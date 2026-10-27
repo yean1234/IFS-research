@@ -1,0 +1,40 @@
+# 연구 파일럿 설정 (「IFS 이론이란?」 2절 모델 제안 기준)
+# - 면담 모델: Gemma 4 31B. 응답 지연·메모리 문제가 있으면 gemma4:26b(MoE)로 내린다.
+# - 가드: Kanana Safeguard 8B. 없으면 시작하지 않는다(required = true).
+# - 버전 고정: 실행 시 Ollama digest(sha256)를 세션 로그에 남긴다. 태그 이름만 믿지 않는다.
+
+[interview]
+condition = "chatbot"
+protocol = "elicitation_protocol.v1.json"
+prompt_version = "1.0.0"
+
+[llm]
+backend = "ollama"
+model = "gemma4:31b"
+host = "http://127.0.0.1:11434"
+timeout_s = 600
+temperature = 0.2
+top_p = 0.9
+seed = 7
+think = false
+num_ctx = 8192
+keep_alive = "60m"
+max_regenerations = 2
+retry_feedback = true
+
+[guard]
+keyword = true
+model_backend = "ollama"
+model = "hf.co/mradermacher/kanana-safeguard-8b-GGUF:Q4_K_M"
+format = "kanana"
+check_output = true
+required = true
+
+[validator]
+strict_novel_content = true
+l5_depth = "present_focus"
+max_anchor_eojeol = 3         # (확장) 인용은 참여자의 낱말·짧은 구만. 문장 통째 인용 금지
+
+[session]
+log_dir = "logs"
+researcher_contact = "(파일럿 전 연구자 연락처 입력)"

@@ -1,0 +1,28 @@
+{
+  "id": "p07_static",
+  "title": "같은 P07 대사를 조건 1(정적 프롬프트)로",
+  "source": "설계 노트 §6 조건 1",
+  "condition": "static",
+  "replies": [
+    "가슴이 좀 답답해요",
+    "가슴 안쪽이요",
+    "젖은 종이처럼 축 처진 덩어리 같아요",
+    "회색이고 무거워요. 바닥에 눌어붙은 것 같아요",
+    "손바닥만 하고 납작해요",
+    "움직임은 없어요"
+  ],
+  "expect": {
+    "endedBy": "completed",
+    "probesAsked": [
+      "size_shape",
+      "movement"
+    ],
+    "sourcesInclude": [
+      "fixed:fleshout_open"
+    ],
+    "sourcesExclude": [
+      "llm"
+    ]
+  },
+  "note": "합성 대사. 노션 스토리보드·설계 문서의 예시를 본떠 만든 것이며 실제 참여자 응답이 아니다."
+}

@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>IFS 면담 데모</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="dot" aria-hidden="true"></span>
+      <div>
+        <h1>IFS 심상화 면담 데모</h1>
+        <p class="sub">Find · Focus · Flesh out — 참여자 말만 되돌려 묻는 유도 면담</p>
+      </div>
+    </div>
+    <div class="badges">
+      <span id="badge-condition" class="badge" hidden></span>
+      <span id="badge-stage" class="badge stage" hidden></span>
+      <span id="badge-model" class="badge muted"></span>
+      <label class="toggle"><input type="checkbox" id="toggle-researcher" checked> 연구자 화면</label>
+    </div>
+  </header>
+
+  <main class="layout" id="layout">
+    <section class="panel participant" aria-label="참여자 화면">
+      <div id="setup" class="setup">
+        <h2>새 세션</h2>
+        <p class="hint">이 화면은 연구자가 함께 있는 자리에서 쓰는 연구용 데모입니다. 실명 대신 가명 ID를 쓰세요.</p>
+        <fieldset class="conditions">
+          <legend>유도 조건 (설계 노트 §6)</legend>
+          <label class="choice">
+            <input type="radio" name="condition" value="chatbot" checked>
+            <span><strong>조건 2 · AI 챗봇 면담</strong><br><small>고정 문구 사이에 로컬 LLM이 참여자 말로만 후속 질문 (매 턴 검증)</small></span>
+          </label>
+          <label class="choice">
+            <input type="radio" name="condition" value="static">
+            <span><strong>조건 1 · 정적 프롬프트</strong><br><small>고정 질문 + 조건부 프로브, LLM 없음</small></span>
+          </label>
+        </fieldset>
+        <label class="field">가명 ID <input id="session-id" placeholder="비우면 자동 (예: P07)" maxlength="40" autocomplete="off"></label>
+        <button id="btn-create" class="primary">세션 만들기</button>
+        <p id="setup-warning" class="warning" hidden></p>
+      </div>
+
+      <div id="chat" class="chat" aria-live="polite" hidden></div>
+
+      <div id="confirm-box" class="confirm" hidden>
+        <label for="draft">확정 텍스트 — 참여자가 쓴 말을 그대로 모은 것</label>
+        <textarea id="draft" rows="6" readonly></textarea>
+      </div>
+
+      <form id="composer" class="composer" hidden>
+        <textarea id="input" rows="2" placeholder="떠오르는 대로 적어 주세요. (Enter 보내기 · Shift+Enter 줄바꿈)"></textarea>
+        <button type="submit" class="primary">보내기</button>
+      </form>
+      <div id="buttons" class="buttons"></div>
+      <p id="busy" class="busy" hidden>질문을 만들고 검사하는 중…</p>
+    </section>
+
+    <aside class="panel researcher" id="researcher" aria-label="연구자 화면">
+      <nav class="tabs" role="tablist">
+        <button role="tab" data-tab="progress" class="active">진행·안전</button>
+        <button role="tab" data-tab="turns">턴·검증</button>
+        <button role="tab" data-tab="extract">확정·추출</button>
+        <button role="tab" data-tab="json">로그</button>
+      </nav>
+      <div class="tab-body" id="tab-progress"></div>
+      <div class="tab-body" id="tab-turns" hidden></div>
+      <div class="tab-body" id="tab-extract" hidden></div>
+      <div class="tab-body" id="tab-json" hidden>
+        <div class="row"><button id="btn-download" class="ghost">JSON 내려받기</button></div>
+        <pre id="json-view" class="json"></pre>
+      </div>
+    </aside>
+  </main>
+  <div id="toast" class="toast" role="status" hidden></div>
+  <script src="/static/app.js"></script>
+</body>
+</html>

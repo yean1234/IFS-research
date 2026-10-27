@@ -1,0 +1,30 @@
+# 참여자 데이터 — 절대 올리지 않음 (가명 ID라도)
+chatbot/logs/
+chatbot/reports/
+*.session.json
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+build/
+dist/
+
+# 편집기·OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Unity (unity/ 프로젝트를 만들면 사용)
+unity/[Ll]ibrary/
+unity/[Tt]emp/
+unity/[Oo]bj/
+unity/[Bb]uild/
+unity/[Bb]uilds/
+unity/[Ll]ogs/
+unity/[Uu]ser[Ss]ettings/
+unity/*.csproj
+unity/*.sln

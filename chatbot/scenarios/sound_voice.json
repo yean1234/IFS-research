@@ -1,0 +1,24 @@
+{
+  "id": "sound_voice",
+  "title": "비시각 경험 — 소리·목소리로 떠오르는 part",
+  "source": "IFS: part는 생각·감정·감각·이미지·소리로 경험됨 (IFS Institute Model Outline)",
+  "condition": "chatbot",
+  "replies": [
+    "낮게 웅웅거리는 목소리처럼 느껴져요",
+    "머리 주변이요",
+    "웅웅거리는 소리가 계속 울려요",
+    "멀리서 들리는 메아리 같아요",
+    "없어요",
+    "없어요",
+    "없어요",
+    "없어요"
+  ],
+  "expect": {
+    "endedBy": "completed",
+    "bodyRelation": "around",
+    "findModalityIncludes": [
+      "sound_or_voice"
+    ]
+  },
+  "note": "합성 대사. 노션 스토리보드·설계 문서의 예시를 본떠 만든 것이며 실제 참여자 응답이 아니다."
+}

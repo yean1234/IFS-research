@@ -1,0 +1,25 @@
+{
+  "id": "ambiguous_disappear",
+  "title": "모호한 표현('사라지고 싶은') — 확인 문구 + 연구자 알림",
+  "source": "「IFS 이론이란?」 5절 오탐 논의",
+  "condition": "chatbot",
+  "softCheck": "continue",
+  "replies": [
+    "어딘가로 사라지고 싶은 느낌이에요",
+    "몸 주변이요",
+    "흐릿한 안개 같아요",
+    "없어요",
+    "없어요",
+    "없어요",
+    "없어요"
+  ],
+  "expect": {
+    "endedBy": "completed",
+    "softChecks": 1,
+    "alertsInclude": [
+      "soft_check"
+    ],
+    "bodyRelation": "around"
+  },
+  "note": "합성 대사. 노션 스토리보드·설계 문서의 예시를 본떠 만든 것이며 실제 참여자 응답이 아니다."
+}

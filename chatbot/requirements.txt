@@ -1,0 +1,7 @@
+fastapi>=0.110
+uvicorn>=0.30
+pydantic>=2.7
+httpx>=0.27
+jsonschema>=4.20
+kiwipiepy>=0.20
+pytest>=8

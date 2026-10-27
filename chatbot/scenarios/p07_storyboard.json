@@ -1,0 +1,29 @@
+{
+  "id": "p07_storyboard",
+  "title": "스토리보드 P07 — 가슴의 답답함이 젖은 종이처럼 축 처진 회색 덩어리로",
+  "source": "노션 「P07의 25분 — IFS VR 세션 파이프라인」(대사는 가상)",
+  "condition": "chatbot",
+  "replies": [
+    "가슴이 좀 답답해요",
+    "가슴 안쪽이요",
+    "답답한 게 꽉 차 있어요",
+    "젖은 종이처럼 축 처진 덩어리 같아요",
+    "회색이고 무거워요",
+    "바닥에 눌어붙은 것 같아요",
+    "그게 다예요",
+    "손바닥만 하고 납작해요",
+    "움직임은 없어요"
+  ],
+  "expect": {
+    "endedBy": "completed",
+    "bodyRelation": "in",
+    "findModalityIncludes": [
+      "body_sensation"
+    ],
+    "extractedIncludes": [
+      "회색",
+      "덩어리"
+    ]
+  },
+  "note": "합성 대사. 노션 스토리보드·설계 문서의 예시를 본떠 만든 것이며 실제 참여자 응답이 아니다."
+}

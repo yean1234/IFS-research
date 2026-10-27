@@ -1,0 +1,18 @@
+[면담 기록]
+{transcript}
+
+[현재 단계] {stage} — 이 단계 질문 {turn_no}/{max_turns}
+[이 단계에서 쓸 수 있는 질문 틀] {allowed_templates}
+
+[참여자가 실제로 쓴 말 — 인용은 이 안에서만, 글자 그대로]
+{participant_lines}
+
+[인용 후보 — 참여자가 쓴 낱말·짧은 구를 그대로 잘라 둔 것. anchor_quote는 이 가운데 하나]
+{candidate_lines}
+
+[이미 한 질문]
+{asked_lines}
+{feedback_block}
+위 규칙과 현재 단계에 맞는 다음 턴 하나를 JSON으로만 출력하세요.
+anchor_quote에는 인용 후보 가운데 하나를 글자 그대로 넣고, utterance의 작은따옴표 안에도 같은 말을 그대로 씁니다.
+질문 틀의 '은(는)', '와(과)'는 앞 말의 받침에 맞게 하나만 씁니다.

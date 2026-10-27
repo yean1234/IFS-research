@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ifs-research.local/shared/schemas/session_log.schema.json",
+  "title": "SessionLog (elicit-log/0.1)",
+  "description": "유도 면담 세션 감사 기록. 노션 「IFS 이론이란?」 4절의 세션 로그 예시를 기준으로 하고, 보이지 않은 턴(attempts)·알림·확정 텍스트·추출 미리보기·VR 이벤트를 덧붙였다. 덧붙인 키는 모두 선택이다.",
+  "type": "object",
+  "required": ["logVersion", "sessionId", "elicitationCondition", "protocol", "turns", "endedBy"],
+  "properties": {
+    "logVersion": { "const": "elicit-log/0.1" },
+    "sessionId": { "type": "string", "description": "가명 ID (예: P07). 실명·연락처를 넣지 않는다." },
+    "elicitationCondition": { "enum": ["static", "chatbot"], "description": "조건 1 정적 프롬프트 / 조건 2 AI 챗봇 면담 (설계 노트 §6). VR의 조절 가능(A)/고정 제시(B)와는 다른 축이다." },
+    "createdAt": { "type": "string" },
+    "endedAt": { "type": ["string", "null"] },
+    "protocol": {
+      "type": "object",
+      "required": ["promptVersion", "lexiconVersion", "controllerVersion"],
+      "properties": {
+        "promptVersion": { "type": "string" },
+        "promptSha256": { "type": "string" },
+        "contextTemplateVersion": { "type": "string" },
+        "lexiconVersion": { "type": "string" },
+        "safetyLexiconVersion": { "type": "string" },
+        "controllerVersion": { "type": "string" },
+        "protocolId": { "type": "string" },
+        "protocolVersion": { "type": "string" }
+      }
+    },
+    "model": {
+      "type": ["object", "null"],
+      "description": "조건 1(static)이면 null.",
+      "properties": {
+        "name": { "type": "string" },
+        "quant": { "type": ["string", "null"] },
+        "digest": { "type": ["string", "null"], "description": "Ollama 태그가 아니라 sha256 digest로 버전을 고정한다." },
+        "runtime": { "type": "string" },
+        "sampling": {
+          "type": ["object", "null"],
+          "properties": {
+            "temperature": { "type": "number" }, "top_p": { "type": "number" },
+            "seed": { "type": "integer" }, "thinking": { "type": "boolean" }
+          }
+        }
+      }
+    },
+    "guard": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "가드 모델 이름 또는 keyword-only" },
+        "digest": { "type": ["string", "null"] },
+        "keywordLexicon": { "type": ["object", "null"] }
+      }
+    },
+    "analyzer": { "type": "object" },
+    "turns": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["i", "speaker"],
+        "properties": {
+          "i": { "type": "integer" },
+          "speaker": { "enum": ["system", "interviewer", "participant"] },
+          "source": { "type": "string", "description": "fixed:<문구 id> | llm | fixed:fallback | fixed:redirect | fixed:depth_present | control" },
+          "stage": { "type": ["string", "null"] },
+          "text": { "type": "string" },
+          "guard": { "type": "string", "description": "참여자 발화의 가드 판정: SAFE | controversial | CRISIS" },
+          "guardDetail": { "type": "object" },
+          "crisisKeyword": { "type": "boolean" },
+          "flags": { "type": "object" },
+          "output": { "type": ["object", "null"], "description": "참여자에게 나간 LLM 턴 JSON (interviewer_turn.schema.json)" },
+          "checks": {
+            "type": "object",
+            "properties": {
+              "passed": { "type": "boolean" },
+              "reasons": { "type": "array", "items": { "type": "string" } },
+              "regenerations": { "type": "integer" },
+              "fallback": { "type": "boolean" }
+            }
+          },
+          "attempts": {
+            "type": "array",
+            "description": "보이지 않은 턴: 참여자에게 나가지 않은 시도까지 모두.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "attempt": { "type": "integer" },
+                "seed": { "type": "integer" },
+                "raw": { "type": "string" },
+                "parsed": { "type": ["object", "null"] },
+                "passed": { "type": "boolean" },
+                "reasons": { "type": "array", "items": { "type": "string" } },
+                "latencyMs": { "type": "integer" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "alerts": { "type": "array", "items": { "type": "object" } },
+    "capture": {
+      "type": "object",
+      "properties": {
+        "bodyRelation": { "type": "object", "description": "Find 위치 질문의 답. focus.location (예: chest.inner)" },
+        "findModality": { "type": "object", "description": "연구자용 휴리스틱 표지. 참여자에게 보이지 않는다." }
+      }
+    },
+    "confirmedText": { "type": ["string", "null"], "description": "참여자가 [이대로 맞아요]를 누른 텍스트. 점선 아래(추출)로 넘어가는 유일한 것." },
+    "confirmation": { "type": ["object", "null"] },
+    "extraction": { "type": ["object", "null"], "description": "추출 미리보기(1층 사전 + 직유 표지 + _provenance)" },
+    "events": { "type": "array", "description": "Unity 등 외부에서 보낸 이벤트(보정·거리 등)", "items": { "type": "object" } },
+    "endedBy": { "enum": ["completed", "participant_stop", "crisis", "abandoned", null] },
+    "rawSurveyResponseRef": { "type": ["string", "null"] }
+  }
+}

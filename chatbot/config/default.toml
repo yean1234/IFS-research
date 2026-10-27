@@ -1,0 +1,38 @@
+# 데모 기본 설정 (개발용 PC: RTX 5080 16GB 기준)
+# 연구 파일럿 설정은 pilot.toml. 실행: python -m ifs_chatbot.server --config pilot
+
+[interview]
+condition = "chatbot"                     # chatbot = 조건 2 · AI 챗봇 면담 / static = 조건 1 · 정적 프롬프트
+protocol = "elicitation_protocol.v1.json" # shared/protocol/ 아래 파일
+prompt_version = "1.0.0"                  # chatbot/prompts/v1.0.0/
+
+[llm]
+backend = "ollama"         # ollama | offline (개발용 템플릿 대역 — 연구 조건 아님)
+model = "gemma4:e4b"       # 노션 1순위는 gemma4:31b(약 20GB). 이 PC에서는 같은 계열 E4B로 개발한다.
+host = "http://127.0.0.1:11434"
+timeout_s = 300
+temperature = 0.2          # 「IFS 이론이란?」 세션 로그 예시의 샘플링 값
+top_p = 0.9
+seed = 7
+think = false              # Gemma 4는 기본이 thinking 켜짐. 반드시 끈다.
+num_ctx = 8192
+keep_alive = "30m"
+max_regenerations = 2      # 검증 실패 시 재생성 최대 2회, 그다음 고정 대체 문구
+retry_feedback = true      # 재생성할 때 어떤 규칙에 걸렸는지 알려 준다
+
+[guard]
+keyword = true             # L1 한국어 위기 키워드 사전 (shared/lexicon/safety_ko.v0.json)
+model_backend = "ollama"   # none | ollama
+model = "hf.co/mradermacher/kanana-safeguard-8b-GGUF:Q4_K_M"
+format = "kanana"          # kanana(<SAFE>/<UNSAFE-S6>) | qwen3guard(Safe/Controversial/Unsafe)
+check_output = true        # V8 출력 가드
+required = false           # 데모: 가드 모델이 없으면 키워드 사전만으로 돌고 로그에 남긴다
+
+[validator]
+strict_novel_content = true   # V5 확장: 질문 틀에 없는 새 내용어(돌, 차갑…)도 막는다
+l5_depth = "present_focus"    # 과거 기억 서사가 나오면 LLM 대신 고정 문구(depth_present)
+max_anchor_eojeol = 3         # (확장) 인용은 참여자의 낱말·짧은 구만. 문장 통째 인용 금지
+
+[session]
+log_dir = "logs"              # chatbot/logs/ (git에 올리지 않음)
+researcher_contact = "(연구자 연락처를 config에 입력하세요)"

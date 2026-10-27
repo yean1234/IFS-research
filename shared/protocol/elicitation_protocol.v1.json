@@ -1,0 +1,222 @@
+{
+  "protocolId": "ifs-imagery-elicitation",
+  "protocolVersion": "1.0.0",
+  "description": "IFS 6F의 Find·Focus·Flesh out을 따르는 심상 유도 면담 프로토콜. 챗봇 서버(chatbot/)와 VR 앱(unity/)이 같은 단계 이름·고정 문구·질문 틀을 쓰기 위한 공용 약속.",
+  "sources": {
+    "chatbot_spec": "노션 「IFS 이론이란?」 > 챗봇 도입 (시스템 프롬프트 v1.0, 질문 틀 6개, 고정 문구, 검증기 V1–V8, 안전 L0–L5)",
+    "dev_direction": "노션 「앞으로 개발 방향」(2026-10-26) + 첨부 「P07의 25분 — IFS VR 세션 파이프라인」",
+    "design_note": "노션 「교수님 공유 자료」 > IFS 심상화 설계 노트(2026-10-06) §2 6F 표준 문구, §6 조건 1/2"
+  },
+  "phraseStatusLegend": {
+    "spec": "노션 설계 문서에 적힌 문구 그대로. IRB 승인 대상.",
+    "spec+draft": "앞부분은 설계 문서 문구, 뒷부분은 텍스트 데모용으로 덧붙인 초안.",
+    "draft": "데모를 위해 새로 쓴 초안. IRB 제출 전에 연구팀 검토 필요."
+  },
+
+  "conditions": {
+    "static": {
+      "label": "조건 1 · 정적 프롬프트",
+      "description": "고정 질문 + 조건부 프로브. LLM 호출 없음, 결정론적. (설계 노트 §6)",
+      "maxLlmTurnsTotal": 0,
+      "sequence": [
+        { "type": "fixed", "phrase": "opening", "stage": "find" },
+        { "type": "fixed", "phrase": "location", "stage": "find", "capture": "bodyRelation" },
+        { "type": "fixed", "phrase": "focus_hold", "stage": "focus" },
+        { "type": "fixed", "phrase": "fleshout_open", "stage": "flesh_out" },
+        { "type": "probes", "stage": "flesh_out" },
+        { "type": "confirm" }
+      ]
+    },
+    "chatbot": {
+      "label": "조건 2 · AI 챗봇 면담",
+      "description": "고정 문구 사이에 로컬 LLM의 clean 후속 질문을 넣는다. 열린 질문만, 속성 제안 금지, 매 턴 검증. (설계 노트 §6, 「앞으로 개발 방향」)",
+      "maxLlmTurnsTotal": null,
+      "maxLlmTurnsTotalNote": "설계 노트 §6은 조건 2를 '최대 5턴'으로 적고, 「앞으로 개발 방향」은 단계별 한도(Find 1회, Flesh out 5회)를 적는다. 기본값은 단계별 한도만 적용한다. 전체 상한을 쓰려면 숫자를 넣는다.",
+      "sequence": [
+        { "type": "fixed", "phrase": "opening", "stage": "find" },
+        { "type": "fixed", "phrase": "location", "stage": "find", "capture": "bodyRelation" },
+        { "type": "llm", "stage": "find", "maxTurns": 1 },
+        { "type": "fixed", "phrase": "focus_hold", "stage": "focus" },
+        { "type": "llm", "stage": "focus", "maxTurns": 0, "note": "VR 스토리보드와 설계 노트에서 Focus는 호흡 동기화 단계라 LLM 질문이 없다. 챗봇 설계 문서의 '최대 3회'를 쓰려면 3으로 바꾼다." },
+        { "type": "llm", "stage": "flesh_out", "maxTurns": 5 },
+        { "type": "probes", "stage": "flesh_out" },
+        { "type": "confirm" }
+      ]
+    }
+  },
+
+  "stages": {
+    "find": {
+      "ifs": "Find",
+      "labelKo": "찾기",
+      "purposeKo": "참여자가 처음 알아차린 것(신체감각·감정·생각·이미지·소리)과 그것이 몸 안·표면·주변 중 어디에 있는지를 찾는다.",
+      "allowedTemplates": ["anything_else", "like_what"]
+    },
+    "focus": {
+      "ifs": "Focus",
+      "labelKo": "머물기",
+      "purposeKo": "찾은 것에 주의를 두고 머문다. VR에서는 호흡에 맞춘 환경 맥동으로 각성을 낮춘다.",
+      "allowedTemplates": ["where", "what_kind", "anything_else"]
+    },
+    "flesh_out": {
+      "ifs": "Flesh out",
+      "labelKo": "구체화",
+      "purposeKo": "참여자가 이미 쓴 말을 그대로 되돌려 묻는 clean 질문으로 모습을 펼친다. 목적은 정확한 그림이 아니라 part를 Self와 구별되는 대상으로 세우는 것(unblending)이다.",
+      "allowedTemplates": ["anything_else", "what_kind", "where", "like_what", "relationship", "then_what"]
+    }
+  },
+
+  "templates": {
+    "anything_else": {
+      "form": "'{X}'에 대해 더 있나요?",
+      "realize": "'{X}'에 대해 더 있나요?",
+      "marker": "더\\s*있",
+      "slots": ["X"],
+      "cleanLanguage": "And is there anything else about X?"
+    },
+    "what_kind": {
+      "form": "그 '{X}'은(는) 어떤 '{X}'인가요?",
+      "realize": "그 '{X}'{X|은/는} 어떤 '{X}'인가요?",
+      "marker": "어떤",
+      "slots": ["X"],
+      "cleanLanguage": "And what kind of X is that X?"
+    },
+    "where": {
+      "form": "그 '{X}'은(는) 어디쯤 있나요?",
+      "realize": "그 '{X}'{X|은/는} 어디쯤 있나요?",
+      "marker": "어디",
+      "slots": ["X"],
+      "cleanLanguage": "And where is X?"
+    },
+    "like_what": {
+      "form": "그 '{X}'은(는) 마치 무엇 같나요?",
+      "realize": "그 '{X}'{X|은/는} 마치 무엇 같나요?",
+      "marker": "무엇\\s*(과|와)?\\s*같|뭐\\s*같",
+      "slots": ["X"],
+      "cleanLanguage": "And that's X like what?"
+    },
+    "relationship": {
+      "form": "'{X}'와(과) '{Y}' 사이에는 어떤 관계가 있나요?",
+      "realize": "'{X}'{X|와/과} '{Y}' 사이에는 어떤 관계가 있나요?",
+      "marker": "관계",
+      "slots": ["X", "Y"],
+      "cleanLanguage": "And what's the relationship between X and Y?"
+    },
+    "then_what": {
+      "form": "그리고 그다음에는 어떻게 되나요?",
+      "realize": "그리고 그다음에는 어떻게 되나요?",
+      "marker": "다음|그\\s*후|그러고\\s*나서",
+      "slots": [],
+      "cleanLanguage": "And then what happens?"
+    }
+  },
+
+  "dimensionProbes": {
+    "note": "아직 나오지 않은 차원만, 모든 참여자에게 같은 순서로 묻는다. 새 차원을 여는 질문은 값을 주지 않아도 약한 유도이므로 LLM이 아니라 사전 등록한 고정 문구가 맡는다. (「IFS 이론이란?」 3절)",
+    "order": [
+      { "id": "size_shape", "phrase": "probe_size_shape", "coveredByCategories": ["size"], "note": "스토리보드 P07은 '덩어리'(형태)가 나온 뒤에도 크기를 물었다. 그래서 크기어가 나왔을 때만 건너뛴다." },
+      { "id": "color_brightness", "phrase": "probe_color_brightness", "coveredByCategories": ["color", "brightness", "saturation"] },
+      { "id": "movement", "phrase": "probe_movement", "coveredByCategories": ["movement"] }
+    ]
+  },
+
+  "fixedPhrases": {
+    "intro": {
+      "text": "안녕하세요. 저는 연구용 AI 면담 보조자예요. 상담이나 치료가 아니라, 지금 마음에 떠오르는 것을 참여자분 자신의 말로 조금 더 표현해 보도록 질문만 드려요. 떠오르지 않으면 '잘 모르겠어요'라고 하셔도 괜찮고, 언제든 [그만]을 누르거나 '그만'이라고 쓰면 바로 멈춰요.",
+      "status": "draft",
+      "note": "AI임을 알리고 언제든 중단할 수 있다고 안내(L0). 치료·내담자 대신 자기성찰 보조 용어를 쓴다(「IFS 논문 디벨롭 - 이론 중심」)."
+    },
+    "opening": {
+      "text": "너무 힘들지 않은 정도로, 최근 마음에 남아 있는 상황 하나를 떠올려 주세요. 그 상황을 떠올릴 때 지금 가장 먼저 알아차려지는 것은 무엇인가요?",
+      "status": "spec",
+      "source": "「IFS 이론이란?」 고정 문구표 · 오프닝"
+    },
+    "location": {
+      "text": "그것이 몸 안에, 몸 표면에, 아니면 몸 주변에 있나요?",
+      "status": "spec",
+      "source": "설계 노트 §2 6F Find 표준 문구. 스토리보드의 '몸 안, 표면, 주변 중 어디?'와 같은 질문. 고정 문구라 V6('아니면')은 적용하지 않는다."
+    },
+    "focus_hold": {
+      "text": "거기에 주의를 두고 잠시 머물러 보세요. 준비가 되면, 지금 알아차려지는 것을 적어 주세요.",
+      "status": "spec+draft",
+      "source": "앞 문장은 설계 노트 §2 6F Focus 표준 문구. 뒤 문장은 텍스트 데모에서 답을 받기 위해 덧붙인 초안(VR에서는 호흡 1분 뒤 다음 단계로 넘어감)."
+    },
+    "fleshout_open": {
+      "text": "지금 그것이 어떻게 있는지, 떠오르는 대로 적어 주세요.",
+      "status": "draft",
+      "note": "조건 1 전용. 설계 노트의 6F 표준 문구('어떻게 보이나요? 몇 살쯤 되어 보이나요? 무엇을 하고 있나요?')는 사람 형상과 시각을 전제하므로, 비시각 경험도 받을 수 있게 중립적으로 바꾼 초안. 참고: IFS Skills Training Manual 계열 치료자 지침은 '보이나요? 보인다면 어떻게 보이나요? 보이지 않는다면 어떻게 경험되나요?'로 비시각 경로를 열어 둔다(Anderson, PESI 6-step 글)."
+    },
+    "probe_size_shape": { "text": "그것에 크기나 모양이 있나요?", "status": "spec", "source": "「IFS 이론이란?」 차원 프로브. Clean Language Level-1 지침의 'And does it have a size or a shape?'와 같은 꼴(값을 주지 않는 속성 질문)." },
+    "probe_color_brightness": { "text": "그것에 색이나 밝기가 있나요?", "status": "spec", "source": "「IFS 이론이란?」 차원 프로브" },
+    "probe_movement": { "text": "그것에 움직임이 있나요?", "status": "spec", "source": "「IFS 이론이란?」 차원 프로브" },
+    "fallback": {
+      "text": "방금 말씀하신 것에 대해 더 있나요?",
+      "status": "spec",
+      "source": "「IFS 이론이란?」 대체 문구. 검증기에 세 번 걸리면 LLM 질문 대신 낸다."
+    },
+    "redirect": {
+      "text": "지금은 떠올린 것에 대해서만 이야기를 나누려고 해요. 방금 떠올린 것으로 돌아가 볼까요?",
+      "status": "spec",
+      "source": "「IFS 이론이란?」 범위 이탈 문구"
+    },
+    "depth_present": {
+      "text": "지금은 떠오른 그것이 지금 어떻게 있는지에만 머물러 볼게요. 지금 그것에서 알아차려지는 것이 있나요?",
+      "status": "draft",
+      "note": "L5 깊이 제한. 참여자가 과거 장면이나 기억으로 깊이 들어갈 때(추방자·외상 기억 쪽) LLM 대신 내는 문구. 6F는 보호자 수준의 준비 과정이고 추방자 작업은 범위 밖이다."
+    },
+    "soft_check": {
+      "text": "지금 계속 이야기해도 괜찮으신가요?",
+      "status": "spec",
+      "source": "「IFS 이론이란?」 5절 안전 프로토콜. 버튼 [계속] [그만]."
+    },
+    "crisis": {
+      "text": "여기서 면담을 멈출게요. 지금 마음이 많이 힘드시다면 혼자 견디지 않으셔도 돼요. 24시간 이야기할 수 있는 곳이 있어요.\n· 자살예방상담전화 109\n· 정신건강위기상담전화 1577-0199\n· 지금 바로 위험하다면 119\n· 연구자 연락처: {researcher_contact}\n연구자가 곧 함께할게요.",
+      "status": "draft",
+      "source": "「IFS 이론이란?」 L4: 위기 상태에서는 LLM을 호출하지 않고 고정 문구로 109·1577-0199·연구자 연락처를 안내하고 세션을 멈춘다. 109는 2024-01-01부터 1393을 대체한 통합 자살예방상담전화(보건복지부). 119 줄은 이 저장소에서 덧붙인 초안."
+    },
+    "confirm_intro": {
+      "text": "지금까지 적어 주신 말을 그대로 모았어요. 이대로 맞는지 확인해 주세요. 고치고 싶은 곳이 있으면 직접 고쳐도 돼요.",
+      "status": "draft",
+      "note": "버튼 [이대로 맞아요] [고칠게요]. 요약문은 LLM이 쓰지 않고 참여자 발화를 그대로 모은다."
+    },
+    "closing": {
+      "text": "확인해 주셔서 고마워요. 면담은 여기까지예요. 이제 연구자의 안내에 따라 다음 단계로 넘어갈게요.",
+      "status": "draft"
+    },
+    "stopped": {
+      "text": "알겠어요. 여기서 멈출게요. 잠시 편하게 쉬어 주세요. 연구자가 곧 안내해 드릴게요.",
+      "status": "draft"
+    },
+    "withdrawn": {
+      "text": "말씀해 주신 내용은 저장하지 않고 폐기했어요.",
+      "status": "draft",
+      "note": "2D 평가 설문의 '응답을 제출하지 않고 폐기해 주세요' 선택지를 옮긴 것."
+    }
+  },
+
+  "vrStages": {
+    "note": "챗봇 서버는 아래 단계를 진행하지 않는다. Unity가 같은 문구를 쓰도록 여기에 둔다. (스토리보드 「P07의 25분」)",
+    "feel_toward": {
+      "text": "지금 그것에 대해 어떻게 느끼나요?",
+      "status": "spec",
+      "source": "스토리보드 11:00. 설계 노트 §2 표준형은 '지금 그 part에 대해 당신은 어떻게 느끼나요?'",
+      "researcherNote": "혐오·두려움·짜증이면 아직 blended, 호기심·연민이면 Self에 가까움(설계 노트 §2). 참여자에게 해석을 말하지 않는다."
+    },
+    "containment": {
+      "text": "이제 그것을 잠시 놓아둘 곳에 담아 두겠습니다.",
+      "status": "spec",
+      "source": "스토리보드 19:00 종료 · 컨테인먼트 제스처"
+    },
+    "post_interview": {
+      "text": "고칠 수 있었을 때와 없었을 때, 뭐가 달랐어요?",
+      "status": "spec",
+      "source": "스토리보드 19:00 사후 인터뷰 질문"
+    }
+  },
+
+  "outOfScope": [
+    { "ifs": "beFriend", "reason": "파일럿 범위 밖. 역할·내력 질문('언제부터')은 과거를 묻는다." },
+    { "ifs": "Fears", "reason": "파일럿 범위 밖. '멈추면 무슨 일이 생길까'는 V6 금지 표현을 포함한다." },
+    { "ifs": "Witnessing · Retrieval · Unburdening", "reason": "추방자 작업은 임상 감독이 필요하다. 비임상 연구 범위 밖." }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "id": "stop_midway",
+  "title": "참여자가 도중에 멈춤",
+  "source": "L0 '언제든 중단'",
+  "condition": "chatbot",
+  "replies": [
+    "가슴이 답답해요",
+    "그만할래요"
+  ],
+  "expect": {
+    "endedBy": "participant_stop"
+  },
+  "note": "합성 대사. 노션 스토리보드·설계 문서의 예시를 본떠 만든 것이며 실제 참여자 응답이 아니다."
+}

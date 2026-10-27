@@ -1,0 +1,29 @@
+{
+  "id": "depth_drift",
+  "title": "기억 서사로 깊어짐 — L5 고정 문구, 반복되면 확인 문구",
+  "source": "「IFS 이론이란?」 L5, 설계 노트(추방자 작업은 범위 밖)",
+  "condition": "chatbot",
+  "softCheck": "continue",
+  "replies": [
+    "가슴이 조여요",
+    "가슴 안쪽이요",
+    "꽉 조이는 느낌이에요",
+    "어릴 때 교실에서 혼자 서 있던 장면이 떠올라요",
+    "그때 친구들이 웃던 기억이 나요",
+    "조이는 게 단단한 매듭 같아요",
+    "없어요",
+    "없어요",
+    "없어요"
+  ],
+  "expect": {
+    "endedBy": "completed",
+    "sourcesInclude": [
+      "fixed:depth_present"
+    ],
+    "softChecks": 1,
+    "alertsInclude": [
+      "depth"
+    ]
+  },
+  "note": "합성 대사. 노션 스토리보드·설계 문서의 예시를 본떠 만든 것이며 실제 참여자 응답이 아니다."
+}

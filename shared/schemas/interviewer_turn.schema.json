@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ifs-research.local/shared/schemas/interviewer_turn.schema.json",
+  "title": "InterviewerTurn",
+  "description": "면담 LLM이 한 턴마다 내는 출력. 키 순서는 의도한 것(위험 판단 → 행동 → 질문 틀 → 근거 인용 → 질문). 장면 속성 필드는 일부러 없음. 원본: 노션 「IFS 이론이란?」 > 챗봇 도입 > 4. 구조화된 출력.",
+  "x-schemaVersion": "1.0.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["stage", "risk_signal", "move", "template", "anchor_quote", "utterance"],
+  "properties": {
+    "stage":        { "type": "string", "enum": ["find", "focus", "flesh_out"] },
+    "risk_signal":  { "type": "string", "enum": ["none", "distress", "harm"] },
+    "move":         { "type": "string", "enum": ["ask", "ready_to_advance", "redirect", "hold"] },
+    "template":     { "type": "string", "enum": ["anything_else", "what_kind", "where", "like_what", "relationship", "then_what", "none"] },
+    "anchor_quote": { "type": "string", "maxLength": 40 },
+    "utterance":    { "type": "string", "maxLength": 80 }
+  }
+}
