@@ -356,7 +356,8 @@ namespace IFS.SceneSpec
                 _model = CreatePrimitive(form);
                 _model.transform.SetParent(_motion.transform, false);
                 _model.transform.localScale = Vector3.one * placement.primitiveBaseSize;
-                Note($"form.type={form}: 프리팹이 연결되지 않아 임시 프리미티브로 대체", true);
+                string why = useProceduralModels ? IfsShaderProblem() : "useProceduralModels가 꺼져 있음";
+                Note($"form.type={form}: 프리팹이 연결되지 않아 임시 프리미티브로 대체 — 이유: {why}", true);
             }
             _model.name = "model (" + form + ")";
             _modelBaseScale = _model.transform.localScale;
@@ -375,6 +376,16 @@ namespace IFS.SceneSpec
             if (_fadeShader == null) _fadeShader = Resources.Load<Shader>(FadeShaderResource);
             // URP 등 Built-in이 아닌 파이프라인에서는 서피스 셰이더가 지원되지 않는다 → 프리미티브로
             return _opaqueShader != null && _fadeShader != null && _opaqueShader.isSupported && _fadeShader.isSupported;
+        }
+
+        static string IfsShaderProblem()
+        {
+            if (_opaqueShader == null || _fadeShader == null)
+                return $"Resources/{OpaqueShaderResource}·{FadeShaderResource} 셰이더를 찾지 못함(파일이 없거나 import 전)";
+            if (!_opaqueShader.isSupported || !_fadeShader.isSupported)
+                return "IFS 셰이더가 지원되지 않음 — 셰이더 컴파일 오류이거나 Built-in이 아닌 렌더 파이프라인(URP 등). " +
+                       "Project 창에서 SceneSpecOpaque 셰이더를 선택해 Inspector의 오류를 확인";
+            return "알 수 없음";
         }
 
         static Mesh IcoMesh()
