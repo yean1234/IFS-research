@@ -77,5 +77,5 @@
 
 - 2D 연구 자유 기술 응답으로 1층 사전 v1 만들기(「앞으로 개발 방향」 권고). 미등록어 목록(`extraction.unmatched`)이 출발점.
 - 2층 직유 → 형태 프로토타입 선택(FastText 유사도), 3층 V/A/D 보충, 우선순위 병합.
-- 정식 IFSSceneSpec 스키마와 필드 정렬, `serializeIFSSceneSpec` → `initialScene.json` 연결.
+- ~~정식 IFSSceneSpec 스키마와 필드 정렬, `serializeIFSSceneSpec` → `initialScene.json` 연결~~ → SceneSpec v2(`docs/scene-spec-mapping.md`)와 Unity 로더(`unity/`)로 대신함. TS `IFSSceneSpec` 원본과의 필드 대조는 남음(`docs/decision-log.md`).
 - 후보 모델 3개 비교(`simulate --model … --runs 3`)와 사람 코딩(Clean Language 깨끗함 등급)으로 검증기 판정 검증.

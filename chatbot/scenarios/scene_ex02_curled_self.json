@@ -1,0 +1,20 @@
+{
+  "id": "scene_ex02_curled_self",
+  "title": "장면 기술 예시 ② — 한 줄만 말하고 나머지는 넘김, 요약을 그대로 [이대로 맞아요]",
+  "source": "확정 텍스트는 사용자 지정 예시 문장. 앞의 답은 챗봇 화면을 지나며 나올 법한 답을 임의로 채운 것",
+  "condition": "chatbot",
+  "replies": [
+    "웅크려진 작은 나",
+    "모르겠어요",
+    "넘어갈게요"
+  ],
+  "defaultReply": "없어요",
+  "confirm": "confirm",
+  "expect": {
+    "endedBy": "completed",
+    "bodyRelation": null,
+    "extractedIncludes": ["웅크려진", "작은"]
+  },
+  "sceneFixture": "tests/fixtures/scene_spec/EX02.json",
+  "note": "합성 대사. 실제 참여자 응답이 아니다. 위치를 모른다고 하면 압박하지 않고 넘어가므로 body는 null로 남는다."
+}

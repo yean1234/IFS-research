@@ -1,0 +1,21 @@
+{
+  "note": "SceneSpec v2 정답 예시. 확정 텍스트는 사용자 지정 예시 문장이고, 참여자 ID·세션 ID는 합성값이다(실제 참여자 응답 아님).",
+  "cases": [
+    {
+      "file": "EX01.json",
+      "confirmedText": "가슴 안쪽에 젖은 종이처럼 눅눅하고 가장자리가 삭아가는 회색 덩어리가 있어요",
+      "participantId": "SYN01",
+      "sessionId": "EX01",
+      "condition": "chatbot",
+      "scenario": "scenarios/scene_ex01_gray_blob.json"
+    },
+    {
+      "file": "EX02.json",
+      "confirmedText": "웅크려진 작은 나",
+      "participantId": "SYN01",
+      "sessionId": "EX02",
+      "condition": "chatbot",
+      "scenario": "scenarios/scene_ex02_curled_self.json"
+    }
+  ]
+}

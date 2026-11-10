@@ -1,0 +1,1200 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ifs-research.local/shared/schemas/scene-spec.v2.json",
+  "title": "IFSSceneSpec v2",
+  "description": "확정 텍스트 → 장면 기술. 챗봇이 [이대로 맞아요] 뒤에 만들고 Unity SceneLoader가 읽는다. 값은 참여자가 말한 것만 채우고(1층 사전 > 2층 직유) 나머지는 null. 3층 V/A/D는 _inferred에만 둔다. 수치는 모두 0–1. 근거: docs/scene-spec-mapping.md, 원칙: AGENTS.md 1·2.",
+  "x-schemaVersion": "2.0.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "meta",
+    "form",
+    "material",
+    "layout",
+    "motion",
+    "body",
+    "_provenance",
+    "_unmatched",
+    "_unmapped",
+    "_negated",
+    "_alternatives",
+    "_inferred"
+  ],
+  "properties": {
+    "meta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "specVersion",
+        "participantId",
+        "sessionId",
+        "condition",
+        "sourceTextHash",
+        "pipeline"
+      ],
+      "properties": {
+        "specVersion": {
+          "const": "2.0.0"
+        },
+        "participantId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[A-Za-z0-9_-]{1,40}$",
+          "description": "가명 ID. 모르면 null"
+        },
+        "sessionId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[A-Za-z0-9_-]{1,40}$"
+        },
+        "condition": {
+          "enum": [
+            "chatbot",
+            "static",
+            null
+          ],
+          "description": "유도 조건(elicitationCondition)"
+        },
+        "sourceTextHash": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "description": "정규화한 확정 텍스트(UTF-8)의 SHA-256. charSpan도 이 텍스트 기준"
+        },
+        "pipeline": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "builder",
+            "analyzer",
+            "lexicons"
+          ],
+          "properties": {
+            "builder": {
+              "type": "string"
+            },
+            "analyzer": {
+              "enum": [
+                "kiwi",
+                "fallback-regex"
+              ]
+            },
+            "lexicons": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "form": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "posture"
+      ],
+      "properties": {
+        "type": {
+          "description": "사전 제작 에셋 4종 중 하나. 덩어리/안개/껍질/조각",
+          "enum": [
+            "blob",
+            "mist",
+            "shell",
+            "fragments",
+            null
+          ]
+        },
+        "posture": {
+          "description": "자세어(웅크리다 → curled). 렌더러가 변형 프리셋으로 표현",
+          "enum": [
+            "bent",
+            "bowed",
+            "cowering",
+            "crouched",
+            "curled",
+            "drooping",
+            "hanging",
+            "hiding",
+            "hunched",
+            "limp",
+            "lying",
+            "prone",
+            "sagging",
+            "sitting",
+            "standing",
+            "turned_away",
+            null
+          ]
+        }
+      }
+    },
+    "material": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "color",
+        "brightness",
+        "saturation",
+        "roughness",
+        "opacity",
+        "erosion"
+      ],
+      "properties": {
+        "color": {
+          "description": "HSL, 각 0–1 (h = 색상각/360)",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/hsl"
+            }
+          ]
+        },
+        "brightness": {
+          "$ref": "#/$defs/unitOrNull",
+          "description": "밝기·발광 0(어두움)–1(눈부심)"
+        },
+        "saturation": {
+          "$ref": "#/$defs/unitOrNull",
+          "description": "채도어(선명·탁하 …). null이 아니면 렌더러가 color.s 대신 쓴다"
+        },
+        "roughness": {
+          "$ref": "#/$defs/unitOrNull",
+          "description": "표면 거칠기 0(젖은·매끈)–1(거칠·녹슨)"
+        },
+        "opacity": {
+          "$ref": "#/$defs/unitOrNull",
+          "description": "불투명도 0(투명)–1(불투명)"
+        },
+        "erosion": {
+          "$ref": "#/$defs/unitOrNull",
+          "description": "가장자리 침식·디졸브 0(온전)–1(부서짐). 삭다·갈라지다·깨지다"
+        }
+      }
+    },
+    "layout": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "size",
+        "distance",
+        "verticalOffset"
+      ],
+      "properties": {
+        "size": {
+          "$ref": "#/$defs/unitOrNull",
+          "description": "로그 척도 크기. 0.5 = 에셋 기본 크기(×1), 0 = ×0.25, 1 = ×4. size = 0.5 + log2(scale)/4"
+        },
+        "distance": {
+          "$ref": "#/$defs/unitOrNull",
+          "description": "참여자 머리에서 수평 거리. 0 = 최소(0.3 m), 1 = 최대(3.0 m), 선형"
+        },
+        "verticalOffset": {
+          "$ref": "#/$defs/unitOrNull",
+          "description": "높이 = 참여자 키에 대한 비율. 0 = 바닥, 1 = 정수리. 가슴 0.72"
+        }
+      }
+    },
+    "motion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "speed"
+      ],
+      "properties": {
+        "type": {
+          "description": "움직임어(흔들리다 → swaying). 움직임 부정('움직임은 없어요')만 still",
+          "enum": [
+            "approaching",
+            "churning",
+            "circling",
+            "collapsing",
+            "drifting",
+            "floating",
+            "moving",
+            "pounding",
+            "pushing",
+            "rippling",
+            "rising",
+            "rotating",
+            "scattering",
+            "settling",
+            "sinking",
+            "sloshing",
+            "spreading",
+            "still",
+            "swaying",
+            "trembling",
+            "vibrating",
+            "wriggling",
+            null
+          ]
+        },
+        "speed": {
+          "$ref": "#/$defs/unitOrNull",
+          "description": "0(아주 느림)–1(아주 빠름)"
+        }
+      }
+    },
+    "body": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "part",
+        "layer"
+      ],
+      "properties": {
+        "part": {
+          "description": "참여자가 말한 신체 부위. 감정 이름에서 추론하지 않는다",
+          "enum": [
+            "arm",
+            "back",
+            "belly",
+            "body",
+            "chest",
+            "face",
+            "flank",
+            "foot",
+            "forehead",
+            "hand",
+            "head",
+            "heart",
+            "leg",
+            "lower_back",
+            "lower_belly",
+            "nape",
+            "shoulder",
+            "skin",
+            "solar_plexus",
+            "throat",
+            "throat_neck",
+            "whole_body",
+            null
+          ]
+        },
+        "layer": {
+          "description": "몸 기준 위치(안·표면·주변). 같은 줄에 신체 부위어가 있을 때만",
+          "enum": [
+            "inner",
+            "surface",
+            "surface_above",
+            "around",
+            "around_front",
+            "around_behind",
+            "around_side",
+            "around_below",
+            null
+          ]
+        }
+      }
+    },
+    "_provenance": {
+      "description": "슬롯 경로 → 그 값을 만든 근거 목록. null인 슬롯은 키가 없다",
+      "type": "object",
+      "propertyNames": {
+        "enum": [
+          "form.type",
+          "form.posture",
+          "material.color",
+          "material.brightness",
+          "material.saturation",
+          "material.roughness",
+          "material.opacity",
+          "material.erosion",
+          "layout.size",
+          "layout.distance",
+          "layout.verticalOffset",
+          "motion.type",
+          "motion.speed",
+          "body.part",
+          "body.layer"
+        ]
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/provenanceList"
+      }
+    },
+    "_unmatched": {
+      "description": "1층 사전에 없는 내용어(소실 정보). 참여자가 말했지만 시스템이 못 읽은 말",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "lemma",
+          "tag",
+          "surface",
+          "charSpan"
+        ],
+        "properties": {
+          "lemma": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "surface": {
+            "type": "string"
+          },
+          "charSpan": {
+            "$ref": "#/$defs/charSpan"
+          }
+        }
+      }
+    },
+    "_unmapped": {
+      "description": "사전에는 있지만 v2 장면 파라미터로 옮길 곳이 없는 말(형태어 '가장자리', 자기지칭 '나' …)",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "lemma",
+          "category",
+          "value",
+          "reason",
+          "_provenance"
+        ],
+        "properties": {
+          "lemma": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "value": {
+            "type": "object"
+          },
+          "reason": {
+            "enum": [
+              "no_scene_param",
+              "no_value_mapping",
+              "no_body_part_context",
+              "simile_prototype_pending"
+            ]
+          },
+          "_provenance": {
+            "$ref": "#/$defs/provenance"
+          }
+        }
+      }
+    },
+    "_negated": {
+      "description": "부정된 말('무겁진 않아요'). 값으로 넣지 않고 기록만 한다",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "lemma",
+          "category",
+          "_provenance"
+        ],
+        "properties": {
+          "lemma": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "_provenance": {
+            "$ref": "#/$defs/provenance"
+          }
+        }
+      }
+    },
+    "_alternatives": {
+      "description": "같은 슬롯에 대한 다른 근거. 우선순위(1층 > 2층, 먼저 말한 것)에서 밀린 값",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "path",
+          "value",
+          "reason",
+          "_provenance"
+        ],
+        "properties": {
+          "path": {
+            "enum": [
+              "form.type",
+              "form.posture",
+              "material.color",
+              "material.brightness",
+              "material.saturation",
+              "material.roughness",
+              "material.opacity",
+              "material.erosion",
+              "layout.size",
+              "layout.distance",
+              "layout.verticalOffset",
+              "motion.type",
+              "motion.speed",
+              "body.part",
+              "body.layer"
+            ]
+          },
+          "value": {},
+          "reason": {
+            "enum": [
+              "lower_layer",
+              "later_mention"
+            ]
+          },
+          "_provenance": {
+            "$ref": "#/$defs/provenanceList"
+          }
+        }
+      }
+    },
+    "_inferred": {
+      "description": "3층(V/A/D) 제안. 값이 null인 슬롯에만 생기고, 값 자리에 들어가지 않는다(원칙 3). 렌더러는 기본적으로 쓰지 않는다",
+      "type": "object",
+      "propertyNames": {
+        "enum": [
+          "form.type",
+          "form.posture",
+          "material.color",
+          "material.brightness",
+          "material.saturation",
+          "material.roughness",
+          "material.opacity",
+          "material.erosion",
+          "layout.size",
+          "layout.distance",
+          "layout.verticalOffset",
+          "motion.type",
+          "motion.speed",
+          "body.part",
+          "body.layer"
+        ]
+      },
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "value",
+          "_provenance"
+        ],
+        "properties": {
+          "value": {
+            "$ref": "#/$defs/unit"
+          },
+          "_provenance": {
+            "$ref": "#/$defs/provenanceList"
+          }
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$comment": "원칙 3·4: form.type가 null이면 _provenance에 없어야 하고, 값이 있으면 _provenance가 있어야 하며 _inferred에는 없어야 한다",
+      "if": {
+        "properties": {
+          "form": {
+            "properties": {
+              "type": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "_provenance": {
+            "not": {
+              "required": [
+                "form.type"
+              ]
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "_provenance": {
+            "required": [
+              "form.type"
+            ]
+          },
+          "_inferred": {
+            "not": {
+              "required": [
+                "form.type"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "$comment": "원칙 3·4: form.posture가 null이면 _provenance에 없어야 하고, 값이 있으면 _provenance가 있어야 하며 _inferred에는 없어야 한다",
+      "if": {
+        "properties": {
+          "form": {
+            "properties": {
+              "posture": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "_provenance": {
+            "not": {
+              "required": [
+                "form.posture"
+              ]
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "_provenance": {
+            "required": [
+              "form.posture"
+            ]
+          },
+          "_inferred": {
+            "not": {
+              "required": [
+                "form.posture"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "$comment": "원칙 3·4: material.color가 null이면 _provenance에 없어야 하고, 값이 있으면 _provenance가 있어야 하며 _inferred에는 없어야 한다",
+      "if": {
+        "properties": {
+          "material": {
+            "properties": {
+              "color": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "_provenance": {
+            "not": {
+              "required": [
+                "material.color"
+              ]
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "_provenance": {
+            "required": [
+              "material.color"
+            ]
+          },
+          "_inferred": {
+            "not": {
+              "required": [
+                "material.color"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "$comment": "원칙 3·4: material.brightness가 null이면 _provenance에 없어야 하고, 값이 있으면 _provenance가 있어야 하며 _inferred에는 없어야 한다",
+      "if": {
+        "properties": {
+          "material": {
+            "properties": {
+              "brightness": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "_provenance": {
+            "not": {
+              "required": [
+                "material.brightness"
+              ]
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "_provenance": {
+            "required": [
+              "material.brightness"
+            ]
+          },
+          "_inferred": {
+            "not": {
+              "required": [
+                "material.brightness"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "$comment": "원칙 3·4: material.saturation가 null이면 _provenance에 없어야 하고, 값이 있으면 _provenance가 있어야 하며 _inferred에는 없어야 한다",
+      "if": {
+        "properties": {
+          "material": {
+            "properties": {
+              "saturation": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "_provenance": {
+            "not": {
+              "required": [
+                "material.saturation"
+              ]
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "_provenance": {
+            "required": [
+              "material.saturation"
+            ]
+          },
+          "_inferred": {
+            "not": {
+              "required": [
+                "material.saturation"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "$comment": "원칙 3·4: material.roughness가 null이면 _provenance에 없어야 하고, 값이 있으면 _provenance가 있어야 하며 _inferred에는 없어야 한다",
+      "if": {
+        "properties": {
+          "material": {
+            "properties": {
+              "roughness": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "_provenance": {
+            "not": {
+              "required": [
+                "material.roughness"
+              ]
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "_provenance": {
+            "required": [
+              "material.roughness"
+            ]
+          },
+          "_inferred": {
+            "not": {
+              "required": [
+                "material.roughness"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "$comment": "원칙 3·4: material.opacity가 null이면 _provenance에 없어야 하고, 값이 있으면 _provenance가 있어야 하며 _inferred에는 없어야 한다",
+      "if": {
+        "properties": {
+          "material": {
+            "properties": {
+              "opacity": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "_provenance": {
+            "not": {
+              "required": [
+                "material.opacity"
+              ]
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "_provenance": {
+            "required": [
+              "material.opacity"
+            ]
+          },
+          "_inferred": {
+            "not": {
+              "required": [
+                "material.opacity"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "$comment": "원칙 3·4: material.erosion가 null이면 _provenance에 없어야 하고, 값이 있으면 _provenance가 있어야 하며 _inferred에는 없어야 한다",
+      "if": {
+        "properties": {
+          "material": {
+            "properties": {
+              "erosion": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "_provenance": {
+            "not": {
+              "required": [
+                "material.erosion"
+              ]
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "_provenance": {
+            "required": [
+              "material.erosion"
+            ]
+          },
+          "_inferred": {
+            "not": {
+              "required": [
+                "material.erosion"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "$comment": "원칙 3·4: layout.size가 null이면 _provenance에 없어야 하고, 값이 있으면 _provenance가 있어야 하며 _inferred에는 없어야 한다",
+      "if": {
+        "properties": {
+          "layout": {
+            "properties": {
+              "size": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "_provenance": {
+            "not": {
+              "required": [
+                "layout.size"
+              ]
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "_provenance": {
+            "required": [
+              "layout.size"
+            ]
+          },
+          "_inferred": {
+            "not": {
+              "required": [
+                "layout.size"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "$comment": "원칙 3·4: layout.distance가 null이면 _provenance에 없어야 하고, 값이 있으면 _provenance가 있어야 하며 _inferred에는 없어야 한다",
+      "if": {
+        "properties": {
+          "layout": {
+            "properties": {
+              "distance": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "_provenance": {
+            "not": {
+              "required": [
+                "layout.distance"
+              ]
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "_provenance": {
+            "required": [
+              "layout.distance"
+            ]
+          },
+          "_inferred": {
+            "not": {
+              "required": [
+                "layout.distance"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "$comment": "원칙 3·4: layout.verticalOffset가 null이면 _provenance에 없어야 하고, 값이 있으면 _provenance가 있어야 하며 _inferred에는 없어야 한다",
+      "if": {
+        "properties": {
+          "layout": {
+            "properties": {
+              "verticalOffset": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "_provenance": {
+            "not": {
+              "required": [
+                "layout.verticalOffset"
+              ]
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "_provenance": {
+            "required": [
+              "layout.verticalOffset"
+            ]
+          },
+          "_inferred": {
+            "not": {
+              "required": [
+                "layout.verticalOffset"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "$comment": "원칙 3·4: motion.type가 null이면 _provenance에 없어야 하고, 값이 있으면 _provenance가 있어야 하며 _inferred에는 없어야 한다",
+      "if": {
+        "properties": {
+          "motion": {
+            "properties": {
+              "type": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "_provenance": {
+            "not": {
+              "required": [
+                "motion.type"
+              ]
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "_provenance": {
+            "required": [
+              "motion.type"
+            ]
+          },
+          "_inferred": {
+            "not": {
+              "required": [
+                "motion.type"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "$comment": "원칙 3·4: motion.speed가 null이면 _provenance에 없어야 하고, 값이 있으면 _provenance가 있어야 하며 _inferred에는 없어야 한다",
+      "if": {
+        "properties": {
+          "motion": {
+            "properties": {
+              "speed": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "_provenance": {
+            "not": {
+              "required": [
+                "motion.speed"
+              ]
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "_provenance": {
+            "required": [
+              "motion.speed"
+            ]
+          },
+          "_inferred": {
+            "not": {
+              "required": [
+                "motion.speed"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "$comment": "원칙 3·4: body.part가 null이면 _provenance에 없어야 하고, 값이 있으면 _provenance가 있어야 하며 _inferred에는 없어야 한다",
+      "if": {
+        "properties": {
+          "body": {
+            "properties": {
+              "part": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "_provenance": {
+            "not": {
+              "required": [
+                "body.part"
+              ]
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "_provenance": {
+            "required": [
+              "body.part"
+            ]
+          },
+          "_inferred": {
+            "not": {
+              "required": [
+                "body.part"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "$comment": "원칙 3·4: body.layer가 null이면 _provenance에 없어야 하고, 값이 있으면 _provenance가 있어야 하며 _inferred에는 없어야 한다",
+      "if": {
+        "properties": {
+          "body": {
+            "properties": {
+              "layer": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "_provenance": {
+            "not": {
+              "required": [
+                "body.layer"
+              ]
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "_provenance": {
+            "required": [
+              "body.layer"
+            ]
+          },
+          "_inferred": {
+            "not": {
+              "required": [
+                "body.layer"
+              ]
+            }
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "unit": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "unitOrNull": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 1
+    },
+    "hsl": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "h",
+        "s",
+        "l"
+      ],
+      "properties": {
+        "h": {
+          "$ref": "#/$defs/unit"
+        },
+        "s": {
+          "$ref": "#/$defs/unit"
+        },
+        "l": {
+          "$ref": "#/$defs/unit"
+        }
+      }
+    },
+    "charSpan": {
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source",
+        "trigger",
+        "charSpan",
+        "rule"
+      ],
+      "properties": {
+        "source": {
+          "enum": [
+            "explicit_lexicon",
+            "simile_marker",
+            "vad_lexicon"
+          ],
+          "description": "1층 사전 / 2층 직유 / 3층 V/A/D"
+        },
+        "trigger": {
+          "type": "string",
+          "minLength": 1,
+          "description": "확정 텍스트에서 그 값을 만든 말(charSpan 구간과 같다)"
+        },
+        "charSpan": {
+          "$ref": "#/$defs/charSpan"
+        },
+        "rule": {
+          "type": "string",
+          "minLength": 1,
+          "description": "<근거 규칙>><슬롯 경로>:<대응 키>"
+        }
+      }
+    },
+    "provenanceList": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/provenance"
+      }
+    }
+  }
+}

@@ -9,13 +9,14 @@
 | --- | --- | --- | --- |
 | `GET /api/health` | — | 모델·가드·사전·프롬프트 버전, 경고 | 시작 화면, 상태 표시 |
 | `GET /api/protocol` | — | `shared/protocol/elicitation_protocol.v1.json` 전체 | Unity가 VR 단계 고정 문구를 같은 출처에서 읽기 |
-| `POST /api/sessions` | `{"condition": "chatbot"\|"static", "sessionId": "P07"}` | 세션 화면(아래) · 201 | 세션 만들기. ID를 비우면 자동 생성 |
+| `POST /api/sessions` | `{"condition": "chatbot"\|"static", "sessionId": "P07", "participantId": "P07"}` | 세션 화면(아래) · 201 | 세션 만들기. ID를 비우면 자동 생성. `participantId`(선택)는 장면 파일 `meta`에만 쓰인다 |
 | `GET /api/sessions` | — | 세션 목록 | 연구자 화면 |
 | `GET /api/sessions/{id}` | — | 세션 화면 | 다시 그리기 |
 | `POST /api/sessions/{id}/start` | — | 세션 화면 | 안내 뒤 [시작] |
 | `POST /api/sessions/{id}/reply` | `{"text": "가슴이 좀 답답해요"}` | 세션 화면 | 참여자 답 (최대 2,000자) |
 | `POST /api/sessions/{id}/action` | `{"action": "...", "text": "..."}` | 세션 화면 | 버튼: `start` `skip` `continue` `stop` `confirm` `edit` `withdraw` |
 | `GET /api/sessions/{id}/log` | — | `{"session", "log", "runtimeWarnings"}` | 연구자 화면. `log`는 elicit-log/0.1 |
+| `GET /api/sessions/{id}/scene` | — | `{"sessionId", "path", "spec"}` | 확정 뒤 만든 SceneSpec v2와 저장 경로. 확정 전이면 `409` |
 | `POST /api/sessions/{id}/events` | `{"type": "calibration", "payload": {...}}` | 기록된 이벤트 · 201 | VR 쪽 기록을 같은 세션 로그에 묶기 |
 | `POST /api/guard/check` | `{"text": "..."}` | 안전 판정 + 낼 고정 문구 | VR 단계(Feel toward 등) 발화도 같은 L1 검사 |
 
@@ -60,6 +61,15 @@ POST /api/guard/check   {"text": "숨이 막히는 느낌이 올라와요"}
 - `level`이 `soft`면 `softCheckPhrase`를 띄우고 [계속][그만]을 받습니다(스토리보드 13′).
 - `crisis`면 LLM·VR 연출을 멈추고 `crisisPhrase`(109 · 1577-0199 · 연구자 연락처)를 보여 주고 연구자를 부릅니다.
 - `model`에는 가드 모델 판정이 들어갑니다. 가드 모델이 없으면 `null`이고 키워드 사전만으로 판정합니다.
+
+## 장면 기술 (SceneSpec v2)
+
+참여자가 [이대로 맞아요](또는 [고칠게요] 뒤 확정)를 누르면, 서버가 **확정 텍스트만** 입력으로 SceneSpec v2를 만들어 `chatbot/logs/scenes/{sessionId}.json`에 저장합니다(설정 `session.scenes_dir`, 비우면 `<log_dir>/scenes`). LLM은 부르지 않습니다.
+
+- 형식: `shared/schemas/scene-spec.v2.json`, 설명: `docs/scene-spec-mapping.md`
+- 세션 로그에는 `sceneSpec: {path, specVersion, builder, sourceTextHash, problems}`만 남습니다.
+- [응답 폐기]를 누르면 장면 파일도 지웁니다.
+- Unity는 지금 Inspector에 이 경로를 넣어 읽습니다. HTTP로 경로를 받는 방식은 `GET /api/sessions/{id}/scene`을 쓰도록 자리만 있습니다(`unity/README.md`).
 
 ## VR 이벤트 묶기
 

@@ -41,6 +41,7 @@ ollama pull hf.co/mradermacher/kanana-safeguard-8b-GGUF:Q4_K_M   # 안전 분류
                                                                        ③ 검증기 V1–V9 ─ 통과한 질문만 참여자에게
                                                                        ④ 걸리면 이유를 알려 주고 재생성(최대 2회) → 그래도 안 되면 고정 대체 문구
 끝: 참여자 발화를 그대로 모은 확정 텍스트 [이대로 맞아요] ─▶ 추출 미리보기(1층 사전 + 직유 표지 + _provenance)
+                                                        └─▶ SceneSpec v2 → logs/scenes/{세션ID}.json ─▶ Unity SceneLoader
 ```
 
 ## 단계 순서
@@ -67,7 +68,8 @@ ollama pull hf.co/mradermacher/kanana-safeguard-8b-GGUF:Q4_K_M   # 안전 분류
 | `validator.py` | V1 스키마 · V2 단계 · V3 인용 · V4 단일 질문 · V5 어휘 누출 · V6 금지 표현 · V7 질문 틀 · V8 출력 가드 · V9 깊이 제한 |
 | `safety.py` | L1 키워드 사전 + 가드 모델(Kanana raw 프롬프트), 중단·넘어가기·판단 맡김·깊이 표지 |
 | `lexicon.py` · `korean.py` | 1층 사전 매칭(Kiwi, 부정·변화 표시), 조사 선택, 인용 마스킹 |
-| `extract.py` | 확정 텍스트 → 속성 후보 + `_provenance`, 직유 원천 명사, 사전 밖 단어(소실 정보율), bodyRelation, Find 첫 반응 양식 |
+| `extract.py` | 확정 텍스트 → 속성 후보 + `_provenance`, 직유 원천 명사, 사전 밖 단어(소실 정보율), bodyRelation, Find 첫 반응 양식 (세션 로그의 추출 미리보기) |
+| `scene_builder.py` · `scene_spec.py` | 확정 텍스트 → SceneSpec v2(0층 Kiwi · 1층 사전 · 2층 직유 · 3층 V/A/D 제안) → `logs/scenes/{sessionId}.json`. 형식 검사·원칙 검사 |
 | `session_log.py` | elicit-log/0.1 세션 로그(턴마다 저장) |
 | `server.py` · `web/` | FastAPI + 웹 데모(참여자 화면 / 연구자 화면) |
 | `cli.py` · `simulate.py` | 터미널 데모, 시나리오 재생·모델 비교 |
@@ -75,6 +77,7 @@ ollama pull hf.co/mradermacher/kanana-safeguard-8b-GGUF:Q4_K_M   # 안전 분류
 ## 로그
 
 - `chatbot/logs/<세션ID>.json` — 형식은 `shared/schemas/session_log.schema.json`.
+- `chatbot/logs/scenes/<세션ID>.json` — 확정 텍스트에서 만든 장면 기술(SceneSpec v2). Unity가 읽는다. 형식은 `shared/schemas/scene-spec.v2.json`.
 - 참여자에게 나가지 않은 시도(보이지 않은 턴)와 걸린 이유, 재생성 횟수, 고정 대체 여부, 가드 판정, 연구자 알림, 확정 텍스트, 추출 미리보기까지 남깁니다.
 - 세션 ID는 가명만 받습니다(영문·숫자·`_`·`-`). 로그 폴더는 git에 올리지 않습니다.
 - 참여자가 끝난 뒤 [응답 폐기]를 누르면 로그 파일을 지웁니다. 위기 대응으로 멈춘 세션은 안전 기록이라 연구자가 처리합니다.

@@ -1,0 +1,25 @@
+{
+  "id": "scene_ex01_gray_blob",
+  "title": "장면 기술 예시 ① — 여러 턴으로 묘사하고, 확정 때 한 문장으로 고쳐 [이대로 맞아요]",
+  "source": "확정 텍스트는 사용자 지정 예시 문장(노션 「심상 텍스트 3D 시각화 프로젝트」 대표 입력). 앞의 답은 챗봇 화면을 지나며 나올 법한 답을 임의로 채운 것",
+  "condition": "chatbot",
+  "replies": [
+    "가슴 안쪽에 회색 덩어리가 있어요",
+    "가슴 안쪽이요",
+    "가장자리가 삭아가는 것 같아요",
+    "젖은 종이처럼 눅눅해요",
+    "더 없어요",
+    "모르겠어요"
+  ],
+  "defaultReply": "없어요",
+  "confirm": {
+    "edit": "가슴 안쪽에 젖은 종이처럼 눅눅하고 가장자리가 삭아가는 회색 덩어리가 있어요"
+  },
+  "expect": {
+    "endedBy": "completed",
+    "bodyRelation": "in",
+    "extractedIncludes": ["회색", "덩어리", "눅눅하고", "삭아가는"]
+  },
+  "sceneFixture": "tests/fixtures/scene_spec/EX01.json",
+  "note": "합성 대사. 실제 참여자 응답이 아니다. tests/test_scene_pipeline.py가 sessionId=EX01, participantId=SYN01로 돌려 scenes/EX01.json을 정답과 비교한다."
+}

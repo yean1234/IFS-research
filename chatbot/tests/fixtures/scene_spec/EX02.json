@@ -1,0 +1,81 @@
+{
+  "meta": {
+    "specVersion": "2.0.0",
+    "participantId": "SYN01",
+    "sessionId": "EX02",
+    "condition": "chatbot",
+    "sourceTextHash": "sha256:641a4a22d9228ec30d3bce78e6bc15b1f6e8b0e1bbcfb52ab512fd7c22c6147a",
+    "pipeline": {
+      "builder": "scene-spec-builder/0.1.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@0.1.0",
+        "vad": "vad-ko@0.1.0"
+      }
+    }
+  },
+  "form": {
+    "type": null,
+    "posture": "curled"
+  },
+  "material": {
+    "color": null,
+    "brightness": null,
+    "saturation": null,
+    "roughness": null,
+    "opacity": null,
+    "erosion": null
+  },
+  "layout": {
+    "size": 0.316,
+    "distance": null,
+    "verticalOffset": null
+  },
+  "motion": {
+    "type": null,
+    "speed": null
+  },
+  "body": {
+    "part": null,
+    "layer": null
+  },
+  "_provenance": {
+    "form.posture": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "웅크려진",
+        "charSpan": [0, 4],
+        "rule": "postureLexicon.웅크리>form.posture:curled"
+      }
+    ],
+    "layout.size": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "작은",
+        "charSpan": [5, 7],
+        "rule": "sizeLexicon.작>layout.size:logScale(0.6)"
+      }
+    ]
+  },
+  "_unmatched": [],
+  "_unmapped": [
+    {
+      "lemma": "나",
+      "category": "self_reference",
+      "value": {
+        "self": "first_person"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "나",
+        "charSpan": [8, 9],
+        "rule": "selfReferenceLexicon.나"
+      }
+    }
+  ],
+  "_negated": [],
+  "_alternatives": [],
+  "_inferred": {}
+}

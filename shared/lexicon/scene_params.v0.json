@@ -1,0 +1,103 @@
+{
+  "lexiconId": "scene-params",
+  "lexiconVersion": "0.1.0",
+  "status": "draft — 연구팀 검토 전 첫 버전. 색 hsl은 1층 사전 값을 그대로 쓰고, 나머지 수치는 모두 초안이다.",
+  "description": "SceneSpec v2 대응표. 1층 사전(layer1_lexicon)이 찾은 말의 범주·값 → 0–1 장면 파라미터. 2층 직유 원천 명사 → 형태 프로토타입. 3층 V/A/D → 빈 슬롯 제안(_inferred). 화이트박스: 표에 없는 값은 만들지 않는다.",
+  "howToEdit": [
+    "layer1의 키는 1층 사전의 category, 각 항목은 그 범주가 채우는 슬롯 하나다. key는 1층 사전 항목 value의 키.",
+    "transform: hsl = 사전 hsl을 {h/360, s, l}로 / logScale = 0.5 + log2(scale)/4 / enum = 사전 값을 문자열 그대로 / 없으면 values 표에서 찾는다.",
+    "values 표에 없는 값은 슬롯을 채우지 않고 _unmapped(no_value_mapping)로 남는다.",
+    "requires: bodyPartSameLine = 같은 줄에 신체 부위어가 있을 때만 쓴다.",
+    "수치를 바꾸면 lexiconVersion을 올린다. 장면 파일 meta.pipeline.lexicons에 버전이 남는다.",
+    "참여자의 실제 응답 문장을 넣지 않는다. 낱말과 수치만 넣는다."
+  ],
+  "units": {
+    "material.color": "{h, s, l} 각 0–1, h = 색상각/360",
+    "material.brightness": "0 어두움 – 1 눈부심",
+    "material.saturation": "0 무채색 – 1 선명. 값이 있으면 렌더러가 color.s 대신 쓴다",
+    "material.roughness": "0 젖음·매끈 – 1 거칠·녹슨",
+    "material.opacity": "0 투명 – 1 불투명",
+    "material.erosion": "0 온전 – 1 부서짐(가장자리 디졸브)",
+    "layout.size": "로그 척도. 0.5 = 에셋 기본 크기 ×1, 0 = ×0.25, 1 = ×4",
+    "layout.distance": "0 = 0.3 m, 1 = 3.0 m (참여자 머리에서 수평, 선형)",
+    "layout.verticalOffset": "참여자 키 대비 높이. 0 바닥, 1 정수리",
+    "motion.speed": "0 아주 느림 – 1 아주 빠름"
+  },
+  "layer1": {
+    "color": [
+      {"path": "material.color", "transform": "hsl", "key": "hsl"}
+    ],
+    "brightness": [
+      {"path": "material.brightness", "key": "level",
+       "values": {"dark": 0.15, "fading": 0.2, "faint": 0.25, "dim": 0.3, "hazy": 0.4, "light": 0.7, "bright": 0.8,
+                  "sparkling": 0.85, "glowing": 0.9, "dazzling": 1.0}}
+    ],
+    "saturation": [
+      {"path": "material.saturation", "key": "level",
+       "values": {"faded": 0.15, "dull": 0.2, "muddy": 0.25, "pale": 0.25, "deep": 0.75, "vivid": 0.9}}
+    ],
+    "opacity": [
+      {"path": "material.opacity", "key": "level",
+       "values": {"transparent": 0.1, "translucent": 0.5, "opaque": 1.0}}
+    ],
+    "texture": [
+      {"path": "material.roughness", "key": "texture",
+       "values": {"smooth": 0.1, "wet": 0.15, "moist": 0.25, "sticky": 0.3, "damp": 0.35, "rough": 0.85, "rusty": 0.9}},
+      {"path": "material.erosion", "key": "texture",
+       "values": {"cracked": 0.4, "decaying": 0.6, "broken": 0.6, "shattered": 0.85}}
+    ],
+    "size": [
+      {"path": "layout.size", "transform": "logScale", "key": "scale"}
+    ],
+    "distance": [
+      {"path": "layout.distance", "key": "distance",
+       "values": {"attached": 0.0, "very_near": 0.1, "near": 0.25, "apart": 0.6, "far": 0.85}}
+    ],
+    "form": [
+      {"path": "form.type", "transform": "enum", "key": "prototype"}
+    ],
+    "posture": [
+      {"path": "form.posture", "transform": "enum", "key": "posture"}
+    ],
+    "movement": [
+      {"path": "motion.type", "transform": "enum", "key": "motion"},
+      {"path": "motion.speed", "key": "speed", "values": {"slow": 0.25, "fast": 0.8}}
+    ],
+    "body_part": [
+      {"path": "body.part", "transform": "enum", "key": "part"},
+      {"path": "layout.verticalOffset", "key": "part",
+       "source": "Drillis & Contini(1966) 신체 비율 근사. 키 대비 높이",
+       "values": {"forehead": 0.96, "head": 0.93, "face": 0.92, "nape": 0.86, "throat": 0.85, "throat_neck": 0.85,
+                  "shoulder": 0.82, "chest": 0.72, "heart": 0.72, "back": 0.72, "solar_plexus": 0.67, "flank": 0.63,
+                  "arm": 0.63, "belly": 0.6, "lower_back": 0.6, "lower_belly": 0.55, "hand": 0.49, "leg": 0.28,
+                  "foot": 0.04}}
+    ],
+    "body_layer": [
+      {"path": "body.layer", "transform": "enum", "key": "layer", "requires": "bodyPartSameLine"}
+    ]
+  },
+  "negation": {
+    "stillWhenNegated": ["움직이", "움직임"],
+    "note": "'움직임은 없어요'처럼 움직임 자체를 부정하면 참여자가 말한 상태(still)다. 다른 부정은 값에 넣지 않고 _negated에 남긴다."
+  },
+  "layer2": {
+    "markers": ["처럼", "같은", "듯한", "마냥"],
+    "vehicleIncludesModifier": true,
+    "note": "직유 구('젖은 종이처럼')의 원천 명사 → 형태 프로토타입. 직유 구 안의 1층 근거는 비유 대상의 속성이라 2층으로 낮춘다. 사전의 형태어(덩어리·안개·껍질·조각 …)는 1층 form 항목이 그대로 쓴다. 표에 없는 원천은 _unmapped(simile_prototype_pending).",
+    "prototypes": {
+      "구름": "mist", "먹구름": "mist", "연기": "mist",
+      "돌": "blob", "바위": "blob", "공": "blob", "구슬": "blob", "진흙": "blob", "타르": "blob", "불덩이": "blob",
+      "물방울": "blob",
+      "막": "shell"
+    }
+  },
+  "layer3": {
+    "combine": "mean",
+    "note": "감정어(부정되지 않은 것)의 V/A/D 평균 → 1·2층 뒤에도 null인 슬롯에만 제안. 값 자리에는 넣지 않고 _inferred에만 둔다(원칙 3).",
+    "targets": [
+      {"path": "material.brightness", "dim": "v", "name": "valence"},
+      {"path": "motion.speed", "dim": "a", "name": "arousal"},
+      {"path": "layout.size", "dim": "d", "name": "dominance"}
+    ]
+  }
+}
