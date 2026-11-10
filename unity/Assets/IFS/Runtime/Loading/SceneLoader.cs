@@ -1,5 +1,6 @@
 // SceneSpec v2 JSON → VR 오브젝트.
-//   form.type      → 프리팹 4종(blob/mist/shell/fragments). 비어 있으면 임시 프리미티브(로그 + initialScene notes)
+//   form.type      → 프리팹 4종(blob/mist/shell/fragments). 비어 있으면 기본 절차 모형(잘게 나눈 구 + IFS 셰이더,
+//                    형태별 프리셋). IFS 셰이더를 못 쓰는 환경이면 임시 프리미티브(로그 + initialScene notes)
 //   material.*     → Shader Graph 파라미터(_BaseColor, _Brightness, _Roughness, _Opacity, _Erosion)
 //   layout.*       → Transform(거리·높이·크기), form.posture → 크기 변형 프리셋
 //   motion.*       → SpecMotion(절차적 움직임)
@@ -67,6 +68,26 @@ namespace IFS.SceneSpec
             { "hanging", new Vector3(0.9f, 1.25f, 0.9f) },
         };
 
+        // 형태별 모양 프리셋(IFS 셰이더 전용): 굴곡, 노이즈 크기, 안개 가장자리, 밀도, 껍질 열림
+        struct FormPreset
+        {
+            public float lumpiness, noiseScale, fuzz, density, shellOpen;
+            public FormPreset(float l, float n, float f, float d, float s) { lumpiness = l; noiseScale = n; fuzz = f; density = d; shellOpen = s; }
+        }
+
+        static readonly Dictionary<string, FormPreset> FormPresets = new Dictionary<string, FormPreset>
+        {
+            { "blob", new FormPreset(0.14f, 1.6f, 0f, 1f, 0f) },
+            { "mist", new FormPreset(0.30f, 1.1f, 1f, 0.5f, 0f) },
+            { "shell", new FormPreset(0.04f, 2.0f, 0f, 1f, 0.35f) },
+            { "fragments", new FormPreset(0.25f, 2.4f, 0f, 1f, 0f) },
+        };
+
+        const string OpaqueShaderResource = "IFS/SceneSpecOpaque";
+        const string FadeShaderResource = "IFS/SceneSpecFade";
+        static Shader _opaqueShader, _fadeShader;
+        static Mesh _icoMesh;
+
         [Header("경로")]
         [Tooltip("ISceneSpecPathSource를 구현한 컴포넌트. 비우면 같은 GameObject에서 찾는다(InspectorPathSource).")]
         [SerializeField] MonoBehaviour pathSource = null;
@@ -77,6 +98,9 @@ namespace IFS.SceneSpec
         {
             new FormPrefab("blob"), new FormPrefab("mist"), new FormPrefab("shell"), new FormPrefab("fragments"),
         };
+
+        [Tooltip("프리팹이 없을 때 IFS 셰이더(Resources/IFS)로 절차 모형을 만든다. 끄면 Unity 기본 프리미티브")]
+        [SerializeField] bool useProceduralModels = true;
 
         [Header("Shader Graph 파라미터")]
         [SerializeField] ShaderParamNames shaderParams = new ShaderParamNames();
@@ -320,6 +344,13 @@ namespace IFS.SceneSpec
             {
                 _model = Instantiate(prefab, _motion.transform, false);
             }
+            else if (useProceduralModels && LoadIfsShaders())
+            {
+                _model = CreateProceduralModel(form);
+                _model.transform.SetParent(_motion.transform, false);
+                _model.transform.localScale = Vector3.one * placement.primitiveBaseSize;
+                Note($"form.type={form}: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시", false);
+            }
             else
             {
                 _model = CreatePrimitive(form);
@@ -336,6 +367,64 @@ namespace IFS.SceneSpec
             foreach (var fp in formPrefabs)
                 if (fp != null && fp.formType == form && fp.prefab != null) return fp.prefab;
             return null;
+        }
+
+        static bool LoadIfsShaders()
+        {
+            if (_opaqueShader == null) _opaqueShader = Resources.Load<Shader>(OpaqueShaderResource);
+            if (_fadeShader == null) _fadeShader = Resources.Load<Shader>(FadeShaderResource);
+            // URP 등 Built-in이 아닌 파이프라인에서는 서피스 셰이더가 지원되지 않는다 → 프리미티브로
+            return _opaqueShader != null && _fadeShader != null && _opaqueShader.isSupported && _fadeShader.isSupported;
+        }
+
+        static Mesh IcoMesh()
+        {
+            if (_icoMesh != null) return _icoMesh;
+            IcoSphere.Build(4, 0.5f, out float[] xyz, out int[] tris);
+            var verts = new Vector3[xyz.Length / 3];
+            var normals = new Vector3[verts.Length];
+            for (int i = 0; i < verts.Length; i++)
+            {
+                verts[i] = new Vector3(xyz[i * 3], xyz[i * 3 + 1], xyz[i * 3 + 2]);
+                normals[i] = verts[i] * 2f;   // 반지름 0.5 → 단위 법선
+            }
+            _icoMesh = new Mesh { name = "IFS IcoSphere" };
+            _icoMesh.vertices = verts;
+            _icoMesh.normals = normals;
+            _icoMesh.triangles = tris;
+            _icoMesh.bounds = new Bounds(Vector3.zero, Vector3.one * 1.6f);   // 셰이더가 정점을 밀어내므로 넉넉하게
+            return _icoMesh;
+        }
+
+        static GameObject CreateProceduralModel(string form)
+        {
+            GameObject Piece(string name, float seed)
+            {
+                var go = new GameObject(name);
+                go.AddComponent<MeshFilter>().sharedMesh = IcoMesh();
+                var mat = new Material(_opaqueShader);
+                mat.SetFloat("_Seed", seed);
+                go.AddComponent<MeshRenderer>().sharedMaterial = mat;
+                go.AddComponent<SphereCollider>();
+                return go;
+            }
+
+            if (form != "fragments") return Piece(form, 0f);
+            var group = new GameObject("fragments");
+            Vector3[] offsets =
+            {
+                new Vector3(-0.38f, 0.1f, 0f), new Vector3(0.32f, -0.16f, 0.1f), new Vector3(0f, 0.38f, -0.1f),
+                new Vector3(0.16f, 0.06f, 0.38f), new Vector3(-0.12f, -0.32f, -0.26f),
+            };
+            for (int i = 0; i < offsets.Length; i++)
+            {
+                var c = Piece("fragment " + i, i + 1);
+                c.transform.SetParent(group.transform, false);
+                c.transform.localPosition = offsets[i];
+                c.transform.localRotation = Quaternion.Euler(17f * i, 31f * i, 11f * i);
+                c.transform.localScale = Vector3.one * (0.42f - 0.04f * i);
+            }
+            return group;
         }
 
         static GameObject CreatePrimitive(string form)
@@ -411,11 +500,25 @@ namespace IFS.SceneSpec
             float erosion = (float)p.GetNumber("material.erosion");
             var color = new Color((float)r, (float)g, (float)b, opacity);
             var sp = shaderParams;
+            string form = p.GetCategory("form.type");
+            FormPresets.TryGetValue(form, out var preset);
+            bool fade = form == "mist" || opacity < 0.99f;
 
             foreach (var rend in _model.GetComponentsInChildren<Renderer>())
             {
                 foreach (var m in rend.materials)   // 렌더러마다 인스턴스(공유 머티리얼을 바꾸지 않는다)
                 {
+                    bool ifsShader = _opaqueShader != null && (m.shader == _opaqueShader || m.shader == _fadeShader);
+                    if (ifsShader)
+                    {
+                        var wanted = fade ? _fadeShader : _opaqueShader;   // 안개·반투명이면 Fade로 바꾼다
+                        if (m.shader != wanted) m.shader = wanted;
+                        m.SetFloat("_Lumpiness", preset.lumpiness);
+                        m.SetFloat("_NoiseScale", preset.noiseScale);
+                        m.SetFloat("_Fuzz", preset.fuzz);
+                        m.SetFloat("_Density", preset.density);
+                        m.SetFloat("_ShellOpen", preset.shellOpen);
+                    }
                     if (m.HasProperty(sp.baseColor)) m.SetColor(sp.baseColor, color);
                     else if (m.HasProperty(sp.colorFallback)) m.SetColor(sp.colorFallback, color);
                     else Note($"{m.shader.name}: 색 프로퍼티({sp.baseColor}) 없음", true);

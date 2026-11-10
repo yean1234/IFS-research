@@ -96,6 +96,27 @@ namespace IFS.SceneSpec.Tests
         }
 
         [Test]
+        public void IcoSphere_is_even_closed_and_faces_outward()
+        {
+            IcoSphere.Build(4, 0.5f, out float[] xyz, out int[] tris);
+            Assert.That(xyz.Length / 3, Is.EqualTo(10 * 256 + 2));            // 10·4^n + 2
+            Assert.That(tris.Length / 3, Is.EqualTo(20 * 256));               // 20·4^n
+            for (int i = 0; i < xyz.Length; i += 3)
+            {
+                double r = System.Math.Sqrt(xyz[i] * xyz[i] + xyz[i + 1] * xyz[i + 1] + xyz[i + 2] * xyz[i + 2]);
+                Assert.That(r, Is.EqualTo(0.5).Within(1e-5));
+            }
+            for (int f = 0; f < tris.Length; f += 3)                          // 앞면 = cross(b−a, c−a)가 바깥
+            {
+                int a = tris[f] * 3, b = tris[f + 1] * 3, c = tris[f + 2] * 3;
+                double ux = xyz[b] - xyz[a], uy = xyz[b + 1] - xyz[a + 1], uz = xyz[b + 2] - xyz[a + 2];
+                double vx = xyz[c] - xyz[a], vy = xyz[c + 1] - xyz[a + 1], vz = xyz[c + 2] - xyz[a + 2];
+                double nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx;
+                Assert.That(nx * xyz[a] + ny * xyz[a + 1] + nz * xyz[a + 2], Is.GreaterThan(0));
+            }
+        }
+
+        [Test]
         public void Recorder_writes_initial_final_and_events()
         {
             string raw = File.ReadAllText(ExamplePath("EX01.json"));
