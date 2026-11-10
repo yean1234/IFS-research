@@ -81,18 +81,43 @@ namespace UnityEngine
         public static Color operator *(Color c, float d) => c;
     }
 
-    public class Shader : Object { }
+    public class Shader : Object { public bool isSupported => true; }
 
     public class Material : Object
     {
-        public Shader shader => null;
+        public Material(Shader shader) { }
+        public Shader shader { get; set; }
         public bool HasProperty(string name) => false;
         public void SetColor(string name, Color value) { }
         public void SetFloat(string name, float value) { }
         public void EnableKeyword(string keyword) { }
     }
 
-    public class Renderer : Component { public Material[] materials { get; set; } }
+    public class Renderer : Component
+    {
+        public Material[] materials { get; set; }
+        public Material sharedMaterial { get; set; }
+    }
+
+    public sealed class MeshRenderer : Renderer { }
+    public sealed class MeshFilter : Component { public Mesh sharedMesh { get; set; } }
+    public class Collider : Component { }
+    public sealed class SphereCollider : Collider { }
+
+    public struct Bounds { public Bounds(Vector3 center, Vector3 size) { } }
+
+    public sealed class Mesh : Object
+    {
+        public Vector3[] vertices { get; set; }
+        public Vector3[] normals { get; set; }
+        public int[] triangles { get; set; }
+        public Bounds bounds { get; set; }
+    }
+
+    public static class Resources
+    {
+        public static T Load<T>(string path) where T : Object => null;
+    }
 
     public class Camera : Behaviour
     {

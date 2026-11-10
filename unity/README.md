@@ -15,7 +15,8 @@ unity/
 │  │  │  ├─ Recording/ExperimentRecorder.cs initialScene.json · finalScene.json · events.csv
 │  │  │  └─ Loading/                       SceneLoader · InspectorPathSource · ISceneSpecPathSource · SpecMotion
 │  │  ├─ Editor/                          메뉴: IFS ▸ SceneSpec ▸ 예시 테스트 씬 다시 만들기
-│  │  ├─ Tests/Editor/                    EditMode 테스트 8개(예시 JSON 2개 역직렬화·왕복·기록기)
+│  │  ├─ Runtime/Resources/IFS/          기본 셰이더(Built-in): SceneSpec Opaque · Fade + 공통 노이즈
+│  │  ├─ Tests/Editor/                    EditMode 테스트 9개(예시 JSON 2개 역직렬화·왕복·기록기·구 메시)
 │  │  └─ Scenes/SceneSpecExamples.unity   예시 2개를 나란히 띄우는 테스트 씬
 │  └─ StreamingAssets/IFS/examples/       EX01.json · EX02.json (chatbot/tests/fixtures/scene_spec와 바이트까지 같음)
 └─ Tools/compile-check/                   Unity 없이 C# 컴파일·테스트(dotnet). Assets 밖이라 Unity는 무시
@@ -25,12 +26,12 @@ UnityEngine에 의존하지 않는 부분(데이터 클래스·파싱·파라미
 
 ## Unity 에디터에서 할 일
 
-1. **프로젝트 준비** — 이 `unity/` 폴더를 Unity Hub에서 프로젝트로 엽니다(ProjectSettings는 Unity가 만듭니다). 이미 Quest 프로젝트가 있으면 `Assets/IFS/`와 `Assets/StreamingAssets/IFS/`를 그 프로젝트의 `Assets/` 아래로 복사합니다(`.meta`도 같이 — 테스트 씬이 스크립트 GUID로 연결돼 있습니다). Unity 2022.3 LTS 이상 / Unity 6 기준(C# 9)으로 썼습니다.
+1. **프로젝트 준비** — Unity Hub ▸ Projects ▸ Add ▸ *Add project from disk* ▸ 이 `unity/` 폴더. Hub는 `ProjectSettings/ProjectVersion.txt`가 있어야 프로젝트로 인식하므로 그 파일만 넣어 두었습니다(6000.0.62f1). 나머지 설정·`Packages/manifest.json`(기본 패키지)은 처음 열 때 Unity가 만듭니다. 이미 Quest 프로젝트가 있으면 `Assets/IFS/`와 `Assets/StreamingAssets/IFS/`를 그 프로젝트의 `Assets/` 아래로 복사합니다(`.meta`도 같이 — 테스트 씬이 스크립트 GUID로 연결돼 있습니다). Unity 2022.3 LTS 이상 / Unity 6 기준(C# 9)으로 썼습니다.
 2. **패키지** — Package Manager ▸ `+` ▸ *Add package by name* ▸ `com.unity.nuget.newtonsoft-json`(3.2.1 이상). 테스트를 돌리려면 `com.unity.test-framework`(새 프로젝트에는 보통 있음). 로더는 XR Interaction Toolkit 없이도 컴파일됩니다.
-3. **테스트** — Window ▸ General ▸ Test Runner ▸ EditMode ▸ *Run All* → 8개 통과해야 합니다.
+3. **테스트** — Window ▸ General ▸ Test Runner ▸ EditMode ▸ *Run All* → 9개 통과해야 합니다.
 4. **테스트 씬** — `Assets/IFS/Scenes/SceneSpecExamples.unity`를 열고 Play. 왼쪽이 EX01(회색 덩어리, 가슴 높이), 오른쪽이 EX02(웅크린 작은 형상). Console에 "SceneSpec 값이 null → 기본값 … 사용" 줄과 기록 폴더 경로가 나옵니다. 씬이 열리지 않으면 메뉴 **IFS ▸ SceneSpec ▸ 예시 테스트 씬 다시 만들기**.
-5. **프리팹 연결** — 씬의 `SceneSpec EX01`/`EX02` ▸ SceneLoader ▸ *Form Prefabs* 4칸(blob · mist · shell · fragments)에 사전 제작 에셋을 넣습니다. 비어 있으면 임시 프리미티브(구·캡슐·큐브 5개)가 뜹니다.
-6. **Shader Graph** — 에셋 셰이더에 아래 Reference 이름으로 프로퍼티를 만듭니다. 이름이 다르면 SceneLoader ▸ *Shader Params*에서 바꿉니다.
+5. **형태 모형** — 프리팹이 없어도 기본 절차 모형이 뜹니다: 잘게 나눈 구를 `IFS/SceneSpec` 셰이더가 노이즈로 밀어 형태별로 다르게 보이게 합니다(blob 울퉁불퉁한 덩어리, mist 가장자리가 흐린 반투명 안개, shell 위가 깨져 열린 껍데기, fragments 조각 5개). 디자이너가 만든 에셋이 생기면 SceneLoader ▸ *Form Prefabs* 4칸에 넣으면 그쪽이 우선입니다. 이 셰이더는 **Built-in 렌더 파이프라인 전용**이라 URP로 바꾸면 지원되지 않고 임시 프리미티브로 돌아갑니다(그때 Shader Graph 판이 필요).
+6. **직접 만든 셰이더를 쓸 때** — 아래 Reference 이름으로 프로퍼티를 만들면 로더가 값을 넣습니다. 이름이 다르면 SceneLoader ▸ *Shader Params*에서 바꿉니다.
 7. **챗봇 출력 연결** — InspectorPathSource ▸ *Spec Path*에 `…/chatbot/logs/scenes/{sessionId}.json`의 절대 경로를 넣습니다(상대 경로는 StreamingAssets 기준).
 8. **참여자 조정 입력** — 컨트롤러·슬라이더(XRI)를 `SceneLoader.SetNumber("material.brightness", v)`, `SetCategory("form.type", "mist")`, 끝날 때 `SaveFinal()`에 연결합니다. 이 연결 UI는 아직 없습니다.
 
@@ -42,9 +43,9 @@ UnityEngine에 의존하지 않는 부분(데이터 클래스·파싱·파라미
 | `form.posture` | 크기 변형 프리셋(웅크림 y×0.7, 납작 y×0.5–0.6, 곧음 y×1.2) | 변형 없음 |
 | `material.color` (+`saturation`) | `_BaseColor` (Built-in은 `_Color`), 알파 = opacity | h 0, s 0, l 0.7 |
 | `material.brightness` | `_Brightness` (없으면 `_EmissionColor`로 근사) | 0.5 |
-| `material.roughness` | `_Roughness` (없으면 URP `_Smoothness` = 1 − r) | 0.5 |
+| `material.roughness` | `_Roughness` (기본 셰이더: 광택↓ · 얼룩↑ · 잔요철↑, 없으면 URP `_Smoothness` = 1 − r) | 0.5 |
 | `material.opacity` | `_Opacity` | 1 |
-| `material.erosion` | `_Erosion` | 0 |
+| `material.erosion` | `_Erosion` (기본 셰이더: 노이즈로 구멍을 뚫고 가장자리를 어둡게 삭은 색으로) | 0 |
 | `layout.size` | 크기 배율 2^((size − 0.5) × 4) | 0.5 (×1) |
 | `layout.distance` | 머리에서 수평 0.3 m + d × 2.7 m | 0.33 (≈1.2 m) |
 | `layout.verticalOffset` | 바닥 + v × 키(키 = 로드 순간 눈높이 / 0.936) | 0.75 |
