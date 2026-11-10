@@ -30,13 +30,15 @@ IFS-research/
 │  └─ logs/ · reports/        세션 로그 · 시나리오 결과 (git에 올리지 않음)
 ├─ unity/                     VR 앱 자리 (README에 쓸 계약 정리)
 ├─ shared/
-│  ├─ schemas/                interviewer_turn.schema.json (턴 JSON) · session_log.schema.json (elicit-log/0.1)
+│  ├─ schemas/                interviewer_turn.schema.json (턴 JSON) · session_log.schema.json (elicit-log/0.1) · scene-spec.v2.json (장면 기술)
 │  ├─ protocol/               elicitation_protocol.v1.json — 조건 1·2 단계 순서, 고정 문구, 질문 틀, 차원 프로브
-│  ├─ lexicon/                layer1_lexicon.v0.json (1층 사전) · safety_ko.v0.json (위기·중단·깊이 표지)
+│  ├─ lexicon/                layer1_lexicon.v0.json (1층 사전) · scene_params.v0.json (장면 대응표) · vad_ko.v0.json (3층) · safety_ko.v0.json (위기·중단·깊이 표지)
 │  └─ api/README.md           HTTP API 명세 (웹 데모·Unity 공용)
 └─ docs/
    ├─ chatbot-design.md       노션 설계 → 구현 대응표, 문서끼리 다른 곳에서 고른 것, 확장한 것, 실험 결과, 열린 질문
-   └─ ifs-knowledge.md        IFS 개념이 시스템 어디에 들어갔는지(범위 안·밖), 6F 문구 출처, 안전 근거
+   ├─ ifs-knowledge.md        IFS 개념이 시스템 어디에 들어갔는지(범위 안·밖), 6F 문구 출처, 안전 근거
+   ├─ scene-spec-mapping.md   확정 텍스트 → SceneSpec v2 → Unity: 형식, 층·우선순위, 기존 형식과 달라진 점
+   └─ decision-log.md         장면 파이프라인을 만들며 고른 기본값과 이유(⚠ = 연구팀 확인 필요)
 ```
 
 ## 브랜치 규칙

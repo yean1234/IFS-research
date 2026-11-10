@@ -35,4 +35,5 @@ max_anchor_eojeol = 3         # (확장) 인용은 참여자의 낱말·짧은 �
 
 [session]
 log_dir = "logs"              # chatbot/logs/ (git에 올리지 않음)
+scenes_dir = ""               # 장면 파일 scenes/{sessionId}.json. 비우면 logs/scenes (git에 올리지 않음)
 researcher_contact = "(연구자 연락처를 config에 입력하세요)"

@@ -51,6 +51,7 @@ class ValidatorConfig:
 @dataclass(frozen=True)
 class SessionConfig:
     log_dir: str = "logs"
+    scenes_dir: str = ""          # 확정 텍스트 → SceneSpec v2 저장 폴더. 비우면 <log_dir>/scenes
     researcher_contact: str = "(연구자 연락처를 config에 입력하세요)"
 
 
@@ -66,6 +67,14 @@ class Config:
     @property
     def log_dir(self) -> Path:
         p = Path(self.session.log_dir)
+        return p if p.is_absolute() else CHATBOT_DIR / p
+
+    @property
+    def scenes_dir(self) -> Path:
+        """장면 파일(scenes/{sessionId}.json) 폴더. 참여자 데이터라 기본은 git 밖의 logs/scenes."""
+        if not self.session.scenes_dir:
+            return self.log_dir / "scenes"
+        p = Path(self.session.scenes_dir)
         return p if p.is_absolute() else CHATBOT_DIR / p
 
     def to_dict(self) -> dict:

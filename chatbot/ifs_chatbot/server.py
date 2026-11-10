@@ -29,6 +29,7 @@ log = logging.getLogger("ifs_chatbot.server")
 class CreateSession(BaseModel):
     condition: str | None = Field(None, description="static(조건 1) | chatbot(조건 2). 비우면 설정 기본값")
     sessionId: str | None = Field(None, description="가명 ID (예: P07). 비우면 자동 생성")
+    participantId: str | None = Field(None, description="가명 참여자 ID. 장면 파일 meta에만 쓴다. 비우면 null")
 
 
 class Reply(BaseModel):
@@ -87,7 +88,7 @@ def create_app(cfg: Config | None = None, runtime: Runtime | None = None, warmup
     @app.post("/api/sessions", status_code=201)
     def create_session(body: CreateSession):
         try:
-            s = rt.new_session(body.condition, body.sessionId)
+            s = rt.new_session(body.condition, body.sessionId, body.participantId)
         except (SessionError, ValueError) as exc:
             raise HTTPException(409, str(exc)) from exc
         return s.view()
@@ -112,6 +113,14 @@ def create_app(cfg: Config | None = None, runtime: Runtime | None = None, warmup
     def session_log(sid: str):
         """연구자용: 세션 로그 전체(elicit-log/0.1) + 런타임 경고."""
         return get_session(sid).researcher_view()
+
+    @app.get("/api/sessions/{sid}/scene")
+    def scene(sid: str):
+        """확정 뒤 만든 SceneSpec v2와 저장 경로. Unity의 HTTP 경로 전달(ISceneSpecPathSource)이 쓸 자리."""
+        s = get_session(sid)
+        if s.scene_spec is None:
+            raise HTTPException(409, "아직 장면 기술이 없습니다([이대로 맞아요] 뒤에 생깁니다).")
+        return {"sessionId": s.id, "path": (s.log.data.get("sceneSpec") or {}).get("path"), "spec": s.scene_spec}
 
     @app.post("/api/sessions/{sid}/events", status_code=201)
     def add_event(sid: str, body: Event):

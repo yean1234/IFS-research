@@ -106,6 +106,18 @@
     "confirmedText": { "type": ["string", "null"], "description": "참여자가 [이대로 맞아요]를 누른 텍스트. 점선 아래(추출)로 넘어가는 유일한 것." },
     "confirmation": { "type": ["object", "null"] },
     "extraction": { "type": ["object", "null"], "description": "추출 미리보기(1층 사전 + 직유 표지 + _provenance)" },
+    "sceneSpec": {
+      "type": ["object", "null"],
+      "description": "(선택) 확정 직후 만든 SceneSpec v2(shared/schemas/scene-spec.v2.json)의 참조. 장면 본문은 scenes/{sessionId}.json에 따로 저장한다. 철회하면 파일과 함께 null.",
+      "properties": {
+        "path": { "type": ["string", "null"] },
+        "specVersion": { "type": "string" },
+        "builder": { "type": "string" },
+        "sourceTextHash": { "type": "string" },
+        "problems": { "type": "array", "items": { "type": "string" } },
+        "error": { "type": "string" }
+      }
+    },
     "events": { "type": "array", "description": "Unity 등 외부에서 보낸 이벤트(보정·거리 등)", "items": { "type": "object" } },
     "endedBy": { "enum": ["completed", "participant_stop", "crisis", "abandoned", null] },
     "rawSurveyResponseRef": { "type": ["string", "null"] }

@@ -9,6 +9,7 @@
  4) 검증기 V1–V9 → 통과한 질문만 나감(최대 2회 재생성, 그다음 고정 대체 문구)
  5) 참여자 답마다 안전 분류(키워드 사전 + 가드 모델) → 위기면 LLM을 끄고 고정 문구 + 연구자 호출
  6) 끝나면 참여자 발화를 그대로 모은 요약을 보여 주고 [이대로 맞아요] → 그 텍스트만 추출로 넘어감
+ 7) 확정 직후 같은 텍스트로 SceneSpec v2를 만들어 scenes/{sessionId}.json에 저장(scene_builder, LLM 없음)
 """
 from __future__ import annotations
 
@@ -30,6 +31,8 @@ from .paths import shared
 from .prompts import PromptContext, PromptSet, TranscriptLine
 from .protocol import Protocol, Step
 from .safety import Guard, GuardVerdict, OllamaGuardModel, SafetyLexicon
+from .scene_builder import SceneSpecBuilder, normalize_confirmed, write_spec
+from .scene_spec import check_principles
 from .session_log import SessionLog, now_iso
 from .validator import TurnContext, Validator, describe
 
@@ -91,6 +94,7 @@ class Runtime:
             max_anchor_eojeol=cfg.validator.max_anchor_eojeol,
         )
         self.extractor = Extractor(self.lexicon, self.analyzer)
+        self.scene_builder = SceneSpecBuilder(self.lexicon, self.analyzer)
         self.persist_logs = persist_logs
         self.sessions: dict[str, "Session"] = {}
         self._lock = threading.Lock()
@@ -128,28 +132,33 @@ class Runtime:
             "warnings": self.warnings,
         }
 
-    def new_session(self, condition: str | None = None, session_id: str | None = None) -> "Session":
+    def new_session(self, condition: str | None = None, session_id: str | None = None,
+                    participant_id: str | None = None) -> "Session":
         condition = condition or self.cfg.interview.condition
         if session_id is None:
             session_id = datetime.now().strftime("S%Y%m%d-%H%M%S-") + secrets.token_hex(2)
         if not SESSION_ID_RE.match(session_id):
             raise SessionError("세션 ID는 영문·숫자·_·- 1–40자만 됩니다(가명 ID 사용).")
+        if participant_id is not None and not SESSION_ID_RE.match(participant_id):
+            raise SessionError("참여자 ID는 영문·숫자·_·- 1–40자만 됩니다(가명 ID 사용).")
         with self._lock:
             if session_id in self.sessions:
                 raise SessionError(f"이미 있는 세션 ID입니다: {session_id}")
-            s = Session(self, condition, session_id)
+            s = Session(self, condition, session_id, participant_id=participant_id)
             self.sessions[session_id] = s
         return s
 
 
 # ── 세션 ────────────────────────────────────────────────────────────────────
 class Session:
-    def __init__(self, rt: Runtime, condition: str, session_id: str):
+    def __init__(self, rt: Runtime, condition: str, session_id: str, participant_id: str | None = None):
         self.rt, self.cfg, self.p = rt, rt.cfg, rt.protocol
         self.p.condition(condition)  # 모르는 조건이면 여기서 오류
         if condition == "chatbot" and not rt.backend_ok:
             raise SessionError(f"조건 2(챗봇)를 시작할 수 없습니다: {rt.backend_msg}")
         self.id, self.condition = session_id, condition
+        self.participant_id = participant_id   # 가명. 피험자 내 설계에서 한 사람의 여러 세션을 묶는다(장면 meta에만 씀)
+        self.scene_spec: dict | None = None
         self.steps: list[Step] = self.p.sequence(condition)
         self.idx = 0
         self.step_state: dict[int, dict] = defaultdict(dict)
@@ -314,8 +323,9 @@ class Session:
                 raise SessionError("면담이 끝난 뒤에 폐기할 수 있습니다. 위기 대응으로 멈춘 세션은 안전 기록을 위해 연구자가 처리합니다.")
             self.log.delete()
             self.log.persist = False
+            self._delete_scene()
             self.log.data.update(turns=[], alerts=[], capture={}, confirmedText=None, confirmation=None,
-                                 extraction=None, events=[], endedBy="withdrawn")
+                                 extraction=None, events=[], endedBy="withdrawn", sceneSpec=None)
             self.participant_texts, self.transcript, self.asked, self.confirm_draft = [], [], [], None
             self.messages = [{"speaker": "bot", "text": self.p.phrase("withdrawn"), "kind": "info", "source": "fixed:withdrawn"}]
             self.state, self.awaiting = "withdrawn", "none"
@@ -512,10 +522,43 @@ class Session:
         self.log.data["confirmedText"] = text
         self.log.data["confirmation"] = {"edited": edited, "draft": self.confirm_draft, "at": now_iso()}
         self.log.data["extraction"] = self.rt.extractor.run(text, self.log.data["capture"].get("bodyRelation"))
+        self._write_scene(text)
         self._say_fixed("closing", stage=None, kind="closing")
         self.state, self.awaiting = "done", "none"
         self.log.end("completed")
         self._save()
+
+    # ── 장면 기술 (확정 텍스트 → SceneSpec v2 → Unity) ──────────────────────
+    @property
+    def scene_path(self):
+        return self.cfg.scenes_dir / f"{self.id}.json"
+
+    def _write_scene(self, text: str) -> None:
+        """확정 텍스트만 입력으로 장면 파일을 만든다. 턴 JSON·LLM 출력은 쓰지 않는다.
+        실패해도 면담 종료는 막지 않고 연구자 알림으로 남긴다."""
+        try:
+            spec = self.rt.scene_builder.build(text, session_id=self.id, participant_id=self.participant_id,
+                                               condition=self.condition)
+            problems = check_principles(spec, normalize_confirmed(text))
+            saved = None
+            if self.rt.persist_logs:
+                saved = str(write_spec(spec, self.scene_path))
+            self.scene_spec = spec
+            self.log.data["sceneSpec"] = {"path": saved, "specVersion": spec["meta"]["specVersion"],
+                                          "builder": spec["meta"]["pipeline"]["builder"],
+                                          "sourceTextHash": spec["meta"]["sourceTextHash"], "problems": problems}
+            if problems:
+                self._alert("scene_spec_invalid", "; ".join(problems[:5]), None)
+        except Exception as exc:  # noqa: BLE001 — 장면 생성 실패가 면담 종료를 막으면 안 된다
+            self.log.data["sceneSpec"] = {"path": None, "error": f"{type(exc).__name__}: {exc}"}
+            self._alert("scene_spec_error", f"{type(exc).__name__}: {exc}", None)
+
+    def _delete_scene(self) -> None:
+        self.scene_spec = None
+        try:
+            self.scene_path.unlink(missing_ok=True)
+        except OSError as exc:
+            alert_logger.warning("장면 파일을 지우지 못했습니다(%s): %s", self.scene_path, exc)
 
     # ── 화면 ────────────────────────────────────────────────────────────────
     def buttons(self) -> list[dict]:
