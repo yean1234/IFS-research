@@ -70,3 +70,11 @@ def test_principle_check_catches_wrong_trigger_span():
     spec = load(CASES[0])
     spec["_provenance"]["form.type"][0]["charSpan"] = [0, 3]
     assert any("trigger" in p for p in check_principles(spec, CASES[0]["confirmedText"]))
+
+
+@pytest.mark.parametrize("case", CASES, ids=[c["file"] for c in CASES])
+def test_unity_example_copy_is_identical(case):
+    """3단계 테스트 씬이 읽는 unity/Assets/StreamingAssets/IFS/examples/* 는 정답 파일과 바이트까지 같아야 한다."""
+    from ifs_chatbot.paths import REPO_ROOT
+    unity_copy = REPO_ROOT / "unity" / "Assets" / "StreamingAssets" / "IFS" / "examples" / case["file"]
+    assert unity_copy.read_bytes() == (FIXTURES / case["file"]).read_bytes()

@@ -46,3 +46,27 @@
 - [2] 세션 로그에는 장면 본문이 아니라 참조(`sceneSpec: path·버전·해시·문제 목록`)만 추가. 스키마에는 선택 키로 넣고 `logVersion`은 그대로(덧붙인 키는 선택이라는 기존 규칙).
 - [2] "실제 챗봇 JSON 예시"는 합성 대사 시나리오 2개(`scenarios/scene_ex01_gray_blob.json`, `scene_ex02_curled_self.json`)를 오프라인 대역으로 돌려 만듦 — ①은 여러 턴 뒤 [고칠게요]로 한 문장 확정, ②는 한 줄 + 넘기기 뒤 그대로 확정.
 - [2] `GET /api/sessions/{id}/scene` 추가 — Unity의 HTTP 경로 전달(3단계 인터페이스)이 쓸 자리. 읽기 전용.
+
+## 3단계 — Unity 로더
+
+- [3] 지시의 [Unity 프로젝트 경로]·[Unity 버전]이 비어 있고 저장소의 `unity/`에는 README만 있었음 → `unity/Assets/IFS/`에 바로 넣을 수 있는 폴더로 만듦(기존 Quest 프로젝트에 복사해도 됨). 버전은 Unity 2022.3 LTS / Unity 6 공통 API, C# 9 기준.
+- [3] ⚠ 확인 필요 — Unity 배치모드 컴파일은 이 환경에 Unity가 없어 하지 못함 → `unity/Tools/compile-check`(dotnet)로 대신 확인: Unity 비의존 코드는 실제 컴파일·테스트, MonoBehaviour·Editor는 스텁으로 타입 검사만. 첫 실행 때 Unity 콘솔을 확인해야 한다.
+- [3] Unity 비의존 부분(데이터 클래스·파싱·파라미터·기록기)과 MonoBehaviour를 나눔 — Unity 없이 역직렬화·기록을 검사할 수 있게.
+- [3] 역직렬화는 엄격하게(`MissingMemberHandling.Error` + 필드마다 `Required`) — 형식이 어긋난 파일로 실험하지 않도록. "빠짐없이"는 다시 직렬화한 JSON이 원본과 같은지로 확인.
+- [3] 수치는 C# `double?`로 — float로 읽으면 0.45 같은 값이 왕복에서 바뀔 수 있다.
+- [3] ⚠ 확인 필요 — 프리팹이 연결되지 않으면 임시 프리미티브로 대체(blob·mist = 구, shell = 캡슐, fragments = 큐브 5개). 콘솔 경고 + `initialScene.json`의 `notes`에 남긴다. 실험 전에 4종 프리팹을 연결해야 한다.
+- [3] ⚠ 확인 필요 — Shader Graph 프로퍼티 이름을 `_BaseColor`·`_Brightness`·`_Roughness`·`_Opacity`·`_Erosion`(Float 0–1)으로 가정. 없으면 URP Lit(`_Smoothness = 1 − r`, `_EmissionColor`)·Built-in(`_Color`, `_Glossiness`)로 근사하고 기록. Inspector에서 이름을 바꿀 수 있다.
+- [3] ⚠ 확인 필요 — null일 때 기본값: form blob, 색 h0 s0 l0.7(밝은 회색), brightness 0.5, roughness 0.5, opacity 1, erosion 0, size 0.5(×1), distance 0.33(≈1.2 m), verticalOffset 0.75, motion still · 0.5. 기본값을 쓴 키는 콘솔과 `defaultsUsed`에 남긴다.
+- [3] `material.saturation`이 있으면 color.s 대신 씀 — 채도어('선명', '탁하')가 색 이름보다 채도에 대해 구체적이다. 조정·기록은 `material.color.h/s/l` 세 값으로 한다.
+- [3] `_inferred`는 기본으로 쓰지 않음(`useInferredSuggestions = false`) — 1단계 결정(원칙 3 우선)과 같은 이유. 켜면 `inferredUsed`에 남는다.
+- [3] 배치: 로드 순간의 머리 위치·수평 방향을 기준(앵커)으로 잡고 거리·높이를 계산 — 참여자가 고개를 돌려도 오브젝트가 따라다니지 않게. 키 = 눈높이 / 0.936(앉아 있어도 비율로 맞춰진다).
+- [3] ⚠ 확인 필요 — 자세(`form.posture`)는 크기 변형 프리셋으로만 표현(웅크림 y×0.7, 늘어짐·누움 y×0.5–0.6, 곧음 y×1.2). 프리셋이 없는 자세(turned_away, hiding)는 적용하지 않고 기록. 사람 형상 에셋이 없어 이 정도가 한계다.
+- [3] 움직임 22종을 절차적 움직임 9묶음으로 묶음(흔들림·떨림·맥동·떠다님·가라앉음·회전·퍼짐·다가옴·정지), speed 0–1 → 0.1–1.5 Hz. 기록은 원래 이름(22종)으로 한다.
+- [3] 기록 위치 `Application.persistentDataPath/IFS/sessions/{sessionId}/` — 참여자 데이터라 저장소 밖. 같은 세션을 다시 띄우면 덮어쓰지 않고 `rerun-…/`.
+- [3] `initialScene.json`·`finalScene.json`은 같은 형식(`ifs-vr-scene-record/0.1`)의 0–1 값 집합 + 기본값 목록. 최종에는 `deltas`(색상은 원형 거리), `adjustedParams`, `adjustmentRms`.
+- [3] ⚠ 확인 필요 — `adjustmentRms`(수치 파라미터 차이의 RMS)는 잠정 지표. 1차 지표 "조정량(정규화된 거리)"의 정의는 연구팀이 정한다. 원자료(`deltas`, `events.csv`)는 모두 남긴다.
+- [3] `events.csv`의 `distance_m`은 그 조정 순간의 머리–오브젝트 거리. 0.1초 간격 거리 기록(옛 API README)은 넣지 않음 — 지시한 열 구성을 따랐다.
+- [3] 경로 전달은 `ISceneSpecPathSource` 인터페이스 + `InspectorPathSource`만 구현. HTTP 방식은 인터페이스 주석에 계약만 적음(127.0.0.1, 메인 스레드에서 알림).
+- [3] 테스트 씬은 YAML로 직접 작성하고, 열리지 않을 때를 위해 같은 씬을 만드는 Editor 메뉴를 둠. `.meta` GUID는 파일 경로의 md5로 고정해 씬의 스크립트 참조가 깨지지 않게 함.
+- [3] 예시 JSON은 `Assets/StreamingAssets/IFS/examples/`에 복사(Unity가 저장소 밖 경로를 읽지 않도록). 파이썬 테스트가 정답 파일과 바이트까지 같은지 확인한다.
+- [3] 패키지 설치·Quest 빌드 설정은 하지 않음(지시). `Packages/manifest.json`도 만들지 않았다 — Newtonsoft 패키지는 사용자가 추가.

@@ -1,0 +1,18 @@
+{
+    "name": "IFS.SceneSpec.Editor",
+    "rootNamespace": "IFS.SceneSpec.EditorTools",
+    "references": [
+        "IFS.SceneSpec"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
