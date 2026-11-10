@@ -25,7 +25,7 @@ UnityEngine에 의존하지 않는 부분(데이터 클래스·파싱·파라미
 
 ## Unity 에디터에서 할 일
 
-1. **프로젝트 준비** — 이 `unity/` 폴더를 Unity Hub에서 프로젝트로 엽니다(ProjectSettings는 Unity가 만듭니다). 이미 Quest 프로젝트가 있으면 `Assets/IFS/`와 `Assets/StreamingAssets/IFS/`를 그 프로젝트의 `Assets/` 아래로 복사합니다(`.meta`도 같이 — 테스트 씬이 스크립트 GUID로 연결돼 있습니다). Unity 2022.3 LTS 이상 / Unity 6 기준(C# 9)으로 썼습니다.
+1. **프로젝트 준비** — Unity Hub ▸ Projects ▸ Add ▸ *Add project from disk* ▸ 이 `unity/` 폴더. Hub는 `ProjectSettings/ProjectVersion.txt`가 있어야 프로젝트로 인식하므로 그 파일만 넣어 두었습니다(6000.0.62f1). 나머지 설정·`Packages/manifest.json`(기본 패키지)은 처음 열 때 Unity가 만듭니다. 이미 Quest 프로젝트가 있으면 `Assets/IFS/`와 `Assets/StreamingAssets/IFS/`를 그 프로젝트의 `Assets/` 아래로 복사합니다(`.meta`도 같이 — 테스트 씬이 스크립트 GUID로 연결돼 있습니다). Unity 2022.3 LTS 이상 / Unity 6 기준(C# 9)으로 썼습니다.
 2. **패키지** — Package Manager ▸ `+` ▸ *Add package by name* ▸ `com.unity.nuget.newtonsoft-json`(3.2.1 이상). 테스트를 돌리려면 `com.unity.test-framework`(새 프로젝트에는 보통 있음). 로더는 XR Interaction Toolkit 없이도 컴파일됩니다.
 3. **테스트** — Window ▸ General ▸ Test Runner ▸ EditMode ▸ *Run All* → 8개 통과해야 합니다.
 4. **테스트 씬** — `Assets/IFS/Scenes/SceneSpecExamples.unity`를 열고 Play. 왼쪽이 EX01(회색 덩어리, 가슴 높이), 오른쪽이 EX02(웅크린 작은 형상). Console에 "SceneSpec 값이 null → 기본값 … 사용" 줄과 기록 폴더 경로가 나옵니다. 씬이 열리지 않으면 메뉴 **IFS ▸ SceneSpec ▸ 예시 테스트 씬 다시 만들기**.
