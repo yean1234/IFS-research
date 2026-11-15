@@ -87,6 +87,7 @@ async function createSession() {
 
 // ── 동작 ─────────────────────────────────────────────────────────────────────
 async function send(text) {
+  if (!state.sid) return toast("먼저 세션을 만들어 주세요.");
   if (!text.trim() || state.busy) return;
   setBusy(true);
   try {
