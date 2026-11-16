@@ -156,6 +156,7 @@ namespace UnityEngine
     public sealed class MeshFilter : Component { public Mesh sharedMesh { get; set; } }
     public class Collider : Component { }
     public sealed class SphereCollider : Collider { }
+    public sealed class MeshCollider : Collider { public Mesh sharedMesh { get; set; } public bool convex { get; set; } }
 
     public struct Bounds
     {
@@ -173,6 +174,8 @@ namespace UnityEngine
         public Bounds bounds { get; set; }
         public int subMeshCount => 1;
         public uint GetIndexCount(int submesh) => 0;
+        public void Clear() { }
+        public void RecalculateBounds() { }
     }
 
     public static class Resources
@@ -410,7 +413,19 @@ namespace Unity.Profiling
 
 namespace UnityEngine.SceneManagement
 {
-    public struct Scene { }
+    public struct Scene
+    {
+        public string path => "";
+        public string name => "";
+        public bool isLoaded => true;
+        public GameObject[] GetRootGameObjects() => Array.Empty<GameObject>();
+    }
+
+    public static class SceneManager
+    {
+        public static int sceneCount => 0;
+        public static Scene GetSceneAt(int index) => default;
+    }
 }
 
 namespace UnityEditor
@@ -418,6 +433,26 @@ namespace UnityEditor
     [AttributeUsage(AttributeTargets.Method)] public sealed class MenuItem : Attribute { public MenuItem(string itemName) { } }
 
     public static class EditorApplication { public static void Exit(int returnValue) { } }
+
+    public static class AssetDatabase
+    {
+        public static T LoadAssetAtPath<T>(string assetPath) where T : UnityEngine.Object => null;
+        public static void CreateAsset(UnityEngine.Object asset, string path) { }
+        public static string CreateFolder(string parentFolder, string newFolderName) => "";
+        public static bool IsValidFolder(string path) => false;
+        public static void SaveAssets() { }
+    }
+
+    public static class PrefabUtility
+    {
+        public static UnityEngine.GameObject SaveAsPrefabAsset(UnityEngine.GameObject instanceRoot, string assetPath, out bool success)
+        {
+            success = true;
+            return instanceRoot;
+        }
+    }
+
+    public static class EditorUtility { public static void SetDirty(UnityEngine.Object target) { } }
 
     public static class UnityStats
     {
@@ -463,11 +498,15 @@ namespace UnityEditor.SceneManagement
 {
     public enum NewSceneSetup { EmptyScene, DefaultGameObjects }
     public enum NewSceneMode { Single, Additive }
+    public enum OpenSceneMode { Single, Additive, AdditiveWithoutLoading }
 
     public static class EditorSceneManager
     {
         public static bool SaveCurrentModifiedScenesIfUserWantsTo() => true;
         public static UnityEngine.SceneManagement.Scene NewScene(NewSceneSetup setup, NewSceneMode mode) => default;
-        public static bool SaveScene(UnityEngine.SceneManagement.Scene scene, string dstScenePath) => true;
+        public static bool SaveScene(UnityEngine.SceneManagement.Scene scene, string dstScenePath = "", bool saveAsCopy = false) => true;
+        public static UnityEngine.SceneManagement.Scene OpenScene(string scenePath, OpenSceneMode mode) => default;
+        public static bool CloseScene(UnityEngine.SceneManagement.Scene scene, bool removeScene) => true;
+        public static bool MarkSceneDirty(UnityEngine.SceneManagement.Scene scene) => true;
     }
 }

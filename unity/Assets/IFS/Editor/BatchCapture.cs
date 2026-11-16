@@ -13,6 +13,8 @@
 //      1차 값(primary) = 불투명 inContext, 반투명 scene. 요약은 참여자가 말한 색(stated)과 기본값이 섞인 색을 나눠 집계한다.
 //   5) 성능: 눈당 width×height, MSAA = 품질 설정, 한 프레임 = 눈 eyes개 렌더 + GPU 동기화. p50/p95/max(ms)
 //   6) 렌더 통계: UnityStats·ProfilerRecorder(배치모드에서 의미가 있는지 함께 기록) + 직접 계산한 추정(렌더러·삼각형·패스·그림자 광원)
+//   7) 모양어 판정(shape): _unmapped의 모양어 → 모양 모형(SceneLoader.Shape). 모양 프리팹은 Assets/Prefabs/Shapes에서 읽어
+//      로더에 연결한다(ShapePrefabMenu). 없으면 로더가 같은 형상을 코드로 만들고 viaPrefab = false로 남긴다.
 // 끝나면 <outDir>/report.json. 모든 spec이 로드되고 도구가 예외 없이 끝나면 Exit(0), 아니면 Exit(1).
 // 데스크톱 GPU 대리 측정이다. Quest 3 헤드셋(모바일 GPU)의 성능이 아니다.
 using System;
@@ -129,7 +131,8 @@ namespace IFS.SceneSpec.EditorTools
                 temps.Add(resolved);
                 var fullTex = new Texture2D(o.Width, o.Height, TextureFormat.RGBA32, false, false);
                 temps.Add(fullTex);
-                var ctx = new Ctx { O = o, Cam = cam, Env = env, EyeRt = eyeRt, Resolved = resolved, FullTex = fullTex, OutDir = outDir, Temps = temps };
+                var ctx = new Ctx { O = o, Cam = cam, Env = env, EyeRt = eyeRt, Resolved = resolved, FullTex = fullTex, OutDir = outDir, Temps = temps,
+                                    ShapePrefabs = ShapePrefabMenu.LoadShapePrefabs() };
                 // 색 측정용 바닥 대체 머티리얼(배경과 같은 단색). 에디터 도구라 내장 셰이더를 Shader.Find로 찾는다.
                 var unlit = Shader.Find("Unlit/Color");
                 if (unlit != null && unlit.isSupported)
@@ -172,6 +175,7 @@ namespace IFS.SceneSpec.EditorTools
             public Material FloorBlack, FloorWhite;
             public string OutDir;
             public List<UnityEngine.Object> Temps;
+            public ShapePrefab[] ShapePrefabs;
         }
 
         // ── spec 하나 ───────────────────────────────────────────────────────
@@ -210,6 +214,7 @@ namespace IFS.SceneSpec.EditorTools
                 so.FindProperty("loadOnStart").boolValue = false;
                 so.FindProperty("head").objectReferenceValue = cam.transform;
                 so.ApplyModifiedPropertiesWithoutUndo();
+                loader.ConfigureShapePrefabs(c.ShapePrefabs);
 
                 bool loaded = loader.Load(file);
                 entry["loaded"] = loaded;
@@ -221,6 +226,7 @@ namespace IFS.SceneSpec.EditorTools
                     entry["defaultsUsed"] = new JArray(p.DefaultsUsed);
                     entry["inferredUsed"] = new JArray(p.InferredUsed);
                     entry["notes"] = new JArray(loader.Notes.ToArray());
+                    entry["shape"] = loader.Shape.ToJson();
 
                     var renderers = loader.Root.GetComponentsInChildren<Renderer>();
                     var bounds = Encapsulate(renderers);
@@ -825,8 +831,63 @@ namespace IFS.SceneSpec.EditorTools
                     ["realtimeShadowLights"] = shadowLightsMax,
                     ["color"] = ColorSummary(specs),
                     ["ac4"] = ac4,
+                    ["shapes"] = ShapeSummary(specs),
+                },
+                ["shapePrefabs"] = new JObject
+                {
+                    ["folder"] = ShapePrefabMenu.Folder,
+                    ["connected"] = new JObject(c.ShapePrefabs.Select(sp => new JProperty(sp.shape,
+                        sp.prefab != null ? (JToken)ShapePrefabMenu.PrefabPath(ShapeMapping.ModelFor(sp.shape)) : JValue.CreateNull()))),
+                    ["note"] = "모양 값 → 프리팹 경로(null = 프리팹 없음 → 로더가 같은 형상을 코드로 만들고 경고, spec별 shape.viaPrefab = false).",
                 },
                 ["specs"] = specs,
+            };
+        }
+
+        /// <summary>
+        /// 모양어 판정 집계(docs/shape-mapping.md). byStatus = spec별 shape.status 수, byModel = 적용한 모형별 spec 수,
+        /// unmappedValues = 표에 없는 모양 값별 낱말 수와 spec 이름, notAppliedForm·conflict = 해당 낱말이 나온 spec.
+        /// </summary>
+        public static JObject ShapeSummary(JArray specs)
+        {
+            var withShape = specs.Where(s => s["shape"] is JObject).ToArray();
+            var byStatus = new JObject();
+            foreach (var g in withShape.GroupBy(s => s["shape"].Value<string>("status")).OrderBy(g => g.Key, StringComparer.Ordinal))
+                byStatus[g.Key ?? "null"] = g.Count();
+            var byModel = new JObject();
+            foreach (var model in ShapeMapping.Models)
+                byModel[model] = withShape.Count(s => s["shape"].Value<string>("model") == model);
+            var viaPrefab = withShape.Count(s => s["shape"].Value<bool?>("viaPrefab") == true);
+            var viaCode = withShape.Count(s => s["shape"].Value<bool?>("viaPrefab") == false);
+
+            JObject WordsWith(string status)
+            {
+                var o = new JObject();
+                var hits = withShape.SelectMany(s => s["shape"]["words"].Children<JObject>()
+                        .Where(w => w.Value<string>("status") == status)
+                        .Select(w => (Shape: w.Value<string>("shape") ?? "(값 없음)", Spec: s.Value<string>("spec"))))
+                    .ToArray();
+                foreach (var g in hits.GroupBy(h => h.Shape).OrderByDescending(g => g.Count()).ThenBy(g => g.Key, StringComparer.Ordinal))
+                    o[g.Key] = new JObject
+                    {
+                        ["words"] = g.Count(),
+                        ["specs"] = new JArray(g.Select(h => h.Spec).Distinct().OrderBy(x => x, StringComparer.Ordinal)),
+                    };
+                return o;
+            }
+
+            return new JObject
+            {
+                ["specs"] = withShape.Length,
+                ["byStatus"] = byStatus,
+                ["byModel"] = byModel,
+                ["viaPrefab"] = viaPrefab,
+                ["viaCode"] = viaCode,
+                ["unmappedValues"] = WordsWith(ShapeMapping.StatusUnmapped),
+                ["notAppliedForm"] = WordsWith(ShapeMapping.StatusNotAppliedForm),
+                ["conflict"] = WordsWith(ShapeMapping.StatusConflict),
+                ["note"] = "status: applied = 모양 모형 적용, none = 모양어 없음(기본 모형), unmapped_shape = 표에 없는 모양어만 있어 모양 정보 없이 만든 모형, " +
+                           "not_applied_form = spec이 mist·shell·fragments를 말해 그 형태 모형을 지킴. 표: round→Sphere, square→Cube, flat→FlatCylinder, pointed→Cone.",
             };
         }
 

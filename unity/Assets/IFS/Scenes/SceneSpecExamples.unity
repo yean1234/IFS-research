@@ -161,6 +161,15 @@ MonoBehaviour:
   - formType: fragments
     prefab: {fileID: 0}
   useProceduralModels: 1
+  shapePrefabs:
+  - shape: round
+    prefab: {fileID: 5205205719194274513, guid: 340eb160792ab954aa8cb01a546b0fec, type: 3}
+  - shape: square
+    prefab: {fileID: 6123057468570214479, guid: 20f44bed620025e45b93b64d23840b41, type: 3}
+  - shape: flat
+    prefab: {fileID: 2667884931303218395, guid: f3f1c52b7da29fc48bda3c5d261d2900, type: 3}
+  - shape: pointed
+    prefab: {fileID: 187486842095103829, guid: 6eaa914f23a0c8341978d935f65bafcf, type: 3}
   shaderParams:
     baseColor: _BaseColor
     brightness: _Brightness
@@ -337,6 +346,15 @@ MonoBehaviour:
   - formType: fragments
     prefab: {fileID: 0}
   useProceduralModels: 1
+  shapePrefabs:
+  - shape: round
+    prefab: {fileID: 5205205719194274513, guid: 340eb160792ab954aa8cb01a546b0fec, type: 3}
+  - shape: square
+    prefab: {fileID: 6123057468570214479, guid: 20f44bed620025e45b93b64d23840b41, type: 3}
+  - shape: flat
+    prefab: {fileID: 2667884931303218395, guid: f3f1c52b7da29fc48bda3c5d261d2900, type: 3}
+  - shape: pointed
+    prefab: {fileID: 187486842095103829, guid: 6eaa914f23a0c8341978d935f65bafcf, type: 3}
   shaderParams:
     baseColor: _BaseColor
     brightness: _Brightness

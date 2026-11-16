@@ -50,6 +50,9 @@ namespace IFS.SceneSpec.EditorTools
             var so = new SerializedObject(loader);
             so.FindProperty("extraOffset").vector3Value = offset;
             so.ApplyModifiedPropertiesWithoutUndo();
+            // 모양 프리팹(IFS ▸ Create Shape Prefabs)이 이미 있으면 같이 연결한다. 없으면 로더가 코드로 같은 형상을 만들고 경고한다.
+            var shapes = ShapePrefabMenu.LoadShapePrefabs();
+            if (System.Array.Exists(shapes, s => s.prefab != null)) ShapePrefabMenu.Assign(loader, shapes);
         }
     }
 }

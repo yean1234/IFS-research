@@ -15,6 +15,7 @@ Shader "IFS/SceneSpec Opaque"
         _Fuzz ("Fuzz", Range(0, 1)) = 0
         _Density ("Density", Range(0, 1)) = 1
         _ShellOpen ("Shell Opening", Range(0, 1)) = 0
+        _Displacement ("Displacement", Range(0, 1)) = 1
     }
     SubShader
     {

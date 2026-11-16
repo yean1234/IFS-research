@@ -15,11 +15,13 @@ unity/
 │  │  │  ├─ Recording/ExperimentRecorder.cs initialScene.json · finalScene.json · events.csv
 │  │  │  ├─ Loading/                       SceneLoader · InspectorPathSource · ISceneSpecPathSource · SpecMotion
 │  │  │  ├─ Environment/                   EnvironmentBuilder(코드로 만드는 중립 환경) · IFSEnvironment(씬 컴포넌트)
-│  │  │  └─ SceneSpec/ColorMetrics.cs      sRGB↔Lab, CIEDE2000 (색 정확도 측정)
-│  │  ├─ Editor/                          메뉴: 예시 테스트 씬 다시 만들기 · BatchCapture(배치 캡처·성능 측정)
+│  │  │  ├─ SceneSpec/ColorMetrics.cs      sRGB↔Lab, CIEDE2000 (색 정확도 측정)
+│  │  │  └─ SceneSpec/ShapeMapping.cs · ConeMesh.cs  모양어 → 모양 모형 판정, 원뿔 메시 (docs/shape-mapping.md)
+│  │  ├─ Editor/                          메뉴: 예시 테스트 씬 다시 만들기 · Create Shape Prefabs · BatchCapture(배치 캡처·성능 측정)
 │  │  ├─ Runtime/Resources/IFS/          셰이더(Built-in): SceneSpec Opaque · Fade + 공통 노이즈, Environment Floor · Sky
-│  │  ├─ Tests/Editor/                    EditMode 테스트 19개(아래 「테스트」), UnityOnly/ = Unity에서만 도는 3개
+│  │  ├─ Tests/Editor/                    EditMode 테스트(아래 「테스트」), UnityOnly/ = Unity에서만 도는 것
 │  │  └─ Scenes/SceneSpecExamples.unity   예시 2개를 나란히 띄우는 테스트 씬
+│  ├─ Prefabs/Shapes/                     모양 모형 프리팹 4개(Sphere · Cube · FlatCylinder · Cone) + 원뿔 메시 + 머티리얼(메뉴가 만듦)
 │  └─ StreamingAssets/IFS/examples/       EX01.json · EX02.json (chatbot/tests/fixtures/scene_spec와 바이트까지 같음)
 └─ Tools/compile-check/                   Unity 없이 C# 컴파일·테스트(dotnet). Assets 밖이라 Unity는 무시
 ```
@@ -30,9 +32,9 @@ UnityEngine에 의존하지 않는 부분(데이터 클래스·파싱·파라미
 
 1. **프로젝트 준비** — Unity Hub ▸ Projects ▸ Add ▸ *Add project from disk* ▸ 이 `unity/` 폴더. 에디터 버전은 6000.0.85f2(`ProjectSettings/ProjectVersion.txt`)입니다. 색공간·품질 설정은 아래 「환경과 품질 설정」을 따릅니다. 이미 Quest 프로젝트가 있으면 `Assets/IFS/`와 `Assets/StreamingAssets/IFS/`를 그 프로젝트의 `Assets/` 아래로 복사합니다(`.meta`도 같이 — 테스트 씬이 스크립트 GUID로 연결돼 있습니다). Unity 2022.3 LTS 이상 / Unity 6 기준(C# 9)으로 썼습니다.
 2. **패키지** — Package Manager ▸ `+` ▸ *Add package by name* ▸ `com.unity.nuget.newtonsoft-json`(3.2.1 이상). 테스트를 돌리려면 `com.unity.test-framework`(새 프로젝트에는 보통 있음). 로더는 XR Interaction Toolkit 없이도 컴파일됩니다.
-3. **테스트** — Window ▸ General ▸ Test Runner ▸ EditMode ▸ *Run All* → 19개 통과해야 합니다(배치모드 명령은 아래 「테스트」).
+3. **테스트** — Window ▸ General ▸ Test Runner ▸ EditMode ▸ *Run All* → 66개 통과해야 합니다(2026-11-16 기준, 배치모드 명령은 아래 「테스트」).
 4. **테스트 씬** — `Assets/IFS/Scenes/SceneSpecExamples.unity`를 열고 Play. 중립 환경(회색 바닥·1 m 격자·하늘·방향광 그림자)이 먼저 만들어지고, 왼쪽이 EX01(회색 덩어리, 가슴 높이), 오른쪽이 EX02(웅크린 작은 형상). Console에 "SceneSpec 값이 null → 기본값 … 사용" 줄과 기록 폴더 경로가 나옵니다. 씬이 열리지 않으면 메뉴 **IFS ▸ SceneSpec ▸ 예시 테스트 씬 다시 만들기**.
-5. **형태 모형** — 프리팹이 없어도 기본 절차 모형이 뜹니다: 잘게 나눈 구를 `IFS/SceneSpec` 셰이더가 노이즈로 밀어 형태별로 다르게 보이게 합니다(blob 울퉁불퉁한 덩어리, mist 가장자리가 흐린 반투명 안개, shell 위가 깨져 열린 껍데기, fragments 조각 5개). 디자이너가 만든 에셋이 생기면 SceneLoader ▸ *Form Prefabs* 4칸에 넣으면 그쪽이 우선입니다. 이 셰이더는 **Built-in 렌더 파이프라인 전용**이라 URP로 바꾸면 지원되지 않고 임시 프리미티브로 돌아갑니다(그때 Shader Graph 판이 필요).
+5. **형태 모형** — 프리팹이 없어도 기본 절차 모형이 뜹니다: 잘게 나눈 구를 `IFS/SceneSpec` 셰이더가 노이즈로 밀어 형태별로 다르게 보이게 합니다(blob 울퉁불퉁한 덩어리, mist 가장자리가 흐린 반투명 안개, shell 위가 깨져 열린 껍데기, fragments 조각 5개). 디자이너가 만든 에셋이 생기면 SceneLoader ▸ *Form Prefabs* 4칸에 넣으면 그쪽이 우선입니다. 참여자가 모양어(동그랗다·네모·납작하다·뾰족하다)를 말했으면 구·큐브·납작 원기둥·원뿔 모형으로 바꿉니다(spec `_unmapped`의 모양어, `form.type`이 null·blob일 때만). 프리팹은 메뉴 **IFS ▸ Create Shape Prefabs**가 만들고 연결합니다. 규칙·기록은 `docs/shape-mapping.md`. 이 셰이더는 **Built-in 렌더 파이프라인 전용**이라 URP로 바꾸면 지원되지 않고 임시 프리미티브로 돌아갑니다(그때 Shader Graph 판이 필요).
 6. **직접 만든 셰이더를 쓸 때** — 아래 Reference 이름으로 프로퍼티를 만들면 로더가 값을 넣습니다. 이름이 다르면 SceneLoader ▸ *Shader Params*에서 바꿉니다.
 7. **챗봇 출력 연결** — InspectorPathSource ▸ *Spec Path*에 `…/chatbot/logs/scenes/{sessionId}.json`의 절대 경로를 넣습니다(상대 경로는 StreamingAssets 기준).
 8. **참여자 조정 입력** — 컨트롤러·슬라이더(XRI)를 `SceneLoader.SetNumber("material.brightness", v)`, `SetCategory("form.type", "mist")`, 끝날 때 `SaveFinal()`에 연결합니다. 이 연결 UI는 아직 없습니다.
@@ -42,6 +44,7 @@ UnityEngine에 의존하지 않는 부분(데이터 클래스·파싱·파라미
 | SceneSpec | Unity | null이면(기본값, Inspector에서 변경) |
 | --- | --- | --- |
 | `form.type` | Form Prefabs에서 고름 | `blob` |
+| `_unmapped`의 모양어(round · square · flat · pointed) | Shape Prefabs에서 고름(Sphere · Cube · FlatCylinder · Cone). `form.type`이 null·blob일 때만. 표에 없는 모양어는 경고·기록만 | 모양어 없음 → `form.type` 모형 |
 | `form.posture` | 크기 변형 프리셋(웅크림 y×0.7, 납작 y×0.5–0.6, 곧음 y×1.2) | 변형 없음 |
 | `material.color` (+`saturation`) | `_BaseColor` (Built-in은 `_Color`), 알파 = opacity | h 0, s 0, l 0.7 |
 | `material.brightness` | `_Brightness` (없으면 `_EmissionColor`로 근사) | 0.5 |
@@ -210,13 +213,15 @@ JSON 하나마다 하는 일:
   -runTests -testPlatform EditMode -testResults <결과.xml> -logFile <로그>
 ```
 
-EditMode 23개(2026-11-16 배치모드로 전부 통과):
+EditMode 66개(2026-11-16 모양 매핑을 넣은 뒤 배치모드로 전부 통과):
 
 | 파일 | 개수 | 내용 |
 | --- | --- | --- |
-| `SceneSpecDeserializationTests.cs` | 9 | 기존: 예시 JSON 역직렬화·왕복, 미지정 슬롯·기본값 기록, 조정량, 기록기, 구 메시 |
+| `SceneSpecDeserializationTests.cs` | 14 | 기존: 예시 JSON 역직렬화·왕복, 미지정 슬롯·기본값 기록, 조정량, 기록기, 구 메시 |
 | `CaptureMathTests.cs` | 9 | CIEDE2000(Sharma·Wu·Dalal 2005 시험 쌍 4개), sRGB → Lab 기준점, 캡처 인자, 백분위수, 색 기본값 성분(h·s·l 중 하나라도), 색 요약(말한 색과 기본값 분리) |
 | `UnityOnly/EnvironmentAndCaptureTests.cs` | 5 | 선형 색공간·VR 품질 단계, 환경(방향광 1·소프트 섀도·무채색·셰이더 컴파일·정리), 환경 Dispose의 RenderSettings 복원, form.type 변경 시 머티리얼 사본 누수 없음, 배치 캡처 한 바퀴(예시 2개, 콘솔 오류 0, 불투명 scene = inContext, 요약의 stated/withDefaults) |
+| `ShapeMappingTests.cs` | 33 | 원뿔 메시(정점·삼각형 수, 경계 상자, 인덱스, 바깥 감기 방향, 밑면 각진 모서리), 모양어 판정 규칙(표 4개, 표에 없는 값, charSpan 순서, conflict, form.type) |
+| `UnityOnly/ShapeModelTests.cs` | 5 | 모양 모형 팩토리·프리팹 에셋(루트 크기 1, 배율은 자식, IFS 머티리얼 변위 0), SceneLoader 적용·`initialScene.json` 기록, 표에 없는 모양어·형태 우선, 조정 중 form.type 변경 |
 
 로그 확인: EditMode 로그에는 테스트 프레임워크의 스택 프레임 `UnityLogCheckDelegatingCommand:CaptureException`이 정상 실행에서도 찍힙니다(이번 실행 36줄). 오류를 찾을 때는 `Select-String -Pattern 'error CS|Shader error|^\w*Exception:|\[Exception\]'`처럼 좁히거나 이 프레임을 빼고 셉니다(이번 실행 0건). 캡처 로그는 넓은 패턴(`Exception|error CS|Shader error`)으로도 0건입니다.
 
@@ -228,7 +233,7 @@ Unity가 없는 곳(CI 등)에서는 `Tools/compile-check/`에서 dotnet으로 �
 cd unity/Tools/compile-check && dotnet build IFS.SceneSpec.CompileCheck.csproj && dotnet test Tests/IFS.SceneSpec.CompileCheck.Tests.csproj
 ```
 
-- Unity에 의존하지 않는 코드와 EditMode 테스트 파일은 실제 Newtonsoft·NUnit으로 컴파일·실행됩니다(18개). `Tests/Editor/UnityOnly/`는 실제 렌더가 필요해 뺍니다.
+- Unity에 의존하지 않는 코드와 EditMode 테스트 파일은 실제 Newtonsoft·NUnit으로 컴파일·실행됩니다(56개, 2026-11-16). `Tests/Editor/UnityOnly/`는 실제 렌더가 필요해 뺍니다.
 - MonoBehaviour·Editor 스크립트는 UnityEngine/UnityEditor **스텁**(이름·시그니처만)으로 타입 검사만 합니다. 새 Unity API를 쓰면 `Stubs/UnityStubs.cs`에 같은 시그니처를 추가합니다.
 
 ## 한계

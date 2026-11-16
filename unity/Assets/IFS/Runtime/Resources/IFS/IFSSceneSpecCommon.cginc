@@ -3,6 +3,9 @@
 //   _BaseColor  색(HSL → RGB)      _Brightness 밝기·발광     _Roughness 거칠기(얼룩·잔요철·광택)
 //   _Opacity    불투명도(Fade만)   _Erosion    가장자리 침식(삭아감·갈라짐)
 // 형태별 모양은 로더가 정하는 프리셋 값: _Lumpiness(덩어리 굴곡) _NoiseScale _Seed _Fuzz(안개 가장자리) _Density _ShellOpen(껍질 열림)
+// _Displacement: 정점 변위(굴곡 + 잔요철) 전체에 곱하는 값. 기본 1 = 원래 그대로(blob·mist·shell·fragments).
+//   모양 모형(큐브·원뿔·원기둥·구, docs/shape-mapping.md)은 로더가 0으로 둔다. 각진 메시는 모서리 정점이 면마다 따로라
+//   법선 방향으로 밀면 면이 벌어지고 윤곽이 흐려지기 때문이다. 색·밝기·거칠기(얼룩·광택)·불투명도·침식은 그대로 반영된다.
 #ifndef IFS_SCENESPEC_COMMON_INCLUDED
 #define IFS_SCENESPEC_COMMON_INCLUDED
 
@@ -17,6 +20,7 @@ float _Seed;
 half _Fuzz;
 half _Density;
 half _ShellOpen;
+half _Displacement;
 
 struct Input
 {
@@ -67,7 +71,7 @@ float ifsHeight(float3 p)
     float3 q = ifsNoiseCoord(p);
     float big = (ifsFbm(q) - 0.47) * _Lumpiness;
     float fine = (ifsNoise(q * 9.0) - 0.5) * 0.035 * _Roughness;
-    return big + fine;
+    return (big + fine) * _Displacement;
 }
 
 // ── 정점: 노이즈로 밀고, 이웃 두 점으로 법선을 다시 계산 ────────────────────
