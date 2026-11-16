@@ -100,7 +100,7 @@ ultracode
 
 ### Codex 체크포인트 (정확히 3번, 실패 시 재시도 1번)
 - [x] CP1 — 1회 사용. 원문+분류표 `docs/codex-reviews/CP1.md`. 수용 11 / 보류 1(#12 인용 원문 대조, 사람)
-- [ ] CP2 — **호출함(2번째, 세션 edd117bf). 결과 정리 중.** 출력이 `docs/codex-reviews/CP2.md`에 없으면 호출이 끊긴 것: 재시도는 1번까지만. 지시문 `docs/codex-reviews/prompts/CP2_prompt.md`
+- [x] CP2 — 1회 사용(2026-11-16 13:55, 종료 코드 0). 원문+분류표 `docs/codex-reviews/CP2.md`. 수용 6 · 일부 수용 2 · 반박 1 · 일부 반박·보류 1 · 보류 2. 지시문 `docs/codex-reviews/prompts/CP2_prompt.md`
 - [ ] CP3 — 미사용. 지시문 `docs/codex-reviews/prompts/CP3_prompt.md` (`<CP2_COMMIT>` = `58ba0dc`)
 
 **Codex 사용 현황: 3번 중 2번 사용(CP1, CP2), 남은 1번(CP3).** 다른 계정으로 넘어가도 이 횟수는 이어집니다. 이 외 용도로 절대 호출하지 마세요.
@@ -114,8 +114,9 @@ codex exec --sandbox read-only -c model_reasoning_effort="medium" -C . -o /tmp/c
 
 ## 4. 지금 진행 중인 것 (계정 전환 뒤 세션 edd117bf 기준)
 
-- 2단계 끝: 독립 검토 2건 → 수정 → 원문 보존 보완 → CP2 커밋 `58ba0dc`. 오프라인 354 통과, drift 라벨 정확도 1.000(sha `345c4071…dc1d`, AC-2 잠정 통과), held-out sha 그대로. 분류·결정은 `docs/decisions.md` 맨 끝(D09, 분류표, X1–X8).
-- **진행 중: Codex CP2 호출(2번째)**. 출력은 세션 임시 폴더에 받고 `docs/codex-reviews/CP2.md`로 옮김. 그다음 5절 3번(분류표 → 수용 항목 반영 → 테스트 → 커밋) → 4번(3단계 E2E).
+- 끝: 2단계(CP2 커밋 `58ba0dc`), Codex CP2 호출과 분류(`docs/codex-reviews/CP2.md`). 사람이 할 일은 morning-todo에 병합.
+- **진행 중: CP2 수용 항목 반영 에이전트(opus) 1개** — 코드 3건(#3 `[mapping] strict`, #4 drift `comparableGroups` 표시, #12 `[drift] allow_draft_phrases` 게이트)과 문서(#1·#2·#5 acceptance.md, #6 research-design·mapping-v1). 매핑 규칙·채점 로직·임계값은 안 바꿈.
+- 끊겼다면: CP2.md 분류 표에서 아직 반영 안 된 수용 항목을 `git diff`로 확인해 새 서브에이전트(opus)에 맡김 → 오프라인 테스트(시작 354) → drift 라벨 평가(정확도 1.000 유지 확인, sha가 바뀌면 acceptance·drift-design 갱신) → `CP2 반영:` 커밋 → 5절 4번(3단계 E2E).
 - 모델 배정(D09): 판단·분류·판정·보고서는 메인 세션(Fable), 구현·테스트 실행·검토·수정 서브에이전트는 opus.
 
 ## 5. 다음에 할 일 (순서대로)
