@@ -336,6 +336,19 @@ def test_session_log_with_drift_matches_schema(rt):
     assert not errors, [e.message for e in errors[:3]]
 
 
+def test_summary_comparable_is_primary_groups(rt):
+    """CP2 #4: 1차 쌍에서 비교 가능했던 묶음은 summary.comparable(이름 목록)과 assessment.primary.groups에 있다.
+    묶음이 하나뿐이면 그 하나의 모순으로 DI = 1이 된다(drift-design 9절 한계)."""
+    s = rt.new_session("static", "DRIFT14")
+    _drive(s, STATIC)
+    s.act("confirm")
+    d = s.log.data["drift"]
+    groups = d["assessment"]["primary"]["groups"]
+    assert d["summary"]["comparable"] == [g["group"] for g in groups]
+    if len(groups) == 1 and groups[0]["verdict"] == "contradict":
+        assert d["summary"]["DI"] == 1.0
+
+
 def test_drift_checks_off_when_protocol_lacks_phrases(offline_cfg, tmp_path):
     rt = Runtime(offline_cfg.with_overrides(**{"session.log_dir": str(tmp_path), "drift.self_report": True,
                                                 "drift.recall_check": True}))
@@ -345,9 +358,43 @@ def test_drift_checks_off_when_protocol_lacks_phrases(offline_cfg, tmp_path):
 
 @pytest.fixture
 def rt_v11(offline_cfg, tmp_path):
+    # v1.1 문구는 status = draft라 allow_draft_phrases = true를 따로 줘야 켜진다(Codex CP2 #12)
     return Runtime(offline_cfg.with_overrides(**{
         "session.log_dir": str(tmp_path), "interview.protocol": "elicitation_protocol.v1.1.json",
+        "drift.self_report": True, "drift.recall_check": True, "drift.allow_draft_phrases": True}))
+
+
+def test_draft_phrases_off_by_default_with_warning(offline_cfg, tmp_path):
+    """CP2 #12: 문구가 draft이고 allow_draft_phrases = false면 recall_check·self_report를 켜도 끄고 경고한다."""
+    assert offline_cfg.drift.allow_draft_phrases is False                    # default.toml 기본값
+    rt = Runtime(offline_cfg.with_overrides(**{
+        "session.log_dir": str(tmp_path), "interview.protocol": "elicitation_protocol.v1.1.json",
         "drift.self_report": True, "drift.recall_check": True}))
+    assert rt.protocol.phrase_meta("recall_check")["status"] == "draft"
+    assert not rt.drift_recall and not rt.drift_self_report
+    for flag in ("recall_check", "self_report"):
+        assert any(f"[drift] {flag}" in w and "draft" in w and "allow_draft_phrases" in w for w in rt.warnings), flag
+    assert rt.info()["drift"]["recallCheck"] is False and rt.info()["drift"]["allowDraftPhrases"] is False
+    s = rt.new_session("static", "DRAFT01")                                  # 회상 확인·자기보고 없이 끝난다
+    _drive(s, STATIC)
+    assert s.awaiting == "confirm"
+    assert not any(m.get("source") in ("fixed:recall_check", "fixed:self_report_drift") for m in s.messages)
+    s.act("confirm")
+    assert s.state == "done" and s.log.data["drift"]["selfReport"] is None
+
+
+def test_draft_phrases_on_when_allowed(rt_v11):
+    """CP2 #12: allow_draft_phrases = true면 지금처럼 켜지고 draft 경고가 없다."""
+    assert rt_v11.drift_recall and rt_v11.drift_self_report
+    assert not any("status = draft" in w for w in rt_v11.warnings)
+    assert rt_v11.info()["drift"]["allowDraftPhrases"] is True
+
+
+def test_draft_gate_keys_in_both_configs():
+    from ifs_chatbot.config import load_config
+    for name in ("default", "pilot"):
+        cfg = load_config(name)
+        assert cfg.drift.allow_draft_phrases is False, name
 
 
 def test_recall_check_and_self_report_flow(rt_v11):

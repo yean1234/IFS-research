@@ -143,7 +143,7 @@
             "confirmationEdited": { "type": "boolean" }
           }
         },
-        "summary": { "type": ["object", "null"], "description": "연구자 화면용 요약 {decision, DI, identityContradiction, contradicted, comparable, acknowledged, maxAdjacentDI, first, confirmationEdited, multipleObjects}" },
+        "summary": { "type": ["object", "null"], "description": "연구자 화면용 요약 {decision, DI, identityContradiction, contradicted, comparable, acknowledged, maxAdjacentDI, first, confirmationEdited, multipleObjects}. comparable = 1차 쌍에서 비교 가능했던 속성 묶음 이름 목록(assessment.primary.groups[].group과 같음, 길이 = 비교 가능 묶음 수). 길이 1이면 그 묶음 하나의 모순으로 DI = 1이 된다(docs/drift-design.md 9절)" },
         "error": { "type": "string" },
         "recallCheck": { "type": ["object", "null"], "description": "회상 확인(recall_check) {asked, x(참여자가 이름 붙인 자리의 원문), answer: same|little|much|null, skipped(true|false|\"stop\" = 대기 중 중단)}" },
         "selfReport": { "type": ["object", "null"], "description": "확정 직후 자기보고(self_report_drift) {asked, questionTurn, value 1–7|null, skipped(true|false|\"stop\"), selfReportDrift(≤3), driftCutoff, protocolVersion}" }

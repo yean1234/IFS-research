@@ -104,10 +104,19 @@ class Runtime:
         self.mapping_load_error: str | None = None
         if cfg.mapping.mode not in ("v0", "v1"):
             raise ValueError(f"모르는 mapping.mode: {cfg.mapping.mode} (v0 | v1)")
+        # [mapping] strict: 시작 시점(여기) 실패만 다룬다. strict이고 v1을 요청했으면 v0로 넘어가지 않고 시작을 멈춘다
+        # (참여자 결과가 요청한 매핑과 달라지는 것을 막음, Codex CP2 #3). 세션 도중 확정 시점에 v1 build가 예외를
+        # 내는 경우는 strict여도 Session._build_scene이 v0로 대체하고 meta.mapping·연구자 알림을 남긴다
+        # (이미 진행 중인 참여자 세션을 끊지 않기 위함).
         try:
             self.scene_builders["v1"] = SceneSpecBuilderV1(self.analyzer)
-        except Exception as exc:  # noqa: BLE001 — 개선 매핑을 못 불러도 v0로 면담은 이어 간다
+        except Exception as exc:  # noqa: BLE001 — strict가 아니면 개선 매핑을 못 불러도 v0로 면담은 이어 간다
             self.mapping_load_error = f"{type(exc).__name__}: {exc}"
+            if cfg.mapping.strict and cfg.mapping.mode == "v1":
+                raise RuntimeError(
+                    f"개선 매핑(v1)을 불러오지 못했습니다: {self.mapping_load_error}. "
+                    "[mapping] strict = true라 v0로 대체하지 않고 시작을 멈춥니다. "
+                    "원인을 고치거나, 개발·시연에서만 strict = false로 두세요.") from exc
             self.warnings.append(f"개선 매핑(v1)을 불러오지 못해 v0로 대체합니다: {self.mapping_load_error}")
         self.scene_builder = self.scene_builders.get(cfg.mapping.mode) or self.scene_builders["v0"]
         self.clarify_validator = Validator(
@@ -124,13 +133,20 @@ class Runtime:
                 self.drift = DriftAssessor.from_runtime(self)
             except Exception as exc:  # noqa: BLE001 — 판정기를 못 만들어도 면담은 이어 간다
                 self.warnings.append(f"표류 판정기를 만들지 못했습니다: {type(exc).__name__}: {exc}")
+        # status = "draft"인 문구는 [drift] allow_draft_phrases = true일 때만 쓴다(원칙 7, Codex CP2 #12).
         for flag, phrase in (("recall_check", "recall_check"), ("self_report", "self_report_drift")):
-            if getattr(cfg.drift, flag):
-                if phrase in self.protocol.phrases:
-                    setattr(self, "drift_recall" if flag == "recall_check" else "drift_self_report", True)
-                else:
-                    self.warnings.append(f"[drift] {flag}를 켰지만 프로토콜 {self.protocol.version}에 '{phrase}' 문구가 없어 "
-                                         "끕니다(elicitation_protocol.v1.1.json 이상 필요).")
+            if not getattr(cfg.drift, flag):
+                continue
+            if phrase not in self.protocol.phrases:
+                self.warnings.append(f"[drift] {flag}를 켰지만 프로토콜 {self.protocol.version}에 '{phrase}' 문구가 없어 "
+                                     "끕니다(elicitation_protocol.v1.1.json 이상 필요).")
+                continue
+            if self.protocol.phrase_meta(phrase)["status"] == "draft" and not cfg.drift.allow_draft_phrases:
+                self.warnings.append(f"[drift] {flag}를 켰지만 프로토콜 {self.protocol.version}의 '{phrase}' 문구가 "
+                                     "status = draft(IRB·팀 검토 전)라 끕니다. 개발·시연에서만 쓰려면 "
+                                     "[drift] allow_draft_phrases = true.")
+                continue
+            setattr(self, "drift_recall" if flag == "recall_check" else "drift_self_report", True)
         self.persist_logs = persist_logs
         self.sessions: dict[str, "Session"] = {}
         self._lock = threading.Lock()
@@ -166,11 +182,12 @@ class Runtime:
             "protocol": self.protocol.info(),
             "prompts": self.prompts.info(),
             "mapping": {"mode": self.cfg.mapping.mode, "saveBoth": self.cfg.mapping.save_both,
-                        "clarifyLoop": self.cfg.mapping.clarify_loop,
+                        "clarifyLoop": self.cfg.mapping.clarify_loop, "strict": self.cfg.mapping.strict,
                         "builders": {k: b.info() for k, b in self.scene_builders.items() if hasattr(b, "info")},
                         "loadError": self.mapping_load_error},
             "drift": {"enabled": self.drift is not None, "recallCheck": self.drift_recall,
-                      "selfReport": self.drift_self_report, **(self.drift.info() if self.drift else {})},
+                      "selfReport": self.drift_self_report, "allowDraftPhrases": self.cfg.drift.allow_draft_phrases,
+                      **(self.drift.info() if self.drift else {})},
             "warnings": self.warnings,
         }
 
@@ -774,7 +791,9 @@ class Session:
         return self.cfg.scenes_dir / f"{self.id}.{mapper}.json"
 
     def _build_scene(self, text: str) -> tuple[dict, dict]:
-        """주 매핑으로 만든다. v1(또는 끼운 매핑)이 예외를 내면 v0 결과에 대체 사실을 남겨 쓴다(AC-3.7)."""
+        """주 매핑으로 만든다. v1(또는 끼운 매핑)이 예외를 내면 v0 결과에 대체 사실을 남겨 쓴다(AC-3.7).
+        [mapping] strict와 상관없이 그렇다: strict는 시작 시점(Runtime)의 v1 생성 실패만 멈추고, 여기(세션 도중
+        확정 시점)의 예외는 참여자 세션을 끊지 않도록 v0 대체 + meta.mapping + 연구자 알림으로 남긴다."""
         rt, kw = self.rt, {"session_id": self.id, "participant_id": self.participant_id, "condition": self.condition}
         v0 = rt.scene_builders["v0"]
         primary = rt.scene_builder

@@ -120,7 +120,7 @@ AC-2·AC-3은 공학적 회귀 기준으로 한정해 해석하고, 독립 held-
 | 1 | 어절 원문 보존률 100%는 의미 보존을 보장하지 않음 | 수용(해석·문서) | 같은 판단을 decisions X8에 이미 적음. acceptance.md AC-3.5에 "정보가 남았는지 보는 보조 지표이고 매핑 품질 판정은 3.2–3.4·3.11·3.12로 한다"를 명시. 사람이 속성별 의미 상태를 라벨링하는 평가는 morning-todo |
 | 2 | 근거 없는 값 지표가 넓은 정답 구간과 겹치면 근거로 인정함. null 정답이 미언급과 모호를 구분하지 않음 | 일부 수용 | 지표의 한계를 acceptance.md와 보고서에 적음. 정답을 최소 의미 단위로 다시 라벨링하고 null을 나누는 일은 보류: held-out 정답은 고정(D04)이고 사람이 검토해야 함 → morning-todo |
 | 3 | v1 로딩 실패 시 v0로 대체하고 면담을 계속함 | 수용 | `[mapping] strict` 설정 추가: 켜면 v1을 요청했는데 만들지 못할 때 시작 오류로 멈춤. pilot 설정에서는 켬. 3단계 보고서에 항목별 실제 builder와 폴백 건수를 적음(채점기 0.3.0에 이미 있음) |
-| 4 | drift 정확도 1.000은 독립 타당도 증거가 아님. 비교 가능한 묶음이 하나면 DI가 1이 됨 | 수용(해석·문서) | 이미 "잠정 통과"·탐색(RQ4)으로 적음. 비교 가능 묶음이 하나뿐인 판정을 세션 로그·요약에 `comparableGroups` 수로 드러내고 한계에 적음. 새 독립 라벨은 morning-todo |
+| 4 | drift 정확도 1.000은 독립 타당도 증거가 아님. 비교 가능한 묶음이 하나면 DI가 1이 됨 | 수용(해석·문서) | 이미 "잠정 통과"·탐색(RQ4)으로 적음. 비교 가능 묶음은 이미 `drift.summary.comparable`(이름 목록)과 `assessment.primary.groups`에 남으므로 새 키는 만들지 않고, 스키마 설명과 drift-design 6·9절에 "길이 1이면 그 하나의 모순으로 DI=1"을 적음(라벨 18개 중 3개가 해당). 새 독립 라벨은 morning-todo |
 | 5 | AC-2·AC-3은 구현 준비도 기준인데 연구 결과 주장과 혼동되기 쉬움 | 수용 | acceptance.md 머리에 "AC는 공학적 회귀 기준이며 타당도 주장이 아니다"를 명시 |
 | 6 | 여러 대상의 속성이 하나의 장면 객체로 합쳐짐 | 일부 수용 | 연구 범위를 단일 대상 심상으로 제한한다고 research-design·mapping-v1에 명시(지금 스키마는 형상 하나). 대상 ID·결속을 스키마에 넣는 일은 보류(일정, Unity 변경 필요) → morning-todo |
 | 7 | 컨트롤러 탈락률에 상한이 없고 보존률 분모에서 빠짐 | 보류 | 탈락 건수·비율은 따로 보고하고 있음(F3). 원인인 프로브 건너뛰기 규칙은 `shared/protocol` 변경이라 팀 결정(morning-todo에 이미 있음). 상한 수치를 지금 정할 근거가 없음 |
@@ -131,3 +131,16 @@ AC-2·AC-3은 공학적 회귀 기준으로 한정해 해석하고, 독립 held-
 | 12 | draft 문구를 켤 때 승인 상태를 코드가 확인하지 않음 | 수용 | 프로토콜에서 status가 draft인 문구는 `[drift] allow_draft_phrases = true`를 따로 적어야만 켜지게 함(기본 false, 켜지 않으면 경고와 함께 꺼짐) |
 
 수용 6(1·3·4·5·11·12) · 일부 수용 2(2·6) · 반박 1(8) · 일부 반박·일부 보류 1(10) · 보류 2(7·9). 코드 변경은 3·4·12, 나머지는 문서입니다.
+
+## 반영 결과 (2026-11-16)
+
+| # | 바뀐 파일 | 무엇을 바꿨나 |
+| --- | --- | --- |
+| 3 | `chatbot/config/default.toml`·`pilot.toml`, `config.py`, `controller.py`, `test_scene_builder_v1.py`, `docs/scene-spec-mapping.md` 6.6 | `[mapping] strict`(기본 false, pilot true). 켜면 mode가 v1인데 v1 빌더를 만들지 못할 때 v0로 넘어가지 않고 시작을 멈춤. 세션 도중의 v1 build 오류는 strict여도 v0 대체 + `meta.mapping` + 연구자 알림(참여자 세션을 끊지 않음) → 분석에서 폴백 세션을 따로 걸러야 함 |
+| 4 | `shared/schemas/session_log.schema.json`(설명), `docs/drift-design.md` 6·9절, `test_drift.py` | 위 표 참고. 판정 출력은 그대로라 라벨 평가 sha256도 그대로(`345c4071…dc1d`) |
+| 12 | `config.py`, `controller.py`, 두 toml, `test_drift.py`, `docs/drift-design.md` 5절, `docs/chatbot-design.md` 5-2, `docs/research-design.md` 4.5 | `[drift] allow_draft_phrases`(기본 false). status가 draft인 문구는 이 값을 true로 적어야만 켜짐. 아니면 경고와 함께 꺼짐 |
+| 1·2·5 | `docs/acceptance.md` | 머리에 "AC는 공학적 회귀 기준, 타당도 주장 아님". AC-3.5는 보조 지표, AC-3.12 지표의 한계. 기준 수치는 그대로 |
+| 6 | `docs/research-design.md` 2.1·8절, `docs/mapping-v1.md` 4.4 | 연구 범위를 단일 대상 심상으로 제한 |
+| 11 | `docs/morning-report.md`(작성 시) | 남은 리스크에 제한사항으로 적음 |
+
+메인 세션이 다시 잰 값: 오프라인 테스트 363 통과, drift 라벨 정확도 1.000, held-out sha 그대로.

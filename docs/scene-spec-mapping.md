@@ -198,8 +198,10 @@ v0(`scene_builder.py`)는 비교 기준선이라 그대로 두고, 개선 매핑
 | `save_both` | `true` | 같은 확정 텍스트로 `scenes/{sessionId}.v0.json`(순수 v0, specVersion 2.0.0)과 `.v1.json`도 만든다 — 비교 설계(`docs/research-design.md` 3.1). 철회하면 셋 다 지운다 |
 | `clarify_loop` | `false` | 확인 질문 루프(`docs/chatbot-design.md` 5-1). 확증 비교에서는 끈다 |
 | `clarify_max` | `2` | 확인 질문 최대 횟수 |
+| `strict` | `false` (pilot `true`) | `true`이고 `mode = "v1"`인데 **시작 시점**에 v1 빌더를 만들지 못하면 v0로 넘어가지 않고 서버 시작(`Runtime` 생성)을 예외로 멈춘다. 요청한 매핑과 다른 매핑으로 참여자 세션을 돌리지 않기 위함(Codex CP2 #3). `mode = "v0"`이면 v1 생성 실패는 경고뿐. `false`면 아래 대체 경로 그대로 |
 
 - **대체 경로.** v1이 예외를 내거나 불러오지 못하면 v0 결과를 씁니다. 파일의 `meta.mapping = {requested: "v1", used: "v0", fallbackReason}`(specVersion 2.1.0), 세션 로그 `sceneSpec.fallback = true`·`sceneSpec.mapping`, 연구자 알림 `scene_mapping_fallback`이 남습니다. 면담 종료는 막지 않습니다.
+- **`strict`가 다루는 것과 다루지 않는 것.** `strict`는 시작 시점의 v1 **생성** 실패만 멈춥니다. 세션 도중 확정 시점에 v1 `build`가 예외를 내면 `strict = true`여도 위 대체 경로(v0 결과 + `meta.mapping` + 연구자 알림)로 갑니다. 이미 진행 중인 참여자 세션을 도중에 끊지 않기 위해서입니다. 그런 세션은 `sceneSpec.fallback = true`로 찾아 분석에서 따로 다룹니다.
 - **코퍼스 재생.** `corpus_run`·`fidelity`의 매핑은 `--mapper`로만 고릅니다(설정의 `mode`와 무관). `--mapper v1`은 `ifs_chatbot.scene_builder_v1:factory`와 같습니다. 요청한 매핑이 예외로 v0에 대체된 항목은 `corpus_run` 결과의 `mappingFallback`과 채점 요약 `summary.mappingFallback`(건수·id)에 남고, 1건이라도 있으면 `report.md`·`paired.md` 머리와 콘솔에 경고가 나옵니다(그 항목은 v0 출력으로 채점된 것).
 
 ```powershell

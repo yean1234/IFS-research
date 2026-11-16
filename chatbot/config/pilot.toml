@@ -45,8 +45,11 @@ mode = "v1"                   # 확정 텍스트 → SceneSpec 매핑: v1(개선
 save_both = true              # scenes/{sessionId}.v0.json · .v1.json도 저장(같은 텍스트를 두 매핑으로 — 비교 설계)
 clarify_loop = false          # 확정 직후 what_kind 틀 확인 질문(최대 clarify_max회). 확증 비교에서는 끈다
 clarify_max = 2
+strict = true                 # v1을 요청했는데 시작 때 v1을 못 만들면 v0로 넘어가지 않고 시작을 멈춤(요청과 다른 매핑으로 세션을 돌리지 않음).
+                              #   세션 도중 확정 시점의 v1 오류는 v0 대체 + meta.mapping + 연구자 알림(참여자 세션을 끊지 않음)
 
 [drift]
 enabled = true                # 확정 직후 단계별 스냅샷으로 심상 유지(표류) 판정 → 세션 로그 drift(참여자에게 안 보임)
 recall_check = false          # Flesh out 뒤 회상 확인 문구. 확증 비교에서는 끈다. 켜려면 interview.protocol = v1.1
 self_report = false           # 확정 직후 자기보고 1–7. 문구가 draft(IRB 검토 전). 켜려면 interview.protocol = v1.1
+allow_draft_phrases = false   # 위 두 문구가 status = draft면 켜지 않고 경고. IRB·팀 검토를 거쳐 문구가 draft가 아닐 때만 켠다

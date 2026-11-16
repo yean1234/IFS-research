@@ -159,6 +159,7 @@ v1의 '연한/짙은' 수식은 l을 약 ±0.2 옮깁니다(연한 파랑 0.70, 
 - 답은 버튼으로만 받습니다. 확정 텍스트와 장면에 들어가지 않습니다.
 - 기본값을 끈 이유: 회상 확인은 확정 전에 참여자가 첫 심상을 다시 보게 합니다. 그러면 확정 텍스트가 바뀔 수 있고, 조건 간 비교를 교란합니다(research-design 3.2의 확인 질문 루프와 같은 논리). 자기보고는 확정 뒤라 매핑 비교를 건드리지 않지만, 문구가 draft라 IRB 검토 전에는 끕니다.
 - 켜려면 `interview.protocol = "elicitation_protocol.v1.1.json"`도 함께 바꿔야 합니다. 문구가 없는 프로토콜에서 켜면 런타임 경고를 남기고 끕니다.
+- **draft 문구 게이트(`[drift] allow_draft_phrases`, 기본 false, default·pilot 모두 false).** 프로토콜에서 해당 문구의 `status`가 `draft`이면 `recall_check`·`self_report`를 켜도 `allow_draft_phrases = true`를 따로 적지 않는 한 그 기능을 끄고 런타임 경고(`Runtime.warnings`)를 남깁니다. 지금 두 문구는 모두 draft라 기본 설정에서는 켜지지 않습니다. `true`는 IRB·팀 검토 전 개발·시연용입니다. 검토를 거쳐 문구의 `status`가 draft가 아니게 되면(원칙 7: 출처·프로토콜 버전과 함께) 이 키 없이 켜집니다(Codex CP2 #12).
 - 자기보고 이분 기준: `value ≤ 3` → `selfReportDrift = true`(research-design 4.5, 사전 등록 항목). 기준값은 `PARAMS.selfReportDriftMax`.
 
 ## 6. 세션 로그
@@ -177,7 +178,7 @@ v1의 '연한/짙은' 수식은 l을 약 ±0.2 옮깁니다(연한 파랑 0.70, 
 | `assessment.acknowledged` | 표지(`markers`)와 부정 때문에 세지 않은 표지(`negatedMarkers`) |
 | `assessment.multipleObjects` | 한 턴에 서로 다른 형상 명사가 둘 이상인 턴들(`flag`, `turns[{i, stage, heads}]`) |
 | `assessment.params` | 판정 수치 사본 |
-| `summary` | 연구자 화면용 요약(판정·DI·모순 묶음·acknowledged·`confirmationEdited`·`multipleObjects`) |
+| `summary` | 연구자 화면용 요약(판정·DI·모순 묶음 `contradicted`·비교 가능 묶음 `comparable`·acknowledged·`confirmationEdited`·`multipleObjects`). `comparable`은 1차 쌍에서 비교 가능했던 묶음의 이름 목록(`assessment.primary.groups[].group`과 같음)이고, 그 길이가 비교 가능 묶음 수입니다. 길이가 1이면 9절 한계 '비교 가능 묶음이 하나뿐인 판정'에 해당합니다 |
 | `recallCheck`, `selfReport` | 회상 확인·자기보고 기록. 대기 중에 [그만]을 누르면 물은 기록(`asked`·`x`·`questionTurn`·`protocolVersion` 등)은 남기고 `skipped: "stop"`을 더합니다 |
 
 세션 로그의 `endedBy`는 `completed`·`participant_stop`·`crisis`·`abandoned`·`withdrawn`입니다. `withdrawn`은 철회 때 컨트롤러가 쓰는 값인데 스키마 enum에 빠져 있어 더했습니다(검토 T2 실행자 기록).
@@ -287,6 +288,7 @@ AC-2 정확도 1.000은 이 사전 낱말에 기댑니다. 그래서 AC-2는 **�
 | 무채색 변화가 비대칭입니다 | v1 회색이 l = 0.45라 검정 → 회색(Δl 0.37)은 같고 흰색 → 회색(Δl 0.5)은 모순입니다(검토 T2-F11, 보류) | 새 독립 라벨에 경계 사례를 넣은 뒤 기준을 정합니다 |
 | 주어 자리로만 말한 정체 변화를 놓칠 수 있습니다 | 앞 턴에 이름 자리 명사가 있으면, 뒤 턴의 '새가 앉아 있어요'(주어 자리)는 정체를 덮지 않습니다 | 이름 자리 우선은 부분 주어 오탐을 막기 위한 선택입니다. 자기보고와의 불일치로 빈도를 봅니다 |
 | 스냅샷은 그 단계 텍스트만 봅니다 | '그것', '아까 그거'처럼 앞 턴을 가리키는 말은 값이 없습니다. 한 턴 안에서는 매핑 규칙이 먼저 말한 값을 고르므로 한 답 안의 자기 정정은 v1 정정 규칙에 기댑니다 | 턴 단위로 쪼개 "마지막으로 말한 값"을 쓰는 것이 이 한계를 줄입니다 |
+| **비교 가능 묶음이 하나뿐이면 그 하나의 모순으로 DI = 1이 됩니다** | DI는 비교 가능 묶음 가중 합이 분모라, 두 스냅샷에 함께 나온 묶음이 하나면 그 묶음의 모순 하나로 DI = 1(drift)이고, 같으면 DI = 0입니다. 판정이 한 묶음의 비교 하나에 달려 있어 매핑 오류 하나·동의어 하나로 결과가 뒤집힙니다. 라벨 18개 중 비교 가능 묶음이 하나뿐인 사례는 3개입니다(DR01·DR04: 색만, 같음 → no_drift / DR14: 정체만, 모순 → DI 1.0, drift. DR14는 정체 모순이라 DI와 상관없이 drift) | 세션 로그 `summary.comparable`(묶음 이름 목록, 6절)과 `assessment.primary.groups`로 묶음 수를 드러냅니다. 판정 규칙·수치는 바꾸지 않았습니다(Codex CP2 #4). 묶음이 하나뿐인 판정은 분석에서 따로 셉니다 |
 | 말하지 않은 변화는 잡지 못합니다 | 다시 말하지 않은 속성은 생략으로 보고 비교하지 않습니다. dev에서 21/30이 판정 불가였습니다 | 자기보고가 이것을 보완합니다 |
 | 확정 텍스트를 고친 경우 | 고친 텍스트는 단계로 나눌 수 없어 판정에 쓰지 않고 `confirmationEdited`만 남깁니다. 연구자 요약에도 보입니다 | 분석에서 따로 셉니다 |
 | 다듬기와 바뀜의 경계 | '회색, 아니 푸르스름한 회색'은 텍스트만으로 갈리지 않습니다(research-design 4.5) | 자기보고로 가릅니다 |

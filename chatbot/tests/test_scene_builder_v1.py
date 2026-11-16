@@ -665,6 +665,76 @@ def test_v1_exception_falls_back_to_v0(rt_v1, monkeypatch):
     assert v0["meta"]["specVersion"] == "2.0.0"                      # 비교 파일은 순수 v0
 
 
+# ── [mapping] strict (Codex CP2 #3) ──────────────────────────────────────────
+def _break_v1_constructor(monkeypatch):
+    import ifs_chatbot.controller as C
+
+    def broken(*a, **k):
+        raise RuntimeError("일부러 낸 생성 오류")
+    monkeypatch.setattr(C, "SceneSpecBuilderV1", broken)
+
+
+def test_strict_config_keys():
+    from ifs_chatbot.config import MappingConfig, load_config
+    assert MappingConfig().strict is False
+    assert load_config("default").mapping.strict is False
+    assert load_config("pilot").mapping.strict is True and load_config("pilot").mapping.mode == "v1"
+
+
+def test_v1_load_failure_not_strict_falls_back_to_v0(offline_cfg, tmp_path, monkeypatch):
+    """strict = false(기본): 지금 동작 그대로 — 경고 뒤 v0로 면담을 잇고 장면에 대체 사실을 남긴다."""
+    _break_v1_constructor(monkeypatch)
+    rt = Runtime(offline_cfg.with_overrides(**{"session.log_dir": str(tmp_path / "logs"), "mapping.mode": "v1",
+                                               "mapping.strict": False}))
+    assert "v1" not in rt.scene_builders and rt.scene_builder is rt.scene_builders["v0"]
+    assert "일부러 낸 생성 오류" in rt.mapping_load_error
+    assert any("v0로 대체" in w for w in rt.warnings)
+    s = rt.new_session("static", "ST01")
+    _drive_static(s, ["가슴에 회색 덩어리가 있어요", "몸 안이요", "그대로예요", "무거워요"])
+    assert s.state == "done"
+    main = json.loads(s.scene_path.read_text(encoding="utf-8"))
+    assert main["meta"]["mapping"]["requested"] == "v1" and main["meta"]["mapping"]["used"] == "v0"
+    assert "일부러 낸 생성 오류" in main["meta"]["mapping"]["fallbackReason"]
+    assert s.log.data["sceneSpec"]["fallback"] is True
+
+
+def test_v1_load_failure_strict_stops_startup(offline_cfg, tmp_path, monkeypatch):
+    """strict = true이고 mode = v1인데 v1을 못 만들면 v0로 넘어가지 않고 Runtime 생성에서 멈춘다."""
+    _break_v1_constructor(monkeypatch)
+    with pytest.raises(RuntimeError) as ei:
+        Runtime(offline_cfg.with_overrides(**{"session.log_dir": str(tmp_path / "logs"), "mapping.mode": "v1",
+                                              "mapping.strict": True}))
+    msg = str(ei.value)
+    assert "strict" in msg and "일부러 낸 생성 오류" in msg and "v1" in msg
+    assert isinstance(ei.value.__cause__, RuntimeError)
+
+
+def test_v1_load_failure_strict_but_v0_mode_starts(offline_cfg, tmp_path, monkeypatch):
+    """strict는 v1을 요청했을 때만 멈춘다. mode = v0면 v1 생성 실패는 경고뿐(주 매핑이 v0라 요청과 같음)."""
+    _break_v1_constructor(monkeypatch)
+    rt = Runtime(offline_cfg.with_overrides(**{"session.log_dir": str(tmp_path / "logs"), "mapping.mode": "v0",
+                                               "mapping.strict": True}))
+    assert rt.scene_builder is rt.scene_builders["v0"] and rt.mapping_load_error
+
+
+def test_v1_build_error_mid_session_falls_back_even_when_strict(offline_cfg, tmp_path, monkeypatch, analyzer):
+    """strict여도 세션 도중 확정 시점의 v1 build 예외는 세션을 깨뜨리지 않고 v0 대체 + meta.mapping + 연구자 알림."""
+    rt = Runtime(offline_cfg.with_overrides(**{"session.log_dir": str(tmp_path / "logs"), "mapping.mode": "v1",
+                                               "mapping.strict": True}))
+    assert isinstance(rt.scene_builder, SceneSpecBuilderV1) and rt.info()["mapping"]["strict"] is True
+
+    def broken(*a, **k):
+        raise RuntimeError("일부러 낸 오류")
+    monkeypatch.setattr(rt.scene_builders["v1"], "build", broken)
+    s = rt.new_session("static", "ST02")
+    _drive_static(s, ["가슴에 회색 덩어리가 있어요", "몸 안이요", "그대로예요", "무거워요"])
+    assert s.state == "done" and s.log.data["endedBy"] == "completed"
+    main = json.loads(s.scene_path.read_text(encoding="utf-8"))
+    assert main["meta"]["mapping"]["used"] == "v0" and "일부러 낸 오류" in main["meta"]["mapping"]["fallbackReason"]
+    assert s.log.data["sceneSpec"]["fallback"] is True
+    assert any(a["kind"] == "scene_mapping_fallback" for a in s.log.data["alerts"])
+
+
 def test_fallback_spec_is_valid_v21(analyzer):
     b = SceneSpecBuilder(Lexicon(shared("lexicon", "layer1_lexicon.v0.json"), analyzer), analyzer)
     text = "웅크려진 작은 나"

@@ -92,6 +92,8 @@
 
 `[drift] recall_check`를 켜면 Flesh out 뒤 확정 요약 전에 고정 문구 "'{X}' — 지금 떠오르는 것도 그 '{X}'인가요?"를 한 번 냅니다(`docs/drift-design.md` 5절, 문구는 `elicitation_protocol.v1.1.json`의 draft).
 
+문구가 draft이므로 `[drift] allow_draft_phrases = true`(기본 false, default·pilot 모두 false)를 함께 적어야 켜집니다. 적지 않으면 `recall_check`·`self_report`를 켜도 끄고 런타임 경고를 남깁니다(원칙 7, Codex CP2 #12). `true`는 IRB·팀 검토 전 개발·시연용입니다.
+
 | 항목 | 내용 |
 | --- | --- |
 | X | 첫 단계에서 참여자가 **그것에 이름을 붙인 자리**('X 같은 게'·'X예요')에 쓴 형상 명사 원문, 가장 먼저 말한 것. 3어절 이하 |
