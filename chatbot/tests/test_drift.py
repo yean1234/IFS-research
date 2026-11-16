@@ -269,10 +269,61 @@ def test_protocol_v11_phrases_are_draft_and_keep_v1(rt_v11):
     p11 = json.loads(shared("protocol", "elicitation_protocol.v1.1.json").read_text(encoding="utf-8"))
     p10 = json.loads(shared("protocol", "elicitation_protocol.v1.json").read_text(encoding="utf-8"))
     assert p10["protocolVersion"] == "1.0.0" and p11["protocolVersion"] == "1.1.0"
+    assert p11["changes"][-1]["version"] == p11["protocolVersion"] and p11["changes"][-1]["status"] == "draft"
     for k in ("recall_check", "self_report_drift"):
         assert p11["fixedPhrases"][k]["status"] == "draft" and "drift-design.md" in p11["fixedPhrases"][k]["source"]
     assert {k: v for k, v in p11["fixedPhrases"].items() if k in p10["fixedPhrases"]} == p10["fixedPhrases"]
-    assert p11["conditions"] == p10["conditions"]
-    banned = ("왜", "기억", "치료", "내담자", "진단", "상담")
+    # v1.1은 문구 2개와 driftChecks 절만 더한다: 그 밖의 절은 v1.0과 같다
+    assert {k: v for k, v in p11.items() if k not in ("protocolVersion", "changes", "driftChecks", "fixedPhrases")} \
+        == {k: v for k, v in p10.items() if k not in ("protocolVersion", "fixedPhrases")}
+    banned = ("왜", "기억", "과거", "이유", "예전", "옛날", "어릴", "치료", "내담자", "진단", "상담", "증상")
     for k in ("recall_check", "self_report_drift"):
-        assert not any(w in p11["fixedPhrases"][k]["text"] for w in banned)
+        ph = p11["fixedPhrases"][k]
+        texts = [ph["text"]] + [o["label"] for o in ph.get("options") or []] + list((ph.get("scale") or {}).get("anchors", {}).values())
+        assert not any(w in t for w in banned for t in texts), k
+    assert not any(w in p11["fixedPhrases"]["recall_check"]["text"] for w in ("처음", "아까", "원래"))  # 지금 떠오르는 것만 묻는다
+
+
+def test_drift_log_with_recall_and_self_report_matches_schema(rt_v11):
+    from jsonschema import Draft202012Validator
+    schema = json.loads(shared("schemas", "session_log.schema.json").read_text(encoding="utf-8"))
+    s = rt_v11.new_session("static", "DRIFT05")
+    _drive(s, STATIC)
+    s.act("recall:little")
+    s.act("confirm")
+    s.act("self_report:5")
+    d = s.log.data["drift"]
+    assert d["recallCheck"]["asked"] and d["selfReport"]["value"] == 5 and d["assessment"]["decision"] == "drift"
+    errors = list(Draft202012Validator(schema).iter_errors(json.loads(json.dumps(s.log.data, ensure_ascii=False))))
+    assert not errors, [e.message for e in errors[:3]]
+
+
+# ── 문서 세 곳의 수치가 PARAMS와 같은지 (drift.py · drift-design.md · research-design.md 4.5) ──────
+def _g(x) -> str:
+    return f"{x:g}"
+
+
+def test_docs_match_params():
+    P = D.PARAMS
+    root = Path(__file__).resolve().parents[2] / "docs"
+    design = (root / "drift-design.md").read_text(encoding="utf-8")
+    rd = (root / "research-design.md").read_text(encoding="utf-8")
+    sec = rd.split("### 4.5", 1)[1].split("\n### ", 1)[0]
+    lo, hi = P["chromaticL"]
+    w = P["groupWeights"]
+    for s in (f"τ_soft = {_g(P['tauNumSoft'])}", f"τ_hard = {_g(P['tauNumHard'])}", f"τ_hue = {_g(P['tauHueDeg'])}°",
+              f"τ_l = {_g(P['tauL'])}", f"τ_s = {_g(P['tauS'])}", f"s ≥ {_g(P['chromaticMinS'])}",
+              f"{_g(lo)} < l < {_g(hi)}", f"θ = {_g(P['theta'])}", f"value ≤ {P['selfReportDriftMax']}",
+              D.DRIFT_VERSION, D.PARAMS_VERSION, "·".join(P["translationalMotion"])):
+        assert s in design, s
+    for g, label in (("identity", "정체 identity"), ("color", "색 color"), ("size", "크기 size"),
+                     ("position", "위치 position"), ("shape", "자세 shape"), ("surface", "표면 surface")):
+        assert any(line.startswith(f"| {label} |") and f"| {_g(w[g])} |" in line for line in design.splitlines()), g
+    assert any(line.startswith("| 움직임 motion |") and f"| **{_g(w['motion'])}** |" in line for line in design.splitlines())
+    for s in (f"`|Δ| > {_g(P['tauNumHard'])}`", f"`|Δ| > {_g(P['tauNumSoft'])}`", f"`> {_g(P['tauHueDeg'])}°`",
+              f"`|Δl| > {_g(P['tauL'])}`", f"`|Δs| > {_g(P['tauS'])}`", f"`s ≥ {_g(P['chromaticMinS'])}`",
+              f"`{_g(lo)} < l < {_g(hi)}`", f"`DI ≥ {_g(P['theta'])}`", f"자기보고 ≤ {P['selfReportDriftMax']}",
+              f"정체·색·크기·위치 {_g(w['identity'])}, 자세·표면 {_g(w['shape'])}, 움직임 {_g(w['motion'])}",
+              D.DRIFT_VERSION, D.PARAMS_VERSION):
+        assert s in sec, s
+    assert w["identity"] == w["color"] == w["size"] == w["position"] and w["shape"] == w["surface"]

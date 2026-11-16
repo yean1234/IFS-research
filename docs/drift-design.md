@@ -173,6 +173,8 @@ cd chatbot
 .venv\Scripts\python.exe -m ifs_chatbot.drift --cases tests\fixtures\drift\drift_cases.json --out <결과.json>
 ```
 
+`test_docs_match_params`는 `drift.py`의 `PARAMS`와 이 문서 3절·2.4절, `docs/research-design.md` 4.5절 표의 수치가 같은지 봅니다. 수치를 바꾸면 세 곳을 함께 고쳐야 테스트가 통과합니다.
+
 `--cases`는 `eval/corpus_run.py`의 `make_runtime`·`drive_item`으로 실제 컨트롤러 정적 조건을 재생합니다(안전 검사, 이미 나온 차원의 프로브 건너뛰기, 확정까지 모두 실제 코드). 판정은 세션 로그 `drift.assessment`에서 읽습니다. 라벨이 없는 코퍼스도 돌릴 수 있습니다(판정 분포만 보고).
 
 ## 8. 검증 결과 (2026-11-16)

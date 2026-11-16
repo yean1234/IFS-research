@@ -114,12 +114,10 @@ codex exec --sandbox read-only -c model_reasoning_effort="medium" -C . -o /tmp/c
 
 ## 4. 지금 진행 중인 것 (계정 전환 뒤 세션 edd117bf 기준)
 
-- 이전 세션의 2단계 Workflow(`wf_15b49a46-a60`)는 재개할 수 없어서 남은 부분만 새 Workflow(run `wf_d0009ff1-aa7`, 이 세션 내부, 서브에이전트 opus)로 다시 실행 중: **T2 drift 마무리 점검(요구사항 6개 대조) → T2·T3 독립 검토자 2명(읽기 전용)**. 그다음 메인 세션이 지적을 수용/반박/보류로 나누고 수정 에이전트(opus)에 맡김.
-- 인수 시점 확인: T2 산출물(drift.py·test_drift.py·drift-design.md·protocol v1.1·컨트롤러 통합)은 WIP 커밋 61d713c에 있음. 오프라인 테스트 268 통과. held-out sha 그대로.
-- 이 Workflow도 끊겼다면:
-  1. `git status`·`git diff`로 T2 마무리 에이전트가 무엇을 고쳤는지 확인하고 오프라인 테스트를 돌림.
-  2. 검토자 2명(T2 drift, T3 매핑 v1)을 새 서브에이전트로 다시 실행. 검토자는 실행자와 다른 컨텍스트에서 코드와 실행 결과만 보게 하고, heldout.json은 열지 않게 함.
-  3. T2 요구사항 요지: 단계별(opening/location/focus/fleshout/probe) 속성 스냅샷을 v1 매퍼로 만들고, 첫 심상 대비 대체(drift)와 정교화(속성 추가)를 구별하는 수치 지표 DI와 임계값 τ/θ를 정의. drift_cases.json(라벨은 고치지 않음)으로 정확도 ≥ 0.90, 정교화만 있는 사례 오탐 0(AC-2). LLM 쓰지 않음. 회상 확인·자기보고 문구는 `shared/protocol` v1.1에 status=draft·출처와 함께 추가, config `[drift] recall_check=false` 기본.
+- 끝난 것: T2 drift 마무리 점검(빠진 것 없음, 테스트 2개 추가 → 오프라인 270 통과), T2·T3 독립 검토(opus 2명). 검토 지적의 수용/보류 분류는 `docs/decisions.md` 맨 끝 "2단계 독립 검토 분류" 절.
+- **진행 중: 수용 항목 수정 Workflow**(이 세션 내부, opus, 순차): ① 매핑 v1·채점기 수정(T3-F1·F2·F3·F4·F5·F6·F7·G1·G2·G3·F8·F9) → ② drift 수정(T2-F01·F02·F03·F04·F05·F06·F07·F08·F09·F10·F12·F13, 스키마 endedBy withdrawn).
+- 이 Workflow가 끊겼다면: `git diff`로 어디까지 고쳤는지 보고, decisions.md 분류표에서 아직 반영 안 된 수용 항목만 새 서브에이전트(opus)에 맡김. 매핑을 먼저 끝내고 drift를 그 뒤에(drift는 v1 매퍼 출력을 씀). 원칙: 사례 낱말 땜질 금지, 지표가 나빠지면 그대로 보고, heldout.json은 열지 않음, drift 라벨·dev 정답 수정 금지.
+- 수정이 끝나면 메인 세션이 테스트·dev 수치·라벨 정확도를 직접 다시 재고 5절 1번으로 감.
 
 ## 5. 다음에 할 일 (순서대로)
 
