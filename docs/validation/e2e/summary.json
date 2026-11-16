@@ -1,0 +1,462 @@
+{
+  "tool": "e2e/0.1.0",
+  "scorer": "fidelity/0.3.0",
+  "corpus": {
+    "corpusId": "imagery-heldout",
+    "version": "1.0.0",
+    "file": "chatbot/tests/fixtures/imagery_corpus/heldout.json",
+    "sha256": "f8d38ef5877c09bd899ee7cbadd491be5f2dfb8ffaf97169c1163ad716350d55",
+    "synthetic": true,
+    "checkErrors": 0,
+    "checkWarnings": 0
+  },
+  "items": 30,
+  "mappers": [
+    "v0",
+    "v1"
+  ],
+  "condition": "static",
+  "network": {
+    "guard": true,
+    "targets": [
+      "socket.connect",
+      "httpx.get",
+      "httpx.post",
+      "Client.send",
+      "urllib.request.urlopen",
+      "OllamaBackend.generate",
+      "OllamaBackend._post",
+      "OfflineTemplateBackend.generate"
+    ],
+    "calls": []
+  },
+  "builders": {
+    "v0": "scene-spec-builder/0.1.0",
+    "v1": "scene-spec-builder-v1/1.2.0"
+  },
+  "analyzer": {
+    "backend": "kiwi",
+    "version": "0.24.1"
+  },
+  "drift": {
+    "version": "drift/1.1.0",
+    "info": {
+      "driftVersion": "drift/1.1.0",
+      "params": "drift-params/1.1.0",
+      "snapshotBuilder": "v1",
+      "builder": "scene-spec-builder-v1/1.2.0"
+    },
+    "byMapper": {
+      "v0": {
+        "predictedDrift": 3,
+        "noDrift": 7,
+        "undecidable": 20,
+        "other": 0,
+        "errors": 0,
+        "undecidableReasons": {
+          "null": 13,
+          "no_later_snapshot": 7
+        }
+      },
+      "v1": {
+        "predictedDrift": 3,
+        "noDrift": 7,
+        "undecidable": 20,
+        "other": 0,
+        "errors": 0,
+        "undecidableReasons": {
+          "null": 13,
+          "no_later_snapshot": 7
+        }
+      }
+    }
+  },
+  "schema": {
+    "v0": {
+      "files": 30,
+      "valid": 30,
+      "schemaFiles": [
+        "scene-spec.v2.json"
+      ],
+      "principleProblems": 0,
+      "fileEqualsRunSpec": 30,
+      "fallbacks": 0,
+      "fallbackIds": []
+    },
+    "v1": {
+      "files": 30,
+      "valid": 30,
+      "schemaFiles": [
+        "scene-spec.v2.1.json"
+      ],
+      "principleProblems": 0,
+      "fileEqualsRunSpec": 30,
+      "fallbacks": 0,
+      "fallbackIds": []
+    }
+  },
+  "scores": {
+    "v0": {
+      "attributes": 237,
+      "slotAttributes": 212,
+      "slotStatus": {
+        "reflected": 106,
+        "distorted": 37,
+        "preserved": 12,
+        "lost": 34,
+        "dropped_by_controller": 23
+      },
+      "reflectRate": 0.5,
+      "distortRate": 0.1745,
+      "lostRate": 0.1604,
+      "droppedRate": 0.1085,
+      "preserveRate": 0.5316,
+      "unreflectedVerbatimRate": 0.283,
+      "unreflectedVerbatimRateWithClauseIndex": 0.283,
+      "unreflected": 106,
+      "lostClauseIndexOnly": 0,
+      "fuzzyValues": 0,
+      "spuriousRate": 0.2759,
+      "unsupportedRate": 0.4926,
+      "spuriousValues": 56,
+      "unsupportedValues": 100,
+      "unsupportedReasons": {
+        "no_evidence": 0,
+        "no_gold_span": 67,
+        "outside_gold_span": 33
+      },
+      "valuesFilled": 203,
+      "bootstrap": {
+        "reflectRate": {
+          "estimate": 0.5,
+          "lo": 0.4344,
+          "hi": 0.5619,
+          "replicates": 10000
+        },
+        "distortRate": {
+          "estimate": 0.1745,
+          "lo": 0.1233,
+          "hi": 0.2275,
+          "replicates": 10000
+        },
+        "lostRate": {
+          "estimate": 0.1604,
+          "lo": 0.1142,
+          "hi": 0.2115,
+          "replicates": 10000
+        },
+        "droppedRate": {
+          "estimate": 0.1085,
+          "lo": 0.0574,
+          "hi": 0.1659,
+          "replicates": 10000
+        },
+        "preserveRate": {
+          "estimate": 0.5316,
+          "lo": 0.4728,
+          "hi": 0.5872,
+          "replicates": 10000
+        },
+        "unreflectedVerbatimRate": {
+          "estimate": 0.283,
+          "lo": 0.2124,
+          "hi": 0.3558,
+          "replicates": 10000
+        },
+        "unreflectedVerbatimRateWithClauseIndex": {
+          "estimate": 0.283,
+          "lo": 0.2124,
+          "hi": 0.3558,
+          "replicates": 10000
+        },
+        "spuriousRate": {
+          "estimate": 0.2759,
+          "lo": 0.2437,
+          "hi": 0.311,
+          "replicates": 10000
+        },
+        "unsupportedRate": {
+          "estimate": 0.4926,
+          "lo": 0.4369,
+          "hi": 0.551,
+          "replicates": 10000
+        },
+        "fuzzyValueRate": {
+          "estimate": 0.0,
+          "lo": 0.0,
+          "hi": 0.0,
+          "replicates": 10000
+        }
+      },
+      "mappingFallback": 0
+    },
+    "v1": {
+      "attributes": 237,
+      "slotAttributes": 212,
+      "slotStatus": {
+        "reflected": 148,
+        "distorted": 20,
+        "preserved": 18,
+        "lost": 3,
+        "dropped_by_controller": 23
+      },
+      "reflectRate": 0.6981,
+      "distortRate": 0.0943,
+      "lostRate": 0.0142,
+      "droppedRate": 0.1085,
+      "preserveRate": 0.7975,
+      "unreflectedVerbatimRate": 0.8594,
+      "unreflectedVerbatimRateWithClauseIndex": 1.0,
+      "unreflected": 64,
+      "lostClauseIndexOnly": 3,
+      "fuzzyValues": 0,
+      "spuriousRate": 0.2197,
+      "unsupportedRate": 0.3632,
+      "spuriousValues": 49,
+      "unsupportedValues": 81,
+      "unsupportedReasons": {
+        "no_evidence": 0,
+        "no_gold_span": 60,
+        "outside_gold_span": 21
+      },
+      "valuesFilled": 223,
+      "bootstrap": {
+        "reflectRate": {
+          "estimate": 0.6981,
+          "lo": 0.6411,
+          "hi": 0.7535,
+          "replicates": 10000
+        },
+        "distortRate": {
+          "estimate": 0.0943,
+          "lo": 0.0571,
+          "hi": 0.1327,
+          "replicates": 10000
+        },
+        "lostRate": {
+          "estimate": 0.0142,
+          "lo": 0.0,
+          "hi": 0.03,
+          "replicates": 10000
+        },
+        "droppedRate": {
+          "estimate": 0.1085,
+          "lo": 0.0574,
+          "hi": 0.1659,
+          "replicates": 10000
+        },
+        "preserveRate": {
+          "estimate": 0.7975,
+          "lo": 0.7573,
+          "hi": 0.8368,
+          "replicates": 10000
+        },
+        "unreflectedVerbatimRate": {
+          "estimate": 0.8594,
+          "lo": 0.7656,
+          "hi": 0.9455,
+          "replicates": 10000
+        },
+        "unreflectedVerbatimRateWithClauseIndex": {
+          "estimate": 1.0,
+          "lo": 1.0,
+          "hi": 1.0,
+          "replicates": 10000
+        },
+        "spuriousRate": {
+          "estimate": 0.2197,
+          "lo": 0.1888,
+          "hi": 0.2489,
+          "replicates": 10000
+        },
+        "unsupportedRate": {
+          "estimate": 0.3632,
+          "lo": 0.317,
+          "hi": 0.4118,
+          "replicates": 10000
+        },
+        "fuzzyValueRate": {
+          "estimate": 0.0,
+          "lo": 0.0,
+          "hi": 0.0,
+          "replicates": 10000
+        }
+      },
+      "mappingFallback": 0
+    }
+  },
+  "paired": {
+    "reflectRate": {
+      "a": 0.5,
+      "b": 0.6981,
+      "diff": 0.1981,
+      "lo": 0.1368,
+      "hi": 0.2593
+    },
+    "distortRate": {
+      "a": 0.1745,
+      "b": 0.0943,
+      "diff": -0.0802,
+      "lo": -0.1232,
+      "hi": -0.0376
+    },
+    "lostRate": {
+      "a": 0.1604,
+      "b": 0.0142,
+      "diff": -0.1462,
+      "lo": -0.2009,
+      "hi": -0.0945
+    },
+    "droppedRate": {
+      "a": 0.1085,
+      "b": 0.1085,
+      "diff": 0.0,
+      "lo": 0.0,
+      "hi": 0.0
+    },
+    "preserveRate": {
+      "a": 0.5316,
+      "b": 0.7975,
+      "diff": 0.2658,
+      "lo": 0.2092,
+      "hi": 0.3248
+    },
+    "unreflectedVerbatimRate": {
+      "a": 0.283,
+      "b": 0.8594,
+      "diff": 0.5764,
+      "lo": 0.4659,
+      "hi": 0.6823
+    },
+    "unreflectedVerbatimRateWithClauseIndex": {
+      "a": 0.283,
+      "b": 1.0,
+      "diff": 0.717,
+      "lo": 0.6442,
+      "hi": 0.7876
+    },
+    "spuriousRate": {
+      "a": 0.2759,
+      "b": 0.2197,
+      "diff": -0.0561,
+      "lo": -0.0823,
+      "hi": -0.0313
+    },
+    "unsupportedRate": {
+      "a": 0.4926,
+      "b": 0.3632,
+      "diff": -0.1294,
+      "lo": -0.181,
+      "hi": -0.0809
+    },
+    "fuzzyValueRate": {
+      "a": 0.0,
+      "b": 0.0,
+      "diff": 0.0,
+      "lo": 0.0,
+      "hi": 0.0
+    }
+  },
+  "unity": {
+    "report": "unity/report.json",
+    "ok": true,
+    "specFiles": 60,
+    "loaded": 60,
+    "captureFailures": 0,
+    "consoleErrors": 0,
+    "consoleExceptions": 0,
+    "specsWithConsoleWarnings": 0,
+    "screenshots": 60,
+    "expectedScreenshots": 60,
+    "detailScreenshots": 59,
+    "frameMsP95Max": 1.693,
+    "unityVersion": "6000.0.85f2",
+    "graphicsDevice": "NVIDIA GeForce RTX 5080",
+    "applied": {
+      "source": "나",
+      "numericCompared": 306,
+      "maxAbsDelta": 0.0,
+      "maxAbsDeltaVsUnroundedSpec": 0.0,
+      "failures": 0,
+      "roundingBoundaryCases": 0,
+      "categoricalCompared": 87,
+      "categoricalMismatches": 0,
+      "defaultsUsedMismatches": 0,
+      "specsMissingOrNotLoaded": 0
+    },
+    "log": {
+      "errorPatternHits": 0,
+      "hits": [],
+      "batchCaptureEnd": [
+        "True"
+      ],
+      "batchCaptureFailed": false,
+      "loadedLines": 60,
+      "loadedFiles": [
+        "H01.v0.json",
+        "H01.v1.json",
+        "H02.v0.json",
+        "H02.v1.json",
+        "H03.v0.json",
+        "H03.v1.json",
+        "H04.v0.json",
+        "H04.v1.json",
+        "H05.v0.json",
+        "H05.v1.json",
+        "H06.v0.json",
+        "H06.v1.json",
+        "H07.v0.json",
+        "H07.v1.json",
+        "H08.v0.json",
+        "H08.v1.json",
+        "H09.v0.json",
+        "H09.v1.json",
+        "H10.v0.json",
+        "H10.v1.json",
+        "H11.v0.json",
+        "H11.v1.json",
+        "H12.v0.json",
+        "H12.v1.json",
+        "H13.v0.json",
+        "H13.v1.json",
+        "H14.v0.json",
+        "H14.v1.json",
+        "H15.v0.json",
+        "H15.v1.json",
+        "H16.v0.json",
+        "H16.v1.json",
+        "H17.v0.json",
+        "H17.v1.json",
+        "H18.v0.json",
+        "H18.v1.json",
+        "H19.v0.json",
+        "H19.v1.json",
+        "H20.v0.json",
+        "H20.v1.json",
+        "H21.v0.json",
+        "H21.v1.json",
+        "H22.v0.json",
+        "H22.v1.json",
+        "H23.v0.json",
+        "H23.v1.json",
+        "H24.v0.json",
+        "H24.v1.json",
+        "H25.v0.json",
+        "H25.v1.json",
+        "H26.v0.json",
+        "H26.v1.json",
+        "H27.v0.json",
+        "H27.v1.json",
+        "H28.v0.json",
+        "H28.v1.json",
+        "H29.v0.json",
+        "H29.v1.json",
+        "H30.v0.json",
+        "H30.v1.json"
+      ],
+      "readFailures": 0,
+      "formatWarnings": 0
+    },
+    "logFile": "logs/capture.log"
+  }
+}

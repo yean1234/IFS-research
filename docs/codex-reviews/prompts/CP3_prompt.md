@@ -4,8 +4,12 @@
 - 연구: IFS Find→Focus→Flesh out 면담 챗봇 → 확정 텍스트 → 화이트박스 규칙 매핑(SceneSpec JSON, v0 규칙 / v1 개선) → Unity VR 렌더. 초점은 심상-구현 일치도. 저장소 원칙은 AGENTS.md.
 - 이번 CP3는 작업 5(중립 테스트 입력으로 챗봇→JSON→Unity 전 과정 실행 검증) 완료 시점이며, **전체 코드 리뷰**를 맡긴다.
 
+## 이미 알고 있는 것 (되풀이하지 말 것)
+- held-out 판정은 docs/validation/e2e/README.md 「판정」과 docs/acceptance.md 맨 아래 판정 표에 있다: AC-3.2·3.4·3.5 와 AC-4.5 미달, 전체 "완료 아님". 이 미달 자체를 다시 지적하지 말고, 그 판정·숫자가 산출물과 어긋나는 곳이나 빠뜨린 미달을 찾아라.
+- 이전 검토(Claude 독립 검토 2건, Codex CP2)의 지적과 수용/반박/보류는 docs/decisions.md 뒤쪽 절들과 docs/codex-reviews/CP2.md 에 있다. 보류로 기록된 한계를 그대로 되풀이하지 말라.
+
 ## 할 일
-1. `git diff <CP2_COMMIT>..HEAD --stat` 와 `git diff <CP2_COMMIT>..HEAD` 를 읽어라(작업 5 변경). 그다음 전체 코드를 리뷰하라: `git diff a753289..HEAD --stat` 로 이번 야간 작업 전체 범위를 확인하고 핵심 파일을 직접 읽어라.
+1. `git diff 58ba0dc..HEAD --stat` 와 `git diff 58ba0dc..HEAD` 를 읽어라(작업 5 변경). 그다음 전체 코드를 리뷰하라: `git diff a753289..HEAD --stat` 로 이번 야간 작업 전체 범위를 확인하고 핵심 파일을 직접 읽어라.
    - chatbot/ifs_chatbot/: controller.py, scene_builder.py(v0), scene_builder_v1.py, jamo.py, clarify.py, drift.py, scene_spec.py, lexicon.py, config.py, session_log.py, eval/*.py
    - shared/lexicon/*.json, shared/schemas/*.json, shared/protocol/*.json
    - unity/Assets/IFS/Runtime/SceneSpec/*.cs, unity/Assets/IFS/Editor/**/*.cs, unity/Assets/IFS/Shaders/*, unity/Assets/IFS/Tests/**

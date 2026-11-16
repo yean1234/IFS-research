@@ -1,0 +1,1406 @@
+{
+  "v0": {
+    "info": {
+      "builder": {
+        "builder": "scene-spec-builder/0.1.0",
+        "specVersion": "2.0.0",
+        "lexicons": {
+          "layer1": "layer1-attribute-lexicon@0.1.0",
+          "sceneParams": "scene-params@0.1.0",
+          "vad": "vad-ko@0.1.0"
+        }
+      },
+      "drift": {
+        "driftVersion": "drift/1.1.0",
+        "params": "drift-params/1.1.0",
+        "snapshotBuilder": "v1",
+        "builder": "scene-spec-builder-v1/1.2.0"
+      }
+    },
+    "items": {
+      "H01": {
+        "enabled": true,
+        "decision": "undecidable",
+        "DI": null,
+        "reason": null,
+        "maxAdjacentDI": 0.0,
+        "summary": {
+          "decision": "undecidable",
+          "DI": null,
+          "identityContradiction": false,
+          "contradicted": [],
+          "comparable": [],
+          "acknowledged": false,
+          "maxAdjacentDI": 0.0,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": false
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      },
+      "H02": {
+        "enabled": true,
+        "decision": "no_drift",
+        "DI": 0.0,
+        "reason": null,
+        "maxAdjacentDI": 0.0,
+        "summary": {
+          "decision": "no_drift",
+          "DI": 0.0,
+          "identityContradiction": false,
+          "contradicted": [],
+          "comparable": [
+            "identity",
+            "size",
+            "position"
+          ],
+          "acknowledged": false,
+          "maxAdjacentDI": 0.0,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": false
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      },
+      "H03": {
+        "enabled": true,
+        "decision": "undecidable",
+        "DI": null,
+        "reason": null,
+        "maxAdjacentDI": null,
+        "summary": {
+          "decision": "undecidable",
+          "DI": null,
+          "identityContradiction": false,
+          "contradicted": [],
+          "comparable": [
+            "motion"
+          ],
+          "acknowledged": false,
+          "maxAdjacentDI": null,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": false
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      },
+      "H04": {
+        "enabled": true,
+        "decision": "undecidable",
+        "DI": null,
+        "reason": "no_later_snapshot",
+        "maxAdjacentDI": null,
+        "summary": {
+          "decision": "undecidable",
+          "DI": null,
+          "identityContradiction": null,
+          "contradicted": [],
+          "comparable": [],
+          "acknowledged": false,
+          "maxAdjacentDI": null,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": false
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      },
+      "H05": {
+        "enabled": true,
+        "decision": "drift",
+        "DI": 1.0,
+        "reason": null,
+        "maxAdjacentDI": 1.0,
+        "summary": {
+          "decision": "drift",
+          "DI": 1.0,
+          "identityContradiction": true,
+          "contradicted": [
+            "identity",
+            "position"
+          ],
+          "comparable": [
+            "identity",
+            "position"
+          ],
+          "acknowledged": false,
+          "maxAdjacentDI": 1.0,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": false
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      },
+      "H06": {
+        "enabled": true,
+        "decision": "undecidable",
+        "DI": null,
+        "reason": null,
+        "maxAdjacentDI": null,
+        "summary": {
+          "decision": "undecidable",
+          "DI": null,
+          "identityContradiction": false,
+          "contradicted": [],
+          "comparable": [
+            "motion"
+          ],
+          "acknowledged": false,
+          "maxAdjacentDI": null,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": false
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      },
+      "H07": {
+        "enabled": true,
+        "decision": "no_drift",
+        "DI": 0.0,
+        "reason": null,
+        "maxAdjacentDI": 0.0,
+        "summary": {
+          "decision": "no_drift",
+          "DI": 0.0,
+          "identityContradiction": false,
+          "contradicted": [],
+          "comparable": [
+            "identity",
+            "color"
+          ],
+          "acknowledged": false,
+          "maxAdjacentDI": 0.0,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": false
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      },
+      "H08": {
+        "enabled": true,
+        "decision": "no_drift",
+        "DI": 0.0,
+        "reason": null,
+        "maxAdjacentDI": 0.0,
+        "summary": {
+          "decision": "no_drift",
+          "DI": 0.0,
+          "identityContradiction": false,
+          "contradicted": [],
+          "comparable": [
+            "identity"
+          ],
+          "acknowledged": false,
+          "maxAdjacentDI": 0.0,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": false
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      },
+      "H09": {
+        "enabled": true,
+        "decision": "undecidable",
+        "DI": null,
+        "reason": null,
+        "maxAdjacentDI": null,
+        "summary": {
+          "decision": "undecidable",
+          "DI": null,
+          "identityContradiction": false,
+          "contradicted": [],
+          "comparable": [
+            "motion"
+          ],
+          "acknowledged": false,
+          "maxAdjacentDI": null,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": false
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      },
+      "H10": {
+        "enabled": true,
+        "decision": "no_drift",
+        "DI": 0.0,
+        "reason": null,
+        "maxAdjacentDI": 1.0,
+        "summary": {
+          "decision": "no_drift",
+          "DI": 0.0,
+          "identityContradiction": false,
+          "contradicted": [],
+          "comparable": [
+            "identity"
+          ],
+          "acknowledged": false,
+          "maxAdjacentDI": 1.0,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": true
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      },
+      "H11": {
+        "enabled": true,
+        "decision": "undecidable",
+        "DI": null,
+        "reason": null,
+        "maxAdjacentDI": null,
+        "summary": {
+          "decision": "undecidable",
+          "DI": null,
+          "identityContradiction": false,
+          "contradicted": [
+            "motion"
+          ],
+          "comparable": [
+            "motion"
+          ],
+          "acknowledged": false,
+          "maxAdjacentDI": null,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": false
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      },
+      "H12": {
+        "enabled": true,
+        "decision": "undecidable",
+        "DI": null,
+        "reason": null,
+        "maxAdjacentDI": null,
+        "summary": {
+          "decision": "undecidable",
+          "DI": null,
+          "identityContradiction": false,
+          "contradicted": [],
+          "comparable": [
+            "motion"
+          ],
+          "acknowledged": false,
+          "maxAdjacentDI": null,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": false
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      },
+      "H13": {
+        "enabled": true,
+        "decision": "undecidable",
+        "DI": null,
+        "reason": null,
+        "maxAdjacentDI": null,
+        "summary": {
+          "decision": "undecidable",
+          "DI": null,
+          "identityContradiction": false,
+          "contradicted": [],
+          "comparable": [],
+          "acknowledged": false,
+          "maxAdjacentDI": null,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": false
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      },
+      "H14": {
+        "enabled": true,
+        "decision": "undecidable",
+        "DI": null,
+        "reason": null,
+        "maxAdjacentDI": null,
+        "summary": {
+          "decision": "undecidable",
+          "DI": null,
+          "identityContradiction": false,
+          "contradicted": [],
+          "comparable": [],
+          "acknowledged": false,
+          "maxAdjacentDI": null,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": false
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      },
+      "H15": {
+        "enabled": true,
+        "decision": "undecidable",
+        "DI": null,
+        "reason": null,
+        "maxAdjacentDI": null,
+        "summary": {
+          "decision": "undecidable",
+          "DI": null,
+          "identityContradiction": false,
+          "contradicted": [],
+          "comparable": [
+            "motion"
+          ],
+          "acknowledged": false,
+          "maxAdjacentDI": null,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": true
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      },
+      "H16": {
+        "enabled": true,
+        "decision": "no_drift",
+        "DI": 0.0,
+        "reason": null,
+        "maxAdjacentDI": 0.0,
+        "summary": {
+          "decision": "no_drift",
+          "DI": 0.0,
+          "identityContradiction": false,
+          "contradicted": [],
+          "comparable": [
+            "identity",
+            "position"
+          ],
+          "acknowledged": false,
+          "maxAdjacentDI": 0.0,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": false
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      },
+      "H17": {
+        "enabled": true,
+        "decision": "no_drift",
+        "DI": 0.0,
+        "reason": null,
+        "maxAdjacentDI": 0.0,
+        "summary": {
+          "decision": "no_drift",
+          "DI": 0.0,
+          "identityContradiction": false,
+          "contradicted": [],
+          "comparable": [
+            "size"
+          ],
+          "acknowledged": false,
+          "maxAdjacentDI": 0.0,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": false
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      },
+      "H18": {
+        "enabled": true,
+        "decision": "undecidable",
+        "DI": null,
+        "reason": null,
+        "maxAdjacentDI": null,
+        "summary": {
+          "decision": "undecidable",
+          "DI": null,
+          "identityContradiction": false,
+          "contradicted": [],
+          "comparable": [
+            "motion"
+          ],
+          "acknowledged": false,
+          "maxAdjacentDI": null,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": true
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      },
+      "H19": {
+        "enabled": true,
+        "decision": "undecidable",
+        "DI": null,
+        "reason": null,
+        "maxAdjacentDI": 0.0,
+        "summary": {
+          "decision": "undecidable",
+          "DI": null,
+          "identityContradiction": false,
+          "contradicted": [],
+          "comparable": [],
+          "acknowledged": false,
+          "maxAdjacentDI": 0.0,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": false
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      },
+      "H20": {
+        "enabled": true,
+        "decision": "undecidable",
+        "DI": null,
+        "reason": null,
+        "maxAdjacentDI": null,
+        "summary": {
+          "decision": "undecidable",
+          "DI": null,
+          "identityContradiction": false,
+          "contradicted": [],
+          "comparable": [],
+          "acknowledged": false,
+          "maxAdjacentDI": null,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": false
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      },
+      "H21": {
+        "enabled": true,
+        "decision": "undecidable",
+        "DI": null,
+        "reason": "no_later_snapshot",
+        "maxAdjacentDI": null,
+        "summary": {
+          "decision": "undecidable",
+          "DI": null,
+          "identityContradiction": null,
+          "contradicted": [],
+          "comparable": [],
+          "acknowledged": false,
+          "maxAdjacentDI": null,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": true
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      },
+      "H22": {
+        "enabled": true,
+        "decision": "undecidable",
+        "DI": null,
+        "reason": null,
+        "maxAdjacentDI": null,
+        "summary": {
+          "decision": "undecidable",
+          "DI": null,
+          "identityContradiction": false,
+          "contradicted": [],
+          "comparable": [],
+          "acknowledged": false,
+          "maxAdjacentDI": null,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": false
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      },
+      "H23": {
+        "enabled": true,
+        "decision": "undecidable",
+        "DI": null,
+        "reason": "no_later_snapshot",
+        "maxAdjacentDI": null,
+        "summary": {
+          "decision": "undecidable",
+          "DI": null,
+          "identityContradiction": null,
+          "contradicted": [],
+          "comparable": [],
+          "acknowledged": false,
+          "maxAdjacentDI": null,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": false
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      },
+      "H24": {
+        "enabled": true,
+        "decision": "drift",
+        "DI": 0.5,
+        "reason": null,
+        "maxAdjacentDI": 0.5,
+        "summary": {
+          "decision": "drift",
+          "DI": 0.5,
+          "identityContradiction": true,
+          "contradicted": [
+            "identity"
+          ],
+          "comparable": [
+            "identity",
+            "position"
+          ],
+          "acknowledged": false,
+          "maxAdjacentDI": 0.5,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": false
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      },
+      "H25": {
+        "enabled": true,
+        "decision": "undecidable",
+        "DI": null,
+        "reason": "no_later_snapshot",
+        "maxAdjacentDI": null,
+        "summary": {
+          "decision": "undecidable",
+          "DI": null,
+          "identityContradiction": null,
+          "contradicted": [],
+          "comparable": [],
+          "acknowledged": false,
+          "maxAdjacentDI": null,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": false
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      },
+      "H26": {
+        "enabled": true,
+        "decision": "drift",
+        "DI": 0.5,
+        "reason": null,
+        "maxAdjacentDI": 1.0,
+        "summary": {
+          "decision": "drift",
+          "DI": 0.5,
+          "identityContradiction": true,
+          "contradicted": [
+            "identity"
+          ],
+          "comparable": [
+            "identity",
+            "color"
+          ],
+          "acknowledged": false,
+          "maxAdjacentDI": 1.0,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": false
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      },
+      "H27": {
+        "enabled": true,
+        "decision": "no_drift",
+        "DI": 0.0,
+        "reason": null,
+        "maxAdjacentDI": null,
+        "summary": {
+          "decision": "no_drift",
+          "DI": 0.0,
+          "identityContradiction": false,
+          "contradicted": [],
+          "comparable": [
+            "color"
+          ],
+          "acknowledged": false,
+          "maxAdjacentDI": null,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": false
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      },
+      "H28": {
+        "enabled": true,
+        "decision": "undecidable",
+        "DI": null,
+        "reason": "no_later_snapshot",
+        "maxAdjacentDI": null,
+        "summary": {
+          "decision": "undecidable",
+          "DI": null,
+          "identityContradiction": null,
+          "contradicted": [],
+          "comparable": [],
+          "acknowledged": false,
+          "maxAdjacentDI": null,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": true
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      },
+      "H29": {
+        "enabled": true,
+        "decision": "undecidable",
+        "DI": null,
+        "reason": "no_later_snapshot",
+        "maxAdjacentDI": null,
+        "summary": {
+          "decision": "undecidable",
+          "DI": null,
+          "identityContradiction": null,
+          "contradicted": [],
+          "comparable": [],
+          "acknowledged": false,
+          "maxAdjacentDI": null,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": false
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      },
+      "H30": {
+        "enabled": true,
+        "decision": "undecidable",
+        "DI": null,
+        "reason": "no_later_snapshot",
+        "maxAdjacentDI": null,
+        "summary": {
+          "decision": "undecidable",
+          "DI": null,
+          "identityContradiction": null,
+          "contradicted": [],
+          "comparable": [],
+          "acknowledged": false,
+          "maxAdjacentDI": null,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": true
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      }
+    }
+  },
+  "v1": {
+    "info": {
+      "builder": {
+        "builder": "scene-spec-builder-v1/1.2.0",
+        "specVersion": "2.1.0",
+        "lexicons": {
+          "layer1": "layer1-attribute-lexicon@1.0.0",
+          "layer1Base": "layer1-attribute-lexicon@0.1.0",
+          "sceneParams": "scene-params@1.0.0",
+          "vad": "vad-ko@0.1.0"
+        },
+        "mapper": "v1"
+      },
+      "drift": {
+        "driftVersion": "drift/1.1.0",
+        "params": "drift-params/1.1.0",
+        "snapshotBuilder": "v1",
+        "builder": "scene-spec-builder-v1/1.2.0"
+      }
+    },
+    "items": {
+      "H01": {
+        "enabled": true,
+        "decision": "undecidable",
+        "DI": null,
+        "reason": null,
+        "maxAdjacentDI": 0.0,
+        "summary": {
+          "decision": "undecidable",
+          "DI": null,
+          "identityContradiction": false,
+          "contradicted": [],
+          "comparable": [],
+          "acknowledged": false,
+          "maxAdjacentDI": 0.0,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": false
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      },
+      "H02": {
+        "enabled": true,
+        "decision": "no_drift",
+        "DI": 0.0,
+        "reason": null,
+        "maxAdjacentDI": 0.0,
+        "summary": {
+          "decision": "no_drift",
+          "DI": 0.0,
+          "identityContradiction": false,
+          "contradicted": [],
+          "comparable": [
+            "identity",
+            "size",
+            "position"
+          ],
+          "acknowledged": false,
+          "maxAdjacentDI": 0.0,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": false
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      },
+      "H03": {
+        "enabled": true,
+        "decision": "undecidable",
+        "DI": null,
+        "reason": null,
+        "maxAdjacentDI": null,
+        "summary": {
+          "decision": "undecidable",
+          "DI": null,
+          "identityContradiction": false,
+          "contradicted": [],
+          "comparable": [
+            "motion"
+          ],
+          "acknowledged": false,
+          "maxAdjacentDI": null,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": false
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      },
+      "H04": {
+        "enabled": true,
+        "decision": "undecidable",
+        "DI": null,
+        "reason": "no_later_snapshot",
+        "maxAdjacentDI": null,
+        "summary": {
+          "decision": "undecidable",
+          "DI": null,
+          "identityContradiction": null,
+          "contradicted": [],
+          "comparable": [],
+          "acknowledged": false,
+          "maxAdjacentDI": null,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": false
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      },
+      "H05": {
+        "enabled": true,
+        "decision": "drift",
+        "DI": 1.0,
+        "reason": null,
+        "maxAdjacentDI": 1.0,
+        "summary": {
+          "decision": "drift",
+          "DI": 1.0,
+          "identityContradiction": true,
+          "contradicted": [
+            "identity",
+            "position"
+          ],
+          "comparable": [
+            "identity",
+            "position"
+          ],
+          "acknowledged": false,
+          "maxAdjacentDI": 1.0,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": false
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      },
+      "H06": {
+        "enabled": true,
+        "decision": "undecidable",
+        "DI": null,
+        "reason": null,
+        "maxAdjacentDI": null,
+        "summary": {
+          "decision": "undecidable",
+          "DI": null,
+          "identityContradiction": false,
+          "contradicted": [],
+          "comparable": [
+            "motion"
+          ],
+          "acknowledged": false,
+          "maxAdjacentDI": null,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": false
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      },
+      "H07": {
+        "enabled": true,
+        "decision": "no_drift",
+        "DI": 0.0,
+        "reason": null,
+        "maxAdjacentDI": 0.0,
+        "summary": {
+          "decision": "no_drift",
+          "DI": 0.0,
+          "identityContradiction": false,
+          "contradicted": [],
+          "comparable": [
+            "identity",
+            "color"
+          ],
+          "acknowledged": false,
+          "maxAdjacentDI": 0.0,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": false
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      },
+      "H08": {
+        "enabled": true,
+        "decision": "no_drift",
+        "DI": 0.0,
+        "reason": null,
+        "maxAdjacentDI": 0.0,
+        "summary": {
+          "decision": "no_drift",
+          "DI": 0.0,
+          "identityContradiction": false,
+          "contradicted": [],
+          "comparable": [
+            "identity"
+          ],
+          "acknowledged": false,
+          "maxAdjacentDI": 0.0,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": false
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      },
+      "H09": {
+        "enabled": true,
+        "decision": "undecidable",
+        "DI": null,
+        "reason": null,
+        "maxAdjacentDI": null,
+        "summary": {
+          "decision": "undecidable",
+          "DI": null,
+          "identityContradiction": false,
+          "contradicted": [],
+          "comparable": [
+            "motion"
+          ],
+          "acknowledged": false,
+          "maxAdjacentDI": null,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": false
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      },
+      "H10": {
+        "enabled": true,
+        "decision": "no_drift",
+        "DI": 0.0,
+        "reason": null,
+        "maxAdjacentDI": 1.0,
+        "summary": {
+          "decision": "no_drift",
+          "DI": 0.0,
+          "identityContradiction": false,
+          "contradicted": [],
+          "comparable": [
+            "identity"
+          ],
+          "acknowledged": false,
+          "maxAdjacentDI": 1.0,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": true
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      },
+      "H11": {
+        "enabled": true,
+        "decision": "undecidable",
+        "DI": null,
+        "reason": null,
+        "maxAdjacentDI": null,
+        "summary": {
+          "decision": "undecidable",
+          "DI": null,
+          "identityContradiction": false,
+          "contradicted": [
+            "motion"
+          ],
+          "comparable": [
+            "motion"
+          ],
+          "acknowledged": false,
+          "maxAdjacentDI": null,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": false
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      },
+      "H12": {
+        "enabled": true,
+        "decision": "undecidable",
+        "DI": null,
+        "reason": null,
+        "maxAdjacentDI": null,
+        "summary": {
+          "decision": "undecidable",
+          "DI": null,
+          "identityContradiction": false,
+          "contradicted": [],
+          "comparable": [
+            "motion"
+          ],
+          "acknowledged": false,
+          "maxAdjacentDI": null,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": false
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      },
+      "H13": {
+        "enabled": true,
+        "decision": "undecidable",
+        "DI": null,
+        "reason": null,
+        "maxAdjacentDI": null,
+        "summary": {
+          "decision": "undecidable",
+          "DI": null,
+          "identityContradiction": false,
+          "contradicted": [],
+          "comparable": [],
+          "acknowledged": false,
+          "maxAdjacentDI": null,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": false
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      },
+      "H14": {
+        "enabled": true,
+        "decision": "undecidable",
+        "DI": null,
+        "reason": null,
+        "maxAdjacentDI": null,
+        "summary": {
+          "decision": "undecidable",
+          "DI": null,
+          "identityContradiction": false,
+          "contradicted": [],
+          "comparable": [],
+          "acknowledged": false,
+          "maxAdjacentDI": null,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": false
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      },
+      "H15": {
+        "enabled": true,
+        "decision": "undecidable",
+        "DI": null,
+        "reason": null,
+        "maxAdjacentDI": null,
+        "summary": {
+          "decision": "undecidable",
+          "DI": null,
+          "identityContradiction": false,
+          "contradicted": [],
+          "comparable": [
+            "motion"
+          ],
+          "acknowledged": false,
+          "maxAdjacentDI": null,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": true
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      },
+      "H16": {
+        "enabled": true,
+        "decision": "no_drift",
+        "DI": 0.0,
+        "reason": null,
+        "maxAdjacentDI": 0.0,
+        "summary": {
+          "decision": "no_drift",
+          "DI": 0.0,
+          "identityContradiction": false,
+          "contradicted": [],
+          "comparable": [
+            "identity",
+            "position"
+          ],
+          "acknowledged": false,
+          "maxAdjacentDI": 0.0,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": false
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      },
+      "H17": {
+        "enabled": true,
+        "decision": "no_drift",
+        "DI": 0.0,
+        "reason": null,
+        "maxAdjacentDI": 0.0,
+        "summary": {
+          "decision": "no_drift",
+          "DI": 0.0,
+          "identityContradiction": false,
+          "contradicted": [],
+          "comparable": [
+            "size"
+          ],
+          "acknowledged": false,
+          "maxAdjacentDI": 0.0,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": false
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      },
+      "H18": {
+        "enabled": true,
+        "decision": "undecidable",
+        "DI": null,
+        "reason": null,
+        "maxAdjacentDI": null,
+        "summary": {
+          "decision": "undecidable",
+          "DI": null,
+          "identityContradiction": false,
+          "contradicted": [],
+          "comparable": [
+            "motion"
+          ],
+          "acknowledged": false,
+          "maxAdjacentDI": null,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": true
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      },
+      "H19": {
+        "enabled": true,
+        "decision": "undecidable",
+        "DI": null,
+        "reason": null,
+        "maxAdjacentDI": 0.0,
+        "summary": {
+          "decision": "undecidable",
+          "DI": null,
+          "identityContradiction": false,
+          "contradicted": [],
+          "comparable": [],
+          "acknowledged": false,
+          "maxAdjacentDI": 0.0,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": false
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      },
+      "H20": {
+        "enabled": true,
+        "decision": "undecidable",
+        "DI": null,
+        "reason": null,
+        "maxAdjacentDI": null,
+        "summary": {
+          "decision": "undecidable",
+          "DI": null,
+          "identityContradiction": false,
+          "contradicted": [],
+          "comparable": [],
+          "acknowledged": false,
+          "maxAdjacentDI": null,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": false
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      },
+      "H21": {
+        "enabled": true,
+        "decision": "undecidable",
+        "DI": null,
+        "reason": "no_later_snapshot",
+        "maxAdjacentDI": null,
+        "summary": {
+          "decision": "undecidable",
+          "DI": null,
+          "identityContradiction": null,
+          "contradicted": [],
+          "comparable": [],
+          "acknowledged": false,
+          "maxAdjacentDI": null,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": true
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      },
+      "H22": {
+        "enabled": true,
+        "decision": "undecidable",
+        "DI": null,
+        "reason": null,
+        "maxAdjacentDI": null,
+        "summary": {
+          "decision": "undecidable",
+          "DI": null,
+          "identityContradiction": false,
+          "contradicted": [],
+          "comparable": [],
+          "acknowledged": false,
+          "maxAdjacentDI": null,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": false
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      },
+      "H23": {
+        "enabled": true,
+        "decision": "undecidable",
+        "DI": null,
+        "reason": "no_later_snapshot",
+        "maxAdjacentDI": null,
+        "summary": {
+          "decision": "undecidable",
+          "DI": null,
+          "identityContradiction": null,
+          "contradicted": [],
+          "comparable": [],
+          "acknowledged": false,
+          "maxAdjacentDI": null,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": false
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      },
+      "H24": {
+        "enabled": true,
+        "decision": "drift",
+        "DI": 0.5,
+        "reason": null,
+        "maxAdjacentDI": 0.5,
+        "summary": {
+          "decision": "drift",
+          "DI": 0.5,
+          "identityContradiction": true,
+          "contradicted": [
+            "identity"
+          ],
+          "comparable": [
+            "identity",
+            "position"
+          ],
+          "acknowledged": false,
+          "maxAdjacentDI": 0.5,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": false
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      },
+      "H25": {
+        "enabled": true,
+        "decision": "undecidable",
+        "DI": null,
+        "reason": "no_later_snapshot",
+        "maxAdjacentDI": null,
+        "summary": {
+          "decision": "undecidable",
+          "DI": null,
+          "identityContradiction": null,
+          "contradicted": [],
+          "comparable": [],
+          "acknowledged": false,
+          "maxAdjacentDI": null,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": false
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      },
+      "H26": {
+        "enabled": true,
+        "decision": "drift",
+        "DI": 0.5,
+        "reason": null,
+        "maxAdjacentDI": 1.0,
+        "summary": {
+          "decision": "drift",
+          "DI": 0.5,
+          "identityContradiction": true,
+          "contradicted": [
+            "identity"
+          ],
+          "comparable": [
+            "identity",
+            "color"
+          ],
+          "acknowledged": false,
+          "maxAdjacentDI": 1.0,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": false
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      },
+      "H27": {
+        "enabled": true,
+        "decision": "no_drift",
+        "DI": 0.0,
+        "reason": null,
+        "maxAdjacentDI": null,
+        "summary": {
+          "decision": "no_drift",
+          "DI": 0.0,
+          "identityContradiction": false,
+          "contradicted": [],
+          "comparable": [
+            "color"
+          ],
+          "acknowledged": false,
+          "maxAdjacentDI": null,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": false
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      },
+      "H28": {
+        "enabled": true,
+        "decision": "undecidable",
+        "DI": null,
+        "reason": "no_later_snapshot",
+        "maxAdjacentDI": null,
+        "summary": {
+          "decision": "undecidable",
+          "DI": null,
+          "identityContradiction": null,
+          "contradicted": [],
+          "comparable": [],
+          "acknowledged": false,
+          "maxAdjacentDI": null,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": true
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      },
+      "H29": {
+        "enabled": true,
+        "decision": "undecidable",
+        "DI": null,
+        "reason": "no_later_snapshot",
+        "maxAdjacentDI": null,
+        "summary": {
+          "decision": "undecidable",
+          "DI": null,
+          "identityContradiction": null,
+          "contradicted": [],
+          "comparable": [],
+          "acknowledged": false,
+          "maxAdjacentDI": null,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": false
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      },
+      "H30": {
+        "enabled": true,
+        "decision": "undecidable",
+        "DI": null,
+        "reason": "no_later_snapshot",
+        "maxAdjacentDI": null,
+        "summary": {
+          "decision": "undecidable",
+          "DI": null,
+          "identityContradiction": null,
+          "contradicted": [],
+          "comparable": [],
+          "acknowledged": false,
+          "maxAdjacentDI": null,
+          "first": "find",
+          "confirmationEdited": false,
+          "multipleObjects": true
+        },
+        "error": null,
+        "sceneSpecProblems": []
+      }
+    }
+  }
+}

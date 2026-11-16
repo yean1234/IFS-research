@@ -1,0 +1,453 @@
+{
+  "meta": {
+    "specVersion": "2.1.0",
+    "participantId": null,
+    "sessionId": "H08",
+    "condition": "static",
+    "sourceTextHash": "sha256:1d90d951224784ba90171873e1bdc871fbb304c990411c598abd8614604e40b8",
+    "pipeline": {
+      "builder": "scene-spec-builder-v1/1.2.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@1.0.0",
+        "layer1Base": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@1.0.0",
+        "vad": "vad-ko@0.1.0"
+      }
+    },
+    "mapping": {
+      "requested": "v1",
+      "used": "v1",
+      "fallbackReason": null
+    }
+  },
+  "form": {
+    "type": "fragments",
+    "posture": null
+  },
+  "material": {
+    "color": {
+      "h": 0.0,
+      "s": 0.0,
+      "l": 0.95
+    },
+    "brightness": null,
+    "saturation": null,
+    "roughness": null,
+    "opacity": null,
+    "erosion": 0.6
+  },
+  "layout": {
+    "size": 0.0,
+    "distance": 0.85,
+    "verticalOffset": null
+  },
+  "motion": {
+    "type": "scattering",
+    "speed": null
+  },
+  "body": {
+    "part": "body",
+    "layer": "around"
+  },
+  "_provenance": {
+    "form.type": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "조각",
+        "charSpan": [
+          3,
+          5
+        ],
+        "rule": "formLexicon.조각>form.type:fragments"
+      },
+      {
+        "source": "explicit_lexicon",
+        "trigger": "조각",
+        "charSpan": [
+          29,
+          31
+        ],
+        "rule": "formLexicon.조각>form.type:fragments"
+      }
+    ],
+    "material.color": [
+      {
+        "source": "phrase_rule",
+        "trigger": "하얀",
+        "charSpan": [
+          0,
+          2
+        ],
+        "rule": "colorTerm.하얀>material.color:hsl"
+      }
+    ],
+    "material.erosion": [
+      {
+        "source": "simile_marker",
+        "trigger": "깨진",
+        "charSpan": [
+          44,
+          46
+        ],
+        "rule": "simile.처럼>textureLexicon.깨지>material.erosion:broken"
+      }
+    ],
+    "layout.size": [
+      {
+        "source": "phrase_rule",
+        "trigger": "손톱만 해요",
+        "charSpan": [
+          86,
+          92
+        ],
+        "rule": "compare.equal.손톱>layout.size:0.015m"
+      }
+    ],
+    "layout.distance": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "멀어져요",
+        "charSpan": [
+          38,
+          42
+        ],
+        "rule": "distanceLexicon.멀>layout.distance:far"
+      }
+    ],
+    "motion.type": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "흩어져",
+        "charSpan": [
+          20,
+          23
+        ],
+        "rule": "motionLexicon.흩어지>motion.type:scattering"
+      }
+    ],
+    "body.part": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "몸",
+        "charSpan": [
+          14,
+          15
+        ],
+        "rule": "bodyPartLexicon.몸>body.part:body"
+      }
+    ],
+    "body.layer": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "주변",
+        "charSpan": [
+          16,
+          18
+        ],
+        "rule": "bodyLayerLexicon.주변>body.layer:around"
+      }
+    ]
+  },
+  "_unmatched": [
+    {
+      "lemma": "떠오르",
+      "tag": "VV",
+      "surface": "떠올",
+      "charSpan": [
+        8,
+        10
+      ]
+    },
+    {
+      "lemma": "떠오르",
+      "tag": "EOJEOL",
+      "surface": "떠올라요",
+      "charSpan": [
+        8,
+        12
+      ]
+    },
+    {
+      "lemma": "있",
+      "tag": "EOJEOL",
+      "surface": "있어요",
+      "charSpan": [
+        24,
+        27
+      ]
+    },
+    {
+      "lemma": "조금",
+      "tag": "EOJEOL",
+      "surface": "조금씩",
+      "charSpan": [
+        34,
+        37
+      ]
+    },
+    {
+      "lemma": "접시",
+      "tag": "NNG",
+      "surface": "접시",
+      "charSpan": [
+        47,
+        49
+      ]
+    },
+    {
+      "lemma": "조각",
+      "tag": "EOJEOL",
+      "surface": "조각처럼",
+      "charSpan": [
+        50,
+        54
+      ]
+    },
+    {
+      "lemma": "모서리",
+      "tag": "NNG",
+      "surface": "모서리",
+      "charSpan": [
+        55,
+        58
+      ]
+    },
+    {
+      "lemma": "모서리",
+      "tag": "EOJEOL",
+      "surface": "모서리가",
+      "charSpan": [
+        55,
+        59
+      ]
+    },
+    {
+      "lemma": "군데군데",
+      "tag": "MAG",
+      "surface": "군데군데",
+      "charSpan": [
+        65,
+        69
+      ]
+    },
+    {
+      "lemma": "금",
+      "tag": "NNG",
+      "surface": "금",
+      "charSpan": [
+        70,
+        71
+      ]
+    },
+    {
+      "lemma": "금",
+      "tag": "EOJEOL",
+      "surface": "금이",
+      "charSpan": [
+        70,
+        72
+      ]
+    },
+    {
+      "lemma": "가",
+      "tag": "VV",
+      "surface": "가",
+      "charSpan": [
+        73,
+        74
+      ]
+    },
+    {
+      "lemma": "있",
+      "tag": "EOJEOL",
+      "surface": "있어요",
+      "charSpan": [
+        75,
+        78
+      ]
+    },
+    {
+      "lemma": "하나+하나",
+      "tag": "EOJEOL",
+      "surface": "하나하나는",
+      "charSpan": [
+        80,
+        85
+      ]
+    }
+  ],
+  "_unmapped": [
+    {
+      "lemma": "날카롭",
+      "category": "shape",
+      "value": {
+        "shape": "sharp"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "날카롭고",
+        "charSpan": [
+          60,
+          64
+        ],
+        "rule": "shapeLexicon.날카롭"
+      }
+    }
+  ],
+  "_negated": [],
+  "_alternatives": [
+    {
+      "path": "form.type",
+      "value": "fragments",
+      "reason": "lower_layer",
+      "_provenance": [
+        {
+          "source": "simile_marker",
+          "trigger": "조각",
+          "charSpan": [
+            50,
+            52
+          ],
+          "rule": "simile.처럼>formLexicon.조각>form.type:fragments"
+        }
+      ]
+    }
+  ],
+  "_inferred": {},
+  "_context": [],
+  "_parts": [],
+  "_uncertain": [],
+  "_measurements": [
+    {
+      "text": "손톱만 해요",
+      "charSpan": [
+        86,
+        92
+      ],
+      "kind": "reference",
+      "meters": 0.015,
+      "dimension": "size",
+      "reference": "손톱",
+      "usedFor": "layout.size"
+    }
+  ],
+  "_direction": [],
+  "_needsConfirmation": [],
+  "_clauses": [
+    {
+      "charSpan": [
+        0,
+        12
+      ],
+      "text": "하얀 조각들이 떠올라요",
+      "usedFor": [
+        "form.type",
+        "material.color"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        12,
+        13
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        14,
+        27
+      ],
+      "text": "몸 주변에 흩어져 있어요",
+      "usedFor": [
+        "motion.type",
+        "body.part",
+        "body.layer"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        27,
+        28
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        29,
+        42
+      ],
+      "text": "조각들이 조금씩 멀어져요",
+      "usedFor": [
+        "form.type",
+        "layout.distance"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        42,
+        43
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        44,
+        64
+      ],
+      "text": "깨진 접시 조각처럼 모서리가 날카롭고",
+      "usedFor": [
+        "material.erosion"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        65,
+        78
+      ],
+      "text": "군데군데 금이 가 있어요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        78,
+        79
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        80,
+        92
+      ],
+      "text": "하나하나는 손톱만 해요",
+      "usedFor": [
+        "layout.size"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        92,
+        93
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    }
+  ]
+}

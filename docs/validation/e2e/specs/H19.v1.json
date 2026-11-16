@@ -1,0 +1,587 @@
+{
+  "meta": {
+    "specVersion": "2.1.0",
+    "participantId": null,
+    "sessionId": "H19",
+    "condition": "static",
+    "sourceTextHash": "sha256:091e1536eaeb2e4709edb7e7d0bda73a1734d02990bd4cf0bd58d4b5fa9a3d3e",
+    "pipeline": {
+      "builder": "scene-spec-builder-v1/1.2.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@1.0.0",
+        "layer1Base": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@1.0.0",
+        "vad": "vad-ko@0.1.0"
+      }
+    },
+    "mapping": {
+      "requested": "v1",
+      "used": "v1",
+      "fallbackReason": null
+    }
+  },
+  "form": {
+    "type": null,
+    "posture": null
+  },
+  "material": {
+    "color": {
+      "h": 0.486,
+      "s": 0.45,
+      "l": 0.4
+    },
+    "brightness": 0.7,
+    "saturation": null,
+    "roughness": null,
+    "opacity": null,
+    "erosion": null
+  },
+  "layout": {
+    "size": 0.508,
+    "distance": null,
+    "verticalOffset": null
+  },
+  "motion": {
+    "type": "spreading",
+    "speed": null
+  },
+  "body": {
+    "part": "body",
+    "layer": "around"
+  },
+  "_provenance": {
+    "material.color": [
+      {
+        "source": "phrase_rule",
+        "trigger": "청록색",
+        "charSpan": [
+          0,
+          3
+        ],
+        "rule": "colorTerm.청록색>material.color:hsl"
+      }
+    ],
+    "material.brightness": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "빛",
+        "charSpan": [
+          42,
+          43
+        ],
+        "rule": "brightnessLexicon.빛>material.brightness:light"
+      },
+      {
+        "source": "explicit_lexicon",
+        "trigger": "빛",
+        "charSpan": [
+          85,
+          86
+        ],
+        "rule": "brightnessLexicon.빛>material.brightness:light"
+      }
+    ],
+    "layout.size": [
+      {
+        "source": "phrase_rule",
+        "trigger": "손보다 조금 커요",
+        "charSpan": [
+          96,
+          105
+        ],
+        "rule": "compare.than.손>layout.size:0.207m"
+      }
+    ],
+    "motion.type": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "퍼져",
+        "charSpan": [
+          49,
+          51
+        ],
+        "rule": "motionLexicon.퍼지>motion.type:spreading"
+      }
+    ],
+    "body.part": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "몸",
+        "charSpan": [
+          19,
+          20
+        ],
+        "rule": "bodyPartLexicon.몸>body.part:body"
+      }
+    ],
+    "body.layer": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "밖",
+        "charSpan": [
+          21,
+          22
+        ],
+        "rule": "bodyLayerLexicon.밖>body.layer:around"
+      }
+    ]
+  },
+  "_unmatched": [
+    {
+      "lemma": "크리스탈",
+      "tag": "NNG",
+      "surface": "크리스탈",
+      "charSpan": [
+        4,
+        8
+      ]
+    },
+    {
+      "lemma": "크리스탈",
+      "tag": "EOJEOL",
+      "surface": "크리스탈이",
+      "charSpan": [
+        4,
+        9
+      ]
+    },
+    {
+      "lemma": "하나",
+      "tag": "EOJEOL",
+      "surface": "하나",
+      "charSpan": [
+        10,
+        12
+      ]
+    },
+    {
+      "lemma": "떠오르",
+      "tag": "VV",
+      "surface": "떠올",
+      "charSpan": [
+        13,
+        15
+      ]
+    },
+    {
+      "lemma": "떠오르",
+      "tag": "EOJEOL",
+      "surface": "떠올라요",
+      "charSpan": [
+        13,
+        17
+      ]
+    },
+    {
+      "lemma": "바로",
+      "tag": "MAG",
+      "surface": "바로",
+      "charSpan": [
+        26,
+        28
+      ]
+    },
+    {
+      "lemma": "탁자",
+      "tag": "NNG",
+      "surface": "탁자",
+      "charSpan": [
+        31,
+        33
+      ]
+    },
+    {
+      "lemma": "위",
+      "tag": "EOJEOL",
+      "surface": "위에",
+      "charSpan": [
+        34,
+        36
+      ]
+    },
+    {
+      "lemma": "있",
+      "tag": "EOJEOL",
+      "surface": "있어요",
+      "charSpan": [
+        37,
+        40
+      ]
+    },
+    {
+      "lemma": "안",
+      "tag": "EOJEOL",
+      "surface": "안에서",
+      "charSpan": [
+        45,
+        48
+      ]
+    },
+    {
+      "lemma": "나오",
+      "tag": "VV",
+      "surface": "나와",
+      "charSpan": [
+        52,
+        54
+      ]
+    },
+    {
+      "lemma": "나오",
+      "tag": "EOJEOL",
+      "surface": "나와요",
+      "charSpan": [
+        52,
+        55
+      ]
+    },
+    {
+      "lemma": "끝",
+      "tag": "NNG",
+      "surface": "끝",
+      "charSpan": [
+        57,
+        58
+      ]
+    },
+    {
+      "lemma": "끝",
+      "tag": "EOJEOL",
+      "surface": "끝이",
+      "charSpan": [
+        57,
+        59
+      ]
+    },
+    {
+      "lemma": "여러",
+      "tag": "EOJEOL",
+      "surface": "여러",
+      "charSpan": [
+        60,
+        62
+      ]
+    },
+    {
+      "lemma": "개",
+      "tag": "EOJEOL",
+      "surface": "개로",
+      "charSpan": [
+        63,
+        65
+      ]
+    },
+    {
+      "lemma": "솟",
+      "tag": "VV-R",
+      "surface": "솟",
+      "charSpan": [
+        71,
+        72
+      ]
+    },
+    {
+      "lemma": "솟",
+      "tag": "EOJEOL",
+      "surface": "솟아",
+      "charSpan": [
+        71,
+        73
+      ]
+    },
+    {
+      "lemma": "있",
+      "tag": "EOJEOL",
+      "surface": "있고",
+      "charSpan": [
+        74,
+        76
+      ]
+    },
+    {
+      "lemma": "각",
+      "tag": "NNG",
+      "surface": "각",
+      "charSpan": [
+        78,
+        79
+      ]
+    },
+    {
+      "lemma": "지",
+      "tag": "VV",
+      "surface": "진",
+      "charSpan": [
+        79,
+        80
+      ]
+    },
+    {
+      "lemma": "면",
+      "tag": "NNG",
+      "surface": "면",
+      "charSpan": [
+        81,
+        82
+      ]
+    },
+    {
+      "lemma": "면",
+      "tag": "EOJEOL",
+      "surface": "면마다",
+      "charSpan": [
+        81,
+        84
+      ]
+    },
+    {
+      "lemma": "반사",
+      "tag": "NNG",
+      "surface": "반사",
+      "charSpan": [
+        88,
+        90
+      ]
+    },
+    {
+      "lemma": "반사",
+      "tag": "EOJEOL",
+      "surface": "반사돼요",
+      "charSpan": [
+        88,
+        92
+      ]
+    },
+    {
+      "lemma": "저",
+      "tag": "EOJEOL",
+      "surface": "제",
+      "charSpan": [
+        94,
+        95
+      ]
+    }
+  ],
+  "_unmapped": [
+    {
+      "lemma": "뾰족",
+      "category": "shape",
+      "value": {
+        "shape": "pointed"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "뾰족하게",
+        "charSpan": [
+          66,
+          70
+        ],
+        "rule": "shapeLexicon.뾰족"
+      }
+    }
+  ],
+  "_negated": [],
+  "_alternatives": [
+    {
+      "path": "body.layer",
+      "value": "inner",
+      "reason": "later_mention",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "안",
+          "charSpan": [
+            45,
+            46
+          ],
+          "rule": "bodyLayerLexicon.안>body.layer:inner"
+        }
+      ]
+    }
+  ],
+  "_inferred": {},
+  "_context": [
+    {
+      "text": "앞",
+      "charSpan": [
+        29,
+        30
+      ],
+      "reason": "object_relative_position",
+      "path": "body.layer",
+      "value": "around_front",
+      "rule": "bodyLayerLexicon.앞>body.layer:around_front"
+    },
+    {
+      "text": "위",
+      "charSpan": [
+        34,
+        35
+      ],
+      "reason": "object_relative_position",
+      "path": "body.layer",
+      "value": "surface_above",
+      "rule": "bodyLayerLexicon.위>body.layer:surface_above"
+    }
+  ],
+  "_parts": [],
+  "_uncertain": [],
+  "_measurements": [
+    {
+      "text": "손보다 조금 커요",
+      "charSpan": [
+        96,
+        105
+      ],
+      "kind": "reference",
+      "meters": 0.207,
+      "dimension": "size",
+      "reference": "손",
+      "usedFor": "layout.size"
+    }
+  ],
+  "_direction": [],
+  "_needsConfirmation": [],
+  "_clauses": [
+    {
+      "charSpan": [
+        0,
+        17
+      ],
+      "text": "청록색 크리스탈이 하나 떠올라요",
+      "usedFor": [
+        "material.color"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        17,
+        18
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        19,
+        24
+      ],
+      "text": "몸 밖이요",
+      "usedFor": [
+        "body.part",
+        "body.layer"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        24,
+        25
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        26,
+        40
+      ],
+      "text": "바로 앞 탁자 위에 있어요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        40,
+        41
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        42,
+        55
+      ],
+      "text": "빛이 안에서 퍼져 나와요",
+      "usedFor": [
+        "material.brightness",
+        "motion.type"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        55,
+        56
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        57,
+        76
+      ],
+      "text": "끝이 여러 개로 뾰족하게 솟아 있고",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        76,
+        77
+      ],
+      "text": ",",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        78,
+        92
+      ],
+      "text": "각진 면마다 빛이 반사돼요",
+      "usedFor": [
+        "material.brightness"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        92,
+        93
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        94,
+        105
+      ],
+      "text": "제 손보다 조금 커요",
+      "usedFor": [
+        "layout.size"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        105,
+        106
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    }
+  ]
+}

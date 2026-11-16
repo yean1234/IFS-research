@@ -1,0 +1,277 @@
+{
+  "meta": {
+    "specVersion": "2.0.0",
+    "participantId": null,
+    "sessionId": "H10",
+    "condition": "static",
+    "sourceTextHash": "sha256:d878e4de5504bb03f9d331da9a56ca313ee7e4026ac04b22c6c55a44a5432e9e",
+    "pipeline": {
+      "builder": "scene-spec-builder/0.1.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@0.1.0",
+        "vad": "vad-ko@0.1.0"
+      }
+    }
+  },
+  "form": {
+    "type": null,
+    "posture": null
+  },
+  "material": {
+    "color": {
+      "h": 0.069,
+      "s": 0.45,
+      "l": 0.3
+    },
+    "brightness": null,
+    "saturation": null,
+    "roughness": 0.85,
+    "opacity": null,
+    "erosion": null
+  },
+  "layout": {
+    "size": null,
+    "distance": null,
+    "verticalOffset": null
+  },
+  "motion": {
+    "type": "still",
+    "speed": null
+  },
+  "body": {
+    "part": "body",
+    "layer": "around"
+  },
+  "_provenance": {
+    "material.color": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "갈색",
+        "charSpan": [
+          0,
+          2
+        ],
+        "rule": "colorLexicon.갈색>material.color:hsl"
+      }
+    ],
+    "material.roughness": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "거칠어요",
+        "charSpan": [
+          75,
+          79
+        ],
+        "rule": "textureLexicon.거칠>material.roughness:rough"
+      }
+    ],
+    "motion.type": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "움직여요",
+        "charSpan": [
+          103,
+          107
+        ],
+        "rule": "motionLexicon.움직이>motion.type:still(negated)"
+      }
+    ],
+    "body.part": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "몸",
+        "charSpan": [
+          15,
+          16
+        ],
+        "rule": "bodyPartLexicon.몸>body.part:body"
+      }
+    ],
+    "body.layer": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "밖",
+        "charSpan": [
+          17,
+          18
+        ],
+        "rule": "bodyLayerLexicon.밖>body.layer:around"
+      }
+    ]
+  },
+  "_unmatched": [
+    {
+      "lemma": "나무",
+      "tag": "NNG",
+      "surface": "나무",
+      "charSpan": [
+        3,
+        5
+      ]
+    },
+    {
+      "lemma": "바닥",
+      "tag": "NNG",
+      "surface": "바닥",
+      "charSpan": [
+        28,
+        30
+      ]
+    },
+    {
+      "lemma": "뚜껑",
+      "tag": "NNG",
+      "surface": "뚜껑",
+      "charSpan": [
+        37,
+        39
+      ]
+    },
+    {
+      "lemma": "닫히",
+      "tag": "VV",
+      "surface": "닫혀",
+      "charSpan": [
+        41,
+        43
+      ]
+    },
+    {
+      "lemma": "반듯",
+      "tag": "XR",
+      "surface": "반듯",
+      "charSpan": [
+        51,
+        53
+      ]
+    },
+    {
+      "lemma": "나뭇결",
+      "tag": "NNG",
+      "surface": "나뭇결",
+      "charSpan": [
+        59,
+        62
+      ]
+    },
+    {
+      "lemma": "변",
+      "tag": "NNG",
+      "surface": "변",
+      "charSpan": [
+        83,
+        84
+      ]
+    },
+    {
+      "lemma": "쯤",
+      "tag": "NNG",
+      "surface": "쯤",
+      "charSpan": [
+        90,
+        91
+      ]
+    },
+    {
+      "lemma": "안",
+      "tag": "MAG",
+      "surface": "안",
+      "charSpan": [
+        101,
+        102
+      ]
+    }
+  ],
+  "_unmapped": [
+    {
+      "lemma": "상자",
+      "category": "object",
+      "value": {
+        "object": "box"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "상자",
+        "charSpan": [
+          6,
+          8
+        ],
+        "rule": "objectLexicon.상자"
+      }
+    },
+    {
+      "lemma": "네모",
+      "category": "shape",
+      "value": {
+        "shape": "square"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "네모",
+        "charSpan": [
+          49,
+          51
+        ],
+        "rule": "shapeLexicon.네모"
+      }
+    },
+    {
+      "lemma": "상자",
+      "category": "object",
+      "value": {
+        "object": "box"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "상자",
+        "charSpan": [
+          55,
+          57
+        ],
+        "rule": "objectLexicon.상자"
+      }
+    },
+    {
+      "lemma": "표면",
+      "category": "body_layer",
+      "value": {
+        "layer": "surface"
+      },
+      "reason": "no_body_part_context",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "표면",
+        "charSpan": [
+          69,
+          71
+        ],
+        "rule": "bodyLayerLexicon.표면"
+      }
+    }
+  ],
+  "_negated": [],
+  "_alternatives": [
+    {
+      "path": "body.layer",
+      "value": "around_front",
+      "reason": "later_mention",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "앞",
+          "charSpan": [
+            26,
+            27
+          ],
+          "rule": "bodyLayerLexicon.앞>body.layer:around_front"
+        }
+      ]
+    }
+  ],
+  "_inferred": {}
+}

@@ -1,0 +1,315 @@
+{
+  "meta": {
+    "specVersion": "2.0.0",
+    "participantId": null,
+    "sessionId": "H09",
+    "condition": "static",
+    "sourceTextHash": "sha256:81e0492adfdf6add42f24d477740702067eda02c2ef235911a8c0d4d4b84b8b5",
+    "pipeline": {
+      "builder": "scene-spec-builder/0.1.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@0.1.0",
+        "vad": "vad-ko@0.1.0"
+      }
+    }
+  },
+  "form": {
+    "type": "mist",
+    "posture": null
+  },
+  "material": {
+    "color": {
+      "h": 0.764,
+      "s": 0.45,
+      "l": 0.45
+    },
+    "brightness": 0.3,
+    "saturation": 0.75,
+    "roughness": null,
+    "opacity": 0.1,
+    "erosion": null
+  },
+  "layout": {
+    "size": null,
+    "distance": null,
+    "verticalOffset": 0.6
+  },
+  "motion": {
+    "type": null,
+    "speed": 0.25
+  },
+  "body": {
+    "part": "lower_back",
+    "layer": "surface_above"
+  },
+  "_provenance": {
+    "form.type": [
+      {
+        "source": "simile_marker",
+        "trigger": "보라색 연기처럼",
+        "charSpan": [
+          0,
+          8
+        ],
+        "rule": "simile.처럼>prototype.연기>form.type:mist"
+      }
+    ],
+    "material.color": [
+      {
+        "source": "simile_marker",
+        "trigger": "보라색",
+        "charSpan": [
+          0,
+          3
+        ],
+        "rule": "simile.처럼>colorLexicon.보라>material.color:hsl"
+      }
+    ],
+    "material.brightness": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "흐려져서",
+        "charSpan": [
+          51,
+          55
+        ],
+        "rule": "brightnessLexicon.흐리>material.brightness:dim"
+      }
+    ],
+    "material.saturation": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "짙고",
+        "charSpan": [
+          38,
+          40
+        ],
+        "rule": "saturationLexicon.짙>material.saturation:deep"
+      }
+    ],
+    "material.opacity": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "투명",
+        "charSpan": [
+          62,
+          64
+        ],
+        "rule": "opacityLexicon.투명>material.opacity:transparent"
+      }
+    ],
+    "layout.verticalOffset": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "허리",
+        "charSpan": [
+          73,
+          75
+        ],
+        "rule": "bodyPartLexicon.허리>layout.verticalOffset:lower_back"
+      }
+    ],
+    "motion.speed": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "천천히",
+        "charSpan": [
+          19,
+          22
+        ],
+        "rule": "motionLexicon.천천히>motion.speed:slow"
+      }
+    ],
+    "body.part": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "허리",
+        "charSpan": [
+          73,
+          75
+        ],
+        "rule": "bodyPartLexicon.허리>body.part:lower_back"
+      }
+    ],
+    "body.layer": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "위",
+        "charSpan": [
+          23,
+          24
+        ],
+        "rule": "bodyLayerLexicon.위>body.layer:surface_above"
+      }
+    ]
+  },
+  "_unmatched": [
+    {
+      "lemma": "생기",
+      "tag": "VV",
+      "surface": "생긴",
+      "charSpan": [
+        9,
+        11
+      ]
+    },
+    {
+      "lemma": "바닥",
+      "tag": "NNG",
+      "surface": "바닥",
+      "charSpan": [
+        14,
+        16
+      ]
+    },
+    {
+      "lemma": "피어오르",
+      "tag": "VV",
+      "surface": "피어올",
+      "charSpan": [
+        26,
+        29
+      ]
+    },
+    {
+      "lemma": "가운데",
+      "tag": "NNG",
+      "surface": "가운데",
+      "charSpan": [
+        33,
+        36
+      ]
+    },
+    {
+      "lemma": "가",
+      "tag": "VV",
+      "surface": "갈",
+      "charSpan": [
+        47,
+        48
+      ]
+    },
+    {
+      "lemma": "끝",
+      "tag": "NNG",
+      "surface": "끝",
+      "charSpan": [
+        56,
+        57
+      ]
+    },
+    {
+      "lemma": "거의",
+      "tag": "MAG",
+      "surface": "거의",
+      "charSpan": [
+        59,
+        61
+      ]
+    },
+    {
+      "lemma": "키",
+      "tag": "NNG",
+      "surface": "키",
+      "charSpan": [
+        68,
+        69
+      ]
+    },
+    {
+      "lemma": "오",
+      "tag": "VV",
+      "surface": "와",
+      "charSpan": [
+        79,
+        80
+      ]
+    },
+    {
+      "lemma": "안",
+      "tag": "MAG",
+      "surface": "안",
+      "charSpan": [
+        87,
+        88
+      ]
+    },
+    {
+      "lemma": "나",
+      "tag": "VV",
+      "surface": "나",
+      "charSpan": [
+        89,
+        90
+      ]
+    },
+    {
+      "lemma": "앞쪽",
+      "tag": "NNG",
+      "surface": "앞쪽",
+      "charSpan": [
+        95,
+        97
+      ]
+    },
+    {
+      "lemma": "계속",
+      "tag": "MAG",
+      "surface": "계속",
+      "charSpan": [
+        101,
+        103
+      ]
+    },
+    {
+      "lemma": "올라가",
+      "tag": "VV",
+      "surface": "올라가",
+      "charSpan": [
+        104,
+        107
+      ]
+    }
+  ],
+  "_unmapped": [
+    {
+      "lemma": "가장자리",
+      "category": "shape",
+      "value": {
+        "shape": "edge"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "가장자리",
+        "charSpan": [
+          41,
+          45
+        ],
+        "rule": "shapeLexicon.가장자리"
+      }
+    }
+  ],
+  "_negated": [],
+  "_alternatives": [
+    {
+      "path": "body.part",
+      "value": "body",
+      "reason": "later_mention",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "몸",
+          "charSpan": [
+            93,
+            94
+          ],
+          "rule": "bodyPartLexicon.몸>body.part:body"
+        }
+      ]
+    }
+  ],
+  "_inferred": {}
+}

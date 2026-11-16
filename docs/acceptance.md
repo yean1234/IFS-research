@@ -133,12 +133,13 @@ cd chatbot
 #   paired.json: 지표별 v0·개선 값, 차이(개선 − v0)와 항목 단위 쌍 군집 부트스트랩 95% CI, 항목별 결과(함께 보고, 판정 기준 아님)
 #   3.12: paired.json metrics.unsupportedRate 의 b ≤ a. mappingFallback.a·b 의 count = 0
 git diff --stat a753289 -- chatbot/tests/fixtures/scene_spec/               # 3.8 (1): 정답 파일 변경 없음(출력 없음)
-.venv\Scripts\python.exe -m pytest -q -m "not live" -k "bytes or byte_identical"   # 3.8 (2): v0 출력 == EX01/EX02 바이트 비교 테스트(이름은 구현 후 확정, 1개 이상 실행·통과)
-.venv\Scripts\python.exe -m pytest -q -m "not live" -k "no_llm or no_network"    # 3.9: LLM·HTTP 차단 상태 매핑 테스트(이름은 구현 후 확정, 1개 이상 실행·통과)
-Select-String -Path <개선 매핑 모듈> -Pattern 'ollama|llm|requests|httpx'    # 3.9 보조 증거(판정 기준 아님)
+.venv\Scripts\python.exe -m pytest -q -m "not live" -k "bytes or byte_identical"   # 3.8 (2): 6개 선택 — tests\test_scene_pipeline.py::test_v0_scene_file_byte_identical_to_golden[EX01·EX02](v0 장면 파일 == EX01/EX02 바이트 비교), ::test_default_v1_writes_main_and_both_variants_v0_byte_identical[EX01·EX02], tests\test_scene_builder_v1.py::test_v1_same_input_byte_identical, ::test_v0_output_byte_identical_to_baseline_hashes
+.venv\Scripts\python.exe -m pytest -q -m "not live" -k "no_llm or no_network"    # 3.9 (dev 코퍼스): tests\test_scene_builder_v1.py::test_dev_corpus_maps_with_no_llm_no_network 1개 선택
+.venv\Scripts\python.exe -m ifs_chatbot.eval.e2e --corpus tests\fixtures\imagery_corpus\heldout.json --out ..\docs\validation\e2e --no-network   # 3.9 (held-out 전체): 같은 대상(ifs_chatbot.llm 호출 함수·httpx·urlopen·socket.connect 등 8개)을 호출 즉시 예외로 바꾼 상태에서 재생·매핑. pipeline.log "[차단] … 시도된 호출 0건", summary.json network.calls = [] (차단 장치 테스트: tests\test_e2e.py::test_network_guard_blocks_and_restores)
+Select-String -Path ifs_chatbot\scene_builder_v1.py, ifs_chatbot\jamo.py, ifs_chatbot\clarify.py -Pattern 'ollama|llm|requests|httpx'    # 3.9 보조 증거(판정 기준 아님)
 ```
 
-- 3.1: 실패 사례 문서(구현 후 확정)에서 사례 수와 유형 열을 센다.
+- 3.1: 실패 사례 문서 `docs/mapping-failures.md`에서 사례 수와 유형 열을 센다.
 
 ---
 
@@ -175,7 +176,7 @@ Select-String -Path <scratch>\editmode.log, <scratch>\capture.log -Pattern 'erro
 
 1. held-out 입력 **20–30개**(감정적 고통 없는 중립 심상, 자유 서술형 포함, 합성 대사).
 2. 실제 챗봇 컨트롤러(**정적 조건**, 조건 1)로 면담 → 확정 텍스트.
-3. SceneSpec JSON **스키마 유효 100%**(`shared/schemas/scene-spec.v2.json`).
+3. SceneSpec JSON **스키마 유효 100%**. spec마다 `meta.specVersion`에 맞는 스키마로 검사한다: v0 출력(2.0.0)은 `shared/schemas/scene-spec.v2.json`, v1 출력(2.1.0)은 `shared/schemas/scene-spec.v2.1.json`. (2026-11-16 문구 수정: 처음 문구는 v2.json만 적었는데, v1 출력 형식 2.1은 그 뒤 작업 3에서 정한 상위 집합이라 v2.json으로는 v1 spec이 모두 실패한다. 두 수치를 함께 보고한다. `docs/decisions.md` X9)
 4. Unity batchmode 로드 **예외 0, 100%**.
 5. **스크린샷 전부** 저장(입력 수 × 매핑 수).
 6. 두 매핑(v0 / 개선)의 **속성 반영률·왜곡률·보존률** 보고.
@@ -186,11 +187,23 @@ Select-String -Path <scratch>\editmode.log, <scratch>\capture.log -Pattern 'erro
 
 ```powershell
 cd chatbot
-.venv\Scripts\python.exe -m <전 과정 스크립트>                       # (구현 후 확정) 입력 수, 스키마 유효 수, 반영률 표 출력
-# Unity 쪽: -executeMethod <일괄 로드 메서드> 로그에서 로드 성공 수 = 입력 수 × 2, 예외 0
-# 스크린샷 폴더 파일 수 = 입력 수 × 2
-# 적용값 대조 결과 파일에서 max |Δ| ≤ 1e-6
+.venv\Scripts\python.exe -m ifs_chatbot.eval.e2e --corpus tests\fixtures\imagery_corpus\heldout.json --out ..\docs\validation\e2e --no-network
+#   입력 수, 스키마 유효 수(spec마다 meta.specVersion에 맞는 스키마: v0 → scene-spec.v2.json, v1 → scene-spec.v2.1.json), 반영률 표 출력
+#   → ..\docs\validation\e2e\specs\<id>.v0.json·<id>.v1.json(컨트롤러가 쓴 장면 파일 그대로), schema.json, score\(fidelity --compare와 같은 파일), summary.json, results.md, pipeline.log
+cd ..
+& "C:\Program Files\Unity\Hub\Editor\6000.0.85f2\Editor\Unity.exe" -batchmode -projectPath unity `
+     -executeMethod IFS.SceneSpec.EditorTools.BatchCapture.Run -specDir ..\docs\validation\e2e\specs -outDir ..\docs\validation\e2e\unity `
+     -width 2064 -height 2208 -eyes 2 -warmup 30 -frames 300 -logFile <scratch>\capture.log     # -specDir·-outDir의 상대 경로는 unity\ 기준
+cd chatbot
+.venv\Scripts\python.exe -m ifs_chatbot.eval.e2e --corpus tests\fixtures\imagery_corpus\heldout.json --out ..\docs\validation\e2e --no-network `
+     --unity-out ..\docs\validation\e2e\unity --unity-log <scratch>\capture.log
+#   (캡처한 spec 파일과 다시 만든 spec이 다르면 멈춤) unity\report.json summary.loaded = 입력 수 × 2, consoleExceptions = 0,
+#   logs\capture.log(경로·계정 가림 사본)의 "[SceneLoader] … 로드:" 줄 = 입력 수 × 2, 오류 패턴 0
+# 스크린샷: ..\docs\validation\e2e\unity\<id>.<매핑>.png 수 = 입력 수 × 2 (summary.json unity.screenshots)
+# 적용값 대조: ..\docs\validation\e2e\applied_values.json·.md 에서 max |Δ| ≤ 1e-6 (비교 원천 (나))
 ```
+
+- 결과 문서: `docs/validation/e2e/README.md`(실행 명령·날짜·버전·결과 요약), `docs/validation/e2e/results.md`(결과 표·실패 목록).
 
 ---
 
@@ -235,10 +248,12 @@ Select-String -Path docs\morning-report.md -Pattern '바뀐 파일|검증|Codex|
 
 | AC | 판정(통과/미달) | 측정 수치 | 근거 파일·명령 |
 | --- | --- | --- | --- |
-| AC-1 | | | |
-| AC-2 | | | |
-| AC-3 | | | |
-| AC-4 | | | |
-| AC-5 | | | |
-| AC-6 | | | |
-| AC-7 | | | |
+| AC-1 | 통과(이전 세션 판정) | 필수 절 7개, CP1 지적 11건 반영. 인용 원문 대조 1건은 사람 몫으로 보류 | `docs/research-design.md`, `docs/codex-reviews/CP1.md`. 이 세션에서 다시 재지 않음 |
+| AC-2 | 잠정 통과 | 라벨 18개(drift 9 · no-drift 9) 정확도 1.000, 덧붙임 오탐 0, 두 번 실행 sha256 동일(`345c4071…dc1d`), LLM 호출 0. **단서:** 라벨에 나온 사전 낱말 4개를 빼면 0.833(< 0.90). 설계자가 라벨을 읽은 뒤 규칙을 씀 | `pytest tests	est_drift.py`, `python -m ifs_chatbot.drift --cases …`, `docs/drift-design.md` 8절 |
+| AC-3 | **미달** | held-out 30개: 3.2 반영률 0.698(기준 ≥ 0.75) **미달** · 3.3 향상 +0.198 충족(쌍 CI 하한 0.137) · 3.4 왜곡률 0.094(기준 ≤ 0.05) **미달** · 3.5 미반영 원문 보존률 0.859(기준 1.0) **미달** · 3.11 퍼지 경로 값 0 충족 · 3.12 근거 없는 값 0.363 ≤ v0 0.493 충족 · 3.1 실패 사례 45건 · 오프라인 테스트 374 통과 | `docs/validation/e2e/README.md`·`results.md`·`score/` |
+| AC-4 | **미달(4.5)** | 4.1 EditMode 28/28 · 4.2 오류·예외 0 · 4.3 p95 1.69–2.21 ms(≤ 13.9, 데스크톱 대리 측정) · 4.4 드로콜 추정 ≤ 24/눈, 삼각형 추정 ≤ 102,800/눈, 그림자 광원 1(기기 측정 아님) · **4.5 held-out 캡처 60장 중 H09.v1이 빈 화면, H09.v0도 사실상 빈 화면(매핑이 opacity 0.0·0.1을 냄). 60장 중 12장만 검토** · 4.6 기기 72 Hz는 morning-todo | `docs/validation/e2e/unity/report.json`, `logs/editmode.xml`, `docs/validation/unity/` |
+| AC-5 | 통과(5.3 문구 수정 조건) | 입력 30 · 정적 조건 실제 컨트롤러 · 스키마 유효 60/60(버전별 스키마. 처음 문구대로 v2.json만 쓰면 v1 0/30) · Unity 로드 60/60 예외 0 · 스크린샷 60/60 · 적용값 수치 306개 max \|Δ\| = 0.0(원천 (나)) · 로그 저장 | `python -m ifs_chatbot.eval.e2e …`, `docs/validation/e2e/` |
+| AC-6 | (CP3 뒤 판정) | CP1·CP2 원문과 분류표 있음. Codex 2/3번 사용 | `docs/codex-reviews/` |
+| AC-7 | (보고서 작성 뒤 판정) | | `docs/morning-report.md` |
+
+**종합(2026-11-16): "완료"가 아닙니다.** AC-3(3.2·3.4·3.5)과 AC-4.5가 미달입니다.

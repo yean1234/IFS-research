@@ -1,0 +1,694 @@
+{
+  "meta": {
+    "specVersion": "2.1.0",
+    "participantId": null,
+    "sessionId": "H27",
+    "condition": "static",
+    "sourceTextHash": "sha256:42590d5ef576561decafd3a9b0209c4a60037ec58436d46a7227591d6b8f9875",
+    "pipeline": {
+      "builder": "scene-spec-builder-v1/1.2.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@1.0.0",
+        "layer1Base": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@1.0.0",
+        "vad": "vad-ko@0.1.0"
+      }
+    },
+    "mapping": {
+      "requested": "v1",
+      "used": "v1",
+      "fallbackReason": null
+    }
+  },
+  "form": {
+    "type": null,
+    "posture": "hanging"
+  },
+  "material": {
+    "color": {
+      "h": 0.986,
+      "s": 0.6,
+      "l": 0.25
+    },
+    "brightness": null,
+    "saturation": 0.25,
+    "roughness": null,
+    "opacity": null,
+    "erosion": 0.85
+  },
+  "layout": {
+    "size": null,
+    "distance": null,
+    "verticalOffset": null
+  },
+  "motion": {
+    "type": "swaying",
+    "speed": 0.125
+  },
+  "body": {
+    "part": "shoulder",
+    "layer": "around_side"
+  },
+  "_provenance": {
+    "form.posture": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "매달려",
+        "charSpan": [
+          45,
+          48
+        ],
+        "rule": "postureLexicon.매달리>form.posture:hanging"
+      }
+    ],
+    "material.color": [
+      {
+        "source": "phrase_rule",
+        "trigger": "검붉은",
+        "charSpan": [
+          0,
+          3
+        ],
+        "rule": "colorTerm.검붉은>material.color:hsl"
+      }
+    ],
+    "material.saturation": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "탁해요",
+        "charSpan": [
+          104,
+          107
+        ],
+        "rule": "saturationLexicon.탁하>material.saturation:muddy"
+      }
+    ],
+    "material.erosion": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "부서져",
+        "charSpan": [
+          78,
+          81
+        ],
+        "rule": "textureLexicon.부서지>material.erosion:shattered"
+      }
+    ],
+    "motion.type": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "흔들려요",
+        "charSpan": [
+          120,
+          124
+        ],
+        "rule": "motionLexicon.흔들리>motion.type:swaying"
+      }
+    ],
+    "motion.speed": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "느리게",
+        "charSpan": [
+          112,
+          115
+        ],
+        "rule": "motionLexicon.느리>motion.speed:slow"
+      }
+    ],
+    "body.part": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "어깨",
+        "charSpan": [
+          27,
+          29
+        ],
+        "rule": "bodyPartLexicon.어깨>body.part:shoulder"
+      }
+    ],
+    "body.layer": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "옆",
+        "charSpan": [
+          18,
+          19
+        ],
+        "rule": "bodyLayerLexicon.옆>body.layer:around_side"
+      },
+      {
+        "source": "explicit_lexicon",
+        "trigger": "옆",
+        "charSpan": [
+          30,
+          31
+        ],
+        "rule": "bodyLayerLexicon.옆>body.layer:around_side"
+      }
+    ]
+  },
+  "_unmatched": [
+    {
+      "lemma": "같",
+      "tag": "EOJEOL",
+      "surface": "같은",
+      "charSpan": [
+        6,
+        8
+      ]
+    },
+    {
+      "lemma": "것",
+      "tag": "EOJEOL",
+      "surface": "게",
+      "charSpan": [
+        9,
+        10
+      ]
+    },
+    {
+      "lemma": "보이",
+      "tag": "EOJEOL",
+      "surface": "보여요",
+      "charSpan": [
+        11,
+        14
+      ]
+    },
+    {
+      "lemma": "있",
+      "tag": "EOJEOL",
+      "surface": "있어요",
+      "charSpan": [
+        33,
+        36
+      ]
+    },
+    {
+      "lemma": "위",
+      "tag": "EOJEOL",
+      "surface": "위에서",
+      "charSpan": [
+        38,
+        41
+      ]
+    },
+    {
+      "lemma": "줄",
+      "tag": "NNG",
+      "surface": "줄",
+      "charSpan": [
+        42,
+        43
+      ]
+    },
+    {
+      "lemma": "줄",
+      "tag": "EOJEOL",
+      "surface": "줄에",
+      "charSpan": [
+        42,
+        44
+      ]
+    },
+    {
+      "lemma": "있",
+      "tag": "EOJEOL",
+      "surface": "있어요",
+      "charSpan": [
+        49,
+        52
+      ]
+    },
+    {
+      "lemma": "가장자리",
+      "tag": "EOJEOL",
+      "surface": "가장자리가",
+      "charSpan": [
+        63,
+        68
+      ]
+    },
+    {
+      "lemma": "조금",
+      "tag": "EOJEOL",
+      "surface": "조금씩",
+      "charSpan": [
+        74,
+        77
+      ]
+    },
+    {
+      "lemma": "있",
+      "tag": "EOJEOL",
+      "surface": "있어요",
+      "charSpan": [
+        82,
+        85
+      ]
+    },
+    {
+      "lemma": "책",
+      "tag": "NNG",
+      "surface": "책",
+      "charSpan": [
+        87,
+        88
+      ]
+    },
+    {
+      "lemma": "한",
+      "tag": "EOJEOL",
+      "surface": "한",
+      "charSpan": [
+        89,
+        90
+      ]
+    },
+    {
+      "lemma": "권",
+      "tag": "EOJEOL",
+      "surface": "권",
+      "charSpan": [
+        91,
+        92
+      ]
+    },
+    {
+      "lemma": "크기",
+      "tag": "EOJEOL",
+      "surface": "크기쯤이요",
+      "charSpan": [
+        93,
+        98
+      ]
+    },
+    {
+      "lemma": "아주",
+      "tag": "EOJEOL",
+      "surface": "아주",
+      "charSpan": [
+        109,
+        111
+      ]
+    },
+    {
+      "lemma": "좌우",
+      "tag": "NNG",
+      "surface": "좌우",
+      "charSpan": [
+        116,
+        118
+      ]
+    },
+    {
+      "lemma": "좌우",
+      "tag": "EOJEOL",
+      "surface": "좌우로",
+      "charSpan": [
+        116,
+        119
+      ]
+    }
+  ],
+  "_unmapped": [
+    {
+      "lemma": "판",
+      "category": "shape",
+      "value": {
+        "shape": "sheet"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "simile_marker",
+        "trigger": "판",
+        "charSpan": [
+          4,
+          5
+        ],
+        "rule": "simile.같은>shapeLexicon.판"
+      }
+    },
+    {
+      "lemma": "얇",
+      "category": "shape",
+      "value": {
+        "shape": "thin"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "얇고",
+        "charSpan": [
+          54,
+          56
+        ],
+        "rule": "shapeLexicon.얇"
+      }
+    },
+    {
+      "lemma": "평평",
+      "category": "shape",
+      "value": {
+        "shape": "flat"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "평평해요",
+        "charSpan": [
+          57,
+          61
+        ],
+        "rule": "shapeLexicon.평평"
+      }
+    },
+    {
+      "lemma": "가장자리",
+      "category": "shape",
+      "value": {
+        "shape": "edge"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "가장자리",
+        "charSpan": [
+          63,
+          67
+        ],
+        "rule": "shapeLexicon.가장자리"
+      }
+    }
+  ],
+  "_negated": [],
+  "_alternatives": [
+    {
+      "path": "material.color",
+      "value": {
+        "h": 0.0,
+        "s": 0.65,
+        "l": 0.24
+      },
+      "reason": "later_mention",
+      "_provenance": [
+        {
+          "source": "phrase_rule",
+          "trigger": "검붉고",
+          "charSpan": [
+            100,
+            103
+          ],
+          "rule": "colorTerm.붉>material.color:hsl"
+        }
+      ]
+    },
+    {
+      "path": "body.part",
+      "value": "body",
+      "reason": "lower_priority",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "몸",
+          "charSpan": [
+            16,
+            17
+          ],
+          "rule": "bodyPartLexicon.몸>body.part:body"
+        }
+      ]
+    },
+    {
+      "path": "body.layer",
+      "value": "surface_above",
+      "reason": "later_mention",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "위",
+          "charSpan": [
+            38,
+            39
+          ],
+          "rule": "bodyLayerLexicon.위>body.layer:surface_above"
+        }
+      ]
+    }
+  ],
+  "_inferred": {
+    "layout.verticalOffset": {
+      "value": 0.82,
+      "_provenance": [
+        {
+          "source": "body_part_height",
+          "trigger": "어깨",
+          "charSpan": [
+            27,
+            29
+          ],
+          "rule": "bodyPartHeight.shoulder>layout.verticalOffset:0.82"
+        }
+      ]
+    }
+  },
+  "_context": [],
+  "_parts": [
+    {
+      "text": "녹슬어서",
+      "charSpan": [
+        69,
+        73
+      ],
+      "part": "가장자리",
+      "partClass": "detail",
+      "path": "material.roughness",
+      "value": 0.9,
+      "rule": "textureLexicon.녹슬>material.roughness:rusty"
+    }
+  ],
+  "_uncertain": [],
+  "_measurements": [],
+  "_direction": [
+    {
+      "text": "오른쪽",
+      "charSpan": [
+        23,
+        26
+      ],
+      "horizontal": "right",
+      "vertical": null,
+      "depth": null
+    }
+  ],
+  "_needsConfirmation": [],
+  "_clauses": [
+    {
+      "charSpan": [
+        0,
+        14
+      ],
+      "text": "검붉은 판 같은 게 보여요",
+      "usedFor": [
+        "material.color"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        14,
+        15
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        16,
+        21
+      ],
+      "text": "몸 옆이요",
+      "usedFor": [
+        "body.layer"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        21,
+        22
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        23,
+        36
+      ],
+      "text": "오른쪽 어깨 옆에 있어요",
+      "usedFor": [
+        "body.part",
+        "body.layer"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        36,
+        37
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        38,
+        52
+      ],
+      "text": "위에서 줄에 매달려 있어요",
+      "usedFor": [
+        "form.posture"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        52,
+        53
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        54,
+        56
+      ],
+      "text": "얇고",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        57,
+        61
+      ],
+      "text": "평평해요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        61,
+        62
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        63,
+        73
+      ],
+      "text": "가장자리가 녹슬어서",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        74,
+        85
+      ],
+      "text": "조금씩 부서져 있어요",
+      "usedFor": [
+        "material.erosion"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        85,
+        86
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        87,
+        98
+      ],
+      "text": "책 한 권 크기쯤이요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        98,
+        99
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        100,
+        103
+      ],
+      "text": "검붉고",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        104,
+        107
+      ],
+      "text": "탁해요",
+      "usedFor": [
+        "material.saturation"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        107,
+        108
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        109,
+        124
+      ],
+      "text": "아주 느리게 좌우로 흔들려요",
+      "usedFor": [
+        "motion.type",
+        "motion.speed"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        124,
+        125
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    }
+  ]
+}

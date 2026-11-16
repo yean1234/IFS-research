@@ -1,0 +1,567 @@
+{
+  "meta": {
+    "specVersion": "2.1.0",
+    "participantId": null,
+    "sessionId": "H14",
+    "condition": "static",
+    "sourceTextHash": "sha256:dd89f6e583dbedc05c4b0de399e328c0dae947cbc670d18b13ae668ae19d1290",
+    "pipeline": {
+      "builder": "scene-spec-builder-v1/1.2.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@1.0.0",
+        "layer1Base": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@1.0.0",
+        "vad": "vad-ko@0.1.0"
+      }
+    },
+    "mapping": {
+      "requested": "v1",
+      "used": "v1",
+      "fallbackReason": null
+    }
+  },
+  "form": {
+    "type": null,
+    "posture": null
+  },
+  "material": {
+    "color": null,
+    "brightness": 0.3,
+    "saturation": null,
+    "roughness": null,
+    "opacity": null,
+    "erosion": null
+  },
+  "layout": {
+    "size": 0.544,
+    "distance": null,
+    "verticalOffset": null
+  },
+  "motion": {
+    "type": "rotating",
+    "speed": 0.125
+  },
+  "body": {
+    "part": "body",
+    "layer": "around"
+  },
+  "_provenance": {
+    "material.brightness": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "흐릿해서",
+        "charSpan": [
+          71,
+          75
+        ],
+        "rule": "brightnessLexicon.흐릿>material.brightness:dim"
+      }
+    ],
+    "layout.size": [
+      {
+        "source": "phrase_rule",
+        "trigger": "농구공 정도요",
+        "charSpan": [
+          85,
+          92
+        ],
+        "rule": "compare.equal.농구공>layout.size:0.24m"
+      }
+    ],
+    "motion.type": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "돌아요",
+        "charSpan": [
+          107,
+          110
+        ],
+        "rule": "motionLexicon.돌>motion.type:rotating"
+      }
+    ],
+    "motion.speed": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "천천히",
+        "charSpan": [
+          97,
+          100
+        ],
+        "rule": "motionLexicon.천천히>motion.speed:slow"
+      }
+    ],
+    "body.part": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "몸",
+        "charSpan": [
+          28,
+          29
+        ],
+        "rule": "bodyPartLexicon.몸>body.part:body"
+      }
+    ],
+    "body.layer": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "주변",
+        "charSpan": [
+          30,
+          32
+        ],
+        "rule": "bodyLayerLexicon.주변>body.layer:around"
+      }
+    ]
+  },
+  "_unmatched": [
+    {
+      "lemma": "뭐",
+      "tag": "EOJEOL",
+      "surface": "뭔가",
+      "charSpan": [
+        0,
+        2
+      ]
+    },
+    {
+      "lemma": "것",
+      "tag": "EOJEOL",
+      "surface": "게",
+      "charSpan": [
+        7,
+        8
+      ]
+    },
+    {
+      "lemma": "있",
+      "tag": "EOJEOL",
+      "surface": "있는데",
+      "charSpan": [
+        9,
+        12
+      ]
+    },
+    {
+      "lemma": "정확히",
+      "tag": "MAG",
+      "surface": "정확히",
+      "charSpan": [
+        13,
+        16
+      ]
+    },
+    {
+      "lemma": "모르",
+      "tag": "VV",
+      "surface": "모르",
+      "charSpan": [
+        21,
+        23
+      ]
+    },
+    {
+      "lemma": "것",
+      "tag": "EOJEOL",
+      "surface": "것",
+      "charSpan": [
+        34,
+        35
+      ]
+    },
+    {
+      "lemma": "같",
+      "tag": "EOJEOL",
+      "surface": "같아요",
+      "charSpan": [
+        36,
+        39
+      ]
+    },
+    {
+      "lemma": "정면",
+      "tag": "NNG",
+      "surface": "정면",
+      "charSpan": [
+        41,
+        43
+      ]
+    },
+    {
+      "lemma": "정면",
+      "tag": "EOJEOL",
+      "surface": "정면에요",
+      "charSpan": [
+        41,
+        45
+      ]
+    },
+    {
+      "lemma": "소리",
+      "tag": "EOJEOL",
+      "surface": "소리가",
+      "charSpan": [
+        53,
+        56
+      ]
+    },
+    {
+      "lemma": "나",
+      "tag": "VV",
+      "surface": "나",
+      "charSpan": [
+        57,
+        58
+      ]
+    },
+    {
+      "lemma": "나",
+      "tag": "EOJEOL",
+      "surface": "나는",
+      "charSpan": [
+        57,
+        59
+      ]
+    },
+    {
+      "lemma": "것",
+      "tag": "EOJEOL",
+      "surface": "것",
+      "charSpan": [
+        60,
+        61
+      ]
+    },
+    {
+      "lemma": "같",
+      "tag": "EOJEOL",
+      "surface": "같아요",
+      "charSpan": [
+        62,
+        65
+      ]
+    },
+    {
+      "lemma": "윤곽",
+      "tag": "NNG",
+      "surface": "윤곽",
+      "charSpan": [
+        67,
+        69
+      ]
+    },
+    {
+      "lemma": "윤곽",
+      "tag": "EOJEOL",
+      "surface": "윤곽이",
+      "charSpan": [
+        67,
+        70
+      ]
+    },
+    {
+      "lemma": "잘",
+      "tag": "MAG",
+      "surface": "잘",
+      "charSpan": [
+        76,
+        77
+      ]
+    },
+    {
+      "lemma": "안",
+      "tag": "MAG",
+      "surface": "안",
+      "charSpan": [
+        78,
+        79
+      ]
+    },
+    {
+      "lemma": "보이",
+      "tag": "EOJEOL",
+      "surface": "보여요",
+      "charSpan": [
+        80,
+        83
+      ]
+    },
+    {
+      "lemma": "아주",
+      "tag": "EOJEOL",
+      "surface": "아주",
+      "charSpan": [
+        94,
+        96
+      ]
+    },
+    {
+      "lemma": "제자리",
+      "tag": "NNG",
+      "surface": "제자리",
+      "charSpan": [
+        101,
+        104
+      ]
+    },
+    {
+      "lemma": "제자리",
+      "tag": "EOJEOL",
+      "surface": "제자리에서",
+      "charSpan": [
+        101,
+        106
+      ]
+    }
+  ],
+  "_unmapped": [
+    {
+      "lemma": "동그랗",
+      "category": "shape",
+      "value": {
+        "shape": "round"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "동그란",
+        "charSpan": [
+          3,
+          6
+        ],
+        "rule": "shapeLexicon.동그랗"
+      }
+    },
+    {
+      "lemma": "웅웅",
+      "category": "sound",
+      "value": {
+        "sound": "humming"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "웅웅거리는",
+        "charSpan": [
+          47,
+          52
+        ],
+        "rule": "soundLexicon.웅웅"
+      }
+    },
+    {
+      "lemma": "소리",
+      "category": "sound",
+      "value": {
+        "sound": "sound"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "소리",
+        "charSpan": [
+          53,
+          55
+        ],
+        "rule": "soundLexicon.소리"
+      }
+    }
+  ],
+  "_negated": [],
+  "_alternatives": [],
+  "_inferred": {},
+  "_context": [],
+  "_parts": [],
+  "_uncertain": [
+    {
+      "text": "정확히 뭔지는 모르겠어요",
+      "charSpan": [
+        13,
+        26
+      ],
+      "paths": [],
+      "marker": "모르"
+    }
+  ],
+  "_measurements": [
+    {
+      "text": "농구공 정도요",
+      "charSpan": [
+        85,
+        92
+      ],
+      "kind": "reference",
+      "meters": 0.24,
+      "dimension": "size",
+      "reference": "농구공",
+      "usedFor": "layout.size"
+    }
+  ],
+  "_direction": [],
+  "_needsConfirmation": [],
+  "_clauses": [
+    {
+      "charSpan": [
+        0,
+        2
+      ],
+      "text": "뭔가",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        3,
+        12
+      ],
+      "text": "동그란 게 있는데",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        13,
+        26
+      ],
+      "text": "정확히 뭔지는 모르겠어요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        26,
+        27
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        28,
+        39
+      ],
+      "text": "몸 주변인 것 같아요",
+      "usedFor": [
+        "body.part",
+        "body.layer"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        39,
+        40
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        41,
+        45
+      ],
+      "text": "정면에요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        45,
+        46
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        47,
+        65
+      ],
+      "text": "웅웅거리는 소리가 나는 것 같아요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        65,
+        66
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        67,
+        75
+      ],
+      "text": "윤곽이 흐릿해서",
+      "usedFor": [
+        "material.brightness"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        76,
+        83
+      ],
+      "text": "잘 안 보여요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        83,
+        84
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        85,
+        92
+      ],
+      "text": "농구공 정도요",
+      "usedFor": [
+        "layout.size"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        92,
+        93
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        94,
+        110
+      ],
+      "text": "아주 천천히 제자리에서 돌아요",
+      "usedFor": [
+        "motion.type",
+        "motion.speed"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        110,
+        111
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    }
+  ]
+}

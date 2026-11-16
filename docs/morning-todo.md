@@ -3,6 +3,9 @@
 야간 작업 중 실행하지 못했거나 사람이 결정해야 하는 것을 모았습니다. 확인한 항목은 체크하거나 지우면 됩니다.
 
 ## 연구 진행 (마감 12/2 기준, 급한 순)
+- [ ] **AC-3 held-out 미달을 어떻게 이어갈지 결정.** v1 반영률 0.698(기준 0.75), 왜곡률 0.094(기준 0.05), 미반영 원문 보존률 0.859(기준 1.0). v0보다는 낫습니다(반영률 +0.198, 왜곡률 −0.080). 지금 held-out은 이미 봤으므로 이 세트를 보고 규칙을 고치면 안 됩니다. 선택지: (가) 지금 수치 그대로 논문에 보고, (나) 실패 목록(`docs/validation/e2e/results.md`)을 dev에 합쳐 규칙을 고치고 **새 held-out**을 사람이 써서 다시 평가. 왜곡 20건 중 7건이 크기 구간, 5건이 다른 슬롯으로 들어간 값입니다.
+- [ ] **AC-5.3 문구 수정을 인정할지.** 처음 문구는 `scene-spec.v2.json`만 적었는데 v1 출력은 2.1 형식입니다. 버전별 스키마로는 60/60, v2.json만 쓰면 v1 0/30입니다(decisions X9).
+- [ ] **'거의 투명' → opacity 0.0으로 형상이 사라지는 문제(H09).** 채점은 반영으로 세지만 화면에는 아무것도 없습니다. opacity 하한을 둘지, 정답 구간을 좁힐지 정합니다. `docs/validation/e2e/unity/`의 PNG 60장을 직접 열어 빈 화면·분홍 화면이 더 있는지도 봐 주세요(지금까지 12장만 확인).
 - [ ] **기관 정책 확인 (11/19 정오까지).** 참여자를 모집해 동의를 받고 응답을 저장하는 연구가 기관의 사전 심의 또는 면제 확인 대상인지 확인합니다. 한국HCI학회 투고 규정이 윤리 심의 진술을 요구하는지도 봅니다. 확인되기 전에는 내부 파일럿만 하고, 확인이 안 되면 research-design.md 7절의 축소 범위로 전환합니다.
 - [ ] 한국HCI학회 분량·형식 규정 확인(research-design.md 8절 [확인 필요])
 - [ ] 중립 심상 문구 초안 채택 여부(opening_neutral, location_neutral, probe_material, 심상 유지 자기보고 문항). 채택하면 `shared/protocol`에 status·출처·버전을 적어 반영합니다(AGENTS.md 원칙 7).
@@ -40,3 +43,5 @@
 - [ ] PlayMode나 기기에서 ProfilerRecorder('Draw Calls Count', 'Triangles Count')로 실측해 배치 캡처 추정값(눈당 드로콜 8–24, 삼각형 2만–10만)과 비교
 - [ ] SceneSpecOpaque에 Cull Off ShadowCaster 패스(정점 변위·침식·껍질 clip 포함)를 넣을지: 지금은 침식 구멍 너머 안쪽 면이 그 뒤 깊이로 그림자를 읽습니다.
 - [ ] 2단계 수정에서 `SceneSpecDeserializationTests.cs`와 예시 `examples/v1/EX01·EX03.v1.json`을 바꿨지만 Unity에서 실행해 보지 않았습니다. 3단계 배치 캡처에서 로드는 확인하고, EditMode 테스트는 Test Runner에서 한 번 돌려 주세요.
+- [ ] push·PR 전에 `docs/validation/e2e/`(약 21 MB, PNG 119장)를 그대로 올릴지, 상세 PNG(`*_detail.png`, 5.6 MB)를 뺄지 정합니다. 로그(`logs/capture.log`·`editmode.log`)는 경로·계정·호스트·Machine Id·사설 IP를 가렸지만 공개 전에 한 번 더 봐 주세요(GPU 모델과 Program Files 경로는 남아 있습니다).
+- [ ] Unity `-specDir`·`-outDir`의 상대 경로는 `unity\` 폴더 기준으로 풀립니다. 저장소 루트 기준 경로를 주면 실패합니다(`..\docs\…`처럼 적어야 함).

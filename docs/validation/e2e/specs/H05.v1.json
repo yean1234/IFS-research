@@ -1,0 +1,591 @@
+{
+  "meta": {
+    "specVersion": "2.1.0",
+    "participantId": null,
+    "sessionId": "H05",
+    "condition": "static",
+    "sourceTextHash": "sha256:3a37c7d6e980f11504936661dcbf50b36fc900230f8709dbc3eb396414a604d4",
+    "pipeline": {
+      "builder": "scene-spec-builder-v1/1.2.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@1.0.0",
+        "layer1Base": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@1.0.0",
+        "vad": "vad-ko@0.1.0"
+      }
+    },
+    "mapping": {
+      "requested": "v1",
+      "used": "v1",
+      "fallbackReason": null
+    }
+  },
+  "form": {
+    "type": null,
+    "posture": null
+  },
+  "material": {
+    "color": {
+      "h": 0.0,
+      "s": 0.0,
+      "l": 0.08
+    },
+    "brightness": null,
+    "saturation": null,
+    "roughness": 0.85,
+    "opacity": null,
+    "erosion": null
+  },
+  "layout": {
+    "size": 0.333,
+    "distance": null,
+    "verticalOffset": 0.02
+  },
+  "motion": {
+    "type": "still",
+    "speed": null
+  },
+  "body": {
+    "part": "foot",
+    "layer": "around"
+  },
+  "_provenance": {
+    "material.color": [
+      {
+        "source": "phrase_rule",
+        "trigger": "검은",
+        "charSpan": [
+          0,
+          2
+        ],
+        "rule": "colorTerm.검은>material.color:hsl"
+      }
+    ],
+    "material.roughness": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "까끌까끌하고",
+        "charSpan": [
+          48,
+          54
+        ],
+        "rule": "textureLexicon.까끌까끌>material.roughness:rough"
+      },
+      {
+        "source": "explicit_lexicon",
+        "trigger": "거칠어요",
+        "charSpan": [
+          55,
+          59
+        ],
+        "rule": "textureLexicon.거칠>material.roughness:rough"
+      }
+    ],
+    "layout.size": [
+      {
+        "source": "phrase_rule",
+        "trigger": "주먹만 하고",
+        "charSpan": [
+          79,
+          85
+        ],
+        "rule": "compare.equal.주먹>layout.size:0.1m"
+      }
+    ],
+    "layout.verticalOffset": [
+      {
+        "source": "phrase_rule",
+        "trigger": "발밑",
+        "charSpan": [
+          21,
+          23
+        ],
+        "rule": "height.발밑>layout.verticalOffset:0.02"
+      }
+    ],
+    "motion.type": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "움직임",
+        "charSpan": [
+          97,
+          100
+        ],
+        "rule": "motionLexicon.움직임>motion.type:still(negated)"
+      }
+    ],
+    "body.part": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "발",
+        "charSpan": [
+          21,
+          22
+        ],
+        "rule": "bodyPartLexicon.발>body.part:foot"
+      }
+    ],
+    "body.layer": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "밖",
+        "charSpan": [
+          16,
+          17
+        ],
+        "rule": "bodyLayerLexicon.밖>body.layer:around"
+      }
+    ]
+  },
+  "_unmatched": [
+    {
+      "lemma": "돌멩이",
+      "tag": "NNG",
+      "surface": "돌멩이",
+      "charSpan": [
+        3,
+        6
+      ]
+    },
+    {
+      "lemma": "돌멩이",
+      "tag": "EOJEOL",
+      "surface": "돌멩이가",
+      "charSpan": [
+        3,
+        7
+      ]
+    },
+    {
+      "lemma": "생각나",
+      "tag": "VV",
+      "surface": "생각나",
+      "charSpan": [
+        8,
+        11
+      ]
+    },
+    {
+      "lemma": "생각나",
+      "tag": "EOJEOL",
+      "surface": "생각나요",
+      "charSpan": [
+        8,
+        12
+      ]
+    },
+    {
+      "lemma": "있",
+      "tag": "EOJEOL",
+      "surface": "있어요",
+      "charSpan": [
+        25,
+        28
+      ]
+    },
+    {
+      "lemma": "돌",
+      "tag": "EOJEOL",
+      "surface": "돌이",
+      "charSpan": [
+        30,
+        32
+      ]
+    },
+    {
+      "lemma": "그냥",
+      "tag": "EOJEOL",
+      "surface": "그냥",
+      "charSpan": [
+        33,
+        35
+      ]
+    },
+    {
+      "lemma": "거기",
+      "tag": "EOJEOL",
+      "surface": "거기",
+      "charSpan": [
+        36,
+        38
+      ]
+    },
+    {
+      "lemma": "있",
+      "tag": "EOJEOL",
+      "surface": "있어요",
+      "charSpan": [
+        39,
+        42
+      ]
+    },
+    {
+      "lemma": "표면",
+      "tag": "EOJEOL",
+      "surface": "표면이",
+      "charSpan": [
+        44,
+        47
+      ]
+    },
+    {
+      "lemma": "손",
+      "tag": "EOJEOL",
+      "surface": "손으로",
+      "charSpan": [
+        61,
+        64
+      ]
+    },
+    {
+      "lemma": "들",
+      "tag": "EOJEOL",
+      "surface": "들면",
+      "charSpan": [
+        65,
+        67
+      ]
+    },
+    {
+      "lemma": "것",
+      "tag": "EOJEOL",
+      "surface": "것",
+      "charSpan": [
+        72,
+        73
+      ]
+    },
+    {
+      "lemma": "같",
+      "tag": "EOJEOL",
+      "surface": "같아요",
+      "charSpan": [
+        74,
+        77
+      ]
+    },
+    {
+      "lemma": "모양",
+      "tag": "EOJEOL",
+      "surface": "모양이에요",
+      "charSpan": [
+        90,
+        95
+      ]
+    },
+    {
+      "lemma": "없",
+      "tag": "EOJEOL",
+      "surface": "없어요",
+      "charSpan": [
+        102,
+        105
+      ]
+    }
+  ],
+  "_unmapped": [
+    {
+      "lemma": "돌",
+      "category": "object",
+      "value": {
+        "object": "stone"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "돌",
+        "charSpan": [
+          30,
+          31
+        ],
+        "rule": "objectLexicon.돌"
+      }
+    },
+    {
+      "lemma": "표면",
+      "category": "body_layer",
+      "value": {
+        "layer": "surface"
+      },
+      "reason": "no_body_part_context",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "표면",
+        "charSpan": [
+          44,
+          46
+        ],
+        "rule": "bodyLayerLexicon.표면"
+      }
+    },
+    {
+      "lemma": "묵직",
+      "category": "weight",
+      "value": {
+        "weight": "heavy"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "묵직할",
+        "charSpan": [
+          68,
+          71
+        ],
+        "rule": "weightLexicon.묵직"
+      }
+    },
+    {
+      "lemma": "납작",
+      "category": "shape",
+      "value": {
+        "shape": "flat"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "납작한",
+        "charSpan": [
+          86,
+          89
+        ],
+        "rule": "shapeLexicon.납작"
+      }
+    }
+  ],
+  "_negated": [],
+  "_alternatives": [
+    {
+      "path": "body.part",
+      "value": "body",
+      "reason": "lower_priority",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "몸",
+          "charSpan": [
+            14,
+            15
+          ],
+          "rule": "bodyPartLexicon.몸>body.part:body"
+        }
+      ]
+    },
+    {
+      "path": "body.part",
+      "value": "hand",
+      "reason": "later_mention",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "손",
+          "charSpan": [
+            61,
+            62
+          ],
+          "rule": "bodyPartLexicon.손>body.part:hand"
+        }
+      ]
+    }
+  ],
+  "_inferred": {},
+  "_context": [],
+  "_parts": [],
+  "_uncertain": [],
+  "_measurements": [
+    {
+      "text": "주먹만 하고",
+      "charSpan": [
+        79,
+        85
+      ],
+      "kind": "reference",
+      "meters": 0.1,
+      "dimension": "size",
+      "reference": "주먹",
+      "usedFor": "layout.size"
+    }
+  ],
+  "_direction": [],
+  "_needsConfirmation": [],
+  "_clauses": [
+    {
+      "charSpan": [
+        0,
+        12
+      ],
+      "text": "검은 돌멩이가 생각나요",
+      "usedFor": [
+        "material.color"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        12,
+        13
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        14,
+        19
+      ],
+      "text": "몸 밖이요",
+      "usedFor": [
+        "body.layer"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        19,
+        20
+      ],
+      "text": ",",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        21,
+        28
+      ],
+      "text": "발밑에 있어요",
+      "usedFor": [
+        "layout.verticalOffset",
+        "body.part"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        28,
+        29
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        30,
+        42
+      ],
+      "text": "돌이 그냥 거기 있어요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        42,
+        43
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        44,
+        54
+      ],
+      "text": "표면이 까끌까끌하고",
+      "usedFor": [
+        "material.roughness"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        55,
+        59
+      ],
+      "text": "거칠어요",
+      "usedFor": [
+        "material.roughness"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        59,
+        60
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        61,
+        77
+      ],
+      "text": "손으로 들면 묵직할 것 같아요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        77,
+        78
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        79,
+        85
+      ],
+      "text": "주먹만 하고",
+      "usedFor": [
+        "layout.size"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        86,
+        95
+      ],
+      "text": "납작한 모양이에요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        95,
+        96
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        97,
+        105
+      ],
+      "text": "움직임은 없어요",
+      "usedFor": [
+        "motion.type"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        105,
+        106
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    }
+  ]
+}

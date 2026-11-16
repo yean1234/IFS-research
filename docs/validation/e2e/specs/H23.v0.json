@@ -1,0 +1,289 @@
+{
+  "meta": {
+    "specVersion": "2.0.0",
+    "participantId": null,
+    "sessionId": "H23",
+    "condition": "static",
+    "sourceTextHash": "sha256:790526375cba093817490dd3044e0699b4f093720ef078003823fa9a9310e9c3",
+    "pipeline": {
+      "builder": "scene-spec-builder/0.1.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@0.1.0",
+        "vad": "vad-ko@0.1.0"
+      }
+    }
+  },
+  "form": {
+    "type": "fragments",
+    "posture": null
+  },
+  "material": {
+    "color": {
+      "h": 0.144,
+      "s": 0.85,
+      "l": 0.6
+    },
+    "brightness": 0.9,
+    "saturation": null,
+    "roughness": null,
+    "opacity": null,
+    "erosion": null
+  },
+  "layout": {
+    "size": 0.316,
+    "distance": null,
+    "verticalOffset": null
+  },
+  "motion": {
+    "type": "spreading",
+    "speed": null
+  },
+  "body": {
+    "part": "body",
+    "layer": "around"
+  },
+  "_provenance": {
+    "form.type": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "조각",
+        "charSpan": [
+          13,
+          15
+        ],
+        "rule": "formLexicon.조각>form.type:fragments"
+      }
+    ],
+    "material.color": [
+      {
+        "source": "simile_marker",
+        "trigger": "노란",
+        "charSpan": [
+          0,
+          2
+        ],
+        "rule": "simile.같은>colorLexicon.노랗>material.color:hsl"
+      }
+    ],
+    "material.brightness": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "빛나요",
+        "charSpan": [
+          54,
+          57
+        ],
+        "rule": "brightnessLexicon.빛나>material.brightness:glowing"
+      }
+    ],
+    "layout.size": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "작은",
+        "charSpan": [
+          10,
+          12
+        ],
+        "rule": "sizeLexicon.작>layout.size:logScale(0.6)"
+      },
+      {
+        "source": "explicit_lexicon",
+        "trigger": "작고",
+        "charSpan": [
+          42,
+          44
+        ],
+        "rule": "sizeLexicon.작>layout.size:logScale(0.6)"
+      }
+    ],
+    "motion.type": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "퍼져",
+        "charSpan": [
+          25,
+          27
+        ],
+        "rule": "motionLexicon.퍼지>motion.type:spreading"
+      }
+    ],
+    "body.part": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "몸",
+        "charSpan": [
+          112,
+          113
+        ],
+        "rule": "bodyPartLexicon.몸>body.part:body"
+      }
+    ],
+    "body.layer": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "주변",
+        "charSpan": [
+          114,
+          116
+        ],
+        "rule": "bodyLayerLexicon.주변>body.layer:around"
+      }
+    ]
+  },
+  "_unmatched": [
+    {
+      "lemma": "모래알",
+      "tag": "NNG",
+      "surface": "모래알",
+      "charSpan": [
+        3,
+        6
+      ]
+    },
+    {
+      "lemma": "발밑",
+      "tag": "NNG",
+      "surface": "발밑",
+      "charSpan": [
+        18,
+        20
+      ]
+    },
+    {
+      "lemma": "넓",
+      "tag": "VA",
+      "surface": "넓",
+      "charSpan": [
+        22,
+        23
+      ]
+    },
+    {
+      "lemma": "햇볕",
+      "tag": "NNG",
+      "surface": "햇볕",
+      "charSpan": [
+        45,
+        47
+      ]
+    },
+    {
+      "lemma": "반짝반짝",
+      "tag": "MAG",
+      "surface": "반짝반짝",
+      "charSpan": [
+        49,
+        53
+      ]
+    },
+    {
+      "lemma": "바람",
+      "tag": "NNG",
+      "surface": "바람",
+      "charSpan": [
+        59,
+        61
+      ]
+    },
+    {
+      "lemma": "불",
+      "tag": "VV",
+      "surface": "불",
+      "charSpan": [
+        63,
+        64
+      ]
+    },
+    {
+      "lemma": "사방",
+      "tag": "NNG",
+      "surface": "사방",
+      "charSpan": [
+        66,
+        68
+      ]
+    },
+    {
+      "lemma": "만지",
+      "tag": "VV",
+      "surface": "만지",
+      "charSpan": [
+        77,
+        79
+      ]
+    },
+    {
+      "lemma": "까슬까슬",
+      "tag": "MAG",
+      "surface": "까슬까슬",
+      "charSpan": [
+        81,
+        85
+      ]
+    },
+    {
+      "lemma": "그대로",
+      "tag": "MAG",
+      "surface": "그대로",
+      "charSpan": [
+        120,
+        123
+      ]
+    }
+  ],
+  "_unmapped": [
+    {
+      "lemma": "미지근",
+      "category": "temperature",
+      "value": {
+        "temperature": "lukewarm"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "미지근해요",
+        "charSpan": [
+          105,
+          110
+        ],
+        "rule": "temperatureLexicon.미지근"
+      }
+    }
+  ],
+  "_negated": [
+    {
+      "lemma": "따뜻",
+      "category": "temperature",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "따뜻하진",
+        "charSpan": [
+          94,
+          98
+        ],
+        "rule": "temperatureLexicon.따뜻"
+      }
+    }
+  ],
+  "_alternatives": [
+    {
+      "path": "motion.type",
+      "value": "scattering",
+      "reason": "later_mention",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "흩어져요",
+          "charSpan": [
+            71,
+            75
+          ],
+          "rule": "motionLexicon.흩어지>motion.type:scattering"
+        }
+      ]
+    }
+  ],
+  "_inferred": {}
+}

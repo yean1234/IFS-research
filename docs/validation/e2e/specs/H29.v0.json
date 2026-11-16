@@ -1,0 +1,256 @@
+{
+  "meta": {
+    "specVersion": "2.0.0",
+    "participantId": null,
+    "sessionId": "H29",
+    "condition": "static",
+    "sourceTextHash": "sha256:02e172b798157ad9e756c58363b5b633e0e23e9c9b4724a32383dee20c9299ba",
+    "pipeline": {
+      "builder": "scene-spec-builder/0.1.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@0.1.0",
+        "vad": "vad-ko@0.1.0"
+      }
+    }
+  },
+  "form": {
+    "type": null,
+    "posture": null
+  },
+  "material": {
+    "color": null,
+    "brightness": null,
+    "saturation": null,
+    "roughness": null,
+    "opacity": null,
+    "erosion": 0.4
+  },
+  "layout": {
+    "size": null,
+    "distance": null,
+    "verticalOffset": null
+  },
+  "motion": {
+    "type": "still",
+    "speed": null
+  },
+  "body": {
+    "part": "body",
+    "layer": "around"
+  },
+  "_provenance": {
+    "material.erosion": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "갈라져",
+        "charSpan": [
+          38,
+          41
+        ],
+        "rule": "textureLexicon.갈라지>material.erosion:cracked"
+      }
+    ],
+    "motion.type": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "움직이지",
+        "charSpan": [
+          65,
+          69
+        ],
+        "rule": "motionLexicon.움직이>motion.type:still(negated)"
+      }
+    ],
+    "body.part": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "몸",
+        "charSpan": [
+          103,
+          104
+        ],
+        "rule": "bodyPartLexicon.몸>body.part:body"
+      }
+    ],
+    "body.layer": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "밖",
+        "charSpan": [
+          105,
+          106
+        ],
+        "rule": "bodyLayerLexicon.밖>body.layer:around"
+      }
+    ]
+  },
+  "_unmatched": [
+    {
+      "lemma": "황토색",
+      "tag": "NNG",
+      "surface": "황토색",
+      "charSpan": [
+        0,
+        3
+      ]
+    },
+    {
+      "lemma": "흙덩이",
+      "tag": "NNG",
+      "surface": "흙덩이",
+      "charSpan": [
+        4,
+        7
+      ]
+    },
+    {
+      "lemma": "무릎",
+      "tag": "NNG",
+      "surface": "무릎",
+      "charSpan": [
+        9,
+        11
+      ]
+    },
+    {
+      "lemma": "높이",
+      "tag": "NNG",
+      "surface": "높이",
+      "charSpan": [
+        12,
+        14
+      ]
+    },
+    {
+      "lemma": "공중",
+      "tag": "NNG",
+      "surface": "공중",
+      "charSpan": [
+        16,
+        18
+      ]
+    },
+    {
+      "lemma": "바싹",
+      "tag": "MAG",
+      "surface": "바싹",
+      "charSpan": [
+        28,
+        30
+      ]
+    },
+    {
+      "lemma": "마르",
+      "tag": "VV",
+      "surface": "말",
+      "charSpan": [
+        31,
+        32
+      ]
+    },
+    {
+      "lemma": "쩍쩍",
+      "tag": "MAG",
+      "surface": "쩍쩍",
+      "charSpan": [
+        35,
+        37
+      ]
+    },
+    {
+      "lemma": "거치",
+      "tag": "VV",
+      "surface": "거칠",
+      "charSpan": [
+        45,
+        47
+      ]
+    },
+    {
+      "lemma": "칠",
+      "tag": "NNG",
+      "surface": "칠",
+      "charSpan": [
+        48,
+        49
+      ]
+    },
+    {
+      "lemma": "수박",
+      "tag": "NNG",
+      "surface": "수박",
+      "charSpan": [
+        53,
+        55
+      ]
+    },
+    {
+      "lemma": "그대로",
+      "tag": "MAG",
+      "surface": "그대로",
+      "charSpan": [
+        73,
+        76
+      ]
+    },
+    {
+      "lemma": "오른쪽",
+      "tag": "NNG",
+      "surface": "오른쪽",
+      "charSpan": [
+        82,
+        85
+      ]
+    },
+    {
+      "lemma": "그대로",
+      "tag": "MAG",
+      "surface": "그대로",
+      "charSpan": [
+        110,
+        113
+      ]
+    }
+  ],
+  "_unmapped": [
+    {
+      "lemma": "겉",
+      "category": "body_layer",
+      "value": {
+        "layer": "surface"
+      },
+      "reason": "no_body_part_context",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "겉",
+        "charSpan": [
+          25,
+          26
+        ],
+        "rule": "bodyLayerLexicon.겉"
+      }
+    },
+    {
+      "lemma": "앞",
+      "category": "body_layer",
+      "value": {
+        "layer": "around_front"
+      },
+      "reason": "no_body_part_context",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "앞",
+        "charSpan": [
+          86,
+          87
+        ],
+        "rule": "bodyLayerLexicon.앞"
+      }
+    }
+  ],
+  "_negated": [],
+  "_alternatives": [],
+  "_inferred": {}
+}
