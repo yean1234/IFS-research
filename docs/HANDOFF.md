@@ -77,7 +77,7 @@ ultracode
 - 체크포인트 커밋:
   - `a753289` baseline
   - `d4e3e3a` CP1 (작업 1 + 작업 3 전반 실패 사례·채점기 + 작업 4 Unity)
-  - CP2 커밋: 아직 없음(작업 2·3 완료 후 만들 예정)
+  - `58ba0dc` CP2 (작업 2 drift 1.1.0 + 작업 3 매핑 빌더 1.2.0·채점기 0.3.0, 독립 검토 반영)
 - 마지막 커밋: `git log -1` 로 확인. 이 파일 갱신과 함께 WIP 커밋이 쌓입니다(메시지 접두어 `WIP:`).
   WIP 커밋은 체크포인트가 아니므로, Codex에게 줄 diff 기준점은 항상 위 체크포인트 커밋을 씁니다.
 
@@ -90,20 +90,20 @@ ultracode
   - [x] 정답 라벨 18개 `chatbot/tests/fixtures/drift/drift_cases.json` (drift 9 / no_drift 9, 유형 a–k, 경계 3)
   - [x] 구현 `chatbot/ifs_chatbot/drift.py`, `tests/test_drift.py`, 컨트롤러 단계별 스냅샷, `shared/protocol/elicitation_protocol.v1.1.json`(회상 확인·자기보고 1–7 초안, status=draft), `docs/drift-design.md`, research-design 4.5절, acceptance AC-2
   - [x] 독립 검토 → 수정
-- [ ] 3. 매핑 고도화
+- [x] 3. 매핑 고도화 (독립 검토·수정 끝, 빌더 1.2.0. dev: 반영률 0.937, 왜곡 0.000, 미반영 원문 보존 1.000(구조적), 퍼지 경로 값 0)
   - [x] 실패 사례 기록 `docs/mapping-failures.md`(45건), 채점기 `chatbot/ifs_chatbot/eval/fidelity.py`(v0.2.0), `eval/corpus_run.py`
   - [x] v1 매퍼 `chatbot/ifs_chatbot/scene_builder_v1.py` + `jamo.py` + `clarify.py`, 사전 `shared/lexicon/*.v1.json`, 스키마 `shared/schemas/scene-spec.v2.1.json`, Unity 파서 2.0/2.1, config `[mapping] mode=v1, save_both=true, clarify_loop=false`, v1 예외 시 v0 폴백. dev: 반영률 0.573→0.937, 왜곡 0.165→0.000, 미반영 원문 보존 0.130→1.000 (dev는 규칙 작성에 쓴 세트라 낙관적)
-  - [ ] 독립 검토 → 수정
+  - [x] 독립 검토 → 수정
 - [x] 4. Unity 현실감 (Linear, VR PC/VR Quest 품질 단계, 무채색 하늘·바닥 1 m 격자·그림자 1개, 후처리 없음, 배치 캡처). EX01/EX02 p95 ≤ 2.01 ms(데스크톱 대리 측정). 기기 72 Hz 측정은 morning-todo
 - [ ] 5. 실행 검증(E2E) — **남음** (5절 참고)
 - [ ] docs/morning-report.md — **남음**
 
 ### Codex 체크포인트 (정확히 3번, 실패 시 재시도 1번)
 - [x] CP1 — 1회 사용. 원문+분류표 `docs/codex-reviews/CP1.md`. 수용 11 / 보류 1(#12 인용 원문 대조, 사람)
-- [ ] CP2 — 미사용. 지시문 `docs/codex-reviews/prompts/CP2_prompt.md`
-- [ ] CP3 — 미사용. 지시문 `docs/codex-reviews/prompts/CP3_prompt.md` (`<CP2_COMMIT>`을 실제 CP2 커밋 해시로 바꿔서 사용)
+- [ ] CP2 — **호출함(2번째, 세션 edd117bf). 결과 정리 중.** 출력이 `docs/codex-reviews/CP2.md`에 없으면 호출이 끊긴 것: 재시도는 1번까지만. 지시문 `docs/codex-reviews/prompts/CP2_prompt.md`
+- [ ] CP3 — 미사용. 지시문 `docs/codex-reviews/prompts/CP3_prompt.md` (`<CP2_COMMIT>` = `58ba0dc`)
 
-**Codex 사용 현황: 3번 중 1번 사용, 남은 2번(CP2, CP3).** 다른 계정으로 넘어가도 이 횟수는 이어집니다. 이 외 용도로 절대 호출하지 마세요.
+**Codex 사용 현황: 3번 중 2번 사용(CP1, CP2), 남은 1번(CP3).** 다른 계정으로 넘어가도 이 횟수는 이어집니다. 이 외 용도로 절대 호출하지 마세요.
 
 Codex 실행 명령(Git Bash, 저장소 루트에서. CP1 때 쓴 것과 같은 형식):
 ```bash
@@ -114,10 +114,9 @@ codex exec --sandbox read-only -c model_reasoning_effort="medium" -C . -o /tmp/c
 
 ## 4. 지금 진행 중인 것 (계정 전환 뒤 세션 edd117bf 기준)
 
-- 끝난 것(WIP 커밋 40e6981까지): T2 마무리 점검, T2·T3 독립 검토, 수용 항목 수정(매핑 1.1.0, 채점기 0.3.0, drift 1.1.0). 분류표와 결과·결정(X1–X7)은 `docs/decisions.md` 맨 끝 두 절. 사람이 할 일은 `docs/morning-todo.md`에 병합함.
-- 메인 세션이 다시 잰 값: 오프라인 350 통과, drift 라벨 정확도 1.000(sha `345c4071…dc1d`, AC-2 잠정 통과), dev 반영률 0.937·왜곡 0.000·퍼지 경로 값 0·미반영 원문 보존률(속성 단위) 0.375.
-- **진행 중: 원문 보존 보완 에이전트(opus) 1개** — 소비되지 않은 내용어를 `_unmatched`에 남기는 일반 규칙(decisions X7). 슬롯 값은 바꾸지 않음. 고치는 파일: scene_builder_v1.py, test_scene_builder_v1.py, docs/mapping-v1.md, examples/v1/*.json.
-- 끊겼다면: `git diff`로 scene_builder_v1.py 변경을 보고, 오프라인 테스트와 dev 채점(`python -m ifs_chatbot.eval.fidelity --corpus tests/fixtures/imagery_corpus/dev.json --mapper v0 --compare v1 --out <임시>`)을 돌려 슬롯 값이 그대로이고 보존률이 올랐으면 채택, 테스트가 깨지고 고치기 어려우면 `git checkout -- <그 파일들>`로 40e6981 상태로 되돌린 뒤 0.375를 그대로 보고하고 5절 1번으로 감.
+- 2단계 끝: 독립 검토 2건 → 수정 → 원문 보존 보완 → CP2 커밋 `58ba0dc`. 오프라인 354 통과, drift 라벨 정확도 1.000(sha `345c4071…dc1d`, AC-2 잠정 통과), held-out sha 그대로. 분류·결정은 `docs/decisions.md` 맨 끝(D09, 분류표, X1–X8).
+- **진행 중: Codex CP2 호출(2번째)**. 출력은 세션 임시 폴더에 받고 `docs/codex-reviews/CP2.md`로 옮김. 그다음 5절 3번(분류표 → 수용 항목 반영 → 테스트 → 커밋) → 4번(3단계 E2E).
+- 모델 배정(D09): 판단·분류·판정·보고서는 메인 세션(Fable), 구현·테스트 실행·검토·수정 서브에이전트는 opus.
 
 ## 5. 다음에 할 일 (순서대로)
 
