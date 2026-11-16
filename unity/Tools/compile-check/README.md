@@ -10,6 +10,8 @@ dotnet test Tests/IFS.SceneSpec.CompileCheck.Tests.csproj   # Assets/IFS/Tests/E
 | 무엇을 | 얼마나 확인되나 |
 | --- | --- |
 | `SceneSpecV2` · `SceneSpecJson` · `SceneParams` · `ExperimentRecorder` | 실제 Newtonsoft.Json 13.0.3으로 컴파일하고 테스트가 실행된다 |
-| `SceneLoader` · `SpecMotion` · `InspectorPathSource` · Editor 메뉴 | `Stubs/UnityStubs.cs`(이름·시그니처만 흉내 낸 스텁)로 **타입 검사만** 한다. 동작은 Unity에서 확인해야 한다 |
+| `ColorMetrics`(CIEDE2000) · `CaptureOptions` · `CaptureStats` | 실제로 컴파일하고 테스트(`CaptureMathTests`)가 실행된다 |
+| `SceneLoader` · `SpecMotion` · `InspectorPathSource` · `EnvironmentBuilder` · `IFSEnvironment` · `BatchCapture` · Editor 메뉴 | `Stubs/UnityStubs.cs`(이름·시그니처만 흉내 낸 스텁)로 **타입 검사만** 한다. 동작은 Unity에서 확인해야 한다 |
+| `Assets/IFS/Tests/Editor/UnityOnly/` | 실제 렌더·프로젝트 설정이 필요해 테스트 프로젝트에서 뺀다(Unity `-runTests`에서만 실행) |
 
 스텁에 없는 Unity API를 새로 쓰면 빌드가 실패합니다. 그때는 실제 Unity API와 같은 시그니처로 스텁에 추가합니다.

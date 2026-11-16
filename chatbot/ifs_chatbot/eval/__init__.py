@@ -1,0 +1,7 @@
+"""심상-구현 일치도 평가 도구(오프라인, LLM 없음).
+
+- corpus_run: 코퍼스 항목의 답을 실제 컨트롤러(정적 조건)에 넣어 확정 텍스트와 SceneSpec v2를 얻는다.
+- fidelity:   정답(gold) 대비 반영·왜곡·보존·손실을 채점하고 리포트를 쓴다.
+
+정의와 실행 명령: docs/mapping-failures.md
+"""

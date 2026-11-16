@@ -1,0 +1,802 @@
+{
+  "corpusId": "imagery-dev",
+  "version": "1.0.0",
+  "synthetic": true,
+  "authoredBy": "agent:dev-writer",
+  "note": "합성 대사만 담은 개발용 코퍼스입니다(AGENTS.md 6). 실제 참여자 응답이 아니고, 감정적 고통이 없는 중립 심상(색·모양·크기·위치·재질·움직임·투명도·밝기)만 다룹니다. 작성자는 scene_builder.py와 shared/lexicon/*을 보지 않고 썼습니다(사전에 맞춘 표현 아님). replies의 키는 shared/protocol/elicitation_protocol.v1.json 정적 조건 순서(opening → location → focus_hold → fleshout_open → 프로브 3개)입니다. 프로브가 null이면 그 차원이 앞 답에서 이미 나와 묻지 않은 것으로 봅니다. expect 규칙: (1) range는 SceneSpec v2 슬롯 값(0–1) 기준의 넉넉한 사람 상식 구간입니다. (2) color는 hue_deg(도 단위, lo > hi이면 0°를 지나 감쌉니다. 예: [345, 15]), l, s 구간이며 생략한 키는 검사하지 않습니다. 무채색은 hue_deg를 빼고 s 상한으로 적습니다. (3) {\"equals\": null}은 참여자가 '모르겠다'고 한 슬롯으로, 시스템이 값을 채우지 않고 null로 두어야 한다는 뜻입니다(AGENTS.md 2). (4) expect가 null이면 값 검사 없이 '말해졌다'는 사실만 기록합니다(slot이 null인 비시각 속성, 부정된 속성, v2 enum에 맞는 값이 뚜렷하지 않은 움직임). (5) height는 참여자가 공간 높이어(눈높이·발밑·머리 위·가슴 높이 …)를 직접 말했을 때만 넣고, 신체 부위어에서 높이를 끌어내지 않았습니다. distractors는 형상이 아닌 배경·맥락 사물의 수식어나 자기 수정 전 값처럼 형상 슬롯에 들어가면 안 되는 표현입니다.",
+  "items": [
+    {
+      "id": "D01",
+      "style": "multi_turn",
+      "replies": {
+        "opening": "주말에 공원 걸었던 게 떠올라요. 가슴 쪽에 뭔가 동그란 게 있는 느낌이에요.",
+        "location": "몸 안에 있어요. 가슴 한가운데요.",
+        "focus": "동그란 덩어리가 가만히 있어요.",
+        "fleshout": "공처럼 동그랗고 노란색이에요. 표면은 매끈해요.",
+        "probe_size_shape": "주먹만 해요.",
+        "probe_color_brightness": null,
+        "probe_movement": "거의 안 움직여요."
+      },
+      "gold": [
+        { "attr": "body_part", "phrase": "가슴 한가운데", "slot": "body.part", "expect": { "equals": "chest" }, "negated": false },
+        { "attr": "body_layer", "phrase": "몸 안에 있어요", "slot": "body.layer", "expect": { "equals": "inner" }, "negated": false },
+        { "attr": "form", "phrase": "동그란 덩어리", "slot": "form.type", "expect": { "equals": "blob" }, "negated": false },
+        { "attr": "shape", "phrase": "공처럼 동그랗고", "slot": null, "expect": null, "negated": false },
+        { "attr": "color", "phrase": "노란색", "slot": "material.color", "expect": { "hue_deg": [40, 70], "s": [0.4, 1.0], "l": [0.35, 0.75] }, "negated": false },
+        { "attr": "texture_roughness", "phrase": "표면은 매끈해요", "slot": "material.roughness", "expect": { "range": [0.0, 0.35] }, "negated": false },
+        { "attr": "size", "phrase": "주먹만 해요", "slot": "layout.size", "expect": { "range": [0.05, 0.5] }, "negated": false },
+        { "attr": "motion_type", "phrase": "가만히 있어요", "slot": "motion.type", "expect": { "in": ["still"] }, "negated": false }
+      ],
+      "distractors": [
+        { "phrase": "공원", "why": "떠올린 상황의 장소(맥락). 형상 속성이 아님" }
+      ]
+    },
+    {
+      "id": "D02",
+      "style": "multi_turn",
+      "replies": {
+        "opening": "어제 비 그치고 창밖 보던 장면이요. 몸 주변에 안개 같은 게 느껴져요.",
+        "location": "몸 주변이요. 어깨 뒤쪽을 감싸고 있어요.",
+        "focus": "잿빛 안개가 천천히 퍼지고 있어요.",
+        "fleshout": "속이 살짝 비치는 정도로 옅고, 가장자리는 흐릿해요.",
+        "probe_size_shape": "제 몸을 다 덮을 만큼 커요.",
+        "probe_color_brightness": null,
+        "probe_movement": null
+      },
+      "gold": [
+        { "attr": "form", "phrase": "안개 같은 게", "slot": "form.type", "expect": { "equals": "mist" }, "negated": false },
+        { "attr": "body_layer", "phrase": "어깨 뒤쪽을 감싸고", "slot": "body.layer", "expect": { "in": ["around", "around_behind"] }, "negated": false },
+        { "attr": "body_part", "phrase": "어깨", "slot": "body.part", "expect": { "equals": "shoulder" }, "negated": false },
+        { "attr": "color", "phrase": "잿빛", "slot": "material.color", "expect": { "s": [0.0, 0.2], "l": [0.3, 0.7] }, "negated": false },
+        { "attr": "motion_type", "phrase": "천천히 퍼지고", "slot": "motion.type", "expect": { "in": ["spreading", "drifting"] }, "negated": false },
+        { "attr": "motion_speed", "phrase": "천천히", "slot": "motion.speed", "expect": { "range": [0.0, 0.4] }, "negated": false },
+        { "attr": "opacity", "phrase": "속이 살짝 비치는 정도로 옅고", "slot": "material.opacity", "expect": { "range": [0.2, 0.75] }, "negated": false },
+        { "attr": "size", "phrase": "제 몸을 다 덮을 만큼 커요", "slot": "layout.size", "expect": { "range": [0.65, 1.0] }, "negated": false }
+      ],
+      "distractors": [
+        { "phrase": "비 그치고", "why": "떠올린 상황의 날씨(맥락)" },
+        { "phrase": "창밖", "why": "맥락 장소" }
+      ]
+    },
+    {
+      "id": "D03",
+      "style": "multi_turn",
+      "replies": {
+        "opening": "책상 정리하던 오후가 떠올라요. 눈앞에 작은 상자 같은 게 보여요.",
+        "location": "몸 주변이요. 1미터쯤 앞에 있어요.",
+        "focus": "눈높이에 떠 있어요.",
+        "fleshout": "나무로 된 네모난 상자예요. 겉이 아주 거칠어요.",
+        "probe_size_shape": "한 30센티 정도요.",
+        "probe_color_brightness": "연한 갈색이고 조금 어두워요.",
+        "probe_movement": "아주 천천히 돌아요."
+      },
+      "gold": [
+        { "attr": "distance", "phrase": "1미터쯤 앞에", "slot": "layout.distance", "expect": { "range": [0.15, 0.4] }, "negated": false },
+        { "attr": "height", "phrase": "눈높이에", "slot": "layout.verticalOffset", "expect": { "range": [0.85, 1.0] }, "negated": false },
+        { "attr": "texture_roughness", "phrase": "겉이 아주 거칠어요", "slot": "material.roughness", "expect": { "range": [0.75, 1.0] }, "negated": false },
+        { "attr": "size", "phrase": "한 30센티 정도요", "slot": "layout.size", "expect": { "range": [0.25, 0.7] }, "negated": false },
+        { "attr": "color", "phrase": "연한 갈색", "slot": "material.color", "expect": { "hue_deg": [15, 45], "s": [0.2, 0.7], "l": [0.4, 0.75] }, "negated": false },
+        { "attr": "brightness", "phrase": "조금 어두워요", "slot": "material.brightness", "expect": { "range": [0.2, 0.48] }, "negated": false },
+        { "attr": "motion_type", "phrase": "아주 천천히 돌아요", "slot": "motion.type", "expect": { "in": ["rotating", "circling"] }, "negated": false },
+        { "attr": "motion_speed", "phrase": "아주 천천히", "slot": "motion.speed", "expect": { "range": [0.0, 0.25] }, "negated": false }
+      ],
+      "distractors": [
+        { "phrase": "책상 정리하던", "why": "맥락 사물(책상)" }
+      ]
+    },
+    {
+      "id": "D04",
+      "style": "multi_turn",
+      "replies": {
+        "opening": "베란다 화분에 물 주던 아침이요. 배 쪽에 따뜻한 무언가가 느껴져요.",
+        "location": "몸 안이요. 배꼽 바로 아래쯤이요.",
+        "focus": "따뜻한 기운이 고여 있어요.",
+        "fleshout": "연두빛이 도는 반투명한 덩어리 같아요. 젤리처럼 말랑해요.",
+        "probe_size_shape": "손바닥만 해요.",
+        "probe_color_brightness": null,
+        "probe_movement": "살짝살짝 흔들려요."
+      },
+      "gold": [
+        { "attr": "temperature", "phrase": "따뜻한 무언가", "slot": null, "expect": null, "negated": false },
+        { "attr": "body_part", "phrase": "배꼽 바로 아래쯤", "slot": "body.part", "expect": { "in": ["lower_belly", "belly"] }, "negated": false },
+        { "attr": "body_layer", "phrase": "몸 안이요", "slot": "body.layer", "expect": { "equals": "inner" }, "negated": false },
+        { "attr": "color", "phrase": "연두빛이 도는", "slot": "material.color", "expect": { "hue_deg": [70, 120], "s": [0.3, 1.0], "l": [0.4, 0.8] }, "negated": false },
+        { "attr": "opacity", "phrase": "반투명한", "slot": "material.opacity", "expect": { "range": [0.2, 0.7] }, "negated": false },
+        { "attr": "form", "phrase": "덩어리 같아요", "slot": "form.type", "expect": { "equals": "blob" }, "negated": false },
+        { "attr": "size", "phrase": "손바닥만 해요", "slot": "layout.size", "expect": { "range": [0.1, 0.55] }, "negated": false },
+        { "attr": "motion_type", "phrase": "살짝살짝 흔들려요", "slot": "motion.type", "expect": { "in": ["swaying", "trembling"] }, "negated": false }
+      ],
+      "distractors": [
+        { "phrase": "베란다 화분", "why": "맥락 사물" }
+      ]
+    },
+    {
+      "id": "D05",
+      "style": "free_narrative",
+      "replies": {
+        "opening": "카페 창가 자리에 앉아 있던 게 생각나요. 파란 벽 앞에 빨간 공이 하나 있는데, 크기는 농구공만 하고 바닥에서 조금 떠 있어요. 표면이 반짝반짝 윤이 나고 천천히 위아래로 둥실둥실 떠다녀요.",
+        "location": "몸 주변이요.",
+        "focus": "그대로 있어요.",
+        "fleshout": "잘 모르겠어요.",
+        "probe_size_shape": null,
+        "probe_color_brightness": null,
+        "probe_movement": null
+      },
+      "gold": [
+        { "attr": "color", "phrase": "빨간 공", "slot": "material.color", "expect": { "hue_deg": [345, 15], "s": [0.5, 1.0], "l": [0.3, 0.65] }, "negated": false },
+        { "attr": "shape", "phrase": "공이 하나", "slot": null, "expect": null, "negated": false },
+        { "attr": "size", "phrase": "농구공만 하고", "slot": "layout.size", "expect": { "range": [0.45, 0.8] }, "negated": false },
+        { "attr": "height", "phrase": "바닥에서 조금 떠 있어요", "slot": "layout.verticalOffset", "expect": { "range": [0.0, 0.25] }, "negated": false },
+        { "attr": "texture_roughness", "phrase": "반짝반짝 윤이 나고", "slot": "material.roughness", "expect": { "range": [0.0, 0.3] }, "negated": false },
+        { "attr": "motion_type", "phrase": "둥실둥실 떠다녀요", "slot": "motion.type", "expect": { "in": ["floating", "drifting"] }, "negated": false },
+        { "attr": "motion_speed", "phrase": "천천히 위아래로", "slot": "motion.speed", "expect": { "range": [0.0, 0.4] }, "negated": false },
+        { "attr": "body_layer", "phrase": "몸 주변이요", "slot": "body.layer", "expect": { "in": ["around", "around_front", "around_behind", "around_side", "around_below"] }, "negated": false }
+      ],
+      "distractors": [
+        { "phrase": "파란 벽", "why": "배경 사물의 색. material.color를 파랑으로 만들면 안 됨" },
+        { "phrase": "창가 자리", "why": "맥락 장소" }
+      ]
+    },
+    {
+      "id": "D06",
+      "style": "free_narrative",
+      "replies": {
+        "opening": "음 그냥 퇴근길 버스 기다리던거요 ㅎㅎ 머리위에 하얀 구름같은게 둥둥 떠잇어요 엄청 크진 않구 수박만한데 몽글몽글해요 천천히 오른쪽으로 흘러가요",
+        "location": "주변이요",
+        "focus": "계속 떠있어요",
+        "fleshout": "잘 모르겟어요",
+        "probe_size_shape": null,
+        "probe_color_brightness": null,
+        "probe_movement": null
+      },
+      "gold": [
+        { "attr": "height", "phrase": "머리위에", "slot": "layout.verticalOffset", "expect": { "range": [0.9, 1.0] }, "negated": false },
+        { "attr": "color", "phrase": "하얀", "slot": "material.color", "expect": { "s": [0.0, 0.2], "l": [0.8, 1.0] }, "negated": false },
+        { "attr": "form", "phrase": "구름같은게", "slot": "form.type", "expect": { "in": ["mist", "blob"] }, "negated": false },
+        { "attr": "motion_type", "phrase": "둥둥 떠잇어요", "slot": "motion.type", "expect": { "in": ["floating", "drifting"] }, "negated": false },
+        { "attr": "size", "phrase": "엄청 크진 않구", "slot": "layout.size", "expect": null, "negated": true },
+        { "attr": "size", "phrase": "수박만한데", "slot": "layout.size", "expect": { "range": [0.5, 0.8] }, "negated": false },
+        { "attr": "motion_type", "phrase": "오른쪽으로 흘러가요", "slot": "motion.type", "expect": { "in": ["drifting", "moving", "floating"] }, "negated": false },
+        { "attr": "motion_speed", "phrase": "천천히 오른쪽으로", "slot": "motion.speed", "expect": { "range": [0.0, 0.4] }, "negated": false }
+      ],
+      "distractors": [
+        { "phrase": "퇴근길 버스", "why": "맥락 사물" }
+      ]
+    },
+    {
+      "id": "D07",
+      "style": "multi_turn",
+      "replies": {
+        "opening": "도서관에서 책 고르던 장면이요. 손에 뭔가 쥐고 있는 느낌이 들어요.",
+        "location": "몸 표면이요. 오른손 손바닥 위에요.",
+        "focus": "돌멩이 같은 게 손에 놓여 있어요.",
+        "fleshout": "무겁진 않고 생각보다 가벼워요. 차갑고 표면이 오돌토돌해요.",
+        "probe_size_shape": "달걀만 하고 약간 납작해요.",
+        "probe_color_brightness": "회색인데 군데군데 하얀 점이 있어요.",
+        "probe_movement": "움직임은 없어요."
+      },
+      "gold": [
+        { "attr": "body_part", "phrase": "오른손 손바닥", "slot": "body.part", "expect": { "equals": "hand" }, "negated": false },
+        { "attr": "body_layer", "phrase": "몸 표면이요", "slot": "body.layer", "expect": { "in": ["surface", "surface_above"] }, "negated": false },
+        { "attr": "weight", "phrase": "무겁진 않고", "slot": null, "expect": null, "negated": true },
+        { "attr": "temperature", "phrase": "차갑고", "slot": null, "expect": null, "negated": false },
+        { "attr": "texture_roughness", "phrase": "표면이 오돌토돌해요", "slot": "material.roughness", "expect": { "range": [0.6, 1.0] }, "negated": false },
+        { "attr": "size", "phrase": "달걀만 하고", "slot": "layout.size", "expect": { "range": [0.05, 0.45] }, "negated": false },
+        { "attr": "color", "phrase": "회색인데", "slot": "material.color", "expect": { "s": [0.0, 0.2], "l": [0.3, 0.7] }, "negated": false },
+        { "attr": "motion_type", "phrase": "움직임은 없어요", "slot": "motion.type", "expect": { "equals": "still" }, "negated": false }
+      ],
+      "distractors": [
+        { "phrase": "군데군데 하얀 점", "why": "형상 일부의 무늬. 전체 색(회색)을 흰색으로 덮으면 안 됨" },
+        { "phrase": "도서관에서 책 고르던", "why": "맥락 장소·사물" }
+      ]
+    },
+    {
+      "id": "D08",
+      "style": "multi_turn",
+      "replies": {
+        "opening": "지난주에 친구랑 전시 보러 갔던 게 떠올라요. 목 근처에 뭔가 있는 것 같아요.",
+        "location": "몸 안인지 표면인지 잘 모르겠어요. 목 앞쪽이요.",
+        "focus": "작은 조각들이 모여 있어요.",
+        "fleshout": "유리 조각처럼 투명하고 가장자리가 반짝여요.",
+        "probe_size_shape": "하나하나는 손톱만 해요.",
+        "probe_color_brightness": "어떤 색인지 모르겠어요. 그냥 빛이 좀 나요.",
+        "probe_movement": "조금씩 빙글빙글 돌아요."
+      },
+      "gold": [
+        { "attr": "body_part", "phrase": "목 앞쪽", "slot": "body.part", "expect": { "in": ["throat", "throat_neck"] }, "negated": false },
+        { "attr": "body_layer", "phrase": "몸 안인지 표면인지 잘 모르겠어요", "slot": "body.layer", "expect": { "equals": null }, "negated": false },
+        { "attr": "form", "phrase": "작은 조각들", "slot": "form.type", "expect": { "equals": "fragments" }, "negated": false },
+        { "attr": "opacity", "phrase": "유리 조각처럼 투명하고", "slot": "material.opacity", "expect": { "range": [0.0, 0.3] }, "negated": false },
+        { "attr": "size", "phrase": "하나하나는 손톱만 해요", "slot": "layout.size", "expect": { "range": [0.0, 0.4] }, "negated": false },
+        { "attr": "color", "phrase": "어떤 색인지 모르겠어요", "slot": "material.color", "expect": { "equals": null }, "negated": false },
+        { "attr": "brightness", "phrase": "빛이 좀 나요", "slot": "material.brightness", "expect": { "range": [0.5, 0.9] }, "negated": false },
+        { "attr": "motion_type", "phrase": "빙글빙글 돌아요", "slot": "motion.type", "expect": { "in": ["rotating", "circling"] }, "negated": false }
+      ],
+      "distractors": [
+        { "phrase": "전시 보러", "why": "맥락 활동" }
+      ]
+    },
+    {
+      "id": "D09",
+      "style": "free_narrative",
+      "replies": {
+        "opening": "아침에 커피 내리던 장면이 떠올라요. 가슴 앞에 주황색 빛 덩어리가 있는데 처음엔 탁구공만 했다가 점점 커져요. 지금은 축구공 정도 돼요. 밝기도 점점 밝아지고 있어요. 따뜻한 느낌이 나요.",
+        "location": "몸 주변이요. 가슴 바로 앞이요.",
+        "focus": "계속 커지고 있어요.",
+        "fleshout": "잘 모르겠어요.",
+        "probe_size_shape": null,
+        "probe_color_brightness": null,
+        "probe_movement": "잘 모르겠어요."
+      },
+      "gold": [
+        { "attr": "color", "phrase": "주황색", "slot": "material.color", "expect": { "hue_deg": [15, 45], "s": [0.5, 1.0], "l": [0.35, 0.7] }, "negated": false },
+        { "attr": "form", "phrase": "빛 덩어리", "slot": "form.type", "expect": { "equals": "blob" }, "negated": false },
+        { "attr": "body_part", "phrase": "가슴 바로 앞이요", "slot": "body.part", "expect": { "equals": "chest" }, "negated": false },
+        { "attr": "body_layer", "phrase": "가슴 바로 앞이요", "slot": "body.layer", "expect": { "in": ["around_front", "around"] }, "negated": false },
+        { "attr": "size", "phrase": "축구공 정도", "slot": "layout.size", "expect": { "range": [0.45, 0.8] }, "negated": false },
+        { "attr": "other", "phrase": "점점 커져요", "slot": null, "expect": null, "negated": false },
+        { "attr": "brightness", "phrase": "점점 밝아지고", "slot": "material.brightness", "expect": { "range": [0.55, 1.0] }, "negated": false },
+        { "attr": "temperature", "phrase": "따뜻한 느낌", "slot": null, "expect": null, "negated": false }
+      ],
+      "distractors": [
+        { "phrase": "탁구공만 했다가", "why": "이전 상태의 크기. 현재 크기는 '축구공 정도'" },
+        { "phrase": "커피 내리던", "why": "맥락 활동" }
+      ]
+    },
+    {
+      "id": "D10",
+      "style": "multi_turn",
+      "replies": {
+        "opening": "빨래 개던 저녁이 생각나요. 어깨 위에 천 같은 게 걸쳐져 있는 느낌이에요.",
+        "location": "몸 표면이요. 양쪽 어깨에요.",
+        "focus": "얇은 천이 축 늘어져 있어요.",
+        "fleshout": "하늘색이고 실크처럼 매끄러워요. 빛이 은은하게 비쳐요.",
+        "probe_size_shape": "어깨를 다 덮을 정도로 넓어요.",
+        "probe_color_brightness": null,
+        "probe_movement": "바람에 날리듯 살랑살랑 흔들려요."
+      },
+      "gold": [
+        { "attr": "body_part", "phrase": "양쪽 어깨에요", "slot": "body.part", "expect": { "equals": "shoulder" }, "negated": false },
+        { "attr": "body_layer", "phrase": "몸 표면이요", "slot": "body.layer", "expect": { "in": ["surface", "surface_above"] }, "negated": false },
+        { "attr": "posture", "phrase": "축 늘어져 있어요", "slot": "form.posture", "expect": { "in": ["drooping", "hanging", "sagging", "limp"] }, "negated": false },
+        { "attr": "color", "phrase": "하늘색", "slot": "material.color", "expect": { "hue_deg": [185, 215], "s": [0.3, 1.0], "l": [0.6, 0.9] }, "negated": false },
+        { "attr": "texture_roughness", "phrase": "실크처럼 매끄러워요", "slot": "material.roughness", "expect": { "range": [0.0, 0.25] }, "negated": false },
+        { "attr": "brightness", "phrase": "빛이 은은하게 비쳐요", "slot": "material.brightness", "expect": { "range": [0.35, 0.75] }, "negated": false },
+        { "attr": "size", "phrase": "어깨를 다 덮을 정도로 넓어요", "slot": "layout.size", "expect": { "range": [0.5, 0.85] }, "negated": false },
+        { "attr": "motion_type", "phrase": "살랑살랑 흔들려요", "slot": "motion.type", "expect": { "in": ["swaying", "rippling"] }, "negated": false }
+      ],
+      "distractors": [
+        { "phrase": "빨래 개던", "why": "맥락 활동" }
+      ]
+    },
+    {
+      "id": "D11",
+      "style": "multi_turn",
+      "replies": {
+        "opening": "주말에 동네 산책하던 장면이요. 발밑에 뭔가 동그랗게 깔려 있어요.",
+        "location": "몸 주변이요. 발 바로 아래요.",
+        "focus": "물웅덩이 같은 게 있어요.",
+        "fleshout": "짙은 남색이고 표면이 젖은 것처럼 번들거려요. 가운데서 물결이 잔잔하게 퍼져요.",
+        "probe_size_shape": "지름이 한 1미터쯤 돼요. 납작해요.",
+        "probe_color_brightness": null,
+        "probe_movement": null
+      },
+      "gold": [
+        { "attr": "height", "phrase": "발밑에", "slot": "layout.verticalOffset", "expect": { "range": [0.0, 0.08] }, "negated": false },
+        { "attr": "body_part", "phrase": "발 바로 아래요", "slot": "body.part", "expect": { "equals": "foot" }, "negated": false },
+        { "attr": "body_layer", "phrase": "발 바로 아래요", "slot": "body.layer", "expect": { "in": ["around_below", "around"] }, "negated": false },
+        { "attr": "color", "phrase": "짙은 남색", "slot": "material.color", "expect": { "hue_deg": [215, 250], "s": [0.3, 1.0], "l": [0.08, 0.35] }, "negated": false },
+        { "attr": "texture_roughness", "phrase": "젖은 것처럼 번들거려요", "slot": "material.roughness", "expect": { "range": [0.0, 0.25] }, "negated": false },
+        { "attr": "motion_type", "phrase": "물결이 잔잔하게 퍼져요", "slot": "motion.type", "expect": { "in": ["rippling", "spreading"] }, "negated": false },
+        { "attr": "motion_speed", "phrase": "잔잔하게", "slot": "motion.speed", "expect": { "range": [0.0, 0.4] }, "negated": false },
+        { "attr": "size", "phrase": "지름이 한 1미터쯤", "slot": "layout.size", "expect": { "range": [0.55, 0.9] }, "negated": false }
+      ],
+      "distractors": [
+        { "phrase": "동네 산책하던", "why": "맥락 활동" }
+      ]
+    },
+    {
+      "id": "D12",
+      "style": "free_narrative",
+      "replies": {
+        "opening": "회사 회의실에 앉아 있던 장면이요. 하얀 책상 위에 초록색 유리병이 하나 서 있어요. 병은 제 팔 길이만큼 떨어져 있고 높이는 한 뼘 정도예요. 뒤쪽 창문으로 노란 햇빛이 들어오는데, 병 자체는 빛이 안 나고 좀 어둑해요. 움직이지는 않아요.",
+        "location": "몸 주변, 앞쪽이요.",
+        "focus": "그대로 서 있어요.",
+        "fleshout": "잘 모르겠어요.",
+        "probe_size_shape": null,
+        "probe_color_brightness": null,
+        "probe_movement": null
+      },
+      "gold": [
+        { "attr": "color", "phrase": "초록색 유리병", "slot": "material.color", "expect": { "hue_deg": [90, 160], "s": [0.3, 1.0], "l": [0.2, 0.6] }, "negated": false },
+        { "attr": "posture", "phrase": "하나 서 있어요", "slot": "form.posture", "expect": { "in": ["standing"] }, "negated": false },
+        { "attr": "distance", "phrase": "제 팔 길이만큼 떨어져", "slot": "layout.distance", "expect": { "range": [0.05, 0.3] }, "negated": false },
+        { "attr": "size", "phrase": "한 뼘 정도", "slot": "layout.size", "expect": { "range": [0.15, 0.55] }, "negated": false },
+        { "attr": "brightness", "phrase": "빛이 안 나고", "slot": "material.brightness", "expect": null, "negated": true },
+        { "attr": "brightness", "phrase": "좀 어둑해요", "slot": "material.brightness", "expect": { "range": [0.15, 0.45] }, "negated": false },
+        { "attr": "motion_type", "phrase": "움직이지는 않아요", "slot": "motion.type", "expect": { "equals": "still" }, "negated": false },
+        { "attr": "body_layer", "phrase": "몸 주변, 앞쪽이요", "slot": "body.layer", "expect": { "in": ["around_front", "around"] }, "negated": false }
+      ],
+      "distractors": [
+        { "phrase": "하얀 책상", "why": "배경 사물의 색" },
+        { "phrase": "노란 햇빛", "why": "배경 조명의 색. 형상 색이나 밝기가 아님" },
+        { "phrase": "뒤쪽 창문", "why": "배경 사물·위치" }
+      ]
+    },
+    {
+      "id": "D13",
+      "style": "multi_turn",
+      "replies": {
+        "opening": "택배 상자 뜯던 오후요. 손끝이 찌릿찌릿한 느낌이 먼저 와요.",
+        "location": "몸 표면이요. 양손 손끝이요.",
+        "focus": "작은 알갱이들이 빠르게 떨려요.",
+        "fleshout": "은색 가루 같고 반짝반짝 빛나요.",
+        "probe_size_shape": "모래알처럼 아주 작아요.",
+        "probe_color_brightness": null,
+        "probe_movement": null
+      },
+      "gold": [
+        { "attr": "body_part", "phrase": "양손 손끝이요", "slot": "body.part", "expect": { "equals": "hand" }, "negated": false },
+        { "attr": "body_layer", "phrase": "몸 표면이요", "slot": "body.layer", "expect": { "in": ["surface", "surface_above"] }, "negated": false },
+        { "attr": "form", "phrase": "작은 알갱이들", "slot": "form.type", "expect": { "in": ["fragments", "mist"] }, "negated": false },
+        { "attr": "motion_type", "phrase": "빠르게 떨려요", "slot": "motion.type", "expect": { "in": ["trembling", "vibrating"] }, "negated": false },
+        { "attr": "motion_speed", "phrase": "빠르게", "slot": "motion.speed", "expect": { "range": [0.6, 1.0] }, "negated": false },
+        { "attr": "color", "phrase": "은색 가루", "slot": "material.color", "expect": { "s": [0.0, 0.2], "l": [0.55, 0.9] }, "negated": false },
+        { "attr": "brightness", "phrase": "반짝반짝 빛나요", "slot": "material.brightness", "expect": { "range": [0.6, 1.0] }, "negated": false },
+        { "attr": "size", "phrase": "모래알처럼 아주 작아요", "slot": "layout.size", "expect": { "range": [0.0, 0.25] }, "negated": false }
+      ],
+      "distractors": [
+        { "phrase": "택배 상자", "why": "맥락 사물" }
+      ]
+    },
+    {
+      "id": "D14",
+      "style": "free_narrative",
+      "replies": {
+        "opening": "주말 아침에 빵집 앞을 지나가던 게 떠올라요. 먼저 고소한 냄새가 나고, 몸 주변에 따뜻하고 포근한 공기 같은 게 있어요. 낮게 웅웅거리는 소리도 들려요. 색은 크림색이에요. 모양은 딱히 없고 그냥 퍼져 있어요.",
+        "location": "몸 주변이요. 저를 둥글게 감싸고 있어요.",
+        "focus": "계속 그대로예요.",
+        "fleshout": "잘 모르겠어요.",
+        "probe_size_shape": null,
+        "probe_color_brightness": null,
+        "probe_movement": "잘 모르겠어요."
+      },
+      "gold": [
+        { "attr": "smell", "phrase": "고소한 냄새", "slot": null, "expect": null, "negated": false },
+        { "attr": "temperature", "phrase": "따뜻하고", "slot": null, "expect": null, "negated": false },
+        { "attr": "other", "phrase": "포근한", "slot": null, "expect": null, "negated": false },
+        { "attr": "form", "phrase": "공기 같은 게", "slot": "form.type", "expect": { "in": ["mist"] }, "negated": false },
+        { "attr": "sound", "phrase": "낮게 웅웅거리는 소리", "slot": null, "expect": null, "negated": false },
+        { "attr": "color", "phrase": "크림색", "slot": "material.color", "expect": { "hue_deg": [35, 60], "s": [0.2, 0.8], "l": [0.8, 0.97] }, "negated": false },
+        { "attr": "shape", "phrase": "모양은 딱히 없고", "slot": null, "expect": null, "negated": true },
+        { "attr": "body_layer", "phrase": "저를 둥글게 감싸고", "slot": "body.layer", "expect": { "in": ["around"] }, "negated": false }
+      ],
+      "distractors": [
+        { "phrase": "빵집 앞", "why": "맥락 장소" }
+      ]
+    },
+    {
+      "id": "D15",
+      "style": "multi_turn",
+      "replies": {
+        "opening": "이삿짐 정리하던 날이 생각나요. 옆구리 쪽에 뭔가 붙어 있는 것 같아요.",
+        "location": "몸 표면이요. 왼쪽 옆구리요.",
+        "focus": "껍데기처럼 단단한 게 붙어 있어요.",
+        "fleshout": "조개껍데기처럼 생겼고 겉은 울퉁불퉁한데 안쪽은 매끈해요. 베이지색이에요.",
+        "probe_size_shape": "손바닥보다 조금 커요.",
+        "probe_color_brightness": null,
+        "probe_movement": "가만히 붙어 있어요."
+      },
+      "gold": [
+        { "attr": "body_part", "phrase": "왼쪽 옆구리", "slot": "body.part", "expect": { "equals": "flank" }, "negated": false },
+        { "attr": "body_layer", "phrase": "몸 표면이요", "slot": "body.layer", "expect": { "in": ["surface", "surface_above"] }, "negated": false },
+        { "attr": "form", "phrase": "껍데기처럼", "slot": "form.type", "expect": { "equals": "shell" }, "negated": false },
+        { "attr": "other", "phrase": "단단한 게", "slot": null, "expect": null, "negated": false },
+        { "attr": "texture_roughness", "phrase": "겉은 울퉁불퉁한데", "slot": "material.roughness", "expect": { "range": [0.6, 1.0] }, "negated": false },
+        { "attr": "color", "phrase": "베이지색", "slot": "material.color", "expect": { "hue_deg": [25, 55], "s": [0.15, 0.6], "l": [0.6, 0.9] }, "negated": false },
+        { "attr": "size", "phrase": "손바닥보다 조금 커요", "slot": "layout.size", "expect": { "range": [0.3, 0.65] }, "negated": false },
+        { "attr": "motion_type", "phrase": "가만히 붙어 있어요", "slot": "motion.type", "expect": { "in": ["still"] }, "negated": false }
+      ],
+      "distractors": [
+        { "phrase": "안쪽은 매끈해요", "why": "형상 안쪽 면의 질감. 바깥에서 보이는 겉면 질감(울퉁불퉁)을 덮으면 안 됨" },
+        { "phrase": "이삿짐 정리하던", "why": "맥락 활동" }
+      ]
+    },
+    {
+      "id": "D16",
+      "style": "multi_turn",
+      "replies": {
+        "opening": "퇴근하고 집에서 음악 듣던 장면이요. 머리 안쪽에 뭔가 동글동글한 게 떠올라요.",
+        "location": "몸 안이요. 이마 뒤쪽이요.",
+        "focus": "보라색 구슬 같은 게 있어요.",
+        "fleshout": "색이 아주 선명하고 진해요. 겉이 유리처럼 매끈하고 속이 조금 비쳐요.",
+        "probe_size_shape": "구슬만큼 작아요. 한 2센티쯤?",
+        "probe_color_brightness": null,
+        "probe_movement": "제자리에서 천천히 굴러요."
+      },
+      "gold": [
+        { "attr": "body_part", "phrase": "이마 뒤쪽", "slot": "body.part", "expect": { "in": ["forehead", "head"] }, "negated": false },
+        { "attr": "body_layer", "phrase": "몸 안이요", "slot": "body.layer", "expect": { "equals": "inner" }, "negated": false },
+        { "attr": "color", "phrase": "보라색", "slot": "material.color", "expect": { "hue_deg": [260, 300], "s": [0.35, 1.0], "l": [0.25, 0.65] }, "negated": false },
+        { "attr": "saturation", "phrase": "아주 선명하고 진해요", "slot": "material.saturation", "expect": { "range": [0.75, 1.0] }, "negated": false },
+        { "attr": "texture_roughness", "phrase": "유리처럼 매끈하고", "slot": "material.roughness", "expect": { "range": [0.0, 0.25] }, "negated": false },
+        { "attr": "opacity", "phrase": "속이 조금 비쳐요", "slot": "material.opacity", "expect": { "range": [0.4, 0.85] }, "negated": false },
+        { "attr": "size", "phrase": "한 2센티쯤", "slot": "layout.size", "expect": { "range": [0.0, 0.3] }, "negated": false },
+        { "attr": "motion_type", "phrase": "천천히 굴러요", "slot": "motion.type", "expect": { "in": ["rotating", "moving"] }, "negated": false }
+      ],
+      "distractors": [
+        { "phrase": "음악 듣던", "why": "맥락 활동" }
+      ]
+    },
+    {
+      "id": "D17",
+      "style": "free_narrative",
+      "replies": {
+        "opening": "어제저녁에 장보고 오던길이 떠올라요.왼쪽앞에 연보라색 풍선같은게 하나 떠있어요.크기는 사람 머리만하고 표면은 반질반질해요.바람에 살짝 흔들리면서 아주 느리게 위로 올라가요.",
+        "location": "주변이요",
+        "focus": "올라가고있어요",
+        "fleshout": "모르겠어요",
+        "probe_size_shape": null,
+        "probe_color_brightness": null,
+        "probe_movement": null
+      },
+      "gold": [
+        { "attr": "other", "phrase": "왼쪽앞에", "slot": null, "expect": null, "negated": false },
+        { "attr": "color", "phrase": "연보라색", "slot": "material.color", "expect": { "hue_deg": [255, 300], "s": [0.2, 0.8], "l": [0.6, 0.9] }, "negated": false },
+        { "attr": "size", "phrase": "사람 머리만하고", "slot": "layout.size", "expect": { "range": [0.35, 0.65] }, "negated": false },
+        { "attr": "texture_roughness", "phrase": "반질반질해요", "slot": "material.roughness", "expect": { "range": [0.0, 0.3] }, "negated": false },
+        { "attr": "motion_type", "phrase": "살짝 흔들리면서", "slot": "motion.type", "expect": { "in": ["swaying", "rising", "floating"] }, "negated": false },
+        { "attr": "motion_type", "phrase": "위로 올라가요", "slot": "motion.type", "expect": { "in": ["rising", "floating", "swaying"] }, "negated": false },
+        { "attr": "motion_speed", "phrase": "아주 느리게", "slot": "motion.speed", "expect": { "range": [0.0, 0.25] }, "negated": false },
+        { "attr": "body_layer", "phrase": "주변이요", "slot": "body.layer", "expect": { "in": ["around", "around_front", "around_behind", "around_side", "around_below"] }, "negated": false }
+      ],
+      "distractors": [
+        { "phrase": "장보고 오던길", "why": "맥락 활동" }
+      ]
+    },
+    {
+      "id": "D18",
+      "style": "multi_turn",
+      "replies": {
+        "opening": "바닷가 사진 정리하던 게 떠올라요. 몸 주변, 멀리 앞에 커다란 게 있어요.",
+        "location": "몸 주변이요. 한 3미터쯤 떨어져 있어요.",
+        "focus": "커다란 바위 같은 덩어리가 있어요.",
+        "fleshout": "짙은 회색이고 표면이 까끌까끌해요. 군데군데 갈라져 있어요.",
+        "probe_size_shape": "제 키보다 커요.",
+        "probe_color_brightness": "전체적으로 어두운 편이에요.",
+        "probe_movement": "움직임은 없어요."
+      },
+      "gold": [
+        { "attr": "distance", "phrase": "한 3미터쯤 떨어져", "slot": "layout.distance", "expect": { "range": [0.85, 1.0] }, "negated": false },
+        { "attr": "form", "phrase": "바위 같은 덩어리", "slot": "form.type", "expect": { "equals": "blob" }, "negated": false },
+        { "attr": "size", "phrase": "제 키보다 커요", "slot": "layout.size", "expect": { "range": [0.75, 1.0] }, "negated": false },
+        { "attr": "color", "phrase": "짙은 회색", "slot": "material.color", "expect": { "s": [0.0, 0.2], "l": [0.1, 0.4] }, "negated": false },
+        { "attr": "texture_roughness", "phrase": "표면이 까끌까끌해요", "slot": "material.roughness", "expect": { "range": [0.65, 1.0] }, "negated": false },
+        { "attr": "erosion", "phrase": "군데군데 갈라져 있어요", "slot": "material.erosion", "expect": { "range": [0.2, 0.7] }, "negated": false },
+        { "attr": "brightness", "phrase": "어두운 편이에요", "slot": "material.brightness", "expect": { "range": [0.1, 0.4] }, "negated": false },
+        { "attr": "motion_type", "phrase": "움직임은 없어요", "slot": "motion.type", "expect": { "equals": "still" }, "negated": false }
+      ],
+      "distractors": [
+        { "phrase": "바닷가 사진", "why": "맥락 사물" }
+      ]
+    },
+    {
+      "id": "D19",
+      "style": "multi_turn",
+      "replies": {
+        "opening": "그냥 설거지하다가요. 배에 뭐가 있어요",
+        "location": "안에요",
+        "focus": "몽실몽실한거",
+        "fleshout": "분홍색이고 솜사탕같아요",
+        "probe_size_shape": "작아요 아주",
+        "probe_color_brightness": null,
+        "probe_movement": "천천히 부풀었다 줄었다 해요"
+      },
+      "gold": [
+        { "attr": "body_part", "phrase": "배에", "slot": "body.part", "expect": { "in": ["belly", "lower_belly"] }, "negated": false },
+        { "attr": "body_layer", "phrase": "안에요", "slot": "body.layer", "expect": { "equals": "inner" }, "negated": false },
+        { "attr": "other", "phrase": "몽실몽실한거", "slot": null, "expect": null, "negated": false },
+        { "attr": "color", "phrase": "분홍색", "slot": "material.color", "expect": { "hue_deg": [315, 10], "s": [0.3, 1.0], "l": [0.6, 0.9] }, "negated": false },
+        { "attr": "form", "phrase": "솜사탕같아요", "slot": "form.type", "expect": { "in": ["blob", "mist"] }, "negated": false },
+        { "attr": "size", "phrase": "작아요 아주", "slot": "layout.size", "expect": { "range": [0.0, 0.35] }, "negated": false },
+        { "attr": "motion_type", "phrase": "부풀었다 줄었다", "slot": "motion.type", "expect": null, "negated": false },
+        { "attr": "motion_speed", "phrase": "천천히 부풀었다", "slot": "motion.speed", "expect": { "range": [0.0, 0.4] }, "negated": false }
+      ],
+      "distractors": [
+        { "phrase": "설거지하다가요", "why": "맥락 활동" }
+      ]
+    },
+    {
+      "id": "D20",
+      "style": "free_narrative",
+      "replies": {
+        "opening": "독서 모임 준비하던 저녁이 생각나요. 얼굴 앞 30센티쯤에 촛불처럼 작은 불빛이 하나 떠 있어요. 색은 따뜻한 귤색이고, 가운데는 하얗게 밝고 가장자리로 갈수록 흐려져요. 아주 미세하게 떨리고 있어요. 소리는 없어요.",
+        "location": "몸 주변이요.",
+        "focus": "계속 떠 있어요.",
+        "fleshout": "잘 모르겠어요.",
+        "probe_size_shape": null,
+        "probe_color_brightness": null,
+        "probe_movement": null
+      },
+      "gold": [
+        { "attr": "distance", "phrase": "30센티쯤", "slot": "layout.distance", "expect": { "range": [0.0, 0.1] }, "negated": false },
+        { "attr": "body_part", "phrase": "얼굴 앞", "slot": "body.part", "expect": { "equals": "face" }, "negated": false },
+        { "attr": "body_layer", "phrase": "얼굴 앞", "slot": "body.layer", "expect": { "in": ["around_front", "around"] }, "negated": false },
+        { "attr": "size", "phrase": "작은 불빛", "slot": "layout.size", "expect": { "range": [0.0, 0.4] }, "negated": false },
+        { "attr": "color", "phrase": "귤색", "slot": "material.color", "expect": { "hue_deg": [20, 45], "s": [0.5, 1.0], "l": [0.4, 0.7] }, "negated": false },
+        { "attr": "brightness", "phrase": "하얗게 밝고", "slot": "material.brightness", "expect": { "range": [0.65, 1.0] }, "negated": false },
+        { "attr": "motion_type", "phrase": "아주 미세하게 떨리고", "slot": "motion.type", "expect": { "in": ["trembling", "vibrating"] }, "negated": false },
+        { "attr": "sound", "phrase": "소리는 없어요", "slot": null, "expect": null, "negated": true }
+      ],
+      "distractors": [
+        { "phrase": "가운데는 하얗게", "why": "중심부 묘사. 형상 전체 색은 귤색이므로 material.color를 흰색으로 덮으면 안 됨" },
+        { "phrase": "따뜻한 귤색", "why": "'따뜻한'은 색감 수식어. 온도로 읽으면 안 됨" },
+        { "phrase": "독서 모임", "why": "맥락 활동" }
+      ]
+    },
+    {
+      "id": "D21",
+      "style": "multi_turn",
+      "replies": {
+        "opening": "비 오는 날 창문 닦던 게 떠올라요. 몸 앞쪽이 뿌연 느낌이에요.",
+        "location": "몸 주변이요. 앞쪽에 넓게 있어요.",
+        "focus": "뿌연 안개가 있어요.",
+        "fleshout": "탁한 청록색이고 뒤가 거의 안 보일 만큼 짙어요.",
+        "probe_size_shape": "모양은 없고 넓게 펼쳐져 있어요. 제 앞을 다 가릴 만큼이요.",
+        "probe_color_brightness": null,
+        "probe_movement": "아주 느리게 소용돌이쳐요."
+      },
+      "gold": [
+        { "attr": "form", "phrase": "뿌연 안개", "slot": "form.type", "expect": { "equals": "mist" }, "negated": false },
+        { "attr": "color", "phrase": "청록색", "slot": "material.color", "expect": { "hue_deg": [160, 200], "s": [0.1, 0.7], "l": [0.2, 0.6] }, "negated": false },
+        { "attr": "saturation", "phrase": "탁한", "slot": "material.saturation", "expect": { "range": [0.0, 0.4] }, "negated": false },
+        { "attr": "opacity", "phrase": "뒤가 거의 안 보일 만큼 짙어요", "slot": "material.opacity", "expect": { "range": [0.7, 1.0] }, "negated": false },
+        { "attr": "shape", "phrase": "모양은 없고", "slot": null, "expect": null, "negated": true },
+        { "attr": "size", "phrase": "제 앞을 다 가릴 만큼이요", "slot": "layout.size", "expect": { "range": [0.7, 1.0] }, "negated": false },
+        { "attr": "motion_type", "phrase": "소용돌이쳐요", "slot": "motion.type", "expect": { "in": ["churning", "circling", "rotating"] }, "negated": false },
+        { "attr": "motion_speed", "phrase": "아주 느리게", "slot": "motion.speed", "expect": { "range": [0.0, 0.25] }, "negated": false }
+      ],
+      "distractors": [
+        { "phrase": "비 오는 날 창문", "why": "맥락 날씨·사물" }
+      ]
+    },
+    {
+      "id": "D22",
+      "style": "multi_turn",
+      "replies": {
+        "opening": "회의 자료 출력하던 장면이요. 등 뒤에 뭔가 있는 것 같아요.",
+        "location": "몸 주변이요. 등 뒤쪽 조금 떨어진 곳이요.",
+        "focus": "네모난 판 같은 게 서 있어요.",
+        "fleshout": "하얀색인데 약간 누르스름해요. 종이처럼 얇아요.",
+        "probe_size_shape": "크기는 잘 모르겠어요.",
+        "probe_color_brightness": null,
+        "probe_movement": "가끔 펄럭여요."
+      },
+      "gold": [
+        { "attr": "body_part", "phrase": "등 뒤쪽", "slot": "body.part", "expect": { "equals": "back" }, "negated": false },
+        { "attr": "body_layer", "phrase": "등 뒤쪽 조금 떨어진 곳이요", "slot": "body.layer", "expect": { "in": ["around_behind", "around"] }, "negated": false },
+        { "attr": "distance", "phrase": "조금 떨어진", "slot": "layout.distance", "expect": { "range": [0.05, 0.5] }, "negated": false },
+        { "attr": "shape", "phrase": "네모난 판", "slot": null, "expect": null, "negated": false },
+        { "attr": "posture", "phrase": "서 있어요", "slot": "form.posture", "expect": { "in": ["standing"] }, "negated": false },
+        { "attr": "color", "phrase": "하얀색인데 약간 누르스름해요", "slot": "material.color", "expect": { "hue_deg": [35, 65], "s": [0.0, 0.5], "l": [0.75, 0.97] }, "negated": false },
+        { "attr": "size", "phrase": "크기는 잘 모르겠어요", "slot": "layout.size", "expect": { "equals": null }, "negated": false },
+        { "attr": "motion_type", "phrase": "가끔 펄럭여요", "slot": "motion.type", "expect": { "in": ["rippling", "swaying"] }, "negated": false }
+      ],
+      "distractors": [
+        { "phrase": "회의 자료 출력하던", "why": "맥락 활동·사물(종이 이미지를 형상 속성으로 끌어오면 안 됨)" }
+      ]
+    },
+    {
+      "id": "D23",
+      "style": "free_narrative",
+      "replies": {
+        "opening": "식물원 온실 구경하던 게 떠올라요. 초록 잎들 사이에 하얀 꽃 한 송이가 보이는데, 그게 제일 먼저 눈에 들어와요. 꽃은 제 가슴 높이에 있고, 꽃잎이 얇아서 빛이 살짝 비쳐요. 크기는 손바닥만 하고, 아주 천천히 피어나듯 벌어지고 있어요. 주변 화분들은 갈색이에요.",
+        "location": "몸 주변, 바로 앞이요.",
+        "focus": "꽃만 보여요.",
+        "fleshout": "잘 모르겠어요.",
+        "probe_size_shape": null,
+        "probe_color_brightness": null,
+        "probe_movement": null
+      },
+      "gold": [
+        { "attr": "color", "phrase": "하얀 꽃", "slot": "material.color", "expect": { "s": [0.0, 0.25], "l": [0.8, 1.0] }, "negated": false },
+        { "attr": "shape", "phrase": "꽃 한 송이", "slot": null, "expect": null, "negated": false },
+        { "attr": "height", "phrase": "가슴 높이에", "slot": "layout.verticalOffset", "expect": { "range": [0.62, 0.82] }, "negated": false },
+        { "attr": "opacity", "phrase": "빛이 살짝 비쳐요", "slot": "material.opacity", "expect": { "range": [0.4, 0.9] }, "negated": false },
+        { "attr": "size", "phrase": "손바닥만 하고", "slot": "layout.size", "expect": { "range": [0.1, 0.55] }, "negated": false },
+        { "attr": "motion_type", "phrase": "피어나듯 벌어지고", "slot": "motion.type", "expect": { "in": ["spreading"] }, "negated": false },
+        { "attr": "motion_speed", "phrase": "아주 천천히", "slot": "motion.speed", "expect": { "range": [0.0, 0.25] }, "negated": false },
+        { "attr": "body_layer", "phrase": "바로 앞이요", "slot": "body.layer", "expect": { "in": ["around_front", "around"] }, "negated": false }
+      ],
+      "distractors": [
+        { "phrase": "초록 잎들", "why": "배경 사물의 색" },
+        { "phrase": "주변 화분들은 갈색이에요", "why": "배경 사물의 색" },
+        { "phrase": "식물원 온실", "why": "맥락 장소" }
+      ]
+    },
+    {
+      "id": "D24",
+      "style": "free_narrative",
+      "replies": {
+        "opening": "밤에 산책하다 가로등 본 장면이 떠올라요. 머리 바로 위에 눈부시게 밝은 고리가 하나 떠 있어요. 흰빛에 가까운 노란색이고, 지름이 한 50센티 정도예요. 제 머리 위를 천천히 빙빙 돌아요.",
+        "location": "몸 주변이요.",
+        "focus": "계속 돌고 있어요.",
+        "fleshout": "잘 모르겠어요.",
+        "probe_size_shape": null,
+        "probe_color_brightness": null,
+        "probe_movement": null
+      },
+      "gold": [
+        { "attr": "height", "phrase": "머리 바로 위에", "slot": "layout.verticalOffset", "expect": { "range": [0.9, 1.0] }, "negated": false },
+        { "attr": "body_part", "phrase": "머리 바로 위에", "slot": "body.part", "expect": { "equals": "head" }, "negated": false },
+        { "attr": "body_layer", "phrase": "머리 바로 위에", "slot": "body.layer", "expect": { "in": ["surface_above", "around"] }, "negated": false },
+        { "attr": "brightness", "phrase": "눈부시게 밝은", "slot": "material.brightness", "expect": { "range": [0.8, 1.0] }, "negated": false },
+        { "attr": "color", "phrase": "흰빛에 가까운 노란색", "slot": "material.color", "expect": { "hue_deg": [40, 65], "s": [0.2, 1.0], "l": [0.65, 0.97] }, "negated": false },
+        { "attr": "size", "phrase": "지름이 한 50센티", "slot": "layout.size", "expect": { "range": [0.4, 0.75] }, "negated": false },
+        { "attr": "motion_type", "phrase": "빙빙 돌아요", "slot": "motion.type", "expect": { "in": ["circling", "rotating"] }, "negated": false },
+        { "attr": "motion_speed", "phrase": "천천히 빙빙", "slot": "motion.speed", "expect": { "range": [0.0, 0.4] }, "negated": false }
+      ],
+      "distractors": [
+        { "phrase": "가로등", "why": "맥락 사물(밝기·색을 끌어오면 안 됨)" },
+        { "phrase": "밤에", "why": "맥락 시간. 밝기를 낮추면 안 됨" }
+      ]
+    },
+    {
+      "id": "D25",
+      "style": "multi_turn",
+      "replies": {
+        "opening": "오래된 책장 정리하던 오후요. 손등에 뭔가 얹혀 있어요.",
+        "location": "몸 표면이요. 왼손 손등이요.",
+        "focus": "마른 나뭇잎 같은 게 있어요.",
+        "fleshout": "갈색이고 가장자리가 바스러져 있어요. 바짝 말라서 바삭바삭해요.",
+        "probe_size_shape": "작아요. 동전 두 개 크기 정도요.",
+        "probe_color_brightness": "빛은 없고 칙칙해요.",
+        "probe_movement": "가끔 바르르 떨려요."
+      },
+      "gold": [
+        { "attr": "body_part", "phrase": "왼손 손등", "slot": "body.part", "expect": { "equals": "hand" }, "negated": false },
+        { "attr": "color", "phrase": "갈색이고", "slot": "material.color", "expect": { "hue_deg": [15, 45], "s": [0.2, 0.8], "l": [0.15, 0.5] }, "negated": false },
+        { "attr": "erosion", "phrase": "가장자리가 바스러져", "slot": "material.erosion", "expect": { "range": [0.4, 1.0] }, "negated": false },
+        { "attr": "texture_roughness", "phrase": "바삭바삭해요", "slot": "material.roughness", "expect": { "range": [0.5, 1.0] }, "negated": false },
+        { "attr": "size", "phrase": "동전 두 개 크기", "slot": "layout.size", "expect": { "range": [0.0, 0.35] }, "negated": false },
+        { "attr": "brightness", "phrase": "빛은 없고", "slot": "material.brightness", "expect": null, "negated": true },
+        { "attr": "saturation", "phrase": "칙칙해요", "slot": "material.saturation", "expect": { "range": [0.0, 0.4] }, "negated": false },
+        { "attr": "motion_type", "phrase": "바르르 떨려요", "slot": "motion.type", "expect": { "in": ["trembling", "vibrating"] }, "negated": false }
+      ],
+      "distractors": [
+        { "phrase": "오래된 책장", "why": "배경 사물 수식어. erosion을 올리면 안 됨" }
+      ]
+    },
+    {
+      "id": "D26",
+      "style": "free_narrative",
+      "replies": {
+        "opening": "시험 끝나고 집에 와서 누웠던 장면이요. 배 위에 볼링공만 한 검은 공 같은 게 올려져 있어요. 묵직하고 차가워요. 아주 천천히 아래로 가라앉는 느낌이에요. 표면은 매끄럽고 광택이 있어요.",
+        "location": "몸 표면이요. 배 위요.",
+        "focus": "그대로 있어요.",
+        "fleshout": "잘 모르겠어요.",
+        "probe_size_shape": null,
+        "probe_color_brightness": null,
+        "probe_movement": null
+      },
+      "gold": [
+        { "attr": "body_part", "phrase": "배 위요", "slot": "body.part", "expect": { "in": ["belly", "lower_belly"] }, "negated": false },
+        { "attr": "size", "phrase": "볼링공만 한", "slot": "layout.size", "expect": { "range": [0.4, 0.75] }, "negated": false },
+        { "attr": "color", "phrase": "검은 공", "slot": "material.color", "expect": { "s": [0.0, 0.25], "l": [0.0, 0.2] }, "negated": false },
+        { "attr": "weight", "phrase": "묵직하고", "slot": null, "expect": null, "negated": false },
+        { "attr": "temperature", "phrase": "차가워요", "slot": null, "expect": null, "negated": false },
+        { "attr": "motion_type", "phrase": "아래로 가라앉는", "slot": "motion.type", "expect": { "in": ["sinking", "settling"] }, "negated": false },
+        { "attr": "motion_speed", "phrase": "아주 천천히", "slot": "motion.speed", "expect": { "range": [0.0, 0.25] }, "negated": false },
+        { "attr": "texture_roughness", "phrase": "매끄럽고 광택이", "slot": "material.roughness", "expect": { "range": [0.0, 0.25] }, "negated": false }
+      ],
+      "distractors": [
+        { "phrase": "누웠던", "why": "참여자 자신의 자세(맥락). form.posture를 lying으로 만들면 안 됨" }
+      ]
+    },
+    {
+      "id": "D27",
+      "style": "multi_turn",
+      "replies": {
+        "opening": "주말에 자전거 타던 장면이 떠올라요. 다리 쪽에 뭔가 감겨 있는 느낌이에요.",
+        "location": "몸 표면이요. 오른쪽 종아리요.",
+        "focus": "리본 같은 띠가 감겨 있어요.",
+        "fleshout": "파란색… 아 아니다, 파란색보다는 남색에 가까워요. 매끈한 천이에요.",
+        "probe_size_shape": "폭은 손가락 두 개 정도고 길어요.",
+        "probe_color_brightness": null,
+        "probe_movement": "종아리를 따라 천천히 빙글빙글 돌아요."
+      },
+      "gold": [
+        { "attr": "body_part", "phrase": "오른쪽 종아리", "slot": "body.part", "expect": { "equals": "leg" }, "negated": false },
+        { "attr": "body_layer", "phrase": "몸 표면이요", "slot": "body.layer", "expect": { "in": ["surface", "surface_above"] }, "negated": false },
+        { "attr": "shape", "phrase": "리본 같은 띠", "slot": null, "expect": null, "negated": false },
+        { "attr": "color", "phrase": "남색에 가까워요", "slot": "material.color", "expect": { "hue_deg": [215, 250], "s": [0.3, 1.0], "l": [0.1, 0.4] }, "negated": false },
+        { "attr": "texture_roughness", "phrase": "매끈한 천", "slot": "material.roughness", "expect": { "range": [0.0, 0.3] }, "negated": false },
+        { "attr": "shape", "phrase": "폭은 손가락 두 개 정도고 길어요", "slot": null, "expect": null, "negated": false },
+        { "attr": "motion_type", "phrase": "빙글빙글 돌아요", "slot": "motion.type", "expect": { "in": ["rotating", "circling"] }, "negated": false },
+        { "attr": "motion_speed", "phrase": "천천히 빙글빙글", "slot": "motion.speed", "expect": { "range": [0.0, 0.4] }, "negated": false }
+      ],
+      "distractors": [
+        { "phrase": "파란색… 아 아니다", "why": "자기 수정 전 값. 남색이 최종 답" },
+        { "phrase": "자전거 타던", "why": "맥락 활동" }
+      ]
+    },
+    {
+      "id": "D28",
+      "style": "free_narrative",
+      "replies": {
+        "opening": "공항에서 비행기 기다리던 장면이요. 제 앞으로 2미터쯤, 바닥 가까이에 투명한 물방울 모양 덩어리가 있어요. 크기는 큰 수박 정도예요. 겉은 물처럼 촉촉하고 안이 다 비쳐요. 통통 튀듯이 빠르게 위아래로 움직여요. 색은 없어요.",
+        "location": "몸 주변이요.",
+        "focus": "계속 튀고 있어요.",
+        "fleshout": "잘 모르겠어요.",
+        "probe_size_shape": null,
+        "probe_color_brightness": null,
+        "probe_movement": null
+      },
+      "gold": [
+        { "attr": "distance", "phrase": "2미터쯤", "slot": "layout.distance", "expect": { "range": [0.5, 0.75] }, "negated": false },
+        { "attr": "height", "phrase": "바닥 가까이에", "slot": "layout.verticalOffset", "expect": { "range": [0.0, 0.2] }, "negated": false },
+        { "attr": "opacity", "phrase": "투명한", "slot": "material.opacity", "expect": { "range": [0.0, 0.3] }, "negated": false },
+        { "attr": "form", "phrase": "물방울 모양 덩어리", "slot": "form.type", "expect": { "equals": "blob" }, "negated": false },
+        { "attr": "size", "phrase": "큰 수박 정도", "slot": "layout.size", "expect": { "range": [0.5, 0.85] }, "negated": false },
+        { "attr": "motion_type", "phrase": "통통 튀듯이", "slot": "motion.type", "expect": null, "negated": false },
+        { "attr": "motion_speed", "phrase": "빠르게 위아래로", "slot": "motion.speed", "expect": { "range": [0.6, 1.0] }, "negated": false },
+        { "attr": "color", "phrase": "색은 없어요", "slot": "material.color", "expect": null, "negated": true }
+      ],
+      "distractors": [
+        { "phrase": "공항에서 비행기", "why": "맥락 장소·사물" }
+      ]
+    },
+    {
+      "id": "D29",
+      "style": "free_narrative",
+      "replies": {
+        "opening": "강아지 산책시키던 아침이 생각나요. 뒷목에 깃털 같은 게 닿아 있어서 간질간질해요. 하얗고 보송보송하고 아주 가벼워요. 크기는 새끼손가락만 해요. 바람 불 때마다 살랑거려요.",
+        "location": "몸 표면이요.",
+        "focus": "그대로 닿아 있어요.",
+        "fleshout": "잘 모르겠어요.",
+        "probe_size_shape": null,
+        "probe_color_brightness": null,
+        "probe_movement": null
+      },
+      "gold": [
+        { "attr": "body_part", "phrase": "뒷목에", "slot": "body.part", "expect": { "in": ["nape", "throat_neck"] }, "negated": false },
+        { "attr": "body_layer", "phrase": "몸 표면이요", "slot": "body.layer", "expect": { "in": ["surface", "surface_above"] }, "negated": false },
+        { "attr": "shape", "phrase": "깃털 같은 게", "slot": null, "expect": null, "negated": false },
+        { "attr": "other", "phrase": "간질간질해요", "slot": null, "expect": null, "negated": false },
+        { "attr": "color", "phrase": "하얗고", "slot": "material.color", "expect": { "s": [0.0, 0.2], "l": [0.8, 1.0] }, "negated": false },
+        { "attr": "weight", "phrase": "아주 가벼워요", "slot": null, "expect": null, "negated": false },
+        { "attr": "size", "phrase": "새끼손가락만 해요", "slot": "layout.size", "expect": { "range": [0.0, 0.35] }, "negated": false },
+        { "attr": "motion_type", "phrase": "살랑거려요", "slot": "motion.type", "expect": { "in": ["swaying", "rippling", "trembling"] }, "negated": false }
+      ],
+      "distractors": [
+        { "phrase": "강아지 산책시키던", "why": "맥락 활동" }
+      ]
+    },
+    {
+      "id": "D30",
+      "style": "multi_turn",
+      "replies": {
+        "opening": "새로 산 조명 켜 보던 저녁이요. 눈앞에 육각형 같은 게 보여요.",
+        "location": "몸 주변이요. 눈높이에 있어요.",
+        "focus": "육각형 판이 떠 있어요.",
+        "fleshout": "금색 테두리가 있고 안쪽은 어두운 초록이에요. 표면은 살짝 거칠어요.",
+        "probe_size_shape": "접시만 해요.",
+        "probe_color_brightness": "밝기는 은은한 정도예요.",
+        "probe_movement": "움직이는지는 잘 모르겠어요."
+      },
+      "gold": [
+        { "attr": "height", "phrase": "눈높이에", "slot": "layout.verticalOffset", "expect": { "range": [0.85, 1.0] }, "negated": false },
+        { "attr": "shape", "phrase": "육각형 판", "slot": null, "expect": null, "negated": false },
+        { "attr": "other", "phrase": "금색 테두리", "slot": null, "expect": null, "negated": false },
+        { "attr": "color", "phrase": "안쪽은 어두운 초록", "slot": "material.color", "expect": { "hue_deg": [90, 160], "s": [0.2, 1.0], "l": [0.08, 0.35] }, "negated": false },
+        { "attr": "texture_roughness", "phrase": "표면은 살짝 거칠어요", "slot": "material.roughness", "expect": { "range": [0.5, 0.8] }, "negated": false },
+        { "attr": "size", "phrase": "접시만 해요", "slot": "layout.size", "expect": { "range": [0.3, 0.65] }, "negated": false },
+        { "attr": "brightness", "phrase": "은은한 정도", "slot": "material.brightness", "expect": { "range": [0.3, 0.65] }, "negated": false },
+        { "attr": "motion_type", "phrase": "움직이는지는 잘 모르겠어요", "slot": "motion.type", "expect": { "equals": null }, "negated": false }
+      ],
+      "distractors": [
+        { "phrase": "새로 산 조명", "why": "맥락 사물. 밝기를 끌어오면 안 됨" }
+      ]
+    }
+  ]
+}

@@ -126,8 +126,10 @@ void ifsSurface(Input IN, inout SurfaceOutputStandard o, float interior)
 
     float bright = lerp(0.4, 1.0, saturate(_Brightness * 2.0));          // 0.5 미만은 어둡게
     o.Albedo = col * bright * lerp(1.0, 0.3, interior);
+    // PBR(Standard, 금속도 워크플로): 금속도 0 = 유전체(반사율 ≈ 4%, 확산·정반사 합은 Standard BRDF가 에너지 보존).
+    // 스무드니스 = 1 − roughness(지각적 거칠기와 같은 척도). 0.92 상한 = 완전 거울면이 VR에서 반짝이며 깜빡이는 것(정반사 앨리어싱)을 막는다.
     o.Metallic = 0.0;
-    o.Smoothness = saturate((1.0 - _Roughness) * lerp(0.8, 1.0, mottle) * (1.0 - 0.8 * edge));
+    o.Smoothness = saturate((1.0 - _Roughness) * 0.92 * lerp(0.8, 1.0, mottle) * (1.0 - 0.8 * edge));
     o.Emission = col * saturate(_Brightness - 0.5) * 2.4 * (1.0 - interior); // 0.5 초과는 빛남
     o.Alpha = 1.0;
 }

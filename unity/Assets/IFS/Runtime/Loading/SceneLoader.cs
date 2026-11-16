@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace IFS.SceneSpec
 {
@@ -129,6 +130,8 @@ namespace IFS.SceneSpec
         public SceneParams CurrentParams { get; private set; }
         public ExperimentRecorder Recorder => _recorder;
         public GameObject Root => _root;
+        /// <summary>로더 메모(기본값 사용, 프리미티브 대체, 없는 셰이더 프로퍼티 …). initialScene.json의 notes와 같다.</summary>
+        public IReadOnlyList<string> Notes => _notes;
         public event Action<SceneLoader> Loaded;
 
         ISceneSpecPathSource _source;
@@ -138,6 +141,8 @@ namespace IFS.SceneSpec
         Vector3 _anchorPos, _anchorForward, _modelBaseScale;
         float _eyeHeight;
         readonly List<string> _notes = new List<string>();
+        // 로더가 만든 머티리얼 사본(Unload 때 정리). renderer.materials는 에디트 모드에서 누수 오류를 내므로 직접 복제한다.
+        readonly HashSet<Material> _ownedMaterials = new HashSet<Material>();
 
         // ── 수명 ─────────────────────────────────────────────────────────────
         void OnEnable()
@@ -156,7 +161,12 @@ namespace IFS.SceneSpec
             if (loadOnStart) LoadFromSource();
         }
 
-        void OnDestroy() => CloseRecorder();
+        void OnDestroy()
+        {
+            CloseRecorder();
+            foreach (var m in _ownedMaterials) DestroySafe(m);   // 형상(자식)은 함께 지워지지만 머티리얼 사본은 남으므로
+            _ownedMaterials.Clear();
+        }
 
         void OnSpecPathChanged(string path) => Load(path);
 
@@ -230,7 +240,9 @@ namespace IFS.SceneSpec
         public void Unload()
         {
             CloseRecorder();
-            if (_root != null) Destroy(_root);
+            DestroySafe(_root);
+            foreach (var m in _ownedMaterials) DestroySafe(m);
+            _ownedMaterials.Clear();
             _root = _model = null;
             _motion = null;
             Spec = null;
@@ -336,7 +348,7 @@ namespace IFS.SceneSpec
                 pivot.transform.SetParent(_root.transform, false);
                 _motion = pivot.AddComponent<SpecMotion>();
             }
-            if (_model != null) Destroy(_model);
+            ReleaseModel();
 
             string form = CurrentParams.GetCategory("form.type");
             var prefab = FindPrefab(form);
@@ -347,6 +359,8 @@ namespace IFS.SceneSpec
             else if (useProceduralModels && LoadIfsShaders())
             {
                 _model = CreateProceduralModel(form);
+                foreach (var r in _model.GetComponentsInChildren<Renderer>())   // 로더가 만든 머티리얼 = 이미 사본
+                    foreach (var m in r.sharedMaterials) _ownedMaterials.Add(m);
                 _model.transform.SetParent(_motion.transform, false);
                 _model.transform.localScale = Vector3.one * placement.primitiveBaseSize;
                 Note($"form.type={form}: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시", false);
@@ -362,6 +376,21 @@ namespace IFS.SceneSpec
             _model.name = "model (" + form + ")";
             _modelBaseScale = _model.transform.localScale;
         }
+
+        // 형상만 바꿀 때(조정 중 form.type 변경): 이전 형상이 쓰던 머티리얼 사본도 함께 지운다.
+        // 지우지 않으면 _ownedMaterials에 남아 Unload·OnDestroy 때까지 쌓인다.
+        void ReleaseModel()
+        {
+            if (_model == null) return;
+            foreach (var r in _model.GetComponentsInChildren<Renderer>(true))
+                foreach (var m in r.sharedMaterials)
+                    if (m != null && _ownedMaterials.Remove(m)) DestroySafe(m);
+            DestroySafe(_model);
+            _model = null;
+        }
+
+        /// <summary>로더가 지금 들고 있는 머티리얼 사본 수(누수 확인용).</summary>
+        public int OwnedMaterialCount => _ownedMaterials.Count;
 
         GameObject FindPrefab(string form)
         {
@@ -517,11 +546,13 @@ namespace IFS.SceneSpec
 
             foreach (var rend in _model.GetComponentsInChildren<Renderer>())
             {
-                foreach (var m in rend.materials)   // 렌더러마다 인스턴스(공유 머티리얼을 바꾸지 않는다)
+                bool anyIfs = false;
+                foreach (var m in InstanceMaterials(rend))   // 렌더러마다 인스턴스(공유 머티리얼을 바꾸지 않는다)
                 {
                     bool ifsShader = _opaqueShader != null && (m.shader == _opaqueShader || m.shader == _fadeShader);
                     if (ifsShader)
                     {
+                        anyIfs = true;
                         var wanted = fade ? _fadeShader : _opaqueShader;   // 안개·반투명이면 Fade로 바꾼다
                         if (m.shader != wanted) m.shader = wanted;
                         m.SetFloat("_Lumpiness", preset.lumpiness);
@@ -555,7 +586,33 @@ namespace IFS.SceneSpec
                     if (m.HasProperty(sp.erosion)) m.SetFloat(sp.erosion, erosion);
                     else if (erosion > 0.001f) Note($"{m.shader.name}: {sp.erosion} 없음 → material.erosion 적용 안 됨", true);
                 }
+                // 반투명(Fade)은 Built-in에서 그림자를 받지 못하고, 불투명 그림자를 드리우면 안개가 덩어리처럼 보인다 → 그림자 끔.
+                if (anyIfs) rend.shadowCastingMode = fade ? ShadowCastingMode.Off : ShadowCastingMode.On;
             }
+        }
+
+        // renderer.materials와 같은 일(공유 머티리얼을 사본으로 바꿈)을 재생 중·에디트 모드 모두에서 한다.
+        // 로더가 직접 만든 머티리얼(절차 모형)은 이미 사본이라 그대로 쓴다.
+        Material[] InstanceMaterials(Renderer rend)
+        {
+            var shared = rend.sharedMaterials;
+            bool changed = false;
+            for (int i = 0; i < shared.Length; i++)
+            {
+                if (shared[i] == null || _ownedMaterials.Contains(shared[i])) continue;
+                shared[i] = new Material(shared[i]);
+                _ownedMaterials.Add(shared[i]);
+                changed = true;
+            }
+            if (changed) rend.sharedMaterials = shared;
+            return shared;
+        }
+
+        static void DestroySafe(UnityEngine.Object o)
+        {
+            if (o == null) return;
+            if (Application.isPlaying) Destroy(o);
+            else DestroyImmediate(o);
         }
 
         void ApplyMotion()
