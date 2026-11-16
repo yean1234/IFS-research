@@ -1,0 +1,263 @@
+{
+  "lexiconId": "scene-params",
+  "lexiconVersion": "1.0.0",
+  "status": "draft — 개선 매핑(v1)용. 연구팀 검토 전. v0 표(scene_params.v0.json)는 고치지 않고 이 파일을 따로 둔다. 수치는 모두 초안이다.",
+  "description": "SceneSpec v2.1 대응표(개선 매핑 v1). layer1·layer2·layer3·negation은 v0와 같은 구조이고 값 표를 넓혔다. v1 절은 어절 표면형 규칙(색 이름·색 수식·정도 부사·수치 단위·비교 크기·높이어·배경 명사·부분 명사·모름·자기 정정·퍼지 매칭)의 표다. 화이트박스: 표에 없는 값은 만들지 않는다.",
+  "howToEdit": [
+    "layer1의 키는 1층 사전(v0 + layer1_lexicon.v1.json 오버레이)의 category. 각 항목은 그 범주가 채우는 슬롯 하나다.",
+    "v0와 달리 body_part는 body.part만 채운다. 신체 부위 높이(bodyPartHeight)는 값이 아니라 _inferred 제안으로만 쓴다(코퍼스 규칙 C5: 공간 높이어가 있을 때만 높이를 값으로).",
+    "v1 절의 표는 모두 어절 표면형(글자) 기준이다. Kiwi 형태가 아니다.",
+    "수치를 바꾸면 lexiconVersion을 올린다. 장면 파일 meta.pipeline.lexicons에 버전이 남는다.",
+    "참여자의 실제 응답 문장을 넣지 않는다. 낱말과 수치만 넣는다. 크기표의 미터 값은 일상 사물의 대략 크기(초안)이고 출처 문헌이 없다 — 연구팀 확인 필요."
+  ],
+  "units": {
+    "material.color": "{h, s, l} 각 0–1, h = 색상각/360",
+    "material.brightness": "0 어두움 – 1 눈부심",
+    "material.saturation": "0 무채색 – 1 선명",
+    "material.roughness": "0 젖음·매끈 – 1 거칠·녹슨",
+    "material.opacity": "0 투명 – 1 불투명",
+    "material.erosion": "0 온전 – 1 부서짐",
+    "layout.size": "로그 척도. 0.5 = 에셋 기본 크기 ×1, 0 = ×0.25, 1 = ×4. 말한 물리 크기 m는 size = 0.5 + log2(m / 0.2) / 6 (v1.size)",
+    "layout.distance": "0 = 0.3 m, 1 = 3.0 m (선형)",
+    "layout.verticalOffset": "참여자 키 대비 높이. 0 바닥, 1 정수리",
+    "motion.speed": "0 아주 느림 – 1 아주 빠름"
+  },
+  "layer1": {
+    "brightness": [
+      {"path": "material.brightness", "key": "level",
+       "values": {"dark": 0.15, "fading": 0.2, "faint": 0.25, "dim": 0.3, "hazy": 0.4, "soft_glow": 0.5, "light": 0.7,
+                  "bright": 0.8, "sparkling": 0.85, "glowing": 0.9, "dazzling": 1.0}}
+    ],
+    "saturation": [
+      {"path": "material.saturation", "key": "level",
+       "values": {"faded": 0.15, "dull": 0.2, "muddy": 0.25, "pale": 0.25, "deep": 0.75, "vivid": 0.9}}
+    ],
+    "opacity": [
+      {"path": "material.opacity", "key": "level",
+       "values": {"transparent": 0.1, "see_through": 0.5, "translucent": 0.5, "opaque": 1.0}}
+    ],
+    "texture": [
+      {"path": "material.roughness", "key": "texture",
+       "values": {"smooth": 0.1, "glossy": 0.1, "wet": 0.15, "slick": 0.15, "moist": 0.25, "sticky": 0.3, "damp": 0.35,
+                  "crisp": 0.7, "rough_bumpy": 0.75, "rough": 0.85, "rusty": 0.9}},
+      {"path": "material.erosion", "key": "texture",
+       "values": {"cracked": 0.4, "worn": 0.45, "decaying": 0.6, "broken": 0.6, "torn": 0.6, "crumbling": 0.7,
+                  "tattered": 0.7, "shattered": 0.85}}
+    ],
+    "size": [
+      {"path": "layout.size", "transform": "logScale", "key": "scale"}
+    ],
+    "distance": [
+      {"path": "layout.distance", "key": "distance",
+       "values": {"attached": 0.0, "very_near": 0.1, "near": 0.25, "apart": 0.6, "far": 0.85}}
+    ],
+    "form": [
+      {"path": "form.type", "transform": "enum", "key": "prototype"}
+    ],
+    "posture": [
+      {"path": "form.posture", "transform": "enum", "key": "posture"}
+    ],
+    "movement": [
+      {"path": "motion.type", "transform": "enum", "key": "motion"},
+      {"path": "motion.speed", "key": "speed", "values": {"slow": 0.25, "fast": 0.8}}
+    ],
+    "body_part": [
+      {"path": "body.part", "transform": "enum", "key": "part"}
+    ],
+    "body_layer": [
+      {"path": "body.layer", "transform": "enum", "key": "layer", "requires": "bodyAnchor"}
+    ]
+  },
+  "negation": {
+    "stillWhenNegated": ["움직이", "움직임"],
+    "note": "'움직임은 없어요'처럼 움직임 자체를 부정하면 still. 다른 부정은 _negated. v1은 '빛이 안 나고'처럼 체언 + 조사 + 안/못 + 용언의 체언도 부정으로 본다."
+  },
+  "layer2": {
+    "markers": ["처럼", "같은", "듯한", "마냥"],
+    "vehicleIncludesModifier": true,
+    "note": "직유 원천 명사 → 형태 프로토타입. 원천이 합성어면 표에 있는 가장 긴 뒷부분으로 찾는다('조개껍데기' → '껍데기').",
+    "prototypes": {
+      "구름": "mist", "먹구름": "mist", "연기": "mist", "안개": "mist", "김": "mist", "수증기": "mist", "공기": "mist",
+      "아지랑이": "mist", "솜사탕": "mist", "솜": "mist", "먼지구름": "mist",
+      "돌": "blob", "돌멩이": "blob", "바위": "blob", "자갈": "blob", "공": "blob", "구슬": "blob", "진흙": "blob",
+      "타르": "blob", "불덩이": "blob", "물방울": "blob", "방울": "blob", "풍선": "blob", "젤리": "blob", "찰흙": "blob",
+      "반죽": "blob", "솜뭉치": "blob", "주먹밥": "blob",
+      "막": "shell", "껍데기": "shell", "껍질": "shell", "갑옷": "shell", "깍지": "shell",
+      "모래": "fragments", "모래알": "fragments", "가루": "fragments", "먼지": "fragments", "알갱이": "fragments",
+      "부스러기": "fragments", "파편": "fragments", "조각": "fragments", "유리조각": "fragments"
+    }
+  },
+  "layer3": {
+    "combine": "mean",
+    "note": "v0와 같음. 감정어 V/A/D 평균 → 값이 null인 슬롯에만 _inferred 제안.",
+    "targets": [
+      {"path": "material.brightness", "dim": "v", "name": "valence"},
+      {"path": "motion.speed", "dim": "a", "name": "arousal"},
+      {"path": "layout.size", "dim": "d", "name": "dominance"}
+    ]
+  },
+  "bodyPartHeight": {
+    "source": "Drillis & Contini(1966) 신체 비율 근사(v0 표와 같음). v1에서는 값이 아니라 _inferred 제안",
+    "values": {"forehead": 0.96, "head": 0.93, "face": 0.92, "nape": 0.86, "throat": 0.85, "throat_neck": 0.85,
+               "shoulder": 0.82, "chest": 0.72, "heart": 0.72, "back": 0.72, "solar_plexus": 0.67, "flank": 0.63,
+               "arm": 0.63, "belly": 0.6, "lower_back": 0.6, "lower_belly": 0.55, "hand": 0.49, "leg": 0.28,
+               "foot": 0.04}
+  },
+  "v1": {
+    "size": {
+      "referenceMeters": 0.2,
+      "octavesPerUnit": 6,
+      "note": "⚠ 가정. 말한 물리 크기 m(가장 긴 변) → size = 0.5 + log2(m / 0.2) / 6, 0–1로 자름. 0.5 = 20 cm(손바닥~한 뼘), 0 = 2.5 cm, 1 = 1.6 m. 렌더 범위(×0.25–×4, 16배)에 사람이 말하는 크기 범위(손톱~사람 키, 약 64배)를 압축해 넣는다. 크기형용사('작은' ×0.6)는 v0와 같은 0.5 + log2(scale)/4"
+    },
+    "distance": {"minMeters": 0.3, "maxMeters": 3.0, "note": "distance = (m − 0.3) / 2.7, 0–1로 자름(v2 정의와 같음)"},
+    "units": {
+      "센티미터": 0.01, "센티": 0.01, "센치": 0.01, "cm": 0.01, "㎝": 0.01, "밀리미터": 0.001, "밀리": 0.001, "mm": 0.001,
+      "미터": 1.0, "m": 1.0, "뼘": 0.2, "걸음": 0.6, "발짝": 0.6, "발자국": 0.6
+    },
+    "nativeNumbers": {"한": 1, "두": 2, "세": 3, "네": 4, "다섯": 5, "여섯": 6, "일곱": 7, "여덟": 8, "아홉": 9, "열": 10, "반": 0.5},
+    "approxWords": ["한", "약", "대략", "대충", "거의"],
+    "sizeCueWords": ["지름", "크기", "길이", "높이", "둘레", "덩치", "키"],
+    "widthWords": ["폭", "너비", "두께", "굵기"],
+    "distanceCueWords": ["떨어", "거리", "멀리", "멀어", "앞", "뒤", "옆", "앞쪽", "뒤쪽", "옆쪽"],
+    "referenceObjects": {
+      "모래알": 0.001, "쌀알": 0.005, "깨": 0.003, "좁쌀": 0.003, "콩": 0.01, "팥": 0.008, "손톱": 0.015, "단추": 0.02,
+      "구슬": 0.015, "동전": 0.025, "포도알": 0.02, "체리": 0.025, "호두": 0.035, "밤톨": 0.03, "도토리": 0.025,
+      "탁구공": 0.04, "골프공": 0.043, "엄지": 0.06, "엄지손가락": 0.06, "새끼손가락": 0.06, "손가락": 0.08,
+      "달걀": 0.06, "계란": 0.06, "귤": 0.07, "테니스공": 0.067, "야구공": 0.074, "자두": 0.05, "사과": 0.08,
+      "주먹": 0.1, "컵": 0.1, "머그컵": 0.1, "휴대폰": 0.15, "핸드폰": 0.15, "스마트폰": 0.15, "손바닥": 0.18,
+      "손": 0.18, "자몽": 0.12, "멜론": 0.18, "배구공": 0.21, "축구공": 0.22, "볼링공": 0.22, "농구공": 0.24,
+      "머리": 0.22, "얼굴": 0.22, "책": 0.25, "공책": 0.25, "접시": 0.25, "수박": 0.3, "냄비": 0.3, "쟁반": 0.4,
+      "방석": 0.45, "베개": 0.5, "의자": 0.8, "우산": 0.9, "사람": 1.7, "키": 1.7, "문": 2.0, "냉장고": 1.8, "자동차": 4.0,
+      "버스": 10.0, "집": 8.0
+    },
+    "lengthReferences": {"팔": 0.65, "다리": 0.9, "손": 0.18, "손가락": 0.08, "몸": 1.7, "키": 1.7, "한 걸음": 0.6},
+    "coverObjects": {
+      "몸": 1.7, "온몸": 1.7, "몸 전체": 1.7, "몸전체": 1.7, "앞": 1.7, "시야": 1.7, "눈앞": 1.7, "얼굴": 0.25, "머리": 0.25, "어깨": 0.45,
+      "가슴": 0.4, "등": 0.5, "배": 0.35, "손": 0.18, "손바닥": 0.18, "팔": 0.65, "다리": 0.9, "발": 0.25, "목": 0.15
+    },
+    "referenceAdjectives": {"큰": 1.3, "커다란": 1.5, "작은": 0.75, "조그만": 0.7, "조그마한": 0.7},
+    "comparativeFactors": {
+      "bigger": 1.3, "smaller": 0.75, "slightlyBigger": 1.15, "slightlySmaller": 0.87, "muchBigger": 2.0, "muchSmaller": 0.5,
+      "slightWords": ["조금", "좀", "약간", "살짝", "다소"], "muchWords": ["훨씬", "많이", "한참"],
+      "biggerStems": ["크", "커", "넓", "길"], "smallerStems": ["작", "좁", "짧"]
+    },
+    "colorTerms": {
+      "빨강": ["red", 0, 0.75, 0.45], "빨간": ["red", 0, 0.75, 0.45], "빨갛": ["red", 0, 0.75, 0.45], "빨개": ["red", 0, 0.75, 0.45],
+      "붉은": ["red", 0, 0.65, 0.4], "붉게": ["red", 0, 0.65, 0.4], "붉어": ["red", 0, 0.65, 0.4], "붉": ["red", 0, 0.65, 0.4],
+      "검붉은": ["dark_red", 355, 0.6, 0.25],
+      "주황": ["orange", 28, 0.85, 0.55], "귤": ["tangerine", 30, 0.85, 0.55, "suffix"], "오렌지": ["orange", 30, 0.85, 0.55],
+      "노랑": ["yellow", 52, 0.85, 0.6], "노란": ["yellow", 52, 0.85, 0.6], "노랗": ["yellow", 52, 0.85, 0.6],
+      "노래요": ["yellow", 52, 0.85, 0.6], "노래져": ["yellow", 52, 0.85, 0.6], "노래지": ["yellow", 52, 0.85, 0.6],
+      "샛노란": ["yellow", 52, 0.95, 0.55], "누런": ["dull_yellow", 45, 0.55, 0.5], "누렇": ["dull_yellow", 45, 0.55, 0.5],
+      "황금": ["gold", 45, 0.75, 0.5], "금": ["gold", 45, 0.75, 0.5, "suffix"],
+      "연두": ["yellow_green", 90, 0.55, 0.55], "초록": ["green", 120, 0.45, 0.4], "녹색": ["green", 120, 0.45, 0.4],
+      "풀": ["grass_green", 110, 0.5, 0.4, "suffix"], "올리브": ["olive", 60, 0.4, 0.35, "suffix"],
+      "청록": ["teal", 175, 0.45, 0.4], "민트": ["mint", 160, 0.45, 0.7, "suffix"], "옥": ["jade", 165, 0.35, 0.65, "suffix"],
+      "에메랄드": ["emerald", 150, 0.6, 0.45],
+      "하늘": ["sky", 200, 0.7, 0.75, "suffix"],
+      "파랑": ["blue", 215, 0.7, 0.5], "파란": ["blue", 215, 0.7, 0.5], "파랗": ["blue", 215, 0.7, 0.5], "파래": ["blue", 215, 0.7, 0.5],
+      "푸른": ["blue", 205, 0.55, 0.5], "푸르": ["blue", 205, 0.55, 0.5], "퍼런": ["blue", 215, 0.6, 0.4],
+      "새파란": ["blue", 215, 0.85, 0.5],
+      "남색": ["navy", 230, 0.55, 0.25], "곤": ["navy", 230, 0.55, 0.25, "suffix"], "감": ["navy", 230, 0.45, 0.25, "suffix"],
+      "보라": ["purple", 275, 0.45, 0.45], "보랏": ["purple", 275, 0.45, 0.45, "suffix"], "자주": ["magenta", 320, 0.5, 0.35, "suffix"],
+      "자줏": ["magenta", 320, 0.5, 0.35, "suffix"],
+      "분홍": ["pink", 340, 0.6, 0.78], "핑크": ["pink", 340, 0.6, 0.78],
+      "와인": ["wine", 345, 0.6, 0.3, "suffix"],
+      "갈색": ["brown", 25, 0.45, 0.3], "밤": ["chestnut", 20, 0.45, 0.25, "suffix"], "고동": ["dark_brown", 20, 0.5, 0.2, "suffix"],
+      "황토": ["ochre", 35, 0.55, 0.45, "suffix"], "커피": ["coffee", 25, 0.4, 0.3, "suffix"],
+      "베이지": ["beige", 38, 0.35, 0.78], "크림": ["cream", 45, 0.55, 0.88, "suffix"], "상아": ["ivory", 45, 0.45, 0.9, "suffix"],
+      "아이보리": ["ivory", 45, 0.45, 0.9], "살구": ["apricot", 25, 0.75, 0.75, "suffix"],
+      "흰": ["white", 0, 0.0, 0.95], "하얀": ["white", 0, 0.0, 0.95], "하얗": ["white", 0, 0.0, 0.95], "하얘": ["white", 0, 0.0, 0.95],
+      "하양": ["white", 0, 0.0, 0.95], "새하얀": ["white", 0, 0.0, 0.98], "허연": ["off_white", 0, 0.0, 0.85], "백": ["white", 0, 0.0, 0.95, "suffix"],
+      "검은": ["black", 0, 0.0, 0.08], "검정": ["black", 0, 0.0, 0.08], "검게": ["black", 0, 0.0, 0.08], "까만": ["black", 0, 0.0, 0.06],
+      "까맣": ["black", 0, 0.0, 0.06], "까매": ["black", 0, 0.0, 0.06], "까망": ["black", 0, 0.0, 0.06], "새까만": ["black", 0, 0.0, 0.03],
+      "시커먼": ["black", 0, 0.0, 0.05], "흑": ["black", 0, 0.0, 0.08, "suffix"],
+      "회색": ["gray", 0, 0.05, 0.45], "잿빛": ["ash", 0, 0.03, 0.55], "쥐": ["gray", 0, 0.05, 0.45, "suffix"],
+      "은": ["silver", 0, 0.0, 0.75, "suffix"], "무채색": ["achromatic", 0, 0.0, 0.5]
+    },
+    "colorSuffixes": ["색깔", "빛깔", "색", "빛"],
+    "colorTints": {
+      "누르스름": ["yellow", 50, 0.45, 0.7], "노르스름": ["yellow", 52, 0.5, 0.7], "누리끼리": ["yellow", 48, 0.45, 0.65],
+      "노리끼리": ["yellow", 50, 0.45, 0.65], "불그스름": ["red", 5, 0.5, 0.6], "발그스름": ["red", 5, 0.5, 0.7],
+      "푸르스름": ["blue", 205, 0.4, 0.6], "파르스름": ["blue", 210, 0.4, 0.6], "거무스름": ["black", 0, 0.05, 0.3],
+      "거뭇": ["black", 0, 0.05, 0.3], "희끄무레": ["white", 0, 0.03, 0.85], "희뿌연": ["white", 0, 0.03, 0.8]
+    },
+    "colorModifiers": {
+      "pastel": ["연한", "연하게", "연하고", "옅은", "엷은", "흐릿한", "흐린", "희미한"],
+      "light": ["밝은", "환한", "밝게"],
+      "deep": ["짙은", "진한", "진하게", "짙게", "깊은"],
+      "dark": ["어두운", "어둑한", "어둡게", "어스름한", "칙칙하게"],
+      "dull": ["탁한", "칙칙한", "바랜", "빛바랜"],
+      "vivid": ["선명한", "쨍한", "강렬한", "또렷한"]
+    },
+    "colorPrefixes": {"연": "pastel", "진": "deep", "새": "vivid", "샛": "vivid", "검": "dark"},
+    "colorModifierEffects": {
+      "pastel": {"lUp": 0.4, "sMul": 0.7},
+      "light": {"lUp": 0.35},
+      "deep": {"lMul": 0.6, "sMul": 1.15},
+      "dark": {"lMul": 0.6},
+      "dull": {"sMul": 0.55},
+      "vivid": {"sUp": 0.4}
+    },
+    "colorBlend": {"near": 0.3, "tintS": 0.5, "tintL": 0.3, "tintAloneS": 0.6},
+    "degreeAdverbs": {
+      "strong": ["아주", "매우", "엄청", "되게", "너무", "정말", "진짜", "굉장히", "몹시", "완전", "완전히", "무척", "꽤", "많이", "훨씬", "거의"],
+      "weak": ["살짝", "약간", "조금", "좀", "다소", "살짝살짝", "미세하게", "은근히", "가볍게", "약하게"],
+      "k": {"strong": 1.5, "weak": 0.6}
+    },
+    "scalarCenters": {
+      "material.brightness": 0.5, "material.saturation": 0.5, "material.roughness": 0.5, "material.opacity": 0.5,
+      "material.erosion": 0.0, "layout.size": 0.5, "motion.speed": 0.5, "layout.distance": 0.5
+    },
+    "scalarCentersByKey": {"layout.distance": {"apart": 0.0},
+                           "note": "'조금 떨어져'처럼 떨어짐의 정도는 0(붙음)에서 잰다. 가깝다·멀다는 가운데(0.5)에서 잰다"},
+    "seeThrough": {"base": 0.5, "note": "'비치다'(속이 비침) → opacity = 1 − 0.5·k. 살짝 비침 0.7, 다 비침 0.25"},
+    "occlusion": {"opaque": 0.9, "clear": 0.2,
+                  "subjects": ["뒤", "뒤쪽", "너머", "건너편", "저편", "반대편", "속", "안", "안쪽", "뒷부분"]},
+    "heightPhrases": {
+      "eyeLevel": 0.93, "aboveHead": 1.0, "underFoot": 0.02, "floor": 0.05, "ceiling": 1.0,
+      "bodyLevel": {"머리": 0.93, "이마": 0.96, "얼굴": 0.92, "눈": 0.93, "목": 0.85, "어깨": 0.82, "가슴": 0.72,
+                    "명치": 0.67, "배": 0.6, "배꼽": 0.6, "허리": 0.6, "골반": 0.52, "엉덩이": 0.5, "허벅지": 0.4,
+                    "무릎": 0.28, "정강이": 0.18, "종아리": 0.18, "발목": 0.04, "발": 0.04}
+    },
+    "backgroundNouns": [
+      "벽", "벽지", "책상", "탁자", "테이블", "식탁", "의자", "소파", "침대", "이불", "창문", "창", "창가", "창밖", "문", "커튼",
+      "선반", "책장", "천장", "방", "거실", "부엌", "집", "건물", "회의실", "교실", "사무실", "카페", "하늘", "땅", "길", "도로",
+      "바다", "강", "호수", "산", "숲", "나무", "잎", "잎사귀", "풀", "잔디", "화분", "햇빛", "햇살", "조명", "가로등", "전등",
+      "형광등", "배경", "공간", "사람들", "버스", "자동차", "모니터", "화면", "옷", "그림", "바닥", "마루", "타일", "울타리"
+    ],
+    "partNouns": {
+      "outer": ["겉", "겉면", "표면", "바깥", "바깥쪽", "겉쪽"],
+      "inner": ["안쪽", "속", "속쪽", "가운데", "중심", "중앙", "한가운데", "몸통", "안"],
+      "detail": ["주변", "둘레", "테두리", "가장자리", "모서리", "끝", "끝부분", "점", "무늬", "줄무늬", "얼룩", "반점", "꼭대기", "테", "윗부분", "아랫부분", "군데군데"]
+    },
+    "relationalNouns": ["앞", "뒤", "위", "아래", "밑", "옆", "안", "속", "사이", "근처", "주변", "쪽", "너머", "건너편", "앞쪽", "뒤쪽", "옆쪽", "위쪽", "아래쪽", "곁"],
+    "partScopedSlots": ["material.color", "material.brightness", "material.saturation", "material.roughness"],
+    "dimensionTopics": {
+      "색": "material.color", "색깔": "material.color", "빛깔": "material.color", "색상": "material.color",
+      "크기": "layout.size", "덩치": "layout.size", "밝기": "material.brightness", "채도": "material.saturation",
+      "질감": "material.roughness", "촉감": "material.roughness", "투명도": "material.opacity", "속도": "motion.speed",
+      "움직임": "motion.type", "거리": "layout.distance", "위치": "body.layer"
+    },
+    "uncertaintyMarkers": ["모르", "헷갈리", "애매", "글쎄", "확실하지", "모르겠"],
+    "correctionMarkers": {"standalone": ["아니다", "아니야", "아니", "아니요", "아니에요"], "after": ["말고", "보다는", "보단"],
+                          "phrases": ["다시 보니", "정정", "그게 아니라"]},
+    "formerMarkers": ["처음", "원래", "아까", "예전", "전에는", "전엔"],
+    "currentMarkers": ["지금", "이제", "현재"],
+    "contextSentence": {"etm": ["던"], "nouns": ["장면"],
+                        "recallVerbs": ["떠오르", "생각나", "기억나", "떠올리"],
+                        "situationNouns": ["날", "때", "오후", "아침", "저녁", "밤", "낮", "주말", "순간", "길", "거", "것", "게", "일", "적", "시간", "무렵", "즈음", "참", "오전", "새벽"],
+                        "note": "회상 문장 표지. '~하던 게 떠올라요', '~던 장면이요'처럼 떠올린 상황을 말한 문장의 속성어는 형상 값으로 쓰지 않고 _context에 남긴다."},
+    "bodyGeneral": {"몸": 2, "온몸": 1, "전신": 1},
+    "layerExplicit": ["안", "안쪽", "속", "겉", "겉면", "표면", "주변", "둘레", "밖", "바깥", "바깥쪽", "근처"],
+    "directionWords": {"왼쪽": "left", "오른쪽": "right", "왼편": "left", "오른편": "right", "좌측": "left", "우측": "right"},
+    "mimeticDerivation": {"suffixes": ["거리", "대", "이"],
+                          "note": "의태어 + -거리다/-대다/-이다(까끌거리다·출렁이다), 겹친 의태어(펄럭펄럭)는 사전의 같은 뿌리 항목(까끌까끌·출렁)으로 찾는다. 사전에 없는 형태를 같은 범주로 옮기는 형태론 규칙"},
+    "idioms": {"glossFlow": {"subjects": ["윤기", "윤", "광택", "빛", "색", "색깔", "빛깔", "기운"], "verbs": ["흐르", "돌", "감돌"],
+                             "note": "'윤기가 흐르다'·'초록빛이 돌다'·'붉은 기운이 감돌다'의 흐르다·돌다는 움직임이 아니다(색·광택을 띠는 표현)"}},
+    "coverVerbs": ["덮", "가리", "감싸", "채우", "뒤덮"],
+    "fuzzyEndings": ["하네요", "했어요", "해져요", "해요", "하고", "하게", "한데", "해서", "하다", "한", "해", "이에요", "예요", "이고", "이요", "요", "고", "게"],
+    "fuzzy": {"minJamo": 5, "maxDistance": 1,
+              "note": "사전에 없는 내용어를 자모 단위 편집거리로 사전 표제어에 맞춘다. 표제어 자모 5개 이상, 거리 1 이하, 가장 가까운 후보가 하나일 때만(동률이면 쓰지 않음). 값을 만든 근거는 source = fuzzy_lexicon, _needsConfirmation에 남긴다."}
+  }
+}

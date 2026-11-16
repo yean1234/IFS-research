@@ -24,8 +24,19 @@ def runtime(offline_cfg, tmp_path):
     return rt
 
 
+@pytest.fixture
+def runtime_v0(offline_cfg, tmp_path):
+    """주 매핑을 v0(규칙 기반 기준선)로 둔 런타임. 정답 EX01·EX02는 v0 출력이다."""
+    cfg = offline_cfg.with_overrides(**{"session.log_dir": str(tmp_path / "logs"), "mapping.mode": "v0"})
+    rt = Runtime(cfg)
+    if not rt.analyzer.available:
+        pytest.skip("kiwipiepy가 없으면 정답과 다르다")
+    return rt
+
+
 @pytest.mark.parametrize("case", CASES, ids=[c["file"] for c in CASES])
-def test_confirm_writes_scene_file_equal_to_golden(runtime, case):
+def test_confirm_writes_scene_file_equal_to_golden(runtime_v0, case):
+    runtime = runtime_v0
     scenario = load_scenarios([str(CHATBOT_DIR / case["scenario"])])[0]
     s = runtime.new_session(case["condition"], case["sessionId"], case["participantId"])
     drive(s, scenario)
@@ -37,6 +48,44 @@ def test_confirm_writes_scene_file_equal_to_golden(runtime, case):
     assert json.loads(path.read_text(encoding="utf-8")) == json.loads((FIXTURES / case["file"]).read_text(encoding="utf-8"))
     ref = s.log.data["sceneSpec"]
     assert ref["path"] == str(path) and ref["problems"] == [] and ref["sourceTextHash"].startswith("sha256:")
+    assert ref["mapping"] == {"requested": "v0", "used": "v0", "fallbackReason": None}
+
+
+def golden_bytes(name: str) -> bytes:
+    """정답 파일을 장면 파일 작성기와 같은 형식(키 순서 그대로, indent 2, 끝 줄바꿈)으로 다시 쓴 바이트.
+    정답 파일 자체는 charSpan을 한 줄로 적은 손 정리본이라 v0 작성기 출력과 원래부터 바이트가 달랐다(baseline a753289에서도).
+    정답 파일은 바꾸지 않고(AC-3.8 (1)), 키 순서·수 표기·들여쓰기까지 같아야 통과하는 바이트 비교를 한다."""
+    data = json.loads((FIXTURES / name).read_text(encoding="utf-8"))
+    return (json.dumps(data, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
+
+
+def file_bytes(path: Path) -> bytes:
+    return path.read_bytes().replace(b"\r\n", b"\n")      # Windows 텍스트 모드 줄바꿈만 맞춘다
+
+
+@pytest.mark.parametrize("case", CASES, ids=[c["file"] for c in CASES])
+def test_v0_scene_file_byte_identical_to_golden(runtime_v0, case):
+    """AC-3.8: v0가 쓴 장면 파일이 정답과 바이트까지 같다(값 비교가 아니라 파일 바이트 비교. 키 순서도 본다)."""
+    s = runtime_v0.new_session(case["condition"], case["sessionId"], case["participantId"])
+    drive(s, load_scenarios([str(CHATBOT_DIR / case["scenario"])])[0])
+    assert file_bytes(s.scene_path) == golden_bytes(case["file"])
+    assert file_bytes(s.variant_path("v0")) == golden_bytes(case["file"])   # save_both 비교 파일도 같다
+
+
+@pytest.mark.parametrize("case", CASES, ids=[c["file"] for c in CASES])
+def test_default_v1_writes_main_and_both_variants_v0_byte_identical(runtime, case):
+    """기본 설정(mode = v1, save_both): 주 파일 = v1, 비교 파일 {sid}.v0.json은 정답과 바이트 동일, {sid}.v1.json = 주 파일."""
+    assert runtime.cfg.mapping.mode == "v1" and runtime.cfg.mapping.save_both
+    s = runtime.new_session(case["condition"], case["sessionId"], case["participantId"])
+    drive(s, load_scenarios([str(CHATBOT_DIR / case["scenario"])])[0])
+    main = json.loads(s.scene_path.read_text(encoding="utf-8"))
+    assert main["meta"]["specVersion"] == "2.1.0" and main["meta"]["mapping"]["used"] == "v1"
+    assert file_bytes(s.variant_path("v0")) == golden_bytes(case["file"])
+    assert s.variant_path("v1").read_bytes() == s.scene_path.read_bytes()
+    ref = s.log.data["sceneSpec"]
+    assert ref["problems"] == [] and ref["variants"]["v0"] == str(s.variant_path("v0"))
+    s.act("withdraw")                                               # 철회하면 비교 파일도 지운다
+    assert not s.scene_path.exists() and not s.variant_path("v0").exists() and not s.variant_path("v1").exists()
 
 
 def test_scene_uses_only_confirmed_text(runtime):

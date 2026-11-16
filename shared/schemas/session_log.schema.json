@@ -115,7 +115,38 @@
         "builder": { "type": "string" },
         "sourceTextHash": { "type": "string" },
         "problems": { "type": "array", "items": { "type": "string" } },
-        "error": { "type": "string" }
+        "error": { "type": "string" },
+        "mapping": { "type": "object", "description": "(개선 매핑 v1 이후) 주 매핑 기록 {requested, used, fallbackReason}. v1이 실패해 v0를 썼으면 used = v0" },
+        "variants": { "type": "object", "description": "config [mapping] save_both의 비교 파일 경로 {v0, v1} (실패 시 v1Error)" },
+        "fallback": { "type": "boolean", "description": "v1 실패로 v0 결과를 썼으면 true(연구자 알림 scene_mapping_fallback과 함께)" }
+      }
+    },
+    "clarify": { "type": ["object", "null"], "description": "(선택) 확인 질문 루프 기록(config [mapping] clarify_loop). 질문 틀 what_kind만, LLM 없음. targets·turns(질문·검사·답)·appended·finalText. docs/chatbot-design.md 5-1" },
+    "drift": {
+      "type": ["object", "null"],
+      "description": "(선택) 심상 유지(표류) 판정 기록(config [drift], docs/drift-design.md). 규칙만, LLM 없음. 참여자에게 보이지 않는다. 철회하면 null.",
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "assessment": {
+          "type": ["object", "null"],
+          "description": "drift.DriftAssessor.assess 결과: 턴별 스냅샷(turns: 슬롯 값·근거·형상 명사), 단계 스냅샷(stages), 1차 쌍(primary: 슬롯별 비교·속성 묶음·DI·정체 모순·판정), 인접 쌍(adjacent), acknowledged 표지",
+          "properties": {
+            "version": { "type": "string" },
+            "params": { "type": "object", "description": "판정 수치(τ·θ·가중치) 사본" },
+            "snapshotBuilder": { "enum": ["v1", "v0"] },
+            "decision": { "enum": ["drift", "no_drift", "undecidable"] },
+            "DI": { "type": ["number", "null"] },
+            "primary": { "type": ["object", "null"] },
+            "adjacent": { "type": "array" },
+            "maxAdjacentDI": { "type": ["number", "null"] },
+            "acknowledged": { "type": "object", "description": "{flag, markers[{i, stage, match}]}: 참여자가 바뀌었다고 직접 말한 표지. 판정은 바꾸지 않는다" },
+            "confirmationEdited": { "type": "boolean" }
+          }
+        },
+        "summary": { "type": ["object", "null"], "description": "연구자 화면용 요약 {decision, DI, identityContradiction, contradicted, comparable, acknowledged, maxAdjacentDI, first}" },
+        "error": { "type": "string" },
+        "recallCheck": { "type": ["object", "null"], "description": "회상 확인(recall_check) {asked, x(참여자 원문), answer: same|little|much|null, skipped}" },
+        "selfReport": { "type": ["object", "null"], "description": "확정 직후 자기보고(self_report_drift) {value 1–7|null, skipped, selfReportDrift(≤3), driftCutoff, protocolVersion}" }
       }
     },
     "events": { "type": "array", "description": "Unity 등 외부에서 보낸 이벤트(보정·거리 등)", "items": { "type": "object" } },

@@ -73,9 +73,11 @@ class Hit:
 
 
 class Lexicon:
-    def __init__(self, path: str | Path, analyzer: Analyzer):
+    def __init__(self, path: str | Path, analyzer: Analyzer, data: dict | None = None):
+        """data를 주면 파일 대신 그 내용을 쓴다(개선 매핑 v1이 v0 사전 + 오버레이를 합쳐 넘긴다)."""
         self.path = Path(path)
-        data = json.loads(self.path.read_text(encoding="utf-8"))
+        if data is None:
+            data = json.loads(self.path.read_text(encoding="utf-8"))
         self.version: str = data.get("lexiconVersion", "0.0.0")
         self.lexicon_id: str = data.get("lexiconId", "layer1")
         self.categories: dict = data["categories"]

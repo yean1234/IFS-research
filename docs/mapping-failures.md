@@ -2,7 +2,7 @@
 
 작업 3 전반부 기록입니다. 현 화이트박스 매핑(`scene-spec-builder/0.1.0`)이 참여자 표현을 놓치거나 왜곡하는 경우를 찾아 유형별로 셉니다. 개선 매핑은 이 문서의 유형과 수치를 기준선으로 삼습니다.
 
-- 대상 코퍼스: `chatbot/tests/fixtures/imagery_corpus/dev.json` (합성 30개, 다회 응답 18 · 자유 서술 12). 정답 속성 240개, 그중 슬롯 속성 206개.
+- 대상 코퍼스: `chatbot/tests/fixtures/imagery_corpus/dev.json` (합성 30개, 다회 응답 18 · 자유 서술 12). 정답 속성 240개, 그중 슬롯 속성 206개. 문장과 정답 라벨은 같은 AI 에이전트(`authoredBy: agent:dev-writer`)가 썼습니다. 사람 라벨이 아닙니다.
 - held-out 코퍼스(`heldout.json`)는 열지 않았습니다. 매핑을 고칠 때 보지 않은 문장이어야 하기 때문입니다(AC-3). 이 문서의 수치는 **개선 방향을 정하는 데만** 씁니다. 논문 보고 수치가 아닙니다.
 - 입력 경로: 코퍼스의 답을 **실제 컨트롤러의 정적 조건(조건 1)** 에 순서대로 넣었습니다. 안전 검사, 프로브 건너뛰기, 확정 텍스트 조립, 장면 파일 쓰기를 실제 코드 그대로 거칩니다.
 - 사전 버전: `layer1_lexicon.v0.json`(379항목), `scene_params.v0.json`, `vad_ko.v0.json`. 형태소 분석기 Kiwi.
@@ -15,6 +15,10 @@
 cd chatbot
 # 재생 + 채점 + 리포트 (runs.json, report.json, report.md)
 .venv\Scripts\python.exe -m ifs_chatbot.eval.fidelity --corpus tests\fixtures\imagery_corpus\dev.json --mapper v0 --out <결과 폴더>
+# 정답 라벨 형식 검사만 (phrase 원문은 출력하지 않음, 오류가 있으면 종료 코드 1)
+.venv\Scripts\python.exe -m ifs_chatbot.eval.fidelity --check-corpus tests\fixtures\imagery_corpus\dev.json
+# 두 매핑 비교 (A 결과는 <폴더>, B 결과는 <폴더>\compare, 항목 단위 쌍 비교는 <폴더>\paired.json · paired.md)
+.venv\Scripts\python.exe -m ifs_chatbot.eval.fidelity --corpus tests\fixtures\imagery_corpus\dev.json --mapper v0 --compare <모듈:factory> --out <결과 폴더>
 # 재생만 (확정 텍스트 · SceneSpec · 컨트롤러 기록)
 .venv\Scripts\python.exe -m ifs_chatbot.eval.corpus_run --corpus tests\fixtures\imagery_corpus\dev.json --out <파일>.json
 # 채점 규칙 단위 테스트
@@ -64,25 +68,48 @@ cd chatbot
 | 미반영 원문 보존률 | reflected·captured·dropped가 아닌 속성 중 phrase가 보존 필드에 원문 그대로 남은 비율입니다. 상태와 무관하게 판정하므로 distorted도 포함합니다. AC-3.5의 대상입니다. |
 | 배경 오염 | distractor 구간과 겹치는 `_provenance` 근거가 들어간 (distractor, 경로) 쌍의 수입니다. 그 근거가 값을 정한 첫 근거이면 "값 결정"으로 따로 셉니다. |
 | 부정 오류 | negated phrase 구간과 겹치는 근거로 슬롯 값이 생긴 negated 속성의 수입니다. |
-| 근거 없는 값(spurious) | 값이 있는 슬롯 중 그 항목 정답(부정 제외)에 그 경로가 없는 것 / 값이 있는 슬롯 수입니다. `docs/research-design.md` 4.4의 Spurious_c와 같은 정의입니다. |
+| 근거 없는 값 — 경로 기준(spurious) | 값이 있는 슬롯 중 그 항목 정답(부정 제외)에 그 경로가 없는 것 / 값이 있는 슬롯 수입니다. `docs/research-design.md` 4.4의 Spurious_c와 같은 정의입니다. |
+| 근거 없는 값 — 근거 기준(unsupported) | 값이 있는 슬롯 중, 그 슬롯의 `_provenance` 구간 어느 것도 같은 항목에서 같은 경로를 가진 부정 아닌 정답 phrase의 확정 텍스트 구간과 겹치지 않는 것 / 값이 있는 슬롯 수입니다. 사유는 `no_evidence` · `no_gold_span`(정답이 없거나 phrase가 확정 텍스트에 없음) · `outside_gold_span`입니다. 경로 기준으로 잡힌 값은 모두 여기에도 잡힙니다. `docs/research-design.md` 4.4의 Unsupported_c입니다. |
 
-`docs/research-design.md` 4.4의 `≈`(수치 ±0.15, 색 30°) 대신, 이 코퍼스는 항목마다 사람이 정한 허용 구간(expect)을 씁니다. 두 정의가 다르면 스크립트가 정본입니다(AC-3).
+허용 구간(expect)은 항목마다 코퍼스를 쓴 AI 에이전트가 정했습니다(사람 라벨 아님). 색 expect에서 키가 없거나 값이 null인 구성요소는 검사하지 않습니다. 정의가 문서와 다르면 스크립트가 정본입니다(AC-3).
+
+신뢰구간은 **항목 단위 군집 부트스트랩**(항목을 복원 추출, 10,000회, 시드 20261116, 백분위 95%)입니다. 한 항목 안의 속성들은 독립이 아니므로 속성 단위로 재표집하지 않습니다. 30개 코퍼스의 구간은 이 코퍼스 안의 변동만 나타냅니다.
 
 ## 3. 집계 수치 (v0, dev 30개)
 
-| 지표 | 값 |
-| --- | --- |
-| 정답 속성 / 슬롯 속성 | 240 / 206 |
-| 슬롯 상태 | reflected 118 · distorted 34 · preserved 1 · lost 40 · dropped 13 |
-| **반영률** | **0.573** |
-| **왜곡률** | **0.165** |
-| 손실률 | 0.194 |
-| 컨트롤러 탈락률 | 0.063 |
-| **보존률** | **0.529** |
-| 미반영 원문 보존률 | 0.130 (108개 중) |
-| 부정 오류 | 1 / 8 |
-| 배경 오염 | 8 (8건 모두 값 결정) |
-| 근거 없는 값 | 54 / 206 = 0.262 |
+채점기 `fidelity/0.2.0`. 0.1.0과 비교해 기존 지표 값은 바뀌지 않았고, 근거 기준 근거 없는 값과 신뢰구간이 더해졌습니다.
+
+| 지표 | 값 | 95% 구간(항목 군집 부트스트랩) |
+| --- | --- | --- |
+| 정답 속성 / 슬롯 속성 | 240 / 206 | |
+| 슬롯 상태 | reflected 118 · distorted 34 · preserved 1 · lost 40 · dropped 13 | |
+| **반영률** | **0.573** | 0.491–0.649 |
+| **왜곡률** | **0.165** | 0.112–0.224 |
+| 손실률 | 0.194 | 0.148–0.244 |
+| 컨트롤러 탈락률 | 0.063 | 0.020–0.112 |
+| **보존률** | **0.529** | 0.454–0.604 |
+| 미반영 원문 보존률 | 0.130 (108개 중) | 0.078–0.187 |
+| 부정 오류 | 1 / 8 | |
+| 배경 오염 | 8 (8건 모두 값 결정) | |
+| 근거 없는 값 — 경로 기준 | 54 / 206 = 0.262 | 0.224–0.302 |
+| 근거 없는 값 — 근거 기준 | 98 / 206 = 0.476 | 0.412–0.539 |
+
+근거 기준 98건의 사유: `no_gold_span` 62(그중 54건은 경로 기준과 같은 값, 8건은 정답 경로는 있으나 그 phrase가 확정 텍스트에 없음 — 컨트롤러가 버린 프로브 답 등), `outside_gold_span` 36, `no_evidence` 0. 98건 중 20건은 근거가 정답 구간 밖이지만 값은 그 경로의 정답 expect를 만족합니다. 예: D02 "안개 같은 게"가 정답 phrase인데 값의 근거는 뒤 문장의 "잿빛 안개가"의 '안개'입니다. 같은 속성을 두 번 말했는데 정답이 한 언급만 표시한 경우라, 라벨 누락인지 사람이 확인해야 합니다.
+
+정답 구간 폭(kind = slot, 206개):
+
+| expect 종류 | n | reflected | 반영률 |
+| --- | --- | --- | --- |
+| range | 91 | 41 | 0.451 |
+| in | 54 | 40 | 0.741 |
+| equals(값) | 29 | 23 | 0.793 |
+| 색(hue 포함) | 20 | 8 | 0.400 |
+| 색(s·l만, 무채색) | 8 | 6 | 0.750 |
+| equals null('모르겠다') | 4 | 0 | 0.000 |
+
+- range 폭: 중앙값 0.35(최소 0.08, 최대 0.60). 폭이 중앙값 이하인 53개의 반영률 0.453, 초과인 38개는 0.447로 차이가 거의 없습니다.
+- hue 폭: 중앙값 30°(25–70°). s 폭 중앙값 0.55, l 폭 중앙값 0.30. `in` 목록 길이 중앙값 2(1–5).
+- 범주형(`in`·`equals`)의 반영률이 수치·색보다 높습니다. `in` 목록이 길수록 쉽게 맞으므로 범주형 반영률은 목록 길이와 함께 읽습니다.
 
 응답 방식별:
 
@@ -144,7 +171,8 @@ cd chatbot
 | --- | --- | --- |
 | 부정 오류 | 1 | D12 "빛이 안 나고" → 밝기 0.7 |
 | 배경 오염 | 8 | 파란 벽, 하얀 책상, 초록 잎들, 주변 화분, 빵집 앞, 가운데는 하얗게, 안쪽은 매끈해요, 누웠던 |
-| 근거 없는 값 | 54 | verticalOffset 18 · body.part 11 · body.layer 8 · brightness 4 · saturation 3 · distance 3 · posture 2 · form.type 2 · 기타 3 |
+| 근거 없는 값(경로 기준) | 54 | verticalOffset 18 · body.part 11 · body.layer 8 · brightness 4 · saturation 3 · distance 3 · posture 2 · form.type 2 · 기타 3 |
+| 근거 없는 값(근거 기준) | 98 | 경로 기준 54 + 44. 더해진 44건은 body.layer 11 · body.part 6 · layout.size 6 · motion.type 7 · color 5 · brightness 4 · 기타 5. 36건은 같은 경로의 정답은 있으나 값의 근거가 정답 구간 밖의 말(예: D05 맥락 사물의 '파란', D02 일반어 '몸', 같은 말의 다른 언급)인 경우이고, 8건은 정답 phrase가 확정 텍스트에서 빠진 경우입니다 |
 | 무슬롯 속성 lost | 19 | 온도·무게·소리·냄새·모양. 낱말은 대부분 `_unmatched`·`_unmapped`에 있으나 구 전체가 원문 그대로 남지 않음 |
 
 근거 없는 값 54건 중 29건(verticalOffset 18 + body.part 11)은 설계와 코퍼스 규칙이 다른 데서 나옵니다. 6절에 적었습니다.

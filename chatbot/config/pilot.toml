@@ -39,3 +39,14 @@ max_anchor_eojeol = 3         # (확장) 인용은 참여자의 낱말·짧은 �
 log_dir = "logs"
 scenes_dir = ""               # 장면 파일 scenes/{sessionId}.json. 비우면 logs/scenes (git에 올리지 않음)
 researcher_contact = "(파일럿 전 연구자 연락처 입력)"
+
+[mapping]
+mode = "v1"                   # 확정 텍스트 → SceneSpec 매핑: v1(개선 매핑, 기본) | v0(규칙 기반 기준선)
+save_both = true              # scenes/{sessionId}.v0.json · .v1.json도 저장(같은 텍스트를 두 매핑으로 — 비교 설계)
+clarify_loop = false          # 확정 직후 what_kind 틀 확인 질문(최대 clarify_max회). 확증 비교에서는 끈다
+clarify_max = 2
+
+[drift]
+enabled = true                # 확정 직후 단계별 스냅샷으로 심상 유지(표류) 판정 → 세션 로그 drift(참여자에게 안 보임)
+recall_check = false          # Flesh out 뒤 회상 확인 문구. 확증 비교에서는 끈다. 켜려면 interview.protocol = v1.1
+self_report = false           # 확정 직후 자기보고 1–7. 문구가 draft(IRB 검토 전). 켜려면 interview.protocol = v1.1

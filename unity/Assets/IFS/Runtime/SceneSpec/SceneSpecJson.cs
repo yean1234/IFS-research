@@ -70,8 +70,10 @@ namespace IFS.SceneSpec
         public static List<string> Validate(SceneSpecV2 s)
         {
             var problems = new List<string>();
-            if (s.Meta.SpecVersion != SceneSpecV2.SupportedSpecVersion)
-                problems.Add($"specVersion {s.Meta.SpecVersion} (지원: {SceneSpecV2.SupportedSpecVersion})");
+            if (Array.IndexOf(SceneSpecV2.SupportedSpecVersions, s.Meta.SpecVersion) < 0)
+                problems.Add($"specVersion {s.Meta.SpecVersion} (지원: {string.Join(", ", SceneSpecV2.SupportedSpecVersions)})");
+            if (s.Meta.SpecVersion == SceneSpecV2.SupportedSpecVersion && s.HasV21Fields)
+                problems.Add("specVersion 2.0.0 문서에 2.1 전용 필드(_context … _clauses, meta.mapping)가 있다");
             foreach (var path in SlotPaths)
             {
                 var value = GetSlot(s, path);

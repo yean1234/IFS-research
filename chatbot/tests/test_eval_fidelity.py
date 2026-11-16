@@ -1,6 +1,7 @@
 """일치도 채점 규칙(ifs_chatbot.eval.fidelity)과 코퍼스 재생(corpus_run) 테스트.
 대사는 모두 합성(AGENTS.md 6). spec은 채점 규칙만 보려고 손으로 만든 작은 가짜다."""
 import json
+from pathlib import Path
 
 import pytest
 
@@ -156,8 +157,12 @@ def test_negation_error_and_contamination_and_spurious():
     assert status_of(sc, "brightness")["negationError"][0]["path"] == "material.brightness"
     assert {(c["path"], c["decisive"]) for c in sc["contamination"]} == {("material.color", True), ("layout.size", True)}
     assert {s["path"] for s in sc["spurious"]} == {"material.brightness", "layout.size"}  # 부정 정답은 경로를 허가하지 않음
+    # 근거 기준: color는 경로가 정답에 있으나 근거('파란')가 정답 구간('노란') 밖 → 근거 없는 값
+    assert {u["path"]: u["reason"] for u in sc["unsupported"]} == {
+        "material.brightness": "no_gold_span", "layout.size": "no_gold_span", "material.color": "outside_gold_span"}
     summ = aggregate([sc])["overall"]
     assert summ["negationErrors"] == 1 and summ["contamination"] == 2 and summ["spuriousValues"] == 2
+    assert summ["unsupportedValues"] == 3 and summ["unsupportedRate"] == 1.0
 
 
 def test_no_slot_and_unscored_attributes():
@@ -248,3 +253,183 @@ def test_scoring_is_deterministic(tmp_path):
     b = fidelity.score_runs(SYN, corpus_run.run_corpus(SYN, "v0", work_dir=tmp_path / "b"))
     assert json.dumps(a, ensure_ascii=False, sort_keys=True) == json.dumps(b, ensure_ascii=False, sort_keys=True)
     assert fidelity.to_markdown(a) == fidelity.to_markdown(b)
+
+
+# ── CP1 반영: 색 null 구성요소, expect 형식 검사 ─────────────────────────────
+DEV = Path(__file__).parent / "fixtures" / "imagery_corpus" / "dev.json"
+
+
+def test_satisfies_skips_null_color_components():
+    assert satisfies(YELLOW, {"hue_deg": [40, 70], "s": None, "l": None})
+    assert satisfies(YELLOW, {"hue_deg": None, "s": [0.4, 1.0]})
+    assert not satisfies(BLUE, {"hue_deg": [40, 70], "l": None})
+    assert satisfies({"h": 0.0, "s": 0.05, "l": 0.5}, {"hue_deg": None, "s": [0.0, 0.2], "l": [0.3, 0.7]})
+
+
+def test_check_expect_accepts_valid_forms():
+    ok = [({"equals": None}, "material.color"), ({"equals": "chest"}, "body.part"), ({"in": ["still"]}, "motion.type"),
+          ({"range": [0.0, 0.35]}, "layout.size"), (YELLOW_EXPECT, "material.color"),
+          ({"hue_deg": [345, 15]}, "material.color"), ({"hue_deg": None, "s": [0.0, 0.2]}, "material.color"),
+          (None, "layout.size")]
+    for expect, slot in ok:
+        assert fidelity.check_expect(expect, slot) == ([], []), (expect, slot)
+
+
+def test_check_expect_rejects_bad_forms():
+    bad = [({"equals": "chests"}, "body.part"), ({"in": []}, "motion.type"), ({"in": ["still", None]}, "motion.type"),
+           ({"in": [0.3]}, "layout.size"), ({"range": [0.5, 0.2]}, "layout.size"), ({"range": [0, 1.5]}, "layout.size"),
+           ({"range": [0.1, 0.2]}, "body.layer"), ({"hue_deg": [40, 400]}, "material.color"),
+           ({"s": [0.9, 0.1]}, "material.color"), ({"s": 0.5}, "material.color"), ({"hue_deg": [40, 70]}, "layout.size"),
+           ({"approx": 0.5}, "layout.size"), ({}, "layout.size"), ({"equals": {"h": 0.1}}, "material.color")]
+    for expect, slot in bad:
+        errs, _ = fidelity.check_expect(expect, slot)
+        assert errs, (expect, slot)
+
+
+def test_check_expect_warns_on_vacuous_color():
+    errs, warns = fidelity.check_expect({"hue_deg": None, "s": None, "l": None}, "material.color")
+    assert errs == [] and warns
+
+
+def test_dev_corpus_expect_format_is_valid():
+    """dev 코퍼스 전체 정답의 expect가 형식에 맞고, 모든 expect로 채점이 예외 없이 돈다(held-out은 여기서 열지 않음)."""
+    corpus = json.loads(DEV.read_text(encoding="utf-8"))
+    chk = fidelity.check_corpus(corpus)
+    assert chk["errors"] == [] and chk["items"] == 30
+    sample = {"color": {"h": 0.1, "s": 0.5, "l": 0.5}, "numeric": 0.5}
+    for it in corpus["items"]:
+        for gl in it["gold"]:
+            if fidelity.kind_of(gl) != "slot":
+                continue
+            kind, enum = fidelity.slot_kind(gl["slot"])
+            value = enum[0] if kind == "categorical" else sample[kind]
+            assert isinstance(satisfies(value, gl["expect"]), bool)
+            assert isinstance(satisfies(None, gl["expect"]), bool)
+
+
+def test_check_corpus_reports_without_phrase_text():
+    secret = "비밀스러운 합성 문장"
+    corpus = {"items": [{"id": "X1", "replies": {"opening": secret},
+                         "gold": [g("color", secret, "material.color", {"hue_deg": [40, 400]}),
+                                  g("size", "없는 구절", "layout.size", {"range": [0.1, 0.2]})]}]}
+    chk = fidelity.check_corpus(corpus)
+    assert len(chk["errors"]) == 1 and len(chk["warnings"]) == 1        # hue 범위 오류, phrase_missing 경고
+    assert all(secret not in m and "없는 구절" not in m for m in chk["errors"] + chk["warnings"])
+
+
+def test_check_corpus_cli_exit_code(tmp_path, capsys):
+    good = tmp_path / "good.json"
+    good.write_text(json.dumps(SYN, ensure_ascii=False), encoding="utf-8")
+    with pytest.raises(SystemExit) as e:
+        fidelity.main(["--check-corpus", str(good)])
+    assert e.value.code == 0
+    bad = json.loads(json.dumps(SYN))
+    bad["items"][0]["gold"][0]["expect"] = {"range": [0.9, 0.1]}
+    (tmp_path / "bad.json").write_text(json.dumps(bad, ensure_ascii=False), encoding="utf-8")
+    with pytest.raises(SystemExit) as e:
+        fidelity.main(["--check-corpus", str(tmp_path / "bad.json")])
+    assert e.value.code == 1 and "오류" in capsys.readouterr().out
+
+
+def test_evaluate_refuses_malformed_corpus():
+    bad = json.loads(json.dumps(SYN))
+    bad["items"][0]["gold"][0]["expect"] = {"range": [0.9, 0.1]}
+    with pytest.raises(ValueError):
+        fidelity.evaluate(bad, "v0")
+
+
+# ── CP1 반영: 근거 기준 근거 없는 값(unsupported) ─────────────────────────────
+def test_unsupported_reasons():
+    gold = [g("color", "노란", "material.color", YELLOW_EXPECT),
+            g("size", "주먹만 해요", "layout.size", {"range": [0.05, 0.5]})]
+    it = item(gold, replies={"opening": TEXT, "probe_size_shape": "주먹만 해요."})
+    supported = blank_spec(**{"material.color": (YELLOW, [span_of("노란")])})
+    assert score_item(it, {"confirmedText": TEXT, "spec": supported})["unsupported"] == []
+    # 정답 경로는 있으나 phrase가 확정 텍스트에 없음(컨트롤러 탈락) → 경로 기준으로는 통과, 근거 기준으로는 근거 없음
+    dropped = blank_spec(**{"layout.size": (0.3, [span_of("공이")])})
+    sc = score_item(it, {"confirmedText": TEXT, "spec": dropped})
+    assert sc["spurious"] == []
+    assert [(u["path"], u["reason"], u["spurious"]) for u in sc["unsupported"]] == [("layout.size", "no_gold_span", False)]
+    # 근거 구간이 없는 값
+    no_ev = blank_spec(**{"material.color": (YELLOW, [])})
+    u = score_item(it, {"confirmedText": TEXT, "spec": no_ev})["unsupported"]
+    assert [(x["reason"], x["valueMatchesGold"]) for x in u] == [("no_evidence", True)]
+
+
+def test_unsupported_counts_correct_value_from_unlabelled_mention():
+    text = "노란 공이에요. 노란 빛이 나요."
+    gold = [g("color", "노란 공", "material.color", YELLOW_EXPECT)]
+    s = find_spans(text, "노란")[1]
+    spec = blank_spec()
+    spec["material"]["color"] = YELLOW
+    spec["_provenance"]["material.color"] = [{"trigger": "노란", "charSpan": list(s)}]
+    sc = score_item(item(gold, replies={"opening": text}), {"confirmedText": text, "spec": spec})
+    assert status_of(sc, "color")["status"] == "reflected"
+    assert sc["unsupported"][0]["reason"] == "outside_gold_span" and sc["unsupported"][0]["valueMatchesGold"]
+    assert aggregate([sc], B=10)["overall"]["unsupportedValueMatchesGold"] == 1
+
+
+# ── CP1 반영: 항목 단위 군집 부트스트랩, 쌍 비교, 구간 폭 ─────────────────────
+def _scored_items(n_ok: int, n_bad: int) -> list[dict]:
+    gold = [g("color", "노란", "material.color", YELLOW_EXPECT)]
+    ok = blank_spec(**{"material.color": (YELLOW, [span_of("노란")])})
+    bad = blank_spec(**{"material.color": (BLUE, [span_of("파란")])})
+    out = [score_item(item(gold, iid=f"T{k:02d}"), {"confirmedText": TEXT, "spec": ok}) for k in range(n_ok)]
+    out += [score_item(item(gold, iid=f"T{n_ok + k:02d}"), {"confirmedText": TEXT, "spec": bad}) for k in range(n_bad)]
+    return out
+
+
+def test_summary_rates_equal_pooled_item_counts():
+    scored = _scored_items(3, 2)
+    summ = aggregate(scored, B=50)["overall"]
+    tot = {k: sum(fidelity.item_counts(i)[k] for i in scored) for k in fidelity.item_counts(scored[0])}
+    for m, (num, den) in fidelity.METRICS.items():
+        assert summ[m] == (round(tot[num] / tot[den], 4) if tot[den] else None), m
+
+
+def test_cluster_bootstrap_is_deterministic_and_brackets_estimate():
+    scored = _scored_items(6, 4)
+    a = fidelity.bootstrap_ci(scored, B=400, seed=7)
+    assert a == fidelity.bootstrap_ci(scored, B=400, seed=7)
+    assert a["unit"] == "item" and a["nItems"] == 10
+    r = a["metrics"]["reflectRate"]
+    assert r["estimate"] == 0.6 and r["lo"] <= 0.6 <= r["hi"] and r["lo"] < r["hi"] and r["replicates"] == 400
+    same = fidelity.bootstrap_ci(_scored_items(5, 0), B=100)["metrics"]["reflectRate"]
+    assert same["lo"] == same["hi"] == same["estimate"] == 1.0           # 모든 항목이 같으면 구간 폭 0
+
+
+def test_paired_compare_item_level():
+    a = {"corpusId": "unit", "mapper": "A", "items": _scored_items(2, 3)}
+    b = {"corpusId": "unit", "mapper": "B", "items": _scored_items(4, 1)}
+    cmp = fidelity.paired_compare(a, b, B=300, seed=1)
+    m = cmp["metrics"]["reflectRate"]
+    assert (m["a"], m["b"], m["diff"]) == (0.4, 0.8, 0.4) and m["lo"] <= 0.4 <= m["hi"]
+    assert cmp["attributePairs"] == {"both": 2, "onlyA": 0, "onlyB": 2, "neither": 1}
+    assert cmp["itemSigns"]["reflected"] == {"b_more": 2, "equal": 3, "b_fewer": 0}
+    assert cmp == fidelity.paired_compare(a, b, B=300, seed=1)
+    assert "| T02 |" in fidelity.paired_markdown(cmp)
+    with pytest.raises(ValueError):
+        fidelity.paired_compare(a, {"items": _scored_items(4, 0)}, B=10)
+
+
+def test_expect_widths():
+    gold = [g("color", "노란", "material.color", {"hue_deg": [345, 15], "s": [0.4, 1.0]}),
+            g("size", "공이", "layout.size", {"range": [0.1, 0.4]}),
+            g("texture_roughness", "오돌토돌해요", "material.roughness", {"range": [0.6, 1.0]}),
+            g("motion_type", "벽 앞", "motion.type", {"in": ["still", "floating"]})]
+    spec = blank_spec(**{"layout.size": (0.2, [span_of("공이")])})
+    ew = aggregate([score_item(item(gold), {"confirmedText": TEXT, "spec": spec})], B=10)["expectWidths"]
+    assert ew["hueWidthDeg"]["max"] == 30.0 and ew["sWidth"]["max"] == 0.6
+    assert ew["rangeWidth"]["n"] == 2 and ew["rangeWidth"]["median"] == 0.35
+    assert ew["byType"]["range"] == {"n": 2, "reflected": 1, "reflectRate": 0.5}
+    assert ew["rangeReflectByWidth"]["atOrBelowMedian"]["reflected"] == 1
+    assert ew["inListLength"]["max"] == 2.0
+
+
+def test_compare_writes_paired_outputs(tmp_path):
+    def factory(rt):
+        return rt.scene_builder
+    res = fidelity.compare(SYN, "v0", factory, tmp_path, B=50)
+    assert res["paired"]["metrics"]["reflectRate"]["diff"] == 0.0 and res["paired"]["sameSlotValuesItems"] == 1
+    for f in ("report.json", "paired.json", "paired.md", "compare/report.json", "compare/runs.json"):
+        assert (tmp_path / f).exists(), f

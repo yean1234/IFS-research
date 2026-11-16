@@ -17,6 +17,10 @@ from .paths import shared
 
 SPEC_VERSION = "2.0.0"
 SCHEMA_FILE = "scene-spec.v2.json"
+SPEC_VERSION_V21 = "2.1.0"                 # 개선 매핑 v1 출력(상위 호환 확장)
+SCHEMA_FILE_V21 = "scene-spec.v2.1.json"
+V21_FIELDS: tuple[str, ...] = ("_context", "_parts", "_uncertain", "_measurements", "_direction",
+                               "_needsConfirmation", "_clauses")
 SLOT_PATHS: tuple[str, ...] = (
     "form.type", "form.posture",
     "material.color", "material.brightness", "material.saturation", "material.roughness", "material.opacity",
@@ -34,21 +38,23 @@ def text_hash(text: str) -> str:
     return "sha256:" + hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
-@lru_cache(maxsize=1)
-def schema() -> dict:
-    return json.loads(shared("schemas", SCHEMA_FILE).read_text(encoding="utf-8"))
+@lru_cache(maxsize=2)
+def schema(version: str = SPEC_VERSION) -> dict:
+    name = SCHEMA_FILE_V21 if version == SPEC_VERSION_V21 else SCHEMA_FILE
+    return json.loads(shared("schemas", name).read_text(encoding="utf-8"))
 
 
-@lru_cache(maxsize=1)
-def _validator():
+@lru_cache(maxsize=2)
+def _validator(version: str = SPEC_VERSION):
     from jsonschema import Draft202012Validator
-    return Draft202012Validator(schema())
+    return Draft202012Validator(schema(version))
 
 
 def schema_errors(spec: dict) -> list[str]:
-    """스키마 위반 목록(없으면 빈 목록)."""
+    """스키마 위반 목록(없으면 빈 목록). meta.specVersion이 2.1.0이면 v2.1 스키마, 아니면 v2.0 스키마로 검사한다."""
+    version = SPEC_VERSION_V21 if (spec.get("meta") or {}).get("specVersion") == SPEC_VERSION_V21 else SPEC_VERSION
     return [f"{'/'.join(map(str, e.absolute_path)) or '(root)'}: {e.message}"
-            for e in sorted(_validator().iter_errors(spec), key=lambda e: list(map(str, e.absolute_path)))]
+            for e in sorted(_validator(version).iter_errors(spec), key=lambda e: list(map(str, e.absolute_path)))]
 
 
 def get_slot(spec: dict, path: str):
@@ -96,4 +102,10 @@ def check_principles(spec: dict, text: str) -> list[str]:
         s, e = u["charSpan"]
         if text[s:e] != u["surface"]:
             problems.append(f"_unmatched[{i}]: surface '{u['surface']}'가 확정 텍스트 [{s},{e})와 다르다")
+    for name in V21_FIELDS:                       # v2.1 보존 필드: 원문 그대로(구간 포함)여야 한다
+        for i, item in enumerate(spec.get(name) or []):
+            s, e = item["charSpan"]
+            got = item.get("text", item.get("trigger"))
+            if text[s:e] != got:
+                problems.append(f"{name}[{i}]: '{got}'가 확정 텍스트 [{s},{e}) '{text[s:e]}'와 다르다")
     return problems

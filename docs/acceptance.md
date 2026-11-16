@@ -4,6 +4,7 @@
 
 - **판정 규칙**: AC-1부터 AC-7까지 **모두 통과했을 때만 "완료"** 라고 씁니다. 하나라도 미달이면 미달 항목과 측정 수치를 그대로 보고합니다. 반올림·해석으로 통과시키지 않습니다.
 - 수치 기준은 작업 지시에서 정한 값입니다. 바꾸려면 이유를 `docs/decisions.md`에 남깁니다.
+- **AC 통과는 공학 목표 달성입니다. 연구 타당도 주장과 다릅니다.** 예를 들어 AC-3을 통과해도 "참여자의 심상을 더 잘 구현했다"는 증거가 되지 않습니다. AC-3의 지표는 AI 에이전트가 쓰고 라벨을 붙인 합성 코퍼스의 허용 구간에 대한 일치이고, 임계값(+0.15 등)은 사용자에게 의미 있는 차이로 정한 값이 아닙니다(`docs/research-design.md` 4.4절, 8절).
 - 명령은 저장소 루트 기준이고 PowerShell 문법입니다. Python은 `chatbot\.venv\Scripts\python.exe`입니다.
 - 경로에 "(구현 후 확정)"이 붙은 것은 작업 2·3·4·5의 실행자가 만든 파일 이름으로 오케스트레이터가 바꿔 적습니다.
 
@@ -73,12 +74,16 @@ Select-String -Path docs\research-design.md -Pattern '^\| [A-Z].*\(\d{4}\) \|' |
 
 ```powershell
 cd chatbot
-.venv\Scripts\python.exe -m pytest -q -m "not live" tests\test_drift.py      # (구현 후 확정)
-# 시나리오 집계: 정확도, 덧붙임-only 오탐 수, 시나리오 수(drift / no-drift)를 출력하는 테스트 또는 스크립트
+.venv\Scripts\python.exe -m pytest -q -m "not live" tests\test_drift.py -s
+# 시나리오 집계(정확도·혼동행렬·덧붙임-only 오탐·undecidable·acknowledged 일치)를 출력하고 결과 JSON을 남긴다
+.venv\Scripts\python.exe -m ifs_chatbot.drift --cases tests\fixtures\drift\drift_cases.json --out <결과.json>
+# 결정론: 위 명령을 두 번 실행해 두 결과 파일의 sha256이 같은지 본다(test_evaluation_is_deterministic도 같은 것을 확인)
 ```
 
-- 시나리오 파일의 라벨 개수를 직접 센다(drift ≥ 5, no-drift ≥ 5, 합계 ≥ 12).
-- 수치 기준(임계값)은 모듈 문서 또는 `docs/research-design.md` 4.5절에서 가리키는 곳에 적혀 있어야 한다.
+- 시나리오 파일: `chatbot/tests/fixtures/drift/drift_cases.json`(독립 작성자 라벨). 라벨 개수를 직접 센다(drift ≥ 5, no-drift ≥ 5, 합계 ≥ 12). `test_cases_meet_label_counts`가 같은 것을 확인한다.
+- 구현 모듈: `chatbot/ifs_chatbot/drift.py`(LLM 호출 없음, `test_drift_module_does_not_use_llm`). 평가는 `eval/corpus_run.py`로 실제 컨트롤러 정적 조건을 재생해 세션 로그 `drift.assessment`에서 읽는다.
+- 수치 기준(τ·θ·가중치)과 근거는 `docs/drift-design.md` 3절, 같은 값이 `docs/research-design.md` 4.5절 표에 있다.
+- 2026-11-16 결과: 18개(drift 9 · no-drift 9) 정확도 1.000, 덧붙임-only 오탐 0, 출력 sha256 두 번 동일. 설계자가 라벨을 읽은 뒤 규칙을 썼으므로 새 독립 라벨로 다시 재는 것이 남아 있다(`docs/drift-design.md` 8.4절).
 
 ---
 
@@ -100,16 +105,21 @@ cd chatbot
 | 3.10 | 오프라인 테스트 전부 통과 | 실패 0 |
 
 - 반영률·왜곡률·보존률의 정의는 `docs/research-design.md` 4.4절과 평가 스크립트 `chatbot/ifs_chatbot/eval/fidelity.py`가 같아야 한다. 다르면 스크립트가 정본이고 문서를 고친다. 반영률·왜곡률의 분모는 kind = slot인 정답 속성 수(dropped 포함), 왜곡은 `wrong_value` + `cross_slot`, 일치 판정은 정답 라벨마다의 `expect` 구간이다.
-- held-out 코퍼스는 매핑을 고칠 때 보지 않은 문장이다(`docs/decisions.md` D04). dev 코퍼스 수치로는 판정하지 않는다.
+- held-out 코퍼스는 매핑을 고칠 때 보지 않은 문장이다(`docs/decisions.md` D04). dev 코퍼스 수치로는 판정하지 않는다. 채점 전에 정답 라벨 형식 검사(`--check-corpus`)에서 **오류 0**이어야 한다. 형식 오류가 있으면 채점기가 채점을 거부한다.
+- **3.5의 뜻.** 미반영 원문 보존률 100%는 "반영하지 못한 표현을 잃지 않고 원문 그대로 남겼다"는 뜻일 뿐이다. 의미나 정보가 보존되었다는 증거가 아니다. 채점기는 phrase 구간이 보존 필드에 글자 그대로 있는지만 보며, 왜곡된 속성도 원문을 남기면 이 비율에 들어간다. 보고서에서 이 수치를 의미 일치의 증거로 쓰지 않는다.
+- **함께 보고할 것(판정 기준은 아님).** AC-3 수치를 적을 때 다음을 같이 싣는다: 지표별 분모와 `dropped_by_controller` 건수, 항목 단위 군집 부트스트랩 95% CI(`report.json`의 `summary.bootstrap`), v0 대비 차이의 항목 단위 쌍 CI(`--compare`로 만든 `paired.json`), 항목별 결과(`summary.byItem`, `paired.json`의 `items`), 정답 구간 폭 통계(`summary.expectWidths`), 근거 없는 값 두 가지(경로 기준 `spuriousRate`, 근거 기준 `unsupportedRate`). 사람 라벨이 생기면 라벨 신뢰도도 싣는다. 30개 안팎 코퍼스의 CI는 그 코퍼스 안의 변동이며 일반 성능의 증거가 아니다.
 
 **확인 방법**
 
 ```powershell
 cd chatbot
 .venv\Scripts\python.exe -m pytest -q -m "not live"                         # 3.6–3.10, 실패 0
-.venv\Scripts\python.exe -m ifs_chatbot.eval.fidelity --corpus testsixtures\imagery_corpus\heldout.json --mapper v0 --out <scratch>0
-.venv\Scripts\python.exe -m ifs_chatbot.eval.fidelity --corpus testsixtures\imagery_corpus\heldout.json --mapper <개선 매핑 이름> --out <scratch>1   # (매퍼 이름은 구현 후 확정)
+.venv\Scripts\python.exe -m ifs_chatbot.eval.fidelity --check-corpus tests\fixtures\imagery_corpus\heldout.json   # 형식 오류 0(종료 코드 0). phrase 원문은 출력하지 않음
+.venv\Scripts\python.exe -m ifs_chatbot.eval.fidelity --corpus tests\fixtures\imagery_corpus\heldout.json --mapper v0 --out <scratch>\v0
+.venv\Scripts\python.exe -m ifs_chatbot.eval.fidelity --corpus tests\fixtures\imagery_corpus\heldout.json --mapper <개선 매핑 이름> --out <scratch>\v1   # (매퍼 이름은 구현 후 확정)
 #   report.json 의 reflectRate(3.2·3.3), distortRate(3.4), unreflectedVerbatimRate(3.5 = 1.0), droppedRate·slotStatus.dropped_by_controller(따로 보고)
+.venv\Scripts\python.exe -m ifs_chatbot.eval.fidelity --corpus tests\fixtures\imagery_corpus\heldout.json --mapper v0 --compare <개선 매핑 모듈:factory> --out <scratch>\pair
+#   paired.json: 지표별 v0·개선 값, 차이(개선 − v0)와 항목 단위 쌍 군집 부트스트랩 95% CI, 항목별 결과(함께 보고, 판정 기준 아님)
 git diff --stat a753289 -- chatbot/tests/fixtures/scene_spec/               # 3.8 (1): 정답 파일 변경 없음(출력 없음)
 .venv\Scripts\python.exe -m pytest -q -m "not live" -k "bytes or byte_identical"   # 3.8 (2): v0 출력 == EX01/EX02 바이트 비교 테스트(이름은 구현 후 확정, 1개 이상 실행·통과)
 .venv\Scripts\python.exe -m pytest -q -m "not live" -k "no_llm or no_network"    # 3.9: LLM·HTTP 차단 상태 매핑 테스트(이름은 구현 후 확정, 1개 이상 실행·통과)
@@ -142,8 +152,7 @@ $U = "C:\Program Files\Unity\Hub\Editor\6000.0.85f2\Editor\Unity.exe"
      -specDir <spec 폴더> -outDir <scratch>\capture -width 2064 -height 2208 -eyes 2 -warmup 30 -frames 300 `
      -logFile <scratch>\capture.log          # -nographics 쓰지 않음
 Select-String -Path <scratch>\editmode.log, <scratch>\capture.log -Pattern 'error CS|Shader error|^\w*Exception:|\[Exception\]'   # 0건 (테스트 프레임워크 스택 프레임 'UnityLogCheckDelegatingCommand:CaptureException'은 오류가 아니므로 제외)
-# <scratch>\capture
-eport.json: frameMsP95Max ≤ 13.9, 드로콜·삼각형·그림자 광원 예산 항목, spec별 Console 오류 0
+# <scratch>\capture\report.json: frameMsP95Max ≤ 13.9, 드로콜·삼각형·그림자 광원 예산 항목, spec별 Console 오류 0
 ```
 
 ---

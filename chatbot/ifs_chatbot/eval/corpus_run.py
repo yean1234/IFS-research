@@ -10,7 +10,8 @@ simulate.drive()와 같은 방식으로 Session을 움직인다. 안전 검사, 
 probe_movement}, "gold": [...], "distractors": [...]}. replies 값이 null인 프로브를 컨트롤러가 묻는 경우에는
 [넘어가기](control:skip)를 누른 것으로 처리한다. 참여자가 같은 말을 되풀이했다고 지어내지 않기 위해서다.
 
-매핑 함수는 바꿔 끼울 수 있다(mapper). 기본 "v0"은 현 scene_builder다. 다른 매핑은 "모듈:이름"으로 주며,
+매핑 함수는 바꿔 끼울 수 있다(mapper). 기본 "v0"은 현 scene_builder다. "v1"은 개선 매핑(scene_builder_v1.factory).
+config의 [mapping] mode와 상관없이 mapper 인자가 매핑을 정한다. 다른 매핑은 "모듈:이름"으로 주며,
 그 이름은 factory(rt) → build(text, *, session_id, participant_id, condition) -> dict 를 가진 객체를 돌려줘야 한다.
 컨트롤러의 rt.scene_builder 자리에 넣으므로 개선 매핑도 같은 경로(Session._write_scene)를 지난다.
 세션 로그와 장면 파일은 임시 폴더에 쓴다(chatbot/logs를 건드리지 않는다).
@@ -41,6 +42,9 @@ def resolve_mapper(mapper: str | Callable | None) -> tuple[str, Callable | None]
     """(라벨, factory). factory가 None이면 Runtime이 만든 v0 scene_builder를 그대로 쓴다."""
     if mapper is None or mapper == "v0":
         return "v0", None
+    if mapper == "v1":                                   # 개선 매핑(= ifs_chatbot.scene_builder_v1:factory)
+        from ..scene_builder_v1 import factory
+        return "v1", factory
     if callable(mapper):
         return getattr(mapper, "__name__", "custom"), mapper
     if isinstance(mapper, str) and ":" in mapper:
@@ -52,9 +56,11 @@ def resolve_mapper(mapper: str | Callable | None) -> tuple[str, Callable | None]
 def offline_config(work_dir: Path, base: Config | None = None) -> Config:
     """LLM·가드 모델 없이, 로그와 장면을 work_dir에 쓰는 정적 조건 설정."""
     cfg = base or load_config()
+    # 매핑은 mapper 인자로만 고른다: 기본 자리는 v0, 다른 매핑은 make_runtime이 끼운다. 비교 파일·확인 질문은 끈다.
     return cfg.with_overrides(**{
         "llm.backend": "offline", "guard.model_backend": "none", "interview.condition": CONDITION,
         "session.log_dir": str(work_dir / "logs"), "session.scenes_dir": str(work_dir / "scenes"),
+        "mapping.mode": "v0", "mapping.save_both": False, "mapping.clarify_loop": False,
     })
 
 
