@@ -431,7 +431,107 @@ def test_every_non_space_char_is_preserved_verbatim(v1, text):
     assert all(i in covered for i, ch in enumerate(t) if not ch.isspace())
 
 
-CASES_V1 = json.loads((FIXTURES / "cases_v1.json").read_text(encoding="utf-8"))["cases"]
+# ── 어절 원문 보존(1.2.0) — 절 색인(_clauses)이 아니라 속성 단위 보존 필드에 남는가 ──────────────
+def _verbatim_cover(spec, text, *, keys=None, skip=("_provenance", "_clauses")):
+    """보존 필드(또는 keys)의 원문 근거(charSpan + 그 구간 원문과 같은 surface/trigger/text)가 덮는 글자 위치."""
+    out = set()
+
+    def walk(node):
+        if isinstance(node, dict):
+            cs = node.get("charSpan")
+            txt = next((node[k] for k in ("surface", "trigger", "text", "phrase") if isinstance(node.get(k), str)), None)
+            if isinstance(cs, list) and len(cs) == 2 and txt is not None and text[cs[0]:cs[1]] == txt:
+                out.update(range(cs[0], cs[1]))
+            for v in node.values():
+                walk(v)
+        elif isinstance(node, list):
+            for v in node:
+                walk(v)
+    for k, node in spec.items():
+        if (keys is None and k.startswith("_") and k not in skip) or (keys is not None and k in keys):
+            walk(node)
+    return out
+
+
+def _eojeol_entries(spec):
+    return [u for u in spec["_unmatched"] if u["tag"] == "EOJEOL"]
+
+
+def test_unconsumed_content_eojeols_kept_whole_with_exact_span(v1):
+    """어떤 규칙도 값·보존 기록으로 쓰지 않은 내용어(정도 부사·부정 보조 용언·'같은'·의존 명사 '게'·수사·서술어)는
+    어절 전체가 원문 그대로 _unmatched(tag EOJEOL)에 남고, charSpan은 text[s:e]와 같다."""
+    text = "음 손바닥 위에 조약돌 같은 게 하나 있어요. 별로 차갑진 않네요. 은은하게 데워진 느낌이에요."
+    spec = build(v1, text)
+    t = normalize_confirmed(text)
+    eoj = _eojeol_entries(spec)
+    for u in eoj:
+        s, e = u["charSpan"]
+        assert t[s:e] == u["surface"] and u["surface"] == u["surface"].strip() and u["lemma"]
+    surfaces = [u["surface"] for u in eoj]
+    for w in ("게", "하나", "있어요", "않네요", "느낌이에요"):
+        assert w in surfaces, w
+    assert "별로" in [u["surface"] for u in spec["_unmatched"]]         # 어절 전체가 이미 낱말 항목이면 어절 항목을 겹쳐 넣지 않는다
+    assert "별로" not in surfaces
+    assert "차갑진" in [n["_provenance"]["trigger"] for n in spec["_negated"]]
+    # 부정 범위 '별로 차갑진 않네요' 전체가 속성 단위 보존 필드(_negated + _unmatched)로 덮인다
+    s = t.index("별로 차갑진 않네요")
+    kept = _verbatim_cover(spec, t)
+    assert all(i in kept for i in range(s, s + len("별로 차갑진 않네요")) if not t[i].isspace())
+
+
+def test_eojeol_preservation_with_emoji_and_newlines(v1):
+    """이모지·줄바꿈이 섞여도 어절 항목의 charSpan은 정규화한 확정 텍스트 구간과 맞고, 공백·이모지를 담지 않는다."""
+    text = "🙂 어…\n왼쪽 발등에 🌀회오리 같은 게\n있는데 그리 크진 않아요 🙂\n✨반짝✨"
+    spec = build(v1, text)
+    t = normalize_confirmed(text)
+    eoj = _eojeol_entries(spec)
+    assert eoj
+    for u in eoj:
+        s, e = u["charSpan"]
+        assert t[s:e] == u["surface"]
+        assert not any(ch.isspace() for ch in u["surface"])
+        assert not any(ch in u["surface"] for ch in "🙂🌀✨")
+    surfaces = [u["surface"] for u in spec["_unmatched"]]
+    for w in ("같은", "게", "있는데", "그리", "않아요"):
+        assert w in surfaces, w
+    # 내용어가 있는 어절은 모두 ① 보존 필드가 어절 전체를 덮거나 ② 내용어가 값 근거로만 쓰였다(아무것도 사라지지 않음)
+    kept = _verbatim_cover(spec, t)
+    valued = _verbatim_cover(spec, t, keys=("_provenance",))
+    import re
+    for m in re.finditer(r"[^\s🙂🌀✨…]+", t):
+        idx = range(m.start(), m.end())
+        assert all(i in kept for i in idx) or any(i in valued for i in idx), m.group(0)
+
+
+def test_value_only_eojeol_not_added_and_rule_is_additive(v1, monkeypatch):
+    """값으로만 쓰인 어절('빨간')은 어절 항목이 되지 않는다. 어절 항목을 빼면 나머지 출력(슬롯 값·다른 보존 필드·
+    낱말 단위 _unmatched)은 이 규칙이 없을 때와 같다 — 이 규칙은 보존 항목만 더한다."""
+    texts = ["빨간 공이 둥둥 떠 있어요", "가슴 한가운데 회색 돌멩이처럼 딱딱한 게 있어요.\n몸 안이요.\n천천히 가라앉아요.",
+             "🙂 노르스름한\n솜뭉치 같은데 별로 안 무거워요"]
+    with_rule = [build(v1, t) for t in texts]
+    assert "빨간" not in [u["surface"] for u in _eojeol_entries(with_rule[0])]
+    monkeypatch.setattr(SceneSpecBuilderV1, "_unmatched_eojeols", lambda self, doc, spec: [])
+    for t, a in zip(texts, with_rule):
+        b = v1.build(t)
+        a = {**a, "_unmatched": [u for u in a["_unmatched"] if u["tag"] != "EOJEOL"]}
+        assert dumps(a) == dumps(b)
+
+
+def test_eojeol_entries_are_not_clarify_targets(v1, analyzer):
+    """어절 항목(tag EOJEOL)은 확인 질문 대상이 아니다(질문 X는 낱말 단위 항목에서만 — 기존 동작 유지)."""
+    from ifs_chatbot.clarify import clarify_targets
+    text = "엄청 몽실몽실한 게 떠 있는데 그다지 크진 않아요"
+    spec = build(v1, text)
+    t = normalize_confirmed(text)
+    eoj_spans = {tuple(u["charSpan"]) for u in _eojeol_entries(spec)}
+    assert eoj_spans
+    targets = clarify_targets(spec, t, max_n=10, analyzer=analyzer)
+    assert all(tuple(x["charSpan"]) not in eoj_spans or x["why"] != "unread_attribute" for x in targets)
+    tok_only = {**spec, "_unmatched": [u for u in spec["_unmatched"] if u["tag"] != "EOJEOL"]}
+    assert targets == clarify_targets(tok_only, t, max_n=10, analyzer=analyzer)
+
+
+CASES_V1 =json.loads((FIXTURES / "cases_v1.json").read_text(encoding="utf-8"))["cases"]
 
 
 @pytest.mark.parametrize("case", CASES_V1, ids=[c["file"] for c in CASES_V1])

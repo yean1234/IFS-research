@@ -6,7 +6,7 @@
     "condition": "static",
     "sourceTextHash": "sha256:7c9b141c8701d84d2f03470c7b3325119133bc142507ba014bce78a1bff50384",
     "pipeline": {
-      "builder": "scene-spec-builder-v1/1.1.0",
+      "builder": "scene-spec-builder-v1/1.2.0",
       "analyzer": "kiwi",
       "lexicons": {
         "layer1": "layer1-attribute-lexicon@1.0.0",
@@ -145,6 +145,24 @@
       ]
     },
     {
+      "lemma": "걷",
+      "tag": "EOJEOL",
+      "surface": "걷던",
+      "charSpan": [
+        6,
+        8
+      ]
+    },
+    {
+      "lemma": "것",
+      "tag": "EOJEOL",
+      "surface": "게",
+      "charSpan": [
+        9,
+        10
+      ]
+    },
+    {
       "lemma": "떠오르",
       "tag": "VV",
       "surface": "떠올",
@@ -154,12 +172,93 @@
       ]
     },
     {
+      "lemma": "떠오르",
+      "tag": "EOJEOL",
+      "surface": "떠올라요",
+      "charSpan": [
+        11,
+        15
+      ]
+    },
+    {
+      "lemma": "앞",
+      "tag": "EOJEOL",
+      "surface": "앞에",
+      "charSpan": [
+        22,
+        24
+      ]
+    },
+    {
+      "lemma": "같",
+      "tag": "EOJEOL",
+      "surface": "같은",
+      "charSpan": [
+        34,
+        36
+      ]
+    },
+    {
+      "lemma": "것",
+      "tag": "EOJEOL",
+      "surface": "게",
+      "charSpan": [
+        37,
+        38
+      ]
+    },
+    {
+      "lemma": "있",
+      "tag": "EOJEOL",
+      "surface": "있어요",
+      "charSpan": [
+        41,
+        44
+      ]
+    },
+    {
+      "lemma": "크기",
+      "tag": "EOJEOL",
+      "surface": "크기는",
+      "charSpan": [
+        46,
+        49
+      ]
+    },
+    {
+      "lemma": "있",
+      "tag": "EOJEOL",
+      "surface": "있어요",
+      "charSpan": [
+        62,
+        65
+      ]
+    },
+    {
       "lemma": "테두리",
       "tag": "NNG",
       "surface": "테두리",
       "charSpan": [
         75,
         78
+      ]
+    },
+    {
+      "lemma": "테두리",
+      "tag": "EOJEOL",
+      "surface": "테두리는",
+      "charSpan": [
+        75,
+        79
+      ]
+    },
+    {
+      "lemma": "표면",
+      "tag": "EOJEOL",
+      "surface": "표면이",
+      "charSpan": [
+        85,
+        88
       ]
     },
     {
@@ -178,6 +277,15 @@
       "charSpan": [
         106,
         108
+      ]
+    },
+    {
+      "lemma": "있",
+      "tag": "EOJEOL",
+      "surface": "있어요",
+      "charSpan": [
+        124,
+        127
       ]
     }
   ],

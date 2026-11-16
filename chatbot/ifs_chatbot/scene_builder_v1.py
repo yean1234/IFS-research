@@ -15,6 +15,7 @@ v0(scene_builder.py)는 그대로 두고 비교 설계(docs/research-design.md 3
   퍼지  자모 편집거리 일치는 값이 아니다(원칙 2). _alternatives(needs_confirmation)·_needsConfirmation에만 남는다
   보존  값이 되지 않은 말은 _unmatched·_unmapped·_negated·_alternatives·_context·_parts·_uncertain에,
         확정 텍스트 전체는 절 단위 색인 _clauses(charSpan + 원문)에 남는다. 읽지 못한 말이 결과에서 사라지지 않는다.
+        내용어가 값·보존 기록에 다 들어가지 않은 어절은 어절 전체가 _unmatched(tag EOJEOL)에 원문으로 남는다(1.2.0)
 
 형식: shared/schemas/scene-spec.v2.1.json (v2.0 상위 호환)
 """
@@ -36,7 +37,9 @@ from .paths import shared
 from .scene_builder import dumps, normalize_confirmed, write_spec  # noqa: F401 (같은 저장 방식)
 from .scene_spec import SLOT_PATHS, text_hash
 
-BUILDER_VERSION = "1.1.0"      # 1.1.0: 2단계 독립 검토(T3) 반영 — 퍼지 일치를 값에 쓰지 않음, 품사·구문 범위 규칙(docs/mapping-v1.md 5절)
+# 1.1.0: 2단계 독립 검토(T3) 반영 — 퍼지 일치를 값에 쓰지 않음, 품사·구문 범위 규칙(docs/mapping-v1.md 5절)
+# 1.2.0: 어절 원문 보존 — 값·보존 기록에 다 들어가지 않은 내용어 어절을 _unmatched에 어절 전체로 남김(docs/mapping-v1.md 6절)
+BUILDER_VERSION = "1.2.0"
 BUILDER_ID = f"scene-spec-builder-v1/{BUILDER_VERSION}"
 SPEC_VERSION = "2.1.0"
 MAPPER_ID = "v1"
@@ -59,6 +62,16 @@ _ORDER = {p: i for i, p in enumerate(SLOT_PATHS)}
 
 # 쓰는 범주(색은 표면형 규칙이 맡는다)
 SKIP_LEXICON_CATEGORIES = {"color", "dimension"}
+
+# 어절 원문 보존(_unmatched의 어절 항목)에서 '내용어'로 보는 품사: 체언(NNG·NNP·NNB·NR·NP)·용언(VV·VA·VX·VCN)·
+# 수식언(MM·MAG·MAJ)·독립언(IC)·어근(XR)·숫자·외국어·한자(SN·SL·SH)·Kiwi 특수 토큰(W_*, 이모지 제외)·미분석(UN).
+# 조사(J*)·어미(E*)·접사(XP*·XS*)·서술격 조사(VCP)·기호는 내용어가 아니다(어절 안에 있으면 어절 전체와 함께 남는다)
+EOJ_CONTENT_TAGS = {"NNG", "NNP", "NNB", "NR", "NP", "VV", "VA", "VX", "VCN", "MM", "MAG", "MAJ", "IC", "XR",
+                    "SN", "SL", "SH", "W_URL", "W_EMAIL", "W_HASHTAG", "W_MENTION", "W_SERIAL", "UN"}
+# 어절 항목의 tag. Kiwi 품사가 아니므로 확인 질문 루프(clarify.ATTR_TAGS)는 이 항목을 묻지 않는다
+EOJEOL_TAG = "EOJEOL"
+# 보존 판정에서 원문으로 보는 키(scene_spec.check_principles와 같은 원문 일치 규칙)
+_VERBATIM_KEYS = ("surface", "trigger", "text", "phrase")
 
 
 def _r(x: float) -> float:
@@ -311,7 +324,7 @@ class SceneSpecBuilderV1:
         def sort_span(items, *keys):
             return sorted(items, key=lambda x: (x["charSpan"][0], x["charSpan"][1], *[str(x.get(k)) for k in keys]))
 
-        return {
+        spec = {
             "meta": {
                 "specVersion": SPEC_VERSION,
                 "participantId": participant_id,
@@ -338,6 +351,10 @@ class SceneSpecBuilderV1:
             "_needsConfirmation": sort_span(needs, "path"),
             "_clauses": clauses,
         }
+        # 어절 원문 보존: 다른 보존 필드가 모두 정해진 뒤에 계산한다(값·보존 기록이 덮은 글자를 알아야 하므로)
+        spec["_unmatched"] = sorted(unmatched + self._unmatched_eojeols(doc, spec),
+                                    key=lambda u: (u["charSpan"][0], u["charSpan"][1]))
+        return spec
 
     # ── 도우미 ─────────────────────────────────────────────────────────────────
     @staticmethod
@@ -1765,6 +1782,67 @@ class SceneSpecBuilderV1:
             if any(h.char_span[0] <= t.start and t.end <= h.char_span[1] and t.form in h.entry.lemma for h in hits):
                 continue
             out.append({"lemma": t.lemma, "tag": t.tag, "surface": doc.text[t.start:t.end], "charSpan": [t.start, t.end]})
+        return out
+
+    @staticmethod
+    def _verbatim_chars(node, text: str, out: set[int]) -> None:
+        """node 안의 원문 근거(charSpan + 그 구간 원문과 같은 surface/trigger/text/phrase)가 덮는 글자 위치."""
+        if isinstance(node, dict):
+            cs = node.get("charSpan")
+            txt = next((node[k] for k in _VERBATIM_KEYS if isinstance(node.get(k), str)), None)
+            if isinstance(cs, (list, tuple)) and len(cs) == 2 and txt is not None:
+                s, e = int(cs[0]), int(cs[1])
+                if 0 <= s <= e <= len(text) and text[s:e] == txt:
+                    out.update(range(s, e))
+            for v in node.values():
+                SceneSpecBuilderV1._verbatim_chars(v, text, out)
+        elif isinstance(node, list):
+            for v in node:
+                SceneSpecBuilderV1._verbatim_chars(v, text, out)
+
+    @staticmethod
+    def _eojeol_bounds(doc: Doc, e: int) -> tuple[int, int]:
+        """어절 e의 원문 구간. 토큰이 덮지 않은 어절 끝 글자(대체 분석기가 뗀 어미 등)는 다음 토큰·공백 전까지 붙인다."""
+        a, b = doc.eojeols[e]
+        s = min(doc.toks[k].start for k in range(a, b + 1))
+        end = max(doc.toks[k].end for k in range(a, b + 1))
+        stop = doc.toks[b + 1].start if b + 1 < len(doc.toks) else len(doc.text)
+        while end < stop and doc.text[end].isalnum():
+            end += 1
+        return s, end
+
+    def _unmatched_eojeols(self, doc: Doc, spec: dict) -> list[dict]:
+        """어절 원문 보존(1.2.0). 내용어(EOJ_CONTENT_TAGS)가 있는 어절 중
+          ① 값(_provenance)으로도 보존 필드로도 덮이지 않은 내용어가 있거나(아무 규칙도 소비하지 않은 말: 부정어 '않'·
+             정도 부사·'같은'·의존 명사 '게'·수 관형사 …)
+          ② 보존 필드가 어절의 일부만 덮은(부정 범위·대안·부분 기록의 조사·어미가 빠진) 어절을
+        어절 전체 원문과 charSpan으로 _unmatched에 남긴다(tag = EOJEOL). 이미 보존 필드가 어절 전체를 덮었으면 더하지 않는다.
+        내용어가 모두 값으로만 쓰인 어절(보존 필드가 전혀 덮지 않음)은 '읽은 말'이므로 더하지 않는다.
+        슬롯 값·다른 보존 필드는 바꾸지 않는다. 같은 doc·spec이면 같은 결과다."""
+        text = doc.text
+        kept: set[int] = set()
+        for key, node in spec.items():
+            if key.startswith("_") and key not in ("_provenance", "_clauses"):
+                self._verbatim_chars(node, text, kept)
+        valued: set[int] = set()
+        self._verbatim_chars(spec.get("_provenance") or {}, text, valued)
+        out = []
+        for e in range(len(doc.eojeols)):
+            if doc.is_punct_eoj(e):
+                continue
+            content = [doc.toks[k] for k in doc.etoks(e) if doc.toks[k].base_tag in EOJ_CONTENT_TAGS]
+            if not content:
+                continue
+            s, t = self._eojeol_bounds(doc, e)
+            chars = [i for i in range(s, t) if not text[i].isspace()]
+            if not chars or all(i in kept for i in chars):
+                continue
+            unconsumed = any(tok.end > tok.start and not all(i in kept or i in valued for i in range(tok.start, tok.end))
+                             for tok in content)
+            partly_kept = any(i in kept for i in chars)
+            if unconsumed or partly_kept:
+                out.append({"lemma": "+".join(tok.lemma for tok in content), "tag": EOJEOL_TAG,
+                            "surface": text[s:t], "charSpan": [s, t]})
         return out
 
     def _clauses(self, doc: Doc, provenance: dict, context_sents: set[int]) -> list[dict]:
