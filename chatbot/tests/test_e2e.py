@@ -160,37 +160,57 @@ def test_compare_applied_reports_missing_and_default_mismatch():
     assert [(m["key"], m["issue"]) for m in c["defaultsUsedMismatches"]] == [("motion.speed", "spec null인데 defaultsUsed에 없음")]
 
 
-def test_unity_section_sanitizes_paths_and_counts_screenshots(e2e_out, small_corpus, tmp_path):
-    out, _ = e2e_out
-    work = tmp_path / "w"
+def _copy_out(out: Path, work: Path) -> Path:
     for k, v in _files(out).items():
         (work / k).parent.mkdir(parents=True, exist_ok=True)
         (work / k).write_bytes(v)
+    return work
+
+
+def _fake_unity(work: Path, specs_dir: Path | None = None) -> tuple[Path, dict, list[str]]:
+    """specs/의 spec마다 합성 Unity 기록(적용값 = spec 값을 Unity 규칙으로 반올림)·PNG·report.json을 만든다."""
+    specs_dir = specs_dir or work / "specs"
     unity = work / "unity"
-    unity.mkdir()
-    names = sorted(p.stem for p in (work / "specs").glob("*.json"))
+    unity.mkdir(exist_ok=True)
+    names = sorted(p.stem for p in specs_dir.glob("*.json"))
     entries = []
     for n in names:
-        spec = json.loads((work / "specs" / f"{n}.json").read_text(encoding="utf-8"))
+        spec = json.loads((specs_dir / f"{n}.json").read_text(encoding="utf-8"))
         num, cat = e2e.expected_params(spec)
         params = {k: e2e.dotnet_round4(e2e.clamp01(float(num[k]))) if k in num else 0.5 for k in e2e.UNITY_NUMERIC}
         params.update({k: cat.get(k, "x") for k in e2e.UNITY_CATEGORICAL})
         defaults = [k for k in (*e2e.UNITY_NUMERIC, *e2e.UNITY_CATEGORICAL) if k not in num and k not in cat]
         entries.append({"spec": f"{n}.json", "loaded": True, "params": params, "defaultsUsed": defaults,
-                        "console": {"errors": 0, "exceptions": 0, "warnings": 0}})
-    for n in names[:-1]:                                     # 마지막 하나는 스크린샷 없음
+                        "png": f"{n}.png", "console": {"errors": 0, "exceptions": 0, "warnings": 0}})
         (unity / f"{n}.png").write_bytes(b"\x89PNG")
-    repo = str(REPO_ROOT.resolve())
-    report = {"ok": True, "options": {"specDir": repo + "\\docs\\x"}, "system": {"unityVersion": "test"},
+    report = {"ok": True, "system": {"unityVersion": "test"},
               "summary": {"specFiles": len(names), "loaded": len(names), "captureFailures": 0, "consoleErrors": 0,
                           "consoleExceptions": 0, "frameMsP95Max": 1.0}, "specs": entries}
+    return unity, report, names
+
+
+def _write_report(unity: Path, report: dict) -> None:
     (unity / "report.json").write_text(json.dumps(report, ensure_ascii=False), encoding="utf-8")
-    log = tmp_path / "capture.log"
-    log.write_text(f"Loading {repo}\n" + "".join(f"[SceneLoader] {n}.json 로드: form=blob\n" for n in names)
-                   + "[BatchCapture] 끝: ok=True\n", encoding="utf-8")
+
+
+def _capture_log(path: Path, names, head: str = "") -> Path:
+    path.write_text(head + "".join(f"[SceneLoader] {n}.json 로드: form=blob\n" for n in names)
+                    + "[BatchCapture] 끝: ok=True\n", encoding="utf-8")
+    return path
+
+
+def test_unity_section_sanitizes_paths_and_counts_screenshots(e2e_out, small_corpus, tmp_path):
+    out, _ = e2e_out
+    work = _copy_out(out, tmp_path / "w")
+    unity, report, names = _fake_unity(work)
+    repo = str(REPO_ROOT.resolve())
+    report["options"] = {"specDir": repo + "\\docs\\x"}
+    _write_report(unity, report)
+    log = _capture_log(tmp_path / "capture.log", names, head=f"Loading {repo}\n")
     s = e2e.run(small_corpus, work, B=B, unity_out=unity, unity_log=log)
     u = s["unity"]
-    assert u["screenshots"] == len(names) - 1 and u["expectedScreenshots"] == len(names)
+    assert s["ok"] is True and s["failures"] == [] and u["failures"] == []
+    assert u["screenshots"] == len(names) and u["expectedScreenshots"] == len(names)
     assert u["applied"]["maxAbsDelta"] == 0.0 and u["applied"]["failures"] == 0
     assert u["log"]["loadedLines"] == len(names) and u["log"]["errorPatternHits"] == 0
     assert u["log"]["batchCaptureEnd"] == ["True"]
@@ -198,3 +218,173 @@ def test_unity_section_sanitizes_paths_and_counts_screenshots(e2e_out, small_cor
     assert "<repo>" in (unity / "report.json").read_text(encoding="utf-8")
     copied = (work / "logs" / "capture.log").read_text(encoding="utf-8")
     assert repo not in copied and "<repo>" in copied
+    # 실행 검사를 통과하면 종료 코드 0
+    e2e.main(["--corpus", str(small_corpus), "--out", str(work), "--unity-out", str(unity),
+              "--unity-log", str(log), "--bootstrap", str(B)])
+
+
+# ── CP3 지적 1: specs/의 잔여 spec 파일 ────────────────────────────────────────────
+def _stale_script_spec(work: Path, sid: str = "Z99") -> Path:
+    """이전 실행이 남긴 것처럼 보이는 합성 spec(이 스크립트 형식: <id>.<매핑>.json, sessionId = id)."""
+    spec = json.loads((work / "specs" / "D01.v0.json").read_text(encoding="utf-8"))
+    spec["meta"]["sessionId"] = sid
+    p = work / "specs" / f"{sid}.v0.json"
+    p.write_text(json.dumps(spec, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    return p
+
+
+def test_rerun_fails_on_stale_spec_files_without_deleting(e2e_out, small_corpus, tmp_path):
+    """같은 --out에 다시 돌릴 때 이번 실행이 만들지 않는 spec이 남아 있으면 멈추고(종료 코드 2) 지우지 않는다."""
+    out, _ = e2e_out
+    work = _copy_out(out, tmp_path / "w")
+    stale = _stale_script_spec(work)
+    user = work / "specs" / "notes.JSON"                      # Unity GetFiles("*.json")는 대소문자를 가리지 않는다
+    user.write_text("{}\n", encoding="utf-8")
+    before = (work / "summary.json").read_bytes()
+    with pytest.raises(e2e.E2EError, match=r"Z99\.v0\.json.*notes\.JSON|notes\.JSON.*Z99\.v0\.json"):
+        e2e.run(small_corpus, work, B=B)
+    assert stale.exists() and user.exists()
+    assert (work / "summary.json").read_bytes() == before     # 결과 파일을 쓰기 전에 멈춘다
+    with pytest.raises(SystemExit) as ei:
+        e2e.main(["--corpus", str(small_corpus), "--out", str(work), "--bootstrap", str(B)])
+    assert ei.value.code == 2
+    assert stale.exists() and user.exists()
+
+
+def test_clean_specs_removes_only_script_format_files(e2e_out, small_corpus, tmp_path):
+    out, _ = e2e_out
+    work = _copy_out(out, tmp_path / "w")
+    stale = _stale_script_spec(work)
+    user = work / "specs" / "notes.json"                      # 이 스크립트 형식이 아님 → 지우지 않고 멈춤
+    user.write_text('{"meta": {"specVersion": "2.0.0"}}\n', encoding="utf-8")
+    foreign = work / "specs" / "Z98.v0.json"                  # 이름은 맞지만 sessionId가 이름과 다름 → 지우지 않음
+    spec = json.loads((work / "specs" / "D01.v0.json").read_text(encoding="utf-8"))
+    foreign.write_text(json.dumps(spec), encoding="utf-8")
+    with pytest.raises(e2e.E2EError, match="notes.json") as ei:
+        e2e.run(small_corpus, work, B=B, clean_specs=True)
+    assert "Z98.v0.json" in str(ei.value) and "Z99.v0.json" not in str(ei.value)
+    assert not stale.exists() and user.exists() and foreign.exists()
+    user.unlink()
+    foreign.unlink()
+    _stale_script_spec(work, "Z97")
+    s = e2e.run(small_corpus, work, B=B, clean_specs=True)
+    assert s["ok"] is True
+    assert sorted(p.name for p in (work / "specs").iterdir()) == sorted(
+        f"{i}.{m}.json" for i in ("D01", "D02", "D03") for m in ("v0", "v1"))
+
+
+def test_clean_specs_refused_with_unity_out(small_corpus, tmp_path):
+    with pytest.raises(e2e.E2EError, match="--clean-specs"):
+        e2e.run(small_corpus, tmp_path / "o", B=B, unity_out=tmp_path / "u", clean_specs=True)
+    assert not (tmp_path / "o").exists()
+
+
+# ── CP3 지적 2: Unity report.json 검증 ─────────────────────────────────────────────
+EXPECTED = {"A01.v0.json", "A01.v1.json", "A02.v0.json"}
+
+
+def _synthetic_report(tmp_path: Path) -> tuple[Path, dict]:
+    unity = tmp_path / "unity"
+    unity.mkdir()
+    entries = []
+    for n in sorted(EXPECTED):
+        (unity / f"{Path(n).stem}.png").write_bytes(b"\x89PNG")
+        entries.append({"spec": n, "loaded": True, "png": f"{Path(n).stem}.png", "params": {}, "defaultsUsed": []})
+    rep = {"ok": True, "summary": {"specFiles": 3, "loaded": 3, "captureFailures": 0, "consoleErrors": 0,
+                                   "consoleExceptions": 0}, "specs": entries}
+    return unity, rep
+
+
+def test_report_failures_empty_when_one_to_one(tmp_path):
+    unity, rep = _synthetic_report(tmp_path)
+    assert e2e.unity_report_failures(rep, EXPECTED, unity) == []
+
+
+@pytest.mark.parametrize("mutate, needle", [
+    (lambda r, u: r["specs"].pop(), "report.json에 없는 spec 1개: A02.v0.json"),
+    (lambda r, u: r["specs"].append({"spec": "Z99.v0.json", "loaded": True, "png": "Z99.v0.png"}),
+     "이번 실행의 spec이 아닌 항목 1개: Z99.v0.json"),
+    (lambda r, u: r["specs"].append(dict(r["specs"][0])), "두 번 이상 나온 spec 1개: A01.v0.json"),
+    (lambda r, u: r["specs"][1].update(loaded=False), "로드되지 않은 spec 1개: A01.v1.json"),
+    (lambda r, u: r["specs"][2].update(captureFailed=True), "캡처 실패(captureFailed) spec 1개: A02.v0.json"),
+    (lambda r, u: r.update(ok=False), "report.json ok = False"),
+    (lambda r, u: r["summary"].update(captureFailures=1), "summary.captureFailures = 1"),
+    (lambda r, u: r["summary"].update(consoleExceptions=2), "summary.consoleExceptions = 2"),
+    (lambda r, u: (u / "A01.v1.png").unlink(), "장면 PNG가 없는 spec 1개: A01.v1.json"),
+])
+def test_report_failures_catch_missing_extra_and_failed_specs(tmp_path, mutate, needle):
+    unity, rep = _synthetic_report(tmp_path)
+    mutate(rep, unity)
+    fails = e2e.unity_report_failures(rep, EXPECTED, unity)
+    assert any(needle in f for f in fails), fails
+
+
+def test_report_failures_include_applied_and_log_problems(tmp_path):
+    unity, rep = _synthetic_report(tmp_path)
+    cmp = e2e.compare_applied({"X01.v1.json": SPEC}, {"specs": [_unity_entry(**{"material.color.h": 0.1235})]})
+    log_check = e2e.unity_log_check("[SceneLoader] A01.v0.json 로드: x\nSystem.Exception: 합성\n[BatchCapture] 끝: ok=False\n")
+    fails = e2e.unity_report_failures(rep, EXPECTED, unity, cmp, log_check)
+    assert any(f.startswith("적용값 대조 미달 1건") and "X01.v1.json material.color.h" in f for f in fails), fails
+    assert any(f.startswith("Unity 로그 오류 패턴 1건") for f in fails), fails
+    assert any("ok=…' = ['False']" in f for f in fails), fails
+    assert any("로드:' 파일이 spec 목록과 다름(빠짐 2" in f for f in fails), fails
+
+
+@pytest.mark.parametrize("case", ["missing_entry", "stale_entry", "capture_failed", "applied_delta"])
+def test_unity_check_failure_sets_summary_and_exit_code_1(e2e_out, small_corpus, tmp_path, case):
+    out, _ = e2e_out
+    work = _copy_out(out, tmp_path / "w")
+    unity, report, names = _fake_unity(work)
+    if case == "missing_entry":
+        report["specs"].pop(0)
+        report["summary"]["loaded"] -= 1
+        needle = "report.json에 없는 spec 1개: D01.v0.json"
+    elif case == "stale_entry":                              # 이전 실행의 잔여 spec까지 캡처한 보고서
+        report["specs"].append(dict(report["specs"][0], spec="Z99.v0.json", png="Z99.v0.png"))
+        report["summary"].update(specFiles=len(names) + 1, loaded=len(names) + 1)
+        needle = "이번 실행의 spec이 아닌 항목 1개: Z99.v0.json"
+    elif case == "capture_failed":
+        report["specs"][1]["captureFailed"] = True
+        report["summary"]["captureFailures"] = 1
+        report["ok"] = False
+        needle = "캡처 실패(captureFailed) spec 1개: D01.v1.json"
+    else:                                                    # Unity 값이 1e-4 어긋남 → |Δ| > 1e-6
+        p = report["specs"][0]["params"]
+        k = next(k for k in e2e.UNITY_NUMERIC if k not in report["specs"][0]["defaultsUsed"])
+        p[k] = round(p[k] + 1e-4, 4) if p[k] < 0.5 else round(p[k] - 1e-4, 4)
+        needle = "적용값 대조 미달 1건"
+    _write_report(unity, report)
+    s = e2e.run(small_corpus, work, B=B, unity_out=unity)
+    assert s["ok"] is False and any(needle in f for f in s["failures"]), s["failures"]
+    assert s["unity"]["failures"] == s["failures"]
+    saved = json.loads((work / "summary.json").read_text(encoding="utf-8"))
+    assert saved["ok"] is False and saved["failures"] == s["failures"]
+    assert "실행 검사" in (work / "results.md").read_text(encoding="utf-8")
+    with pytest.raises(SystemExit) as ei:
+        e2e.main(["--corpus", str(small_corpus), "--out", str(work), "--unity-out", str(unity), "--bootstrap", str(B)])
+    assert ei.value.code == 1
+
+
+def test_scores_below_ac_do_not_change_exit_code(e2e_out):
+    """채점 지표는 실행 검사에 넣지 않는다(Unity 없이 돌리면 failures는 비어 있다)."""
+    _, s = e2e_out
+    assert s["ok"] is True and s["failures"] == [] and "unity" not in s
+
+
+# ── CP3 지적 3: Unity 로그 예외 패턴 ───────────────────────────────────────────────
+def test_log_check_catches_namespaced_exceptions_but_not_capture_frame():
+    text = "\n".join([
+        "System.Exception: 합성 예외",
+        "System.IO.DirectoryNotFoundException: Could not find a part of the path",
+        "NullReferenceException: Object reference not set",
+        "UnityEngine.TestRunner.NUnitExtensions.Runner.UnityLogCheckDelegatingCommand:CaptureException "
+        "(NUnit.Framework.Internal.TestResult,System.Action) (at ./Library/x.cs:72)",
+        "  at Foo.Bar () [0x00000] in <x>:0",
+        "Exceptions handled: 0",
+        "[SceneLoader] A01.v0.json 로드: form=blob",
+    ]) + "\n"
+    r = e2e.unity_log_check(text)
+    assert r["errorPatternHits"] == 3
+    assert r["hits"] == ["System.Exception:", "System.IO.DirectoryNotFoundException:", "NullReferenceException:"]
+    assert e2e.unity_log_check("UnityEngine.TestRunner.NUnitExtensions.Runner.UnityLogCheckDelegatingCommand:"
+                               "CaptureException (NUnit.Framework.Internal.TestResult,System.Action)\n")["errorPatternHits"] == 0

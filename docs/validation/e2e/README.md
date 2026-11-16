@@ -57,6 +57,10 @@ cd chatbot
 # 재현 확인: 이 폴더 전체를 <scratch>/e2e_repro에 복사해 ④를 다시 돌린 뒤 diff -rq → 모든 파일 동일
 ```
 
+- 위 결과는 e2e/0.1.0으로 만들었다. e2e/0.2.0(외부 검토 CP3 지적 반영)부터 ②·④의 동작이 이렇게 바뀌었다. 채점·spec·적용값 계산은 같다(held-out을 저장소 밖 임시 폴더에 다시 돌려 `score/`·`specs/`·`schema.json`·`drift.json`·`applied_values.*`가 이 폴더와 바이트 동일함을 확인).
+  - `--out`의 `specs/`에 이번 실행이 만들지 않는 `*.json`이 있으면 아무 결과도 쓰지 않고 종료 코드 2로 멈춘다(Unity `BatchCapture`가 `-specDir`의 `*.json`을 전부 읽어 이전 실행의 잔여 파일이 보고서에 섞이기 때문). 파일은 지우지 않는다. `--clean-specs`를 주면 이 스크립트가 만든 형식(`<id>.<매핑>.json`, `meta.condition = static`, `meta.sessionId`가 id와 맞음)의 잔여 파일만 지우고 계속한다(`--unity-out`과 함께 쓸 수 없음).
+  - ④에서 report.json의 spec별 결과가 이번 실행의 spec과 일대일인지(빠짐·남음·중복), 모두 로드·캡처되고 PNG가 있는지, `ok = true`인지, Console 오류·예외, 적용값 미달(\|Δ\| > 1e-6)·범주·`defaultsUsed` 불일치, (로그를 주면) 로그 오류 패턴·`[BatchCapture] 끝: ok=True`·로드 줄을 확인한다. 하나라도 어긋나면 `summary.json`의 `failures`·`results.md`에 사유를 적고 종료 코드 1로 끝난다. 채점 지표의 AC 충족 여부는 종료 코드에 넣지 않는다.
+  - 로그의 예외 패턴은 `^[\w.]*Exception:`(네임스페이스가 붙은 `System.Exception:`도 잡음)이다. 이 패턴으로 `logs/capture.log`·`logs/editmode.log`를 다시 훑어도 0건이다(editmode.log의 `Exception` 포함 줄 36개는 모두 `UnityLogCheckDelegatingCommand:CaptureException` 스택 프레임).
 - ③의 첫 시도는 `-specDir docs\validation\e2e\specs`(저장소 루트 기준)로 줘서 `DirectoryNotFoundException: …\unity\docs\validation\e2e\specs`로 끝났다(종료 코드 1, 캡처 0건). Unity가 상대 경로를 프로젝트 폴더(`unity\`) 기준으로 푼다. `..\`를 붙여 다시 돌린 것이 위 ③이다.
 - ⑤의 로그·xml과 ①의 표준 출력은 경로·계정 이름을 가린 사본을 `logs/`에 두었다(`<repo>`·`<home>`·`<user>`·`<host>`, 라이선스 Machine Id·사설 IP는 `<masked>`·`<ip>`).
 

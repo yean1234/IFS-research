@@ -98,14 +98,14 @@ ultracode
   - [x] 독립 검토 → 수정
 - [x] 4. Unity 현실감 (Linear, VR PC/VR Quest 품질 단계, 무채색 하늘·바닥 1 m 격자·그림자 1개, 후처리 없음, 배치 캡처). EX01/EX02 p95 ≤ 2.01 ms(데스크톱 대리 측정). 기기 72 Hz 측정은 morning-todo
 - [x] 5. 실행 검증(E2E) — 끝. `docs/validation/e2e/`. **held-out에서 AC-3.2(0.698)·3.4(0.094)·3.5(0.859), AC-4.5(H09 빈 화면) 미달 → 전체 "완료 아님"**. 규칙은 고치지 않음(decisions X10)
-- [ ] docs/morning-report.md — **남음**
+- [x] docs/morning-report.md — 작성 끝
 
 ### Codex 체크포인트 (정확히 3번, 실패 시 재시도 1번)
 - [x] CP1 — 1회 사용. 원문+분류표 `docs/codex-reviews/CP1.md`. 수용 11 / 보류 1(#12 인용 원문 대조, 사람)
 - [x] CP2 — 1회 사용(2026-11-16 13:55, 종료 코드 0). 원문+분류표 `docs/codex-reviews/CP2.md`. 수용 6 · 일부 수용 2 · 반박 1 · 일부 반박·보류 1 · 보류 2. 지시문 `docs/codex-reviews/prompts/CP2_prompt.md`
-- [ ] CP3 — **호출함(3번째, 마지막. 세션 edd117bf).** `docs/codex-reviews/CP3.md`가 없으면 호출이 끊긴 것: 재시도는 1번까지만. 지시문 `docs/codex-reviews/prompts/CP3_prompt.md` (`<CP2_COMMIT>` = `58ba0dc`)
+- [x] CP3 — 1회 사용(2026-11-16 14:40, 종료 코드 0). 원문+분류표 `docs/codex-reviews/CP3.md`. 수용 3(모두 e2e.py 견고성), 반영 끝. 지시문 `docs/codex-reviews/prompts/CP3_prompt.md` (`<CP2_COMMIT>` = `58ba0dc`)
 
-**Codex 사용 현황: 3번 모두 사용(CP1, CP2, CP3). 더 호출하지 않음**(CP3가 실패로 끝난 경우의 재시도 1번만 예외). 다른 계정으로 넘어가도 이 횟수는 이어집니다. 이 외 용도로 절대 호출하지 마세요.
+**Codex 사용 현황: 3번 모두 사용(CP1, CP2, CP3), 재시도 0. 어떤 이유로도 더 호출하지 않습니다.** 다른 계정으로 넘어가도 이 횟수는 이어집니다. 이 외 용도로 절대 호출하지 마세요.
 
 Codex 실행 명령(Git Bash, 저장소 루트에서. CP1 때 쓴 것과 같은 형식):
 ```bash
@@ -114,14 +114,15 @@ codex exec --sandbox read-only -c model_reasoning_effort="medium" -C . -o /tmp/c
 - 출력 원문을 `docs/codex-reviews/CPN.md`에 저장(맨 위에 실행 명령·시각·종료 코드, 그 아래 지시문, 그 아래 원문). 그 뒤에 "수용 / 반박(근거) / 보류" 표를 붙이고, 수용한 것만 반영 후 커밋.
 - 사용 한도 에러면 재시도하지 말고 Claude 검토자(별도 서브에이전트, 같은 지시문)로 대체하고 그 사실을 CPN.md와 decisions.md에 기록.
 
-## 4. 지금 진행 중인 것 (계정 전환 뒤 세션 edd117bf 기준)
+## 4. 지금 상태 (세션 edd117bf, 2026-11-16) — 야간 작업 끝, 진행 중인 것 없음
 
-- 끝: 3단계 E2E와 독립 재현, AC 판정(`docs/acceptance.md` 맨 아래 표, `docs/validation/e2e/README.md` 「판정」), CP3 커밋 `5326ca9`.
-- **진행 중: Codex CP3 호출(3번째, 마지막).** 출력을 `docs/codex-reviews/CP3.md`(원문 + 수용/반박/보류 표)로 저장 → 수용 항목 반영(opus 서브에이전트) → 테스트 → 커밋 → `docs/morning-report.md` 작성 → AC-6·AC-7 판정 → 최종 커밋.
-- **CP3 반영 원칙(decisions X13):** 매핑·채점 결과를 바꾸는 수정은 하지 않고 morning-todo로 넘김(held-out 수치가 낡고 "본 뒤 고침"이 됨). 결과를 안 바꾸는 버그·안전 수정만 반영.
+- 다섯 작업의 구현·실행·검토, Codex 3번, `docs/morning-report.md`까지 끝났습니다. **판정은 "완료 아님"**: AC-3(held-out 반영률 0.698·왜곡률 0.094·미반영 원문 보존률 0.859)과 AC-4.5(H09 빈 화면)가 미달입니다. 판정 표는 `docs/acceptance.md` 맨 아래.
+- 마지막으로 잰 값: 오프라인 테스트 394 통과, drift 라벨 정확도 1.000, Unity EditMode 28/28, held-out sha 그대로.
+- **이어서 할 일은 사람의 결정이 먼저입니다**(`docs/morning-todo.md` 맨 위 세 항목): AC-3 미달을 어떻게 이어갈지, AC-5.3 문구 수정을 인정할지, 스크린샷 60장 확인.
+- **하지 말 것:** 지금 held-out(`heldout.json`)을 보고 매핑 규칙을 고치는 일(평가 무효, D04·X10), Codex 추가 호출, push·main 병합(사람이 검토 후 PR).
 - 모델 배정(D09): 판단·분류·판정·보고서는 메인 세션(Fable), 구현·테스트 실행·검토·수정 서브에이전트는 opus.
 
-## 5. 다음에 할 일 (순서대로)
+## 5. 야간 작업의 순서 (모두 끝남. 기록용)
 
 1. **2단계 결과 정리**: 결과 확인 → 결정 사항을 `docs/decisions.md`에, 사람이 할 일을 `docs/morning-todo.md`에 병합 → 개인 폴더명 `git grep` 결과 0 → 오프라인 테스트 전체 통과 → held-out sha 그대로인지 확인.
 2. **CP2 커밋** (`CP2: 심상 유지 판단·개선 매핑 v1 …`). 이 해시를 이 파일 2절에 기록.

@@ -15,6 +15,21 @@
   applied_values.json/md  (--unity-out을 줄 때) Unity가 기록한 params와 spec 값 대조(AC-5.7)
   summary.json, results.md, pipeline.log
 
+종료 코드:
+  0  끝까지 돌았고 아래 실행 검사에 걸린 것이 없다
+  1  결과 파일은 썼지만 실행 검사에 걸렸다(사유는 summary.json failures·unity.failures, results.md, pipeline.log)
+     실행 검사(--unity-out을 줄 때만): report.json ok = true, spec별 결과가 이번 실행의 spec 파일과 정확히 일대일
+     (빠진 것·남는 것·중복 없음), 모두 loaded이고 captureFailed가 아니며 장면 PNG가 있음, summary의 specFiles·loaded·
+     captureFailures가 기대와 같음, Console 오류·예외 0, 적용값 대조 미달(|Δ| > 허용 오차)·범주 불일치·defaultsUsed
+     불일치 0, (--unity-log를 주면) 로그 오류 패턴 0·읽기 실패 0·'[BatchCapture] 끝: ok=True'·로드 줄 = spec 파일.
+     채점 지표(반영률 등)가 AC 수치에 못 미치는 것은 종료 코드에 넣지 않는다(판정은 사람이 한다).
+  2  시작 조건이 맞지 않아 멈췄다: specs/에 이번 실행이 만들지 않는 *.json이 있음(Unity BatchCapture는 -specDir의
+     *.json을 전부 읽으므로 이전 실행의 잔여 파일이 섞인다), Unity가 캡처한 spec과 지금 만든 spec이 다름,
+     재생 중 LLM·네트워크 호출 시도(--no-network), 옵션 충돌
+  --clean-specs: 잔여 *.json 중 이 스크립트가 만든 형식(<id>.<매핑>.json, meta.condition = static,
+     meta.sessionId = id의 세션 ID 규칙 값, meta.specVersion 있음)만 지우고 계속한다. 그 밖의 파일은 지우지 않고 멈춘다.
+     --unity-out과 함께 쓸 수 없다(캡처한 spec 폴더를 지우지 않는다).
+
 동결 규칙(docs/decisions.md D04): 이 스크립트는 매핑·채점·drift·컨트롤러를 부르기만 하고 바꾸지 않는다.
 채점은 fidelity.score_runs·paired_compare를 그대로 쓴다(같은 코퍼스면 fidelity --compare와 같은 report.json·paired.json).
 
@@ -44,7 +59,7 @@ from ..scene_spec import SCHEMA_FILE, SCHEMA_FILE_V21, SPEC_VERSION_V21, check_p
 from . import fidelity
 from .corpus_run import RUNNER_VERSION, make_runtime, mapping_fallbacks, run_items
 
-E2E_VERSION = "0.1.0"
+E2E_VERSION = "0.2.0"   # 0.2.0: 잔여 spec이면 멈춤(--clean-specs), Unity report 일대일·로드·캡처·적용값 검사와 종료 코드, 예외 패턴
 DEFAULT_MAPPERS = ("v0", "v1")
 TOLERANCE = 1e-6
 
@@ -53,9 +68,18 @@ UNITY_NUMERIC = ("material.color.h", "material.color.s", "material.color.l", "ma
                  "material.roughness", "material.opacity", "material.erosion", "layout.size", "layout.distance",
                  "layout.verticalOffset", "motion.speed")
 UNITY_CATEGORICAL = ("form.type", "form.posture", "motion.type")
-# Unity 로그에서 오류로 세는 패턴(docs/acceptance.md AC-4 확인 방법과 같음)
-LOG_ERROR_RE = re.compile(r"error CS|Shader error|^\w*Exception:|\[Exception\]", re.M)
+# Unity 로그에서 오류로 세는 패턴(docs/acceptance.md AC-4 확인 방법과 같음).
+# 예외 줄은 줄 첫머리의 예외 타입 이름 + ':' — 네임스페이스가 붙은 형식(System.Exception:, System.IO.…Exception:)도 잡는다.
+# 테스트 프레임워크 스택 프레임 '…UnityLogCheckDelegatingCommand:CaptureException (…)'은 ':' 뒤에 Exception이 오므로
+# 패턴에 걸리지 않고, 걸리더라도 LOG_EXCLUDE로 뺀다.
+LOG_ERROR_RE = re.compile(r"error CS|Shader error|^[\w.]*Exception:|\[Exception\]", re.M)
 LOG_EXCLUDE = "UnityLogCheckDelegatingCommand:CaptureException"
+# --clean-specs가 지울 수 있는 이름 형식: <id>.<매핑>.json
+SPEC_NAME_RE = re.compile(r"^(?P<id>.+)\.(?P<mapper>[A-Za-z0-9_-]+)\.json$")
+
+
+class E2EError(RuntimeError):
+    """시작 조건이 맞지 않아 멈춤(종료 코드 2)."""
 
 
 # ── 도우미 ──────────────────────────────────────────────────────────────────
@@ -210,6 +234,57 @@ def check_specs(runs: dict, files: dict, mapper: str) -> list[dict]:
     return rows
 
 
+def expected_spec_names(files_by: dict, mappers) -> set[str]:
+    """이번 실행이 specs/에 두는 파일 이름(장면 파일이 없는 항목은 넣지 않는다)."""
+    return {f"{iid}.{m}.json" for m in mappers for iid, raw in files_by[m].items() if raw is not None}
+
+
+def spec_dir_json(spec_dir: Path) -> list[Path]:
+    """Unity BatchCapture가 읽는 것과 같은 범위: 폴더 바로 아래 *.json(하위 폴더 제외, 확장자 대소문자 무시)."""
+    if not spec_dir.is_dir():
+        return []
+    return sorted((p for p in spec_dir.iterdir() if p.name.lower().endswith(".json") and p.is_file()),
+                  key=lambda p: p.name)
+
+
+def is_script_spec(path: Path) -> bool:
+    """이 스크립트가 만든 형식의 spec 파일인가(--clean-specs가 지워도 되는가)."""
+    m = SPEC_NAME_RE.match(path.name)
+    if not m or path.is_symlink():
+        return False
+    try:
+        spec = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, ValueError):
+        return False
+    meta = spec.get("meta") if isinstance(spec, dict) else None
+    return (isinstance(meta, dict) and isinstance(meta.get("specVersion"), str) and meta.get("condition") == "static"
+            and meta.get("sessionId") == _sid(m.group("id")))
+
+
+def check_spec_dir(spec_dir: Path, expected: set[str], clean: bool, log) -> list[str]:
+    """specs/의 *.json이 이번 실행의 spec과 정확히 같은 목록인지 본다. 남는 파일이 있으면 E2EError.
+    clean=True면 이 스크립트 형식의 잔여 파일만 지우고(지운 이름을 돌려준다), 그 밖의 파일이 남으면 멈춘다."""
+    stale = [p for p in spec_dir_json(spec_dir) if p.name not in expected]
+    if not stale:
+        return []
+    removed: list[str] = []
+    if clean:
+        for p in stale:
+            if is_script_spec(p):
+                p.unlink()
+                removed.append(p.name)
+        if removed:
+            log(f"[spec] --clean-specs: 이전 실행의 잔여 spec {len(removed)}개를 지움: {', '.join(removed)}")
+        stale = [p for p in stale if p.name not in removed]
+        if not stale:
+            return removed
+    names = [p.name for p in stale]
+    hint = ("이 스크립트가 만든 형식이 아니라 지우지 않았습니다. 직접 확인해 옮기거나 지우십시오."
+            if clean else "직접 지우거나, 빈 --out 폴더를 쓰거나, --clean-specs를 주십시오.")
+    raise E2EError(f"{spec_dir.name}/ 에 이번 실행이 만들지 않는 spec 파일 {len(names)}개가 있습니다: {', '.join(names)}. "
+                   f"Unity BatchCapture는 -specDir의 *.json을 전부 읽으므로 이전 실행의 잔여 파일이 보고서에 섞입니다. {hint}")
+
+
 # ── 6. Unity 적용값 대조 ──────────────────────────────────────────────────────
 def compare_applied(specs: dict[str, dict], unity_report: dict) -> dict:
     """specs: {파일 이름: spec}. unity_report: BatchCapture report.json. 비교 원천 (나)."""
@@ -308,6 +383,80 @@ def applied_markdown(cmp: dict) -> str:
         ds = [r["absDelta"] for r in cmp["rows"] if r["key"] == k and r["absDelta"] is not None]
         L.append(f"| {k} | {by_key.get(k, 0)} | {max(ds)!r} |" if ds else f"| {k} | 0 | – |")
     return "\n".join(L) + "\n"
+
+
+def _names(xs, n: int = 10) -> str:
+    xs = list(xs)
+    return ", ".join(xs[:n]) + (f" 외 {len(xs) - n}개" if len(xs) > n else "")
+
+
+def unity_report_failures(rep: dict, expected: set[str], unity_out: Path, cmp: dict | None = None,
+                          log_check: dict | None = None) -> list[str]:
+    """Unity report.json(과 적용값 대조·로그 검사)이 이번 실행의 spec 목록과 맞는지 본다. 어긋난 사유 목록(비면 통과).
+    채점 지표는 보지 않는다(실행이 끝까지 제대로 됐는지만)."""
+    fails: list[str] = []
+    if rep.get("ok") is not True:
+        fails.append(f"report.json ok = {rep.get('ok')!r}(true여야 함)")
+    entries = rep.get("specs")
+    if not isinstance(entries, list):
+        fails.append("report.json에 specs 목록이 없음")
+        entries = []
+    names = [e.get("spec") if isinstance(e, dict) else None for e in entries]
+    if any(not isinstance(n, str) for n in names):
+        fails.append(f"report.json specs 중 spec 이름이 없는 항목 {sum(not isinstance(n, str) for n in names)}개")
+    counts = Counter(n for n in names if isinstance(n, str))
+    dup = sorted(n for n, c in counts.items() if c > 1)
+    missing = sorted(expected - set(counts))
+    extra = sorted(set(counts) - expected)
+    if missing:
+        fails.append(f"report.json에 없는 spec {len(missing)}개: {_names(missing)}")
+    if extra:
+        fails.append(f"report.json에 이번 실행의 spec이 아닌 항목 {len(extra)}개: {_names(extra)}")
+    if dup:
+        fails.append(f"report.json에 두 번 이상 나온 spec {len(dup)}개: {_names(dup)}")
+    by = {e["spec"]: e for e in entries if isinstance(e, dict) and isinstance(e.get("spec"), str)}
+    not_loaded = sorted(n for n in expected if n in by and by[n].get("loaded") is not True)
+    cap_failed = sorted(n for n in expected if n in by and by[n].get("captureFailed") is True)
+    no_png = sorted(n for n in expected if n in by and by[n].get("loaded") is True and not by[n].get("png"))
+    no_png_file = sorted(n for n in expected if not (unity_out / f"{Path(n).stem}.png").exists())
+    if not_loaded:
+        fails.append(f"로드되지 않은 spec {len(not_loaded)}개: {_names(not_loaded)}")
+    if cap_failed:
+        fails.append(f"캡처 실패(captureFailed) spec {len(cap_failed)}개: {_names(cap_failed)}")
+    if no_png:
+        fails.append(f"report.json에 png 기록이 없는 spec {len(no_png)}개: {_names(no_png)}")
+    if no_png_file:
+        fails.append(f"{unity_out.name}/에 장면 PNG가 없는 spec {len(no_png_file)}개: {_names(no_png_file)}")
+    s = rep.get("summary") or {}
+    for key, want in (("specFiles", len(expected)), ("loaded", len(expected)), ("captureFailures", 0),
+                      ("consoleErrors", 0), ("consoleExceptions", 0)):
+        if s.get(key) != want:
+            fails.append(f"report.json summary.{key} = {s.get(key)!r}(기대 {want})")
+    if cmp is not None:
+        if cmp["failures"]:
+            fails.append(f"적용값 대조 미달 {len(cmp['failures'])}건(|Δ| > {cmp['tolerance']:g} 또는 Unity 값 없음): "
+                         + _names(f"{r['spec']} {r['key']}" for r in cmp["failures"]))
+        if cmp["categoricalMismatches"]:
+            fails.append(f"범주 값 불일치 {len(cmp['categoricalMismatches'])}건: "
+                         + _names(f"{r['spec']} {r['key']}" for r in cmp["categoricalMismatches"]))
+        if cmp["defaultsUsedMismatches"]:
+            fails.append(f"defaultsUsed 불일치 {len(cmp['defaultsUsedMismatches'])}건: "
+                         + _names(f"{r['spec']} {r['key']}" for r in cmp["defaultsUsedMismatches"]))
+    if log_check is not None:
+        if log_check["errorPatternHits"]:
+            fails.append(f"Unity 로그 오류 패턴 {log_check['errorPatternHits']}건: {_names(log_check['hits'], 5)}")
+        if log_check["batchCaptureFailed"]:
+            fails.append("Unity 로그에 '[BatchCapture] 실패'가 있음")
+        if log_check["batchCaptureEnd"][-1:] != ["True"]:
+            fails.append(f"Unity 로그의 '[BatchCapture] 끝: ok=…' = {log_check['batchCaptureEnd']!r}(마지막이 True여야 함)")
+        if log_check["readFailures"]:
+            fails.append(f"Unity 로그에 SceneSpec 읽기 실패 {log_check['readFailures']}건")
+        if set(log_check["loadedFiles"]) != expected:
+            lm = sorted(expected - set(log_check["loadedFiles"]))
+            lx = sorted(set(log_check["loadedFiles"]) - expected)
+            fails.append(f"Unity 로그의 '[SceneLoader] … 로드:' 파일이 spec 목록과 다름(빠짐 {len(lm)}: {_names(lm, 5)} · "
+                         f"남음 {len(lx)}: {_names(lx, 5)})")
+    return fails
 
 
 def unity_log_check(text: str) -> dict:
@@ -418,7 +567,10 @@ def results_markdown(summary: dict, reports: dict, paired: dict | None) -> str:
               f"- 적용값 대조: 원천 ({u['applied']['source']}) · 수치 {u['applied']['numericCompared']}개 · max |Δ| = {u['applied']['maxAbsDelta']!r}"
               f" · 미달 {u['applied']['failures']} · 반올림 경계 {u['applied']['roundingBoundaryCases']} · 범주 불일치 "
               f"{u['applied']['categoricalMismatches']} · defaultsUsed 불일치 {u['applied']['defaultsUsedMismatches']}",
-              f"- 프레임 시간 p95 최댓값(데스크톱 대리 측정): {u['frameMsP95Max']} ms"]
+              f"- 프레임 시간 p95 최댓값(데스크톱 대리 측정): {u['frameMsP95Max']} ms",
+              f"- 실행 검사(report 일대일·로드·캡처·ok·적용값·로그): "
+              + ("통과" if not u.get("failures") else f"**실패 {len(u['failures'])}건**(종료 코드 1)")]
+        L += [f"  - {f}" for f in u.get("failures") or []]
     L += ["", "## 실패·오류 목록", ""]
     for m, r in reports.items():
         L += [f"### {m}", "", "| 항목 | 유형 | 속성/경로 | phrase | 기대 | 실제 | 근거 |", "| --- | --- | --- | --- | --- | --- | --- |"]
@@ -460,7 +612,11 @@ class _Log:
 def run(corpus_path: str | Path, out_dir: str | Path, mappers: tuple[str, ...] = DEFAULT_MAPPERS,
         unity_out: str | Path | None = None, unity_log: str | Path | None = None,
         B: int = fidelity.BOOTSTRAP_B, seed: int = fidelity.BOOTSTRAP_SEED, base: Config | None = None,
-        no_network: bool = False) -> dict:
+        no_network: bool = False, clean_specs: bool = False) -> dict:
+    """끝까지 돌면 summary를 돌려준다(summary['ok'] = 실행 검사 통과 여부, 사유는 summary['failures']).
+    시작 조건이 맞지 않으면 E2EError."""
+    if clean_specs and unity_out is not None:
+        raise E2EError("--clean-specs는 --unity-out과 함께 쓸 수 없습니다(Unity가 캡처한 spec 폴더의 파일을 지우지 않습니다).")
     log = _Log()
     out = Path(out_dir)
     corpus_path = Path(corpus_path)
@@ -487,7 +643,10 @@ def run(corpus_path: str | Path, out_dir: str | Path, mappers: tuple[str, ...] =
         log(f"[차단] LLM·HTTP·소켓 {len(network['targets'])}개 함수를 호출 즉시 예외로 바꾼 상태에서 재생·매핑 · 시도된 호출 "
             f"{len(network['calls'])}건")
         if network["calls"]:
-            raise RuntimeError("재생·매핑 중 LLM·네트워크 호출 시도: " + ", ".join(network["calls"]))
+            raise E2EError("재생·매핑 중 LLM·네트워크 호출 시도: " + ", ".join(network["calls"]))
+    # specs/ 폴더 = 이번 실행의 spec 목록이어야 한다(Unity BatchCapture는 -specDir의 *.json을 전부 읽는다). 쓰기 전에 본다.
+    expected = expected_spec_names(files_by, mappers)
+    check_spec_dir(spec_dir, expected, clean_specs, log)
     # spec 파일: Unity 캡처 뒤 다시 돌릴 때 바이트가 달라졌으면 멈춘다(캡처한 파일 = 지금 만든 파일이어야 대조가 뜻이 있다)
     changed = []
     for m in mappers:
@@ -500,11 +659,8 @@ def run(corpus_path: str | Path, out_dir: str | Path, mappers: tuple[str, ...] =
             elif not p.exists() or p.read_bytes() != raw:
                 p.write_bytes(raw)
     if changed:
-        raise RuntimeError("Unity가 캡처한 spec 파일과 지금 만든 spec이 다릅니다: " + ", ".join(changed[:10]))
-    stale = sorted(p.name for p in spec_dir.glob("*.json")
-                   if not any(p.name == f"{iid}.{m}.json" for m in mappers for iid in files_by[m]))
-    log(f"[spec] {spec_dir.name}/ 에 {sum(1 for m in mappers for v in files_by[m].values() if v is not None)}개"
-        + (f" · 코퍼스에 없는 파일 {len(stale)}개: {', '.join(stale[:5])}" if stale else ""))
+        raise E2EError("Unity가 캡처한 spec 파일과 지금 만든 spec이 다릅니다: " + ", ".join(changed[:10]))
+    log(f"[spec] {spec_dir.name}/ 에 {len(expected)}개")
     for m in mappers:
         rows_by[m] = check_specs(runs_by[m], files_by[m], m)
         v = rows_by[m]
@@ -579,8 +735,17 @@ def run(corpus_path: str | Path, out_dir: str | Path, mappers: tuple[str, ...] =
                    if paired else None),
     }
 
+    failures: list[str] = []
     if unity_out is not None:
         summary["unity"] = unity_section(Path(unity_out), out, files_by, mappers, unity_log, log)
+        failures += summary["unity"]["failures"]
+    # 실행 검사 결과(종료 코드 1의 근거). 채점 지표의 AC 충족 여부는 넣지 않는다.
+    summary["ok"] = not failures
+    summary["failures"] = failures
+    if failures:
+        log(f"[검사] 실행 검사 실패 {len(failures)}건 — 종료 코드 1")
+        for f in failures:
+            log(f"  - {f}")
 
     (out / "summary.json").write_text(_dump(summary), encoding="utf-8")
     (out / "results.md").write_text(results_markdown(summary, reports, paired), encoding="utf-8")
@@ -628,8 +793,10 @@ def unity_section(unity_out: Path, out: Path, files_by: dict, mappers, unity_log
         dst.parent.mkdir(parents=True, exist_ok=True)
         dst.write_text(sanitize_text(text, roots, log=True), encoding="utf-8")
         sec["logFile"] = f"logs/{dst.name}"
+    sec["failures"] = unity_report_failures(rep, set(specs), unity_out, cmp, sec.get("log"))
     log(f"[unity] 로드 {sec['loaded']}/{sec['specFiles']} · 예외 {sec['consoleExceptions']} · 오류 {sec['consoleErrors']}"
-        f" · 스크린샷 {shots}/{len(specs)} · 적용값 max |Δ| {cmp['maxAbsDelta']!r} · 미달 {len(cmp['failures'])}")
+        f" · 스크린샷 {shots}/{len(specs)} · 적용값 max |Δ| {cmp['maxAbsDelta']!r} · 미달 {len(cmp['failures'])}"
+        f" · 실행 검사 실패 {len(sec['failures'])}건")
     return sec
 
 
@@ -649,10 +816,22 @@ def main(argv: list[str] | None = None) -> None:
     ap.add_argument("--seed", type=int, default=fidelity.BOOTSTRAP_SEED)
     ap.add_argument("--no-network", action="store_true",
                     help="재생·매핑 동안 LLM 호출 함수·HTTP·소켓을 호출 즉시 예외로 바꾼다(AC-3.9). 시도가 있으면 실패")
+    ap.add_argument("--clean-specs", action="store_true",
+                    help="<out>/specs/의 잔여 *.json 중 이 스크립트가 만든 형식만 지우고 계속한다(기본: 잔여 파일이 있으면 "
+                         "종료 코드 2로 멈춤). --unity-out과 함께 쓸 수 없다")
     args = ap.parse_args(argv)
     mappers = tuple(m.strip() for m in args.mappers.split(",") if m.strip())
-    run(args.corpus, args.out, mappers, args.unity_out, args.unity_log, args.bootstrap, args.seed,
-        no_network=args.no_network)
+    try:
+        summary = run(args.corpus, args.out, mappers, args.unity_out, args.unity_log, args.bootstrap, args.seed,
+                      no_network=args.no_network, clean_specs=args.clean_specs)
+    except E2EError as e:
+        print(f"[e2e] 멈춤: {e}", file=sys.stderr)
+        sys.exit(2)
+    if not summary["ok"]:
+        print(f"[e2e] 실행 검사 실패 {len(summary['failures'])}건(summary.json failures):", file=sys.stderr)
+        for f in summary["failures"]:
+            print(f"  - {f}", file=sys.stderr)
+        sys.exit(1)
 
 
 if __name__ == "__main__":

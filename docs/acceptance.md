@@ -164,7 +164,7 @@ $U = "C:\Program Files\Unity\Hub\Editor\6000.0.85f2\Editor\Unity.exe"
 & $U -batchmode -projectPath unity -executeMethod IFS.SceneSpec.EditorTools.BatchCapture.Run `
      -specDir <spec 폴더> -outDir <scratch>\capture -width 2064 -height 2208 -eyes 2 -warmup 30 -frames 300 `
      -logFile <scratch>\capture.log          # -nographics 쓰지 않음
-Select-String -Path <scratch>\editmode.log, <scratch>\capture.log -Pattern 'error CS|Shader error|^\w*Exception:|\[Exception\]'   # 0건 (테스트 프레임워크 스택 프레임 'UnityLogCheckDelegatingCommand:CaptureException'은 오류가 아니므로 제외)
+Select-String -Path <scratch>\editmode.log, <scratch>\capture.log -Pattern 'error CS|Shader error|^[\w.]*Exception:|\[Exception\]'   # 0건. 네임스페이스가 붙은 예외(System.Exception: …)도 잡는다 (테스트 프레임워크 스택 프레임 'UnityLogCheckDelegatingCommand:CaptureException'은 오류가 아니므로 제외 — 이 패턴에는 걸리지 않는다)
 # <scratch>\capture\report.json: frameMsP95Max ≤ 13.9, 드로콜·삼각형·그림자 광원 예산 항목, spec별 Console 오류 0
 ```
 
@@ -197,8 +197,12 @@ cd ..
 cd chatbot
 .venv\Scripts\python.exe -m ifs_chatbot.eval.e2e --corpus tests\fixtures\imagery_corpus\heldout.json --out ..\docs\validation\e2e --no-network `
      --unity-out ..\docs\validation\e2e\unity --unity-log <scratch>\capture.log
-#   (캡처한 spec 파일과 다시 만든 spec이 다르면 멈춤) unity\report.json summary.loaded = 입력 수 × 2, consoleExceptions = 0,
+#   (캡처한 spec 파일과 다시 만든 spec이 다르거나 specs\에 이번 실행이 만들지 않는 *.json이 있으면 종료 코드 2로 멈춤)
+#   unity\report.json summary.loaded = 입력 수 × 2, consoleExceptions = 0,
 #   logs\capture.log(경로·계정 가림 사본)의 "[SceneLoader] … 로드:" 줄 = 입력 수 × 2, 오류 패턴 0
+#   종료 코드 0 = 실행 검사 통과: report.json ok = true, spec별 결과가 specs\와 일대일(빠짐·남음·중복 없음), 모두 로드·캡처·PNG,
+#   Console 오류·예외 0, 적용값 미달·범주·defaultsUsed 불일치 0, 로그 오류 패턴 0. 하나라도 어긋나면 종료 코드 1, 사유는
+#   summary.json failures. 채점 지표의 AC 충족 여부는 종료 코드에 들어가지 않는다(판정은 사람이 한다)
 # 스크린샷: ..\docs\validation\e2e\unity\<id>.<매핑>.png 수 = 입력 수 × 2 (summary.json unity.screenshots)
 # 적용값 대조: ..\docs\validation\e2e\applied_values.json·.md 에서 max |Δ| ≤ 1e-6 (비교 원천 (나))
 ```
@@ -250,10 +254,10 @@ Select-String -Path docs\morning-report.md -Pattern '바뀐 파일|검증|Codex|
 | --- | --- | --- | --- |
 | AC-1 | 통과(이전 세션 판정) | 필수 절 7개, CP1 지적 11건 반영. 인용 원문 대조 1건은 사람 몫으로 보류 | `docs/research-design.md`, `docs/codex-reviews/CP1.md`. 이 세션에서 다시 재지 않음 |
 | AC-2 | 잠정 통과 | 라벨 18개(drift 9 · no-drift 9) 정확도 1.000, 덧붙임 오탐 0, 두 번 실행 sha256 동일(`345c4071…dc1d`), LLM 호출 0. **단서:** 라벨에 나온 사전 낱말 4개를 빼면 0.833(< 0.90). 설계자가 라벨을 읽은 뒤 규칙을 씀 | `pytest tests	est_drift.py`, `python -m ifs_chatbot.drift --cases …`, `docs/drift-design.md` 8절 |
-| AC-3 | **미달** | held-out 30개: 3.2 반영률 0.698(기준 ≥ 0.75) **미달** · 3.3 향상 +0.198 충족(쌍 CI 하한 0.137) · 3.4 왜곡률 0.094(기준 ≤ 0.05) **미달** · 3.5 미반영 원문 보존률 0.859(기준 1.0) **미달** · 3.11 퍼지 경로 값 0 충족 · 3.12 근거 없는 값 0.363 ≤ v0 0.493 충족 · 3.1 실패 사례 45건 · 오프라인 테스트 374 통과 | `docs/validation/e2e/README.md`·`results.md`·`score/` |
+| AC-3 | **미달** | held-out 30개: 3.2 반영률 0.698(기준 ≥ 0.75) **미달** · 3.3 향상 +0.198 충족(쌍 CI 하한 0.137) · 3.4 왜곡률 0.094(기준 ≤ 0.05) **미달** · 3.5 미반영 원문 보존률 0.859(기준 1.0) **미달** · 3.11 퍼지 경로 값 0 충족 · 3.12 근거 없는 값 0.363 ≤ v0 0.493 충족 · 3.1 실패 사례 45건 · 오프라인 테스트 394 통과(CP3 반영 뒤) | `docs/validation/e2e/README.md`·`results.md`·`score/` |
 | AC-4 | **미달(4.5)** | 4.1 EditMode 28/28 · 4.2 오류·예외 0 · 4.3 p95 1.69–2.21 ms(≤ 13.9, 데스크톱 대리 측정) · 4.4 드로콜 추정 ≤ 24/눈, 삼각형 추정 ≤ 102,800/눈, 그림자 광원 1(기기 측정 아님) · **4.5 held-out 캡처 60장 중 H09.v1이 빈 화면, H09.v0도 사실상 빈 화면(매핑이 opacity 0.0·0.1을 냄). 60장 중 12장만 검토** · 4.6 기기 72 Hz는 morning-todo | `docs/validation/e2e/unity/report.json`, `logs/editmode.xml`, `docs/validation/unity/` |
 | AC-5 | 통과(5.3 문구 수정 조건) | 입력 30 · 정적 조건 실제 컨트롤러 · 스키마 유효 60/60(버전별 스키마. 처음 문구대로 v2.json만 쓰면 v1 0/30) · Unity 로드 60/60 예외 0 · 스크린샷 60/60 · 적용값 수치 306개 max \|Δ\| = 0.0(원천 (나)) · 로그 저장 | `python -m ifs_chatbot.eval.e2e …`, `docs/validation/e2e/` |
-| AC-6 | (CP3 뒤 판정) | CP1·CP2 원문과 분류표 있음. Codex 2/3번 사용 | `docs/codex-reviews/` |
-| AC-7 | (보고서 작성 뒤 판정) | | `docs/morning-report.md` |
+| AC-6 | 통과 | CP1·CP2·CP3 원문과 수용/반박/보류 표, 수용 항목 반영 커밋. 호출 정확히 3번(재시도 0, 한도 에러 없음), 모두 `--sandbox read-only`·`model_reasoning_effort="medium"`. 원문에서 로컬 절대 경로만 `<repo>/`로 바꿈(CP2 16곳, CP3 5곳) | `docs/codex-reviews/CP1.md`·`CP2.md`·`CP3.md` |
+| AC-7 | 통과 | 바뀐 파일, 검증 숫자, Codex 지적과 처리, 남은 리스크, 아침에 확인할 것 | `docs/morning-report.md` |
 
 **종합(2026-11-16): "완료"가 아닙니다.** AC-3(3.2·3.4·3.5)과 AC-4.5가 미달입니다.
