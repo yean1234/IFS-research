@@ -1,6 +1,7 @@
 # HANDOFF — 야간 작업 인수인계 (새 세션은 이 파일 하나만 읽고 이어서 진행)
 
-> 마지막 갱신: 2026-11-16 12:10 KST · 갱신자: 오케스트레이터(Claude, 세션 7f4bfcc2)
+> 마지막 갱신: 2026-11-16 (계정 전환 뒤 새 세션) · 갱신자: 오케스트레이터(Claude Fable 5.2, 세션 edd117bf)
+> 모델 배정(decisions.md D09): 메인 세션(판단·검토 반영 분류·AC 판정·보고서)은 Fable, Workflow 서브에이전트(구현·테스트 실행·검토·수정)는 `model: 'opus'`로 지정.
 > 이 파일은 단계가 끝날 때와 최소 30분마다 갱신하고, 갱신 때마다 WIP 커밋을 남깁니다.
 
 ## 0. 이어받으면 맨 처음 할 것 (확인 명령)
@@ -111,12 +112,13 @@ codex exec --sandbox read-only -c model_reasoning_effort="medium" -C . -o /tmp/c
 - 출력 원문을 `docs/codex-reviews/CPN.md`에 저장(맨 위에 실행 명령·시각·종료 코드, 그 아래 지시문, 그 아래 원문). 그 뒤에 "수용 / 반박(근거) / 보류" 표를 붙이고, 수용한 것만 반영 후 커밋.
 - 사용 한도 에러면 재시도하지 말고 Claude 검토자(별도 서브에이전트, 같은 지시문)로 대체하고 그 사실을 CPN.md와 decisions.md에 기록.
 
-## 4. 지금 진행 중인 것 (2026-11-16 12:10 기준)
+## 4. 지금 진행 중인 것 (계정 전환 뒤 세션 edd117bf 기준)
 
-- 2단계 Workflow(run `wf_15b49a46-a60`, 이전 세션 내부): CP1 반영 ✔, drift 라벨 ✔, T3b v1 매퍼 ✔, **T2 drift 실행자 진행 중** → 그다음 T3·T2 독립 검토자 2명 → 지적이 있으면 수정 에이전트.
-- 새 세션에서 이어받았는데 이 Workflow가 끝나지 않은 채 끊겼다면:
-  1. `git status`로 drift.py·test_drift.py·docs/drift-design.md 존재 여부를 보고 T2가 어디까지 했는지 판단.
-  2. 남은 것(T2 마무리 → 검토자 2명 → 수정)을 새 서브에이전트에 맡김. 검토자는 실행자와 다른 컨텍스트에서 코드와 실행 결과만 보게 함.
+- 이전 세션의 2단계 Workflow(`wf_15b49a46-a60`)는 재개할 수 없어서 남은 부분만 새 Workflow(run `wf_d0009ff1-aa7`, 이 세션 내부, 서브에이전트 opus)로 다시 실행 중: **T2 drift 마무리 점검(요구사항 6개 대조) → T2·T3 독립 검토자 2명(읽기 전용)**. 그다음 메인 세션이 지적을 수용/반박/보류로 나누고 수정 에이전트(opus)에 맡김.
+- 인수 시점 확인: T2 산출물(drift.py·test_drift.py·drift-design.md·protocol v1.1·컨트롤러 통합)은 WIP 커밋 61d713c에 있음. 오프라인 테스트 268 통과. held-out sha 그대로.
+- 이 Workflow도 끊겼다면:
+  1. `git status`·`git diff`로 T2 마무리 에이전트가 무엇을 고쳤는지 확인하고 오프라인 테스트를 돌림.
+  2. 검토자 2명(T2 drift, T3 매핑 v1)을 새 서브에이전트로 다시 실행. 검토자는 실행자와 다른 컨텍스트에서 코드와 실행 결과만 보게 하고, heldout.json은 열지 않게 함.
   3. T2 요구사항 요지: 단계별(opening/location/focus/fleshout/probe) 속성 스냅샷을 v1 매퍼로 만들고, 첫 심상 대비 대체(drift)와 정교화(속성 추가)를 구별하는 수치 지표 DI와 임계값 τ/θ를 정의. drift_cases.json(라벨은 고치지 않음)으로 정확도 ≥ 0.90, 정교화만 있는 사례 오탐 0(AC-2). LLM 쓰지 않음. 회상 확인·자기보고 문구는 `shared/protocol` v1.1에 status=draft·출처와 함께 추가, config `[drift] recall_check=false` 기본.
 
 ## 5. 다음에 할 일 (순서대로)
