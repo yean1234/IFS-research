@@ -77,6 +77,7 @@ ultracode
 - 체크포인트 커밋:
   - `a753289` baseline
   - `d4e3e3a` CP1 (작업 1 + 작업 3 전반 실패 사례·채점기 + 작업 4 Unity)
+  - `5326ca9` CP3 (작업 5 E2E + AC 판정. 오프라인 374 통과)
   - `46199cc` CP2 반영(Codex CP2 수용 항목. 오프라인 363 통과)
   - `58ba0dc` CP2 (작업 2 drift 1.1.0 + 작업 3 매핑 빌더 1.2.0·채점기 0.3.0, 독립 검토 반영)
 - 마지막 커밋: `git log -1` 로 확인. 이 파일 갱신과 함께 WIP 커밋이 쌓입니다(메시지 접두어 `WIP:`).
@@ -96,15 +97,15 @@ ultracode
   - [x] v1 매퍼 `chatbot/ifs_chatbot/scene_builder_v1.py` + `jamo.py` + `clarify.py`, 사전 `shared/lexicon/*.v1.json`, 스키마 `shared/schemas/scene-spec.v2.1.json`, Unity 파서 2.0/2.1, config `[mapping] mode=v1, save_both=true, clarify_loop=false`, v1 예외 시 v0 폴백. dev: 반영률 0.573→0.937, 왜곡 0.165→0.000, 미반영 원문 보존 0.130→1.000 (dev는 규칙 작성에 쓴 세트라 낙관적)
   - [x] 독립 검토 → 수정
 - [x] 4. Unity 현실감 (Linear, VR PC/VR Quest 품질 단계, 무채색 하늘·바닥 1 m 격자·그림자 1개, 후처리 없음, 배치 캡처). EX01/EX02 p95 ≤ 2.01 ms(데스크톱 대리 측정). 기기 72 Hz 측정은 morning-todo
-- [ ] 5. 실행 검증(E2E) — **남음** (5절 참고)
+- [x] 5. 실행 검증(E2E) — 끝. `docs/validation/e2e/`. **held-out에서 AC-3.2(0.698)·3.4(0.094)·3.5(0.859), AC-4.5(H09 빈 화면) 미달 → 전체 "완료 아님"**. 규칙은 고치지 않음(decisions X10)
 - [ ] docs/morning-report.md — **남음**
 
 ### Codex 체크포인트 (정확히 3번, 실패 시 재시도 1번)
 - [x] CP1 — 1회 사용. 원문+분류표 `docs/codex-reviews/CP1.md`. 수용 11 / 보류 1(#12 인용 원문 대조, 사람)
 - [x] CP2 — 1회 사용(2026-11-16 13:55, 종료 코드 0). 원문+분류표 `docs/codex-reviews/CP2.md`. 수용 6 · 일부 수용 2 · 반박 1 · 일부 반박·보류 1 · 보류 2. 지시문 `docs/codex-reviews/prompts/CP2_prompt.md`
-- [ ] CP3 — 미사용. 지시문 `docs/codex-reviews/prompts/CP3_prompt.md` (`<CP2_COMMIT>` = `58ba0dc`)
+- [ ] CP3 — **호출함(3번째, 마지막. 세션 edd117bf).** `docs/codex-reviews/CP3.md`가 없으면 호출이 끊긴 것: 재시도는 1번까지만. 지시문 `docs/codex-reviews/prompts/CP3_prompt.md` (`<CP2_COMMIT>` = `58ba0dc`)
 
-**Codex 사용 현황: 3번 중 2번 사용(CP1, CP2), 남은 1번(CP3).** 다른 계정으로 넘어가도 이 횟수는 이어집니다. 이 외 용도로 절대 호출하지 마세요.
+**Codex 사용 현황: 3번 모두 사용(CP1, CP2, CP3). 더 호출하지 않음**(CP3가 실패로 끝난 경우의 재시도 1번만 예외). 다른 계정으로 넘어가도 이 횟수는 이어집니다. 이 외 용도로 절대 호출하지 마세요.
 
 Codex 실행 명령(Git Bash, 저장소 루트에서. CP1 때 쓴 것과 같은 형식):
 ```bash
@@ -115,10 +116,9 @@ codex exec --sandbox read-only -c model_reasoning_effort="medium" -C . -o /tmp/c
 
 ## 4. 지금 진행 중인 것 (계정 전환 뒤 세션 edd117bf 기준)
 
-- 끝: 2단계, Codex CP2와 반영(커밋 `46199cc`). 오프라인 363 통과, drift 라벨 정확도 1.000, held-out sha 그대로.
-- **진행 중: 3단계 Workflow(이 세션 내부, opus, 순차)**: ① E2E 실행자 — held-out 30개 재생 → v0·v1 spec → 스키마 검증 → 채점 → Unity 배치 캡처 60개 → 적용값 대조 → `docs/validation/e2e/`, 전 과정 스크립트(`chatbot/ifs_chatbot/eval/` 아래), acceptance.md의 "(구현 후 확정)" 채움. ② 독립 재현 검토자(읽기 전용).
-- **동결:** 매핑 규칙·채점 판정·drift·코퍼스는 CP2 반영 커밋 뒤로 고치지 않음. held-out 결과를 본 뒤에는 어떤 것도 조정하지 않고 미달이면 숫자 그대로 보고(D04).
-- 끊겼다면: `git status`로 `docs/validation/e2e/`와 새 스크립트가 어디까지 됐는지 보고, 남은 것만 새 서브에이전트(opus)에 맡김(5절 4번). held-out 채점이 이미 한 번 됐으면 같은 명령의 재실행(재현)만 함. 그다음 메인 세션이 AC를 하나씩 판정 → CP3 커밋 → Codex CP3(마지막 1번, `<CP2_COMMIT>` = `58ba0dc`) → 반영 → morning-report.
+- 끝: 3단계 E2E와 독립 재현, AC 판정(`docs/acceptance.md` 맨 아래 표, `docs/validation/e2e/README.md` 「판정」), CP3 커밋 `5326ca9`.
+- **진행 중: Codex CP3 호출(3번째, 마지막).** 출력을 `docs/codex-reviews/CP3.md`(원문 + 수용/반박/보류 표)로 저장 → 수용 항목 반영(opus 서브에이전트) → 테스트 → 커밋 → `docs/morning-report.md` 작성 → AC-6·AC-7 판정 → 최종 커밋.
+- **CP3 반영 원칙(decisions X13):** 매핑·채점 결과를 바꾸는 수정은 하지 않고 morning-todo로 넘김(held-out 수치가 낡고 "본 뒤 고침"이 됨). 결과를 안 바꾸는 버그·안전 수정만 반영.
 - 모델 배정(D09): 판단·분류·판정·보고서는 메인 세션(Fable), 구현·테스트 실행·검토·수정 서브에이전트는 opus.
 
 ## 5. 다음에 할 일 (순서대로)
