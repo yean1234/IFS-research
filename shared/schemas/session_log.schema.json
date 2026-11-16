@@ -143,14 +143,14 @@
             "confirmationEdited": { "type": "boolean" }
           }
         },
-        "summary": { "type": ["object", "null"], "description": "연구자 화면용 요약 {decision, DI, identityContradiction, contradicted, comparable, acknowledged, maxAdjacentDI, first}" },
+        "summary": { "type": ["object", "null"], "description": "연구자 화면용 요약 {decision, DI, identityContradiction, contradicted, comparable, acknowledged, maxAdjacentDI, first, confirmationEdited, multipleObjects}" },
         "error": { "type": "string" },
-        "recallCheck": { "type": ["object", "null"], "description": "회상 확인(recall_check) {asked, x(참여자 원문), answer: same|little|much|null, skipped}" },
-        "selfReport": { "type": ["object", "null"], "description": "확정 직후 자기보고(self_report_drift) {value 1–7|null, skipped, selfReportDrift(≤3), driftCutoff, protocolVersion}" }
+        "recallCheck": { "type": ["object", "null"], "description": "회상 확인(recall_check) {asked, x(참여자가 이름 붙인 자리의 원문), answer: same|little|much|null, skipped(true|false|\"stop\" = 대기 중 중단)}" },
+        "selfReport": { "type": ["object", "null"], "description": "확정 직후 자기보고(self_report_drift) {asked, questionTurn, value 1–7|null, skipped(true|false|\"stop\"), selfReportDrift(≤3), driftCutoff, protocolVersion}" }
       }
     },
     "events": { "type": "array", "description": "Unity 등 외부에서 보낸 이벤트(보정·거리 등)", "items": { "type": "object" } },
-    "endedBy": { "enum": ["completed", "participant_stop", "crisis", "abandoned", null] },
+    "endedBy": { "enum": ["completed", "participant_stop", "crisis", "abandoned", "withdrawn", null], "description": "withdrawn = 참여자가 응답 폐기를 고름(controller.withdraw: 로그 파일은 지우고 메모리 기록만 남음)" },
     "rawSurveyResponseRef": { "type": ["string", "null"] }
   }
 }

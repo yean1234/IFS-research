@@ -108,8 +108,10 @@ def test_body_part_refinement_is_not_contradiction():
 def test_identity_synonyms_and_heads(assessor):
     v = assessor.vocab
     assert D.same_identity("돌멩이", "돌", v) and D.same_identity("뭉치", "덩어리", v)
-    assert D.same_identity("물방울", "방울", v) and D.same_identity("참새", "새", v)
+    assert D.same_identity("물방울", "방울", v) and D.same_identity("공기방울", "방울", v)
     assert not D.same_identity("공", "막대", v) and not D.same_identity("안개", "돌", v)
+    # T2-F07: 한 음절 겹침은 오른쪽 머리로 보지 않는다(불꽃 ⊅ 꽃). 그 대가로 참새 ⊃ 새도 같은 정체가 아니다(9절 한계)
+    assert not D.same_identity("불꽃", "꽃", v) and not D.same_identity("참새", "새", v)
 
 
 def test_paraphrase_is_not_drift(assessor):
@@ -157,7 +159,123 @@ def test_stated_motion_explains_position_change(assessor):
 def test_fuzzy_needs_confirmation_values_are_not_compared(assessor):
     snap = assessor.turn_snapshot({"i": 0, "stage": "flesh_out", "text": "가끔 살짝 흔들려요."})
     assert "body.part" not in snap["slots"]          # '가끔' → 가슴(퍼지 일치, 확인 필요)
+    # 매핑 v1.1부터 퍼지 후보는 슬롯 값이 아니라 _alternatives(reason needs_confirmation)에만 있다
     assert snap["unconfirmed"].get("body.part", {}).get("value") == "chest"
+    assert snap["unconfirmed"]["body.part"]["trigger"] == "가끔"
+
+
+# ── 검토 T2 지적 회귀 (합성 문장. 규칙을 고친 뒤 통과시킨 것이라 AC-2 독립 평가가 아니다) ─────────
+def test_t2_f01_change_inside_find_is_first_said_value(assessor):
+    # 검토 T03/W1: Find 안에서 파랑 → 빨강. S_first는 슬롯마다 처음 말한 값(파랑)
+    a = run(assessor, ("find", "파란 공 같은 게 떠올라요."), ("find", "몸 안이요. 배에 빨간 공이 있어요."),
+            ("focus", "빨간 공이 배에 있어요."), ("flesh_out", "빨갛고 동그래요."))
+    assert a["decision"] == "drift"
+    row = {r["path"]: r for r in a["primary"]["slots"]}["material.color"]
+    assert row["verdict"] == "contradict" and row["fromTurn"] == 0
+    assert a["firstSnapshot"]["source"]["material.color"]["i"] == 0
+
+
+def test_t2_f02_simile_modifier_and_material_are_not_identity(assessor):
+    n = D.identity_nouns("가슴에 구름 같은 덩어리가 있어요.", assessor.analyzer, assessor.vocab)
+    assert [x["head"] for x in n["nouns"]] == ["덩어리"]
+    assert any(d["head"] == "구름" and d["why"] == "simile_modifier" for d in n["dropped"])
+    n = D.identity_nouns("고무로 돼 있어요. 말랑해요.", assessor.analyzer, assessor.vocab)
+    assert n["nouns"] == [] and n["dropped"][0]["why"] == "material"
+    n = D.identity_nouns("유리로 만들어졌어요.", assessor.analyzer, assessor.vocab)
+    assert n["nouns"] == [] and n["dropped"][0]["why"] == "material"
+    # 'X로 바뀌었어요'는 그대로 변화 자리
+    n = D.identity_nouns("이제는 막대로 바뀌었어요.", assessor.analyzer, assessor.vocab)
+    assert [(x["head"], x["position"]) for x in n["nouns"]] == [("막대", "change")]
+    # 'X 같은 게'·'X 같은 느낌'(일반어)은 이름 자리 그대로
+    n = D.identity_nouns("하얀 솜 같은 게 있어요.", assessor.analyzer, assessor.vocab)
+    assert [(x["head"], x["position"]) for x in n["nouns"]] == [("솜", "simile_name")]
+    for turns in ((("find", "가슴에 구름 같은 덩어리가 있어요."), ("focus", "덩어리가 가슴에 있어요."),
+                   ("flesh_out", "덩어리가 말랑해요.")),
+                  (("find", "가슴에 공 같은 게 있어요."), ("focus", "공이 가슴에 있어요."),
+                   ("flesh_out", "고무로 돼 있어요. 말랑해요."))):
+        a = run(assessor, *turns)
+        assert a["decision"] == "no_drift" and a["primary"]["identity"]["verdict"] == "agree", turns
+
+
+def test_t2_f02_mass_head_compound_keeps_its_substance(assessor):
+    v = assessor.vocab
+    a = run(assessor, ("find", "배 쪽에 하얀 솜 같은 게 있어요."), ("focus", "솜이 그대로 있어요."),
+            ("flesh_out", "하얀 솜뭉치예요. 폭신해요."))
+    assert a["decision"] == "no_drift" and a["primary"]["identity"]["verdict"] == "agree"
+    n = D.identity_nouns("커다란 털실 뭉치 같은 게 있어요.", assessor.analyzer, v)["nouns"]
+    assert n[0]["head"] == "뭉치" and n[0]["massOf"] == "털실"
+    rec = lambda h, m=None: {"head": h, **({"massOf": m} if m else {})}   # noqa: E731
+    assert D.identity_match(rec("덩어리"), rec("돌덩어리"), v)                   # 덩이 → 돌덩이: 덧붙임
+    assert not D.identity_match(rec("덩어리", "구름"), rec("덩어리", "돌"), v)    # 구름 덩어리 ≠ 돌 덩어리
+    assert D.identity_match(rec("뭉치", "털실"), rec("덩어리", "털실"), v)
+
+
+def test_t2_f03_motion_only_in_first_turn_or_wrong_direction_does_not_excuse(assessor):
+    a = run(assessor, ("find", "발밑에 원판 같은 게 천천히 움직여요."), ("focus", "원판이 머리 위에 있어요."),
+            ("flesh_out", "머리 위에 가만히 있어요."))                      # 검토 S16/W2: 움직임은 첫 턴에만
+    assert a["decision"] == "drift"
+    rows = {r["path"]: r for r in a["primary"]["slots"]}
+    assert rows["layout.verticalOffset"]["verdict"] == "contradict"
+    a = run(assessor, ("find", "발밑에 납작한 원판 같은 게 있어요."),
+            ("focus", "원판이 머리 위에 있어요. 천천히 가라앉아요."), ("flesh_out", "머리 위에 있어요."))   # 검토 S15
+    assert a["decision"] == "drift"                                        # 가라앉음(아래) ≠ 위로 옮김
+    assert {r["path"]: r for r in a["primary"]["slots"]}["layout.verticalOffset"]["verdict"] == "contradict"
+
+
+def test_t2_f04_size_word_vs_measure_uses_hard_threshold_only(assessor):
+    for turns in ((("find", "배에 큰 덩어리 같은 게 있어요."), ("focus", "덩어리가 배에 있어요."),
+                   ("flesh_out", "주먹만 해요.")),
+                  (("find", "가슴에 커다란 공 같은 게 있어요."), ("focus", "공이 가슴에 있어요."),
+                   ("flesh_out", "주먹만 해요. 커다래요."))):
+        a = run(assessor, *turns)
+        row = {r["path"]: r for r in a["primary"]["slots"]}["layout.size"]
+        assert a["decision"] == "no_drift" and row["verdict"] == "agree", turns
+        assert row["scales"] == ["word", "measure"]
+    # 같은 척도끼리는 그대로 중립점 규칙
+    assert D.compare_slot("layout.size", 0.316, 0.621, scales=("word", "word"))["verdict"] == "contradict"
+    assert D.compare_slot("layout.size", 0.316, 0.621, scales=("word", "measure"))["verdict"] == "agree"
+
+
+def test_t2_f05_multiple_objects_are_flagged(assessor):
+    a = run(assessor, ("find", "가슴에 작은 공 같은 게 있고, 배에는 막대 같은 게 있어요."),
+            ("focus", "공이 가슴에 있어요."), ("flesh_out", "막대는 배에 있어요. 공은 그대로예요."))
+    assert a["multipleObjects"]["flag"] is True and a["multipleObjects"]["turns"][0]["heads"] == ["공", "막대"]
+    assert D.summarize(a)["multipleObjects"] is True
+    # 판정은 바꾸지 않았다(절 단위 대상 연결은 보류): 서로 다른 대상의 부위가 비교되어 drift로 남는다
+    assert a["decision"] == "drift"
+
+
+def test_t2_f06_clarify_answers_do_not_set_identity(assessor):
+    a = run(assessor, ("find", "가슴에 덩어리 같은 게 있어요."), ("focus", "덩어리가 그대로 있어요."),
+            ("flesh_out", "주먹만 해요."), ("clarify", "젤리 같은 거요."))
+    assert a["decision"] == "no_drift" and a["primary"]["identity"]["to"] == ["덩어리"]
+    clar = [t for t in a["turns"] if t["stage"] == "clarify"][0]
+    assert clar["identity"] == [] and clar["identityDropped"][0]["why"] == "clarify_answer"
+
+
+def test_t2_f07_single_syllable_overlap_is_not_same_identity(assessor):
+    a = run(assessor, ("find", "가슴에 작은 꽃 같은 게 있어요."), ("focus", "꽃이 가슴에 있어요."),
+            ("flesh_out", "불꽃이에요. 활활 타요."))
+    assert a["decision"] == "drift" and a["primary"]["identityContradiction"] is True
+
+
+def test_t2_f08_recall_anchor_only_from_naming_positions(assessor):
+    tt = lambda *xs: [{"i": k, "stage": st, "text": tx} for k, (st, tx) in enumerate(xs)]   # noqa: E731
+    assert assessor.recall_anchor(tt(("find", "가슴에 구름 같은 덩어리가 있어요."), ("focus", "덩어리가 있어요."))) is None
+    assert assessor.recall_anchor(tt(("find", "가슴에 뭔가 있어요. 유리로 돼 있어요."), ("focus", "그대로예요."))) is None
+    assert assessor.recall_anchor(tt(("find", "덩어리가 있어요."), ("focus", "덩어리예요."))) is None   # 주어 자리만
+    assert assessor.recall_anchor(tt(("find", "배 쪽에 둥근 공 같은 게 있어요."),))["x"] == "공"
+    assert assessor.recall_anchor(tt(("find", "작은 돌멩이예요."),))["x"] == "돌멩이"
+
+
+def test_t2_f10_negated_change_marker_is_not_acknowledged(assessor):
+    a = run(assessor, ("find", "가슴에 파란 공 같은 게 있어요."), ("focus", "공이 그대로예요. 바뀐 건 없어요."),
+            ("flesh_out", "달라진 게 없어요. 파래요."))
+    assert a["acknowledged"]["flag"] is False
+    assert [m["match"] for m in a["acknowledged"]["negatedMarkers"]] == ["바뀐", "달라진"]
+    a = run(assessor, ("find", "가슴에 파란 공 같은 게 있어요."), ("focus", "공이 있어요."),
+            ("flesh_out", "색이 바뀌었는데 지금은 안 움직여요."))              # 부정이 다음 절에 있음: 표지 유지
+    assert a["acknowledged"]["flag"] is True
 
 
 def test_acknowledged_marker_is_flagged_but_does_not_decide(assessor):
@@ -284,6 +402,61 @@ def test_protocol_v11_phrases_are_draft_and_keep_v1(rt_v11):
     assert not any(w in p11["fixedPhrases"]["recall_check"]["text"] for w in ("처음", "아까", "원래"))  # 지금 떠오르는 것만 묻는다
 
 
+def _schema_errors(s):
+    from jsonschema import Draft202012Validator
+    schema = json.loads(shared("schemas", "session_log.schema.json").read_text(encoding="utf-8"))
+    return [e.message for e in Draft202012Validator(schema).iter_errors(
+        json.loads(json.dumps(s.log.data, ensure_ascii=False)))][:3]
+
+
+@pytest.mark.parametrize("texts", [["가슴에 구름 같은 덩어리가 있어요.", "몸 안이요.", "덩어리가 있어요.", "말랑해요."],
+                                   ["가슴에 뭔가 있어요. 유리로 돼 있어요.", "몸 안이요.", "그대로예요.", "말랑해요."]])
+def test_t2_f08_recall_check_does_not_quote_simile_or_material(rt_v11, texts):
+    s = rt_v11.new_session("static", "DRIFT08")
+    _drive(s, texts)
+    assert s.awaiting == "confirm"                                   # 묻지 않고 확정 요약으로
+    rc = s.log.data["drift"]["recallCheck"]
+    assert rc["asked"] is False and "x" not in rc
+    assert not any(m.get("source") == "fixed:recall_check" for m in s.messages)
+
+
+def test_t2_f09_confirmation_edited_is_in_summary(rt):
+    s = rt.new_session("static", "DRIFT09")
+    _drive(s, ["배 쪽에 파란 공 같은 게 있어요.", "몸 안이요. 배 가운데요.", "파란 공이 있어요.", "파랗고 동그래요."])
+    s.act("edit", "머리 위에 빨간 막대가 있어요.")
+    summ = s.log.data["drift"]["summary"]
+    assert summ["confirmationEdited"] is True and summ["decision"] == "no_drift"   # 판정은 턴으로만 한다
+
+
+def test_t2_f12_stop_while_recall_or_self_report_keeps_keys(rt_v11):
+    s = rt_v11.new_session("static", "DRIFT12A")
+    _drive(s, STATIC)
+    assert s.awaiting == "recall"
+    s.act("stop")
+    rc = s.log.data["drift"]["recallCheck"]
+    assert rc["asked"] is True and rc["x"] == "공" and rc["answer"] is None and rc["skipped"] == "stop"
+    assert not _schema_errors(s)
+    s = rt_v11.new_session("static", "DRIFT12B")
+    _drive(s, STATIC)
+    s.act("recall:same")
+    s.act("confirm")
+    assert s.awaiting == "self_report"
+    s.act("stop")
+    sr = s.log.data["drift"]["selfReport"]
+    assert sr["asked"] is True and sr["questionTurn"] is not None and sr["protocolVersion"] == "1.1.0"
+    assert sr["value"] is None and sr["skipped"] == "stop"
+    assert s.log.data["endedBy"] == "participant_stop" and not _schema_errors(s)
+
+
+def test_withdrawn_log_matches_schema(rt):
+    s = rt.new_session("static", "DRIFT13")
+    _drive(s, STATIC)
+    s.act("confirm")
+    s.act("withdraw")
+    assert s.log.data["endedBy"] == "withdrawn"                   # 컨트롤러가 실제로 쓰는 값
+    assert not _schema_errors(s)
+
+
 def test_drift_log_with_recall_and_self_report_matches_schema(rt_v11):
     from jsonschema import Draft202012Validator
     schema = json.loads(shared("schemas", "session_log.schema.json").read_text(encoding="utf-8"))
@@ -326,4 +499,11 @@ def test_docs_match_params():
               f"정체·색·크기·위치 {_g(w['identity'])}, 자세·표면 {_g(w['shape'])}, 움직임 {_g(w['motion'])}",
               D.DRIFT_VERSION, D.PARAMS_VERSION):
         assert s in sec, s
+    # 규칙 정의(움직임 방향, 크기 출처)도 세 곳이 같아야 한다
+    design3 = design.split("\n## 3. ", 1)[1].split("\n## ", 1)[0]          # 설계 문서 3절(규칙 표)에서만 찾는다
+    direction = D.motion_direction_text(P)
+    assert direction in design3 and direction in sec
+    assert P["sizeCrossScale"] == "hard_only"
+    for text in (design3, sec):
+        assert "크기 출처" in text and "τ_hard만" in text
     assert w["identity"] == w["color"] == w["size"] == w["position"] and w["shape"] == w["surface"]

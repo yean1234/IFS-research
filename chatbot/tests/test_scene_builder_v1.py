@@ -290,15 +290,129 @@ def test_specific_body_part_beats_general(v1):
 
 # ── 퍼지 매칭 ────────────────────────────────────────────────────────────────
 def test_fuzzy_lexicon_marks_needs_confirmation(v1):
+    """퍼지 일치는 값이 아니라 확인 필요 대안으로만 남는다(T3-F1, 원칙 2)."""
     spec = build(v1, "표면이 오돌도돌해요")
-    p = spec["_provenance"]["material.roughness"][0]
-    assert p["source"] == "fuzzy_lexicon" and p["needsConfirmation"] is True
+    assert val(spec, "material.roughness") is None and "material.roughness" not in spec["_provenance"]
     assert spec["_needsConfirmation"][0]["matched"] == "오돌토돌"
+    alt = [a for a in spec["_alternatives"] if a["reason"] == "needs_confirmation"]
+    assert [a["path"] for a in alt] == ["material.roughness"] and alt[0]["value"] == 0.75
+    p = alt[0]["_provenance"][0]
+    assert p["source"] == "fuzzy_lexicon" and p["needsConfirmation"] is True and p["trigger"] == "오돌도돌해요"
 
 
 def test_fuzzy_does_not_fire_on_short_or_ambiguous_words(v1):
     spec = build(v1, "그냥 있어요")
     assert spec["_needsConfirmation"] == [] and all(val(spec, p) is None for p in SLOT_PATHS)
+
+
+# ── 2단계 독립 검토(T3) 재현 입력 회귀 — 검토자가 쓴 합성 문장 ─────────────────────
+@pytest.mark.parametrize("text,path,matched", [
+    ("뭐라고 설명하기가 어려워요.", "material.saturation", "선명"),
+    ("심정이 좀 복잡해요.", "body.part", "심장"),
+    ("시장 한가운데 있는 것 같아요.", "body.part", "심장"),
+    ("정리가 잘 안 돼요.", "motion.type", "정지"),
+    ("멀미가 나는 느낌이에요.", "layout.distance", "멀리"),
+    ("착한 아이 같아요.", "material.saturation", "탁하"),
+    ("친한 친구 같은 느낌이에요.", "material.saturation", "진하"),
+    ("빨래처럼 걸려 있어요.", "motion.speed", "빨리"),
+    ("진통이 오는 느낌이에요.", "motion.type", "진동"),
+])
+def test_t3_f1_fuzzy_never_fills_slot_or_inferred(v1, text, path, matched):
+    """T3-F1: 자모 퍼지 일치(다른 낱말)는 슬롯 값·_inferred를 만들지 않고 확인 필요 대안에만 원문과 함께 남는다."""
+    spec = build(v1, text)
+    assert all(val(spec, p) is None for p in SLOT_PATHS)
+    assert spec["_inferred"] == {}
+    assert any(n["path"] == path and n["matched"] == matched for n in spec["_needsConfirmation"])
+    assert any(a["path"] == path and a["reason"] == "needs_confirmation" for a in spec["_alternatives"])
+
+
+def test_t3_f1_fuzzy_does_not_override_spoken_gray(v1):
+    spec = build(v1, "뭐라고 설명하기가 어려워요. 회색 덩어리예요.")
+    assert val(spec, "material.saturation") is None
+    h, s, l = hue(spec)
+    assert s <= 0.1 and 0.35 <= l <= 0.55
+
+
+@pytest.mark.parametrize("text", ["자세히 보라고 하는 것 같아요.", "그건 제 노래요.", "오렌지만 해요."])
+def test_t3_f2_color_homonym_and_comparison_reference_are_not_color(v1, text):
+    """T3-F2: 동사 '보-라고', 명사 '노래'+요, 'N만 하다'의 기준 사물은 색이 아니다(품사·구조 조건)."""
+    spec = build(v1, text)
+    assert spec["material"]["color"] is None
+    assert spec["_unmatched"], "읽지 않은 말은 원문으로 남는다"
+
+
+@pytest.mark.parametrize("text,want_h", [("색은 노래요.", 52), ("보라예요.", 275), ("오렌지색 공이에요.", 30),
+                                         ("붉어졌어요.", 0), ("점점 파래져요.", 215)])         # 붉어지/VV: 색 + '-어지다'
+def test_t3_f2_color_forms_still_read(v1, text, want_h):
+    assert hue(build(v1, text))[0] == want_h
+
+
+@pytest.mark.parametrize("text,path", [("크지도 작지도 않아요.", "layout.size"), ("밝지도 어둡지도 않아요.", "material.brightness")])
+def test_t3_f3_coordinated_negation_negates_every_item(v1, text, path):
+    """T3-F3: 'X지도 Y지도 않다'는 둘 다 부정 → 값 없음, 두 말 모두 _negated."""
+    spec = build(v1, text)
+    assert val(spec, path) is None
+    assert len(spec["_negated"]) == 2
+
+
+def test_t3_f4_former_relative_clause_and_lemma_color(v1):
+    """T3-F4: '-던' 관형절 안의 말은 지난 상태(후보 단위 때), 색 활용형은 형태소 원형으로 찾는다."""
+    assert hue(build(v1, "빨갛던 게 노래졌어요."))[0] == 52
+    spec = build(v1, "아까 반짝이던 게 지금은 어두워졌어요.")
+    assert val(spec, "material.brightness") <= 0.3
+    assert any(a["reason"] == "superseded" for a in spec["_alternatives"])
+    assert val(build(v1, "떨리던 게 이제 멈췄어요."), "motion.type") == "still"
+    spec = build(v1, "파랬다가 지금은 노래졌어요.")
+    assert hue(spec)[0] == 52
+    assert any(a["path"] == "material.color" and a["_provenance"][0]["trigger"] == "파랬다가" for a in spec["_alternatives"])
+
+
+@pytest.mark.parametrize("text", ["크고 검은 돌 옆의 작은 불빛이에요.", "작은 불빛이 크고 검은 돌 옆에 있어요."])
+def test_t3_f5_coordinated_attributive_follows_same_head(v1, text):
+    """T3-F5: '-고' 관형 나열('크고 검은 돌')은 같은 머리 명사를 꾸민다 → 자리 표지 사물의 크기는 형상 값이 아니다."""
+    spec = build(v1, text)
+    assert val(spec, "layout.size") == val(build(v1, "작은 불빛이에요."), "layout.size") < 0.5
+    assert {"크고", "검은"} <= {c["text"] for c in spec["_context"] if c["reason"] == "landmark_object"}
+
+
+def test_t3_f6_uncertainty_clause_and_recollection_noun(v1):
+    """T3-F6: '-더니'는 절 경계(모름은 앞 절에만), '장면' 명사만으로는 회상 문장이 아니다."""
+    spec = build(v1, "처음엔 모르겠더니 지금은 분명히 빨개요.")
+    assert hue(spec)[0] == 0 and spec["_uncertain"][0]["text"] == "처음엔 모르겠더니"
+    spec = build(v1, "장면 속에 빨간 공이 둥둥 떠 있어요.")
+    assert hue(spec)[0] == 0 and val(spec, "form.type") == "blob" and val(spec, "motion.type") == "floating"
+    assert "recollection_sentence" not in {c["reason"] for c in spec["_context"]}
+    spec = build(v1, "빨간 우산을 들고 걷던 장면이요. 노란 공이 있어요.")          # '-던 장면'은 여전히 회상
+    assert hue(spec)[0] == 52
+    assert "recollection_sentence" in {c["reason"] for c in spec["_context"]}
+
+
+def test_t3_f7_half_multiplier(v1):
+    """T3-F7: 'N의 반' · 'N 반만' → 기준 사물 × 0.5, '두 뼘 반' → 2.5뼘(수 + 반)."""
+    half_fist = v1.size_from_meters(0.05)
+    for text in ("주먹 크기의 반 정도예요.", "주먹 반만 해요."):
+        spec = build(v1, text)
+        assert val(spec, "layout.size") == half_fist
+        assert spec["_measurements"][0]["meters"] == 0.05 and "반" not in [u["surface"] for u in spec["_unmatched"]]
+    spec = build(v1, "두 뼘 반쯤 돼요.")
+    assert spec["_measurements"][0]["meters"] == 0.5 and spec["_measurements"][0]["text"] == "두 뼘 반쯤"
+    assert val(build(v1, "반투명해요"), "material.opacity") == 0.5                 # '반투명'의 반은 배율이 아니다
+
+
+def test_t3_f8_emoji_is_eojeol_boundary_and_unread_color_kept(v1):
+    """T3-F8: 이모지는 어절 경계. 색 규칙이 읽지 못한 색 낱말은 _unmatched에 원문으로 남는다."""
+    assert hue(build(v1, "🔴빨간🔴공🔴이에요"))[0] == 0
+    assert "빨깐" in [u["surface"] for u in build(v1, "빨깐 공이에요.")["_unmatched"]]
+
+
+def test_t3_f9_clarify_target_drops_particles(v1, analyzer):
+    """T3-F9: 확인 질문의 X에서 조사·명사형 어미를 뗀다(Kiwi 품사, 없으면 닫힌 조사 목록)."""
+    from ifs_chatbot.clarify import clarify_targets
+    for text, want in (("뭐라고 설명하기가 어려워요.", "설명"), ("심정이 좀 복잡해요.", "심정"), ("빨래처럼 걸려 있어요.", "빨래")):
+        spec = build(v1, text)
+        t = normalize_confirmed(text)
+        assert clarify_targets(spec, t, max_n=1, analyzer=analyzer)[0]["x"] == want
+        assert clarify_targets(spec, t, max_n=1)[0]["x"] == want
 
 
 # ── 무손실 보존 ──────────────────────────────────────────────────────────────

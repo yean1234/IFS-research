@@ -51,8 +51,13 @@ namespace IFS.SceneSpec.Tests
             Assert.That(s.Motion.Type, Is.Null);
             Assert.That(s.Measurements.Select(m => m.Dimension), Does.Contain("distance"));
             Assert.That(s.Direction.Single().Horizontal, Is.EqualTo("right"));
+            // 퍼지 일치('오돌도돌' → 오돌토돌)는 슬롯 값이 아니라 확인 필요 대안으로만 온다(원칙 2). 렌더는 기본값을 쓴다
             Assert.That(s.NeedsConfirmation.Single().Path, Is.EqualTo("material.roughness"));
-            Assert.That(s.Provenance["material.roughness"][0].NeedsConfirmation, Is.True);
+            Assert.That(s.Material.Roughness, Is.Null);
+            Assert.That(s.Provenance.ContainsKey("material.roughness"), Is.False);
+            var fuzzy = s.Alternatives.Single(a => a.Reason == "needs_confirmation");
+            Assert.That(fuzzy.Path, Is.EqualTo("material.roughness"));
+            Assert.That(fuzzy.Provenance[0].NeedsConfirmation, Is.True);
             var p = SceneParams.FromSpec(s, new SceneDefaults());   // 렌더 파라미터는 v2.0과 같은 슬롯만 쓴다
             Assert.That(p.GetNumber("layout.size"), Is.EqualTo(s.Layout.Size.Value));
         }

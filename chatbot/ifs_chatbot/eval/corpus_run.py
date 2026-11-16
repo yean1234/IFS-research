@@ -166,10 +166,22 @@ def run_corpus(corpus: dict | str | Path, mapper: str | Callable | None = "v0",
         items = run_items(rt, corpus["items"])
         return {"runner": f"corpus-run/{RUNNER_VERSION}", "corpusId": corpus.get("corpusId"),
                 "corpusVersion": corpus.get("version"), "condition": CONDITION, "mapper": label,
-                "builder": builder_info, "analyzer": rt.analyzer.info(), "items": items}
+                "builder": builder_info, "analyzer": rt.analyzer.info(),
+                "mappingFallback": mapping_fallbacks(items), "items": items}
     finally:
         if tmp is not None:
             tmp.cleanup()
+
+
+def mapping_fallbacks(items: list[dict]) -> dict:
+    """요청한 매핑이 예외로 실패해 컨트롤러가 v0로 대체한 항목(spec.meta.mapping.used ≠ requested).
+    builder·mapper 라벨은 요청한 매핑으로 남으므로, 이 건수가 0이 아니면 그 항목은 v0 출력이다."""
+    ids = []
+    for it in items:
+        mp = ((it.get("spec") or {}).get("meta") or {}).get("mapping")
+        if isinstance(mp, dict) and (mp.get("used") != mp.get("requested") or mp.get("fallbackReason")):
+            ids.append(it.get("id"))
+    return {"count": len(ids), "ids": ids}
 
 
 def main(argv: list[str] | None = None) -> None:
@@ -187,7 +199,10 @@ def main(argv: list[str] | None = None) -> None:
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(res, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    print(f"{len(res['items'])}개 항목 → {out}")
+    fb = res["mappingFallback"]
+    if fb["count"]:
+        print(f"경고: 매핑 {res['mapper']}이(가) {fb['count']}개 항목에서 v0로 대체됨 — {', '.join(map(str, fb['ids']))}")
+    print(f"{len(res['items'])}개 항목 → {out} (매핑 대체 {fb['count']}건)")
 
 
 if __name__ == "__main__":

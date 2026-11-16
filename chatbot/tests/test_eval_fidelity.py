@@ -426,6 +426,63 @@ def test_expect_widths():
     assert ew["inListLength"]["max"] == 2.0
 
 
+# ── 2단계 독립 검토(T3) 반영: 절 색인 분리, 퍼지 경로 값, 매핑 대체, 크기 구간 옥타브 ──────────
+def test_t3_g1_clause_index_alone_is_not_attribute_preservation():
+    """T3-G1: _clauses(절 색인)로만 덮인 속성은 보존이 아니라 lost(clauseIndexOnly)로 따로 센다."""
+    gold = [g("texture_roughness", "오돌토돌해요", "material.roughness", {"range": [0.6, 1.0]}),
+            g("color", "노란", "material.color", YELLOW_EXPECT)]
+    spec = blank_spec()
+    spec["_clauses"] = [{"charSpan": [0, len(TEXT)], "text": TEXT, "usedFor": [], "status": "unused"}]
+    sc = score_item(item(gold), {"confirmedText": TEXT, "spec": spec})
+    a = status_of(sc, "texture_roughness")
+    assert a["status"] == "lost" and a["clauseIndexOnly"] and not a["verbatimPreserved"] and a["verbatimWithClauseIndex"]
+    summ = aggregate([sc], B=10)["overall"]
+    assert summ["lostRate"] == 1.0 and summ["lostClauseIndexOnly"] == 2
+    assert summ["unreflectedVerbatimRate"] == 0.0 and summ["unreflectedVerbatimRateWithClauseIndex"] == 1.0
+    s, e = span_of("노란")                                  # 속성 단위 보존 필드에 있으면 보존
+    spec["_unmatched"] = [{"lemma": "노랗", "tag": "VA", "surface": TEXT[s:e], "charSpan": [s, e]}]
+    b = status_of(score_item(item(gold), {"confirmedText": TEXT, "spec": spec}), "color")
+    assert b["status"] == "preserved" and not b["clauseIndexOnly"]
+
+
+def test_t3_g2_fuzzy_path_values_are_counted():
+    """T3-G2: 퍼지 일치 근거로 슬롯에 들어간 값은 정답이 없어도 fuzzyValues로 센다."""
+    gold = [g("color", "노란", "material.color", YELLOW_EXPECT)]
+    spec = blank_spec(**{"material.color": (YELLOW, [span_of("노란")]),
+                         "material.saturation": (0.9, [span_of("표면은")])})
+    spec["_provenance"]["material.saturation"][0].update(source="fuzzy_lexicon", needsConfirmation=True)
+    sc = score_item(item(gold), {"confirmedText": TEXT, "spec": spec})
+    assert [f["path"] for f in sc["fuzzyValues"]] == ["material.saturation"]
+    summ = aggregate([sc], B=10)["overall"]
+    assert summ["fuzzyValues"] == 1 and summ["fuzzyValueRate"] == 0.5 and summ["reflectRate"] == 1.0
+    assert any(f["type"] == "fuzzy_value" for f in fidelity.failures([sc], {}))
+
+
+def test_t3_g3_fallback_is_counted_and_warned(tmp_path):
+    """T3-G3: 요청한 매핑이 예외로 v0에 대체되면 corpus_run·채점 요약에 건수·id가 남고 리포트 머리에 경고가 나온다."""
+    from ifs_chatbot.scene_builder_v1 import SceneSpecBuilderV1
+
+    class Broken(SceneSpecBuilderV1):
+        def build(self, text, **meta):
+            raise RuntimeError("일부러 낸 오류")
+
+    runs = corpus_run.run_corpus(SYN, lambda rt: Broken(rt.analyzer), work_dir=tmp_path)
+    assert runs["mappingFallback"] == {"count": 1, "ids": ["U01"]}
+    rep = fidelity.score_runs(SYN, runs, B=10)
+    assert rep["summary"]["mappingFallback"]["ids"] == ["U01"]
+    md = fidelity.to_markdown(rep)
+    assert "경고" in md.split("## 전체")[0] and "U01" in md.split("## 전체")[0]
+    ok = fidelity.score_runs(SYN, corpus_run.run_corpus(SYN, "v1", work_dir=tmp_path / "ok"), B=10)
+    assert ok["summary"]["mappingFallback"]["count"] == 0 and "경고" not in fidelity.to_markdown(ok).split("## 전체")[0]
+
+
+def test_t3_f7_size_range_width_in_octaves():
+    gold = [g("size", "공이", "layout.size", {"range": [0.05, 0.5]})]
+    ew = aggregate([score_item(item(gold), {"confirmedText": TEXT, "spec": blank_spec()})], B=10)["expectWidths"]
+    so = ew["sizeRangeOctavesV1"]
+    assert so["octavesPerUnit"] == 6.0 and so["octaves"]["median"] == 2.7 and so["ratio"]["median"] == round(2 ** 2.7, 2)
+
+
 def test_compare_writes_paired_outputs(tmp_path):
     def factory(rt):
         return rt.scene_builder

@@ -6,7 +6,7 @@
     "condition": "chatbot",
     "sourceTextHash": "sha256:7ada4b623e6993396aacc5e6142a27e0ca89e231db4dc350ed513e01f226bdb0",
     "pipeline": {
-      "builder": "scene-spec-builder-v1/1.0.0",
+      "builder": "scene-spec-builder-v1/1.1.0",
       "analyzer": "kiwi",
       "lexicons": {
         "layer1": "layer1-attribute-lexicon@1.0.0",

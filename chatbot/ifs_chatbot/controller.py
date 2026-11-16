@@ -569,8 +569,16 @@ class Session:
             self._record_confirmation(self.clarify["baseText"], self.clarify["edited"])
             self._write_scene(self.clarify["baseText"])
             self._record_drift()
-        if self.awaiting == "self_report":                # 확정은 끝났다 → 자기보고만 비운다
-            self._drift_log()["selfReport"] = {"value": None, "skipped": "stop", "at": now_iso()}
+        if self.awaiting == "self_report":                # 확정은 끝났다 → 자기보고 값만 비운다(물은 기록은 남김)
+            d = self._drift_log()
+            sr = d.get("selfReport") if isinstance(d.get("selfReport"), dict) else {}
+            sr.update(value=None, skipped="stop", selfReportDrift=None, at=now_iso())
+            d["selfReport"] = sr
+        if self.awaiting == "recall":                     # 회상 확인 대기 중 중단: 물은 기록에 중단 표시
+            d = self._drift_log()
+            rc = d.get("recallCheck") if isinstance(d.get("recallCheck"), dict) else {}
+            rc.update(answer=None, skipped="stop", at=now_iso())
+            d["recallCheck"] = rc
         self._say_fixed("stopped", stage=self.stage, kind="info")
         self.state, self.awaiting = "stopped", "none"
         self.log.end(by)
@@ -639,7 +647,7 @@ class Session:
         anchor = self.rt.drift.recall_anchor(participant_turns(self.log.turns),
                                              max_eojeol=self.cfg.validator.max_anchor_eojeol or 3)
         if anchor is None:
-            d["recallCheck"] = {"asked": False, "reason": "첫 단계에 형상 명사가 없음"}
+            d["recallCheck"] = {"asked": False, "reason": "첫 단계에 이름 붙인 형상 명사('X 같은 게'·'X예요')가 없음"}
             return False
         x = anchor["x"]
         safety = self.rt.safety
@@ -714,7 +722,8 @@ class Session:
         except Exception as exc:  # noqa: BLE001
             info["skipped"] = f"v1 매핑 오류: {type(exc).__name__}: {exc}"
             return False
-        info["targets"] = clarify_targets(spec, normalize_confirmed(text), max_n=max(0, self.cfg.mapping.clarify_max))
+        info["targets"] = clarify_targets(spec, normalize_confirmed(text), max_n=max(0, self.cfg.mapping.clarify_max),
+                                          analyzer=self.rt.analyzer)
         if not info["targets"]:
             return False
         self.clarify = info

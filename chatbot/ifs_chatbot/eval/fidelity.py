@@ -36,9 +36,12 @@
 - **distorted**: 값이 있으나 expect를 만족하지 않음(wrong_value), 또는 값이 null인데 그 phrase가 다른 슬롯 값을 잘못
   만듦(cross_slot: phrase 구간과 겹치는 _provenance가 다른 경로 P에 있고, P를 가진 정답 phrase가 그 근거를 덮지 않으며,
   P의 값이 P의 정답을 만족하지도 않음).
-- **preserved**: 값이 null이고, phrase 구간의 공백 아닌 글자가 모두 보존 필드(_provenance를 뺀 '_' 최상위 키:
-  _unmatched, _unmapped, _negated, _alternatives, _inferred, 개선 매핑이 더하는 보존 필드)의 원문 근거(charSpan과
-  그 구간의 원문과 같은 surface/trigger/text/phrase)로 덮임. 원문 그대로(구간 포함)만 인정한다.
+- **preserved**: 값이 null이고, phrase 구간의 공백 아닌 글자가 모두 **속성 단위 보존 필드**(_provenance와 _clauses를 뺀
+  '_' 최상위 키: _unmatched, _unmapped, _negated, _alternatives, _inferred, 개선 매핑이 더하는 _context·_parts·
+  _uncertain·_measurements·_direction·_needsConfirmation 등)의 원문 근거(charSpan과 그 구간의 원문과 같은
+  surface/trigger/text/phrase)로 덮임. 원문 그대로(구간 포함)만 인정한다.
+  _clauses(절 단위 원문 색인)는 확정 텍스트 전체를 담으므로 어떤 말이든 덮는다. 그래서 보존으로 치지 않고, 절 색인으로만
+  덮인 속성은 lost로 두되 clauseIndexOnly로 따로 표시·집계한다(v0·v1 같은 규칙).
 - **lost**: 위 어디에도 해당하지 않음.
 
 no_slot·negated·slot_unscored의 보존: no_slot은 보존 필드 ∪ _provenance(값의 근거로 남은 것도 원문 보존으로 봄),
@@ -49,8 +52,13 @@ negated는 보존 필드만(값으로 쓰인 것은 오류이므로 보존으로
 
 - 반영률 = reflected / slot 수 · 왜곡률 = distorted / slot 수 · 손실률 = lost / slot 수 · 컨트롤러 탈락률 = dropped / slot 수
 - 보존률 = (reflected + captured + preserved) / 전체 속성 수(모든 kind, dropped 포함)
-- 미반영 원문 보존률 = 반영·포착되지 않은 속성(dropped 제외) 중 phrase가 보존 필드에 원문 그대로 있는 비율(상태와 무관한
-  verbatim 판정). 원문을 "잃지 않고 남겼다"는 뜻일 뿐 의미가 보존되었다는 뜻은 아니다.
+- 미반영 원문 보존률(unreflectedVerbatimRate) = 반영·포착되지 않은 속성(dropped 제외) 중 phrase가 **속성 단위 보존
+  필드**에 원문 그대로 있는 비율(상태와 무관한 verbatim 판정). 원문을 "잃지 않고 남겼다"는 뜻일 뿐 의미가 보존되었다는
+  뜻은 아니다. 절 색인까지 인정한 값은 unreflectedVerbatimRateWithClauseIndex로 따로 보고하고(판정에 쓰지 않음),
+  절 색인으로만 남은 lost 속성 수는 lostClauseIndexOnly.
+- 퍼지 경로 값(fuzzyValues, fuzzyValueRate) = 슬롯 값의 _provenance에 자모 퍼지 일치(source = fuzzy_lexicon 또는
+  needsConfirmation)가 있는 슬롯 수 / 값이 있는 슬롯 수. 참여자가 그 낱말을 말하지 않았는데 값이 생긴 경로(원칙 2).
+- 매핑 대체(summary.mappingFallback) = spec.meta.mapping.used ≠ requested인 항목 수와 id. 1건 이상이면 리포트 머리에 경고.
 - 배경 오염 = distractor 구간과 겹치는 _provenance 근거가 들어간 (distractor, 경로) 쌍의 수(정답 phrase가 그 경로로
   덮으면 제외). 그 근거가 값을 정한 첫 근거이면 decisive(값 자체를 배경이 정함)
 - 근거 없는 값 — 두 가지를 함께 보고한다(docs/research-design.md 4.4와 같은 정의, 원칙 2 감시).
@@ -75,7 +83,8 @@ negated는 보존 필드만(값으로 쓰인 것은 오류이므로 보존으로
 ## 정답 구간 폭(expectWidths)
 
 넓은 허용 구간은 반영률을 쉽게 올린다. 그래서 kind = slot 속성의 expect 종류별 수, range 폭·hue 폭·s·l 폭의 분포,
-expect 종류별 반영률, range 폭이 중앙값 이하/초과인 속성의 반영률을 함께 보고한다.
+expect 종류별 반영률, range 폭이 중앙값 이하/초과인 속성의 반영률을 함께 보고한다. layout.size 구간 폭은 v1 크기 척도
+(scene_params.v1.json v1.size.octavesPerUnit)로 옥타브·배율로도 환산한다(sizeRangeOctavesV1).
 """
 from __future__ import annotations
 
@@ -91,10 +100,13 @@ from pathlib import Path
 from ..korean import normalize
 from ..scene_spec import SLOT_PATHS
 
-SCORER_VERSION = "0.2.0"
+SCORER_VERSION = "0.3.0"
 STATUSES = ("reflected", "distorted", "preserved", "lost", "dropped_by_controller", "captured")
 TEXT_KEYS = ("surface", "trigger", "text", "phrase")
 VALUE_EVIDENCE_KEY = "_provenance"
+# 절 단위 원문 색인(개선 매핑 v1의 _clauses). 확정 텍스트 전체를 담으므로 속성 단위 보존이 아니다 — 기본 판정에서 뺀다
+CLAUSE_INDEX_KEY = "_clauses"
+FUZZY_SOURCE = "fuzzy_lexicon"
 COLOR_SLOT = "material.color"
 COLOR_KEYS = ("hue_deg", "s", "l")
 BOOTSTRAP_B = 10000
@@ -109,8 +121,10 @@ METRICS: dict[str, tuple[str, str]] = {
     "droppedRate": ("dropped", "slot"),
     "preserveRate": ("preservedAll", "attrs"),
     "unreflectedVerbatimRate": ("unreflectedVerbatim", "unreflected"),
+    "unreflectedVerbatimRateWithClauseIndex": ("unreflectedVerbatimWithClauseIndex", "unreflected"),
     "spuriousRate": ("spurious", "values"),
     "unsupportedRate": ("unsupported", "values"),
+    "fuzzyValueRate": ("fuzzy", "values"),
 }
 UNSUPPORTED_REASONS = ("no_evidence", "no_gold_span", "outside_gold_span")
 
@@ -202,12 +216,14 @@ def _walk(node, found: list[tuple[Span, str]]):
             _walk(v, found)
 
 
-def preservation_spans(spec: dict | None, text: str) -> list[Span]:
+def preservation_spans(spec: dict | None, text: str, include_clause_index: bool = False) -> list[Span]:
     """보존 필드('_'로 시작하는 최상위 키 중 _provenance 제외)에 원문 그대로 남은 구간.
-    근거 문자열이 확정 텍스트의 그 구간과 글자까지 같아야 인정한다."""
+    근거 문자열이 확정 텍스트의 그 구간과 글자까지 같아야 인정한다.
+    기본은 **속성 단위 보존 필드만**이다(_clauses 제외). _clauses는 확정 텍스트 전체를 절로 잘라 담은 색인이라
+    어떤 말이든 덮는다. include_clause_index=True면 _clauses까지 인정한다(따로 보고하는 값)."""
     found: list[tuple[Span, str]] = []
     for key, node in (spec or {}).items():
-        if key.startswith("_") and key != VALUE_EVIDENCE_KEY:
+        if key.startswith("_") and key != VALUE_EVIDENCE_KEY and (include_clause_index or key != CLAUSE_INDEX_KEY):
             _walk(node, found)
     return sorted({sp for sp, txt in found if 0 <= sp[0] <= sp[1] <= len(text) and text[sp[0]:sp[1]] == txt})
 
@@ -378,8 +394,10 @@ def score_item(item: dict, run: dict) -> dict:
     spec = run.get("spec") or {}
     replies_text = "\n".join(normalize(v) for v in (item.get("replies") or {}).values() if v)
     evidence = value_evidence(spec)
-    keep = preservation_spans(spec, text)
+    keep = preservation_spans(spec, text)                                   # 속성 단위 보존 필드만
+    keep_ci = preservation_spans(spec, text, include_clause_index=True)     # + 절 색인(_clauses)
     keep_and_values = sorted(set(keep) | {sp for _, sp, _ in evidence})
+    keep_ci_and_values = sorted(set(keep_ci) | {sp for _, sp, _ in evidence})
     gold = item.get("gold") or []
     occ = [find_spans(text, g["phrase"]) for g in gold]
 
@@ -405,7 +423,10 @@ def score_item(item: dict, run: dict) -> dict:
             continue
         touching = [(p, sp, trig) for p, sp, trig in evidence if any(overlaps(sp, o) for o in spans)]
         verbatim = any(coverage(text, o, keep) >= 1.0 for o in spans)
+        verbatim_ci = any(coverage(text, o, keep_ci) >= 1.0 for o in spans)
         rec["verbatimPreserved"] = verbatim
+        rec["verbatimWithClauseIndex"] = verbatim_ci
+        rec["clauseIndexOnly"] = verbatim_ci and not verbatim
         rec["coverageAny"] = round(max(coverage(text, o, keep_and_values) for o in spans), 3)
         rec["phraseEvidence"] = [{"path": p, "trigger": t} for p, _, t in touching]
         if kind in ("slot", "slot_unscored"):
@@ -437,6 +458,8 @@ def score_item(item: dict, run: dict) -> dict:
             rec["status"] = "preserved" if verbatim else "lost"
         else:  # no_slot
             full = any(coverage(text, o, keep_and_values) >= 1.0 for o in spans)
+            full_ci = any(coverage(text, o, keep_ci_and_values) >= 1.0 for o in spans)
+            rec["clauseIndexOnly"] = full_ci and not full
             rec["mappedTo"] = sorted({p for p, _, _ in touching})
             rec["status"] = "preserved" if full else "lost"
         attrs.append(rec)
@@ -469,8 +492,15 @@ def score_item(item: dict, run: dict) -> dict:
         unsupported.append({"path": path, "value": show_value(get_value(spec, path)), "reason": reason,
                             "triggers": [t for p, _, t in evidence if p == path], "spurious": path not in gold_slots,
                             "valueMatchesGold": benign(path)})
+    # 지어내기 감시 ③ 퍼지 경로 값: 슬롯 값의 근거에 자모 퍼지 일치(확인 필요)가 있음. 0건이어야 한다(AC-3.11)
+    provs_of = spec.get(VALUE_EVIDENCE_KEY) or {}
+    fuzzy = [{"path": path, "value": show_value(get_value(spec, path)),
+              "triggers": [p.get("trigger") for p in provs_of.get(path) or []
+                           if p.get("source") == FUZZY_SOURCE or p.get("needsConfirmation")]}
+             for path in filled
+             if any(p.get("source") == FUZZY_SOURCE or p.get("needsConfirmation") for p in provs_of.get(path) or [])]
     return {"id": item["id"], "style": item.get("style"), "attributes": attrs,
-            "contamination": contamination, "spurious": spurious, "unsupported": unsupported,
+            "contamination": contamination, "spurious": spurious, "unsupported": unsupported, "fuzzyValues": fuzzy,
             "valuesFilled": len(filled), "negationErrors": sum(1 for a in attrs if a.get("negationError"))}
 
 
@@ -492,9 +522,12 @@ def _counts(attrs: list[dict], items: list[dict]) -> dict:
         "dropped": sc["dropped_by_controller"],
         "preservedAll": allc["reflected"] + allc["captured"] + allc["preserved"],
         "unreflected": len(unref), "unreflectedVerbatim": sum(1 for a in unref if a.get("verbatimPreserved")),
+        "unreflectedVerbatimWithClauseIndex": sum(1 for a in unref if a.get("verbatimWithClauseIndex")),
+        "clauseIndexOnly": sum(1 for a in attrs if a["status"] == "lost" and a.get("clauseIndexOnly")),
         "values": sum(i["valuesFilled"] for i in items),
         "spurious": sum(len(i["spurious"]) for i in items),
         "unsupported": sum(len(i.get("unsupported") or []) for i in items),
+        "fuzzy": sum(len(i.get("fuzzyValues") or []) for i in items),
     }
 
 
@@ -513,6 +546,8 @@ def _summary(attrs: list[dict], items: list[dict]) -> dict:
         "allStatus": {s: allc.get(s, 0) for s in STATUSES},
         **{m: _rate(c[a], c[b]) for m, (a, b) in METRICS.items()},
         "unreflected": c["unreflected"],
+        "lostClauseIndexOnly": c["clauseIndexOnly"],
+        "fuzzyValues": c["fuzzy"],
         "negated": len(negs),
         "negationErrors": sum(1 for a in negs if a.get("negationError")),
         "contamination": sum(len(i["contamination"]) for i in items),
@@ -601,6 +636,24 @@ def hue_width(pair) -> float:
     return float(hi - lo) if lo <= hi else float(360 - lo + hi)
 
 
+@lru_cache(maxsize=None)
+def v1_size_octaves_per_unit() -> float:
+    """개선 매핑 v1의 크기 척도(scene_params.v1.json v1.size.octavesPerUnit): size 1단위 = 몇 옥타브(2배)."""
+    from ..paths import shared
+    return float(json.loads(shared("lexicon", "scene_params.v1.json").read_text(encoding="utf-8"))["v1"]["size"]["octavesPerUnit"])
+
+
+def size_width_octaves(scored: list[dict]) -> dict:
+    """layout.size range 폭을 v1 크기 척도로 옥타브(2배 수)와 배율(2^옥타브)로 환산. 폭이 넓으면 몇 배 틀린 크기도 반영으로 센다."""
+    opu = v1_size_octaves_per_unit()
+    widths = [float(a["expect"]["range"][1] - a["expect"]["range"][0]) for i in scored for a in i["attributes"]
+              if a["kind"] == "slot" and a["status"] != "phrase_missing" and a["slot"] == "layout.size"
+              and "range" in (a["expect"] or {})]
+    octs = _five([w * opu for w in widths])
+    return {"octavesPerUnit": opu, "octaves": octs,
+            "ratio": {k: (round(2 ** octs[k], 2) if octs[k] is not None else None) for k in ("min", "median", "max")}}
+
+
 def expect_widths(scored: list[dict]) -> dict:
     """kind = slot 정답의 expect 종류·구간 폭 통계와 종류·폭별 반영률(phrase_missing 제외)."""
     slot = [a for i in scored for a in i["attributes"] if a["kind"] == "slot" and a["status"] != "phrase_missing"]
@@ -624,6 +677,7 @@ def expect_widths(scored: list[dict]) -> dict:
         "inListLength": _five([float(len(a["expect"]["in"])) for a in by_type.get("in", [])]),
         "rangeWidth": _five(rw),
         "rangeWidthBySlot": {s: _five(v) for s, v in sorted(range_by_slot.items())},
+        "sizeRangeOctavesV1": size_width_octaves(scored),
         "rangeReflectByWidth": {
             "median": round(med, 4) if med is not None else None,
             "atOrBelowMedian": refl([a for a, w in zip(ranges, rw) if med is not None and w <= med]),
@@ -681,15 +735,38 @@ def failures(scored: list[dict], runs: dict[str, dict]) -> list[dict]:
         for u in i.get("unsupported") or []:
             if not u["spurious"]:
                 out.append({"id": i["id"], "type": "unsupported", **{k: v for k, v in u.items() if k != "spurious"}})
+        for f in i.get("fuzzyValues") or []:
+            out.append({"id": i["id"], "type": "fuzzy_value", **f})
     return out
+
+
+def mapping_fallbacks(runs: dict) -> dict:
+    """요청한 매핑 대신 v0로 대체된 항목(spec.meta.mapping.used ≠ requested 또는 fallbackReason 있음). 그 항목은 요청한
+    매핑이 아니라 v0 출력으로 채점된 것이다."""
+    out = []
+    for r in runs.get("items") or []:
+        mp = ((r.get("spec") or {}).get("meta") or {}).get("mapping")
+        if isinstance(mp, dict) and (mp.get("used") != mp.get("requested") or mp.get("fallbackReason")):
+            out.append({"id": r.get("id"), "requested": mp.get("requested"), "used": mp.get("used"),
+                        "reason": mp.get("fallbackReason")})
+    return {"count": len(out), "ids": [x["id"] for x in out], "items": out}
+
+
+def _fallback_warning(fb: dict | None, label: str = "") -> list[str]:
+    if not fb or not fb.get("count"):
+        return []
+    return [f"> **경고{label}: 매핑 대체 {fb['count']}건.** 요청한 매핑이 예외로 실패해 v0 출력으로 채점된 항목: "
+            f"{', '.join(map(str, fb['ids']))}. 이 결과를 요청한 매핑의 수치로 보고하지 않는다.", ""]
 
 
 def score_runs(corpus: dict, runs: dict, B: int = BOOTSTRAP_B, seed: int = BOOTSTRAP_SEED) -> dict:
     by_id = {r["id"]: r for r in runs["items"]}
     scored = [score_item(item, by_id.get(item["id"], {})) for item in corpus["items"]]
+    summary = aggregate(scored, B, seed)
+    summary["mappingFallback"] = mapping_fallbacks(runs)
     return {"scorer": f"fidelity/{SCORER_VERSION}", "corpusId": corpus.get("corpusId"),
             "corpusVersion": corpus.get("version"), "mapper": runs.get("mapper"), "builder": runs.get("builder"),
-            "analyzer": runs.get("analyzer"), "summary": aggregate(scored, B, seed), "items": scored,
+            "analyzer": runs.get("analyzer"), "summary": summary, "items": scored,
             "failures": failures(scored, by_id)}
 
 
@@ -756,6 +833,8 @@ def paired_compare(report_a: dict, report_b: dict, runs_a: dict | None = None, r
     out = {"scorer": f"fidelity/{SCORER_VERSION}", "corpusId": report_a.get("corpusId"),
            "corpusVersion": report_a.get("corpusVersion"), "mapperA": report_a.get("mapper"),
            "mapperB": report_b.get("mapper"),
+           "mappingFallback": {"a": (report_a.get("summary") or {}).get("mappingFallback"),
+                               "b": (report_b.get("summary") or {}).get("mappingFallback")},
            "bootstrap": {"unit": "item", "method": "paired cluster bootstrap, percentile", "B": B, "seed": seed,
                          "level": level, "nItems": len(rows)},
            "metrics": metrics,
@@ -784,13 +863,18 @@ def _ci(m: dict) -> str:
 def to_markdown(report: dict) -> str:
     s = report["summary"]["overall"]
     L = [f"# 일치도 채점 — {report.get('corpusId')} · 매핑 {report.get('mapper')}", "",
+         *_fallback_warning(report["summary"].get("mappingFallback")),
          f"채점기 {report['scorer']}, 코퍼스 {report.get('corpusId')}@{report.get('corpusVersion')}, "
          f"빌더 {(report.get('builder') or {}).get('builder')}", "",
          "## 전체", "", "| 지표 | 값 |", "| --- | --- |"]
     for k in ("attributes", "slotAttributes", "reflectRate", "distortRate", "lostRate", "droppedRate", "preserveRate",
-              "unreflectedVerbatimRate", "negated", "negationErrors", "contamination", "contaminationDecisive",
-              "spuriousValues", "unsupportedValues", "valuesFilled", "spuriousRate", "unsupportedRate"):
+              "unreflectedVerbatimRate", "unreflectedVerbatimRateWithClauseIndex", "lostClauseIndexOnly",
+              "negated", "negationErrors", "contamination", "contaminationDecisive",
+              "spuriousValues", "unsupportedValues", "fuzzyValues", "valuesFilled", "spuriousRate", "unsupportedRate"):
         L.append(f"| {k} | {_fmt(s[k])} |")
+    L += ["", "미반영 원문 보존률(unreflectedVerbatimRate)은 속성 단위 보존 필드만 인정한 값이다. "
+              "절 색인(_clauses)까지 인정한 값은 unreflectedVerbatimRateWithClauseIndex, 절 색인으로만 남은 손실은 "
+              "lostClauseIndexOnly. fuzzyValues는 자모 퍼지 일치 근거로 슬롯에 들어간 값의 수(0이어야 한다)."]
     L += ["", "슬롯 속성 상태: " + ", ".join(f"{k} {v}" for k, v in s["slotStatus"].items()),
           "근거 없는 값(근거 기준) 사유: " + ", ".join(f"{k} {v}" for k, v in s["unsupportedReasons"].items())
           + f" · 그중 값은 정답 expect를 만족 {s['unsupportedValueMatchesGold']}"]
@@ -815,6 +899,13 @@ def to_markdown(report: dict) -> str:
         L += ["", f"range 폭 중앙값 {_fmt(rw['median'])} 이하: 반영률 {_fmt(rw['atOrBelowMedian']['reflectRate'])}"
               f" (n {rw['atOrBelowMedian']['n']}) · 초과: 반영률 {_fmt(rw['aboveMedian']['reflectRate'])}"
               f" (n {rw['aboveMedian']['n']})"]
+        so = ew.get("sizeRangeOctavesV1")
+        if so and so["octaves"]["n"]:
+            o, r = so["octaves"], so["ratio"]
+            L += ["", f"layout.size 정답 구간 폭을 v1 크기 척도(1단위 = {_fmt(so['octavesPerUnit'])}옥타브)로 환산: "
+                  f"n {o['n']} · 최소 {_fmt(o['min'])}옥타브(×{_fmt(r['min'])}) · 중앙값 {_fmt(o['median'])}옥타브"
+                  f"(×{_fmt(r['median'])}) · 최대 {_fmt(o['max'])}옥타브(×{_fmt(r['max'])}). 구간 안이면 반영으로 세므로, "
+                  "이 배율만큼 다른 크기도 반영될 수 있다."]
     L += ["", "## 속성 유형별", "", "| 속성 | n | slot n | reflected | distorted | preserved | lost | dropped | captured | 반영률 |",
           "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |"]
     for name, r in report["summary"]["byAttr"].items():
@@ -837,7 +928,9 @@ def to_markdown(report: dict) -> str:
 
 def paired_markdown(cmp: dict) -> str:
     bs = cmp["bootstrap"]
+    fb = cmp.get("mappingFallback") or {}
     L = [f"# 두 매핑 쌍 비교 — {cmp.get('corpusId')} · A = {cmp['mapperA']}, B = {cmp['mapperB']}", "",
+         *_fallback_warning(fb.get("a"), "(A)"), *_fallback_warning(fb.get("b"), "(B)"),
          f"채점기 {cmp['scorer']}. 차이 = B − A(합동 비율). 구간은 항목 단위 쌍 군집 부트스트랩(B = {bs['B']}, "
          f"시드 {bs['seed']}, 항목 {bs['nItems']}개)의 백분위 95% 구간입니다. 이 합성 코퍼스 안의 변동만 나타냅니다.", "",
          "| 지표 | A | B | 차이 | 95% 구간 |", "| --- | --- | --- | --- | --- |"]
@@ -913,12 +1006,17 @@ def compare(corpus_path: str | Path, mapper_a="v0", mapper_b="v0", out_dir: str 
 def _print_summary(report: dict) -> None:
     s = report["summary"]["overall"]
     ci = report["summary"]["bootstrap"]["metrics"]
+    fb = report["summary"].get("mappingFallback") or {}
+    if fb.get("count"):
+        print(f"경고: 매핑 {report['mapper']}이(가) {fb['count']}개 항목에서 v0로 대체됨 — {', '.join(map(str, fb['ids']))}")
     print(f"매핑 {report['mapper']} · 속성 {s['attributes']}개(슬롯 {s['slotAttributes']}개)")
     print(f"  반영률 {s['reflectRate']} {_ci(ci['reflectRate'])}  왜곡률 {s['distortRate']} {_ci(ci['distortRate'])}  "
           f"손실률 {s['lostRate']}  컨트롤러 탈락률 {s['droppedRate']}")
-    print(f"  보존률 {s['preserveRate']}  미반영 원문 보존률 {s['unreflectedVerbatimRate']}")
+    print(f"  보존률 {s['preserveRate']}  미반영 원문 보존률 {s['unreflectedVerbatimRate']}"
+          f"(절 색인 포함 {s['unreflectedVerbatimRateWithClauseIndex']}, 절 색인으로만 남은 손실 {s['lostClauseIndexOnly']})")
     print(f"  배경 오염 {s['contamination']}(값 결정 {s['contaminationDecisive']})  부정 오류 {s['negationErrors']}/{s['negated']}  "
-          f"근거 없는 값 경로 {s['spuriousValues']}/{s['valuesFilled']} · 근거 {s['unsupportedValues']}/{s['valuesFilled']}")
+          f"근거 없는 값 경로 {s['spuriousValues']}/{s['valuesFilled']} · 근거 {s['unsupportedValues']}/{s['valuesFilled']}  "
+          f"퍼지 경로 값 {s['fuzzyValues']}  매핑 대체 {fb.get('count', 0)}")
 
 
 def main(argv: list[str] | None = None) -> None:

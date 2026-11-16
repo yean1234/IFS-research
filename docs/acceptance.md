@@ -14,7 +14,7 @@
 | --- | --- | --- | --- |
 | AC-1 | 연구 설계 문서 | 필수 절 7개, 지어낸 인용 0건 | 문서 절 확인 + 독립 검토자 인용 점검 |
 | AC-2 | 심상 유지(표류) 판정 | 시나리오 ≥ 12, 정확도 ≥ 0.90, 덧붙임 오탐 0 | pytest |
-| AC-3 | 매핑 고도화 | 실패 사례 ≥ 15, 반영률 ≥ 0.75 & v0 + 0.15, 왜곡률 ≤ 0.05 & ≤ v0, 미반영 원문 보존률 100% | pytest + 평가 스크립트 |
+| AC-3 | 매핑 고도화 | 실패 사례 ≥ 15, 반영률 ≥ 0.75 & v0 + 0.15, 왜곡률 ≤ 0.05 & ≤ v0, 미반영 원문 보존률(속성 단위) 100%, 퍼지 경로 슬롯 값 0건, 근거 없는 값 비율 ≤ v0 | pytest + 평가 스크립트 |
 | AC-4 | Unity 현실감 | EditMode 전부 통과, 오류 0, p95 ≤ 13.9 ms(눈당 2064×2208 × 2눈), 드로콜 ≤ 100, 삼각형 ≤ 300k, 그림자 광원 ≤ 1 | batchmode 로그·결과 XML |
 | AC-5 | 전 과정 실행 | 20–30개, 스키마 유효 100%, 로드 100%, 스크린샷 전부, \|Δ\| ≤ 1e-6 | 파이프라인 스크립트 + 로그 |
 | AC-6 | Codex 감시 | CP1·CP2·CP3 원문 + 처리표 | `docs/codex-reviews/` |
@@ -75,6 +75,8 @@ Select-String -Path docs\research-design.md -Pattern '^\| [A-Z].*\(\d{4}\) \|' |
 ```powershell
 cd chatbot
 .venv\Scripts\python.exe -m pytest -q -m "not live" tests\test_drift.py -s
+# 검토 회귀 대화(AC-2 집계 밖): 기대 일치 수와 알려진 한계를 출력한다
+.venv\Scripts\python.exe -m pytest -q -m "not live" tests\test_drift_review.py -s
 # 시나리오 집계(정확도·혼동행렬·덧붙임-only 오탐·undecidable·acknowledged 일치)를 출력하고 결과 JSON을 남긴다
 .venv\Scripts\python.exe -m ifs_chatbot.drift --cases tests\fixtures\drift\drift_cases.json --out <결과.json>
 # 결정론: 위 명령을 두 번 실행해 두 결과 파일의 sha256이 같은지 본다(test_evaluation_is_deterministic도 같은 것을 확인)
@@ -83,7 +85,9 @@ cd chatbot
 - 시나리오 파일: `chatbot/tests/fixtures/drift/drift_cases.json`(독립 작성자 라벨). 라벨 개수를 직접 센다(drift ≥ 5, no-drift ≥ 5, 합계 ≥ 12). `test_cases_meet_label_counts`가 같은 것을 확인한다.
 - 구현 모듈: `chatbot/ifs_chatbot/drift.py`(LLM 호출 없음, `test_drift_module_does_not_use_llm`). 평가는 `eval/corpus_run.py`로 실제 컨트롤러 정적 조건을 재생해 세션 로그 `drift.assessment`에서 읽는다.
 - 수치 기준(τ·θ·가중치)과 근거는 `docs/drift-design.md` 3절, 같은 값이 `docs/research-design.md` 4.5절 표에 있다.
-- 2026-11-16 결과: 18개(drift 9 · no-drift 9) 정확도 1.000, 덧붙임-only 오탐 0, 출력 sha256 두 번 동일. 설계자가 라벨을 읽은 뒤 규칙을 썼으므로 새 독립 라벨로 다시 재는 것이 남아 있다(`docs/drift-design.md` 8.4절).
+- 2026-11-16 결과(`drift/1.1.0`, 2단계 검토 T2 반영 뒤): 18개(drift 9 · no-drift 9) 정확도 1.000(TP 9 · FP 0 · TN 9 · FN 0), 덧붙임-only 오탐 0, undecidable 0, acknowledged 일치 18/18, 출력 sha256 두 번 동일(`345c40714fe3c433bdfdc13440b320239a3270b561d07ee0ff38acf63f32dc1d`). 1.0.0 때 sha256은 `93687ebd…`였고, 18개 항목의 판정·DI는 1.0.0과 같다(결과 JSON의 판정 버전 문자열만 다름).
+- **잠정 통과로 보고한다.** 설계자가 라벨을 읽은 뒤 규칙을 썼고, 라벨이 수치를 거의 구속하지 못하며(`docs/drift-design.md` 8.3절), 정확도가 라벨 사례에 나온 사전 낱말에 기댄다: 날개·보풀·돌멩이·뭉치 넷을 빼면 0.833(기준 미만, DR03·DR06·DR09 오탐, 8.4절). 새 독립 라벨로 다시 재는 것이 남아 있다.
+- 검토 회귀 대화(`chatbot/tests/fixtures/drift/review_t2_regression.json`, 검토자 합성 41개)는 이 기준의 집계에 넣지 않는다. 규칙을 고친 뒤 확인한 것이라 독립 평가가 아니다. 기대가 있는 38개 중 33개가 기대와 같고, 5개는 알려진 한계다(`docs/drift-design.md` 9.3절, `tests\test_drift_review.py`).
 
 ---
 
@@ -97,17 +101,19 @@ cd chatbot
 | 3.2 | held-out 코퍼스에서 개선 매핑의 슬롯 속성 반영률 | ≥ 0.75 |
 | 3.3 | 같은 코퍼스에서 v0 대비 반영률 향상(절대) | ≥ +0.15 |
 | 3.4 | 왜곡률(값은 있으나 틀림) | ≤ 0.05 이고 v0보다 높지 않음 |
-| 3.5 | 무손실 보존: 반영되지 않은 정답 속성 표현이 원문 그대로(구간 포함) 결과 JSON의 보존 필드에 남음. 지표는 `fidelity.py`의 **미반영 원문 보존률**(`unreflectedVerbatimRate`: status ∉ {reflected, captured, dropped_by_controller}인 속성 중 phrase가 보존 필드에 원문 그대로 있는 비율). `dropped_by_controller`는 확정 텍스트에 없어 매핑이 원리적으로 보존할 수 없으므로 분모에서 빼고, **건수와 탈락률을 따로 보고**한다. `preserveRate`(전체 분모, dropped 포함)로는 판정하지 않는다 | = 1.0 (100%) |
+| 3.5 | 무손실 보존: 반영되지 않은 정답 속성 표현이 원문 그대로(구간 포함) 결과 JSON의 **속성 단위 보존 필드**에 남음. 지표는 `fidelity.py`(채점기 0.3.0 이상)의 **미반영 원문 보존률**(`unreflectedVerbatimRate`: status ∉ {reflected, captured, dropped_by_controller}인 속성 중 phrase가 보존 필드에 원문 그대로 있는 비율). 보존 필드는 `_provenance`와 **`_clauses`(절 단위 원문 색인)를 뺀** '_' 최상위 키(`_unmatched`·`_unmapped`·`_negated`·`_alternatives`·`_inferred`·`_context`·`_parts`·`_uncertain`·`_measurements`·`_direction`·`_needsConfirmation`)다. `_clauses`는 확정 텍스트 전체를 담아 어떤 말이든 덮으므로 판정에 쓰지 않고, 그것까지 인정한 값(`unreflectedVerbatimRateWithClauseIndex`)과 절 색인으로만 남은 속성 수(`lostClauseIndexOnly`)는 따로 보고한다(v0·v1 같은 규칙). `dropped_by_controller`는 확정 텍스트에 없어 매핑이 원리적으로 보존할 수 없으므로 분모에서 빼고, **건수와 탈락률을 따로 보고**한다. `preserveRate`(전체 분모, dropped 포함)로는 판정하지 않는다. (2026-11-16 2단계 독립 검토 T3-G1 반영: held-out을 보기 전에 `_clauses`를 인정하던 기준을 이렇게 엄격하게 바꿈) | = 1.0 (100%) |
 | 3.6 | 결정론: 같은 입력 → 바이트 동일 출력 | 테스트 통과 |
 | 3.7 | 개선 매핑에서 예외가 나면 v0로 대체 | 테스트 통과 |
 | 3.8 | v0 출력 불변: v0가 쓴 장면 파일이 `chatbot/tests/fixtures/scene_spec/EX01.json`, `EX02.json`과 **바이트 동일**(파일 바이트 비교 테스트). 기존 테스트 `test_scene_pipeline.py::test_confirm_writes_scene_file_equal_to_golden`, `test_scene_builder.py::test_matches_golden_including_provenance`는 JSON 값 비교라 이것만으로는 미달. 정답 파일 자체가 baseline 대비 바뀌지 않았어야 한다 | 테스트 통과 |
 | 3.9 | 매핑 경로에 LLM 호출 없음: v0·개선 매핑을 실행하는 동안 LLM·HTTP 클라이언트(`ifs_chatbot.llm`의 호출 함수, `ollama`, `httpx`, `requests`, `urllib.request.urlopen`, `socket.socket.connect`)를 호출 즉시 예외를 내도록 바꿔 두고 held-out 코퍼스 전체를 매핑하는 테스트. 정적 grep은 보조 증거일 뿐 판정 기준이 아니다 | 테스트 통과 |
 | 3.10 | 오프라인 테스트 전부 통과 | 실패 0 |
+| 3.11 | 지어내기 ①: 퍼지 경로 슬롯 값. 개선 매핑 출력에서 슬롯 값의 `_provenance`에 자모 퍼지 일치(`source = fuzzy_lexicon` 또는 `needsConfirmation`)가 있는 슬롯 수. 지표는 `fidelity.py`의 `fuzzyValues`(요약)·`fuzzyValues`(항목별) | = 0건 |
+| 3.12 | 지어내기 ②: 근거 없는 값 비율(근거 기준, `unsupportedRate` = 값이 있는 슬롯 중 `_provenance` 구간이 같은 경로 정답 phrase 구간과 겹치지 않는 것의 비율). 왜곡률(3.4)은 정답 phrase가 있는 슬롯만 보므로 정답 밖에서 지어낸 값을 못 본다. 그 빈틈을 이 기준이 막는다. 경로 기준 `spuriousRate`도 함께 보고한다 | 개선 매핑 ≤ v0 (같은 held-out 코퍼스) |
 
 - 반영률·왜곡률·보존률의 정의는 `docs/research-design.md` 4.4절과 평가 스크립트 `chatbot/ifs_chatbot/eval/fidelity.py`가 같아야 한다. 다르면 스크립트가 정본이고 문서를 고친다. 반영률·왜곡률의 분모는 kind = slot인 정답 속성 수(dropped 포함), 왜곡은 `wrong_value` + `cross_slot`, 일치 판정은 정답 라벨마다의 `expect` 구간이다.
 - held-out 코퍼스는 매핑을 고칠 때 보지 않은 문장이다(`docs/decisions.md` D04). dev 코퍼스 수치로는 판정하지 않는다. 채점 전에 정답 라벨 형식 검사(`--check-corpus`)에서 **오류 0**이어야 한다. 형식 오류가 있으면 채점기가 채점을 거부한다.
 - **3.5의 뜻.** 미반영 원문 보존률 100%는 "반영하지 못한 표현을 잃지 않고 원문 그대로 남겼다"는 뜻일 뿐이다. 의미나 정보가 보존되었다는 증거가 아니다. 채점기는 phrase 구간이 보존 필드에 글자 그대로 있는지만 보며, 왜곡된 속성도 원문을 남기면 이 비율에 들어간다. 보고서에서 이 수치를 의미 일치의 증거로 쓰지 않는다.
-- **함께 보고할 것(판정 기준은 아님).** AC-3 수치를 적을 때 다음을 같이 싣는다: 지표별 분모와 `dropped_by_controller` 건수, 항목 단위 군집 부트스트랩 95% CI(`report.json`의 `summary.bootstrap`), v0 대비 차이의 항목 단위 쌍 CI(`--compare`로 만든 `paired.json`), 항목별 결과(`summary.byItem`, `paired.json`의 `items`), 정답 구간 폭 통계(`summary.expectWidths`), 근거 없는 값 두 가지(경로 기준 `spuriousRate`, 근거 기준 `unsupportedRate`). 사람 라벨이 생기면 라벨 신뢰도도 싣는다. 30개 안팎 코퍼스의 CI는 그 코퍼스 안의 변동이며 일반 성능의 증거가 아니다.
+- **함께 보고할 것(판정 기준은 아님).** AC-3 수치를 적을 때 다음을 같이 싣는다: 지표별 분모와 `dropped_by_controller` 건수, 항목 단위 군집 부트스트랩 95% CI(`report.json`의 `summary.bootstrap`), v0 대비 차이의 항목 단위 쌍 CI(`--compare`로 만든 `paired.json`), 항목별 결과(`summary.byItem`, `paired.json`의 `items`), 정답 구간 폭 통계(`summary.expectWidths`. layout.size 구간 폭의 v1 크기 척도 옥타브·배율 환산 `sizeRangeOctavesV1` 포함 — dev 중앙값 2.1옥타브 ≈ ×4.3라 그만큼 다른 크기도 반영으로 센다), 근거 없는 값 두 가지(경로 기준 `spuriousRate`, 근거 기준 `unsupportedRate`). 사람 라벨이 생기면 라벨 신뢰도도 싣는다. 30개 안팎 코퍼스의 CI는 그 코퍼스 안의 변동이며 일반 성능의 증거가 아니다.
 
 **확인 방법**
 
@@ -116,10 +122,14 @@ cd chatbot
 .venv\Scripts\python.exe -m pytest -q -m "not live"                         # 3.6–3.10, 실패 0
 .venv\Scripts\python.exe -m ifs_chatbot.eval.fidelity --check-corpus tests\fixtures\imagery_corpus\heldout.json   # 형식 오류 0(종료 코드 0). phrase 원문은 출력하지 않음
 .venv\Scripts\python.exe -m ifs_chatbot.eval.fidelity --corpus tests\fixtures\imagery_corpus\heldout.json --mapper v0 --out <scratch>\v0
-.venv\Scripts\python.exe -m ifs_chatbot.eval.fidelity --corpus tests\fixtures\imagery_corpus\heldout.json --mapper <개선 매핑 이름> --out <scratch>\v1   # (매퍼 이름은 구현 후 확정)
-#   report.json 의 reflectRate(3.2·3.3), distortRate(3.4), unreflectedVerbatimRate(3.5 = 1.0), droppedRate·slotStatus.dropped_by_controller(따로 보고)
-.venv\Scripts\python.exe -m ifs_chatbot.eval.fidelity --corpus tests\fixtures\imagery_corpus\heldout.json --mapper v0 --compare <개선 매핑 모듈:factory> --out <scratch>\pair
+.venv\Scripts\python.exe -m ifs_chatbot.eval.fidelity --corpus tests\fixtures\imagery_corpus\heldout.json --mapper v1 --out <scratch>\v1
+#   report.json summary.overall 의 reflectRate(3.2·3.3), distortRate(3.4), unreflectedVerbatimRate(3.5 = 1.0, 속성 단위),
+#   fuzzyValues(3.11 = 0), unsupportedRate(3.12), droppedRate·slotStatus.dropped_by_controller(따로 보고),
+#   unreflectedVerbatimRateWithClauseIndex·lostClauseIndexOnly(따로 보고, 판정 아님)
+#   summary.mappingFallback.count = 0 이어야 개선 매핑의 수치다(1 이상이면 report.md 머리에 경고, 그 항목은 v0 출력)
+.venv\Scripts\python.exe -m ifs_chatbot.eval.fidelity --corpus tests\fixtures\imagery_corpus\heldout.json --mapper v0 --compare v1 --out <scratch>\pair
 #   paired.json: 지표별 v0·개선 값, 차이(개선 − v0)와 항목 단위 쌍 군집 부트스트랩 95% CI, 항목별 결과(함께 보고, 판정 기준 아님)
+#   3.12: paired.json metrics.unsupportedRate 의 b ≤ a. mappingFallback.a·b 의 count = 0
 git diff --stat a753289 -- chatbot/tests/fixtures/scene_spec/               # 3.8 (1): 정답 파일 변경 없음(출력 없음)
 .venv\Scripts\python.exe -m pytest -q -m "not live" -k "bytes or byte_identical"   # 3.8 (2): v0 출력 == EX01/EX02 바이트 비교 테스트(이름은 구현 후 확정, 1개 이상 실행·통과)
 .venv\Scripts\python.exe -m pytest -q -m "not live" -k "no_llm or no_network"    # 3.9: LLM·HTTP 차단 상태 매핑 테스트(이름은 구현 후 확정, 1개 이상 실행·통과)

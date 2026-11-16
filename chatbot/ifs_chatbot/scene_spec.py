@@ -94,6 +94,9 @@ def check_principles(spec: dict, text: str) -> list[str]:
             problems.append(f"{path}: 값이 있는데 _provenance가 없다(원칙 4)")
         if value is not None and path in spec.get("_inferred", {}):
             problems.append(f"{path}: 값이 있는데 _inferred도 있다")
+        if value is not None and any(p.get("source") == "fuzzy_lexicon" or p.get("needsConfirmation")
+                                     for p in spec.get("_provenance", {}).get(path) or []):
+            problems.append(f"{path}: 퍼지 일치(확인 필요) 근거로 값을 만들었다(원칙 2)")
     for where, p in _all_provenance(spec):
         s, e = p["charSpan"]
         if text[s:e] != p["trigger"]:

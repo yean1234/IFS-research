@@ -20,7 +20,30 @@ ENDINGS = ("하네요", "했어요", "해져요", "해요", "하고", "하게", 
            "이요", "요", "고", "게")
 
 
-def _stem(word: str) -> str:
+# 낱말 끝에서 떼는 기능 형태소(조사 J*, 어미 E*, 접미 XS*, 서술격·보조 용언, 기호). Kiwi 품사로 판단한다
+_TRAIL_PREFIXES = ("J", "E")
+_TRAIL_TAGS = {"XSV", "XSA", "XSN", "VCP", "VX", "SF", "SP", "SS", "SE", "SO", "SW"}
+# Kiwi가 없을 때의 대체: 닫힌 부류인 조사·명사형 어미만 뗀다
+PARTICLES = ("에서", "으로", "처럼", "까지", "부터", "하기가", "하기는", "하기를", "이", "가", "은", "는", "을", "를", "도",
+             "만", "에", "로", "와", "과", "의")
+
+
+def _stem(word: str, analyzer=None) -> str:
+    """참여자 낱말에서 조사·어미를 뗀 앞부분(확정 텍스트에 글자 그대로 있는 접두 부분). '설명하기가' → '설명'."""
+    if analyzer is not None and getattr(analyzer, "available", False):
+        toks = analyzer.tokens(word)
+        keep = list(toks)
+        while keep and (keep[-1].base_tag.startswith(_TRAIL_PREFIXES) or keep[-1].base_tag in _TRAIL_TAGS):
+            keep.pop()
+        if keep and keep[0].start == 0:
+            cut = max(t.end for t in keep)
+            if 0 < cut < len(word) and len(word[:cut]) >= 2:
+                word = word[:cut]
+    else:
+        for p in PARTICLES:
+            if word.endswith(p) and len(word) - len(p) >= 2:
+                word = word[:-len(p)]
+                break
     for end in ENDINGS:
         if word.endswith(end) and len(word) - len(end) >= 2:
             return word[:-len(end)]
@@ -32,19 +55,21 @@ def _in_context(spec: dict, span: list[int]) -> bool:
                for c in spec.get("_clauses") or [])
 
 
-def clarify_targets(spec: dict, text: str, max_n: int = 2, asked: set[str] | None = None) -> list[dict]:
-    """v1 spec → 물을 참여자 표현 X 목록(원문 순서, 최대 max_n). X는 확정 텍스트에 글자 그대로 있다."""
+def clarify_targets(spec: dict, text: str, max_n: int = 2, asked: set[str] | None = None, analyzer=None) -> list[dict]:
+    """v1 spec → 물을 참여자 표현 X 목록(원문 순서, 최대 max_n). X는 확정 텍스트에 글자 그대로 있다.
+    analyzer(Kiwi)를 주면 X 끝의 조사·어미를 품사로 뗀다('설명하기가' → '설명'). 없으면 닫힌 조사 목록으로 뗀다."""
     asked = asked or set()
     found: list[dict] = []
     for n in spec.get("_needsConfirmation") or []:
-        found.append({"x": _stem(n["trigger"]), "charSpan": n["charSpan"], "why": "fuzzy_lexicon", "path": n["path"]})
+        found.append({"x": _stem(n["trigger"], analyzer), "charSpan": n["charSpan"], "why": "fuzzy_lexicon",
+                      "path": n["path"]})
     for u in spec.get("_unmatched") or []:
         if u["tag"].split("-")[0] in ATTR_TAGS and u["lemma"] not in FUNCTION_LEMMAS:
             found.append({"x": u["surface"], "charSpan": u["charSpan"], "why": "unread_attribute", "path": None})
     for u in spec.get("_unmapped") or []:
         if u["category"] in ATTR_CATEGORIES:
             p = u["_provenance"]
-            found.append({"x": _stem(p["trigger"]), "charSpan": p["charSpan"], "why": f"unmapped_{u['category']}",
+            found.append({"x": _stem(p["trigger"], analyzer), "charSpan": p["charSpan"], "why": f"unmapped_{u['category']}",
                           "path": None})
     out, seen = [], set(asked)
     for f in sorted(found, key=lambda f: (f["charSpan"][0], f["x"])):

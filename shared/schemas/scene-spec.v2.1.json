@@ -443,7 +443,7 @@
       }
     },
     "_alternatives": {
-      "description": "같은 슬롯의 다른 근거. lower_layer·later_mention(v2.0), lower_priority(구체어·움직임 동사·측정값에 밀림), superseded('처음엔 …했다가' 뒤 상태에 밀림), self_corrected('아 아니다'·'X보다는'), participant_uncertain('잘 모르겠어요')",
+      "description": "같은 슬롯의 다른 근거. lower_layer·later_mention(v2.0), lower_priority(구체어·움직임 동사·측정값에 밀림), superseded('처음엔 …했다가' 뒤 상태에 밀림), self_corrected('아 아니다'·'X보다는'), participant_uncertain('잘 모르겠어요'), needs_confirmation(자모 퍼지 일치 후보. 값으로 쓰지 않음 — 참여자 확인 전, 원칙 2)",
       "type": "array",
       "items": {
         "type": "object",
@@ -482,7 +482,8 @@
               "lower_priority",
               "superseded",
               "self_corrected",
-              "participant_uncertain"
+              "participant_uncertain",
+              "needs_confirmation"
             ]
           },
           "_provenance": {
@@ -750,7 +751,7 @@
       }
     },
     "_needsConfirmation": {
-      "description": "(v2.1) 퍼지 매칭으로 만든 값 — 확인 필요",
+      "description": "(v2.1) 자모 퍼지 일치 후보 — 확인 필요. 슬롯 값에는 쓰지 않는다(값은 _alternatives의 needs_confirmation에만)",
       "type": "array",
       "items": {
         "type": "object",
@@ -1594,7 +1595,7 @@
         },
         "needsConfirmation": {
           "type": "boolean",
-          "description": "퍼지 매칭으로 만든 값. 참여자 확인 전"
+          "description": "퍼지 일치 근거. 참여자 확인 전이라 _alternatives(needs_confirmation)에만 나오고 슬롯 값의 _provenance에는 나오지 않는다"
         }
       }
     },

@@ -6,7 +6,7 @@
     "condition": "static",
     "sourceTextHash": "sha256:7c9b141c8701d84d2f03470c7b3325119133bc142507ba014bce78a1bff50384",
     "pipeline": {
-      "builder": "scene-spec-builder-v1/1.0.0",
+      "builder": "scene-spec-builder-v1/1.1.0",
       "analyzer": "kiwi",
       "lexicons": {
         "layer1": "layer1-attribute-lexicon@1.0.0",
@@ -33,7 +33,7 @@
     },
     "brightness": null,
     "saturation": null,
-    "roughness": 0.75,
+    "roughness": null,
     "opacity": null,
     "erosion": null
   },
@@ -80,18 +80,6 @@
           27
         ],
         "rule": "colorModifier.연한>material.color:pastel"
-      }
-    ],
-    "material.roughness": [
-      {
-        "source": "fuzzy_lexicon",
-        "trigger": "오돌도돌해요",
-        "charSpan": [
-          89,
-          95
-        ],
-        "rule": "fuzzy(d=1).오돌토돌>textureLexicon.오돌토돌>material.roughness:rough_bumpy",
-        "needsConfirmation": true
       }
     ],
     "layout.size": [
@@ -265,6 +253,23 @@
   ],
   "_negated": [],
   "_alternatives": [
+    {
+      "path": "material.roughness",
+      "value": 0.75,
+      "reason": "needs_confirmation",
+      "_provenance": [
+        {
+          "source": "fuzzy_lexicon",
+          "trigger": "오돌도돌해요",
+          "charSpan": [
+            89,
+            95
+          ],
+          "rule": "fuzzy(d=1).오돌토돌>textureLexicon.오돌토돌>material.roughness:rough_bumpy",
+          "needsConfirmation": true
+        }
+      ]
+    },
     {
       "path": "layout.distance",
       "value": 0.6,
@@ -528,10 +533,8 @@
         95
       ],
       "text": "표면이 오돌도돌해요",
-      "usedFor": [
-        "material.roughness"
-      ],
-      "status": "partly_used"
+      "usedFor": [],
+      "status": "unused"
     },
     {
       "charSpan": [

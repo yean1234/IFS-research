@@ -11,7 +11,8 @@ v0(scene_builder.py)는 그대로 두고 비교 설계(docs/research-design.md 3
   3층  감정어 V/A/D, 신체 부위 높이 → _inferred(값 자리 아님)
   범위 규칙  회상 문장·배경 사물·부분(테두리·안쪽)·차원 주제('색은')·때(처음엔/지금은)
              ·부정·자기 정정·모름 → 값에서 빼고 보존 필드에 원문 그대로 남긴다
-  병합  차원 주제 > 부분(전체·겉 > 안쪽) > 지금 > 1층 > 2층 > 측정 > 비교 > 사전 > 퍼지 > 구체어 > 먼저 말함
+  병합  차원 주제 > 부분(전체·겉 > 안쪽) > 지금 > 1층 > 2층 > 측정 > 비교 > 사전 > 구체어 > 먼저 말함
+  퍼지  자모 편집거리 일치는 값이 아니다(원칙 2). _alternatives(needs_confirmation)·_needsConfirmation에만 남는다
   보존  값이 되지 않은 말은 _unmatched·_unmapped·_negated·_alternatives·_context·_parts·_uncertain에,
         확정 텍스트 전체는 절 단위 색인 _clauses(charSpan + 원문)에 남는다. 읽지 못한 말이 결과에서 사라지지 않는다.
 
@@ -35,17 +36,22 @@ from .paths import shared
 from .scene_builder import dumps, normalize_confirmed, write_spec  # noqa: F401 (같은 저장 방식)
 from .scene_spec import SLOT_PATHS, text_hash
 
-BUILDER_VERSION = "1.0.0"
+BUILDER_VERSION = "1.1.0"      # 1.1.0: 2단계 독립 검토(T3) 반영 — 퍼지 일치를 값에 쓰지 않음, 품사·구문 범위 규칙(docs/mapping-v1.md 5절)
 BUILDER_ID = f"scene-spec-builder-v1/{BUILDER_VERSION}"
 SPEC_VERSION = "2.1.0"
 MAPPER_ID = "v1"
 
-PUNCT_TAGS = {"SF", "SP", "SS", "SE", "SO", "SW"}
+# 어절 경계가 되는 기호. 이모지(W_EMOJI)도 띄어쓰기처럼 어절을 끊는다('🔴빨간🔴공' → 빨간 · 공)
+PUNCT_TAGS = {"SF", "SP", "SS", "SE", "SO", "SW", "W_EMOJI"}
 NOUN_TAGS = {"NNG", "NNP"}
 NOUNISH_TAGS = {"NNG", "NNP", "NNB", "NR", "SN", "NP"}
 SIMILE_SKIP_TAGS = ("JKS", "JKB", "JX", "VCP", "ETM", "JKO")
+# 절을 끊는 연결 어미. 대조·전환 어미(-더니 · -던데)도 절 경계다('모르겠더니 지금은 빨개요'의 모름은 앞 절에만)
 CLAUSE_EC = {"고", "는데", "ᆫ데", "은데", "지만", "면서", "으면서", "으며", "며", "어서", "아서", "여서", "서", "다가",
-             "니까", "으니까", "는데요"}
+             "니까", "으니까", "는데요", "더니", "던데"}
+# 색 낱말로 받는 품사: 색 어간이 시작하는 형태소가 형용사·어근이거나, 명사 안에 색 어간이 다 들어 있어야 한다
+COLOR_PRED_TAGS = {"VA", "XR"}
+NEGATOR_FORMS = ("않", "안", "못")
 TOPIC_PARTICLES = {"은", "는", "ᆫ", "도", "이", "가", "만"}
 LOC_PARTICLES = {"에", "에서", "서", "로", "으로", "까지"}
 SENT_END_FORMS = {"요", "이요"}
@@ -214,8 +220,10 @@ class SceneSpecBuilderV1:
         unit_alt = "|".join(sorted(map(re.escape, v["units"]), key=lambda s: (-len(s), s)))
         num_alt = "|".join(sorted(map(re.escape, v["nativeNumbers"]), key=lambda s: (-len(s), s)))
         approx = "|".join(sorted(map(re.escape, v["approxWords"]), key=lambda s: (-len(s), s)))
+        # '두 뼘 반' · '1미터 반' = 수 + 0.5 단위(덧셈). '반' 뒤에는 쯤·정도·가량이나 한글 아닌 글자만 온다('반투명' 제외)
         self._measure_re = re.compile(
-            rf"(?:(?:{approx})\s*)?(\d+(?:\.\d+)?|{num_alt})\s*({unit_alt})(?![A-Za-z])(?:\s*(쯤|정도|가량|남짓))?")
+            rf"(?:(?:{approx})\s*)?(\d+(?:\.\d+)?|{num_alt})\s*({unit_alt})(?![A-Za-z])"
+            rf"(?:\s*(반)(?=쯤|정도|가량|[^가-힣]|$))?(?:\s*(쯤|정도|가량|남짓))?")
 
     # ── 외부 정보 ───────────────────────────────────────────────────────────────
     @classmethod
@@ -237,6 +245,7 @@ class SceneSpecBuilderV1:
         text = normalize_confirmed(text)
         toks = self.analyzer.tokens(text)
         doc = Doc(text, toks)
+        doc.coord_neg = self._coord_negated(doc)       # type: ignore[attr-defined]
         consumed: set[int] = set()
         records: dict[str, list] = defaultdict(list)     # 보존 필드
         cands: list[Cand] = []
@@ -290,9 +299,9 @@ class SceneSpecBuilderV1:
         inferred = self._layer3(hits, values, provenance, consumed, context_sents, doc)
         unmatched = self._unmatched(doc, hits, consumed | proto_toks | fuzzy_toks)
         clauses = self._clauses(doc, provenance, context_sents)
-        needs = [{"path": p, "trigger": pv["trigger"], "charSpan": pv["charSpan"], "reason": "fuzzy_lexicon",
-                  "matched": pv["rule"].split(">")[0].split(".", 1)[-1]}
-                 for p, provs in provenance.items() for pv in provs if pv.get("needsConfirmation")]
+        needs = [{"path": c.path, "trigger": c.provs[0]["trigger"], "charSpan": c.provs[0]["charSpan"],
+                  "reason": "fuzzy_lexicon", "matched": c.meta["matched"]}
+                 for c in records.pop("_needsConfirmation", [])]
 
         groups: dict[str, dict] = {}
         for path in SLOT_PATHS:
@@ -430,6 +439,26 @@ class SceneSpecBuilderV1:
             return True
         return bool(ts) and all(t.base_tag in NOUN_TAGS | {"XSN", "MM"} for t in ts)
 
+    def _coordinated_attributive(self, doc: Doc, e: int) -> int | None:
+        """'크고 검은 돌' · '작고 둥글고 하얀 공' — 형용사 + '-고'로 이어진 관형 나열은 같은 머리 명사를 꾸민다.
+        나열 끝의 관형 어절(…ETM) 번호를 돌려준다. '돌고 있는'(-고 있다)처럼 보조 용언이 오면 나열이 아니다."""
+        toks = doc.toks
+        f = e
+        while True:
+            ts = [toks[k] for k in doc.etoks(f)]
+            if len(ts) < 2 or ts[-1].form != "고" or ts[-1].base_tag != "EC" or \
+                    not any(t.base_tag in ("VA", "XSA") for t in ts[:-1]):
+                return None
+            g = f + 1
+            if g >= len(doc.eojeols) or doc.is_punct_eoj(g) or doc.eoj_sent(g) != doc.eoj_sent(f):
+                return None
+            first = toks[doc.eojeols[g][0]]
+            if first.base_tag in ("VX", "VCN") or first.form in NEGATOR_FORMS:
+                return None
+            if self._is_attributive(doc, g) and toks[doc.eojeols[g][1]].base_tag == "ETM":
+                return g
+            f = g
+
     def _is_background(self, noun: str) -> bool:
         return noun in self.background or any(len(b) >= 2 and noun.endswith(b) for b in self.background)
 
@@ -468,13 +497,18 @@ class SceneSpecBuilderV1:
         for s in sorted(set(doc.sent)):
             ids = [i for i in range(len(toks)) if doc.sent[i] == s]
             forms = [(toks[i].form, toks[i].base_tag) for i in ids]
-            if any(f in cs["nouns"] and tg in NOUN_TAGS for f, tg in forms):
+            recall = any(f in cs["recallVerbs"] and tg == "VV" for f, tg in forms)
+            # '장면'은 떠올린 상황을 가리킬 때만 회상 표지다: '-던 장면' 관형절의 머리이거나, 같은 문장에 '떠오르다' 류가 있을 때.
+            # 명사 하나만으로 문장 전체를 회상으로 돌리지 않는다('장면 속에 빨간 공이 있어요'는 형상 문장)
+            if any(toks[i].form in cs["nouns"] and toks[i].base_tag in NOUN_TAGS
+                   and (recall or (i > 0 and doc.sent[i - 1] == s and toks[i - 1].base_tag == "ETM"
+                                   and toks[i - 1].form in cs["etm"])) for i in ids):
                 out.add(s)
                 continue
             etm = [i for i in ids if toks[i].form in cs["etm"] and toks[i].base_tag == "ETM"]
             if not etm:
                 continue
-            if any(f in cs["recallVerbs"] and tg == "VV" for f, tg in forms):
+            if recall:
                 out.add(s)
                 continue
             for i in etm:                       # '~던 오후요' · '~던거요': 던 + 상황 명사로 문장이 끝남
@@ -520,6 +554,8 @@ class SceneSpecBuilderV1:
             if m.start(1) > 0 and re.match(r"[가-힣A-Za-z0-9]", text[m.start(1) - 1]) and not num_s.isdigit():
                 continue
             num = float(num_s) if re.match(r"\d", num_s) else float(v["nativeNumbers"][num_s])
+            if m.group(3):                       # '두 뼘 반' — 단위 뒤의 반은 반 단위를 더한다
+                num += 0.5
             meters = num * v["units"][unit]
             s, e = m.start(), m.end()
             ids = doc.toks_in(s, e)
@@ -604,6 +640,20 @@ class SceneSpecBuilderV1:
                 return t.form[-n:], i, table[t.form[-n:]]
         return None
 
+    @staticmethod
+    def _half_at(doc: Doc, j: int, clause: int) -> int | None:
+        """j에서 '(의) 반'이 시작하면 '반' 토큰 번호. '반투명'처럼 반이 다른 명사의 앞부분이면 아니다."""
+        toks = doc.toks
+        n = len(toks)
+        if j < n and toks[j].form == "의" and toks[j].base_tag == "JKG":
+            j += 1
+        if j >= n or toks[j].form != "반" or toks[j].base_tag not in ("NNG", "NR") or doc.clause[j] != clause:
+            return None
+        nx = toks[j + 1] if j + 1 < n else None
+        if nx is not None and nx.start == toks[j].end and nx.base_tag in NOUN_TAGS and nx.form != "정도":
+            return None
+        return j
+
     def _comparatives(self, doc: Doc, consumed: set[int], records) -> list[Cand]:
         out = []
         v = self.v
@@ -628,16 +678,26 @@ class SceneSpecBuilderV1:
                 num = toks[j].form
                 mult = float(num) if num.isdigit() else float(v["nativeNumbers"].get(num, 1))
                 j += 2
+            # 절반: 'N 반만 해요' · 'N의 반만큼' · 'N 반쯤' — 기준 사물의 0.5배
+            hj = self._half_at(doc, j, doc.clause[i])
+            half_only = False
+            if hj is not None:
+                mult *= 0.5
+                j = hj + 1
+                while j < n and toks[j].base_tag == "XSN":          # 반쯤
+                    j += 1
+                if j >= n or toks[j].form not in ("만", "만큼", "만치", "보다", "크기", "정도"):
+                    half_only = True                                  # 'N 반쯤 돼요' — 반 자체가 비교 구조
             nj = toks[j] if j < n else None
-            if nj is None:
+            if nj is None and not half_only:
                 continue
             # (1) 길이 기준: 팔 길이만큼
-            if t.form == "길이" and nj.form in ("만큼", "만치", "정도"):
+            if nj is not None and t.form == "길이" and nj.form in ("만큼", "만치", "정도"):
                 r = self._ref_noun(doc, i - 1, self.length_refs) if i else None
                 if r:
                     ref = (r[0] + " 길이", r[1], r[2])
                     pattern, end_tok, dist_hint = "length", j, True
-            if pattern is None:
+            if pattern is None and nj is not None:
                 if nj.form == "만" and nj.base_tag == "JX":
                     k = j + 1
                     after = text[nj.end:doc.espan(doc.eoj[j])[1]]
@@ -691,8 +751,19 @@ class SceneSpecBuilderV1:
                                 k2 += 1
                             if k2 < n and toks[k2].form in ("만큼", "정도"):
                                 end_tok = k2
+            if pattern is None and half_only:
+                pattern, end_tok = "half", j - 1
             if pattern is None:
                 continue
+            # 비교 구 뒤의 절반: '주먹 크기의 반 (정도)'
+            if hj is None and end_tok is not None:
+                hk = self._half_at(doc, end_tok + 1, doc.clause[i])
+                if hk is not None:
+                    mult *= 0.5
+                    end_tok = hk
+                    while end_tok + 1 < n and (toks[end_tok + 1].base_tag == "XSN" or toks[end_tok + 1].form in ("정도", "가량")) \
+                            and doc.clause[end_tok + 1] == doc.clause[i]:
+                        end_tok += 1
             if ref is None:
                 ref = self._ref_noun(doc, i, self.refs)
                 if ref is None:
@@ -849,6 +920,100 @@ class SceneSpecBuilderV1:
                         "suffix": suf}
         return None
 
+    def _full_color_lemma(self, form: str, tag: str | None = None):
+        """형태소 원형이 색 어간(또는 접두 + 어간) 그대로인가: 파랗 · 노래지 · 새빨갛.
+        동사(VV)는 Kiwi가 '-어지다' 변화 동사를 한 형태로 낸 경우도 받는다: 붉어지 · 빨개지 = 색 활용형 + 지."""
+        m = self._match_color(form)
+        if m is not None and m["len"] == len(form):
+            return m
+        if tag == "VV" and form.endswith("지") and len(form) >= 2:
+            m = self._match_color(form[:-1])
+            if m is not None and m["len"] == len(form) - 1:
+                return m
+        return None
+
+    def _color_pos_ok(self, doc: Doc, e: int, a: int, b: int) -> bool:
+        """어절 e의 [a, b) 글자(색 어간)가 색 낱말로 쓰였는가 — 품사 조건.
+        어간이 시작하는 형태소가 형용사·어근(VA·XR)이면 받는다('노래요' = 노랗/VA). 동사(VV)는 원형이 색 어간 그대로일 때만
+        ('노래지다'). 명사·부사면 색 어간이 그 형태소 안에 다 들어 있거나 이어지는 형태소가 모두 명사여야 한다
+        ('보라색' · '하늘/NNG 색/NNG'). 그래서 '보라고'(보/VV + 라고/EC), '제 노래요'(노래/NNG + 요/JX)는 색이 아니다."""
+        ids = list(doc.etoks(e))
+        toks = doc.toks
+        tk = next((k for k in ids if toks[k].start <= a < toks[k].end), None)
+        if tk is None:
+            return False
+        t = toks[tk]
+        if t.base_tag in COLOR_PRED_TAGS:
+            return True
+        if t.base_tag == "VV":
+            return self._full_color_lemma(t.form, "VV") is not None
+        if t.base_tag in NOUN_TAGS | {"MAG", "NNB"}:
+            over = [k for k in ids if toks[k].start < b and a < max(toks[k].end, toks[k].start + 1)]
+            return all(k == tk or toks[k].base_tag in NOUN_TAGS | {"XSN"} for k in over)
+        return False
+
+    def _is_comparison_reference(self, doc: Doc, e: int) -> bool:
+        """'오렌지만 해요' · '귤만큼 커요' — 'N만 하다 / N만큼·보다 + 크기 서술어'의 N은 비교 기준 사물이다(색이 아님)."""
+        toks = doc.toks
+        n = len(toks)
+        cf = self.v["comparativeFactors"]
+        ids = list(doc.etoks(e))
+        nouns = [k for k in ids if toks[k].base_tag in NOUN_TAGS]
+        if not nouns:
+            return False
+        j = nouns[-1] + 1
+        if j >= n or doc.clause[j] != doc.clause[nouns[-1]]:
+            return False
+        if toks[j].form == "만" and toks[j].base_tag == "JX":
+            k = j + 1
+            return k < n and doc.clause[k] == doc.clause[j] and toks[k].form == "하" and toks[k].base_tag in ("VV", "XSV", "VA", "XSA")
+        if toks[j].form in ("만큼", "만치", "보다"):
+            for k in range(j + 1, min(n, j + 5)):
+                if doc.clause[k] != doc.clause[j]:
+                    break
+                tk = toks[k]
+                if tk.base_tag in ("VA", "VV"):
+                    return tk.form[:1] in cf["biggerStems"] + cf["smallerStems"] or tk.form in cf["biggerStems"] + cf["smallerStems"]
+        return False
+
+    def _color_in_eojeol(self, doc: Doc, e: int):
+        """어절 e의 색 낱말: 표면형(어절 첫머리)을 품사 조건으로 거르고, 안 되면 첫 형태소 원형('파랬다가' → 파랗)으로 찾는다."""
+        s0 = doc.espan(e)[0]
+        m = self._match_color(doc.etext(e))
+        if m is not None:
+            a = s0 + len(m["prefix"])
+            if not self._color_pos_ok(doc, e, a, a + len(m["stem"])):
+                m = None
+        if m is None:
+            first = doc.toks[doc.eojeols[e][0]]
+            if first.base_tag in ("VA", "VV", "XR"):
+                m = self._full_color_lemma(first.form, first.base_tag)
+                if m is not None:
+                    m = dict(m, suffix="", lemma=first.form)
+        if m is not None and self._is_comparison_reference(doc, e):
+            return None
+        return m
+
+    def _coord_negated(self, doc: Doc) -> set[int]:
+        """'크지도 작지도 않아요' — '-지도'(EC 지 + JX 도)가 이어지고 뒤에 않·안·못이 오면 그 열의 모든 항이 부정이다."""
+        toks = doc.toks
+        out: set[int] = set()
+        run: list[int] = []
+        for e in range(len(doc.eojeols)):
+            ids = list(doc.etoks(e))
+            forms = [(toks[k].form, toks[k].base_tag) for k in ids]
+            if len(forms) >= 2 and forms[-2] == ("지", "EC") and forms[-1] == ("도", "JX"):
+                if run and doc.eoj_clause(run[-1]) != doc.eoj_clause(e):
+                    run = []
+                run.append(e)
+                continue
+            if run and doc.eoj_clause(e) == doc.eoj_clause(run[-1]) and ids \
+                    and toks[ids[0]].form in NEGATOR_FORMS + ("아니",):
+                for f in run:
+                    out.update(doc.etoks(f))
+            run = []
+        return out
+
     def _colors(self, doc: Doc, consumed: set[int], records) -> list[Cand]:
         text = doc.text
         found = []   # (e, match)
@@ -858,7 +1023,7 @@ class SceneSpecBuilderV1:
             ids = list(doc.etoks(e))
             if any(k in consumed for k in ids):
                 continue
-            m = self._match_color(doc.etext(e))
+            m = self._color_in_eojeol(doc, e)
             if m:
                 found.append((e, m))
         out: list[Cand] = []
@@ -925,7 +1090,8 @@ class SceneSpecBuilderV1:
             nf = self._next_eoj_same_clause(doc, e)
             in_eoj = [doc.toks[k].form for k in ids]
             pre = doc.toks[i0 - 1] if i0 else None
-            if ("지" in in_eoj and nf is not None and doc.etext(nf)[:1] in ("않", "안")) or \
+            if any(k in doc.coord_neg for k in ids) or \
+                    ("지" in in_eoj and nf is not None and doc.etext(nf)[:1] in ("않", "안")) or \
                     (nf is not None and doc.etext(nf).startswith("아니") and not doc.etext(e).endswith("에")) or \
                     (pre is not None and pre.form in ("안", "못") and pre.base_tag == "MAG" and doc.clause[i0 - 1] == doc.clause[i0]):
                 c.status = "negated"
@@ -989,7 +1155,7 @@ class SceneSpecBuilderV1:
             if sim:
                 base_mk = mk
                 mk = lambda rule, _b=base_mk, _s=sim: dict(_b(f"simile.{_s['marker']}>{rule}"), source="simile_marker")  # noqa: E731
-            neg = h.negated or self._noun_negated(doc, i)
+            neg = h.negated or self._noun_negated(doc, i) or i in doc.coord_neg
             # 'X에 가까운/가까워요'의 X가 색이면 거리 말이 아니다(색 규칙이 맡음)
             if e.category == "distance" and e.lemma == "가깝" and i > 0:
                 pe = doc.eoj[i] - 1
@@ -1244,7 +1410,8 @@ class SceneSpecBuilderV1:
         return out
 
     def _fuzzy(self, doc: Doc, covered: set[int], fuzzy_toks: set[int]) -> list[Cand]:
-        """사전에 없는 내용어: (1) 의태어 파생 규칙(정확 일치) (2) 자모 편집거리 ≤ 1(확인 필요)."""
+        """사전에 없는 내용어: (1) 의태어 파생 규칙(정확 일치, 값) (2) 자모 편집거리 ≤ 1(kind = fuzzy: 값이 아니라
+        확인 필요 대안으로만 남는다 — _merge)."""
         out = []
         maxd = self.v["fuzzy"]["maxDistance"]
         for i, t in enumerate(doc.toks):
@@ -1360,6 +1527,7 @@ class SceneSpecBuilderV1:
         sim_src = {s["srcIndex"] for s in similes}
         former = set(self.v["formerMarkers"])
         current = set(self.v["currentMarkers"])
+        former_etm = set(self.v["contextSentence"]["etm"])          # '던'
         clause_tense: dict[int, int] = {}
         for c_id in set(doc.clause):
             ids = doc.clause_toks(c_id)
@@ -1378,11 +1546,16 @@ class SceneSpecBuilderV1:
                 c.status, c.reason = "context", "recollection_sentence"
                 continue
             c.tense = clause_tense.get(doc.clause[i], 0)
+            # 후보 단위 때: '-던' 관형절 안의 말은 지난 상태다('빨갛던 게 노래졌어요' · '아까 반짝이던 게 지금은 …')
+            last = doc.toks[doc.eojeols[doc.eoj[i]][1]]
+            if last.base_tag == "ETM" and last.form in former_etm:
+                c.tense = -1
             # 관형어 → 꾸미는 명사
             if c.kind in ("color", "lexicon") and c.path.startswith(("material.", "form.posture", "layout.size")):
                 e = doc.eoj[i]
-                if c.attributive or self._is_attributive(doc, e):
-                    hn = self._head_noun(doc, e)
+                attr_e = e if (c.attributive or self._is_attributive(doc, e)) else self._coordinated_attributive(doc, e)
+                if attr_e is not None:
+                    hn = self._head_noun(doc, attr_e)
                     if hn:
                         noun, k = hn
                         if self._is_background(noun) and k not in sim_src:
@@ -1432,7 +1605,7 @@ class SceneSpecBuilderV1:
                     q_toks.add(k)
             for c in cands:
                 if doc.clause[c.tok] == c_id and c.status == "ok":
-                    if c.tok in q_toks:
+                    if c.tok in q_toks and c.kind != "fuzzy":
                         paths.add(c.path)
                     c.status, c.reason = "uncertain", "participant_uncertain"
             for k in q_toks:
@@ -1467,14 +1640,14 @@ class SceneSpecBuilderV1:
             forms = [toks[k].form for k in doc.etoks(e)]
             if "보다" in forms and forms.index("보다") + 1 < len(forms) and forms[forms.index("보다") + 1] in ("는", "ᆫ"):
                 later = [d for d in cands if d is not c and d.path == c.path and d.start > c.start
-                         and doc.sent[d.tok] == doc.sent[c.tok]]
+                         and doc.sent[d.tok] == doc.sent[c.tok] and d.kind != "fuzzy"]
                 if later:
                     c.status, c.reason = "corrected", "self_corrected"
             nf = self._next_eoj_same_clause(doc, e)
             if nf is not None and doc.etext(nf) == "말고":
                 c.status, c.reason = "corrected", "self_corrected"
         for i, s in points:
-            after_paths = {d.path for d in cands if d.start > toks[i].start and doc.sent[d.tok] == s}
+            after_paths = {d.path for d in cands if d.start > toks[i].start and doc.sent[d.tok] == s and d.kind != "fuzzy"}
             for c in cands:
                 if c.status != "ok" or c.start >= toks[i].start:
                     continue
@@ -1503,6 +1676,12 @@ class SceneSpecBuilderV1:
         by_path: dict[str, list[Cand]] = defaultdict(list)
         alternatives: list[dict] = []
         for c in cands:
+            if c.kind == "fuzzy" and c.status in ("ok", "uncertain", "corrected"):
+                # 자모 퍼지 일치는 참여자가 그 낱말을 말했다는 근거가 아니다(원칙 2): 슬롯 값에 쓰지 않고 확인 필요 대안으로만 둔다
+                alternatives.append({"path": c.path, "value": c.value, "reason": "needs_confirmation",
+                                     "_provenance": list(c.provs)})
+                records["_needsConfirmation"].append(c)
+                continue
             if c.status == "ok":
                 by_path[c.path].append(c)
             elif c.status in ("corrected", "uncertain"):
@@ -1576,6 +1755,8 @@ class SceneSpecBuilderV1:
 
     @staticmethod
     def _unmatched(doc: Doc, hits: list[Hit], covered: set[int]) -> list[dict]:
+        # v1은 색을 사전이 아니라 색 규칙으로 읽는다. 색 규칙이 차지하지 않은 색 사전 낱말은 '읽지 못한 말'로 남긴다
+        hits = [h for h in hits if h.entry.category != "color"]
         cov = {h.token_index for h in hits} | covered
         out = []
         for i, t in enumerate(doc.toks):
