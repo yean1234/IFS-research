@@ -77,6 +77,7 @@ ultracode
 - 체크포인트 커밋:
   - `a753289` baseline
   - `d4e3e3a` CP1 (작업 1 + 작업 3 전반 실패 사례·채점기 + 작업 4 Unity)
+  - `46199cc` CP2 반영(Codex CP2 수용 항목. 오프라인 363 통과)
   - `58ba0dc` CP2 (작업 2 drift 1.1.0 + 작업 3 매핑 빌더 1.2.0·채점기 0.3.0, 독립 검토 반영)
 - 마지막 커밋: `git log -1` 로 확인. 이 파일 갱신과 함께 WIP 커밋이 쌓입니다(메시지 접두어 `WIP:`).
   WIP 커밋은 체크포인트가 아니므로, Codex에게 줄 diff 기준점은 항상 위 체크포인트 커밋을 씁니다.
@@ -114,9 +115,10 @@ codex exec --sandbox read-only -c model_reasoning_effort="medium" -C . -o /tmp/c
 
 ## 4. 지금 진행 중인 것 (계정 전환 뒤 세션 edd117bf 기준)
 
-- 끝: 2단계(CP2 커밋 `58ba0dc`), Codex CP2 호출과 분류(`docs/codex-reviews/CP2.md`). 사람이 할 일은 morning-todo에 병합.
-- **진행 중: CP2 수용 항목 반영 에이전트(opus) 1개** — 코드 3건(#3 `[mapping] strict`, #4 drift `comparableGroups` 표시, #12 `[drift] allow_draft_phrases` 게이트)과 문서(#1·#2·#5 acceptance.md, #6 research-design·mapping-v1). 매핑 규칙·채점 로직·임계값은 안 바꿈.
-- 끊겼다면: CP2.md 분류 표에서 아직 반영 안 된 수용 항목을 `git diff`로 확인해 새 서브에이전트(opus)에 맡김 → 오프라인 테스트(시작 354) → drift 라벨 평가(정확도 1.000 유지 확인, sha가 바뀌면 acceptance·drift-design 갱신) → `CP2 반영:` 커밋 → 5절 4번(3단계 E2E).
+- 끝: 2단계, Codex CP2와 반영(커밋 `46199cc`). 오프라인 363 통과, drift 라벨 정확도 1.000, held-out sha 그대로.
+- **진행 중: 3단계 Workflow(이 세션 내부, opus, 순차)**: ① E2E 실행자 — held-out 30개 재생 → v0·v1 spec → 스키마 검증 → 채점 → Unity 배치 캡처 60개 → 적용값 대조 → `docs/validation/e2e/`, 전 과정 스크립트(`chatbot/ifs_chatbot/eval/` 아래), acceptance.md의 "(구현 후 확정)" 채움. ② 독립 재현 검토자(읽기 전용).
+- **동결:** 매핑 규칙·채점 판정·drift·코퍼스는 CP2 반영 커밋 뒤로 고치지 않음. held-out 결과를 본 뒤에는 어떤 것도 조정하지 않고 미달이면 숫자 그대로 보고(D04).
+- 끊겼다면: `git status`로 `docs/validation/e2e/`와 새 스크립트가 어디까지 됐는지 보고, 남은 것만 새 서브에이전트(opus)에 맡김(5절 4번). held-out 채점이 이미 한 번 됐으면 같은 명령의 재실행(재현)만 함. 그다음 메인 세션이 AC를 하나씩 판정 → CP3 커밋 → Codex CP3(마지막 1번, `<CP2_COMMIT>` = `58ba0dc`) → 반영 → morning-report.
 - 모델 배정(D09): 판단·분류·판정·보고서는 메인 세션(Fable), 구현·테스트 실행·검토·수정 서브에이전트는 opus.
 
 ## 5. 다음에 할 일 (순서대로)
