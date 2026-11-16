@@ -86,10 +86,10 @@ ultracode
 ### 작업
 - [x] 0. baseline 커밋, 저장소 구조 파악
 - [x] 1. 측정·평가 설계 → `docs/research-design.md`, `docs/acceptance.md`(AC-1..AC-7, RD-1..8). CP1 지적 11건 반영 완료(커밋 전, WIP에 포함)
-- [ ] 2. 심상 유지(drift) 판단 — **진행 중**
+- [x] 2. 심상 유지(drift) 판단 — 구현·독립 검토·수정 끝(drift 1.1.0, AC-2 잠정 통과). CP2 대기
   - [x] 정답 라벨 18개 `chatbot/tests/fixtures/drift/drift_cases.json` (drift 9 / no_drift 9, 유형 a–k, 경계 3)
-  - [ ] 구현 `chatbot/ifs_chatbot/drift.py`, `tests/test_drift.py`, 컨트롤러 단계별 스냅샷, `shared/protocol/elicitation_protocol.v1.1.json`(회상 확인·자기보고 1–7 초안, status=draft), `docs/drift-design.md`, research-design 4.5절, acceptance AC-2 — T2 실행자 작업 중
-  - [ ] 독립 검토 → 수정
+  - [x] 구현 `chatbot/ifs_chatbot/drift.py`, `tests/test_drift.py`, 컨트롤러 단계별 스냅샷, `shared/protocol/elicitation_protocol.v1.1.json`(회상 확인·자기보고 1–7 초안, status=draft), `docs/drift-design.md`, research-design 4.5절, acceptance AC-2
+  - [x] 독립 검토 → 수정
 - [ ] 3. 매핑 고도화
   - [x] 실패 사례 기록 `docs/mapping-failures.md`(45건), 채점기 `chatbot/ifs_chatbot/eval/fidelity.py`(v0.2.0), `eval/corpus_run.py`
   - [x] v1 매퍼 `chatbot/ifs_chatbot/scene_builder_v1.py` + `jamo.py` + `clarify.py`, 사전 `shared/lexicon/*.v1.json`, 스키마 `shared/schemas/scene-spec.v2.1.json`, Unity 파서 2.0/2.1, config `[mapping] mode=v1, save_both=true, clarify_loop=false`, v1 예외 시 v0 폴백. dev: 반영률 0.573→0.937, 왜곡 0.165→0.000, 미반영 원문 보존 0.130→1.000 (dev는 규칙 작성에 쓴 세트라 낙관적)
@@ -114,10 +114,10 @@ codex exec --sandbox read-only -c model_reasoning_effort="medium" -C . -o /tmp/c
 
 ## 4. 지금 진행 중인 것 (계정 전환 뒤 세션 edd117bf 기준)
 
-- 끝난 것: T2 drift 마무리 점검(빠진 것 없음, 테스트 2개 추가 → 오프라인 270 통과), T2·T3 독립 검토(opus 2명). 검토 지적의 수용/보류 분류는 `docs/decisions.md` 맨 끝 "2단계 독립 검토 분류" 절.
-- **진행 중: 수용 항목 수정 Workflow**(이 세션 내부, opus, 순차): ① 매핑 v1·채점기 수정(T3-F1·F2·F3·F4·F5·F6·F7·G1·G2·G3·F8·F9) → ② drift 수정(T2-F01·F02·F03·F04·F05·F06·F07·F08·F09·F10·F12·F13, 스키마 endedBy withdrawn).
-- 이 Workflow가 끊겼다면: `git diff`로 어디까지 고쳤는지 보고, decisions.md 분류표에서 아직 반영 안 된 수용 항목만 새 서브에이전트(opus)에 맡김. 매핑을 먼저 끝내고 drift를 그 뒤에(drift는 v1 매퍼 출력을 씀). 원칙: 사례 낱말 땜질 금지, 지표가 나빠지면 그대로 보고, heldout.json은 열지 않음, drift 라벨·dev 정답 수정 금지.
-- 수정이 끝나면 메인 세션이 테스트·dev 수치·라벨 정확도를 직접 다시 재고 5절 1번으로 감.
+- 끝난 것(WIP 커밋 40e6981까지): T2 마무리 점검, T2·T3 독립 검토, 수용 항목 수정(매핑 1.1.0, 채점기 0.3.0, drift 1.1.0). 분류표와 결과·결정(X1–X7)은 `docs/decisions.md` 맨 끝 두 절. 사람이 할 일은 `docs/morning-todo.md`에 병합함.
+- 메인 세션이 다시 잰 값: 오프라인 350 통과, drift 라벨 정확도 1.000(sha `345c4071…dc1d`, AC-2 잠정 통과), dev 반영률 0.937·왜곡 0.000·퍼지 경로 값 0·미반영 원문 보존률(속성 단위) 0.375.
+- **진행 중: 원문 보존 보완 에이전트(opus) 1개** — 소비되지 않은 내용어를 `_unmatched`에 남기는 일반 규칙(decisions X7). 슬롯 값은 바꾸지 않음. 고치는 파일: scene_builder_v1.py, test_scene_builder_v1.py, docs/mapping-v1.md, examples/v1/*.json.
+- 끊겼다면: `git diff`로 scene_builder_v1.py 변경을 보고, 오프라인 테스트와 dev 채점(`python -m ifs_chatbot.eval.fidelity --corpus tests/fixtures/imagery_corpus/dev.json --mapper v0 --compare v1 --out <임시>`)을 돌려 슬롯 값이 그대로이고 보존률이 올랐으면 채택, 테스트가 깨지고 고치기 어려우면 `git checkout -- <그 파일들>`로 40e6981 상태로 되돌린 뒤 0.375를 그대로 보고하고 5절 1번으로 감.
 
 ## 5. 다음에 할 일 (순서대로)
 
