@@ -528,7 +528,8 @@ def test_docs_match_params():
     root = Path(__file__).resolve().parents[2] / "docs"
     design = (root / "drift-design.md").read_text(encoding="utf-8")
     rd = (root / "research-design.md").read_text(encoding="utf-8")
-    sec = rd.split("### 4.5", 1)[1].split("\n### ", 1)[0]
+    # 절 번호가 아니라 절 제목으로 찾는다(2026-11-17 개정으로 4.5 → 4.6)
+    sec = rd.split("심상 유지(표류) 지표\n", 1)[1].split("\n### ", 1)[0]
     lo, hi = P["chromaticL"]
     w = P["groupWeights"]
     for s in (f"τ_soft = {_g(P['tauNumSoft'])}", f"τ_hard = {_g(P['tauNumHard'])}", f"τ_hue = {_g(P['tauHueDeg'])}°",
