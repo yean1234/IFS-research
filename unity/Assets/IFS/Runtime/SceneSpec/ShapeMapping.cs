@@ -83,6 +83,8 @@ namespace IFS.SceneSpec
         public const string StatusUnmapped = "unmapped_shape";
         public const string StatusNotAppliedForm = "not_applied_form";
         public const string StatusConflict = "conflict";
+        /// <summary>맨 위 상태 전용: 소유감 실험 변형본이 모양 모형을 강제함(SceneOverride.ShapeModel). spec 판정이 아니다.</summary>
+        public const string StatusForced = "forced";
 
         public const string ModelSphere = "Sphere";
         public const string ModelCube = "Cube";
@@ -105,6 +107,30 @@ namespace IFS.SceneSpec
         public static bool IsMapped(string shape) => shape != null && ModelByShape.ContainsKey(shape);
 
         public static string ModelFor(string shape) => IsMapped(shape) ? ModelByShape[shape] : null;
+
+        /// <summary>모형 → 모양 값(Cube → square). 표에 없으면 null.</summary>
+        public static string ShapeForModel(string model)
+        {
+            foreach (var kv in ModelByShape) if (kv.Value == model) return kv.Key;
+            return null;
+        }
+
+        /// <summary>변형본용: 원래 판정의 모양어 기록은 그대로 두고 모형만 강제한 판정(Status = forced). 입력은 바꾸지 않는다.</summary>
+        public static ShapeResolution Forced(ShapeResolution original, string model)
+        {
+            if (Array.IndexOf(Models, model) < 0) throw new ArgumentException("모르는 모양 모형: " + model);
+            return new ShapeResolution
+            {
+                Status = StatusForced,
+                Applied = ShapeForModel(model),
+                Model = model,
+                FormType = original?.FormType,
+                Words = (original?.Words ?? new List<ShapeWord>()).Select(w => new ShapeWord
+                {
+                    Shape = w.Shape, Lemma = w.Lemma, Trigger = w.Trigger, CharSpan = w.CharSpan?.ToArray(), Status = w.Status,
+                }).ToList(),
+            };
+        }
 
         /// <summary>모양 모형으로 바꿀 수 있는 form.type: 말하지 않음(null) 또는 blob.</summary>
         public static bool FormAllowsShape(string statedFormType) => statedFormType == null || statedFormType == "blob";

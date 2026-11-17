@@ -16,13 +16,16 @@ unity/
 │  │  │  ├─ Loading/                       SceneLoader · InspectorPathSource · ISceneSpecPathSource · SpecMotion
 │  │  │  ├─ Environment/                   EnvironmentBuilder(코드로 만드는 중립 환경) · IFSEnvironment(씬 컴포넌트)
 │  │  │  ├─ SceneSpec/ColorMetrics.cs      sRGB↔Lab, CIEDE2000 (색 정확도 측정)
-│  │  │  └─ SceneSpec/ShapeMapping.cs · ConeMesh.cs  모양어 → 모양 모형 판정, 원뿔 메시 (docs/shape-mapping.md)
-│  │  ├─ Editor/                          메뉴: 예시 테스트 씬 다시 만들기 · Create Shape Prefabs · BatchCapture(배치 캡처·성능 측정)
+│  │  │  ├─ SceneSpec/ShapeMapping.cs · ConeMesh.cs  모양어 → 모양 모형 판정, 원뿔 메시 (docs/shape-mapping.md)
+│  │  │  ├─ SceneSpec/SceneOverride.cs · MotionGroups.cs  변형본 덮어쓰기, motion.type → 움직임 묶음 표
+│  │  │  └─ Ownership/                     소유감 실험: 변형본 생성기 · 러너 · 머리 자세 · 기록 (아래 「소유감 실험」)
+│  │  ├─ Editor/                          메뉴: 예시 테스트 씬 다시 만들기 · Create Shape Prefabs · BatchCapture(배치 캡처·성능 측정) · Ownership 실험 씬·자동 시행
 │  │  ├─ Runtime/Resources/IFS/          셰이더(Built-in): SceneSpec Opaque · Fade + 공통 노이즈, Environment Floor · Sky
 │  │  ├─ Tests/Editor/                    EditMode 테스트(아래 「테스트」), UnityOnly/ = Unity에서만 도는 것
-│  │  └─ Scenes/SceneSpecExamples.unity   예시 2개를 나란히 띄우는 테스트 씬
+│  │  └─ Scenes/                          SceneSpecExamples.unity(예시 2개 테스트 씬) · OwnershipExperiment.unity(소유감 실험)
 │  ├─ Prefabs/Shapes/                     모양 모형 프리팹 4개(Sphere · Cube · FlatCylinder · Cone) + 원뿔 메시 + 머티리얼(메뉴가 만듦)
 │  └─ StreamingAssets/IFS/examples/       EX01.json · EX02.json (chatbot/tests/fixtures/scene_spec와 바이트까지 같음)
+│     StreamingAssets/IFS/ownership_task.v0.json  소유감 실험 참여자 문구(초안, IRB 대상)
 └─ Tools/compile-check/                   Unity 없이 C# 컴파일·테스트(dotnet). Assets 밖이라 Unity는 무시
 ```
 
@@ -32,7 +35,7 @@ UnityEngine에 의존하지 않는 부분(데이터 클래스·파싱·파라미
 
 1. **프로젝트 준비** — Unity Hub ▸ Projects ▸ Add ▸ *Add project from disk* ▸ 이 `unity/` 폴더. 에디터 버전은 6000.0.85f2(`ProjectSettings/ProjectVersion.txt`)입니다. 색공간·품질 설정은 아래 「환경과 품질 설정」을 따릅니다. 이미 Quest 프로젝트가 있으면 `Assets/IFS/`와 `Assets/StreamingAssets/IFS/`를 그 프로젝트의 `Assets/` 아래로 복사합니다(`.meta`도 같이 — 테스트 씬이 스크립트 GUID로 연결돼 있습니다). Unity 2022.3 LTS 이상 / Unity 6 기준(C# 9)으로 썼습니다.
 2. **패키지** — Package Manager ▸ `+` ▸ *Add package by name* ▸ `com.unity.nuget.newtonsoft-json`(3.2.1 이상). 테스트를 돌리려면 `com.unity.test-framework`(새 프로젝트에는 보통 있음). 로더는 XR Interaction Toolkit 없이도 컴파일됩니다.
-3. **테스트** — Window ▸ General ▸ Test Runner ▸ EditMode ▸ *Run All* → 66개 통과해야 합니다(2026-11-16 기준, 배치모드 명령은 아래 「테스트」).
+3. **테스트** — Window ▸ General ▸ Test Runner ▸ EditMode ▸ *Run All* → 134개 통과해야 합니다(2026-11-17 기준, 배치모드 명령은 아래 「테스트」).
 4. **테스트 씬** — `Assets/IFS/Scenes/SceneSpecExamples.unity`를 열고 Play. 중립 환경(회색 바닥·1 m 격자·하늘·방향광 그림자)이 먼저 만들어지고, 왼쪽이 EX01(회색 덩어리, 가슴 높이), 오른쪽이 EX02(웅크린 작은 형상). Console에 "SceneSpec 값이 null → 기본값 … 사용" 줄과 기록 폴더 경로가 나옵니다. 씬이 열리지 않으면 메뉴 **IFS ▸ SceneSpec ▸ 예시 테스트 씬 다시 만들기**.
 5. **형태 모형** — 프리팹이 없어도 기본 절차 모형이 뜹니다: 잘게 나눈 구를 `IFS/SceneSpec` 셰이더가 노이즈로 밀어 형태별로 다르게 보이게 합니다(blob 울퉁불퉁한 덩어리, mist 가장자리가 흐린 반투명 안개, shell 위가 깨져 열린 껍데기, fragments 조각 5개). 디자이너가 만든 에셋이 생기면 SceneLoader ▸ *Form Prefabs* 4칸에 넣으면 그쪽이 우선입니다. 참여자가 모양어(동그랗다·네모·납작하다·뾰족하다)를 말했으면 구·큐브·납작 원기둥·원뿔 모형으로 바꿉니다(spec `_unmapped`의 모양어, `form.type`이 null·blob일 때만). 프리팹은 메뉴 **IFS ▸ Create Shape Prefabs**가 만들고 연결합니다. 규칙·기록은 `docs/shape-mapping.md`. 이 셰이더는 **Built-in 렌더 파이프라인 전용**이라 URP로 바꾸면 지원되지 않고 임시 프리미티브로 돌아갑니다(그때 Shader Graph 판이 필요).
 6. **직접 만든 셰이더를 쓸 때** — 아래 Reference 이름으로 프로퍼티를 만들면 로더가 값을 넣습니다. 이름이 다르면 SceneLoader ▸ *Shader Params*에서 바꿉니다.
@@ -206,6 +209,103 @@ JSON 하나마다 하는 일:
 - 말한 색만 집계한 ΔE00 primary: 예시(EX01) 1.20, 합성 4개 평균 6.98·최대 8.06. 유채색에서 차이가 큽니다(아래 「한계」).
 - 다시 돌리는 법: `-specDir docs/validation/unity/synthetic/specs -outDir docs/validation/unity/synthetic -quality "VR PC"`.
 
+## 소유감 실험 (`Runtime/Ownership/`, 후보1 프로토타입)
+
+참여자 서술로 만든 원본 형상 1개와, 형태·색·크기·움직임 중 하나만 바꾼 변형본 4개를 균형 순서로 하나씩 같은 시간 보여 줍니다. 형상마다 "내 것 같다"를 7점으로 평정하고, 마지막에 5개 중 가장 자기 것인 하나를 고릅니다. 끝으로 원본과 변형본을 나란히 두고 "얼마나 다른가"를 평정합니다(조작 크기 점검, 설정으로 끔). 어느 것이 원본인지는 참여자에게 알려 주지 않습니다.
+
+| 파일 | 하는 일 |
+| --- | --- |
+| `OwnershipVariantGenerator.cs` | 변형본 생성기(순수 C#). 원본 spec + 참여자 번호 + 설정 → 원본 해석값, 변형 4개, 제시 순서, 오류·플래그. 기본값·모양 해석은 `SceneParams`·`ShapeMapping`을 그대로 씁니다. 난수·LLM이 없어 입력이 같으면 결과가 바이트까지 같습니다 |
+| `WilliamsDesign.cs` | 제시 순서 표(5조건 Williams 설계 10행). 행 = (번호 − 1) mod 10, 균형 비트 cb = (번호 − 1) mod 2. 참여자 번호는 1부터 빠짐없이 차례로 배정하고, 중단·재시행은 같은 번호로 합니다(분석기 `summary.json`의 `orderBalance`가 행·cb별 세션 수를 세고 어긋나면 경고) |
+| `OwnershipConfig.cs` | `sizeStep` 0.25 · `colorDeltaE` 30(잠정) · `viewSeconds` 30 · `headSampleHz` 20 · `gazeConeDeg` 15 · `finalChoiceArcDeg` 120 · `finalChoiceRadiusM` 0(= 원본 거리) · `differenceRating` 켬. 값은 manifest에 남습니다 |
+| `OwnershipRunner.cs` | 단계 진행, 형상 5개 로드(로더 5개, `SceneLoader.Load(path, SceneOverride)`), 평정·선택 입력, 기록 |
+| `HeadPoseProvider.cs` | 머리 자세: XR Head 노드가 있으면 그것(`headSource = xr`), 없으면 데스크톱 모의(`desktop`) |
+| `ParticipantTextDisplay.cs` | 참여자에게 보이는 글(월드 공간 TextMesh + OS 폰트 "Malgun Gothic" 등, 없으면 내장 폰트와 경고) |
+| `OwnershipExperimenterGui.cs` | 실험자 화면(IMGUI, 데스크톱 창에만 그림. F1로 숨기기) |
+| `OwnershipRecordWriter.cs` · `OwnershipManifest.cs` | 기록 파일(아래 「기록」) |
+| `SceneSpec/SceneOverride.cs` | 해석값 덮어쓰기 + 모양 모형 강제. 참여자 조정이 아니라서 `RecordChange`(events.csv)를 타지 않습니다. `Load(path)`(변형 없음)는 예전과 같습니다(golden 지문 테스트) |
+| `StreamingAssets/IFS/ownership_task.v0.json` | 참여자 문구 5개(초안, `status: draft`, IRB 대상). 코드에는 문구가 없습니다 |
+| `Editor/OwnershipExperimentMenu.cs` | 씬 만들기 메뉴, 배치 진입점(씬·자동 시행) |
+
+### 변형 규칙 (요약)
+
+원본 spec 파일은 고치지 않습니다. 변형 = 해석된 값 + 덮어쓰기입니다. `_inferred`는 쓰지 않습니다.
+
+| 속성 | 규칙 | 기록 |
+| --- | --- | --- |
+| 크기 | `layout.size` ± 0.25(지름 ×2 또는 ÷2). [0.25, 0.75] 안이면 cb 0 = +, 1 = −. 밖이면 들어오는 쪽(clamp 없음) | `rule` up/down, `flags.forced` |
+| 색 | 유채색(s ≥ 0.10): 색상을 cb 방향으로 1°씩 돌려 ΔE00 ≥ 30인 최소 각. 180°까지 안 되면 명도(`lightness_fallback`). 무채색(기본 HSL(0, 0, 0.7) 포함): 명도를 0.005씩, 두 방향 다 되면 cb(0 밝게·1 어둡게). 둘 다 안 되면 최대 변화 + `belowTarget` | `magnitude.deltaE00`, from/to h·s·l |
+| 움직임 | 정지이거나 보이지 않는 조합(회전 + 구·납작 원기둥·원뿔, 흔들림 + 구)이면 `floating`(add), 아니면 `still`(remove). 속도 그대로 | `flags.motionAltersScale`(맥동·퍼짐·다가옴·가라앉음) |
+| 형태 | 모형 없는 blob → Cube(add), 구 → Cube(swap), Cube·납작 원기둥·원뿔 → 구(remove), mist·shell·fragments → blob(remove, 모양 모형 없음) | `flags.saidNotRendered`(말했지만 그려지지 않은 모양어) |
+
+- `source`(RQ2): 바꾼 키의 값을 준 spec 슬롯에 `_provenance`가 있으면 stated, 없으면 default, 섞이면 mixed.
+- 원본과 같아지는 변형, 모르는 `motion.type`·모형은 오류입니다(시작 버튼이 꺼짐). 원본 유효 불투명도(opacity × mist 밀도 0.5) < 0.15면 `lowVisibility` 경고.
+
+### 실험자가 하는 일
+
+1. (처음 한 번) 메뉴 **IFS ▸ Create Shape Prefabs**로 모양 프리팹이 있는지 확인합니다. 씬이 없거나 망가졌으면 **IFS ▸ Experiment ▸ Create Ownership Experiment Scene**.
+2. `Assets/IFS/Scenes/OwnershipExperiment.unity`를 열고 Play. Game 창 왼쪽에 실험자 화면이 뜹니다(Game 창을 크게, 해상도 1920×1080 이상 권장).
+3. **Setup**: 참여자 번호(1 이상. 1부터 빠짐없이 차례로 배정하고, 중단·재시행은 같은 번호로 합니다) → spec 폴더(비우면 에디터에서 `<저장소>/chatbot/logs/scenes`) → 목록에서 파일을 누르거나 경로를 직접 입력(`[변형 파일]` = `EX01.v1.json`처럼 `.v숫자.json` 파일) → **확인 → SpecCheck**.
+4. **SpecCheck**: 슬롯별 말한 값/기본값/근거 없음과 근거 말(구분은 슬롯의 `_provenance` 유무로, 변형 `source`와 같은 함수 `OwnershipVariantGenerator.SlotSource`. 값은 있는데 근거가 없으면 "근거 없음"이고 변형 `source`에서는 default로 셉니다), `_unmapped`·`_unmatched`·`_alternatives`·`_needsConfirmation`의 개수와 원문, 변형 4개의 from → to와 플래그를 확인합니다. 빨간 오류가 있으면 시작할 수 없습니다. 참여자가 헤드셋을 쓰고 정면을 보면 **Enter**(시작 순간의 머리 자세가 형상 배치 기준이 됩니다).
+5. **Intro**: 안내 문구 → 준비되면 **Space/Enter**.
+6. **Viewing × 5**는 `viewSeconds`마다 자동으로 넘어갑니다. **Rating**: 참여자가 말한 숫자 **1–7** → **Space/Enter**로 확정·다음 형상. 잘못 눌렀으면 **Backspace**(취소도 기록).
+7. **FinalChoice**: 5개가 호에 놓이고 위에 1–5 번호(왼쪽부터 = 제시 순서). **1–5** → **Space/Enter**.
+8. **Difference × 4**: 왼쪽 원본, 오른쪽 변형본. **1–7** → **Space/Enter**.
+9. **Done**: 기록 폴더 경로가 보입니다. **다음 참여자 준비**를 누르면 Setup으로 돌아갑니다.
+
+| 키 | 동작 |
+| --- | --- |
+| 1–7 (숫자 줄·키패드) | 평정·선택 입력(선택은 1–5) |
+| Space · Enter | 확정·다음 단계. SpecCheck에서는 시작 |
+| Backspace | 확정 전 입력 취소 |
+| Esc | 중단(어느 단계든, 그때까지의 자료는 남고 `summary.json`에 `abortedAt`). SpecCheck에서는 뒤로 |
+| F1 | 실험자 화면 숨기기·보이기 |
+| 마우스 오른쪽 드래그 · WASD | 데스크톱 모의 조작: 둘러보기 · 수평 이동(헤드셋이 없을 때) |
+
+- 참여자 화면에는 남은 시간·원본 여부가 나오지 않습니다. 실험자 화면에는 둘 다 보입니다.
+- 마지막 선택·차이 평정에서 형상끼리 겹치면 반지름을 늘려 같은 거리에 다시 놓습니다(`events.csv`의 `final_layout`·`difference_layout`에 반지름 기록).
+- Play를 멈추거나 앱을 닫으면 중단으로 기록합니다(`quit` 이벤트).
+
+### 헤드셋 연결 (사람이 할 단계, 실기 미검증)
+
+이 저장소는 XR 패키지·uGUI·TextMeshPro·Input System 없이 만들었습니다(`Packages/manifest.json`·ProjectSettings를 바꾸지 않음). 러너는 내장 XR 모듈의 `InputDevices`(Head 노드)만 읽습니다.
+
+1. Package Manager에서 **XR Plugin Management**와 **OpenXR**(Quest Link로 PC VR) 또는 **Oculus XR Plugin**을 설치합니다. 패키지 추가는 manifest.json을 바꾸므로 팀 결정 후 커밋합니다.
+2. Project Settings ▸ XR Plug-in Management ▸ PC(Standalone) 탭에서 플러그인을 켭니다. Quest를 Link로 연결하고 Play.
+3. 실험자 화면 위쪽 `머리: xr`이면 헤드셋 자세를 쓰는 중입니다. `desktop`이면 헤드셋을 찾지 못한 것입니다(manifest의 `headSource`에도 남음).
+
+**헤드셋 실기에서는 검증하지 않았습니다.** 확인한 것은 데스크톱 모의 조작 경로와 배치모드 자동 시행입니다. 기기에서 볼 것: Head 노드 자세가 카메라에 맞게 들어가는지(이중 추적 여부), IMGUI가 헤드셋 화면에 나오지 않는지, TextMesh 글의 크기·거리, 72 Hz 유지.
+
+### 기록 (참여자 데이터 — git 밖)
+
+`{recordRoot}/ownership/P{번호:000}/{sessionId}/{UTC yyyyMMdd-HHmmss}/`. `recordRoot`는 비우면 `persistentDataPath/IFS/sessions`(OwnershipRunner ▸ *Record Root*로 변경). UTF-8(BOM 없음), 숫자 InvariantCulture, 줄바꿈 `\n`. 분석 스크립트와의 계약이라 헤더·필드 이름을 바꾸지 않습니다(EditMode 테스트가 문자열을 고정).
+
+| 파일 | 내용 |
+| --- | --- |
+| `manifest.json` | `recordVersion` ifs-ownership/0.1, `generatorVersion`, 참여자 번호·cb·순서 행, `specFile`(파일 이름만)·`specSha256`, `headSource`, 설정, `flags.lowVisibility`, 원본 해석값·말한/기본값 키, 변형 5개(`overrides`·`shapeModel`·`from`/`to`·`rule`·`source`·`sourceByKey`·`flags`·`magnitude`), `order` |
+| `headpose.csv` | `time_ms,phase,position,variant,head_x,head_y,head_z,head_qx,head_qy,head_qz,head_qw,obj_x,obj_y,obj_z,distance_m,angle_deg` — 프레임당 최대 1개, 앞 표본에서 1/`headSampleHz` 이상 지난 프레임의 실제 시각으로 씁니다(밀린 표본을 과거 시각으로 채우지 않음. 그래서 실제 간격은 프레임 간격에 맞춰 명목보다 조금 길 수 있고, 긴 멈춤은 빈 간격으로 남음). 형상이 하나만 보이는 viewing에서만 variant·obj·거리·각이 있습니다 |
+| `ratings.csv` | `position,variant,rating,rt_ms,view_ms,cancelled` — 취소한 평정은 `cancelled=1` 행으로 남고 다시 입력한 값이 새 행 |
+| `difference.csv` | `variant,rating,rt_ms` |
+| `events.csv` | `time_ms,event,detail` — 단계 전환, 키, 취소, 배치, 경고, 중단. 형상 제시 시작은 `viewing_start`(detail `position=N;variant=ID` 고정 형식, 분석기가 `first_look_ms`·표본 구간의 시작점으로 읽음) |
+| `summary.json` | `completed`, `abortedAt`, `finalChoice`(position·variant·rt_ms), `ratings`(변형별 마지막 평정), `endedAtUtc` |
+
+- `time_ms`는 세션 시작(SpecCheck에서 Enter)부터. `rt_ms`는 문항을 띄운 때(취소 뒤에는 다시 물은 때)부터 숫자 키까지. `view_ms`는 실제 제시 시간(프레임 단위로 `viewSeconds`보다 조금 길 수 있음).
+- 자기 자료가 아닌 기록(자동 시행)은 `events.csv`에 `auto_mode` 줄이 있습니다.
+
+### 자동 시행 (검증용)
+
+키 없이 정해진 평정(합성)·선택·머리 경로로 Setup → Done을 한 바퀴 돌아 기록 폴더를 만듭니다. 에디트 모드에서 시뮬레이션 시계로 돕니다(형상 움직임은 돌지 않음).
+
+```bash
+"C:\Program Files\Unity\Hub\Editor\6000.0.85f2\Editor\Unity.exe" -batchmode -projectPath <unity 폴더> \
+  -executeMethod IFS.SceneSpec.EditorTools.OwnershipExperimentMenu.RunAutoTrialBatch \
+  -recordRoot <저장소 밖 폴더> -specPath "<a.json>;<b.json>" [-participant 1] [-viewSeconds 0.5] [-headSampleHz 20] -logFile <로그>
+```
+
+spec마다 참여자 번호를 하나씩 올립니다. 씬 만들기 배치: `-executeMethod IFS.SceneSpec.EditorTools.OwnershipExperimentMenu.CreateSceneBatch`. 둘 다 `-quit` 없이(끝나면 스스로 닫음), 성공 0·실패 1.
+
+2026-11-17 확인: 합성 spec 4개(말한 값이 많은 것·EX02(거의 기본값)·mist·네모 + 맥동)로 자동 시행, 4개 모두 기록 6개 파일이 계약 형식과 맞음. 씬 만들기 두 번 실행 결과는 로컬 fileID(Unity가 실행마다 새로 정함)만 다르고 구성·값은 같음. CP4 반영 뒤 같은 4개를 다시 돌려 분석기(`ifs_chatbot.eval.ownership`)에 넣었을 때 경고 0건(dt 0.02 s에서 표본 간격 60 ms, 형상당 8개, 모두 `viewing_start` 기준).
+
 ## 테스트
 
 ```bash
@@ -213,7 +313,7 @@ JSON 하나마다 하는 일:
   -runTests -testPlatform EditMode -testResults <결과.xml> -logFile <로그>
 ```
 
-EditMode 66개(2026-11-16 모양 매핑을 넣은 뒤 배치모드로 전부 통과):
+EditMode 138개(2026-11-17 소유감 실험 CP4 검토 반영 뒤 배치모드로 전부 통과):
 
 | 파일 | 개수 | 내용 |
 | --- | --- | --- |
@@ -222,6 +322,10 @@ EditMode 66개(2026-11-16 모양 매핑을 넣은 뒤 배치모드로 전부 통
 | `UnityOnly/EnvironmentAndCaptureTests.cs` | 5 | 선형 색공간·VR 품질 단계, 환경(방향광 1·소프트 섀도·무채색·셰이더 컴파일·정리), 환경 Dispose의 RenderSettings 복원, form.type 변경 시 머티리얼 사본 누수 없음, 배치 캡처 한 바퀴(예시 2개, 콘솔 오류 0, 불투명 scene = inContext, 요약의 stated/withDefaults) |
 | `ShapeMappingTests.cs` | 33 | 원뿔 메시(정점·삼각형 수, 경계 상자, 인덱스, 바깥 감기 방향, 밑면 각진 모서리), 모양어 판정 규칙(표 4개, 표에 없는 값, charSpan 순서, conflict, form.type) |
 | `UnityOnly/ShapeModelTests.cs` | 5 | 모양 모형 팩토리·프리팹 에셋(루트 크기 1, 배율은 자식, IFS 머티리얼 변위 0), SceneLoader 적용·`initialScene.json` 기록, 표에 없는 모양어·형태 우선, 조정 중 form.type 변경 |
+| `OwnershipVariantTests.cs` | 55 | 소유감 실험 변형본: Williams 표 성질(각 조건이 각 위치에 2번, 순서쌍 2번씩), cb·순서 행, 같은 입력 → 같은 manifest 문자열, manifest 필드·specFile 이름만, 크기 방향·강제, 색(유채색은 색상만·최소 각·ΔE ≥ 목표, 무채색은 명도만, 명도 대체, belowTarget), 움직임 add/remove·보이지 않는 조합·motionAltersScale, 형태 표 4행, source·saidNotRendered, 원본과 같으면 오류, lowVisibility, `_inferred` 안 씀, SpecCheck 구분(말한 값/기본값/근거 없음)이 생성기 source와 같은 기준 |
+| `OwnershipRecordTests.cs` | 9 | 기록 파일 헤더(계약 문자열 고정)·폴더 구조·UTF-8 BOM 없음·줄바꿈 LF, 같은 초 재시작, 중단 요약, 표본 시각(밀린 프레임 하나에 표본 하나, 실제 시각), `viewing_start` detail 형식, 문구 파일(초안·금지 표현), 글 줄바꿈, 시선 각·호 배치 계산 |
+| `UnityOnly/LoaderNoVariantGoldenTests.cs` | 1 | 변형 경로를 넣기 전 로더로 만든 지문(`Golden/loader_no_variant.golden.txt`: 적용값·notes·계층·머티리얼·기록)과 `Load(path)`가 같음 |
+| `UnityOnly/OwnershipLoaderTests.cs` | 7 | `Load(path, null)`·빈 덮어쓰기도 golden과 같음, 변형본이 계획대로 그려지고 조정 기록에 남지 않음(3종), 잘못된 덮어쓰기 거부, 자동 시행 한 바퀴의 기록 폴더, 0.3초 밀린 프레임이 있는 자동 시행(표본 시각 중복 없음·빈 간격·형상마다 `viewing_start` ≤ 첫 표본) |
 
 로그 확인: EditMode 로그에는 테스트 프레임워크의 스택 프레임 `UnityLogCheckDelegatingCommand:CaptureException`이 정상 실행에서도 찍힙니다(이번 실행 36줄). 오류를 찾을 때는 `Select-String -Pattern 'error CS|Shader error|^\w*Exception:|\[Exception\]'`처럼 좁히거나 이 프레임을 빼고 셉니다(이번 실행 0건). 캡처 로그는 넓은 패턴(`Exception|error CS|Shader error`)으로도 0건입니다.
 
@@ -233,8 +337,8 @@ Unity가 없는 곳(CI 등)에서는 `Tools/compile-check/`에서 dotnet으로 �
 cd unity/Tools/compile-check && dotnet build IFS.SceneSpec.CompileCheck.csproj && dotnet test Tests/IFS.SceneSpec.CompileCheck.Tests.csproj
 ```
 
-- Unity에 의존하지 않는 코드와 EditMode 테스트 파일은 실제 Newtonsoft·NUnit으로 컴파일·실행됩니다(56개, 2026-11-16). `Tests/Editor/UnityOnly/`는 실제 렌더가 필요해 뺍니다.
-- MonoBehaviour·Editor 스크립트는 UnityEngine/UnityEditor **스텁**(이름·시그니처만)으로 타입 검사만 합니다. 새 Unity API를 쓰면 `Stubs/UnityStubs.cs`에 같은 시그니처를 추가합니다.
+- Unity에 의존하지 않는 코드와 EditMode 테스트 파일은 실제 Newtonsoft·NUnit으로 컴파일·실행됩니다(120개, 2026-11-17). `Tests/Editor/UnityOnly/`는 실제 렌더가 필요해 뺍니다.
+- MonoBehaviour·Editor 스크립트는 UnityEngine/UnityEditor **스텁**(이름·시그니처만)으로 타입 검사만 합니다. 새 Unity API를 쓰면 `Stubs/UnityStubs.cs`(소유감 실험의 입력·글자·IMGUI·XR은 `Stubs/UnityStubsOwnership.cs`)에 같은 시그니처를 추가합니다.
 
 ## 한계
 

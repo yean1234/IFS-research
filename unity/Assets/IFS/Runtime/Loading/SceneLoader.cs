@@ -10,6 +10,7 @@
 // null 값은 SceneDefaults로 채우고, 어떤 값을 기본값으로 썼는지 콘솔과 initialScene.json(defaultsUsed)에 남긴다.
 // _inferred(3층 제안)는 useInferredSuggestions를 켜야만 쓴다(기본 꺼짐 — 말하지 않은 것을 추론하지 않는다).
 // 참여자 조정은 SetNumber/SetCategory로 → events.csv 한 줄씩, SaveFinal()로 finalScene.json.
+// 소유감 실험 변형본은 Load(path, SceneOverride): 해석값 덮어쓰기·모양 모형 강제, 기록(RecordChange) 없음. Load(path)는 그대로.
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -223,7 +224,11 @@ namespace IFS.SceneSpec
         }
 
         // ── 로드 ─────────────────────────────────────────────────────────────
-        public bool Load(string path)
+        public bool Load(string path) => Load(path, null);
+
+        /// <summary>소유감 실험 변형본: 해석값에 덮어쓰기와 모양 모형 강제(variant)를 얹어 로드한다.
+        /// 덮어쓰기는 참여자 조정이 아니므로 RecordChange(events.csv)를 타지 않는다. variant가 null이면 Load(path)와 같다.</summary>
+        public bool Load(string path, SceneOverride variant)
         {
             string full = ResolvePath(path);
             string raw;
@@ -240,6 +245,7 @@ namespace IFS.SceneSpec
             }
             foreach (var problem in SceneSpecJson.Validate(spec))
                 Debug.LogWarning($"[SceneLoader] 형식 경고({Path.GetFileName(full)}): {problem}", this);
+            if (variant != null && !CheckVariant(spec, variant, Path.GetFileName(full))) return false;
 
             Unload();
             Spec = spec;
@@ -250,8 +256,14 @@ namespace IFS.SceneSpec
                 Note($"{key}: SceneSpec 값이 null → 기본값 {Describe(InitialParams, key)} 사용", false);
             foreach (var key in InitialParams.InferredUsed)
                 Note($"{key}: 3층 제안(_inferred) {Describe(InitialParams, key)} 사용", false);
+            if (variant != null) ApplyVariantParams(variant);
             CurrentParams = InitialParams.Clone();
             Shape = ShapeMapping.Resolve(spec);
+            if (variant?.ShapeModel != null)
+            {
+                Shape = ShapeMapping.Forced(Shape, variant.ShapeModel);
+                Note($"변형 덮어쓰기(기록 안 함): 모양 모형 강제 → {Shape.Model}", false);
+            }
             NoteShapeWords(Path.GetFileName(full), spec.Meta.SessionId);
 
             CaptureAnchor();
@@ -288,6 +300,56 @@ namespace IFS.SceneSpec
 
         string ResolvePath(string path) =>
             Path.IsPathRooted(path) ? path : Path.Combine(Application.streamingAssetsPath, path);
+
+        // ── 변형본(소유감 실험) ─────────────────────────────────────────────
+        /// <summary>null 슬롯에 쓰는 기본값(변형본 생성기가 같은 값으로 해석하도록 읽는다).</summary>
+        public SceneDefaults Defaults => defaults;
+        public bool UseInferredSuggestions => useInferredSuggestions;
+
+        /// <summary>실험 러너용 설정: 머리 기준(고정 앵커), 기본값, 기록 끔(러너가 자체 기록), 시작 때 자동 로드 끔, _inferred 끔.</summary>
+        public void ConfigureForRunner(Transform headAnchor, SceneDefaults sceneDefaults)
+        {
+            head = headAnchor;
+            if (sceneDefaults != null) defaults = sceneDefaults;
+            record = false;
+            loadOnStart = false;
+            autoSaveFinalOnDestroy = false;
+            useInferredSuggestions = false;
+        }
+
+        // 덮어쓰기를 확인한다(로드 전, 지금 형상을 지우기 전에). 모르는 키·모형, blob이 아닌 형태의 모양 모형은 오류.
+        bool CheckVariant(SceneSpecV2 spec, SceneOverride variant, string file)
+        {
+            var errors = variant.Validate();
+            if (errors.Count == 0)
+            {
+                var check = SceneParams.FromSpec(spec, defaults, useInferredSuggestions);
+                variant.ApplyTo(check);
+                string model = variant.ShapeModel ?? ShapeMapping.Resolve(spec).Model;
+                string form = check.GetCategory("form.type");
+                if (model != null && form != "blob") errors.Add($"모양 모형 {model}은 form.type=blob에만 쓸 수 있음(지금 {form})");
+            }
+            if (errors.Count == 0) return true;
+            Debug.LogError($"[SceneLoader] 변형 덮어쓰기를 적용할 수 없습니다({file}): {string.Join("; ", errors)}", this);
+            return false;
+        }
+
+        // InitialParams에 덮어쓰기를 얹는다. 참여자 조정이 아니므로 RecordChange를 부르지 않는다(notes에만 남김).
+        void ApplyVariantParams(SceneOverride variant)
+        {
+            foreach (var kv in variant.Numbers)
+            {
+                string from = Describe(InitialParams, kv.Key);
+                if (InitialParams.SetNumber(kv.Key, kv.Value))
+                    Note($"변형 덮어쓰기(기록 안 함): {kv.Key} {from} → {Describe(InitialParams, kv.Key)}", false);
+            }
+            foreach (var kv in variant.Categories)
+            {
+                string from = InitialParams.GetCategory(kv.Key);
+                if (InitialParams.SetCategory(kv.Key, kv.Value))
+                    Note($"변형 덮어쓰기(기록 안 함): {kv.Key} {from} → {kv.Value}", false);
+            }
+        }
 
         string RecordRoot => string.IsNullOrEmpty(recordRoot)
             ? Path.Combine(Application.persistentDataPath, "IFS", "sessions")

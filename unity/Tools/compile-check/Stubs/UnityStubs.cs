@@ -39,6 +39,8 @@ namespace UnityEngine
         public Transform transform => null;
         public string tag { get; set; }
         public bool activeInHierarchy => true;
+        public bool activeSelf => true;
+        public void SetActive(bool value) { }
         public T AddComponent<T>() where T : Component => default;
         public T GetComponent<T>() => default;
         public T[] GetComponentsInChildren<T>() => Array.Empty<T>();
@@ -78,10 +80,20 @@ namespace UnityEngine
         public static Vector3 Cross(Vector3 a, Vector3 b) => a;
         public static float Distance(Vector3 a, Vector3 b) => 0f;
         public static Vector3 Scale(Vector3 a, Vector3 b) => a;
+        public static Vector3 operator -(Vector3 a) => a;
+    }
+
+    public struct Vector2
+    {
+        public float x, y;
+        public Vector2(float x, float y) { this.x = x; this.y = y; }
     }
 
     public struct Quaternion
     {
+        public float x, y, z, w;
+        public Vector3 eulerAngles => default;
+        public static Vector3 operator *(Quaternion rotation, Vector3 point) => point;
         public static Quaternion identity => default;
         public static Quaternion Euler(float x, float y, float z) => default;
         public static Quaternion LookRotation(Vector3 forward, Vector3 upwards) => default;
@@ -94,6 +106,7 @@ namespace UnityEngine
         public Color(float r, float g, float b, float a) { this.r = r; this.g = g; this.b = b; this.a = a; }
         public static Color white => new Color(1, 1, 1, 1);
         public static Color black => new Color(0, 0, 0, 1);
+        public static Color yellow => new Color(1, 0.92f, 0.016f, 1);
         public static Color operator *(Color c, float d) => c;
     }
 
@@ -163,6 +176,8 @@ namespace UnityEngine
         public Bounds(Vector3 center, Vector3 size) { }
         public Vector3 center => default;
         public Vector3 extents => default;
+        public Vector3 size => default;
+        public Vector3 max => default;
         public void Encapsulate(Bounds bounds) { }
     }
 
@@ -181,6 +196,7 @@ namespace UnityEngine
     public static class Resources
     {
         public static T Load<T>(string path) where T : Object => null;
+        public static T GetBuiltinResource<T>(string path) where T : Object => null;
     }
 
     public class Camera : Behaviour
@@ -335,6 +351,8 @@ namespace UnityEngine
         public static string persistentDataPath => Path.GetTempPath();
         public static bool isPlaying => false;
         public static bool isBatchMode => true;
+        public static bool isEditor => true;
+        public static string dataPath => "";
         public static string unityVersion => "";
         public delegate void LogCallback(string condition, string stackTrace, LogType type);
         public static event LogCallback logMessageReceived { add { } remove { } }
@@ -358,12 +376,13 @@ namespace UnityEngine
         public static float Min(float a, float b) => a < b ? a : b;
         public static float Lerp(float a, float b, float t) => a;
         public static float Clamp01(float v) => v;
+        public static float Clamp(float value, float min, float max) => value;
         public static float PerlinNoise(float x, float y) => 0f;
         public static float Sin(float f) => 0f;
         public static float Cos(float f) => 0f;
     }
 
-    public static class Time { public static float deltaTime => 0f; }
+    public static class Time { public static float deltaTime => 0f; public static float unscaledDeltaTime => 0f; }
 
     [AttributeUsage(AttributeTargets.Field)] public sealed class SerializeField : Attribute { }
     public class PropertyAttribute : Attribute { }

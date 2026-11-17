@@ -1,29 +1,15 @@
 // motion.type(22종) → 절차적 움직임 9묶음. motion.speed(0–1) → 주기 0.1–1.5 Hz.
 // 부모(배치)와 자식(크기·자세)을 건드리지 않도록 가운데 'motion' 피벗만 움직인다.
+// 묶음 표(MotionGroup·MotionGroups)는 UnityEngine 없이 쓰도록 SceneSpec/MotionGroups.cs에 있다(변형본 생성기와 공유).
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace IFS.SceneSpec
 {
-    public enum MotionGroup { Still, Sway, Tremble, Pulse, Drift, Sink, Spin, Expand, Approach }
-
     [AddComponentMenu("")]
     public sealed class SpecMotion : MonoBehaviour
     {
-        public static readonly Dictionary<string, MotionGroup> Groups = new Dictionary<string, MotionGroup>
-        {
-            { "still", MotionGroup.Still },
-            { "swaying", MotionGroup.Sway }, { "sloshing", MotionGroup.Sway }, { "rippling", MotionGroup.Sway },
-            { "churning", MotionGroup.Sway },
-            { "trembling", MotionGroup.Tremble }, { "vibrating", MotionGroup.Tremble }, { "wriggling", MotionGroup.Tremble },
-            { "pounding", MotionGroup.Pulse },
-            { "moving", MotionGroup.Drift }, { "drifting", MotionGroup.Drift }, { "floating", MotionGroup.Drift },
-            { "rising", MotionGroup.Drift },
-            { "sinking", MotionGroup.Sink }, { "settling", MotionGroup.Sink }, { "collapsing", MotionGroup.Sink },
-            { "rotating", MotionGroup.Spin }, { "circling", MotionGroup.Spin },
-            { "spreading", MotionGroup.Expand }, { "scattering", MotionGroup.Expand },
-            { "approaching", MotionGroup.Approach }, { "pushing", MotionGroup.Approach },
-        };
+        public static readonly Dictionary<string, MotionGroup> Groups = MotionGroups.ByType;
 
         [SerializeField] string motionType = "still";
         [Range(0f, 1f)] [SerializeField] float speed = 0.5f;
