@@ -1,0 +1,83 @@
+{
+  "meta": {
+    "specVersion": "2.0.0",
+    "participantId": "SYN-UNITY",
+    "sessionId": "SYN-U4",
+    "condition": null,
+    "sourceTextHash": "sha256:725ab76ff2ac1d0332d2ae151c37b983b4af13be8d3609ea3c496c261df27fb9",
+    "pipeline": {
+      "builder": "handwritten-synthetic/0",
+      "analyzer": "none",
+      "lexicons": {}
+    }
+  },
+  "form": {
+    "type": "blob",
+    "posture": null
+  },
+  "material": {
+    "color": {
+      "h": 0.0,
+      "s": 0.9,
+      "l": 0.5
+    },
+    "brightness": null,
+    "saturation": null,
+    "roughness": 0.1,
+    "opacity": null,
+    "erosion": null
+  },
+  "layout": {
+    "size": null,
+    "distance": null,
+    "verticalOffset": null
+  },
+  "motion": {
+    "type": null,
+    "speed": null
+  },
+  "body": {
+    "part": null,
+    "layer": null
+  },
+  "_provenance": {
+    "form.type": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "(합성)",
+        "charSpan": [
+          0,
+          0
+        ],
+        "rule": "synthetic.handwritten-render-test>form.type"
+      }
+    ],
+    "material.color": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "(합성)",
+        "charSpan": [
+          0,
+          0
+        ],
+        "rule": "synthetic.handwritten-render-test>material.color"
+      }
+    ],
+    "material.roughness": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "(합성)",
+        "charSpan": [
+          0,
+          0
+        ],
+        "rule": "synthetic.handwritten-render-test>material.roughness"
+      }
+    ]
+  },
+  "_unmatched": [],
+  "_unmapped": [],
+  "_negated": [],
+  "_alternatives": [],
+  "_inferred": {}
+}

@@ -55,8 +55,9 @@ namespace IFS.SceneSpec
             _events.Flush();
         }
 
-        /// <summary>처음 로드한 값. rawSpecJson은 읽은 파일 그대로(분석 때 원본과 대조).</summary>
-        public void WriteInitial(SceneParams initial, string rawSpecJson, IEnumerable<string> notes = null)
+        /// <summary>처음 로드한 값. rawSpecJson은 읽은 파일 그대로(분석 때 원본과 대조).
+        /// shape = 모양어 판정(ShapeResolution.ToJson(): status·applied·model·viaPrefab·formType·words). 없으면 기록하지 않는다.</summary>
+        public void WriteInitial(SceneParams initial, string rawSpecJson, IEnumerable<string> notes = null, JObject shape = null)
         {
             var o = (JObject)_context.DeepClone();
             o["kind"] = "initial";
@@ -65,6 +66,7 @@ namespace IFS.SceneSpec
             o["defaultsUsed"] = new JArray(initial.DefaultsUsed);
             o["inferredUsed"] = new JArray(initial.InferredUsed);
             o["notes"] = new JArray((notes ?? Enumerable.Empty<string>()).ToArray());
+            if (shape != null) o["shape"] = shape.DeepClone();
             o["spec"] = JToken.Parse(rawSpecJson);
             WriteJson("initialScene.json", o);
         }

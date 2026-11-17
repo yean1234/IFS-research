@@ -1,0 +1,296 @@
+{
+  "meta": {
+    "specVersion": "2.0.0",
+    "participantId": null,
+    "sessionId": "H12",
+    "condition": "static",
+    "sourceTextHash": "sha256:97a4ebf2766eac835452dcefad963d58d2f3352c420eab81404130ecb01a4681",
+    "pipeline": {
+      "builder": "scene-spec-builder/0.1.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@0.1.0",
+        "vad": "vad-ko@0.1.0"
+      }
+    }
+  },
+  "form": {
+    "type": null,
+    "posture": null
+  },
+  "material": {
+    "color": {
+      "h": 0.333,
+      "s": 0.45,
+      "l": 0.4
+    },
+    "brightness": null,
+    "saturation": null,
+    "roughness": null,
+    "opacity": null,
+    "erosion": null
+  },
+  "layout": {
+    "size": 0.25,
+    "distance": null,
+    "verticalOffset": 0.49
+  },
+  "motion": {
+    "type": "swaying",
+    "speed": null
+  },
+  "body": {
+    "part": "hand",
+    "layer": "around_front"
+  },
+  "_provenance": {
+    "material.color": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "초록색",
+        "charSpan": [
+          0,
+          3
+        ],
+        "rule": "colorLexicon.초록>material.color:hsl"
+      }
+    ],
+    "layout.size": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "손바닥",
+        "charSpan": [
+          32,
+          35
+        ],
+        "rule": "sizeLexicon.손바닥>layout.size:logScale(0.5)"
+      }
+    ],
+    "layout.verticalOffset": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "손바닥",
+        "charSpan": [
+          32,
+          35
+        ],
+        "rule": "bodyPartLexicon.손>layout.verticalOffset:hand"
+      }
+    ],
+    "motion.type": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "흔들려요",
+        "charSpan": [
+          26,
+          30
+        ],
+        "rule": "motionLexicon.흔들리>motion.type:swaying"
+      },
+      {
+        "source": "explicit_lexicon",
+        "trigger": "흔들려요",
+        "charSpan": [
+          109,
+          113
+        ],
+        "rule": "motionLexicon.흔들리>motion.type:swaying"
+      }
+    ],
+    "body.part": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "손바닥",
+        "charSpan": [
+          32,
+          35
+        ],
+        "rule": "bodyPartLexicon.손>body.part:hand"
+      }
+    ],
+    "body.layer": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "앞",
+        "charSpan": [
+          17,
+          18
+        ],
+        "rule": "bodyLayerLexicon.앞>body.layer:around_front"
+      }
+    ]
+  },
+  "_unmatched": [
+    {
+      "lemma": "잎사귀",
+      "tag": "NNG",
+      "surface": "잎사귀",
+      "charSpan": [
+        4,
+        7
+      ]
+    },
+    {
+      "lemma": "왼쪽",
+      "tag": "NNG",
+      "surface": "왼쪽",
+      "charSpan": [
+        14,
+        16
+      ]
+    },
+    {
+      "lemma": "살랑살랑",
+      "tag": "MAG",
+      "surface": "살랑살랑",
+      "charSpan": [
+        21,
+        25
+      ]
+    },
+    {
+      "lemma": "끝",
+      "tag": "NNG",
+      "surface": "끝",
+      "charSpan": [
+        43,
+        44
+      ]
+    },
+    {
+      "lemma": "잎맥",
+      "tag": "NNP",
+      "surface": "잎맥",
+      "charSpan": [
+        52,
+        54
+      ]
+    },
+    {
+      "lemma": "또렷",
+      "tag": "XR",
+      "surface": "또렷",
+      "charSpan": [
+        56,
+        58
+      ]
+    },
+    {
+      "lemma": "햇빛",
+      "tag": "NNG",
+      "surface": "햇빛",
+      "charSpan": [
+        65,
+        67
+      ]
+    },
+    {
+      "lemma": "받",
+      "tag": "VV-R",
+      "surface": "받",
+      "charSpan": [
+        69,
+        70
+      ]
+    },
+    {
+      "lemma": "반짝반짝",
+      "tag": "MAG",
+      "surface": "반짝반짝",
+      "charSpan": [
+        73,
+        77
+      ]
+    },
+    {
+      "lemma": "눈높이",
+      "tag": "NNG",
+      "surface": "눈높이",
+      "charSpan": [
+        81,
+        84
+      ]
+    },
+    {
+      "lemma": "계속",
+      "tag": "MAG",
+      "surface": "계속",
+      "charSpan": [
+        106,
+        108
+      ]
+    }
+  ],
+  "_unmapped": [
+    {
+      "lemma": "뾰족",
+      "category": "shape",
+      "value": {
+        "shape": "pointed"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "뾰족해요",
+        "charSpan": [
+          46,
+          50
+        ],
+        "rule": "shapeLexicon.뾰족"
+      }
+    }
+  ],
+  "_negated": [],
+  "_alternatives": [
+    {
+      "path": "body.part",
+      "value": "body",
+      "reason": "later_mention",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "몸",
+          "charSpan": [
+            99,
+            100
+          ],
+          "rule": "bodyPartLexicon.몸>body.part:body"
+        }
+      ]
+    },
+    {
+      "path": "body.layer",
+      "value": "around_below",
+      "reason": "later_mention",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "아래",
+          "charSpan": [
+            90,
+            92
+          ],
+          "rule": "bodyLayerLexicon.아래>body.layer:around_below"
+        }
+      ]
+    },
+    {
+      "path": "body.layer",
+      "value": "around",
+      "reason": "later_mention",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "밖",
+          "charSpan": [
+            101,
+            102
+          ],
+          "rule": "bodyLayerLexicon.밖>body.layer:around"
+        }
+      ]
+    }
+  ],
+  "_inferred": {}
+}

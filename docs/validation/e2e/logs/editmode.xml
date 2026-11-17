@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="28" result="Passed" total="28" passed="28" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-11-16 05:19:35Z" end-time="2026-11-16 05:19:35Z" duration="0.2903691">
+  <test-suite type="TestSuite" id="1000" name="unity" fullname="unity" runstate="Runnable" testcasecount="28" result="Passed" start-time="2026-11-16 05:19:35Z" end-time="2026-11-16 05:19:35Z" duration="0.290369" total="28" passed="28" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1035" name="IFS.SceneSpec.Tests.Editor.dll" fullname="&lt;repo&gt;/unity/Library/ScriptAssemblies/IFS.SceneSpec.Tests.Editor.dll" runstate="Runnable" testcasecount="28" result="Passed" start-time="2026-11-16 05:19:35Z" end-time="2026-11-16 05:19:35Z" duration="0.286158" total="28" passed="28" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="24964" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1036" name="IFS" fullname="IFS" runstate="Runnable" testcasecount="28" result="Passed" start-time="2026-11-16 05:19:35Z" end-time="2026-11-16 05:19:35Z" duration="0.286035" total="28" passed="28" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1037" name="SceneSpec" fullname="IFS.SceneSpec" runstate="Runnable" testcasecount="28" result="Passed" start-time="2026-11-16 05:19:35Z" end-time="2026-11-16 05:19:35Z" duration="0.286002" total="28" passed="28" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1038" name="Tests" fullname="IFS.SceneSpec.Tests" runstate="Runnable" testcasecount="28" result="Passed" start-time="2026-11-16 05:19:35Z" end-time="2026-11-16 05:19:35Z" duration="0.285952" total="28" passed="28" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestFixture" id="1001" name="CaptureMathTests" fullname="IFS.SceneSpec.Tests.CaptureMathTests" classname="IFS.SceneSpec.Tests.CaptureMathTests" runstate="Runnable" testcasecount="9" result="Passed" start-time="2026-11-16 05:19:35Z" end-time="2026-11-16 05:19:35Z" duration="0.110176" total="9" passed="9" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1008" name="Capture_options_defaults_are_quest3_per_eye" fullname="IFS.SceneSpec.Tests.CaptureMathTests.Capture_options_defaults_are_quest3_per_eye" methodname="Capture_options_defaults_are_quest3_per_eye" classname="IFS.SceneSpec.Tests.CaptureMathTests" runstate="Runnable" seed="1411154003" result="Passed" start-time="2026-11-16 05:19:35Z" end-time="2026-11-16 05:19:35Z" duration="0.010054" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1009" name="Color_default_components_flag_any_unsaid_hsl_part" fullname="IFS.SceneSpec.Tests.CaptureMathTests.Color_default_components_flag_any_unsaid_hsl_part" methodname="Color_default_components_flag_any_unsaid_hsl_part" classname="IFS.SceneSpec.Tests.CaptureMathTests" runstate="Runnable" seed="818425160" result="Passed" start-time="2026-11-16 05:19:35Z" end-time="2026-11-16 05:19:35Z" duration="0.087027" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1010" name="Color_summary_keeps_default_colors_out_of_stated_accuracy" fullname="IFS.SceneSpec.Tests.CaptureMathTests.Color_summary_keeps_default_colors_out_of_stated_accuracy" methodname="Color_summary_keeps_default_colors_out_of_stated_accuracy" classname="IFS.SceneSpec.Tests.CaptureMathTests" runstate="Runnable" seed="1978350556" result="Passed" start-time="2026-11-16 05:19:35Z" end-time="2026-11-16 05:19:35Z" duration="0.003957" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-suite type="ParameterizedMethod" id="1006" name="DeltaE2000_matches_published_test_pairs" fullname="IFS.SceneSpec.Tests.CaptureMathTests.DeltaE2000_matches_published_test_pairs" classname="IFS.SceneSpec.Tests.CaptureMathTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-11-16 05:19:35Z" end-time="2026-11-16 05:19:35Z" duration="0.001663" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1002" name="DeltaE2000_matches_published_test_pairs(50.0d,2.6772d,-79.7751d,50.0d,0.0d,-82.7485d,2.0425d)" fullname="IFS.SceneSpec.Tests.CaptureMathTests.DeltaE2000_matches_published_test_pairs(50.0d,2.6772d,-79.7751d,50.0d,0.0d,-82.7485d,2.0425d)" methodname="DeltaE2000_matches_published_test_pairs" classname="IFS.SceneSpec.Tests.CaptureMathTests" runstate="Runnable" seed="362659569" result="Passed" start-time="2026-11-16 05:19:35Z" end-time="2026-11-16 05:19:35Z" duration="0.000515" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1003" name="DeltaE2000_matches_published_test_pairs(50.0d,0.0d,0.0d,50.0d,-1.0d,2.0d,2.3669d)" fullname="IFS.SceneSpec.Tests.CaptureMathTests.DeltaE2000_matches_published_test_pairs(50.0d,0.0d,0.0d,50.0d,-1.0d,2.0d,2.3669d)" methodname="DeltaE2000_matches_published_test_pairs" classname="IFS.SceneSpec.Tests.CaptureMathTests" runstate="Runnable" seed="1710266985" result="Passed" start-time="2026-11-16 05:19:35Z" end-time="2026-11-16 05:19:35Z" duration="0.000033" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1004" name="DeltaE2000_matches_published_test_pairs(50.0d,2.49d,-0.001d,50.0d,-2.49d,0.0009d,7.1792d)" fullname="IFS.SceneSpec.Tests.CaptureMathTests.DeltaE2000_matches_published_test_pairs(50.0d,2.49d,-0.001d,50.0d,-2.49d,0.0009d,7.1792d)" methodname="DeltaE2000_matches_published_test_pairs" classname="IFS.SceneSpec.Tests.CaptureMathTests" runstate="Runnable" seed="639367322" result="Passed" start-time="2026-11-16 05:19:35Z" end-time="2026-11-16 05:19:35Z" duration="0.000017" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1005" name="DeltaE2000_matches_published_test_pairs(50.0d,2.5d,0.0d,73.0d,25.0d,-18.0d,27.1492d)" fullname="IFS.SceneSpec.Tests.CaptureMathTests.DeltaE2000_matches_published_test_pairs(50.0d,2.5d,0.0d,73.0d,25.0d,-18.0d,27.1492d)" methodname="DeltaE2000_matches_published_test_pairs" classname="IFS.SceneSpec.Tests.CaptureMathTests" runstate="Runnable" seed="792202647" result="Passed" start-time="2026-11-16 05:19:35Z" end-time="2026-11-16 05:19:35Z" duration="0.000017" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-case id="1011" name="Percentile_is_nearest_rank" fullname="IFS.SceneSpec.Tests.CaptureMathTests.Percentile_is_nearest_rank" methodname="Percentile_is_nearest_rank" classname="IFS.SceneSpec.Tests.CaptureMathTests" runstate="Runnable" seed="886667292" result="Passed" start-time="2026-11-16 05:19:35Z" end-time="2026-11-16 05:19:35Z" duration="0.001123" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1007" name="Srgb_to_lab_anchor_points" fullname="IFS.SceneSpec.Tests.CaptureMathTests.Srgb_to_lab_anchor_points" methodname="Srgb_to_lab_anchor_points" classname="IFS.SceneSpec.Tests.CaptureMathTests" runstate="Runnable" seed="1449581639" result="Passed" start-time="2026-11-16 05:19:35Z" end-time="2026-11-16 05:19:35Z" duration="0.000863" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1029" name="EnvironmentAndCaptureTests" fullname="IFS.SceneSpec.Tests.EnvironmentAndCaptureTests" classname="IFS.SceneSpec.Tests.EnvironmentAndCaptureTests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-11-16 05:19:35Z" end-time="2026-11-16 05:19:35Z" duration="0.126587" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1034" name="Batch_capture_renders_examples_without_console_errors" fullname="IFS.SceneSpec.Tests.EnvironmentAndCaptureTests.Batch_capture_renders_examples_without_console_errors" methodname="Batch_capture_renders_examples_without_console_errors" classname="IFS.SceneSpec.Tests.EnvironmentAndCaptureTests" runstate="Runnable" seed="1626248099" result="Passed" start-time="2026-11-16 05:19:35Z" end-time="2026-11-16 05:19:35Z" duration="0.107640" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[[SceneLoader] form.posture: SceneSpec 값이 null → 기본값 none 사용
+[SceneLoader] material.brightness: SceneSpec 값이 null → 기본값 0.5 사용
+[SceneLoader] material.opacity: SceneSpec 값이 null → 기본값 1 사용
+[SceneLoader] layout.size: SceneSpec 값이 null → 기본값 0.5 사용
+[SceneLoader] layout.distance: SceneSpec 값이 null → 기본값 0.33 사용
+[SceneLoader] motion.type: SceneSpec 값이 null → 기본값 still 사용
+[SceneLoader] motion.speed: SceneSpec 값이 null → 기본값 0.5 사용
+[SceneLoader] form.type=blob: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시
+[SceneLoader] EX01.json 로드: form=blob, 기본값 7개
+[SceneLoader] form.type: SceneSpec 값이 null → 기본값 blob 사용
+[SceneLoader] material.color.h: SceneSpec 값이 null → 기본값 0 사용
+[SceneLoader] material.color.s: SceneSpec 값이 null → 기본값 0 사용
+[SceneLoader] material.color.l: SceneSpec 값이 null → 기본값 0.7 사용
+[SceneLoader] material.brightness: SceneSpec 값이 null → 기본값 0.5 사용
+[SceneLoader] material.roughness: SceneSpec 값이 null → 기본값 0.5 사용
+[SceneLoader] material.opacity: SceneSpec 값이 null → 기본값 1 사용
+[SceneLoader] material.erosion: SceneSpec 값이 null → 기본값 0 사용
+[SceneLoader] layout.distance: SceneSpec 값이 null → 기본값 0.33 사용
+[SceneLoader] layout.verticalOffset: SceneSpec 값이 null → 기본값 0.75 사용
+[SceneLoader] motion.type: SceneSpec 값이 null → 기본값 still 사용
+[SceneLoader] motion.speed: SceneSpec 값이 null → 기본값 0.5 사용
+[SceneLoader] form.type=blob: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시
+[SceneLoader] EX02.json 로드: form=blob, 기본값 12개
+]]></output>
+              </test-case>
+              <test-case id="1033" name="Changing_form_type_does_not_accumulate_material_copies" fullname="IFS.SceneSpec.Tests.EnvironmentAndCaptureTests.Changing_form_type_does_not_accumulate_material_copies" methodname="Changing_form_type_does_not_accumulate_material_copies" classname="IFS.SceneSpec.Tests.EnvironmentAndCaptureTests" runstate="Runnable" seed="629234589" result="Passed" start-time="2026-11-16 05:19:35Z" end-time="2026-11-16 05:19:35Z" duration="0.012261" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[[SceneLoader] form.posture: SceneSpec 값이 null → 기본값 none 사용
+[SceneLoader] material.brightness: SceneSpec 값이 null → 기본값 0.5 사용
+[SceneLoader] material.opacity: SceneSpec 값이 null → 기본값 1 사용
+[SceneLoader] layout.size: SceneSpec 값이 null → 기본값 0.5 사용
+[SceneLoader] layout.distance: SceneSpec 값이 null → 기본값 0.33 사용
+[SceneLoader] motion.type: SceneSpec 값이 null → 기본값 still 사용
+[SceneLoader] motion.speed: SceneSpec 값이 null → 기본값 0.5 사용
+[SceneLoader] 머리(카메라)를 찾지 못해 (0, 1.6, 0)에서 앞을 본다고 가정
+[SceneLoader] form.type=blob: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시
+[SceneLoader] EX01.json 로드: form=blob, 기본값 7개
+[SceneLoader] form.type=shell: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시
+[SceneLoader] form.type=fragments: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시
+[SceneLoader] form.type=mist: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시
+]]></output>
+              </test-case>
+              <test-case id="1032" name="Environment_dispose_restores_global_render_settings" fullname="IFS.SceneSpec.Tests.EnvironmentAndCaptureTests.Environment_dispose_restores_global_render_settings" methodname="Environment_dispose_restores_global_render_settings" classname="IFS.SceneSpec.Tests.EnvironmentAndCaptureTests" runstate="Runnable" seed="1985831877" result="Passed" start-time="2026-11-16 05:19:35Z" end-time="2026-11-16 05:19:35Z" duration="0.002499" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1031" name="Environment_is_neutral_lit_by_one_soft_shadow_light_and_cleans_up" fullname="IFS.SceneSpec.Tests.EnvironmentAndCaptureTests.Environment_is_neutral_lit_by_one_soft_shadow_light_and_cleans_up" methodname="Environment_is_neutral_lit_by_one_soft_shadow_light_and_cleans_up" classname="IFS.SceneSpec.Tests.EnvironmentAndCaptureTests" runstate="Runnable" seed="1357777944" result="Passed" start-time="2026-11-16 05:19:35Z" end-time="2026-11-16 05:19:35Z" duration="0.002822" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1030" name="Project_uses_linear_color_space_and_vr_quality_levels" fullname="IFS.SceneSpec.Tests.EnvironmentAndCaptureTests.Project_uses_linear_color_space_and_vr_quality_levels" methodname="Project_uses_linear_color_space_and_vr_quality_levels" classname="IFS.SceneSpec.Tests.EnvironmentAndCaptureTests" runstate="Runnable" seed="114799996" result="Passed" start-time="2026-11-16 05:19:35Z" end-time="2026-11-16 05:19:35Z" duration="0.000771" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1012" name="SceneSpecDeserializationTests" fullname="IFS.SceneSpec.Tests.SceneSpecDeserializationTests" classname="IFS.SceneSpec.Tests.SceneSpecDeserializationTests" runstate="Runnable" testcasecount="14" result="Passed" start-time="2026-11-16 05:19:35Z" end-time="2026-11-16 05:19:35Z" duration="0.048775" total="14" passed="14" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1026" name="Adjustment_is_measured_on_the_same_0_1_scale" fullname="IFS.SceneSpec.Tests.SceneSpecDeserializationTests.Adjustment_is_measured_on_the_same_0_1_scale" methodname="Adjustment_is_measured_on_the_same_0_1_scale" classname="IFS.SceneSpec.Tests.SceneSpecDeserializationTests" runstate="Runnable" seed="598803753" result="Passed" start-time="2026-11-16 05:19:35Z" end-time="2026-11-16 05:19:35Z" duration="0.001788" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1022" name="EX01_values_and_provenance" fullname="IFS.SceneSpec.Tests.SceneSpecDeserializationTests.EX01_values_and_provenance" methodname="EX01_values_and_provenance" classname="IFS.SceneSpec.Tests.SceneSpecDeserializationTests" runstate="Runnable" seed="1945952635" result="Passed" start-time="2026-11-16 05:19:35Z" end-time="2026-11-16 05:19:35Z" duration="0.000996" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1023" name="EX02_unsaid_slots_stay_null_and_defaults_are_recorded" fullname="IFS.SceneSpec.Tests.SceneSpecDeserializationTests.EX02_unsaid_slots_stay_null_and_defaults_are_recorded" methodname="EX02_unsaid_slots_stay_null_and_defaults_are_recorded" classname="IFS.SceneSpec.Tests.SceneSpecDeserializationTests" runstate="Runnable" seed="136960324" result="Passed" start-time="2026-11-16 05:19:35Z" end-time="2026-11-16 05:19:35Z" duration="0.000459" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-suite type="ParameterizedMethod" id="1015" name="Example_deserializes_strictly_and_round_trips_without_loss" fullname="IFS.SceneSpec.Tests.SceneSpecDeserializationTests.Example_deserializes_strictly_and_round_trips_without_loss" classname="IFS.SceneSpec.Tests.SceneSpecDeserializationTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-11-16 05:19:35Z" end-time="2026-11-16 05:19:35Z" duration="0.006573" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1013" name="Example_deserializes_strictly_and_round_trips_without_loss(&quot;EX01.json&quot;)" fullname="IFS.SceneSpec.Tests.SceneSpecDeserializationTests.Example_deserializes_strictly_and_round_trips_without_loss(&quot;EX01.json&quot;)" methodname="Example_deserializes_strictly_and_round_trips_without_loss" classname="IFS.SceneSpec.Tests.SceneSpecDeserializationTests" runstate="Runnable" seed="1222841309" result="Passed" start-time="2026-11-16 05:19:35Z" end-time="2026-11-16 05:19:35Z" duration="0.006043" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1014" name="Example_deserializes_strictly_and_round_trips_without_loss(&quot;EX02.json&quot;)" fullname="IFS.SceneSpec.Tests.SceneSpecDeserializationTests.Example_deserializes_strictly_and_round_trips_without_loss(&quot;EX02.json&quot;)" methodname="Example_deserializes_strictly_and_round_trips_without_loss" classname="IFS.SceneSpec.Tests.SceneSpecDeserializationTests" runstate="Runnable" seed="1128844589" result="Passed" start-time="2026-11-16 05:19:35Z" end-time="2026-11-16 05:19:35Z" duration="0.000332" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-case id="1027" name="IcoSphere_is_even_closed_and_faces_outward" fullname="IFS.SceneSpec.Tests.SceneSpecDeserializationTests.IcoSphere_is_even_closed_and_faces_outward" methodname="IcoSphere_is_even_closed_and_faces_outward" classname="IFS.SceneSpec.Tests.SceneSpecDeserializationTests" runstate="Runnable" seed="144108780" result="Passed" start-time="2026-11-16 05:19:35Z" end-time="2026-11-16 05:19:35Z" duration="0.008122" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1025" name="Missing_field_is_rejected" fullname="IFS.SceneSpec.Tests.SceneSpecDeserializationTests.Missing_field_is_rejected" methodname="Missing_field_is_rejected" classname="IFS.SceneSpec.Tests.SceneSpecDeserializationTests" runstate="Runnable" seed="1035587823" result="Passed" start-time="2026-11-16 05:19:35Z" end-time="2026-11-16 05:19:35Z" duration="0.001852" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1028" name="Recorder_writes_initial_final_and_events" fullname="IFS.SceneSpec.Tests.SceneSpecDeserializationTests.Recorder_writes_initial_final_and_events" methodname="Recorder_writes_initial_final_and_events" classname="IFS.SceneSpec.Tests.SceneSpecDeserializationTests" runstate="Runnable" seed="225078390" result="Passed" start-time="2026-11-16 05:19:35Z" end-time="2026-11-16 05:19:35Z" duration="0.012332" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1024" name="Unknown_field_is_rejected" fullname="IFS.SceneSpec.Tests.SceneSpecDeserializationTests.Unknown_field_is_rejected" methodname="Unknown_field_is_rejected" classname="IFS.SceneSpec.Tests.SceneSpecDeserializationTests" runstate="Runnable" seed="1422836039" result="Passed" start-time="2026-11-16 05:19:35Z" end-time="2026-11-16 05:19:35Z" duration="0.000541" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1020" name="V20_document_with_v21_field_is_flagged" fullname="IFS.SceneSpec.Tests.SceneSpecDeserializationTests.V20_document_with_v21_field_is_flagged" methodname="V20_document_with_v21_field_is_flagged" classname="IFS.SceneSpec.Tests.SceneSpecDeserializationTests" runstate="Runnable" seed="870842309" result="Passed" start-time="2026-11-16 05:19:35Z" end-time="2026-11-16 05:19:35Z" duration="0.003076" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-suite type="ParameterizedMethod" id="1018" name="V21_example_deserializes_strictly_and_round_trips_without_loss" fullname="IFS.SceneSpec.Tests.SceneSpecDeserializationTests.V21_example_deserializes_strictly_and_round_trips_without_loss" classname="IFS.SceneSpec.Tests.SceneSpecDeserializationTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-11-16 05:19:35Z" end-time="2026-11-16 05:19:35Z" duration="0.008766" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1016" name="V21_example_deserializes_strictly_and_round_trips_without_loss(&quot;EX01.v1.json&quot;)" fullname="IFS.SceneSpec.Tests.SceneSpecDeserializationTests.V21_example_deserializes_strictly_and_round_trips_without_loss(&quot;EX01.v1.json&quot;)" methodname="V21_example_deserializes_strictly_and_round_trips_without_loss" classname="IFS.SceneSpec.Tests.SceneSpecDeserializationTests" runstate="Runnable" seed="90288979" result="Passed" start-time="2026-11-16 05:19:35Z" end-time="2026-11-16 05:19:35Z" duration="0.004373" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1017" name="V21_example_deserializes_strictly_and_round_trips_without_loss(&quot;EX03.v1.json&quot;)" fullname="IFS.SceneSpec.Tests.SceneSpecDeserializationTests.V21_example_deserializes_strictly_and_round_trips_without_loss(&quot;EX03.v1.json&quot;)" methodname="V21_example_deserializes_strictly_and_round_trips_without_loss" classname="IFS.SceneSpec.Tests.SceneSpecDeserializationTests" runstate="Runnable" seed="1690846308" result="Passed" start-time="2026-11-16 05:19:35Z" end-time="2026-11-16 05:19:35Z" duration="0.004088" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-case id="1019" name="V21_preservation_fields_are_read" fullname="IFS.SceneSpec.Tests.SceneSpecDeserializationTests.V21_preservation_fields_are_read" methodname="V21_preservation_fields_are_read" classname="IFS.SceneSpec.Tests.SceneSpecDeserializationTests" runstate="Runnable" seed="846527146" result="Passed" start-time="2026-11-16 05:19:35Z" end-time="2026-11-16 05:19:35Z" duration="0.002181" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1021" name="V21_unknown_field_is_still_rejected" fullname="IFS.SceneSpec.Tests.SceneSpecDeserializationTests.V21_unknown_field_is_still_rejected" methodname="V21_unknown_field_is_still_rejected" classname="IFS.SceneSpec.Tests.SceneSpecDeserializationTests" runstate="Runnable" seed="371112847" result="Passed" start-time="2026-11-16 05:19:35Z" end-time="2026-11-16 05:19:35Z" duration="0.000994" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[Saving results to: &lt;scratch&gt;\editmode.xml
+]]></output>
+              </test-case>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

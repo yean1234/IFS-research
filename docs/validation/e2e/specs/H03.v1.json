@@ -1,0 +1,498 @@
+{
+  "meta": {
+    "specVersion": "2.1.0",
+    "participantId": null,
+    "sessionId": "H03",
+    "condition": "static",
+    "sourceTextHash": "sha256:4d137c43eb0401bf5a9ddc7677140fb347e009b618e980cf8736a8c83a3c2867",
+    "pipeline": {
+      "builder": "scene-spec-builder-v1/1.2.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@1.0.0",
+        "layer1Base": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@1.0.0",
+        "vad": "vad-ko@0.1.0"
+      }
+    },
+    "mapping": {
+      "requested": "v1",
+      "used": "v1",
+      "fallbackReason": null
+    }
+  },
+  "form": {
+    "type": null,
+    "posture": null
+  },
+  "material": {
+    "color": {
+      "h": 0.078,
+      "s": 0.85,
+      "l": 0.55
+    },
+    "brightness": null,
+    "saturation": null,
+    "roughness": null,
+    "opacity": null,
+    "erosion": null
+  },
+  "layout": {
+    "size": null,
+    "distance": null,
+    "verticalOffset": 1.0
+  },
+  "motion": {
+    "type": "floating",
+    "speed": null
+  },
+  "body": {
+    "part": "head",
+    "layer": "around"
+  },
+  "_provenance": {
+    "material.color": [
+      {
+        "source": "phrase_rule",
+        "trigger": "주황색",
+        "charSpan": [
+          0,
+          3
+        ],
+        "rule": "colorTerm.주황색>material.color:hsl"
+      }
+    ],
+    "layout.verticalOffset": [
+      {
+        "source": "phrase_rule",
+        "trigger": "머리 위쪽",
+        "charSpan": [
+          23,
+          28
+        ],
+        "rule": "height.머리위>layout.verticalOffset:1.0"
+      }
+    ],
+    "motion.type": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "둥실둥실",
+        "charSpan": [
+          80,
+          84
+        ],
+        "rule": "motionLexicon.둥실둥실>motion.type:floating"
+      },
+      {
+        "source": "explicit_lexicon",
+        "trigger": "떠",
+        "charSpan": [
+          30,
+          31
+        ],
+        "rule": "motionLexicon.뜨>motion.type:floating"
+      },
+      {
+        "source": "explicit_lexicon",
+        "trigger": "떠",
+        "charSpan": [
+          49,
+          50
+        ],
+        "rule": "motionLexicon.뜨>motion.type:floating"
+      }
+    ],
+    "body.part": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "머리",
+        "charSpan": [
+          23,
+          25
+        ],
+        "rule": "bodyPartLexicon.머리>body.part:head"
+      }
+    ],
+    "body.layer": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "밖",
+        "charSpan": [
+          18,
+          19
+        ],
+        "rule": "bodyLayerLexicon.밖>body.layer:around"
+      }
+    ]
+  },
+  "_unmatched": [
+    {
+      "lemma": "풍선",
+      "tag": "EOJEOL",
+      "surface": "풍선이",
+      "charSpan": [
+        4,
+        7
+      ]
+    },
+    {
+      "lemma": "하나",
+      "tag": "EOJEOL",
+      "surface": "하나",
+      "charSpan": [
+        8,
+        10
+      ]
+    },
+    {
+      "lemma": "보이",
+      "tag": "EOJEOL",
+      "surface": "보여요",
+      "charSpan": [
+        11,
+        14
+      ]
+    },
+    {
+      "lemma": "있",
+      "tag": "EOJEOL",
+      "surface": "있어요",
+      "charSpan": [
+        32,
+        35
+      ]
+    },
+    {
+      "lemma": "하늘",
+      "tag": "NNG",
+      "surface": "하늘",
+      "charSpan": [
+        40,
+        42
+      ]
+    },
+    {
+      "lemma": "하늘",
+      "tag": "EOJEOL",
+      "surface": "하늘을",
+      "charSpan": [
+        40,
+        43
+      ]
+    },
+    {
+      "lemma": "배경",
+      "tag": "NNG",
+      "surface": "배경",
+      "charSpan": [
+        44,
+        46
+      ]
+    },
+    {
+      "lemma": "배경",
+      "tag": "EOJEOL",
+      "surface": "배경으로",
+      "charSpan": [
+        44,
+        48
+      ]
+    },
+    {
+      "lemma": "있",
+      "tag": "EOJEOL",
+      "surface": "있어요",
+      "charSpan": [
+        51,
+        54
+      ]
+    },
+    {
+      "lemma": "빵빵",
+      "tag": "XR",
+      "surface": "빵빵",
+      "charSpan": [
+        61,
+        63
+      ]
+    },
+    {
+      "lemma": "빵빵",
+      "tag": "EOJEOL",
+      "surface": "빵빵하게",
+      "charSpan": [
+        61,
+        65
+      ]
+    },
+    {
+      "lemma": "있",
+      "tag": "EOJEOL",
+      "surface": "있어요",
+      "charSpan": [
+        70,
+        73
+      ]
+    },
+    {
+      "lemma": "위아래",
+      "tag": "NNG",
+      "surface": "위아래",
+      "charSpan": [
+        75,
+        78
+      ]
+    },
+    {
+      "lemma": "위아래",
+      "tag": "EOJEOL",
+      "surface": "위아래로",
+      "charSpan": [
+        75,
+        79
+      ]
+    }
+  ],
+  "_unmapped": [
+    {
+      "lemma": "풍선",
+      "category": "object",
+      "value": {
+        "object": "balloon"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "풍선",
+        "charSpan": [
+          4,
+          6
+        ],
+        "rule": "objectLexicon.풍선"
+      }
+    },
+    {
+      "lemma": "동그랗",
+      "category": "shape",
+      "value": {
+        "shape": "round"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "동그랗고",
+        "charSpan": [
+          56,
+          60
+        ],
+        "rule": "shapeLexicon.동그랗"
+      }
+    },
+    {
+      "lemma": "부풀",
+      "category": "size",
+      "value": {
+        "size": "swelling"
+      },
+      "reason": "no_value_mapping",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "부풀어",
+        "charSpan": [
+          66,
+          69
+        ],
+        "rule": "sizeLexicon.부풀"
+      }
+    }
+  ],
+  "_negated": [],
+  "_alternatives": [
+    {
+      "path": "motion.type",
+      "value": "moving",
+      "reason": "later_mention",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "움직여요",
+          "charSpan": [
+            85,
+            89
+          ],
+          "rule": "motionLexicon.움직이>motion.type:moving"
+        }
+      ]
+    },
+    {
+      "path": "body.part",
+      "value": "body",
+      "reason": "lower_priority",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "몸",
+          "charSpan": [
+            16,
+            17
+          ],
+          "rule": "bodyPartLexicon.몸>body.part:body"
+        }
+      ]
+    }
+  ],
+  "_inferred": {},
+  "_context": [
+    {
+      "text": "파란",
+      "charSpan": [
+        37,
+        39
+      ],
+      "reason": "background_object",
+      "path": "material.color",
+      "value": {
+        "h": 0.597,
+        "s": 0.7,
+        "l": 0.5
+      },
+      "rule": "colorTerm.파란>material.color:hsl"
+    }
+  ],
+  "_parts": [],
+  "_uncertain": [],
+  "_measurements": [],
+  "_direction": [],
+  "_needsConfirmation": [],
+  "_clauses": [
+    {
+      "charSpan": [
+        0,
+        14
+      ],
+      "text": "주황색 풍선이 하나 보여요",
+      "usedFor": [
+        "material.color"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        14,
+        15
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        16,
+        21
+      ],
+      "text": "몸 밖이요",
+      "usedFor": [
+        "body.layer"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        21,
+        22
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        23,
+        35
+      ],
+      "text": "머리 위쪽에 떠 있어요",
+      "usedFor": [
+        "layout.verticalOffset",
+        "motion.type",
+        "body.part"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        35,
+        36
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        37,
+        54
+      ],
+      "text": "파란 하늘을 배경으로 떠 있어요",
+      "usedFor": [
+        "motion.type"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        54,
+        55
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        56,
+        60
+      ],
+      "text": "동그랗고",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        61,
+        73
+      ],
+      "text": "빵빵하게 부풀어 있어요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        73,
+        74
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        75,
+        89
+      ],
+      "text": "위아래로 둥실둥실 움직여요",
+      "usedFor": [
+        "motion.type"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        89,
+        90
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    }
+  ]
+}

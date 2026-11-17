@@ -1,0 +1,237 @@
+=== EX01
+loaded: True
+params: {"form.posture":"none","form.type":"blob","layout.distance":0.33,"layout.size":0.5,"layout.verticalOffset":0.72,"material.brightness":0.5,"material.color.h":0.0,"material.color.l":0.45,"material.color.s":0.05,"material.erosion":0.6,"material.opacity":1.0,"material.roughness":0.35,"motion.speed":0.5,"motion.type":"still"}
+current: {"form.posture":"none","form.type":"blob","layout.distance":0.33,"layout.size":0.5,"layout.verticalOffset":0.72,"material.brightness":0.5,"material.color.h":0.0,"material.color.l":0.45,"material.color.s":0.05,"material.erosion":0.6,"material.opacity":1.0,"material.roughness":0.35,"motion.speed":0.5,"motion.type":"still"}
+defaultsUsed: form.posture,material.brightness,material.opacity,layout.size,layout.distance,motion.type,motion.speed
+inferredUsed: 
+shape: {"status":"unmapped_shape","applied":null,"model":null,"viaPrefab":null,"formType":"blob","words":[{"shape":"edge","lemma":"가장자리","trigger":"가장자리","charSpan":[20,24],"status":"unmapped_shape"}]}
+showingShapeModel: False
+ownedMaterials: 1
+notes:
+  - form.posture: SceneSpec 값이 null → 기본값 none 사용
+  - material.brightness: SceneSpec 값이 null → 기본값 0.5 사용
+  - material.opacity: SceneSpec 값이 null → 기본값 1 사용
+  - layout.size: SceneSpec 값이 null → 기본값 0.5 사용
+  - layout.distance: SceneSpec 값이 null → 기본값 0.33 사용
+  - motion.type: SceneSpec 값이 null → 기본값 still 사용
+  - motion.speed: SceneSpec 값이 null → 기본값 0.5 사용
+  - EX01.json (session EX01): shape=edge, 트리거 '가장자리' [20,24] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)
+  - 머리(카메라)를 찾지 못해 (0, 1.6, 0)에서 앞을 본다고 가정
+  - form.type=blob: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시
+hierarchy:
+  SceneSpec EX01 active=True pos=(0.00000,1.23077,1.19100) rot=(0.00000,1.00000,0.00000,0.00000) scale=(1.00000,1.00000,1.00000)
+    motion active=True pos=(0.00000,0.00000,0.00000) rot=(0.00000,0.00000,0.00000,1.00000) scale=(1.00000,1.00000,1.00000)
+      motion group=Still
+      model (blob) active=True pos=(0.00000,0.00000,0.00000) rot=(0.00000,0.00000,0.00000,1.00000) scale=(0.35000,0.35000,0.35000)
+        mesh=IFS IcoSphere verts=2562
+        renderer shadow=On
+          mat shader=IFS/SceneSpec Opaque queue=2450 _BaseColor=(0.47250,0.42750,0.42750,1.00000) _Brightness=0.50000 _Roughness=0.35000 _Opacity=1.00000 _Erosion=0.60000 _Lumpiness=0.14000 _NoiseScale=1.60000 _Fuzz=0.00000 _Density=1.00000 _ShellOpen=0.00000 _Displacement=1.00000 _Seed=0.00000 keywords=
+        collider=SphereCollider
+initialScene: {"recordVersion":"ifs-vr-scene-record/0.1","sessionId":"EX01","participantId":"SYN01","condition":"chatbot","specVersion":"2.0.0","sourceTextHash":"sha256:7ada4b623e6993396aacc5e6142a27e0ca89e231db4dc350ed513e01f226bdb0","kind":"initial","params":{"form.posture":"none","form.type":"blob","layout.distance":0.33,"layout.size":0.5,"layout.verticalOffset":0.72,"material.brightness":0.5,"material.color.h":0.0,"material.color.l":0.45,"material.color.s":0.05,"material.erosion":0.6,"material.opacity":1.0,"material.roughness":0.35,"motion.speed":0.5,"motion.type":"still"},"defaultsUsed":["form.posture","material.brightness","material.opacity","layout.size","layout.distance","motion.type","motion.speed"],"inferredUsed":[],"notes":["form.posture: SceneSpec 값이 null → 기본값 none 사용","material.brightness: SceneSpec 값이 null → 기본값 0.5 사용","material.opacity: SceneSpec 값이 null → 기본값 1 사용","layout.size: SceneSpec 값이 null → 기본값 0.5 사용","layout.distance: SceneSpec 값이 null → 기본값 0.33 사용","motion.type: SceneSpec 값이 null → 기본값 still 사용","motion.speed: SceneSpec 값이 null → 기본값 0.5 사용","EX01.json (session EX01): shape=edge, 트리거 '가장자리' [20,24] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)","머리(카메라)를 찾지 못해 (0, 1.6, 0)에서 앞을 본다고 가정","form.type=blob: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시"],"shape":{"status":"unmapped_shape","applied":null,"model":null,"viaPrefab":null,"formType":"blob","words":[{"shape":"edge","lemma":"가장자리","trigger":"가장자리","charSpan":[20,24],"status":"unmapped_shape"}]},"spec":{"meta":{"specVersion":"2.0.0","participantId":"SYN01","sessionId":"EX01","condition":"chatbot","sourceTextHash":"sha256:7ada4b623e6993396aacc5e6142a27e0ca89e231db4dc350ed513e01f226bdb0","pipeline":{"builder":"scene-spec-builder/0.1.0","analyzer":"kiwi","lexicons":{"layer1":"layer1-attribute-lexicon@0.1.0","sceneParams":"scene-params@0.1.0","vad":"vad-ko@0.1.0"}}},"form":{"type":"blob","posture":null},"material":{"color":{"h":0.0,"s":0.05,"l":0.45},"brightness":null,"saturation":null,"roughness":0.35,"opacity":null,"erosion":0.6},"layout":{"size":null,"distance":null,"verticalOffset":0.72},"motion":{"type":null,"speed":null},"body":{"part":"chest","layer":"inner"},"_provenance":{"form.type":[{"source":"explicit_lexicon","trigger":"덩어리","charSpan":[34,37],"rule":"formLexicon.덩어리>form.type:blob"}],"material.color":[{"source":"explicit_lexicon","trigger":"회색","charSpan":[31,33],"rule":"colorLexicon.회색>material.color:hsl"}],"material.roughness":[{"source":"explicit_lexicon","trigger":"눅눅하고","charSpan":[15,19],"rule":"textureLexicon.눅눅>material.roughness:damp"}],"material.erosion":[{"source":"explicit_lexicon","trigger":"삭아가는","charSpan":[26,30],"rule":"textureLexicon.삭>material.erosion:decaying"}],"layout.verticalOffset":[{"source":"explicit_lexicon","trigger":"가슴","charSpan":[0,2],"rule":"bodyPartLexicon.가슴>layout.verticalOffset:chest"}],"body.part":[{"source":"explicit_lexicon","trigger":"가슴","charSpan":[0,2],"rule":"bodyPartLexicon.가슴>body.part:chest"}],"body.layer":[{"source":"explicit_lexicon","trigger":"안쪽","charSpan":[3,5],"rule":"bodyLayerLexicon.안쪽>body.layer:inner"}]},"_unmatched":[],"_unmapped":[{"lemma":"종이","category":"object","value":{"object":"paper"},"reason":"simile_prototype_pending","_provenance":{"source":"simile_marker","trigger":"종이처럼","charSpan":[10,14],"rule":"simile.처럼>objectLexicon.종이"}},{"lemma":"가장자리","category":"shape","value":{"shape":"edge"},"reason":"no_scene_param","_provenance":{"source":"explicit_lexicon","trigger":"가장자리","charSpan":[20,24],"rule":"shapeLexicon.가장자리"}}],"_negated":[],"_alternatives":[{"path":"material.roughness","value":0.15,"reason":"lower_layer","_provenance":[{"source":"simile_marker","trigger":"젖은","charSpan":[7,9],"rule":"simile.처럼>textureLexicon.젖>material.roughness:wet"}]}],"_inferred":{}}}
+events: time_ms,param,from,to,distance_m\r\n
+files: events.csv,initialScene.json
+=== EX02
+loaded: True
+params: {"form.posture":"curled","form.type":"blob","layout.distance":0.33,"layout.size":0.316,"layout.verticalOffset":0.75,"material.brightness":0.5,"material.color.h":0.0,"material.color.l":0.7,"material.color.s":0.0,"material.erosion":0.0,"material.opacity":1.0,"material.roughness":0.5,"motion.speed":0.5,"motion.type":"still"}
+current: {"form.posture":"curled","form.type":"blob","layout.distance":0.33,"layout.size":0.316,"layout.verticalOffset":0.75,"material.brightness":0.5,"material.color.h":0.0,"material.color.l":0.7,"material.color.s":0.0,"material.erosion":0.0,"material.opacity":1.0,"material.roughness":0.5,"motion.speed":0.5,"motion.type":"still"}
+defaultsUsed: form.type,material.color.h,material.color.s,material.color.l,material.brightness,material.roughness,material.opacity,material.erosion,layout.distance,layout.verticalOffset,motion.type,motion.speed
+inferredUsed: 
+shape: {"status":"none","applied":null,"model":null,"viaPrefab":null,"formType":null,"words":[]}
+showingShapeModel: False
+ownedMaterials: 1
+notes:
+  - form.type: SceneSpec 값이 null → 기본값 blob 사용
+  - material.color.h: SceneSpec 값이 null → 기본값 0 사용
+  - material.color.s: SceneSpec 값이 null → 기본값 0 사용
+  - material.color.l: SceneSpec 값이 null → 기본값 0.7 사용
+  - material.brightness: SceneSpec 값이 null → 기본값 0.5 사용
+  - material.roughness: SceneSpec 값이 null → 기본값 0.5 사용
+  - material.opacity: SceneSpec 값이 null → 기본값 1 사용
+  - material.erosion: SceneSpec 값이 null → 기본값 0 사용
+  - layout.distance: SceneSpec 값이 null → 기본값 0.33 사용
+  - layout.verticalOffset: SceneSpec 값이 null → 기본값 0.75 사용
+  - motion.type: SceneSpec 값이 null → 기본값 still 사용
+  - motion.speed: SceneSpec 값이 null → 기본값 0.5 사용
+  - 머리(카메라)를 찾지 못해 (0, 1.6, 0)에서 앞을 본다고 가정
+  - form.type=blob: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시
+hierarchy:
+  SceneSpec EX02 active=True pos=(0.00000,1.28205,1.19100) rot=(0.00000,1.00000,0.00000,0.00000) scale=(1.00000,1.00000,1.00000)
+    motion active=True pos=(0.00000,0.00000,0.00000) rot=(0.00000,0.00000,0.00000,1.00000) scale=(1.00000,1.00000,1.00000)
+      motion group=Still
+      model (blob) active=True pos=(0.00000,0.00000,0.00000) rot=(0.00000,0.00000,0.00000,1.00000) scale=(0.24166,0.14710,0.24166)
+        mesh=IFS IcoSphere verts=2562
+        renderer shadow=On
+          mat shader=IFS/SceneSpec Opaque queue=2450 _BaseColor=(0.70000,0.70000,0.70000,1.00000) _Brightness=0.50000 _Roughness=0.50000 _Opacity=1.00000 _Erosion=0.00000 _Lumpiness=0.14000 _NoiseScale=1.60000 _Fuzz=0.00000 _Density=1.00000 _ShellOpen=0.00000 _Displacement=1.00000 _Seed=0.00000 keywords=
+        collider=SphereCollider
+initialScene: {"recordVersion":"ifs-vr-scene-record/0.1","sessionId":"EX02","participantId":"SYN01","condition":"chatbot","specVersion":"2.0.0","sourceTextHash":"sha256:641a4a22d9228ec30d3bce78e6bc15b1f6e8b0e1bbcfb52ab512fd7c22c6147a","kind":"initial","params":{"form.posture":"curled","form.type":"blob","layout.distance":0.33,"layout.size":0.316,"layout.verticalOffset":0.75,"material.brightness":0.5,"material.color.h":0.0,"material.color.l":0.7,"material.color.s":0.0,"material.erosion":0.0,"material.opacity":1.0,"material.roughness":0.5,"motion.speed":0.5,"motion.type":"still"},"defaultsUsed":["form.type","material.color.h","material.color.s","material.color.l","material.brightness","material.roughness","material.opacity","material.erosion","layout.distance","layout.verticalOffset","motion.type","motion.speed"],"inferredUsed":[],"notes":["form.type: SceneSpec 값이 null → 기본값 blob 사용","material.color.h: SceneSpec 값이 null → 기본값 0 사용","material.color.s: SceneSpec 값이 null → 기본값 0 사용","material.color.l: SceneSpec 값이 null → 기본값 0.7 사용","material.brightness: SceneSpec 값이 null → 기본값 0.5 사용","material.roughness: SceneSpec 값이 null → 기본값 0.5 사용","material.opacity: SceneSpec 값이 null → 기본값 1 사용","material.erosion: SceneSpec 값이 null → 기본값 0 사용","layout.distance: SceneSpec 값이 null → 기본값 0.33 사용","layout.verticalOffset: SceneSpec 값이 null → 기본값 0.75 사용","motion.type: SceneSpec 값이 null → 기본값 still 사용","motion.speed: SceneSpec 값이 null → 기본값 0.5 사용","머리(카메라)를 찾지 못해 (0, 1.6, 0)에서 앞을 본다고 가정","form.type=blob: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시"],"shape":{"status":"none","applied":null,"model":null,"viaPrefab":null,"formType":null,"words":[]},"spec":{"meta":{"specVersion":"2.0.0","participantId":"SYN01","sessionId":"EX02","condition":"chatbot","sourceTextHash":"sha256:641a4a22d9228ec30d3bce78e6bc15b1f6e8b0e1bbcfb52ab512fd7c22c6147a","pipeline":{"builder":"scene-spec-builder/0.1.0","analyzer":"kiwi","lexicons":{"layer1":"layer1-attribute-lexicon@0.1.0","sceneParams":"scene-params@0.1.0","vad":"vad-ko@0.1.0"}}},"form":{"type":null,"posture":"curled"},"material":{"color":null,"brightness":null,"saturation":null,"roughness":null,"opacity":null,"erosion":null},"layout":{"size":0.316,"distance":null,"verticalOffset":null},"motion":{"type":null,"speed":null},"body":{"part":null,"layer":null},"_provenance":{"form.posture":[{"source":"explicit_lexicon","trigger":"웅크려진","charSpan":[0,4],"rule":"postureLexicon.웅크리>form.posture:curled"}],"layout.size":[{"source":"explicit_lexicon","trigger":"작은","charSpan":[5,7],"rule":"sizeLexicon.작>layout.size:logScale(0.6)"}]},"_unmatched":[],"_unmapped":[{"lemma":"나","category":"self_reference","value":{"self":"first_person"},"reason":"no_scene_param","_provenance":{"source":"explicit_lexicon","trigger":"나","charSpan":[8,9],"rule":"selfReferenceLexicon.나"}}],"_negated":[],"_alternatives":[],"_inferred":{}}}
+events: time_ms,param,from,to,distance_m\r\n
+files: events.csv,initialScene.json
+=== EX01.v1
+loaded: True
+params: {"form.posture":"none","form.type":"blob","layout.distance":0.33,"layout.size":0.5,"layout.verticalOffset":0.75,"material.brightness":0.5,"material.color.h":0.0,"material.color.l":0.45,"material.color.s":0.05,"material.erosion":0.6,"material.opacity":1.0,"material.roughness":0.35,"motion.speed":0.5,"motion.type":"still"}
+current: {"form.posture":"none","form.type":"blob","layout.distance":0.33,"layout.size":0.5,"layout.verticalOffset":0.75,"material.brightness":0.5,"material.color.h":0.0,"material.color.l":0.45,"material.color.s":0.05,"material.erosion":0.6,"material.opacity":1.0,"material.roughness":0.35,"motion.speed":0.5,"motion.type":"still"}
+defaultsUsed: form.posture,material.brightness,material.opacity,layout.size,layout.distance,layout.verticalOffset,motion.type,motion.speed
+inferredUsed: 
+shape: {"status":"unmapped_shape","applied":null,"model":null,"viaPrefab":null,"formType":"blob","words":[{"shape":"edge","lemma":"가장자리","trigger":"가장자리","charSpan":[20,24],"status":"unmapped_shape"}]}
+showingShapeModel: False
+ownedMaterials: 1
+notes:
+  - form.posture: SceneSpec 값이 null → 기본값 none 사용
+  - material.brightness: SceneSpec 값이 null → 기본값 0.5 사용
+  - material.opacity: SceneSpec 값이 null → 기본값 1 사용
+  - layout.size: SceneSpec 값이 null → 기본값 0.5 사용
+  - layout.distance: SceneSpec 값이 null → 기본값 0.33 사용
+  - layout.verticalOffset: SceneSpec 값이 null → 기본값 0.75 사용
+  - motion.type: SceneSpec 값이 null → 기본값 still 사용
+  - motion.speed: SceneSpec 값이 null → 기본값 0.5 사용
+  - EX01.v1.json (session EX01): shape=edge, 트리거 '가장자리' [20,24] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)
+  - 머리(카메라)를 찾지 못해 (0, 1.6, 0)에서 앞을 본다고 가정
+  - form.type=blob: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시
+hierarchy:
+  SceneSpec EX01 active=True pos=(0.00000,1.28205,1.19100) rot=(0.00000,1.00000,0.00000,0.00000) scale=(1.00000,1.00000,1.00000)
+    motion active=True pos=(0.00000,0.00000,0.00000) rot=(0.00000,0.00000,0.00000,1.00000) scale=(1.00000,1.00000,1.00000)
+      motion group=Still
+      model (blob) active=True pos=(0.00000,0.00000,0.00000) rot=(0.00000,0.00000,0.00000,1.00000) scale=(0.35000,0.35000,0.35000)
+        mesh=IFS IcoSphere verts=2562
+        renderer shadow=On
+          mat shader=IFS/SceneSpec Opaque queue=2450 _BaseColor=(0.47250,0.42750,0.42750,1.00000) _Brightness=0.50000 _Roughness=0.35000 _Opacity=1.00000 _Erosion=0.60000 _Lumpiness=0.14000 _NoiseScale=1.60000 _Fuzz=0.00000 _Density=1.00000 _ShellOpen=0.00000 _Displacement=1.00000 _Seed=0.00000 keywords=
+        collider=SphereCollider
+initialScene: {"recordVersion":"ifs-vr-scene-record/0.1","sessionId":"EX01","participantId":"SYN01","condition":"chatbot","specVersion":"2.1.0","sourceTextHash":"sha256:7ada4b623e6993396aacc5e6142a27e0ca89e231db4dc350ed513e01f226bdb0","kind":"initial","params":{"form.posture":"none","form.type":"blob","layout.distance":0.33,"layout.size":0.5,"layout.verticalOffset":0.75,"material.brightness":0.5,"material.color.h":0.0,"material.color.l":0.45,"material.color.s":0.05,"material.erosion":0.6,"material.opacity":1.0,"material.roughness":0.35,"motion.speed":0.5,"motion.type":"still"},"defaultsUsed":["form.posture","material.brightness","material.opacity","layout.size","layout.distance","layout.verticalOffset","motion.type","motion.speed"],"inferredUsed":[],"notes":["form.posture: SceneSpec 값이 null → 기본값 none 사용","material.brightness: SceneSpec 값이 null → 기본값 0.5 사용","material.opacity: SceneSpec 값이 null → 기본값 1 사용","layout.size: SceneSpec 값이 null → 기본값 0.5 사용","layout.distance: SceneSpec 값이 null → 기본값 0.33 사용","layout.verticalOffset: SceneSpec 값이 null → 기본값 0.75 사용","motion.type: SceneSpec 값이 null → 기본값 still 사용","motion.speed: SceneSpec 값이 null → 기본값 0.5 사용","EX01.v1.json (session EX01): shape=edge, 트리거 '가장자리' [20,24] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)","머리(카메라)를 찾지 못해 (0, 1.6, 0)에서 앞을 본다고 가정","form.type=blob: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시"],"shape":{"status":"unmapped_shape","applied":null,"model":null,"viaPrefab":null,"formType":"blob","words":[{"shape":"edge","lemma":"가장자리","trigger":"가장자리","charSpan":[20,24],"status":"unmapped_shape"}]},"spec":{"meta":{"specVersion":"2.1.0","participantId":"SYN01","sessionId":"EX01","condition":"chatbot","sourceTextHash":"sha256:7ada4b623e6993396aacc5e6142a27e0ca89e231db4dc350ed513e01f226bdb0","pipeline":{"builder":"scene-spec-builder-v1/1.2.0","analyzer":"kiwi","lexicons":{"layer1":"layer1-attribute-lexicon@1.0.0","layer1Base":"layer1-attribute-lexicon@0.1.0","sceneParams":"scene-params@1.0.0","vad":"vad-ko@0.1.0"}},"mapping":{"requested":"v1","used":"v1","fallbackReason":null}},"form":{"type":"blob","posture":null},"material":{"color":{"h":0.0,"s":0.05,"l":0.45},"brightness":null,"saturation":null,"roughness":0.35,"opacity":null,"erosion":0.6},"layout":{"size":null,"distance":null,"verticalOffset":null},"motion":{"type":null,"speed":null},"body":{"part":"chest","layer":"inner"},"_provenance":{"form.type":[{"source":"explicit_lexicon","trigger":"덩어리","charSpan":[34,37],"rule":"formLexicon.덩어리>form.type:blob"}],"material.color":[{"source":"phrase_rule","trigger":"회색","charSpan":[31,33],"rule":"colorTerm.회색>material.color:hsl"}],"material.roughness":[{"source":"explicit_lexicon","trigger":"눅눅하고","charSpan":[15,19],"rule":"textureLexicon.눅눅>material.roughness:damp"}],"material.erosion":[{"source":"explicit_lexicon","trigger":"삭아가는","charSpan":[26,30],"rule":"textureLexicon.삭>material.erosion:decaying"}],"body.part":[{"source":"explicit_lexicon","trigger":"가슴","charSpan":[0,2],"rule":"bodyPartLexicon.가슴>body.part:chest"}],"body.layer":[{"source":"explicit_lexicon","trigger":"안쪽","charSpan":[3,5],"rule":"bodyLayerLexicon.안쪽>body.layer:inner"}]},"_unmatched":[{"lemma":"가장자리","tag":"EOJEOL","surface":"가장자리가","charSpan":[20,25]},{"lemma":"있","tag":"EOJEOL","surface":"있어요","charSpan":[39,42]}],"_unmapped":[{"lemma":"종이","category":"object","value":{"object":"paper"},"reason":"simile_prototype_pending","_provenance":{"source":"simile_marker","trigger":"종이처럼","charSpan":[10,14],"rule":"simile.처럼>objectLexicon.종이"}},{"lemma":"가장자리","category":"shape","value":{"shape":"edge"},"reason":"no_scene_param","_provenance":{"source":"explicit_lexicon","trigger":"가장자리","charSpan":[20,24],"rule":"shapeLexicon.가장자리"}}],"_negated":[],"_alternatives":[{"path":"material.roughness","value":0.15,"reason":"lower_layer","_provenance":[{"source":"simile_marker","trigger":"젖은","charSpan":[7,9],"rule":"simile.처럼>textureLexicon.젖>material.roughness:wet"}]}],"_inferred":{"layout.verticalOffset":{"value":0.72,"_provenance":[{"source":"body_part_height","trigger":"가슴","charSpan":[0,2],"rule":"bodyPartHeight.chest>layout.verticalOffset:0.72"}]}},"_context":[],"_parts":[],"_uncertain":[],"_measurements":[],"_direction":[],"_needsConfirmation":[],"_clauses":[{"charSpan":[0,19],"text":"가슴 안쪽에 젖은 종이처럼 눅눅하고","usedFor":["material.roughness","body.part","body.layer"],"status":"partly_used"},{"charSpan":[20,42],"text":"가장자리가 삭아가는 회색 덩어리가 있어요","usedFor":["form.type","material.color","material.erosion"],"status":"partly_used"}]}}
+events: time_ms,param,from,to,distance_m\r\n
+files: events.csv,initialScene.json
+=== EX03.v1
+loaded: True
+params: {"form.posture":"none","form.type":"blob","layout.distance":0.259,"layout.size":0.333,"layout.verticalOffset":0.93,"material.brightness":0.5,"material.color.h":0.597,"material.color.l":0.7,"material.color.s":0.49,"material.erosion":0.0,"material.opacity":1.0,"material.roughness":0.5,"motion.speed":0.5,"motion.type":"still"}
+current: {"form.posture":"none","form.type":"blob","layout.distance":0.259,"layout.size":0.333,"layout.verticalOffset":0.93,"material.brightness":0.5,"material.color.h":0.597,"material.color.l":0.7,"material.color.s":0.49,"material.erosion":0.0,"material.opacity":1.0,"material.roughness":0.5,"motion.speed":0.5,"motion.type":"still"}
+defaultsUsed: form.posture,material.brightness,material.roughness,material.opacity,material.erosion,motion.type,motion.speed
+inferredUsed: 
+shape: {"status":"none","applied":null,"model":null,"viaPrefab":null,"formType":"blob","words":[]}
+showingShapeModel: False
+ownedMaterials: 1
+notes:
+  - form.posture: SceneSpec 값이 null → 기본값 none 사용
+  - material.brightness: SceneSpec 값이 null → 기본값 0.5 사용
+  - material.roughness: SceneSpec 값이 null → 기본값 0.5 사용
+  - material.opacity: SceneSpec 값이 null → 기본값 1 사용
+  - material.erosion: SceneSpec 값이 null → 기본값 0 사용
+  - motion.type: SceneSpec 값이 null → 기본값 still 사용
+  - motion.speed: SceneSpec 값이 null → 기본값 0.5 사용
+  - 머리(카메라)를 찾지 못해 (0, 1.6, 0)에서 앞을 본다고 가정
+  - form.type=blob: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시
+hierarchy:
+  SceneSpec EX03 active=True pos=(0.00000,1.58974,0.99930) rot=(0.00000,1.00000,0.00000,0.00000) scale=(1.00000,1.00000,1.00000)
+    motion active=True pos=(0.00000,0.00000,0.00000) rot=(0.00000,0.00000,0.00000,1.00000) scale=(1.00000,1.00000,1.00000)
+      motion group=Still
+      model (blob) active=True pos=(0.00000,0.00000,0.00000) rot=(0.00000,0.00000,0.00000,1.00000) scale=(0.22028,0.22028,0.22028)
+        mesh=IFS IcoSphere verts=2562
+        renderer shadow=On
+          mat shader=IFS/SceneSpec Opaque queue=2450 _BaseColor=(0.55300,0.67589,0.84700,1.00000) _Brightness=0.50000 _Roughness=0.50000 _Opacity=1.00000 _Erosion=0.00000 _Lumpiness=0.14000 _NoiseScale=1.60000 _Fuzz=0.00000 _Density=1.00000 _ShellOpen=0.00000 _Displacement=1.00000 _Seed=0.00000 keywords=
+        collider=SphereCollider
+initialScene: {"recordVersion":"ifs-vr-scene-record/0.1","sessionId":"EX03","participantId":"SYN01","condition":"static","specVersion":"2.1.0","sourceTextHash":"sha256:7c9b141c8701d84d2f03470c7b3325119133bc142507ba014bce78a1bff50384","kind":"initial","params":{"form.posture":"none","form.type":"blob","layout.distance":0.259,"layout.size":0.333,"layout.verticalOffset":0.93,"material.brightness":0.5,"material.color.h":0.597,"material.color.l":0.7,"material.color.s":0.49,"material.erosion":0.0,"material.opacity":1.0,"material.roughness":0.5,"motion.speed":0.5,"motion.type":"still"},"defaultsUsed":["form.posture","material.brightness","material.roughness","material.opacity","material.erosion","motion.type","motion.speed"],"inferredUsed":[],"notes":["form.posture: SceneSpec 값이 null → 기본값 none 사용","material.brightness: SceneSpec 값이 null → 기본값 0.5 사용","material.roughness: SceneSpec 값이 null → 기본값 0.5 사용","material.opacity: SceneSpec 값이 null → 기본값 1 사용","material.erosion: SceneSpec 값이 null → 기본값 0 사용","motion.type: SceneSpec 값이 null → 기본값 still 사용","motion.speed: SceneSpec 값이 null → 기본값 0.5 사용","머리(카메라)를 찾지 못해 (0, 1.6, 0)에서 앞을 본다고 가정","form.type=blob: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시"],"shape":{"status":"none","applied":null,"model":null,"viaPrefab":null,"formType":"blob","words":[]},"spec":{"meta":{"specVersion":"2.1.0","participantId":"SYN01","sessionId":"EX03","condition":"static","sourceTextHash":"sha256:7c9b141c8701d84d2f03470c7b3325119133bc142507ba014bce78a1bff50384","pipeline":{"builder":"scene-spec-builder-v1/1.2.0","analyzer":"kiwi","lexicons":{"layer1":"layer1-attribute-lexicon@1.0.0","layer1Base":"layer1-attribute-lexicon@0.1.0","sceneParams":"scene-params@1.0.0","vad":"vad-ko@0.1.0"}},"mapping":{"requested":"v1","used":"v1","fallbackReason":null}},"form":{"type":"blob","posture":null},"material":{"color":{"h":0.597,"s":0.49,"l":0.7},"brightness":null,"saturation":null,"roughness":null,"opacity":null,"erosion":null},"layout":{"size":0.333,"distance":0.259,"verticalOffset":0.93},"motion":{"type":null,"speed":null},"body":{"part":null,"layer":null},"_provenance":{"form.type":[{"source":"simile_marker","trigger":"공","charSpan":[32,33],"rule":"simile.같은>formLexicon.공>form.type:blob"}],"material.color":[{"source":"phrase_rule","trigger":"파란색","charSpan":[28,31],"rule":"colorTerm.파란색>material.color:hsl"},{"source":"phrase_rule","trigger":"연한","charSpan":[25,27],"rule":"colorModifier.연한>material.color:pastel"}],"layout.size":[{"source":"phrase_rule","trigger":"주먹만 하고","charSpan":[50,56],"rule":"compare.equal.주먹>layout.size:0.1m"}],"layout.distance":[{"source":"phrase_rule","trigger":"한 1미터쯤","charSpan":[113,119],"rule":"measure.미터>layout.distance:1.0m"}],"layout.verticalOffset":[{"source":"phrase_rule","trigger":"눈높이","charSpan":[57,60],"rule":"height.눈높이>layout.verticalOffset:0.93"}]},"_unmatched":[{"lemma":"어제","tag":"NNG","surface":"어제","charSpan":[0,2]},{"lemma":"공원","tag":"NNG","surface":"공원","charSpan":[3,5]},{"lemma":"걷","tag":"VV-I","surface":"걷","charSpan":[6,7]},{"lemma":"걷","tag":"EOJEOL","surface":"걷던","charSpan":[6,8]},{"lemma":"것","tag":"EOJEOL","surface":"게","charSpan":[9,10]},{"lemma":"떠오르","tag":"VV","surface":"떠올","charSpan":[11,13]},{"lemma":"떠오르","tag":"EOJEOL","surface":"떠올라요","charSpan":[11,15]},{"lemma":"앞","tag":"EOJEOL","surface":"앞에","charSpan":[22,24]},{"lemma":"같","tag":"EOJEOL","surface":"같은","charSpan":[34,36]},{"lemma":"것","tag":"EOJEOL","surface":"게","charSpan":[37,38]},{"lemma":"있","tag":"EOJEOL","surface":"있어요","charSpan":[41,44]},{"lemma":"크기","tag":"EOJEOL","surface":"크기는","charSpan":[46,49]},{"lemma":"있","tag":"EOJEOL","surface":"있어요","charSpan":[62,65]},{"lemma":"테두리","tag":"NNG","surface":"테두리","charSpan":[75,78]},{"lemma":"테두리","tag":"EOJEOL","surface":"테두리는","charSpan":[75,79]},{"lemma":"표면","tag":"EOJEOL","surface":"표면이","charSpan":[85,88]},{"lemma":"잘","tag":"MAG","surface":"잘","charSpan":[104,105]},{"lemma":"모르","tag":"VV","surface":"모르","charSpan":[106,108]},{"lemma":"있","tag":"EOJEOL","surface":"있어요","charSpan":[124,127]}],"_unmapped":[{"lemma":"벽","category":"object","value":{"object":"wall"},"reason":"no_scene_param","_provenance":{"source":"explicit_lexicon","trigger":"벽","charSpan":[20,21],"rule":"objectLexicon.벽"}},{"lemma":"표면","category":"body_layer","value":{"layer":"surface"},"reason":"no_body_part_context","_provenance":{"source":"explicit_lexicon","trigger":"표면","charSpan":[85,87],"rule":"bodyLayerLexicon.표면"}},{"lemma":"돌","category":"object","value":{"object":"stone"},"reason":"no_scene_param","_provenance":{"source":"explicit_lexicon","trigger":"돌","charSpan":[90,91],"rule":"objectLexicon.돌"}},{"lemma":"돌","category":"object","value":{"object":"stone"},"reason":"no_scene_param","_provenance":{"source":"explicit_lexicon","trigger":"돌","charSpan":[92,93],"rule":"objectLexicon.돌"}}],"_negated":[],"_alternatives":[{"path":"material.roughness","value":0.75,"reason":"needs_confirmation","_provenance":[{"source":"fuzzy_lexicon","trigger":"오돌도돌해요","charSpan":[89,95],"rule":"fuzzy(d=1).오돌토돌>textureLexicon.오돌토돌>material.roughness:rough_bumpy","needsConfirmation":true}]},{"path":"layout.distance","value":0.6,"reason":"lower_priority","_provenance":[{"source":"explicit_lexicon","trigger":"떨어져","charSpan":[120,123],"rule":"distanceLexicon.떨어지>layout.distance:apart"}]},{"path":"motion.type","value":"floating","reason":"participant_uncertain","_provenance":[{"source":"explicit_lexicon","trigger":"떠","charSpan":[39,40],"rule":"motionLexicon.뜨>motion.type:floating"}]},{"path":"motion.type","value":"moving","reason":"participant_uncertain","_provenance":[{"source":"explicit_lexicon","trigger":"움직이는지는","charSpan":[97,103],"rule":"motionLexicon.움직이>motion.type:moving"}]}],"_inferred":{},"_context":[{"text":"하얀","charSpan":[17,19],"reason":"background_object","path":"material.color","value":{"h":0.0,"s":0.0,"l":0.95},"rule":"colorTerm.하얀>material.color:hsl"},{"text":"앞","charSpan":[22,23],"reason":"object_relative_position","path":"body.layer","value":"around_front","rule":"bodyLayerLexicon.앞>body.layer:around_front"}],"_parts":[{"text":"금색이고","charSpan":[80,84],"part":"테두리","partClass":"detail","path":"material.color","value":{"h":0.125,"s":0.75,"l":0.5},"rule":"colorTerm.금색>material.color:hsl"}],"_uncertain":[{"text":"움직이는지는 잘 모르겠어요","charSpan":[97,111],"paths":["motion.type"],"marker":"모르"}],"_measurements":[{"text":"주먹만 하고","charSpan":[50,56],"kind":"reference","meters":0.1,"dimension":"size","reference":"주먹","usedFor":"layout.size"},{"text":"한 1미터쯤","charSpan":[113,119],"kind":"number_unit","meters":1.0,"dimension":"distance","reference":null,"usedFor":"layout.distance"}],"_direction":[{"text":"오른쪽앞에요","charSpan":[67,73],"horizontal":"right","vertical":null,"depth":"front"}],"_needsConfirmation":[{"path":"material.roughness","trigger":"오돌도돌해요","charSpan":[89,95],"reason":"fuzzy_lexicon","matched":"오돌토돌"}],"_clauses":[{"charSpan":[0,15],"text":"어제 공원 걷던 게 떠올라요","usedFor":[],"status":"context"},{"charSpan":[15,16],"text":".","usedFor":[],"status":"unused"},{"charSpan":[17,44],"text":"하얀 벽 앞에 연한 파란색 공 같은 게 떠 있어요","usedFor":["form.type","material.color"],"status":"partly_used"},{"charSpan":[44,45],"text":".","usedFor":[],"status":"unused"},{"charSpan":[46,56],"text":"크기는 주먹만 하고","usedFor":["layout.size"],"status":"partly_used"},{"charSpan":[57,65],"text":"눈높이에 있어요","usedFor":["layout.verticalOffset"],"status":"used"},{"charSpan":[65,66],"text":".","usedFor":[],"status":"unused"},{"charSpan":[67,73],"text":"오른쪽앞에요","usedFor":[],"status":"unused"},{"charSpan":[73,74],"text":".","usedFor":[],"status":"unused"},{"charSpan":[75,84],"text":"테두리는 금색이고","usedFor":[],"status":"unused"},{"charSpan":[85,95],"text":"표면이 오돌도돌해요","usedFor":[],"status":"unused"},{"charSpan":[95,96],"text":".","usedFor":[],"status":"unused"},{"charSpan":[97,111],"text":"움직이는지는 잘 모르겠어요","usedFor":[],"status":"unused"},{"charSpan":[111,112],"text":".","usedFor":[],"status":"unused"},{"charSpan":[113,127],"text":"한 1미터쯤 떨어져 있어요","usedFor":["layout.distance"],"status":"partly_used"},{"charSpan":[127,128],"text":".","usedFor":[],"status":"unused"}]}}
+events: time_ms,param,from,to,distance_m\r\n
+files: events.csv,initialScene.json
+=== GOLD-square
+loaded: True
+params: {"form.posture":"curled","form.type":"blob","layout.distance":0.33,"layout.size":0.316,"layout.verticalOffset":0.75,"material.brightness":0.5,"material.color.h":0.0,"material.color.l":0.7,"material.color.s":0.0,"material.erosion":0.0,"material.opacity":1.0,"material.roughness":0.5,"motion.speed":0.5,"motion.type":"still"}
+current: {"form.posture":"curled","form.type":"blob","layout.distance":0.33,"layout.size":0.316,"layout.verticalOffset":0.75,"material.brightness":0.5,"material.color.h":0.0,"material.color.l":0.7,"material.color.s":0.0,"material.erosion":0.0,"material.opacity":1.0,"material.roughness":0.5,"motion.speed":0.5,"motion.type":"still"}
+defaultsUsed: form.type,material.color.h,material.color.s,material.color.l,material.brightness,material.roughness,material.opacity,material.erosion,layout.distance,layout.verticalOffset,motion.type,motion.speed
+inferredUsed: 
+shape: {"status":"applied","applied":"square","model":"Cube","viaPrefab":false,"formType":null,"words":[{"shape":"square","lemma":"네모","trigger":"네모","charSpan":[12,14],"status":"applied"}]}
+showingShapeModel: True
+ownedMaterials: 1
+notes:
+  - form.type: SceneSpec 값이 null → 기본값 blob 사용
+  - material.color.h: SceneSpec 값이 null → 기본값 0 사용
+  - material.color.s: SceneSpec 값이 null → 기본값 0 사용
+  - material.color.l: SceneSpec 값이 null → 기본값 0.7 사용
+  - material.brightness: SceneSpec 값이 null → 기본값 0.5 사용
+  - material.roughness: SceneSpec 값이 null → 기본값 0.5 사용
+  - material.opacity: SceneSpec 값이 null → 기본값 1 사용
+  - material.erosion: SceneSpec 값이 null → 기본값 0 사용
+  - layout.distance: SceneSpec 값이 null → 기본값 0.33 사용
+  - layout.verticalOffset: SceneSpec 값이 null → 기본값 0.75 사용
+  - motion.type: SceneSpec 값이 null → 기본값 still 사용
+  - motion.speed: SceneSpec 값이 null → 기본값 0.5 사용
+  - 머리(카메라)를 찾지 못해 (0, 1.6, 0)에서 앞을 본다고 가정
+  - shape=square → Cube: 모양 프리팹이 연결되지 않아 같은 형상을 코드로 만듦 (메뉴 IFS ▸ Create Shape Prefabs로 연결)
+  - shape=square → Cube 모형으로 표시(form.type=blob, 트리거 '네모', 코드 생성)
+hierarchy:
+  SceneSpec GOLD-square active=True pos=(0.00000,1.28205,1.19100) rot=(0.00000,1.00000,0.00000,0.00000) scale=(1.00000,1.00000,1.00000)
+    motion active=True pos=(0.00000,0.00000,0.00000) rot=(0.00000,0.00000,0.00000,1.00000) scale=(1.00000,1.00000,1.00000)
+      motion group=Still
+      model (blob, shape square → Cube) active=True pos=(0.00000,0.00000,0.00000) rot=(0.00000,0.00000,0.00000,1.00000) scale=(0.24166,0.14710,0.24166)
+        mesh active=True pos=(0.00000,0.00000,0.00000) rot=(0.00000,0.00000,0.00000,1.00000) scale=(1.00000,1.00000,1.00000)
+          mesh=Cube verts=24
+          renderer shadow=On
+            mat shader=IFS/SceneSpec Opaque queue=2450 _BaseColor=(0.70000,0.70000,0.70000,1.00000) _Brightness=0.50000 _Roughness=0.50000 _Opacity=1.00000 _Erosion=0.00000 _Lumpiness=0.00000 _NoiseScale=1.60000 _Fuzz=0.00000 _Density=1.00000 _ShellOpen=0.00000 _Displacement=0.00000 _Seed=0.00000 keywords=
+          collider=BoxCollider
+initialScene: {"recordVersion":"ifs-vr-scene-record/0.1","sessionId":"GOLD-square","participantId":"SYN01","condition":"chatbot","specVersion":"2.0.0","sourceTextHash":"sha256:641a4a22d9228ec30d3bce78e6bc15b1f6e8b0e1bbcfb52ab512fd7c22c6147a","kind":"initial","params":{"form.posture":"curled","form.type":"blob","layout.distance":0.33,"layout.size":0.316,"layout.verticalOffset":0.75,"material.brightness":0.5,"material.color.h":0.0,"material.color.l":0.7,"material.color.s":0.0,"material.erosion":0.0,"material.opacity":1.0,"material.roughness":0.5,"motion.speed":0.5,"motion.type":"still"},"defaultsUsed":["form.type","material.color.h","material.color.s","material.color.l","material.brightness","material.roughness","material.opacity","material.erosion","layout.distance","layout.verticalOffset","motion.type","motion.speed"],"inferredUsed":[],"notes":["form.type: SceneSpec 값이 null → 기본값 blob 사용","material.color.h: SceneSpec 값이 null → 기본값 0 사용","material.color.s: SceneSpec 값이 null → 기본값 0 사용","material.color.l: SceneSpec 값이 null → 기본값 0.7 사용","material.brightness: SceneSpec 값이 null → 기본값 0.5 사용","material.roughness: SceneSpec 값이 null → 기본값 0.5 사용","material.opacity: SceneSpec 값이 null → 기본값 1 사용","material.erosion: SceneSpec 값이 null → 기본값 0 사용","layout.distance: SceneSpec 값이 null → 기본값 0.33 사용","layout.verticalOffset: SceneSpec 값이 null → 기본값 0.75 사용","motion.type: SceneSpec 값이 null → 기본값 still 사용","motion.speed: SceneSpec 값이 null → 기본값 0.5 사용","머리(카메라)를 찾지 못해 (0, 1.6, 0)에서 앞을 본다고 가정","shape=square → Cube: 모양 프리팹이 연결되지 않아 같은 형상을 코드로 만듦 (메뉴 IFS ▸ Create Shape Prefabs로 연결)","shape=square → Cube 모형으로 표시(form.type=blob, 트리거 '네모', 코드 생성)"],"shape":{"status":"applied","applied":"square","model":"Cube","viaPrefab":false,"formType":null,"words":[{"shape":"square","lemma":"네모","trigger":"네모","charSpan":[12,14],"status":"applied"}]},"spec":{"meta":{"specVersion":"2.0.0","participantId":"SYN01","sessionId":"GOLD-square","condition":"chatbot","sourceTextHash":"sha256:641a4a22d9228ec30d3bce78e6bc15b1f6e8b0e1bbcfb52ab512fd7c22c6147a","pipeline":{"builder":"scene-spec-builder/0.1.0","analyzer":"kiwi","lexicons":{"layer1":"layer1-attribute-lexicon@0.1.0","sceneParams":"scene-params@0.1.0","vad":"vad-ko@0.1.0"}}},"form":{"type":null,"posture":"curled"},"material":{"color":null,"brightness":null,"saturation":null,"roughness":null,"opacity":null,"erosion":null},"layout":{"size":0.316,"distance":null,"verticalOffset":null},"motion":{"type":null,"speed":null},"body":{"part":null,"layer":null},"_provenance":{"form.posture":[{"source":"explicit_lexicon","trigger":"웅크려진","charSpan":[0,4],"rule":"postureLexicon.웅크리>form.posture:curled"}],"layout.size":[{"source":"explicit_lexicon","trigger":"작은","charSpan":[5,7],"rule":"sizeLexicon.작>layout.size:logScale(0.6)"}]},"_unmatched":[],"_unmapped":[{"lemma":"나","category":"self_reference","value":{"self":"first_person"},"reason":"no_scene_param","_provenance":{"source":"explicit_lexicon","trigger":"나","charSpan":[8,9],"rule":"selfReferenceLexicon.나"}},{"lemma":"네모","category":"shape","value":{"shape":"square"},"reason":"no_scene_param","_provenance":{"source":"explicit_lexicon","trigger":"네모","charSpan":[12,14],"rule":"shapeLexicon.네모"}}],"_negated":[],"_alternatives":[],"_inferred":{}}}
+events: time_ms,param,from,to,distance_m\r\n
+files: events.csv,initialScene.json
+=== GOLD-mist
+loaded: True
+params: {"form.posture":"curled","form.type":"mist","layout.distance":0.33,"layout.size":0.316,"layout.verticalOffset":0.75,"material.brightness":0.5,"material.color.h":0.6,"material.color.l":0.4,"material.color.s":0.5,"material.erosion":0.0,"material.opacity":0.6,"material.roughness":0.5,"motion.speed":0.5,"motion.type":"swaying"}
+current: {"form.posture":"curled","form.type":"mist","layout.distance":0.33,"layout.size":0.316,"layout.verticalOffset":0.75,"material.brightness":0.5,"material.color.h":0.6,"material.color.l":0.4,"material.color.s":0.5,"material.erosion":0.0,"material.opacity":0.6,"material.roughness":0.5,"motion.speed":0.5,"motion.type":"swaying"}
+defaultsUsed: material.brightness,material.roughness,material.erosion,layout.distance,layout.verticalOffset,motion.speed
+inferredUsed: 
+shape: {"status":"none","applied":null,"model":null,"viaPrefab":null,"formType":"mist","words":[]}
+showingShapeModel: False
+ownedMaterials: 1
+notes:
+  - material.brightness: SceneSpec 값이 null → 기본값 0.5 사용
+  - material.roughness: SceneSpec 값이 null → 기본값 0.5 사용
+  - material.erosion: SceneSpec 값이 null → 기본값 0 사용
+  - layout.distance: SceneSpec 값이 null → 기본값 0.33 사용
+  - layout.verticalOffset: SceneSpec 값이 null → 기본값 0.75 사용
+  - motion.speed: SceneSpec 값이 null → 기본값 0.5 사용
+  - 머리(카메라)를 찾지 못해 (0, 1.6, 0)에서 앞을 본다고 가정
+  - form.type=mist: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시
+hierarchy:
+  SceneSpec GOLD-mist active=True pos=(0.00000,1.28205,1.19100) rot=(0.00000,1.00000,0.00000,0.00000) scale=(1.00000,1.00000,1.00000)
+    motion active=True pos=(0.00000,0.00000,0.00000) rot=(0.00000,0.00000,0.00000,1.00000) scale=(1.00000,1.00000,1.00000)
+      motion group=Sway
+      model (mist) active=True pos=(0.00000,0.00000,0.00000) rot=(0.00000,0.00000,0.00000,1.00000) scale=(0.24166,0.14710,0.24166)
+        mesh=IFS IcoSphere verts=2562
+        renderer shadow=Off
+          mat shader=IFS/SceneSpec Fade queue=3000 _BaseColor=(0.20000,0.36000,0.60000,0.60000) _Brightness=0.50000 _Roughness=0.50000 _Opacity=0.60000 _Erosion=0.00000 _Lumpiness=0.30000 _NoiseScale=1.10000 _Fuzz=1.00000 _Density=0.50000 _ShellOpen=0.00000 _Displacement=1.00000 _Seed=0.00000 keywords=
+        collider=SphereCollider
+initialScene: {"recordVersion":"ifs-vr-scene-record/0.1","sessionId":"GOLD-mist","participantId":"SYN01","condition":"chatbot","specVersion":"2.0.0","sourceTextHash":"sha256:641a4a22d9228ec30d3bce78e6bc15b1f6e8b0e1bbcfb52ab512fd7c22c6147a","kind":"initial","params":{"form.posture":"curled","form.type":"mist","layout.distance":0.33,"layout.size":0.316,"layout.verticalOffset":0.75,"material.brightness":0.5,"material.color.h":0.6,"material.color.l":0.4,"material.color.s":0.5,"material.erosion":0.0,"material.opacity":0.6,"material.roughness":0.5,"motion.speed":0.5,"motion.type":"swaying"},"defaultsUsed":["material.brightness","material.roughness","material.erosion","layout.distance","layout.verticalOffset","motion.speed"],"inferredUsed":[],"notes":["material.brightness: SceneSpec 값이 null → 기본값 0.5 사용","material.roughness: SceneSpec 값이 null → 기본값 0.5 사용","material.erosion: SceneSpec 값이 null → 기본값 0 사용","layout.distance: SceneSpec 값이 null → 기본값 0.33 사용","layout.verticalOffset: SceneSpec 값이 null → 기본값 0.75 사용","motion.speed: SceneSpec 값이 null → 기본값 0.5 사용","머리(카메라)를 찾지 못해 (0, 1.6, 0)에서 앞을 본다고 가정","form.type=mist: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시"],"shape":{"status":"none","applied":null,"model":null,"viaPrefab":null,"formType":"mist","words":[]},"spec":{"meta":{"specVersion":"2.0.0","participantId":"SYN01","sessionId":"GOLD-mist","condition":"chatbot","sourceTextHash":"sha256:641a4a22d9228ec30d3bce78e6bc15b1f6e8b0e1bbcfb52ab512fd7c22c6147a","pipeline":{"builder":"scene-spec-builder/0.1.0","analyzer":"kiwi","lexicons":{"layer1":"layer1-attribute-lexicon@0.1.0","sceneParams":"scene-params@0.1.0","vad":"vad-ko@0.1.0"}}},"form":{"type":"mist","posture":"curled"},"material":{"color":{"h":0.6,"s":0.5,"l":0.4},"brightness":null,"saturation":null,"roughness":null,"opacity":0.6,"erosion":null},"layout":{"size":0.316,"distance":null,"verticalOffset":null},"motion":{"type":"swaying","speed":null},"body":{"part":null,"layer":null},"_provenance":{"form.posture":[{"source":"explicit_lexicon","trigger":"웅크려진","charSpan":[0,4],"rule":"postureLexicon.웅크리>form.posture:curled"}],"layout.size":[{"source":"explicit_lexicon","trigger":"작은","charSpan":[5,7],"rule":"sizeLexicon.작>layout.size:logScale(0.6)"}],"form.type":[{"source":"explicit_lexicon","trigger":"안개","charSpan":[0,2],"rule":"synthetic.안개"}],"material.opacity":[{"source":"explicit_lexicon","trigger":"흐릿","charSpan":[0,2],"rule":"synthetic.흐릿"}],"motion.type":[{"source":"explicit_lexicon","trigger":"흔들","charSpan":[0,2],"rule":"synthetic.흔들"}],"material.color":[{"source":"explicit_lexicon","trigger":"파란","charSpan":[0,2],"rule":"synthetic.파란"}]},"_unmatched":[],"_unmapped":[{"lemma":"나","category":"self_reference","value":{"self":"first_person"},"reason":"no_scene_param","_provenance":{"source":"explicit_lexicon","trigger":"나","charSpan":[8,9],"rule":"selfReferenceLexicon.나"}}],"_negated":[],"_alternatives":[],"_inferred":{}}}
+events: time_ms,param,from,to,distance_m\r\n
+files: events.csv,initialScene.json
+=== GOLD-round
+loaded: True
+params: {"form.posture":"curled","form.type":"blob","layout.distance":0.33,"layout.size":0.8,"layout.verticalOffset":0.75,"material.brightness":0.5,"material.color.h":0.0,"material.color.l":0.7,"material.color.s":0.0,"material.erosion":0.0,"material.opacity":1.0,"material.roughness":0.5,"motion.speed":0.5,"motion.type":"rotating"}
+current: {"form.posture":"curled","form.type":"blob","layout.distance":0.33,"layout.size":0.8,"layout.verticalOffset":0.75,"material.brightness":0.5,"material.color.h":0.0,"material.color.l":0.7,"material.color.s":0.0,"material.erosion":0.0,"material.opacity":1.0,"material.roughness":0.5,"motion.speed":0.5,"motion.type":"rotating"}
+defaultsUsed: form.type,material.color.h,material.color.s,material.color.l,material.brightness,material.roughness,material.opacity,material.erosion,layout.distance,layout.verticalOffset,motion.speed
+inferredUsed: 
+shape: {"status":"applied","applied":"round","model":"Sphere","viaPrefab":false,"formType":null,"words":[{"shape":"round","lemma":"동그란","trigger":"동그란","charSpan":[3,6],"status":"applied"}]}
+showingShapeModel: True
+ownedMaterials: 1
+notes:
+  - form.type: SceneSpec 값이 null → 기본값 blob 사용
+  - material.color.h: SceneSpec 값이 null → 기본값 0 사용
+  - material.color.s: SceneSpec 값이 null → 기본값 0 사용
+  - material.color.l: SceneSpec 값이 null → 기본값 0.7 사용
+  - material.brightness: SceneSpec 값이 null → 기본값 0.5 사용
+  - material.roughness: SceneSpec 값이 null → 기본값 0.5 사용
+  - material.opacity: SceneSpec 값이 null → 기본값 1 사용
+  - material.erosion: SceneSpec 값이 null → 기본값 0 사용
+  - layout.distance: SceneSpec 값이 null → 기본값 0.33 사용
+  - layout.verticalOffset: SceneSpec 값이 null → 기본값 0.75 사용
+  - motion.speed: SceneSpec 값이 null → 기본값 0.5 사용
+  - 머리(카메라)를 찾지 못해 (0, 1.6, 0)에서 앞을 본다고 가정
+  - shape=round → Sphere: 모양 프리팹이 연결되지 않아 같은 형상을 코드로 만듦 (메뉴 IFS ▸ Create Shape Prefabs로 연결)
+  - shape=round → Sphere 모형으로 표시(form.type=blob, 트리거 '동그란', 코드 생성)
+hierarchy:
+  SceneSpec GOLD-round active=True pos=(0.00000,1.28205,1.19100) rot=(0.00000,1.00000,0.00000,0.00000) scale=(1.00000,1.00000,1.00000)
+    motion active=True pos=(0.00000,0.00000,0.00000) rot=(0.00000,0.00000,0.00000,1.00000) scale=(1.00000,1.00000,1.00000)
+      motion group=Spin
+      model (blob, shape round → Sphere) active=True pos=(0.00000,0.00000,0.00000) rot=(0.00000,0.00000,0.00000,1.00000) scale=(0.92470,0.56286,0.92470)
+        mesh active=True pos=(0.00000,0.00000,0.00000) rot=(0.00000,0.00000,0.00000,1.00000) scale=(1.00000,1.00000,1.00000)
+          mesh=Sphere verts=515
+          renderer shadow=On
+            mat shader=IFS/SceneSpec Opaque queue=2450 _BaseColor=(0.70000,0.70000,0.70000,1.00000) _Brightness=0.50000 _Roughness=0.50000 _Opacity=1.00000 _Erosion=0.00000 _Lumpiness=0.00000 _NoiseScale=1.60000 _Fuzz=0.00000 _Density=1.00000 _ShellOpen=0.00000 _Displacement=0.00000 _Seed=0.00000 keywords=
+          collider=SphereCollider
+initialScene: {"recordVersion":"ifs-vr-scene-record/0.1","sessionId":"GOLD-round","participantId":"SYN01","condition":"chatbot","specVersion":"2.0.0","sourceTextHash":"sha256:641a4a22d9228ec30d3bce78e6bc15b1f6e8b0e1bbcfb52ab512fd7c22c6147a","kind":"initial","params":{"form.posture":"curled","form.type":"blob","layout.distance":0.33,"layout.size":0.8,"layout.verticalOffset":0.75,"material.brightness":0.5,"material.color.h":0.0,"material.color.l":0.7,"material.color.s":0.0,"material.erosion":0.0,"material.opacity":1.0,"material.roughness":0.5,"motion.speed":0.5,"motion.type":"rotating"},"defaultsUsed":["form.type","material.color.h","material.color.s","material.color.l","material.brightness","material.roughness","material.opacity","material.erosion","layout.distance","layout.verticalOffset","motion.speed"],"inferredUsed":[],"notes":["form.type: SceneSpec 값이 null → 기본값 blob 사용","material.color.h: SceneSpec 값이 null → 기본값 0 사용","material.color.s: SceneSpec 값이 null → 기본값 0 사용","material.color.l: SceneSpec 값이 null → 기본값 0.7 사용","material.brightness: SceneSpec 값이 null → 기본값 0.5 사용","material.roughness: SceneSpec 값이 null → 기본값 0.5 사용","material.opacity: SceneSpec 값이 null → 기본값 1 사용","material.erosion: SceneSpec 값이 null → 기본값 0 사용","layout.distance: SceneSpec 값이 null → 기본값 0.33 사용","layout.verticalOffset: SceneSpec 값이 null → 기본값 0.75 사용","motion.speed: SceneSpec 값이 null → 기본값 0.5 사용","머리(카메라)를 찾지 못해 (0, 1.6, 0)에서 앞을 본다고 가정","shape=round → Sphere: 모양 프리팹이 연결되지 않아 같은 형상을 코드로 만듦 (메뉴 IFS ▸ Create Shape Prefabs로 연결)","shape=round → Sphere 모형으로 표시(form.type=blob, 트리거 '동그란', 코드 생성)"],"shape":{"status":"applied","applied":"round","model":"Sphere","viaPrefab":false,"formType":null,"words":[{"shape":"round","lemma":"동그란","trigger":"동그란","charSpan":[3,6],"status":"applied"}]},"spec":{"meta":{"specVersion":"2.0.0","participantId":"SYN01","sessionId":"GOLD-round","condition":"chatbot","sourceTextHash":"sha256:641a4a22d9228ec30d3bce78e6bc15b1f6e8b0e1bbcfb52ab512fd7c22c6147a","pipeline":{"builder":"scene-spec-builder/0.1.0","analyzer":"kiwi","lexicons":{"layer1":"layer1-attribute-lexicon@0.1.0","sceneParams":"scene-params@0.1.0","vad":"vad-ko@0.1.0"}}},"form":{"type":null,"posture":"curled"},"material":{"color":null,"brightness":null,"saturation":null,"roughness":null,"opacity":null,"erosion":null},"layout":{"size":0.8,"distance":null,"verticalOffset":null},"motion":{"type":"rotating","speed":null},"body":{"part":null,"layer":null},"_provenance":{"form.posture":[{"source":"explicit_lexicon","trigger":"웅크려진","charSpan":[0,4],"rule":"postureLexicon.웅크리>form.posture:curled"}],"layout.size":[{"source":"explicit_lexicon","trigger":"커다란","charSpan":[0,3],"rule":"synthetic.커다란"}],"motion.type":[{"source":"explicit_lexicon","trigger":"돌아","charSpan":[0,2],"rule":"synthetic.돌아"}]},"_unmatched":[],"_unmapped":[{"lemma":"나","category":"self_reference","value":{"self":"first_person"},"reason":"no_scene_param","_provenance":{"source":"explicit_lexicon","trigger":"나","charSpan":[8,9],"rule":"selfReferenceLexicon.나"}},{"lemma":"동그란","category":"shape","value":{"shape":"round"},"reason":"no_scene_param","_provenance":{"source":"explicit_lexicon","trigger":"동그란","charSpan":[3,6],"rule":"shapeLexicon.동그란"}}],"_negated":[],"_alternatives":[],"_inferred":{}}}
+events: time_ms,param,from,to,distance_m\r\n
+files: events.csv,initialScene.json

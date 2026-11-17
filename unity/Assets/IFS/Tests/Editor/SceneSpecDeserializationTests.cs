@@ -12,6 +12,8 @@ namespace IFS.SceneSpec.Tests
     public class SceneSpecDeserializationTests
     {
         static string ExamplePath(string name) => Path.Combine(Application.streamingAssetsPath, "IFS", "examples", name);
+        // v2.1 예시는 하위 폴더(examples/v1)에 둔다 — 배치 캡처 테스트가 examples/*.json(v2.0 정답 2개)만 세기 때문
+        static string ExampleV1Path(string name) => Path.Combine(Application.streamingAssetsPath, "IFS", "examples", "v1", name);
 
         [TestCase("EX01.json")]
         [TestCase("EX02.json")]
@@ -22,6 +24,60 @@ namespace IFS.SceneSpec.Tests
             Assert.That(SceneSpecJson.Validate(spec), Is.Empty);
             var back = JToken.Parse(SceneSpecJson.Serialize(spec));
             Assert.That(JToken.DeepEquals(JToken.Parse(raw), back), Is.True, "다시 직렬화한 JSON이 원본과 다르다(빠진 필드)");
+        }
+
+        // v2.1(개선 매핑 v1) 예시. 같은 엄격 파서가 2.0.0과 2.1.0을 둘 다 읽는다.
+        [TestCase("EX01.v1.json")]
+        [TestCase("EX03.v1.json")]
+        public void V21_example_deserializes_strictly_and_round_trips_without_loss(string name)
+        {
+            string raw = File.ReadAllText(ExampleV1Path(name));
+            var spec = SceneSpecJson.Parse(raw);
+            Assert.That(spec.Meta.SpecVersion, Is.EqualTo(SceneSpecV2.SpecVersionV21));
+            Assert.That(SceneSpecJson.Validate(spec), Is.Empty);
+            Assert.That(spec.Meta.Mapping.Used, Is.EqualTo("v1"));
+            Assert.That(spec.Clauses, Is.Not.Empty);
+            var back = JToken.Parse(SceneSpecJson.Serialize(spec));
+            Assert.That(JToken.DeepEquals(JToken.Parse(raw), back), Is.True, "다시 직렬화한 JSON이 원본과 다르다(빠진 필드)");
+        }
+
+        [Test]
+        public void V21_preservation_fields_are_read()
+        {
+            var s = SceneSpecJson.Load(ExampleV1Path("EX03.v1.json"));
+            Assert.That(s.Context.Select(c => c.Reason), Does.Contain("background_object"));
+            Assert.That(s.Parts.Single().PartClass, Is.EqualTo("detail"));
+            Assert.That(s.Uncertain.Single().Paths, Is.EqualTo(new[] { "motion.type" }));
+            Assert.That(s.Motion.Type, Is.Null);
+            Assert.That(s.Measurements.Select(m => m.Dimension), Does.Contain("distance"));
+            Assert.That(s.Direction.Single().Horizontal, Is.EqualTo("right"));
+            // 퍼지 일치('오돌도돌' → 오돌토돌)는 슬롯 값이 아니라 확인 필요 대안으로만 온다(원칙 2). 렌더는 기본값을 쓴다
+            Assert.That(s.NeedsConfirmation.Single().Path, Is.EqualTo("material.roughness"));
+            Assert.That(s.Material.Roughness, Is.Null);
+            Assert.That(s.Provenance.ContainsKey("material.roughness"), Is.False);
+            var fuzzy = s.Alternatives.Single(a => a.Reason == "needs_confirmation");
+            Assert.That(fuzzy.Path, Is.EqualTo("material.roughness"));
+            Assert.That(fuzzy.Provenance[0].NeedsConfirmation, Is.True);
+            var p = SceneParams.FromSpec(s, new SceneDefaults());   // 렌더 파라미터는 v2.0과 같은 슬롯만 쓴다
+            Assert.That(p.GetNumber("layout.size"), Is.EqualTo(s.Layout.Size.Value));
+        }
+
+        [Test]
+        public void V20_document_with_v21_field_is_flagged()
+        {
+            var o = JObject.Parse(File.ReadAllText(ExamplePath("EX02.json")));
+            o["_clauses"] = new JArray();
+            var s = SceneSpecJson.Parse(o.ToString());
+            Assert.That(SceneSpecJson.Validate(s), Has.Some.Contains("2.1 전용 필드"));
+            Assert.That(SceneSpecJson.Validate(SceneSpecJson.Load(ExamplePath("EX02.json"))), Is.Empty);
+        }
+
+        [Test]
+        public void V21_unknown_field_is_still_rejected()
+        {
+            var o = JObject.Parse(File.ReadAllText(ExampleV1Path("EX03.v1.json")));
+            ((JArray)o["_clauses"])[0]["note"] = "x";
+            Assert.Throws<JsonSerializationException>(() => SceneSpecJson.Parse(o.ToString()));
         }
 
         [Test]

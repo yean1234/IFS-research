@@ -22,7 +22,10 @@ from collections import defaultdict
 from datetime import datetime
 
 from .anchors import anchor_candidates
+from .clarify import clarify_targets, question_json
 from .config import Config
+from .drift import PARAMS as DRIFT_PARAMS
+from .drift import DriftAssessor, participant_turns, summarize
 from .extract import Extractor, find_modality, parse_body_relation
 from .korean import Analyzer, normalize
 from .lexicon import Lexicon
@@ -32,6 +35,7 @@ from .prompts import PromptContext, PromptSet, TranscriptLine
 from .protocol import Protocol, Step
 from .safety import Guard, GuardVerdict, OllamaGuardModel, SafetyLexicon
 from .scene_builder import SceneSpecBuilder, normalize_confirmed, write_spec
+from .scene_builder_v1 import SceneSpecBuilderV1, fallback_spec
 from .scene_spec import check_principles
 from .session_log import SessionLog, now_iso
 from .validator import TurnContext, Validator, describe
@@ -94,7 +98,55 @@ class Runtime:
             max_anchor_eojeol=cfg.validator.max_anchor_eojeol,
         )
         self.extractor = Extractor(self.lexicon, self.analyzer)
-        self.scene_builder = SceneSpecBuilder(self.lexicon, self.analyzer)
+        # 확정 텍스트 → SceneSpec 매핑. v0 = 규칙 기반 기준선(scene_builder.py, 출력 불변), v1 = 개선 매핑.
+        # scene_builder는 주 매핑(config [mapping] mode). corpus_run이 이 자리에 다른 매핑을 끼울 수 있다.
+        self.scene_builders: dict[str, object] = {"v0": SceneSpecBuilder(self.lexicon, self.analyzer)}
+        self.mapping_load_error: str | None = None
+        if cfg.mapping.mode not in ("v0", "v1"):
+            raise ValueError(f"모르는 mapping.mode: {cfg.mapping.mode} (v0 | v1)")
+        # [mapping] strict: 시작 시점(여기) 실패만 다룬다. strict이고 v1을 요청했으면 v0로 넘어가지 않고 시작을 멈춘다
+        # (참여자 결과가 요청한 매핑과 달라지는 것을 막음, Codex CP2 #3). 세션 도중 확정 시점에 v1 build가 예외를
+        # 내는 경우는 strict여도 Session._build_scene이 v0로 대체하고 meta.mapping·연구자 알림을 남긴다
+        # (이미 진행 중인 참여자 세션을 끊지 않기 위함).
+        try:
+            self.scene_builders["v1"] = SceneSpecBuilderV1(self.analyzer)
+        except Exception as exc:  # noqa: BLE001 — strict가 아니면 개선 매핑을 못 불러도 v0로 면담은 이어 간다
+            self.mapping_load_error = f"{type(exc).__name__}: {exc}"
+            if cfg.mapping.strict and cfg.mapping.mode == "v1":
+                raise RuntimeError(
+                    f"개선 매핑(v1)을 불러오지 못했습니다: {self.mapping_load_error}. "
+                    "[mapping] strict = true라 v0로 대체하지 않고 시작을 멈춥니다. "
+                    "원인을 고치거나, 개발·시연에서만 strict = false로 두세요.") from exc
+            self.warnings.append(f"개선 매핑(v1)을 불러오지 못해 v0로 대체합니다: {self.mapping_load_error}")
+        self.scene_builder = self.scene_builders.get(cfg.mapping.mode) or self.scene_builders["v0"]
+        self.clarify_validator = Validator(
+            self.protocol, self.lexicon, self.safety, self.analyzer, self.schema, guard=None,
+            strict_novel_content=cfg.validator.strict_novel_content,
+            depth_anchor_block=cfg.validator.l5_depth != "off",
+            max_anchor_eojeol=cfg.validator.max_anchor_eojeol,
+        )
+        # 심상 유지(표류) 판정 — 규칙만, LLM 없음(docs/drift-design.md). 회상 확인·자기보고는 고정 문구가 있을 때만 켠다.
+        self.drift: DriftAssessor | None = None
+        self.drift_recall = self.drift_self_report = False
+        if cfg.drift.enabled:
+            try:
+                self.drift = DriftAssessor.from_runtime(self)
+            except Exception as exc:  # noqa: BLE001 — 판정기를 못 만들어도 면담은 이어 간다
+                self.warnings.append(f"표류 판정기를 만들지 못했습니다: {type(exc).__name__}: {exc}")
+        # status = "draft"인 문구는 [drift] allow_draft_phrases = true일 때만 쓴다(원칙 7, Codex CP2 #12).
+        for flag, phrase in (("recall_check", "recall_check"), ("self_report", "self_report_drift")):
+            if not getattr(cfg.drift, flag):
+                continue
+            if phrase not in self.protocol.phrases:
+                self.warnings.append(f"[drift] {flag}를 켰지만 프로토콜 {self.protocol.version}에 '{phrase}' 문구가 없어 "
+                                     "끕니다(elicitation_protocol.v1.1.json 이상 필요).")
+                continue
+            if self.protocol.phrase_meta(phrase)["status"] == "draft" and not cfg.drift.allow_draft_phrases:
+                self.warnings.append(f"[drift] {flag}를 켰지만 프로토콜 {self.protocol.version}의 '{phrase}' 문구가 "
+                                     "status = draft(IRB·팀 검토 전)라 끕니다. 개발·시연에서만 쓰려면 "
+                                     "[drift] allow_draft_phrases = true.")
+                continue
+            setattr(self, "drift_recall" if flag == "recall_check" else "drift_self_report", True)
         self.persist_logs = persist_logs
         self.sessions: dict[str, "Session"] = {}
         self._lock = threading.Lock()
@@ -129,6 +181,13 @@ class Runtime:
             "lexicon": self.lexicon.info(),
             "protocol": self.protocol.info(),
             "prompts": self.prompts.info(),
+            "mapping": {"mode": self.cfg.mapping.mode, "saveBoth": self.cfg.mapping.save_both,
+                        "clarifyLoop": self.cfg.mapping.clarify_loop, "strict": self.cfg.mapping.strict,
+                        "builders": {k: b.info() for k, b in self.scene_builders.items() if hasattr(b, "info")},
+                        "loadError": self.mapping_load_error},
+            "drift": {"enabled": self.drift is not None, "recallCheck": self.drift_recall,
+                      "selfReport": self.drift_self_report, "allowDraftPhrases": self.cfg.drift.allow_draft_phrases,
+                      **(self.drift.info() if self.drift else {})},
             "warnings": self.warnings,
         }
 
@@ -176,6 +235,8 @@ class Session:
         self.last_no_more = False
         self.last_depth_strong = False
         self.confirm_draft: str | None = None
+        self.clarify: dict | None = None           # 확인 질문 루프 상태(config [mapping] clarify_loop)
+        self.recall_asked = False                  # 회상 확인(config [drift] recall_check)을 이미 물었는지
         self.lock = threading.RLock()
         self.log = SessionLog(session_id, condition, rt.header(condition), self.cfg.log_dir, persist=rt.persist_logs)
         self._say_fixed("intro", stage=None, kind="info")
@@ -252,6 +313,12 @@ class Session:
             if safety.is_stop(text):
                 self._stop("participant_stop")
                 return self.view()
+            if self.state == "clarify":                          # 확인 질문의 답(고정 틀, LLM 없음)
+                if verdict.level == "soft":
+                    self._alert("clarify_soft", "확인 질문의 답에 확인 필요 표현 — 답을 장면에 쓰지 않고 넘어감", turn["i"])
+                self._on_clarify_reply(text, no_more or verdict.level == "soft", turn["i"])
+                self._save()
+                return self.view()
             if flags["delegation"]:
                 self.log.add_alert("delegation", "참여자가 판단을 맡김(규칙 8) — 면담자는 답을 제안하지 않는다", turn["i"], "info")
 
@@ -288,6 +355,10 @@ class Session:
                 self.log.add_turn(speaker="participant", source="control:stop", stage=self.stage, text="[그만]")
                 self._stop("participant_stop")
                 return self.view()
+            if self.awaiting == "recall":
+                return self._on_recall(action)
+            if self.awaiting == "self_report":
+                return self._on_self_report(action)
             if action == "skip":
                 return self.reply("넘어갈게요", source="control:skip")
             if action == "continue" and self.awaiting == "soft_check":
@@ -301,7 +372,7 @@ class Session:
             if self.awaiting == "confirm" and action in ("confirm", "edit"):
                 if action == "confirm":
                     self.log.add_turn(speaker="participant", source="control:confirm", stage=None, text="[이대로 맞아요]")
-                    self._finish(self.confirm_draft or "", edited=False)
+                    self._confirmed(self.confirm_draft or "", edited=False)
                 else:
                     edited = normalize(text or "") if text and "\n" not in text else "\n".join(normalize(t) for t in (text or "").split("\n") if normalize(t))
                     if not edited:
@@ -312,7 +383,7 @@ class Session:
                     if verdict.level == "crisis":
                         self._crisis(verdict, turn["i"])
                         return self.view()
-                    self._finish(edited, edited=True)
+                    self._confirmed(edited, edited=True)
                 return self.view()
             raise SessionError(f"지금은 '{action}'을(를) 할 수 없습니다 (대기 중: {self.awaiting}).")
 
@@ -325,7 +396,7 @@ class Session:
             self.log.persist = False
             self._delete_scene()
             self.log.data.update(turns=[], alerts=[], capture={}, confirmedText=None, confirmation=None,
-                                 extraction=None, events=[], endedBy="withdrawn", sceneSpec=None)
+                                 extraction=None, events=[], endedBy="withdrawn", sceneSpec=None, drift=None)
             self.participant_texts, self.transcript, self.asked, self.confirm_draft = [], [], [], None
             self.messages = [{"speaker": "bot", "text": self.p.phrase("withdrawn"), "kind": "info", "source": "fixed:withdrawn"}]
             self.state, self.awaiting = "withdrawn", "none"
@@ -400,6 +471,8 @@ class Session:
                 self.awaiting = "reply"
                 return
             if step.type == "confirm":
+                if self._ask_recall():
+                    return
                 self._enter_confirm()
                 return
             raise RuntimeError(f"모르는 단계 종류: {step.type}")
@@ -508,6 +581,21 @@ class Session:
         self._save()
 
     def _stop(self, by: str) -> None:
+        if self.state == "clarify" and self.clarify:     # 이미 [이대로 맞아요]를 눌렀다 → 확정 텍스트로 장면은 남긴다
+            self.clarify["stopped"] = True
+            self._record_confirmation(self.clarify["baseText"], self.clarify["edited"])
+            self._write_scene(self.clarify["baseText"])
+            self._record_drift()
+        if self.awaiting == "self_report":                # 확정은 끝났다 → 자기보고 값만 비운다(물은 기록은 남김)
+            d = self._drift_log()
+            sr = d.get("selfReport") if isinstance(d.get("selfReport"), dict) else {}
+            sr.update(value=None, skipped="stop", selfReportDrift=None, at=now_iso())
+            d["selfReport"] = sr
+        if self.awaiting == "recall":                     # 회상 확인 대기 중 중단: 물은 기록에 중단 표시
+            d = self._drift_log()
+            rc = d.get("recallCheck") if isinstance(d.get("recallCheck"), dict) else {}
+            rc.update(answer=None, skipped="stop", at=now_iso())
+            d["recallCheck"] = rc
         self._say_fixed("stopped", stage=self.stage, kind="info")
         self.state, self.awaiting = "stopped", "none"
         self.log.end(by)
@@ -518,47 +606,269 @@ class Session:
         self._say_fixed("confirm_intro", stage=None, kind="confirm", draft=self.confirm_draft)
         self.state, self.awaiting = "confirm", "confirm"
 
-    def _finish(self, text: str, edited: bool) -> None:
+    def _record_confirmation(self, text: str, edited: bool) -> None:
         self.log.data["confirmedText"] = text
         self.log.data["confirmation"] = {"edited": edited, "draft": self.confirm_draft, "at": now_iso()}
         self.log.data["extraction"] = self.rt.extractor.run(text, self.log.data["capture"].get("bodyRelation"))
+
+    def _confirmed(self, text: str, edited: bool) -> None:
+        """[이대로 맞아요]/[고칠게요] 뒤. 확인 질문 루프가 켜져 있고 물을 말이 있으면 먼저 묻는다."""
+        if self.cfg.mapping.clarify_loop and self._start_clarify(text, edited):
+            return
+        self._finish(text, edited)
+
+    def _finish(self, text: str, edited: bool) -> None:
+        self._record_confirmation(text, edited)
         self._write_scene(text)
+        self._record_drift()
+        if self._ask_self_report():
+            self._save()
+            return
+        self._close()
+
+    def _close(self) -> None:
         self._say_fixed("closing", stage=None, kind="closing")
         self.state, self.awaiting = "done", "none"
         self.log.end("completed")
         self._save()
+
+    # ── 심상 유지(표류) 판정 · 회상 확인 · 자기보고 (docs/drift-design.md, LLM 없음) ─────────
+    def _drift_log(self) -> dict:
+        d = self.log.data.get("drift")
+        if not isinstance(d, dict):
+            d = {"enabled": self.rt.drift is not None, "assessment": None, "summary": None,
+                 "recallCheck": None, "selfReport": None}
+            self.log.data["drift"] = d
+        return d
+
+    def _record_drift(self) -> None:
+        """확정 직후: 참여자 턴(단계 표시 포함)만으로 단계별 스냅샷 → 1차 쌍 판정. 실패해도 면담 종료를 막지 않는다."""
+        if self.rt.drift is None:
+            return
+        d = self._drift_log()
+        try:
+            edited = bool((self.log.data.get("confirmation") or {}).get("edited"))
+            a = self.rt.drift.assess(participant_turns(self.log.turns, self.log.data.get("clarify")),
+                                     confirmation_edited=edited)
+            d["assessment"], d["summary"] = a, summarize(a)
+        except Exception as exc:  # noqa: BLE001
+            d["assessment"], d["error"] = None, f"{type(exc).__name__}: {exc}"[:300]
+            self._alert("drift_error", d["error"], None)
+
+    def _ask_recall(self) -> bool:
+        """Flesh out 뒤, 확정 요약 전에 한 번: '{X}' — 지금 떠오르는 것도 그 '{X}'인가요? (X = 참여자의 형상 명사 원문)"""
+        if not self.rt.drift_recall or self.recall_asked or self.rt.drift is None:
+            return False
+        self.recall_asked = True
+        d = self._drift_log()
+        anchor = self.rt.drift.recall_anchor(participant_turns(self.log.turns),
+                                             max_eojeol=self.cfg.validator.max_anchor_eojeol or 3)
+        if anchor is None:
+            d["recallCheck"] = {"asked": False, "reason": "첫 단계에 이름 붙인 형상 명사('X 같은 게'·'X예요')가 없음"}
+            return False
+        x = anchor["x"]
+        safety = self.rt.safety
+        if safety.crisis_hits(x) or safety.has_depth_marker(x):
+            d["recallCheck"] = {"asked": False, "reason": "인용할 말에 안전·깊이 표지", "x": x}
+            return False
+        turn = self._say(self.p.phrase("recall_check", X=x), speaker="system", source="fixed:recall_check",
+                         stage="recall_check", kind="check", phraseStatus=self.p.phrase_meta("recall_check")["status"],
+                         anchor=x)
+        d["recallCheck"] = {"asked": True, "x": x, "anchorTurn": anchor["i"], "anchorStage": anchor["stage"],
+                            "questionTurn": turn["i"], "answer": None}
+        self.state, self.awaiting = "recall", "recall"
+        return True
+
+    def _recall_options(self) -> list[dict]:
+        return list(self.p.phrases["recall_check"].get("options") or [])
+
+    def _on_recall(self, action: str) -> dict:
+        opts = {f"recall:{o['id']}": o for o in self._recall_options()}
+        if action not in opts:
+            raise SessionError(f"지금은 '{action}'을(를) 할 수 없습니다 (대기 중: recall).")
+        o = opts[action]
+        turn = self.log.add_turn(speaker="participant", source=f"control:{action}", stage="recall_check", text=o["label"])
+        rc = self._drift_log()["recallCheck"]
+        rc.update(answer=None if o["id"] == "skip" else o["id"], skipped=o["id"] == "skip", turn=turn["i"], at=now_iso())
+        self.messages.append({"speaker": "participant", "text": o["label"], "i": turn["i"]})
+        self.state = "interview"
+        self._enter_confirm()
+        self._save()
+        return self.view()
+
+    def _ask_self_report(self) -> bool:
+        if not self.rt.drift_self_report:
+            return False
+        turn = self._say_fixed("self_report_drift", stage=None, kind="check")
+        self._drift_log()["selfReport"] = {"asked": True, "questionTurn": turn["i"], "value": None,
+                                           "protocolVersion": self.p.version}
+        self.state, self.awaiting = "self_report", "self_report"
+        return True
+
+    def _self_report_scale(self) -> dict:
+        return self.p.phrases["self_report_drift"].get("scale") or {"min": 1, "max": 7, "anchors": {}}
+
+    def _on_self_report(self, action: str) -> dict:
+        sc = self._self_report_scale()
+        valid = {f"self_report:{v}" for v in range(int(sc["min"]), int(sc["max"]) + 1)} | {"self_report:skip"}
+        if action not in valid:
+            raise SessionError(f"지금은 '{action}'을(를) 할 수 없습니다 (대기 중: self_report).")
+        raw = action.split(":", 1)[1]
+        value = None if raw == "skip" else int(raw)
+        turn = self.log.add_turn(speaker="participant", source=f"control:{action}", stage=None,
+                                 text="[넘어가기]" if value is None else str(value))
+        self.messages.append({"speaker": "participant", "text": turn["text"], "i": turn["i"]})
+        sr = self._drift_log()["selfReport"]
+        cut = DRIFT_PARAMS["selfReportDriftMax"]
+        sr.update(value=value, skipped=value is None, turn=turn["i"], at=now_iso(),
+                  selfReportDrift=None if value is None else value <= cut, driftCutoff=cut)
+        self._close()
+        return self.view()
+
+    # ── 확인 질문 루프 (선택, 고정 틀 what_kind만 · LLM 없음) ─────────────────
+    def _start_clarify(self, text: str, edited: bool) -> bool:
+        v1 = self.rt.scene_builders.get("v1")
+        info: dict = {"enabled": True, "template": "what_kind", "baseText": text, "edited": edited, "targets": [],
+                      "turns": [], "appended": [], "finalText": None}
+        self.log.data["clarify"] = info
+        if v1 is None:
+            info["skipped"] = "v1 매핑 없음"
+            return False
+        try:
+            spec = v1.build(text)
+        except Exception as exc:  # noqa: BLE001
+            info["skipped"] = f"v1 매핑 오류: {type(exc).__name__}: {exc}"
+            return False
+        info["targets"] = clarify_targets(spec, normalize_confirmed(text), max_n=max(0, self.cfg.mapping.clarify_max),
+                                          analyzer=self.rt.analyzer)
+        if not info["targets"]:
+            return False
+        self.clarify = info
+        self.state = "clarify"
+        return self._ask_clarify()
+
+    def _ask_clarify(self) -> bool:
+        """다음 대상 X로 what_kind 질문을 낸다. 검증기(V3·V4·V5·V7·V9)를 통과한 질문만 나간다."""
+        info = self.clarify
+        texts = [t for t in normalize_confirmed(info["baseText"]).split("\n") if t] + list(info["appended"])
+        while info["targets"]:
+            target = info["targets"].pop(0)
+            utt, raw = question_json(self.p, target["x"])
+            ctx = TurnContext("flesh_out", ["what_kind"], texts, texts[-1])
+            r = self.rt.clarify_validator.check(raw, ctx)
+            rec = {"x": target["x"], "why": target["why"], "question": utt, "passed": r.passed, "reasons": r.reasons}
+            info["turns"].append(rec)
+            if not r.passed:
+                continue
+            self._say(utt, speaker="interviewer", source="clarify:what_kind", stage="clarify",
+                      checks={"passed": True, "reasons": [], "regenerations": 0, "fallback": False}, anchor=target["x"])
+            self.awaiting = "reply"
+            return True
+        return False
+
+    def _on_clarify_reply(self, text: str, skip: bool, turn_i: int) -> None:
+        info = self.clarify
+        asked = next((t for t in reversed(info["turns"]) if t["passed"] and "answer" not in t), None)
+        if asked is not None:
+            asked["answer"] = text
+            asked["used"] = not skip
+            asked["turn"] = turn_i
+        if not skip:
+            info["appended"].append(text)
+        if self._ask_clarify():
+            return
+        final = info["baseText"] if not info["appended"] else "\n".join([info["baseText"], *info["appended"]])
+        info["finalText"] = final
+        self.clarify = None
+        self._finish(final, info["edited"])
 
     # ── 장면 기술 (확정 텍스트 → SceneSpec v2 → Unity) ──────────────────────
     @property
     def scene_path(self):
         return self.cfg.scenes_dir / f"{self.id}.json"
 
+    def variant_path(self, mapper: str):
+        return self.cfg.scenes_dir / f"{self.id}.{mapper}.json"
+
+    def _build_scene(self, text: str) -> tuple[dict, dict]:
+        """주 매핑으로 만든다. v1(또는 끼운 매핑)이 예외를 내면 v0 결과에 대체 사실을 남겨 쓴다(AC-3.7).
+        [mapping] strict와 상관없이 그렇다: strict는 시작 시점(Runtime)의 v1 생성 실패만 멈추고, 여기(세션 도중
+        확정 시점)의 예외는 참여자 세션을 끊지 않도록 v0 대체 + meta.mapping + 연구자 알림으로 남긴다."""
+        rt, kw = self.rt, {"session_id": self.id, "participant_id": self.participant_id, "condition": self.condition}
+        v0 = rt.scene_builders["v0"]
+        primary = rt.scene_builder
+        requested = self.cfg.mapping.mode if primary is v0 else getattr(primary, "mapper_id", "custom")
+        if primary is v0 and requested != "v0":            # v1을 불러오지 못한 경우
+            reason = f"매핑 {requested}을(를) 불러오지 못함: {rt.mapping_load_error}"
+            return fallback_spec(v0.build(text, **kw), requested, reason), {"requested": requested, "used": "v0",
+                                                                            "fallbackReason": reason}
+        try:
+            spec = primary.build(text, **kw)
+            return spec, {"requested": requested, "used": requested, "fallbackReason": None}
+        except Exception as exc:  # noqa: BLE001
+            if primary is v0:
+                raise
+            reason = f"{type(exc).__name__}: {exc}"
+            self._alert("scene_mapping_fallback", f"매핑 {requested} 실패 → v0로 대체: {reason}"[:300], None)
+            return fallback_spec(v0.build(text, **kw), requested, reason), {"requested": requested, "used": "v0",
+                                                                            "fallbackReason": reason}
+
     def _write_scene(self, text: str) -> None:
         """확정 텍스트만 입력으로 장면 파일을 만든다. 턴 JSON·LLM 출력은 쓰지 않는다.
+        save_both면 같은 텍스트를 v0·v1 두 매핑으로 만든 파일도 남긴다(비교 설계: research-design 3.1).
         실패해도 면담 종료는 막지 않고 연구자 알림으로 남긴다."""
         try:
-            spec = self.rt.scene_builder.build(text, session_id=self.id, participant_id=self.participant_id,
-                                               condition=self.condition)
-            problems = check_principles(spec, normalize_confirmed(text))
+            spec, mapping = self._build_scene(text)
+            norm = normalize_confirmed(text)
+            problems = check_principles(spec, norm)
             saved = None
+            variants: dict = {}
             if self.rt.persist_logs:
                 saved = str(write_spec(spec, self.scene_path))
+            if self.cfg.mapping.save_both:
+                variants = self._write_variants(text, spec, mapping, norm, problems)
             self.scene_spec = spec
             self.log.data["sceneSpec"] = {"path": saved, "specVersion": spec["meta"]["specVersion"],
                                           "builder": spec["meta"]["pipeline"]["builder"],
-                                          "sourceTextHash": spec["meta"]["sourceTextHash"], "problems": problems}
+                                          "sourceTextHash": spec["meta"]["sourceTextHash"], "problems": problems,
+                                          "mapping": mapping, "variants": variants}
+            if mapping["fallbackReason"]:
+                self.log.data["sceneSpec"]["fallback"] = True
             if problems:
                 self._alert("scene_spec_invalid", "; ".join(problems[:5]), None)
         except Exception as exc:  # noqa: BLE001 — 장면 생성 실패가 면담 종료를 막으면 안 된다
             self.log.data["sceneSpec"] = {"path": None, "error": f"{type(exc).__name__}: {exc}"}
             self._alert("scene_spec_error", f"{type(exc).__name__}: {exc}", None)
 
+    def _write_variants(self, text: str, spec: dict, mapping: dict, norm: str, problems: list) -> dict:
+        kw = {"session_id": self.id, "participant_id": self.participant_id, "condition": self.condition}
+        out: dict = {}
+        for name in ("v0", "v1"):
+            b = self.rt.scene_builders.get(name)
+            if b is None:
+                out[name] = None
+                continue
+            try:
+                if mapping["used"] == name and spec["meta"].get("mapping", {}).get("fallbackReason") is None \
+                        and (self.rt.scene_builder is b):
+                    vs = spec
+                else:
+                    vs = b.build(text, **kw)
+                for p in check_principles(vs, norm):
+                    problems.append(f"[{name}] {p}")
+                out[name] = str(write_spec(vs, self.variant_path(name))) if self.rt.persist_logs else None
+            except Exception as exc:  # noqa: BLE001
+                out[name] = None
+                out[f"{name}Error"] = f"{type(exc).__name__}: {exc}"
+        return out
+
     def _delete_scene(self) -> None:
         self.scene_spec = None
-        try:
-            self.scene_path.unlink(missing_ok=True)
-        except OSError as exc:
-            alert_logger.warning("장면 파일을 지우지 못했습니다(%s): %s", self.scene_path, exc)
+        for path in (self.scene_path, self.variant_path("v0"), self.variant_path("v1")):
+            try:
+                path.unlink(missing_ok=True)
+            except OSError as exc:
+                alert_logger.warning("장면 파일을 지우지 못했습니다(%s): %s", path, exc)
 
     # ── 화면 ────────────────────────────────────────────────────────────────
     def buttons(self) -> list[dict]:
@@ -570,6 +880,15 @@ class Session:
             return [{"action": "continue", "label": "계속"}, {"action": "stop", "label": "그만"}]
         if self.awaiting == "confirm":
             return [{"action": "confirm", "label": "이대로 맞아요"}, {"action": "edit", "label": "고칠게요"}]
+        if self.awaiting == "recall":
+            return [{"action": f"recall:{o['id']}", "label": o["label"]} for o in self._recall_options()] \
+                + [{"action": "stop", "label": "그만"}]
+        if self.awaiting == "self_report":
+            sc = self._self_report_scale()
+            anchors = sc.get("anchors") or {}
+            skip = self.p.phrases["self_report_drift"].get("skipLabel", "넘어가기")
+            return [{"action": f"self_report:{v}", "label": f"{v} {anchors[str(v)]}" if str(v) in anchors else str(v)}
+                    for v in range(int(sc["min"]), int(sc["max"]) + 1)] + [{"action": "self_report:skip", "label": skip}]
         if self.state in ("done", "stopped"):
             return [{"action": "withdraw", "label": "응답 폐기"}]
         return []

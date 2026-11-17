@@ -1,0 +1,709 @@
+{
+  "meta": {
+    "specVersion": "2.1.0",
+    "participantId": null,
+    "sessionId": "H30",
+    "condition": "static",
+    "sourceTextHash": "sha256:ad32153af012a79a90ee50f34dfe22c370c0ea5f906862d1baf3c207c1b0155d",
+    "pipeline": {
+      "builder": "scene-spec-builder-v1/1.2.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@1.0.0",
+        "layer1Base": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@1.0.0",
+        "vad": "vad-ko@0.1.0"
+      }
+    },
+    "mapping": {
+      "requested": "v1",
+      "used": "v1",
+      "fallbackReason": null
+    }
+  },
+  "form": {
+    "type": null,
+    "posture": null
+  },
+  "material": {
+    "color": {
+      "h": 0.597,
+      "s": 0.7,
+      "l": 0.5
+    },
+    "brightness": 0.85,
+    "saturation": null,
+    "roughness": 0.1,
+    "opacity": 0.5,
+    "erosion": null
+  },
+  "layout": {
+    "size": 0.475,
+    "distance": null,
+    "verticalOffset": 0.72
+  },
+  "motion": {
+    "type": "still",
+    "speed": null
+  },
+  "body": {
+    "part": "body",
+    "layer": "around"
+  },
+  "_provenance": {
+    "material.color": [
+      {
+        "source": "phrase_rule",
+        "trigger": "파란",
+        "charSpan": [
+          9,
+          11
+        ],
+        "rule": "colorTerm.파란>material.color:hsl"
+      }
+    ],
+    "material.brightness": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "반짝반짝",
+        "charSpan": [
+          54,
+          58
+        ],
+        "rule": "brightnessLexicon.반짝반짝>material.brightness:sparkling"
+      }
+    ],
+    "material.roughness": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "매끄러워요",
+        "charSpan": [
+          59,
+          64
+        ],
+        "rule": "textureLexicon.매끄럽>material.roughness:smooth"
+      }
+    ],
+    "material.opacity": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "비쳐요",
+        "charSpan": [
+          45,
+          48
+        ],
+        "rule": "opacityLexicon.비치>material.opacity:see_through"
+      }
+    ],
+    "layout.size": [
+      {
+        "source": "phrase_rule",
+        "trigger": "손바닥만 하고",
+        "charSpan": [
+          29,
+          36
+        ],
+        "rule": "compare.equal.손바닥>layout.size:0.18m"
+      }
+    ],
+    "layout.verticalOffset": [
+      {
+        "source": "phrase_rule",
+        "trigger": "가슴 높이",
+        "charSpan": [
+          103,
+          108
+        ],
+        "rule": "height.가슴높이>layout.verticalOffset:0.72"
+      }
+    ],
+    "motion.type": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "움직임",
+        "charSpan": [
+          91,
+          94
+        ],
+        "rule": "motionLexicon.움직임>motion.type:still(negated)"
+      }
+    ],
+    "body.part": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "몸",
+        "charSpan": [
+          120,
+          121
+        ],
+        "rule": "bodyPartLexicon.몸>body.part:body"
+      }
+    ],
+    "body.layer": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "밖",
+        "charSpan": [
+          122,
+          123
+        ],
+        "rule": "bodyLayerLexicon.밖>body.layer:around"
+      }
+    ]
+  },
+  "_unmatched": [
+    {
+      "lemma": "책상",
+      "tag": "NNG",
+      "surface": "책상",
+      "charSpan": [
+        3,
+        5
+      ]
+    },
+    {
+      "lemma": "위",
+      "tag": "EOJEOL",
+      "surface": "위에",
+      "charSpan": [
+        6,
+        8
+      ]
+    },
+    {
+      "lemma": "컵",
+      "tag": "NNG",
+      "surface": "컵",
+      "charSpan": [
+        12,
+        13
+      ]
+    },
+    {
+      "lemma": "컵",
+      "tag": "EOJEOL",
+      "surface": "컵이",
+      "charSpan": [
+        12,
+        14
+      ]
+    },
+    {
+      "lemma": "하나",
+      "tag": "EOJEOL",
+      "surface": "하나",
+      "charSpan": [
+        15,
+        17
+      ]
+    },
+    {
+      "lemma": "놓이",
+      "tag": "VV",
+      "surface": "놓여",
+      "charSpan": [
+        18,
+        20
+      ]
+    },
+    {
+      "lemma": "있",
+      "tag": "EOJEOL",
+      "surface": "있어요",
+      "charSpan": [
+        21,
+        24
+      ]
+    },
+    {
+      "lemma": "컵",
+      "tag": "NNG",
+      "surface": "컵",
+      "charSpan": [
+        26,
+        27
+      ]
+    },
+    {
+      "lemma": "컵",
+      "tag": "EOJEOL",
+      "surface": "컵은",
+      "charSpan": [
+        26,
+        28
+      ]
+    },
+    {
+      "lemma": "유리",
+      "tag": "EOJEOL",
+      "surface": "유리라서",
+      "charSpan": [
+        37,
+        41
+      ]
+    },
+    {
+      "lemma": "속",
+      "tag": "EOJEOL",
+      "surface": "속이",
+      "charSpan": [
+        42,
+        44
+      ]
+    },
+    {
+      "lemma": "겉면",
+      "tag": "EOJEOL",
+      "surface": "겉면이",
+      "charSpan": [
+        50,
+        53
+      ]
+    },
+    {
+      "lemma": "책상",
+      "tag": "NNG",
+      "surface": "책상",
+      "charSpan": [
+        66,
+        68
+      ]
+    },
+    {
+      "lemma": "책상",
+      "tag": "EOJEOL",
+      "surface": "책상은",
+      "charSpan": [
+        66,
+        69
+      ]
+    },
+    {
+      "lemma": "오래",
+      "tag": "MAG",
+      "surface": "오래",
+      "charSpan": [
+        73,
+        75
+      ]
+    },
+    {
+      "lemma": "오래+되",
+      "tag": "EOJEOL",
+      "surface": "오래돼서",
+      "charSpan": [
+        73,
+        77
+      ]
+    },
+    {
+      "lemma": "군데군데",
+      "tag": "MAG",
+      "surface": "군데군데",
+      "charSpan": [
+        78,
+        82
+      ]
+    },
+    {
+      "lemma": "긁히",
+      "tag": "VV",
+      "surface": "긁혀",
+      "charSpan": [
+        83,
+        85
+      ]
+    },
+    {
+      "lemma": "있",
+      "tag": "EOJEOL",
+      "surface": "있어요",
+      "charSpan": [
+        86,
+        89
+      ]
+    },
+    {
+      "lemma": "없",
+      "tag": "EOJEOL",
+      "surface": "없어요",
+      "charSpan": [
+        96,
+        99
+      ]
+    },
+    {
+      "lemma": "저",
+      "tag": "EOJEOL",
+      "surface": "제",
+      "charSpan": [
+        101,
+        102
+      ]
+    },
+    {
+      "lemma": "바로",
+      "tag": "MAG",
+      "surface": "바로",
+      "charSpan": [
+        111,
+        113
+      ]
+    },
+    {
+      "lemma": "앞",
+      "tag": "EOJEOL",
+      "surface": "앞이에요",
+      "charSpan": [
+        114,
+        118
+      ]
+    },
+    {
+      "lemma": "그대로",
+      "tag": "MAG",
+      "surface": "그대로",
+      "charSpan": [
+        127,
+        130
+      ]
+    },
+    {
+      "lemma": "그대로",
+      "tag": "EOJEOL",
+      "surface": "그대로예요",
+      "charSpan": [
+        127,
+        132
+      ]
+    }
+  ],
+  "_unmapped": [
+    {
+      "lemma": "유리",
+      "category": "object",
+      "value": {
+        "object": "glass"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "유리",
+        "charSpan": [
+          37,
+          39
+        ],
+        "rule": "objectLexicon.유리"
+      }
+    },
+    {
+      "lemma": "속",
+      "category": "body_layer",
+      "value": {
+        "layer": "inner"
+      },
+      "reason": "no_body_part_context",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "속",
+        "charSpan": [
+          42,
+          43
+        ],
+        "rule": "bodyLayerLexicon.속"
+      }
+    },
+    {
+      "lemma": "겉면",
+      "category": "body_layer",
+      "value": {
+        "layer": "surface"
+      },
+      "reason": "no_body_part_context",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "겉면",
+        "charSpan": [
+          50,
+          52
+        ],
+        "rule": "bodyLayerLexicon.겉면"
+      }
+    }
+  ],
+  "_negated": [],
+  "_alternatives": [
+    {
+      "path": "body.layer",
+      "value": "around_front",
+      "reason": "lower_priority",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "앞",
+          "charSpan": [
+            114,
+            115
+          ],
+          "rule": "bodyLayerLexicon.앞>body.layer:around_front"
+        }
+      ]
+    }
+  ],
+  "_inferred": {},
+  "_context": [
+    {
+      "text": "하얀",
+      "charSpan": [
+        0,
+        2
+      ],
+      "reason": "background_object",
+      "path": "material.color",
+      "value": {
+        "h": 0.0,
+        "s": 0.0,
+        "l": 0.95
+      },
+      "rule": "colorTerm.하얀>material.color:hsl"
+    },
+    {
+      "text": "위",
+      "charSpan": [
+        6,
+        7
+      ],
+      "reason": "object_relative_position",
+      "path": "body.layer",
+      "value": "surface_above",
+      "rule": "bodyLayerLexicon.위>body.layer:surface_above"
+    },
+    {
+      "text": "넓고",
+      "charSpan": [
+        70,
+        72
+      ],
+      "reason": "background_subject",
+      "path": "layout.size",
+      "value": 0.621,
+      "rule": "sizeLexicon.넓>layout.size:logScale(1.4)"
+    }
+  ],
+  "_parts": [],
+  "_uncertain": [],
+  "_measurements": [
+    {
+      "text": "손바닥만 하고",
+      "charSpan": [
+        29,
+        36
+      ],
+      "kind": "reference",
+      "meters": 0.18,
+      "dimension": "size",
+      "reference": "손바닥",
+      "usedFor": "layout.size"
+    }
+  ],
+  "_direction": [],
+  "_needsConfirmation": [],
+  "_clauses": [
+    {
+      "charSpan": [
+        0,
+        24
+      ],
+      "text": "하얀 책상 위에 파란 컵이 하나 놓여 있어요",
+      "usedFor": [
+        "material.color"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        24,
+        25
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        26,
+        36
+      ],
+      "text": "컵은 손바닥만 하고",
+      "usedFor": [
+        "layout.size"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        37,
+        48
+      ],
+      "text": "유리라서 속이 비쳐요",
+      "usedFor": [
+        "material.opacity"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        48,
+        49
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        50,
+        64
+      ],
+      "text": "겉면이 반짝반짝 매끄러워요",
+      "usedFor": [
+        "material.brightness",
+        "material.roughness"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        64,
+        65
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        66,
+        72
+      ],
+      "text": "책상은 넓고",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        73,
+        77
+      ],
+      "text": "오래돼서",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        78,
+        89
+      ],
+      "text": "군데군데 긁혀 있어요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        89,
+        90
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        91,
+        99
+      ],
+      "text": "움직임은 없어요",
+      "usedFor": [
+        "motion.type"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        99,
+        100
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        101,
+        110
+      ],
+      "text": "제 가슴 높이쯤,",
+      "usedFor": [
+        "layout.verticalOffset"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        111,
+        118
+      ],
+      "text": "바로 앞이에요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        118,
+        119
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        120,
+        125
+      ],
+      "text": "몸 밖이요",
+      "usedFor": [
+        "body.part",
+        "body.layer"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        125,
+        126
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        127,
+        132
+      ],
+      "text": "그대로예요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        132,
+        133
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    }
+  ]
+}

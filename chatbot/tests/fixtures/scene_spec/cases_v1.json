@@ -1,0 +1,19 @@
+{
+  "note": "SceneSpec v2.1(개선 매핑 v1) 예시 입력. 확정 텍스트는 합성 문장이다(실제 참여자 응답 아님). Unity 테스트가 읽는 unity/Assets/StreamingAssets/IFS/examples/v1/*.v1.json은 이 입력의 v1 출력과 같아야 한다(test_scene_builder_v1.py). v1 규칙·사전을 바꾸면 예시 파일을 다시 만든다.",
+  "cases": [
+    {
+      "file": "EX01.v1.json",
+      "confirmedText": "가슴 안쪽에 젖은 종이처럼 눅눅하고 가장자리가 삭아가는 회색 덩어리가 있어요",
+      "participantId": "SYN01",
+      "sessionId": "EX01",
+      "condition": "chatbot"
+    },
+    {
+      "file": "EX03.v1.json",
+      "confirmedText": "어제 공원 걷던 게 떠올라요. 하얀 벽 앞에 연한 파란색 공 같은 게 떠 있어요.\n크기는 주먹만 하고 눈높이에 있어요. 오른쪽앞에요.\n테두리는 금색이고 표면이 오돌도돌해요.\n움직이는지는 잘 모르겠어요. 한 1미터쯤 떨어져 있어요.",
+      "participantId": "SYN01",
+      "sessionId": "EX03",
+      "condition": "static"
+    }
+  ]
+}

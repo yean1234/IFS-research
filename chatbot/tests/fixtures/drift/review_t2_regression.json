@@ -1,0 +1,838 @@
+{
+ "corpusId": "drift-review-t2-regression",
+ "version": "1.0.0",
+ "synthetic": true,
+ "authoredBy": "2단계 독립 검토자(T2)의 합성 대화를 옮김",
+ "note": "합성 대사만 담았습니다(AGENTS.md 6). 독립 검토자가 라벨 18개(drift_cases.json) 밖에서 만든 대화이고 expected는 검토자의 기대입니다('?'였던 것은 null). 규칙을 고친 뒤 이 대화로 확인했으므로 독립 평가가 아니며 AC-2 집계에 넣지 않습니다. turns는 판정기에 바로 넣는 [단계, 텍스트], static은 정적 조건 컨트롤러 재생(opening, location, focus, fleshout 순)입니다. knownLimitation이 있는 항목은 보류·분류표 밖이라 지금도 기대와 다르게 나오는 것으로, docs/drift-design.md 9.3절 목록과 같습니다.",
+ "items": [
+  {
+   "id": "S01",
+   "what": "synonym 솜→솜뭉치",
+   "finding": "T2-F02",
+   "expected": "no_drift",
+   "turns": [
+    [
+     "find",
+     "배 쪽에 하얀 솜 같은 게 있어요."
+    ],
+    [
+     "focus",
+     "솜이 그대로 있어요."
+    ],
+    [
+     "flesh_out",
+     "하얀 솜뭉치예요. 폭신해요."
+    ]
+   ],
+   "knownLimitation": null
+  },
+  {
+   "id": "S02",
+   "what": "synonym 주머니→자루",
+   "finding": "T2-F02",
+   "expected": "no_drift",
+   "turns": [
+    [
+     "find",
+     "가슴에 작은 주머니 같은 게 있어요."
+    ],
+    [
+     "focus",
+     "주머니가 가슴에 있어요."
+    ],
+    [
+     "flesh_out",
+     "작은 자루예요. 천으로 돼 있어요."
+    ]
+   ],
+   "knownLimitation": "동의어 사전 밖(주머니 ↔ 자루). T2-F02 중 사전을 사례에 맞춰 늘리는 부분은 받지 않음(과적합)"
+  },
+  {
+   "id": "S03",
+   "what": "pronoun 아까 그거",
+   "finding": null,
+   "expected": "no_drift",
+   "turns": [
+    [
+     "find",
+     "가슴에 빨간 공 같은 게 있어요."
+    ],
+    [
+     "focus",
+     "아까 그거 그대로 있어요."
+    ],
+    [
+     "flesh_out",
+     "그게 조금 더 빨개요. 가슴에 있어요."
+    ]
+   ],
+   "knownLimitation": null
+  },
+  {
+   "id": "S04",
+   "what": "negation in first turn",
+   "finding": null,
+   "expected": "no_drift",
+   "turns": [
+    [
+     "find",
+     "배 쪽에 공 같은 게 있어요. 빨갛지는 않고 파래요."
+    ],
+    [
+     "focus",
+     "파란 공이 배에 있어요."
+    ],
+    [
+     "flesh_out",
+     "파랗고 반들반들해요."
+    ]
+   ],
+   "knownLimitation": null
+  },
+  {
+   "id": "S05",
+   "what": "negation states change",
+   "finding": null,
+   "expected": "drift",
+   "turns": [
+    [
+     "find",
+     "배 쪽에 파란 공 같은 게 있어요."
+    ],
+    [
+     "focus",
+     "공이 배에 있어요."
+    ],
+    [
+     "flesh_out",
+     "이제 파랗지 않고 빨개요."
+    ]
+   ],
+   "knownLimitation": null
+  },
+  {
+   "id": "S06",
+   "what": "self-correction red->blue",
+   "finding": null,
+   "expected": "no_drift",
+   "turns": [
+    [
+     "find",
+     "빨간, 아니 파란 공 같은 게 가슴에 있어요."
+    ],
+    [
+     "focus",
+     "파란 공이 가슴에 있어요."
+    ],
+    [
+     "flesh_out",
+     "파랗고 동그래요."
+    ]
+   ],
+   "knownLimitation": null
+  },
+  {
+   "id": "S07",
+   "what": "former clause 아까는 파랬는데",
+   "finding": null,
+   "expected": "drift",
+   "turns": [
+    [
+     "find",
+     "배 쪽에 파란 공 같은 게 있어요."
+    ],
+    [
+     "focus",
+     "공이 배에 있어요."
+    ],
+    [
+     "flesh_out",
+     "아까는 파랬는데 지금은 빨개요."
+    ]
+   ],
+   "knownLimitation": null
+  },
+  {
+   "id": "S08",
+   "what": "color red->pink",
+   "finding": null,
+   "expected": null,
+   "turns": [
+    [
+     "find",
+     "가슴에 빨간 공 같은 게 있어요."
+    ],
+    [
+     "focus",
+     "빨간 공이 있어요."
+    ],
+    [
+     "flesh_out",
+     "분홍색이에요."
+    ]
+   ],
+   "knownLimitation": null
+  },
+  {
+   "id": "S09",
+   "what": "color green->blue",
+   "finding": null,
+   "expected": "drift",
+   "turns": [
+    [
+     "find",
+     "가슴에 초록색 공 같은 게 있어요."
+    ],
+    [
+     "focus",
+     "공이 가슴에 있어요."
+    ],
+    [
+     "flesh_out",
+     "파란색이에요."
+    ]
+   ],
+   "knownLimitation": null
+  },
+  {
+   "id": "S10",
+   "what": "color white->yellow",
+   "finding": null,
+   "expected": "drift",
+   "turns": [
+    [
+     "find",
+     "가슴에 하얀 공 같은 게 있어요."
+    ],
+    [
+     "focus",
+     "공이 가슴에 있어요."
+    ],
+    [
+     "flesh_out",
+     "노란색이에요."
+    ]
+   ],
+   "knownLimitation": null
+  },
+  {
+   "id": "S11",
+   "what": "color black->gray",
+   "finding": "T2-F11",
+   "expected": null,
+   "turns": [
+    [
+     "find",
+     "가슴에 검은 공 같은 게 있어요."
+    ],
+    [
+     "focus",
+     "공이 가슴에 있어요."
+    ],
+    [
+     "flesh_out",
+     "회색이에요."
+    ]
+   ],
+   "knownLimitation": null
+  },
+  {
+   "id": "S12",
+   "what": "size 큰 -> 주먹만",
+   "finding": "T2-F04",
+   "expected": "no_drift",
+   "turns": [
+    [
+     "find",
+     "배에 큰 덩어리 같은 게 있어요."
+    ],
+    [
+     "focus",
+     "덩어리가 배에 있어요."
+    ],
+    [
+     "flesh_out",
+     "주먹만 해요."
+    ]
+   ],
+   "knownLimitation": null
+  },
+  {
+   "id": "S13",
+   "what": "size 큰 -> 탁구공만",
+   "finding": "T2-F04",
+   "expected": null,
+   "turns": [
+    [
+     "find",
+     "배에 큰 덩어리 같은 게 있어요."
+    ],
+    [
+     "focus",
+     "덩어리가 배에 있어요."
+    ],
+    [
+     "flesh_out",
+     "탁구공만 해요."
+    ]
+   ],
+   "knownLimitation": null
+  },
+  {
+   "id": "S14",
+   "what": "size 작은 -> 수박만",
+   "finding": "T2-F04",
+   "expected": "drift",
+   "turns": [
+    [
+     "find",
+     "배에 작은 덩어리 같은 게 있어요."
+    ],
+    [
+     "focus",
+     "덩어리가 배에 있어요."
+    ],
+    [
+     "flesh_out",
+     "수박만 해요."
+    ]
+   ],
+   "knownLimitation": "T2-F04 규칙의 부작용: 크기 낱말(작은 0.316)과 측정(수박만 0.597)은 τ_hard만 보므로 차이 0.281이 모순이 아님"
+  },
+  {
+   "id": "S15",
+   "what": "position jump with sinking",
+   "finding": "T2-F03",
+   "expected": "drift",
+   "turns": [
+    [
+     "find",
+     "발밑에 납작한 원판 같은 게 있어요."
+    ],
+    [
+     "focus",
+     "원판이 머리 위에 있어요. 천천히 가라앉아요."
+    ],
+    [
+     "flesh_out",
+     "머리 위에 있어요."
+    ]
+   ],
+   "knownLimitation": null
+  },
+  {
+   "id": "S16",
+   "what": "motion only in find stage",
+   "finding": "T2-F03",
+   "expected": "drift",
+   "turns": [
+    [
+     "find",
+     "발밑에 원판 같은 게 천천히 움직여요."
+    ],
+    [
+     "focus",
+     "원판이 머리 위에 있어요."
+    ],
+    [
+     "flesh_out",
+     "머리 위에 가만히 있어요."
+    ]
+   ],
+   "knownLimitation": null
+  },
+  {
+   "id": "S17",
+   "what": "simile noun 구름 같은 덩어리",
+   "finding": "T2-F02",
+   "expected": "no_drift",
+   "turns": [
+    [
+     "find",
+     "가슴에 구름 같은 덩어리가 있어요."
+    ],
+    [
+     "focus",
+     "덩어리가 가슴에 있어요."
+    ],
+    [
+     "flesh_out",
+     "덩어리가 말랑해요."
+    ]
+   ],
+   "knownLimitation": null
+  },
+  {
+   "id": "S18",
+   "what": "multi objects",
+   "finding": "T2-F05",
+   "expected": "no_drift",
+   "turns": [
+    [
+     "find",
+     "가슴에 작은 공 같은 게 있고, 배에는 막대 같은 게 있어요."
+    ],
+    [
+     "focus",
+     "공이 가슴에 있어요."
+    ],
+    [
+     "flesh_out",
+     "막대는 배에 있어요. 공은 그대로예요."
+    ]
+   ],
+   "knownLimitation": "T2-F05 일부 수용: 대상이 여럿이면 multipleObjects만 표시하고 판정은 그대로(절 단위 대상 연결 보류)"
+  },
+  {
+   "id": "S19",
+   "what": "DI null",
+   "finding": null,
+   "expected": "undecidable",
+   "turns": [
+    [
+     "find",
+     "뭔가 떠올라요."
+    ],
+    [
+     "focus",
+     "그대로 있어요."
+    ],
+    [
+     "flesh_out",
+     "잘 모르겠어요."
+    ]
+   ],
+   "knownLimitation": null
+  },
+  {
+   "id": "S20",
+   "what": "꽃 -> 불꽃",
+   "finding": "T2-F07",
+   "expected": "drift",
+   "turns": [
+    [
+     "find",
+     "가슴에 작은 꽃 같은 게 있어요."
+    ],
+    [
+     "focus",
+     "꽃이 가슴에 있어요."
+    ],
+    [
+     "flesh_out",
+     "불꽃이에요. 활활 타요."
+    ]
+   ],
+   "knownLimitation": null
+  },
+  {
+   "id": "S21",
+   "what": "subject-only identity change after naming",
+   "finding": null,
+   "expected": "drift",
+   "turns": [
+    [
+     "find",
+     "가슴에 덩어리 같은 게 있어요."
+    ],
+    [
+     "focus",
+     "덩어리가 있어요."
+    ],
+    [
+     "flesh_out",
+     "새가 날개를 펴고 있어요."
+    ]
+   ],
+   "knownLimitation": null
+  },
+  {
+   "id": "S22",
+   "what": "강아지 -> 개",
+   "finding": null,
+   "expected": "no_drift",
+   "turns": [
+    [
+     "find",
+     "배 쪽에 작은 강아지 같은 게 있어요."
+    ],
+    [
+     "focus",
+     "강아지가 있어요."
+    ],
+    [
+     "flesh_out",
+     "작은 개예요. 웅크리고 있어요."
+    ]
+   ],
+   "knownLimitation": null
+  },
+  {
+   "id": "T01",
+   "what": "material as identity 고무로 돼",
+   "finding": "T2-F02",
+   "expected": "no_drift",
+   "turns": [
+    [
+     "find",
+     "가슴에 공 같은 게 있어요."
+    ],
+    [
+     "focus",
+     "공이 가슴에 있어요."
+    ],
+    [
+     "flesh_out",
+     "고무로 돼 있어요. 말랑해요."
+    ]
+   ],
+   "knownLimitation": null
+  },
+  {
+   "id": "T02",
+   "what": "덩어리 -> 개",
+   "finding": "T2-F07",
+   "expected": "drift",
+   "turns": [
+    [
+     "find",
+     "배에 덩어리 같은 게 있어요."
+    ],
+    [
+     "focus",
+     "덩어리가 배에 있어요."
+    ],
+    [
+     "flesh_out",
+     "지금은 개예요. 웅크리고 있어요."
+    ]
+   ],
+   "knownLimitation": "T2-F07 중 '개' 문맥 처리(수 + 개)는 보류: '개'를 단위어로 빼므로 '지금은 개예요'의 정체를 못 읽음"
+  },
+  {
+   "id": "T03",
+   "what": "change within Find",
+   "finding": "T2-F01",
+   "expected": "drift",
+   "turns": [
+    [
+     "find",
+     "파란 공 같은 게 떠올라요."
+    ],
+    [
+     "find",
+     "몸 안이요. 배에 빨간 공이 있어요."
+    ],
+    [
+     "focus",
+     "빨간 공이 배에 있어요."
+    ],
+    [
+     "flesh_out",
+     "빨갛고 동그래요."
+    ]
+   ],
+   "knownLimitation": null
+  },
+  {
+   "id": "T04",
+   "what": "가슴 가운데 -> 명치",
+   "finding": null,
+   "expected": "no_drift",
+   "turns": [
+    [
+     "find",
+     "가슴 가운데 덩어리 같은 게 있어요."
+    ],
+    [
+     "focus",
+     "덩어리가 그대로 있어요."
+    ],
+    [
+     "flesh_out",
+     "명치 쪽에 있어요. 단단해요."
+    ]
+   ],
+   "knownLimitation": "검토 분류표 밖: 매핑이 '가슴 가운데'를 chest, '명치'를 solar_plexus로 읽고 두 부위에 포함 관계가 없음"
+  },
+  {
+   "id": "T05",
+   "what": "배 -> 배꼽",
+   "finding": null,
+   "expected": "no_drift",
+   "turns": [
+    [
+     "find",
+     "배 쪽에 덩어리 같은 게 있어요."
+    ],
+    [
+     "focus",
+     "덩어리가 그대로 있어요."
+    ],
+    [
+     "flesh_out",
+     "배꼽 근처에 있어요."
+    ]
+   ],
+   "knownLimitation": null
+  },
+  {
+   "id": "T06",
+   "what": "ack negated",
+   "finding": "T2-F10",
+   "expected": "no_drift",
+   "turns": [
+    [
+     "find",
+     "가슴에 파란 공 같은 게 있어요."
+    ],
+    [
+     "focus",
+     "공이 그대로예요. 바뀐 건 없어요."
+    ],
+    [
+     "flesh_out",
+     "달라진 게 없어요. 파래요."
+    ]
+   ],
+   "knownLimitation": null
+  },
+  {
+   "id": "T07",
+   "what": "brightness 밝은->어두운",
+   "finding": null,
+   "expected": "drift",
+   "turns": [
+    [
+     "find",
+     "가슴에 밝은 덩어리 같은 게 있어요."
+    ],
+    [
+     "focus",
+     "덩어리가 있어요."
+    ],
+    [
+     "flesh_out",
+     "어두워요."
+    ]
+   ],
+   "knownLimitation": null
+  },
+  {
+   "id": "T08",
+   "what": "big then fist plus same words",
+   "finding": "T2-F04",
+   "expected": "no_drift",
+   "turns": [
+    [
+     "find",
+     "가슴에 커다란 공 같은 게 있어요."
+    ],
+    [
+     "focus",
+     "공이 가슴에 있어요."
+    ],
+    [
+     "flesh_out",
+     "주먹만 해요. 커다래요."
+    ]
+   ],
+   "knownLimitation": null
+  },
+  {
+   "id": "T09",
+   "what": "position move phrase 올라왔어요 only",
+   "finding": null,
+   "expected": "no_drift",
+   "turns": [
+    [
+     "find",
+     "배에 공 같은 게 있어요."
+    ],
+    [
+     "focus",
+     "공이 가슴으로 올라왔어요."
+    ],
+    [
+     "flesh_out",
+     "가슴에 있어요."
+    ]
+   ],
+   "knownLimitation": null
+  },
+  {
+   "id": "T10",
+   "what": "floating then teleports",
+   "finding": "T2-F03",
+   "expected": "drift",
+   "turns": [
+    [
+     "find",
+     "발밑에 원판 같은 게 있어요."
+    ],
+    [
+     "focus",
+     "원판이 머리 위에 떠 있어요."
+    ],
+    [
+     "flesh_out",
+     "머리 위에 있어요."
+    ]
+   ],
+   "knownLimitation": null
+  },
+  {
+   "id": "T11",
+   "what": "two turns in flesh with later restating first value",
+   "finding": null,
+   "expected": "no_drift",
+   "turns": [
+    [
+     "find",
+     "가슴에 파란 공 같은 게 있어요."
+    ],
+    [
+     "focus",
+     "공이 있어요."
+    ],
+    [
+     "flesh_out",
+     "빨간 줄무늬가 있어요."
+    ],
+    [
+     "flesh_out",
+     "공은 파래요."
+    ]
+   ],
+   "knownLimitation": null
+  },
+  {
+   "id": "T12",
+   "what": "part color",
+   "finding": null,
+   "expected": "no_drift",
+   "turns": [
+    [
+     "find",
+     "가슴에 파란 공 같은 게 있어요."
+    ],
+    [
+     "focus",
+     "공이 있어요."
+    ],
+    [
+     "flesh_out",
+     "가장자리가 하얘요."
+    ]
+   ],
+   "knownLimitation": null
+  },
+  {
+   "id": "T13",
+   "what": "simile property color",
+   "finding": null,
+   "expected": "no_drift",
+   "turns": [
+    [
+     "find",
+     "가슴에 파란 공 같은 게 있어요."
+    ],
+    [
+     "focus",
+     "공이 있어요."
+    ],
+    [
+     "flesh_out",
+     "눈처럼 반짝여요."
+    ]
+   ],
+   "knownLimitation": null
+  },
+  {
+   "id": "T14",
+   "what": "background noun 하늘",
+   "finding": null,
+   "expected": "no_drift",
+   "turns": [
+    [
+     "find",
+     "가슴에 공 같은 게 있어요."
+    ],
+    [
+     "focus",
+     "공이 있어요."
+    ],
+    [
+     "flesh_out",
+     "하늘 같은 느낌이에요."
+    ]
+   ],
+   "knownLimitation": null
+  },
+  {
+   "id": "W1",
+   "what": "Find 안에서 바뀜(정적 조건 컨트롤러)",
+   "finding": "T2-F01",
+   "expected": "drift",
+   "static": [
+    "파란 공 같은 게 떠올라요.",
+    "몸 안이요. 배에 빨간 공이 있어요.",
+    "빨간 공이 배에 있어요.",
+    "빨갛고 동그래요."
+   ],
+   "knownLimitation": null
+  },
+  {
+   "id": "W2",
+   "what": "움직임은 Find에서만, 위치가 뜀",
+   "finding": "T2-F03",
+   "expected": "drift",
+   "static": [
+    "발밑에 원판 같은 게 천천히 움직여요.",
+    "몸 주변이요. 발밑 바닥이요.",
+    "원판이 머리 위에 있어요.",
+    "머리 위에 가만히 있어요."
+   ],
+   "knownLimitation": null
+  },
+  {
+   "id": "W3",
+   "what": "큰 → 주먹만",
+   "finding": "T2-F04",
+   "expected": "no_drift",
+   "static": [
+    "배에 큰 덩어리 같은 게 있어요.",
+    "몸 안이요. 배 가운데요.",
+    "덩어리가 그대로 있어요.",
+    "주먹만 해요."
+   ],
+   "knownLimitation": null
+  },
+  {
+   "id": "W4",
+   "what": "직유 수식 명사",
+   "finding": "T2-F02",
+   "expected": "no_drift",
+   "static": [
+    "가슴에 구름 같은 덩어리가 있어요.",
+    "몸 안이요. 가슴 가운데요.",
+    "덩어리가 그대로 있어요.",
+    "말랑해요."
+   ],
+   "knownLimitation": null
+  },
+  {
+   "id": "W5",
+   "what": "재질 서술",
+   "finding": "T2-F02",
+   "expected": "no_drift",
+   "static": [
+    "가슴에 공 같은 게 있어요.",
+    "몸 안이요. 가슴 가운데요.",
+    "공이 그대로 있어요.",
+    "고무로 돼 있어요."
+   ],
+   "knownLimitation": null
+  }
+ ]
+}

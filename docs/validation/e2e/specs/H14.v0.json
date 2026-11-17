@@ -1,0 +1,239 @@
+{
+  "meta": {
+    "specVersion": "2.0.0",
+    "participantId": null,
+    "sessionId": "H14",
+    "condition": "static",
+    "sourceTextHash": "sha256:dd89f6e583dbedc05c4b0de399e328c0dae947cbc670d18b13ae668ae19d1290",
+    "pipeline": {
+      "builder": "scene-spec-builder/0.1.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@0.1.0",
+        "vad": "vad-ko@0.1.0"
+      }
+    }
+  },
+  "form": {
+    "type": null,
+    "posture": null
+  },
+  "material": {
+    "color": null,
+    "brightness": 0.3,
+    "saturation": null,
+    "roughness": null,
+    "opacity": null,
+    "erosion": null
+  },
+  "layout": {
+    "size": null,
+    "distance": null,
+    "verticalOffset": null
+  },
+  "motion": {
+    "type": "rotating",
+    "speed": 0.25
+  },
+  "body": {
+    "part": "body",
+    "layer": "around"
+  },
+  "_provenance": {
+    "material.brightness": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "흐릿해서",
+        "charSpan": [
+          71,
+          75
+        ],
+        "rule": "brightnessLexicon.흐릿>material.brightness:dim"
+      }
+    ],
+    "motion.type": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "돌아요",
+        "charSpan": [
+          107,
+          110
+        ],
+        "rule": "motionLexicon.돌>motion.type:rotating"
+      }
+    ],
+    "motion.speed": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "천천히",
+        "charSpan": [
+          97,
+          100
+        ],
+        "rule": "motionLexicon.천천히>motion.speed:slow"
+      }
+    ],
+    "body.part": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "몸",
+        "charSpan": [
+          28,
+          29
+        ],
+        "rule": "bodyPartLexicon.몸>body.part:body"
+      }
+    ],
+    "body.layer": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "주변",
+        "charSpan": [
+          30,
+          32
+        ],
+        "rule": "bodyLayerLexicon.주변>body.layer:around"
+      }
+    ]
+  },
+  "_unmatched": [
+    {
+      "lemma": "정확히",
+      "tag": "MAG",
+      "surface": "정확히",
+      "charSpan": [
+        13,
+        16
+      ]
+    },
+    {
+      "lemma": "모르",
+      "tag": "VV",
+      "surface": "모르",
+      "charSpan": [
+        21,
+        23
+      ]
+    },
+    {
+      "lemma": "정면",
+      "tag": "NNG",
+      "surface": "정면",
+      "charSpan": [
+        41,
+        43
+      ]
+    },
+    {
+      "lemma": "나",
+      "tag": "VV",
+      "surface": "나",
+      "charSpan": [
+        57,
+        58
+      ]
+    },
+    {
+      "lemma": "윤곽",
+      "tag": "NNG",
+      "surface": "윤곽",
+      "charSpan": [
+        67,
+        69
+      ]
+    },
+    {
+      "lemma": "잘",
+      "tag": "MAG",
+      "surface": "잘",
+      "charSpan": [
+        76,
+        77
+      ]
+    },
+    {
+      "lemma": "안",
+      "tag": "MAG",
+      "surface": "안",
+      "charSpan": [
+        78,
+        79
+      ]
+    },
+    {
+      "lemma": "농구공",
+      "tag": "NNG",
+      "surface": "농구공",
+      "charSpan": [
+        85,
+        88
+      ]
+    },
+    {
+      "lemma": "제자리",
+      "tag": "NNG",
+      "surface": "제자리",
+      "charSpan": [
+        101,
+        104
+      ]
+    }
+  ],
+  "_unmapped": [
+    {
+      "lemma": "동그랗",
+      "category": "shape",
+      "value": {
+        "shape": "round"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "동그란",
+        "charSpan": [
+          3,
+          6
+        ],
+        "rule": "shapeLexicon.동그랗"
+      }
+    },
+    {
+      "lemma": "웅웅",
+      "category": "sound",
+      "value": {
+        "sound": "humming"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "웅웅거리는",
+        "charSpan": [
+          47,
+          52
+        ],
+        "rule": "soundLexicon.웅웅"
+      }
+    },
+    {
+      "lemma": "소리",
+      "category": "sound",
+      "value": {
+        "sound": "sound"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "소리",
+        "charSpan": [
+          53,
+          55
+        ],
+        "rule": "soundLexicon.소리"
+      }
+    }
+  ],
+  "_negated": [],
+  "_alternatives": [],
+  "_inferred": {}
+}

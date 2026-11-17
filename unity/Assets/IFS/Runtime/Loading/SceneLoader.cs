@@ -1,17 +1,22 @@
 // SceneSpec v2 JSON → VR 오브젝트.
 //   form.type      → 프리팹 4종(blob/mist/shell/fragments). 비어 있으면 기본 절차 모형(잘게 나눈 구 + IFS 셰이더,
 //                    형태별 프리셋). IFS 셰이더를 못 쓰는 환경이면 임시 프리미티브(로그 + initialScene notes)
+//   _unmapped 모양어 → 모양 모형(round 구 · square 큐브 · flat 납작 원기둥 · pointed 원뿔, ShapeMapping).
+//                    form.type이 null·blob일 때만. 표에 없는 모양어는 경고하고 unmapped_shape로 기록(구로 바꾸지 않음).
+//                    판정은 initialScene.json·report.json의 "shape"(docs/shape-mapping.md)
 //   material.*     → Shader Graph 파라미터(_BaseColor, _Brightness, _Roughness, _Opacity, _Erosion)
 //   layout.*       → Transform(거리·높이·크기), form.posture → 크기 변형 프리셋
 //   motion.*       → SpecMotion(절차적 움직임)
 // null 값은 SceneDefaults로 채우고, 어떤 값을 기본값으로 썼는지 콘솔과 initialScene.json(defaultsUsed)에 남긴다.
 // _inferred(3층 제안)는 useInferredSuggestions를 켜야만 쓴다(기본 꺼짐 — 말하지 않은 것을 추론하지 않는다).
 // 참여자 조정은 SetNumber/SetCategory로 → events.csv 한 줄씩, SaveFinal()로 finalScene.json.
+// 소유감 실험 변형본은 Load(path, SceneOverride): 해석값 덮어쓰기·모양 모형 강제, 기록(RecordChange) 없음. Load(path)는 그대로.
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace IFS.SceneSpec
 {
@@ -23,6 +28,17 @@ namespace IFS.SceneSpec
 
         public FormPrefab() { }
         public FormPrefab(string type) { formType = type; }
+    }
+
+    /// <summary>모양 값(round·square·flat·pointed) → 모양 모형 프리팹. 메뉴 IFS ▸ Create Shape Prefabs가 채운다.</summary>
+    [Serializable]
+    public sealed class ShapePrefab
+    {
+        public string shape;
+        public GameObject prefab;
+
+        public ShapePrefab() { }
+        public ShapePrefab(string shape, GameObject prefab = null) { this.shape = shape; this.prefab = prefab; }
     }
 
     [Serializable]
@@ -83,10 +99,15 @@ namespace IFS.SceneSpec
             { "fragments", new FormPreset(0.25f, 2.4f, 0f, 1f, 0f) },
         };
 
+        // 모양 모형(구·큐브·원기둥·원뿔): 굴곡 0, 안개 가장자리 0, 껍질 열림 0 + 정점 변위 0(_Displacement) → 윤곽 유지.
+        // 노이즈 크기는 blob과 같게 둬 거칠기 얼룩·침식 무늬의 크기가 기본 모형과 같다.
+        static readonly FormPreset ShapePreset = new FormPreset(0f, 1.6f, 0f, 1f, 0f);
+        const string DisplacementProperty = "_Displacement";
+
         const string OpaqueShaderResource = "IFS/SceneSpecOpaque";
         const string FadeShaderResource = "IFS/SceneSpecFade";
         static Shader _opaqueShader, _fadeShader;
-        static Mesh _icoMesh;
+        static Mesh _icoMesh, _coneMesh;
 
         [Header("경로")]
         [Tooltip("ISceneSpecPathSource를 구현한 컴포넌트. 비우면 같은 GameObject에서 찾는다(InspectorPathSource).")]
@@ -101,6 +122,13 @@ namespace IFS.SceneSpec
 
         [Tooltip("프리팹이 없을 때 IFS 셰이더(Resources/IFS)로 절차 모형을 만든다. 끄면 Unity 기본 프리미티브")]
         [SerializeField] bool useProceduralModels = true;
+
+        [Header("모양 프리팹 (메뉴 IFS ▸ Create Shape Prefabs가 연결)")]
+        [Tooltip("_unmapped의 모양어(round·square·flat·pointed) → 모형. 비어 있으면 같은 형상을 코드로 만들고 경고를 남긴다")]
+        [SerializeField] ShapePrefab[] shapePrefabs =
+        {
+            new ShapePrefab("round"), new ShapePrefab("square"), new ShapePrefab("flat"), new ShapePrefab("pointed"),
+        };
 
         [Header("Shader Graph 파라미터")]
         [SerializeField] ShaderParamNames shaderParams = new ShaderParamNames();
@@ -129,6 +157,13 @@ namespace IFS.SceneSpec
         public SceneParams CurrentParams { get; private set; }
         public ExperimentRecorder Recorder => _recorder;
         public GameObject Root => _root;
+        /// <summary>로더 메모(기본값 사용, 프리미티브 대체, 없는 셰이더 프로퍼티 …). initialScene.json의 notes와 같다.</summary>
+        public IReadOnlyList<string> Notes => _notes;
+        /// <summary>모양어 판정(_unmapped의 모양어 → 모형). initialScene.json·report.json의 "shape".</summary>
+        public ShapeResolution Shape { get; private set; }
+        /// <summary>지금 보이는 모형이 모양 모형인가(참여자가 form.type을 바꾸면 그 형태 모형으로 돌아간다).</summary>
+        public bool ShowingShapeModel => _isShapeModel;
+        public IReadOnlyList<ShapePrefab> ShapePrefabs => shapePrefabs;
         public event Action<SceneLoader> Loaded;
 
         ISceneSpecPathSource _source;
@@ -137,7 +172,10 @@ namespace IFS.SceneSpec
         SpecMotion _motion;
         Vector3 _anchorPos, _anchorForward, _modelBaseScale;
         float _eyeHeight;
+        bool _isShapeModel;
         readonly List<string> _notes = new List<string>();
+        // 로더가 만든 머티리얼 사본(Unload 때 정리). renderer.materials는 에디트 모드에서 누수 오류를 내므로 직접 복제한다.
+        readonly HashSet<Material> _ownedMaterials = new HashSet<Material>();
 
         // ── 수명 ─────────────────────────────────────────────────────────────
         void OnEnable()
@@ -156,7 +194,12 @@ namespace IFS.SceneSpec
             if (loadOnStart) LoadFromSource();
         }
 
-        void OnDestroy() => CloseRecorder();
+        void OnDestroy()
+        {
+            CloseRecorder();
+            foreach (var m in _ownedMaterials) DestroySafe(m);   // 형상(자식)은 함께 지워지지만 머티리얼 사본은 남으므로
+            _ownedMaterials.Clear();
+        }
 
         void OnSpecPathChanged(string path) => Load(path);
 
@@ -181,7 +224,11 @@ namespace IFS.SceneSpec
         }
 
         // ── 로드 ─────────────────────────────────────────────────────────────
-        public bool Load(string path)
+        public bool Load(string path) => Load(path, null);
+
+        /// <summary>소유감 실험 변형본: 해석값에 덮어쓰기와 모양 모형 강제(variant)를 얹어 로드한다.
+        /// 덮어쓰기는 참여자 조정이 아니므로 RecordChange(events.csv)를 타지 않는다. variant가 null이면 Load(path)와 같다.</summary>
+        public bool Load(string path, SceneOverride variant)
         {
             string full = ResolvePath(path);
             string raw;
@@ -198,6 +245,7 @@ namespace IFS.SceneSpec
             }
             foreach (var problem in SceneSpecJson.Validate(spec))
                 Debug.LogWarning($"[SceneLoader] 형식 경고({Path.GetFileName(full)}): {problem}", this);
+            if (variant != null && !CheckVariant(spec, variant, Path.GetFileName(full))) return false;
 
             Unload();
             Spec = spec;
@@ -208,7 +256,15 @@ namespace IFS.SceneSpec
                 Note($"{key}: SceneSpec 값이 null → 기본값 {Describe(InitialParams, key)} 사용", false);
             foreach (var key in InitialParams.InferredUsed)
                 Note($"{key}: 3층 제안(_inferred) {Describe(InitialParams, key)} 사용", false);
+            if (variant != null) ApplyVariantParams(variant);
             CurrentParams = InitialParams.Clone();
+            Shape = ShapeMapping.Resolve(spec);
+            if (variant?.ShapeModel != null)
+            {
+                Shape = ShapeMapping.Forced(Shape, variant.ShapeModel);
+                Note($"변형 덮어쓰기(기록 안 함): 모양 모형 강제 → {Shape.Model}", false);
+            }
+            NoteShapeWords(Path.GetFileName(full), spec.Meta.SessionId);
 
             CaptureAnchor();
             BuildHierarchy();
@@ -218,11 +274,12 @@ namespace IFS.SceneSpec
             {
                 var sessionId = spec.Meta.SessionId ?? Path.GetFileNameWithoutExtension(full);
                 _recorder = new ExperimentRecorder(RecordRoot, sessionId, spec, full);
-                _recorder.WriteInitial(InitialParams, raw, _notes);
+                _recorder.WriteInitial(InitialParams, raw, _notes, Shape.ToJson());
                 Debug.Log($"[SceneLoader] 기록 폴더: {_recorder.Directory}", this);
             }
             Debug.Log($"[SceneLoader] {Path.GetFileName(full)} 로드: form={CurrentParams.GetCategory("form.type")}, " +
-                      $"기본값 {InitialParams.DefaultsUsed.Count}개", this);
+                      $"기본값 {InitialParams.DefaultsUsed.Count}개, shape={Shape.Status}" +
+                      (Shape.Model != null ? $"({Shape.Applied} → {Shape.Model})" : ""), this);
             Loaded?.Invoke(this);
             return true;
         }
@@ -230,15 +287,69 @@ namespace IFS.SceneSpec
         public void Unload()
         {
             CloseRecorder();
-            if (_root != null) Destroy(_root);
+            DestroySafe(_root);
+            foreach (var m in _ownedMaterials) DestroySafe(m);
+            _ownedMaterials.Clear();
             _root = _model = null;
             _motion = null;
+            _isShapeModel = false;
+            Shape = null;
             Spec = null;
             InitialParams = CurrentParams = null;
         }
 
         string ResolvePath(string path) =>
             Path.IsPathRooted(path) ? path : Path.Combine(Application.streamingAssetsPath, path);
+
+        // ── 변형본(소유감 실험) ─────────────────────────────────────────────
+        /// <summary>null 슬롯에 쓰는 기본값(변형본 생성기가 같은 값으로 해석하도록 읽는다).</summary>
+        public SceneDefaults Defaults => defaults;
+        public bool UseInferredSuggestions => useInferredSuggestions;
+
+        /// <summary>실험 러너용 설정: 머리 기준(고정 앵커), 기본값, 기록 끔(러너가 자체 기록), 시작 때 자동 로드 끔, _inferred 끔.</summary>
+        public void ConfigureForRunner(Transform headAnchor, SceneDefaults sceneDefaults)
+        {
+            head = headAnchor;
+            if (sceneDefaults != null) defaults = sceneDefaults;
+            record = false;
+            loadOnStart = false;
+            autoSaveFinalOnDestroy = false;
+            useInferredSuggestions = false;
+        }
+
+        // 덮어쓰기를 확인한다(로드 전, 지금 형상을 지우기 전에). 모르는 키·모형, blob이 아닌 형태의 모양 모형은 오류.
+        bool CheckVariant(SceneSpecV2 spec, SceneOverride variant, string file)
+        {
+            var errors = variant.Validate();
+            if (errors.Count == 0)
+            {
+                var check = SceneParams.FromSpec(spec, defaults, useInferredSuggestions);
+                variant.ApplyTo(check);
+                string model = variant.ShapeModel ?? ShapeMapping.Resolve(spec).Model;
+                string form = check.GetCategory("form.type");
+                if (model != null && form != "blob") errors.Add($"모양 모형 {model}은 form.type=blob에만 쓸 수 있음(지금 {form})");
+            }
+            if (errors.Count == 0) return true;
+            Debug.LogError($"[SceneLoader] 변형 덮어쓰기를 적용할 수 없습니다({file}): {string.Join("; ", errors)}", this);
+            return false;
+        }
+
+        // InitialParams에 덮어쓰기를 얹는다. 참여자 조정이 아니므로 RecordChange를 부르지 않는다(notes에만 남김).
+        void ApplyVariantParams(SceneOverride variant)
+        {
+            foreach (var kv in variant.Numbers)
+            {
+                string from = Describe(InitialParams, kv.Key);
+                if (InitialParams.SetNumber(kv.Key, kv.Value))
+                    Note($"변형 덮어쓰기(기록 안 함): {kv.Key} {from} → {Describe(InitialParams, kv.Key)}", false);
+            }
+            foreach (var kv in variant.Categories)
+            {
+                string from = InitialParams.GetCategory(kv.Key);
+                if (InitialParams.SetCategory(kv.Key, kv.Value))
+                    Note($"변형 덮어쓰기(기록 안 함): {kv.Key} {from} → {kv.Value}", false);
+            }
+        }
 
         string RecordRoot => string.IsNullOrEmpty(recordRoot)
             ? Path.Combine(Application.persistentDataPath, "IFS", "sessions")
@@ -336,9 +447,18 @@ namespace IFS.SceneSpec
                 pivot.transform.SetParent(_root.transform, false);
                 _motion = pivot.AddComponent<SpecMotion>();
             }
-            if (_model != null) Destroy(_model);
+            ReleaseModel();
+            _isShapeModel = false;
 
             string form = CurrentParams.GetCategory("form.type");
+            // 모양 모형: 판정이 적용(applied)이고, 참여자가 form.type을 처음 값에서 바꾸지 않았을 때.
+            // (조정 중 form.type을 바꾸면 그 형태 모형을 보여 주고, 처음 값으로 돌아오면 모양 모형으로 돌아온다)
+            if (Shape?.Model != null && form == InitialParams.GetCategory("form.type"))
+            {
+                BuildShapeModel(form);
+                return;
+            }
+
             var prefab = FindPrefab(form);
             if (prefab != null)
             {
@@ -347,6 +467,8 @@ namespace IFS.SceneSpec
             else if (useProceduralModels && LoadIfsShaders())
             {
                 _model = CreateProceduralModel(form);
+                foreach (var r in _model.GetComponentsInChildren<Renderer>())   // 로더가 만든 머티리얼 = 이미 사본
+                    foreach (var m in r.sharedMaterials) _ownedMaterials.Add(m);
                 _model.transform.SetParent(_motion.transform, false);
                 _model.transform.localScale = Vector3.one * placement.primitiveBaseSize;
                 Note($"form.type={form}: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시", false);
@@ -362,6 +484,106 @@ namespace IFS.SceneSpec
             _model.name = "model (" + form + ")";
             _modelBaseScale = _model.transform.localScale;
         }
+
+        // 모양 모형: 연결된 프리팹이 있으면 그것, 없으면 메뉴와 같은 함수(ShapeModelFactory)로 같은 형상을 코드로 만든다.
+        // 어느 쪽이든 구로 몰래 바꾸지 않는다. 크기는 절차 모형과 같은 기본 크기(primitiveBaseSize)로 맞춰 layout.size의 뜻을 유지한다.
+        void BuildShapeModel(string form)
+        {
+            string shape = Shape.Applied, model = Shape.Model;
+            bool ifs = LoadIfsShaders();   // 프리팹 머티리얼이 IFS 셰이더인지 ApplyMaterial이 알아보려면 셰이더를 먼저 읽어야 한다
+            var prefab = FindShapePrefab(shape);
+            if (prefab != null)
+            {
+                _model = Instantiate(prefab, _motion.transform, false);
+                Shape.ViaPrefab = true;
+            }
+            else
+            {
+                Material mat = null;
+                if (ifs)
+                {
+                    mat = new Material(_opaqueShader) { name = "IFS shape (" + model + ")" };
+                    _ownedMaterials.Add(mat);
+                }
+                _model = ShapeModelFactory.Create(model, mat, ConeMeshCached());
+                _model.transform.SetParent(_motion.transform, false);
+                Shape.ViaPrefab = false;
+                Note($"shape={shape} → {model}: 모양 프리팹이 연결되지 않아 같은 형상을 코드로 만듦" +
+                     " (메뉴 IFS ▸ Create Shape Prefabs로 연결)", true);
+                if (!ifs)
+                    Note($"shape={shape} → {model}: IFS 셰이더를 쓸 수 없어 프리미티브 기본 머티리얼로 표시 — 이유: {IfsShaderProblem()}", true);
+            }
+            _model.transform.localScale = Vector3.one * placement.primitiveBaseSize;
+            _model.name = "model (" + form + ", shape " + shape + " → " + model + ")";
+            _modelBaseScale = _model.transform.localScale;
+            _isShapeModel = true;
+            Note($"shape={shape} → {model} 모형으로 표시(form.type={form}, 트리거 " +
+                 $"'{Shape.Words.Find(w => w.Status == ShapeMapping.StatusApplied)?.Trigger}', " +
+                 (Shape.ViaPrefab == true ? "프리팹" : "코드 생성") + ")", false);
+        }
+
+        GameObject FindShapePrefab(string shape)
+        {
+            if (shapePrefabs == null) return null;
+            foreach (var sp in shapePrefabs)
+                if (sp != null && sp.shape == shape && sp.prefab != null) return sp.prefab;
+            return null;
+        }
+
+        /// <summary>모양 프리팹 연결(에디터 메뉴·배치 캡처가 부른다). 다음 Load부터 쓴다.</summary>
+        public void ConfigureShapePrefabs(IEnumerable<ShapePrefab> prefabs)
+        {
+            var list = new List<ShapePrefab>();
+            if (prefabs != null)
+                foreach (var p in prefabs)
+                    if (p != null) list.Add(new ShapePrefab(p.shape, p.prefab));
+            shapePrefabs = list.ToArray();
+        }
+
+        static Mesh ConeMeshCached()
+        {
+            if (_coneMesh == null) _coneMesh = ShapeModelFactory.BuildConeMesh();
+            return _coneMesh;
+        }
+
+        // 모양어마다 무엇을 했는지 콘솔·notes에 남긴다. 적용하지 못한 모양어(표에 없음·형태 때문·충돌)는 경고.
+        void NoteShapeWords(string file, string sessionId)
+        {
+            string who = sessionId != null ? $"{file} (session {sessionId})" : file;
+            foreach (var w in Shape.Words)
+            {
+                string at = $"shape={w.Shape ?? "(값 없음)"}, 트리거 '{w.Trigger}' [{Span(w.CharSpan)}]";
+                switch (w.Status)
+                {
+                    case ShapeMapping.StatusUnmapped:
+                        Note($"{who}: {at} — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)", true);
+                        break;
+                    case ShapeMapping.StatusNotAppliedForm:
+                        Note($"{who}: {at} — spec이 form.type={Shape.FormType}을 말해 그 형태 모형을 지킴(not_applied_form)", true);
+                        break;
+                    case ShapeMapping.StatusConflict:
+                        Note($"{who}: {at} — 앞서 적용한 shape={Shape.Applied}와 다른 모양어라 적용하지 않음(conflict)", true);
+                        break;
+                }
+            }
+        }
+
+        static string Span(int[] s) => s == null ? "" : string.Join(",", s);
+
+        // 형상만 바꿀 때(조정 중 form.type 변경): 이전 형상이 쓰던 머티리얼 사본도 함께 지운다.
+        // 지우지 않으면 _ownedMaterials에 남아 Unload·OnDestroy 때까지 쌓인다.
+        void ReleaseModel()
+        {
+            if (_model == null) return;
+            foreach (var r in _model.GetComponentsInChildren<Renderer>(true))
+                foreach (var m in r.sharedMaterials)
+                    if (m != null && _ownedMaterials.Remove(m)) DestroySafe(m);
+            DestroySafe(_model);
+            _model = null;
+        }
+
+        /// <summary>로더가 지금 들고 있는 머티리얼 사본 수(누수 확인용).</summary>
+        public int OwnedMaterialCount => _ownedMaterials.Count;
 
         GameObject FindPrefab(string form)
         {
@@ -503,7 +725,8 @@ namespace IFS.SceneSpec
         void ApplyMaterial()
         {
             var p = CurrentParams;
-            SceneParams.HslToRgb(p.GetNumber("material.color.h"), p.GetNumber("material.color.s"),
+            // 색·Fade 판정은 변형본 생성기(색 변형 ΔE00)와 같은 함수(RenderedColor)를 쓴다.
+            RenderedColor.BaseSrgb(p.GetNumber("material.color.h"), p.GetNumber("material.color.s"),
                 p.GetNumber("material.color.l"), out double r, out double g, out double b);
             float opacity = (float)p.GetNumber("material.opacity");
             float brightness = (float)p.GetNumber("material.brightness");
@@ -512,16 +735,20 @@ namespace IFS.SceneSpec
             var color = new Color((float)r, (float)g, (float)b, opacity);
             var sp = shaderParams;
             string form = p.GetCategory("form.type");
-            FormPresets.TryGetValue(form, out var preset);
-            bool fade = form == "mist" || opacity < 0.99f;
+            FormPreset preset;
+            if (_isShapeModel) preset = ShapePreset;
+            else FormPresets.TryGetValue(form, out preset);
+            bool fade = RenderedColor.UsesFadeShader(form, opacity);
 
             foreach (var rend in _model.GetComponentsInChildren<Renderer>())
             {
-                foreach (var m in rend.materials)   // 렌더러마다 인스턴스(공유 머티리얼을 바꾸지 않는다)
+                bool anyIfs = false;
+                foreach (var m in InstanceMaterials(rend))   // 렌더러마다 인스턴스(공유 머티리얼을 바꾸지 않는다)
                 {
                     bool ifsShader = _opaqueShader != null && (m.shader == _opaqueShader || m.shader == _fadeShader);
                     if (ifsShader)
                     {
+                        anyIfs = true;
                         var wanted = fade ? _fadeShader : _opaqueShader;   // 안개·반투명이면 Fade로 바꾼다
                         if (m.shader != wanted) m.shader = wanted;
                         m.SetFloat("_Lumpiness", preset.lumpiness);
@@ -529,6 +756,8 @@ namespace IFS.SceneSpec
                         m.SetFloat("_Fuzz", preset.fuzz);
                         m.SetFloat("_Density", preset.density);
                         m.SetFloat("_ShellOpen", preset.shellOpen);
+                        // 모양 모형만 정점 변위 0(각진 면이 벌어지지 않고 윤곽 유지). 그 밖의 모형은 셰이더 기본값 1 그대로.
+                        if (_isShapeModel) m.SetFloat(DisplacementProperty, 0f);
                     }
                     if (m.HasProperty(sp.baseColor)) m.SetColor(sp.baseColor, color);
                     else if (m.HasProperty(sp.colorFallback)) m.SetColor(sp.colorFallback, color);
@@ -555,7 +784,33 @@ namespace IFS.SceneSpec
                     if (m.HasProperty(sp.erosion)) m.SetFloat(sp.erosion, erosion);
                     else if (erosion > 0.001f) Note($"{m.shader.name}: {sp.erosion} 없음 → material.erosion 적용 안 됨", true);
                 }
+                // 반투명(Fade)은 Built-in에서 그림자를 받지 못하고, 불투명 그림자를 드리우면 안개가 덩어리처럼 보인다 → 그림자 끔.
+                if (anyIfs) rend.shadowCastingMode = fade ? ShadowCastingMode.Off : ShadowCastingMode.On;
             }
+        }
+
+        // renderer.materials와 같은 일(공유 머티리얼을 사본으로 바꿈)을 재생 중·에디트 모드 모두에서 한다.
+        // 로더가 직접 만든 머티리얼(절차 모형)은 이미 사본이라 그대로 쓴다.
+        Material[] InstanceMaterials(Renderer rend)
+        {
+            var shared = rend.sharedMaterials;
+            bool changed = false;
+            for (int i = 0; i < shared.Length; i++)
+            {
+                if (shared[i] == null || _ownedMaterials.Contains(shared[i])) continue;
+                shared[i] = new Material(shared[i]);
+                _ownedMaterials.Add(shared[i]);
+                changed = true;
+            }
+            if (changed) rend.sharedMaterials = shared;
+            return shared;
+        }
+
+        static void DestroySafe(UnityEngine.Object o)
+        {
+            if (o == null) return;
+            if (Application.isPlaying) Destroy(o);
+            else DestroyImmediate(o);
         }
 
         void ApplyMotion()

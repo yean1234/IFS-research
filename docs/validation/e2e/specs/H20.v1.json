@@ -1,0 +1,549 @@
+{
+  "meta": {
+    "specVersion": "2.1.0",
+    "participantId": null,
+    "sessionId": "H20",
+    "condition": "static",
+    "sourceTextHash": "sha256:f60a5c9666f64de1529ebda240706a0b18217ed406627da65cceac2c94ce43da",
+    "pipeline": {
+      "builder": "scene-spec-builder-v1/1.2.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@1.0.0",
+        "layer1Base": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@1.0.0",
+        "vad": "vad-ko@0.1.0"
+      }
+    },
+    "mapping": {
+      "requested": "v1",
+      "used": "v1",
+      "fallbackReason": null
+    }
+  },
+  "form": {
+    "type": "blob",
+    "posture": "sagging"
+  },
+  "material": {
+    "color": {
+      "h": 0.333,
+      "s": 0.248,
+      "l": 0.4
+    },
+    "brightness": null,
+    "saturation": 0.25,
+    "roughness": 0.15,
+    "opacity": null,
+    "erosion": null
+  },
+  "layout": {
+    "size": null,
+    "distance": null,
+    "verticalOffset": 0.02
+  },
+  "motion": {
+    "type": "sinking",
+    "speed": null
+  },
+  "body": {
+    "part": "body",
+    "layer": "around"
+  },
+  "_provenance": {
+    "form.type": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "덩어리",
+        "charSpan": [
+          13,
+          16
+        ],
+        "rule": "formLexicon.덩어리>form.type:blob"
+      }
+    ],
+    "form.posture": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "늘어져",
+        "charSpan": [
+          78,
+          81
+        ],
+        "rule": "postureLexicon.늘어지>form.posture:sagging"
+      }
+    ],
+    "material.color": [
+      {
+        "source": "phrase_rule",
+        "trigger": "초록색",
+        "charSpan": [
+          3,
+          6
+        ],
+        "rule": "colorTerm.초록색>material.color:hsl"
+      },
+      {
+        "source": "phrase_rule",
+        "trigger": "탁한",
+        "charSpan": [
+          0,
+          2
+        ],
+        "rule": "colorModifier.탁한>material.color:dull"
+      }
+    ],
+    "material.saturation": [
+      {
+        "source": "simile_marker",
+        "trigger": "탁한",
+        "charSpan": [
+          0,
+          2
+        ],
+        "rule": "simile.같은>saturationLexicon.탁하>material.saturation:muddy"
+      }
+    ],
+    "material.roughness": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "질척질척하고",
+        "charSpan": [
+          61,
+          67
+        ],
+        "rule": "mimeticDerivation.질척>textureLexicon.질척>material.roughness:wet"
+      },
+      {
+        "source": "explicit_lexicon",
+        "trigger": "축축해요",
+        "charSpan": [
+          68,
+          72
+        ],
+        "rule": "textureLexicon.축축>material.roughness:wet"
+      }
+    ],
+    "layout.verticalOffset": [
+      {
+        "source": "phrase_rule",
+        "trigger": "발밑",
+        "charSpan": [
+          23,
+          25
+        ],
+        "rule": "height.발밑>layout.verticalOffset:0.02"
+      }
+    ],
+    "motion.type": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "가라앉는",
+        "charSpan": [
+          49,
+          53
+        ],
+        "rule": "motionLexicon.가라앉>motion.type:sinking"
+      }
+    ],
+    "body.part": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "몸",
+        "charSpan": [
+          29,
+          30
+        ],
+        "rule": "bodyPartLexicon.몸>body.part:body"
+      }
+    ],
+    "body.layer": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "밖",
+        "charSpan": [
+          31,
+          32
+        ],
+        "rule": "bodyLayerLexicon.밖>body.layer:around"
+      }
+    ]
+  },
+  "_unmatched": [
+    {
+      "lemma": "같",
+      "tag": "EOJEOL",
+      "surface": "같은",
+      "charSpan": [
+        10,
+        12
+      ]
+    },
+    {
+      "lemma": "보이",
+      "tag": "EOJEOL",
+      "surface": "보여요",
+      "charSpan": [
+        18,
+        21
+      ]
+    },
+    {
+      "lemma": "발밑",
+      "tag": "NNG",
+      "surface": "발밑",
+      "charSpan": [
+        23,
+        25
+      ]
+    },
+    {
+      "lemma": "발밑",
+      "tag": "EOJEOL",
+      "surface": "발밑이요",
+      "charSpan": [
+        23,
+        27
+      ]
+    },
+    {
+      "lemma": "바닥",
+      "tag": "EOJEOL",
+      "surface": "바닥에",
+      "charSpan": [
+        33,
+        36
+      ]
+    },
+    {
+      "lemma": "있",
+      "tag": "EOJEOL",
+      "surface": "있어요",
+      "charSpan": [
+        37,
+        40
+      ]
+    },
+    {
+      "lemma": "점점",
+      "tag": "MAG",
+      "surface": "점점",
+      "charSpan": [
+        42,
+        44
+      ]
+    },
+    {
+      "lemma": "아래",
+      "tag": "EOJEOL",
+      "surface": "아래로",
+      "charSpan": [
+        45,
+        48
+      ]
+    },
+    {
+      "lemma": "것",
+      "tag": "EOJEOL",
+      "surface": "것",
+      "charSpan": [
+        54,
+        55
+      ]
+    },
+    {
+      "lemma": "같",
+      "tag": "EOJEOL",
+      "surface": "같아요",
+      "charSpan": [
+        56,
+        59
+      ]
+    },
+    {
+      "lemma": "있",
+      "tag": "EOJEOL",
+      "surface": "있어요",
+      "charSpan": [
+        82,
+        85
+      ]
+    },
+    {
+      "lemma": "양동이",
+      "tag": "NNG",
+      "surface": "양동이",
+      "charSpan": [
+        87,
+        90
+      ]
+    },
+    {
+      "lemma": "하나",
+      "tag": "EOJEOL",
+      "surface": "하나",
+      "charSpan": [
+        91,
+        93
+      ]
+    },
+    {
+      "lemma": "분량",
+      "tag": "NNG",
+      "surface": "분량",
+      "charSpan": [
+        94,
+        96
+      ]
+    },
+    {
+      "lemma": "분량",
+      "tag": "EOJEOL",
+      "surface": "분량쯤",
+      "charSpan": [
+        94,
+        97
+      ]
+    },
+    {
+      "lemma": "되",
+      "tag": "EOJEOL",
+      "surface": "돼요",
+      "charSpan": [
+        98,
+        100
+      ]
+    }
+  ],
+  "_unmapped": [
+    {
+      "lemma": "무겁",
+      "category": "weight",
+      "value": {
+        "weight": "heavy"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "무겁게",
+        "charSpan": [
+          74,
+          77
+        ],
+        "rule": "weightLexicon.무겁"
+      }
+    }
+  ],
+  "_negated": [],
+  "_alternatives": [
+    {
+      "path": "form.type",
+      "value": "blob",
+      "reason": "lower_layer",
+      "_provenance": [
+        {
+          "source": "simile_marker",
+          "trigger": "초록색 진흙 같",
+          "charSpan": [
+            3,
+            11
+          ],
+          "rule": "simile.같은>prototype.진흙>form.type:blob"
+        }
+      ]
+    },
+    {
+      "path": "layout.verticalOffset",
+      "value": 0.05,
+      "reason": "later_mention",
+      "_provenance": [
+        {
+          "source": "phrase_rule",
+          "trigger": "바닥",
+          "charSpan": [
+            33,
+            35
+          ],
+          "rule": "height.바닥>layout.verticalOffset:0.05"
+        }
+      ]
+    },
+    {
+      "path": "body.layer",
+      "value": "around_below",
+      "reason": "lower_priority",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "아래",
+          "charSpan": [
+            45,
+            47
+          ],
+          "rule": "bodyLayerLexicon.아래>body.layer:around_below"
+        }
+      ]
+    }
+  ],
+  "_inferred": {},
+  "_context": [],
+  "_parts": [],
+  "_uncertain": [],
+  "_measurements": [],
+  "_direction": [],
+  "_needsConfirmation": [],
+  "_clauses": [
+    {
+      "charSpan": [
+        0,
+        21
+      ],
+      "text": "탁한 초록색 진흙 같은 덩어리가 보여요",
+      "usedFor": [
+        "form.type",
+        "material.color",
+        "material.saturation"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        21,
+        22
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        23,
+        27
+      ],
+      "text": "발밑이요",
+      "usedFor": [
+        "layout.verticalOffset"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        27,
+        28
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        29,
+        40
+      ],
+      "text": "몸 밖 바닥에 있어요",
+      "usedFor": [
+        "body.part",
+        "body.layer"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        40,
+        41
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        42,
+        59
+      ],
+      "text": "점점 아래로 가라앉는 것 같아요",
+      "usedFor": [
+        "motion.type"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        59,
+        60
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        61,
+        67
+      ],
+      "text": "질척질척하고",
+      "usedFor": [
+        "material.roughness"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        68,
+        72
+      ],
+      "text": "축축해요",
+      "usedFor": [
+        "material.roughness"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        72,
+        73
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        74,
+        85
+      ],
+      "text": "무겁게 늘어져 있어요",
+      "usedFor": [
+        "form.posture"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        85,
+        86
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        87,
+        100
+      ],
+      "text": "양동이 하나 분량쯤 돼요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        100,
+        101
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    }
+  ]
+}

@@ -37,6 +37,7 @@ class SessionLog:
             "confirmedText": None,
             "confirmation": None,
             "extraction": None,
+            "drift": None,             # 심상 유지(표류) 판정·회상 확인·자기보고(config [drift], docs/drift-design.md)
             "events": [],
             "endedBy": None,
             "rawSurveyResponseRef": None,

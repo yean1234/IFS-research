@@ -1,0 +1,3078 @@
+{
+  "source": "나",
+  "sourceNote": "Unity report.json params = SceneParams.ToRecord()(소수 4자리, Math.Round 짝수 반올림). 반올림 전 런타임 값 기록이 없어 spec 원값을 같은 규칙(.NET Math.Round(double, 4) 계산 방식)으로 반올림한 뒤 비교했다(docs/acceptance.md AC-5.7 (나)).",
+  "tolerance": 1e-06,
+  "specsCompared": 60,
+  "specsMissingOrNotLoaded": [],
+  "numericCompared": 306,
+  "maxAbsDelta": 0.0,
+  "maxAbsDeltaVsUnroundedSpec": 0.0,
+  "failures": [],
+  "roundingBoundaryCases": [],
+  "clampedValues": [],
+  "categoricalCompared": 87,
+  "categoricalMismatches": [],
+  "defaultsUsedMismatches": [],
+  "rows": [
+    {
+      "spec": "H01.v0.json",
+      "key": "material.brightness",
+      "specValue": 0.7,
+      "expected": 0.7,
+      "unity": 0.7,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H01.v0.json",
+      "key": "material.roughness",
+      "specValue": 0.1,
+      "expected": 0.1,
+      "unity": 0.1,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H01.v0.json",
+      "key": "material.opacity",
+      "specValue": 0.1,
+      "expected": 0.1,
+      "unity": 0.1,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H01.v0.json",
+      "key": "layout.size",
+      "specValue": 0.316,
+      "expected": 0.316,
+      "unity": 0.316,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H01.v0.json",
+      "key": "layout.verticalOffset",
+      "specValue": 0.72,
+      "expected": 0.72,
+      "unity": 0.72,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H01.v1.json",
+      "key": "material.color.h",
+      "specValue": 0.25,
+      "expected": 0.25,
+      "unity": 0.25,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H01.v1.json",
+      "key": "material.color.s",
+      "specValue": 0.55,
+      "expected": 0.55,
+      "unity": 0.55,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H01.v1.json",
+      "key": "material.color.l",
+      "specValue": 0.55,
+      "expected": 0.55,
+      "unity": 0.55,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H01.v1.json",
+      "key": "material.roughness",
+      "specValue": 0.0,
+      "expected": 0.0,
+      "unity": 0.0,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H01.v1.json",
+      "key": "material.opacity",
+      "specValue": 0.5,
+      "expected": 0.5,
+      "unity": 0.5,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H01.v1.json",
+      "key": "layout.size",
+      "specValue": 0.316,
+      "expected": 0.316,
+      "unity": 0.316,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H01.v1.json",
+      "key": "layout.verticalOffset",
+      "specValue": 0.72,
+      "expected": 0.72,
+      "unity": 0.72,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H02.v0.json",
+      "key": "material.color.h",
+      "specValue": 0.0,
+      "expected": 0.0,
+      "unity": 0.0,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H02.v0.json",
+      "key": "material.color.s",
+      "specValue": 0.75,
+      "expected": 0.75,
+      "unity": 0.75,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H02.v0.json",
+      "key": "material.color.l",
+      "specValue": 0.55,
+      "expected": 0.55,
+      "unity": 0.55,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H02.v0.json",
+      "key": "layout.size",
+      "specValue": 0.621,
+      "expected": 0.621,
+      "unity": 0.621,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H02.v0.json",
+      "key": "layout.verticalOffset",
+      "specValue": 0.04,
+      "expected": 0.04,
+      "unity": 0.04,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H02.v0.json",
+      "key": "motion.speed",
+      "specValue": 0.25,
+      "expected": 0.25,
+      "unity": 0.25,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H02.v1.json",
+      "key": "material.color.h",
+      "specValue": 0.0,
+      "expected": 0.0,
+      "unity": 0.0,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H02.v1.json",
+      "key": "material.color.s",
+      "specValue": 0.75,
+      "expected": 0.75,
+      "unity": 0.75,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H02.v1.json",
+      "key": "material.color.l",
+      "specValue": 0.55,
+      "expected": 0.55,
+      "unity": 0.55,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H02.v1.json",
+      "key": "material.opacity",
+      "specValue": 0.25,
+      "expected": 0.25,
+      "unity": 0.25,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H02.v1.json",
+      "key": "layout.size",
+      "specValue": 0.621,
+      "expected": 0.621,
+      "unity": 0.621,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H02.v1.json",
+      "key": "layout.verticalOffset",
+      "specValue": 0.02,
+      "expected": 0.02,
+      "unity": 0.02,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H02.v1.json",
+      "key": "motion.speed",
+      "specValue": 0.25,
+      "expected": 0.25,
+      "unity": 0.25,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H03.v0.json",
+      "key": "material.color.h",
+      "specValue": 0.078,
+      "expected": 0.078,
+      "unity": 0.078,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H03.v0.json",
+      "key": "material.color.s",
+      "specValue": 0.85,
+      "expected": 0.85,
+      "unity": 0.85,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H03.v0.json",
+      "key": "material.color.l",
+      "specValue": 0.55,
+      "expected": 0.55,
+      "unity": 0.55,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H03.v0.json",
+      "key": "layout.verticalOffset",
+      "specValue": 0.93,
+      "expected": 0.93,
+      "unity": 0.93,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H03.v1.json",
+      "key": "material.color.h",
+      "specValue": 0.078,
+      "expected": 0.078,
+      "unity": 0.078,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H03.v1.json",
+      "key": "material.color.s",
+      "specValue": 0.85,
+      "expected": 0.85,
+      "unity": 0.85,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H03.v1.json",
+      "key": "material.color.l",
+      "specValue": 0.55,
+      "expected": 0.55,
+      "unity": 0.55,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H03.v1.json",
+      "key": "layout.verticalOffset",
+      "specValue": 1.0,
+      "expected": 1.0,
+      "unity": 1.0,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H04.v0.json",
+      "key": "material.color.h",
+      "specValue": 0.597,
+      "expected": 0.597,
+      "unity": 0.597,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H04.v0.json",
+      "key": "material.color.s",
+      "specValue": 0.7,
+      "expected": 0.7,
+      "unity": 0.7,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H04.v0.json",
+      "key": "material.color.l",
+      "specValue": 0.5,
+      "expected": 0.5,
+      "unity": 0.5,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H04.v0.json",
+      "key": "layout.size",
+      "specValue": 0.316,
+      "expected": 0.316,
+      "unity": 0.316,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H04.v0.json",
+      "key": "layout.distance",
+      "specValue": 0.6,
+      "expected": 0.6,
+      "unity": 0.6,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H04.v1.json",
+      "key": "material.color.h",
+      "specValue": 0.0,
+      "expected": 0.0,
+      "unity": 0.0,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H04.v1.json",
+      "key": "material.color.s",
+      "specValue": 0.75,
+      "expected": 0.75,
+      "unity": 0.75,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H04.v1.json",
+      "key": "material.color.l",
+      "specValue": 0.45,
+      "expected": 0.45,
+      "unity": 0.45,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H04.v1.json",
+      "key": "material.roughness",
+      "specValue": 0.1,
+      "expected": 0.1,
+      "unity": 0.1,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H04.v1.json",
+      "key": "layout.size",
+      "specValue": 0.489,
+      "expected": 0.489,
+      "unity": 0.489,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H04.v1.json",
+      "key": "layout.distance",
+      "specValue": 0.63,
+      "expected": 0.63,
+      "unity": 0.63,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H04.v1.json",
+      "key": "layout.verticalOffset",
+      "specValue": 0.05,
+      "expected": 0.05,
+      "unity": 0.05,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H05.v0.json",
+      "key": "material.color.h",
+      "specValue": 0.0,
+      "expected": 0.0,
+      "unity": 0.0,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H05.v0.json",
+      "key": "material.color.s",
+      "specValue": 0.0,
+      "expected": 0.0,
+      "unity": 0.0,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H05.v0.json",
+      "key": "material.color.l",
+      "specValue": 0.08,
+      "expected": 0.08,
+      "unity": 0.08,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H05.v0.json",
+      "key": "material.roughness",
+      "specValue": 0.85,
+      "expected": 0.85,
+      "unity": 0.85,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H05.v0.json",
+      "key": "layout.verticalOffset",
+      "specValue": 0.04,
+      "expected": 0.04,
+      "unity": 0.04,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H05.v1.json",
+      "key": "material.color.h",
+      "specValue": 0.0,
+      "expected": 0.0,
+      "unity": 0.0,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H05.v1.json",
+      "key": "material.color.s",
+      "specValue": 0.0,
+      "expected": 0.0,
+      "unity": 0.0,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H05.v1.json",
+      "key": "material.color.l",
+      "specValue": 0.08,
+      "expected": 0.08,
+      "unity": 0.08,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H05.v1.json",
+      "key": "material.roughness",
+      "specValue": 0.85,
+      "expected": 0.85,
+      "unity": 0.85,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H05.v1.json",
+      "key": "layout.size",
+      "specValue": 0.333,
+      "expected": 0.333,
+      "unity": 0.333,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H05.v1.json",
+      "key": "layout.verticalOffset",
+      "specValue": 0.02,
+      "expected": 0.02,
+      "unity": 0.02,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H06.v0.json",
+      "key": "material.brightness",
+      "specValue": 0.7,
+      "expected": 0.7,
+      "unity": 0.7,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H06.v0.json",
+      "key": "layout.verticalOffset",
+      "specValue": 0.82,
+      "expected": 0.82,
+      "unity": 0.82,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H06.v1.json",
+      "key": "material.color.h",
+      "specValue": 0.0,
+      "expected": 0.0,
+      "unity": 0.0,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H06.v1.json",
+      "key": "material.color.s",
+      "specValue": 0.0,
+      "expected": 0.0,
+      "unity": 0.0,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H06.v1.json",
+      "key": "material.color.l",
+      "specValue": 0.75,
+      "expected": 0.75,
+      "unity": 0.75,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H06.v1.json",
+      "key": "material.brightness",
+      "specValue": 0.7,
+      "expected": 0.7,
+      "unity": 0.7,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H06.v1.json",
+      "key": "layout.size",
+      "specValue": 0.887,
+      "expected": 0.887,
+      "unity": 0.887,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H06.v1.json",
+      "key": "layout.verticalOffset",
+      "specValue": 0.82,
+      "expected": 0.82,
+      "unity": 0.82,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H07.v0.json",
+      "key": "material.color.h",
+      "specValue": 0.144,
+      "expected": 0.144,
+      "unity": 0.144,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H07.v0.json",
+      "key": "material.color.s",
+      "specValue": 0.85,
+      "expected": 0.85,
+      "unity": 0.85,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H07.v0.json",
+      "key": "material.color.l",
+      "specValue": 0.6,
+      "expected": 0.6,
+      "unity": 0.6,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H07.v0.json",
+      "key": "material.brightness",
+      "specValue": 0.9,
+      "expected": 0.9,
+      "unity": 0.9,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H07.v0.json",
+      "key": "layout.verticalOffset",
+      "specValue": 0.6,
+      "expected": 0.6,
+      "unity": 0.6,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H07.v1.json",
+      "key": "material.color.h",
+      "specValue": 0.144,
+      "expected": 0.144,
+      "unity": 0.144,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H07.v1.json",
+      "key": "material.color.s",
+      "specValue": 0.85,
+      "expected": 0.85,
+      "unity": 0.85,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H07.v1.json",
+      "key": "material.color.l",
+      "specValue": 0.6,
+      "expected": 0.6,
+      "unity": 0.6,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H07.v1.json",
+      "key": "material.brightness",
+      "specValue": 0.5,
+      "expected": 0.5,
+      "unity": 0.5,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H08.v0.json",
+      "key": "material.color.h",
+      "specValue": 0.0,
+      "expected": 0.0,
+      "unity": 0.0,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H08.v0.json",
+      "key": "material.color.s",
+      "specValue": 0.0,
+      "expected": 0.0,
+      "unity": 0.0,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H08.v0.json",
+      "key": "material.color.l",
+      "specValue": 0.95,
+      "expected": 0.95,
+      "unity": 0.95,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H08.v0.json",
+      "key": "material.erosion",
+      "specValue": 0.6,
+      "expected": 0.6,
+      "unity": 0.6,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H08.v0.json",
+      "key": "layout.distance",
+      "specValue": 0.85,
+      "expected": 0.85,
+      "unity": 0.85,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H08.v1.json",
+      "key": "material.color.h",
+      "specValue": 0.0,
+      "expected": 0.0,
+      "unity": 0.0,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H08.v1.json",
+      "key": "material.color.s",
+      "specValue": 0.0,
+      "expected": 0.0,
+      "unity": 0.0,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H08.v1.json",
+      "key": "material.color.l",
+      "specValue": 0.95,
+      "expected": 0.95,
+      "unity": 0.95,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H08.v1.json",
+      "key": "material.erosion",
+      "specValue": 0.6,
+      "expected": 0.6,
+      "unity": 0.6,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H08.v1.json",
+      "key": "layout.size",
+      "specValue": 0.0,
+      "expected": 0.0,
+      "unity": 0.0,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H08.v1.json",
+      "key": "layout.distance",
+      "specValue": 0.85,
+      "expected": 0.85,
+      "unity": 0.85,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H09.v0.json",
+      "key": "material.color.h",
+      "specValue": 0.764,
+      "expected": 0.764,
+      "unity": 0.764,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H09.v0.json",
+      "key": "material.color.s",
+      "specValue": 0.75,
+      "expected": 0.75,
+      "unity": 0.75,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H09.v0.json",
+      "key": "material.color.l",
+      "specValue": 0.45,
+      "expected": 0.45,
+      "unity": 0.45,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H09.v0.json",
+      "key": "material.brightness",
+      "specValue": 0.3,
+      "expected": 0.3,
+      "unity": 0.3,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H09.v0.json",
+      "key": "material.opacity",
+      "specValue": 0.1,
+      "expected": 0.1,
+      "unity": 0.1,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H09.v0.json",
+      "key": "layout.verticalOffset",
+      "specValue": 0.6,
+      "expected": 0.6,
+      "unity": 0.6,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H09.v0.json",
+      "key": "motion.speed",
+      "specValue": 0.25,
+      "expected": 0.25,
+      "unity": 0.25,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H09.v1.json",
+      "key": "material.color.h",
+      "specValue": 0.764,
+      "expected": 0.764,
+      "unity": 0.764,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H09.v1.json",
+      "key": "material.color.s",
+      "specValue": 0.75,
+      "expected": 0.75,
+      "unity": 0.75,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H09.v1.json",
+      "key": "material.color.l",
+      "specValue": 0.45,
+      "expected": 0.45,
+      "unity": 0.45,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H09.v1.json",
+      "key": "material.opacity",
+      "specValue": 0.0,
+      "expected": 0.0,
+      "unity": 0.0,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H09.v1.json",
+      "key": "layout.verticalOffset",
+      "specValue": 0.05,
+      "expected": 0.05,
+      "unity": 0.05,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H09.v1.json",
+      "key": "motion.speed",
+      "specValue": 0.25,
+      "expected": 0.25,
+      "unity": 0.25,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H10.v0.json",
+      "key": "material.color.h",
+      "specValue": 0.069,
+      "expected": 0.069,
+      "unity": 0.069,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H10.v0.json",
+      "key": "material.color.s",
+      "specValue": 0.45,
+      "expected": 0.45,
+      "unity": 0.45,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H10.v0.json",
+      "key": "material.color.l",
+      "specValue": 0.3,
+      "expected": 0.3,
+      "unity": 0.3,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H10.v0.json",
+      "key": "material.roughness",
+      "specValue": 0.85,
+      "expected": 0.85,
+      "unity": 0.85,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H10.v1.json",
+      "key": "material.color.h",
+      "specValue": 0.069,
+      "expected": 0.069,
+      "unity": 0.069,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H10.v1.json",
+      "key": "material.color.s",
+      "specValue": 0.45,
+      "expected": 0.45,
+      "unity": 0.45,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H10.v1.json",
+      "key": "material.color.l",
+      "specValue": 0.3,
+      "expected": 0.3,
+      "unity": 0.3,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H10.v1.json",
+      "key": "material.roughness",
+      "specValue": 0.71,
+      "expected": 0.71,
+      "unity": 0.71,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H10.v1.json",
+      "key": "layout.distance",
+      "specValue": 0.259,
+      "expected": 0.259,
+      "unity": 0.259,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H10.v1.json",
+      "key": "layout.verticalOffset",
+      "specValue": 0.05,
+      "expected": 0.05,
+      "unity": 0.05,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H11.v0.json",
+      "key": "material.color.h",
+      "specValue": 0.944,
+      "expected": 0.944,
+      "unity": 0.944,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H11.v0.json",
+      "key": "material.color.s",
+      "specValue": 0.6,
+      "expected": 0.6,
+      "unity": 0.6,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H11.v0.json",
+      "key": "material.color.l",
+      "specValue": 0.78,
+      "expected": 0.78,
+      "unity": 0.78,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H11.v0.json",
+      "key": "material.roughness",
+      "specValue": 0.25,
+      "expected": 0.25,
+      "unity": 0.25,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H11.v0.json",
+      "key": "material.opacity",
+      "specValue": 0.5,
+      "expected": 0.5,
+      "unity": 0.5,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H11.v1.json",
+      "key": "material.color.h",
+      "specValue": 0.944,
+      "expected": 0.944,
+      "unity": 0.944,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H11.v1.json",
+      "key": "material.color.s",
+      "specValue": 0.6,
+      "expected": 0.6,
+      "unity": 0.6,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H11.v1.json",
+      "key": "material.color.l",
+      "specValue": 0.78,
+      "expected": 0.78,
+      "unity": 0.78,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H11.v1.json",
+      "key": "material.roughness",
+      "specValue": 0.25,
+      "expected": 0.25,
+      "unity": 0.25,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H11.v1.json",
+      "key": "material.opacity",
+      "specValue": 0.5,
+      "expected": 0.5,
+      "unity": 0.5,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H11.v1.json",
+      "key": "layout.size",
+      "specValue": 0.113,
+      "expected": 0.113,
+      "unity": 0.113,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H12.v0.json",
+      "key": "material.color.h",
+      "specValue": 0.333,
+      "expected": 0.333,
+      "unity": 0.333,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H12.v0.json",
+      "key": "material.color.s",
+      "specValue": 0.45,
+      "expected": 0.45,
+      "unity": 0.45,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H12.v0.json",
+      "key": "material.color.l",
+      "specValue": 0.4,
+      "expected": 0.4,
+      "unity": 0.4,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H12.v0.json",
+      "key": "layout.size",
+      "specValue": 0.25,
+      "expected": 0.25,
+      "unity": 0.25,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H12.v0.json",
+      "key": "layout.verticalOffset",
+      "specValue": 0.49,
+      "expected": 0.49,
+      "unity": 0.49,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H12.v1.json",
+      "key": "material.brightness",
+      "specValue": 0.85,
+      "expected": 0.85,
+      "unity": 0.85,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H12.v1.json",
+      "key": "layout.size",
+      "specValue": 0.475,
+      "expected": 0.475,
+      "unity": 0.475,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H13.v0.json",
+      "key": "material.color.h",
+      "specValue": 0.639,
+      "expected": 0.639,
+      "unity": 0.639,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H13.v0.json",
+      "key": "material.color.s",
+      "specValue": 0.55,
+      "expected": 0.55,
+      "unity": 0.55,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H13.v0.json",
+      "key": "material.color.l",
+      "specValue": 0.25,
+      "expected": 0.25,
+      "unity": 0.25,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H13.v0.json",
+      "key": "material.roughness",
+      "specValue": 0.25,
+      "expected": 0.25,
+      "unity": 0.25,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H13.v0.json",
+      "key": "layout.size",
+      "specValue": 0.316,
+      "expected": 0.316,
+      "unity": 0.316,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H13.v0.json",
+      "key": "layout.verticalOffset",
+      "specValue": 0.85,
+      "expected": 0.85,
+      "unity": 0.85,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H13.v0.json",
+      "key": "motion.speed",
+      "specValue": 0.25,
+      "expected": 0.25,
+      "unity": 0.25,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H13.v1.json",
+      "key": "material.color.h",
+      "specValue": 0.639,
+      "expected": 0.639,
+      "unity": 0.639,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H13.v1.json",
+      "key": "material.color.s",
+      "specValue": 0.55,
+      "expected": 0.55,
+      "unity": 0.55,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H13.v1.json",
+      "key": "material.color.l",
+      "specValue": 0.25,
+      "expected": 0.25,
+      "unity": 0.25,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H13.v1.json",
+      "key": "material.roughness",
+      "specValue": 0.25,
+      "expected": 0.25,
+      "unity": 0.25,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H13.v1.json",
+      "key": "layout.size",
+      "specValue": 0.224,
+      "expected": 0.224,
+      "unity": 0.224,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H13.v1.json",
+      "key": "motion.speed",
+      "specValue": 0.25,
+      "expected": 0.25,
+      "unity": 0.25,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H14.v0.json",
+      "key": "material.brightness",
+      "specValue": 0.3,
+      "expected": 0.3,
+      "unity": 0.3,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H14.v0.json",
+      "key": "motion.speed",
+      "specValue": 0.25,
+      "expected": 0.25,
+      "unity": 0.25,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H14.v1.json",
+      "key": "material.brightness",
+      "specValue": 0.3,
+      "expected": 0.3,
+      "unity": 0.3,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H14.v1.json",
+      "key": "layout.size",
+      "specValue": 0.544,
+      "expected": 0.544,
+      "unity": 0.544,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H14.v1.json",
+      "key": "motion.speed",
+      "specValue": 0.125,
+      "expected": 0.125,
+      "unity": 0.125,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H15.v0.json",
+      "key": "material.color.h",
+      "specValue": 0.125,
+      "expected": 0.125,
+      "unity": 0.125,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H15.v0.json",
+      "key": "material.color.s",
+      "specValue": 0.75,
+      "expected": 0.75,
+      "unity": 0.75,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H15.v0.json",
+      "key": "material.color.l",
+      "specValue": 0.5,
+      "expected": 0.5,
+      "unity": 0.5,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H15.v0.json",
+      "key": "material.roughness",
+      "specValue": 0.1,
+      "expected": 0.1,
+      "unity": 0.1,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H15.v0.json",
+      "key": "layout.size",
+      "specValue": 0.621,
+      "expected": 0.621,
+      "unity": 0.621,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H15.v0.json",
+      "key": "layout.verticalOffset",
+      "specValue": 0.63,
+      "expected": 0.63,
+      "unity": 0.63,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H15.v0.json",
+      "key": "motion.speed",
+      "specValue": 0.8,
+      "expected": 0.8,
+      "unity": 0.8,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H15.v1.json",
+      "key": "material.color.h",
+      "specValue": 0.125,
+      "expected": 0.125,
+      "unity": 0.125,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H15.v1.json",
+      "key": "material.color.s",
+      "specValue": 0.75,
+      "expected": 0.75,
+      "unity": 0.75,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H15.v1.json",
+      "key": "material.color.l",
+      "specValue": 0.5,
+      "expected": 0.5,
+      "unity": 0.5,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H15.v1.json",
+      "key": "material.roughness",
+      "specValue": 0.1,
+      "expected": 0.1,
+      "unity": 0.1,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H15.v1.json",
+      "key": "layout.size",
+      "specValue": 0.573,
+      "expected": 0.573,
+      "unity": 0.573,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H15.v1.json",
+      "key": "motion.speed",
+      "specValue": 0.8,
+      "expected": 0.8,
+      "unity": 0.8,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H16.v0.json",
+      "key": "material.color.h",
+      "specValue": 0.556,
+      "expected": 0.556,
+      "unity": 0.556,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H16.v0.json",
+      "key": "material.color.s",
+      "specValue": 0.7,
+      "expected": 0.7,
+      "unity": 0.7,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H16.v0.json",
+      "key": "material.color.l",
+      "specValue": 0.75,
+      "expected": 0.75,
+      "unity": 0.75,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H16.v0.json",
+      "key": "layout.size",
+      "specValue": 0.621,
+      "expected": 0.621,
+      "unity": 0.621,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H16.v0.json",
+      "key": "layout.distance",
+      "specValue": 0.0,
+      "expected": 0.0,
+      "unity": 0.0,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H16.v0.json",
+      "key": "layout.verticalOffset",
+      "specValue": 0.72,
+      "expected": 0.72,
+      "unity": 0.72,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H16.v1.json",
+      "key": "material.color.h",
+      "specValue": 0.556,
+      "expected": 0.556,
+      "unity": 0.556,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H16.v1.json",
+      "key": "material.color.s",
+      "specValue": 0.7,
+      "expected": 0.7,
+      "unity": 0.7,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H16.v1.json",
+      "key": "material.color.l",
+      "specValue": 0.75,
+      "expected": 0.75,
+      "unity": 0.75,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H16.v1.json",
+      "key": "material.opacity",
+      "specValue": 0.5,
+      "expected": 0.5,
+      "unity": 0.5,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H16.v1.json",
+      "key": "layout.size",
+      "specValue": 0.621,
+      "expected": 0.621,
+      "unity": 0.621,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H16.v1.json",
+      "key": "layout.distance",
+      "specValue": 0.0,
+      "expected": 0.0,
+      "unity": 0.0,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H17.v0.json",
+      "key": "material.color.h",
+      "specValue": 0.0,
+      "expected": 0.0,
+      "unity": 0.0,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H17.v0.json",
+      "key": "material.color.s",
+      "specValue": 0.75,
+      "expected": 0.75,
+      "unity": 0.75,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H17.v0.json",
+      "key": "material.color.l",
+      "specValue": 0.45,
+      "expected": 0.45,
+      "unity": 0.45,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H17.v0.json",
+      "key": "layout.size",
+      "specValue": 0.316,
+      "expected": 0.316,
+      "unity": 0.316,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H17.v0.json",
+      "key": "layout.verticalOffset",
+      "specValue": 0.49,
+      "expected": 0.49,
+      "unity": 0.49,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H17.v1.json",
+      "key": "layout.size",
+      "specValue": 0.224,
+      "expected": 0.224,
+      "unity": 0.224,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H18.v0.json",
+      "key": "material.color.h",
+      "specValue": 0.0,
+      "expected": 0.0,
+      "unity": 0.0,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H18.v0.json",
+      "key": "material.color.s",
+      "specValue": 0.2,
+      "expected": 0.2,
+      "unity": 0.2,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H18.v0.json",
+      "key": "material.color.l",
+      "specValue": 0.95,
+      "expected": 0.95,
+      "unity": 0.95,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H18.v0.json",
+      "key": "material.brightness",
+      "specValue": 0.8,
+      "expected": 0.8,
+      "unity": 0.8,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H18.v0.json",
+      "key": "layout.verticalOffset",
+      "specValue": 0.93,
+      "expected": 0.93,
+      "unity": 0.93,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H18.v0.json",
+      "key": "motion.speed",
+      "specValue": 0.25,
+      "expected": 0.25,
+      "unity": 0.25,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H18.v1.json",
+      "key": "material.color.h",
+      "specValue": 0.0,
+      "expected": 0.0,
+      "unity": 0.0,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H18.v1.json",
+      "key": "material.color.s",
+      "specValue": 0.2,
+      "expected": 0.2,
+      "unity": 0.2,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H18.v1.json",
+      "key": "material.color.l",
+      "specValue": 0.45,
+      "expected": 0.45,
+      "unity": 0.45,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H18.v1.json",
+      "key": "material.brightness",
+      "specValue": 0.8,
+      "expected": 0.8,
+      "unity": 0.8,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H18.v1.json",
+      "key": "motion.speed",
+      "specValue": 0.25,
+      "expected": 0.25,
+      "unity": 0.25,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H19.v0.json",
+      "key": "material.brightness",
+      "specValue": 0.7,
+      "expected": 0.7,
+      "unity": 0.7,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H19.v0.json",
+      "key": "layout.size",
+      "specValue": 0.621,
+      "expected": 0.621,
+      "unity": 0.621,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H19.v0.json",
+      "key": "layout.verticalOffset",
+      "specValue": 0.49,
+      "expected": 0.49,
+      "unity": 0.49,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H19.v1.json",
+      "key": "material.color.h",
+      "specValue": 0.486,
+      "expected": 0.486,
+      "unity": 0.486,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H19.v1.json",
+      "key": "material.color.s",
+      "specValue": 0.45,
+      "expected": 0.45,
+      "unity": 0.45,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H19.v1.json",
+      "key": "material.color.l",
+      "specValue": 0.4,
+      "expected": 0.4,
+      "unity": 0.4,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H19.v1.json",
+      "key": "material.brightness",
+      "specValue": 0.7,
+      "expected": 0.7,
+      "unity": 0.7,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H19.v1.json",
+      "key": "layout.size",
+      "specValue": 0.508,
+      "expected": 0.508,
+      "unity": 0.508,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H20.v0.json",
+      "key": "material.color.h",
+      "specValue": 0.333,
+      "expected": 0.333,
+      "unity": 0.333,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H20.v0.json",
+      "key": "material.color.s",
+      "specValue": 0.25,
+      "expected": 0.25,
+      "unity": 0.25,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H20.v0.json",
+      "key": "material.color.l",
+      "specValue": 0.4,
+      "expected": 0.4,
+      "unity": 0.4,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H20.v0.json",
+      "key": "material.roughness",
+      "specValue": 0.15,
+      "expected": 0.15,
+      "unity": 0.15,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H20.v1.json",
+      "key": "material.color.h",
+      "specValue": 0.333,
+      "expected": 0.333,
+      "unity": 0.333,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H20.v1.json",
+      "key": "material.color.s",
+      "specValue": 0.25,
+      "expected": 0.25,
+      "unity": 0.25,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H20.v1.json",
+      "key": "material.color.l",
+      "specValue": 0.4,
+      "expected": 0.4,
+      "unity": 0.4,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H20.v1.json",
+      "key": "material.roughness",
+      "specValue": 0.15,
+      "expected": 0.15,
+      "unity": 0.15,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H20.v1.json",
+      "key": "layout.verticalOffset",
+      "specValue": 0.02,
+      "expected": 0.02,
+      "unity": 0.02,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H21.v0.json",
+      "key": "layout.size",
+      "specValue": 0.621,
+      "expected": 0.621,
+      "unity": 0.621,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H21.v1.json",
+      "key": "material.color.h",
+      "specValue": 0.0,
+      "expected": 0.0,
+      "unity": 0.0,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H21.v1.json",
+      "key": "material.color.s",
+      "specValue": 0.75,
+      "expected": 0.75,
+      "unity": 0.75,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H21.v1.json",
+      "key": "material.color.l",
+      "specValue": 0.45,
+      "expected": 0.45,
+      "unity": 0.45,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H21.v1.json",
+      "key": "material.brightness",
+      "specValue": 0.85,
+      "expected": 0.85,
+      "unity": 0.85,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H21.v1.json",
+      "key": "material.roughness",
+      "specValue": 0.1,
+      "expected": 0.1,
+      "unity": 0.1,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H21.v1.json",
+      "key": "layout.size",
+      "specValue": 0.621,
+      "expected": 0.621,
+      "unity": 0.621,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H22.v0.json",
+      "key": "material.color.h",
+      "specValue": 0.0,
+      "expected": 0.0,
+      "unity": 0.0,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H22.v0.json",
+      "key": "material.color.s",
+      "specValue": 0.0,
+      "expected": 0.0,
+      "unity": 0.0,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H22.v0.json",
+      "key": "material.color.l",
+      "specValue": 0.95,
+      "expected": 0.95,
+      "unity": 0.95,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H22.v0.json",
+      "key": "layout.size",
+      "specValue": 0.316,
+      "expected": 0.316,
+      "unity": 0.316,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H22.v0.json",
+      "key": "layout.verticalOffset",
+      "specValue": 0.82,
+      "expected": 0.82,
+      "unity": 0.82,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H22.v0.json",
+      "key": "motion.speed",
+      "specValue": 0.25,
+      "expected": 0.25,
+      "unity": 0.25,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H22.v1.json",
+      "key": "material.color.h",
+      "specValue": 0.0,
+      "expected": 0.0,
+      "unity": 0.0,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H22.v1.json",
+      "key": "material.color.s",
+      "specValue": 0.0,
+      "expected": 0.0,
+      "unity": 0.0,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H22.v1.json",
+      "key": "material.color.l",
+      "specValue": 0.95,
+      "expected": 0.95,
+      "unity": 0.95,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H22.v1.json",
+      "key": "layout.size",
+      "specValue": 0.224,
+      "expected": 0.224,
+      "unity": 0.224,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H22.v1.json",
+      "key": "motion.speed",
+      "specValue": 0.25,
+      "expected": 0.25,
+      "unity": 0.25,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H23.v0.json",
+      "key": "material.color.h",
+      "specValue": 0.144,
+      "expected": 0.144,
+      "unity": 0.144,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H23.v0.json",
+      "key": "material.color.s",
+      "specValue": 0.85,
+      "expected": 0.85,
+      "unity": 0.85,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H23.v0.json",
+      "key": "material.color.l",
+      "specValue": 0.6,
+      "expected": 0.6,
+      "unity": 0.6,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H23.v0.json",
+      "key": "material.brightness",
+      "specValue": 0.9,
+      "expected": 0.9,
+      "unity": 0.9,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H23.v0.json",
+      "key": "layout.size",
+      "specValue": 0.316,
+      "expected": 0.316,
+      "unity": 0.316,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H23.v1.json",
+      "key": "material.color.h",
+      "specValue": 0.144,
+      "expected": 0.144,
+      "unity": 0.144,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H23.v1.json",
+      "key": "material.color.s",
+      "specValue": 0.85,
+      "expected": 0.85,
+      "unity": 0.85,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H23.v1.json",
+      "key": "material.color.l",
+      "specValue": 0.6,
+      "expected": 0.6,
+      "unity": 0.6,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H23.v1.json",
+      "key": "material.brightness",
+      "specValue": 0.85,
+      "expected": 0.85,
+      "unity": 0.85,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H23.v1.json",
+      "key": "material.roughness",
+      "specValue": 0.85,
+      "expected": 0.85,
+      "unity": 0.85,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H23.v1.json",
+      "key": "layout.size",
+      "specValue": 0.316,
+      "expected": 0.316,
+      "unity": 0.316,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H23.v1.json",
+      "key": "layout.verticalOffset",
+      "specValue": 0.02,
+      "expected": 0.02,
+      "unity": 0.02,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H24.v0.json",
+      "key": "material.color.h",
+      "specValue": 0.569,
+      "expected": 0.569,
+      "unity": 0.569,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H24.v0.json",
+      "key": "material.color.s",
+      "specValue": 0.55,
+      "expected": 0.55,
+      "unity": 0.55,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H24.v0.json",
+      "key": "material.color.l",
+      "specValue": 0.5,
+      "expected": 0.5,
+      "unity": 0.5,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H24.v0.json",
+      "key": "material.roughness",
+      "specValue": 0.15,
+      "expected": 0.15,
+      "unity": 0.15,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H24.v0.json",
+      "key": "material.opacity",
+      "specValue": 0.1,
+      "expected": 0.1,
+      "unity": 0.1,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H24.v0.json",
+      "key": "layout.verticalOffset",
+      "specValue": 0.49,
+      "expected": 0.49,
+      "unity": 0.49,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H24.v1.json",
+      "key": "material.color.h",
+      "specValue": 0.569,
+      "expected": 0.569,
+      "unity": 0.569,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H24.v1.json",
+      "key": "material.color.s",
+      "specValue": 0.55,
+      "expected": 0.55,
+      "unity": 0.55,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H24.v1.json",
+      "key": "material.color.l",
+      "specValue": 0.5,
+      "expected": 0.5,
+      "unity": 0.5,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H24.v1.json",
+      "key": "material.roughness",
+      "specValue": 0.15,
+      "expected": 0.15,
+      "unity": 0.15,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H24.v1.json",
+      "key": "material.opacity",
+      "specValue": 0.1,
+      "expected": 0.1,
+      "unity": 0.1,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H24.v1.json",
+      "key": "motion.speed",
+      "specValue": 0.25,
+      "expected": 0.25,
+      "unity": 0.25,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H25.v0.json",
+      "key": "material.color.h",
+      "specValue": 0.078,
+      "expected": 0.078,
+      "unity": 0.078,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H25.v0.json",
+      "key": "material.color.s",
+      "specValue": 0.15,
+      "expected": 0.15,
+      "unity": 0.15,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H25.v0.json",
+      "key": "material.color.l",
+      "specValue": 0.55,
+      "expected": 0.55,
+      "unity": 0.55,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H25.v0.json",
+      "key": "layout.size",
+      "specValue": 0.646,
+      "expected": 0.646,
+      "unity": 0.646,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H25.v1.json",
+      "key": "material.color.h",
+      "specValue": 0.078,
+      "expected": 0.078,
+      "unity": 0.078,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H25.v1.json",
+      "key": "material.color.s",
+      "specValue": 0.29,
+      "expected": 0.29,
+      "unity": 0.29,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H25.v1.json",
+      "key": "material.color.l",
+      "specValue": 0.55,
+      "expected": 0.55,
+      "unity": 0.55,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H25.v1.json",
+      "key": "material.roughness",
+      "specValue": 0.65,
+      "expected": 0.65,
+      "unity": 0.65,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H25.v1.json",
+      "key": "layout.size",
+      "specValue": 1.0,
+      "expected": 1.0,
+      "unity": 1.0,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H25.v1.json",
+      "key": "layout.distance",
+      "specValue": 0.63,
+      "expected": 0.63,
+      "unity": 0.63,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H26.v0.json",
+      "key": "material.brightness",
+      "specValue": 0.8,
+      "expected": 0.8,
+      "unity": 0.8,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H26.v0.json",
+      "key": "layout.size",
+      "specValue": 0.621,
+      "expected": 0.621,
+      "unity": 0.621,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H26.v0.json",
+      "key": "motion.speed",
+      "specValue": 0.25,
+      "expected": 0.25,
+      "unity": 0.25,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H26.v1.json",
+      "key": "material.color.h",
+      "specValue": 0.25,
+      "expected": 0.25,
+      "unity": 0.25,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H26.v1.json",
+      "key": "material.color.s",
+      "specValue": 0.55,
+      "expected": 0.55,
+      "unity": 0.55,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H26.v1.json",
+      "key": "material.color.l",
+      "specValue": 0.55,
+      "expected": 0.55,
+      "unity": 0.55,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H26.v1.json",
+      "key": "layout.size",
+      "specValue": 0.295,
+      "expected": 0.295,
+      "unity": 0.295,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H26.v1.json",
+      "key": "motion.speed",
+      "specValue": 0.25,
+      "expected": 0.25,
+      "unity": 0.25,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H27.v0.json",
+      "key": "material.color.s",
+      "specValue": 0.25,
+      "expected": 0.25,
+      "unity": 0.25,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H27.v0.json",
+      "key": "material.roughness",
+      "specValue": 0.9,
+      "expected": 0.9,
+      "unity": 0.9,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H27.v0.json",
+      "key": "material.erosion",
+      "specValue": 0.85,
+      "expected": 0.85,
+      "unity": 0.85,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H27.v0.json",
+      "key": "layout.verticalOffset",
+      "specValue": 0.82,
+      "expected": 0.82,
+      "unity": 0.82,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H27.v0.json",
+      "key": "motion.speed",
+      "specValue": 0.25,
+      "expected": 0.25,
+      "unity": 0.25,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H27.v1.json",
+      "key": "material.color.h",
+      "specValue": 0.986,
+      "expected": 0.986,
+      "unity": 0.986,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H27.v1.json",
+      "key": "material.color.s",
+      "specValue": 0.25,
+      "expected": 0.25,
+      "unity": 0.25,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H27.v1.json",
+      "key": "material.color.l",
+      "specValue": 0.25,
+      "expected": 0.25,
+      "unity": 0.25,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H27.v1.json",
+      "key": "material.erosion",
+      "specValue": 0.85,
+      "expected": 0.85,
+      "unity": 0.85,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H27.v1.json",
+      "key": "motion.speed",
+      "specValue": 0.125,
+      "expected": 0.125,
+      "unity": 0.125,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H28.v0.json",
+      "key": "material.color.h",
+      "specValue": 0.556,
+      "expected": 0.556,
+      "unity": 0.556,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H28.v0.json",
+      "key": "material.color.s",
+      "specValue": 0.7,
+      "expected": 0.7,
+      "unity": 0.7,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H28.v0.json",
+      "key": "material.color.l",
+      "specValue": 0.75,
+      "expected": 0.75,
+      "unity": 0.75,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H28.v0.json",
+      "key": "material.brightness",
+      "specValue": 0.3,
+      "expected": 0.3,
+      "unity": 0.3,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H28.v0.json",
+      "key": "layout.size",
+      "specValue": 0.316,
+      "expected": 0.316,
+      "unity": 0.316,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H28.v0.json",
+      "key": "layout.verticalOffset",
+      "specValue": 0.93,
+      "expected": 0.93,
+      "unity": 0.93,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H28.v1.json",
+      "key": "material.color.h",
+      "specValue": 0.556,
+      "expected": 0.556,
+      "unity": 0.556,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H28.v1.json",
+      "key": "material.color.s",
+      "specValue": 0.49,
+      "expected": 0.49,
+      "unity": 0.49,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H28.v1.json",
+      "key": "material.color.l",
+      "specValue": 0.85,
+      "expected": 0.85,
+      "unity": 0.85,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H28.v1.json",
+      "key": "material.brightness",
+      "specValue": 0.7,
+      "expected": 0.7,
+      "unity": 0.7,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H28.v1.json",
+      "key": "layout.size",
+      "specValue": 0.316,
+      "expected": 0.316,
+      "unity": 0.316,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H28.v1.json",
+      "key": "layout.verticalOffset",
+      "specValue": 1.0,
+      "expected": 1.0,
+      "unity": 1.0,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H29.v0.json",
+      "key": "material.erosion",
+      "specValue": 0.4,
+      "expected": 0.4,
+      "unity": 0.4,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H29.v1.json",
+      "key": "material.color.h",
+      "specValue": 0.097,
+      "expected": 0.097,
+      "unity": 0.097,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H29.v1.json",
+      "key": "material.color.s",
+      "specValue": 0.55,
+      "expected": 0.55,
+      "unity": 0.55,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H29.v1.json",
+      "key": "material.color.l",
+      "specValue": 0.45,
+      "expected": 0.45,
+      "unity": 0.45,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H29.v1.json",
+      "key": "material.erosion",
+      "specValue": 0.4,
+      "expected": 0.4,
+      "unity": 0.4,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H29.v1.json",
+      "key": "layout.size",
+      "specValue": 0.597,
+      "expected": 0.597,
+      "unity": 0.597,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H29.v1.json",
+      "key": "layout.distance",
+      "specValue": 0.111,
+      "expected": 0.111,
+      "unity": 0.111,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H29.v1.json",
+      "key": "layout.verticalOffset",
+      "specValue": 0.28,
+      "expected": 0.28,
+      "unity": 0.28,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H30.v0.json",
+      "key": "material.color.h",
+      "specValue": 0.0,
+      "expected": 0.0,
+      "unity": 0.0,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H30.v0.json",
+      "key": "material.color.s",
+      "specValue": 0.0,
+      "expected": 0.0,
+      "unity": 0.0,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H30.v0.json",
+      "key": "material.color.l",
+      "specValue": 0.95,
+      "expected": 0.95,
+      "unity": 0.95,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H30.v0.json",
+      "key": "material.roughness",
+      "specValue": 0.1,
+      "expected": 0.1,
+      "unity": 0.1,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H30.v0.json",
+      "key": "layout.size",
+      "specValue": 0.25,
+      "expected": 0.25,
+      "unity": 0.25,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H30.v0.json",
+      "key": "layout.verticalOffset",
+      "specValue": 0.49,
+      "expected": 0.49,
+      "unity": 0.49,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H30.v1.json",
+      "key": "material.color.h",
+      "specValue": 0.597,
+      "expected": 0.597,
+      "unity": 0.597,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H30.v1.json",
+      "key": "material.color.s",
+      "specValue": 0.7,
+      "expected": 0.7,
+      "unity": 0.7,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H30.v1.json",
+      "key": "material.color.l",
+      "specValue": 0.5,
+      "expected": 0.5,
+      "unity": 0.5,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H30.v1.json",
+      "key": "material.brightness",
+      "specValue": 0.85,
+      "expected": 0.85,
+      "unity": 0.85,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H30.v1.json",
+      "key": "material.roughness",
+      "specValue": 0.1,
+      "expected": 0.1,
+      "unity": 0.1,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H30.v1.json",
+      "key": "material.opacity",
+      "specValue": 0.5,
+      "expected": 0.5,
+      "unity": 0.5,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H30.v1.json",
+      "key": "layout.size",
+      "specValue": 0.475,
+      "expected": 0.475,
+      "unity": 0.475,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    },
+    {
+      "spec": "H30.v1.json",
+      "key": "layout.verticalOffset",
+      "specValue": 0.72,
+      "expected": 0.72,
+      "unity": 0.72,
+      "absDelta": 0.0,
+      "absDeltaRaw": 0.0,
+      "ok": true
+    }
+  ]
+}

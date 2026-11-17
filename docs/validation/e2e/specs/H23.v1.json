@@ -1,0 +1,637 @@
+{
+  "meta": {
+    "specVersion": "2.1.0",
+    "participantId": null,
+    "sessionId": "H23",
+    "condition": "static",
+    "sourceTextHash": "sha256:790526375cba093817490dd3044e0699b4f093720ef078003823fa9a9310e9c3",
+    "pipeline": {
+      "builder": "scene-spec-builder-v1/1.2.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@1.0.0",
+        "layer1Base": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@1.0.0",
+        "vad": "vad-ko@0.1.0"
+      }
+    },
+    "mapping": {
+      "requested": "v1",
+      "used": "v1",
+      "fallbackReason": null
+    }
+  },
+  "form": {
+    "type": "fragments",
+    "posture": null
+  },
+  "material": {
+    "color": {
+      "h": 0.144,
+      "s": 0.85,
+      "l": 0.6
+    },
+    "brightness": 0.85,
+    "saturation": null,
+    "roughness": 0.85,
+    "opacity": null,
+    "erosion": null
+  },
+  "layout": {
+    "size": 0.316,
+    "distance": null,
+    "verticalOffset": 0.02
+  },
+  "motion": {
+    "type": "scattering",
+    "speed": null
+  },
+  "body": {
+    "part": "body",
+    "layer": "around"
+  },
+  "_provenance": {
+    "form.type": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "조각",
+        "charSpan": [
+          13,
+          15
+        ],
+        "rule": "formLexicon.조각>form.type:fragments"
+      }
+    ],
+    "material.color": [
+      {
+        "source": "phrase_rule",
+        "trigger": "노란",
+        "charSpan": [
+          0,
+          2
+        ],
+        "rule": "colorTerm.노란>material.color:hsl"
+      }
+    ],
+    "material.brightness": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "반짝반짝",
+        "charSpan": [
+          49,
+          53
+        ],
+        "rule": "brightnessLexicon.반짝반짝>material.brightness:sparkling"
+      }
+    ],
+    "material.roughness": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "까슬까슬할",
+        "charSpan": [
+          81,
+          86
+        ],
+        "rule": "textureLexicon.까슬까슬>material.roughness:rough"
+      }
+    ],
+    "layout.size": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "작은",
+        "charSpan": [
+          10,
+          12
+        ],
+        "rule": "sizeLexicon.작>layout.size:logScale(0.6)"
+      }
+    ],
+    "layout.verticalOffset": [
+      {
+        "source": "phrase_rule",
+        "trigger": "발밑",
+        "charSpan": [
+          18,
+          20
+        ],
+        "rule": "height.발밑>layout.verticalOffset:0.02"
+      }
+    ],
+    "motion.type": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "흩어져요",
+        "charSpan": [
+          71,
+          75
+        ],
+        "rule": "motionLexicon.흩어지>motion.type:scattering"
+      }
+    ],
+    "body.part": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "몸",
+        "charSpan": [
+          112,
+          113
+        ],
+        "rule": "bodyPartLexicon.몸>body.part:body"
+      }
+    ],
+    "body.layer": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "주변",
+        "charSpan": [
+          114,
+          116
+        ],
+        "rule": "bodyLayerLexicon.주변>body.layer:around"
+      }
+    ]
+  },
+  "_unmatched": [
+    {
+      "lemma": "같",
+      "tag": "EOJEOL",
+      "surface": "같은",
+      "charSpan": [
+        7,
+        9
+      ]
+    },
+    {
+      "lemma": "발밑",
+      "tag": "NNG",
+      "surface": "발밑",
+      "charSpan": [
+        18,
+        20
+      ]
+    },
+    {
+      "lemma": "발밑",
+      "tag": "EOJEOL",
+      "surface": "발밑에",
+      "charSpan": [
+        18,
+        21
+      ]
+    },
+    {
+      "lemma": "있",
+      "tag": "EOJEOL",
+      "surface": "있어요",
+      "charSpan": [
+        28,
+        31
+      ]
+    },
+    {
+      "lemma": "하나+하나",
+      "tag": "EOJEOL",
+      "surface": "하나하나는",
+      "charSpan": [
+        33,
+        38
+      ]
+    },
+    {
+      "lemma": "아주",
+      "tag": "EOJEOL",
+      "surface": "아주",
+      "charSpan": [
+        39,
+        41
+      ]
+    },
+    {
+      "lemma": "햇볕",
+      "tag": "NNG",
+      "surface": "햇볕",
+      "charSpan": [
+        45,
+        47
+      ]
+    },
+    {
+      "lemma": "햇볕",
+      "tag": "EOJEOL",
+      "surface": "햇볕에",
+      "charSpan": [
+        45,
+        48
+      ]
+    },
+    {
+      "lemma": "바람",
+      "tag": "NNG",
+      "surface": "바람",
+      "charSpan": [
+        59,
+        61
+      ]
+    },
+    {
+      "lemma": "바람",
+      "tag": "EOJEOL",
+      "surface": "바람이",
+      "charSpan": [
+        59,
+        62
+      ]
+    },
+    {
+      "lemma": "불",
+      "tag": "VV",
+      "surface": "불",
+      "charSpan": [
+        63,
+        64
+      ]
+    },
+    {
+      "lemma": "불",
+      "tag": "EOJEOL",
+      "surface": "불면",
+      "charSpan": [
+        63,
+        65
+      ]
+    },
+    {
+      "lemma": "사방",
+      "tag": "NNG",
+      "surface": "사방",
+      "charSpan": [
+        66,
+        68
+      ]
+    },
+    {
+      "lemma": "사방",
+      "tag": "EOJEOL",
+      "surface": "사방으로",
+      "charSpan": [
+        66,
+        70
+      ]
+    },
+    {
+      "lemma": "만지",
+      "tag": "VV",
+      "surface": "만지",
+      "charSpan": [
+        77,
+        79
+      ]
+    },
+    {
+      "lemma": "만지",
+      "tag": "EOJEOL",
+      "surface": "만지면",
+      "charSpan": [
+        77,
+        80
+      ]
+    },
+    {
+      "lemma": "것",
+      "tag": "EOJEOL",
+      "surface": "것",
+      "charSpan": [
+        87,
+        88
+      ]
+    },
+    {
+      "lemma": "같",
+      "tag": "EOJEOL",
+      "surface": "같아요",
+      "charSpan": [
+        89,
+        92
+      ]
+    },
+    {
+      "lemma": "않",
+      "tag": "EOJEOL",
+      "surface": "않고",
+      "charSpan": [
+        99,
+        101
+      ]
+    },
+    {
+      "lemma": "그냥",
+      "tag": "EOJEOL",
+      "surface": "그냥",
+      "charSpan": [
+        102,
+        104
+      ]
+    },
+    {
+      "lemma": "그대로",
+      "tag": "MAG",
+      "surface": "그대로",
+      "charSpan": [
+        120,
+        123
+      ]
+    },
+    {
+      "lemma": "있",
+      "tag": "EOJEOL",
+      "surface": "있어요",
+      "charSpan": [
+        124,
+        127
+      ]
+    }
+  ],
+  "_unmapped": [
+    {
+      "lemma": "미지근",
+      "category": "temperature",
+      "value": {
+        "temperature": "lukewarm"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "미지근해요",
+        "charSpan": [
+          105,
+          110
+        ],
+        "rule": "temperatureLexicon.미지근"
+      }
+    }
+  ],
+  "_negated": [
+    {
+      "lemma": "따뜻",
+      "category": "temperature",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "따뜻하진",
+        "charSpan": [
+          94,
+          98
+        ],
+        "rule": "temperatureLexicon.따뜻"
+      }
+    }
+  ],
+  "_alternatives": [
+    {
+      "path": "form.type",
+      "value": "fragments",
+      "reason": "lower_layer",
+      "_provenance": [
+        {
+          "source": "simile_marker",
+          "trigger": "모래알 같",
+          "charSpan": [
+            3,
+            8
+          ],
+          "rule": "simile.같은>prototype.모래알>form.type:fragments"
+        }
+      ]
+    },
+    {
+      "path": "material.brightness",
+      "value": 0.9,
+      "reason": "later_mention",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "빛나요",
+          "charSpan": [
+            54,
+            57
+          ],
+          "rule": "brightnessLexicon.빛나>material.brightness:glowing"
+        }
+      ]
+    },
+    {
+      "path": "layout.size",
+      "value": 0.621,
+      "reason": "later_mention",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "넓게",
+          "charSpan": [
+            22,
+            24
+          ],
+          "rule": "sizeLexicon.넓>layout.size:logScale(1.4)"
+        }
+      ]
+    },
+    {
+      "path": "layout.size",
+      "value": 0.224,
+      "reason": "later_mention",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "작고",
+          "charSpan": [
+            42,
+            44
+          ],
+          "rule": "sizeLexicon.작>layout.size:logScale(0.6)"
+        }
+      ]
+    },
+    {
+      "path": "motion.type",
+      "value": "spreading",
+      "reason": "lower_priority",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "퍼져",
+          "charSpan": [
+            25,
+            27
+          ],
+          "rule": "motionLexicon.퍼지>motion.type:spreading"
+        }
+      ]
+    }
+  ],
+  "_inferred": {},
+  "_context": [],
+  "_parts": [],
+  "_uncertain": [],
+  "_measurements": [],
+  "_direction": [],
+  "_needsConfirmation": [],
+  "_clauses": [
+    {
+      "charSpan": [
+        0,
+        31
+      ],
+      "text": "노란 모래알 같은 작은 조각들이 발밑에 넓게 퍼져 있어요",
+      "usedFor": [
+        "form.type",
+        "material.color",
+        "layout.size",
+        "layout.verticalOffset"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        31,
+        32
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        33,
+        44
+      ],
+      "text": "하나하나는 아주 작고",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        45,
+        57
+      ],
+      "text": "햇볕에 반짝반짝 빛나요",
+      "usedFor": [
+        "material.brightness"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        57,
+        58
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        59,
+        75
+      ],
+      "text": "바람이 불면 사방으로 흩어져요",
+      "usedFor": [
+        "motion.type"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        75,
+        76
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        77,
+        92
+      ],
+      "text": "만지면 까슬까슬할 것 같아요",
+      "usedFor": [
+        "material.roughness"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        92,
+        93
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        94,
+        101
+      ],
+      "text": "따뜻하진 않고",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        102,
+        110
+      ],
+      "text": "그냥 미지근해요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        110,
+        111
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        112,
+        118
+      ],
+      "text": "몸 주변이요",
+      "usedFor": [
+        "body.part",
+        "body.layer"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        118,
+        119
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        120,
+        127
+      ],
+      "text": "그대로 있어요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        127,
+        128
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    }
+  ]
+}

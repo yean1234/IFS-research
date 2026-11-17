@@ -1,0 +1,341 @@
+{
+  "meta": {
+    "specVersion": "2.0.0",
+    "participantId": null,
+    "sessionId": "H28",
+    "condition": "static",
+    "sourceTextHash": "sha256:40f5592838187085dd8860c26645961ff4a3467c3dd3503a9c70b517fe75ee11",
+    "pipeline": {
+      "builder": "scene-spec-builder/0.1.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@0.1.0",
+        "vad": "vad-ko@0.1.0"
+      }
+    }
+  },
+  "form": {
+    "type": "mist",
+    "posture": null
+  },
+  "material": {
+    "color": {
+      "h": 0.556,
+      "s": 0.7,
+      "l": 0.75
+    },
+    "brightness": 0.3,
+    "saturation": null,
+    "roughness": null,
+    "opacity": null,
+    "erosion": null
+  },
+  "layout": {
+    "size": 0.316,
+    "distance": null,
+    "verticalOffset": 0.93
+  },
+  "motion": {
+    "type": "spreading",
+    "speed": null
+  },
+  "body": {
+    "part": "head",
+    "layer": "surface_above"
+  },
+  "_provenance": {
+    "form.type": [
+      {
+        "source": "simile_marker",
+        "trigger": "안개",
+        "charSpan": [
+          41,
+          43
+        ],
+        "rule": "simile.처럼>formLexicon.안개>form.type:mist"
+      }
+    ],
+    "material.color": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "하늘색",
+        "charSpan": [
+          4,
+          7
+        ],
+        "rule": "colorLexicon.하늘색>material.color:hsl"
+      }
+    ],
+    "material.brightness": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "흐릿한",
+        "charSpan": [
+          0,
+          3
+        ],
+        "rule": "brightnessLexicon.흐릿>material.brightness:dim"
+      }
+    ],
+    "layout.size": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "작았는데",
+        "charSpan": [
+          28,
+          32
+        ],
+        "rule": "sizeLexicon.작>layout.size:logScale(0.6)"
+      }
+    ],
+    "layout.verticalOffset": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "머리",
+        "charSpan": [
+          13,
+          15
+        ],
+        "rule": "bodyPartLexicon.머리>layout.verticalOffset:head"
+      }
+    ],
+    "motion.type": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "퍼진",
+        "charSpan": [
+          46,
+          48
+        ],
+        "rule": "motionLexicon.퍼지>motion.type:spreading"
+      }
+    ],
+    "body.part": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "머리",
+        "charSpan": [
+          13,
+          15
+        ],
+        "rule": "bodyPartLexicon.머리>body.part:head"
+      }
+    ],
+    "body.layer": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "위",
+        "charSpan": [
+          16,
+          17
+        ],
+        "rule": "bodyLayerLexicon.위>body.layer:surface_above"
+      }
+    ]
+  },
+  "_unmatched": [
+    {
+      "lemma": "처음",
+      "tag": "NNG",
+      "surface": "처음",
+      "charSpan": [
+        24,
+        26
+      ]
+    },
+    {
+      "lemma": "점점",
+      "tag": "MAG",
+      "surface": "점점",
+      "charSpan": [
+        33,
+        35
+      ]
+    },
+    {
+      "lemma": "전혀",
+      "tag": "MAG",
+      "surface": "전혀",
+      "charSpan": [
+        66,
+        68
+      ]
+    },
+    {
+      "lemma": "중간",
+      "tag": "NNG",
+      "surface": "중간",
+      "charSpan": [
+        82,
+        84
+      ]
+    },
+    {
+      "lemma": "위쪽",
+      "tag": "NNG",
+      "surface": "위쪽",
+      "charSpan": [
+        96,
+        98
+      ]
+    },
+    {
+      "lemma": "계속",
+      "tag": "MAG",
+      "surface": "계속",
+      "charSpan": [
+        102,
+        104
+      ]
+    }
+  ],
+  "_unmapped": [
+    {
+      "lemma": "커지",
+      "category": "size",
+      "value": {
+        "size": "growing"
+      },
+      "reason": "no_value_mapping",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "커져요",
+        "charSpan": [
+          36,
+          39
+        ],
+        "rule": "sizeLexicon.커지"
+      }
+    },
+    {
+      "lemma": "조용",
+      "category": "sound",
+      "value": {
+        "sound": "quiet"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "조용해요",
+        "charSpan": [
+          72,
+          76
+        ],
+        "rule": "soundLexicon.조용"
+      }
+    },
+    {
+      "lemma": "커지",
+      "category": "size",
+      "value": {
+        "size": "growing"
+      },
+      "reason": "no_value_mapping",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "커지고",
+        "charSpan": [
+          105,
+          108
+        ],
+        "rule": "sizeLexicon.커지"
+      }
+    }
+  ],
+  "_negated": [
+    {
+      "lemma": "경계",
+      "category": "shape",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "경계",
+        "charSpan": [
+          53,
+          55
+        ],
+        "rule": "shapeLexicon.경계"
+      }
+    },
+    {
+      "lemma": "소리",
+      "category": "sound",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "소리",
+        "charSpan": [
+          62,
+          64
+        ],
+        "rule": "soundLexicon.소리"
+      }
+    }
+  ],
+  "_alternatives": [
+    {
+      "path": "material.brightness",
+      "value": 0.7,
+      "reason": "later_mention",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "빛",
+          "charSpan": [
+            8,
+            9
+          ],
+          "rule": "brightnessLexicon.빛>material.brightness:light"
+        }
+      ]
+    },
+    {
+      "path": "material.brightness",
+      "value": 0.7,
+      "reason": "later_mention",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "빛",
+          "charSpan": [
+            49,
+            50
+          ],
+          "rule": "brightnessLexicon.빛>material.brightness:light"
+        }
+      ]
+    },
+    {
+      "path": "body.part",
+      "value": "body",
+      "reason": "later_mention",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "몸",
+          "charSpan": [
+            90,
+            91
+          ],
+          "rule": "bodyPartLexicon.몸>body.part:body"
+        }
+      ]
+    },
+    {
+      "path": "body.layer",
+      "value": "around",
+      "reason": "later_mention",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "주변",
+          "charSpan": [
+            92,
+            94
+          ],
+          "rule": "bodyLayerLexicon.주변>body.layer:around"
+        }
+      ]
+    }
+  ],
+  "_inferred": {}
+}

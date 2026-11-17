@@ -1,0 +1,269 @@
+{
+  "meta": {
+    "specVersion": "2.0.0",
+    "participantId": null,
+    "sessionId": "H25",
+    "condition": "static",
+    "sourceTextHash": "sha256:ca89b581102dcb89822557031d77f01e32faadfe67f4c88346ff47c8c46163e8",
+    "pipeline": {
+      "builder": "scene-spec-builder/0.1.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@0.1.0",
+        "vad": "vad-ko@0.1.0"
+      }
+    }
+  },
+  "form": {
+    "type": null,
+    "posture": "standing"
+  },
+  "material": {
+    "color": {
+      "h": 0.078,
+      "s": 0.85,
+      "l": 0.55
+    },
+    "brightness": null,
+    "saturation": 0.15,
+    "roughness": null,
+    "opacity": null,
+    "erosion": null
+  },
+  "layout": {
+    "size": 0.646,
+    "distance": null,
+    "verticalOffset": null
+  },
+  "motion": {
+    "type": "still",
+    "speed": null
+  },
+  "body": {
+    "part": "body",
+    "layer": "around"
+  },
+  "_provenance": {
+    "form.posture": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "서",
+        "charSpan": [
+          75,
+          76
+        ],
+        "rule": "postureLexicon.서>form.posture:standing"
+      }
+    ],
+    "material.color": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "주황색",
+        "charSpan": [
+          4,
+          7
+        ],
+        "rule": "colorLexicon.주황>material.color:hsl"
+      }
+    ],
+    "material.saturation": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "바랜",
+        "charSpan": [
+          87,
+          89
+        ],
+        "rule": "saturationLexicon.바래>material.saturation:faded"
+      }
+    ],
+    "layout.size": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "커다란",
+        "charSpan": [
+          0,
+          3
+        ],
+        "rule": "sizeLexicon.커다랗>layout.size:logScale(1.5)"
+      }
+    ],
+    "motion.type": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "가만히",
+        "charSpan": [
+          71,
+          74
+        ],
+        "rule": "motionLexicon.가만히>motion.type:still"
+      }
+    ],
+    "body.part": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "몸",
+        "charSpan": [
+          97,
+          98
+        ],
+        "rule": "bodyPartLexicon.몸>body.part:body"
+      }
+    ],
+    "body.layer": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "밖",
+        "charSpan": [
+          99,
+          100
+        ],
+        "rule": "bodyLayerLexicon.밖>body.layer:around"
+      }
+    ]
+  },
+  "_unmatched": [
+    {
+      "lemma": "원반",
+      "tag": "NNG",
+      "surface": "원반",
+      "charSpan": [
+        8,
+        10
+      ]
+    },
+    {
+      "lemma": "세우",
+      "tag": "VV",
+      "surface": "세워",
+      "charSpan": [
+        22,
+        24
+      ]
+    },
+    {
+      "lemma": "키",
+      "tag": "NNG",
+      "surface": "키",
+      "charSpan": [
+        34,
+        35
+      ]
+    },
+    {
+      "lemma": "두께",
+      "tag": "NNG",
+      "surface": "두께",
+      "charSpan": [
+        40,
+        42
+      ]
+    },
+    {
+      "lemma": "오돌토돌",
+      "tag": "MAG",
+      "surface": "오돌토돌",
+      "charSpan": [
+        63,
+        67
+      ]
+    },
+    {
+      "lemma": "그대로",
+      "tag": "MAG",
+      "surface": "그대로",
+      "charSpan": [
+        104,
+        107
+      ]
+    }
+  ],
+  "_unmapped": [
+    {
+      "lemma": "앞",
+      "category": "body_layer",
+      "value": {
+        "layer": "around_front"
+      },
+      "reason": "no_body_part_context",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "앞",
+        "charSpan": [
+          14,
+          15
+        ],
+        "rule": "bodyLayerLexicon.앞"
+      }
+    },
+    {
+      "lemma": "사람",
+      "category": "object",
+      "value": {
+        "object": "person_figure"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "사람",
+        "charSpan": [
+          31,
+          33
+        ],
+        "rule": "objectLexicon.사람"
+      }
+    },
+    {
+      "lemma": "얇",
+      "category": "shape",
+      "value": {
+        "shape": "thin"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "얇아요",
+        "charSpan": [
+          44,
+          47
+        ],
+        "rule": "shapeLexicon.얇"
+      }
+    },
+    {
+      "lemma": "표면",
+      "category": "body_layer",
+      "value": {
+        "layer": "surface"
+      },
+      "reason": "no_body_part_context",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "표면",
+        "charSpan": [
+          56,
+          58
+        ],
+        "rule": "bodyLayerLexicon.표면"
+      }
+    }
+  ],
+  "_negated": [
+    {
+      "lemma": "무겁",
+      "category": "weight",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "무겁진",
+        "charSpan": [
+          49,
+          52
+        ],
+        "rule": "weightLexicon.무겁"
+      }
+    }
+  ],
+  "_alternatives": [],
+  "_inferred": {}
+}

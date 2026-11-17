@@ -1,0 +1,603 @@
+{
+  "meta": {
+    "specVersion": "2.1.0",
+    "participantId": null,
+    "sessionId": "H26",
+    "condition": "static",
+    "sourceTextHash": "sha256:11aa4fe419acea140b841fdccb6a9de8a922cf409ade1dd4c02b5bfb149c647a",
+    "pipeline": {
+      "builder": "scene-spec-builder-v1/1.2.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@1.0.0",
+        "layer1Base": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@1.0.0",
+        "vad": "vad-ko@0.1.0"
+      }
+    },
+    "mapping": {
+      "requested": "v1",
+      "used": "v1",
+      "fallbackReason": null
+    }
+  },
+  "form": {
+    "type": null,
+    "posture": null
+  },
+  "material": {
+    "color": {
+      "h": 0.25,
+      "s": 0.55,
+      "l": 0.55
+    },
+    "brightness": null,
+    "saturation": null,
+    "roughness": null,
+    "opacity": null,
+    "erosion": null
+  },
+  "layout": {
+    "size": 0.295,
+    "distance": null,
+    "verticalOffset": null
+  },
+  "motion": {
+    "type": "circling",
+    "speed": 0.25
+  },
+  "body": {
+    "part": "belly",
+    "layer": "around"
+  },
+  "_provenance": {
+    "material.color": [
+      {
+        "source": "phrase_rule",
+        "trigger": "연두색",
+        "charSpan": [
+          0,
+          3
+        ],
+        "rule": "colorTerm.연두색>material.color:hsl"
+      }
+    ],
+    "layout.size": [
+      {
+        "source": "phrase_rule",
+        "trigger": "야구공보다 조금 커요",
+        "charSpan": [
+          88,
+          99
+        ],
+        "rule": "compare.than.야구공>layout.size:0.085m"
+      }
+    ],
+    "motion.type": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "맴돌아요",
+        "charSpan": [
+          55,
+          59
+        ],
+        "rule": "motionLexicon.맴돌>motion.type:circling"
+      }
+    ],
+    "motion.speed": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "천천히",
+        "charSpan": [
+          51,
+          54
+        ],
+        "rule": "motionLexicon.천천히>motion.speed:slow"
+      }
+    ],
+    "body.part": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "배꼽",
+        "charSpan": [
+          25,
+          27
+        ],
+        "rule": "bodyPartLexicon.배꼽>body.part:belly"
+      }
+    ],
+    "body.layer": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "밖",
+        "charSpan": [
+          20,
+          21
+        ],
+        "rule": "bodyLayerLexicon.밖>body.layer:around"
+      }
+    ]
+  },
+  "_unmatched": [
+    {
+      "lemma": "실타래",
+      "tag": "NNG",
+      "surface": "실타래",
+      "charSpan": [
+        4,
+        7
+      ]
+    },
+    {
+      "lemma": "실타래",
+      "tag": "EOJEOL",
+      "surface": "실타래가",
+      "charSpan": [
+        4,
+        8
+      ]
+    },
+    {
+      "lemma": "하나",
+      "tag": "EOJEOL",
+      "surface": "하나",
+      "charSpan": [
+        9,
+        11
+      ]
+    },
+    {
+      "lemma": "떠오르",
+      "tag": "VV",
+      "surface": "떠올",
+      "charSpan": [
+        12,
+        14
+      ]
+    },
+    {
+      "lemma": "떠오르",
+      "tag": "EOJEOL",
+      "surface": "떠올라요",
+      "charSpan": [
+        12,
+        16
+      ]
+    },
+    {
+      "lemma": "공중",
+      "tag": "NNG",
+      "surface": "공중",
+      "charSpan": [
+        31,
+        33
+      ]
+    },
+    {
+      "lemma": "공중",
+      "tag": "EOJEOL",
+      "surface": "공중에",
+      "charSpan": [
+        31,
+        34
+      ]
+    },
+    {
+      "lemma": "있",
+      "tag": "EOJEOL",
+      "surface": "있어요",
+      "charSpan": [
+        35,
+        38
+      ]
+    },
+    {
+      "lemma": "실타래",
+      "tag": "NNG",
+      "surface": "실타래",
+      "charSpan": [
+        40,
+        43
+      ]
+    },
+    {
+      "lemma": "실타래",
+      "tag": "EOJEOL",
+      "surface": "실타래가",
+      "charSpan": [
+        40,
+        44
+      ]
+    },
+    {
+      "lemma": "저",
+      "tag": "EOJEOL",
+      "surface": "제",
+      "charSpan": [
+        45,
+        46
+      ]
+    },
+    {
+      "lemma": "주위",
+      "tag": "NNG",
+      "surface": "주위",
+      "charSpan": [
+        47,
+        49
+      ]
+    },
+    {
+      "lemma": "주위",
+      "tag": "EOJEOL",
+      "surface": "주위를",
+      "charSpan": [
+        47,
+        50
+      ]
+    },
+    {
+      "lemma": "실",
+      "tag": "EOJEOL",
+      "surface": "실이",
+      "charSpan": [
+        61,
+        63
+      ]
+    },
+    {
+      "lemma": "돌돌",
+      "tag": "MAG",
+      "surface": "돌돌",
+      "charSpan": [
+        68,
+        70
+      ]
+    },
+    {
+      "lemma": "말리",
+      "tag": "VV",
+      "surface": "말려",
+      "charSpan": [
+        71,
+        73
+      ]
+    },
+    {
+      "lemma": "있",
+      "tag": "EOJEOL",
+      "surface": "있고",
+      "charSpan": [
+        74,
+        76
+      ]
+    },
+    {
+      "lemma": "겉",
+      "tag": "EOJEOL",
+      "surface": "겉이",
+      "charSpan": [
+        77,
+        79
+      ]
+    },
+    {
+      "lemma": "보풀보풀",
+      "tag": "NNG",
+      "surface": "보풀보풀",
+      "charSpan": [
+        80,
+        84
+      ]
+    },
+    {
+      "lemma": "보풀보풀",
+      "tag": "EOJEOL",
+      "surface": "보풀보풀해요",
+      "charSpan": [
+        80,
+        86
+      ]
+    }
+  ],
+  "_unmapped": [
+    {
+      "lemma": "실",
+      "category": "shape",
+      "value": {
+        "shape": "thread"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "실",
+        "charSpan": [
+          61,
+          62
+        ],
+        "rule": "shapeLexicon.실"
+      }
+    },
+    {
+      "lemma": "둥글",
+      "category": "shape",
+      "value": {
+        "shape": "round"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "둥글게",
+        "charSpan": [
+          64,
+          67
+        ],
+        "rule": "shapeLexicon.둥글"
+      }
+    },
+    {
+      "lemma": "겉",
+      "category": "body_layer",
+      "value": {
+        "layer": "surface"
+      },
+      "reason": "no_body_part_context",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "겉",
+        "charSpan": [
+          77,
+          78
+        ],
+        "rule": "bodyLayerLexicon.겉"
+      }
+    }
+  ],
+  "_negated": [],
+  "_alternatives": [
+    {
+      "path": "material.color",
+      "value": {
+        "h": 0.25,
+        "s": 0.55,
+        "l": 0.708
+      },
+      "reason": "later_mention",
+      "_provenance": [
+        {
+          "source": "phrase_rule",
+          "trigger": "연두예요",
+          "charSpan": [
+            104,
+            108
+          ],
+          "rule": "colorTerm.연두>material.color:hsl"
+        },
+        {
+          "source": "phrase_rule",
+          "trigger": "밝은",
+          "charSpan": [
+            101,
+            103
+          ],
+          "rule": "colorModifier.밝은>material.color:light"
+        }
+      ]
+    },
+    {
+      "path": "body.part",
+      "value": "body",
+      "reason": "lower_priority",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "몸",
+          "charSpan": [
+            18,
+            19
+          ],
+          "rule": "bodyPartLexicon.몸>body.part:body"
+        }
+      ]
+    },
+    {
+      "path": "body.layer",
+      "value": "around_front",
+      "reason": "lower_priority",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "앞쪽",
+          "charSpan": [
+            28,
+            30
+          ],
+          "rule": "bodyLayerLexicon.앞>body.layer:around_front"
+        }
+      ]
+    }
+  ],
+  "_inferred": {
+    "layout.verticalOffset": {
+      "value": 0.6,
+      "_provenance": [
+        {
+          "source": "body_part_height",
+          "trigger": "배꼽",
+          "charSpan": [
+            25,
+            27
+          ],
+          "rule": "bodyPartHeight.belly>layout.verticalOffset:0.6"
+        }
+      ]
+    }
+  },
+  "_context": [],
+  "_parts": [],
+  "_uncertain": [],
+  "_measurements": [
+    {
+      "text": "야구공보다 조금 커요",
+      "charSpan": [
+        88,
+        99
+      ],
+      "kind": "reference",
+      "meters": 0.0851,
+      "dimension": "size",
+      "reference": "야구공",
+      "usedFor": "layout.size"
+    }
+  ],
+  "_direction": [],
+  "_needsConfirmation": [],
+  "_clauses": [
+    {
+      "charSpan": [
+        0,
+        16
+      ],
+      "text": "연두색 실타래가 하나 떠올라요",
+      "usedFor": [
+        "material.color"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        16,
+        17
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        18,
+        23
+      ],
+      "text": "몸 밖이요",
+      "usedFor": [
+        "body.layer"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        23,
+        24
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        25,
+        38
+      ],
+      "text": "배꼽 앞쪽 공중에 있어요",
+      "usedFor": [
+        "body.part"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        38,
+        39
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        40,
+        59
+      ],
+      "text": "실타래가 제 주위를 천천히 맴돌아요",
+      "usedFor": [
+        "motion.type",
+        "motion.speed"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        59,
+        60
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        61,
+        76
+      ],
+      "text": "실이 둥글게 돌돌 말려 있고",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        77,
+        86
+      ],
+      "text": "겉이 보풀보풀해요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        86,
+        87
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        88,
+        99
+      ],
+      "text": "야구공보다 조금 커요",
+      "usedFor": [
+        "layout.size"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        99,
+        100
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        101,
+        108
+      ],
+      "text": "밝은 연두예요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        108,
+        109
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    }
+  ]
+}

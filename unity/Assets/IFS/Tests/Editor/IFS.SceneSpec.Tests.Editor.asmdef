@@ -3,6 +3,7 @@
     "rootNamespace": "IFS.SceneSpec.Tests",
     "references": [
         "IFS.SceneSpec",
+        "IFS.SceneSpec.Editor",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner"
     ],

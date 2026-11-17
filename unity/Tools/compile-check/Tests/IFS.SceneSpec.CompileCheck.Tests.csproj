@@ -10,6 +10,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="../../../Assets/IFS/Tests/Editor/**/*.cs" />
+    <!-- UnityOnly/ = 실제 렌더·프로젝트 설정이 필요한 테스트(스텁으로는 실행할 수 없음). Unity -runTests에서만 돈다 -->
+    <Compile Remove="../../../Assets/IFS/Tests/Editor/UnityOnly/**/*.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../IFS.SceneSpec.CompileCheck.csproj" />

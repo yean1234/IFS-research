@@ -56,12 +56,35 @@ class SessionConfig:
 
 
 @dataclass(frozen=True)
+class MappingConfig:
+    mode: str = "v1"              # 확정 텍스트 → SceneSpec 매핑. v1(개선 매핑) | v0(규칙 기반 기준선)
+    save_both: bool = True        # scenes/{sid}.v0.json · {sid}.v1.json도 저장(같은 텍스트를 두 매핑으로 — 비교 설계)
+    clarify_loop: bool = False    # 확정 직후 what_kind 틀 확인 질문. 확증 비교에서는 끈다(research-design 3.2)
+    clarify_max: int = 2          # 확인 질문 최대 횟수
+    # True면 mode = "v1"인데 v1 빌더를 만들지 못할 때(시작 시점) v0로 넘어가지 않고 Runtime 생성에서 예외로 멈춘다.
+    # 세션 도중 확정 시점의 v1 build 예외는 strict여도 v0 대체 + meta.mapping + 연구자 알림(참여자 세션을 끊지 않음).
+    strict: bool = False
+
+
+@dataclass(frozen=True)
+class DriftConfig:
+    enabled: bool = True          # 확정 직후 단계별 스냅샷으로 심상 유지(표류) 판정을 계산해 로그에 남긴다(참여자에게 안 보임)
+    recall_check: bool = False    # Flesh out 뒤 회상 확인 고정 문구. 확증 비교에서는 끈다(심상을 다시 보게 해 비교를 교란)
+    self_report: bool = False     # 확정 직후 자기보고 1–7 고정 문구. 문구가 draft라 IRB·팀 검토 뒤 켠다
+    # 프로토콜에서 status = "draft"인 문구(recall_check·self_report_drift)를 쓰는 기능을 켜도 되는지.
+    # False면 위 두 기능을 켜도 문구가 draft일 때 끄고 경고를 남긴다(원칙 7: IRB·팀 검토 전 문구). 개발·시연에서만 True
+    allow_draft_phrases: bool = False
+
+
+@dataclass(frozen=True)
 class Config:
     interview: InterviewConfig = field(default_factory=InterviewConfig)
     llm: LLMConfig = field(default_factory=LLMConfig)
     guard: GuardConfig = field(default_factory=GuardConfig)
     validator: ValidatorConfig = field(default_factory=ValidatorConfig)
     session: SessionConfig = field(default_factory=SessionConfig)
+    mapping: MappingConfig = field(default_factory=MappingConfig)
+    drift: DriftConfig = field(default_factory=DriftConfig)
     source: str = "defaults"
 
     @property
@@ -94,7 +117,8 @@ class Config:
 
 _SECTIONS = {
     "interview": InterviewConfig, "llm": LLMConfig, "guard": GuardConfig,
-    "validator": ValidatorConfig, "session": SessionConfig,
+    "validator": ValidatorConfig, "session": SessionConfig, "mapping": MappingConfig,
+    "drift": DriftConfig,
 }
 
 

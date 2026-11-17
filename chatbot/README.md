@@ -28,6 +28,7 @@ ollama pull hf.co/mradermacher/kanana-safeguard-8b-GGUF:Q4_K_M   # 안전 분류
 | 위기 안내에 연락처 넣기 | `--researcher-contact "연구자 OOO 010-…"` 또는 config의 `researcher_contact` |
 | 테스트 | `python -m pytest` (오프라인), `$env:IFS_LIVE=1; python -m pytest -m live` (로컬 모델) |
 | 모델 비교 | `python -m ifs_chatbot.simulate --model gemma4:e4b --model qwen3.5:9b --runs 3` |
+| 소유감 실험 기록 요약 | `python -m ifs_chatbot.eval.ownership --records <기록 루트> --out <폴더>` (형상·세션 CSV + RQ1–RQ3 기술 통계, 기록은 저장소 밖) |
 
 ## 한 턴이 도는 순서
 

@@ -1,0 +1,336 @@
+{
+  "meta": {
+    "specVersion": "2.0.0",
+    "participantId": null,
+    "sessionId": "H01",
+    "condition": "static",
+    "sourceTextHash": "sha256:a4c2b8a8eb435e7973eb26d05d94a9112b89ddda4623853aa294ebe46b2c65d6",
+    "pipeline": {
+      "builder": "scene-spec-builder/0.1.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@0.1.0",
+        "vad": "vad-ko@0.1.0"
+      }
+    }
+  },
+  "form": {
+    "type": null,
+    "posture": null
+  },
+  "material": {
+    "color": null,
+    "brightness": 0.7,
+    "saturation": null,
+    "roughness": 0.1,
+    "opacity": 0.1,
+    "erosion": null
+  },
+  "layout": {
+    "size": 0.316,
+    "distance": null,
+    "verticalOffset": 0.72
+  },
+  "motion": {
+    "type": "still",
+    "speed": null
+  },
+  "body": {
+    "part": "body",
+    "layer": "around_front"
+  },
+  "_provenance": {
+    "material.brightness": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "빛",
+        "charSpan": [
+          87,
+          88
+        ],
+        "rule": "brightnessLexicon.빛>material.brightness:light"
+      }
+    ],
+    "material.roughness": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "매끈해요",
+        "charSpan": [
+          79,
+          83
+        ],
+        "rule": "textureLexicon.매끈>material.roughness:smooth"
+      }
+    ],
+    "material.opacity": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "투명",
+        "charSpan": [
+          62,
+          64
+        ],
+        "rule": "opacityLexicon.투명>material.opacity:transparent"
+      }
+    ],
+    "layout.size": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "작은",
+        "charSpan": [
+          0,
+          2
+        ],
+        "rule": "sizeLexicon.작>layout.size:logScale(0.6)"
+      }
+    ],
+    "layout.verticalOffset": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "가슴",
+        "charSpan": [
+          25,
+          27
+        ],
+        "rule": "bodyPartLexicon.가슴>layout.verticalOffset:chest"
+      }
+    ],
+    "motion.type": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "가만히",
+        "charSpan": [
+          44,
+          47
+        ],
+        "rule": "motionLexicon.가만히>motion.type:still"
+      }
+    ],
+    "body.part": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "몸",
+        "charSpan": [
+          18,
+          19
+        ],
+        "rule": "bodyPartLexicon.몸>body.part:body"
+      }
+    ],
+    "body.layer": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "앞",
+        "charSpan": [
+          20,
+          21
+        ],
+        "rule": "bodyLayerLexicon.앞>body.layer:around_front"
+      }
+    ]
+  },
+  "_unmatched": [
+    {
+      "lemma": "떠오르",
+      "tag": "VV",
+      "surface": "떠올",
+      "charSpan": [
+        12,
+        14
+      ]
+    },
+    {
+      "lemma": "높이",
+      "tag": "NNG",
+      "surface": "높이",
+      "charSpan": [
+        28,
+        30
+      ]
+    },
+    {
+      "lemma": "비치",
+      "tag": "VV",
+      "surface": "비치",
+      "charSpan": [
+        58,
+        60
+      ]
+    },
+    {
+      "lemma": "연두",
+      "tag": "NNG",
+      "surface": "연두",
+      "charSpan": [
+        85,
+        87
+      ]
+    },
+    {
+      "lemma": "살짝",
+      "tag": "MAG",
+      "surface": "살짝",
+      "charSpan": [
+        90,
+        92
+      ]
+    }
+  ],
+  "_unmapped": [
+    {
+      "lemma": "유리",
+      "category": "object",
+      "value": {
+        "object": "glass"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "유리",
+        "charSpan": [
+          3,
+          5
+        ],
+        "rule": "objectLexicon.유리"
+      }
+    },
+    {
+      "lemma": "구슬",
+      "category": "object",
+      "value": {
+        "object": "bead"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "구슬",
+        "charSpan": [
+          5,
+          7
+        ],
+        "rule": "objectLexicon.구슬"
+      }
+    },
+    {
+      "lemma": "구슬",
+      "category": "object",
+      "value": {
+        "object": "bead"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "구슬",
+        "charSpan": [
+          40,
+          42
+        ],
+        "rule": "objectLexicon.구슬"
+      }
+    },
+    {
+      "lemma": "속",
+      "category": "body_layer",
+      "value": {
+        "layer": "inner"
+      },
+      "reason": "no_body_part_context",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "속",
+        "charSpan": [
+          55,
+          56
+        ],
+        "rule": "bodyLayerLexicon.속"
+      }
+    },
+    {
+      "lemma": "구슬",
+      "category": "object",
+      "value": {
+        "object": "bead"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "구슬",
+        "charSpan": [
+          66,
+          68
+        ],
+        "rule": "objectLexicon.구슬"
+      }
+    },
+    {
+      "lemma": "표면",
+      "category": "body_layer",
+      "value": {
+        "layer": "surface"
+      },
+      "reason": "no_body_part_context",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "표면",
+        "charSpan": [
+          72,
+          74
+        ],
+        "rule": "bodyLayerLexicon.표면"
+      }
+    }
+  ],
+  "_negated": [],
+  "_alternatives": [
+    {
+      "path": "motion.type",
+      "value": "floating",
+      "reason": "later_mention",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "떠",
+          "charSpan": [
+            48,
+            49
+          ],
+          "rule": "motionLexicon.뜨>motion.type:floating"
+        }
+      ]
+    },
+    {
+      "path": "motion.type",
+      "value": "rotating",
+      "reason": "later_mention",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "돌아요",
+          "charSpan": [
+            93,
+            96
+          ],
+          "rule": "motionLexicon.돌>motion.type:rotating"
+        }
+      ]
+    },
+    {
+      "path": "body.part",
+      "value": "chest",
+      "reason": "later_mention",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "가슴",
+          "charSpan": [
+            25,
+            27
+          ],
+          "rule": "bodyPartLexicon.가슴>body.part:chest"
+        }
+      ]
+    }
+  ],
+  "_inferred": {}
+}
