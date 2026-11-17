@@ -38,7 +38,8 @@ IFS-research/
    ├─ chatbot-design.md       노션 설계 → 구현 대응표, 문서끼리 다른 곳에서 고른 것, 확장한 것, 실험 결과, 열린 질문
    ├─ ifs-knowledge.md        IFS 개념이 시스템 어디에 들어갔는지(범위 안·밖), 6F 문구 출처, 안전 근거
    ├─ scene-spec-mapping.md   확정 텍스트 → SceneSpec v2 → Unity: 형식, 층·우선순위, 기존 형식과 달라진 점
-   └─ decision-log.md         장면 파이프라인을 만들며 고른 기본값과 이유(⚠ = 연구팀 확인 필요)
+   ├─ decision-log.md         장면 파이프라인을 만들며 고른 기본값과 이유(⚠ = 연구팀 확인 필요)
+   └─ measurement-constructs.md  "내 심상이다"의 구성개념·측정 도구 검토, 실험설계 검토 의견 대응안(제안)
 ```
 
 ## 브랜치 규칙
