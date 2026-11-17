@@ -43,8 +43,18 @@ namespace IFS.SceneSpec.Ownership
             runner.GuiHasKeyboardFocus = runner.Phase == OwnershipPhase.Setup && GUIUtility.keyboardControl != 0;
         }
 
+        // 문구 파일에 draft 문구가 있으면 Setup·SpecCheck 맨 위에 굵은 주황 줄로 띄운다.
+        void DrawDraftNotice()
+        {
+            string notice = runner.DraftPhraseNotice;
+            if (notice == null) return;
+            GUILayout.Label("<size=15><b><color=#ff9a30>[초안 문구] " + notice + "</color></b></size>", _wrap);
+        }
+
         void DrawSetup()
         {
+            DrawDraftNotice();
+            if (runner.Config.requireSpecPhrases) GUILayout.Label("requireSpecPhrases 켬: draft 문구가 있으면 세션을 시작하지 않습니다.", _wrap);
             GUILayout.Label("1. 참여자 번호(1 이상 정수)");
             runner.ParticipantNumberText = GUILayout.TextField(runner.ParticipantNumberText ?? "", GUILayout.Width(120));
             GUILayout.Label("2. spec 폴더");
@@ -67,6 +77,7 @@ namespace IFS.SceneSpec.Ownership
         void DrawSpecCheck()
         {
             var plan = runner.Plan;
+            DrawDraftNotice();
             GUILayout.Label($"참여자 {runner.ParticipantNumberText}  cb={plan?.Cb}  순서 행={plan?.OrderRow}  순서: {(plan != null ? string.Join(" → ", plan.Order) : "")}", _wrap);
             GUILayout.Label("<b>속성별 말한 값 / 기본값 / 근거 없음</b>  (슬롯 | spec 값 | 구분 | 근거 말 | 해석값)  — 구분은 _provenance 기준(변형 source와 같음)", _wrap);
             foreach (var r in runner.SpecTable())

@@ -9,7 +9,8 @@ namespace IFS.SceneSpec.Ownership
     [Serializable]
     public sealed class OwnershipConfig
     {
-        public const string GeneratorVersion = "ownership-variants/0.1";
+        /// <summary>0.2: 색 ΔE00을 셰이더 알베도(밝기 배율) 기준으로, 합성 ΔE00 기록, 흔들림 + 구는 자세가 none일 때만 보이지 않음.</summary>
+        public const string GeneratorVersion = "ownership-variants/0.2";
 
         /// <summary>layout.size(로그 척도) 변화량. 0.25 = 지름 ×2 또는 ÷2. (0, 0.5]</summary>
         public double sizeStep = 0.25;
@@ -27,6 +28,8 @@ namespace IFS.SceneSpec.Ownership
         public double finalChoiceRadiusM = 0;
         /// <summary>평정·선택 뒤 "원본과 얼마나 다른가" 평정(조작 크기 점검).</summary>
         public bool differenceRating = true;
+        /// <summary>켜면 문구 파일에 status draft 문구가 하나라도 있을 때 세션 시작을 거부한다(IRB 확인 뒤 본 실험용). 기본 꺼짐.</summary>
+        public bool requireSpecPhrases = false;
 
         public OwnershipConfig Clone() => (OwnershipConfig)MemberwiseClone();
 
@@ -54,6 +57,7 @@ namespace IFS.SceneSpec.Ownership
             ["finalChoiceArcDeg"] = finalChoiceArcDeg,
             ["finalChoiceRadiusM"] = finalChoiceRadiusM,
             ["differenceRating"] = differenceRating,
+            ["requireSpecPhrases"] = requireSpecPhrases,
         };
     }
 }

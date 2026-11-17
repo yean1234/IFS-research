@@ -216,7 +216,7 @@ JSON 하나마다 하는 일:
 | 파일 | 하는 일 |
 | --- | --- |
 | `OwnershipVariantGenerator.cs` | 변형본 생성기(순수 C#). 원본 spec + 참여자 번호 + 설정 → 원본 해석값, 변형 4개, 제시 순서, 오류·플래그. 기본값·모양 해석은 `SceneParams`·`ShapeMapping`을 그대로 씁니다. 난수·LLM이 없어 입력이 같으면 결과가 바이트까지 같습니다 |
-| `WilliamsDesign.cs` | 제시 순서 표(5조건 Williams 설계 10행). 행 = (번호 − 1) mod 10, 균형 비트 cb = (번호 − 1) mod 2. 참여자 번호는 1부터 빠짐없이 차례로 배정하고, 중단·재시행은 같은 번호로 합니다(분석기 `summary.json`의 `orderBalance`가 행·cb별 세션 수를 세고 어긋나면 경고) |
+| `WilliamsDesign.cs` | 제시 순서 표(5조건 Williams 설계 10행). 행 = (번호 − 1) mod 10, 균형 비트 cb = ((번호 − 1) mod 2) XOR (⌊(번호 − 1) / 10⌋ mod 2) — 1–10번은 홀짝 그대로, 11–20번은 뒤집혀 20명이면 행 × cb 20칸이 한 번씩 찹니다. 참여자 번호는 1부터 빠짐없이 차례로 배정하고, 중단·재시행은 같은 번호로 합니다(분석기 `summary.json`의 `orderBalance`가 행별·cb별·행×cb 칸별 세션 수를 세고 어긋나면 경고) |
 | `OwnershipConfig.cs` | `sizeStep` 0.25 · `colorDeltaE` 30(잠정) · `viewSeconds` 30 · `headSampleHz` 20 · `gazeConeDeg` 15 · `finalChoiceArcDeg` 120 · `finalChoiceRadiusM` 0(= 원본 거리) · `differenceRating` 켬. 값은 manifest에 남습니다 |
 | `OwnershipRunner.cs` | 단계 진행, 형상 5개 로드(로더 5개, `SceneLoader.Load(path, SceneOverride)`), 평정·선택 입력, 기록 |
 | `HeadPoseProvider.cs` | 머리 자세: XR Head 노드가 있으면 그것(`headSource = xr`), 없으면 데스크톱 모의(`desktop`) |
@@ -234,8 +234,8 @@ JSON 하나마다 하는 일:
 | 속성 | 규칙 | 기록 |
 | --- | --- | --- |
 | 크기 | `layout.size` ± 0.25(지름 ×2 또는 ÷2). [0.25, 0.75] 안이면 cb 0 = +, 1 = −. 밖이면 들어오는 쪽(clamp 없음) | `rule` up/down, `flags.forced` |
-| 색 | 유채색(s ≥ 0.10): 색상을 cb 방향으로 1°씩 돌려 ΔE00 ≥ 30인 최소 각. 180°까지 안 되면 명도(`lightness_fallback`). 무채색(기본 HSL(0, 0, 0.7) 포함): 명도를 0.005씩, 두 방향 다 되면 cb(0 밝게·1 어둡게). 둘 다 안 되면 최대 변화 + `belowTarget` | `magnitude.deltaE00`, from/to h·s·l |
-| 움직임 | 정지이거나 보이지 않는 조합(회전 + 구·납작 원기둥·원뿔, 흔들림 + 구)이면 `floating`(add), 아니면 `still`(remove). 속도 그대로 | `flags.motionAltersScale`(맥동·퍼짐·다가옴·가라앉음) |
+| 색 | ΔE00은 셰이더 알베도 기준(`RenderedColor`: HSL → sRGB를 선형 공간에서 밝기 배율 `lerp(0.4, 1, saturate(2 × brightness))`로 곱한 색, 로더와 같은 함수). 유채색(s ≥ 0.10): 색상을 cb 방향으로 1°씩 돌려 ΔE00 ≥ 30인 최소 각. 180°까지 안 되면 명도(`lightness_fallback`). 무채색(기본 HSL(0, 0, 0.7) 포함): 명도를 0.005씩, 두 방향 다 되면 cb(0 밝게·1 어둡게). 둘 다 안 되면 최대 변화 + `belowTarget`. 불투명도는 목표에 넣지 않고 하늘 지평선 색 위 알파 합성 ΔE00을 따로 기록 | `magnitude.deltaE00`(알베도)·`deltaE00Composited`, from/to h·s·l |
+| 움직임 | 정지이거나 보이지 않는 조합(회전 + 구·납작 원기둥·원뿔, 흔들림 + 자세 변형 없는 구)이면 `floating`(add), 아니면 `still`(remove). 속도 그대로. 기본 blob·mist·shell·fragments는 굴곡·조각이 함께 돌아 보이므로 표에 없음 | `flags.motionAltersScale`(맥동·퍼짐·다가옴·가라앉음) |
 | 형태 | 모형 없는 blob → Cube(add), 구 → Cube(swap), Cube·납작 원기둥·원뿔 → 구(remove), mist·shell·fragments → blob(remove, 모양 모형 없음) | `flags.saidNotRendered`(말했지만 그려지지 않은 모양어) |
 
 - `source`(RQ2): 바꾼 키의 값을 준 spec 슬롯에 `_provenance`가 있으면 stated, 없으면 default, 섞이면 mixed.
@@ -263,6 +263,8 @@ JSON 하나마다 하는 일:
 | 마우스 오른쪽 드래그 · WASD | 데스크톱 모의 조작: 둘러보기 · 수평 이동(헤드셋이 없을 때) |
 
 - 참여자 화면에는 남은 시간·원본 여부가 나오지 않습니다. 실험자 화면에는 둘 다 보입니다.
+
+**초안 문구 경고.** 문구 파일(`ownership_task.v0.json`)의 문구 5개는 IRB 확인 전이라 모두 `status: draft`입니다(그대로 둡니다). draft 문구가 하나라도 있으면 Setup·SpecCheck 화면 맨 위에 주황 굵은 글씨로 "[초안 문구]" 줄이 뜨고, 같은 내용이 `events.csv`의 `warning`으로 남습니다. `manifest.json`의 `taskText`에는 문구 파일 버전과 draft 문구 수·키가 기록되고, 분석기는 `sessions.csv`의 `draft_phrases` 열과 `summary.json` 경고로 draft 문구로 모은 세션을 알려 줍니다. 본 실험에서는 문구를 `spec`으로 바꾼 뒤 OwnershipRunner ▸ Config ▸ *Require Spec Phrases*(`requireSpecPhrases`, 기본 꺼짐)를 켜면, draft 문구가 남아 있을 때 세션 시작을 거부하고 이유를 화면에 빨간 오류로 보여 줍니다.
 - 마지막 선택·차이 평정에서 형상끼리 겹치면 반지름을 늘려 같은 거리에 다시 놓습니다(`events.csv`의 `final_layout`·`difference_layout`에 반지름 기록).
 - Play를 멈추거나 앱을 닫으면 중단으로 기록합니다(`quit` 이벤트).
 
@@ -282,7 +284,7 @@ JSON 하나마다 하는 일:
 
 | 파일 | 내용 |
 | --- | --- |
-| `manifest.json` | `recordVersion` ifs-ownership/0.1, `generatorVersion`, 참여자 번호·cb·순서 행, `specFile`(파일 이름만)·`specSha256`, `headSource`, 설정, `flags.lowVisibility`, 원본 해석값·말한/기본값 키, 변형 5개(`overrides`·`shapeModel`·`from`/`to`·`rule`·`source`·`sourceByKey`·`flags`·`magnitude`), `order` |
+| `manifest.json` | `recordVersion` ifs-ownership/0.2(분석기는 0.1도 읽음, 0.1에는 아래 0.2 값이 없어 빈칸), `generatorVersion`, `taskText`(문구 파일·버전·`draftCount`·`draftKeys`), 참여자 번호·cb·순서 행, `specFile`(파일 이름만)·`specSha256`, `headSource`, 설정, `flags.lowVisibility`, 원본 해석값·말한/기본값 키, 변형 5개(`overrides`·`shapeModel`·`from`/`to`·`rule`·`source`·`sourceByKey`·`flags`·`magnitude`), `order` |
 | `headpose.csv` | `time_ms,phase,position,variant,head_x,head_y,head_z,head_qx,head_qy,head_qz,head_qw,obj_x,obj_y,obj_z,distance_m,angle_deg` — 프레임당 최대 1개, 앞 표본에서 1/`headSampleHz` 이상 지난 프레임의 실제 시각으로 씁니다(밀린 표본을 과거 시각으로 채우지 않음. 그래서 실제 간격은 프레임 간격에 맞춰 명목보다 조금 길 수 있고, 긴 멈춤은 빈 간격으로 남음). 형상이 하나만 보이는 viewing에서만 variant·obj·거리·각이 있습니다 |
 | `ratings.csv` | `position,variant,rating,rt_ms,view_ms,cancelled` — 취소한 평정은 `cancelled=1` 행으로 남고 다시 입력한 값이 새 행 |
 | `difference.csv` | `variant,rating,rt_ms` |
@@ -304,7 +306,7 @@ JSON 하나마다 하는 일:
 
 spec마다 참여자 번호를 하나씩 올립니다. 씬 만들기 배치: `-executeMethod IFS.SceneSpec.EditorTools.OwnershipExperimentMenu.CreateSceneBatch`. 둘 다 `-quit` 없이(끝나면 스스로 닫음), 성공 0·실패 1.
 
-2026-11-17 확인: 합성 spec 4개(말한 값이 많은 것·EX02(거의 기본값)·mist·네모 + 맥동)로 자동 시행, 4개 모두 기록 6개 파일이 계약 형식과 맞음. 씬 만들기 두 번 실행 결과는 로컬 fileID(Unity가 실행마다 새로 정함)만 다르고 구성·값은 같음. CP4 반영 뒤 같은 4개를 다시 돌려 분석기(`ifs_chatbot.eval.ownership`)에 넣었을 때 경고 0건(dt 0.02 s에서 표본 간격 60 ms, 형상당 8개, 모두 `viewing_start` 기준).
+2026-11-17 확인: 합성 spec 4개(말한 값이 많은 것·EX02(거의 기본값)·mist·네모 + 맥동)로 자동 시행, 4개 모두 기록 6개 파일이 계약 형식과 맞음. 씬 만들기 두 번 실행 결과는 로컬 fileID(Unity가 실행마다 새로 정함)만 다르고 구성·값은 같음. CP4 반영 뒤 같은 4개를 다시 돌려 분석기(`ifs_chatbot.eval.ownership`)에 넣었을 때 경고 0건(dt 0.02 s에서 표본 간격 60 ms, 형상당 8개, 모두 `viewing_start` 기준). 외부 리뷰 반영(기록 0.2) 뒤 같은 4개를 다시 돌렸을 때 4개 모두 완료, 분석기 경고는 초안 문구 1건(4세션 모두 draft 5개, 의도한 경고)뿐이었습니다. 네 spec 모두 밝기 ≥ 0.5라 색 변형은 이전과 같았고, mist(유효 알파 0.25)의 합성 ΔE00은 13.6(알베도 ΔE00 30.1)이었습니다.
 
 ## 테스트
 
@@ -313,7 +315,7 @@ spec마다 참여자 번호를 하나씩 올립니다. 씬 만들기 배치: `-e
   -runTests -testPlatform EditMode -testResults <결과.xml> -logFile <로그>
 ```
 
-EditMode 138개(2026-11-17 소유감 실험 CP4 검토 반영 뒤 배치모드로 전부 통과):
+EditMode 161개(2026-11-17 소유감 실험 외부 리뷰 반영 뒤 배치모드로 전부 통과):
 
 | 파일 | 개수 | 내용 |
 | --- | --- | --- |
@@ -322,12 +324,12 @@ EditMode 138개(2026-11-17 소유감 실험 CP4 검토 반영 뒤 배치모드�
 | `UnityOnly/EnvironmentAndCaptureTests.cs` | 5 | 선형 색공간·VR 품질 단계, 환경(방향광 1·소프트 섀도·무채색·셰이더 컴파일·정리), 환경 Dispose의 RenderSettings 복원, form.type 변경 시 머티리얼 사본 누수 없음, 배치 캡처 한 바퀴(예시 2개, 콘솔 오류 0, 불투명 scene = inContext, 요약의 stated/withDefaults) |
 | `ShapeMappingTests.cs` | 33 | 원뿔 메시(정점·삼각형 수, 경계 상자, 인덱스, 바깥 감기 방향, 밑면 각진 모서리), 모양어 판정 규칙(표 4개, 표에 없는 값, charSpan 순서, conflict, form.type) |
 | `UnityOnly/ShapeModelTests.cs` | 5 | 모양 모형 팩토리·프리팹 에셋(루트 크기 1, 배율은 자식, IFS 머티리얼 변위 0), SceneLoader 적용·`initialScene.json` 기록, 표에 없는 모양어·형태 우선, 조정 중 form.type 변경 |
-| `OwnershipVariantTests.cs` | 55 | 소유감 실험 변형본: Williams 표 성질(각 조건이 각 위치에 2번, 순서쌍 2번씩), cb·순서 행, 같은 입력 → 같은 manifest 문자열, manifest 필드·specFile 이름만, 크기 방향·강제, 색(유채색은 색상만·최소 각·ΔE ≥ 목표, 무채색은 명도만, 명도 대체, belowTarget), 움직임 add/remove·보이지 않는 조합·motionAltersScale, 형태 표 4행, source·saidNotRendered, 원본과 같으면 오류, lowVisibility, `_inferred` 안 씀, SpecCheck 구분(말한 값/기본값/근거 없음)이 생성기 source와 같은 기준 |
-| `OwnershipRecordTests.cs` | 9 | 기록 파일 헤더(계약 문자열 고정)·폴더 구조·UTF-8 BOM 없음·줄바꿈 LF, 같은 초 재시작, 중단 요약, 표본 시각(밀린 프레임 하나에 표본 하나, 실제 시각), `viewing_start` detail 형식, 문구 파일(초안·금지 표현), 글 줄바꿈, 시선 각·호 배치 계산 |
+| `OwnershipVariantTests.cs` | 74 | 소유감 실험 변형본: Williams 표 성질(각 조건이 각 위치에 2번, 순서쌍 2번씩), cb·순서 행, 1–20번 행 × cb 완전 교차, 같은 입력 → 같은 manifest 문자열, manifest 필드·specFile 이름만, 크기 방향·강제, 색(유채색은 색상만·최소 각·ΔE ≥ 목표, 무채색은 명도만, 명도 대체, belowTarget, 밝기 배율을 넣은 알베도 기준, 합성 ΔE00은 기록만), 움직임 add/remove·보이지 않는 조합(표 고정, 모양 모형 없는 형태는 보임, 자세 변형 + 흔들림은 보임)·motionAltersScale, 형태 표 4행, source·saidNotRendered, 원본과 같으면 오류, lowVisibility, `_inferred` 안 씀, SpecCheck 구분(말한 값/기본값/근거 없음)이 생성기 source와 같은 기준 |
+| `OwnershipRecordTests.cs` | 10 | 기록 파일 헤더(계약 문자열 고정)·폴더 구조·UTF-8 BOM 없음·줄바꿈 LF, 같은 초 재시작, 중단 요약, 표본 시각(밀린 프레임 하나에 표본 하나, 실제 시각), `viewing_start` detail 형식, 문구 파일(초안·금지 표현), draft 문구 목록·경고·`requireSpecPhrases` 거부, 글 줄바꿈, 시선 각·호 배치 계산 |
 | `UnityOnly/LoaderNoVariantGoldenTests.cs` | 1 | 변형 경로를 넣기 전 로더로 만든 지문(`Golden/loader_no_variant.golden.txt`: 적용값·notes·계층·머티리얼·기록)과 `Load(path)`가 같음 |
-| `UnityOnly/OwnershipLoaderTests.cs` | 7 | `Load(path, null)`·빈 덮어쓰기도 golden과 같음, 변형본이 계획대로 그려지고 조정 기록에 남지 않음(3종), 잘못된 덮어쓰기 거부, 자동 시행 한 바퀴의 기록 폴더, 0.3초 밀린 프레임이 있는 자동 시행(표본 시각 중복 없음·빈 간격·형상마다 `viewing_start` ≤ 첫 표본) |
+| `UnityOnly/OwnershipLoaderTests.cs` | 10 | `Load(path, null)`·빈 덮어쓰기도 golden과 같음, 변형본이 계획대로 그려지고 조정 기록에 남지 않음(3종), 잘못된 덮어쓰기 거부, 자동 시행 한 바퀴의 기록 폴더(draft 수·경고 포함), `requireSpecPhrases` 켜면 시작 거부, 합성 배경 = 하늘 지평선 색, 로더 `_BaseColor` = `RenderedColor.BaseSrgb`, 0.3초 밀린 프레임이 있는 자동 시행(표본 시각 중복 없음·빈 간격·형상마다 `viewing_start` ≤ 첫 표본) |
 
-로그 확인: EditMode 로그에는 테스트 프레임워크의 스택 프레임 `UnityLogCheckDelegatingCommand:CaptureException`이 정상 실행에서도 찍힙니다(이번 실행 36줄). 오류를 찾을 때는 `Select-String -Pattern 'error CS|Shader error|^\w*Exception:|\[Exception\]'`처럼 좁히거나 이 프레임을 빼고 셉니다(이번 실행 0건). 캡처 로그는 넓은 패턴(`Exception|error CS|Shader error`)으로도 0건입니다.
+로그 확인: EditMode 로그에는 테스트 프레임워크의 스택 프레임 `UnityLogCheckDelegatingCommand:CaptureException`이 정상 실행에서도 찍힙니다(CP4 실행 36줄, 외부 리뷰 반영 실행은 로그 문구가 늘어 더 많음). 오류를 찾을 때는 `Select-String -Pattern 'error CS|Shader error|^\w*Exception:|\[Exception\]'`처럼 좁히거나 이 프레임을 빼고 셉니다(이번 실행 0건). 캡처 로그는 넓은 패턴(`Exception|error CS|Shader error`)으로도 0건입니다.
 
 ## 컴파일 확인 (dotnet)
 
@@ -337,7 +339,7 @@ Unity가 없는 곳(CI 등)에서는 `Tools/compile-check/`에서 dotnet으로 �
 cd unity/Tools/compile-check && dotnet build IFS.SceneSpec.CompileCheck.csproj && dotnet test Tests/IFS.SceneSpec.CompileCheck.Tests.csproj
 ```
 
-- Unity에 의존하지 않는 코드와 EditMode 테스트 파일은 실제 Newtonsoft·NUnit으로 컴파일·실행됩니다(120개, 2026-11-17). `Tests/Editor/UnityOnly/`는 실제 렌더가 필요해 뺍니다.
+- Unity에 의존하지 않는 코드와 EditMode 테스트 파일은 실제 Newtonsoft·NUnit으로 컴파일·실행됩니다(140개, 2026-11-17 외부 리뷰 반영 뒤). `Tests/Editor/UnityOnly/`는 실제 렌더가 필요해 뺍니다.
 - MonoBehaviour·Editor 스크립트는 UnityEngine/UnityEditor **스텁**(이름·시그니처만)으로 타입 검사만 합니다. 새 Unity API를 쓰면 `Stubs/UnityStubs.cs`(소유감 실험의 입력·글자·IMGUI·XR은 `Stubs/UnityStubsOwnership.cs`)에 같은 시그니처를 추가합니다.
 
 ## 한계
@@ -346,6 +348,7 @@ cd unity/Tools/compile-check && dotnet build IFS.SceneSpec.CompileCheck.csproj &
 - **드로콜·삼각형은 추정입니다.** UnityStats·ProfilerRecorder가 이 실행 방식에서 0이라 추정을 교차 확인하지 못했습니다. PlayMode 또는 기기(OVR Metrics)에서 실측해야 합니다.
 - **정지 화면입니다.** 캡처는 에디트 모드라 `motion.type`이 이미지에 보이지 않습니다(`placement.motionNote`).
 - **색 정확도 수치의 범위**: 형상 가운데 영역의 평균이라 얼룩·침식 가장자리·정반사가 섞입니다. 형상 전체의 색 분포는 아닙니다. 정면 조명(`frontal`)은 방향광이 정면에서 비춰 spec보다 밝게 나옵니다(EX01 ΔE00 6.90). 말한 색의 primary ΔE00은 무채색 EX01 1.20, 합성 유채색 4개 6.3–8.1이었습니다. 고채도·광택 높은 빨강(SYN-U4, roughness 0.1)은 무채색 환경의 정반사로 채도가 낮아 보여 7.72였습니다. 유채색 일치도가 낮다는 뜻이라, 일치도 평가에서 색 속성 결과를 해석할 때 함께 적어야 합니다.
+- **소유감 실험 색 변형 크기**는 셰이더 알베도(밝기 배율 포함) 기준 ΔE00입니다. 조명·그림자·정반사·표면 얼룩·발광(밝기 0.5 초과분)은 넣지 않았고, 합성 ΔE00은 하늘 지평선 색 하나를 배경으로 가정합니다.
 - **mist가 매우 옅습니다.** 형태 프리셋 밀도 0.5 × opacity라, opacity 0.6이면 가운데 덮임 평균이 0.26이었습니다(SYN-U1). 배경과 섞인 inContext ΔE00은 12.87입니다. 참여자가 "안 보인다"고 느낄 수 있어 프리셋 확인이 필요합니다.
 - **안쪽 면의 그림자**: 그림자 캐스터를 바깥 면 패스에만 두어서, 침식 구멍·껍질 입구 너머로 보이는 안쪽 면은 그 뒤에 있는 것(바닥 등)의 깊이로 그림자를 읽습니다. 안쪽 면은 0.3배로 어둡게 그려 눈에 띄는 차이는 작습니다. 완전히 맞추려면 Cull Off인 직접 작성 ShadowCaster 패스(정점 변위·침식 clip 포함)가 필요합니다.
 - **반사**는 환경만 찍은 큐브맵 + 단순 밉맵(GGX 컨볼루션 아님)이라 거친 면의 반사가 실제와 조금 다를 수 있습니다.

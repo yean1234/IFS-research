@@ -104,4 +104,60 @@ namespace IFS.SceneSpec
             return h < 0 ? h + 360 : h;
         }
     }
+
+    /// <summary>
+    /// SceneParams의 색 → 재질에 들어가는 색과 IFS 셰이더가 만드는 알베도. SceneLoader(_BaseColor·Fade 선택)와
+    /// 변형본 생성기(색 변형 ΔE00)가 이 함수를 같이 쓴다. 조명·그림자·표면 얼룩(mottle)·침식 가장자리·발광은 넣지 않는다.
+    ///   _BaseColor = HSL → sRGB (채도어 material.saturation은 SceneParams가 이미 s에 넣었다)
+    ///   알베도     = _BaseColor × 밝기 배율. IFSSceneSpecCommon.cginc의
+    ///                bright = lerp(0.4, 1.0, saturate(_Brightness * 2.0)); o.Albedo = col * bright
+    ///                와 같은 식이다(셰이더를 바꾸면 BrightnessFactor도 같이 바꾼다). 프로젝트가 선형 색공간이라
+    ///                곱셈은 선형 값에서 일어난다(ProjectSettings m_ActiveColorSpace = 1).
+    ///   알파       = Fade 셰이더(mist 또는 opacity &lt; 0.99)면 opacity × 형태 밀도(가장자리 흐림 _Fuzz 제외), 아니면 1.
+    /// UnityEngine에 의존하지 않는다.
+    /// </summary>
+    public static class RenderedColor
+    {
+        /// <summary>로더가 _BaseColor에 넣는 색(sRGB, 각 0–1).</summary>
+        public static void BaseSrgb(double h, double s, double l, out double r, out double g, out double b) =>
+            SceneParams.HslToRgb(h, s, l, out r, out g, out b);
+
+        /// <summary>셰이더의 밝기 배율: 0.5 이상이면 1, 0이면 0.4(0.5 초과분은 알베도가 아니라 발광으로 간다).</summary>
+        public static double BrightnessFactor(double brightness)
+        {
+            double t = Math.Max(0.0, Math.Min(1.0, brightness * 2.0));
+            return 0.4 + (1.0 - 0.4) * t;
+        }
+
+        /// <summary>셰이더가 만드는 알베도(sRGB, 각 0–1): 선형 공간에서 _BaseColor × 밝기 배율.</summary>
+        public static void AlbedoSrgb(double h, double s, double l, double brightness, out double r, out double g, out double b)
+        {
+            BaseSrgb(h, s, l, out r, out g, out b);
+            double k = BrightnessFactor(brightness);
+            r = ColorMetrics.LinearToSrgb(ColorMetrics.SrgbToLinear(r) * k);
+            g = ColorMetrics.LinearToSrgb(ColorMetrics.SrgbToLinear(g) * k);
+            b = ColorMetrics.LinearToSrgb(ColorMetrics.SrgbToLinear(b) * k);
+        }
+
+        public static Lab AlbedoLab(double h, double s, double l, double brightness)
+        {
+            AlbedoSrgb(h, s, l, brightness, out double r, out double g, out double b);
+            return ColorMetrics.SrgbToLab(r, g, b);
+        }
+
+        /// <summary>로더가 반투명(Fade) 셰이더로 바꾸는 조건. 비교는 로더와 같이 float로 한다.</summary>
+        public static bool UsesFadeShader(string formType, double opacity) => formType == "mist" || (float)opacity < 0.99f;
+
+        /// <summary>표면 알파: Fade면 opacity × 형태 밀도(모양 모형은 밀도 1), 불투명 셰이더면 1.</summary>
+        public static double SurfaceAlpha(string formType, double opacity, double density) =>
+            UsesFadeShader(formType, opacity) ? Math.Max(0.0, Math.Min(1.0, opacity * density)) : 1.0;
+
+        /// <summary>배경 위 알파 합성(Built-in alpha:fade = SrcAlpha·OneMinusSrcAlpha, 선형 색공간이라 선형 값끼리). sRGB 입출력.</summary>
+        public static Lab CompositeLab(double r, double g, double b, double alpha, double bgR, double bgG, double bgB)
+        {
+            double Mix(double fg, double bg) =>
+                ColorMetrics.LinearToSrgb(alpha * ColorMetrics.SrgbToLinear(fg) + (1.0 - alpha) * ColorMetrics.SrgbToLinear(bg));
+            return ColorMetrics.SrgbToLab(Mix(r, bgR), Mix(g, bgG), Mix(b, bgB));
+        }
+    }
 }

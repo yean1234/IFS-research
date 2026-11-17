@@ -146,6 +146,49 @@ namespace IFS.SceneSpec.Tests
             Assert.That(events[0], Is.EqualTo(OwnershipRecordWriter.EventsHeader));
             Assert.That(events.Any(e => e.Contains(",rating_cancel,")), Is.True);
             Assert.That(events.Last(), Does.Contain(",done,completed"));
+            Assert.That((int)manifest["taskText"]["draftCount"], Is.EqualTo(5), "지금 문구 5개는 draft — manifest에 남는다");
+            Assert.That(events.Any(e => e.Contains(",warning,") && e.Contains("초안 문구")), Is.True, "draft 경고가 events.csv에도");
+        }
+
+        [Test]
+        public void Require_spec_phrases_refuses_to_start_while_phrases_are_draft()
+        {
+            string spec = OwnershipTestSpecs.ExamplePath("EX02.json");
+            var cfg = new OwnershipConfig { viewSeconds = 0.4, requireSpecPhrases = true };
+            var ex = Assert.Throws<InvalidOperationException>(() =>
+                OwnershipExperimentMenu.RunAutoTrial(spec, Path.Combine(_tmp, "records"), 4, cfg, 0.02, null));
+            Assert.That(ex.Message, Does.Contain("requireSpecPhrases"));
+            Assert.That(Directory.Exists(Path.Combine(_tmp, "records")), Is.False, "기록 폴더를 만들지 않는다");
+        }
+
+        [Test]
+        public void Composite_background_is_the_environment_horizon_color()
+        {
+            var sky = new EnvironmentSettings().skyHorizon;
+            var bg = OwnershipVariantGenerator.CompositeBackgroundSrgb;
+            Assert.That(new[] { (double)sky.r, (double)sky.g, (double)sky.b }, Is.EqualTo(bg).Within(1e-6),
+                "합성 ΔE00의 배경 = 중립 환경 하늘 지평선 색(카메라 배경색)");
+        }
+
+        [Test]
+        public void Loader_puts_the_shared_base_color_into_the_material()
+        {
+            string path = OwnershipTestSpecs.Empty("SYN-basecolor").Hsl(0.6, 0.5, 0.4).Slot("material.brightness", 0.2).Write(_tmp, "basecolor.json");
+            var loader = LoaderNoVariantGoldenTests.NewLoader(Path.Combine(_tmp, "sessions"), out var go);
+            try
+            {
+                Assert.That(loader.Load(path), Is.True);
+                RenderedColor.BaseSrgb(0.6, 0.5, 0.4, out double r, out double g, out double b);
+                var rend = loader.Root.GetComponentsInChildren<Renderer>().First();
+                var c = rend.sharedMaterial.GetColor("_BaseColor");
+                Assert.That(new[] { (double)c.r, (double)c.g, (double)c.b }, Is.EqualTo(new[] { r, g, b }).Within(1e-4), "_BaseColor = RenderedColor.BaseSrgb");
+                Assert.That(rend.sharedMaterial.GetFloat("_Brightness"), Is.EqualTo(0.2f).Within(1e-6), "밝기 배율은 셰이더가 곱한다");
+            }
+            finally
+            {
+                loader.Unload();
+                UnityEngine.Object.DestroyImmediate(go);
+            }
         }
 
         // 제시 중 0.3초 밀린 프레임 하나: 표본은 그 프레임의 실제 시각에 하나만(과거 시각 복제 없음). 형상마다 viewing_start가 첫 표본보다 먼저.

@@ -54,4 +54,5 @@
 - [ ] SceneSpecOpaque에 Cull Off ShadowCaster 패스(정점 변위·침식·껍질 clip 포함)를 넣을지: 지금은 침식 구멍 너머 안쪽 면이 그 뒤 깊이로 그림자를 읽습니다.
 - [ ] 2단계 수정에서 `SceneSpecDeserializationTests.cs`와 예시 `examples/v1/EX01·EX03.v1.json`을 바꿨지만 Unity에서 실행해 보지 않았습니다. 3단계 배치 캡처에서 로드는 확인하고, EditMode 테스트는 Test Runner에서 한 번 돌려 주세요.
 - [ ] push·PR 전에 `docs/validation/e2e/`(약 21 MB, PNG 119장)를 그대로 올릴지, 상세 PNG(`*_detail.png`, 5.6 MB)를 뺄지 정합니다. 로그(`logs/capture.log`·`editmode.log`)는 경로·계정·호스트·Machine Id·사설 IP를 가렸지만 공개 전에 한 번 더 봐 주세요(GPU 모델과 Program Files 경로는 남아 있습니다).
+  - 2026-11-17: 이 결정 없이 브랜치가 원격(공개)에 푸시됐습니다. 캡처 PNG 250장(`e2e/unity` 119, `shapes/unity` 119, `validation/unity` 12)과 로그가 원격 이력에 있습니다. 푸시 뒤 로그를 다시 확인했고, 남은 것은 GPU 모델명·VRAM과 Unity 표준 설치 경로뿐이며 계정·호스트·개인 폴더 이름은 없습니다. 원격 이력에서 지우려면 이력 재작성과 강제 푸시가 필요해 하지 않았습니다. `main` 병합 전에 PNG를 남길지 정해 주세요.
 - [ ] Unity `-specDir`·`-outDir`의 상대 경로는 `unity\` 폴더 기준으로 풀립니다. 저장소 루트 기준 경로를 주면 실패합니다(`..\docs\…`처럼 적어야 함).

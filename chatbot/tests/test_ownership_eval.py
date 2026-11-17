@@ -29,9 +29,11 @@ def default_head(position, variant, start):
 
 
 def make_session(root, pnum=1, sid="sess-a", utc="20261117-010000", ratings=None, final="orig",
-                 completed=True, order=ORDER, head=None, rating_rows=None, difference=None, config=None, events=None):
+                 completed=True, order=ORDER, head=None, rating_rows=None, difference=None, config=None, events=None,
+                 version="0.2", cb=None, draft_keys=()):
     """ownership/P###/<sid>/<utc>/ 아래에 합성 기록 한 벌을 쓴다.
-    events가 None이면 러너처럼 형상마다 첫 viewing 표본 시각에 viewing_start를 쓴다."""
+    events가 None이면 러너처럼 형상마다 첫 viewing 표본 시각에 viewing_start를 쓴다.
+    version "0.1"이면 0.2에서 늘어난 값(taskText.draftCount, magnitude.deltaE00Composited)을 넣지 않는다."""
     folder = root / "ownership" / f"P{pnum:03d}" / sid / utc
     folder.mkdir(parents=True)
     variants = [{"id": "orig", "attribute": None, "overrides": {}, "shapeModel": None}]
@@ -40,11 +42,17 @@ def make_session(root, pnum=1, sid="sess-a", utc="20261117-010000", ratings=None
                          "from": {}, "to": {}, "rule": "r", "source": SOURCES[a], "sourceByKey": {},
                          "flags": {"saidNotRendered": a == "form", "forced": False, "belowTarget": False,
                                    "motionAltersScale": False},
-                         "magnitude": {"sizeStep": 0.25} if a == "size" else ({"deltaE00": 31.2} if a == "color" else None)})
+                         "magnitude": {"sizeStep": 0.25} if a == "size" else (
+                             ({"deltaE00": 31.2} if version == "0.1" else {"deltaE00": 31.2, "deltaE00Composited": 18.4})
+                             if a == "color" else None)})
     cfg = {"sizeStep": 0.25, "colorDeltaE": 30, "viewSeconds": 30, "headSampleHz": 20, "gazeConeDeg": 15}
     cfg.update(config or {})
-    manifest = {"recordVersion": "ifs-ownership/0.1", "generatorVersion": "ownership-variants/0.1",
-                "participantNumber": pnum, "cb": (pnum - 1) % 2, "orderRow": (pnum - 1) % 10, "sessionId": sid,
+    task_text = {"file": "ownership_task.v0.json", "version": "0.1"}
+    if version != "0.1":
+        task_text.update({"draftCount": len(draft_keys), "draftKeys": list(draft_keys)})
+    manifest = {"recordVersion": f"ifs-ownership/{version}", "generatorVersion": f"ownership-variants/{version}",
+                "participantNumber": pnum, "cb": ownership.cb_for(pnum) if cb is None else cb,
+                "orderRow": (pnum - 1) % 10, "sessionId": sid, "taskText": task_text,
                 "specFile": "synthetic.json", "specSha256": "0" * 64, "startedAtUtc": utc, "headSource": "desktop",
                 "unityVersion": "test", "config": cfg, "flags": {"lowVisibility": False},
                 "original": {"params": {}, "shapeModel": "none", "statedKeys": [], "defaultKeys": [],
@@ -430,3 +438,48 @@ def test_order_balance_counts_and_warns(tmp_path):
     make_session(tmp_path / "inc", pnum=5, sid="c", completed=False, final=None)
     res = analyze(tmp_path / "inc")
     assert res["summary"]["orderBalance"]["sessions"] == 1 and _order_warnings(res) == []
+
+
+def test_cb_rule_matches_unity_and_crosses_with_order_row():
+    assert [ownership.cb_for(n) for n in range(1, 11)] == [(n - 1) % 2 for n in range(1, 11)]  # 1–10번은 예전과 같다
+    assert [ownership.cb_for(n) for n in (11, 12, 20, 21)] == [1, 0, 0, 0]
+    assert len({((n - 1) % 10, ownership.cb_for(n)) for n in range(1, 21)}) == 20
+
+
+def test_order_balance_checks_row_by_cb_cells(tmp_path):
+    for n in range(1, 21):  # 새 규칙으로 1–20번: 20칸이 한 번씩
+        make_session(tmp_path / "new", pnum=n, sid=f"s{n}")
+    bal = analyze(tmp_path / "new")["summary"]["orderBalance"]
+    assert bal["cellSpread"] == 0 and bal["balanced"] and set(bal["byOrderRowCb"].values()) == {1}
+
+    for n in range(1, 21):  # 예전 규칙(cb = (번호 − 1) mod 2): 행과 cb가 묶여 10칸 2개·10칸 0개
+        make_session(tmp_path / "old", pnum=n, sid=f"s{n}", cb=(n - 1) % 2)
+    res = analyze(tmp_path / "old")
+    bal = res["summary"]["orderBalance"]
+    assert (bal["rowSpread"], bal["cbSpread"], bal["cellSpread"], bal["balanced"]) == (0, 0, 2, False)
+    assert len(_order_warnings(res)) == 1 and "20칸 최대−최소 2" in _order_warnings(res)[0]["message"]
+
+
+# ---------------------------------------------------------------- (i) 기록 버전 0.1·0.2, 초안 문구
+
+def test_reads_both_record_versions_and_flags_draft_phrases(tmp_path):
+    make_session(tmp_path, pnum=1, sid="v01", version="0.1")
+    make_session(tmp_path, pnum=2, sid="v02", draft_keys=("done", "rating"))
+    make_session(tmp_path, pnum=3, sid="v02-spec")
+    res = analyze(tmp_path, tmp_path / "out")
+    by = {s["session"]: s for s in res["sessions"]}
+    assert by["v01"]["record_version"] == "ifs-ownership/0.1" and by["v01"]["draft_phrases"] is None
+    assert by["v02"]["draft_phrases"] == 2 and by["v02-spec"]["draft_phrases"] == 0
+    assert stim(res, "color", "v01")["magnitude_delta_e00_composited"] is None
+    assert stim(res, "color", "v02")["magnitude_delta_e00_composited"] == 18.4
+    assert stim(res, "color", "v02")["magnitude_delta_e00"] == 31.2
+    assert res["summary"]["recordVersions"] == ["ifs-ownership/0.1", "ifs-ownership/0.2"]
+    assert res["summary"]["draftPhraseSessions"] == 1
+    drafts = [w for w in res["summary"]["warnings"] if w["message"].startswith("초안 문구")]
+    assert len(drafts) == 1 and "P002/v02 2개" in drafts[0]["message"]
+    with (tmp_path / "out" / "sessions.csv").open(encoding="utf-8") as f:
+        rows = {r["session"]: r for r in csv.DictReader(f)}
+    assert (rows["v01"]["draft_phrases"], rows["v02"]["draft_phrases"]) == ("", "2")
+    with (tmp_path / "out" / "stimuli.csv").open(encoding="utf-8") as f:
+        col = {(r["session"], r["variant"]): r["magnitude_delta_e00_composited"] for r in csv.DictReader(f)}
+    assert (col[("v01", "color")], col[("v02", "color")]) == ("", "18.4")

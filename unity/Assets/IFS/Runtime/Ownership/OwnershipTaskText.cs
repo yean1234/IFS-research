@@ -22,6 +22,21 @@ namespace IFS.SceneSpec.Ownership
         public string this[string key] => _text.TryGetValue(key, out var t) ? t : null;
         public string Status(string key) => _status.TryGetValue(key, out var s) ? s : null;
         public IEnumerable<string> Keys => _text.Keys;
+        public int Count => _text.Count;
+
+        /// <summary>status가 draft인 문구 키(이름순). IRB 확인 전 초안이라 러너가 경고하고 manifest에 남긴다.</summary>
+        public List<string> DraftKeys
+        {
+            get
+            {
+                var keys = new List<string>();
+                foreach (var kv in _status) if (kv.Value == "draft") keys.Add(kv.Key);
+                keys.Sort(StringComparer.Ordinal);
+                return keys;
+            }
+        }
+
+        public bool HasDraft => DraftKeys.Count > 0;
 
         /// <exception cref="FormatException">필요한 필드가 없을 때</exception>
         public static OwnershipTaskText Parse(string json, string fileName = null)

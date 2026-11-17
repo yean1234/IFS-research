@@ -174,6 +174,33 @@ namespace IFS.SceneSpec.Tests
             }
             Assert.That(t["rating"], Does.Contain("1(전혀 내 것 같지 않다)").And.Contain("7(완전히 내 것 같다)"));
             Assert.Throws<FormatException>(() => OwnershipTaskText.Parse("{\"version\":\"0.1\",\"texts\":{}}"), "빠진 문구는 오류");
+            Assert.That(t.DraftKeys, Is.EqualTo(OwnershipTaskText.RequiredKeys.OrderBy(k => k, StringComparer.Ordinal).ToList()), "지금 문구 5개는 모두 draft");
+            Assert.That(OwnershipRunner.DraftNotice(t, false), Does.Contain("5/5"), "실험자 화면 경고 줄");
+        }
+
+        static OwnershipTaskText TaskText(params (string key, string status)[] items)
+        {
+            var texts = new JObject();
+            foreach (var k in OwnershipTaskText.RequiredKeys) texts[k] = new JObject { ["text"] = "합성 " + k, ["status"] = "spec", ["source"] = "합성" };
+            foreach (var (key, status) in items) texts[key]["status"] = status;
+            return OwnershipTaskText.Parse(new JObject { ["version"] = "9", ["texts"] = texts }.ToString(), "synthetic.json");
+        }
+
+        [Test]
+        public void Draft_phrases_are_listed_warned_and_refused_only_when_required()
+        {
+            var mixed = TaskText(("rating", "draft"), ("done", "draft"));
+            Assert.That(mixed.DraftKeys, Is.EqualTo(new[] { "done", "rating" }), "이름순");
+            Assert.That(mixed.HasDraft, Is.True);
+            Assert.That(OwnershipRunner.DraftNotice(mixed, false), Does.Contain("2/5").And.Contain("done, rating"));
+            Assert.That(OwnershipRunner.SpecPhraseRefusal(mixed, false), Is.Null, "기본(requireSpecPhrases 꺼짐)은 경고만");
+            Assert.That(OwnershipRunner.SpecPhraseRefusal(mixed, true), Does.Contain("requireSpecPhrases"), "켜면 시작 거부");
+
+            var spec = TaskText();
+            Assert.That(spec.HasDraft, Is.False);
+            Assert.That(OwnershipRunner.DraftNotice(spec, true), Is.Null);
+            Assert.That(OwnershipRunner.SpecPhraseRefusal(spec, true), Is.Null, "모두 spec이면 켜도 시작");
+            Assert.That(new OwnershipConfig().requireSpecPhrases, Is.False, "기본 꺼짐");
         }
 
         [Test]

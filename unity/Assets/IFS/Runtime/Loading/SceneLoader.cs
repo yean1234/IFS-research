@@ -725,7 +725,8 @@ namespace IFS.SceneSpec
         void ApplyMaterial()
         {
             var p = CurrentParams;
-            SceneParams.HslToRgb(p.GetNumber("material.color.h"), p.GetNumber("material.color.s"),
+            // 색·Fade 판정은 변형본 생성기(색 변형 ΔE00)와 같은 함수(RenderedColor)를 쓴다.
+            RenderedColor.BaseSrgb(p.GetNumber("material.color.h"), p.GetNumber("material.color.s"),
                 p.GetNumber("material.color.l"), out double r, out double g, out double b);
             float opacity = (float)p.GetNumber("material.opacity");
             float brightness = (float)p.GetNumber("material.brightness");
@@ -737,7 +738,7 @@ namespace IFS.SceneSpec
             FormPreset preset;
             if (_isShapeModel) preset = ShapePreset;
             else FormPresets.TryGetValue(form, out preset);
-            bool fade = form == "mist" || opacity < 0.99f;
+            bool fade = RenderedColor.UsesFadeShader(form, opacity);
 
             foreach (var rend in _model.GetComponentsInChildren<Renderer>())
             {

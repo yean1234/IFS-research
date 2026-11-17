@@ -128,7 +128,7 @@ void ifsSurface(Input IN, inout SurfaceOutputStandard o, float interior)
     col *= lerp(1.0, 0.7 + 0.6 * mottle, 0.25 + 0.6 * _Roughness);       // 거칠수록 얼룩
     col = lerp(col, col * 0.25 + float3(0.06, 0.045, 0.03), edge);       // 삭은 가장자리
 
-    float bright = lerp(0.4, 1.0, saturate(_Brightness * 2.0));          // 0.5 미만은 어둡게
+    float bright = lerp(0.4, 1.0, saturate(_Brightness * 2.0));          // 0.5 미만은 어둡게(바꾸면 C# RenderedColor.BrightnessFactor도)
     o.Albedo = col * bright * lerp(1.0, 0.3, interior);
     // PBR(Standard, 금속도 워크플로): 금속도 0 = 유전체(반사율 ≈ 4%, 확산·정반사 합은 Standard BRDF가 에너지 보존).
     // 스무드니스 = 1 − roughness(지각적 거칠기와 같은 척도). 0.92 상한 = 완전 거울면이 VR에서 반짝이며 깜빡이는 것(정반사 앨리어싱)을 막는다.

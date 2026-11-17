@@ -22,11 +22,8 @@ namespace IFS.SceneSpec.Tests
             return p;
         }
 
-        static Lab LabOf(double h, double s, double l)
-        {
-            SceneParams.HslToRgb(h, s, l, out double r, out double g, out double b);
-            return ColorMetrics.SrgbToLab(r, g, b);
-        }
+        // 기본 밝기 0.5 = 셰이더 밝기 배율 1(알베도 = _BaseColor)
+        static Lab LabOf(double h, double s, double l, double brightness = 0.5) => RenderedColor.AlbedoLab(h, s, l, brightness);
 
         // ── 제시 순서 ─────────────────────────────────────────────────────
         [Test]
@@ -50,14 +47,26 @@ namespace IFS.SceneSpec.Tests
         [TestCase(1, 0, 0)]
         [TestCase(2, 1, 1)]
         [TestCase(10, 1, 9)]
-        [TestCase(11, 0, 0)]
-        [TestCase(14, 1, 3)]
+        [TestCase(11, 1, 0)]    // 11–20번은 cb가 뒤집힌다
+        [TestCase(14, 0, 3)]
+        [TestCase(21, 0, 0)]    // 21–30번은 다시 1–10번과 같다
         public void Participant_number_sets_balance_bit_and_order_row(int n, int cb, int row)
         {
             var p = GenOk(OwnershipTestSpecs.Empty("SYN-order"), n);
             Assert.That(p.Cb, Is.EqualTo(cb));
             Assert.That(p.OrderRow, Is.EqualTo(row));
             Assert.That(p.Order, Is.EqualTo(WilliamsDesign.Rows[row].Select(i => WilliamsDesign.Conditions[i]).ToArray()));
+        }
+
+        [Test]
+        public void Balance_bit_is_crossed_with_order_row_over_twenty_participants()
+        {
+            var cells = Enumerable.Range(1, 20).Select(n => (WilliamsDesign.RowFor(n), WilliamsDesign.CbFor(n))).ToList();
+            Assert.That(cells.Distinct().Count(), Is.EqualTo(20), "1–20번의 (행, cb) 20쌍이 모두 다르다(행 × cb 완전 교차)");
+            for (int n = 1; n <= 10; n++)
+                Assert.That(WilliamsDesign.CbFor(n), Is.EqualTo((n - 1) % 2), $"1–10번의 cb는 이전 규칙과 같다({n})");
+            for (int start = 1; start <= 21; start += 10)
+                Assert.That(Enumerable.Range(start, 10).Count(n => WilliamsDesign.CbFor(n) == 0), Is.EqualTo(5), $"{start}번부터 10명 안에서 cb 5:5");
         }
 
         [Test]
@@ -71,6 +80,7 @@ namespace IFS.SceneSpec.Tests
         {
             SessionId = "SYN-det", SpecFile = "SYN-det.json", SpecSha256 = "0", StartedAtUtc = "2026-01-01T00:00:00.000Z",
             HeadSource = "desktop", UnityVersion = "test", TaskTextFile = "ownership_task.v0.json", TaskTextVersion = "0.1",
+            TaskTextDraftKeys = new[] { "done", "rating" },
         };
 
         [Test]
@@ -105,10 +115,13 @@ namespace IFS.SceneSpec.Tests
                 "recordVersion", "generatorVersion", "participantNumber", "cb", "orderRow", "sessionId", "specFile", "specSha256",
                 "startedAtUtc", "headSource", "unityVersion", "taskText", "config", "flags", "original", "variants", "order",
             }));
-            Assert.That((string)m["recordVersion"], Is.EqualTo("ifs-ownership/0.1"));
-            Assert.That((string)m["generatorVersion"], Is.EqualTo("ownership-variants/0.1"));
+            Assert.That((string)m["recordVersion"], Is.EqualTo("ifs-ownership/0.2"));
+            Assert.That((string)m["generatorVersion"], Is.EqualTo("ownership-variants/0.2"));
+            Assert.That(((JObject)m["taskText"]).Properties().Select(p => p.Name), Is.EqualTo(new[] { "file", "version", "draftCount", "draftKeys" }));
+            Assert.That((int)m["taskText"]["draftCount"], Is.EqualTo(2));
+            Assert.That(m["taskText"]["draftKeys"].ToObject<string[]>(), Is.EqualTo(new[] { "done", "rating" }));
             Assert.That((string)m["specFile"], Is.EqualTo("SYN-det.json"));
-            foreach (var k in new[] { "sizeStep", "colorDeltaE", "viewSeconds", "headSampleHz", "gazeConeDeg", "finalChoiceArcDeg", "differenceRating", "generatorVersion" })
+            foreach (var k in new[] { "sizeStep", "colorDeltaE", "viewSeconds", "headSampleHz", "gazeConeDeg", "finalChoiceArcDeg", "differenceRating", "requireSpecPhrases", "generatorVersion" })
                 Assert.That(m["config"][k], Is.Not.Null, "config." + k);
             Assert.That(m["flags"]["lowVisibility"], Is.Not.Null);
             foreach (var k in new[] { "params", "shapeModel", "statedKeys", "defaultKeys", "unmappedCount", "unmatchedCount" })
@@ -122,6 +135,8 @@ namespace IFS.SceneSpec.Tests
                 foreach (var k in new[] { "id", "attribute", "overrides", "shapeModel", "changedKeys", "from", "to", "rule", "source", "sourceByKey", "flags", "magnitude" })
                     Assert.That(v.ContainsKey(k), Is.True, (string)v["id"] + "." + k);
             Assert.That(((JArray)m["order"]).Count, Is.EqualTo(5));
+            var color = ((JArray)m["variants"]).Cast<JObject>().Single(v => (string)v["id"] == "color");
+            Assert.That(((JObject)color["magnitude"]).Properties().Select(p => p.Name), Is.EqualTo(new[] { "deltaE00", "deltaE00Composited" }));
         }
 
         // ── 크기 ─────────────────────────────────────────────────────────
@@ -230,6 +245,75 @@ namespace IFS.SceneSpec.Tests
         }
 
         [Test]
+        public void Brightness_factor_and_albedo_follow_the_shader()
+        {
+            Assert.That(RenderedColor.BrightnessFactor(0.0), Is.EqualTo(0.4).Within(1e-12));
+            Assert.That(RenderedColor.BrightnessFactor(0.25), Is.EqualTo(0.7).Within(1e-12));
+            Assert.That(RenderedColor.BrightnessFactor(0.5), Is.EqualTo(1.0).Within(1e-12));
+            Assert.That(RenderedColor.BrightnessFactor(1.0), Is.EqualTo(1.0).Within(1e-12), "0.5 초과는 알베도가 아니라 발광");
+            RenderedColor.BaseSrgb(0.6, 0.5, 0.4, out double r, out double g, out double b);
+            SceneParams.HslToRgb(0.6, 0.5, 0.4, out double r0, out double g0, out double b0);
+            Assert.That(new[] { r, g, b }, Is.EqualTo(new[] { r0, g0, b0 }), "_BaseColor = HSL → sRGB");
+            RenderedColor.AlbedoSrgb(0.6, 0.5, 0.4, 0.8, out double ar, out double ag, out double ab);
+            Assert.That(new[] { ar, ag, ab }, Is.EqualTo(new[] { r, g, b }).Within(1e-9), "밝기 ≥ 0.5면 알베도 = _BaseColor");
+            RenderedColor.AlbedoSrgb(0.6, 0.5, 0.4, 0.0, out double dr, out _, out _);
+            Assert.That(ColorMetrics.SrgbToLinear(dr), Is.EqualTo(0.4 * ColorMetrics.SrgbToLinear(r)).Within(1e-9), "선형 공간에서 × 0.4");
+            Assert.That(RenderedColor.UsesFadeShader("blob", 1.0), Is.False);
+            Assert.That(RenderedColor.UsesFadeShader("blob", 0.98), Is.True);
+            Assert.That(RenderedColor.UsesFadeShader("mist", 1.0), Is.True);
+            Assert.That(RenderedColor.SurfaceAlpha("mist", 0.6, 0.5), Is.EqualTo(0.3).Within(1e-12));
+            Assert.That(RenderedColor.SurfaceAlpha("blob", 1.0, 1.0), Is.EqualTo(1.0));
+        }
+
+        [TestCase(0.6, 0.5, 0.4, 0.1)]
+        [TestCase(0.0, 0.0, 0.7, 0.0)]
+        public void Color_target_is_reached_on_the_shader_albedo_not_the_hsl_value(double h, double s, double l, double brightness)
+        {
+            var plan = GenOk(OwnershipTestSpecs.Empty("SYN-dim").Hsl(h, s, l).Slot("material.brightness", brightness, "어두운"));
+            var v = plan.Get("color");
+            Assert.That(v.BelowTarget, Is.False, v.Rule);
+            string key = v.Override.Numbers.Keys.Single();
+            double th = key == "material.color.h" ? v.Override.Numbers[key] : h;
+            double tl = key == "material.color.l" ? v.Override.Numbers[key] : l;
+            double de = ColorMetrics.DeltaE2000(LabOf(h, s, l, brightness), LabOf(th, s, tl, brightness));
+            Assert.That(de, Is.GreaterThanOrEqualTo(30.0), "알베도 기준 ΔE00 ≥ 목표");
+            Assert.That((double)v.Magnitude["deltaE00"], Is.EqualTo(de).Within(0.001));
+            Assert.That((string)v.Detail["deltaEBasis"], Is.EqualTo("albedo"));
+            Assert.That((double)v.Detail["brightnessFactor"], Is.EqualTo(Math.Round(RenderedColor.BrightnessFactor(brightness), 4)));
+            // 밝기가 낮으면 같은 HSL 변화의 화면 차이가 작아, 밝기 0.5(배율 1)일 때보다 적게 가서는 목표에 닿지 않는다.
+            var bright = GenOk(OwnershipTestSpecs.Empty("SYN-dim").Hsl(h, s, l)).Get("color");
+            if (bright.Rule == v.Rule && (string)bright.Detail["direction"] == (string)v.Detail["direction"])
+                Assert.That((int)v.Detail["steps"], Is.GreaterThanOrEqualTo((int)bright.Detail["steps"]));
+            double hslDe = ColorMetrics.DeltaE2000(ColorMetrics.SrgbToLab(Rgb(h, s, l)[0], Rgb(h, s, l)[1], Rgb(h, s, l)[2]),
+                                                   ColorMetrics.SrgbToLab(Rgb(th, s, tl)[0], Rgb(th, s, tl)[1], Rgb(th, s, tl)[2]));
+            Assert.That(hslDe, Is.Not.EqualTo(de).Within(0.5), "HSL 해석값 기준 ΔE00과는 다르다(밝기 배율 < 1)");
+        }
+
+        static double[] Rgb(double h, double s, double l)
+        {
+            SceneParams.HslToRgb(h, s, l, out double r, out double g, out double b);
+            return new[] { r, g, b };
+        }
+
+        [TestCase(null, 1.0, 1.0)]
+        [TestCase(null, 0.4, 0.4)]
+        [TestCase("mist", 1.0, 0.5)]
+        public void Composited_delta_e_uses_the_surface_alpha_and_is_recorded_only(string form, double opacity, double alpha)
+        {
+            var spec = OwnershipTestSpecs.Empty("SYN-comp").Hsl(0.6, 0.5, 0.4).Slot("material.opacity", opacity, "투명");
+            if (form != null) spec.Slot("form.type", form, "형태");
+            var v = GenOk(spec).Get("color");
+            var free = GenOk(OwnershipTestSpecs.Empty("SYN-comp").Hsl(0.6, 0.5, 0.4)).Get("color");
+            Assert.That(v.Override.Numbers, Is.EqualTo(free.Override.Numbers), "불투명도는 목표 계산에 들어가지 않는다");
+            Assert.That((double)v.Detail["compositeAlpha"], Is.EqualTo(alpha).Within(1e-9));
+            double de = (double)v.Magnitude["deltaE00"], comp = (double)v.Magnitude["deltaE00Composited"];
+            if (alpha >= 1.0) Assert.That(comp, Is.EqualTo(de).Within(0.002), "불투명이면 합성해도 같다");
+            else Assert.That(comp, Is.LessThan(de), "배경과 섞이면 차이가 줄어든다");
+            double h1 = v.Override.Numbers["material.color.h"];
+            Assert.That(comp, Is.EqualTo(Math.Round(OwnershipVariantGenerator.CompositedDeltaE(0.6, 0.4, h1, 0.4, 0.5, 0.5, alpha), 3)));
+        }
+
+        [Test]
         public void Color_change_leaves_brightness_and_opacity_alone()
         {
             var plan = GenOk(OwnershipTestSpecs.Empty("SYN-other").Hsl(0.3, 0.6, 0.5).Slot("material.brightness", 0.8).Slot("material.opacity", 0.6));
@@ -261,6 +345,48 @@ namespace IFS.SceneSpec.Tests
             Assert.That(v.Override.Numbers, Is.Empty, "속도는 바꾸지 않는다");
             Assert.That(v.Source, Is.EqualTo(source));
             Assert.That(v.MotionAltersScale, Is.EqualTo(altersScale));
+        }
+
+        // 기본 blob·mist·shell·fragments(모양 모형 없음)는 굴곡·조각이 물체와 함께 돌아 회전·기울임이 보인다 → 표에 없음.
+        [TestCase(null, "rotating")]
+        [TestCase(null, "swaying")]
+        [TestCase("blob", "rotating")]
+        [TestCase("mist", "rotating")]
+        [TestCase("shell", "rotating")]
+        [TestCase("fragments", "swaying")]
+        public void Rotation_on_shapes_without_a_shape_model_is_visible(string formType, string type)
+        {
+            var spec = OwnershipTestSpecs.Empty("SYN-blobmotion").Slot("motion.type", type, "움직");
+            if (formType != null) spec.Slot("form.type", formType, "형태");
+            var plan = GenOk(spec);
+            Assert.That(plan.OriginalShapeModel, Is.EqualTo("none"));
+            var v = plan.Get("motion");
+            Assert.That(v.Rule, Is.EqualTo("remove"), "보이는 움직임 → still");
+            Assert.That((bool)v.Detail["originalVisible"], Is.True);
+            foreach (MotionGroup g in Enum.GetValues(typeof(MotionGroup)))
+                Assert.That(OwnershipVariantGenerator.IsInvisibleMotion(g, null), Is.False, "모양 모형이 없으면 표에 걸리지 않음: " + g);
+        }
+
+        // 자세 변형은 x = z라 y축 회전(Spin)의 대칭은 유지되지만, z축 기울임(Sway)은 눌린 구에서 보인다.
+        [TestCase("swaying", "round", "curled", "remove")]
+        [TestCase("swaying", "round", null, "add")]
+        [TestCase("rotating", "round", "lying", "add")]
+        [TestCase("rotating", "pointed", "standing", "add")]
+        public void Posture_deformation_makes_sway_on_a_sphere_visible(string type, string shape, string posture, string rule)
+        {
+            var spec = OwnershipTestSpecs.Empty("SYN-posture").Slot("motion.type", type, "움직").ShapeWord(shape, "모양", 5);
+            if (posture != null) spec.Slot("form.posture", posture, "자세");
+            var v = GenOk(spec).Get("motion");
+            Assert.That(v.Rule, Is.EqualTo(rule));
+            Assert.That((bool)v.Detail["originalVisible"], Is.EqualTo(rule == "remove"));
+        }
+
+        [Test]
+        public void Invisible_motion_table_is_fixed()
+        {
+            var rows = OwnershipVariantGenerator.InvisibleMotion.Select(x => $"{x.group}/{x.model}/{(x.anyPosture ? "any" : "none")}").ToArray();
+            Assert.That(rows, Is.EqualTo(new[] { "Spin/Sphere/any", "Spin/FlatCylinder/any", "Spin/Cone/any", "Sway/Sphere/none" }),
+                "표를 바꾸면 docs/decisions.md와 이 테스트를 함께 고친다");
         }
 
         [Test]

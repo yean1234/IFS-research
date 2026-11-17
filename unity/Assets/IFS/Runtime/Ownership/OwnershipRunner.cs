@@ -142,6 +142,35 @@ namespace IFS.SceneSpec.Ownership
         {
             if (SpecFolderText == null) SpecFolderText = specFolder;
             RefreshSpecList();
+            PreloadTaskText();
+        }
+
+        // ── 초안 문구 ─────────────────────────────────────────────────────
+        /// <summary>
+        /// 문구 파일에 status draft 문구가 있으면 실험자 화면 맨 위에 띄울 한 줄(없으면 null). Setup에서도 보이도록
+        /// Awake·Setup 복귀 때 문구 파일을 미리 읽는다(읽기 오류는 Check가 보고한다).
+        /// </summary>
+        public string DraftPhraseNotice => DraftNotice(TaskText, config.requireSpecPhrases);
+
+        public static string DraftNotice(OwnershipTaskText text, bool requireSpec)
+        {
+            if (text == null || !text.HasDraft) return null;
+            var keys = text.DraftKeys;
+            return $"초안 문구 사용 중: {text.FileName ?? "문구 파일"}(version {text.Version})의 문구 {keys.Count}/{text.Count}개가 status draft" +
+                   $"(IRB 확인 전) — {string.Join(", ", keys)}. " +
+                   (requireSpec ? "requireSpecPhrases가 켜져 있어 시작할 수 없습니다." : "본 실험 자료로 쓰기 전에 spec 문구로 바꾸세요(manifest에 기록됨).");
+        }
+
+        /// <summary>requireSpecPhrases가 켜져 있고 draft 문구가 있으면 시작 거부 이유, 아니면 null.</summary>
+        public static string SpecPhraseRefusal(OwnershipTaskText text, bool requireSpec) =>
+            requireSpec && text != null && text.HasDraft
+                ? $"requireSpecPhrases가 켜져 있는데 draft 문구 {text.DraftKeys.Count}개({string.Join(", ", text.DraftKeys)})가 있어 세션을 시작하지 않습니다"
+                : null;
+
+        void PreloadTaskText()
+        {
+            try { TaskText = File.Exists(ResolvedTaskTextPath) ? OwnershipTaskText.Load(ResolvedTaskTextPath) : null; }
+            catch (Exception) { TaskText = null; }
         }
 
         void Update()
@@ -248,7 +277,10 @@ namespace IFS.SceneSpec.Ownership
             _specFullPath = path;
             foreach (var problem in SceneSpecJson.Validate(Spec)) Warnings.Add("spec 형식 경고: " + problem);
             try { TaskText = OwnershipTaskText.Load(ResolvedTaskTextPath); }
-            catch (Exception e) { Errors.Add("문구 파일을 읽지 못했습니다(" + OwnershipTaskText.DefaultRelativePath + "): " + e.Message); }
+            catch (Exception e) { TaskText = null; Errors.Add("문구 파일을 읽지 못했습니다(" + OwnershipTaskText.DefaultRelativePath + "): " + e.Message); }
+            if (DraftPhraseNotice != null) Warnings.Add(DraftPhraseNotice);   // events.csv에도 warning으로 남는다
+            string refusal = SpecPhraseRefusal(TaskText, config.requireSpecPhrases);
+            if (refusal != null) Errors.Add(refusal);
             Plan = OwnershipVariantGenerator.Generate(Spec, number, config, defaults);
             Errors.AddRange(Plan.Errors);
             Warnings.AddRange(Plan.Warnings);
@@ -264,6 +296,7 @@ namespace IFS.SceneSpec.Ownership
             Errors.Clear();
             Warnings.Clear();
             RefreshSpecList();
+            PreloadTaskText();
         }
 
         // ── 시작 ─────────────────────────────────────────────────────────
@@ -275,6 +308,8 @@ namespace IFS.SceneSpec.Ownership
                 if (!Errors.Contains("생성 오류가 있어 시작할 수 없습니다")) Errors.Add("생성 오류가 있어 시작할 수 없습니다");
                 return false;
             }
+            string refusal = SpecPhraseRefusal(TaskText, config.requireSpecPhrases);
+            if (refusal != null) { Errors.Add(refusal); return false; }
             // 확인 뒤 파일이 바뀌었으면 시작하지 않는다(계획과 로드 값이 어긋나지 않도록)
             string sha;
             try { sha = OwnershipManifest.Sha256OfFile(_specFullPath); }
@@ -345,6 +380,7 @@ namespace IFS.SceneSpec.Ownership
                     UnityVersion = Application.unityVersion,
                     TaskTextFile = TaskText.FileName,
                     TaskTextVersion = TaskText.Version,
+                    TaskTextDraftKeys = TaskText.DraftKeys.ToArray(),
                 };
                 _writer.WriteManifest(OwnershipManifest.Build(Plan, info));
             }
@@ -688,6 +724,7 @@ namespace IFS.SceneSpec.Ownership
             Warnings.Clear();
             ParticipantNumberText = "";
             RefreshSpecList();
+            PreloadTaskText();
         }
 
         // ── 시간·표본 ───────────────────────────────────────────────────

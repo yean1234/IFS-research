@@ -172,3 +172,16 @@
 - 수정 에이전트가 정한 것: 표본은 "앞 표본에서 목표 간격 이상 지난 첫 프레임"에 쓰므로 실효 표본률이 목표 20 Hz보다 낮음(72–90 Hz 화면에서 약 18 Hz 예상). 시각은 실제 시각. 값은 있는데 근거가 없는 `form.type`은 default로 분류.
 - 문서 개정 중 `docs/research-design.md`의 표류 지표 절이 4.5 → 4.6으로 옮겨지며 내용이 줄어 `test_docs_match_params`가 실패함. 절 내용을 2026-11-16 판 그대로 되살리고, 테스트는 절 번호 대신 절 제목으로 찾게 바꿈(검사 항목은 그대로).
 - 문서 담당 에이전트가 정한 연구 설계 사항(사람 확인 필요): 확증 가설은 H1(원본 선택률 > 1/5) 하나, 목표 N=20·최소 10, 참여자당 심상 1개, 11/20 정오 재판단 규칙.
+
+## 외부 리뷰 반영 (2026-11-17)
+후보1 프로토타입에 대한 외부 코드 리뷰 지적 5건. 방향은 메인이 정했고 수정 에이전트가 구현했다. 기록 계약 `ifs-ownership/0.2`, 생성기 `ownership-variants/0.2`.
+
+| # | 결정 | 이유 | 다른 선택지 |
+| --- | --- | --- | --- |
+| X31 | 균형 비트를 `cb = ((번호 − 1) mod 2) XOR (⌊(번호 − 1) / 10⌋ mod 2)`로 바꿈. 1–10번은 전과 같고 11–20번은 뒤집힘. 분석기 `orderBalance`에 행×cb 20칸 수(`byOrderRowCb`·`cellSpread`)를 더하고 칸 최대−최소 > 1이면 경고 | 전에는 행 = (n−1) mod 10, cb = (n−1) mod 2라 cb 0은 짝수 행만 받아 크기·색 방향이 순서 행과 묶였음. 새 규칙은 10명 안에서 cb 5:5, 20명이면 행 × cb 완전 교차 | 별도 배정표(X26의 결정론·번호 배정 유지) |
+| X32 | 보이지 않는 움직임 표에 기본 blob을 넣지 않음. 흔들림(Sway, z축 기울임) + 구는 자세 변형이 없을 때만 보이지 않음(자세 변형은 x = z라 y축 회전 + 구·납작 원기둥·원뿔은 그대로). 표는 EditMode 테스트로 고정 | blob은 IFS 셰이더가 물체 좌표 노이즈로 정점을 밀어(굴곡 0.14) 윤곽이 함께 돌아 회전이 보임. mist·shell·fragments·Cube도 같은 이유로 보임. 자세 변형(예: curled 1.15·0.7·1.15)이 있는 구는 타원체라 z축 기울임이 보임 | blob 추가(원본을 "보이지 않는 움직임"으로 취급) |
+| X33 | 색 변형 ΔE00 목표(30)를 HSL 해석값이 아니라 셰이더 알베도 기준으로 맞춤: `RenderedColor`(로더와 생성기가 공유) = HSL → sRGB를 선형 공간에서 밝기 배율 `lerp(0.4, 1, saturate(2 × brightness))`로 곱한 색. 불투명도는 목표에 넣지 않고, 하늘 지평선 색 위에 표면 알파(Fade면 opacity × 형태 밀도)로 합성한 ΔE00을 `magnitude.deltaE00Composited`·`stimuli.csv` `magnitude_delta_e00_composited`로 기록만 함 | 로더는 `_BaseColor`에 HSL 색을, `_Brightness`는 따로 넣고 셰이더가 곱함. 밝기 < 0.5이면 화면 색이 어두워져 같은 HSL 변화의 ΔE가 작아짐(밝기 ≥ 0.5는 배율 1이라 결과가 전과 같음). 조명·그림자·얼룩·발광은 다루지 않음(문서 한계) | 합성색을 목표로(불투명도가 색 조작 크기를 정하게 됨) |
+| X34 | `chatbot/pyproject.toml`의 패키지 목록을 `packages.find`(`ifs_chatbot`, `ifs_chatbot.*`)로 바꿈. package-data(`web/*`) 유지 | `ifs_chatbot.eval`이 빠져 설치본에서 분석기를 못 씀. 하위 패키지는 지금 `eval` 하나뿐이지만 목록을 손으로 맞추지 않게 함 | `packages`에 `ifs_chatbot.eval`만 추가 |
+| X35 | 문구 status는 draft 그대로 두고 러너가 알림: Setup·SpecCheck 맨 위 경고 줄, `events.csv` warning, manifest `taskText.draftCount`·`draftKeys`, `OwnershipConfig.requireSpecPhrases`(기본 false, 켜면 draft가 있을 때 시작 거부). 분석기 `sessions.csv` `draft_phrases`·`task_text_version` 열과 summary 경고 | IRB 확인 전이라 draft가 맞음(원칙 7). 초안 문구로 모은 자료가 본 실험 자료와 섞이지 않게 기록·경고로 구분 | 문구를 spec으로 바꿈(IRB 전이라 불가) |
+
+- 확인하지 못한 것: 헤드셋 실기, 실제 화면 픽셀 색(조명 포함)과 알베도 ΔE00의 차이. 모양 모형의 표면 얼룩(`_Roughness`에 따른 mottle, 물체 좌표)은 윤곽이 그대로여도 회전과 함께 돌므로, X32 표는 "윤곽 기준"이라는 가정 위에 있음(⚠ 메인 판단 필요: 얼룩이 도는 것도 "보이는 움직임"으로 보면 표의 네 행 모두 빠져야 함).

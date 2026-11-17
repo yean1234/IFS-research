@@ -19,8 +19,9 @@ dependencies = [
 [project.optional-dependencies]
 dev = ["pytest>=8"]
 
-[tool.setuptools]
-packages = ["ifs_chatbot"]
+# 하위 패키지(ifs_chatbot.eval 등)를 빠뜨리지 않도록 목록 대신 찾기로. web/는 패키지가 아니라 package-data.
+[tool.setuptools.packages.find]
+include = ["ifs_chatbot", "ifs_chatbot.*"]
 
 [tool.setuptools.package-data]
 ifs_chatbot = ["web/*"]

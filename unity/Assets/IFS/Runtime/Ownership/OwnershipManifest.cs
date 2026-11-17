@@ -23,11 +23,15 @@ namespace IFS.SceneSpec.Ownership
         public string UnityVersion;
         public string TaskTextFile;
         public string TaskTextVersion;
+        /// <summary>문구 파일에서 status draft인 키(이름순). null이면 빈 목록으로 기록.</summary>
+        public string[] TaskTextDraftKeys;
     }
 
     public static class OwnershipManifest
     {
-        public const string RecordVersion = "ifs-ownership/0.1";
+        /// <summary>0.2: taskText.draftCount·draftKeys, 색 변형 magnitude.deltaE00Composited, config.requireSpecPhrases 추가.
+        /// deltaE00은 셰이더 알베도 기준(0.1은 HSL 해석값 기준).</summary>
+        public const string RecordVersion = "ifs-ownership/0.2";
 
         public static JObject Build(OwnershipPlan plan, OwnershipSessionInfo info)
         {
@@ -47,7 +51,13 @@ namespace IFS.SceneSpec.Ownership
                 ["startedAtUtc"] = info.StartedAtUtc,
                 ["headSource"] = info.HeadSource,
                 ["unityVersion"] = info.UnityVersion,
-                ["taskText"] = new JObject { ["file"] = info.TaskTextFile, ["version"] = info.TaskTextVersion },
+                ["taskText"] = new JObject
+                {
+                    ["file"] = info.TaskTextFile,
+                    ["version"] = info.TaskTextVersion,
+                    ["draftCount"] = info.TaskTextDraftKeys?.Length ?? 0,
+                    ["draftKeys"] = new JArray(info.TaskTextDraftKeys ?? new string[0]),
+                },
                 ["config"] = plan.Config.ToJson(),
                 ["flags"] = plan.FlagsJson(),
                 ["original"] = plan.OriginalJson(),

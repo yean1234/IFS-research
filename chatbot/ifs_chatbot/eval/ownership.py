@@ -5,6 +5,8 @@ LLM 없음, 표준 라이브러리만, 결정론적(같은 기록 → 같은 출
   → <폴더>/stimuli.csv(세션×형상 5행), sessions.csv(세션 1행), summary.json(RQ1–RQ3, 건너뛴 기록, 경고)
 
 기록 형식은 설계 확정본 2.4절(recordVersion "ifs-ownership/0.x"), 행동 지표는 3절을 따른다.
+0.1과 0.2를 모두 읽는다. 0.2에서 늘어난 값(색 변형 magnitude.deltaE00Composited, taskText.draftCount)은 0.1 기록에서 빈칸이다.
+magnitude_delta_e00은 0.1에서는 HSL 해석값 기준, 0.2에서는 셰이더 알베도(밝기 배율 포함) 기준이다(record_version 열로 구분).
 추론 통계(p값)는 내지 않는다: 참여자 수가 작고 검정 계획이 아직 정해지지 않아 기술 통계(평균·n·lowN)만 낸다.
 
 기록 찾기
@@ -42,8 +44,12 @@ LLM 없음, 표준 라이브러리만, 결정론적(같은 기록 → 같은 출
 - 추정치마다 n을 함께 적고, n < 5이면 "lowN": true.
 - RQ3 상관: 세션 안에서 5개 형상의 rating과 행동 지표의 Spearman ρ(동순위 평균 순위). 짝이 3개 미만이거나
   한쪽 값이 모두 같으면 그 세션은 빠진다. 세션별 ρ의 평균과 세션 수를 낸다.
-- 순서 균형(orderBalance): 요약에 포함된 세션의 manifest orderRow(0–9)별·cb(0/1)별 세션 수. 행별 최대 − 최소 > 1
-  이거나 cb 두 값의 차이 > 1이면 warnings에 적는다(참여자 번호를 건너뛰거나 다시 쓰면 Williams 균형이 깨진다).
+- 순서 균형(orderBalance): 요약에 포함된 세션의 manifest orderRow(0–9)별·cb(0/1)별·orderRow×cb 20칸별 세션 수.
+  행별 최대 − 최소 > 1, cb 두 값의 차이 > 1, 또는 20칸의 최대 − 최소 > 1이면 warnings에 적는다(참여자 번호를 건너뛰거나
+  다시 쓰면 Williams 균형이 깨진다). Unity의 cb는 10명 단위마다 뒤집히므로(WilliamsDesign.CbFor) 1번부터 차례로
+  배정하면 20칸이 고르게 찬다. 예전 규칙(cb = (번호 − 1) mod 2)으로 모은 기록은 행과 cb가 묶여 칸 불균형으로 경고된다.
+- 초안 문구: manifest taskText.draftCount > 0인 세션(문구 status draft로 수집)이 있으면 warnings에 적는다.
+  sessions.csv의 draft_phrases = draftCount(0.1 기록은 빈칸).
 """
 from __future__ import annotations
 
@@ -55,7 +61,8 @@ import sys
 from pathlib import Path
 
 RECORD_PREFIX = "ifs-ownership/"
-SUMMARY_VERSION = "ownership-summary/0.2"   # 0.2: gap_ms·n_gaps·start_source 열, orderBalance
+SUMMARY_VERSION = "ownership-summary/0.3"   # 0.2: gap_ms·n_gaps·start_source 열, orderBalance
+#                                               0.3: magnitude_delta_e00_composited·draft_phrases 열, orderBalance.byOrderRowCb
 ATTRIBUTES = ("form", "color", "size", "motion")
 SOURCES = ("stated", "default", "mixed")
 METRICS = ("gaze_ms", "gaze_ratio", "dist_mean_m", "dist_min_m", "azimuth_range_deg", "path_m", "first_look_ms")
@@ -71,7 +78,7 @@ VIEWING_START_EVENT = "viewing_start"
 STIMULI_COLUMNS = [
     "participant", "session", "position", "variant", "attribute", "source", "rule",
     "said_not_rendered", "forced", "below_target", "motion_alters_scale",
-    "magnitude_size_step", "magnitude_delta_e00", "changed_keys",
+    "magnitude_size_step", "magnitude_delta_e00", "magnitude_delta_e00_composited", "changed_keys",
     "rating", "rating_drop", "chosen", "difference_rating", "view_ms", "rt_ms", "n_cancelled",
     "n_samples", "gap_ms", "n_gaps", "start_source", *METRICS, *(f"{m}_diff" for m in METRICS),
     "included", "orig_below_threshold",
@@ -81,6 +88,7 @@ SESSION_COLUMNS = [
     "head_source", "low_visibility", "completed", "aborted_at",
     "orig_rating", "orig_chosen", "chosen_variant", "chosen_position",
     "size_step", "color_delta_e", "view_seconds", "head_sample_hz", "gaze_cone_deg",
+    "task_text_version", "draft_phrases",
     "orig_below_threshold", "excluded",
 ]
 
@@ -269,14 +277,22 @@ def viewing_starts(events: list[dict]) -> dict[int, dict]:
     return {**found["phase"], **found["viewing_start"]}
 
 
+def cb_for(participant: int) -> int:
+    """Unity WilliamsDesign.CbFor와 같은 규칙: (번호 − 1) mod 2를 10명 단위마다 뒤집는다(1–10번은 예전과 같음)."""
+    return ((participant - 1) % 2) ^ (((participant - 1) // WILLIAMS_ROWS) % 2)
+
+
 def order_balance(sessions: list[dict]) -> dict:
-    """요약에 포함된 세션의 순서 행·cb별 세션 수와 균형 여부(행별 최대 − 최소 ≤ 1, cb 차이 ≤ 1)."""
+    """요약에 포함된 세션의 순서 행·cb·행×cb 칸별 세션 수와 균형 여부
+    (행별 최대 − 최소 ≤ 1, cb 차이 ≤ 1, 20칸 최대 − 최소 ≤ 1)."""
     rows = {str(r): 0 for r in range(WILLIAMS_ROWS)}
     cbs = {"0": 0, "1": 0}
+    cells = {f"{r}:{c}": 0 for r in range(WILLIAMS_ROWS) for c in (0, 1)}
     unknown_row = unknown_cb = 0
     for s in sessions:
         r, c = s.get("order_row"), s.get("cb")
-        if r is not None and 0 <= r < WILLIAMS_ROWS:
+        row_ok = r is not None and 0 <= r < WILLIAMS_ROWS
+        if row_ok:
             rows[str(r)] += 1
         else:
             unknown_row += 1
@@ -284,12 +300,16 @@ def order_balance(sessions: list[dict]) -> dict:
             cbs[str(c)] += 1
         else:
             unknown_cb += 1
+        if row_ok and c in (0, 1):
+            cells[f"{r}:{c}"] += 1
     row_spread = max(rows.values()) - min(rows.values())
     cb_spread = abs(cbs["0"] - cbs["1"])
-    return {"sessions": len(sessions), "byOrderRow": rows, "byCb": cbs,
+    cell_spread = max(cells.values()) - min(cells.values())
+    return {"sessions": len(sessions), "byOrderRow": rows, "byCb": cbs, "byOrderRowCb": cells,
             "unknownOrderRow": unknown_row, "unknownCb": unknown_cb,
-            "rowSpread": row_spread, "cbSpread": cb_spread,
-            "balanced": row_spread <= 1 and cb_spread <= 1 and unknown_row == 0 and unknown_cb == 0}
+            "rowSpread": row_spread, "cbSpread": cb_spread, "cellSpread": cell_spread,
+            "balanced": row_spread <= 1 and cb_spread <= 1 and cell_spread <= 1
+                        and unknown_row == 0 and unknown_cb == 0}
 
 
 def _vec(row: dict, prefix: str) -> tuple[float, float, float] | None:
@@ -416,6 +436,7 @@ def load_session(cand: dict, orig_threshold: float) -> tuple[dict, list[dict], l
     below = None if orig_rating is None else orig_rating < orig_threshold
     excluded = "" if completed else "incomplete"
     flags = man.get("flags") if isinstance(man.get("flags"), dict) else {}
+    task_text = man.get("taskText") if isinstance(man.get("taskText"), dict) else {}
 
     srow = {
         "participant": participant, "session": sid, "record_folder": rel,
@@ -427,6 +448,7 @@ def load_session(cand: dict, orig_threshold: float) -> tuple[dict, list[dict], l
         "chosen_variant": chosen_var, "chosen_position": chosen_pos,
         "size_step": _num(config.get("sizeStep")), "color_delta_e": _num(config.get("colorDeltaE")),
         "view_seconds": _num(config.get("viewSeconds")), "head_sample_hz": hz, "gaze_cone_deg": cone,
+        "task_text_version": task_text.get("version"), "draft_phrases": _int(task_text.get("draftCount")),
         "orig_below_threshold": below, "excluded": excluded,
     }
 
@@ -451,6 +473,7 @@ def load_session(cand: dict, orig_threshold: float) -> tuple[dict, list[dict], l
             "motion_alters_scale": None if is_orig else bool(vflags.get("motionAltersScale")),
             "magnitude_size_step": _num(mag.get("sizeStep")),
             "magnitude_delta_e00": _num(mag.get("deltaE00")),
+            "magnitude_delta_e00_composited": _num(mag.get("deltaE00Composited")),
             "changed_keys": "|".join(str(k) for k in v.get("changedKeys") or []),
             "rating": rating,
             "rating_drop": None if rating is None or orig_rating is None else orig_rating - rating,
@@ -576,8 +599,15 @@ def analyze(records: str | Path, out_dir: str | Path | None = None,
     if not balance["balanced"]:
         warnings.append({"record": None, "message": (
             f"순서 불균형: 포함된 세션 {balance['sessions']}개의 orderRow별 수 최대−최소 {balance['rowSpread']}, "
-            f"cb 차이 {balance['cbSpread']}, orderRow·cb 모름 {balance['unknownOrderRow']}·{balance['unknownCb']} "
+            f"cb 차이 {balance['cbSpread']}, orderRow×cb 20칸 최대−최소 {balance['cellSpread']}, "
+            f"orderRow·cb 모름 {balance['unknownOrderRow']}·{balance['unknownCb']} "
             "— 참여자 번호를 1부터 빠짐없이 차례로 배정했는지 확인")})
+    drafted = [s for s in sessions if (s["draft_phrases"] or 0) > 0]
+    if drafted:
+        warnings.append({"record": None, "message": (
+            f"초안 문구: 세션 {len(drafted)}개가 status draft 문구로 수집됨("
+            + ", ".join(f"{s['participant']}/{s['session']} {s['draft_phrases']}개" for s in drafted)
+            + ") — IRB 확인 전 문구라 본 실험 자료로 쓰기 전에 확인")})
     summary = {
         "tool": "ifs_chatbot.eval.ownership",
         "summaryVersion": SUMMARY_VERSION,
@@ -594,6 +624,7 @@ def analyze(records: str | Path, out_dir: str | Path | None = None,
             "skipped": len(skipped),
         },
         "orderBalance": balance,
+        "draftPhraseSessions": len(drafted),
         "summaries": {"all": summarize(included, stimuli),
                       "origAtOrAboveThreshold": summarize(passing, stimuli)},
         "skipped": skipped,

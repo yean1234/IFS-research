@@ -5,9 +5,11 @@
 //   - _inferred는 쓰지 않는다(useInferred = false로 해석).
 // 변형 규칙:
 //   크기  layout.size ± sizeStep. [step, 1−step] 안이면 cb 0 = +, 1 = −. 밖이면 들어오는 쪽(forced). clamp 없음.
-//   색    유채색(s ≥ 0.10): h를 cb 방향(0 = +, 1 = −)으로 1°씩, ΔE00 ≥ 목표인 최소 각. 180°까지 안 되면 명도(lightness_fallback).
+//   색    ΔE00은 로더·셰이더가 실제로 쓰는 알베도(RenderedColor: HSL → sRGB × 밝기 배율, 선형 공간) 기준.
+//         유채색(s ≥ 0.10): h를 cb 방향(0 = +, 1 = −)으로 1°씩, ΔE00 ≥ 목표인 최소 각. 180°까지 안 되면 명도(lightness_fallback).
 //         무채색: l을 0.005씩, ΔE00 ≥ 목표인 최소량. 두 방향 다 되면 cb(0 = 밝게, 1 = 어둡게), 아니면 되는 쪽.
 //         둘 다 안 되면 도달 가능한 최대 변화 + belowTarget. 다른 슬롯(brightness·opacity …)은 건드리지 않는다.
+//         불투명도는 목표에 넣지 않고, 배경(하늘 지평선 색) 위 알파 합성 색끼리의 ΔE00을 따로 기록한다(deltaE00Composited).
 //   움직임 Still 묶음이거나 보이지 않는 조합이면 floating(add), 아니면 still(remove). 속도는 그대로.
 //   형태  blob(모형 없음) → Cube(add), Sphere → Cube(swap), Cube·FlatCylinder·Cone → Sphere(remove),
 //         mist·shell·fragments → blob(remove, 모양 모형 없음).
@@ -141,13 +143,23 @@ namespace IFS.SceneSpec.Ownership
         /// <summary>원본 유효 불투명도가 이 값보다 작으면 lowVisibility.</summary>
         public const double LowVisibilityOpacity = 0.15;
 
-        /// <summary>보이지 않는 움직임 조합(잠정 표): 이 묶음을 이 모양 모형에 걸면 축 대칭이라 움직임이 보이지 않는다.</summary>
-        public static readonly IReadOnlyList<(MotionGroup group, string model)> InvisibleMotion = new[]
+        /// <summary>
+        /// 보이지 않는 움직임 조합(잠정 표): 이 묶음을 이 모양 모형에 걸면 회전축 대칭이라 윤곽이 바뀌지 않는다.
+        /// Spin = 피벗의 y축 회전, Sway = z축 기울임(SpecMotion). 그 밖의 묶음은 이동·크기 변화라 어느 형상에서도 보인다.
+        /// anyPosture: 자세 변형(SceneLoader.PostureScale, 늘 x = z)이 있어도 대칭이 유지되는지. y축 회전은 유지되고,
+        /// z축 기울임은 y만 눌리거나 늘어난 구(타원체)에서 보이므로 자세가 none일 때만 보이지 않는다.
+        /// 표에 없는 형태: 기본 blob(모양 모형 없음)은 IFS 셰이더가 물체 좌표 노이즈로 정점을 밀어(_Lumpiness 0.14)
+        /// 울퉁불퉁한 윤곽이 물체와 함께 돌므로 회전·기울임이 보인다. mist(굴곡 0.30·안개 가장자리)·shell(노이즈 테두리 열림)·
+        /// fragments(비대칭 조각 5개)·Cube도 같은 이유로 보인다. 납작 원기둥·원뿔은 z축 기울임이 보인다.
+        /// 한계: 모양 모형에도 표면 얼룩(_Roughness에 따른 mottle, 물체 좌표)이 있어 윤곽은 그대로여도 얼룩이 도는 것은 보인다.
+        /// 이 표는 윤곽 기준이다(docs/decisions.md X32).
+        /// </summary>
+        public static readonly IReadOnlyList<(MotionGroup group, string model, bool anyPosture)> InvisibleMotion = new[]
         {
-            (MotionGroup.Spin, ShapeMapping.ModelSphere),
-            (MotionGroup.Spin, ShapeMapping.ModelFlatCylinder),
-            (MotionGroup.Spin, ShapeMapping.ModelCone),
-            (MotionGroup.Sway, ShapeMapping.ModelSphere),
+            (MotionGroup.Spin, ShapeMapping.ModelSphere, true),
+            (MotionGroup.Spin, ShapeMapping.ModelFlatCylinder, true),
+            (MotionGroup.Spin, ShapeMapping.ModelCone, true),
+            (MotionGroup.Sway, ShapeMapping.ModelSphere, false),
         };
 
         /// <summary>크기 정보를 바꾸는 움직임 묶음(맥동·퍼짐·다가옴·가라앉음). 원본·변형 중 하나라도 이 묶음이면 motionAltersScale.</summary>
@@ -159,11 +171,20 @@ namespace IFS.SceneSpec.Ownership
             { "blob", 1.0 }, { "mist", 0.5 }, { "shell", 1.0 }, { "fragments", 1.0 },
         };
 
+        /// <summary>
+        /// 합성 ΔE00(기록용)의 배경색(sRGB). 중립 환경의 하늘 지평선 색 = 카메라 배경색(EnvironmentSettings.skyHorizon,
+        /// Unity 전용 테스트가 같은 값인지 확인). 형상 뒤로 바닥(0.46)이 보이는 시선에서는 실제 배경과 다르다.
+        /// </summary>
+        public static readonly double[] CompositeBackgroundSrgb = { 0.74, 0.74, 0.75 };
+
         public const string AddMotionType = "floating";
         public const string RemoveMotionType = "still";
 
-        public static bool IsInvisibleMotion(MotionGroup group, string shapeModel) =>
-            shapeModel != null && InvisibleMotion.Any(x => x.group == group && x.model == shapeModel);
+        /// <param name="shapeModel">그려지는 모양 모형. null(모양 모형 없는 blob·mist·shell·fragments)이면 늘 보인다.</param>
+        /// <param name="posture">form.posture 해석값. none이 아니면 자세 변형이 있다고 본다(표에 없는 자세도 보수적으로).</param>
+        public static bool IsInvisibleMotion(MotionGroup group, string shapeModel, string posture = SceneParams.NoPosture) =>
+            shapeModel != null && InvisibleMotion.Any(x => x.group == group && x.model == shapeModel
+                                                           && (x.anyPosture || posture == null || posture == SceneParams.NoPosture));
 
         public static string SourceLabel(IEnumerable<string> perKey)
         {
@@ -332,22 +353,30 @@ namespace IFS.SceneSpec.Ownership
                                                           || w.Status == ShapeMapping.StatusNotAppliedForm);
             // 형태가 바뀌면 같은 움직임이 보이거나 안 보이게 될 수 있다(분석 참고용).
             MotionGroups.TryGet(plan.OriginalParams.GetCategory("motion.type"), out var g);
+            string posture = plan.OriginalParams.GetCategory("form.posture");
             v.Detail = new JObject
             {
                 ["shapeStatus"] = plan.Shape.Status,
                 ["shapeWords"] = new JArray(plan.Shape.Words.Select(w => (JToken)new JObject { ["shape"] = w.Shape, ["trigger"] = w.Trigger, ["status"] = w.Status }).ToArray()),
-                ["motionVisibleFrom"] = g != MotionGroup.Still && !IsInvisibleMotion(g, model),
-                ["motionVisibleTo"] = g != MotionGroup.Still && !IsInvisibleMotion(g, toModel),
+                ["motionVisibleFrom"] = g != MotionGroup.Still && !IsInvisibleMotion(g, model, posture),
+                ["motionVisibleTo"] = g != MotionGroup.Still && !IsInvisibleMotion(g, toModel, posture),
             };
             v.Magnitude = null;
             return v;
         }
 
         // ── 색 ───────────────────────────────────────────────────────────
-        static Lab LabOf(double h, double s, double l)
+        // 목표 ΔE00은 셰이더 알베도 기준(밝기 배율 포함). 색 변형은 h·l만 바꾸므로 밝기는 원본 값 그대로다.
+        static Lab LabOf(double h, double s, double l, double brightness) => RenderedColor.AlbedoLab(h, s, l, brightness);
+
+        /// <summary>배경 위에 원본의 표면 알파로 합성한 두 알베도의 ΔE00(기록용, 목표 계산에는 쓰지 않음).</summary>
+        public static double CompositedDeltaE(double h0, double l0, double h1, double l1, double s, double brightness, double alpha)
         {
-            SceneParams.HslToRgb(h, s, l, out double r, out double g, out double b);
-            return ColorMetrics.SrgbToLab(r, g, b);
+            var bg = CompositeBackgroundSrgb;
+            RenderedColor.AlbedoSrgb(h0, s, l0, brightness, out double r0, out double g0, out double b0);
+            RenderedColor.AlbedoSrgb(h1, s, l1, brightness, out double r1, out double g1, out double b1);
+            return ColorMetrics.DeltaE2000(RenderedColor.CompositeLab(r0, g0, b0, alpha, bg[0], bg[1], bg[2]),
+                                           RenderedColor.CompositeLab(r1, g1, b1, alpha, bg[0], bg[1], bg[2]));
         }
 
         struct Candidate
@@ -358,7 +387,7 @@ namespace IFS.SceneSpec.Ownership
         }
 
         // h를 dir 방향으로 1°씩(최대 180°). 목표에 닿는 최소 각과, 닿지 못할 때 최대 ΔE 후보.
-        static void SearchHue(double h0, double s, double l, Lab lab0, int dir, double target, out Candidate first, out Candidate max)
+        static void SearchHue(double h0, double s, double l, double bright, Lab lab0, int dir, double target, out Candidate first, out Candidate max)
         {
             first = default; max = default;
             for (int k = 1; k <= MaxHueSteps; k++)
@@ -367,14 +396,14 @@ namespace IFS.SceneSpec.Ownership
                 raw -= Math.Floor(raw);
                 double cand = R4(raw);
                 if (cand >= 1) cand -= 1;
-                double de = ColorMetrics.DeltaE2000(lab0, LabOf(cand, s, l));
+                double de = ColorMetrics.DeltaE2000(lab0, LabOf(cand, s, l, bright));
                 if (de > max.DeltaE) max = new Candidate { Value = cand, DeltaE = de, Steps = k };
                 if (de >= target) { first = new Candidate { Value = cand, DeltaE = de, Steps = k, Found = true }; return; }
             }
         }
 
         // l을 dir 방향으로 0.005씩(끝 0·1 포함). 목표에 닿는 최소량과 최대 ΔE 후보.
-        static void SearchLightness(double h, double s, double l0, Lab lab0, int dir, double target, out Candidate first, out Candidate max)
+        static void SearchLightness(double h, double s, double l0, double bright, Lab lab0, int dir, double target, out Candidate first, out Candidate max)
         {
             first = default; max = default;
             double l0r = R4(l0);
@@ -387,7 +416,7 @@ namespace IFS.SceneSpec.Ownership
                 double cand = R4(raw);
                 if (cand != l0r)
                 {
-                    double de = ColorMetrics.DeltaE2000(lab0, LabOf(h, s, cand));
+                    double de = ColorMetrics.DeltaE2000(lab0, LabOf(h, s, cand, bright));
                     if (de > max.DeltaE) max = new Candidate { Value = cand, DeltaE = de, Steps = n };
                     if (de >= target) { first = new Candidate { Value = cand, DeltaE = de, Steps = n, Found = true }; return; }
                 }
@@ -399,8 +428,9 @@ namespace IFS.SceneSpec.Ownership
         {
             var p = plan.OriginalParams;
             double h = p.GetNumber("material.color.h"), s = p.GetNumber("material.color.s"), l = p.GetNumber("material.color.l");
+            double bright = p.GetNumber("material.brightness");
             double target = plan.Config.colorDeltaE;
-            var lab0 = LabOf(h, s, l);
+            var lab0 = LabOf(h, s, l, bright);
             var v = new OwnershipVariant { Id = "color", Attribute = "color" };
             bool chromatic = s >= ChromaticMinSaturation;
             int hueDir = plan.Cb == 0 ? +1 : -1;
@@ -412,7 +442,7 @@ namespace IFS.SceneSpec.Ownership
             Candidate hueFirst = default, hueMax = default;
             if (chromatic)
             {
-                SearchHue(h, s, l, lab0, hueDir, target, out hueFirst, out hueMax);
+                SearchHue(h, s, l, bright, lab0, hueDir, target, out hueFirst, out hueMax);
                 if (hueFirst.Found)
                 {
                     key = "material.color.h"; chosen = hueFirst; v.Rule = "hue";
@@ -421,8 +451,8 @@ namespace IFS.SceneSpec.Ownership
             }
             if (key == null)
             {
-                SearchLightness(h, s, l, lab0, +1, target, out var upFirst, out var upMax);
-                SearchLightness(h, s, l, lab0, -1, target, out var downFirst, out var downMax);
+                SearchLightness(h, s, l, bright, lab0, +1, target, out var upFirst, out var upMax);
+                SearchLightness(h, s, l, bright, lab0, -1, target, out var downFirst, out var downMax);
                 string rule = chromatic ? "lightness_fallback" : "lightness";
                 if (upFirst.Found || downFirst.Found)
                 {
@@ -456,7 +486,14 @@ namespace IFS.SceneSpec.Ownership
             bool colorStated = Stated(spec, "material.color");
             v.SourceByKey[key] = Label(colorStated);   // h·l ← material.color
             v.Source = SourceLabel(v.SourceByKey.Values);
-            v.Magnitude = new JObject { ["deltaE00"] = Math.Round(chosen.DeltaE, 3) };
+            string form = p.GetCategory("form.type");
+            double alpha = RenderedColor.SurfaceAlpha(form, p.GetNumber("material.opacity"),
+                plan.Shape.Model != null ? 1.0 : FormDensity[form]);
+            v.Magnitude = new JObject
+            {
+                ["deltaE00"] = Math.Round(chosen.DeltaE, 3),
+                ["deltaE00Composited"] = Math.Round(CompositedDeltaE(h, l, th, tl, s, bright, alpha), 3),
+            };
             v.Detail = new JObject
             {
                 ["achromatic"] = !chromatic,
@@ -465,6 +502,10 @@ namespace IFS.SceneSpec.Ownership
                 ["steps"] = chosen.Steps,
                 ["stepSize"] = key == "material.color.h" ? "1/360" : "0.005",
                 ["saturationSource"] = Label(spec.Material.Saturation != null ? Stated(spec, "material.saturation") : colorStated),
+                ["deltaEBasis"] = "albedo",
+                ["brightnessFactor"] = R4(RenderedColor.BrightnessFactor(bright)),
+                ["compositeAlpha"] = R4(alpha),
+                ["compositeBackground"] = new JArray(CompositeBackgroundSrgb.Select(c => (object)c).ToArray()),
             };
             return v;
         }
@@ -508,7 +549,7 @@ namespace IFS.SceneSpec.Ownership
                 return null;
             }
             string model = plan.Shape.Model;
-            bool invisible = IsInvisibleMotion(g, model);
+            bool invisible = IsInvisibleMotion(g, model, plan.OriginalParams.GetCategory("form.posture"));
             bool add = g == MotionGroup.Still || invisible;
             string toType = add ? AddMotionType : RemoveMotionType;
             MotionGroups.TryGet(toType, out var tg);
