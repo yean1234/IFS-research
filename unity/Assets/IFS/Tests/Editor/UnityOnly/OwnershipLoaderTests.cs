@@ -118,7 +118,11 @@ namespace IFS.SceneSpec.Tests
             Assert.That((string)manifest["specFile"], Is.EqualTo("EX02.json"));
             Assert.That((string)manifest["headSource"], Is.EqualTo("desktop"));
             var order = manifest["order"].Select(t => (string)t).ToArray();
-            Assert.That(order, Is.EqualTo(WilliamsDesign.OrderFor(4)));
+            var shown = manifest["variants"].Select(v => (string)v["id"]).ToList();
+            int n = shown.Count;
+            Assert.That(n, Is.EqualTo(9), "EX02 + 기본 설정: 원본 + 어긋난 변형 4 + 쌍 2개");
+            Assert.That(order, Is.EqualTo(WilliamsDesign.OrderFor(4, shown)));
+            Assert.That((string)manifest["ratingItem"], Is.EqualTo("resemblance"));
 
             var head = File.ReadAllLines(Path.Combine(dir, "headpose.csv"));
             Assert.That(head[0], Is.EqualTo(OwnershipRecordWriter.HeadposeHeader));
@@ -133,20 +137,21 @@ namespace IFS.SceneSpec.Tests
 
             var ratings = File.ReadAllLines(Path.Combine(dir, "ratings.csv"));
             Assert.That(ratings[0], Is.EqualTo(OwnershipRecordWriter.RatingsHeader));
-            Assert.That(ratings.Length, Is.EqualTo(1 + 5 + 1), "5개 + 취소 1개");
-            Assert.That(ratings.Count(l => l.EndsWith(",1")), Is.EqualTo(1));
+            Assert.That(ratings.Length, Is.EqualTo(1 + n + 1), "n개 + 취소 1개");
+            Assert.That(ratings.Skip(1).All(l => l.EndsWith(",resemblance")), Is.True, "끝 열 item");
+            Assert.That(ratings.Count(l => l.Split(',')[5] == "1"), Is.EqualTo(1));
             Assert.That(ratings[2], Does.StartWith("2," + order[1] + ",7,"), "위치 2에서 잘못 누른 7을 취소");
-            Assert.That(File.ReadAllLines(Path.Combine(dir, "difference.csv")).Length, Is.EqualTo(1 + 4));
+            Assert.That(File.ReadAllLines(Path.Combine(dir, "difference.csv")).Length, Is.EqualTo(1 + n - 1));
 
             var summary = OwnershipVariantTests.ParseNoDates(File.ReadAllText(Path.Combine(dir, "summary.json")));
             Assert.That((bool)summary["completed"], Is.True);
             Assert.That((string)summary["finalChoice"]["variant"], Is.EqualTo("orig"));
-            Assert.That(((JObject)summary["ratings"]).Count, Is.EqualTo(5));
+            Assert.That(((JObject)summary["ratings"]).Count, Is.EqualTo(n));
             var events = File.ReadAllLines(Path.Combine(dir, "events.csv"));
             Assert.That(events[0], Is.EqualTo(OwnershipRecordWriter.EventsHeader));
             Assert.That(events.Any(e => e.Contains(",rating_cancel,")), Is.True);
             Assert.That(events.Last(), Does.Contain(",done,completed"));
-            Assert.That((int)manifest["taskText"]["draftCount"], Is.EqualTo(5), "지금 문구 5개는 draft — manifest에 남는다");
+            Assert.That((int)manifest["taskText"]["draftCount"], Is.EqualTo(7), "지금 문구 7개는 draft — manifest에 남는다");
             Assert.That(events.Any(e => e.Contains(",warning,") && e.Contains("초안 문구")), Is.True, "draft 경고가 events.csv에도");
         }
 

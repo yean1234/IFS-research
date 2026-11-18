@@ -31,7 +31,7 @@ namespace IFS.SceneSpec.Tests
 
         // 계약 문자열을 여기 그대로 적어 둔다(상수를 바꾸면 이 테스트가 깨져야 한다).
         const string Headpose = "time_ms,phase,position,variant,head_x,head_y,head_z,head_qx,head_qy,head_qz,head_qw,obj_x,obj_y,obj_z,distance_m,angle_deg";
-        const string Ratings = "position,variant,rating,rt_ms,view_ms,cancelled";
+        const string Ratings = "position,variant,rating,rt_ms,view_ms,cancelled,item";
         const string Difference = "variant,rating,rt_ms";
         const string Events = "time_ms,event,detail";
 
@@ -58,13 +58,13 @@ namespace IFS.SceneSpec.Tests
                 w.Head(new HeadSample { TimeMs = 50, Phase = "viewing", Position = 1, Variant = "size", HeadX = 0, HeadY = 1.6, HeadZ = 0, Qw = 1,
                     HasObject = true, ObjX = 0, ObjY = 1.28, ObjZ = 1.19, DistanceM = 1.23, AngleDeg = 15.5 });
                 w.Head(new HeadSample { TimeMs = 100, Phase = "rating", Position = 1, HeadY = 1.6, Qw = 1 });
-                w.Rating(1, "size", 7, 812, 30000, true);
-                w.Rating(1, "size", 5, 400, 30000, false);
+                w.Rating(1, "size", 7, 812, 30000, true, "resemblance");
+                w.Rating(1, "size", 5, 400, 30000, false, "resemblance");
                 w.Difference("color", 4, 1234);
                 w.Event(0, "phase", "viewing;position=1;variant=size");
                 w.Event(5, "note", "쉼표, 따옴표\" 포함");
                 w.WriteSummary(OwnershipRecordWriter.BuildSummary(true, null, 3, "orig", 900,
-                    new Dictionary<string, int> { { "size", 5 }, { "orig", 6 } }, started.AddMinutes(5)));
+                    new Dictionary<string, int> { { "size_hi", 2 }, { "color_lo", 3 }, { "size", 5 }, { "orig", 6 } }, started.AddMinutes(5)));
                 w.WriteManifest(new JObject { ["recordVersion"] = OwnershipManifest.RecordVersion });
             }
             Assert.That(dir, Is.EqualTo(Path.Combine(_tmp, "ownership", "P007", "SYN_sess", "20261117-010203")), "폴더 = ownership/P{번호:000}/{sessionId}/{UTC}");
@@ -79,7 +79,7 @@ namespace IFS.SceneSpec.Tests
             Assert.That(head[2], Is.EqualTo("100,rating,1,,0.0000,1.6000,0.0000,0.000000,0.000000,0.000000,1.000000,,,,,"), "형상 없으면 빈칸");
             Assert.That(head[1].Split(',').Length, Is.EqualTo(Headpose.Split(',').Length));
             var ratings = File.ReadAllLines(Path.Combine(dir, "ratings.csv"));
-            Assert.That(ratings, Is.EqualTo(new[] { Ratings, "1,size,7,812,30000,1", "1,size,5,400,30000,0" }));
+            Assert.That(ratings, Is.EqualTo(new[] { Ratings, "1,size,7,812,30000,1,resemblance", "1,size,5,400,30000,0,resemblance" }));
             Assert.That(File.ReadAllLines(Path.Combine(dir, "difference.csv")), Is.EqualTo(new[] { Difference, "color,4,1234" }));
             var events = File.ReadAllLines(Path.Combine(dir, "events.csv"));
             Assert.That(events[0], Is.EqualTo(Events));
@@ -91,7 +91,7 @@ namespace IFS.SceneSpec.Tests
             Assert.That((int)summary["finalChoice"]["position"], Is.EqualTo(3));
             Assert.That((string)summary["finalChoice"]["variant"], Is.EqualTo("orig"));
             Assert.That((long)summary["finalChoice"]["rt_ms"], Is.EqualTo(900));
-            Assert.That(((JObject)summary["ratings"]).Properties().Select(p => p.Name), Is.EqualTo(new[] { "orig", "size" }), "조건 순서");
+            Assert.That(((JObject)summary["ratings"]).Properties().Select(p => p.Name), Is.EqualTo(new[] { "orig", "size", "color_lo", "size_hi" }), "조건 순서");
             Assert.That((string)summary["endedAtUtc"], Is.EqualTo("2026-11-17T01:07:03.000Z"));
         }
 
@@ -163,9 +163,11 @@ namespace IFS.SceneSpec.Tests
         {
             string path = Path.Combine(Application.streamingAssetsPath, OwnershipTaskText.DefaultRelativePath);
             var t = OwnershipTaskText.Load(path);
-            Assert.That(t.Version, Is.EqualTo("0.1"));
-            Assert.That(t.FileName, Is.EqualTo("ownership_task.v0.json"));
-            foreach (var k in OwnershipTaskText.RequiredKeys)
+            Assert.That(t.Version, Is.EqualTo("0.2"));
+            Assert.That(t.FileName, Is.EqualTo("ownership_task.v0.2.json"));
+            Assert.That(t.Keys.OrderBy(k => k, StringComparer.Ordinal), Is.EqualTo(new[]
+                { "difference", "done", "final_choice", "final_choice_resemblance", "rating", "rating_resemblance", "viewing_intro" }));
+            foreach (var k in t.Keys)
             {
                 Assert.That(t[k], Is.Not.Null.And.Not.Empty, k);
                 Assert.That(t.Status(k), Is.EqualTo("draft"), k + " status");
@@ -173,9 +175,30 @@ namespace IFS.SceneSpec.Tests
                     Assert.That(t[k].Contains(banned), Is.False, $"{k}: '{banned}' 표현 금지(AGENTS.md 8)");
             }
             Assert.That(t["rating"], Does.Contain("1(전혀 내 것 같지 않다)").And.Contain("7(완전히 내 것 같다)"));
+            Assert.That(t.RatingText("resemblance"), Does.Contain("떠올린 모습과").And.Contain("닮았").And.Contain("1(").And.Contain("7("));
+            Assert.That(t.RatingText("mine"), Is.EqualTo(t["rating"]));
+            Assert.That(t.FinalChoiceText("resemblance", 9), Does.StartWith("9개 중").And.Contain("닮은"));
+            Assert.That(t.FinalChoiceText("mine", 7), Does.StartWith("7개 중").And.Contain("'내 것'"));
+            foreach (var k in new[] { "rating_resemblance", "final_choice_resemblance" })
+                Assert.That(t.Source(k), Is.EqualTo("docs/rq-v2-proposal.md 3.5 (초안, IRB 검토 전)"), k + " source");
+            foreach (var item in new[] { "resemblance", "mine" })
+                foreach (var n in new[] { 5, 7, 9 })
+                    Assert.That(t.Problems(item, n), Is.Empty, $"{item} n={n}");
             Assert.Throws<FormatException>(() => OwnershipTaskText.Parse("{\"version\":\"0.1\",\"texts\":{}}"), "빠진 문구는 오류");
-            Assert.That(t.DraftKeys, Is.EqualTo(OwnershipTaskText.RequiredKeys.OrderBy(k => k, StringComparer.Ordinal).ToList()), "지금 문구 5개는 모두 draft");
-            Assert.That(OwnershipRunner.DraftNotice(t, false), Does.Contain("5/5"), "실험자 화면 경고 줄");
+            Assert.That(t.DraftKeys.Count, Is.EqualTo(7), "지금 문구 7개는 모두 draft");
+            Assert.That(OwnershipRunner.DraftNotice(t, false), Does.Contain("7/7"), "실험자 화면 경고 줄");
+        }
+
+        // 0.1 문구 파일은 0.2 이전 세션 재현용으로 남는다: '내 것' 문항·조건 5개에서만 쓸 수 있다.
+        [Test]
+        public void Old_task_text_file_still_loads_but_only_fits_mine_with_five_conditions()
+        {
+            var t = OwnershipTaskText.Load(Path.Combine(Application.streamingAssetsPath, "IFS", "ownership_task.v0.json"));
+            Assert.That(t.Version, Is.EqualTo("0.1"));
+            Assert.That(t.Problems("mine", 5), Is.Empty);
+            Assert.That(t.Problems("mine", 9).Single(), Does.Contain("{n}"), "\"다섯 개 중\" 문구로 9개를 물을 수 없다");
+            Assert.That(t.Problems("resemblance", 5).Count, Is.EqualTo(2), "닮음 문구 두 개가 없다");
+            Assert.That(t.FinalChoiceText("mine", 5), Is.EqualTo(t["final_choice"]));
         }
 
         static OwnershipTaskText TaskText(params (string key, string status)[] items)

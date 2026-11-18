@@ -30,8 +30,10 @@ namespace IFS.SceneSpec.Ownership
     public static class OwnershipManifest
     {
         /// <summary>0.2: taskText.draftCount·draftKeys, 색 변형 magnitude.deltaE00Composited, config.requireSpecPhrases 추가.
-        /// deltaE00은 셰이더 알베도 기준(0.1은 HSL 해석값 기준).</summary>
-        public const string RecordVersion = "ifs-ownership/0.2";
+        /// deltaE00은 셰이더 알베도 기준(0.1은 HSL 해석값 기준).
+        /// 0.3: ratingItem(최상위), shiftPairs, variants[].kind, config의 쌍 설정·ratingItem, ratings.csv 끝 열 item.
+        /// order 길이는 보여 준 조건 수(5·7·9).</summary>
+        public const string RecordVersion = "ifs-ownership/0.3";
 
         public static JObject Build(OwnershipPlan plan, OwnershipSessionInfo info)
         {
@@ -58,10 +60,12 @@ namespace IFS.SceneSpec.Ownership
                     ["draftCount"] = info.TaskTextDraftKeys?.Length ?? 0,
                     ["draftKeys"] = new JArray(info.TaskTextDraftKeys ?? new string[0]),
                 },
+                ["ratingItem"] = plan.Config.ratingItem,
                 ["config"] = plan.Config.ToJson(),
                 ["flags"] = plan.FlagsJson(),
                 ["original"] = plan.OriginalJson(),
                 ["variants"] = plan.VariantsJson(),
+                ["shiftPairs"] = plan.ShiftPairsJson(),
                 ["order"] = new JArray(plan.Order),
             };
         }

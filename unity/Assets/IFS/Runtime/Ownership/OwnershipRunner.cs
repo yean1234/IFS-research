@@ -1,8 +1,9 @@
-// 소유감 실험 러너(설계 2.2). 원본 1개 + 변형 4개를 균형 순서로 하나씩 같은 시간 보여 주고,
-// 형상마다 "내 것 같다" 7점 평정, 마지막에 5개 중 하나 선택, 끝으로 원본 대비 차이 평정(설정으로 끔).
-//   Setup → SpecCheck → Intro → (Viewing → Rating) × 5 → FinalChoice → Difference → Done.  Esc = 어느 단계에서든 중단.
-// 형상 5개는 SceneLoader 5개로 만든다(Load(path, 덮어쓰기), 로더 기록 끔). 시작 순간 머리 자세를 고정 앵커로 잡아
-// 다섯 형상이 모두 같은 자리에 놓인다. 로드한 값이 생성기 계획과 다르면 시작하지 않는다.
+// 소유감 실험 러너(설계 2.2). 원본 1개 + 어긋난 변형 4개 + 유효한 같은 말·다른 값 쌍(0·2·4개) = n개(5·7·9)를
+// 균형 순서로 하나씩 같은 시간 보여 주고, 형상마다 7점 평정(config.ratingItem: resemblance "떠올린 모습과 닮았다" 기본 |
+// mine "내 것 같다"), 마지막에 n개 중 하나 선택, 끝으로 원본 대비 차이 평정(설정으로 끔).
+//   Setup → SpecCheck → Intro → (Viewing → Rating) × n → FinalChoice → Difference × (n − 1) → Done.  Esc = 어느 단계에서든 중단.
+// 형상 n개는 SceneLoader n개로 만든다(Load(path, 덮어쓰기), 로더 기록 끔). 시작 순간 머리 자세를 고정 앵커로 잡아
+// 모든 형상이 같은 자리에 놓인다. 로드한 값이 생성기 계획과 다르면 시작하지 않는다. n ≤ 9(키 한 자리).
 // 기록은 OwnershipRecordWriter(설계 2.4). 참여자에게 원본 여부·남은 시간을 보여 주지 않는다.
 // 키(실험자): 1–7 평정·선택, Backspace 직전 입력 취소, Space/Enter 확정·다음, Esc 중단. 키 입력은 기존 Input Manager.
 // 자동 시행(검증용): BeginAuto(스크립트) 뒤 Tick(dt)을 밖에서 부르면 키 없이 끝까지 간다(시뮬레이션 시계).
@@ -19,14 +20,14 @@ namespace IFS.SceneSpec.Ownership
 {
     public enum OwnershipPhase { Setup, SpecCheck, Intro, Viewing, Rating, FinalChoice, Difference, Done }
 
-    /// <summary>자동 시행의 정해진 입력(합성). 위치 순서(1–5)대로의 평정, 한 번의 잘못 누름과 취소, 선택, 차이 평정.</summary>
+    /// <summary>자동 시행의 정해진 입력(합성). 위치 순서(1–n)대로의 평정(배열보다 길면 되풀이), 한 번의 잘못 누름과 취소, 선택, 차이 평정.</summary>
     public sealed class OwnershipAutoScript
     {
         public int[] Ratings = { 6, 3, 4, 5, 2 };
-        /// <summary>이 위치(1–5)에서 먼저 MistakeRating을 누르고 Backspace로 취소한 뒤 다시 평정한다. 0 = 하지 않음.</summary>
+        /// <summary>이 위치(1–n)에서 먼저 MistakeRating을 누르고 Backspace로 취소한 뒤 다시 평정한다. 0 = 하지 않음.</summary>
         public int CancelAtPosition = 2;
         public int MistakeRating = 7;
-        /// <summary>마지막 선택 위치(1–5). 0이면 원본의 위치.</summary>
+        /// <summary>마지막 선택 위치(1–n). 0이면 원본의 위치.</summary>
         public int FinalChoicePosition = 0;
         public int[] DifferenceRatings = { 5, 3, 4, 2 };
         public double KeyDelaySeconds = 0.3;
@@ -283,6 +284,7 @@ namespace IFS.SceneSpec.Ownership
             if (refusal != null) Errors.Add(refusal);
             Plan = OwnershipVariantGenerator.Generate(Spec, number, config, defaults);
             Errors.AddRange(Plan.Errors);
+            if (Plan.Ok && TaskText != null) Errors.AddRange(TaskText.Problems(config.ratingItem, Plan.Order.Length));
             Warnings.AddRange(Plan.Warnings);
             if (textDisplay != null) { textDisplay.EnsureFont(); if (textDisplay.FontWarning != null) Warnings.Add(textDisplay.FontWarning); }
             Phase = OwnershipPhase.SpecCheck;
@@ -393,7 +395,7 @@ namespace IFS.SceneSpec.Ownership
                 return false;
             }
             LastRecordDirectory = _writer.Directory;
-            Event("session_start", $"participant={Plan.ParticipantNumber};cb={Plan.Cb};orderRow={Plan.OrderRow};order={string.Join("|", Plan.Order)};headSource={HeadSource}");
+            Event("session_start", $"participant={Plan.ParticipantNumber};cb={Plan.Cb};orderRow={Plan.OrderRow};order={string.Join("|", Plan.Order)};headSource={HeadSource};ratingItem={config.ratingItem}");
             if (_auto != null) Event("auto_mode", "scripted inputs and head path (verification only, not participant data)");
             foreach (var w in Warnings) Event("warning", w);
             EnterIntro();
@@ -440,7 +442,7 @@ namespace IFS.SceneSpec.Ownership
             Event("hide", $"position={_pos + 1};variant={id};view_ms={_lastViewMs}");
             SetPhase(OwnershipPhase.Rating, $"rating;position={_pos + 1};variant={id}");
             _askedAt = Now;
-            ShowTextAtEye(TaskText["rating"]);
+            ShowTextAtEye(TaskText.RatingText(config.ratingItem));
         }
 
         void EnterFinal()
@@ -453,7 +455,7 @@ namespace IFS.SceneSpec.Ownership
             Event("final_layout", $"radius_m={radius.ToString("0.000", System.Globalization.CultureInfo.InvariantCulture)};spacing_deg={spacing.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)};positions={string.Join("|", Plan.Order)}");
             for (int i = 0; i < Plan.Order.Length; i++)
                 if (textDisplay != null) textDisplay.ShowLabel(i, (i + 1).ToString(), layout[i].label, _anchor.transform.position);
-            ShowTextAbove(TaskText["final_choice"], layout);
+            ShowTextAbove(TaskText.FinalChoiceText(config.ratingItem, Plan.Order.Length), layout);
             _askedAt = Now;
         }
 
@@ -604,7 +606,7 @@ namespace IFS.SceneSpec.Ownership
             switch (Phase)
             {
                 case OwnershipPhase.Rating:
-                    _writer.Rating(_pos + 1, Plan.Order[_pos], v, rt, _lastViewMs, cancelled: true);
+                    _writer.Rating(_pos + 1, Plan.Order[_pos], v, rt, _lastViewMs, cancelled: true, config.ratingItem);
                     Event("rating_cancel", $"position={_pos + 1};variant={Plan.Order[_pos]};rating={v}");
                     break;
                 case OwnershipPhase.FinalChoice:
@@ -634,7 +636,7 @@ namespace IFS.SceneSpec.Ownership
                     {
                         string id = Plan.Order[_pos];
                         int v = _pending.Value;
-                        _writer.Rating(_pos + 1, id, v, Ms(_pendingAt - _askedAt), _lastViewMs, cancelled: false);
+                        _writer.Rating(_pos + 1, id, v, Ms(_pendingAt - _askedAt), _lastViewMs, cancelled: false, config.ratingItem);
                         _ratings[id] = v;
                         Event("rating", $"position={_pos + 1};variant={id};rating={v}");
                         if (textDisplay != null) textDisplay.HideAll();
@@ -684,7 +686,7 @@ namespace IFS.SceneSpec.Ownership
                 // 확정 전 평정은 참여자가 답한 값이므로 남긴다(취소 아님).
                 if (Phase == OwnershipPhase.Rating && _pending != null)
                 {
-                    _writer.Rating(_pos + 1, Plan.Order[_pos], _pending.Value, Ms(_pendingAt - _askedAt), _lastViewMs, cancelled: false);
+                    _writer.Rating(_pos + 1, Plan.Order[_pos], _pending.Value, Ms(_pendingAt - _askedAt), _lastViewMs, cancelled: false, config.ratingItem);
                     _ratings[Plan.Order[_pos]] = _pending.Value;
                     Event("abort_pending_written", $"rating;position={_pos + 1};value={_pending.Value}");
                 }

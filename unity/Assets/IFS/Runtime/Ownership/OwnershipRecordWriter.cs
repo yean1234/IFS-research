@@ -65,7 +65,7 @@ namespace IFS.SceneSpec.Ownership
     public sealed class OwnershipRecordWriter : IDisposable
     {
         public const string HeadposeHeader = "time_ms,phase,position,variant,head_x,head_y,head_z,head_qx,head_qy,head_qz,head_qw,obj_x,obj_y,obj_z,distance_m,angle_deg";
-        public const string RatingsHeader = "position,variant,rating,rt_ms,view_ms,cancelled";
+        public const string RatingsHeader = "position,variant,rating,rt_ms,view_ms,cancelled,item";
         public const string DifferenceHeader = "variant,rating,rt_ms";
         public const string EventsHeader = "time_ms,event,detail";
 
@@ -79,7 +79,7 @@ namespace IFS.SceneSpec.Ownership
         /// <summary>events.csv: 형상 하나를 단독 제시하기 시작한 순간. detail = ViewingStartDetail(분석기가 읽는 고정 형식).</summary>
         public const string ViewingStartEvent = "viewing_start";
 
-        /// <summary>"position={1–5};variant={id}" — 순서·구분자를 바꾸지 않는다(분석기 ifs_chatbot.eval.ownership과의 계약).</summary>
+        /// <summary>"position={1–n};variant={id}" — 순서·구분자를 바꾸지 않는다(분석기 ifs_chatbot.eval.ownership과의 계약).</summary>
         public static string ViewingStartDetail(int position, string variant) =>
             "position=" + position.ToString(Inv) + ";variant=" + (variant ?? "");
 
@@ -159,11 +159,12 @@ namespace IFS.SceneSpec.Ownership
             if (++_headUnflushed >= 20) { _head.Flush(); _headUnflushed = 0; }   // 약 1초마다(20 Hz)
         }
 
-        public void Rating(int position, string variant, int rating, long rtMs, long viewMs, bool cancelled)
+        /// <param name="item">평정 문항(config.ratingItem: resemblance | mine). ratings.csv 끝 열.</param>
+        public void Rating(int position, string variant, int rating, long rtMs, long viewMs, bool cancelled, string item)
         {
             if (_disposed) return;
             _ratings.WriteLine(string.Join(",", position.ToString(Inv), Csv(variant), rating.ToString(Inv),
-                rtMs.ToString(Inv), viewMs.ToString(Inv), cancelled ? "1" : "0"));
+                rtMs.ToString(Inv), viewMs.ToString(Inv), cancelled ? "1" : "0", Csv(item)));
             _ratings.Flush();
         }
 
@@ -181,13 +182,13 @@ namespace IFS.SceneSpec.Ownership
             _events.Flush();
         }
 
-        /// <summary>summary.json. ratings = 변형 id → 취소되지 않은 마지막 평정(조건 순서 orig, form, color, size, motion).</summary>
+        /// <summary>summary.json. ratings = 변형 id → 취소되지 않은 마지막 평정(조건 순서 OwnershipVariantGenerator.ConditionIds).</summary>
         public static JObject BuildSummary(bool completed, string abortedAt, int? finalPosition, string finalVariant, long? finalRtMs,
             IDictionary<string, int> ratings, DateTime endedUtc)
         {
             var r = new JObject();
             if (ratings != null)
-                foreach (var id in WilliamsDesign.Conditions.Concat(ratings.Keys.Except(WilliamsDesign.Conditions).OrderBy(k => k, StringComparer.Ordinal)))
+                foreach (var id in OwnershipVariantGenerator.ConditionIds.Concat(ratings.Keys.Except(OwnershipVariantGenerator.ConditionIds).OrderBy(k => k, StringComparer.Ordinal)))
                     if (ratings.TryGetValue(id, out int v)) r[id] = v;
             return new JObject
             {

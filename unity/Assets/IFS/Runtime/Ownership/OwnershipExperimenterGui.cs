@@ -93,7 +93,7 @@ namespace IFS.SceneSpec.Ownership
             if (plan != null)
             {
                 GUILayout.Label($"<b>원본</b>: {plan.OriginalRendered} (모양 모형 {plan.OriginalShapeModel}), 유효 불투명도 {plan.EffectiveOpacity:0.###}", _wrap);
-                GUILayout.Label("<b>변형 4개</b>", _wrap);
+                GUILayout.Label($"<b>보여 줄 형상 {plan.Order.Length}개</b> (원본 + 변형 {plan.Variants.Count - 1}개, 평정 문항 {runner.Config.ratingItem})", _wrap);
                 foreach (var v in plan.Variants.Where(v => !v.IsOriginal))
                 {
                     string flags = string.Join(" ", new[]
@@ -123,22 +123,22 @@ namespace IFS.SceneSpec.Ownership
                     GUILayout.Label("안내 문구를 보여 주는 중. 참여자가 준비되면 Space/Enter → 첫 형상.", _wrap);
                     break;
                 case OwnershipPhase.Viewing:
-                    GUILayout.Label($"제시 {runner.Position}/5: <b>{runner.ShownVariant}</b>   남은 시간 {runner.ViewSecondsLeft:0.0}초 (참여자에게는 보이지 않음)", _wrap);
+                    GUILayout.Label($"제시 {runner.Position}/{plan.Order.Length}: <b>{runner.ShownVariant}</b>   남은 시간 {runner.ViewSecondsLeft:0.0}초 (참여자에게는 보이지 않음)", _wrap);
                     break;
                 case OwnershipPhase.Rating:
-                    GUILayout.Label($"평정 {runner.Position}/5 ({plan.Order[runner.Position - 1]}): 참여자가 말한 숫자 1–7을 누르세요.", _wrap);
+                    GUILayout.Label($"평정 {runner.Position}/{plan.Order.Length} ({plan.Order[runner.Position - 1]}): 참여자가 말한 숫자 1–7을 누르세요.", _wrap);
                     GUILayout.Label(runner.PendingInput.HasValue
                         ? $"입력됨: <b>{runner.PendingInput}</b> — Space/Enter 확정·다음, Backspace 취소"
                         : "입력 대기", _wrap);
                     break;
                 case OwnershipPhase.FinalChoice:
-                    GUILayout.Label("마지막 선택: 참여자가 말한 번호 1–5. 호의 왼쪽부터 1–5 = " +
+                    GUILayout.Label($"마지막 선택: 참여자가 말한 번호 1–{plan.Order.Length}. 호의 왼쪽부터 1–{plan.Order.Length} = " +
                                     string.Join(", ", plan.Order.Select((id, i) => $"{i + 1}:{id}")), _wrap);
                     GUILayout.Label(runner.PendingInput.HasValue
                         ? $"입력됨: <b>{runner.PendingInput}</b> — Space/Enter 확정, Backspace 취소" : "입력 대기", _wrap);
                     break;
                 case OwnershipPhase.Difference:
-                    GUILayout.Label($"차이 평정 {runner.DifferenceIndex + 1}/4: 왼쪽 원본, 오른쪽 <b>{runner.DifferenceVariant}</b>. 숫자 1–7.", _wrap);
+                    GUILayout.Label($"차이 평정 {runner.DifferenceIndex + 1}/{plan.Order.Length - 1}: 왼쪽 원본, 오른쪽 <b>{runner.DifferenceVariant}</b>. 숫자 1–7.", _wrap);
                     GUILayout.Label(runner.PendingInput.HasValue
                         ? $"입력됨: <b>{runner.PendingInput}</b> — Space/Enter 확정·다음, Backspace 취소" : "입력 대기", _wrap);
                     break;
