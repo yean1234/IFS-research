@@ -4,6 +4,8 @@
 //   Setup → SpecCheck → Intro → (Viewing → Rating) × n → FinalChoice → Difference × (n − 1) → Done.  Esc = 어느 단계에서든 중단.
 // 형상 n개는 SceneLoader n개로 만든다(Load(path, 덮어쓰기), 로더 기록 끔). 시작 순간 머리 자세를 고정 앵커로 잡아
 // 모든 형상이 같은 자리에 놓인다. 로드한 값이 생성기 계획과 다르면 시작하지 않는다. n ≤ 9(키 한 자리).
+// 보기 전 보고(선택): 실험자가 고른 파일을 시작 때 기록 폴더에 prereport.json으로 바이트 그대로 복사하고 manifest.prereport에
+// 해시·specSha256 일치 여부를 남긴다. 그 내용(고른 값·①②③)은 읽지 않고 자극·순서·화면에 쓰지 않는다(OwnershipPrereport).
 // 기록은 OwnershipRecordWriter(설계 2.4). 참여자에게 원본 여부·남은 시간을 보여 주지 않는다.
 // 키(실험자): 1–7 평정·선택, Backspace 직전 입력 취소, Space/Enter 확정·다음, Esc 중단. 키 입력은 기존 Input Manager.
 // 자동 시행(검증용): BeginAuto(스크립트) 뒤 Tick(dt)을 밖에서 부르면 키 없이 끝까지 간다(시뮬레이션 시계).
@@ -81,6 +83,12 @@ namespace IFS.SceneSpec.Ownership
         public OwnershipPhase Phase { get; private set; } = OwnershipPhase.Setup;
         public string ParticipantNumberText { get; set; } = "";
         public string SpecPathText { get; set; } = "";
+        /// <summary>보기 전 보고 파일 경로(선택, 세션마다). 비우면 보고 없음.</summary>
+        public string PrereportPathText { get; set; } = "";
+        /// <summary>SpecCheck에서 읽은 보기 전 보고(세 필드·해시만). 없으면 null.</summary>
+        public OwnershipPrereport Prereport { get; private set; }
+        /// <summary>실험자 화면 한 단어: 있음 / 없음 / 해시 불일치.</summary>
+        public string PrereportStatus => OwnershipPrereport.Status(Prereport);
         public string SpecFolderText { get; set; }
         public List<SpecFileEntry> SpecFiles { get; } = new List<SpecFileEntry>();
         public List<string> Errors { get; } = new List<string>();
@@ -257,6 +265,7 @@ namespace IFS.SceneSpec.Ownership
             Warnings.Clear();
             Spec = null;
             Plan = null;
+            Prereport = null;
             if (!int.TryParse((ParticipantNumberText ?? "").Trim(), out int number) || number < 1)
                 Errors.Add("참여자 번호는 1 이상의 정수여야 합니다");
             string path = (SpecPathText ?? "").Trim().Trim('"');
@@ -285,6 +294,16 @@ namespace IFS.SceneSpec.Ownership
             Plan = OwnershipVariantGenerator.Generate(Spec, number, config, defaults);
             Errors.AddRange(Plan.Errors);
             if (Plan.Ok && TaskText != null) Errors.AddRange(TaskText.Problems(config.ratingItem, Plan.Order.Length));
+            // 보기 전 보고: 계획을 만든 뒤에 읽는다(내용은 계획에 들어가지 않는다)
+            string prePath = (PrereportPathText ?? "").Trim().Trim('"');
+            if (prePath.Length > 0)
+            {
+                try { Prereport = OwnershipPrereport.Load(prePath, _specSha); }
+                catch (Exception e) { Errors.Add("보기 전 보고 파일을 읽지 못했습니다: " + e.Message); }
+                if (Prereport != null && !Prereport.SpecSha256Match) Warnings.Add("보기 전 보고의 specSha256이 지금 spec 파일과 다릅니다(해시 불일치)");
+            }
+            string preRefusal = OwnershipPrereport.Refusal(Prereport, config.requirePrereport);
+            if (preRefusal != null) Errors.Add(preRefusal);
             Warnings.AddRange(Plan.Warnings);
             if (textDisplay != null) { textDisplay.EnsureFont(); if (textDisplay.FontWarning != null) Warnings.Add(textDisplay.FontWarning); }
             Phase = OwnershipPhase.SpecCheck;
@@ -317,6 +336,16 @@ namespace IFS.SceneSpec.Ownership
             try { sha = OwnershipManifest.Sha256OfFile(_specFullPath); }
             catch (Exception e) { Errors.Add("spec 파일을 다시 읽지 못했습니다: " + e.Message); return false; }
             if (sha != _specSha) { Errors.Add("확인한 뒤 spec 파일이 바뀌었습니다 — 다시 확인하세요"); return false; }
+            string preRefusal = OwnershipPrereport.Refusal(Prereport, config.requirePrereport);
+            if (preRefusal != null) { Errors.Add(preRefusal); return false; }
+            if (Prereport != null)
+            {
+                string pre = (PrereportPathText ?? "").Trim().Trim('"');
+                byte[] now;
+                try { now = File.ReadAllBytes(pre); }
+                catch (Exception e) { Errors.Add("보기 전 보고 파일을 다시 읽지 못했습니다: " + e.Message); return false; }
+                if (OwnershipManifest.Sha256Hex(now) != Prereport.Sha256) { Errors.Add("확인한 뒤 보기 전 보고 파일이 바뀌었습니다 — 다시 확인하세요"); return false; }
+            }
 
             if (headProvider != null && _auto == null) headProvider.Step(0f);   // XR이면 지금 헤드셋 자세를 먼저 읽는다
             var headPos = headProvider != null ? headProvider.Position : new Vector3(0f, 1.6f, 0f);
@@ -383,7 +412,9 @@ namespace IFS.SceneSpec.Ownership
                     TaskTextFile = TaskText.FileName,
                     TaskTextVersion = TaskText.Version,
                     TaskTextDraftKeys = TaskText.DraftKeys.ToArray(),
+                    Prereport = Prereport?.ToJson(),
                 };
+                if (Prereport != null) _writer.WritePrereport(Prereport.Bytes);
                 _writer.WriteManifest(OwnershipManifest.Build(Plan, info));
             }
             catch (Exception e)
@@ -431,6 +462,7 @@ namespace IFS.SceneSpec.Ownership
             _viewStart = Now;
             // 제시 시작 시각(분석기의 first_look_ms·표본 지속 시간의 시작점). 첫 표본은 다음 프레임에 쓰인다.
             Event(OwnershipRecordWriter.ViewingStartEvent, OwnershipRecordWriter.ViewingStartDetail(pos + 1, id));
+            if (pos == 0) Event(OwnershipRecordWriter.FirstViewingUtcEvent, OwnershipRecordWriter.FormatUtc(DateTime.UtcNow));
         }
 
         void EndViewing()
@@ -725,6 +757,8 @@ namespace IFS.SceneSpec.Ownership
             Errors.Clear();
             Warnings.Clear();
             ParticipantNumberText = "";
+            PrereportPathText = "";
+            Prereport = null;
             RefreshSpecList();
             PreloadTaskText();
         }

@@ -217,7 +217,7 @@ JSON 하나마다 하는 일:
 | --- | --- |
 | `OwnershipVariantGenerator.cs` | 변형본 생성기(순수 C#). 원본 spec + 참여자 번호 + 설정 → 원본 해석값, 어긋난 변형 4개, 같은 말·다른 값 쌍, 제시 순서, 오류·플래그. 참여자 보고값은 입력으로 받지 않습니다. 기본값·모양 해석은 `SceneParams`·`ShapeMapping`을 그대로 씁니다. 난수·LLM이 없어 입력이 같으면 결과가 바이트까지 같습니다 |
 | `WilliamsDesign.cs` | 제시 순서 표. 보여 줄 조건 n개를 먼저 정한 뒤 n조건 Williams 설계(첫 행 0 1 n−1 2 n−2 …, 짝수 n행, 홀수 2n행 = 뒤집은 방진 추가). 5조건은 예전 10행 표 그대로(0.2 세션 재현). 행 = (번호 − 1) mod 행 수, 균형 비트 cb = ((번호 − 1) mod 2) XOR (⌊(번호 − 1) / 10⌋ mod 2) — 1–10번은 홀짝 그대로, 11–20번은 뒤집혀 20명이면 행 × cb 20칸이 한 번씩 찹니다. 참여자 번호는 1부터 빠짐없이 차례로 배정하고, 중단·재시행은 같은 번호로 합니다(분석기 `summary.json`의 `orderBalance`가 행별·cb별·행×cb 칸별 세션 수를 세고 어긋나면 경고) |
-| `OwnershipConfig.cs` | `sizeStep` 0.25 · `colorDeltaE` 30(잠정) · 쌍: `shiftAttributes` [color, size](빈 목록 = 0.2와 같은 동작) · `sizeShiftStep` 0.10 · `colorShiftDeltaE` 12 · `maxHueShiftDeg` 20 · `shiftSymmetryTolerance` 3(모두 잠정) · `ratingItem` resemblance(기본)·mine · `viewSeconds` 30 · `headSampleHz` 20 · `gazeConeDeg` 15 · `finalChoiceArcDeg` 120 · `finalChoiceRadiusM` 0(= 원본 거리) · `differenceRating` 켬. 값은 manifest에 남습니다 |
+| `OwnershipConfig.cs` | `sizeStep` 0.25 · `colorDeltaE` 30(잠정) · 쌍: `shiftAttributes` [color, size](빈 목록 = 0.2와 같은 계획·순서. 기록 형식은 0.3 그대로이고 0.2 직렬화 모드는 없음) · `requirePrereport` 꺼짐 · `sizeShiftStep` 0.10(최소 0.02) · `colorShiftDeltaE` 12 · `maxHueShiftDeg` 20 · `shiftSymmetryTolerance` 3(모두 잠정) · `ratingItem` resemblance(기본)·mine · `viewSeconds` 30 · `headSampleHz` 20 · `gazeConeDeg` 15 · `finalChoiceArcDeg` 120 · `finalChoiceRadiusM` 0(= 원본 거리) · `differenceRating` 켬. 값은 manifest에 남습니다 |
 | `OwnershipRunner.cs` | 단계 진행, 형상 n개 로드(로더 n개, `SceneLoader.Load(path, SceneOverride)`), 평정·선택 입력, 기록. 조건은 최대 9개(키 한 자리), 넘으면 생성 오류 |
 | `HeadPoseProvider.cs` | 머리 자세: XR Head 노드가 있으면 그것(`headSource = xr`), 없으면 데스크톱 모의(`desktop`) |
 | `ParticipantTextDisplay.cs` | 참여자에게 보이는 글(월드 공간 TextMesh + OS 폰트 "Malgun Gothic" 등, 없으면 내장 폰트와 경고) |
@@ -237,11 +237,13 @@ JSON 하나마다 하는 일:
 | 색 | ΔE00은 셰이더 알베도 기준(`RenderedColor`: HSL → sRGB를 선형 공간에서 밝기 배율 `lerp(0.4, 1, saturate(2 × brightness))`로 곱한 색, 로더와 같은 함수). 유채색(s ≥ 0.10): 색상을 cb 방향으로 1°씩 돌려 ΔE00 ≥ 30인 최소 각. 180°까지 안 되면 명도(`lightness_fallback`). 무채색(기본 HSL(0, 0, 0.7) 포함): 명도를 0.005씩, 두 방향 다 되면 cb(0 밝게·1 어둡게). 둘 다 안 되면 최대 변화 + `belowTarget`. 불투명도는 목표에 넣지 않고 하늘 지평선 색 위 알파 합성 ΔE00을 따로 기록 | `magnitude.deltaE00`(알베도)·`deltaE00Composited`, from/to h·s·l |
 | 움직임 | 정지이거나 보이지 않는 조합(회전 + 구·납작 원기둥·원뿔, 흔들림 + 자세 변형 없는 구)이면 `floating`(add), 아니면 `still`(remove). 속도 그대로. 기본 blob·mist·shell·fragments는 굴곡·조각이 함께 돌아 보이므로 표에 없음 | `flags.motionAltersScale`(맥동·퍼짐·다가옴·가라앉음) |
 | 형태 | 모형 없는 blob → Cube(add), 구 → Cube(swap), Cube·납작 원기둥·원뿔 → 구(remove), mist·shell·fragments → blob(remove, 모양 모형 없음) | `flags.saidNotRendered`(말했지만 그려지지 않은 모양어) |
-| 크기 쌍 `size_lo`·`size_hi` | `layout.size` ∓ `sizeShiftStep`(0.10). 둘 다 [0, 1] 안(아니면 `out_of_range`). 크기를 말했으면 원본과 같은 쪽(0.5 기준, w < 0.5 → hi < 0.5, w > 0.5 → lo > 0.5. w = 0.5는 검사 없음, 아니면 `crosses_category`) | `shiftPairs[]`(axis size), `kind` shift |
-| 색 쌍 `color_lo`·`color_hi` | 유채색: 색상을 −/+ 1°씩, 알베도 ΔE00 ≥ 12인 최소 각(최대 20°). 무채색: 명도를 −/+ 0.005씩, ΔE00 ≥ 12인 최소량([0.05, 0.95] 안). 한쪽이라도 못 닿으면 `range_exceeded`, \|ΔE_lo − ΔE_hi\| > 3이면 `asymmetric`. 명도 대체 없음 | `shiftPairs[]`(axis hue/lightness, `deltaE_lo`·`deltaE_hi`) |
+| 크기 쌍 `size_lo`·`size_hi` | `layout.size` ∓ `sizeShiftStep`(0.10). 적용 값이 [0, 1] 안(아니면 `out_of_range`), lo < w < hi·로그 척도 대칭(아니면 `asymmetric`). 크기가 stated면 반올림 전 값으로 원본과 같은 쪽(0.5 기준, w < 0.5 → hi < 0.5, w > 0.5 → lo > 0.5, 아니면 `crosses_category`. w = 0.5는 `categoryCheck` skipped_neutral) | `shiftPairs[]`(axis size, 화면 폭 `wM`·`loM`·`hiM` m = `RenderedSize`, 로더와 같은 식·자세 배율 포함, `categoryCheck`), `kind` shift |
+| 색 쌍 `color_lo`·`color_hi` | 유채색: 색상 1° 격자(반올림해 적용할 값으로 최대 20°). 무채색: 명도 0.005 격자([0.05, 0.95] 안). 양쪽 후보를 함께 보고 둘 다 알베도 ΔE00 ≥ 12이고 \|ΔE_lo − ΔE_hi\| ≤ 3인 최소 이동 쌍. 한쪽이라도 못 닿으면 `range_exceeded`, 닿지만 대칭 쌍이 없으면 `asymmetric`. 명도 대체 없음 | `shiftPairs[]`(axis hue/lightness, `deltaE_lo`·`deltaE_hi`, 기록용 `deltaEComposited_lo`·`_hi`) |
 
 - `source`(RQ2): 바꾼 키의 값을 준 spec 슬롯에 `_provenance`가 있으면 stated, 없으면 default, 섞이면 mixed.
 - 원본과 같아지는 변형, 모르는 `motion.type`·모형은 오류입니다(시작 버튼이 꺼짐). 원본 유효 불투명도(opacity × mist 밀도 0.5) < 0.15면 `lowVisibility` 경고.
+- 쌍의 `basis`: 축 값의 슬롯에 값이 있고 근거(`_provenance`)도 있으면 stated, 아니면 default(값 없이 근거만 있으면 `provenanceWithoutValue: true`). 색은 `material.color` 슬롯만으로 정하고 축 선택에 쓴 채도의 출처는 `axisChoiceBasis`.
+- 순서·cb: 쌍의 유효성으로 조건 수 n을 먼저 정하고, cb = ((번호 − 1) mod 2) XOR (⌊(번호 − 1) / 행 수(n)⌋ mod 2)(n = 5는 예전 규칙과 같음). manifest에 `orderRows`(행 수)·`conditionSet`(조건 id 이름순, `|`로 이음).
 - 쌍은 생성 때 유효한지 정하고, 유효하지 않으면 둘 다 보이지 않습니다. `lowVisibility`면 두 쌍 모두 `not_rendered`, 꺼진 속성은 `disabled`. 쌍의 `lo`·`hi`는 축 값(size·hue·lightness 모두 0–1, hue는 0/1에서 감김), `step`은 크기면 이동폭, 색이면 탐색 단위(1/360 또는 0.005). 실험자 화면에는 쌍의 id만 보입니다(값·방향 설명 없음).
 
 ### 실험자가 하는 일
@@ -249,6 +251,7 @@ JSON 하나마다 하는 일:
 1. (처음 한 번) 메뉴 **IFS ▸ Create Shape Prefabs**로 모양 프리팹이 있는지 확인합니다. 씬이 없거나 망가졌으면 **IFS ▸ Experiment ▸ Create Ownership Experiment Scene**.
 2. `Assets/IFS/Scenes/OwnershipExperiment.unity`를 열고 Play. Game 창 왼쪽에 실험자 화면이 뜹니다(Game 창을 크게, 해상도 1920×1080 이상 권장).
 3. **Setup**: 참여자 번호(1 이상. 1부터 빠짐없이 차례로 배정하고, 중단·재시행은 같은 번호로 합니다) → spec 폴더(비우면 에디터에서 `<저장소>/chatbot/logs/scenes`) → 목록에서 파일을 누르거나 경로를 직접 입력(`[변형 파일]` = `EX01.v1.json`처럼 `.v숫자.json` 파일) → **확인 → SpecCheck**.
+   - (선택) Setup의 **보기 전 보고 파일 경로**: 있으면 시작 때 기록 폴더에 `prereport.json`으로 바이트 그대로 복사하고 manifest `prereport`(file·sha256·specSha256·specSha256Match·sessionId·createdAtUtc)를 남깁니다. 고른 값·확정 여부는 읽지 않고 자극·순서·화면에 쓰지 않습니다. SpecCheck에는 "보기 전 보고: 있음/없음/해시 불일치"만 보입니다. `requirePrereport`를 켜면 없거나 해시가 다를 때 시작을 거부합니다.
 4. **SpecCheck**: 슬롯별 말한 값/기본값/근거 없음과 근거 말(구분은 슬롯의 `_provenance` 유무로, 변형 `source`와 같은 함수 `OwnershipVariantGenerator.SlotSource`. 값은 있는데 근거가 없으면 "근거 없음"이고 변형 `source`에서는 default로 셉니다), `_unmapped`·`_unmatched`·`_alternatives`·`_needsConfirmation`의 개수와 원문, 어긋난 변형 4개의 from → to와 플래그, 보여 줄 형상 수를 확인합니다. 빨간 오류가 있으면 시작할 수 없습니다. 참여자가 헤드셋을 쓰고 정면을 보면 **Enter**(시작 순간의 머리 자세가 형상 배치 기준이 됩니다).
 5. **Intro**: 안내 문구 → 준비되면 **Space/Enter**.
 6. **Viewing × n**은 `viewSeconds`마다 자동으로 넘어갑니다. **Rating**: 참여자가 말한 숫자 **1–7** → **Space/Enter**로 확정·다음 형상. 잘못 눌렀으면 **Backspace**(취소도 기록).
@@ -291,7 +294,8 @@ JSON 하나마다 하는 일:
 | `headpose.csv` | `time_ms,phase,position,variant,head_x,head_y,head_z,head_qx,head_qy,head_qz,head_qw,obj_x,obj_y,obj_z,distance_m,angle_deg` — 프레임당 최대 1개, 앞 표본에서 1/`headSampleHz` 이상 지난 프레임의 실제 시각으로 씁니다(밀린 표본을 과거 시각으로 채우지 않음. 그래서 실제 간격은 프레임 간격에 맞춰 명목보다 조금 길 수 있고, 긴 멈춤은 빈 간격으로 남음). 형상이 하나만 보이는 viewing에서만 variant·obj·거리·각이 있습니다 |
 | `ratings.csv` | `position,variant,rating,rt_ms,view_ms,cancelled,item`(item = `ratingItem`, 0.3에서 추가) — 취소한 평정은 `cancelled=1` 행으로 남고 다시 입력한 값이 새 행 |
 | `difference.csv` | `variant,rating,rt_ms` |
-| `events.csv` | `time_ms,event,detail` — 단계 전환, 키, 취소, 배치, 경고, 중단. 형상 제시 시작은 `viewing_start`(detail `position=N;variant=ID` 고정 형식, 분석기가 `first_look_ms`·표본 구간의 시작점으로 읽음) |
+| `events.csv` | `time_ms,event,detail` — 단계 전환, 키, 취소, 배치, 경고, 중단. 형상 제시 시작은 `viewing_start`(detail `position=N;variant=ID` 고정 형식, 분석기가 `first_look_ms`·표본 구간의 시작점으로 읽음). 첫 제시 바로 뒤 `first_viewing_utc`(detail = UTC ISO 8601 `yyyy-MM-ddTHH:mm:ss.fffZ`, 세션에 한 번) |
+| `prereport.json` | (보기 전 보고 파일을 고른 때만) 원본 바이트 그대로 |
 | `summary.json` | `completed`, `abortedAt`, `finalChoice`(position·variant·rt_ms), `ratings`(변형별 마지막 평정), `endedAtUtc` |
 
 - `time_ms`는 세션 시작(SpecCheck에서 Enter)부터. `rt_ms`는 문항을 띄운 때(취소 뒤에는 다시 물은 때)부터 숫자 키까지. `view_ms`는 실제 제시 시간(프레임 단위로 `viewSeconds`보다 조금 길 수 있음).
@@ -318,7 +322,7 @@ spec마다 참여자 번호를 하나씩 올립니다. 씬 만들기 배치: `-e
   -runTests -testPlatform EditMode -testResults <결과.xml> -logFile <로그>
 ```
 
-EditMode 161개(2026-11-17 소유감 실험 외부 리뷰 반영 뒤 배치모드로 전부 통과). 2026-11-18 같은 말·다른 값 쌍(생성기 0.3)으로 27개를 더해 188개 — dotnet compile-check(UnityOnly 제외 167개)는 통과, Unity 배치모드는 아직 돌리지 않음:
+EditMode 161개(2026-11-17 소유감 실험 외부 리뷰 반영 뒤 배치모드로 전부 통과). 2026-11-18 같은 말·다른 값 쌍(생성기 0.3)과 CP5 검토 반영으로 46개를 더해 207개 — dotnet compile-check(UnityOnly 제외 186개)는 통과, Unity 배치모드는 아직 돌리지 않음:
 
 | 파일 | 개수 | 내용 |
 | --- | --- | --- |
@@ -327,8 +331,8 @@ EditMode 161개(2026-11-17 소유감 실험 외부 리뷰 반영 뒤 배치모�
 | `UnityOnly/EnvironmentAndCaptureTests.cs` | 5 | 선형 색공간·VR 품질 단계, 환경(방향광 1·소프트 섀도·무채색·셰이더 컴파일·정리), 환경 Dispose의 RenderSettings 복원, form.type 변경 시 머티리얼 사본 누수 없음, 배치 캡처 한 바퀴(예시 2개, 콘솔 오류 0, 불투명 scene = inContext, 요약의 stated/withDefaults) |
 | `ShapeMappingTests.cs` | 33 | 원뿔 메시(정점·삼각형 수, 경계 상자, 인덱스, 바깥 감기 방향, 밑면 각진 모서리), 모양어 판정 규칙(표 4개, 표에 없는 값, charSpan 순서, conflict, form.type) |
 | `UnityOnly/ShapeModelTests.cs` | 5 | 모양 모형 팩토리·프리팹 에셋(루트 크기 1, 배율은 자식, IFS 머티리얼 변위 0), SceneLoader 적용·`initialScene.json` 기록, 표에 없는 모양어·형태 우선, 조정 중 form.type 변경 |
-| `OwnershipVariantTests.cs` | 100 | 소유감 실험 변형본: n조건 Williams(n = 4–9, 각 위치·순서쌍 균형, 5조건은 예전 표와 같음), 보여 줄 조건을 정한 뒤 순서, 쌍을 끄면 0.2 manifest와 바이트까지 같음(`Golden/ownership_v02_*.json`), 크기·색 쌍(최소 각·목표 ΔE·대칭, skipReason 6종, 무효면 둘 다 빠짐), 쌍 설정 검사, 실험자 화면에 쌍은 id만, Williams 표 성질(각 조건이 각 위치에 2번, 순서쌍 2번씩), cb·순서 행, 1–20번 행 × cb 완전 교차, 같은 입력 → 같은 manifest 문자열, manifest 필드·specFile 이름만, 크기 방향·강제, 색(유채색은 색상만·최소 각·ΔE ≥ 목표, 무채색은 명도만, 명도 대체, belowTarget, 밝기 배율을 넣은 알베도 기준, 합성 ΔE00은 기록만), 움직임 add/remove·보이지 않는 조합(표 고정, 모양 모형 없는 형태는 보임, 자세 변형 + 흔들림은 보임)·motionAltersScale, 형태 표 4행, source·saidNotRendered, 원본과 같으면 오류, lowVisibility, `_inferred` 안 씀, SpecCheck 구분(말한 값/기본값/근거 없음)이 생성기 source와 같은 기준 |
-| `OwnershipRecordTests.cs` | 11 | 기록 파일 헤더(계약 문자열 고정, ratings.csv 끝 열 item)·폴더 구조·UTF-8 BOM 없음·줄바꿈 LF, 같은 초 재시작, 중단 요약, 표본 시각(밀린 프레임 하나에 표본 하나, 실제 시각), `viewing_start` detail 형식, 문구 파일(0.2: 초안·금지 표현·닮음 문항·{n}, 0.1은 mine + 5조건에서만), draft 문구 목록·경고·`requireSpecPhrases` 거부, 글 줄바꿈, 시선 각·호 배치 계산 |
+| `OwnershipVariantTests.cs` | 115 | 소유감 실험 변형본: n조건 Williams(n = 4–9, 각 위치·순서쌍 균형, 5조건은 예전 표와 같음), 보여 줄 조건을 정한 뒤 순서, 쌍을 끄면 0.2 manifest와 바이트까지 같음(`Golden/ownership_v02_*.json`), 크기·색 쌍(최소 각·목표 ΔE·대칭, skipReason 6종, 무효면 둘 다 빠짐), 쌍 설정 검사, 실험자 화면에 쌍은 id만, CP5(반올림 전 범주 검사·skipped_neutral, 최소 이동폭, 화면 폭 wM·자세, basis·provenanceWithoutValue·axisChoiceBasis, 최소 대칭 색 쌍 전수 비교, 반올림 값 상한, cb의 n 일반화·7조건 두 주기 행 × cb), Williams 표 성질(각 조건이 각 위치에 2번, 순서쌍 2번씩), cb·순서 행, 1–20번 행 × cb 완전 교차, 같은 입력 → 같은 manifest 문자열, manifest 필드·specFile 이름만, 크기 방향·강제, 색(유채색은 색상만·최소 각·ΔE ≥ 목표, 무채색은 명도만, 명도 대체, belowTarget, 밝기 배율을 넣은 알베도 기준, 합성 ΔE00은 기록만), 움직임 add/remove·보이지 않는 조합(표 고정, 모양 모형 없는 형태는 보임, 자세 변형 + 흔들림은 보임)·motionAltersScale, 형태 표 4행, source·saidNotRendered, 원본과 같으면 오류, lowVisibility, `_inferred` 안 씀, SpecCheck 구분(말한 값/기본값/근거 없음)이 생성기 source와 같은 기준 |
+| `OwnershipRecordTests.cs` | 15 | 기록 파일 헤더(계약 문자열 고정, ratings.csv 끝 열 item)·폴더 구조·UTF-8 BOM 없음·줄바꿈 LF, 같은 초 재시작, 중단 요약, 표본 시각(밀린 프레임 하나에 표본 하나, 실제 시각), `viewing_start` detail 형식, 문구 파일(0.2: 초안·금지 표현·닮음 문항·{n}, 0.1은 mine + 5조건에서만), 보기 전 보고(세 필드만 읽기·해시·바이트 복사·requirePrereport 거부·내용이 계획에 영향 없음), `first_viewing_utc`, draft 문구 목록·경고·`requireSpecPhrases` 거부, 글 줄바꿈, 시선 각·호 배치 계산 |
 | `UnityOnly/LoaderNoVariantGoldenTests.cs` | 1 | 변형 경로를 넣기 전 로더로 만든 지문(`Golden/loader_no_variant.golden.txt`: 적용값·notes·계층·머티리얼·기록)과 `Load(path)`가 같음 |
 | `UnityOnly/OwnershipLoaderTests.cs` | 10 | `Load(path, null)`·빈 덮어쓰기도 golden과 같음, 변형본이 계획대로 그려지고 조정 기록에 남지 않음(3종), 잘못된 덮어쓰기 거부, 자동 시행 한 바퀴의 기록 폴더(draft 수·경고 포함), `requireSpecPhrases` 켜면 시작 거부, 합성 배경 = 하늘 지평선 색, 로더 `_BaseColor` = `RenderedColor.BaseSrgb`, 0.3초 밀린 프레임이 있는 자동 시행(표본 시각 중복 없음·빈 간격·형상마다 `viewing_start` ≤ 첫 표본) |
 

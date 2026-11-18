@@ -71,6 +71,9 @@ namespace IFS.SceneSpec.Ownership
             GUILayout.EndScrollView();
             GUILayout.Label("3. spec 경로(목록에서 고르거나 직접 입력)");
             runner.SpecPathText = GUILayout.TextField(runner.SpecPathText ?? "");
+            GUILayout.Label("4. 보기 전 보고 파일 경로(선택. 내용은 화면·자극에 쓰지 않고 기록 폴더에 복사만 함)" +
+                            (runner.Config.requirePrereport ? " — requirePrereport 켬: 없거나 해시가 다르면 시작하지 않음" : ""), _wrap);
+            runner.PrereportPathText = GUILayout.TextField(runner.PrereportPathText ?? "");
             if (GUILayout.Button("확인 → SpecCheck", GUILayout.Height(32))) runner.Check();
         }
 
@@ -79,6 +82,7 @@ namespace IFS.SceneSpec.Ownership
             var plan = runner.Plan;
             DrawDraftNotice();
             GUILayout.Label($"참여자 {runner.ParticipantNumberText}  cb={plan?.Cb}  순서 행={plan?.OrderRow}  순서: {(plan != null ? string.Join(" → ", plan.Order) : "")}", _wrap);
+            GUILayout.Label($"보기 전 보고: <b>{runner.PrereportStatus}</b>", _wrap);
             GUILayout.Label("<b>속성별 말한 값 / 기본값 / 근거 없음</b>  (슬롯 | spec 값 | 구분 | 근거 말 | 해석값)  — 구분은 _provenance 기준(변형 source와 같음)", _wrap);
             foreach (var r in runner.SpecTable())
             {

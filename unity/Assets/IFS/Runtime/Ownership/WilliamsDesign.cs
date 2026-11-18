@@ -6,7 +6,8 @@
 //     조건 번호: 0 orig, 1 form, 2 color, 3 size, 4 motion.
 //   조건 목록은 생성기가 실제로 보여 줄 것(orig + 어긋난 변형 + 유효한 같은 말·다른 값 쌍)을 먼저 정한 뒤 넘긴다.
 //   행 = (참여자 번호 − 1) mod 행 수.
-// 균형 비트(cb)는 행과 따로 돌도록 10명 단위마다 뒤집는다(CbFor). 조건 수와 무관하다(어긋난 변형의 방향에만 쓴다).
+// 균형 비트(cb, 어긋난 변형의 방향)는 행과 따로 돌도록 행 수 단위마다 뒤집는다: cb = ((번호 − 1) mod 2) XOR (⌊(번호 − 1) / 행 수⌋ mod 2).
+//   5조건(10행)은 X31 규칙과 같다. 홀수 n이면 행 수 2n이 짝수라 2 × 행 수 명이면 행 × cb 칸이 한 번씩 찬다.
 using System;
 using System.Collections.Generic;
 
@@ -76,8 +77,11 @@ namespace IFS.SceneSpec.Ownership
         /// 그래서 10명 단위 안에서 cb가 5:5이고, 20명이면 순서 행(10) × cb(2) 20칸이 한 번씩 채워진다
         /// (행 번호와 cb가 늘 같은 홀짝으로 묶이지 않는다).
         /// </summary>
-        public static int CbFor(int participantNumber) =>
-            ((participantNumber - 1) % 2) ^ (((participantNumber - 1) / Rows.Length) % 2);
+        public static int CbFor(int participantNumber) => CbFor(participantNumber, Conditions.Length);
+
+        /// <summary>n조건: cb = ((번호 − 1) mod 2) XOR (⌊(번호 − 1) / 행 수(n)⌋ mod 2). n = 5는 CbFor(번호)와 같다.</summary>
+        public static int CbFor(int participantNumber, int n) =>
+            ((participantNumber - 1) % 2) ^ (((participantNumber - 1) / RowsFor(n).Length) % 2);
 
         /// <summary>5조건(orig, form, color, size, motion) 순서.</summary>
         public static string[] OrderFor(int participantNumber) => OrderFor(participantNumber, Conditions);

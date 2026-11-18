@@ -17,15 +17,24 @@
 //   형태  blob(모형 없음) → Cube(add), Sphere → Cube(swap), Cube·FlatCylinder·Cone → Sphere(remove),
 //         mist·shell·fragments → blob(remove, 모양 모형 없음).
 // 같은 말·다른 값 쌍(shift, 설정 shiftAttributes에 있는 속성만, 값은 모두 잠정). lo = 축 값을 줄임, hi = 늘림.
-//   크기  축 size = layout.size(로그 척도) ± sizeShiftStep. 둘 다 [0, 1] 안이어야 함(out_of_range).
-//         크기 슬롯이 말한 값(_provenance 있음)이면 원본과 같은 쪽(0.5 기준)에 머물러야 함:
-//         w < 0.5 → hi < 0.5, w > 0.5 → lo > 0.5(crosses_category). w = 0.5는 쪽이 없어 이 검사를 하지 않는다.
-//   색    유채색(s ≥ 0.10): 축 hue. h를 −/+ 1°씩, 알베도 ΔE00 ≥ colorShiftDeltaE인 최소 각(최대 maxHueShiftDeg).
-//         무채색: 축 lightness. l을 −/+ 0.005씩, ΔE00 ≥ 목표인 최소량([0.05, 0.95] 안). 한쪽이라도 못 닿으면 range_exceeded.
-//         |ΔE00(lo) − ΔE00(hi)| > shiftSymmetryTolerance면 asymmetric. 명도 대체(fallback)는 하지 않는다.
+//   basis 축 값의 슬롯이 null이 아니고 그 슬롯에 근거(_provenance)가 있으면 stated, 아니면 default.
+//         슬롯이 null인데 근거만 있으면 default + provenanceWithoutValue. 색은 material.color 슬롯만으로 정하고,
+//         축(hue/lightness)을 고르는 데 쓴 채도의 출처는 axisChoiceBasis로 따로 남긴다(basis를 mixed로 만들지 않음).
+//   크기  축 size = layout.size(로그 척도) ± sizeShiftStep. 적용 값(4자리 반올림)이 [0, 1] 안이어야 함(out_of_range),
+//         lo < w < hi이고 로그 척도에서 대칭(|(hi − w) − (w − lo)| ≤ 1e-4, 반올림 오차)이어야 함(asymmetric).
+//         크기가 stated면 반올림 전 값으로 원본과 같은 쪽(0.5 기준)에 머물러야 함: w < 0.5 → hi < 0.5, w > 0.5 → lo > 0.5
+//         (crosses_category). w = 0.5는 쪽이 없어 검사하지 않고 categoryCheck = skipped_neutral.
+//         화면 폭 wM·loM·hiM = RenderedSize.MaxHorizontalWidthM(로더와 같은 식, 자세 배율 포함).
+//   색    유채색(s ≥ 0.10): 축 hue, 1° 격자. 무채색: 축 lightness, 0.005 격자([0.05, 0.95] 안).
+//         상한(maxHueShiftDeg·명도 범위)은 반올림해 실제 적용할 값으로 검사한다.
+//         상한 안의 lo 후보 × hi 후보 중 둘 다 ΔE00 ≥ colorShiftDeltaE이고 |ΔE00(lo) − ΔE00(hi)| ≤ shiftSymmetryTolerance인
+//         쌍에서 이동이 가장 작은 쌍(큰 쪽 걸음 수, 걸음 합, lo 걸음 수 순)을 고른다. 한쪽이라도 목표에 못 닿으면
+//         range_exceeded, 닿지만 대칭인 쌍이 없으면 asymmetric. 명도 대체(fallback)는 하지 않는다.
+//         배경 합성 ΔE00(deltaEComposited_lo/hi)은 기록만 하고 유효성에는 쓰지 않는다.
 //   공통  원본 유효 불투명도가 낮으면(lowVisibility) 속성이 보이지 않으므로 not_rendered. 꺼진 속성은 disabled.
 //         쌍이 유효하지 않으면 둘 다 보이지 않는다(한쪽만 보이지 않음). 쌍 기록은 manifest shiftPairs.
-// 순서: 보여 줄 조건(orig + 어긋난 변형 + 유효한 쌍, 정해진 순서 ConditionIds)을 먼저 정한 뒤 n조건 Williams 표(WilliamsDesign).
+// 순서: 쌍의 유효성(균형 비트와 무관)을 먼저 정해 보여 줄 조건 수 n을 안 뒤, cb = CbFor(번호, n), 어긋난 변형,
+//       보여 줄 조건(정해진 순서 ConditionIds)에 n조건 Williams 표(WilliamsDesign).
 // UnityEngine에 의존하지 않는다(dotnet 테스트 가능).
 using System;
 using System.Collections.Generic;
@@ -111,10 +120,20 @@ namespace IFS.SceneSpec.Ownership
         public string Attribute;
         /// <summary>size | hue | lightness</summary>
         public string Axis;
-        /// <summary>stated | default | mixed</summary>
+        /// <summary>stated | default (축 값 슬롯의 값 + 근거 기준)</summary>
         public string Basis;
+        /// <summary>색만: 축 선택에 쓴 채도의 출처(stated | default). 크기는 null.</summary>
+        public string AxisChoiceBasis;
+        /// <summary>축 값 슬롯이 null인데 근거(_provenance)만 있음(basis는 default).</summary>
+        public bool ProvenanceWithoutValue;
         public double W;
         public double? Lo, Hi, Step, DeltaELo, DeltaEHi;
+        /// <summary>크기만: 가장 넓은 가로 폭(m, RenderedSize). 색은 null.</summary>
+        public double? WM, LoM, HiM;
+        /// <summary>색만: 배경 합성 뒤 ΔE00(기록용, 유효성에 쓰지 않음).</summary>
+        public double? DeltaECompositedLo, DeltaECompositedHi;
+        /// <summary>크기만: passed | failed | skipped_neutral(w = 0.5) | not_applicable(basis default). 계산하지 않았으면 null.</summary>
+        public string CategoryCheck;
         public bool Valid;
         /// <summary>out_of_range | crosses_category | range_exceeded | asymmetric | not_rendered | disabled (유효하면 null)</summary>
         public string SkipReason;
@@ -125,12 +144,20 @@ namespace IFS.SceneSpec.Ownership
             ["attribute"] = Attribute,
             ["axis"] = Axis,
             ["basis"] = Basis,
+            ["axisChoiceBasis"] = AxisChoiceBasis,
+            ["provenanceWithoutValue"] = ProvenanceWithoutValue,
             ["w"] = W,
             ["lo"] = Lo,
             ["hi"] = Hi,
+            ["wM"] = WM,
+            ["loM"] = LoM,
+            ["hiM"] = HiM,
             ["step"] = Step,
             ["deltaE_lo"] = DeltaELo,
             ["deltaE_hi"] = DeltaEHi,
+            ["deltaEComposited_lo"] = DeltaECompositedLo,
+            ["deltaEComposited_hi"] = DeltaECompositedHi,
+            ["categoryCheck"] = CategoryCheck,
             ["valid"] = Valid,
             ["skipReason"] = SkipReason,
         };
@@ -139,6 +166,10 @@ namespace IFS.SceneSpec.Ownership
     public sealed class OwnershipPlan
     {
         public int ParticipantNumber, Cb, OrderRow;
+        /// <summary>이 조건 수의 Williams 표 행 수(5 → 10, 7 → 14, 9 → 18).</summary>
+        public int OrderRows;
+        /// <summary>보여 줄 조건 id를 이름순(Ordinal)으로 정렬해 '|'로 이은 것(같은 표를 쓰는 세션끼리 묶는 키).</summary>
+        public string ConditionSet;
         public OwnershipConfig Config;
         public SceneParams OriginalParams;
         public ShapeResolution Shape;
@@ -278,7 +309,6 @@ namespace IFS.SceneSpec.Ownership
             plan.Errors.AddRange(config.Validate().Select(e => "설정: " + e));
             if (!plan.Ok) return plan;
 
-            plan.Cb = WilliamsDesign.CbFor(participantNumber);
 
             var orig = SceneParams.FromSpec(spec, defaults, useInferred: false);
             plan.OriginalParams = orig;
@@ -318,24 +348,27 @@ namespace IFS.SceneSpec.Ownership
             var origVariant = new OwnershipVariant { Id = "orig", Kind = KindOriginal, Params = orig.Clone(), Rendered = plan.OriginalRendered, RenderedShapeModel = origModel };
             plan.Variants.Add(origVariant);
 
+            // 같은 말·다른 값 쌍: 균형 비트와 무관하게 먼저 유효성을 정한다(참여자 보고값은 쓰지 않는다).
+            var on = config.EnabledShiftAttributes();
+            foreach (var attr in OwnershipConfig.ShiftAttributeNames)
+            {
+                bool enabled = on.Contains(attr);
+                plan.ShiftPairs.Add(attr == "color" ? ColorPair(spec, plan, enabled) : SizePair(spec, plan, enabled));
+            }
+            int n = OwnershipConfig.BaseConditionCount + 2 * plan.ShiftPairs.Count(pp => pp.Valid);
+            plan.Cb = WilliamsDesign.CbFor(participantNumber, n);
+
             TryAdd(plan, () => Form(spec, plan));
             TryAdd(plan, () => Color(spec, plan));
             TryAdd(plan, () => Size(spec, plan));
             TryAdd(plan, () => Motion(spec, plan));
             foreach (var v in plan.Variants.Where(v => !v.IsOriginal)) v.Kind = KindMismatch;
 
-            // 같은 말·다른 값 쌍: 유효한 쌍만 둘 다 넣는다(참여자 보고값은 쓰지 않는다).
-            var on = config.EnabledShiftAttributes();
-            foreach (var attr in OwnershipConfig.ShiftAttributeNames)
+            // 유효한 쌍만 둘 다 넣는다.
+            foreach (var pair in plan.ShiftPairs.Where(pp => pp.Valid))
             {
-                bool enabled = on.Contains(attr);
-                var pair = attr == "color" ? ColorPair(spec, plan, enabled) : SizePair(spec, plan, enabled);
-                plan.ShiftPairs.Add(pair);
-                if (pair.Valid)
-                {
-                    plan.Variants.Add(ShiftVariant(spec, plan, pair, -1));
-                    plan.Variants.Add(ShiftVariant(spec, plan, pair, +1));
-                }
+                plan.Variants.Add(ShiftVariant(spec, plan, pair, -1));
+                plan.Variants.Add(ShiftVariant(spec, plan, pair, +1));
             }
 
             foreach (var v in plan.Variants.Where(v => !v.IsOriginal)) Finish(plan, v);
@@ -347,6 +380,9 @@ namespace IFS.SceneSpec.Ownership
                 plan.Errors.Add($"조건 {conditions.Count}개: 마지막 선택 키(1–{WilliamsDesign.MaxConditions})로 받을 수 없음");
                 return plan;
             }
+            if (conditions.Count != n) plan.Errors.Add($"조건 {conditions.Count}개 ≠ 균형 비트를 정할 때의 {n}개(어긋난 변형 생성 오류)");
+            plan.OrderRows = WilliamsDesign.RowsFor(conditions.Count).Length;
+            plan.ConditionSet = string.Join("|", conditions.OrderBy(c => c, StringComparer.Ordinal));
             plan.OrderRow = WilliamsDesign.RowFor(participantNumber, conditions.Count);
             plan.Order = WilliamsDesign.OrderFor(participantNumber, conditions);
             return plan;
@@ -640,6 +676,46 @@ namespace IFS.SceneSpec.Ownership
         // ── 같은 말·다른 값 쌍 ───────────────────────────────────────────
         static double R6(double v) => Math.Round(v, 6);
 
+        /// <summary>쌍의 basis: 슬롯 값이 null이 아니고 근거가 있으면 stated. 값 없이 근거만 있으면 default + provWithoutValue.</summary>
+        public static string PairBasis(SceneSpecV2 spec, string path, out bool provenanceWithoutValue)
+        {
+            bool hasValue = spec != null && SceneSpecJson.GetSlot(spec, path) != null;
+            bool prov = spec != null && HasProv(spec, path);
+            provenanceWithoutValue = prov && !hasValue;
+            return hasValue && prov ? SlotStated : SlotDefault;
+        }
+
+        /// <summary>1° 격자의 색상 후보(dir 방향). 반올림해 적용할 값의 실제 각이 maxDeg를 넘으면 멈춘다.</summary>
+        static List<Candidate> HueCandidates(double h, double s, double l, double bright, Lab lab0, int dir, double maxDeg)
+        {
+            var list = new List<Candidate>();
+            for (int k = 1; k <= MaxHueSteps; k++)
+            {
+                double raw = h + dir * k * HueStep;
+                raw -= Math.Floor(raw);
+                double cand = R4(raw);
+                if (cand >= 1) cand -= 1;
+                double d = Math.Abs(cand - h) % 1.0;
+                double angle = Math.Min(d, 1.0 - d) * 360.0;
+                if (angle > maxDeg + 1e-9) break;
+                list.Add(new Candidate { Value = cand, DeltaE = ColorMetrics.DeltaE2000(lab0, LabOf(cand, s, l, bright)), Steps = k, Found = true });
+            }
+            return list;
+        }
+
+        /// <summary>0.005 격자의 명도 후보(dir 방향). 반올림해 적용할 값이 [lMin, lMax] 밖이면 멈춘다(끝에 붙이지 않음).</summary>
+        static List<Candidate> LightnessCandidates(double h, double s, double l, double bright, Lab lab0, int dir, double lMin, double lMax)
+        {
+            var list = new List<Candidate>();
+            for (int k = 1; ; k++)
+            {
+                double cand = R4(l + dir * k * LightnessStep);
+                if (cand < lMin - 1e-12 || cand > lMax + 1e-12) break;
+                list.Add(new Candidate { Value = cand, DeltaE = ColorMetrics.DeltaE2000(lab0, LabOf(h, s, cand, bright)), Steps = k, Found = true });
+            }
+            return list;
+        }
+
         static OwnershipShiftPair ColorPair(SceneSpecV2 spec, OwnershipPlan plan, bool enabled)
         {
             var p = plan.OriginalParams;
@@ -647,53 +723,85 @@ namespace IFS.SceneSpec.Ownership
             double h = p.GetNumber("material.color.h"), s = p.GetNumber("material.color.s"), l = p.GetNumber("material.color.l");
             double bright = p.GetNumber("material.brightness");
             bool chromatic = s >= ChromaticMinSaturation;
-            bool colorStated = Stated(spec, "material.color");
-            var basis = new List<string> { Label(colorStated) };
-            if (spec.Material.Saturation != null) basis.Add(Label(Stated(spec, "material.saturation")));
+            string basis = PairBasis(spec, "material.color", out bool provOnly);
+            // 채도: material.saturation 슬롯이 있으면 그 출처, 없으면 s도 material.color에서 온다.
+            string axisBasis = spec.Material.Saturation != null ? PairBasis(spec, "material.saturation", out _) : basis;
             var pair = new OwnershipShiftPair
             {
-                Attribute = "color", Axis = chromatic ? "hue" : "lightness", Basis = SourceLabel(basis), W = R4(chromatic ? h : l),
+                Attribute = "color", Axis = chromatic ? "hue" : "lightness", Basis = basis, AxisChoiceBasis = axisBasis,
+                ProvenanceWithoutValue = provOnly, W = R4(chromatic ? h : l),
             };
             if (!enabled) { pair.SkipReason = SkipDisabled; return pair; }
             pair.Step = chromatic ? R6(HueStep) : LightnessStep;
             var lab0 = LabOf(h, s, l, bright);
-            double target = cfg.colorShiftDeltaE;
-            Candidate lo, hi;
-            if (chromatic)
+            double target = cfg.colorShiftDeltaE, tol = cfg.shiftSymmetryTolerance;
+            var los = chromatic ? HueCandidates(h, s, l, bright, lab0, -1, cfg.maxHueShiftDeg)
+                                : LightnessCandidates(h, s, l, bright, lab0, -1, ShiftLightnessMin, ShiftLightnessMax);
+            var his = chromatic ? HueCandidates(h, s, l, bright, lab0, +1, cfg.maxHueShiftDeg)
+                                : LightnessCandidates(h, s, l, bright, lab0, +1, ShiftLightnessMin, ShiftLightnessMax);
+            var loReach = los.Where(c => c.DeltaE >= target).ToList();
+            var hiReach = his.Where(c => c.DeltaE >= target).ToList();
+            Candidate lo = default, hi = default;
+            bool found = false;
+            (int, int, int) bestKey = (int.MaxValue, int.MaxValue, int.MaxValue);
+            foreach (var a in loReach)
+                foreach (var b in hiReach)
+                {
+                    if (Math.Abs(a.DeltaE - b.DeltaE) > tol) continue;
+                    var key = (Math.Max(a.Steps, b.Steps), a.Steps + b.Steps, a.Steps);
+                    if (key.CompareTo(bestKey) < 0) { bestKey = key; lo = a; hi = b; found = true; }
+                }
+            if (!found)
             {
-                int maxSteps = (int)Math.Floor(cfg.maxHueShiftDeg + 1e-9);
-                SearchHue(h, s, l, bright, lab0, -1, target, out lo, out _, maxSteps);
-                SearchHue(h, s, l, bright, lab0, +1, target, out hi, out _, maxSteps);
+                // 기록용: 방향마다 목표에 처음 닿는 값(없으면 null)
+                lo = loReach.Count > 0 ? loReach[0] : default;
+                hi = hiReach.Count > 0 ? hiReach[0] : default;
             }
-            else
-            {
-                SearchLightness(h, s, l, bright, lab0, -1, target, out lo, out _, ShiftLightnessMin, ShiftLightnessMax);
-                SearchLightness(h, s, l, bright, lab0, +1, target, out hi, out _, ShiftLightnessMin, ShiftLightnessMax);
-            }
-            if (lo.Found) { pair.Lo = lo.Value; pair.DeltaELo = Math.Round(lo.DeltaE, 3); pair.StepsLo = lo.Steps; }
-            if (hi.Found) { pair.Hi = hi.Value; pair.DeltaEHi = Math.Round(hi.DeltaE, 3); pair.StepsHi = hi.Steps; }
+            string form = p.GetCategory("form.type");
+            double alpha = RenderedColor.SurfaceAlpha(form, p.GetNumber("material.opacity"), plan.Shape.Model != null ? 1.0 : FormDensity[form]);
+            double Comp(double v) => Math.Round(chromatic ? CompositedDeltaE(h, l, v, l, s, bright, alpha) : CompositedDeltaE(h, l, h, v, s, bright, alpha), 3);
+            if (lo.Found) { pair.Lo = lo.Value; pair.DeltaELo = Math.Round(lo.DeltaE, 3); pair.StepsLo = lo.Steps; pair.DeltaECompositedLo = Comp(lo.Value); }
+            if (hi.Found) { pair.Hi = hi.Value; pair.DeltaEHi = Math.Round(hi.DeltaE, 3); pair.StepsHi = hi.Steps; pair.DeltaECompositedHi = Comp(hi.Value); }
             if (plan.LowVisibility) pair.SkipReason = SkipNotRendered;
-            else if (!lo.Found || !hi.Found) pair.SkipReason = SkipRangeExceeded;
-            else if (Math.Abs(lo.DeltaE - hi.DeltaE) > cfg.shiftSymmetryTolerance) pair.SkipReason = SkipAsymmetric;
+            else if (loReach.Count == 0 || hiReach.Count == 0) pair.SkipReason = SkipRangeExceeded;
+            else if (!found) pair.SkipReason = SkipAsymmetric;
             pair.Valid = pair.SkipReason == null;
             return pair;
         }
 
+        /// <summary>크기 쌍의 lo·hi 대칭 허용치(4자리 반올림 오차).</summary>
+        public const double SizeSymmetryTolerance = 1e-4;
+
         static OwnershipShiftPair SizePair(SceneSpecV2 spec, OwnershipPlan plan, bool enabled)
         {
-            double w = R4(plan.OriginalParams.GetNumber("layout.size"));
-            bool stated = Stated(spec, "layout.size");
-            var pair = new OwnershipShiftPair { Attribute = "size", Axis = "size", Basis = Label(stated), W = w };
+            double wr = plan.OriginalParams.GetNumber("layout.size");
+            string posture = plan.OriginalParams.GetCategory("form.posture");
+            string basis = PairBasis(spec, "layout.size", out bool provOnly);
+            bool stated = basis == SlotStated;
+            var pair = new OwnershipShiftPair
+            {
+                Attribute = "size", Axis = "size", Basis = basis, ProvenanceWithoutValue = provOnly, W = R4(wr),
+                WM = R4(RenderedSize.MaxHorizontalWidthM(wr, posture)),
+            };
             if (!enabled) { pair.SkipReason = SkipDisabled; return pair; }
             double step = plan.Config.sizeShiftStep;
-            double lo = R4(w - step), hi = R4(w + step);
+            double rawLo = wr - step, rawHi = wr + step;
+            double lo = R4(rawLo), hi = R4(rawHi);
             pair.Step = step;
             pair.Lo = lo;
             pair.Hi = hi;
+            pair.LoM = R4(RenderedSize.MaxHorizontalWidthM(lo, posture));
+            pair.HiM = R4(RenderedSize.MaxHorizontalWidthM(hi, posture));
+            // 범주 검사는 반올림 전 값으로(.49996이 .5로 반올림돼 통과하지 않도록)
+            if (!stated) pair.CategoryCheck = "not_applicable";
+            else if (wr == SizeCategoryBoundary) pair.CategoryCheck = "skipped_neutral";
+            else if (wr < SizeCategoryBoundary) pair.CategoryCheck = rawHi < SizeCategoryBoundary ? "passed" : "failed";
+            else pair.CategoryCheck = rawLo > SizeCategoryBoundary ? "passed" : "failed";
+            bool symmetric = lo < wr && wr < hi && Math.Abs((hi - wr) - (wr - lo)) <= SizeSymmetryTolerance + 1e-12;
             if (plan.LowVisibility) pair.SkipReason = SkipNotRendered;
             else if (lo < 0 || hi > 1) pair.SkipReason = SkipOutOfRange;
-            else if (stated && ((w < SizeCategoryBoundary && !(hi < SizeCategoryBoundary)) || (w > SizeCategoryBoundary && !(lo > SizeCategoryBoundary))))
-                pair.SkipReason = SkipCrossesCategory;
+            else if (pair.CategoryCheck == "failed") pair.SkipReason = SkipCrossesCategory;
+            else if (!symmetric) pair.SkipReason = SkipAsymmetric;
             pair.Valid = pair.SkipReason == null;
             return pair;
         }
@@ -737,7 +845,7 @@ namespace IFS.SceneSpec.Ownership
             v.Magnitude = new JObject
             {
                 ["deltaE00"] = dir < 0 ? pair.DeltaELo : pair.DeltaEHi,
-                ["deltaE00Composited"] = Math.Round(CompositedDeltaE(h, l, th, tl, s, bright, alpha), 3),
+                ["deltaE00Composited"] = dir < 0 ? pair.DeltaECompositedLo : pair.DeltaECompositedHi,
             };
             v.Detail = new JObject
             {

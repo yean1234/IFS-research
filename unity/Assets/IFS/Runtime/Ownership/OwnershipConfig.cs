@@ -18,6 +18,8 @@ namespace IFS.SceneSpec.Ownership
         public static readonly string[] ShiftAttributeNames = { "color", "size" };
         public const string RatingResemblance = "resemblance";
         public const string RatingMine = "mine";
+        /// <summary>크기 쌍 이동폭의 최소값(4자리 반올림에서 lo·w·hi가 확실히 갈리도록).</summary>
+        public const double MinSizeShiftStep = 0.02;
         /// <summary>어긋난 변형까지의 조건 수(orig + form·color·size·motion).</summary>
         public const int BaseConditionCount = 5;
 
@@ -43,7 +45,7 @@ namespace IFS.SceneSpec.Ownership
         // ── 같은 말·다른 값 쌍(값은 모두 잠정) ──
         /// <summary>쌍을 만들 속성(color·size). 빈 목록이면 0.2와 똑같이 원본 + 어긋난 변형 4개만.</summary>
         public List<string> shiftAttributes = new List<string> { "color", "size" };
-        /// <summary>쌍의 layout.size(로그 척도) 이동폭(잠정). (0, 0.5]</summary>
+        /// <summary>쌍의 layout.size(로그 척도) 이동폭(잠정). [0.02, 0.5]</summary>
         public double sizeShiftStep = 0.10;
         /// <summary>색 쌍의 목표 CIEDE2000(셰이더 알베도 기준, 잠정).</summary>
         public double colorShiftDeltaE = 12;
@@ -51,6 +53,9 @@ namespace IFS.SceneSpec.Ownership
         public double maxHueShiftDeg = 20;
         /// <summary>색 쌍의 |ΔE00(lo) − ΔE00(hi)| 허용치(잠정). 넘으면 asymmetric으로 둘 다 보이지 않는다.</summary>
         public double shiftSymmetryTolerance = 3;
+        /// <summary>켜면 보기 전 보고 파일이 없거나 그 specSha256이 지금 spec과 다를 때 세션 시작을 거부한다. 기본 꺼짐.
+        /// 보고 파일 경로는 세션마다 실험자 화면에서 고른다(로컬 경로라 설정·manifest에 남기지 않는다).</summary>
+        public bool requirePrereport = false;
         /// <summary>형상마다 받는 평정 문항: resemblance(떠올린 모습과 닮았다, 기본) | mine(내 것 같다).</summary>
         public string ratingItem = RatingResemblance;
 
@@ -90,7 +95,7 @@ namespace IFS.SceneSpec.Ownership
                 if (max > WilliamsDesign.MaxConditions)
                     e.Add($"조건이 최대 {max}개가 될 수 있음: 마지막 선택 키(1–{WilliamsDesign.MaxConditions})로 받을 수 없음");
             }
-            if (!(sizeShiftStep > 0 && sizeShiftStep <= 0.5)) e.Add($"sizeShiftStep {sizeShiftStep}: (0, 0.5] 밖");
+            if (!(sizeShiftStep >= MinSizeShiftStep && sizeShiftStep <= 0.5)) e.Add($"sizeShiftStep {sizeShiftStep}: [{MinSizeShiftStep}, 0.5] 밖");
             if (!(colorShiftDeltaE > 0)) e.Add($"colorShiftDeltaE {colorShiftDeltaE}: 0보다 커야 함");
             if (!(maxHueShiftDeg >= 1 && maxHueShiftDeg <= 180)) e.Add($"maxHueShiftDeg {maxHueShiftDeg}: [1, 180] 밖");
             if (!(shiftSymmetryTolerance >= 0)) e.Add($"shiftSymmetryTolerance {shiftSymmetryTolerance}: 0 이상이어야 함");
@@ -116,6 +121,7 @@ namespace IFS.SceneSpec.Ownership
             ["maxHueShiftDeg"] = maxHueShiftDeg,
             ["shiftSymmetryTolerance"] = shiftSymmetryTolerance,
             ["ratingItem"] = ratingItem,
+            ["requirePrereport"] = requirePrereport,
         };
     }
 }

@@ -151,6 +151,9 @@ namespace IFS.SceneSpec.Tests
             Assert.That(events[0], Is.EqualTo(OwnershipRecordWriter.EventsHeader));
             Assert.That(events.Any(e => e.Contains(",rating_cancel,")), Is.True);
             Assert.That(events.Last(), Does.Contain(",done,completed"));
+            Assert.That(events.Count(e => e.Contains(",first_viewing_utc,")), Is.EqualTo(1), "첫 제시 UTC 시각(ISO 8601)");
+            Assert.That(manifest["prereport"].Type, Is.EqualTo(JTokenType.Null), "보기 전 보고 없음");
+            Assert.That(File.Exists(Path.Combine(dir, "prereport.json")), Is.False);
             Assert.That((int)manifest["taskText"]["draftCount"], Is.EqualTo(7), "지금 문구 7개는 draft — manifest에 남는다");
             Assert.That(events.Any(e => e.Contains(",warning,") && e.Contains("초안 문구")), Is.True, "draft 경고가 events.csv에도");
         }

@@ -64,25 +64,22 @@ namespace IFS.SceneSpec
         [Tooltip("눈높이 / 키 (Drillis & Contini 1966 ≈ 0.936)")] public float eyeHeightRatio = 0.936f;
         [Tooltip("0보다 크면 이 키(m)를 쓴다. 0이면 로드 순간의 머리 높이로 계산")] public float participantHeightOverride = 0f;
         [Tooltip("머리를 찾지 못했을 때의 키(m)")] public float fallbackParticipantHeight = 1.65f;
-        [Tooltip("프리미티브 대체 때 기본 크기(m). 프리팹은 프리팹 자체 크기를 기본(×1)으로 쓴다")] public float primitiveBaseSize = 0.35f;
+        [Tooltip("프리미티브 대체 때 기본 크기(m). 프리팹은 프리팹 자체 크기를 기본(×1)으로 쓴다")] public float primitiveBaseSize = (float)RenderedSize.NominalBaseDiameterM;
     }
 
     [DisallowMultipleComponent]
     [AddComponentMenu("IFS/SceneSpec Loader")]
     public sealed class SceneLoader : MonoBehaviour
     {
-        // 자세어 → 크기 변형(x, y, z 배율). 표에 없는 자세는 적용하지 않고 기록한다.
-        public static readonly Dictionary<string, Vector3> PostureScale = new Dictionary<string, Vector3>
+        // 자세어 → 크기 변형(x, y, z 배율). 표는 RenderedSize.PostureTable(생성기와 공유). 표에 없는 자세는 적용하지 않고 기록한다.
+        public static readonly Dictionary<string, Vector3> PostureScale = BuildPostureScale();
+
+        static Dictionary<string, Vector3> BuildPostureScale()
         {
-            { "curled", new Vector3(1.15f, 0.7f, 1.15f) }, { "crouched", new Vector3(1.15f, 0.7f, 1.15f) },
-            { "cowering", new Vector3(1.1f, 0.7f, 1.1f) }, { "hunched", new Vector3(1.1f, 0.8f, 1.1f) },
-            { "bowed", new Vector3(1.05f, 0.85f, 1.05f) }, { "bent", new Vector3(1.05f, 0.85f, 1.05f) },
-            { "lying", new Vector3(1.3f, 0.5f, 1.3f) }, { "prone", new Vector3(1.3f, 0.5f, 1.3f) },
-            { "drooping", new Vector3(1.2f, 0.6f, 1.2f) }, { "sagging", new Vector3(1.2f, 0.6f, 1.2f) },
-            { "limp", new Vector3(1.2f, 0.6f, 1.2f) },
-            { "standing", new Vector3(0.9f, 1.2f, 0.9f) }, { "sitting", new Vector3(1f, 0.9f, 1f) },
-            { "hanging", new Vector3(0.9f, 1.25f, 0.9f) },
-        };
+            var d = new Dictionary<string, Vector3>();
+            foreach (var kv in RenderedSize.PostureTable) d[kv.Key] = new Vector3((float)kv.Value.x, (float)kv.Value.y, (float)kv.Value.z);
+            return d;
+        }
 
         // 형태별 모양 프리셋(IFS 셰이더 전용): 굴곡, 노이즈 크기, 안개 가장자리, 밀도, 껍질 열림
         struct FormPreset
@@ -711,14 +708,12 @@ namespace IFS.SceneSpec
             look.y = 0f;
             _root.transform.rotation = look.sqrMagnitude > 1e-4f ? Quaternion.LookRotation(look.normalized, Vector3.up) : Quaternion.identity;
 
+            // 배율·자세 배율은 생성기(크기 쌍의 화면 폭)와 같은 함수(RenderedSize)를 쓴다.
             float scale = (float)SceneParams.SizeToScale(p.GetNumber("layout.size"));
             string posture = p.GetCategory("form.posture");
-            Vector3 deform = Vector3.one;
-            if (posture != SceneParams.NoPosture && !PostureScale.TryGetValue(posture, out deform))
-            {
-                deform = Vector3.one;
+            if (!RenderedSize.PostureDeform(posture, out double dx, out double dy, out double dz))
                 Note($"form.posture={posture}: 변형 프리셋이 없어 적용하지 않음", true);
-            }
+            var deform = new Vector3((float)dx, (float)dy, (float)dz);
             _model.transform.localScale = Vector3.Scale(_modelBaseScale * scale, deform);
         }
 

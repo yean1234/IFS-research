@@ -1,6 +1,6 @@
 // 소유감 실험 기록기(설계 2.4, 분석 스크립트와의 계약 — 헤더·필드 이름을 바꾸지 않는다).
 //   {recordRoot}/ownership/P{번호:000}/{sessionId}/{UTC yyyyMMdd-HHmmss}/
-//     manifest.json · headpose.csv · ratings.csv · difference.csv · events.csv · summary.json
+//     manifest.json · headpose.csv · ratings.csv · difference.csv · events.csv · summary.json · (있으면) prereport.json
 //   UTF-8(BOM 없음), 숫자는 InvariantCulture, 줄바꿈 \n. 줄마다 바로 쓰므로 중간에 꺼져도 그때까지 남는다.
 // 참여자 자료다. 저장소(git) 밖(기본 persistentDataPath/IFS/sessions)에 둔다.
 // UnityEngine에 의존하지 않는다.
@@ -75,6 +75,11 @@ namespace IFS.SceneSpec.Ownership
         public const string DifferenceFile = "difference.csv";
         public const string EventsFile = "events.csv";
         public const string SummaryFile = "summary.json";
+        /// <summary>보기 전 보고 파일을 바이트 그대로 복사한 것(있을 때만).</summary>
+        public const string PrereportFile = "prereport.json";
+
+        /// <summary>events.csv: 첫 형상 제시 시작의 UTC 시각. detail = ISO 8601(yyyy-MM-ddTHH:mm:ss.fffZ, FormatUtc). 세션에 한 번.</summary>
+        public const string FirstViewingUtcEvent = "first_viewing_utc";
 
         /// <summary>events.csv: 형상 하나를 단독 제시하기 시작한 순간. detail = ViewingStartDetail(분석기가 읽는 고정 형식).</summary>
         public const string ViewingStartEvent = "viewing_start";
@@ -132,11 +137,16 @@ namespace IFS.SceneSpec.Ownership
 
         public void WriteSummary(JObject summary) => WriteText(SummaryFile, OwnershipJson.Serialize(summary));
 
-        void WriteText(string name, string text)
+        /// <summary>보기 전 보고 파일 바이트를 그대로 prereport.json으로.</summary>
+        public void WritePrereport(byte[] bytes) => WriteBytes(PrereportFile, bytes);
+
+        void WriteText(string name, string text) => WriteBytes(name, Utf8NoBom.GetBytes(text));
+
+        void WriteBytes(string name, byte[] bytes)
         {
             var path = Path.Combine(Directory, name);
             var tmp = path + ".tmp";
-            File.WriteAllText(tmp, text, Utf8NoBom);
+            File.WriteAllBytes(tmp, bytes);
             if (File.Exists(path)) File.Delete(path);
             File.Move(tmp, path);
         }
