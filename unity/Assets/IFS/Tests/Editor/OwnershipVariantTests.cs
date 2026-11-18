@@ -850,8 +850,10 @@ namespace IFS.SceneSpec.Tests
         [TestCase(0.49996, "failed", "crosses_category")]     // 반올림하면 0.5지만 0.5 미만 → hi가 0.5를 넘음
         [TestCase(0.50004, "failed", "crosses_category")]
         [TestCase(0.5, "skipped_neutral", null)]
-        [TestCase(0.39996, "passed", null)]                    // hi 0.49996 < 0.5 (반올림하면 0.5지만 통과)
-        public void Size_category_check_uses_unrounded_values(double w, string check, string reason)
+        [TestCase(0.39996, "failed", "crosses_category")]      // 반올림 전 hi 0.49996 < 0.5지만 적용할 hi = 0.5 → 실패
+        [TestCase(0.38996, "passed", null)]                    // 적용할 hi 0.48996 < 0.5
+        [TestCase(0.60004, "failed", "crosses_category")]      // 적용할 lo = 0.5 → 실패
+        public void Size_category_check_uses_the_unrounded_side_and_the_applied_ends(double w, string check, string reason)
         {
             var plan = GenShift(OwnershipTestSpecs.Empty("SYN-raw").Slot("layout.size", w, "크기"));
             var pair = plan.ShiftPairs[1];
@@ -864,6 +866,26 @@ namespace IFS.SceneSpec.Tests
             }
             var dflt = GenShift(DefaultSpec()).ShiftPairs[1];
             Assert.That(dflt.CategoryCheck, Is.EqualTo("not_applicable"));
+        }
+
+        [Test]
+        public void Size_category_check_with_the_minimum_step_catches_an_applied_end_of_exactly_one_half()
+        {
+            var cfg = new OwnershipConfig { sizeShiftStep = 0.02 };
+            var pair = GenShift(OwnershipTestSpecs.Empty("SYN-raw").Slot("layout.size", 0.47996, "크기"), 1, cfg).ShiftPairs[1];
+            Assert.That(pair.Hi, Is.EqualTo(0.5), "반올림 전 0.49996 → 적용 0.5");
+            Assert.That((pair.CategoryCheck, pair.SkipReason), Is.EqualTo(("failed", "crosses_category")));
+        }
+
+        [Test]
+        public void Size_pair_widths_are_recorded_to_six_decimals()
+        {
+            var pair = GenShift(OwnershipTestSpecs.Empty("SYN-raw").Slot("layout.size", 0.3, "크기")).ShiftPairs[1];
+            Assert.That(pair.WM, Is.EqualTo(Math.Round(RenderedSize.MaxHorizontalWidthM(0.3, "none"), 6)));
+            Assert.That(pair.LoM, Is.EqualTo(Math.Round(RenderedSize.MaxHorizontalWidthM(0.2, "none"), 6)));
+            Assert.That(pair.HiM, Is.EqualTo(Math.Round(RenderedSize.MaxHorizontalWidthM(0.4, "none"), 6)));
+            // 로그 척도 등거리: log2(w/lo) = log2(hi/w) (6자리에서 구분)
+            Assert.That(Math.Log(pair.WM.Value / pair.LoM.Value, 2), Is.EqualTo(Math.Log(pair.HiM.Value / pair.WM.Value, 2)).Within(1e-4));
         }
 
         [Test]
@@ -882,9 +904,9 @@ namespace IFS.SceneSpec.Tests
             var spec = DefaultSpec();
             if (posture != null) spec.Slot("form.posture", posture, "자세");
             var pair = GenShift(spec).ShiftPairs[1];
-            Assert.That(pair.WM, Is.EqualTo(Math.Round(0.35 * widest, 4)).Within(1e-9));
-            Assert.That(pair.LoM, Is.EqualTo(Math.Round(0.35 * Math.Pow(2, (0.4 - 0.5) * 4) * widest, 4)).Within(1e-9));
-            Assert.That(pair.HiM, Is.EqualTo(Math.Round(RenderedSize.MaxHorizontalWidthM(0.6, posture ?? "none"), 4)).Within(1e-9));
+            Assert.That(pair.WM, Is.EqualTo(Math.Round(0.35 * widest, 6)).Within(1e-9));
+            Assert.That(pair.LoM, Is.EqualTo(Math.Round(0.35 * Math.Pow(2, (0.4 - 0.5) * 4) * widest, 6)).Within(1e-9));
+            Assert.That(pair.HiM, Is.EqualTo(Math.Round(RenderedSize.MaxHorizontalWidthM(0.6, posture ?? "none"), 6)).Within(1e-9));
             Assert.That(pair.DeltaECompositedLo, Is.Null);
             foreach (var kv in RenderedSize.PostureTable)
                 Assert.That(SceneLoader.PostureScale[kv.Key].x, Is.EqualTo((float)kv.Value.x), "로더 자세 표 = RenderedSize 표 " + kv.Key);

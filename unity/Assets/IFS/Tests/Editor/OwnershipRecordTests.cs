@@ -279,11 +279,13 @@ namespace IFS.SceneSpec.Tests
             var bytes = PrereportBytes(SpecSha, 0.8, "from_start");
             var p = OwnershipPrereport.FromBytes(bytes, "C:\\x\\deep/SYN-pre.prereport.json", SpecSha);
             var j = p.ToJson();
-            Assert.That(j.Properties().Select(x => x.Name), Is.EqualTo(new[] { "file", "sha256", "specSha256", "specSha256Match", "sessionId", "createdAtUtc" }),
+            Assert.That(j.Properties().Select(x => x.Name), Is.EqualTo(new[] { "file", "sha256", "specSha256", "specSha256Match", "matchedBy", "sessionId", "createdAtUtc", "copiedAtUtc" }),
                 "고른 값·확정 여부는 manifest에 옮기지 않는다");
             Assert.That((string)j["file"], Is.EqualTo("SYN-pre.prereport.json"));
             Assert.That((string)j["sha256"], Is.EqualTo(OwnershipManifest.Sha256Hex(bytes)));
             Assert.That((bool)j["specSha256Match"], Is.True);
+            Assert.That((string)j["matchedBy"], Is.EqualTo("primary"));
+            Assert.That(j["copiedAtUtc"].ToString(Newtonsoft.Json.Formatting.None), Is.EqualTo("null"), "복사 전에는 null(러너가 복사한 시각을 채운다)");
             Assert.That((string)j["sessionId"], Is.EqualTo("SYN-pre"));
             Assert.That((string)j["createdAtUtc"], Is.EqualTo("2026-11-18T01:02:03.000Z"), "날짜 문자열을 바꾸지 않는다");
             Assert.That(OwnershipPrereport.Status(p), Is.EqualTo("있음"));
@@ -308,6 +310,20 @@ namespace IFS.SceneSpec.Tests
             Assert.That(OwnershipPrereport.Refusal(null, true), Does.Contain("requirePrereport"));
             Assert.That(OwnershipPrereport.Refusal(other, true), Does.Contain("specSha256"));
             Assert.That(OwnershipPrereport.Refusal(match, true), Is.Null);
+            Assert.That(other.MatchedBy, Is.Null);
+            Assert.That(other.Sha256, Has.Length.EqualTo(64), "불일치여도 sha256은 늘 채운다");
+
+            // altSpecSha256(대체 매핑 파일 S.v0.json 등)의 값과 같아도 일치(분석기와 같은 규칙)
+            string altSha = new string('c', 64);
+            string text = new UTF8Encoding(false).GetString(PrereportBytes(SpecSha, 0.8, "from_start"))
+                .Replace("\"taskTextFile\"", "\"altSpecSha256\": {\"S.v0.json\": \"" + altSha + "\", \"S.v1.json\": \"" + new string('d', 64) + "\"},\n  \"taskTextFile\"");
+            var viaAlt = OwnershipPrereport.FromBytes(new UTF8Encoding(false).GetBytes(text), "a.json", altSha);
+            Assert.That((viaAlt.SpecSha256Match, viaAlt.MatchedBy), Is.EqualTo((true, "alt")));
+            Assert.That(OwnershipPrereport.Refusal(viaAlt, true), Is.Null, "대체 매핑 파일을 골라도 시작");
+            Assert.That(OwnershipPrereport.Status(viaAlt), Is.EqualTo("있음"));
+            var none = OwnershipPrereport.FromBytes(new UTF8Encoding(false).GetBytes(text), "a.json", new string('e', 64));
+            Assert.That((none.SpecSha256Match, none.MatchedBy), Is.EqualTo((false, (string)null)));
+            Assert.That(OwnershipPrereport.Refusal(none, true), Does.Contain("altSpecSha256"));
             Assert.That(new OwnershipConfig().requirePrereport, Is.False);
         }
 
