@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ifs-research.local/shared/schemas/prereport.v0.2.json",
+  "title": "보기 전 보고 기록 (ifs-prereport/0.2)",
+  "description": "확정 텍스트 뒤, 만든 형상을 보기 전에 참여자가 속성마다 한 번 답한 확정 여부(①②③)와 고른 값. docs/rq-v2-proposal.md 3.2. 면담(질문 틀·검증기 V1–V9) 밖의 고정 문구 과제이고, 고른 값은 장면 JSON에 넣지 않는다(AGENTS.md 1·2). ③(not_set)이면 값을 비워 둔다. 0.1(prereport.v0.json)에서 바뀐 점: 첫 의도적 선택(firstValue·firstWidthM)과 최종 선택(value·widthM)을 함께 남김, 크기의 물리 폭(widthM, 미터), 무채색 보고({h: null, s: 0, l}), 값을 고른 뒤 확정 여부를 바꿨는지(commitmentChangedAfterPick), 장면 sha256은 확정 시점에 고정한 값. 참여자 데이터라 git에 올리지 않는다(<log_dir>/<sessionId>/prereport.json).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "sessionId", "participant", "specSha256", "specFile", "taskTextFile", "taskTextVersion", "createdAtUtc", "attributes"],
+  "properties": {
+    "schema": { "const": "ifs-prereport/0.2" },
+    "sessionId": { "type": "string", "pattern": "^[A-Za-z0-9_-]{1,40}$", "description": "가명 세션 ID" },
+    "participant": { "type": ["string", "null"], "pattern": "^[A-Za-z0-9_-]{1,40}$", "description": "가명 참여자 ID. 없으면 null" },
+    "specSha256": { "$ref": "#/$defs/sha256", "description": "확정 시점에 고정한 주 장면 파일(scenes/{sessionId}.json) 바이트의 sha256. 제출 직전에 파일이 바뀌어도 이 값을 쓴다" },
+    "specFile": { "type": "string", "description": "specSha256의 파일 이름(경로 없이)" },
+    "altSpecSha256": {
+      "type": "object",
+      "description": "확정 때 함께 만든 다른 장면 파일(.v0.json · .v1.json) 이름 → 확정 시점의 sha256",
+      "additionalProperties": { "$ref": "#/$defs/sha256" }
+    },
+    "specFrozenAtUtc": { "$ref": "#/$defs/utc", "description": "장면 sha256을 고정한 시각(확정 시점)" },
+    "taskTextFile": { "type": "string", "description": "고정 문구 파일 이름 (예: prereport_task.v0.2.json)" },
+    "taskTextVersion": { "type": "string" },
+    "createdAtUtc": { "$ref": "#/$defs/utc", "description": "서버가 보고를 받은 시각. 분석기는 형상 첫 제시 시각보다 늦으면 뺀다(report_after_viewing)" },
+    "attributes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["color", "size", "form", "motion"],
+      "properties": {
+        "color": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["commitment", "value", "firstValue", "method", "nSelections", "commitmentChangedAfterPick"],
+          "properties": {
+            "commitment": { "$ref": "#/$defs/commitment" },
+            "value": { "$ref": "#/$defs/colorValue", "description": "최종 선택([확인] 때 값)" },
+            "firstValue": { "$ref": "#/$defs/colorValue", "description": "첫 의도적 선택. 주 분석은 이 값을 쓴다" },
+            "method": { "const": "hue_lightness_field" },
+            "nSelections": { "type": "integer", "minimum": 0 },
+            "commitmentChangedAfterPick": { "type": "boolean" }
+          },
+          "allOf": [{ "$ref": "#/$defs/valueRule" }]
+        },
+        "size": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["commitment", "value", "firstValue", "widthM", "firstWidthM", "method", "nSelections", "commitmentChangedAfterPick"],
+          "properties": {
+            "commitment": { "$ref": "#/$defs/commitment" },
+            "value": { "$ref": "#/$defs/unitOrNull", "description": "최종 막대 값. scene-spec layout.size와 같은 로그 척도(0.5 = ×1)" },
+            "firstValue": { "$ref": "#/$defs/unitOrNull", "description": "첫 의도적 선택의 막대 값" },
+            "widthM": { "$ref": "#/$defs/metersOrNull", "description": "최종 선택의 원 지름이 나타내는 실제 길이(m). 기본 지름 × 2^((value − 0.5) × 4)" },
+            "firstWidthM": { "$ref": "#/$defs/metersOrNull" },
+            "method": { "const": "size_slider" },
+            "nSelections": { "type": "integer", "minimum": 0 },
+            "commitmentChangedAfterPick": { "type": "boolean" }
+          },
+          "allOf": [
+            { "$ref": "#/$defs/valueRule" },
+            {
+              "if": { "properties": { "commitment": { "const": "not_set" } } },
+              "then": { "properties": { "widthM": { "type": "null" }, "firstWidthM": { "type": "null" } } },
+              "else": { "properties": { "widthM": { "type": "number" }, "firstWidthM": { "type": "number" } } }
+            }
+          ]
+        },
+        "form": {
+          "type": "object", "additionalProperties": false, "required": ["commitment"],
+          "properties": { "commitment": { "$ref": "#/$defs/commitment" } }
+        },
+        "motion": {
+          "type": "object", "additionalProperties": false, "required": ["commitment"],
+          "properties": { "commitment": { "$ref": "#/$defs/commitment" } }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "utc": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$" },
+    "unit": { "type": "number", "minimum": 0, "maximum": 1 },
+    "unitOrNull": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/unit" }] },
+    "metersOrNull": { "oneOf": [{ "type": "null" }, { "type": "number", "exclusiveMinimum": 0, "maximum": 10 }] },
+    "commitment": {
+      "enum": ["from_start", "when_asked", "not_set"],
+      "description": "① 처음부터 있었다 = from_start, ② 물어봐서 그때 정했다 = when_asked, ③ 지금도 정해진 것이 없다 = not_set"
+    },
+    "colorValue": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object", "additionalProperties": false, "required": ["h", "l"],
+          "description": "유채색: 색상각/360과 HSL 밝기(채도는 과제 파일의 고정값)",
+          "properties": { "h": { "$ref": "#/$defs/unit" }, "l": { "$ref": "#/$defs/unit" } }
+        },
+        {
+          "type": "object", "additionalProperties": false, "required": ["h", "s", "l"],
+          "description": "무채색 띠: 색상 없음",
+          "properties": { "h": { "type": "null" }, "s": { "const": 0 }, "l": { "$ref": "#/$defs/unit" } }
+        }
+      ]
+    },
+    "valueRule": {
+      "description": "③(not_set)이면 value·firstValue 모두 null(값을 고른 뒤 ③으로 바꿨으면 commitmentChangedAfterPick = true). ①②면 둘 다 있고 한 번 이상 골랐다.",
+      "if": { "properties": { "commitment": { "const": "not_set" } } },
+      "then": { "properties": { "value": { "type": "null" }, "firstValue": { "type": "null" } } },
+      "else": { "properties": { "value": { "not": { "type": "null" } }, "firstValue": { "not": { "type": "null" } }, "nSelections": { "minimum": 1 } } }
+    }
+  }
+}

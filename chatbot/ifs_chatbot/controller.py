@@ -20,6 +20,7 @@ import secrets
 import threading
 from collections import defaultdict
 from datetime import datetime
+from pathlib import Path
 
 from .anchors import anchor_candidates
 from .clarify import clarify_targets, question_json
@@ -219,6 +220,7 @@ class Session:
         self.id, self.condition = session_id, condition
         self.participant_id = participant_id   # 가명. 피험자 내 설계에서 한 사람의 여러 세션을 묶는다(장면 meta에만 씀)
         self.scene_spec: dict | None = None
+        self.scene_hashes: dict | None = None      # 확정 시점에 고정한 장면 파일별 sha256(보기 전 보고가 쓴다)
         self.steps: list[Step] = self.p.sequence(condition)
         self.idx = 0
         self.step_state: dict[int, dict] = defaultdict(dict)
@@ -421,13 +423,12 @@ class Session:
         """과제를 열 수 있는지(확정 텍스트와 장면 파일이 있어야 함)와 이미 냈는지. 고른 값은 돌려주지 않는다."""
         with self.lock:
             reason = None
-            spec = self.log.data.get("sceneSpec") or {}
             if self.state == "withdrawn":
                 reason = "폐기된 세션입니다."
             elif not self.log.data.get("confirmedText"):
                 reason = "확정 텍스트가 아직 없습니다([이대로 맞아요] 뒤에 열립니다)."
-            elif not spec.get("path") or not self.scene_path.is_file():
-                reason = "장면 파일이 없습니다(장면 파일의 sha256을 남겨야 하므로 과제를 열 수 없습니다)."
+            elif not self.scene_hashes:
+                reason = "확정 때 만든 장면 파일이 없습니다(장면 파일의 sha256을 남겨야 하므로 과제를 열 수 없습니다)."
             submitted = self.prereport_path.is_file()
             return {"sessionId": self.id, "available": reason is None and not submitted,
                     "submitted": submitted, "reason": reason}
@@ -441,9 +442,9 @@ class Session:
                 raise SessionError("보기 전 보고는 이미 냈습니다(한 번만 받습니다).")
             if st["reason"]:
                 raise SessionError(st["reason"])
-            alts = [self.variant_path(m) for m in ("v0", "v1")]
+            # 장면 sha256·대체 매핑 파일 목록은 확정 때 고정한 값(지금 파일을 다시 읽지 않는다)
             rec = prereport_mod.build_record(session_id=self.id, participant=self.participant_id,
-                                             spec_path=self.scene_path, attributes=attributes, alt_specs=alts)
+                                             frozen=self.scene_hashes, attributes=attributes)
             problems = prereport_mod.validate(rec)
             if problems:
                 raise ValueError(problems)
@@ -872,10 +873,15 @@ class Session:
             if self.cfg.mapping.save_both:
                 variants = self._write_variants(text, spec, mapping, norm, problems)
             self.scene_spec = spec
+            self.scene_hashes = None
+            if saved:
+                others = [Path(v) for k, v in variants.items() if k in ("v0", "v1") and v]
+                self.scene_hashes = prereport_mod.freeze_hashes(Path(saved), others)
             self.log.data["sceneSpec"] = {"path": saved, "specVersion": spec["meta"]["specVersion"],
                                           "builder": spec["meta"]["pipeline"]["builder"],
                                           "sourceTextHash": spec["meta"]["sourceTextHash"], "problems": problems,
-                                          "mapping": mapping, "variants": variants}
+                                          "mapping": mapping, "variants": variants,
+                                          "sha256": self.scene_hashes}
             if mapping["fallbackReason"]:
                 self.log.data["sceneSpec"]["fallback"] = True
             if problems:
@@ -908,6 +914,7 @@ class Session:
 
     def _delete_scene(self) -> None:
         self.scene_spec = None
+        self.scene_hashes = None
         for path in (self.scene_path, self.variant_path("v0"), self.variant_path("v1")):
             try:
                 path.unlink(missing_ok=True)

@@ -12,7 +12,15 @@ LLM 없음, 표준 라이브러리만, 결정론적(같은 기록 → 같은 출
 세션 폴더의 prereport.json(보기 전 보고, 없을 수 있음) 분석은 ownership_shift.py가 하고 shift_pairs.csv와
 summary의 shift 절로 나온다. kind가 없는 0.1·0.2 기록은 orig 밖을 모두 mismatch로 본다. RQ1·RQ2·RQ3 diffVsOrig는
 mismatch 변형만 쓴다(shift 변형을 섞지 않는다). RQ3 평정 상관은 세션 안 모든 형상(n개)을 쓴다.
-ratings.csv에 item 열이 있으면 manifest.ratingItem과 같은 행만 평정으로 쓰고, 다른 문항 행은 세어서 경고한다.
+평정 문항(ratingItem): 0.1·0.2 기록은 'mine'(내 것 같다)으로 본다. 0.3은 manifest.ratingItem(없으면 'unknown').
+0.3 ratings.csv는 item이 비어 있지 않고 manifest.ratingItem과 같은 행만 평정으로 쓴다(다른·빈 문항 행은 세어서 경고).
+기존 요약(RQ1–RQ3)은 문항별로 따로 낸다(summaries.<문항>). 문항이 다른 세션을 평균하지 않는다.
+같은 참여자·세션을 두 문항으로 따로 실행한 기록은 문항별로 각각 남는다(기록 고르기 키 = 참여자·세션·문항).
+Q1(가까운−먼, shift)은 ratingItem == 'resemblance' 세션만 쓴다.
+선택률(choiceRate)과 행동 상관(RQ3)은 원본 + mismatch 변형 제시 집합으로만 낸다. 최종 선택이 shift 변형인 세션은
+선택률 분모에서 빼고 rq1.choseShift로 따로 센다.
+순서 균형은 조건 집합(manifest 조건 집합 키, 없으면 order의 정렬된 id 목록)별로, 행 수 = manifest.orderRows
+(없으면 조건 수 n이 짝수면 n, 홀수면 2n)로 낸다.
 쌍 요약의 95% 신뢰구간(t 분포)은 과제 요구로 넣었다. p값은 여전히 내지 않는다. 0.2에서 늘어난 값(색 변형 magnitude.deltaE00Composited, taskText.draftCount)은 0.1 기록에서 빈칸이다.
 magnitude_delta_e00은 0.1에서는 HSL 해석값 기준, 0.2에서는 셰이더 알베도(밝기 배율 포함) 기준이다(record_version 열로 구분).
 추론 통계(p값)는 내지 않는다: 참여자 수가 작고 검정 계획이 아직 정해지지 않아 기술 통계(평균·n·lowN)만 낸다.
@@ -71,9 +79,11 @@ from pathlib import Path
 from . import ownership_shift as shift
 
 RECORD_PREFIX = "ifs-ownership/"
-SUMMARY_VERSION = "ownership-summary/0.4"   # 0.2: gap_ms·n_gaps·start_source 열, orderBalance
+SUMMARY_VERSION = "ownership-summary/0.5"   # 0.2: gap_ms·n_gaps·start_source 열, orderBalance
 #                                               0.3: magnitude_delta_e00_composited·draft_phrases 열, orderBalance.byOrderRowCb
 #                                               0.4: 기록 0.3 읽기 — kind·rating_item 등 열, shift_pairs.csv, summaries.*.shift
+#                                               0.5: summaries.<문항>.{all,origAtOrAboveThreshold}, 최상위 shift(문항
+#                                                    resemblance만), orderBalance.byConditionSet, rq1.choseShift
 ATTRIBUTES = ("form", "color", "size", "motion")
 SOURCES = ("stated", "default", "mixed")
 METRICS = ("gaze_ms", "gaze_ratio", "dist_mean_m", "dist_min_m", "azimuth_range_deg", "path_m", "first_look_ms")
@@ -83,11 +93,13 @@ DEFAULT_ORIG_THRESHOLD = 4.0
 DEFAULT_HZ = 20.0
 DEFAULT_CONE_DEG = 15.0
 GAP_FACTOR = 3.0          # 한 구간이 명목 표본 간격의 이 배수를 넘으면 명목 간격 뒤는 결측
-WILLIAMS_ROWS = 10        # unity WilliamsDesign.Rows
+WILLIAMS_ROWS = 10        # unity WilliamsDesign.Rows (5조건)
+LEGACY_ITEM = "mine"      # 0.1·0.2 기록의 평정 문항
+Q1_ITEM = "resemblance"   # 가까운−먼(Q1)에 쓰는 문항
 VIEWING_START_EVENT = "viewing_start"
 
 STIMULI_COLUMNS = [
-    "participant", "session", "position", "variant", "kind", "attribute", "source", "rule",
+    "participant", "session", "rating_item", "position", "variant", "kind", "attribute", "source", "rule",
     "said_not_rendered", "forced", "below_target", "motion_alters_scale",
     "magnitude_size_step", "magnitude_delta_e00", "magnitude_delta_e00_composited", "changed_keys",
     "rating", "rating_drop", "chosen", "difference_rating", "view_ms", "rt_ms", "n_cancelled",
@@ -99,7 +111,8 @@ SESSION_COLUMNS = [
     "head_source", "low_visibility", "completed", "aborted_at",
     "orig_rating", "orig_chosen", "chosen_variant", "chosen_position",
     "size_step", "color_delta_e", "view_seconds", "head_sample_hz", "gaze_cone_deg",
-    "task_text_version", "draft_phrases", "rating_item", "n_positions", "prereport", "n_shift_pairs",
+    "task_text_version", "draft_phrases", "rating_item", "n_positions", "condition_set", "n_order_rows",
+    "chose_shift", "first_presentation_utc", "prereport", "n_shift_pairs", "q1_eligible",
     "orig_below_threshold", "excluded",
 ]
 
@@ -159,9 +172,22 @@ def _r(x: float | None, nd: int = 4) -> float | None:
 
 # ---------------------------------------------------------------- 기록 찾기
 
+def is_v03(man: dict) -> bool:
+    return ("shiftPairs" in man or "ratingItem" in man
+            or any(isinstance(v, dict) and "kind" in v for v in man.get("variants") or []))
+
+
+def rating_item_of(man: dict) -> str:
+    """평정 문항. 0.1·0.2 = mine. 0.3 = manifest.ratingItem(없으면 unknown)."""
+    if not is_v03(man):
+        return LEGACY_ITEM
+    ri = man.get("ratingItem")
+    return ri if isinstance(ri, str) and ri else "unknown"
+
+
 def discover(records: Path) -> tuple[list[dict], list[dict], list[dict]]:
-    """(participant, session)마다 기록 폴더 하나를 고른다. → (고른 것, 건너뛴 것, 경고)"""
-    groups: dict[tuple[int, str], list[dict]] = {}
+    """(participant, session, 평정 문항)마다 기록 폴더 하나를 고른다. → (고른 것, 건너뛴 것, 경고)"""
+    groups: dict[tuple[int, str, str], list[dict]] = {}
     skipped: list[dict] = []
     warnings: list[dict] = []
     for mf in sorted(records.rglob("manifest.json")):
@@ -181,8 +207,9 @@ def discover(records: Path) -> tuple[list[dict], list[dict], list[dict]]:
         if not isinstance(summ, dict):
             warnings.append({"record": rel, "message": "summary.json 없음 또는 읽기 실패 — 미완료로 본다"})
             summ = {}
-        groups.setdefault((pnum, sid), []).append({
-            "folder": folder, "rel": rel, "manifest": man, "summary": summ,
+        item = rating_item_of(man)
+        groups.setdefault((pnum, sid, item), []).append({
+            "folder": folder, "rel": rel, "manifest": man, "summary": summ, "item": item,
             "completed": summ.get("completed") is True,
             "sortKey": (folder.name, str(man.get("startedAtUtc") or "")),
         })
@@ -293,16 +320,43 @@ def cb_for(participant: int) -> int:
     return ((participant - 1) % 2) ^ (((participant - 1) // WILLIAMS_ROWS) % 2)
 
 
+def order_rows_for(man: dict, n: int) -> int:
+    """Williams 순서 행 수: manifest.orderRows가 있으면 그 값, 없으면 조건 수 n이 짝수면 n, 홀수면 2n."""
+    r = _int(man.get("orderRows"))
+    if r is not None and r > 0:
+        return r
+    return n if n % 2 == 0 else 2 * n
+
+
+def condition_set_of(man: dict, order: list[str]) -> str:
+    for k in ("conditionSet", "conditionSetKey", "conditions"):
+        v = man.get(k)
+        if isinstance(v, str) and v:
+            return v
+        if isinstance(v, list) and v:
+            return "|".join(sorted(str(x) for x in v))
+    return "|".join(sorted(order))
+
+
 def order_balance(sessions: list[dict]) -> dict:
-    """요약에 포함된 세션의 순서 행·cb·행×cb 칸별 세션 수와 균형 여부
-    (행별 최대 − 최소 ≤ 1, cb 차이 ≤ 1, 20칸 최대 − 최소 ≤ 1)."""
-    rows = {str(r): 0 for r in range(WILLIAMS_ROWS)}
+    """조건 집합별로 order_balance_one을 낸다. balanced = 모든 집합이 균형."""
+    sets: dict[str, list[dict]] = {}
+    for s in sessions:
+        sets.setdefault(s.get("condition_set") or "", []).append(s)
+    by = {k: order_balance_one(v, max((s.get("n_order_rows") or WILLIAMS_ROWS) for s in v)) for k, v in sorted(sets.items())}
+    return {"sessions": len(sessions), "byConditionSet": by, "balanced": all(b["balanced"] for b in by.values())}
+
+
+def order_balance_one(sessions: list[dict], n_rows: int = WILLIAMS_ROWS) -> dict:
+    """한 조건 집합 세션의 순서 행·cb·행×cb 칸별 세션 수와 균형 여부
+    (행별 최대 − 최소 ≤ 1, cb 차이 ≤ 1, 칸 최대 − 최소 ≤ 1)."""
+    rows = {str(r): 0 for r in range(n_rows)}
     cbs = {"0": 0, "1": 0}
-    cells = {f"{r}:{c}": 0 for r in range(WILLIAMS_ROWS) for c in (0, 1)}
+    cells = {f"{r}:{c}": 0 for r in range(n_rows) for c in (0, 1)}
     unknown_row = unknown_cb = 0
     for s in sessions:
         r, c = s.get("order_row"), s.get("cb")
-        row_ok = r is not None and 0 <= r < WILLIAMS_ROWS
+        row_ok = r is not None and 0 <= r < n_rows
         if row_ok:
             rows[str(r)] += 1
         else:
@@ -316,7 +370,7 @@ def order_balance(sessions: list[dict]) -> dict:
     row_spread = max(rows.values()) - min(rows.values())
     cb_spread = abs(cbs["0"] - cbs["1"])
     cell_spread = max(cells.values()) - min(cells.values())
-    return {"sessions": len(sessions), "byOrderRow": rows, "byCb": cbs, "byOrderRowCb": cells,
+    return {"sessions": len(sessions), "nOrderRows": n_rows, "byOrderRow": rows, "byCb": cbs, "byOrderRowCb": cells,
             "unknownOrderRow": unknown_row, "unknownCb": unknown_cb,
             "rowSpread": row_spread, "cbSpread": cb_spread, "cellSpread": cell_spread,
             "balanced": row_spread <= 1 and cb_spread <= 1 and cell_spread <= 1
@@ -335,8 +389,8 @@ def _variant_at(order: list[str], position) -> str | None:
     return order[p - 1] if p is not None and 1 <= p <= len(order) else None
 
 
-def load_session(cand: dict, orig_threshold: float) -> tuple[dict, list[dict], list[dict]]:
-    """→ (세션 행, 형상 행 목록, 경고 목록). 행 값은 파이썬 값(None = 빈칸)."""
+def load_session(cand: dict, orig_threshold: float) -> tuple[dict, list[dict], list[dict], list[dict]]:
+    """→ (세션 행, 형상 행 목록, 경고 목록, 쌍 행 목록). 행 값은 파이썬 값(None = 빈칸)."""
     folder, rel, man, summ = cand["folder"], cand["rel"], cand["manifest"], cand["summary"]
     warns: list[dict] = []
 
@@ -355,10 +409,10 @@ def load_session(cand: dict, orig_threshold: float) -> tuple[dict, list[dict], l
         cone = DEFAULT_CONE_DEG
         warn(f"config.gazeConeDeg 없음 — {DEFAULT_CONE_DEG:g}°로 계산")
     order = [str(v) for v in man.get("order") or []]
-    is_v03 = "shiftPairs" in man or any(isinstance(v, dict) and "kind" in v for v in man.get("variants") or [])
-    if not is_v03 and len(order) != 5:
+    v03 = is_v03(man)
+    if not v03 and len(order) != 5:
         warn(f"order 길이 {len(order)} (5가 아님)")
-    if is_v03 and len(order) not in (5, 7, 9):
+    if v03 and len(order) not in (5, 7, 9):
         warn(f"order 길이 {len(order)} (0.3은 5·7·9)")
     if len(set(order)) != len(order):
         warn("order에 같은 형상이 두 번 이상 있음")
@@ -366,7 +420,9 @@ def load_session(cand: dict, orig_threshold: float) -> tuple[dict, list[dict], l
     for v in order:
         if v not in variants:
             warn(f"order의 '{v}'가 variants에 없음")
-    rating_item = man.get("ratingItem") if isinstance(man.get("ratingItem"), str) and man.get("ratingItem") else None
+    rating_item = cand.get("item") or rating_item_of(man)
+    if v03 and not man.get("ratingItem"):
+        warn("0.3 manifest에 ratingItem 없음 — 문항 'unknown'으로 따로 요약하고 Q1에서 뺀다")
 
     # 평정: 위에서부터 읽고 취소 행은 그 형상의 직전 유효 평정을 지운다
     ratings: dict[str, dict] = {}
@@ -377,9 +433,9 @@ def load_session(cand: dict, orig_threshold: float) -> tuple[dict, list[dict], l
         var = row.get("variant") or _variant_at(order, row.get("position"))
         if not var:
             continue
-        item = row.get("item") or None
-        if rating_item and item and item != rating_item:       # 다른 평정 문항 행은 이 요약의 평정이 아니다
-            other_items[item] = other_items.get(item, 0) + 1
+        item = row.get("item") or ""
+        if v03 and item != rating_item:        # 0.3: 비어 있거나 다른 문항 행은 이 기록의 평정이 아니다
+            other_items[item or "(빈칸)"] = other_items.get(item or "(빈칸)", 0) + 1
             continue
         vm = _num(row.get("view_ms"))
         if vm is not None:
@@ -463,6 +519,9 @@ def load_session(cand: dict, orig_threshold: float) -> tuple[dict, list[dict], l
     flags = man.get("flags") if isinstance(man.get("flags"), dict) else {}
     task_text = man.get("taskText") if isinstance(man.get("taskText"), dict) else {}
 
+    kinds = {vid: ("orig" if vid == "orig" else (vv.get("kind") if vv.get("kind") in ("mismatch", "shift") else "mismatch"))
+             for vid, vv in variants.items()}
+    first_view = shift.first_presentation_utc(man, [st["t"] for st in starts.values()])
     srow = {
         "participant": participant, "session": sid, "record_folder": rel,
         "record_version": man.get("recordVersion"), "started_at_utc": man.get("startedAtUtc"),
@@ -474,7 +533,10 @@ def load_session(cand: dict, orig_threshold: float) -> tuple[dict, list[dict], l
         "size_step": _num(config.get("sizeStep")), "color_delta_e": _num(config.get("colorDeltaE")),
         "view_seconds": _num(config.get("viewSeconds")), "head_sample_hz": hz, "gaze_cone_deg": cone,
         "task_text_version": task_text.get("version"), "draft_phrases": _int(task_text.get("draftCount")),
-        "rating_item": rating_item, "n_positions": len(order), "prereport": None, "n_shift_pairs": None,
+        "rating_item": rating_item, "n_positions": len(order), "condition_set": condition_set_of(man, order),
+        "n_order_rows": order_rows_for(man, len(order)), "chose_shift": None if chosen_var is None else
+        kinds.get(chosen_var) == "shift", "first_presentation_utc": None if first_view is None else
+        first_view.isoformat().replace("+00:00", "Z"), "prereport": None, "n_shift_pairs": None, "q1_eligible": False,
         "orig_below_threshold": below, "excluded": excluded,
     }
 
@@ -488,9 +550,10 @@ def load_session(cand: dict, orig_threshold: float) -> tuple[dict, list[dict], l
         beh = behavior_metrics(sorted(samples.get(pos, []), key=lambda s: s["t"]), view_ms.get(var), hz, cone, start_ms)
         beh["start_source"] = start_src
         is_orig = var == "orig"
-        kind = "orig" if is_orig else (v.get("kind") if v.get("kind") in ("mismatch", "shift") else "mismatch")
+        kind = "orig" if is_orig else kinds.get(var, "mismatch")
         rows.append({
-            "participant": participant, "session": sid, "position": pos, "variant": var, "kind": kind,
+            "_rec": rel, "participant": participant, "session": sid, "rating_item": rating_item,
+            "position": pos, "variant": var, "kind": kind,
             "attribute": None if is_orig else (v.get("attribute") or var),
             "source": None if is_orig else v.get("source"),
             "rule": None if is_orig else v.get("rule"),
@@ -520,21 +583,19 @@ def load_session(cand: dict, orig_threshold: float) -> tuple[dict, list[dict], l
     # 같은 말·다른 값 쌍과 보기 전 보고(0.3). 0.1·0.2에는 shiftPairs가 없어 쌍 행이 없다
     pairs: list[dict] = []
     if "shiftPairs" in man:
-        report, problem, pw = shift.load_prereport(folder, man)
+        report, status, pw = shift.load_prereport(folder, man, first_view)
         for msg in pw:
             warn(msg)
-        srow["prereport"] = problem or ("present" if report is not None else "absent")
+        srow["prereport"] = status
+        presented = {v for v in order if kinds.get(v) == "shift"}
         pairs, sw = shift.pair_rows(participant, sid, man, {k: r["rating"] for k, r in ratings.items()},
-                                    report, problem)
+                                    presented, report, status)
         for msg in sw:
             warn(msg)
         srow["n_shift_pairs"] = len(pairs)
+        srow["q1_eligible"] = rating_item == Q1_ITEM and any(p["skip_reason"] != "disabled" for p in pairs)
         for pr in pairs:
-            pr["included"] = not excluded
-            if pr["valid"]:
-                for vid in (f"{pr['attribute']}_lo", f"{pr['attribute']}_hi"):
-                    if vid not in order:
-                        warn(f"유효한 쌍의 '{vid}'가 order에 없음")
+            pr.update({"included": not excluded, "record_folder": rel, "rating_item": rating_item})
     elif (folder / shift.PREREPORT_FILE).is_file():
         srow["prereport"] = "present"
         warn("prereport.json이 있지만 manifest에 shiftPairs가 없음(0.1·0.2 기록) — 쌍 분석 없음")
@@ -577,21 +638,27 @@ def spearman(xs: list[float], ys: list[float]) -> float | None:
     return sxy / math.sqrt(sxx * syy)
 
 
-def summarize(sessions: list[dict], stimuli: list[dict], shift_pairs: list[dict] | None = None) -> dict:
-    keys = {(s["participant"], s["session"]) for s in sessions}
-    st = [r for r in stimuli if (r["participant"], r["session"]) in keys]
+def summarize(sessions: list[dict], stimuli: list[dict]) -> dict:
+    """한 문항의 세션들만 넣는다(문항이 다른 세션을 섞지 않는다). 제시 집합 = 원본 + mismatch 변형."""
+    keys = {s["record_folder"] for s in sessions}
+    chose_shift = {s["record_folder"] for s in sessions if s.get("chose_shift")}
+    st = [r for r in stimuli if r["_rec"] in keys and r["kind"] in ("orig", "mismatch")]
     var_rows = [r for r in st if r["kind"] == "mismatch"]
-    orig_rows = [r for r in st if r["variant"] == "orig"]
+    orig_rows = [r for r in st if r["kind"] == "orig"]
 
-    def b(v):
-        return None if v is None else (1.0 if v else 0.0)
+    def b(r):
+        if r["chosen"] is None or r["_rec"] in chose_shift:     # shift를 고른 세션은 선택률 분모에서 뺀다
+            return None
+        return 1.0 if r["chosen"] else 0.0
 
-    rq1 = {"orig": {"rating": _est(r["rating"] for r in orig_rows),
-                    "choiceRate": _est(b(r["chosen"]) for r in orig_rows)}}
+    rq1 = {"presentationSet": "orig+mismatch",
+           "choseShift": {"n": len(chose_shift), "of": len(keys)},
+           "orig": {"rating": _est(r["rating"] for r in orig_rows),
+                    "choiceRate": _est(b(r) for r in orig_rows)}}
     for a in ATTRIBUTES:
         rows = [r for r in var_rows if r["attribute"] == a]
         rq1[a] = {"ratingDrop": _est(r["rating_drop"] for r in rows),
-                  "choiceRate": _est(b(r["chosen"]) for r in rows)}
+                  "choiceRate": _est(b(r) for r in rows)}
 
     src_names = list(SOURCES)
     if any(r["source"] not in SOURCES for r in var_rows):
@@ -608,10 +675,10 @@ def summarize(sessions: list[dict], stimuli: list[dict], shift_pairs: list[dict]
         "note": "mixed(바꾼 키 중 말한 것과 기본값이 섞임)는 stated·default와 따로 센다",
     }
 
-    by_session: dict[tuple, list[dict]] = {}
+    by_session: dict[str, list[dict]] = {}
     for r in st:
-        by_session.setdefault((r["participant"], r["session"]), []).append(r)
-    rq3: dict = {"diffVsOrig": {}, "ratingCorrelation": {}}
+        by_session.setdefault(r["_rec"], []).append(r)
+    rq3: dict = {"presentationSet": "orig+mismatch", "diffVsOrig": {}, "ratingCorrelation": {}}
     for m in METRICS:
         col = f"{m}_diff"
         rq3["diffVsOrig"][m] = {"all": _est(r[col] for r in var_rows),
@@ -625,11 +692,17 @@ def summarize(sessions: list[dict], stimuli: list[dict], shift_pairs: list[dict]
                 rhos.append(rho)
         e = _est(rhos)
         rq3["ratingCorrelation"][m] = {"meanRho": e["mean"], "nSessions": e["n"], "lowN": e["lowN"]}
-    shift_sessions = [s for s in sessions if s.get("n_shift_pairs") is not None]
-    shift_summary = shift.summarize_pairs([p for p in shift_pairs or [] if (p["participant"], p["session"]) in keys],
-                                          [s["participant"] for s in shift_sessions], LOW_N)
-    shift_summary["nSessions"] = len(shift_sessions)
-    return {"nSessions": len(keys), "rq1": rq1, "rq2": rq2, "rq3": rq3, "shift": shift_summary}
+    return {"nSessions": len(keys), "rq1": rq1, "rq2": rq2, "rq3": rq3}
+
+
+def summarize_shift(sessions: list[dict], pairs: list[dict]) -> dict:
+    """Q1: 문항 resemblance이고 disabled가 아닌 쌍이 하나라도 있는 세션의 쌍만."""
+    q1 = [s for s in sessions if s.get("q1_eligible")]
+    keys = {s["record_folder"] for s in q1}
+    out = shift.summarize_pairs([p for p in pairs if p["record_folder"] in keys], [s["participant"] for s in q1], LOW_N)
+    out["nSessions"] = len(q1)
+    out["ratingItem"] = Q1_ITEM
+    return out
 
 
 # ---------------------------------------------------------------- 전체 실행
@@ -650,12 +723,13 @@ def analyze(records: str | Path, out_dir: str | Path | None = None,
     included = [s for s in sessions if not s["excluded"]]
     passing = [s for s in included if s["orig_below_threshold"] is False]
     balance = order_balance(included)
-    if not balance["balanced"]:
-        warnings.append({"record": None, "message": (
-            f"순서 불균형: 포함된 세션 {balance['sessions']}개의 orderRow별 수 최대−최소 {balance['rowSpread']}, "
-            f"cb 차이 {balance['cbSpread']}, orderRow×cb 20칸 최대−최소 {balance['cellSpread']}, "
-            f"orderRow·cb 모름 {balance['unknownOrderRow']}·{balance['unknownCb']} "
-            "— 참여자 번호를 1부터 빠짐없이 차례로 배정했는지 확인")})
+    for key, bal in balance["byConditionSet"].items():
+        if not bal["balanced"]:
+            warnings.append({"record": None, "message": (
+                f"순서 불균형(조건 집합 {key}, {bal['nOrderRows']}행): 포함된 세션 {bal['sessions']}개의 orderRow별 수 "
+                f"최대−최소 {bal['rowSpread']}, cb 차이 {bal['cbSpread']}, orderRow×cb {2 * bal['nOrderRows']}칸 "
+                f"최대−최소 {bal['cellSpread']}, orderRow·cb 모름 {bal['unknownOrderRow']}·{bal['unknownCb']} "
+                "— 참여자 번호를 1부터 빠짐없이 차례로 배정했는지 확인")})
     drafted = [s for s in sessions if (s["draft_phrases"] or 0) > 0]
     if drafted:
         warnings.append({"record": None, "message": (
@@ -679,8 +753,13 @@ def analyze(records: str | Path, out_dir: str | Path | None = None,
         },
         "orderBalance": balance,
         "draftPhraseSessions": len(drafted),
-        "summaries": {"all": summarize(included, stimuli, pairs),
-                      "origAtOrAboveThreshold": summarize(passing, stimuli, pairs)},
+        "ratingItems": sorted({s["rating_item"] for s in included}),
+        "summaries": {item: {"all": summarize([s for s in included if s["rating_item"] == item], stimuli),
+                             "origAtOrAboveThreshold": summarize([s for s in passing if s["rating_item"] == item],
+                                                                 stimuli)}
+                      for item in sorted({s["rating_item"] for s in included})},
+        "shift": {"all": summarize_shift(included, pairs),
+                  "origAtOrAboveThreshold": summarize_shift(passing, pairs)},
         "skipped": skipped,
         "warnings": warnings,
     }

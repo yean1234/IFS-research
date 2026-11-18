@@ -184,7 +184,10 @@ async function addPrereportLink(sid) {
   try {
     const s = await api("GET", `/api/sessions/${encodeURIComponent(sid)}/prereport`);
     if (!s.available || state.sid !== sid || $("#btn-prereport")) return;
-    $("#buttons").append(el("a", { id: "btn-prereport", class: "button primary", href: `/prereport?session=${encodeURIComponent(sid)}` }, "보기 전 보고로"));
+    state.prereportTask = state.prereportTask || await api("GET", "/api/prereport/task");
+    const label = state.prereportTask.fixedPhrases.open_link.text;   // 문구는 과제 파일(prereport_task.v0.2.json)에서
+    if ($("#btn-prereport")) return;
+    $("#buttons").append(el("a", { id: "btn-prereport", class: "button primary", href: `/prereport?session=${encodeURIComponent(sid)}` }, label));
   } catch (e) {
     /* 폐기된 세션 등 */
   }
