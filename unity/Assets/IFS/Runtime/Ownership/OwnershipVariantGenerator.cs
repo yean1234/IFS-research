@@ -22,9 +22,9 @@
 //         축(hue/lightness)을 고르는 데 쓴 채도의 출처는 axisChoiceBasis로 따로 남긴다(basis를 mixed로 만들지 않음).
 //   크기  축 size = layout.size(로그 척도) ± sizeShiftStep. 적용 값(4자리 반올림)이 [0, 1] 안이어야 함(out_of_range),
 //         lo < w < hi이고 로그 척도에서 대칭(|(hi − w) − (w − lo)| ≤ 1e-4, 반올림 오차)이어야 함(asymmetric).
-//         크기가 stated면 반올림 전 값으로 원본과 같은 쪽(0.5 기준)에 머물러야 함: w < 0.5 → hi < 0.5, w > 0.5 → lo > 0.5
+//         크기가 stated면 원본(반올림 전)이 속한 쪽에 실제 적용할 끝값(반올림 뒤)도 있어야 함: w < 0.5 → hi < 0.5, w > 0.5 → lo > 0.5
 //         (crosses_category). w = 0.5는 쪽이 없어 검사하지 않고 categoryCheck = skipped_neutral.
-//         화면 폭 wM·loM·hiM = RenderedSize.MaxHorizontalWidthM(로더와 같은 식, 자세 배율 포함).
+//         화면 폭 wM·loM·hiM(m, 소수 6자리) = RenderedSize.MaxHorizontalWidthM(로더와 같은 식, 자세 배율 포함).
 //   색    유채색(s ≥ 0.10): 축 hue, 1° 격자. 무채색: 축 lightness, 0.005 격자([0.05, 0.95] 안).
 //         상한(maxHueShiftDeg·명도 범위)은 반올림해 실제 적용할 값으로 검사한다.
 //         상한 안의 lo 후보 × hi 후보 중 둘 다 ΔE00 ≥ colorShiftDeltaE이고 |ΔE00(lo) − ΔE00(hi)| ≤ shiftSymmetryTolerance인
@@ -781,7 +781,7 @@ namespace IFS.SceneSpec.Ownership
             var pair = new OwnershipShiftPair
             {
                 Attribute = "size", Axis = "size", Basis = basis, ProvenanceWithoutValue = provOnly, W = R4(wr),
-                WM = R4(RenderedSize.MaxHorizontalWidthM(wr, posture)),
+                WM = R6(RenderedSize.MaxHorizontalWidthM(wr, posture)),
             };
             if (!enabled) { pair.SkipReason = SkipDisabled; return pair; }
             double step = plan.Config.sizeShiftStep;
@@ -790,13 +790,14 @@ namespace IFS.SceneSpec.Ownership
             pair.Step = step;
             pair.Lo = lo;
             pair.Hi = hi;
-            pair.LoM = R4(RenderedSize.MaxHorizontalWidthM(lo, posture));
-            pair.HiM = R4(RenderedSize.MaxHorizontalWidthM(hi, posture));
+            pair.LoM = R6(RenderedSize.MaxHorizontalWidthM(lo, posture));
+            pair.HiM = R6(RenderedSize.MaxHorizontalWidthM(hi, posture));
             // 범주 검사는 반올림 전 값으로(.49996이 .5로 반올림돼 통과하지 않도록)
             if (!stated) pair.CategoryCheck = "not_applicable";
             else if (wr == SizeCategoryBoundary) pair.CategoryCheck = "skipped_neutral";
-            else if (wr < SizeCategoryBoundary) pair.CategoryCheck = rawHi < SizeCategoryBoundary ? "passed" : "failed";
-            else pair.CategoryCheck = rawLo > SizeCategoryBoundary ? "passed" : "failed";
+            // 쪽은 원본의 반올림 전 값으로, 끝값은 실제 적용할(반올림된) 값으로 본다(끝값이 정확히 0.5면 실패).
+            else if (wr < SizeCategoryBoundary) pair.CategoryCheck = rawHi < SizeCategoryBoundary && hi < SizeCategoryBoundary ? "passed" : "failed";
+            else pair.CategoryCheck = rawLo > SizeCategoryBoundary && lo > SizeCategoryBoundary ? "passed" : "failed";
             bool symmetric = lo < wr && wr < hi && Math.Abs((hi - wr) - (wr - lo)) <= SizeSymmetryTolerance + 1e-12;
             if (plan.LowVisibility) pair.SkipReason = SkipNotRendered;
             else if (lo < 0 || hi > 1) pair.SkipReason = SkipOutOfRange;

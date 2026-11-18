@@ -300,7 +300,7 @@ namespace IFS.SceneSpec.Ownership
             {
                 try { Prereport = OwnershipPrereport.Load(prePath, _specSha); }
                 catch (Exception e) { Errors.Add("보기 전 보고 파일을 읽지 못했습니다: " + e.Message); }
-                if (Prereport != null && !Prereport.SpecSha256Match) Warnings.Add("보기 전 보고의 specSha256이 지금 spec 파일과 다릅니다(해시 불일치)");
+                if (Prereport != null && !Prereport.SpecSha256Match) Warnings.Add("보기 전 보고의 specSha256·altSpecSha256이 지금 spec 파일과 다릅니다(해시 불일치)");
             }
             string preRefusal = OwnershipPrereport.Refusal(Prereport, config.requirePrereport);
             if (preRefusal != null) Errors.Add(preRefusal);
@@ -412,9 +412,13 @@ namespace IFS.SceneSpec.Ownership
                     TaskTextFile = TaskText.FileName,
                     TaskTextVersion = TaskText.Version,
                     TaskTextDraftKeys = TaskText.DraftKeys.ToArray(),
-                    Prereport = Prereport?.ToJson(),
                 };
-                if (Prereport != null) _writer.WritePrereport(Prereport.Bytes);
+                if (Prereport != null)
+                {
+                    _writer.WritePrereport(Prereport.Bytes);
+                    Prereport.CopiedAtUtc = OwnershipRecordWriter.FormatUtc(DateTime.UtcNow);
+                    info.Prereport = Prereport.ToJson();
+                }
                 _writer.WriteManifest(OwnershipManifest.Build(Plan, info));
             }
             catch (Exception e)

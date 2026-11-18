@@ -1,5 +1,6 @@
 // 보기 전 보고 파일(shared/schemas/prereport.v0.json)을 세션에 붙이는 일. UnityEngine에 의존하지 않는다.
-//   읽는 것은 specSha256 · sessionId · createdAtUtc 세 필드뿐이다. 고른 값·확정 여부(①②③)는 읽지 않으며
+//   읽는 것은 specSha256 · altSpecSha256(값만) · sessionId · createdAtUtc뿐이다.
+//   지금 spec 해시가 specSha256과 같으면 matchedBy primary, altSpecSha256의 값 중 하나와 같으면 alt(분석기와 같은 규칙). 고른 값·확정 여부(①②③)는 읽지 않으며
 //   자극 생성·순서·화면 표시에 쓰지 않는다(생성기는 이 클래스를 모른다). 파일은 기록 폴더에 바이트 그대로 복사한다.
 using System;
 using System.IO;
@@ -19,6 +20,10 @@ namespace IFS.SceneSpec.Ownership
         public string Sha256;
         public string SpecSha256;
         public bool SpecSha256Match;
+        /// <summary>primary | alt | null(불일치)</summary>
+        public string MatchedBy;
+        /// <summary>기록 폴더에 복사한 시각(UTC, 밀리초, Z). 복사 전에는 null.</summary>
+        public string CopiedAtUtc;
         public string SessionId;
         public string CreatedAtUtc;
         /// <summary>읽은 원래 바이트(기록 폴더에 그대로 복사).</summary>
@@ -47,8 +52,12 @@ namespace IFS.SceneSpec.Ownership
                 CreatedAtUtc = Str("createdAtUtc"),
                 Bytes = (byte[])bytes.Clone(),
             };
-            p.SpecSha256Match = p.SpecSha256 != null && currentSpecSha256 != null &&
-                                string.Equals(p.SpecSha256, currentSpecSha256, StringComparison.OrdinalIgnoreCase);
+            bool Same(string a) => a != null && currentSpecSha256 != null && string.Equals(a, currentSpecSha256, StringComparison.OrdinalIgnoreCase);
+            if (Same(p.SpecSha256)) p.MatchedBy = "primary";
+            else if (o["altSpecSha256"] is JObject alt)
+                foreach (var prop in alt.Properties())
+                    if (prop.Value.Type == JTokenType.String && Same((string)prop.Value)) { p.MatchedBy = "alt"; break; }
+            p.SpecSha256Match = p.MatchedBy != null;
             return p;
         }
 
@@ -61,8 +70,10 @@ namespace IFS.SceneSpec.Ownership
             ["sha256"] = Sha256,
             ["specSha256"] = SpecSha256,
             ["specSha256Match"] = SpecSha256Match,
+            ["matchedBy"] = MatchedBy,
             ["sessionId"] = SessionId,
             ["createdAtUtc"] = CreatedAtUtc,
+            ["copiedAtUtc"] = CopiedAtUtc,
         };
 
         /// <summary>실험자 화면 한 단어: 있음 / 없음 / 해시 불일치.</summary>
@@ -73,7 +84,7 @@ namespace IFS.SceneSpec.Ownership
         {
             if (!require) return null;
             if (p == null) return "requirePrereport가 켜져 있는데 보기 전 보고 파일이 없어 세션을 시작하지 않습니다";
-            if (!p.SpecSha256Match) return $"requirePrereport가 켜져 있는데 보기 전 보고({p.File})의 specSha256이 지금 spec 파일과 달라 세션을 시작하지 않습니다";
+            if (!p.SpecSha256Match) return $"requirePrereport가 켜져 있는데 보기 전 보고({p.File})의 specSha256·altSpecSha256 어디에도 지금 spec 파일의 해시가 없어 세션을 시작하지 않습니다";
             return null;
         }
     }
