@@ -16,8 +16,7 @@ LLM 없음, 결정론적. 근거: docs/rq-v2-proposal.md 3.1–3.2. 보고 형�
   · manifest.specSha256이 64자리 hex가 아님(예: "0") · 보고의 specSha256(과 확정 때 고정한 altSpecSha256)에
   manifest.specSha256이 없음 · 보고와 manifest의 sessionId가 다름.
 - report_time_unknown: 형상 첫 제시 시각을 못 구함(경고). report_after_viewing: 보고 createdAtUtc ≥ 첫 제시 시각.
-  첫 제시 시각은 first_presentation_utc(): manifest의 명시 필드가 있으면 그것, 없으면 startedAtUtc + events.csv의
-  가장 이른 viewing_start(없으면 phase viewing) time_ms. time_ms는 startedAtUtc부터 잰 밀리초로 본다(가정).
+  첫 제시 시각은 first_presentation_utc(): events.csv의 first_viewing_utc 이벤트 detail(UTC, 세션당 1번).
 
 쌍마다(첫 의도적 선택 = 주 분석, 최종 선택 = 보조. 0.1 보고는 firstValue가 없어 둘 다 value)
 1) 보고값 p를 쌍의 축에 투영: hue → color.h(무채색 보고 h=null이면 report_axis_mismatch), lightness → color.l,
@@ -42,7 +41,7 @@ from __future__ import annotations
 import hashlib
 import json
 import math
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from pathlib import Path
 
 from ..prereport import validate as validate_report
@@ -54,7 +53,7 @@ GROUPS = (*COMMITMENTS, *REPORT_PROBLEMS)
 SHIFT_ATTRIBUTES = ("color", "size")
 AXIS_ATTRIBUTE = {"size": "size", "hue": "color", "lightness": "color"}
 SCALE = 10000                 # 기록 정밀도(소수 4자리)
-FIRST_PRESENTATION_FIELDS = ("firstPresentationUtc", "firstViewingStartUtc", "firstViewingUtc")
+FIRST_VIEWING_EVENT = "first_viewing_utc"
 
 PAIR_COLUMNS = [
     "participant", "session", "record_folder", "rating_item", "attribute", "axis", "basis", "w", "lo", "hi", "step",
@@ -99,18 +98,12 @@ def parse_utc(v) -> datetime | None:
     return (t if t.tzinfo else t.replace(tzinfo=timezone.utc)).astimezone(timezone.utc)
 
 
-def first_presentation_utc(manifest: dict, viewing_start_ms: list[float]) -> datetime | None:
-    """형상 첫 제시 시각(UTC). manifest의 명시 필드(FIRST_PRESENTATION_FIELDS)가 먼저,
-    없으면 startedAtUtc + 가장 이른 viewing_start time_ms. 못 구하면 None."""
-    for k in FIRST_PRESENTATION_FIELDS:
-        t = parse_utc(manifest.get(k))
-        if t is not None:
-            return t
-    start = parse_utc(manifest.get("startedAtUtc"))
-    times = [t for t in viewing_start_ms if t is not None]
-    if start is None or not times:
-        return None
-    return start + timedelta(milliseconds=min(times))
+def first_presentation_utc(events: list[dict]) -> datetime | None:
+    """형상 첫 제시 시각(UTC) = events.csv의 first_viewing_utc 이벤트(세션당 1번, 첫 viewing_start 바로 뒤) detail.
+    없으면(0.2 기록 등) None → 보고는 report_time_unknown. 여럿이면 가장 이른 것."""
+    times = [parse_utc(r.get("detail")) for r in events if r.get("event") == FIRST_VIEWING_EVENT]
+    times = [t for t in times if t is not None]
+    return min(times) if times else None
 
 
 # ---------------------------------------------------------------- 거리(정수 단위)
@@ -188,7 +181,7 @@ def load_prereport(folder: Path, manifest: dict, first_view: datetime | None) ->
     created = parse_utc(rep["createdAtUtc"])
     if first_view is None or created is None:
         return None, "report_time_unknown", [
-            "형상 첫 제시 시각을 구하지 못함(manifest 시작 시각·events.csv viewing_start) — report_time_unknown로 제외"]
+            "형상 첫 제시 시각을 구하지 못함(events.csv에 first_viewing_utc 없음) — report_time_unknown로 제외"]
     if created >= first_view:
         return None, "report_after_viewing", [
             f"보고 시각 {rep['createdAtUtc']}이 첫 제시 {first_view.isoformat()}보다 늦음 — report_after_viewing로 제외"]

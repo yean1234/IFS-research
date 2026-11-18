@@ -4,6 +4,8 @@
   "participantNumber": 3,
   "cb": 0,
   "orderRow": 2,
+  "orderRows": 18,
+  "conditionSet": "color|color_hi|color_lo|form|motion|orig|size|size_hi|size_lo",
   "sessionId": "SYN-shift-stated",
   "specFile": "SYN-shift-stated.json",
   "specSha256": "0",
@@ -25,6 +27,7 @@
     ]
   },
   "ratingItem": "resemblance",
+  "prereport": null,
   "config": {
     "generatorVersion": "ownership-variants/0.3",
     "sizeStep": 0.25,
@@ -44,7 +47,8 @@
     "colorShiftDeltaE": 12.0,
     "maxHueShiftDeg": 20.0,
     "shiftSymmetryTolerance": 3.0,
-    "ratingItem": "resemblance"
+    "ratingItem": "resemblance",
+    "requirePrereport": false
   },
   "flags": {
     "lowVisibility": false
@@ -58,7 +62,7 @@
       "layout.verticalOffset": 0.75,
       "material.brightness": 0.5,
       "material.color.h": 0.6,
-      "material.color.l": 0.4,
+      "material.color.l": 0.5,
       "material.color.s": 0.5,
       "material.erosion": 0.0,
       "material.opacity": 1.0,
@@ -115,7 +119,7 @@
         "layout.verticalOffset": 0.75,
         "material.brightness": 0.5,
         "material.color.h": 0.6,
-        "material.color.l": 0.4,
+        "material.color.l": 0.5,
         "material.color.s": 0.5,
         "material.erosion": 0.0,
         "material.opacity": 1.0,
@@ -170,7 +174,7 @@
         "layout.verticalOffset": 0.75,
         "material.brightness": 0.5,
         "material.color.h": 0.6,
-        "material.color.l": 0.4,
+        "material.color.l": 0.5,
         "material.color.s": 0.5,
         "material.erosion": 0.0,
         "material.opacity": 1.0,
@@ -185,7 +189,7 @@
       "attribute": "color",
       "kind": "mismatch",
       "overrides": {
-        "material.color.h": 0.875
+        "material.color.h": 0.8222
       },
       "shapeModel": null,
       "changedKeys": [
@@ -194,12 +198,12 @@
       "from": {
         "material.color.h": 0.6,
         "material.color.s": 0.5,
-        "material.color.l": 0.4
+        "material.color.l": 0.5
       },
       "to": {
-        "material.color.h": 0.875,
+        "material.color.h": 0.8222,
         "material.color.s": 0.5,
-        "material.color.l": 0.4
+        "material.color.l": 0.5
       },
       "rule": "hue",
       "source": "stated",
@@ -213,14 +217,14 @@
         "motionAltersScale": false
       },
       "magnitude": {
-        "deltaE00": 30.083,
-        "deltaE00Composited": 30.083
+        "deltaE00": 30.066,
+        "deltaE00Composited": 30.066
       },
       "detail": {
         "achromatic": false,
         "targetDeltaE00": 30.0,
         "direction": "+hue",
-        "steps": 99,
+        "steps": 80,
         "stepSize": "1/360",
         "saturationSource": "stated",
         "deltaEBasis": "albedo",
@@ -239,8 +243,8 @@
         "layout.size": 0.3,
         "layout.verticalOffset": 0.75,
         "material.brightness": 0.5,
-        "material.color.h": 0.875,
-        "material.color.l": 0.4,
+        "material.color.h": 0.8222,
+        "material.color.l": 0.5,
         "material.color.s": 0.5,
         "material.erosion": 0.0,
         "material.opacity": 1.0,
@@ -294,7 +298,7 @@
         "layout.verticalOffset": 0.75,
         "material.brightness": 0.5,
         "material.color.h": 0.6,
-        "material.color.l": 0.4,
+        "material.color.l": 0.5,
         "material.color.s": 0.5,
         "material.erosion": 0.0,
         "material.opacity": 1.0,
@@ -347,7 +351,7 @@
         "layout.verticalOffset": 0.75,
         "material.brightness": 0.5,
         "material.color.h": 0.6,
-        "material.color.l": 0.4,
+        "material.color.l": 0.5,
         "material.color.s": 0.5,
         "material.erosion": 0.0,
         "material.opacity": 1.0,
@@ -362,7 +366,7 @@
       "attribute": "color",
       "kind": "shift",
       "overrides": {
-        "material.color.h": 0.5556
+        "material.color.h": 0.5611
       },
       "shapeModel": null,
       "changedKeys": [
@@ -371,12 +375,12 @@
       "from": {
         "material.color.h": 0.6,
         "material.color.s": 0.5,
-        "material.color.l": 0.4
+        "material.color.l": 0.5
       },
       "to": {
-        "material.color.h": 0.5556,
+        "material.color.h": 0.5611,
         "material.color.s": 0.5,
-        "material.color.l": 0.4
+        "material.color.l": 0.5
       },
       "rule": "hue",
       "source": "stated",
@@ -390,12 +394,77 @@
         "motionAltersScale": false
       },
       "magnitude": {
-        "deltaE00": 12.504,
-        "deltaE00Composited": 12.504
+        "deltaE00": 12.47,
+        "deltaE00Composited": 12.47
       },
       "detail": {
         "pair": "color",
         "side": "lo",
+        "axis": "hue",
+        "targetDeltaE00": 12.0,
+        "steps": 14,
+        "stepSize": "1/360",
+        "deltaEBasis": "albedo",
+        "brightnessFactor": 1.0,
+        "compositeAlpha": 1.0
+      },
+      "params": {
+        "form.posture": "none",
+        "form.type": "blob",
+        "layout.distance": 0.33,
+        "layout.size": 0.3,
+        "layout.verticalOffset": 0.75,
+        "material.brightness": 0.5,
+        "material.color.h": 0.5611,
+        "material.color.l": 0.5,
+        "material.color.s": 0.5,
+        "material.erosion": 0.0,
+        "material.opacity": 1.0,
+        "material.roughness": 0.5,
+        "motion.speed": 0.5,
+        "motion.type": "swaying"
+      },
+      "rendered": "blob"
+    },
+    {
+      "id": "color_hi",
+      "attribute": "color",
+      "kind": "shift",
+      "overrides": {
+        "material.color.h": 0.6444
+      },
+      "shapeModel": null,
+      "changedKeys": [
+        "material.color.h"
+      ],
+      "from": {
+        "material.color.h": 0.6,
+        "material.color.s": 0.5,
+        "material.color.l": 0.5
+      },
+      "to": {
+        "material.color.h": 0.6444,
+        "material.color.s": 0.5,
+        "material.color.l": 0.5
+      },
+      "rule": "hue",
+      "source": "stated",
+      "sourceByKey": {
+        "material.color.h": "stated"
+      },
+      "flags": {
+        "saidNotRendered": false,
+        "forced": false,
+        "belowTarget": false,
+        "motionAltersScale": false
+      },
+      "magnitude": {
+        "deltaE00": 12.275,
+        "deltaE00Composited": 12.275
+      },
+      "detail": {
+        "pair": "color",
+        "side": "hi",
         "axis": "hue",
         "targetDeltaE00": 12.0,
         "steps": 16,
@@ -411,73 +480,8 @@
         "layout.size": 0.3,
         "layout.verticalOffset": 0.75,
         "material.brightness": 0.5,
-        "material.color.h": 0.5556,
-        "material.color.l": 0.4,
-        "material.color.s": 0.5,
-        "material.erosion": 0.0,
-        "material.opacity": 1.0,
-        "material.roughness": 0.5,
-        "motion.speed": 0.5,
-        "motion.type": "swaying"
-      },
-      "rendered": "blob"
-    },
-    {
-      "id": "color_hi",
-      "attribute": "color",
-      "kind": "shift",
-      "overrides": {
-        "material.color.h": 0.6556
-      },
-      "shapeModel": null,
-      "changedKeys": [
-        "material.color.h"
-      ],
-      "from": {
-        "material.color.h": 0.6,
-        "material.color.s": 0.5,
-        "material.color.l": 0.4
-      },
-      "to": {
-        "material.color.h": 0.6556,
-        "material.color.s": 0.5,
-        "material.color.l": 0.4
-      },
-      "rule": "hue",
-      "source": "stated",
-      "sourceByKey": {
-        "material.color.h": "stated"
-      },
-      "flags": {
-        "saidNotRendered": false,
-        "forced": false,
-        "belowTarget": false,
-        "motionAltersScale": false
-      },
-      "magnitude": {
-        "deltaE00": 12.064,
-        "deltaE00Composited": 12.064
-      },
-      "detail": {
-        "pair": "color",
-        "side": "hi",
-        "axis": "hue",
-        "targetDeltaE00": 12.0,
-        "steps": 20,
-        "stepSize": "1/360",
-        "deltaEBasis": "albedo",
-        "brightnessFactor": 1.0,
-        "compositeAlpha": 1.0
-      },
-      "params": {
-        "form.posture": "none",
-        "form.type": "blob",
-        "layout.distance": 0.33,
-        "layout.size": 0.3,
-        "layout.verticalOffset": 0.75,
-        "material.brightness": 0.5,
-        "material.color.h": 0.6556,
-        "material.color.l": 0.4,
+        "material.color.h": 0.6444,
+        "material.color.l": 0.5,
         "material.color.s": 0.5,
         "material.erosion": 0.0,
         "material.opacity": 1.0,
@@ -533,7 +537,7 @@
         "layout.verticalOffset": 0.75,
         "material.brightness": 0.5,
         "material.color.h": 0.6,
-        "material.color.l": 0.4,
+        "material.color.l": 0.5,
         "material.color.s": 0.5,
         "material.erosion": 0.0,
         "material.opacity": 1.0,
@@ -589,7 +593,7 @@
         "layout.verticalOffset": 0.75,
         "material.brightness": 0.5,
         "material.color.h": 0.6,
-        "material.color.l": 0.4,
+        "material.color.l": 0.5,
         "material.color.s": 0.5,
         "material.erosion": 0.0,
         "material.opacity": 1.0,
@@ -605,12 +609,20 @@
       "attribute": "color",
       "axis": "hue",
       "basis": "stated",
+      "axisChoiceBasis": "stated",
+      "provenanceWithoutValue": false,
       "w": 0.6,
-      "lo": 0.5556,
-      "hi": 0.6556,
+      "lo": 0.5611,
+      "hi": 0.6444,
+      "wM": null,
+      "loM": null,
+      "hiM": null,
       "step": 0.002778,
-      "deltaE_lo": 12.504,
-      "deltaE_hi": 12.064,
+      "deltaE_lo": 12.47,
+      "deltaE_hi": 12.275,
+      "deltaEComposited_lo": 12.47,
+      "deltaEComposited_hi": 12.275,
+      "categoryCheck": null,
       "valid": true,
       "skipReason": null
     },
@@ -618,12 +630,20 @@
       "attribute": "size",
       "axis": "size",
       "basis": "stated",
+      "axisChoiceBasis": null,
+      "provenanceWithoutValue": false,
       "w": 0.3,
       "lo": 0.2,
       "hi": 0.4,
+      "wM": 0.201,
+      "loM": 0.1523,
+      "hiM": 0.2653,
       "step": 0.1,
       "deltaE_lo": null,
       "deltaE_hi": null,
+      "deltaEComposited_lo": null,
+      "deltaEComposited_hi": null,
+      "categoryCheck": "passed",
       "valid": true,
       "skipReason": null
     }

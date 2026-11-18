@@ -881,7 +881,9 @@ class Session:
                                           "builder": spec["meta"]["pipeline"]["builder"],
                                           "sourceTextHash": spec["meta"]["sourceTextHash"], "problems": problems,
                                           "mapping": mapping, "variants": variants,
-                                          "sha256": self.scene_hashes}
+                                          # 시각(frozenAtUtc)은 빼고 남긴다: 같은 확정 텍스트 → 같은 로그 내용(재현 검사)
+                                          "sha256": None if self.scene_hashes is None else
+                                          {k: v for k, v in self.scene_hashes.items() if k != "frozenAtUtc"}}
             if mapping["fallbackReason"]:
                 self.log.data["sceneSpec"]["fallback"] = True
             if problems:

@@ -168,7 +168,7 @@ def test_incomplete_session_excluded(tmp_path):
     summ = res["summary"]
     assert summ["records"] == {"sessions": 2, "included": 1, "excludedIncomplete": 1, "origBelowThreshold": 0,
                                "origRatingMissing": 0, "skipped": 0}
-    rq1 = summ["summaries"]["all"]["rq1"]
+    rq1 = summ["summaries"]["mine"]["all"]["rq1"]
     assert rq1["form"]["ratingDrop"] == {"mean": 4, "n": 1, "lowN": True}
     with (tmp_path / "out" / "sessions.csv").open(encoding="utf-8") as f:
         rows = list(csv.DictReader(f))
@@ -225,8 +225,8 @@ def test_rating_drop_choice_rate_and_threshold(tmp_path):
     assert stim(res, "orig", "s1")["rating_drop"] == 0
     assert stim(res, "form", "s1")["rating_drop"] == 3
 
-    alls = res["summary"]["summaries"]["all"]
-    passing = res["summary"]["summaries"]["origAtOrAboveThreshold"]
+    alls = res["summary"]["summaries"]["mine"]["all"]
+    passing = res["summary"]["summaries"]["mine"]["origAtOrAboveThreshold"]
     assert alls["nSessions"] == 3 and passing["nSessions"] == 2
     # 전체: form 하락 (3 + 1 + 2) / 3 = 2, 기준 통과: (3 + 1) / 2 = 2
     assert alls["rq1"]["form"]["ratingDrop"]["mean"] == 2
@@ -272,10 +272,10 @@ def test_rq3_correlation_and_spearman(tmp_path):
                  for j in range(8)]
     make_session(tmp_path, ratings=ratings, head=head)
     res = analyze(tmp_path)
-    corr = res["summary"]["summaries"]["all"]["rq3"]["ratingCorrelation"]
+    corr = res["summary"]["summaries"]["mine"]["all"]["rq3"]["ratingCorrelation"]
     assert corr["gaze_ms"] == {"meanRho": 1.0, "nSessions": 1, "lowN": True}
     assert corr["path_m"]["nSessions"] == 0  # 모두 0 → 분산 없음
-    diff = res["summary"]["summaries"]["all"]["rq3"]["diffVsOrig"]["gaze_ms"]
+    diff = res["summary"]["summaries"]["mine"]["all"]["rq3"]["diffVsOrig"]["gaze_ms"]
     assert diff["byAttribute"]["form"]["mean"] == pytest.approx((3 - 7) * 50)
     assert diff["all"]["n"] == 4
 
@@ -289,9 +289,8 @@ def test_empty_input_gives_empty_summary(tmp_path):
     ownership.main(["--records", str(tmp_path / "records"), "--out", str(tmp_path / "out")])
     data = json.loads((tmp_path / "out" / "summary.json").read_text(encoding="utf-8"))
     assert data["records"]["sessions"] == 0 and data["skipped"] == []
-    rq1 = data["summaries"]["all"]["rq1"]
-    assert rq1["form"]["ratingDrop"] == {"mean": None, "n": 0, "lowN": True}
-    assert data["summaries"]["all"]["rq3"]["ratingCorrelation"]["gaze_ms"]["nSessions"] == 0
+    assert data["summaries"] == {} and data["ratingItems"] == []     # 문항이 없으면 문항별 요약도 없다
+    assert data["shift"]["all"]["nSessions"] == 0
     lines = (tmp_path / "out" / "stimuli.csv").read_text(encoding="utf-8").splitlines()
     assert lines == [",".join(ownership.STIMULI_COLUMNS)]
     assert (tmp_path / "out" / "sessions.csv").read_text(encoding="utf-8").splitlines() == \
@@ -309,7 +308,7 @@ def test_no_absolute_paths_in_outputs(tmp_path):
         assert str(tmp_path) not in text and tmp_path.as_posix() not in text
     data = json.loads((tmp_path / "out" / "summary.json").read_text(encoding="utf-8"))
     assert data["skipped"] == [{"record": "ownership/P009/x/20261117-000000", "reason": "manifest_unreadable"}]
-    assert not math.isnan(data["summaries"]["all"]["rq1"]["orig"]["rating"]["mean"])
+    assert not math.isnan(data["summaries"]["mine"]["all"]["rq1"]["orig"]["rating"]["mean"])
 
 
 # ---------------------------------------------------------------- (g) 표본 간격·제시 시작(CP4)
@@ -406,6 +405,15 @@ def test_missing_or_late_viewing_start_falls_back_with_warning(tmp_path):
 
 # ---------------------------------------------------------------- (h) 순서 균형
 
+def _bal(res):
+    """0.1·0.2 기록은 조건 집합이 하나(5조건, 10행)."""
+    bal = res["summary"]["orderBalance"]
+    assert len(bal["byConditionSet"]) == 1
+    one = next(iter(bal["byConditionSet"].values()))
+    assert one["nOrderRows"] == 10 and one["balanced"] == bal["balanced"]
+    return one
+
+
 def _order_warnings(res):
     return [w for w in res["summary"]["warnings"] if w["message"].startswith("순서 불균형")]
 
@@ -414,7 +422,7 @@ def test_order_balance_counts_and_warns(tmp_path):
     for n in (1, 2, 3, 4):  # 번호를 차례로: 행 0–3 한 번씩, cb 2:2
         make_session(tmp_path / "seq", pnum=n, sid=f"s{n}")
     res = analyze(tmp_path / "seq")
-    bal = res["summary"]["orderBalance"]
+    bal = _bal(res)
     assert bal["sessions"] == 4 and bal["byCb"] == {"0": 2, "1": 2}
     assert bal["byOrderRow"] == {"0": 1, "1": 1, "2": 1, "3": 1, **{str(r): 0 for r in range(4, 10)}}
     assert (bal["rowSpread"], bal["cbSpread"], bal["balanced"]) == (1, 0, True)
@@ -423,13 +431,13 @@ def test_order_balance_counts_and_warns(tmp_path):
     for n in (1, 3, 5):  # 홀수 번호만 → cb 3:0
         make_session(tmp_path / "odd", pnum=n, sid=f"s{n}")
     res = analyze(tmp_path / "odd")
-    assert res["summary"]["orderBalance"]["byCb"] == {"0": 3, "1": 0}
+    assert _bal(res)["byCb"] == {"0": 3, "1": 0}
     assert len(_order_warnings(res)) == 1 and "cb 차이 3" in _order_warnings(res)[0]["message"]
 
     for n in (1, 11, 2):  # 1과 11은 같은 행 0 → 행 0 두 번, 행 3–9 0번
         make_session(tmp_path / "reuse", pnum=n, sid=f"s{n}")
     res = analyze(tmp_path / "reuse")
-    assert res["summary"]["orderBalance"]["rowSpread"] == 2
+    assert _bal(res)["rowSpread"] == 2
     assert len(_order_warnings(res)) == 1
 
     # 미완료 세션은 세지 않는다
@@ -449,13 +457,13 @@ def test_cb_rule_matches_unity_and_crosses_with_order_row():
 def test_order_balance_checks_row_by_cb_cells(tmp_path):
     for n in range(1, 21):  # 새 규칙으로 1–20번: 20칸이 한 번씩
         make_session(tmp_path / "new", pnum=n, sid=f"s{n}")
-    bal = analyze(tmp_path / "new")["summary"]["orderBalance"]
+    bal = _bal(analyze(tmp_path / "new"))
     assert bal["cellSpread"] == 0 and bal["balanced"] and set(bal["byOrderRowCb"].values()) == {1}
 
     for n in range(1, 21):  # 예전 규칙(cb = (번호 − 1) mod 2): 행과 cb가 묶여 10칸 2개·10칸 0개
         make_session(tmp_path / "old", pnum=n, sid=f"s{n}", cb=(n - 1) % 2)
     res = analyze(tmp_path / "old")
-    bal = res["summary"]["orderBalance"]
+    bal = _bal(res)
     assert (bal["rowSpread"], bal["cbSpread"], bal["cellSpread"], bal["balanced"]) == (0, 0, 2, False)
     assert len(_order_warnings(res)) == 1 and "20칸 최대−최소 2" in _order_warnings(res)[0]["message"]
 

@@ -487,7 +487,8 @@ def load_session(cand: dict, orig_threshold: float) -> tuple[dict, list[dict], l
         warn(f"headpose.csv position {p}의 variant가 manifest.order와 다름 — order를 따름")
 
     # 제시 시작 시각(events.csv)
-    starts = viewing_starts(_read_csv(folder / "events.csv"))
+    events = _read_csv(folder / "events.csv")
+    starts = viewing_starts(events)
     no_start, late_start = [], []
     start_used: dict[int, tuple] = {}
     for p in sorted(samples):
@@ -521,7 +522,7 @@ def load_session(cand: dict, orig_threshold: float) -> tuple[dict, list[dict], l
 
     kinds = {vid: ("orig" if vid == "orig" else (vv.get("kind") if vv.get("kind") in ("mismatch", "shift") else "mismatch"))
              for vid, vv in variants.items()}
-    first_view = shift.first_presentation_utc(man, [st["t"] for st in starts.values()])
+    first_view = shift.first_presentation_utc(events)
     srow = {
         "participant": participant, "session": sid, "record_folder": rel,
         "record_version": man.get("recordVersion"), "started_at_utc": man.get("startedAtUtc"),
@@ -795,12 +796,16 @@ def _print_summary(summary: dict) -> None:
     rec = summary["records"]
     print(f"세션 {rec['sessions']}개(요약 포함 {rec['included']}, 미완료 제외 {rec['excludedIncomplete']}, "
           f"원본 평정 기준 미달 {rec['origBelowThreshold']}, 건너뛴 폴더 {rec['skipped']}) · 경고 {len(summary['warnings'])}")
-    rq1 = summary["summaries"]["all"]["rq1"]
-    print(f"  원본 선택률 {rq1['orig']['choiceRate']['mean']} (n={rq1['orig']['choiceRate']['n']})")
-    for a in ATTRIBUTES:
-        d, c = rq1[a]["ratingDrop"], rq1[a]["choiceRate"]
-        low = " lowN" if d["lowN"] else ""
-        print(f"  {a:<6} 평정 하락 {d['mean']} (n={d['n']}{low})  선택률 {c['mean']}")
+    for item, summ in summary["summaries"].items():
+        rq1 = summ["all"]["rq1"]
+        print(f" [문항 {item}] 원본 선택률 {rq1['orig']['choiceRate']['mean']} (n={rq1['orig']['choiceRate']['n']}, "
+              f"shift 선택 {rq1['choseShift']['n']})")
+        for a in ATTRIBUTES:
+            d, c = rq1[a]["ratingDrop"], rq1[a]["choiceRate"]
+            low = " lowN" if d["lowN"] else ""
+            print(f"  {a:<6} 평정 하락 {d['mean']} (n={d['n']}{low})  선택률 {c['mean']}")
+    pm = summary["shift"]["all"]["nearMinusFar"]["primary"]["participantMean"]
+    print(f" [Q1 resemblance] 가까운−먼(from_start, 첫 선택) {pm['mean']} 95% CI {pm['ci95']} (참여자 n={pm['n']})")
 
 
 def main(argv: list[str] | None = None) -> None:

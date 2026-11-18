@@ -18,9 +18,9 @@
 | `GET /api/sessions/{id}/log` | — | `{"session", "log", "runtimeWarnings"}` | 연구자 화면. `log`는 elicit-log/0.1 |
 | `GET /api/sessions/{id}/scene` | — | `{"sessionId", "path", "spec"}` | 확정 뒤 만든 SceneSpec v2와 저장 경로. 확정 전이면 `409` |
 | `POST /api/sessions/{id}/events` | `{"type": "calibration", "payload": {...}}` | 기록된 이벤트 · 201 | VR 쪽 기록을 같은 세션 로그에 묶기 |
-| `GET /api/prereport/task` | — | `shared/protocol/prereport_task.v0.json` 전체 | 보기 전 보고 과제 고정 문구 |
+| `GET /api/prereport/task` | — | `shared/protocol/prereport_task.v0.2.json` 전체 | 보기 전 보고 과제 고정 문구 |
 | `GET /api/sessions/{id}/prereport` | — | `{"sessionId", "available", "submitted", "reason"}` | 과제를 열 수 있는지(확정 텍스트·장면 파일이 있어야 함). 고른 값은 돌려주지 않는다 |
-| `POST /api/sessions/{id}/prereport` | `{"attributes": {color, size, form, motion}}` | `{"ok", "specSha256", ...}` · 201 | 보기 전 보고 한 번. 서버가 ID·장면 sha256·문구 판을 붙여 `shared/schemas/prereport.v0.json`으로 검사 → `<log_dir>/<id>/prereport.json`. 확정 전·두 번째는 `409`, 형식 위반은 `422`. 화면: `GET /prereport?session=<id>` |
+| `POST /api/sessions/{id}/prereport` | `{"attributes": {color, size, form, motion}}` | `{"ok", "specSha256", ...}` · 201 | 보기 전 보고 한 번. 서버가 ID·확정 때 고정한 장면 sha256(대체 매핑 파일 포함)·문구 판을 붙여 `shared/schemas/prereport.v0.2.json`으로 검사 → `<log_dir>/<id>/prereport.json`. 확정 전·두 번째는 `409`, 형식 위반은 `422`. 화면: `GET /prereport?session=<id>` |
 | `POST /api/guard/check` | `{"text": "..."}` | 안전 판정 + 낼 고정 문구 | VR 단계(Feel toward 등) 발화도 같은 L1 검사 |
 
 오류: 순서가 틀린 요청(예: 시작 전에 답 보내기)은 `409`, 없는 세션은 `404`. 본문은 `{"detail": "사유"}`입니다.
