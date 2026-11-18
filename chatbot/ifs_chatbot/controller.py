@@ -30,6 +30,7 @@ from .extract import Extractor, find_modality, parse_body_relation
 from .korean import Analyzer, normalize
 from .lexicon import Lexicon
 from .llm import GenerationRequest, OfflineTemplateBackend, OllamaBackend
+from . import prereport as prereport_mod
 from .paths import shared
 from .prompts import PromptContext, PromptSet, TranscriptLine
 from .protocol import Protocol, Step
@@ -395,6 +396,7 @@ class Session:
             self.log.delete()
             self.log.persist = False
             self._delete_scene()
+            prereport_mod.delete_record(self.cfg.log_dir, self.id)
             self.log.data.update(turns=[], alerts=[], capture={}, confirmedText=None, confirmation=None,
                                  extraction=None, events=[], endedBy="withdrawn", sceneSpec=None, drift=None)
             self.participant_texts, self.transcript, self.asked, self.confirm_draft = [], [], [], None
@@ -409,6 +411,48 @@ class Session:
             ev = self.log.add_event(kind, payload)
             self._save()
             return ev
+
+    # ── 보기 전 보고 과제 (면담 밖, 고정 문구, LLM 없음 — ifs_chatbot/prereport.py) ──────────
+    @property
+    def prereport_path(self):
+        return prereport_mod.record_path(self.cfg.log_dir, self.id)
+
+    def prereport_status(self) -> dict:
+        """과제를 열 수 있는지(확정 텍스트와 장면 파일이 있어야 함)와 이미 냈는지. 고른 값은 돌려주지 않는다."""
+        with self.lock:
+            reason = None
+            spec = self.log.data.get("sceneSpec") or {}
+            if self.state == "withdrawn":
+                reason = "폐기된 세션입니다."
+            elif not self.log.data.get("confirmedText"):
+                reason = "확정 텍스트가 아직 없습니다([이대로 맞아요] 뒤에 열립니다)."
+            elif not spec.get("path") or not self.scene_path.is_file():
+                reason = "장면 파일이 없습니다(장면 파일의 sha256을 남겨야 하므로 과제를 열 수 없습니다)."
+            submitted = self.prereport_path.is_file()
+            return {"sessionId": self.id, "available": reason is None and not submitted,
+                    "submitted": submitted, "reason": reason}
+
+    def submit_prereport(self, attributes: dict) -> dict:
+        """참여자 답(attributes)에 ID·장면 sha256·문구 판을 붙여 스키마 검사 뒤 한 번만 쓴다.
+        → {"ok": True, ...} / 스키마 위반이면 ValueError(위반 목록), 순서가 틀리면 SessionError."""
+        with self.lock:
+            st = self.prereport_status()
+            if st["submitted"]:
+                raise SessionError("보기 전 보고는 이미 냈습니다(한 번만 받습니다).")
+            if st["reason"]:
+                raise SessionError(st["reason"])
+            alts = [self.variant_path(m) for m in ("v0", "v1")]
+            rec = prereport_mod.build_record(session_id=self.id, participant=self.participant_id,
+                                             spec_path=self.scene_path, attributes=attributes, alt_specs=alts)
+            problems = prereport_mod.validate(rec)
+            if problems:
+                raise ValueError(problems)
+            prereport_mod.write_record(rec, self.prereport_path)
+            # 세션 로그에는 낸 사실과 파일 짝만 남긴다(고른 값·①②③은 별도 파일에만)
+            self.log.add_event("prereport", {"file": f"{self.id}/{prereport_mod.RECORD_NAME}",
+                                             "specSha256": rec["specSha256"], "taskTextVersion": rec["taskTextVersion"]})
+            self._save()
+            return {"ok": True, "sessionId": self.id, "specSha256": rec["specSha256"], "createdAtUtc": rec["createdAtUtc"]}
 
     # ── 진행 ────────────────────────────────────────────────────────────────
     def _on_reply(self, step: Step, text: str, no_more: bool) -> None:

@@ -87,9 +87,9 @@
       "description": "① 처음부터 있었다 = from_start, ② 물어봐서 그때 정했다 = when_asked, ③ 지금도 정해진 것이 없다 = not_set"
     },
     "valueRule": {
-      "description": "③(not_set)이면 값 없음·고른 횟수 0. ①②면 값이 있고 한 번 이상 골랐다.",
+      "description": "③(not_set)이면 값 없음(null). ①②면 값이 있고 한 번 이상 골랐다. ①②에서 값을 고르다가 ③으로 바꾸면 값은 버리고 고른 횟수는 남긴다.",
       "if": { "properties": { "commitment": { "const": "not_set" } } },
-      "then": { "properties": { "value": { "type": "null" }, "nSelections": { "const": 0 } } },
+      "then": { "properties": { "value": { "type": "null" } } },
       "else": { "properties": { "value": { "not": { "type": "null" } }, "nSelections": { "minimum": 1 } } }
     }
   }

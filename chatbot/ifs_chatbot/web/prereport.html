@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>보기 전 보고</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="dot" aria-hidden="true"></span>
+      <div>
+        <h1>보기 전 보고</h1>
+        <p class="sub" id="pr-session"></p>
+      </div>
+    </div>
+    <div class="badges"><span id="pr-progress" class="badge muted" hidden></span></div>
+  </header>
+
+  <main class="layout solo">
+    <section class="panel participant prereport" aria-label="보기 전 보고 과제">
+      <p id="pr-message" class="msg bot info" hidden></p>
+      <div id="pr-step" hidden>
+        <p id="pr-intro" class="hint"></p>
+        <h2 id="pr-question"></h2>
+        <div id="pr-options" class="pr-options" role="radiogroup"></div>
+
+        <div id="pr-color" class="pr-pick" hidden>
+          <p id="pr-color-text" class="hint"></p>
+          <canvas id="pr-color-field" width="480" height="240" aria-label="색상과 밝기 면"></canvas>
+        </div>
+
+        <div id="pr-size" class="pr-pick" hidden>
+          <p id="pr-size-text" class="hint"></p>
+          <canvas id="pr-size-view" width="480" height="300" aria-label="크기 비교 그림"></canvas>
+          <input id="pr-size-slider" type="range" min="0" max="1" step="0.005" aria-label="크기">
+        </div>
+
+        <div class="buttons"><button id="pr-next" class="primary" disabled></button></div>
+      </div>
+    </section>
+  </main>
+  <div id="toast" class="toast" role="status" hidden></div>
+  <script src="/static/prereport.js"></script>
+</body>
+</html>

@@ -116,3 +116,15 @@ th { color: var(--ink-soft); font-weight: 600; }
 .row { display: flex; gap: 8px; margin-bottom: 8px; }
 .toast { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); background: var(--ink); color: var(--panel); padding: 9px 14px; border-radius: 8px; font-size: 13.5px; }
 .empty { color: var(--ink-soft); }
+
+/* 보기 전 보고 과제 (prereport.html) */
+.prereport h2 { font-size: 17px; margin: 4px 0 10px; }
+.pr-options { display: flex; flex-direction: column; gap: 8px; }
+.pr-option { text-align: left; }
+.pr-option[aria-checked="true"] { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); font-weight: 650; }
+.pr-pick { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+.pr-pick canvas { width: 100%; max-width: 480px; height: auto; border: 1px solid var(--line); border-radius: 8px; }
+#pr-color-field { cursor: crosshair; }
+#pr-size-slider { width: 100%; max-width: 480px; }
+a.button { display: inline-block; font: inherit; border-radius: 8px; border: 1px solid var(--accent); padding: 8px 14px; text-decoration: none; }
+a.button.primary { background: var(--accent); color: var(--me-ink); }

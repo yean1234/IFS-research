@@ -175,7 +175,19 @@ function render(v) {
   if (["done", "stopped", "crisis", "withdrawn"].includes(v.state)) {
     btns.append(el("button", { class: "ghost", onclick: () => location.reload() }, "새 세션"));
   }
+  if (["done", "stopped"].includes(v.state)) addPrereportLink(v.sessionId);
   refreshResearcher();
+}
+
+// 보기 전 보고 과제(면담 밖, 고정 문구): 확정 텍스트와 장면 파일이 생긴 뒤에만 연결을 보인다
+async function addPrereportLink(sid) {
+  try {
+    const s = await api("GET", `/api/sessions/${encodeURIComponent(sid)}/prereport`);
+    if (!s.available || state.sid !== sid || $("#btn-prereport")) return;
+    $("#buttons").append(el("a", { id: "btn-prereport", class: "button primary", href: `/prereport?session=${encodeURIComponent(sid)}` }, "보기 전 보고로"));
+  } catch (e) {
+    /* 폐기된 세션 등 */
+  }
 }
 
 // ── 연구자 화면 ───────────────────────────────────────────────────────────────
