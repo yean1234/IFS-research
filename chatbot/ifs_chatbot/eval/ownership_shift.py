@@ -11,7 +11,11 @@ LLM 없음, 표준 라이브러리만, 결정론적. 근거: docs/rq-v2-proposal
 1) 보고값 p를 쌍의 축에 투영: hue → color.value.h, lightness → color.value.l, size → size.value.
    거리 d는 size·lightness에서 |a − b|, hue에서 부호 있는 최단 각 차이의 절댓값(0.98과 0.02의 거리 = 0.04).
 2) 가까운(near) = lo·hi 중 p에 더 가까운 쪽, 먼(far) = 다른 쪽. 다음을 모두 만족할 때만 near/far를 붙인다.
-   commitment가 from_start 또는 when_asked · basis == stated · d(w, p) ≥ step/2 · d(near, p) < d(w, p) < d(far, p).
+   commitment가 from_start 또는 when_asked · basis == stated · d(w, p) ≥ 문턱 · d(near, p) < d(w, p) < d(far, p).
+   문턱: size는 step/2. 색(hue·lightness)의 step은 Unity의 탐색 단위(hue 1/360, lightness 0.005)일 뿐이라 쓰지 않고
+   min(d(lo, w), d(hi, w)) / 2를 쓴다(색의 lo·hi는 ΔE00 기준 대칭이라 각도가 서로 다를 수 있다).
+   hue는 0/1에서 감기므로 lo가 숫자로 w보다 클 수 있다. 모든 차이를 부호 있는 최단 각 차이로 잰다.
+   목표에 못 닿은 방향(lo·hi null)이나 꺼진 속성(skipReason disabled)은 valid=false라 pair_invalid:<사유>.
 3) 붙이지 못하면 제외 사유를 하나 남긴다(검사 순서대로 첫 번째):
    pair_invalid:<skipReason> → no_report → report_invalid · report_spec_mismatch → not_set →
    basis_default · basis_mixed → too_close → order_violation(d(near,p) ≥ d(w,p), lo·hi가 p에서 같은 거리 포함)
@@ -41,7 +45,7 @@ LABELLED = ("from_start", "when_asked")
 
 PAIR_COLUMNS = [
     "participant", "session", "attribute", "axis", "basis", "w", "lo", "hi", "step", "delta_e_lo", "delta_e_hi",
-    "valid", "skip_reason", "commitment", "p", "d_w", "near", "far", "labelled", "exclusion",
+    "valid", "skip_reason", "commitment", "p", "d_w", "threshold", "near", "far", "labelled", "exclusion",
     "rating_orig", "rating_lo", "rating_hi", "rating_near", "rating_far", "near_minus_far", "shift_drop", "included",
 ]
 
@@ -115,13 +119,19 @@ def load_prereport(folder: Path, manifest: dict) -> tuple[dict | None, str | Non
     warns = []
     sha = manifest.get("specSha256")
     shas = {rep.get("specSha256"), *((rep.get("altSpecSha256") or {}).values())}
-    if isinstance(sha, str) and sha and sha not in shas:
+    if not _is_sha(sha):
+        warns.append(f"manifest.specSha256이 sha256 형식이 아님({sha!r}) — prereport.json과 장면 짝을 확인하지 못하고 그대로 씀")
+    elif sha not in shas:
         return None, "report_spec_mismatch", [
             "prereport.json의 specSha256이 manifest.specSha256과 다름(다른 장면의 보고) — report_spec_mismatch로 제외"]
     if rep.get("sessionId") and manifest.get("sessionId") and rep["sessionId"] != manifest["sessionId"]:
         warns.append(f"prereport.json sessionId '{rep['sessionId']}'가 manifest '{manifest['sessionId']}'와 다름"
-                     " — specSha256이 맞아 그대로 씀")
+                     " — 그대로 씀")
     return rep, None, warns
+
+
+def _is_sha(v) -> bool:
+    return isinstance(v, str) and len(v) == 64 and all(c in "0123456789abcdef" for c in v.lower())
 
 
 def report_value(rep: dict, axis: str) -> float | None:
@@ -157,7 +167,7 @@ def pair_rows(participant: str, session: str, manifest: dict, ratings: dict[str,
             "basis": raw.get("basis"), "w": w, "lo": lo, "hi": hi, "step": step,
             "delta_e_lo": _num(raw.get("deltaE_lo")), "delta_e_hi": _num(raw.get("deltaE_hi")),
             "valid": valid, "skip_reason": raw.get("skipReason"),
-            "commitment": None, "p": None, "d_w": None, "near": None, "far": None, "labelled": False,
+            "commitment": None, "p": None, "d_w": None, "threshold": None, "near": None, "far": None, "labelled": False,
             "exclusion": None, "rating_orig": ratings.get("orig"), "rating_lo": None, "rating_hi": None,
             "rating_near": None, "rating_far": None, "near_minus_far": None, "shift_drop": None, "included": True,
         }
@@ -196,7 +206,10 @@ def pair_rows(participant: str, session: str, manifest: dict, ratings: dict[str,
         d_w = axis_distance(axis, w, p)
         d_lo, d_hi = axis_distance(axis, lo, p), axis_distance(axis, hi, p)
         row["d_w"] = _r(d_w, 6)
-        if d_w < step / 2:
+        # 문턱: 크기는 step/2. 색의 step은 탐색 단위(hue 1/360, lightness 0.005)라 쓰지 않고 실제 이동폭의 작은 쪽 / 2
+        threshold = step / 2 if axis == "size" else min(axis_distance(axis, w, lo), axis_distance(axis, w, hi)) / 2
+        row["threshold"] = _r(threshold, 6)
+        if d_w < threshold:
             row["exclusion"] = "too_close"
             continue
         near, far, d_near, d_far = ("lo", "hi", d_lo, d_hi) if d_lo < d_hi else ("hi", "lo", d_hi, d_lo)

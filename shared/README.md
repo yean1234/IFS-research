@@ -10,6 +10,8 @@
 | `lexicon/scene_params.v0.json` | SceneSpec v2 대응표: 1층 사전 값 → 0–1 장면 파라미터, 2층 직유 원천 명사 → 형태 프로토타입, 3층 V/A/D → 빈 슬롯 제안 | 장면 빌더 | `lexiconVersion` |
 | `lexicon/vad_ko.v0.json` | 3층 감성사전: 1층 감정어 → V/A/D(0–1). 초안 값 | 장면 빌더(`_inferred`만) | `lexiconVersion` |
 | `lexicon/safety_ko.v0.json` | 위기 키워드 3층(위기·모호·은유), 중단·넘어가기·판단 맡김 표현, 깊이 표지(L5) | 챗봇 안전 계층, `/api/guard/check` | `lexiconVersion` |
+| `schemas/prereport.v0.json` | 보기 전 보고 ifs-prereport/0.1: 속성마다 확정 여부(①②③)와 색{h,l}·크기 값, 장면 파일 sha256. ③이면 값 null(스키마가 강제). 장면 JSON과 분리 | 챗봇이 쓰고(`<log_dir>/<sessionId>/prereport.json`), `eval.ownership`이 읽음 | `schema` |
+| `protocol/prereport_task.v0.json` | 보기 전 보고 과제 고정 문구(모두 draft, IRB 대상), 색 면·크기 막대 설정. 면담(질문 틀·V1–V9) 밖 | 챗봇 웹 `/prereport` | `taskVersion` |
 | `api/README.md` | HTTP API 명세 | 웹 데모, Unity | — |
 
 ## 고칠 때

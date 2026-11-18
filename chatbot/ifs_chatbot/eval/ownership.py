@@ -2,10 +2,18 @@
 LLM 없음, 표준 라이브러리만, 결정론적(같은 기록 → 같은 출력).
 
   python -m ifs_chatbot.eval.ownership --records <기록 루트 또는 세션 폴더> --out <폴더> [--orig-threshold 4]
-  → <폴더>/stimuli.csv(세션×형상 5행), sessions.csv(세션 1행), summary.json(RQ1–RQ3, 건너뛴 기록, 경고)
+  → <폴더>/stimuli.csv(세션×형상 n행), sessions.csv(세션 1행), shift_pairs.csv(0.3 쌍 1행),
+    summary.json(RQ1–RQ3, 쌍 분석 shift, 건너뛴 기록, 경고)
 
 기록 형식은 설계 확정본 2.4절(recordVersion "ifs-ownership/0.x"), 행동 지표는 3절을 따른다.
-0.1과 0.2를 모두 읽는다. 0.2에서 늘어난 값(색 변형 magnitude.deltaE00Composited, taskText.draftCount)은 0.1 기록에서 빈칸이다.
+0.1·0.2·0.3을 모두 읽는다.
+0.3(docs/rq-v2-proposal.md 3.1–3.2, unity/README.md 기록 표): manifest ratingItem·shiftPairs·variants[].kind
+(orig | mismatch | shift), ratings.csv 끝 열 item, order 길이 n(5·7·9). 같은 말·다른 값 쌍(color_lo/hi · size_lo/hi)과
+세션 폴더의 prereport.json(보기 전 보고, 없을 수 있음) 분석은 ownership_shift.py가 하고 shift_pairs.csv와
+summary의 shift 절로 나온다. kind가 없는 0.1·0.2 기록은 orig 밖을 모두 mismatch로 본다. RQ1·RQ2·RQ3 diffVsOrig는
+mismatch 변형만 쓴다(shift 변형을 섞지 않는다). RQ3 평정 상관은 세션 안 모든 형상(n개)을 쓴다.
+ratings.csv에 item 열이 있으면 manifest.ratingItem과 같은 행만 평정으로 쓰고, 다른 문항 행은 세어서 경고한다.
+쌍 요약의 95% 신뢰구간(t 분포)은 과제 요구로 넣었다. p값은 여전히 내지 않는다. 0.2에서 늘어난 값(색 변형 magnitude.deltaE00Composited, taskText.draftCount)은 0.1 기록에서 빈칸이다.
 magnitude_delta_e00은 0.1에서는 HSL 해석값 기준, 0.2에서는 셰이더 알베도(밝기 배율 포함) 기준이다(record_version 열로 구분).
 추론 통계(p값)는 내지 않는다: 참여자 수가 작고 검정 계획이 아직 정해지지 않아 기술 통계(평균·n·lowN)만 낸다.
 
@@ -60,9 +68,12 @@ import math
 import sys
 from pathlib import Path
 
+from . import ownership_shift as shift
+
 RECORD_PREFIX = "ifs-ownership/"
-SUMMARY_VERSION = "ownership-summary/0.3"   # 0.2: gap_ms·n_gaps·start_source 열, orderBalance
+SUMMARY_VERSION = "ownership-summary/0.4"   # 0.2: gap_ms·n_gaps·start_source 열, orderBalance
 #                                               0.3: magnitude_delta_e00_composited·draft_phrases 열, orderBalance.byOrderRowCb
+#                                               0.4: 기록 0.3 읽기 — kind·rating_item 등 열, shift_pairs.csv, summaries.*.shift
 ATTRIBUTES = ("form", "color", "size", "motion")
 SOURCES = ("stated", "default", "mixed")
 METRICS = ("gaze_ms", "gaze_ratio", "dist_mean_m", "dist_min_m", "azimuth_range_deg", "path_m", "first_look_ms")
@@ -76,7 +87,7 @@ WILLIAMS_ROWS = 10        # unity WilliamsDesign.Rows
 VIEWING_START_EVENT = "viewing_start"
 
 STIMULI_COLUMNS = [
-    "participant", "session", "position", "variant", "attribute", "source", "rule",
+    "participant", "session", "position", "variant", "kind", "attribute", "source", "rule",
     "said_not_rendered", "forced", "below_target", "motion_alters_scale",
     "magnitude_size_step", "magnitude_delta_e00", "magnitude_delta_e00_composited", "changed_keys",
     "rating", "rating_drop", "chosen", "difference_rating", "view_ms", "rt_ms", "n_cancelled",
@@ -88,7 +99,7 @@ SESSION_COLUMNS = [
     "head_source", "low_visibility", "completed", "aborted_at",
     "orig_rating", "orig_chosen", "chosen_variant", "chosen_position",
     "size_step", "color_delta_e", "view_seconds", "head_sample_hz", "gaze_cone_deg",
-    "task_text_version", "draft_phrases",
+    "task_text_version", "draft_phrases", "rating_item", "n_positions", "prereport", "n_shift_pairs",
     "orig_below_threshold", "excluded",
 ]
 
@@ -344,20 +355,31 @@ def load_session(cand: dict, orig_threshold: float) -> tuple[dict, list[dict], l
         cone = DEFAULT_CONE_DEG
         warn(f"config.gazeConeDeg 없음 — {DEFAULT_CONE_DEG:g}°로 계산")
     order = [str(v) for v in man.get("order") or []]
-    if len(order) != 5:
+    is_v03 = "shiftPairs" in man or any(isinstance(v, dict) and "kind" in v for v in man.get("variants") or [])
+    if not is_v03 and len(order) != 5:
         warn(f"order 길이 {len(order)} (5가 아님)")
+    if is_v03 and len(order) not in (5, 7, 9):
+        warn(f"order 길이 {len(order)} (0.3은 5·7·9)")
+    if len(set(order)) != len(order):
+        warn("order에 같은 형상이 두 번 이상 있음")
     variants = {str(v.get("id")): v for v in man.get("variants") or [] if isinstance(v, dict)}
     for v in order:
         if v not in variants:
             warn(f"order의 '{v}'가 variants에 없음")
+    rating_item = man.get("ratingItem") if isinstance(man.get("ratingItem"), str) and man.get("ratingItem") else None
 
     # 평정: 위에서부터 읽고 취소 행은 그 형상의 직전 유효 평정을 지운다
     ratings: dict[str, dict] = {}
     n_cancel: dict[str, int] = {}
     view_ms: dict[str, float] = {}
+    other_items: dict[str, int] = {}
     for row in _read_csv(folder / "ratings.csv"):
         var = row.get("variant") or _variant_at(order, row.get("position"))
         if not var:
+            continue
+        item = row.get("item") or None
+        if rating_item and item and item != rating_item:       # 다른 평정 문항 행은 이 요약의 평정이 아니다
+            other_items[item] = other_items.get(item, 0) + 1
             continue
         vm = _num(row.get("view_ms"))
         if vm is not None:
@@ -369,6 +391,9 @@ def load_session(cand: dict, orig_threshold: float) -> tuple[dict, list[dict], l
         r = _num(row.get("rating"))
         if r is not None:
             ratings[var] = {"rating": r, "rt_ms": _num(row.get("rt_ms"))}
+    if other_items:
+        warn(f"ratings.csv에 manifest.ratingItem('{rating_item}')과 다른 문항 행 "
+             + ", ".join(f"{k} {n}개" for k, n in sorted(other_items.items())) + " — 평정으로 쓰지 않음")
     if isinstance(summ.get("ratings"), dict):
         for var, r in ratings.items():
             sr = _num(summ["ratings"].get(var))
@@ -449,6 +474,7 @@ def load_session(cand: dict, orig_threshold: float) -> tuple[dict, list[dict], l
         "size_step": _num(config.get("sizeStep")), "color_delta_e": _num(config.get("colorDeltaE")),
         "view_seconds": _num(config.get("viewSeconds")), "head_sample_hz": hz, "gaze_cone_deg": cone,
         "task_text_version": task_text.get("version"), "draft_phrases": _int(task_text.get("draftCount")),
+        "rating_item": rating_item, "n_positions": len(order), "prereport": None, "n_shift_pairs": None,
         "orig_below_threshold": below, "excluded": excluded,
     }
 
@@ -462,8 +488,9 @@ def load_session(cand: dict, orig_threshold: float) -> tuple[dict, list[dict], l
         beh = behavior_metrics(sorted(samples.get(pos, []), key=lambda s: s["t"]), view_ms.get(var), hz, cone, start_ms)
         beh["start_source"] = start_src
         is_orig = var == "orig"
+        kind = "orig" if is_orig else (v.get("kind") if v.get("kind") in ("mismatch", "shift") else "mismatch")
         rows.append({
-            "participant": participant, "session": sid, "position": pos, "variant": var,
+            "participant": participant, "session": sid, "position": pos, "variant": var, "kind": kind,
             "attribute": None if is_orig else (v.get("attribute") or var),
             "source": None if is_orig else v.get("source"),
             "rule": None if is_orig else v.get("rule"),
@@ -489,7 +516,29 @@ def load_session(cand: dict, orig_threshold: float) -> tuple[dict, list[dict], l
         for m in METRICS:
             o = orig_row.get(m) if orig_row else None
             r[f"{m}_diff"] = None if r[m] is None or o is None else _r(r[m] - o, 4)
-    return srow, rows, warns
+
+    # 같은 말·다른 값 쌍과 보기 전 보고(0.3). 0.1·0.2에는 shiftPairs가 없어 쌍 행이 없다
+    pairs: list[dict] = []
+    if "shiftPairs" in man:
+        report, problem, pw = shift.load_prereport(folder, man)
+        for msg in pw:
+            warn(msg)
+        srow["prereport"] = problem or ("present" if report is not None else "absent")
+        pairs, sw = shift.pair_rows(participant, sid, man, {k: r["rating"] for k, r in ratings.items()},
+                                    report, problem)
+        for msg in sw:
+            warn(msg)
+        srow["n_shift_pairs"] = len(pairs)
+        for pr in pairs:
+            pr["included"] = not excluded
+            if pr["valid"]:
+                for vid in (f"{pr['attribute']}_lo", f"{pr['attribute']}_hi"):
+                    if vid not in order:
+                        warn(f"유효한 쌍의 '{vid}'가 order에 없음")
+    elif (folder / shift.PREREPORT_FILE).is_file():
+        srow["prereport"] = "present"
+        warn("prereport.json이 있지만 manifest에 shiftPairs가 없음(0.1·0.2 기록) — 쌍 분석 없음")
+    return srow, rows, warns, pairs
 
 
 # ---------------------------------------------------------------- 요약
@@ -528,10 +577,10 @@ def spearman(xs: list[float], ys: list[float]) -> float | None:
     return sxy / math.sqrt(sxx * syy)
 
 
-def summarize(sessions: list[dict], stimuli: list[dict]) -> dict:
+def summarize(sessions: list[dict], stimuli: list[dict], shift_pairs: list[dict] | None = None) -> dict:
     keys = {(s["participant"], s["session"]) for s in sessions}
     st = [r for r in stimuli if (r["participant"], r["session"]) in keys]
-    var_rows = [r for r in st if r["variant"] != "orig"]
+    var_rows = [r for r in st if r["kind"] == "mismatch"]
     orig_rows = [r for r in st if r["variant"] == "orig"]
 
     def b(v):
@@ -576,7 +625,11 @@ def summarize(sessions: list[dict], stimuli: list[dict]) -> dict:
                 rhos.append(rho)
         e = _est(rhos)
         rq3["ratingCorrelation"][m] = {"meanRho": e["mean"], "nSessions": e["n"], "lowN": e["lowN"]}
-    return {"nSessions": len(keys), "rq1": rq1, "rq2": rq2, "rq3": rq3}
+    shift_sessions = [s for s in sessions if s.get("n_shift_pairs") is not None]
+    shift_summary = shift.summarize_pairs([p for p in shift_pairs or [] if (p["participant"], p["session"]) in keys],
+                                          [s["participant"] for s in shift_sessions], LOW_N)
+    shift_summary["nSessions"] = len(shift_sessions)
+    return {"nSessions": len(keys), "rq1": rq1, "rq2": rq2, "rq3": rq3, "shift": shift_summary}
 
 
 # ---------------------------------------------------------------- 전체 실행
@@ -587,11 +640,12 @@ def analyze(records: str | Path, out_dir: str | Path | None = None,
     if not root.exists():
         raise FileNotFoundError(f"기록 경로가 없습니다: {records}")
     chosen, skipped, warnings = discover(root)
-    sessions, stimuli = [], []
+    sessions, stimuli, pairs = [], [], []
     for cand in chosen:
-        srow, rows, w = load_session(cand, orig_threshold)
+        srow, rows, w, pr = load_session(cand, orig_threshold)
         sessions.append(srow)
         stimuli.extend(rows)
+        pairs.extend(pr)
         warnings.extend(w)
     included = [s for s in sessions if not s["excluded"]]
     passing = [s for s in included if s["orig_below_threshold"] is False]
@@ -625,8 +679,8 @@ def analyze(records: str | Path, out_dir: str | Path | None = None,
         },
         "orderBalance": balance,
         "draftPhraseSessions": len(drafted),
-        "summaries": {"all": summarize(included, stimuli),
-                      "origAtOrAboveThreshold": summarize(passing, stimuli)},
+        "summaries": {"all": summarize(included, stimuli, pairs),
+                      "origAtOrAboveThreshold": summarize(passing, stimuli, pairs)},
         "skipped": skipped,
         "warnings": warnings,
     }
@@ -635,8 +689,9 @@ def analyze(records: str | Path, out_dir: str | Path | None = None,
         out.mkdir(parents=True, exist_ok=True)
         _write_csv(out / "stimuli.csv", STIMULI_COLUMNS, stimuli)
         _write_csv(out / "sessions.csv", SESSION_COLUMNS, sessions)
+        _write_csv(out / "shift_pairs.csv", shift.PAIR_COLUMNS, pairs)
         (out / "summary.json").write_text(json.dumps(summary, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    return {"sessions": sessions, "stimuli": stimuli, "summary": summary}
+    return {"sessions": sessions, "stimuli": stimuli, "pairs": pairs, "summary": summary}
 
 
 def _cell(v) -> str:
