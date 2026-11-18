@@ -3,7 +3,7 @@
 - 일시: 2026-11-18
 - 호출: `codex exec --sandbox read-only -c model_reasoning_effort="medium"` (RQ v2 작업 2/3회)
 - 프롬프트: `docs/codex-reviews/prompts/CP5_prompt.md`
-- 검토 대상: 커밋 `f5b4e69..2ea8b9d`의 `unity/`, `chatbot/`, `shared/` 변경
+- 검토 대상: 커밋 `f5b4e69..562bd72`의 `unity/`, `chatbot/`, `shared/` 변경
 - 판정(수용/반박/보류)은 `docs/decisions.md`에 적습니다.
 
 ---
