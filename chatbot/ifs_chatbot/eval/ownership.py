@@ -12,7 +12,11 @@ LLM 없음, 표준 라이브러리만, 결정론적(같은 기록 → 같은 출
 세션 폴더의 prereport.json(보기 전 보고, 없을 수 있음) 분석은 ownership_shift.py가 하고 shift_pairs.csv와
 summary의 shift 절로 나온다. kind가 없는 0.1·0.2 기록은 orig 밖을 모두 mismatch로 본다. RQ1·RQ2·RQ3 diffVsOrig는
 mismatch 변형만 쓴다(shift 변형을 섞지 않는다). RQ3 평정 상관은 세션 안 모든 형상(n개)을 쓴다.
-평정 문항(ratingItem): 0.1·0.2 기록은 'mine'(내 것 같다)으로 본다. 0.3은 manifest.ratingItem(없으면 'unknown').
+평정 문항(ratingItem): recordVersion으로 정한다. 0.1·0.2 기록은 항상 'mine'(내 것 같다). 0.1·0.2 manifest에 0.3 전용
+필드(ratingItem·shiftPairs·variants[].kind)가 있으면 경고하고 그 세션을 격리한다(excluded = quarantined, summary
+quarantined 목록; Q1과 문항별 요약에서 빠짐). 0.3은 manifest.ratingItem(없으면 'unknown').
+철회: --withdrawn <파일>(세션 ID 한 줄에 하나)의 세션은 기록 폴더를 읽기 전에 빼고 records.withdrawn에 개수만 남긴다.
+출력 폴더가 git 저장소 안이고 출력 파일이 무시 규칙에 걸리지 않으면 경고한다.
 0.3 ratings.csv는 item이 비어 있지 않고 manifest.ratingItem과 같은 행만 평정으로 쓴다(다른·빈 문항 행은 세어서 경고).
 기존 요약(RQ1–RQ3)은 문항별로 따로 낸다(summaries.<문항>). 문항이 다른 세션을 평균하지 않는다.
 같은 참여자·세션을 두 문항으로 따로 실행한 기록은 문항별로 각각 남는다(기록 고르기 키 = 참여자·세션·문항).
@@ -172,21 +176,40 @@ def _r(x: float | None, nd: int = 4) -> float | None:
 
 # ---------------------------------------------------------------- 기록 찾기
 
+def record_version(man: dict) -> tuple[int, ...] | None:
+    try:
+        return tuple(int(x) for x in str(man.get("recordVersion", ""))[len(RECORD_PREFIX):].split("."))
+    except ValueError:
+        return None
+
+
 def is_v03(man: dict) -> bool:
-    return ("shiftPairs" in man or "ratingItem" in man
-            or any(isinstance(v, dict) and "kind" in v for v in man.get("variants") or []))
+    """필드 유무가 아니라 recordVersion으로 정한다. 0.1·0.2만 예전 형식(읽을 수 없는 판 번호는 0.3 이후로 본다)."""
+    v = record_version(man)
+    return v is None or v >= (0, 3)
+
+
+def legacy_v03_fields(man: dict) -> list[str]:
+    """0.1·0.2 manifest에 들어 있으면 안 되는 0.3 전용 필드."""
+    found = [k for k in ("ratingItem", "shiftPairs") if k in man]
+    if any(isinstance(v, dict) and "kind" in v for v in man.get("variants") or []):
+        found.append("variants[].kind")
+    return found
 
 
 def rating_item_of(man: dict) -> str:
-    """평정 문항. 0.1·0.2 = mine. 0.3 = manifest.ratingItem(없으면 unknown)."""
+    """평정 문항. 0.1·0.2 = 항상 mine(0.3 전용 필드가 있어도). 0.3 = manifest.ratingItem(없으면 unknown)."""
     if not is_v03(man):
         return LEGACY_ITEM
     ri = man.get("ratingItem")
     return ri if isinstance(ri, str) and ri else "unknown"
 
 
-def discover(records: Path) -> tuple[list[dict], list[dict], list[dict]]:
-    """(participant, session, 평정 문항)마다 기록 폴더 하나를 고른다. → (고른 것, 건너뛴 것, 경고)"""
+def discover(records: Path, withdrawn: set[str] | None = None) -> tuple[list[dict], list[dict], list[dict], int]:
+    """(participant, session, 평정 문항)마다 기록 폴더 하나를 고른다. → (고른 것, 건너뛴 것, 경고, 철회로 뺀 폴더 수)
+    withdrawn의 세션 ID는 평정·보고를 읽기 전에 뺀다(개수만 남긴다)."""
+    withdrawn = withdrawn or set()
+    n_withdrawn = 0
     groups: dict[tuple[int, str, str], list[dict]] = {}
     skipped: list[dict] = []
     warnings: list[dict] = []
@@ -200,6 +223,9 @@ def discover(records: Path) -> tuple[list[dict], list[dict], list[dict]]:
         if not isinstance(man, dict) or not str(man.get("recordVersion", "")).startswith(RECORD_PREFIX):
             continue
         pnum, sid = _int(man.get("participantNumber")), man.get("sessionId")
+        if isinstance(sid, str) and sid in withdrawn:
+            n_withdrawn += 1
+            continue
         if pnum is None or not isinstance(sid, str) or not sid:
             skipped.append({"record": rel, "reason": "manifest_missing_ids"})
             continue
@@ -224,7 +250,7 @@ def discover(records: Path) -> tuple[list[dict], list[dict], list[dict]]:
                 skipped.append({"record": c["rel"], "reason": "duplicate", "completed": c["completed"],
                                 "usedInstead": pick["rel"]})
     skipped.sort(key=lambda s: s["record"])
-    return chosen, skipped, warnings
+    return chosen, skipped, warnings, n_withdrawn
 
 
 # ---------------------------------------------------------------- 행동 지표 (3절)
@@ -517,10 +543,16 @@ def load_session(cand: dict, orig_threshold: float) -> tuple[dict, list[dict], l
     orig_rating = ratings.get("orig", {}).get("rating")
     below = None if orig_rating is None else orig_rating < orig_threshold
     excluded = "" if completed else "incomplete"
+    extra = [] if v03 else legacy_v03_fields(man)
+    if extra:
+        excluded = "quarantined"
+        warn(f"{man.get('recordVersion')} 기록에 0.3 전용 필드({', '.join(extra)})가 있음 — 문항을 정할 수 없어 "
+             "Q1과 문항별 요약에서 격리(quarantined)")
     flags = man.get("flags") if isinstance(man.get("flags"), dict) else {}
     task_text = man.get("taskText") if isinstance(man.get("taskText"), dict) else {}
 
-    kinds = {vid: ("orig" if vid == "orig" else (vv.get("kind") if vv.get("kind") in ("mismatch", "shift") else "mismatch"))
+    kinds = {vid: ("orig" if vid == "orig" else (vv.get("kind") if v03 and vv.get("kind") in ("mismatch", "shift")
+                                                 else "mismatch"))
              for vid, vv in variants.items()}
     first_view = shift.first_presentation_utc(events)
     srow = {
@@ -583,7 +615,7 @@ def load_session(cand: dict, orig_threshold: float) -> tuple[dict, list[dict], l
 
     # 같은 말·다른 값 쌍과 보기 전 보고(0.3). 0.1·0.2에는 shiftPairs가 없어 쌍 행이 없다
     pairs: list[dict] = []
-    if "shiftPairs" in man:
+    if v03 and "shiftPairs" in man:
         report, status, pw = shift.load_prereport(folder, man, first_view)
         for msg in pw:
             warn(msg)
@@ -708,12 +740,42 @@ def summarize_shift(sessions: list[dict], pairs: list[dict]) -> dict:
 
 # ---------------------------------------------------------------- 전체 실행
 
+def read_withdrawn(path: str | Path | None) -> set[str]:
+    """철회 목록 파일: 세션 ID를 한 줄에 하나(빈 줄·#로 시작하는 줄은 무시)."""
+    if path is None:
+        return set()
+    lines = Path(path).read_text(encoding="utf-8-sig").splitlines()
+    return {ln.strip() for ln in lines if ln.strip() and not ln.strip().startswith("#")}
+
+
+def unignored_outputs(out: Path, names: list[str]) -> list[str] | None:
+    """출력 폴더가 git 저장소 안이면 무시 규칙에 걸리지 않는 출력 파일 이름 목록. 저장소 밖·git 없음이면 None."""
+    import subprocess
+    out = out.resolve()
+    root = next((p for p in (out, *out.parents) if (p / ".git").exists()), None)
+    if root is None:
+        return None
+    bad = []
+    for n in names:
+        try:
+            r = subprocess.run(["git", "-C", str(root), "check-ignore", "-q", "--", str(out / n)],
+                               capture_output=True, timeout=30)
+        except (OSError, subprocess.SubprocessError):
+            return None
+        if r.returncode == 1:
+            bad.append(n)
+    return bad
+
+
+OUTPUT_FILES = ["stimuli.csv", "sessions.csv", "shift_pairs.csv", "summary.json"]
+
+
 def analyze(records: str | Path, out_dir: str | Path | None = None,
-            orig_threshold: float = DEFAULT_ORIG_THRESHOLD) -> dict:
+            orig_threshold: float = DEFAULT_ORIG_THRESHOLD, withdrawn: set[str] | None = None) -> dict:
     root = Path(records)
     if not root.exists():
         raise FileNotFoundError(f"기록 경로가 없습니다: {records}")
-    chosen, skipped, warnings = discover(root)
+    chosen, skipped, warnings, n_withdrawn = discover(root, withdrawn)
     sessions, stimuli, pairs = [], [], []
     for cand in chosen:
         srow, rows, w, pr = load_session(cand, orig_threshold)
@@ -722,6 +784,16 @@ def analyze(records: str | Path, out_dir: str | Path | None = None,
         pairs.extend(pr)
         warnings.extend(w)
     included = [s for s in sessions if not s["excluded"]]
+    quarantined = [{"record": s["record_folder"], "recordVersion": s["record_version"]}
+                   for s in sessions if s["excluded"] == "quarantined"]
+    clock = sum(1 for w in warnings if str(w.get("message", "")).startswith(shift.CLOCK_WARNING))
+    if out_dir is not None:
+        bad = unignored_outputs(Path(out_dir), OUTPUT_FILES)
+        if bad:
+            msg = (f"출력 폴더가 git 저장소 안이고 {', '.join(bad)}이(가) 무시 규칙에 걸리지 않음 — 참여자 값이 "
+                   "커밋될 수 있으니 저장소 밖 폴더를 쓰기")
+            warnings.append({"record": None, "message": msg})
+            print("경고: " + msg, file=sys.stderr)
     passing = [s for s in included if s["orig_below_threshold"] is False]
     balance = order_balance(included)
     for key, bal in balance["byConditionSet"].items():
@@ -751,7 +823,11 @@ def analyze(records: str | Path, out_dir: str | Path | None = None,
             "origBelowThreshold": sum(1 for s in included if s["orig_below_threshold"] is True),
             "origRatingMissing": sum(1 for s in included if s["orig_below_threshold"] is None),
             "skipped": len(skipped),
+            "quarantined": len(quarantined),
+            "withdrawn": n_withdrawn,
         },
+        "quarantined": quarantined,
+        "reportClockWarnings": clock,
         "orderBalance": balance,
         "draftPhraseSessions": len(drafted),
         "ratingItems": sorted({s["rating_item"] for s in included}),
@@ -817,12 +893,13 @@ def main(argv: list[str] | None = None) -> None:
     ap = argparse.ArgumentParser(prog="python -m ifs_chatbot.eval.ownership", description="소유감 실험 기록 요약(기술 통계)")
     ap.add_argument("--records", required=True, help="기록 루트(ownership/P###/... 위) 또는 그 아래 아무 폴더")
     ap.add_argument("--out", required=True, help="결과 폴더(stimuli.csv, sessions.csv, summary.json)")
+    ap.add_argument("--withdrawn", help="철회한 세션 ID 목록 파일(한 줄에 하나). 그 세션의 기록 폴더는 읽기 전에 뺀다")
     ap.add_argument("--orig-threshold", type=float, default=DEFAULT_ORIG_THRESHOLD,
                     help=f"원본 평정이 이 값 미만이면 origBelowThreshold(기본 {DEFAULT_ORIG_THRESHOLD:g})")
     args = ap.parse_args(argv)
     if not Path(args.records).exists():
         ap.error(f"--records 경로가 없습니다: {args.records}")
-    res = analyze(args.records, args.out, args.orig_threshold)
+    res = analyze(args.records, args.out, args.orig_threshold, read_withdrawn(args.withdrawn))
     _print_summary(res["summary"])
     print(f"결과: {Path(args.out) / 'summary.json'}")
 

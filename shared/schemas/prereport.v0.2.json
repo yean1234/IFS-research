@@ -20,7 +20,7 @@
     "specFrozenAtUtc": { "$ref": "#/$defs/utc", "description": "장면 sha256을 고정한 시각(확정 시점)" },
     "taskTextFile": { "type": "string", "description": "고정 문구 파일 이름 (예: prereport_task.v0.2.json)" },
     "taskTextVersion": { "type": "string" },
-    "createdAtUtc": { "$ref": "#/$defs/utc", "description": "서버가 보고를 받은 시각. 분석기는 형상 첫 제시 시각보다 늦으면 뺀다(report_after_viewing)" },
+    "createdAtUtc": { "$ref": "#/$defs/utc", "description": "서버가 보고를 받은 시각. 형상 첫 제시 시각(events.csv first_viewing_utc)보다 늦으면 분석기가 경고한다(report_clock_warning). 보기 전의 증거는 Unity 러너의 복사 해시(manifest.prereport.sha256)다" },
     "attributes": {
       "type": "object",
       "additionalProperties": false,
@@ -36,7 +36,8 @@
             "firstValue": { "$ref": "#/$defs/colorValue", "description": "첫 의도적 선택. 주 분석은 이 값을 쓴다" },
             "method": { "const": "hue_lightness_field" },
             "nSelections": { "type": "integer", "minimum": 0 },
-            "commitmentChangedAfterPick": { "type": "boolean" }
+            "commitmentChangedAfterPick": { "type": "boolean" },
+            "commitmentAtPick": { "$ref": "#/$defs/commitmentOrNull", "description": "첫 의도적 선택을 할 때의 확정 여부. 최종 commitment와 다르면 분석기가 주 분석에서 뺀다(commitment_changed). 고른 적이 없으면 null" }
           },
           "allOf": [{ "$ref": "#/$defs/valueRule" }]
         },
@@ -52,7 +53,8 @@
             "firstWidthM": { "$ref": "#/$defs/metersOrNull" },
             "method": { "const": "size_slider" },
             "nSelections": { "type": "integer", "minimum": 0 },
-            "commitmentChangedAfterPick": { "type": "boolean" }
+            "commitmentChangedAfterPick": { "type": "boolean" },
+            "commitmentAtPick": { "$ref": "#/$defs/commitmentOrNull", "description": "첫 의도적 선택을 할 때의 확정 여부. 최종 commitment와 다르면 분석기가 주 분석에서 뺀다(commitment_changed). 고른 적이 없으면 null" }
           },
           "allOf": [
             { "$ref": "#/$defs/valueRule" },
@@ -80,6 +82,7 @@
     "unit": { "type": "number", "minimum": 0, "maximum": 1 },
     "unitOrNull": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/unit" }] },
     "metersOrNull": { "oneOf": [{ "type": "null" }, { "type": "number", "exclusiveMinimum": 0, "maximum": 10 }] },
+    "commitmentOrNull": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/commitment" }] },
     "commitment": {
       "enum": ["from_start", "when_asked", "not_set"],
       "description": "① 처음부터 있었다 = from_start, ② 물어봐서 그때 정했다 = when_asked, ③ 지금도 정해진 것이 없다 = not_set"

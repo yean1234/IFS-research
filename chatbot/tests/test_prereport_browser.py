@@ -44,6 +44,15 @@ const base = process.argv[2], sid = process.argv[3];
   out.thumbHiddenAtStart = await p.isHidden('#pr-size-thumb');
   out.nextDisabledBeforePick = await p.isDisabled('#pr-next');
   const t = await p.locator('#pr-size-track').boundingBox();
+  // 취소된 접촉(pointercancel)은 선택이 아니다: 손잡이도 확정값도 생기지 않는다
+  await p.evaluate(({ x, y }) => {
+    const tr = document.querySelector('#pr-size-track');
+    tr.dispatchEvent(new PointerEvent('pointerdown', { clientX: x, clientY: y, pointerId: 7, bubbles: true }));
+    tr.dispatchEvent(new PointerEvent('pointermove', { clientX: x + 20, clientY: y, pointerId: 7, bubbles: true }));
+    tr.dispatchEvent(new PointerEvent('pointercancel', { pointerId: 7, bubbles: true }));
+  }, { x: t.x + t.width * 0.8, y: t.y + t.height / 2 });
+  out.thumbHiddenAfterCancel = await p.isHidden('#pr-size-thumb');
+  out.afterCancel = JSON.parse(await p.evaluate((k) => sessionStorage.getItem(k), `ifs-prereport:${sid}`)).cur;
   await p.mouse.click(t.x + t.width * 0.25, t.y + t.height / 2);
   out.thumbVisibleAfterPick = await p.isVisible('#pr-size-thumb');
   await p.click('#pr-back');
@@ -122,6 +131,7 @@ def test_browser_reselect_reload_and_switch_to_not_set(server, rt, tmp_path):
     assert out["pickHiddenBeforeCommit"] and out["pickVisibleAfterReload"]
     assert out["afterReload"]["phase"] == "pick" and out["afterReload"]["cur"]["nSelections"] == 2
     assert out["thumbHiddenAtStart"] and out["nextDisabledBeforePick"] and out["thumbVisibleAfterPick"]
+    assert out["thumbHiddenAfterCancel"] and out["afterCancel"]["nSelections"] == 0 and out["afterCancel"]["value"] is None
     assert out["done"] == prereport.task_text()["fixedPhrases"]["done"]["text"] and out["storageCleared"]
 
     rec = json.loads(prereport.record_path(rt.cfg.log_dir, sid).read_text(encoding="utf-8"))
@@ -129,6 +139,8 @@ def test_browser_reselect_reload_and_switch_to_not_set(server, rt, tmp_path):
     c, s = rec["attributes"]["color"], rec["attributes"]["size"]
     assert c["nSelections"] == 2 and c["firstValue"]["h"] == pytest.approx(0.25, abs=0.01)
     assert c["value"]["h"] == pytest.approx(0.75, abs=0.01) and c["commitmentChangedAfterPick"] is False
+    assert c["commitmentAtPick"] == "from_start"
     assert s == {"commitment": "not_set", "value": None, "firstValue": None, "widthM": None, "firstWidthM": None,
-                 "method": "size_slider", "nSelections": 1, "commitmentChangedAfterPick": True}
+                 "method": "size_slider", "nSelections": 1, "commitmentChangedAfterPick": True,
+                 "commitmentAtPick": "from_start"}
     assert rec["attributes"]["form"] == {"commitment": "when_asked"}

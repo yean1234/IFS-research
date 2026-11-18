@@ -20,7 +20,7 @@ from .paths import shared
 
 SCHEMA_ID = "ifs-prereport/0.2"
 SCHEMA_FILES = {"ifs-prereport/0.1": "prereport.v0.json", "ifs-prereport/0.2": "prereport.v0.2.json"}
-TASK_FILE = "prereport_task.v0.2.json"
+TASK_FILE = "prereport_task.v0.3.json"
 RECORD_NAME = "prereport.json"
 
 

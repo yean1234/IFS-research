@@ -1,9 +1,11 @@
-// 보기 전 보고 과제 (문구 shared/protocol/prereport_task.v0.2.json, 기록 형식 shared/schemas/prereport.v0.2.json).
+// 보기 전 보고 과제 (문구 shared/protocol/prereport_task.v0.3.json, 기록 형식 shared/schemas/prereport.v0.2.json).
 // 면담 밖의 고정 문구 과제다. LLM을 부르지 않는다. 외부 라이브러리 없음(연구실 오프라인 사용).
 // 참여자에게 보이는 문구는 모두 과제 파일에서 가져온다(코드에 문구를 두지 않는다).
 // 절차: 속성마다 ①②③을 먼저 [확인]으로 정하고, 색·크기는 ①②일 때만 값 고르기 화면이 나온다.
 //   ③이면 값을 남기지 않는다. 값을 고른 뒤 [답 바꾸기]로 확정 여부를 바꾸면 commitmentChangedAfterPick = true.
 //   첫 의도적 선택(firstValue)과 [확인] 때 값(value)을 함께 남긴다. 새로고침해도 sessionStorage로 이어 간다.
+//   첫 선택 때의 확정 여부를 commitmentAtPick으로 남긴다(최종과 다르면 분석기가 주 분석에서 뺀다).
+//   크기 막대는 손을 뗄 때(pointerup)만 선택으로 확정한다. 접촉이 취소되면(pointercancel) 마지막 확정값으로 되돌린다.
 "use strict";
 
 const $ = (sel) => document.querySelector(sel);
@@ -15,10 +17,11 @@ const r4 = (x) => Math.round(x * 10000) / 10000;
 let task = null;
 let st = null;            // {taskVersion, idx, phase, pending, answers, cur}
 let dragging = false;
+let dragValue = null;     // 끄는 동안 보여 주기만 하는 값(확정 전)
 
 function freshCur() {
   return { commitment: null, value: null, firstValue: null, widthM: null, firstWidthM: null,
-           nSelections: 0, changedAfterPick: false };
+           nSelections: 0, changedAfterPick: false, commitmentAtPick: null };
 }
 
 function save() {
@@ -121,7 +124,7 @@ function pickColor(ev, achromatic) {
   const c = st.cur;
   c.value = v;
   c.nSelections += 1;
-  if (c.firstValue === null) c.firstValue = { ...v };
+  if (c.firstValue === null) { c.firstValue = { ...v }; c.commitmentAtPick = c.commitment; }
   save();
   drawColor();
   updateButtons();
@@ -130,7 +133,7 @@ function pickColor(ev, achromatic) {
 // ── 크기: 손잡이 없는 막대 + 서 있는 사람 윤곽 옆의 중립 원 ─────────────────────
 function widthOf(s) {
   const c = task.sizeSlider;
-  return r4(c.baseDiameterM * Math.pow(2, (s - 0.5) * 4));
+  return Math.round(c.baseDiameterM * Math.pow(2, (s - 0.5) * 4) * 1e6) / 1e6;   // 미터, 소수 6자리
 }
 
 function drawSize() {
@@ -156,7 +159,7 @@ function drawSize() {
   ctx.lineTo(fx - halfW * 0.8, hip); ctx.closePath(); ctx.fill();
   ctx.globalAlpha = 1;
   const thumb = $("#pr-size-thumb");
-  const v = st.cur.value;
+  const v = dragging && dragValue !== null ? dragValue : st.cur.value;
   thumb.hidden = typeof v !== "number";
   if (typeof v === "number") {
     thumb.style.left = `${v * 100}%`;
@@ -168,9 +171,12 @@ function drawSize() {
   } else $("#pr-size-track").removeAttribute("aria-valuenow");
 }
 
-function setSize(v) {
-  st.cur.value = r4(Math.min(Math.max(v, 0), 1));
-  st.cur.widthM = widthOf(st.cur.value);
+function clampSize(v) {
+  return r4(Math.min(Math.max(v, 0), 1));
+}
+
+function showDrag(v) {
+  dragValue = clampSize(v);
   drawSize();
 }
 
@@ -179,11 +185,14 @@ function sizeFromEvent(ev) {
   return (ev.clientX - rect.left) / rect.width;
 }
 
-function commitSizeSelection() {
+function commitSize(v) {
   const c = st.cur;
+  c.value = clampSize(v);
+  c.widthM = widthOf(c.value);
   c.nSelections += 1;
-  if (c.firstValue === null) { c.firstValue = c.value; c.firstWidthM = c.widthM; }
+  if (c.firstValue === null) { c.firstValue = c.value; c.firstWidthM = c.widthM; c.commitmentAtPick = c.commitment; }
   save();
+  drawSize();
   updateButtons();
 }
 
@@ -252,6 +261,7 @@ function finalize() {
       method: a.valuePick === "color" ? task.colorField.method : task.sizeSlider.method,
       nSelections: c.nSelections,
       commitmentChangedAfterPick: c.changedAfterPick,
+      commitmentAtPick: c.commitmentAtPick,
     };
     if (a.valuePick === "size") {
       ans.widthM = keep ? c.widthM : null;
@@ -332,22 +342,27 @@ document.addEventListener("DOMContentLoaded", async () => {
   const track = $("#pr-size-track");
   track.addEventListener("pointerdown", (e) => {
     dragging = true;
-    track.setPointerCapture(e.pointerId);
-    setSize(sizeFromEvent(e));
+    try { track.setPointerCapture(e.pointerId); } catch (err) { /* 합성 이벤트 등 */ }
+    showDrag(sizeFromEvent(e));
   });
-  track.addEventListener("pointermove", (e) => { if (dragging) setSize(sizeFromEvent(e)); });
-  const release = () => { if (dragging) { dragging = false; commitSizeSelection(); } };
-  track.addEventListener("pointerup", release);
-  track.addEventListener("pointercancel", release);
+  track.addEventListener("pointermove", (e) => { if (dragging) showDrag(sizeFromEvent(e)); });
+  track.addEventListener("pointerup", (e) => {
+    if (!dragging) return;
+    dragging = false;
+    commitSize(sizeFromEvent(e));          // 손을 뗀 자리만 선택으로 확정
+    dragValue = null;
+  });
+  track.addEventListener("pointercancel", () => {
+    dragging = false;                      // 취소된 접촉은 선택이 아니다: 마지막 확정값으로 되돌림
+    dragValue = null;
+    drawSize();
+  });
   track.addEventListener("keydown", (e) => {
     if (typeof st.cur.value !== "number") return;      // 손잡이가 생기기 전에는 키로 값을 만들지 않는다
     const d = { ArrowLeft: -0.01, ArrowDown: -0.01, ArrowRight: 0.01, ArrowUp: 0.01 }[e.key];
     if (d === undefined) return;
     e.preventDefault();
-    if (!e.repeat) setSize(st.cur.value + d);
-  });
-  track.addEventListener("keyup", (e) => {
-    if (typeof st.cur.value === "number" && ["ArrowLeft", "ArrowDown", "ArrowRight", "ArrowUp"].includes(e.key)) commitSizeSelection();
+    if (!e.repeat) commitSize(st.cur.value + d);       // 키 한 번 = 선택 한 번
   });
   $("#pr-next").addEventListener("click", onNext);
   $("#pr-back").addEventListener("click", onBack);

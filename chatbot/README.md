@@ -86,13 +86,17 @@ ollama pull hf.co/mradermacher/kanana-safeguard-8b-GGUF:Q4_K_M   # 안전 분류
 
 ## 보기 전 보고 과제 (`/prereport?session=<id>`)
 
-확정 텍스트 뒤, 형상을 보기 전에 속성마다 ①②③과 색·크기 값을 한 번 받습니다(문구 `shared/protocol/prereport_task.v0.2.json`,
+확정 텍스트 뒤, 형상을 보기 전에 속성마다 ①②③과 색·크기 값을 한 번 받습니다(문구 `shared/protocol/prereport_task.v0.3.json`,
 형식 `shared/schemas/prereport.v0.2.json`, 면담·검증기 밖, LLM 없음). 기록은 `logs/<sessionId>/prereport.json`이고
 장면 JSON에는 들어가지 않습니다. 장면 파일 sha256은 확정 때 고정한 값을 붙입니다.
 
 **철회 절차.** [응답 폐기]는 챗봇 쪽 세션 로그·장면 파일·`logs/<sessionId>/prereport.json`만 지웁니다. Unity 러너가
 기록 폴더(`…/ownership/P###/<sessionId>/<UTC>/prereport.json`)에 복사한 사본과 그 기록 폴더, 그리고 분석 출력
 (`stimuli.csv`·`sessions.csv`·`shift_pairs.csv`·`summary.json`)은 연구자가 직접 지우고 분석을 다시 돌려야 합니다.
+분석을 다시 돌릴 때는 철회한 세션 ID를 한 줄에 하나씩 적은 파일을 넘깁니다:
+`python -m ifs_chatbot.eval.ownership --records <기록 루트> --out <저장소 밖 폴더> --withdrawn <철회 목록.txt>`.
+그 세션의 기록 폴더는 평정·보고를 읽기 전에 빠지고 summary에는 개수(`records.withdrawn`)만 남습니다. 출력 폴더가 git
+저장소 안이고 무시 규칙에 걸리지 않으면 분석기가 경고합니다.
 이 파일들은 저장소 밖에 두며, 저장소 안에 복사돼도 `.gitignore`가 막습니다(합성 fixture는 `tests/fixtures/` 아래
 `*.synthetic.json` 또는 `manifest_*.json` 이름만 씁니다).
 
@@ -103,8 +107,9 @@ ollama pull hf.co/mradermacher/kanana-safeguard-8b-GGUF:Q4_K_M   # 안전 분류
   비교합니다. 없으면 0–1 눈금으로 비교하고 `size_scale_fallback`을 표시합니다. Unity의 `wM`도 셰이더 굴곡과 프리팹 실제
   크기는 포함하지 않는 명목값입니다.
 - 색 면은 채도 0.6 고정입니다. 회색은 오른쪽 무채색 띠로 고릅니다(`{h: null, s: 0, l}`).
-- 첫 제시 뒤에 낸 보고는 서버가 막지 못합니다(서버는 Unity 실행 시각을 모름). 분석기가 events.csv의 `first_viewing_utc`와
-  비교해 `report_after_viewing`으로 뺍니다.
+- '보기 전'의 증거는 Unity 러너가 첫 제시 전에 보고를 기록 폴더로 복사하고 그 sha256을 `manifest.prereport`에 남긴
+  사실입니다. 분석기는 이 해시가 없거나 맞지 않으면 `report_spec_mismatch`로 뺍니다. 보고 시각(`createdAtUtc`)과
+  `events.csv`의 `first_viewing_utc` 비교는 두 기계의 시계가 다를 수 있어 경고(`report_clock_warning`)로만 씁니다.
 
 ## 노션 설계에 덧붙인 것
 

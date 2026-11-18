@@ -242,8 +242,6 @@ def test_distance_ties_are_order_violation(tmp_path, pairs, rep, reason):
      "pair_invalid:asymmetric"),
     ([size_pair()], report(size=("from_start", 0.5), sha="b" * 64), "report_spec_mismatch"),
     ([size_pair()], report(size=("from_start", 0.5), sid="other"), "report_spec_mismatch"),
-    ([size_pair()], report(size=("from_start", 0.5), created=AFTER), "report_after_viewing"),
-    ([size_pair()], report(size=("from_start", 0.5), created=VIEW_UTC), "report_after_viewing"),
 ])
 def test_each_exclusion_reason(tmp_path, pairs, rep, reason):
     make_v03(tmp_path, pairs=pairs, prereport=rep)
@@ -258,16 +256,27 @@ def test_each_exclusion_reason(tmp_path, pairs, rep, reason):
     assert sh["participantsWithoutUsablePairs"] == {"n": 1, "of": 1, "share": 1.0}
 
 
-def test_report_time_unknown_without_first_viewing_event(tmp_path):
-    make_v03(tmp_path, pairs=[size_pair()], prereport=report(size=("from_start", 0.5)), first_view=None)
+@pytest.mark.parametrize("created, first_view, warned", [
+    (AFTER, VIEW_UTC, True),            # 보고 시각이 첫 제시보다 늦어도 러너 복사 해시가 맞으면 쓰고 경고만
+    (VIEW_UTC, VIEW_UTC, True),
+    (BEFORE, VIEW_UTC, False),
+    (AFTER, None, False),               # first_viewing_utc 없음(0.2 등) → 비교 안 함, 제외도 아님
+    (AFTER, "2026-11-18T02:00:00.000", False),   # 시간대 표시 없는 문자열은 비교하지 않는다
+])
+def test_clock_comparison_is_only_a_warning(tmp_path, created, first_view, warned):
+    make_v03(tmp_path, pairs=[size_pair()], ratings={"size_hi": 6, "size_lo": 3},
+             prereport=report(size=("from_start", 0.5), created=created), first_view=first_view)
     res = analyze(tmp_path)
-    assert res["pairs"][0]["exclusion"] == "report_time_unknown"
-    assert any("first_viewing_utc" in w["message"] for w in res["summary"]["warnings"])
+    assert res["pairs"][0]["labelled"] is True and res["pairs"][0]["exclusion"] is None
+    assert res["summary"]["reportClockWarnings"] == (1 if warned else 0)
+    assert any(w["message"].startswith("report_clock_warning") for w in res["summary"]["warnings"]) is warned
 
 
 @pytest.mark.parametrize("man_prereport, raw, reason", [
     ({"file": "prereport.json", "sha256": "c" * 64}, None, "report_spec_mismatch"),   # 복사본 해시가 다름
     (None, None, "report_spec_mismatch"),                                              # manifest는 보고 없음이라는데 파일이 있음
+    ({"file": "prereport.json"}, None, "report_spec_mismatch"),                         # 러너 해시 없음 → 건너뛰지 않고 제외
+    ("absent", None, "report_spec_mismatch"),                                          # manifest에 prereport 키 자체가 없음
     ("auto", b"{not json", "report_invalid"),
     ("auto", json.dumps({**report(size=("from_start", 0.5)), "altSpecSha256": ["x"]}).encode(), "report_invalid"),
     ("auto", json.dumps({**report(size=("not_set", None)), "schema": "ifs-prereport/9"}).encode(), "report_invalid"),
@@ -288,7 +297,7 @@ def test_invalid_report_value_with_not_set_is_report_invalid(tmp_path):
     assert res["pairs"][0]["exclusion"] == "report_invalid" and res["sessions"][0]["prereport"] == "report_invalid"
 
 
-def test_v01_report_is_read_and_first_equals_final(tmp_path):
+def test_v01_report_is_legacy_in_primary(tmp_path):
     rep = {"schema": "ifs-prereport/0.1", "sessionId": "s03", "participant": None, "specSha256": SHA,
            "taskTextFile": "prereport_task.v0.json", "taskTextVersion": "0.1", "createdAtUtc": "2026-11-18T01:00:00Z",
            "attributes": {"color": {"commitment": "not_set", "value": None, "method": "hue_lightness_field",
@@ -296,8 +305,13 @@ def test_v01_report_is_read_and_first_equals_final(tmp_path):
                           "size": {"commitment": "from_start", "value": 0.5, "method": "size_slider", "nSelections": 1},
                           "form": {"commitment": "not_set"}, "motion": {"commitment": "not_set"}}}
     make_v03(tmp_path, pairs=[size_pair()], ratings={"size_hi": 6, "size_lo": 3}, prereport=rep)
-    p = pair(analyze(tmp_path), "size")
-    assert p["labelled"] and p["first_from_final"] is True and p["labelled_final"] and p["near_minus_far_final"] == 3
+    res = analyze(tmp_path)
+    p = pair(res, "size")
+    # 0.1 보고는 첫 선택·물리 폭이 관측되지 않아 주 분석에서 빼고 보조(최종 선택) 집계에만 남긴다
+    assert p["exclusion"] == "report_legacy" and not p["labelled"]
+    assert p["labelled_final"] and p["near_minus_far_final"] == 3
+    assert q1(res)["nearMinusFar"]["finalPick"]["fromStart"]["participantMean"]["mean"] == 3
+    assert q1(res)["nearMinusFar"]["primary"]["participantMean"]["n"] == 0
 
 
 # ---------------------------------------------------------------- 첫 선택(주) · 최종 선택(보조)
@@ -473,3 +487,92 @@ def test_real_unity_manifest_default(tmp_path):
     res = analyze(tmp_path)
     assert [p["exclusion"] for p in res["pairs"]] == ["basis_default", "basis_default"]
     assert pair(res, "color", man["sessionId"])["axis"] == "lightness"
+
+
+def test_commitment_at_pick_differs_is_excluded_from_primary_only(tmp_path):
+    rep = report(size=("when_asked", 0.5))
+    rep["attributes"]["size"]["commitmentAtPick"] = "from_start"      # 고를 때 ①, 최종 ②
+    make_v03(tmp_path, pairs=[size_pair()], ratings={"size_hi": 6, "size_lo": 3}, prereport=rep)
+    p = pair(analyze(tmp_path), "size")
+    assert p["exclusion"] == "commitment_changed" and p["labelled_final"] and p["near_minus_far_final"] == 3
+    rep["attributes"]["size"]["commitmentAtPick"] = "when_asked"      # 같으면 주 분석에 들어간다
+    make_v03(tmp_path / "same", pairs=[size_pair()], ratings={"size_hi": 6, "size_lo": 3}, prereport=rep)
+    assert pair(analyze(tmp_path / "same"), "size")["labelled"] is True
+
+
+@pytest.mark.parametrize("width, reason, near", [
+    # 원본·lo의 log 거리가 같은 보고(기하평균 √(0.5·0.4), 6자리) → 기록 정밀도에서 구분 안 됨 → order_violation
+    (round((0.5 * 0.4) ** 0.5, 6), "order_violation", None),
+    (0.45, "order_violation", None),         # w/lo/hi = .5/.4/.6 m에 0.45 m: lo가 원본보다 가깝지 않음
+    (0.3, None, "size_lo"),
+    (0.8, None, "size_hi"),
+])
+def test_meter_distances_with_record_precision(tmp_path, width, reason, near):
+    rep = report(size=("from_start", 0.5))
+    rep["attributes"]["size"]["widthM"] = rep["attributes"]["size"]["firstWidthM"] = width
+    make_v03(tmp_path, pairs=[size_pair(w=0.5, lo=0.4, hi=0.6, m=(0.5, 0.4, 0.6))], prereport=rep,
+             ratings={"size_lo": 3, "size_hi": 6})
+    p = pair(analyze(tmp_path), "size")
+    assert (p["exclusion"], p["near"], p["size_scale_fallback"]) == (reason, near, False)
+
+
+def _legacy(folder, keep=()):
+    man = json.loads((folder / "manifest.json").read_text(encoding="utf-8"))
+    man["recordVersion"] = "ifs-ownership/0.2"
+    for k in ("shiftPairs", "ratingItem", "prereport"):
+        if k not in keep:
+            man.pop(k, None)
+    if "kind" not in keep:
+        for v in man["variants"]:
+            v.pop("kind")
+    (folder / "manifest.json").write_text(json.dumps(man), encoding="utf-8")
+
+
+def test_legacy_record_with_v03_fields_is_quarantined(tmp_path):
+    ok = make_v03(tmp_path, pnum=1, sid="ok", pairs=[], ratings={"orig": 6, "form": 3})
+    _legacy(ok)
+    bad = make_v03(tmp_path, pnum=2, sid="bad", pairs=[size_pair()], ratings={"orig": 6, "form": 1},
+                   prereport=report(size=("from_start", 0.5), sid="bad"))
+    _legacy(bad, keep=("ratingItem", "shiftPairs", "kind"))
+    res = analyze(tmp_path)
+    by = {s["session"]: s for s in res["sessions"]}
+    assert by["bad"]["rating_item"] == "mine" and by["bad"]["excluded"] == "quarantined"
+    assert by["ok"]["rating_item"] == "mine" and by["ok"]["excluded"] == ""
+    summ = res["summary"]
+    assert summ["quarantined"] == [{"record": "ownership/P002/bad/20261118-010000", "recordVersion": "ifs-ownership/0.2"}]
+    assert summ["records"]["quarantined"] == 1 and res["pairs"] == []
+    assert summ["summaries"]["mine"]["all"]["rq1"]["form"]["ratingDrop"] == {"mean": 3, "n": 1, "lowN": True}
+    assert summ["shift"]["all"]["nSessions"] == 0
+    assert any("격리" in w["message"] for w in summ["warnings"])
+
+
+def test_withdrawn_sessions_are_dropped_before_reading(tmp_path):
+    make_v03(tmp_path / "rec", pnum=1, sid="keep", pairs=[size_pair()])
+    make_v03(tmp_path / "rec", pnum=2, sid="gone", pairs=[size_pair()])
+    lst = tmp_path / "withdrawn.txt"
+    lst.write_text("# 철회 목록\ngone\n\n", encoding="utf-8")
+    ownership.main(["--records", str(tmp_path / "rec"), "--out", str(tmp_path / "out"), "--withdrawn", str(lst)])
+    data = json.loads((tmp_path / "out" / "summary.json").read_text(encoding="utf-8"))
+    assert data["records"]["withdrawn"] == 1 and data["records"]["sessions"] == 1
+    assert "gone" not in (tmp_path / "out" / "sessions.csv").read_text(encoding="utf-8")
+    assert "gone" not in (tmp_path / "out" / "shift_pairs.csv").read_text(encoding="utf-8")
+
+
+def test_output_inside_git_repo_is_warned_unless_ignored(tmp_path):
+    import subprocess
+    if subprocess.run(["git", "--version"], capture_output=True).returncode != 0:
+        pytest.skip("git 없음")
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    subprocess.run(["git", "init", "-q", str(repo)], check=True)
+    make_v03(tmp_path / "rec", pairs=[size_pair()])
+    res = analyze(tmp_path / "rec", repo / "out")
+    msgs = [w["message"] for w in res["summary"]["warnings"] if "git 저장소" in w["message"]]
+    assert len(msgs) == 1 and "shift_pairs.csv" in msgs[0]
+    (repo / ".gitignore").write_text("out/\n", encoding="utf-8")
+    res = analyze(tmp_path / "rec", repo / "out2")
+    assert any("git 저장소" in w["message"] for w in res["summary"]["warnings"])
+    res = analyze(tmp_path / "rec", repo / "out")
+    assert not any("git 저장소" in w["message"] for w in res["summary"]["warnings"])
+    res = analyze(tmp_path / "rec", tmp_path / "outside")
+    assert not any("git 저장소" in w["message"] for w in res["summary"]["warnings"])

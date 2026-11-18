@@ -134,7 +134,7 @@ def create_app(cfg: Config | None = None, runtime: Runtime | None = None, warmup
 
     @app.get("/api/prereport/task")
     def prereport_task():
-        """보기 전 보고 과제의 고정 문구(shared/protocol/prereport_task.v0.2.json). 면담 밖 과제, LLM 없음."""
+        """보기 전 보고 과제의 고정 문구(shared/protocol/prereport_task.v0.3.json). 면담 밖 과제, LLM 없음."""
         return prereport_mod.task_text()
 
     @app.get("/api/sessions/{sid}/prereport")

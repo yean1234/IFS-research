@@ -1,5 +1,5 @@
 """보기 전 보고 과제(ifs_chatbot/prereport.py, shared/schemas/prereport.v0.2.json(0.1은 prereport.v0.json),
-shared/protocol/prereport_task.v0.2.json). 합성 대사만 쓴다(AGENTS.md 6). LLM은 offline 백엔드."""
+shared/protocol/prereport_task.v0.3.json). 합성 대사만 쓴다(AGENTS.md 6). LLM은 offline 백엔드."""
 import copy
 import hashlib
 import json
@@ -16,7 +16,7 @@ from ifs_chatbot.server import create_app
 
 SCHEMA = json.loads(shared("schemas", "prereport.v0.2.json").read_text(encoding="utf-8"))
 SCHEMA01 = json.loads(shared("schemas", "prereport.v0.json").read_text(encoding="utf-8"))
-TASK = json.loads(shared("protocol", "prereport_task.v0.2.json").read_text(encoding="utf-8"))
+TASK = json.loads(shared("protocol", "prereport_task.v0.3.json").read_text(encoding="utf-8"))
 TASK01 = json.loads(shared("protocol", "prereport_task.v0.json").read_text(encoding="utf-8"))
 
 ANSWERS = {
@@ -93,7 +93,8 @@ def _texts(task):
 
 
 def test_task_texts_are_draft_with_source_and_follow_scope():
-    assert TASK["taskVersion"] == "0.2" and TASK["changes"][-1]["version"] == "0.2"
+    assert TASK["taskVersion"] == "0.3" and TASK["changes"][-1]["version"] == "0.3"
+    assert "가장 넓은 가로 폭" in TASK["fixedPhrases"]["size_pick"]["text"]
     assert TASK01["taskVersion"] == "0.1"                         # 0.1 기록이 가리키는 파일은 그대로 둔다
     assert TASK["attributeOrder"] == ["color", "size", "form", "motion"]
     assert [o["id"] for o in TASK["commitmentOptions"]] == ["from_start", "when_asked", "not_set"]
@@ -158,7 +159,7 @@ def test_refuses_before_confirmation_then_writes_valid_record(client, rt):
     assert rec["specSha256"] == frozen == r.json()["specSha256"] != hashlib.sha256(scene.read_bytes()).hexdigest()
     assert rec.get("altSpecSha256", {}) == variants and rec["specFrozenAtUtc"]
     assert rec["specFile"] == f"{sid}.json" and rec["sessionId"] == sid
-    assert rec["taskTextFile"] == "prereport_task.v0.2.json" and rec["taskTextVersion"] == "0.2"
+    assert rec["taskTextFile"] == "prereport_task.v0.3.json" and rec["taskTextVersion"] == "0.3"
     log = client.get(f"/api/sessions/{sid}/log").json()["log"]
     assert log["sceneSpec"]["sha256"]["specSha256"] == frozen
     ev = [e for e in log["events"] if e["type"] == "prereport"]
@@ -186,6 +187,6 @@ def test_task_page_and_text_are_served_locally(client):
     assert r.status_code == 200 and "/static/prereport.js" in r.text
     js = client.get("/static/prereport.js")
     assert js.status_code == 200
-    assert client.get("/api/prereport/task").json()["taskVersion"] == "0.2"
+    assert client.get("/api/prereport/task").json()["taskVersion"] == "0.3"
     for text in (r.text, js.text):
         assert not re.search(r"(src|href)=\"https?://", text) and "cdn" not in text.lower()

@@ -167,7 +167,7 @@ def test_incomplete_session_excluded(tmp_path):
     assert by["aborted"]["excluded"] == "incomplete" and by["done"]["excluded"] == ""
     summ = res["summary"]
     assert summ["records"] == {"sessions": 2, "included": 1, "excludedIncomplete": 1, "origBelowThreshold": 0,
-                               "origRatingMissing": 0, "skipped": 0}
+                               "origRatingMissing": 0, "skipped": 0, "quarantined": 0, "withdrawn": 0}
     rq1 = summ["summaries"]["mine"]["all"]["rq1"]
     assert rq1["form"]["ratingDrop"] == {"mean": 4, "n": 1, "lowN": True}
     with (tmp_path / "out" / "sessions.csv").open(encoding="utf-8") as f:

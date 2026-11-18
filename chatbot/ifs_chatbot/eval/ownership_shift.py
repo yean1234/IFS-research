@@ -12,21 +12,27 @@ LLM 없음, 결정론적. 근거: docs/rq-v2-proposal.md 3.1–3.2. 보고 형�
 
 보고 연결(하나라도 어기면 보고를 쓰지 않음, 쌍마다 사유)
 - 파일 없음 → no_report. 읽기·스키마 위반 → report_invalid(분석은 멈추지 않는다).
-- report_spec_mismatch: manifest.prereport가 null인데 파일이 있음 · manifest.prereport.sha256과 파일 바이트 sha256이 다름
-  · manifest.specSha256이 64자리 hex가 아님(예: "0") · 보고의 specSha256(과 확정 때 고정한 altSpecSha256)에
-  manifest.specSha256이 없음 · 보고와 manifest의 sessionId가 다름.
-- report_time_unknown: 형상 첫 제시 시각을 못 구함(경고). report_after_viewing: 보고 createdAtUtc ≥ 첫 제시 시각.
-  첫 제시 시각은 first_presentation_utc(): events.csv의 first_viewing_utc 이벤트 detail(UTC, 세션당 1번).
+- report_spec_mismatch: manifest.prereport가 null이거나 sha256이 없음 · manifest.prereport.sha256과 파일 바이트
+  sha256이 다름 · manifest.specSha256이 64자리 hex가 아님(예: "0") · 보고의 specSha256(과 확정 때 고정한
+  altSpecSha256)에 manifest.specSha256이 없음 · 보고와 manifest의 sessionId가 다름.
+- 순서의 증거는 러너의 복사 사실이다: 러너는 첫 제시 전에 보고를 기록 폴더에 복사하고 sha256을 manifest.prereport에
+  남긴다. 그래서 해시가 맞으면 '보기 전' 보고로 본다. createdAtUtc와 events.csv first_viewing_utc의 비교는 제외가 아니라
+  경고(report_clock_warning)다. 시간대 표시가 없는 시각 문자열은 비교하지 않는다(두 기계의 시계가 다를 수 있음).
 
-쌍마다(첫 의도적 선택 = 주 분석, 최종 선택 = 보조. 0.1 보고는 firstValue가 없어 둘 다 value)
+쌍마다(첫 의도적 선택 = 주 분석, 최종 선택 = 보조)
+- 주 분석에서만 빼는 것: 0.1 형식 보고(report_legacy: 첫 선택·물리 폭이 관측되지 않음), 값을 고를 때의 확정 여부
+  (commitmentAtPick)가 최종 확정 여부와 다름(commitment_changed). 보조(최종 선택) 집계에는 남는다.
 1) 보고값 p를 쌍의 축에 투영: hue → color.h(무채색 보고 h=null이면 report_axis_mismatch), lightness → color.l,
    size → widthM과 manifest wM·loM·hiM이 모두 있으면 log2(미터), 아니면 0–1 눈금(size_scale_fallback 표시, 제외 아님).
-2) 값을 기록 정밀도(소수 4자리)의 정수 단위로 바꿔 거리를 잰다(hue는 주기 10000의 원형 최단 거리).
+2) 0–1 축 값은 기록 정밀도(소수 4자리)의 정수 단위로 바꿔 거리를 잰다(hue는 주기 10000의 원형 최단 거리).
+   미터 폭(소수 6자리)은 log2 거리를 실수로 재고, 두 거리의 차이가 반올림 오차 한계(폭마다 0.5e-6 / (x·ln 2)의 합)
+   안이면 같은 거리로 본다(→ order_violation).
 3) 가까운(near)/먼(far)을 붙이는 조건: commitment ① 또는 ② · basis == stated · 2·d(w,p) ≥ 문턱 ·
    d(near,p) < d(w,p) < d(far,p). 문턱 = 크기 0–1 눈금이면 step, 그 밖(색·미터 크기)은 min(d(lo,w), d(hi,w)).
    d(lo,p) = d(hi,p) · d(near,p) ≥ d(w,p) · d(w,p) = d(far,p) → order_violation, d(w,p) > d(far,p) → beyond_far.
 4) 제외 사유(검사 순서대로 첫 번째): pair_invalid:<skipReason> → not_presented → 보고 연결 사유 → not_set →
-   basis_default · basis_mixed → report_axis_mismatch → too_close → order_violation · beyond_far → missing_rating.
+   basis_default · basis_mixed → (주 분석만) report_legacy · commitment_changed → report_axis_mismatch → too_close →
+   order_violation · beyond_far → missing_rating.
 5) near_minus_far = rating(near) − rating(far). shift_drop = rating(orig) − 평균(rating(lo), rating(hi))
    (제시된 유효 쌍, 세 평정이 모두 있을 때), 보고 상태(①②③ 또는 연결 사유)별로 나눠 요약.
 
@@ -48,7 +54,9 @@ from ..prereport import validate as validate_report
 
 PREREPORT_FILE = "prereport.json"
 COMMITMENTS = ("from_start", "when_asked", "not_set")
-REPORT_PROBLEMS = ("no_report", "report_invalid", "report_spec_mismatch", "report_after_viewing", "report_time_unknown")
+REPORT_PROBLEMS = ("no_report", "report_invalid", "report_spec_mismatch")
+CLOCK_WARNING = "report_clock_warning"
+M_HALF = 0.5e-6               # 미터 폭 기록 정밀도(소수 6자리)의 반올림 오차
 GROUPS = (*COMMITMENTS, *REPORT_PROBLEMS)
 SHIFT_ATTRIBUTES = ("color", "size")
 AXIS_ATTRIBUTE = {"size": "size", "hue": "color", "lightness": "color"}
@@ -58,7 +66,7 @@ FIRST_VIEWING_EVENT = "first_viewing_utc"
 PAIR_COLUMNS = [
     "participant", "session", "record_folder", "rating_item", "attribute", "axis", "basis", "w", "lo", "hi", "step",
     "w_m", "lo_m", "hi_m", "delta_e_lo", "delta_e_hi", "valid", "skip_reason", "presented",
-    "report_status", "commitment", "commitment_changed_after_pick", "first_from_final",
+    "report_status", "commitment", "commitment_at_pick", "commitment_changed_after_pick", "first_from_final",
     "p", "p_m", "d_w", "threshold", "size_scale_fallback", "near", "far", "labelled", "exclusion", "near_minus_far",
     "p_final", "near_final", "labelled_final", "exclusion_final", "near_minus_far_final",
     "rating_orig", "rating_lo", "rating_hi", "shift_drop", "included",
@@ -95,12 +103,14 @@ def parse_utc(v) -> datetime | None:
         t = datetime.fromisoformat(s)
     except ValueError:
         return None
-    return (t if t.tzinfo else t.replace(tzinfo=timezone.utc)).astimezone(timezone.utc)
+    if t.tzinfo is None:          # 시간대 표시가 없으면 비교하지 않는다
+        return None
+    return t.astimezone(timezone.utc)
 
 
 def first_presentation_utc(events: list[dict]) -> datetime | None:
     """형상 첫 제시 시각(UTC) = events.csv의 first_viewing_utc 이벤트(세션당 1번, 첫 viewing_start 바로 뒤) detail.
-    없으면(0.2 기록 등) None → 보고는 report_time_unknown. 여럿이면 가장 이른 것."""
+    없으면(0.2 기록 등) None. 여럿이면 가장 이른 것. 보고 시각과의 비교는 경고에만 쓴다."""
     times = [parse_utc(r.get("detail")) for r in events if r.get("event") == FIRST_VIEWING_EVENT]
     times = [t for t in times if t is not None]
     return min(times) if times else None
@@ -145,6 +155,33 @@ def classify(axis: str, w: int, lo: int, hi: int, p: int, threshold: int) -> tup
     return None, near, d_w
 
 
+def _log_err(x: float) -> float:
+    return M_HALF / (x * math.log(2))
+
+
+def classify_m(w: float, lo: float, hi: float, p: float) -> tuple[str | None, str | None, float, float]:
+    """미터 폭(소수 6자리)의 log2 거리로 판정. 거리 차이가 반올림 오차 한계 안이면 같은 거리로 본다.
+    → (제외 사유 또는 None, near 'lo'|'hi' 또는 None, d(w,p), 문턱)."""
+    L = math.log2
+    e = {"w": _log_err(w), "lo": _log_err(lo), "hi": _log_err(hi), "p": _log_err(p)}
+    d = {"w": abs(L(w) - L(p)), "lo": abs(L(lo) - L(p)), "hi": abs(L(hi) - L(p))}
+
+    def same(a: str, b: str) -> bool:
+        return abs(d[a] - d[b]) <= e[a] + e[b] + 2 * e["p"]
+
+    thr = min(abs(L(lo) - L(w)), abs(L(hi) - L(w)))
+    if 2 * d["w"] < thr - (2 * (e["w"] + e["p"]) + e["lo"] + e["hi"] + e["w"]):
+        return "too_close", None, d["w"], thr
+    if same("lo", "hi"):
+        return "order_violation", None, d["w"], thr
+    near, far = ("lo", "hi") if d["lo"] < d["hi"] else ("hi", "lo")
+    if d[near] >= d["w"] or same(near, "w") or same("w", far):
+        return "order_violation", None, d["w"], thr
+    if d["w"] > d[far]:
+        return "beyond_far", None, d["w"], thr
+    return None, near, d["w"], thr
+
+
 # ---------------------------------------------------------------- 보기 전 보고 읽기
 
 def load_prereport(folder: Path, manifest: dict, first_view: datetime | None) -> tuple[dict | None, str, list[str]]:
@@ -167,9 +204,11 @@ def load_prereport(folder: Path, manifest: dict, first_view: datetime | None) ->
     def mismatch(why: str):
         return None, "report_spec_mismatch", [f"prereport.json 연결 실패: {why} — report_spec_mismatch로 제외"]
 
-    if mp is None:
-        return mismatch("manifest.prereport가 null인데 기록 폴더에 파일이 있음")
-    if isinstance(mp, dict) and mp.get("sha256") is not None and hashlib.sha256(raw).hexdigest() != mp.get("sha256"):
+    if not isinstance(mp, dict):
+        return mismatch("manifest.prereport가 없거나 null(러너가 첫 제시 전에 복사한 기록이 아님)")
+    if not is_sha256(mp.get("sha256")):
+        return mismatch("manifest.prereport.sha256이 없거나 형식이 아님")
+    if hashlib.sha256(raw).hexdigest() != mp["sha256"]:
         return mismatch("파일 sha256이 manifest.prereport.sha256과 다름")
     sha = manifest.get("specSha256")
     if not is_sha256(sha):
@@ -178,14 +217,12 @@ def load_prereport(folder: Path, manifest: dict, first_view: datetime | None) ->
         return mismatch("보고의 specSha256이 manifest.specSha256과 다름(다른 장면의 보고)")
     if manifest.get("sessionId") is not None and rep["sessionId"] != manifest.get("sessionId"):
         return mismatch(f"보고 sessionId '{rep['sessionId']}' ≠ manifest '{manifest.get('sessionId')}'")
+    warns = []
     created = parse_utc(rep["createdAtUtc"])
-    if first_view is None or created is None:
-        return None, "report_time_unknown", [
-            "형상 첫 제시 시각을 구하지 못함(events.csv에 first_viewing_utc 없음) — report_time_unknown로 제외"]
-    if created >= first_view:
-        return None, "report_after_viewing", [
-            f"보고 시각 {rep['createdAtUtc']}이 첫 제시 {first_view.isoformat()}보다 늦음 — report_after_viewing로 제외"]
-    return rep, "ok", []
+    if first_view is not None and created is not None and created >= first_view:
+        warns.append(f"{CLOCK_WARNING}: 보고 시각 {rep['createdAtUtc']}이 첫 제시 {first_view.isoformat()}보다 늦음 "
+                     "— 러너 복사 해시가 맞아 그대로 쓴다(두 기계의 시계 차이일 수 있음, 확인 필요)")
+    return rep, "ok", warns
 
 
 def _pick(rep: dict, attr: str, which: str):
@@ -212,8 +249,13 @@ def _label(row: dict, raw: dict, rep: dict, which: str) -> dict:
         wm, lom, him = (_num(raw.get(k)) for k in ("wM", "loM", "hiM"))
         if all(x is not None and x > 0 for x in (wm, lom, him, out["p_m"])):
             out["fallback"] = False
-            qw, qlo, qhi, qp = (_q(math.log2(x)) for x in (wm, lom, him, out["p_m"]))
-            thr = min(abs(qlo - qw), abs(qhi - qw))
+            excl, near, d_w, thr = classify_m(wm, lom, him, out["p_m"])
+            out["d_w"], out["threshold"] = _r(d_w, 6), _r(thr / 2, 6)
+            if excl:
+                out["exclusion"] = excl
+            else:
+                out["near"], out["far"] = f"{attr}_{near}", f"{attr}_{'hi' if near == 'lo' else 'lo'}"
+            return out
         else:
             out["fallback"] = True
             if out["p"] is None:
@@ -281,6 +323,7 @@ def pair_rows(participant: str, session: str, manifest: dict, ratings: dict[str,
             a = report["attributes"][attr]
             row["commitment"] = a["commitment"]
             row["commitment_changed_after_pick"] = a.get("commitmentChangedAfterPick")
+            row["commitment_at_pick"] = a.get("commitmentAtPick")
         if not row["valid"]:
             exclude(f"pair_invalid:{raw.get('skipReason') or 'unknown'}")
             continue
@@ -306,9 +349,18 @@ def pair_rows(participant: str, session: str, manifest: dict, ratings: dict[str,
         if row["basis"] != "stated":
             exclude("basis_mixed" if row["basis"] == "mixed" else "basis_default")
             continue
+        a = report["attributes"][attr]
+        primary_only = None
+        if report["schema"] == "ifs-prereport/0.1":
+            primary_only = "report_legacy"           # 첫 선택·물리 폭이 관측되지 않음
+        elif a.get("commitmentAtPick") is not None and a["commitmentAtPick"] != a["commitment"]:
+            primary_only = "commitment_changed"      # 값을 고를 때와 최종 확정 여부가 다름
         for which in ("first", "final"):
-            lab = _label(row, raw, report, which)
             suffix = "" if which == "first" else "_final"
+            if which == "first" and primary_only:
+                row["exclusion"] = primary_only
+                continue
+            lab = _label(row, raw, report, which)
             row[f"p{suffix}"] = lab["p"]
             row[f"near{suffix}"] = lab["near"]
             if which == "first":
@@ -463,7 +515,7 @@ def summarize_pairs(rows: list[dict], q1_participants: list[str], low_n: int) ->
             "byAttributeCommitment": {a: {g: est(r["shift_drop"] for r in dropped if r["attribute"] == a and group(r) == g)
                                           for g in GROUPS} for a in SHIFT_ATTRIBUTES},
             "note": "shift_drop = rating(orig) − 평균(rating(lo), rating(hi)), 제시된 유효 쌍 단위. "
-                    "보고가 없거나 쓸 수 없으면 그 사유(no_report·report_invalid·report_spec_mismatch·"
-                    "report_after_viewing·report_time_unknown)로 따로 센다",
+                    "보고가 없거나 쓸 수 없으면 그 사유(no_report·report_invalid·report_spec_mismatch"
+                    ")로 따로 센다",
         },
     }
