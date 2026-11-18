@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ifs-research.local/shared/schemas/prereport.v0.json",
+  "title": "보기 전 보고 기록 (ifs-prereport/0.1)",
+  "description": "확정 텍스트 뒤, 만든 형상을 보기 전에 참여자가 속성마다 한 번 답한 확정 여부(①②③)와 고른 값. docs/rq-v2-proposal.md 3.2. 면담(질문 틀·검증기 V1–V9) 밖의 고정 문구 과제이고, 고른 값은 장면 JSON에 넣지 않는다(AGENTS.md 1·2). ③(not_set)이면 값을 받지 않고 비워 둔다(추론하거나 하나를 고르게 하지 않는다). 참여자 데이터라 git에 올리지 않는다(<log_dir>/<sessionId>/prereport.json).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "sessionId", "participant", "specSha256", "taskTextFile", "taskTextVersion", "createdAtUtc", "attributes"],
+  "properties": {
+    "schema": { "const": "ifs-prereport/0.1" },
+    "sessionId": { "type": "string", "pattern": "^[A-Za-z0-9_-]{1,40}$", "description": "가명 세션 ID" },
+    "participant": { "type": ["string", "null"], "pattern": "^[A-Za-z0-9_-]{1,40}$", "description": "가명 참여자 ID. 없으면 null" },
+    "specSha256": { "type": "string", "pattern": "^[0-9a-f]{64}$", "description": "이 보고가 딸린 장면 파일(scenes/{sessionId}.json) 바이트의 sha256" },
+    "specFile": { "type": "string", "description": "선택. specSha256을 계산한 장면 파일 이름(경로 없이)" },
+    "altSpecSha256": {
+      "type": "object",
+      "description": "선택. 같은 확정 텍스트로 만든 다른 장면 파일(.v0.json · .v1.json)의 sha256. 파일 이름 → sha256. Unity가 변형 파일을 읽었을 때 짝을 찾기 위함",
+      "additionalProperties": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+    },
+    "taskTextFile": { "type": "string", "description": "고정 문구 파일 이름 (예: prereport_task.v0.json)" },
+    "taskTextVersion": { "type": "string" },
+    "createdAtUtc": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$" },
+    "attributes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["color", "size", "form", "motion"],
+      "properties": {
+        "color": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["commitment", "value", "method", "nSelections"],
+          "properties": {
+            "commitment": { "$ref": "#/$defs/commitment" },
+            "value": {
+              "oneOf": [
+                { "type": "null" },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["h", "l"],
+                  "properties": {
+                    "h": { "$ref": "#/$defs/unit", "description": "색상각/360 (scene-spec material.color.h와 같은 척도)" },
+                    "l": { "$ref": "#/$defs/unit", "description": "HSL 밝기 (scene-spec material.color.l과 같은 척도)" }
+                  }
+                }
+              ]
+            },
+            "method": { "const": "hue_lightness_field" },
+            "nSelections": { "type": "integer", "minimum": 0, "description": "[확인] 전까지 값을 고른 횟수(다시 고름 포함)" }
+          },
+          "allOf": [{ "$ref": "#/$defs/valueRule" }]
+        },
+        "size": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["commitment", "value", "method", "nSelections"],
+          "properties": {
+            "commitment": { "$ref": "#/$defs/commitment" },
+            "value": {
+              "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/unit" }],
+              "description": "scene-spec layout.size와 같은 로그 척도. 0.5 = ×1, 0 = ×0.25, 1 = ×4"
+            },
+            "method": { "const": "size_slider" },
+            "nSelections": { "type": "integer", "minimum": 0 }
+          },
+          "allOf": [{ "$ref": "#/$defs/valueRule" }]
+        },
+        "form": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["commitment"],
+          "properties": { "commitment": { "$ref": "#/$defs/commitment" } }
+        },
+        "motion": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["commitment"],
+          "properties": { "commitment": { "$ref": "#/$defs/commitment" } }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "unit": { "type": "number", "minimum": 0, "maximum": 1 },
+    "commitment": {
+      "enum": ["from_start", "when_asked", "not_set"],
+      "description": "① 처음부터 있었다 = from_start, ② 물어봐서 그때 정했다 = when_asked, ③ 지금도 정해진 것이 없다 = not_set"
+    },
+    "valueRule": {
+      "description": "③(not_set)이면 값 없음·고른 횟수 0. ①②면 값이 있고 한 번 이상 골랐다.",
+      "if": { "properties": { "commitment": { "const": "not_set" } } },
+      "then": { "properties": { "value": { "type": "null" }, "nSelections": { "const": 0 } } },
+      "else": { "properties": { "value": { "not": { "type": "null" } }, "nSelections": { "minimum": 1 } } }
+    }
+  }
+}

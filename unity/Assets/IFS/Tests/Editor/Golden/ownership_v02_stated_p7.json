@@ -1,0 +1,365 @@
+{
+  "recordVersion": "ifs-ownership/0.2",
+  "generatorVersion": "ownership-variants/0.2",
+  "participantNumber": 7,
+  "cb": 0,
+  "orderRow": 6,
+  "sessionId": "SYN-golden",
+  "specFile": "SYN-golden.json",
+  "specSha256": "0",
+  "startedAtUtc": "2026-01-01T00:00:00.000Z",
+  "headSource": "desktop",
+  "unityVersion": "test",
+  "taskText": {
+    "file": "ownership_task.v0.json",
+    "version": "0.1",
+    "draftCount": 2,
+    "draftKeys": [
+      "done",
+      "rating"
+    ]
+  },
+  "config": {
+    "generatorVersion": "ownership-variants/0.2",
+    "sizeStep": 0.25,
+    "colorDeltaE": 30.0,
+    "viewSeconds": 30.0,
+    "headSampleHz": 20.0,
+    "gazeConeDeg": 15.0,
+    "finalChoiceArcDeg": 120.0,
+    "finalChoiceRadiusM": 0.0,
+    "differenceRating": true,
+    "requireSpecPhrases": false
+  },
+  "flags": {
+    "lowVisibility": false
+  },
+  "original": {
+    "params": {
+      "form.posture": "none",
+      "form.type": "blob",
+      "layout.distance": 0.33,
+      "layout.size": 0.333,
+      "layout.verticalOffset": 0.75,
+      "material.brightness": 0.5,
+      "material.color.h": 0.597,
+      "material.color.l": 0.7,
+      "material.color.s": 0.49,
+      "material.erosion": 0.0,
+      "material.opacity": 1.0,
+      "material.roughness": 0.5,
+      "motion.speed": 0.5,
+      "motion.type": "swaying"
+    },
+    "shapeModel": "Sphere",
+    "rendered": "Sphere",
+    "statedKeys": [
+      "layout.size",
+      "material.color.h",
+      "material.color.l",
+      "material.color.s",
+      "motion.type"
+    ],
+    "defaultKeys": [
+      "form.posture",
+      "form.type",
+      "layout.distance",
+      "layout.verticalOffset",
+      "material.brightness",
+      "material.erosion",
+      "material.opacity",
+      "material.roughness",
+      "motion.speed"
+    ],
+    "unmappedCount": 1,
+    "unmatchedCount": 0,
+    "alternativesCount": 0,
+    "needsConfirmationCount": 0,
+    "effectiveOpacity": 1.0,
+    "shape": {
+      "status": "applied",
+      "applied": "round",
+      "model": "Sphere",
+      "viaPrefab": null,
+      "formType": null,
+      "words": [
+        {
+          "shape": "round",
+          "lemma": "동그란",
+          "trigger": "동그란",
+          "charSpan": [
+            4,
+            7
+          ],
+          "status": "applied"
+        }
+      ]
+    }
+  },
+  "variants": [
+    {
+      "id": "orig",
+      "attribute": null,
+      "overrides": {},
+      "shapeModel": null,
+      "params": {
+        "form.posture": "none",
+        "form.type": "blob",
+        "layout.distance": 0.33,
+        "layout.size": 0.333,
+        "layout.verticalOffset": 0.75,
+        "material.brightness": 0.5,
+        "material.color.h": 0.597,
+        "material.color.l": 0.7,
+        "material.color.s": 0.49,
+        "material.erosion": 0.0,
+        "material.opacity": 1.0,
+        "material.roughness": 0.5,
+        "motion.speed": 0.5,
+        "motion.type": "swaying"
+      },
+      "rendered": "Sphere"
+    },
+    {
+      "id": "form",
+      "attribute": "form",
+      "overrides": {},
+      "shapeModel": "Cube",
+      "changedKeys": [
+        "form.shapeModel"
+      ],
+      "from": {
+        "form.type": "blob",
+        "shapeModel": "Sphere",
+        "rendered": "Sphere"
+      },
+      "to": {
+        "form.type": "blob",
+        "shapeModel": "Cube",
+        "rendered": "Cube"
+      },
+      "rule": "swap",
+      "source": "stated",
+      "sourceByKey": {
+        "form.shapeModel": "stated"
+      },
+      "flags": {
+        "saidNotRendered": false,
+        "forced": false,
+        "belowTarget": false,
+        "motionAltersScale": false
+      },
+      "magnitude": null,
+      "detail": {
+        "shapeStatus": "applied",
+        "shapeWords": [
+          {
+            "shape": "round",
+            "trigger": "동그란",
+            "status": "applied"
+          }
+        ],
+        "motionVisibleFrom": false,
+        "motionVisibleTo": true
+      },
+      "params": {
+        "form.posture": "none",
+        "form.type": "blob",
+        "layout.distance": 0.33,
+        "layout.size": 0.333,
+        "layout.verticalOffset": 0.75,
+        "material.brightness": 0.5,
+        "material.color.h": 0.597,
+        "material.color.l": 0.7,
+        "material.color.s": 0.49,
+        "material.erosion": 0.0,
+        "material.opacity": 1.0,
+        "material.roughness": 0.5,
+        "motion.speed": 0.5,
+        "motion.type": "swaying"
+      },
+      "rendered": "Cube"
+    },
+    {
+      "id": "color",
+      "attribute": "color",
+      "overrides": {
+        "material.color.h": 0.9387
+      },
+      "shapeModel": null,
+      "changedKeys": [
+        "material.color.h"
+      ],
+      "from": {
+        "material.color.h": 0.597,
+        "material.color.s": 0.49,
+        "material.color.l": 0.7
+      },
+      "to": {
+        "material.color.h": 0.9387,
+        "material.color.s": 0.49,
+        "material.color.l": 0.7
+      },
+      "rule": "hue",
+      "source": "stated",
+      "sourceByKey": {
+        "material.color.h": "stated"
+      },
+      "flags": {
+        "saidNotRendered": false,
+        "forced": false,
+        "belowTarget": false,
+        "motionAltersScale": false
+      },
+      "magnitude": {
+        "deltaE00": 30.091,
+        "deltaE00Composited": 30.091
+      },
+      "detail": {
+        "achromatic": false,
+        "targetDeltaE00": 30.0,
+        "direction": "+hue",
+        "steps": 123,
+        "stepSize": "1/360",
+        "saturationSource": "stated",
+        "deltaEBasis": "albedo",
+        "brightnessFactor": 1.0,
+        "compositeAlpha": 1.0,
+        "compositeBackground": [
+          0.74,
+          0.74,
+          0.75
+        ]
+      },
+      "params": {
+        "form.posture": "none",
+        "form.type": "blob",
+        "layout.distance": 0.33,
+        "layout.size": 0.333,
+        "layout.verticalOffset": 0.75,
+        "material.brightness": 0.5,
+        "material.color.h": 0.9387,
+        "material.color.l": 0.7,
+        "material.color.s": 0.49,
+        "material.erosion": 0.0,
+        "material.opacity": 1.0,
+        "material.roughness": 0.5,
+        "motion.speed": 0.5,
+        "motion.type": "swaying"
+      },
+      "rendered": "Sphere"
+    },
+    {
+      "id": "size",
+      "attribute": "size",
+      "overrides": {
+        "layout.size": 0.583
+      },
+      "shapeModel": null,
+      "changedKeys": [
+        "layout.size"
+      ],
+      "from": {
+        "layout.size": 0.333
+      },
+      "to": {
+        "layout.size": 0.583
+      },
+      "rule": "up",
+      "source": "stated",
+      "sourceByKey": {
+        "layout.size": "stated"
+      },
+      "flags": {
+        "saidNotRendered": false,
+        "forced": false,
+        "belowTarget": false,
+        "motionAltersScale": false
+      },
+      "magnitude": {
+        "sizeStep": 0.25
+      },
+      "detail": {
+        "direction": "up",
+        "scaleFrom": 0.6294,
+        "scaleTo": 1.2588
+      },
+      "params": {
+        "form.posture": "none",
+        "form.type": "blob",
+        "layout.distance": 0.33,
+        "layout.size": 0.583,
+        "layout.verticalOffset": 0.75,
+        "material.brightness": 0.5,
+        "material.color.h": 0.597,
+        "material.color.l": 0.7,
+        "material.color.s": 0.49,
+        "material.erosion": 0.0,
+        "material.opacity": 1.0,
+        "material.roughness": 0.5,
+        "motion.speed": 0.5,
+        "motion.type": "swaying"
+      },
+      "rendered": "Sphere"
+    },
+    {
+      "id": "motion",
+      "attribute": "motion",
+      "overrides": {
+        "motion.type": "floating"
+      },
+      "shapeModel": null,
+      "changedKeys": [
+        "motion.type"
+      ],
+      "from": {
+        "motion.type": "swaying"
+      },
+      "to": {
+        "motion.type": "floating"
+      },
+      "rule": "add",
+      "source": "stated",
+      "sourceByKey": {
+        "motion.type": "stated"
+      },
+      "flags": {
+        "saidNotRendered": false,
+        "forced": false,
+        "belowTarget": false,
+        "motionAltersScale": false
+      },
+      "magnitude": null,
+      "detail": {
+        "originalGroup": "Sway",
+        "variantGroup": "Drift",
+        "originalVisible": false,
+        "speed": 0.5
+      },
+      "params": {
+        "form.posture": "none",
+        "form.type": "blob",
+        "layout.distance": 0.33,
+        "layout.size": 0.333,
+        "layout.verticalOffset": 0.75,
+        "material.brightness": 0.5,
+        "material.color.h": 0.597,
+        "material.color.l": 0.7,
+        "material.color.s": 0.49,
+        "material.erosion": 0.0,
+        "material.opacity": 1.0,
+        "material.roughness": 0.5,
+        "motion.speed": 0.5,
+        "motion.type": "floating"
+      },
+      "rendered": "Sphere"
+    }
+  ],
+  "order": [
+    "motion",
+    "size",
+    "orig",
+    "color",
+    "form"
+  ]
+}
