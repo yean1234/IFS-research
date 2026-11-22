@@ -86,6 +86,7 @@ namespace IFS.SceneSpec
         };
 
         // 형상별 모양(프리셋·메시·셰이더)은 FormRenderPlan(규칙 기반 어댑터)과 IFormRenderer(형상별 렌더러)가 정한다(X64).
+        const string MistFloorProperty = "_FloorY";
 
         [Header("경로")]
         [Tooltip("ISceneSpecPathSource를 구현한 컴포넌트. 비우면 같은 GameObject에서 찾는다(InspectorPathSource).")]
@@ -668,6 +669,8 @@ namespace IFS.SceneSpec
                 {
                     // IFS 셰이더면 형상별 렌더러가 셰이더 선택·형상 프리셋을 넣는다
                     if (formRenderer.ApplyShader(m, plan)) anyIfs = true;
+                    // 안개 셰이더: 바닥 높이(배치 설정) 아래의 밀도를 0으로(광선이 바닥을 뚫고 땅속 안개를 쌓지 않게)
+                    if (m.HasProperty(MistFloorProperty)) m.SetFloat(MistFloorProperty, placement.floorY);
                     if (m.HasProperty(sp.baseColor)) m.SetColor(sp.baseColor, color);
                     else if (m.HasProperty(sp.colorFallback)) m.SetColor(sp.colorFallback, color);
                     else Note($"{m.shader.name}: 색 프로퍼티({sp.baseColor}) 없음", true);

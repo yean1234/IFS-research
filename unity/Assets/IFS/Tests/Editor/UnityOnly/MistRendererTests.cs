@@ -68,6 +68,7 @@ namespace IFS.SceneSpec.Tests
                 Assert.That(m.GetFloat("_Lumpiness"), Is.EqualTo(preset.Lumpiness));
                 Assert.That(m.GetFloat("_NoiseScale"), Is.EqualTo(preset.NoiseScale));
                 Assert.That(m.GetFloat("_Density"), Is.EqualTo(preset.Density));
+                Assert.That(m.GetFloat("_FloorY"), Is.EqualTo(0f), "배치 설정의 바닥 높이(기본 0)");
                 RenderedColor.BaseSrgb(0.6, 0.45, 0.6, out double cr, out double cg, out double cb);
                 var c = m.GetColor("_BaseColor");
                 Assert.That(c.r, Is.EqualTo((float)cr).Within(1e-5));

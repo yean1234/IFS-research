@@ -27,10 +27,13 @@ namespace IFS.SceneSpec.Tests
         }
 
         [Test]
-        public void Shader_draws_inside_faces_without_shadows_or_depth_writes()
+        public void Shader_picks_faces_by_camera_position_without_shadows_or_depth_writes()
         {
             string src = Source();
-            Assert.That(src, Does.Contain("Cull Front"));
+            // 구 밖이면 앞면, 구 안이면 안쪽 면만 남긴다(한 패스, Cull Off) — 바닥에 놓인 안개가 깊이 테스트로 사라지지 않게
+            Assert.That(src, Does.Contain("Cull Off"));
+            Assert.That(src, Does.Contain("if (frontFace == inside) discard;"));
+            Assert.That(src, Does.Contain("_FloorY"));
             Assert.That(src, Does.Contain("ZWrite Off"));
             Assert.That(src, Does.Not.Contain("\"LightMode\" = \"ShadowCaster\""));
             Assert.That(src, Does.Contain("FallBack Off"));

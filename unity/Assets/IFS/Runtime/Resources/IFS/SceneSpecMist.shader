@@ -1,7 +1,11 @@
 // SceneSpec 안개 셰이더(mist, X66). Built-in 렌더 파이프라인, 정점·프래그먼트 셰이더.
-// 구 대리 메시 하나를 안쪽 면(Cull Front)으로 그리고, 물체 좌표에서 짧은 레이마칭(IFS_MIST_STEPS걸음)으로 밀도를 쌓는다.
+// 구 대리 메시 하나를 그리고, 물체 좌표에서 짧은 레이마칭(IFS_MIST_STEPS걸음)으로 밀도를 쌓는다.
 //   밀도 = 반지름 감쇠(낮은 주파수 노이즈로 흔든 반지름) × 3D 노이즈(문턱을 둔 덩이) × 침식 결손. 윤곽이 깨끗한 원이 아니라 몽글몽글하게 풀린다.
-//   카메라가 구 안에 있으면 광선을 카메라에서 시작한다(안쪽 면만 그리므로 구 안에서도 보인다).
+//   면 고르기(Cull Off, 한 패스): 카메라가 구 밖이면 앞면만(입구 → 출구), 구 안이면 안쪽 면만(카메라 → 출구) 남기고 나머지는 버린다.
+//   처음 안(X66)은 안쪽 면(Cull Front)만 그리는 것이었으나, 바닥에 놓인 안개(held-out H02: verticalOffset 0.04)는 구 뒤쪽이 바닥 아래라
+//   깊이 테스트에서 거의 다 사라졌다(보이는 화소 41,834 → 763). 앞면으로 깊이 테스트를 하면 바닥 위 부분이 그대로 보인다.
+//   앞뒤 판정은 VFACE(렌더 텍스처 뒤집기에 따라 부호가 바뀔 수 있음) 대신 dot(물체 좌표, 광선 방향)으로 한다.
+//   _FloorY(세계 높이, 로더가 배치 설정의 바닥 높이를 넣음) 아래의 표본은 밀도 0 — 광선이 바닥을 뚫고 땅속 안개를 쌓지 않게.
 // 재질 슬롯(로더가 넣는 값, 모두 0–1):
 //   _BaseColor  밀도의 색(HSL → sRGB, 채도어는 SceneParams가 이미 s에 넣음)
 //   _Brightness 밝기 배율 lerp(0.4, 1, saturate(2B)) — IFSSceneSpecCommon.cginc·C# RenderedColor.BrightnessFactor와 같은 식.
@@ -12,7 +16,7 @@
 //   _Erosion    밀도 결손(노이즈가 기준보다 낮은 곳의 밀도를 0으로, 기존 Opaque의 침식과 같은 문턱 erosion × 0.62)
 // 형상 프리셋(로더가 넣음): _Lumpiness(반지름 흔들림), _NoiseScale, _Density(0.5), _Seed. _Fuzz·_ShellOpen·_Displacement는 쓰지 않는다.
 // 그림자 없음(U5): ShadowCaster 패스가 없고 FallBack도 없다. 투명 겹침 1층(ZWrite Off), 드로콜 1.
-// 한계: 깊이 테스트는 안쪽 면(구의 뒤쪽)으로 하므로, 구 뒤쪽이 바닥 아래로 들어가면 그 화소는 그려지지 않는다(낮게 놓인 큰 안개).
+// 한계: 카메라가 구 안에 있고 구 뒤쪽이 바닥 아래면, 바닥을 내려다보는 화소의 안개가 빠진다(안쪽 면이 바닥에 가려짐. 매우 큰 안개만).
 // Quest(GLES3/Vulkan 모바일)에서 컴파일되도록 고정 횟수 루프·텍스처 없는 해시 노이즈(공통 cginc)만 쓴다.
 Shader "IFS/SceneSpec Mist"
 {
@@ -27,6 +31,7 @@ Shader "IFS/SceneSpec Mist"
         _NoiseScale ("Noise Scale", Range(0.2, 6)) = 1.1
         _Seed ("Seed", Float) = 0
         _Density ("Density", Range(0, 1)) = 0.5
+        _FloorY ("Floor Height (world)", Float) = -10000
     }
     SubShader
     {
@@ -36,7 +41,7 @@ Shader "IFS/SceneSpec Mist"
         Pass
         {
             Tags { "LightMode" = "ForwardBase" }
-            Cull Front
+            Cull Off
             ZWrite Off
             ZTest LEqual
             Blend One OneMinusSrcAlpha   // 미리 곱한 알파(앞에서 뒤로 쌓은 색 = 색 × 알파)
@@ -56,6 +61,8 @@ Shader "IFS/SceneSpec Mist"
             #define IFS_MIST_RADIUS 0.75
             // 중심 광선의 ∫(반지름 감쇠 × 덩이) ds의 평균 ≈ 1.0 × 반지름(감쇠 평균 약 0.49 × 2R × 덩이 평균 약 1.0)
             #define IFS_MIST_CENTER_INTEGRAL 1.0
+
+            float _FloorY;
 
             struct appdata
             {
@@ -121,6 +128,10 @@ Shader "IFS/SceneSpec Mist"
                 float c = dot(ro, ro) - IFS_MIST_RADIUS * IFS_MIST_RADIUS;
                 float h = b * b - c;
                 if (h <= 0.0) discard;
+                // 구 밖이면 앞면(바깥을 향한 면이 카메라 쪽), 구 안이면 안쪽 면만
+                bool frontFace = dot(i.objPos, rd) < 0.0;
+                bool inside = dot(ro, ro) < IFS_MIST_RADIUS * IFS_MIST_RADIUS;
+                if (frontFace == inside) discard;
                 float sq = sqrt(h);
                 float t0 = max(-b - sq, 0.0);   // 카메라가 구 안이면 카메라에서 시작
                 float t1 = -b + sq;
@@ -147,6 +158,8 @@ Shader "IFS/SceneSpec Mist"
                     float3 p = ro + rd * (t0 + (k + jitter) * dt);
                     float mottle;
                     float d = mistDensity(p, noiseMul, mottle);
+                    // 바닥 아래(세계 높이 < _FloorY)는 밀도 0
+                    if (dot(unity_ObjectToWorld[1], float4(p, 1.0)) < _FloorY) d = 0.0;
                     float a = 1.0 - exp(-sigma * d * dt);
                     // 조명: 구 바깥 방향을 법선으로 한 감싼 확산(빛이 안개 속으로 번지는 근사, (N·L + 0.5)/1.5) + 주변광(구면 조화)
                     float3 n = normalize(UnityObjectToWorldNormal(p + 1e-4));
