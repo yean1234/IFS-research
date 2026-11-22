@@ -1,0 +1,96 @@
+{"participant": "P101", "session_id": "SIM01", "when": "post", "prompt": "L-A", "text": "그게 저기 멀리 보여요.", "synthetic": true}
+{"participant": "P101", "session_id": "SIM01", "when": "post", "prompt": "L-B", "text": "좀 두려워요.", "synthetic": true}
+{"participant": "P101", "session_id": "SIM01", "when": "pre", "prompt": "L-A", "text": "나는 그 돌이에요.", "synthetic": true}
+{"participant": "P101", "session_id": "SIM01", "when": "pre", "prompt": "L-B", "text": "좀 두려워요.", "synthetic": true}
+{"participant": "P102", "session_id": "SIM02", "when": "post", "prompt": "L-A", "text": "내 안에 불안한 게 있어요.", "synthetic": true}
+{"participant": "P102", "session_id": "SIM02", "when": "post", "prompt": "L-B", "text": "좀 안쓰러워요.", "synthetic": true}
+{"participant": "P102", "session_id": "SIM02", "when": "pre", "prompt": "L-A", "text": "그 돌이 저예요.", "synthetic": true}
+{"participant": "P102", "session_id": "SIM02", "when": "pre", "prompt": "L-B", "text": "아직 무서워요.", "synthetic": true}
+{"participant": "P103", "session_id": "SIM03", "when": "post", "prompt": "L-A", "text": "그게 저기 멀리 보여요.", "synthetic": true}
+{"participant": "P103", "session_id": "SIM03", "when": "post", "prompt": "L-B", "text": "아직 무서워요.", "synthetic": true}
+{"participant": "P103", "session_id": "SIM03", "when": "pre", "prompt": "L-A", "text": "저는 그냥 불안한 사람이에요.", "synthetic": true}
+{"participant": "P103", "session_id": "SIM03", "when": "pre", "prompt": "L-B", "text": "좀 두려워요.", "synthetic": true}
+{"participant": "P104", "session_id": "SIM04", "when": "post", "prompt": "L-A", "text": "그건 저기 있어요.", "synthetic": true}
+{"participant": "P104", "session_id": "SIM04", "when": "post", "prompt": "L-B", "text": "보고 싶지 않아요.", "synthetic": true}
+{"participant": "P104", "session_id": "SIM04", "when": "pre", "prompt": "L-A", "text": "나는 불안 덩어리예요.", "synthetic": true}
+{"participant": "P104", "session_id": "SIM04", "when": "pre", "prompt": "L-B", "text": "좀 짜증 나요.", "synthetic": true}
+{"participant": "P105", "session_id": "SIM05", "when": "post", "prompt": "L-A", "text": "그 돌이 멀리 보여요.", "synthetic": true}
+{"participant": "P105", "session_id": "SIM05", "when": "post", "prompt": "L-B", "text": "아직 무서워요.", "synthetic": true}
+{"participant": "P105", "session_id": "SIM05", "when": "pre", "prompt": "L-A", "text": "저는 그냥 불안한 사람이에요.", "synthetic": true}
+{"participant": "P105", "session_id": "SIM05", "when": "pre", "prompt": "L-B", "text": "좀 두려워요.", "synthetic": true}
+{"participant": "P106", "session_id": "SIM06", "when": "post", "prompt": "L-A", "text": "그 돌이 작아 보였어요.", "synthetic": true}
+{"participant": "P106", "session_id": "SIM06", "when": "post", "prompt": "L-B", "text": "괜찮아요.", "synthetic": true}
+{"participant": "P106", "session_id": "SIM06", "when": "pre", "prompt": "L-A", "text": "잘 모르겠어요.", "synthetic": true}
+{"participant": "P106", "session_id": "SIM06", "when": "pre", "prompt": "L-B", "text": "잘 모르겠어요.", "synthetic": true}
+{"participant": "P107", "session_id": "SIM07", "when": "post", "prompt": "L-A", "text": "무거웠어요.", "synthetic": true}
+{"participant": "P107", "session_id": "SIM07", "when": "post", "prompt": "L-B", "text": "괜찮아요.", "synthetic": true}
+{"participant": "P107", "session_id": "SIM07", "when": "pre", "prompt": "L-A", "text": "잘 모르겠어요.", "synthetic": true}
+{"participant": "P107", "session_id": "SIM07", "when": "pre", "prompt": "L-B", "text": "잘 모르겠어요.", "synthetic": true}
+{"participant": "P108", "session_id": "SIM08", "when": "post", "prompt": "L-A", "text": "내 안에 불안한 게 있어요.", "synthetic": true}
+{"participant": "P108", "session_id": "SIM08", "when": "post", "prompt": "L-B", "text": "궁금해요.", "synthetic": true}
+{"participant": "P108", "session_id": "SIM08", "when": "pre", "prompt": "L-A", "text": "그 돌이 저예요.", "synthetic": true}
+{"participant": "P108", "session_id": "SIM08", "when": "pre", "prompt": "L-B", "text": "좀 무서워요.", "synthetic": true}
+{"participant": "P109", "session_id": "SIM09", "when": "post", "prompt": "L-A", "text": "그 돌이 멀리 보여요.", "synthetic": true}
+{"participant": "P109", "session_id": "SIM09", "when": "post", "prompt": "L-B", "text": "아직 무서워요.", "synthetic": true}
+{"participant": "P109", "session_id": "SIM09", "when": "pre", "prompt": "L-A", "text": "나는 그 돌이에요.", "synthetic": true}
+{"participant": "P109", "session_id": "SIM09", "when": "pre", "prompt": "L-B", "text": "좀 두려워요.", "synthetic": true}
+{"participant": "P110", "session_id": "SIM10", "when": "post", "prompt": "L-A", "text": "그건 저기 있어요.", "synthetic": true}
+{"participant": "P110", "session_id": "SIM10", "when": "post", "prompt": "L-B", "text": "보고 싶지 않아요.", "synthetic": true}
+{"participant": "P110", "session_id": "SIM10", "when": "pre", "prompt": "L-A", "text": "나는 불안 덩어리예요.", "synthetic": true}
+{"participant": "P110", "session_id": "SIM10", "when": "pre", "prompt": "L-B", "text": "좀 짜증 나요.", "synthetic": true}
+{"participant": "P111", "session_id": "SIM11", "when": "post", "prompt": "L-A", "text": "내 안에 불안한 게 있어요.", "synthetic": true}
+{"participant": "P111", "session_id": "SIM11", "when": "post", "prompt": "L-B", "text": "좀 안쓰러워요.", "synthetic": true}
+{"participant": "P111", "session_id": "SIM11", "when": "pre", "prompt": "L-A", "text": "저는 그 돌이에요.", "synthetic": true}
+{"participant": "P111", "session_id": "SIM11", "when": "pre", "prompt": "L-B", "text": "좀 무서워요.", "synthetic": true}
+{"participant": "P112", "session_id": "SIM12", "when": "post", "prompt": "L-A", "text": "그 돌이 멀리 보여요.", "synthetic": true}
+{"participant": "P112", "session_id": "SIM12", "when": "post", "prompt": "L-B", "text": "아직 무서워요.", "synthetic": true}
+{"participant": "P112", "session_id": "SIM12", "when": "pre", "prompt": "L-A", "text": "저는 그냥 불안한 사람이에요.", "synthetic": true}
+{"participant": "P112", "session_id": "SIM12", "when": "pre", "prompt": "L-B", "text": "좀 두려워요.", "synthetic": true}
+{"participant": "P113", "session_id": "SIM13", "when": "post", "prompt": "L-A", "text": "제 안에 작은 돌이 있어요.", "synthetic": true}
+{"participant": "P113", "session_id": "SIM13", "when": "post", "prompt": "L-B", "text": "좀 안쓰러워요.", "synthetic": true}
+{"participant": "P113", "session_id": "SIM13", "when": "pre", "prompt": "L-A", "text": "저는 그 돌이에요.", "synthetic": true}
+{"participant": "P113", "session_id": "SIM13", "when": "pre", "prompt": "L-B", "text": "좀 무서워요.", "synthetic": true}
+{"participant": "P114", "session_id": "SIM14", "when": "post", "prompt": "L-A", "text": "무거웠어요.", "synthetic": true}
+{"participant": "P114", "session_id": "SIM14", "when": "post", "prompt": "L-B", "text": "괜찮아요.", "synthetic": true}
+{"participant": "P114", "session_id": "SIM14", "when": "pre", "prompt": "L-A", "text": "무거워요.", "synthetic": true}
+{"participant": "P114", "session_id": "SIM14", "when": "pre", "prompt": "L-B", "text": "잘 모르겠어요.", "synthetic": true}
+{"participant": "P115", "session_id": "SIM15", "when": "post", "prompt": "L-A", "text": "그게 저기 멀리 보여요.", "synthetic": true}
+{"participant": "P115", "session_id": "SIM15", "when": "post", "prompt": "L-B", "text": "아직 무서워요.", "synthetic": true}
+{"participant": "P115", "session_id": "SIM15", "when": "pre", "prompt": "L-A", "text": "나는 그 돌이에요.", "synthetic": true}
+{"participant": "P115", "session_id": "SIM15", "when": "pre", "prompt": "L-B", "text": "좀 두려워요.", "synthetic": true}
+{"participant": "P116", "session_id": "SIM16", "when": "post", "prompt": "L-A", "text": "그 돌은 아직 저기 있네요.", "synthetic": true}
+{"participant": "P116", "session_id": "SIM16", "when": "post", "prompt": "L-B", "text": "싫어요.", "synthetic": true}
+{"participant": "P116", "session_id": "SIM16", "when": "pre", "prompt": "L-A", "text": "나는 불안 덩어리예요.", "synthetic": true}
+{"participant": "P116", "session_id": "SIM16", "when": "pre", "prompt": "L-B", "text": "좀 짜증 나요.", "synthetic": true}
+{"participant": "P117", "session_id": "SIM17", "when": "post", "prompt": "L-A", "text": "그 돌은 아직 저기 있네요.", "synthetic": true}
+{"participant": "P117", "session_id": "SIM17", "when": "post", "prompt": "L-B", "text": "싫어요.", "synthetic": true}
+{"participant": "P117", "session_id": "SIM17", "when": "pre", "prompt": "L-A", "text": "저는 그냥 불안한 사람이에요.", "synthetic": true}
+{"participant": "P117", "session_id": "SIM17", "when": "pre", "prompt": "L-B", "text": "좀 짜증 나요.", "synthetic": true}
+{"participant": "P118", "session_id": "SIM18", "when": "post", "prompt": "L-A", "text": "내 안에 불안한 게 있어요.", "synthetic": true}
+{"participant": "P118", "session_id": "SIM18", "when": "post", "prompt": "L-B", "text": "좀 안쓰러워요.", "synthetic": true}
+{"participant": "P118", "session_id": "SIM18", "when": "pre", "prompt": "L-A", "text": "그 돌이 저예요.", "synthetic": true}
+{"participant": "P118", "session_id": "SIM18", "when": "pre", "prompt": "L-B", "text": "아직 무서워요.", "synthetic": true}
+{"participant": "P119", "session_id": "SIM19", "when": "post", "prompt": "L-A", "text": "그건 저기 있어요.", "synthetic": true}
+{"participant": "P119", "session_id": "SIM19", "when": "post", "prompt": "L-B", "text": "싫어요.", "synthetic": true}
+{"participant": "P119", "session_id": "SIM19", "when": "pre", "prompt": "L-A", "text": "나는 불안 덩어리예요.", "synthetic": true}
+{"participant": "P119", "session_id": "SIM19", "when": "pre", "prompt": "L-B", "text": "좀 짜증 나요.", "synthetic": true}
+{"participant": "P120", "session_id": "SIM20", "when": "post", "prompt": "L-A", "text": "무거웠어요.", "synthetic": true}
+{"participant": "P120", "session_id": "SIM20", "when": "post", "prompt": "L-B", "text": "괜찮아요.", "synthetic": true}
+{"participant": "P120", "session_id": "SIM20", "when": "pre", "prompt": "L-A", "text": "잘 모르겠어요.", "synthetic": true}
+{"participant": "P120", "session_id": "SIM20", "when": "pre", "prompt": "L-B", "text": "잘 모르겠어요.", "synthetic": true}
+{"participant": "P121", "session_id": "SIM21", "when": "post", "prompt": "L-A", "text": "저한테 그런 마음이 있네요.", "synthetic": true}
+{"participant": "P121", "session_id": "SIM21", "when": "post", "prompt": "L-B", "text": "좀 안쓰러워요.", "synthetic": true}
+{"participant": "P121", "session_id": "SIM21", "when": "pre", "prompt": "L-A", "text": "그 돌이 저예요.", "synthetic": true}
+{"participant": "P121", "session_id": "SIM21", "when": "pre", "prompt": "L-B", "text": "아직 무서워요.", "synthetic": true}
+{"participant": "P122", "session_id": "SIM22", "when": "post", "prompt": "L-A", "text": "그 돌은 아직 저기 있네요.", "synthetic": true}
+{"participant": "P122", "session_id": "SIM22", "when": "post", "prompt": "L-B", "text": "싫어요.", "synthetic": true}
+{"participant": "P122", "session_id": "SIM22", "when": "pre", "prompt": "L-A", "text": "나는 불안 덩어리예요.", "synthetic": true}
+{"participant": "P122", "session_id": "SIM22", "when": "pre", "prompt": "L-B", "text": "좀 짜증 나요.", "synthetic": true}
+{"participant": "P123", "session_id": "SIM23", "when": "post", "prompt": "L-A", "text": "그 돌이 작아 보였어요.", "synthetic": true}
+{"participant": "P123", "session_id": "SIM23", "when": "post", "prompt": "L-B", "text": "괜찮아요.", "synthetic": true}
+{"participant": "P123", "session_id": "SIM23", "when": "pre", "prompt": "L-A", "text": "잘 모르겠어요.", "synthetic": true}
+{"participant": "P123", "session_id": "SIM23", "when": "pre", "prompt": "L-B", "text": "잘 모르겠어요.", "synthetic": true}
+{"participant": "P124", "session_id": "SIM24", "when": "post", "prompt": "L-A", "text": "그 돌이 작아 보였어요.", "synthetic": true}
+{"participant": "P124", "session_id": "SIM24", "when": "post", "prompt": "L-B", "text": "괜찮아요.", "synthetic": true}
+{"participant": "P124", "session_id": "SIM24", "when": "pre", "prompt": "L-A", "text": "잘 모르겠어요.", "synthetic": true}
+{"participant": "P124", "session_id": "SIM24", "when": "pre", "prompt": "L-B", "text": "잘 모르겠어요.", "synthetic": true}

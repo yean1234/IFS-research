@@ -1,0 +1,11 @@
+trial,practice,direction,start_distance_m,speed_mps,stop_distance_m,rt_ms,timed_out
+1,1,approach,3.0,0.25,1.487,6052,0
+2,1,recede,0.5,0.25,1.617,4468,0
+3,0,approach,3.0,0.25,1.509,5964,0
+4,0,recede,0.5,0.25,1.918,5672,0
+5,0,approach,3.0,0.25,1.639,5444,0
+6,0,recede,0.5,0.25,1.796,5184,0
+7,0,approach,3.0,0.25,1.546,5816,0
+8,0,recede,0.5,0.25,1.633,4532,0
+9,0,approach,3.0,0.25,1.525,5900,0
+10,0,recede,0.5,0.25,1.692,4768,0

@@ -6,6 +6,10 @@
 - ownership:  소유감 실험(Unity 러너) 기록 → stimuli.csv·sessions.csv·summary.json(RQ1–RQ3 기술 통계).
 - placement:  배치 실험(RQ V4, ifs-placement/0.1) 기록 → placement_sessions.csv·stop_trials.csv·placement_summary.json
               (놓은 자리·고리 몰림·멈춤 거리·머리 행동·평정의 기술 통계와 효과크기 추정).
+- language_markers: 한국어 발화의 언어 표지 K1–K7·태도 낱말(Kiwi 규칙, 근거 구간·판본 기록).
+- differentiation: 구별 프로파일(자기보고·행동 2×2·언어를 성분별로 따로, 순위 상관·사례 목록, 합산 없음).
+- sim_placement: ifs-placement/0.1 합성 세션 생성기(파이프라인 검증용, 효과의 근거가 아님).
+  사용법과 합성 검증 결과: docs/validation/differentiation/README.md
 
 정의와 실행 명령: docs/mapping-failures.md
 """

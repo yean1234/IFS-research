@@ -37,6 +37,7 @@ LLM 없음, 표준 라이브러리만, 결정론적(같은 기록 → 같은 출
   차이가 max(PATH_TOL_ABS_M, PATH_TOL_REL × 큰 값)을 넘으면 objpose_path_mismatch. pathLengthM이 누가 움직였든
   조건 단계 동안 물체가 지나간 길이라고 보고 모든 통제 방식에서 비교한다(system_move·replay에서 러너가 0을 쓰면 이 flag가 뜬다).
 - VR 안 평정: ratings.csv의 (item, when)마다 마지막 행. 열 이름 rating_{item}_{when}. 열은 모든 세션에서 발견된 키의 합집합.
+  범위 점검은 1–7, 단 구별 프로파일의 0–10 문항(profile_items.ITEM_SCALES의 M1p·M2·M3)은 0–10(2026-11-23 추가).
 - 빠진 파일 missing_file:<이름>, 0바이트 파일 empty_file:<이름>, JSON이 깨진 파일 unreadable_file:<이름>.
   recordVersion이 "ifs-placement/0.1"이 아니면 version_mismatch. placement.json의 condition·controlMode가 manifest와
   다르면 condition_mismatch. events.csv의 warning 행이 있으면 runner_warning:<개수>.
@@ -66,6 +67,7 @@ import sys
 from pathlib import Path
 
 from .ownership import _int, _num, _read_csv, _read_json, _rel, _r, _truthy, _write_csv, circular_range_deg
+from .profile_items import rating_range
 
 RECORD_PREFIX = "ifs-placement/"
 KNOWN_VERSIONS = ("ifs-placement/0.1",)
@@ -415,7 +417,8 @@ def load_session(cand: dict, facing_deg: float = DEFAULT_FACING_DEG) -> tuple[di
         if not item or not when:
             continue
         r = _num(row.get("rating"))
-        if r is not None and not 1 <= r <= 7:
+        lo, hi = rating_range(item)   # 러너 기본 1–7, 구별 프로파일 0–10 문항(M1p·M2·M3)만 0–10
+        if r is not None and not lo <= r <= hi:
             out_of_range = True
         ratings[f"rating_{item}_{when}"] = r
     if out_of_range:

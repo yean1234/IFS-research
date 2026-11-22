@@ -1,0 +1,1554 @@
+{
+  "version": "language-marker-cases/0.1",
+  "synthetic": true,
+  "note": "모두 합성 문장(참여자 자료 아님). expected는 사람이 docs/rq-v4-differentiation-measure.md 3.3 정의를 올바른 품사로 적용했을 때의 값이고, actual은 ifs_chatbot.eval.language_markers(Kiwi)의 출력이다. 틀린 사례를 숨기지 않는다. 재계산: cd chatbot; .venv\\Scripts\\python.exe -m ifs_chatbot.eval.language_markers --cases ../docs/validation/differentiation/language_marker_cases.json --out ../docs/validation/differentiation/language_marker_cases.json",
+  "analyzer": {
+    "backend": "kiwi",
+    "kiwipiepy": "0.24.1",
+    "kiwipiepy_model": "0.24.0"
+  },
+  "accuracy": {
+    "cases_all_match": 40,
+    "cases_total": 46,
+    "per_marker": {
+      "K1": "45/46",
+      "K2": "45/46",
+      "K3": "45/46",
+      "K3b": "45/46",
+      "K4": "44/46",
+      "K5": "46/46",
+      "K6": "46/46",
+      "K7": "43/46",
+      "n_clauses": "46/46"
+    }
+  },
+  "mismatches": [
+    {
+      "id": "d11",
+      "sentence": "그냥 저 자체가 무거운 거예요.",
+      "diff": {
+        "K1": {
+          "expected": 1,
+          "actual": 0
+        },
+        "K4": {
+          "expected": 0,
+          "actual": 1
+        }
+      },
+      "cause_if_mismatch": "kiwi_tag: 1인칭 '저'를 저/MM으로 태그 → K1 놓침, K4 오탐"
+    },
+    {
+      "id": "n09",
+      "sentence": "내가 본 게 그 돌이에요.",
+      "diff": {
+        "K2": {
+          "expected": 0,
+          "actual": 1
+        }
+      },
+      "cause_if_mismatch": "rule_gap: 절 안의 VCP와 안긴 절의 1인칭 주어를 이어 K2 오탐"
+    },
+    {
+      "id": "n14",
+      "sentence": "제 마음속에 작은 돌이 있어요.",
+      "diff": {
+        "K3": {
+          "expected": 1,
+          "actual": 0
+        },
+        "K3b": {
+          "expected": 0,
+          "actual": 1
+        }
+      },
+      "cause_if_mismatch": "rule_gap: '마음속'이 한 낱말(NNG)이라 1인칭 + 의 + 안·속 조건에 안 맞아 K3b"
+    },
+    {
+      "id": "n24",
+      "sentence": "저 공이 저기 보였어요.",
+      "diff": {
+        "K4": {
+          "expected": 1,
+          "actual": 0
+        },
+        "K7": {
+          "expected": 0,
+          "actual": 1
+        }
+      },
+      "cause_if_mismatch": "kiwi_tag: '공이'를 숫자 공/NR + 이/NR로 태그 → 주어 조사가 사라져 K4 놓침, K7 오탐(같은 '저 공이'가 n06에서는 공/NNG 이/JKS)"
+    },
+    {
+      "id": "n25",
+      "sentence": "아까는 무거웠어요.",
+      "diff": {
+        "K7": {
+          "expected": 1,
+          "actual": 0
+        }
+      },
+      "cause_if_mismatch": "rule_gap: 시간 명사 '아까'+는(JX)을 주어로 보아 K7을 놓침"
+    },
+    {
+      "id": "n26",
+      "sentence": "나 무서워.",
+      "diff": {
+        "K7": {
+          "expected": 0,
+          "actual": 1
+        }
+      },
+      "cause_if_mismatch": "rule_gap: 조사 없는 1인칭 주어라 K7로 셈"
+    }
+  ],
+  "cases": [
+    {
+      "id": "d01",
+      "sentence": "나는 불안 덩어리다.",
+      "basis": "doc_3.3",
+      "expected": {
+        "K1": 1,
+        "K2": 1,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 0,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "actual": {
+        "K1": 1,
+        "K2": 1,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 0,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "match": true,
+      "diff": {},
+      "tokens": "나/NP 는/JX 불안/NNG 덩어리/NNG 이/VCP 다/EF ./SF"
+    },
+    {
+      "id": "d02",
+      "sentence": "내가 그 돌이에요.",
+      "basis": "doc_3.3",
+      "expected": {
+        "K1": 1,
+        "K2": 1,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 0,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "note": "그 돌은 주어 자리가 아니라 K4 아님",
+      "actual": {
+        "K1": 1,
+        "K2": 1,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 0,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "match": true,
+      "diff": {},
+      "tokens": "나/NP 가/JKS 그/MM 돌/NNG 이/VCP 에요/EF ./SF"
+    },
+    {
+      "id": "d03",
+      "sentence": "저 돌이 저예요.",
+      "basis": "doc_3.3",
+      "expected": {
+        "K1": 1,
+        "K2": 1,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 1,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "actual": {
+        "K1": 1,
+        "K2": 1,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 1,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "match": true,
+      "diff": {},
+      "tokens": "저/MM 돌/NNG 이/JKS 저/NP 이/VCP 예요/EF ./SF"
+    },
+    {
+      "id": "d04",
+      "sentence": "내 안에 불안한 게 있어요.",
+      "basis": "doc_3.3",
+      "expected": {
+        "K1": 1,
+        "K2": 0,
+        "K3": 1,
+        "K3b": 0,
+        "K4": 0,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "actual": {
+        "K1": 1,
+        "K2": 0,
+        "K3": 1,
+        "K3b": 0,
+        "K4": 0,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "match": true,
+      "diff": {},
+      "tokens": "나/NP 의/JKG 안/NNG 에/JKB 불안/NNG 하/XSA ᆫ/ETM 것/NNB 이/JKS 있/VA 어요/EF ./SF"
+    },
+    {
+      "id": "d05",
+      "sentence": "나한테 그런 마음이 있네.",
+      "basis": "doc_3.3",
+      "expected": {
+        "K1": 1,
+        "K2": 0,
+        "K3": 1,
+        "K3b": 0,
+        "K4": 0,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "note": "'그런'은 지시 관형사 이·그·저가 아님",
+      "actual": {
+        "K1": 1,
+        "K2": 0,
+        "K3": 1,
+        "K3b": 0,
+        "K4": 0,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "match": true,
+      "diff": {},
+      "tokens": "나/NP 한테/JKB 그런/MM 마음/NNG 이/JKS 있/VA 네/EF ./SF"
+    },
+    {
+      "id": "d06",
+      "sentence": "가슴에 돌 같은 게 있다.",
+      "basis": "doc_3.3",
+      "expected": {
+        "K1": 0,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 1,
+        "K4": 0,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "actual": {
+        "K1": 0,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 1,
+        "K4": 0,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "match": true,
+      "diff": {},
+      "tokens": "가슴/NNG 에/JKB 돌/NNG 같/VA 은/ETM 것/NNB 이/JKS 있/VV 다/EF ./SF"
+    },
+    {
+      "id": "d07",
+      "sentence": "제 일부가 겁을 내고 있어요.",
+      "basis": "doc_3.3",
+      "expected": {
+        "K1": 1,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 0,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "note": "있/VX라 K3 아님",
+      "actual": {
+        "K1": 1,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 0,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "match": true,
+      "diff": {},
+      "tokens": "저/NP 의/JKG 일부/NNG 가/JKS 겁/NNG 을/JKO 내/VV 고/EC 있/VX 어요/EF ./SF"
+    },
+    {
+      "id": "d08",
+      "sentence": "그게 저기 보여요.",
+      "basis": "doc_3.3",
+      "expected": {
+        "K1": 0,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 1,
+        "K5": 1,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "actual": {
+        "K1": 0,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 1,
+        "K5": 1,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "match": true,
+      "diff": {},
+      "tokens": "그것/NP 이/JKS 저기/IC 보이/VV 어요/EF ./SF"
+    },
+    {
+      "id": "d09",
+      "sentence": "그 공이 아까보다 작아 보였다.",
+      "basis": "doc_3.3",
+      "expected": {
+        "K1": 0,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 1,
+        "K5": 0,
+        "K6": 1,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "note": "앞이 EC라 K5 아님",
+      "actual": {
+        "K1": 0,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 1,
+        "K5": 0,
+        "K6": 1,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "match": true,
+      "diff": {},
+      "tokens": "그/MM 공/NNG 이/JKS 아까/NNG 보다/JKB 작/VA 어/EC 보이/VV 었/EP 다/EF ./SF"
+    },
+    {
+      "id": "d10",
+      "sentence": "무거워요.",
+      "basis": "doc_3.3",
+      "expected": {
+        "K1": 0,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 0,
+        "K5": 0,
+        "K6": 0,
+        "K7": 1,
+        "n_clauses": 1
+      },
+      "actual": {
+        "K1": 0,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 0,
+        "K5": 0,
+        "K6": 0,
+        "K7": 1,
+        "n_clauses": 1
+      },
+      "match": true,
+      "diff": {},
+      "tokens": "무겁/VA-I 어요/EF ./SF"
+    },
+    {
+      "id": "d11",
+      "sentence": "그냥 저 자체가 무거운 거예요.",
+      "basis": "doc_3.3",
+      "expected": {
+        "K1": 1,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 0,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "cause_if_mismatch": "kiwi_tag: 1인칭 '저'를 저/MM으로 태그 → K1 놓침, K4 오탐",
+      "note": "문서의 오분석 예. 기대값은 '저'를 1인칭으로 읽은 값",
+      "actual": {
+        "K1": 0,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 1,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "match": false,
+      "diff": {
+        "K1": {
+          "expected": 1,
+          "actual": 0
+        },
+        "K4": {
+          "expected": 0,
+          "actual": 1
+        }
+      },
+      "tokens": "그냥/MAG 저/MM 자체/NNG 가/JKS 무겁/VA-I 은/ETM 거/NNB 이/VCP 예요/EF ./SF"
+    },
+    {
+      "id": "n01",
+      "sentence": "제가 그 불안이에요.",
+      "basis": "new",
+      "expected": {
+        "K1": 1,
+        "K2": 1,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 0,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "actual": {
+        "K1": 1,
+        "K2": 1,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 0,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "match": true,
+      "diff": {},
+      "tokens": "저/NP 가/JKS 그/MM 불안/NNG 이/VCP 에요/EF ./SF"
+    },
+    {
+      "id": "n02",
+      "sentence": "저는 그냥 화난 사람이에요.",
+      "basis": "new",
+      "expected": {
+        "K1": 1,
+        "K2": 1,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 0,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "actual": {
+        "K1": 1,
+        "K2": 1,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 0,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "match": true,
+      "diff": {},
+      "tokens": "저/NP 는/JX 그냥/MAG 화나/VV ᆫ/ETM 사람/NNG 이/VCP 에요/EF ./SF"
+    },
+    {
+      "id": "n03",
+      "sentence": "이건 그냥 나야.",
+      "basis": "new",
+      "expected": {
+        "K1": 1,
+        "K2": 1,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 1,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "note": "K2(b) VCP 바로 앞 1인칭",
+      "actual": {
+        "K1": 1,
+        "K2": 1,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 1,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "match": true,
+      "diff": {},
+      "tokens": "이거/NP ᆫ/JX 그냥/MAG 나/NP 이/VCP 야/EF ./SF"
+    },
+    {
+      "id": "n04",
+      "sentence": "이게 바로 저예요.",
+      "basis": "new",
+      "expected": {
+        "K1": 1,
+        "K2": 1,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 1,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "actual": {
+        "K1": 1,
+        "K2": 1,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 1,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "match": true,
+      "diff": {},
+      "tokens": "이것/NP 이/JKS 바로/MAG 저/NP 이/VCP 예요/EF ./SF"
+    },
+    {
+      "id": "n05",
+      "sentence": "나도 그거예요.",
+      "basis": "new",
+      "expected": {
+        "K1": 1,
+        "K2": 1,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 1,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "actual": {
+        "K1": 1,
+        "K2": 1,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 1,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "match": true,
+      "diff": {},
+      "tokens": "나/NP 도/JX 그거/NP 이/VCP 예요/EF ./SF"
+    },
+    {
+      "id": "n06",
+      "sentence": "저 공이 나예요.",
+      "basis": "new",
+      "expected": {
+        "K1": 1,
+        "K2": 1,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 1,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "actual": {
+        "K1": 1,
+        "K2": 1,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 1,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "match": true,
+      "diff": {},
+      "tokens": "저/MM 공/NNG 이/JKS 나/NP 이/VCP 예요/EF ./SF"
+    },
+    {
+      "id": "n07",
+      "sentence": "우리는 그 돌이에요.",
+      "basis": "new",
+      "expected": {
+        "K1": 0,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 0,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "note": "문서 K1은 나·저만 셈(복수 1인칭 '우리'는 세지 않음)",
+      "actual": {
+        "K1": 0,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 0,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "match": true,
+      "diff": {},
+      "tokens": "우리/NP 는/JX 그/MM 돌/NNG 이/VCP 에요/EF ./SF"
+    },
+    {
+      "id": "n08",
+      "sentence": "그건 제가 아니에요.",
+      "basis": "new",
+      "expected": {
+        "K1": 1,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 1,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "note": "VCN(아니다)은 K2가 아님",
+      "actual": {
+        "K1": 1,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 1,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "match": true,
+      "diff": {},
+      "tokens": "그거/NP ᆫ/JX 저/NP 가/JKC 아니/VCN 에요/EF ./SF"
+    },
+    {
+      "id": "n09",
+      "sentence": "내가 본 게 그 돌이에요.",
+      "basis": "new",
+      "expected": {
+        "K1": 1,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 0,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "cause_if_mismatch": "rule_gap: 절 안의 VCP와 안긴 절의 1인칭 주어를 이어 K2 오탐",
+      "note": "'내가 본 것 = 그 돌'이라 동일시 틀이 아님",
+      "actual": {
+        "K1": 1,
+        "K2": 1,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 0,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "match": false,
+      "diff": {
+        "K2": {
+          "expected": 0,
+          "actual": 1
+        }
+      },
+      "tokens": "나/NP 가/JKS 보/VV ᆫ/ETM 것/NNB 이/JKS 그/MM 돌/NNG 이/VCP 에요/EF ./SF"
+    },
+    {
+      "id": "n10",
+      "sentence": "저한테 무거운 돌이 있었어요.",
+      "basis": "new",
+      "expected": {
+        "K1": 1,
+        "K2": 0,
+        "K3": 1,
+        "K3b": 0,
+        "K4": 0,
+        "K5": 0,
+        "K6": 1,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "actual": {
+        "K1": 1,
+        "K2": 0,
+        "K3": 1,
+        "K3b": 0,
+        "K4": 0,
+        "K5": 0,
+        "K6": 1,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "match": true,
+      "diff": {},
+      "tokens": "저/NP 한테/JKB 무겁/VA-I 은/ETM 돌/NNG 이/JKS 있/VA 었/EP 어요/EF ./SF"
+    },
+    {
+      "id": "n11",
+      "sentence": "제 안에 겁먹은 마음이 있어요.",
+      "basis": "new",
+      "expected": {
+        "K1": 1,
+        "K2": 0,
+        "K3": 1,
+        "K3b": 0,
+        "K4": 0,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "actual": {
+        "K1": 1,
+        "K2": 0,
+        "K3": 1,
+        "K3b": 0,
+        "K4": 0,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "match": true,
+      "diff": {},
+      "tokens": "저/NP 의/JKG 안/NNG 에/JKB 겁먹/VV 은/ETM 마음/NNG 이/JKS 있/VA 어요/EF ./SF"
+    },
+    {
+      "id": "n12",
+      "sentence": "저에게 이런 게 있는 것 같아요.",
+      "basis": "new",
+      "expected": {
+        "K1": 1,
+        "K2": 0,
+        "K3": 1,
+        "K3b": 0,
+        "K4": 0,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "note": "'있는 것 같다'도 절 안의 있/VA로 셈",
+      "actual": {
+        "K1": 1,
+        "K2": 0,
+        "K3": 1,
+        "K3b": 0,
+        "K4": 0,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "match": true,
+      "diff": {},
+      "tokens": "저/NP 에게/JKB 이런/MM 것/NNB 이/JKS 있/VA 는/ETM 것/NNB 같/VA 어요/EF ./SF"
+    },
+    {
+      "id": "n13",
+      "sentence": "내 속에 화가 있다.",
+      "basis": "new",
+      "expected": {
+        "K1": 1,
+        "K2": 0,
+        "K3": 1,
+        "K3b": 0,
+        "K4": 0,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "actual": {
+        "K1": 1,
+        "K2": 0,
+        "K3": 1,
+        "K3b": 0,
+        "K4": 0,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "match": true,
+      "diff": {},
+      "tokens": "나/NP 의/JKG 속/NNG 에/JKB 화/NNG 가/JKS 있/VV 다/EF ./SF"
+    },
+    {
+      "id": "n14",
+      "sentence": "제 마음속에 작은 돌이 있어요.",
+      "basis": "new",
+      "expected": {
+        "K1": 1,
+        "K2": 0,
+        "K3": 1,
+        "K3b": 0,
+        "K4": 0,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "cause_if_mismatch": "rule_gap: '마음속'이 한 낱말(NNG)이라 1인칭 + 의 + 안·속 조건에 안 맞아 K3b",
+      "note": "기대값은 자기 위치어로 읽은 값",
+      "actual": {
+        "K1": 1,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 1,
+        "K4": 0,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "match": false,
+      "diff": {
+        "K3": {
+          "expected": 1,
+          "actual": 0
+        },
+        "K3b": {
+          "expected": 0,
+          "actual": 1
+        }
+      },
+      "tokens": "저/NP 의/JKG 마음속/NNG 에/JKB 작/VA 은/ETM 돌/NNG 이/JKS 있/VA 어요/EF ./SF"
+    },
+    {
+      "id": "n15",
+      "sentence": "이것은 저기 있어요.",
+      "basis": "new",
+      "expected": {
+        "K1": 0,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 1,
+        "K4": 1,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "actual": {
+        "K1": 0,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 1,
+        "K4": 1,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "match": true,
+      "diff": {},
+      "tokens": "이것/NP 은/JX 저기/NP 있/VV 어요/EF ./SF"
+    },
+    {
+      "id": "n16",
+      "sentence": "그 돌은 아직 저기 있네요.",
+      "basis": "new",
+      "expected": {
+        "K1": 0,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 1,
+        "K4": 1,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "actual": {
+        "K1": 0,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 1,
+        "K4": 1,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "match": true,
+      "diff": {},
+      "tokens": "그/MM 돌/NNG 은/JX 아직/MAG 저기/NP 있/VA 네요/EF ./SF"
+    },
+    {
+      "id": "n17",
+      "sentence": "저기 있었어요.",
+      "basis": "new",
+      "expected": {
+        "K1": 0,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 1,
+        "K4": 0,
+        "K5": 0,
+        "K6": 1,
+        "K7": 1,
+        "n_clauses": 1
+      },
+      "actual": {
+        "K1": 0,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 1,
+        "K4": 0,
+        "K5": 0,
+        "K6": 1,
+        "K7": 1,
+        "n_clauses": 1
+      },
+      "match": true,
+      "diff": {},
+      "tokens": "저기/NP 있/VA 었/EP 어요/EF ./SF"
+    },
+    {
+      "id": "n18",
+      "sentence": "저 멀리 그게 있어요.",
+      "basis": "new",
+      "expected": {
+        "K1": 0,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 1,
+        "K4": 1,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "note": "'저 멀리'의 저/MM 뒤에 체언이 없어 K4(MM)는 아님",
+      "actual": {
+        "K1": 0,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 1,
+        "K4": 1,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "match": true,
+      "diff": {},
+      "tokens": "저/MM 멀리/MAG 그것/NP 이/JKS 있/VA 어요/EF ./SF"
+    },
+    {
+      "id": "n19",
+      "sentence": "그게 잘 보여요.",
+      "basis": "new",
+      "expected": {
+        "K1": 0,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 1,
+        "K5": 1,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "actual": {
+        "K1": 0,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 1,
+        "K5": 1,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "match": true,
+      "diff": {},
+      "tokens": "그것/NP 이/JKS 잘/MAG 보이/VV 어요/EF ./SF"
+    },
+    {
+      "id": "n20",
+      "sentence": "그게 슬퍼 보여요.",
+      "basis": "new",
+      "expected": {
+        "K1": 0,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 1,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "note": "~아 보이다 → K5 아님",
+      "actual": {
+        "K1": 0,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 1,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "match": true,
+      "diff": {},
+      "tokens": "그것/NP 이/JKS 슬프/VA 어/EC 보이/VV 어요/EF ./SF"
+    },
+    {
+      "id": "n21",
+      "sentence": "지금은 그게 작아 보여요.",
+      "basis": "new",
+      "expected": {
+        "K1": 0,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 1,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "actual": {
+        "K1": 0,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 1,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "match": true,
+      "diff": {},
+      "tokens": "지금/NNG 은/JX 그것/NP 이/JKS 작/VA 어/EC 보이/VV 어요/EF ./SF"
+    },
+    {
+      "id": "n22",
+      "sentence": "나한테는 그게 커 보였어요.",
+      "basis": "new",
+      "expected": {
+        "K1": 1,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 1,
+        "K5": 0,
+        "K6": 1,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "actual": {
+        "K1": 1,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 1,
+        "K5": 0,
+        "K6": 1,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "match": true,
+      "diff": {},
+      "tokens": "나/NP 한테/JKB 는/JX 그것/NP 이/JKS 크/VA 어/EC 보이/VV 었/EP 어요/EF ./SF"
+    },
+    {
+      "id": "n23",
+      "sentence": "나는 그것을 봤다.",
+      "basis": "new",
+      "expected": {
+        "K1": 1,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 1,
+        "K5": 0,
+        "K6": 1,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "actual": {
+        "K1": 1,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 1,
+        "K5": 0,
+        "K6": 1,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "match": true,
+      "diff": {},
+      "tokens": "나/NP 는/JX 그것/NP 을/JKO 보/VV 었/EP 다/EF ./SF"
+    },
+    {
+      "id": "n24",
+      "sentence": "저 공이 저기 보였어요.",
+      "basis": "new",
+      "expected": {
+        "K1": 0,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 1,
+        "K5": 1,
+        "K6": 1,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "cause_if_mismatch": "kiwi_tag: '공이'를 숫자 공/NR + 이/NR로 태그 → 주어 조사가 사라져 K4 놓침, K7 오탐(같은 '저 공이'가 n06에서는 공/NNG 이/JKS)",
+      "actual": {
+        "K1": 0,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 0,
+        "K5": 1,
+        "K6": 1,
+        "K7": 1,
+        "n_clauses": 1
+      },
+      "match": false,
+      "diff": {
+        "K4": {
+          "expected": 1,
+          "actual": 0
+        },
+        "K7": {
+          "expected": 0,
+          "actual": 1
+        }
+      },
+      "tokens": "저/MM 공/NR 이/NR 저기/NP 보이/VV 었/EP 어요/EF ./SF"
+    },
+    {
+      "id": "n25",
+      "sentence": "아까는 무거웠어요.",
+      "basis": "new",
+      "expected": {
+        "K1": 0,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 0,
+        "K5": 0,
+        "K6": 1,
+        "K7": 1,
+        "n_clauses": 1
+      },
+      "cause_if_mismatch": "rule_gap: 시간 명사 '아까'+는(JX)을 주어로 보아 K7을 놓침",
+      "note": "기대값은 주어가 말해지지 않았다고 읽은 값",
+      "actual": {
+        "K1": 0,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 0,
+        "K5": 0,
+        "K6": 1,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "match": false,
+      "diff": {
+        "K7": {
+          "expected": 1,
+          "actual": 0
+        }
+      },
+      "tokens": "아까/NNG 는/JX 무겁/VA-I 었/EP 어요/EF ./SF"
+    },
+    {
+      "id": "n26",
+      "sentence": "나 무서워.",
+      "basis": "new",
+      "expected": {
+        "K1": 1,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 0,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "cause_if_mismatch": "rule_gap: 조사 없는 1인칭 주어라 K7로 셈",
+      "note": "기대값은 '나'를 말한 주어로 읽은 값(K7 0)",
+      "actual": {
+        "K1": 1,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 0,
+        "K5": 0,
+        "K6": 0,
+        "K7": 1,
+        "n_clauses": 1
+      },
+      "match": false,
+      "diff": {
+        "K7": {
+          "expected": 0,
+          "actual": 1
+        }
+      },
+      "tokens": "나/NP 무섭/VA-I 어/EF ./SF"
+    },
+    {
+      "id": "n27",
+      "sentence": "나는 무섭고 싫어요.",
+      "basis": "new",
+      "expected": {
+        "K1": 1,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 0,
+        "K5": 0,
+        "K6": 0,
+        "K7": 1,
+        "n_clauses": 2
+      },
+      "note": "둘째 절은 주어를 채우지 않음(원칙 2)",
+      "actual": {
+        "K1": 1,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 0,
+        "K5": 0,
+        "K6": 0,
+        "K7": 1,
+        "n_clauses": 2
+      },
+      "match": true,
+      "diff": {},
+      "tokens": "나/NP 는/JX 무섭/VA-I 고/EC 싫/VA 어요/EF ./SF"
+    },
+    {
+      "id": "n28",
+      "sentence": "그거 보면 좀 무섭고 싫어요.",
+      "basis": "new",
+      "expected": {
+        "K1": 0,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 1,
+        "K5": 0,
+        "K6": 0,
+        "K7": 3,
+        "n_clauses": 3
+      },
+      "actual": {
+        "K1": 0,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 1,
+        "K5": 0,
+        "K6": 0,
+        "K7": 3,
+        "n_clauses": 3
+      },
+      "match": true,
+      "diff": {},
+      "tokens": "그거/NP 보/VV 면/EC 좀/MAG 무섭/VA-I 고/EC 싫/VA 어요/EF ./SF"
+    },
+    {
+      "id": "n29",
+      "sentence": "이 돌은 무겁다.",
+      "basis": "new",
+      "expected": {
+        "K1": 0,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 1,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "actual": {
+        "K1": 0,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 1,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "match": true,
+      "diff": {},
+      "tokens": "이/MM 돌/NNG 은/JX 무겁/VA-I 다/EF ./SF"
+    },
+    {
+      "id": "n30",
+      "sentence": "나는 그 돌이 무섭다.",
+      "basis": "new",
+      "expected": {
+        "K1": 1,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 1,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "actual": {
+        "K1": 1,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 1,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "match": true,
+      "diff": {},
+      "tokens": "나/NP 는/JX 그/MM 돌/NNG 이/JKS 무섭/VA-I 다/EF ./SF"
+    },
+    {
+      "id": "n31",
+      "sentence": "궁금해요.",
+      "basis": "new",
+      "expected": {
+        "K1": 0,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 0,
+        "K5": 0,
+        "K6": 0,
+        "K7": 1,
+        "n_clauses": 1
+      },
+      "actual": {
+        "K1": 0,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 0,
+        "K5": 0,
+        "K6": 0,
+        "K7": 1,
+        "n_clauses": 1
+      },
+      "match": true,
+      "diff": {},
+      "tokens": "궁금하/VA 어요/EF ./SF"
+    },
+    {
+      "id": "n32",
+      "sentence": "더 알고 싶어요.",
+      "basis": "new",
+      "expected": {
+        "K1": 0,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 0,
+        "K5": 0,
+        "K6": 0,
+        "K7": 1,
+        "n_clauses": 1
+      },
+      "actual": {
+        "K1": 0,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 0,
+        "K5": 0,
+        "K6": 0,
+        "K7": 1,
+        "n_clauses": 1
+      },
+      "match": true,
+      "diff": {},
+      "tokens": "더/MAG 알/VV 고/EC 싶/VX 어요/EF ./SF"
+    },
+    {
+      "id": "n33",
+      "sentence": "잘 모르겠어요.",
+      "basis": "new",
+      "expected": {
+        "K1": 0,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 0,
+        "K5": 0,
+        "K6": 0,
+        "K7": 1,
+        "n_clauses": 1
+      },
+      "note": "겠/EP는 과거가 아님",
+      "actual": {
+        "K1": 0,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 0,
+        "K5": 0,
+        "K6": 0,
+        "K7": 1,
+        "n_clauses": 1
+      },
+      "match": true,
+      "diff": {},
+      "tokens": "잘/MAG 모르/VV 겠/EP 어요/EF ./SF"
+    },
+    {
+      "id": "n34",
+      "sentence": "제가 그것을 가지고 있어요.",
+      "basis": "new",
+      "expected": {
+        "K1": 1,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 1,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "note": "있/VX라 K3 아님",
+      "actual": {
+        "K1": 1,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 1,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "match": true,
+      "diff": {},
+      "tokens": "저/NP 가/JKS 그것/NP 을/JKO 가지/VV 고/EC 있/VX 어요/EF ./SF"
+    },
+    {
+      "id": "n35",
+      "sentence": "나에게는 그런 게 없어요.",
+      "basis": "new",
+      "expected": {
+        "K1": 1,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 0,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "note": "'없다'는 K3 대상이 아님",
+      "actual": {
+        "K1": 1,
+        "K2": 0,
+        "K3": 0,
+        "K3b": 0,
+        "K4": 0,
+        "K5": 0,
+        "K6": 0,
+        "K7": 0,
+        "n_clauses": 1
+      },
+      "match": true,
+      "diff": {},
+      "tokens": "나/NP 에게/JKB 는/JX 그런/MM 것/NNB 이/JKS 없/VA 어요/EF ./SF"
+    }
+  ]
+}

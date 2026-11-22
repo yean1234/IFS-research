@@ -1,0 +1,986 @@
+{
+  "version": "placement-summary/0.1",
+  "tool": "ifs_chatbot.eval.placement",
+  "descriptiveOnly": true,
+  "note": "기술 통계와 효과크기 추정만 낸다. 거리 지표는 '고른 거리'이며 심리적 거리의 측정이라고 해석하지 않는다. 거리는 모두 물체 중심 기준이다(보이는 가장자리까지는 object_radius_m만큼 짧다). head_facing_ratio는 눈 추적이 아니라 머리 정면 방향 기준 대리 지표다(시선 지표가 아님). 효과크기 구간은 정규 근사(ci_method normal_approx)라 소표본에서 부정확하다.",
+  "facingDeg": 15.0,
+  "recordVersions": [
+    "ifs-placement/0.1"
+  ],
+  "records": {
+    "sessions": 24,
+    "included": 24,
+    "excludedIncomplete": 0,
+    "excludedPartialCondition": 0,
+    "skipped": 0
+  },
+  "configMismatch": {},
+  "nByConditionControl": {
+    "all": {
+      "place/none": 18,
+      "view/static": 6
+    },
+    "included": {
+      "place/none": 18,
+      "view/static": 6
+    }
+  },
+  "draftPhraseSessions": 24,
+  "autoModeSessions": 24,
+  "summaries": {
+    "byCondition": {
+      "place": {
+        "n": 18,
+        "final_distance_m": {
+          "n": 18,
+          "mean": 2.3791,
+          "sd": 1.069,
+          "min": 0.778,
+          "max": 3.5667
+        },
+        "final_height_m": {
+          "n": 18,
+          "mean": 1.0874,
+          "sd": 0.1349,
+          "min": 0.876,
+          "max": 1.2824
+        },
+        "grab_count": {
+          "n": 18,
+          "mean": 1.5556,
+          "sd": 0.7838,
+          "min": 1.0,
+          "max": 3.0
+        },
+        "first_grab_ms": {
+          "n": 18,
+          "mean": 2828.6667,
+          "sd": 747.4707,
+          "min": 1637.0,
+          "max": 3833.0
+        },
+        "held_ms": {
+          "n": 18,
+          "mean": 4810.5,
+          "sd": 2726.2133,
+          "min": 2041.0,
+          "max": 10117.0
+        },
+        "path_length_m": {
+          "n": 18,
+          "mean": 1.6382,
+          "sd": 0.7409,
+          "min": 0.6189,
+          "max": 2.8239
+        },
+        "stop_approach_mean_m": {
+          "n": 18,
+          "mean": 1.3348,
+          "sd": 0.4659,
+          "min": 0.6497,
+          "max": 1.79
+        },
+        "stop_recede_mean_m": {
+          "n": 18,
+          "mean": 1.5634,
+          "sd": 0.4763,
+          "min": 0.8832,
+          "max": 2.1205
+        },
+        "stop_mean_m": {
+          "n": 18,
+          "mean": 1.4491,
+          "sd": 0.4695,
+          "min": 0.7893,
+          "max": 1.9233
+        },
+        "stop_sd_m": {
+          "n": 18,
+          "mean": 0.1529,
+          "sd": 0.0397,
+          "min": 0.0871,
+          "max": 0.2481
+        },
+        "head_obj_distance_mean_m": {
+          "n": 18,
+          "mean": 2.3706,
+          "sd": 0.9789,
+          "min": 0.8851,
+          "max": 3.5437
+        },
+        "head_facing_ratio": {
+          "n": 18,
+          "mean": 0.5824,
+          "sd": 0.2185,
+          "min": 0.25,
+          "max": 0.8083
+        },
+        "head_yaw_range_deg": {
+          "n": 18,
+          "mean": 249.6028,
+          "sd": 15.8522,
+          "min": 227.76,
+          "max": 288.215
+        },
+        "obj_path_from_objpose_m": {
+          "n": 18,
+          "mean": 1.6382,
+          "sd": 0.7409,
+          "min": 0.6189,
+          "max": 2.8239
+        },
+        "rating_M1p_pre": {
+          "n": 18,
+          "mean": 5.0556,
+          "sd": 0.8024,
+          "min": 4.0,
+          "max": 6.0
+        },
+        "rating_M1p_post": {
+          "n": 18,
+          "mean": 5.8889,
+          "sd": 1.1827,
+          "min": 4.0,
+          "max": 8.0
+        },
+        "rating_M2_pre": {
+          "n": 18,
+          "mean": 4.1667,
+          "sd": 0.6183,
+          "min": 3.0,
+          "max": 5.0
+        },
+        "rating_M2_post": {
+          "n": 18,
+          "mean": 5.5556,
+          "sd": 1.0966,
+          "min": 4.0,
+          "max": 7.0
+        },
+        "rating_M3_pre": {
+          "n": 18,
+          "mean": 3.6667,
+          "sd": 0.767,
+          "min": 3.0,
+          "max": 5.0
+        },
+        "rating_M3_post": {
+          "n": 18,
+          "mean": 4.5556,
+          "sd": 1.0966,
+          "min": 3.0,
+          "max": 6.0
+        },
+        "rating_P1_pre": {
+          "n": 18,
+          "mean": 3.1111,
+          "sd": 0.6764,
+          "min": 2.0,
+          "max": 4.0
+        },
+        "rating_P1_post": {
+          "n": 18,
+          "mean": 4.8333,
+          "sd": 0.7859,
+          "min": 4.0,
+          "max": 6.0
+        },
+        "rating_P2_pre": {
+          "n": 18,
+          "mean": 3.7222,
+          "sd": 0.8264,
+          "min": 2.0,
+          "max": 5.0
+        },
+        "rating_P2_post": {
+          "n": 18,
+          "mean": 4.0,
+          "sd": 1.1376,
+          "min": 2.0,
+          "max": 6.0
+        },
+        "rating_S5_pre": {
+          "n": 18,
+          "mean": 4.5556,
+          "sd": 0.7838,
+          "min": 3.0,
+          "max": 6.0
+        },
+        "rating_S5_post": {
+          "n": 18,
+          "mean": 4.2778,
+          "sd": 1.5265,
+          "min": 2.0,
+          "max": 7.0
+        },
+        "rating_S6_pre": {
+          "n": 18,
+          "mean": 3.6111,
+          "sd": 1.0369,
+          "min": 2.0,
+          "max": 5.0
+        },
+        "rating_S6_post": {
+          "n": 18,
+          "mean": 4.6667,
+          "sd": 2.1144,
+          "min": 1.0,
+          "max": 7.0
+        }
+      },
+      "view": {
+        "n": 6,
+        "final_distance_m": {
+          "n": 6,
+          "mean": 1.5,
+          "sd": 0.0,
+          "min": 1.5,
+          "max": 1.5
+        },
+        "final_height_m": {
+          "n": 6,
+          "mean": 1.2,
+          "sd": 0.0,
+          "min": 1.2,
+          "max": 1.2
+        },
+        "grab_count": {
+          "n": 6,
+          "mean": 0.0,
+          "sd": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "first_grab_ms": {
+          "n": 0,
+          "mean": null,
+          "sd": null,
+          "min": null,
+          "max": null
+        },
+        "held_ms": {
+          "n": 6,
+          "mean": 0.0,
+          "sd": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "path_length_m": {
+          "n": 6,
+          "mean": 0.0,
+          "sd": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "stop_approach_mean_m": {
+          "n": 6,
+          "mean": 1.1076,
+          "sd": 0.0316,
+          "min": 1.0622,
+          "max": 1.152
+        },
+        "stop_recede_mean_m": {
+          "n": 6,
+          "mean": 1.329,
+          "sd": 0.0328,
+          "min": 1.2723,
+          "max": 1.3702
+        },
+        "stop_mean_m": {
+          "n": 6,
+          "mean": 1.2183,
+          "sd": 0.0184,
+          "min": 1.1926,
+          "max": 1.2439
+        },
+        "stop_sd_m": {
+          "n": 6,
+          "mean": 0.1386,
+          "sd": 0.0253,
+          "min": 0.1093,
+          "max": 0.1694
+        },
+        "head_obj_distance_mean_m": {
+          "n": 6,
+          "mean": 1.5524,
+          "sd": 0.0,
+          "min": 1.5524,
+          "max": 1.5524
+        },
+        "head_facing_ratio": {
+          "n": 6,
+          "mean": 0.6315,
+          "sd": 0.055,
+          "min": 0.5694,
+          "max": 0.7222
+        },
+        "head_yaw_range_deg": {
+          "n": 6,
+          "mean": 237.623,
+          "sd": 2.6493,
+          "min": 233.932,
+          "max": 239.497
+        },
+        "obj_path_from_objpose_m": {
+          "n": 6,
+          "mean": 0.0,
+          "sd": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "rating_M1p_pre": {
+          "n": 6,
+          "mean": 4.5,
+          "sd": 0.5477,
+          "min": 4.0,
+          "max": 5.0
+        },
+        "rating_M1p_post": {
+          "n": 6,
+          "mean": 5.6667,
+          "sd": 0.8165,
+          "min": 5.0,
+          "max": 7.0
+        },
+        "rating_M2_pre": {
+          "n": 6,
+          "mean": 4.0,
+          "sd": 0.0,
+          "min": 4.0,
+          "max": 4.0
+        },
+        "rating_M2_post": {
+          "n": 6,
+          "mean": 5.3333,
+          "sd": 0.8165,
+          "min": 4.0,
+          "max": 6.0
+        },
+        "rating_M3_pre": {
+          "n": 6,
+          "mean": 4.1667,
+          "sd": 0.9832,
+          "min": 3.0,
+          "max": 5.0
+        },
+        "rating_M3_post": {
+          "n": 6,
+          "mean": 5.0,
+          "sd": 0.6325,
+          "min": 4.0,
+          "max": 6.0
+        },
+        "rating_P1_pre": {
+          "n": 6,
+          "mean": 3.5,
+          "sd": 0.8367,
+          "min": 2.0,
+          "max": 4.0
+        },
+        "rating_P1_post": {
+          "n": 6,
+          "mean": 3.5,
+          "sd": 0.5477,
+          "min": 3.0,
+          "max": 4.0
+        },
+        "rating_P2_pre": {
+          "n": 6,
+          "mean": 3.6667,
+          "sd": 0.8165,
+          "min": 3.0,
+          "max": 5.0
+        },
+        "rating_P2_post": {
+          "n": 6,
+          "mean": 4.0,
+          "sd": 0.8944,
+          "min": 3.0,
+          "max": 5.0
+        },
+        "rating_S5_pre": {
+          "n": 6,
+          "mean": 4.1667,
+          "sd": 0.7528,
+          "min": 3.0,
+          "max": 5.0
+        },
+        "rating_S5_post": {
+          "n": 6,
+          "mean": 3.6667,
+          "sd": 0.8165,
+          "min": 3.0,
+          "max": 5.0
+        },
+        "rating_S6_pre": {
+          "n": 6,
+          "mean": 2.8333,
+          "sd": 0.7528,
+          "min": 2.0,
+          "max": 4.0
+        },
+        "rating_S6_post": {
+          "n": 6,
+          "mean": 3.3333,
+          "sd": 0.5164,
+          "min": 3.0,
+          "max": 4.0
+        }
+      }
+    },
+    "byConditionControl": {
+      "place/none": {
+        "n": 18,
+        "final_distance_m": {
+          "n": 18,
+          "mean": 2.3791,
+          "sd": 1.069,
+          "min": 0.778,
+          "max": 3.5667
+        },
+        "final_height_m": {
+          "n": 18,
+          "mean": 1.0874,
+          "sd": 0.1349,
+          "min": 0.876,
+          "max": 1.2824
+        },
+        "grab_count": {
+          "n": 18,
+          "mean": 1.5556,
+          "sd": 0.7838,
+          "min": 1.0,
+          "max": 3.0
+        },
+        "first_grab_ms": {
+          "n": 18,
+          "mean": 2828.6667,
+          "sd": 747.4707,
+          "min": 1637.0,
+          "max": 3833.0
+        },
+        "held_ms": {
+          "n": 18,
+          "mean": 4810.5,
+          "sd": 2726.2133,
+          "min": 2041.0,
+          "max": 10117.0
+        },
+        "path_length_m": {
+          "n": 18,
+          "mean": 1.6382,
+          "sd": 0.7409,
+          "min": 0.6189,
+          "max": 2.8239
+        },
+        "stop_approach_mean_m": {
+          "n": 18,
+          "mean": 1.3348,
+          "sd": 0.4659,
+          "min": 0.6497,
+          "max": 1.79
+        },
+        "stop_recede_mean_m": {
+          "n": 18,
+          "mean": 1.5634,
+          "sd": 0.4763,
+          "min": 0.8832,
+          "max": 2.1205
+        },
+        "stop_mean_m": {
+          "n": 18,
+          "mean": 1.4491,
+          "sd": 0.4695,
+          "min": 0.7893,
+          "max": 1.9233
+        },
+        "stop_sd_m": {
+          "n": 18,
+          "mean": 0.1529,
+          "sd": 0.0397,
+          "min": 0.0871,
+          "max": 0.2481
+        },
+        "head_obj_distance_mean_m": {
+          "n": 18,
+          "mean": 2.3706,
+          "sd": 0.9789,
+          "min": 0.8851,
+          "max": 3.5437
+        },
+        "head_facing_ratio": {
+          "n": 18,
+          "mean": 0.5824,
+          "sd": 0.2185,
+          "min": 0.25,
+          "max": 0.8083
+        },
+        "head_yaw_range_deg": {
+          "n": 18,
+          "mean": 249.6028,
+          "sd": 15.8522,
+          "min": 227.76,
+          "max": 288.215
+        },
+        "obj_path_from_objpose_m": {
+          "n": 18,
+          "mean": 1.6382,
+          "sd": 0.7409,
+          "min": 0.6189,
+          "max": 2.8239
+        },
+        "rating_M1p_pre": {
+          "n": 18,
+          "mean": 5.0556,
+          "sd": 0.8024,
+          "min": 4.0,
+          "max": 6.0
+        },
+        "rating_M1p_post": {
+          "n": 18,
+          "mean": 5.8889,
+          "sd": 1.1827,
+          "min": 4.0,
+          "max": 8.0
+        },
+        "rating_M2_pre": {
+          "n": 18,
+          "mean": 4.1667,
+          "sd": 0.6183,
+          "min": 3.0,
+          "max": 5.0
+        },
+        "rating_M2_post": {
+          "n": 18,
+          "mean": 5.5556,
+          "sd": 1.0966,
+          "min": 4.0,
+          "max": 7.0
+        },
+        "rating_M3_pre": {
+          "n": 18,
+          "mean": 3.6667,
+          "sd": 0.767,
+          "min": 3.0,
+          "max": 5.0
+        },
+        "rating_M3_post": {
+          "n": 18,
+          "mean": 4.5556,
+          "sd": 1.0966,
+          "min": 3.0,
+          "max": 6.0
+        },
+        "rating_P1_pre": {
+          "n": 18,
+          "mean": 3.1111,
+          "sd": 0.6764,
+          "min": 2.0,
+          "max": 4.0
+        },
+        "rating_P1_post": {
+          "n": 18,
+          "mean": 4.8333,
+          "sd": 0.7859,
+          "min": 4.0,
+          "max": 6.0
+        },
+        "rating_P2_pre": {
+          "n": 18,
+          "mean": 3.7222,
+          "sd": 0.8264,
+          "min": 2.0,
+          "max": 5.0
+        },
+        "rating_P2_post": {
+          "n": 18,
+          "mean": 4.0,
+          "sd": 1.1376,
+          "min": 2.0,
+          "max": 6.0
+        },
+        "rating_S5_pre": {
+          "n": 18,
+          "mean": 4.5556,
+          "sd": 0.7838,
+          "min": 3.0,
+          "max": 6.0
+        },
+        "rating_S5_post": {
+          "n": 18,
+          "mean": 4.2778,
+          "sd": 1.5265,
+          "min": 2.0,
+          "max": 7.0
+        },
+        "rating_S6_pre": {
+          "n": 18,
+          "mean": 3.6111,
+          "sd": 1.0369,
+          "min": 2.0,
+          "max": 5.0
+        },
+        "rating_S6_post": {
+          "n": 18,
+          "mean": 4.6667,
+          "sd": 2.1144,
+          "min": 1.0,
+          "max": 7.0
+        }
+      },
+      "view/static": {
+        "n": 6,
+        "final_distance_m": {
+          "n": 6,
+          "mean": 1.5,
+          "sd": 0.0,
+          "min": 1.5,
+          "max": 1.5
+        },
+        "final_height_m": {
+          "n": 6,
+          "mean": 1.2,
+          "sd": 0.0,
+          "min": 1.2,
+          "max": 1.2
+        },
+        "grab_count": {
+          "n": 6,
+          "mean": 0.0,
+          "sd": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "first_grab_ms": {
+          "n": 0,
+          "mean": null,
+          "sd": null,
+          "min": null,
+          "max": null
+        },
+        "held_ms": {
+          "n": 6,
+          "mean": 0.0,
+          "sd": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "path_length_m": {
+          "n": 6,
+          "mean": 0.0,
+          "sd": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "stop_approach_mean_m": {
+          "n": 6,
+          "mean": 1.1076,
+          "sd": 0.0316,
+          "min": 1.0622,
+          "max": 1.152
+        },
+        "stop_recede_mean_m": {
+          "n": 6,
+          "mean": 1.329,
+          "sd": 0.0328,
+          "min": 1.2723,
+          "max": 1.3702
+        },
+        "stop_mean_m": {
+          "n": 6,
+          "mean": 1.2183,
+          "sd": 0.0184,
+          "min": 1.1926,
+          "max": 1.2439
+        },
+        "stop_sd_m": {
+          "n": 6,
+          "mean": 0.1386,
+          "sd": 0.0253,
+          "min": 0.1093,
+          "max": 0.1694
+        },
+        "head_obj_distance_mean_m": {
+          "n": 6,
+          "mean": 1.5524,
+          "sd": 0.0,
+          "min": 1.5524,
+          "max": 1.5524
+        },
+        "head_facing_ratio": {
+          "n": 6,
+          "mean": 0.6315,
+          "sd": 0.055,
+          "min": 0.5694,
+          "max": 0.7222
+        },
+        "head_yaw_range_deg": {
+          "n": 6,
+          "mean": 237.623,
+          "sd": 2.6493,
+          "min": 233.932,
+          "max": 239.497
+        },
+        "obj_path_from_objpose_m": {
+          "n": 6,
+          "mean": 0.0,
+          "sd": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "rating_M1p_pre": {
+          "n": 6,
+          "mean": 4.5,
+          "sd": 0.5477,
+          "min": 4.0,
+          "max": 5.0
+        },
+        "rating_M1p_post": {
+          "n": 6,
+          "mean": 5.6667,
+          "sd": 0.8165,
+          "min": 5.0,
+          "max": 7.0
+        },
+        "rating_M2_pre": {
+          "n": 6,
+          "mean": 4.0,
+          "sd": 0.0,
+          "min": 4.0,
+          "max": 4.0
+        },
+        "rating_M2_post": {
+          "n": 6,
+          "mean": 5.3333,
+          "sd": 0.8165,
+          "min": 4.0,
+          "max": 6.0
+        },
+        "rating_M3_pre": {
+          "n": 6,
+          "mean": 4.1667,
+          "sd": 0.9832,
+          "min": 3.0,
+          "max": 5.0
+        },
+        "rating_M3_post": {
+          "n": 6,
+          "mean": 5.0,
+          "sd": 0.6325,
+          "min": 4.0,
+          "max": 6.0
+        },
+        "rating_P1_pre": {
+          "n": 6,
+          "mean": 3.5,
+          "sd": 0.8367,
+          "min": 2.0,
+          "max": 4.0
+        },
+        "rating_P1_post": {
+          "n": 6,
+          "mean": 3.5,
+          "sd": 0.5477,
+          "min": 3.0,
+          "max": 4.0
+        },
+        "rating_P2_pre": {
+          "n": 6,
+          "mean": 3.6667,
+          "sd": 0.8165,
+          "min": 3.0,
+          "max": 5.0
+        },
+        "rating_P2_post": {
+          "n": 6,
+          "mean": 4.0,
+          "sd": 0.8944,
+          "min": 3.0,
+          "max": 5.0
+        },
+        "rating_S5_pre": {
+          "n": 6,
+          "mean": 4.1667,
+          "sd": 0.7528,
+          "min": 3.0,
+          "max": 5.0
+        },
+        "rating_S5_post": {
+          "n": 6,
+          "mean": 3.6667,
+          "sd": 0.8165,
+          "min": 3.0,
+          "max": 5.0
+        },
+        "rating_S6_pre": {
+          "n": 6,
+          "mean": 2.8333,
+          "sd": 0.7528,
+          "min": 2.0,
+          "max": 4.0
+        },
+        "rating_S6_post": {
+          "n": 6,
+          "mean": 3.3333,
+          "sd": 0.5164,
+          "min": 3.0,
+          "max": 4.0
+        }
+      }
+    },
+    "stopDirectionEffect": {
+      "definition": "세션별 stop_approach_mean_m − stop_recede_mean_m",
+      "all": {
+        "n": 24,
+        "mean": -0.2268,
+        "sd": 0.0716,
+        "min": -0.3945,
+        "max": -0.1075
+      },
+      "byCondition": {
+        "place": {
+          "n": 18,
+          "mean": -0.2286,
+          "sd": 0.078,
+          "min": -0.3945,
+          "max": -0.1075
+        },
+        "view": {
+          "n": 6,
+          "mean": -0.2214,
+          "sd": 0.053,
+          "min": -0.2835,
+          "max": -0.1593
+        }
+      }
+    },
+    "stopConditionEffect": {
+      "definition": "A − B, A = place. d = 평균 차 / 합동 sd(n−1), hedges_g = J·d (J = 1 − 3/(4·df − 1)), ci95_normal_approx = d의 정규 근사 95% 구간(소표본에서 부정확)",
+      "stop_mean_m": {
+        "place_vs_view": {
+          "nA": 18,
+          "nB": 6,
+          "meanA": 1.4491,
+          "meanB": 1.2183,
+          "meanDiff": 0.2307,
+          "sdPooled": 0.4128,
+          "d": 0.5589,
+          "hedges_g": 0.5396,
+          "ci95_normal_approx": {
+            "low": -0.3785,
+            "high": 1.4963
+          },
+          "ci_method": "normal_approx"
+        },
+        "place_vs_view_static": {
+          "nA": 18,
+          "nB": 6,
+          "meanA": 1.4491,
+          "meanB": 1.2183,
+          "meanDiff": 0.2307,
+          "sdPooled": 0.4128,
+          "d": 0.5589,
+          "hedges_g": 0.5396,
+          "ci95_normal_approx": {
+            "low": -0.3785,
+            "high": 1.4963
+          },
+          "ci_method": "normal_approx"
+        }
+      },
+      "stop_approach_mean_m": {
+        "place_vs_view": {
+          "nA": 18,
+          "nB": 6,
+          "meanA": 1.3348,
+          "meanB": 1.1076,
+          "meanDiff": 0.2272,
+          "sdPooled": 0.4099,
+          "d": 0.5543,
+          "hedges_g": 0.5351,
+          "ci95_normal_approx": {
+            "low": -0.3829,
+            "high": 1.4914
+          },
+          "ci_method": "normal_approx"
+        },
+        "place_vs_view_static": {
+          "nA": 18,
+          "nB": 6,
+          "meanA": 1.3348,
+          "meanB": 1.1076,
+          "meanDiff": 0.2272,
+          "sdPooled": 0.4099,
+          "d": 0.5543,
+          "hedges_g": 0.5351,
+          "ci95_normal_approx": {
+            "low": -0.3829,
+            "high": 1.4914
+          },
+          "ci_method": "normal_approx"
+        }
+      },
+      "stop_recede_mean_m": {
+        "place_vs_view": {
+          "nA": 18,
+          "nB": 6,
+          "meanA": 1.5634,
+          "meanB": 1.329,
+          "meanDiff": 0.2343,
+          "sdPooled": 0.419,
+          "d": 0.5592,
+          "hedges_g": 0.54,
+          "ci95_normal_approx": {
+            "low": -0.3781,
+            "high": 1.4966
+          },
+          "ci_method": "normal_approx"
+        },
+        "place_vs_view_static": {
+          "nA": 18,
+          "nB": 6,
+          "meanA": 1.5634,
+          "meanB": 1.329,
+          "meanDiff": 0.2343,
+          "sdPooled": 0.419,
+          "d": 0.5592,
+          "hedges_g": 0.54,
+          "ci95_normal_approx": {
+            "low": -0.3781,
+            "high": 1.4966
+          },
+          "ci_method": "normal_approx"
+        }
+      }
+    },
+    "placeDistanceStopCorrelation": {
+      "final_distance_m~stop_mean_m": {
+        "n": 18,
+        "r": 0.9745
+      },
+      "final_distance_m~stop_approach_mean_m": {
+        "n": 18,
+        "r": 0.9723
+      },
+      "final_distance_m~stop_recede_mean_m": {
+        "n": 18,
+        "r": 0.9702
+      }
+    },
+    "ringClustering": {
+      "toleranceM": 0.1,
+      "condition": "place",
+      "nWithRings": 18,
+      "nWithin": 6,
+      "proportionWithin": 0.3333,
+      "nRingsHidden": 0,
+      "uniformReference": 0.15,
+      "uniformReferenceNote": "놓은 거리가 0–floorRadiusM에 고르게 퍼졌을 때 기대 비율(참고값, 검정 아님)"
+    }
+  },
+  "skipped": [],
+  "warnings": [
+    "초안 문구: 세션 24개가 status draft 문구로 수집됨 — IRB 확인 전 문구라 본 실험 자료로 쓰기 전에 확인",
+    "자동 시행(autoMode) 세션 24개 — 참여자 자료가 아님"
+  ]
+}

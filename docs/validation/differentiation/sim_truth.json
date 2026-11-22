@@ -1,0 +1,602 @@
+{
+  "version": "sim-placement/0.1",
+  "synthetic": true,
+  "note": "합성 자료: 파이프라인 검증용이며 효과의 근거가 아님",
+  "seed": 20261123,
+  "perType": 6,
+  "headSampleHz": 4.0,
+  "archetypes": [
+    {
+      "archetype": "near_look",
+      "label": "가까이 두고 바라봄",
+      "condition": "place/none",
+      "expected_quadrant": "NL",
+      "distance_m": [
+        0.7,
+        1.2
+      ],
+      "p_face_early_late": [
+        0.6,
+        0.85
+      ],
+      "grabs": [
+        1,
+        2
+      ],
+      "stop_m": {
+        "approach": [
+          0.6,
+          0.8
+        ],
+        "recede": [
+          0.8,
+          1.0
+        ]
+      },
+      "ratings_pre_post": {
+        "M1p": [
+          5,
+          7
+        ],
+        "M2": [
+          4,
+          6
+        ],
+        "P1": [
+          3,
+          5
+        ],
+        "M3": [
+          4,
+          6
+        ],
+        "P2": [
+          4,
+          5
+        ],
+        "S5": [
+          5,
+          6
+        ],
+        "S6": [
+          3,
+          2
+        ]
+      },
+      "utterances": {
+        "post/L-A": [
+          "내 안에 불안한 게 있어요.",
+          "저한테 그런 마음이 있네요.",
+          "제 안에 작은 돌이 있어요."
+        ],
+        "post/L-B": [
+          "궁금해요.",
+          "좀 안쓰러워요."
+        ],
+        "pre/L-A": [
+          "나는 불안 덩어리예요.",
+          "저는 그 돌이에요.",
+          "그 돌이 저예요."
+        ],
+        "pre/L-B": [
+          "좀 무서워요.",
+          "아직 무서워요."
+        ]
+      }
+    },
+    {
+      "archetype": "far_look",
+      "label": "멀리 두고 바라봄",
+      "condition": "place/none",
+      "expected_quadrant": "FL",
+      "distance_m": [
+        2.6,
+        3.4
+      ],
+      "p_face_early_late": [
+        0.7,
+        0.8
+      ],
+      "grabs": [
+        2,
+        3
+      ],
+      "stop_m": {
+        "approach": [
+          1.4,
+          1.7
+        ],
+        "recede": [
+          1.6,
+          1.9
+        ]
+      },
+      "ratings_pre_post": {
+        "M1p": [
+          5,
+          6
+        ],
+        "M2": [
+          4,
+          5
+        ],
+        "P1": [
+          3,
+          4
+        ],
+        "M3": [
+          4,
+          4
+        ],
+        "P2": [
+          3,
+          3
+        ],
+        "S5": [
+          5,
+          5
+        ],
+        "S6": [
+          4,
+          6
+        ]
+      },
+      "utterances": {
+        "post/L-A": [
+          "그게 저기 멀리 보여요.",
+          "그 돌이 멀리 보여요."
+        ],
+        "post/L-B": [
+          "아직 무서워요.",
+          "좀 두려워요."
+        ],
+        "pre/L-A": [
+          "나는 그 돌이에요.",
+          "저는 그냥 불안한 사람이에요."
+        ],
+        "pre/L-B": [
+          "좀 두려워요."
+        ]
+      }
+    },
+    {
+      "archetype": "far_away",
+      "label": "멀리 두고 고개 돌림",
+      "condition": "place/none",
+      "expected_quadrant": "FA",
+      "distance_m": [
+        2.8,
+        3.6
+      ],
+      "p_face_early_late": [
+        0.5,
+        0.15
+      ],
+      "grabs": [
+        1,
+        1
+      ],
+      "stop_m": {
+        "approach": [
+          1.6,
+          2.0
+        ],
+        "recede": [
+          1.8,
+          2.2
+        ]
+      },
+      "ratings_pre_post": {
+        "M1p": [
+          5,
+          5
+        ],
+        "M2": [
+          4,
+          6
+        ],
+        "P1": [
+          3,
+          5
+        ],
+        "M3": [
+          4,
+          4
+        ],
+        "P2": [
+          4,
+          3
+        ],
+        "S5": [
+          4,
+          2
+        ],
+        "S6": [
+          4,
+          6
+        ]
+      },
+      "utterances": {
+        "post/L-A": [
+          "그건 저기 있어요.",
+          "그 돌은 아직 저기 있네요."
+        ],
+        "post/L-B": [
+          "싫어요.",
+          "보고 싶지 않아요."
+        ],
+        "pre/L-A": [
+          "저는 그냥 불안한 사람이에요.",
+          "나는 불안 덩어리예요."
+        ],
+        "pre/L-B": [
+          "좀 짜증 나요."
+        ]
+      }
+    },
+    {
+      "archetype": "view_only",
+      "label": "보기만 조건",
+      "condition": "view/static",
+      "expected_quadrant": null,
+      "distance_m": [
+        1.5,
+        1.5
+      ],
+      "p_face_early_late": [
+        0.6,
+        0.6
+      ],
+      "grabs": [
+        0,
+        0
+      ],
+      "stop_m": {
+        "approach": [
+          1.0,
+          1.2
+        ],
+        "recede": [
+          1.2,
+          1.4
+        ]
+      },
+      "ratings_pre_post": {
+        "M1p": [
+          5,
+          6
+        ],
+        "M2": [
+          4,
+          5
+        ],
+        "P1": [
+          3,
+          4
+        ],
+        "M3": [
+          4,
+          5
+        ],
+        "P2": [
+          4,
+          4
+        ],
+        "S5": [
+          4,
+          4
+        ],
+        "S6": [
+          3,
+          3
+        ]
+      },
+      "utterances": {
+        "post/L-A": [
+          "무거웠어요.",
+          "그 돌이 작아 보였어요."
+        ],
+        "post/L-B": [
+          "괜찮아요."
+        ],
+        "pre/L-A": [
+          "무거워요.",
+          "잘 모르겠어요."
+        ],
+        "pre/L-B": [
+          "잘 모르겠어요."
+        ]
+      }
+    }
+  ],
+  "sessions": [
+    {
+      "participant": "P101",
+      "session_id": "SIM01",
+      "archetype": "far_look",
+      "label": "멀리 두고 바라봄",
+      "condition": "place",
+      "expected_quadrant": "FL",
+      "p_face_early": 0.654,
+      "p_face_late": 0.794,
+      "final_distance_m": 3.1287,
+      "grabs": 2
+    },
+    {
+      "participant": "P102",
+      "session_id": "SIM02",
+      "archetype": "near_look",
+      "label": "가까이 두고 바라봄",
+      "condition": "place",
+      "expected_quadrant": "NL",
+      "p_face_early": 0.646,
+      "p_face_late": 0.942,
+      "final_distance_m": 1.0064,
+      "grabs": 1
+    },
+    {
+      "participant": "P103",
+      "session_id": "SIM03",
+      "archetype": "far_look",
+      "label": "멀리 두고 바라봄",
+      "condition": "place",
+      "expected_quadrant": "FL",
+      "p_face_early": 0.608,
+      "p_face_late": 0.761,
+      "final_distance_m": 3.0913,
+      "grabs": 3
+    },
+    {
+      "participant": "P104",
+      "session_id": "SIM04",
+      "archetype": "far_away",
+      "label": "멀리 두고 고개 돌림",
+      "condition": "place",
+      "expected_quadrant": "FA",
+      "p_face_early": 0.411,
+      "p_face_late": 0.057,
+      "final_distance_m": 2.9147,
+      "grabs": 1
+    },
+    {
+      "participant": "P105",
+      "session_id": "SIM05",
+      "archetype": "far_look",
+      "label": "멀리 두고 바라봄",
+      "condition": "place",
+      "expected_quadrant": "FL",
+      "p_face_early": 0.65,
+      "p_face_late": 0.803,
+      "final_distance_m": 2.6457,
+      "grabs": 2
+    },
+    {
+      "participant": "P106",
+      "session_id": "SIM06",
+      "archetype": "view_only",
+      "label": "보기만 조건",
+      "condition": "view",
+      "expected_quadrant": null,
+      "p_face_early": 0.55,
+      "p_face_late": 0.558,
+      "final_distance_m": 1.5,
+      "grabs": 0
+    },
+    {
+      "participant": "P107",
+      "session_id": "SIM07",
+      "archetype": "view_only",
+      "label": "보기만 조건",
+      "condition": "view",
+      "expected_quadrant": null,
+      "p_face_early": 0.541,
+      "p_face_late": 0.699,
+      "final_distance_m": 1.5,
+      "grabs": 0
+    },
+    {
+      "participant": "P108",
+      "session_id": "SIM08",
+      "archetype": "near_look",
+      "label": "가까이 두고 바라봄",
+      "condition": "place",
+      "expected_quadrant": "NL",
+      "p_face_early": 0.647,
+      "p_face_late": 0.877,
+      "final_distance_m": 0.8192,
+      "grabs": 1
+    },
+    {
+      "participant": "P109",
+      "session_id": "SIM09",
+      "archetype": "far_look",
+      "label": "멀리 두고 바라봄",
+      "condition": "place",
+      "expected_quadrant": "FL",
+      "p_face_early": 0.668,
+      "p_face_late": 0.893,
+      "final_distance_m": 3.1607,
+      "grabs": 3
+    },
+    {
+      "participant": "P110",
+      "session_id": "SIM10",
+      "archetype": "far_away",
+      "label": "멀리 두고 고개 돌림",
+      "condition": "place",
+      "expected_quadrant": "FA",
+      "p_face_early": 0.427,
+      "p_face_late": 0.155,
+      "final_distance_m": 3.5211,
+      "grabs": 1
+    },
+    {
+      "participant": "P111",
+      "session_id": "SIM11",
+      "archetype": "near_look",
+      "label": "가까이 두고 바라봄",
+      "condition": "place",
+      "expected_quadrant": "NL",
+      "p_face_early": 0.593,
+      "p_face_late": 0.845,
+      "final_distance_m": 0.778,
+      "grabs": 1
+    },
+    {
+      "participant": "P112",
+      "session_id": "SIM12",
+      "archetype": "far_look",
+      "label": "멀리 두고 바라봄",
+      "condition": "place",
+      "expected_quadrant": "FL",
+      "p_face_early": 0.684,
+      "p_face_late": 0.701,
+      "final_distance_m": 3.0615,
+      "grabs": 2
+    },
+    {
+      "participant": "P113",
+      "session_id": "SIM13",
+      "archetype": "near_look",
+      "label": "가까이 두고 바라봄",
+      "condition": "place",
+      "expected_quadrant": "NL",
+      "p_face_early": 0.607,
+      "p_face_late": 0.76,
+      "final_distance_m": 1.0829,
+      "grabs": 1
+    },
+    {
+      "participant": "P114",
+      "session_id": "SIM14",
+      "archetype": "view_only",
+      "label": "보기만 조건",
+      "condition": "view",
+      "expected_quadrant": null,
+      "p_face_early": 0.693,
+      "p_face_late": 0.648,
+      "final_distance_m": 1.5,
+      "grabs": 0
+    },
+    {
+      "participant": "P115",
+      "session_id": "SIM15",
+      "archetype": "far_look",
+      "label": "멀리 두고 바라봄",
+      "condition": "place",
+      "expected_quadrant": "FL",
+      "p_face_early": 0.782,
+      "p_face_late": 0.787,
+      "final_distance_m": 2.7616,
+      "grabs": 3
+    },
+    {
+      "participant": "P116",
+      "session_id": "SIM16",
+      "archetype": "far_away",
+      "label": "멀리 두고 고개 돌림",
+      "condition": "place",
+      "expected_quadrant": "FA",
+      "p_face_early": 0.414,
+      "p_face_late": 0.068,
+      "final_distance_m": 3.5667,
+      "grabs": 1
+    },
+    {
+      "participant": "P117",
+      "session_id": "SIM17",
+      "archetype": "far_away",
+      "label": "멀리 두고 고개 돌림",
+      "condition": "place",
+      "expected_quadrant": "FA",
+      "p_face_early": 0.58,
+      "p_face_late": 0.1,
+      "final_distance_m": 3.1452,
+      "grabs": 1
+    },
+    {
+      "participant": "P118",
+      "session_id": "SIM18",
+      "archetype": "near_look",
+      "label": "가까이 두고 바라봄",
+      "condition": "place",
+      "expected_quadrant": "NL",
+      "p_face_early": 0.654,
+      "p_face_late": 0.876,
+      "final_distance_m": 0.8785,
+      "grabs": 1
+    },
+    {
+      "participant": "P119",
+      "session_id": "SIM19",
+      "archetype": "far_away",
+      "label": "멀리 두고 고개 돌림",
+      "condition": "place",
+      "expected_quadrant": "FA",
+      "p_face_early": 0.406,
+      "p_face_late": 0.125,
+      "final_distance_m": 3.2358,
+      "grabs": 1
+    },
+    {
+      "participant": "P120",
+      "session_id": "SIM20",
+      "archetype": "view_only",
+      "label": "보기만 조건",
+      "condition": "view",
+      "expected_quadrant": null,
+      "p_face_early": 0.609,
+      "p_face_late": 0.54,
+      "final_distance_m": 1.5,
+      "grabs": 0
+    },
+    {
+      "participant": "P121",
+      "session_id": "SIM21",
+      "archetype": "near_look",
+      "label": "가까이 두고 바라봄",
+      "condition": "place",
+      "expected_quadrant": "NL",
+      "p_face_early": 0.516,
+      "p_face_late": 0.873,
+      "final_distance_m": 1.1012,
+      "grabs": 2
+    },
+    {
+      "participant": "P122",
+      "session_id": "SIM22",
+      "archetype": "far_away",
+      "label": "멀리 두고 고개 돌림",
+      "condition": "place",
+      "expected_quadrant": "FA",
+      "p_face_early": 0.506,
+      "p_face_late": 0.1,
+      "final_distance_m": 2.9238,
+      "grabs": 1
+    },
+    {
+      "participant": "P123",
+      "session_id": "SIM23",
+      "archetype": "view_only",
+      "label": "보기만 조건",
+      "condition": "view",
+      "expected_quadrant": null,
+      "p_face_early": 0.639,
+      "p_face_late": 0.648,
+      "final_distance_m": 1.5,
+      "grabs": 0
+    },
+    {
+      "participant": "P124",
+      "session_id": "SIM24",
+      "archetype": "view_only",
+      "label": "보기만 조건",
+      "condition": "view",
+      "expected_quadrant": null,
+      "p_face_early": 0.663,
+      "p_face_late": 0.569,
+      "final_distance_m": 1.5,
+      "grabs": 0
+    }
+  ]
+}

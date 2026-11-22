@@ -1,0 +1,1759 @@
+{
+  "version": "differentiation-profile/0.1",
+  "tool": "ifs_chatbot.eval.differentiation",
+  "descriptiveOnly": true,
+  "syntheticData": true,
+  "syntheticNote": "합성 자료: 파이프라인 검증용이며 효과의 근거가 아님",
+  "note": "세 방법(자기보고·행동·언어)을 성분별로 따로 낸다. 한 점수로 합치지 않는다. 유의성 판정을 내지 않는다. 2×2 칸 이름은 관찰 서술이며 심리 상태의 판정이 아니다. 사례 규칙의 '읽는 법'은 후보 읽기다. 언어 표지는 규칙 개수이고 짧은 발화에서 불안정하다(docs/rq-v4-differentiation-measure.md 3.3 한계).",
+  "parameters": {
+    "facingDeg": 15.0,
+    "facingThreshold": 0.5,
+    "startDistanceDefaultM": 1.5,
+    "distanceSplit": "fixed",
+    "facingSplit": "fixed",
+    "windowS": 30.0,
+    "input": "records"
+  },
+  "itemScales": {
+    "M1p": [
+      0.0,
+      10.0
+    ],
+    "M2": [
+      0.0,
+      10.0
+    ],
+    "M3": [
+      0.0,
+      10.0
+    ],
+    "P1": [
+      1.0,
+      7.0
+    ],
+    "P2": [
+      1.0,
+      7.0
+    ],
+    "S5": [
+      1.0,
+      7.0
+    ],
+    "S6": [
+      1.0,
+      7.0
+    ]
+  },
+  "normalization": "norm(x) = (x − 척도 최소) / (척도 최대 − 척도 최소). disid = (norm(M2) + norm(P1)) / 2, 둘 다 있을 때만",
+  "highThreshold": {
+    "onScale1to7": 5.0,
+    "normalized": 0.6667
+  },
+  "records": {
+    "sessions": 24,
+    "included": 24,
+    "place": 18,
+    "view": 6,
+    "synthetic": 24,
+    "utterances": 96
+  },
+  "selfReport": {
+    "byCondition": {
+      "place": {
+        "n": 18,
+        "M1p_pre": {
+          "n": 18,
+          "mean": 5.0556,
+          "sd": 0.8024,
+          "min": 4.0,
+          "max": 6.0
+        },
+        "M1p_post": {
+          "n": 18,
+          "mean": 5.8889,
+          "sd": 1.1827,
+          "min": 4.0,
+          "max": 8.0
+        },
+        "M1p_change": {
+          "n": 18,
+          "mean": 0.8333,
+          "sd": 1.2005,
+          "min": -1.0,
+          "max": 3.0
+        },
+        "M2_pre": {
+          "n": 18,
+          "mean": 4.1667,
+          "sd": 0.6183,
+          "min": 3.0,
+          "max": 5.0
+        },
+        "M2_post": {
+          "n": 18,
+          "mean": 5.5556,
+          "sd": 1.0966,
+          "min": 4.0,
+          "max": 7.0
+        },
+        "M2_change": {
+          "n": 18,
+          "mean": 1.3889,
+          "sd": 1.3346,
+          "min": -1.0,
+          "max": 4.0
+        },
+        "P1_pre": {
+          "n": 18,
+          "mean": 3.1111,
+          "sd": 0.6764,
+          "min": 2.0,
+          "max": 4.0
+        },
+        "P1_post": {
+          "n": 18,
+          "mean": 4.8333,
+          "sd": 0.7859,
+          "min": 4.0,
+          "max": 6.0
+        },
+        "P1_change": {
+          "n": 18,
+          "mean": 1.7222,
+          "sd": 1.0741,
+          "min": 0.0,
+          "max": 4.0
+        },
+        "M3_pre": {
+          "n": 18,
+          "mean": 3.6667,
+          "sd": 0.767,
+          "min": 3.0,
+          "max": 5.0
+        },
+        "M3_post": {
+          "n": 18,
+          "mean": 4.5556,
+          "sd": 1.0966,
+          "min": 3.0,
+          "max": 6.0
+        },
+        "M3_change": {
+          "n": 18,
+          "mean": 0.8889,
+          "sd": 1.4096,
+          "min": -2.0,
+          "max": 3.0
+        },
+        "P2_pre": {
+          "n": 18,
+          "mean": 3.7222,
+          "sd": 0.8264,
+          "min": 2.0,
+          "max": 5.0
+        },
+        "P2_post": {
+          "n": 18,
+          "mean": 4.0,
+          "sd": 1.1376,
+          "min": 2.0,
+          "max": 6.0
+        },
+        "P2_change": {
+          "n": 18,
+          "mean": 0.2778,
+          "sd": 1.1785,
+          "min": -2.0,
+          "max": 2.0
+        },
+        "S5_pre": {
+          "n": 18,
+          "mean": 4.5556,
+          "sd": 0.7838,
+          "min": 3.0,
+          "max": 6.0
+        },
+        "S5_post": {
+          "n": 18,
+          "mean": 4.2778,
+          "sd": 1.5265,
+          "min": 2.0,
+          "max": 7.0
+        },
+        "S5_change": {
+          "n": 18,
+          "mean": -0.2778,
+          "sd": 1.2744,
+          "min": -3.0,
+          "max": 2.0
+        },
+        "S6_pre": {
+          "n": 18,
+          "mean": 3.6111,
+          "sd": 1.0369,
+          "min": 2.0,
+          "max": 5.0
+        },
+        "S6_post": {
+          "n": 18,
+          "mean": 4.6667,
+          "sd": 2.1144,
+          "min": 1.0,
+          "max": 7.0
+        },
+        "S6_change": {
+          "n": 18,
+          "mean": 1.0556,
+          "sd": 1.6968,
+          "min": -2.0,
+          "max": 4.0
+        },
+        "awareness_pre": {
+          "n": 18,
+          "mean": 0.5056,
+          "sd": 0.0802,
+          "min": 0.4,
+          "max": 0.6
+        },
+        "awareness_post": {
+          "n": 18,
+          "mean": 0.5889,
+          "sd": 0.1183,
+          "min": 0.4,
+          "max": 0.8
+        },
+        "awareness_change": {
+          "n": 18,
+          "mean": 0.0833,
+          "sd": 0.12,
+          "min": -0.1,
+          "max": 0.3
+        },
+        "disid_pre": {
+          "n": 18,
+          "mean": 0.3843,
+          "sd": 0.0738,
+          "min": 0.2833,
+          "max": 0.5
+        },
+        "disid_post": {
+          "n": 18,
+          "mean": 0.5972,
+          "sd": 0.1004,
+          "min": 0.45,
+          "max": 0.7667
+        },
+        "disid_change": {
+          "n": 18,
+          "mean": 0.2129,
+          "sd": 0.126,
+          "min": 0.0333,
+          "max": 0.4334
+        },
+        "reactivity_pre": {
+          "n": 18,
+          "mean": 0.3667,
+          "sd": 0.0767,
+          "min": 0.3,
+          "max": 0.5
+        },
+        "reactivity_post": {
+          "n": 18,
+          "mean": 0.4556,
+          "sd": 0.1097,
+          "min": 0.3,
+          "max": 0.6
+        },
+        "reactivity_change": {
+          "n": 18,
+          "mean": 0.0889,
+          "sd": 0.141,
+          "min": -0.2,
+          "max": 0.3
+        }
+      },
+      "view": {
+        "n": 6,
+        "M1p_pre": {
+          "n": 6,
+          "mean": 4.5,
+          "sd": 0.5477,
+          "min": 4.0,
+          "max": 5.0
+        },
+        "M1p_post": {
+          "n": 6,
+          "mean": 5.6667,
+          "sd": 0.8165,
+          "min": 5.0,
+          "max": 7.0
+        },
+        "M1p_change": {
+          "n": 6,
+          "mean": 1.1667,
+          "sd": 0.7528,
+          "min": 0.0,
+          "max": 2.0
+        },
+        "M2_pre": {
+          "n": 6,
+          "mean": 4.0,
+          "sd": 0.0,
+          "min": 4.0,
+          "max": 4.0
+        },
+        "M2_post": {
+          "n": 6,
+          "mean": 5.3333,
+          "sd": 0.8165,
+          "min": 4.0,
+          "max": 6.0
+        },
+        "M2_change": {
+          "n": 6,
+          "mean": 1.3333,
+          "sd": 0.8165,
+          "min": 0.0,
+          "max": 2.0
+        },
+        "P1_pre": {
+          "n": 6,
+          "mean": 3.5,
+          "sd": 0.8367,
+          "min": 2.0,
+          "max": 4.0
+        },
+        "P1_post": {
+          "n": 6,
+          "mean": 3.5,
+          "sd": 0.5477,
+          "min": 3.0,
+          "max": 4.0
+        },
+        "P1_change": {
+          "n": 6,
+          "mean": 0.0,
+          "sd": 0.8944,
+          "min": -1.0,
+          "max": 1.0
+        },
+        "M3_pre": {
+          "n": 6,
+          "mean": 4.1667,
+          "sd": 0.9832,
+          "min": 3.0,
+          "max": 5.0
+        },
+        "M3_post": {
+          "n": 6,
+          "mean": 5.0,
+          "sd": 0.6325,
+          "min": 4.0,
+          "max": 6.0
+        },
+        "M3_change": {
+          "n": 6,
+          "mean": 0.8333,
+          "sd": 0.7528,
+          "min": 0.0,
+          "max": 2.0
+        },
+        "P2_pre": {
+          "n": 6,
+          "mean": 3.6667,
+          "sd": 0.8165,
+          "min": 3.0,
+          "max": 5.0
+        },
+        "P2_post": {
+          "n": 6,
+          "mean": 4.0,
+          "sd": 0.8944,
+          "min": 3.0,
+          "max": 5.0
+        },
+        "P2_change": {
+          "n": 6,
+          "mean": 0.3333,
+          "sd": 1.2111,
+          "min": -1.0,
+          "max": 2.0
+        },
+        "S5_pre": {
+          "n": 6,
+          "mean": 4.1667,
+          "sd": 0.7528,
+          "min": 3.0,
+          "max": 5.0
+        },
+        "S5_post": {
+          "n": 6,
+          "mean": 3.6667,
+          "sd": 0.8165,
+          "min": 3.0,
+          "max": 5.0
+        },
+        "S5_change": {
+          "n": 6,
+          "mean": -0.5,
+          "sd": 1.0488,
+          "min": -2.0,
+          "max": 1.0
+        },
+        "S6_pre": {
+          "n": 6,
+          "mean": 2.8333,
+          "sd": 0.7528,
+          "min": 2.0,
+          "max": 4.0
+        },
+        "S6_post": {
+          "n": 6,
+          "mean": 3.3333,
+          "sd": 0.5164,
+          "min": 3.0,
+          "max": 4.0
+        },
+        "S6_change": {
+          "n": 6,
+          "mean": 0.5,
+          "sd": 0.8367,
+          "min": 0.0,
+          "max": 2.0
+        },
+        "awareness_pre": {
+          "n": 6,
+          "mean": 0.45,
+          "sd": 0.0548,
+          "min": 0.4,
+          "max": 0.5
+        },
+        "awareness_post": {
+          "n": 6,
+          "mean": 0.5667,
+          "sd": 0.0816,
+          "min": 0.5,
+          "max": 0.7
+        },
+        "awareness_change": {
+          "n": 6,
+          "mean": 0.1167,
+          "sd": 0.0753,
+          "min": 0.0,
+          "max": 0.2
+        },
+        "disid_pre": {
+          "n": 6,
+          "mean": 0.4083,
+          "sd": 0.0697,
+          "min": 0.2833,
+          "max": 0.45
+        },
+        "disid_post": {
+          "n": 6,
+          "mean": 0.475,
+          "sd": 0.0612,
+          "min": 0.3667,
+          "max": 0.55
+        },
+        "disid_change": {
+          "n": 6,
+          "mean": 0.0667,
+          "sd": 0.0943,
+          "min": -0.0833,
+          "max": 0.1834
+        },
+        "reactivity_pre": {
+          "n": 6,
+          "mean": 0.4167,
+          "sd": 0.0983,
+          "min": 0.3,
+          "max": 0.5
+        },
+        "reactivity_post": {
+          "n": 6,
+          "mean": 0.5,
+          "sd": 0.0632,
+          "min": 0.4,
+          "max": 0.6
+        },
+        "reactivity_change": {
+          "n": 6,
+          "mean": 0.0833,
+          "sd": 0.0753,
+          "min": 0.0,
+          "max": 0.2
+        }
+      }
+    },
+    "ambivalentPost": 3,
+    "ambivalentPre": 2
+  },
+  "behavior": {
+    "quadrantRule": {
+      "distanceSplit": "fixed",
+      "facingSplit": "fixed",
+      "distanceMedianM": null,
+      "facingThreshold": 0.5,
+      "nEligible": 18
+    },
+    "quadrantCounts": {
+      "NL": 6,
+      "FL": 6,
+      "FA": 6,
+      "NA": 0,
+      "undetermined": 0
+    },
+    "byCondition": {
+      "place": {
+        "n": 18,
+        "delta_d_m": {
+          "n": 18,
+          "mean": 0.8791,
+          "sd": 1.069,
+          "min": -0.722,
+          "max": 2.0667
+        },
+        "g_whole": {
+          "n": 18,
+          "mean": 0.5824,
+          "sd": 0.2185,
+          "min": 0.25,
+          "max": 0.8083
+        },
+        "g_early": {
+          "n": 18,
+          "mean": 0.5739,
+          "sd": 0.1211,
+          "min": 0.3967,
+          "max": 0.7521
+        },
+        "g_late": {
+          "n": 18,
+          "mean": 0.579,
+          "sd": 0.3516,
+          "min": 0.0661,
+          "max": 0.9339
+        },
+        "g_shift": {
+          "n": 18,
+          "mean": 0.0051,
+          "sd": 0.2724,
+          "min": -0.4546,
+          "max": 0.4793
+        },
+        "head_obj_distance_mean_m": {
+          "n": 18,
+          "mean": 2.3706,
+          "sd": 0.9789,
+          "min": 0.8851,
+          "max": 3.5437
+        },
+        "sd_asym_m": {
+          "n": 18,
+          "mean": -0.2286,
+          "sd": 0.078,
+          "min": -0.3945,
+          "max": -0.1075
+        },
+        "sd_mean_m": {
+          "n": 18,
+          "mean": 1.4491,
+          "sd": 0.4695,
+          "min": 0.7893,
+          "max": 1.9233
+        },
+        "regrab_count": {
+          "n": 18,
+          "mean": 0.5556,
+          "sd": 0.7838,
+          "min": 0.0,
+          "max": 2.0
+        }
+      },
+      "view": {
+        "n": 6,
+        "delta_d_m": {
+          "n": 0,
+          "mean": null,
+          "sd": null,
+          "min": null,
+          "max": null
+        },
+        "g_whole": {
+          "n": 6,
+          "mean": 0.6315,
+          "sd": 0.055,
+          "min": 0.5694,
+          "max": 0.7222
+        },
+        "g_early": {
+          "n": 6,
+          "mean": 0.6267,
+          "sd": 0.1116,
+          "min": 0.4298,
+          "max": 0.7438
+        },
+        "g_late": {
+          "n": 6,
+          "mean": 0.6322,
+          "sd": 0.0979,
+          "min": 0.4959,
+          "max": 0.7438
+        },
+        "g_shift": {
+          "n": 6,
+          "mean": 0.0055,
+          "sd": 0.1714,
+          "min": -0.2148,
+          "max": 0.314
+        },
+        "head_obj_distance_mean_m": {
+          "n": 6,
+          "mean": 1.5524,
+          "sd": 0.0,
+          "min": 1.5524,
+          "max": 1.5524
+        },
+        "sd_asym_m": {
+          "n": 6,
+          "mean": -0.2214,
+          "sd": 0.053,
+          "min": -0.2835,
+          "max": -0.1593
+        },
+        "sd_mean_m": {
+          "n": 6,
+          "mean": 1.2183,
+          "sd": 0.0184,
+          "min": 1.1926,
+          "max": 1.2439
+        },
+        "regrab_count": {
+          "n": 0,
+          "mean": null,
+          "sd": null,
+          "min": null,
+          "max": null
+        }
+      }
+    },
+    "byQuadrant": {
+      "FA": {
+        "n": 6,
+        "disid_change": {
+          "n": 6,
+          "mean": 0.2666,
+          "sd": 0.1095,
+          "min": 0.1,
+          "max": 0.4
+        },
+        "P2_post": {
+          "n": 6,
+          "mean": 3.1667,
+          "sd": 0.7528,
+          "min": 2.0,
+          "max": 4.0
+        },
+        "S5_post": {
+          "n": 6,
+          "mean": 2.5,
+          "sd": 0.5477,
+          "min": 2.0,
+          "max": 3.0
+        },
+        "S6_post": {
+          "n": 6,
+          "mean": 5.6667,
+          "sd": 0.8165,
+          "min": 5.0,
+          "max": 7.0
+        },
+        "la_K2_change": {
+          "n": 6,
+          "mean": -1.0,
+          "sd": 0.0,
+          "min": -1.0,
+          "max": -1.0
+        },
+        "la_K3_change": {
+          "n": 6,
+          "mean": 0.0,
+          "sd": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "g_late": {
+          "n": 6,
+          "mean": 0.1102,
+          "sd": 0.0467,
+          "min": 0.0661,
+          "max": 0.1818
+        },
+        "delta_d_m": {
+          "n": 6,
+          "mean": 1.7179,
+          "sd": 0.282,
+          "min": 1.4147,
+          "max": 2.0667
+        }
+      },
+      "FL": {
+        "n": 6,
+        "disid_change": {
+          "n": 6,
+          "mean": 0.1194,
+          "sd": 0.0939,
+          "min": 0.0333,
+          "max": 0.3
+        },
+        "P2_post": {
+          "n": 6,
+          "mean": 3.5,
+          "sd": 0.5477,
+          "min": 3.0,
+          "max": 4.0
+        },
+        "S5_post": {
+          "n": 6,
+          "mean": 4.5,
+          "sd": 0.5477,
+          "min": 4.0,
+          "max": 5.0
+        },
+        "S6_post": {
+          "n": 6,
+          "mean": 6.3333,
+          "sd": 0.8165,
+          "min": 5.0,
+          "max": 7.0
+        },
+        "la_K2_change": {
+          "n": 6,
+          "mean": -1.0,
+          "sd": 0.0,
+          "min": -1.0,
+          "max": -1.0
+        },
+        "la_K3_change": {
+          "n": 6,
+          "mean": 0.0,
+          "sd": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "g_late": {
+          "n": 6,
+          "mean": 0.7603,
+          "sd": 0.0873,
+          "min": 0.6281,
+          "max": 0.8678
+        },
+        "delta_d_m": {
+          "n": 6,
+          "mean": 1.4749,
+          "sd": 0.2159,
+          "min": 1.1457,
+          "max": 1.6607
+        }
+      },
+      "NL": {
+        "n": 6,
+        "disid_change": {
+          "n": 6,
+          "mean": 0.2528,
+          "sd": 0.1314,
+          "min": 0.05,
+          "max": 0.4334
+        },
+        "P2_post": {
+          "n": 6,
+          "mean": 5.3333,
+          "sd": 0.5164,
+          "min": 5.0,
+          "max": 6.0
+        },
+        "S5_post": {
+          "n": 6,
+          "mean": 5.8333,
+          "sd": 0.7528,
+          "min": 5.0,
+          "max": 7.0
+        },
+        "S6_post": {
+          "n": 6,
+          "mean": 2.0,
+          "sd": 0.8944,
+          "min": 1.0,
+          "max": 3.0
+        },
+        "la_K2_change": {
+          "n": 6,
+          "mean": -1.0,
+          "sd": 0.0,
+          "min": -1.0,
+          "max": -1.0
+        },
+        "la_K3_change": {
+          "n": 6,
+          "mean": 1.0,
+          "sd": 0.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "g_late": {
+          "n": 6,
+          "mean": 0.8664,
+          "sd": 0.091,
+          "min": 0.686,
+          "max": 0.9339
+        },
+        "delta_d_m": {
+          "n": 6,
+          "mean": -0.5556,
+          "sd": 0.1381,
+          "min": -0.722,
+          "max": -0.3988
+        }
+      }
+    },
+    "claims": {
+      "NL": {
+        "can": "물체 가까이에서 주의를 둠",
+        "cannot": "'구별되지 않음(얽힘)'인지 '다가가 살핌'인지 행동만으로는 모름"
+      },
+      "FL": {
+        "can": "거리를 두고도 머리가 물체를 향함",
+        "cannot": "'거리 둔 관찰'이라고 단정할 수 없음. far_facing은 차분한 관찰이라고 해석할 수 없음 — VR 거미 공포 연구에서 공포증 집단은 최소 거리를 더 멀리 두면서도 더 자주 보고 몸을 더 향했음(Binder 외 2022). 경계 감시와 같은 행동 모양"
+      },
+      "FA": {
+        "can": "거리도 두고 주의도 거둠",
+        "cannot": "회피와 가장 잘 맞지만, 과제를 끝냈다고 여겨 둘러보는 행동일 수도 있음"
+      },
+      "NA": {
+        "can": "가까이 두고 주의는 다른 데 둠",
+        "cannot": "해석이 가장 모호함(무관심, 가까운 것을 보기 부담스러움, 둘러보기)"
+      },
+      "sd_mean_m": {
+        "can": "사후에 '이것'이 있기에 알맞다고 고른 거리. 두 조건이 같은 방식으로 측정됨",
+        "cannot": "사전값이 없으므로 변화량이 아님. 물체·심상 자극에서 검증된 적이 없음"
+      },
+      "sd_asym_m": {
+        "can": "방향에 따라 멈춘 거리가 다른지",
+        "cannot": "방어 경계의 비대칭이라고 해석할 근거가 약함(Lebert 외 2024; 한계법의 반응 편향일 수 있음)"
+      },
+      "regrab_count": {
+        "can": "자리 조정에 들인 행동량",
+        "cannot": "탐색인지 안절부절못함인지 구별 못 함"
+      },
+      "g_shift": {
+        "can": "시간에 따라 머리 방향이 물체로 모이는지 흩어지는지",
+        "cannot": "머리 방향만으로 주의를 확정할 수 없음. 시야각이 넓어 머리를 돌리지 않고 볼 수 있음"
+      },
+      "view_condition": {
+        "can": "g·g_shift·머리–물체 거리만 두 조건에서 비교",
+        "cannot": "보기만 조건은 거리를 참여자가 정하지 않으므로 2×2를 만들지 않음. 조건 간 놓은 거리 비교는 조작의 결과라 결과 변수가 아님"
+      }
+    }
+  },
+  "language": {
+    "byConditionWhen": {
+      "place": {
+        "n": 18,
+        "la_K1_pre": {
+          "n": 18,
+          "mean": 1.0,
+          "sd": 0.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "la_K1_post": {
+          "n": 18,
+          "mean": 0.3333,
+          "sd": 0.4851,
+          "min": 0.0,
+          "max": 1.0
+        },
+        "la_K1_change": {
+          "n": 18,
+          "mean": -0.6667,
+          "sd": 0.4851,
+          "min": -1.0,
+          "max": 0.0
+        },
+        "la_K2_pre": {
+          "n": 18,
+          "mean": 1.0,
+          "sd": 0.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "la_K2_post": {
+          "n": 18,
+          "mean": 0.0,
+          "sd": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "la_K2_change": {
+          "n": 18,
+          "mean": -1.0,
+          "sd": 0.0,
+          "min": -1.0,
+          "max": -1.0
+        },
+        "la_K3_pre": {
+          "n": 18,
+          "mean": 0.0,
+          "sd": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "la_K3_post": {
+          "n": 18,
+          "mean": 0.3333,
+          "sd": 0.4851,
+          "min": 0.0,
+          "max": 1.0
+        },
+        "la_K3_change": {
+          "n": 18,
+          "mean": 0.3333,
+          "sd": 0.4851,
+          "min": 0.0,
+          "max": 1.0
+        },
+        "la_K3b_pre": {
+          "n": 18,
+          "mean": 0.0,
+          "sd": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "la_K3b_post": {
+          "n": 18,
+          "mean": 0.3333,
+          "sd": 0.4851,
+          "min": 0.0,
+          "max": 1.0
+        },
+        "la_K3b_change": {
+          "n": 18,
+          "mean": 0.3333,
+          "sd": 0.4851,
+          "min": 0.0,
+          "max": 1.0
+        },
+        "la_K4_pre": {
+          "n": 18,
+          "mean": 0.2222,
+          "sd": 0.4278,
+          "min": 0.0,
+          "max": 1.0
+        },
+        "la_K4_post": {
+          "n": 18,
+          "mean": 0.6667,
+          "sd": 0.4851,
+          "min": 0.0,
+          "max": 1.0
+        },
+        "la_K4_change": {
+          "n": 18,
+          "mean": 0.4444,
+          "sd": 0.8556,
+          "min": -1.0,
+          "max": 1.0
+        },
+        "la_K5_pre": {
+          "n": 18,
+          "mean": 0.0,
+          "sd": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "la_K5_post": {
+          "n": 18,
+          "mean": 0.3333,
+          "sd": 0.4851,
+          "min": 0.0,
+          "max": 1.0
+        },
+        "la_K5_change": {
+          "n": 18,
+          "mean": 0.3333,
+          "sd": 0.4851,
+          "min": 0.0,
+          "max": 1.0
+        },
+        "la_K6_pre": {
+          "n": 18,
+          "mean": 0.0,
+          "sd": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "la_K6_post": {
+          "n": 18,
+          "mean": 0.0,
+          "sd": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "la_K6_change": {
+          "n": 18,
+          "mean": 0.0,
+          "sd": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "la_K7_pre": {
+          "n": 18,
+          "mean": 0.0,
+          "sd": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "la_K7_post": {
+          "n": 18,
+          "mean": 0.0,
+          "sd": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "la_K7_change": {
+          "n": 18,
+          "mean": 0.0,
+          "sd": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "la_nclauses_pre": {
+          "n": 18,
+          "mean": 1.0,
+          "sd": 0.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "la_nclauses_post": {
+          "n": 18,
+          "mean": 1.0,
+          "sd": 0.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "lb_emotion_n_pre": {
+          "n": 18,
+          "mean": 1.0,
+          "sd": 0.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "lb_emotion_n_post": {
+          "n": 18,
+          "mean": 0.6667,
+          "sd": 0.4851,
+          "min": 0.0,
+          "max": 1.0
+        }
+      },
+      "view": {
+        "n": 6,
+        "la_K1_pre": {
+          "n": 6,
+          "mean": 0.0,
+          "sd": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "la_K1_post": {
+          "n": 6,
+          "mean": 0.0,
+          "sd": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "la_K1_change": {
+          "n": 6,
+          "mean": 0.0,
+          "sd": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "la_K2_pre": {
+          "n": 6,
+          "mean": 0.0,
+          "sd": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "la_K2_post": {
+          "n": 6,
+          "mean": 0.0,
+          "sd": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "la_K2_change": {
+          "n": 6,
+          "mean": 0.0,
+          "sd": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "la_K3_pre": {
+          "n": 6,
+          "mean": 0.0,
+          "sd": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "la_K3_post": {
+          "n": 6,
+          "mean": 0.0,
+          "sd": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "la_K3_change": {
+          "n": 6,
+          "mean": 0.0,
+          "sd": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "la_K3b_pre": {
+          "n": 6,
+          "mean": 0.0,
+          "sd": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "la_K3b_post": {
+          "n": 6,
+          "mean": 0.0,
+          "sd": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "la_K3b_change": {
+          "n": 6,
+          "mean": 0.0,
+          "sd": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "la_K4_pre": {
+          "n": 6,
+          "mean": 0.0,
+          "sd": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "la_K4_post": {
+          "n": 6,
+          "mean": 0.5,
+          "sd": 0.5477,
+          "min": 0.0,
+          "max": 1.0
+        },
+        "la_K4_change": {
+          "n": 6,
+          "mean": 0.5,
+          "sd": 0.5477,
+          "min": 0.0,
+          "max": 1.0
+        },
+        "la_K5_pre": {
+          "n": 6,
+          "mean": 0.0,
+          "sd": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "la_K5_post": {
+          "n": 6,
+          "mean": 0.0,
+          "sd": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "la_K5_change": {
+          "n": 6,
+          "mean": 0.0,
+          "sd": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "la_K6_pre": {
+          "n": 6,
+          "mean": 0.0,
+          "sd": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "la_K6_post": {
+          "n": 6,
+          "mean": 1.0,
+          "sd": 0.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "la_K6_change": {
+          "n": 6,
+          "mean": 1.0,
+          "sd": 0.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "la_K7_pre": {
+          "n": 6,
+          "mean": 1.0,
+          "sd": 0.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "la_K7_post": {
+          "n": 6,
+          "mean": 0.5,
+          "sd": 0.5477,
+          "min": 0.0,
+          "max": 1.0
+        },
+        "la_K7_change": {
+          "n": 6,
+          "mean": -0.5,
+          "sd": 0.5477,
+          "min": -1.0,
+          "max": 0.0
+        },
+        "la_nclauses_pre": {
+          "n": 6,
+          "mean": 1.0,
+          "sd": 0.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "la_nclauses_post": {
+          "n": 6,
+          "mean": 1.0,
+          "sd": 0.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "lb_emotion_n_pre": {
+          "n": 6,
+          "mean": 0.0,
+          "sd": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "lb_emotion_n_post": {
+          "n": 6,
+          "mean": 0.0,
+          "sd": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        }
+      }
+    },
+    "analyzer": {
+      "backend": "kiwi",
+      "kiwipiepy": "0.24.1",
+      "kiwipiepy_model": "0.24.0"
+    },
+    "knownLimitations": [
+      {
+        "id": "jeo_mm",
+        "example": "그냥 저 자체가 무거운 거예요.",
+        "what": "1인칭 '저'를 Kiwi가 지시 관형사 저/MM으로 태그 → K1을 놓치고 K4로 잘못 잡음(문서 3.3 오분석 예)"
+      },
+      {
+        "id": "gong_nr",
+        "example": "저 공이 저기 보였어요.",
+        "what": "'공이'를 숫자 공/NR + 이/NR로 태그(문맥에 따라 다름 — '저 공이 나예요'에서는 공/NNG 이/JKS) → K4를 놓치고 K7 오탐"
+      },
+      {
+        "id": "maeumsok",
+        "example": "제 마음속에 작은 돌이 있어요.",
+        "what": "'마음속'이 한 낱말(마음속/NNG)이라 1인칭 NP + JKG + 안·속 조건에 안 맞음 → K3이 아니라 K3b"
+      },
+      {
+        "id": "dropped_particle",
+        "example": "나 무서워.",
+        "what": "조사가 생략된 1인칭 주어는 JKS/JX가 없어 K7(미지정)으로 셈. K1은 1로 따로 잡힘"
+      },
+      {
+        "id": "coordinated_subject",
+        "example": "나는 무섭고 싫어요.",
+        "what": "연결어미로 이어진 둘째 절은 주어를 물려받지 않아 K7. 원칙 2에 따라 채워 넣지 않음"
+      },
+      {
+        "id": "topic_adverbial",
+        "example": "아까는 무거웠어요.",
+        "what": "'아까는'(NNG+JX)도 주어 자리로 보아 K7이 아님(문서 규칙이 JX를 받으므로)"
+      },
+      {
+        "id": "embedded_vcp",
+        "example": "내가 본 게 그 돌이에요.",
+        "what": "1인칭 주어가 안긴 절의 주어인데도 절에 VCP가 있어 K2로 잡힘(오탐)"
+      },
+      {
+        "id": "jkc_identity",
+        "example": "그건 제가 아니에요.",
+        "what": "'제가'가 보격 JKC, 서술어 VCN이라 K2가 아님(부정 동일시는 세지 않음)"
+      }
+    ]
+  },
+  "convergence": {
+    "method": "Spearman 순위 상관(동순위 평균 순위), 쌍별 완전 사례, n < 3 또는 분산 0이면 null. 요약 포함 세션만",
+    "note": "유의성 판정 없음. 같은 성분·다른 방법 쌍의 상관이 다른 성분 쌍보다 높아야 성분 구분이 쓸모 있다고 볼 수 있다(다특성–다방법 발상, 문서 3.4). 표본이 작으면 상관 추정이 매우 불안정하다(n=20에서도 r≈.6 미만은 구별 어려움).",
+    "variables": {
+      "awareness_change": {
+        "method": "self_report",
+        "component": "awareness",
+        "definition": "norm(M1p) post − pre"
+      },
+      "disid_change": {
+        "method": "self_report",
+        "component": "disidentification",
+        "definition": "(norm(M2)+norm(P1))/2 post − pre"
+      },
+      "reactivity_change": {
+        "method": "self_report",
+        "component": "reactivity",
+        "definition": "norm(M3) post − pre"
+      },
+      "P2_change": {
+        "method": "self_report",
+        "component": "attitude",
+        "definition": "P2 post − pre (1–7)"
+      },
+      "S5_change": {
+        "method": "self_report",
+        "component": "attitude_approach",
+        "definition": "S5 post − pre"
+      },
+      "S6_change": {
+        "method": "self_report",
+        "component": "attitude_withdraw",
+        "definition": "S6 post − pre"
+      },
+      "delta_d_m": {
+        "method": "behavior",
+        "component": "distance(성분 미정)",
+        "definition": "놓은 거리 − 시작 거리(직접 배치만)"
+      },
+      "g_late": {
+        "method": "behavior",
+        "component": "attention_orientation(해석)",
+        "definition": "마지막 window 머리 향함 비율"
+      },
+      "g_shift": {
+        "method": "behavior",
+        "component": "attention_orientation(해석)",
+        "definition": "g_late − g_early"
+      },
+      "sd_asym_m": {
+        "method": "behavior",
+        "component": "distance(성분 미정)",
+        "definition": "멈춤 거리 접근 − 후퇴(사후만)"
+      },
+      "regrab_count": {
+        "method": "behavior",
+        "component": "adjustment(성분 미정)",
+        "definition": "다시 잡은 횟수(직접 배치만)"
+      },
+      "la_K1_change": {
+        "method": "language",
+        "component": "disidentification(해석: 자기 거리두기)",
+        "definition": "L-A K1 post − pre"
+      },
+      "la_K2_change": {
+        "method": "language",
+        "component": "disidentification",
+        "definition": "L-A K2 동일시 틀 post − pre"
+      },
+      "la_K3_change": {
+        "method": "language",
+        "component": "disidentification",
+        "definition": "L-A K3 존재 틀 post − pre"
+      },
+      "la_K4_change": {
+        "method": "language",
+        "component": "object_reference(해석)",
+        "definition": "L-A K4 post − pre"
+      },
+      "la_K6_change": {
+        "method": "language",
+        "component": "temporal_distance(해석)",
+        "definition": "L-A K6 post − pre"
+      },
+      "la_K7_change": {
+        "method": "language",
+        "component": "unspecified",
+        "definition": "L-A K7 post − pre"
+      }
+    },
+    "sameComponentCrossMethod": [
+      {
+        "var_a": "disid_change",
+        "method_a": "self_report",
+        "component_a": "disidentification",
+        "var_b": "la_K2_change",
+        "method_b": "language",
+        "component_b": "disidentification",
+        "same_component": true,
+        "same_method": false,
+        "n": 24,
+        "rho": -0.452
+      },
+      {
+        "var_a": "disid_change",
+        "method_a": "self_report",
+        "component_a": "disidentification",
+        "var_b": "la_K3_change",
+        "method_b": "language",
+        "component_b": "disidentification",
+        "same_component": true,
+        "same_method": false,
+        "n": 24,
+        "rho": 0.313
+      }
+    ],
+    "nPairs": 136
+  },
+  "cases": {
+    "rules": [
+      {
+        "id": "disid_up_but_FA",
+        "kind": "discordance",
+        "rule": "disid_change > 0 그리고 quadrant = FA",
+        "reading": "자기보고 탈동일시는 올랐는데 행동은 거리도 두고 주의도 거둔 모양(회피와 가장 잘 맞는 칸). 사례 메모로 남김"
+      },
+      {
+        "id": "P1_high_with_K2",
+        "kind": "discordance",
+        "rule": "P1_post ≥ 5 그리고 L-A 사후 K2 ≥ 1",
+        "reading": "자기보고가 사회적 바람직성(IFS식 정답)에 끌렸을 가능성, 또는 말버릇. 사례 메모로 남김"
+      },
+      {
+        "id": "disid_up_but_K2_up",
+        "kind": "discordance",
+        "rule": "disid_change > 0 그리고 la_K2_change > 0",
+        "reading": "자기보고 탈동일시와 언어 동일시 틀이 반대로 움직임. 사례 메모로 남김"
+      },
+      {
+        "id": "FL_with_S6_high",
+        "kind": "reading",
+        "rule": "quadrant = FL 그리고 S6_post ≥ 5 (L-B 감정어는 참고로 함께 적음)",
+        "reading": "경계 감시 쪽 후보. 구별이 아니라 섞임 쪽(문서 3.4)"
+      },
+      {
+        "id": "FL_with_S5_P2_high",
+        "kind": "reading",
+        "rule": "quadrant = FL 그리고 S5_post ≥ 5 그리고 P2_post ≥ 5",
+        "reading": "거리 둔 관찰 쪽 후보(문서 3.4: 프로파일이 가장 잘 맞는 경우). 단정하지 않음"
+      },
+      {
+        "id": "NL_differentiated",
+        "kind": "reading",
+        "rule": "quadrant = NL 그리고 P1_post ≥ 5 그리고 P2_post ≥ 5",
+        "reading": "가까이 두고도 구별됨 — 거리 = 구별이 아니라는 우려 (1)을 보여 주는 사례 후보"
+      }
+    ],
+    "notComputable": [
+      {
+        "id": "sr_flat_behavior_changed",
+        "rule": "자기보고는 변화가 없고 행동만 변함(문서 3.4)",
+        "why": "행동 지표는 조건 단계 한 번만 기록되어 사전–사후 변화가 없음(멈춤 거리도 사후만)"
+      }
+    ],
+    "counts": {
+      "disid_up_but_FA": 6,
+      "P1_high_with_K2": 0,
+      "disid_up_but_K2_up": 0,
+      "FL_with_S6_high": 6,
+      "FL_with_S5_P2_high": 0,
+      "NL_differentiated": 4
+    },
+    "list": [
+      {
+        "participant": "P101",
+        "session_id": "SIM01",
+        "rule": "FL_with_S6_high",
+        "kind": "reading",
+        "quadrant": "FL",
+        "values": {
+          "disid_change": 0.0833,
+          "P1_post": 4.0,
+          "P2_post": 4.0,
+          "S5_post": 5.0,
+          "S6_post": 6.0,
+          "la_K2_pre": 1,
+          "la_K2_post": 0,
+          "lb_emotion_post": "두렵"
+        }
+      },
+      {
+        "participant": "P102",
+        "session_id": "SIM02",
+        "rule": "NL_differentiated",
+        "kind": "reading",
+        "quadrant": "NL",
+        "values": {
+          "disid_change": 0.4334,
+          "P1_post": 6.0,
+          "P2_post": 5.0,
+          "S5_post": 5.0,
+          "S6_post": 3.0,
+          "la_K2_pre": 1,
+          "la_K2_post": 0,
+          "lb_emotion_post": "안쓰럽"
+        }
+      },
+      {
+        "participant": "P103",
+        "session_id": "SIM03",
+        "rule": "FL_with_S6_high",
+        "kind": "reading",
+        "quadrant": "FL",
+        "values": {
+          "disid_change": 0.1333,
+          "P1_post": 4.0,
+          "P2_post": 3.0,
+          "S5_post": 5.0,
+          "S6_post": 5.0,
+          "la_K2_pre": 1,
+          "la_K2_post": 0,
+          "lb_emotion_post": "무섭"
+        }
+      },
+      {
+        "participant": "P104",
+        "session_id": "SIM04",
+        "rule": "disid_up_but_FA",
+        "kind": "discordance",
+        "quadrant": "FA",
+        "values": {
+          "disid_change": 0.35,
+          "P1_post": 6.0,
+          "P2_post": 4.0,
+          "S5_post": 2.0,
+          "S6_post": 5.0,
+          "la_K2_pre": 1,
+          "la_K2_post": 0,
+          "lb_emotion_post": ""
+        }
+      },
+      {
+        "participant": "P105",
+        "session_id": "SIM05",
+        "rule": "FL_with_S6_high",
+        "kind": "reading",
+        "quadrant": "FL",
+        "values": {
+          "disid_change": 0.0333,
+          "P1_post": 5.0,
+          "P2_post": 3.0,
+          "S5_post": 4.0,
+          "S6_post": 7.0,
+          "la_K2_pre": 1,
+          "la_K2_post": 0,
+          "lb_emotion_post": "무섭"
+        }
+      },
+      {
+        "participant": "P109",
+        "session_id": "SIM09",
+        "rule": "FL_with_S6_high",
+        "kind": "reading",
+        "quadrant": "FL",
+        "values": {
+          "disid_change": 0.0833,
+          "P1_post": 4.0,
+          "P2_post": 3.0,
+          "S5_post": 4.0,
+          "S6_post": 7.0,
+          "la_K2_pre": 1,
+          "la_K2_post": 0,
+          "lb_emotion_post": "무섭"
+        }
+      },
+      {
+        "participant": "P110",
+        "session_id": "SIM10",
+        "rule": "disid_up_but_FA",
+        "kind": "discordance",
+        "quadrant": "FA",
+        "values": {
+          "disid_change": 0.4,
+          "P1_post": 5.0,
+          "P2_post": 3.0,
+          "S5_post": 3.0,
+          "S6_post": 5.0,
+          "la_K2_pre": 1,
+          "la_K2_post": 0,
+          "lb_emotion_post": ""
+        }
+      },
+      {
+        "participant": "P112",
+        "session_id": "SIM12",
+        "rule": "FL_with_S6_high",
+        "kind": "reading",
+        "quadrant": "FL",
+        "values": {
+          "disid_change": 0.0833,
+          "P1_post": 4.0,
+          "P2_post": 4.0,
+          "S5_post": 5.0,
+          "S6_post": 6.0,
+          "la_K2_pre": 1,
+          "la_K2_post": 0,
+          "lb_emotion_post": "무섭"
+        }
+      },
+      {
+        "participant": "P113",
+        "session_id": "SIM13",
+        "rule": "NL_differentiated",
+        "kind": "reading",
+        "quadrant": "NL",
+        "values": {
+          "disid_change": 0.3167,
+          "P1_post": 6.0,
+          "P2_post": 5.0,
+          "S5_post": 6.0,
+          "S6_post": 2.0,
+          "la_K2_pre": 1,
+          "la_K2_post": 0,
+          "lb_emotion_post": "안쓰럽"
+        }
+      },
+      {
+        "participant": "P115",
+        "session_id": "SIM15",
+        "rule": "FL_with_S6_high",
+        "kind": "reading",
+        "quadrant": "FL",
+        "values": {
+          "disid_change": 0.3,
+          "P1_post": 5.0,
+          "P2_post": 4.0,
+          "S5_post": 4.0,
+          "S6_post": 7.0,
+          "la_K2_pre": 1,
+          "la_K2_post": 0,
+          "lb_emotion_post": "무섭"
+        }
+      },
+      {
+        "participant": "P116",
+        "session_id": "SIM16",
+        "rule": "disid_up_but_FA",
+        "kind": "discordance",
+        "quadrant": "FA",
+        "values": {
+          "disid_change": 0.3166,
+          "P1_post": 5.0,
+          "P2_post": 3.0,
+          "S5_post": 3.0,
+          "S6_post": 5.0,
+          "la_K2_pre": 1,
+          "la_K2_post": 0,
+          "lb_emotion_post": ""
+        }
+      },
+      {
+        "participant": "P117",
+        "session_id": "SIM17",
+        "rule": "disid_up_but_FA",
+        "kind": "discordance",
+        "quadrant": "FA",
+        "values": {
+          "disid_change": 0.2166,
+          "P1_post": 5.0,
+          "P2_post": 3.0,
+          "S5_post": 2.0,
+          "S6_post": 6.0,
+          "la_K2_pre": 1,
+          "la_K2_post": 0,
+          "lb_emotion_post": ""
+        }
+      },
+      {
+        "participant": "P118",
+        "session_id": "SIM18",
+        "rule": "NL_differentiated",
+        "kind": "reading",
+        "quadrant": "NL",
+        "values": {
+          "disid_change": 0.1666,
+          "P1_post": 5.0,
+          "P2_post": 5.0,
+          "S5_post": 5.0,
+          "S6_post": 2.0,
+          "la_K2_pre": 1,
+          "la_K2_post": 0,
+          "lb_emotion_post": "안쓰럽"
+        }
+      },
+      {
+        "participant": "P119",
+        "session_id": "SIM19",
+        "rule": "disid_up_but_FA",
+        "kind": "discordance",
+        "quadrant": "FA",
+        "values": {
+          "disid_change": 0.2167,
+          "P1_post": 6.0,
+          "P2_post": 2.0,
+          "S5_post": 3.0,
+          "S6_post": 7.0,
+          "la_K2_pre": 1,
+          "la_K2_post": 0,
+          "lb_emotion_post": ""
+        }
+      },
+      {
+        "participant": "P121",
+        "session_id": "SIM21",
+        "rule": "NL_differentiated",
+        "kind": "reading",
+        "quadrant": "NL",
+        "values": {
+          "disid_change": 0.2666,
+          "P1_post": 5.0,
+          "P2_post": 6.0,
+          "S5_post": 6.0,
+          "S6_post": 3.0,
+          "la_K2_pre": 1,
+          "la_K2_post": 0,
+          "lb_emotion_post": "안쓰럽"
+        }
+      },
+      {
+        "participant": "P122",
+        "session_id": "SIM22",
+        "rule": "disid_up_but_FA",
+        "kind": "discordance",
+        "quadrant": "FA",
+        "values": {
+          "disid_change": 0.1,
+          "P1_post": 4.0,
+          "P2_post": 4.0,
+          "S5_post": 2.0,
+          "S6_post": 6.0,
+          "la_K2_pre": 1,
+          "la_K2_post": 0,
+          "lb_emotion_post": ""
+        }
+      }
+    ]
+  },
+  "warnings": [
+    "[0:differentiation/records] 초안 문구: 세션 24개가 status draft 문구로 수집됨 — IRB 확인 전 문구라 본 실험 자료로 쓰기 전에 확인",
+    "[0:differentiation/records] 자동 시행(autoMode) 세션 24개 — 참여자 자료가 아님"
+  ]
+}

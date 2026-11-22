@@ -1,0 +1,187 @@
+{
+  "version": "sim-placement/0.1",
+  "synthetic": true,
+  "note": "합성 자료: 파이프라인 검증용이며 효과의 근거가 아님. 유형별 값은 생성기가 정한 가정의 복원이다 — 분석 코드가 정의대로 계산하는지의 확인이지 측정의 타당성 근거가 아니다.",
+  "byArchetype": {
+    "near_look": {
+      "label": "가까이 두고 바라봄",
+      "n": 6,
+      "expected_quadrant": "NL",
+      "assigned_fixed": {
+        "NL": 6
+      },
+      "match_fixed": 6,
+      "assigned_median": {
+        "NA": 1,
+        "NL": 5
+      },
+      "match_median": 5,
+      "g_late_mean": 0.866,
+      "delta_d_mean": -0.556,
+      "language_means": {
+        "K1_pre": 1.0,
+        "K1_post": 1.0,
+        "K2_pre": 1.0,
+        "K2_post": 0.0,
+        "K3_pre": 0.0,
+        "K3_post": 1.0,
+        "K3b_pre": 0.0,
+        "K3b_post": 0.0,
+        "K4_pre": 0.667,
+        "K4_post": 0.0,
+        "K5_pre": 0.0,
+        "K5_post": 0.0,
+        "K6_pre": 0.0,
+        "K6_post": 0.0,
+        "K7_pre": 0.0,
+        "K7_post": 0.0
+      },
+      "disid_change_mean": 0.253,
+      "ambivalent_post": 0,
+      "cases": {
+        "NL_differentiated": 4
+      }
+    },
+    "far_look": {
+      "label": "멀리 두고 바라봄",
+      "n": 6,
+      "expected_quadrant": "FL",
+      "assigned_fixed": {
+        "FL": 6
+      },
+      "match_fixed": 6,
+      "assigned_median": {
+        "FA": 2,
+        "FL": 2,
+        "NL": 2
+      },
+      "match_median": 2,
+      "g_late_mean": 0.76,
+      "delta_d_mean": 1.475,
+      "language_means": {
+        "K1_pre": 1.0,
+        "K1_post": 0.0,
+        "K2_pre": 1.0,
+        "K2_post": 0.0,
+        "K3_pre": 0.0,
+        "K3_post": 0.0,
+        "K3b_pre": 0.0,
+        "K3b_post": 0.0,
+        "K4_pre": 0.0,
+        "K4_post": 1.0,
+        "K5_pre": 0.0,
+        "K5_post": 1.0,
+        "K6_pre": 0.0,
+        "K6_post": 0.0,
+        "K7_pre": 0.0,
+        "K7_post": 0.0
+      },
+      "disid_change_mean": 0.119,
+      "ambivalent_post": 3,
+      "cases": {
+        "FL_with_S6_high": 6
+      }
+    },
+    "far_away": {
+      "label": "멀리 두고 고개 돌림",
+      "n": 6,
+      "expected_quadrant": "FA",
+      "assigned_fixed": {
+        "FA": 6
+      },
+      "match_fixed": 6,
+      "assigned_median": {
+        "FA": 5,
+        "NA": 1
+      },
+      "match_median": 5,
+      "g_late_mean": 0.11,
+      "delta_d_mean": 1.718,
+      "language_means": {
+        "K1_pre": 1.0,
+        "K1_post": 0.0,
+        "K2_pre": 1.0,
+        "K2_post": 0.0,
+        "K3_pre": 0.0,
+        "K3_post": 0.0,
+        "K3b_pre": 0.0,
+        "K3b_post": 1.0,
+        "K4_pre": 0.0,
+        "K4_post": 1.0,
+        "K5_pre": 0.0,
+        "K5_post": 0.0,
+        "K6_pre": 0.0,
+        "K6_post": 0.0,
+        "K7_pre": 0.0,
+        "K7_post": 0.0
+      },
+      "disid_change_mean": 0.267,
+      "ambivalent_post": 0,
+      "cases": {
+        "disid_up_but_FA": 6
+      }
+    },
+    "view_only": {
+      "label": "보기만 조건",
+      "n": 6,
+      "expected_quadrant": null,
+      "assigned_fixed": {
+        "None": 6
+      },
+      "match_fixed": null,
+      "assigned_median": {
+        "None": 6
+      },
+      "match_median": null,
+      "g_late_mean": 0.632,
+      "delta_d_mean": null,
+      "language_means": {
+        "K1_pre": 0.0,
+        "K1_post": 0.0,
+        "K2_pre": 0.0,
+        "K2_post": 0.0,
+        "K3_pre": 0.0,
+        "K3_post": 0.0,
+        "K3b_pre": 0.0,
+        "K3b_post": 0.0,
+        "K4_pre": 0.0,
+        "K4_post": 0.5,
+        "K5_pre": 0.0,
+        "K5_post": 0.0,
+        "K6_pre": 0.0,
+        "K6_post": 1.0,
+        "K7_pre": 1.0,
+        "K7_post": 0.5
+      },
+      "disid_change_mean": 0.067,
+      "ambivalent_post": 0,
+      "cases": {}
+    }
+  },
+  "sameComponentCrossMethod": [
+    {
+      "var_a": "disid_change",
+      "method_a": "self_report",
+      "component_a": "disidentification",
+      "var_b": "la_K2_change",
+      "method_b": "language",
+      "component_b": "disidentification",
+      "same_component": true,
+      "same_method": false,
+      "n": 24,
+      "rho": -0.452
+    },
+    {
+      "var_a": "disid_change",
+      "method_a": "self_report",
+      "component_a": "disidentification",
+      "var_b": "la_K3_change",
+      "method_b": "language",
+      "component_b": "disidentification",
+      "same_component": true,
+      "same_method": false,
+      "n": 24,
+      "rho": 0.313
+    }
+  ]
+}

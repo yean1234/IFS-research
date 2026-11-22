@@ -1,0 +1,18 @@
+{
+  "condition": "place",
+  "controlMode": "none",
+  "phaseDurationMs": 90000,
+  "finalX": -0.5462,
+  "finalY": 1.081,
+  "finalZ": 0.9562,
+  "finalDistanceM": 1.1012,
+  "finalAzimuthDeg": -29.73,
+  "finalHeightM": 1.081,
+  "grabCount": 2,
+  "firstGrabMs": 1637,
+  "heldMs": 5886,
+  "pathLengthM": 0.7803,
+  "confirmed": true,
+  "confirmMs": 14153,
+  "conditionCompleted": true
+}
