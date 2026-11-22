@@ -1,7 +1,7 @@
 // 형상별 렌더러(X64): FormRenderPlan → 절차 모형(메시·머티리얼)과 IFS 셰이더 프로퍼티.
 //   blob · shell      : 잘게 나눈 구(icosphere) 하나 + IFS 불투명/반투명 셰이더(정점 변위로 덩어리·껍질)
 //   mist              : (지금은 blob과 같은 구 + Fade 셰이더)
-//   fragments         : (지금은 구 5개)
+//   fragments         : 불규칙한 각진 조각 5개를 합친 메시 하나(FragmentMesh, 평면 음영, 정점 변위 0) + IFS 셰이더
 //   shapeModel        : 모양 모형 4종(ShapeModelFactory) + 정점 변위 0
 // 렌더러는 FormRenderPlan만 본다(매퍼 정보를 모른다, X65). 프리팹·프리미티브 대체 경로는 SceneLoader가 맡는다.
 // 재질의 공통 슬롯(_BaseColor·_Brightness·_Roughness·_Opacity·_Erosion, 대체 프로퍼티)은 SceneLoader가 넣는다.
@@ -80,6 +80,29 @@ namespace IFS.SceneSpec
             return _ico;
         }
 
+        static readonly Dictionary<(int, int), Mesh> _fragments = new Dictionary<(int, int), Mesh>();
+
+        /// <summary>조각 메시(FragmentMesh). 같은 (seed, 조각 수)면 같은 메시라 한 번 만들어 재사용한다.</summary>
+        public static Mesh FragmentsMesh(int seed, int pieces)
+        {
+            if (_fragments.TryGetValue((seed, pieces), out var cached) && cached != null) return cached;
+            FragmentMesh.Build(seed, pieces, out float[] xyz, out float[] nrm, out int[] tris, out _);
+            var verts = new Vector3[xyz.Length / 3];
+            var normals = new Vector3[verts.Length];
+            for (int i = 0; i < verts.Length; i++)
+            {
+                verts[i] = new Vector3(xyz[i * 3], xyz[i * 3 + 1], xyz[i * 3 + 2]);
+                normals[i] = new Vector3(nrm[i * 3], nrm[i * 3 + 1], nrm[i * 3 + 2]);
+            }
+            var mesh = new Mesh { name = "IFS Fragments" };
+            mesh.vertices = verts;
+            mesh.normals = normals;
+            mesh.triangles = tris;
+            mesh.RecalculateBounds();
+            _fragments[(seed, pieces)] = mesh;
+            return mesh;
+        }
+
         public static Mesh ConeMesh()
         {
             if (_cone == null) _cone = ShapeModelFactory.BuildConeMesh();
@@ -133,28 +156,22 @@ namespace IFS.SceneSpec
         public virtual ShadowCastingMode Shadow(FormRenderPlan plan) => plan.Fade ? ShadowCastingMode.Off : ShadowCastingMode.On;
     }
 
-    /// <summary>fragments: 구 5개(이전 경로).</summary>
+    /// <summary>fragments(X67): 불규칙한 각진 조각 여러 개를 합친 메시 하나(드로콜 1, 평면 음영). IFS 셰이더는 그대로 쓰고
+    /// 정점 변위만 0으로 둔다(계획의 ZeroDisplacement) → 재질 슬롯(색·밝기·채도·거칠기·불투명도·침식)과 움직임이 그대로 먹는다.</summary>
     public sealed class FragmentsRenderer : IcoFormRenderer
     {
         public FragmentsRenderer() : base(FormRenderPlan.RendererFragments) { }
 
         public override GameObject CreateModel(FormRenderPlan plan)
         {
-            var group = new GameObject("fragments");
-            Vector3[] offsets =
-            {
-                new Vector3(-0.38f, 0.1f, 0f), new Vector3(0.32f, -0.16f, 0.1f), new Vector3(0f, 0.38f, -0.1f),
-                new Vector3(0.16f, 0.06f, 0.38f), new Vector3(-0.12f, -0.32f, -0.26f),
-            };
-            for (int i = 0; i < offsets.Length; i++)
-            {
-                var c = FormRenderResources.IcoPiece("fragment " + i, i + 1);
-                c.transform.SetParent(group.transform, false);
-                c.transform.localPosition = offsets[i];
-                c.transform.localRotation = Quaternion.Euler(17f * i, 31f * i, 11f * i);
-                c.transform.localScale = Vector3.one * (0.42f - 0.04f * i);
-            }
-            return group;
+            var go = new GameObject("fragments");
+            var mesh = FormRenderResources.FragmentsMesh(plan.FragmentSeed, plan.FragmentPieces);
+            go.AddComponent<MeshFilter>().sharedMesh = mesh;
+            var mat = new Material(FormRenderResources.Opaque);
+            mat.SetFloat("_Seed", plan.FragmentSeed);
+            go.AddComponent<MeshRenderer>().sharedMaterial = mat;
+            go.AddComponent<MeshCollider>().sharedMesh = mesh;
+            return go;
         }
     }
 

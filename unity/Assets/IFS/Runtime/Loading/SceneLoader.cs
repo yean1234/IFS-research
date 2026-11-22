@@ -461,6 +461,7 @@ namespace IFS.SceneSpec
                 _model.transform.localScale = Vector3.one * placement.primitiveBaseSize;
                 RenderPath = renderer.Name;
                 Note($"form.type={form}: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시", false);
+                if (RenderPlan.PresetNote != null) Note(RenderPlan.PresetNote, false);
             }
             else
             {

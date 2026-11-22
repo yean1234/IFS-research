@@ -84,7 +84,7 @@ namespace IFS.SceneSpec.Tests
             var plan = Plan(o);
             Assert.That(plan.Renderer, Is.EqualTo(renderer));
             Assert.That(plan.ShapeModel, Is.EqualTo(model));
-            Assert.That(plan.ZeroDisplacement, Is.EqualTo(model != null));
+            Assert.That(plan.ZeroDisplacement, Is.EqualTo(model != null || renderer == "fragments"));   // 각진 메시는 정점 변위 0
             if (model != null) Assert.That(plan.Preset.Lumpiness, Is.EqualTo(0f));
         }
 

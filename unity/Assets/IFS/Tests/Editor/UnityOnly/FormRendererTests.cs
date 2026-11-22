@@ -95,6 +95,32 @@ namespace IFS.SceneSpec.Tests
             Assert.That(plan.ShapeModel, Is.EqualTo(ShapeMapping.ModelCube));
         }
 
+        [Test]
+        public void Fragments_are_one_angular_mesh_with_material_slots_applied()
+        {
+            var spec = OwnershipTestSpecs.Empty("FRAGLOAD").Slot("form.type", "fragments", "조각").Hsl(0.02, 0.6, 0.45, "붉은")
+                .Slot("material.roughness", 0.8, "거친").Slot("material.erosion", 0.3, "삭은").Slot("motion.type", "swaying", "흔들");
+            WithLoaded(_tmp, spec, "frag-load", l =>
+            {
+                var rs = l.Root.GetComponentsInChildren<Renderer>();
+                Assert.That(rs.Length, Is.EqualTo(1), "드로콜 1(합친 메시 하나)");
+                var mesh = rs[0].GetComponent<MeshFilter>().sharedMesh;
+                Assert.That(mesh.name, Is.EqualTo("IFS Fragments"));
+                Assert.That(mesh.triangles.Length / 3, Is.EqualTo(FragmentMesh.DefaultPieces * 20));
+                var m = rs[0].sharedMaterial;
+                Assert.That(m.GetFloat("_Displacement"), Is.EqualTo(0f));
+                Assert.That(m.GetFloat("_Roughness"), Is.EqualTo(0.8f).Within(1e-6));
+                Assert.That(m.GetFloat("_Erosion"), Is.EqualTo(0.3f).Within(1e-6));
+                Assert.That(l.Notes.Any(n => n.Contains("형상 프리셋 기본값")), Is.True);
+                Assert.That(l.Root.GetComponentInChildren<SpecMotion>().Group, Is.Not.Null);
+                return 0;
+            });
+            // 같은 spec이면 같은 메시(같은 정점)
+            string a = WithLoaded(_tmp, spec, "frag-a", Visual);
+            string b = WithLoaded(_tmp, spec, "frag-b", Visual);
+            Assert.That(b, Is.EqualTo(a));
+        }
+
         [TestCase("mist")]
         [TestCase("fragments")]
         [TestCase("blob")]

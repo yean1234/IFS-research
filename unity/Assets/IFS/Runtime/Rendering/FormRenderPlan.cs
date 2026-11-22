@@ -34,7 +34,8 @@ namespace IFS.SceneSpec
             { "blob", new FormPreset(0.14f, 1.6f, 0f, 1f, 0f) },
             { "mist", new FormPreset(0.30f, 1.1f, 1f, 0.5f, 0f) },
             { "shell", new FormPreset(0.04f, 2.0f, 0f, 1f, 0.35f) },
-            { "fragments", new FormPreset(0.25f, 2.4f, 0f, 1f, 0f) },
+            // fragments: 각진 조각 메시(FragmentMesh)라 정점 변위를 쓰지 않는다(굴곡 0, 변위 0). 노이즈 크기는 얼룩·침식 무늬 크기.
+            { "fragments", new FormPreset(0f, 2.4f, 0f, 1f, 0f) },
         };
 
         /// <summary>모양 모형(구·큐브·원기둥·원뿔): 굴곡 0, 안개 가장자리 0, 껍질 열림 0 + 정점 변위 0 → 윤곽 유지.
@@ -63,8 +64,13 @@ namespace IFS.SceneSpec
         public bool Fade { get; private set; }
         /// <summary>형상 프리셋 기본값.</summary>
         public FormPreset Preset { get; private set; }
-        /// <summary>정점 변위 0(모양 모형: 각진 면이 벌어지지 않게).</summary>
+        /// <summary>정점 변위 0(모양 모형·fragments: 각진 면이 벌어지지 않게).</summary>
         public bool ZeroDisplacement { get; private set; }
+        /// <summary>fragments 형상 프리셋 기본값: 조각 수·seed(그 밖의 렌더러는 0).</summary>
+        public int FragmentPieces { get; private set; }
+        public int FragmentSeed { get; private set; }
+        /// <summary>형상 프리셋 기본값을 적은 로더 메모(notes). 없으면 null.</summary>
+        public string PresetNote { get; private set; }
 
         FormRenderPlan() { }
 
@@ -83,9 +89,11 @@ namespace IFS.SceneSpec
             FormPreset preset;
             if (shapeModel) preset = ShapePreset;
             else FormPresets.TryGetValue(form ?? "", out preset);
+            string renderer = shapeModel ? RendererShapeModel : RendererFor(form);
+            bool fragments = renderer == RendererFragments;
             return new FormRenderPlan
             {
-                Renderer = shapeModel ? RendererShapeModel : RendererFor(form),
+                Renderer = renderer,
                 FormType = form,
                 ShapeModel = shapeModel ? shape.Model : null,
                 ShapeApplied = shapeModel ? shape.Applied : null,
@@ -96,7 +104,13 @@ namespace IFS.SceneSpec
                 Erosion = (float)current.GetNumber("material.erosion"),
                 Fade = RenderedColor.UsesFadeShader(form, opacity),
                 Preset = preset,
-                ZeroDisplacement = shapeModel,
+                ZeroDisplacement = shapeModel || fragments,
+                FragmentPieces = fragments ? FragmentMesh.DefaultPieces : 0,
+                FragmentSeed = fragments ? FragmentMesh.DefaultSeed : 0,
+                PresetNote = fragments
+                    ? $"form.type=fragments: 형상 프리셋 기본값 — 각진 조각 {FragmentMesh.DefaultPieces}개를 합친 메시 하나" +
+                      $"(seed {FragmentMesh.DefaultSeed}, 평면 음영, 정점 변위 0, 노이즈 크기 {preset.NoiseScale.ToString(System.Globalization.CultureInfo.InvariantCulture)})"
+                    : null,
             };
         }
 
@@ -134,6 +148,8 @@ namespace IFS.SceneSpec
                 ["density"] = R(Preset.Density), ["shellOpen"] = R(Preset.ShellOpen),
             },
             ["zeroDisplacement"] = ZeroDisplacement,
+            ["fragmentPieces"] = FragmentPieces,
+            ["fragmentSeed"] = FragmentSeed,
         };
     }
 }
