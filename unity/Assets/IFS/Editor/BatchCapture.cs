@@ -15,6 +15,8 @@
 //   6) 렌더 통계: UnityStats·ProfilerRecorder(배치모드에서 의미가 있는지 함께 기록) + 직접 계산한 추정(렌더러·삼각형·패스·그림자 광원)
 //   7) 모양어 판정(shape): _unmapped의 모양어 → 모양 모형(SceneLoader.Shape). 모양 프리팹은 Assets/Prefabs/Shapes에서 읽어
 //      로더에 연결한다(ShapePrefabMenu). 없으면 로더가 같은 형상을 코드로 만들고 viaPrefab = false로 남긴다.
+//   8) 형상 지표(X72): renderPath(렌더러 이름), visiblePixels·maxAlpha(장면 조명 덮임), silhouette(원형도·덩어리 수·가장자리 감쇠 폭).
+//      "더 그 형상답다"의 대리 지표일 뿐이다(사람 판정을 대신하지 않는다). 계산은 SilhouetteMetrics(UnityEngine 없음).
 // 끝나면 <outDir>/report.json. 모든 spec이 로드되고 도구가 예외 없이 끝나면 Exit(0), 아니면 Exit(1).
 // 데스크톱 GPU 대리 측정이다. Quest 3 헤드셋(모바일 GPU)의 성능이 아니다.
 using System;
@@ -227,6 +229,8 @@ namespace IFS.SceneSpec.EditorTools
                     entry["inferredUsed"] = new JArray(p.InferredUsed);
                     entry["notes"] = new JArray(loader.Notes.ToArray());
                     entry["shape"] = loader.Shape.ToJson();
+                    entry["renderPath"] = loader.RenderPath;
+                    entry["renderPlan"] = loader.RenderPlan?.ToJson();
 
                     var renderers = loader.Root.GetComponentsInChildren<Renderer>();
                     var bounds = Encapsulate(renderers);
@@ -250,8 +254,13 @@ namespace IFS.SceneSpec.EditorTools
 
                     // 2) 색 정확도(형상만 렌더해 가림 마스크·중앙 영역을 구한다)
                     bool fade = RenderedColor.UsesFadeShader(p.GetCategory("form.type"), p.GetNumber("material.opacity"));   // 로더와 같은 판정
-                    var colorReport = MeasureColor(c, cam, p, full, fade, out var maskBox);
+                    var colorReport = MeasureColor(c, cam, p, full, fade, out var maskBox, out var coverage);
                     entry["color"] = colorReport;
+                    // 형상 지표(X72): 장면 조명·형상만 렌더의 화소별 덮임으로 잰다(색 측정과 같은 덮임)
+                    var sil = SilhouetteMetrics.Measure(coverage, c.O.Width, c.O.Height);
+                    entry["visiblePixels"] = sil.VisiblePixels;
+                    entry["maxAlpha"] = R(sil.MaxAlpha);
+                    entry["silhouette"] = SilhouetteJson(sil);
                     if (maskBox.HasValue)
                     {
                         string detail = Path.Combine(c.OutDir, name + "_detail.png");
@@ -360,7 +369,7 @@ namespace IFS.SceneSpec.EditorTools
         }
 
         // ── 색 정확도 ───────────────────────────────────────────────────────
-        static JObject MeasureColor(Ctx c, Camera cam, SceneParams p, Color32[] scenePixels, bool fade, out RectInt? maskBox)
+        static JObject MeasureColor(Ctx c, Camera cam, SceneParams p, Color32[] scenePixels, bool fade, out RectInt? maskBox, out float[] coverage)
         {
             maskBox = null;
             SceneParams.HslToRgb(p.GetNumber("material.color.h"), p.GetNumber("material.color.s"), p.GetNumber("material.color.l"),
@@ -431,6 +440,7 @@ namespace IFS.SceneSpec.EditorTools
             int w = c.O.Width, h = c.O.Height;
             double alphaMin = fade ? 0.05 : 0.98;
             var alpha = Coverage(sceneB, sceneW);
+            coverage = alpha;
             int minX = w, minY = h, maxX = -1, maxY = -1, covered = 0;
             for (int y = 0; y < h; y++)
                 for (int x = 0; x < w; x++)
@@ -531,6 +541,50 @@ namespace IFS.SceneSpec.EditorTools
                     new Lab(sceneLab[0].Value<double>(), sceneLab[1].Value<double>(), sceneLab[2].Value<double>()),
                     new Lab(ctxLab[0].Value<double>(), ctxLab[1].Value<double>(), ctxLab[2].Value<double>())), 2);
             return result;
+        }
+
+        /// <summary>형상 지표 한 spec분(report.json의 silhouette).</summary>
+        public static JObject SilhouetteJson(SilhouetteResult s) => new JObject
+        {
+            ["circularity"] = R(s.Circularity),
+            ["components"] = s.Components,
+            ["edgeFalloffPx"] = R(s.EdgeFalloffPx, 2),
+            ["maskPixels"] = s.MaskPixels,
+            ["perimeterPx"] = R(s.PerimeterPx, 1),
+            ["componentsRaw"] = s.ComponentsRaw,
+            ["method"] = "덮임 = 장면 조명에서 형상만 검은·흰 배경에 렌더한 화소별 a(색 측정과 같음, 원래 해상도). " +
+                         "visiblePixels = a ≥ " + SilhouetteMetrics.VisibleAlpha.ToString(CultureInfo.InvariantCulture) + ", 마스크 = a ≥ " +
+                         SilhouetteMetrics.MaskFraction.ToString(CultureInfo.InvariantCulture) + " × maxAlpha. " +
+                         "circularity = 4π·넓이/둘레²(마칭 스퀘어 둘레, 원 ≈ 1). components = 8-이웃 덩어리 중 마스크 넓이의 " +
+                         SilhouetteMetrics.MinComponentFraction.ToString(CultureInfo.InvariantCulture) + " 이상(componentsRaw = 모두). " +
+                         "edgeFalloffPx = (넓이(a ≥ 0.1·max) − 넓이(a ≥ 0.9·max)) / 둘레 = 덮임이 10%→90%로 오르는 띠의 평균 폭(화소).",
+        };
+
+        /// <summary>렌더 경로별 집계(spec 수, 지표 평균, frameMsP95 최댓값). 대리 지표다.</summary>
+        public static JObject RenderPathSummary(JArray specs)
+        {
+            var o = new JObject();
+            var withPath = specs.Where(s => s.Value<string>("renderPath") != null).ToArray();
+            foreach (var g in withPath.GroupBy(s => s.Value<string>("renderPath")).OrderBy(g => g.Key, StringComparer.Ordinal))
+            {
+                double? Mean(Func<JToken, JToken> pick)
+                {
+                    var v = g.Select(pick).Where(t => t != null && t.Type != JTokenType.Null).Select(t => t.Value<double>()).ToArray();
+                    return v.Length > 0 ? R(v.Average()) : (double?)null;
+                }
+                var perf = g.Select(s => s["performance"]?["frameMsP95"]).Where(t => t != null).Select(t => t.Value<double>()).ToArray();
+                o[g.Key] = new JObject
+                {
+                    ["specs"] = g.Count(),
+                    ["visiblePixelsMean"] = Mean(s => s["visiblePixels"]),
+                    ["maxAlphaMean"] = Mean(s => s["maxAlpha"]),
+                    ["circularityMean"] = Mean(s => s["silhouette"]?["circularity"]),
+                    ["componentsMean"] = Mean(s => s["silhouette"]?["components"]),
+                    ["edgeFalloffPxMean"] = Mean(s => s["silhouette"]?["edgeFalloffPx"]),
+                    ["frameMsP95Max"] = perf.Length > 0 ? R(perf.Max()) : (double?)null,
+                };
+            }
+            return o;
         }
 
         /// <summary>material.color의 h·s·l 중 기본값으로 채운 성분(예: ["h", "l"]). 비어 있으면 전부 참여자가 말한 값.</summary>
@@ -832,6 +886,7 @@ namespace IFS.SceneSpec.EditorTools
                     ["color"] = ColorSummary(specs),
                     ["ac4"] = ac4,
                     ["shapes"] = ShapeSummary(specs),
+                    ["renderPaths"] = RenderPathSummary(specs),
                 },
                 ["shapePrefabs"] = new JObject
                 {

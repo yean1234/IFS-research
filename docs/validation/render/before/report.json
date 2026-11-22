@@ -1,6 +1,6 @@
 {
   "format": "ifs-batch-capture/0.1",
-  "generatedAtUtc": "2026-11-22T15:06:54Z",
+  "generatedAtUtc": "2026-11-22T15:15:28Z",
   "ok": true,
   "disclaimer": "데스크톱 GPU에서 잰 대리 측정값입니다. Quest 3 헤드셋(모바일 GPU, 타일 렌더링, 단일 패스 인스턴싱)의 프레임시간이 아닙니다. 헤드셋 성능은 기기에서 OVR Metrics Tool 등으로 따로 재야 합니다.",
   "system": {
@@ -139,8 +139,8 @@
     "captureFailures": 0,
     "consoleErrors": 0,
     "consoleExceptions": 0,
-    "frameMsP95Max": 1.981,
-    "frameMsMaxMax": 3.209,
+    "frameMsP95Max": 1.826,
+    "frameMsMaxMax": 2.178,
     "drawCallsPerEyeMax": 24,
     "submittedTrianglesPerEyeMax": 102800,
     "realtimeShadowLights": 1,
@@ -200,6 +200,80 @@
       "notAppliedForm": {},
       "conflict": {},
       "note": "status: applied = 모양 모형 적용, none = 모양어 없음(기본 모형), unmapped_shape = 표에 없는 모양어만 있어 모양 정보 없이 만든 모형, not_applied_form = spec이 mist·shell·fragments를 말해 그 형태 모형을 지킴. 표: round→Sphere, square→Cube, flat→FlatCylinder, pointed→Cone."
+    },
+    "renderPaths": {
+      "blob": {
+        "specs": 3,
+        "visiblePixelsMean": 62619.0,
+        "maxAlphaMean": 1.0,
+        "circularityMean": 0.965,
+        "componentsMean": 1.0,
+        "edgeFalloffPxMean": 0.69,
+        "frameMsP95Max": 0.832
+      },
+      "fragments": {
+        "specs": 2,
+        "visiblePixelsMean": 70341.5,
+        "maxAlphaMean": 1.0,
+        "circularityMean": 0.24,
+        "componentsMean": 4.0,
+        "edgeFalloffPxMean": 0.7,
+        "frameMsP95Max": 0.972
+      },
+      "mist": {
+        "specs": 3,
+        "visiblePixelsMean": 51028.333,
+        "maxAlphaMean": 0.323,
+        "circularityMean": 0.583,
+        "componentsMean": 1.0,
+        "edgeFalloffPxMean": 63.587,
+        "frameMsP95Max": 1.826
+      },
+      "shapePrefab(Cone)": {
+        "specs": 1,
+        "visiblePixelsMean": 50928.0,
+        "maxAlphaMean": 1.0,
+        "circularityMean": 0.701,
+        "componentsMean": 1.0,
+        "edgeFalloffPxMean": 0.7,
+        "frameMsP95Max": 0.808
+      },
+      "shapePrefab(Cube)": {
+        "specs": 1,
+        "visiblePixelsMean": 113605.0,
+        "maxAlphaMean": 1.0,
+        "circularityMean": 0.825,
+        "componentsMean": 1.0,
+        "edgeFalloffPxMean": 0.41,
+        "frameMsP95Max": 0.822
+      },
+      "shapePrefab(FlatCylinder)": {
+        "specs": 1,
+        "visiblePixelsMean": 47743.0,
+        "maxAlphaMean": 1.0,
+        "circularityMean": 0.841,
+        "componentsMean": 1.0,
+        "edgeFalloffPxMean": 0.72,
+        "frameMsP95Max": 0.806
+      },
+      "shapePrefab(Sphere)": {
+        "specs": 1,
+        "visiblePixelsMean": 63336.0,
+        "maxAlphaMean": 1.0,
+        "circularityMean": 0.969,
+        "componentsMean": 1.0,
+        "edgeFalloffPxMean": 0.7,
+        "frameMsP95Max": 0.814
+      },
+      "shell": {
+        "specs": 1,
+        "visiblePixelsMean": 48907.0,
+        "maxAlphaMean": 1.0,
+        "circularityMean": 0.835,
+        "componentsMean": 1.0,
+        "edgeFalloffPxMean": 0.44,
+        "frameMsP95Max": 0.834
+      }
     }
   },
   "shapePrefabs": {
@@ -264,6 +338,31 @@
         "viaPrefab": null,
         "formType": "mist",
         "words": []
+      },
+      "renderPath": "mist",
+      "renderPlan": {
+        "renderer": "mist",
+        "formType": "mist",
+        "shapeModel": null,
+        "shapeApplied": null,
+        "color": [
+          0.42,
+          0.564,
+          0.78
+        ],
+        "opacity": 1.0,
+        "brightness": 0.5,
+        "roughness": 0.5,
+        "erosion": 0.0,
+        "fade": true,
+        "preset": {
+          "lumpiness": 0.3,
+          "noiseScale": 1.1,
+          "fuzz": 1.0,
+          "density": 0.5,
+          "shellOpen": 0.0
+        },
+        "zeroDisplacement": false
       },
       "placement": {
         "objectCenter": [
@@ -451,6 +550,17 @@
         },
         "sceneVsInContextDeltaE2000": 7.51
       },
+      "visiblePixels": 53958,
+      "maxAlpha": 0.554,
+      "silhouette": {
+        "circularity": 0.641,
+        "components": 1,
+        "edgeFalloffPx": 66.91,
+        "maskPixels": 29218,
+        "perimeterPx": 756.7,
+        "componentsRaw": 2,
+        "method": "덮임 = 장면 조명에서 형상만 검은·흰 배경에 렌더한 화소별 a(색 측정과 같음, 원래 해상도). visiblePixels = a ≥ 0.02, 마스크 = a ≥ 0.5 × maxAlpha. circularity = 4π·넓이/둘레²(마칭 스퀘어 둘레, 원 ≈ 1). components = 8-이웃 덩어리 중 마스크 넓이의 0.005 이상(componentsRaw = 모두). edgeFalloffPx = (넓이(a ≥ 0.1·max) − 넓이(a ≥ 0.9·max)) / 둘레 = 덮임이 10%→90%로 오르는 띠의 평균 폭(화소)."
+      },
       "pngDetail": "R01_mist_op100_detail.png",
       "renderStats": {
         "unityStats": {
@@ -514,20 +624,6 @@
           "note": "직접 계산(추정): 렌더러별 패스(LightMode = ForwardBase/ForwardAdd/ShadowCaster)×메시 삼각형. 하늘 메시 삼각형은 제외. 눈당 값 = 단일 패스 인스턴싱 스테레오 프레임과 같은 수의 드로콜. 멀티패스(눈마다 Camera.Render, 이 도구의 시간 측정 방식)면 그림자 맵까지 ×2.",
           "renderers": [
             {
-              "name": "model (mist)",
-              "triangles": 5120,
-              "inView": true,
-              "forwardPasses": 1,
-              "shadowCasterPasses": 0,
-              "castsShadow": false,
-              "transparent": true,
-              "passLightModes": [
-                "FORWARDBASE",
-                "FORWARDADD",
-                "META"
-              ]
-            },
-            {
               "name": "floor (1 m grid)",
               "triangles": 200,
               "inView": true,
@@ -541,6 +637,20 @@
                 "DEFERRED",
                 "META"
               ]
+            },
+            {
+              "name": "model (mist)",
+              "triangles": 5120,
+              "inView": true,
+              "forwardPasses": 1,
+              "shadowCasterPasses": 0,
+              "castsShadow": false,
+              "transparent": true,
+              "passLightModes": [
+                "FORWARDBASE",
+                "FORWARDADD",
+                "META"
+              ]
             }
           ]
         }
@@ -552,11 +662,11 @@
         "msaa": 4,
         "frames": 300,
         "warmupFrames": 30,
-        "frameMsP50": 0.426,
-        "frameMsP95": 1.981,
-        "frameMsMax": 3.209,
-        "frameMsMean": 0.714,
-        "fpsAtP95": 504.9
+        "frameMsP50": 0.423,
+        "frameMsP95": 1.826,
+        "frameMsMax": 2.178,
+        "frameMsMean": 0.615,
+        "fpsAtP95": 547.7
       },
       "console": {
         "errors": 0,
@@ -617,6 +727,31 @@
         "viaPrefab": null,
         "formType": "mist",
         "words": []
+      },
+      "renderPath": "mist",
+      "renderPlan": {
+        "renderer": "mist",
+        "formType": "mist",
+        "shapeModel": null,
+        "shapeApplied": null,
+        "color": [
+          0.42,
+          0.564,
+          0.78
+        ],
+        "opacity": 0.6,
+        "brightness": 0.5,
+        "roughness": 0.5,
+        "erosion": 0.0,
+        "fade": true,
+        "preset": {
+          "lumpiness": 0.3,
+          "noiseScale": 1.1,
+          "fuzz": 1.0,
+          "density": 0.5,
+          "shellOpen": 0.0
+        },
+        "zeroDisplacement": false
       },
       "placement": {
         "objectCenter": [
@@ -804,6 +939,17 @@
         },
         "sceneVsInContextDeltaE2000": 10.7
       },
+      "visiblePixels": 53195,
+      "maxAlpha": 0.334,
+      "silhouette": {
+        "circularity": 0.594,
+        "components": 1,
+        "edgeFalloffPx": 64.53,
+        "maskPixels": 29154,
+        "perimeterPx": 785.6,
+        "componentsRaw": 2,
+        "method": "덮임 = 장면 조명에서 형상만 검은·흰 배경에 렌더한 화소별 a(색 측정과 같음, 원래 해상도). visiblePixels = a ≥ 0.02, 마스크 = a ≥ 0.5 × maxAlpha. circularity = 4π·넓이/둘레²(마칭 스퀘어 둘레, 원 ≈ 1). components = 8-이웃 덩어리 중 마스크 넓이의 0.005 이상(componentsRaw = 모두). edgeFalloffPx = (넓이(a ≥ 0.1·max) − 넓이(a ≥ 0.9·max)) / 둘레 = 덮임이 10%→90%로 오르는 띠의 평균 폭(화소)."
+      },
       "pngDetail": "R02_mist_op060_detail.png",
       "renderStats": {
         "unityStats": {
@@ -905,11 +1051,11 @@
         "msaa": 4,
         "frames": 300,
         "warmupFrames": 30,
-        "frameMsP50": 0.421,
-        "frameMsP95": 0.541,
-        "frameMsMax": 0.718,
-        "frameMsMean": 0.441,
-        "fpsAtP95": 1849.8
+        "frameMsP50": 0.422,
+        "frameMsP95": 0.521,
+        "frameMsMax": 0.702,
+        "frameMsMean": 0.439,
+        "fpsAtP95": 1917.9
       },
       "console": {
         "errors": 0,
@@ -970,6 +1116,31 @@
         "viaPrefab": null,
         "formType": "mist",
         "words": []
+      },
+      "renderPath": "mist",
+      "renderPlan": {
+        "renderer": "mist",
+        "formType": "mist",
+        "shapeModel": null,
+        "shapeApplied": null,
+        "color": [
+          0.42,
+          0.564,
+          0.78
+        ],
+        "opacity": 0.15,
+        "brightness": 0.5,
+        "roughness": 0.5,
+        "erosion": 0.0,
+        "fade": true,
+        "preset": {
+          "lumpiness": 0.3,
+          "noiseScale": 1.1,
+          "fuzz": 1.0,
+          "density": 0.5,
+          "shellOpen": 0.0
+        },
+        "zeroDisplacement": false
       },
       "placement": {
         "objectCenter": [
@@ -1157,6 +1328,17 @@
         },
         "sceneVsInContextDeltaE2000": 15.13
       },
+      "visiblePixels": 45932,
+      "maxAlpha": 0.08,
+      "silhouette": {
+        "circularity": 0.513,
+        "components": 1,
+        "edgeFalloffPx": 59.32,
+        "maskPixels": 29776,
+        "perimeterPx": 853.9,
+        "componentsRaw": 4,
+        "method": "덮임 = 장면 조명에서 형상만 검은·흰 배경에 렌더한 화소별 a(색 측정과 같음, 원래 해상도). visiblePixels = a ≥ 0.02, 마스크 = a ≥ 0.5 × maxAlpha. circularity = 4π·넓이/둘레²(마칭 스퀘어 둘레, 원 ≈ 1). components = 8-이웃 덩어리 중 마스크 넓이의 0.005 이상(componentsRaw = 모두). edgeFalloffPx = (넓이(a ≥ 0.1·max) − 넓이(a ≥ 0.9·max)) / 둘레 = 덮임이 10%→90%로 오르는 띠의 평균 폭(화소)."
+      },
       "pngDetail": "R03_mist_op015_detail.png",
       "renderStats": {
         "unityStats": {
@@ -1258,11 +1440,11 @@
         "msaa": 4,
         "frames": 300,
         "warmupFrames": 30,
-        "frameMsP50": 0.42,
-        "frameMsP95": 0.524,
-        "frameMsMax": 0.596,
-        "frameMsMean": 0.435,
-        "fpsAtP95": 1908.0
+        "frameMsP50": 0.423,
+        "frameMsP95": 0.527,
+        "frameMsMax": 0.595,
+        "frameMsMean": 0.437,
+        "fpsAtP95": 1899.3
       },
       "console": {
         "errors": 0,
@@ -1329,6 +1511,31 @@
         "viaPrefab": null,
         "formType": "fragments",
         "words": []
+      },
+      "renderPath": "fragments",
+      "renderPlan": {
+        "renderer": "fragments",
+        "formType": "fragments",
+        "shapeModel": null,
+        "shapeApplied": null,
+        "color": [
+          0.7,
+          0.7,
+          0.7
+        ],
+        "opacity": 1.0,
+        "brightness": 0.5,
+        "roughness": 0.5,
+        "erosion": 0.0,
+        "fade": false,
+        "preset": {
+          "lumpiness": 0.25,
+          "noiseScale": 2.4,
+          "fuzz": 0.0,
+          "density": 1.0,
+          "shellOpen": 0.0
+        },
+        "zeroDisplacement": false
       },
       "placement": {
         "objectCenter": [
@@ -1520,6 +1727,17 @@
         },
         "sceneVsInContextDeltaE2000": 0.0
       },
+      "visiblePixels": 21716,
+      "maxAlpha": 1.0,
+      "silhouette": {
+        "circularity": 0.239,
+        "components": 4,
+        "edgeFalloffPx": 0.68,
+        "maskPixels": 21405,
+        "perimeterPx": 1061.5,
+        "componentsRaw": 4,
+        "method": "덮임 = 장면 조명에서 형상만 검은·흰 배경에 렌더한 화소별 a(색 측정과 같음, 원래 해상도). visiblePixels = a ≥ 0.02, 마스크 = a ≥ 0.5 × maxAlpha. circularity = 4π·넓이/둘레²(마칭 스퀘어 둘레, 원 ≈ 1). components = 8-이웃 덩어리 중 마스크 넓이의 0.005 이상(componentsRaw = 모두). edgeFalloffPx = (넓이(a ≥ 0.1·max) − 넓이(a ≥ 0.9·max)) / 둘레 = 덮임이 10%→90%로 오르는 띠의 평균 폭(화소)."
+      },
       "pngDetail": "R04_frag_small_detail.png",
       "renderStats": {
         "unityStats": {
@@ -1583,7 +1801,7 @@
           "note": "직접 계산(추정): 렌더러별 패스(LightMode = ForwardBase/ForwardAdd/ShadowCaster)×메시 삼각형. 하늘 메시 삼각형은 제외. 눈당 값 = 단일 패스 인스턴싱 스테레오 프레임과 같은 수의 드로콜. 멀티패스(눈마다 Camera.Render, 이 도구의 시간 측정 방식)면 그림자 맵까지 ×2.",
           "renderers": [
             {
-              "name": "fragment 0",
+              "name": "fragment 3",
               "triangles": 5120,
               "inView": true,
               "forwardPasses": 2,
@@ -1603,7 +1821,22 @@
               ]
             },
             {
-              "name": "fragment 2",
+              "name": "floor (1 m grid)",
+              "triangles": 200,
+              "inView": true,
+              "forwardPasses": 1,
+              "shadowCasterPasses": 0,
+              "castsShadow": false,
+              "transparent": false,
+              "passLightModes": [
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "META"
+              ]
+            },
+            {
+              "name": "fragment 1",
               "triangles": 5120,
               "inView": true,
               "forwardPasses": 2,
@@ -1643,7 +1876,7 @@
               ]
             },
             {
-              "name": "fragment 1",
+              "name": "fragment 2",
               "triangles": 5120,
               "inView": true,
               "forwardPasses": 2,
@@ -1663,7 +1896,7 @@
               ]
             },
             {
-              "name": "fragment 3",
+              "name": "fragment 0",
               "triangles": 5120,
               "inView": true,
               "forwardPasses": 2,
@@ -1679,21 +1912,6 @@
                 "FORWARDADD",
                 "DEFERRED",
                 "SHADOWCASTER",
-                "META"
-              ]
-            },
-            {
-              "name": "floor (1 m grid)",
-              "triangles": 200,
-              "inView": true,
-              "forwardPasses": 1,
-              "shadowCasterPasses": 0,
-              "castsShadow": false,
-              "transparent": false,
-              "passLightModes": [
-                "FORWARDBASE",
-                "FORWARDADD",
-                "DEFERRED",
                 "META"
               ]
             }
@@ -1707,11 +1925,11 @@
         "msaa": 4,
         "frames": 300,
         "warmupFrames": 30,
-        "frameMsP50": 0.77,
-        "frameMsP95": 0.908,
-        "frameMsMax": 1.378,
-        "frameMsMean": 0.795,
-        "fpsAtP95": 1101.0
+        "frameMsP50": 0.769,
+        "frameMsP95": 0.895,
+        "frameMsMax": 1.106,
+        "frameMsMean": 0.791,
+        "fpsAtP95": 1117.2
       },
       "console": {
         "errors": 0,
@@ -1768,6 +1986,31 @@
         "viaPrefab": null,
         "formType": "fragments",
         "words": []
+      },
+      "renderPath": "fragments",
+      "renderPlan": {
+        "renderer": "fragments",
+        "formType": "fragments",
+        "shapeModel": null,
+        "shapeApplied": null,
+        "color": [
+          0.72,
+          0.2448,
+          0.18
+        ],
+        "opacity": 1.0,
+        "brightness": 0.5,
+        "roughness": 0.8,
+        "erosion": 0.3,
+        "fade": false,
+        "preset": {
+          "lumpiness": 0.25,
+          "noiseScale": 2.4,
+          "fuzz": 0.0,
+          "density": 1.0,
+          "shellOpen": 0.0
+        },
+        "zeroDisplacement": false
       },
       "placement": {
         "objectCenter": [
@@ -1955,6 +2198,17 @@
         },
         "sceneVsInContextDeltaE2000": 0.0
       },
+      "visiblePixels": 118967,
+      "maxAlpha": 1.0,
+      "silhouette": {
+        "circularity": 0.241,
+        "components": 4,
+        "edgeFalloffPx": 0.72,
+        "maskPixels": 118417,
+        "perimeterPx": 2482.9,
+        "componentsRaw": 4,
+        "method": "덮임 = 장면 조명에서 형상만 검은·흰 배경에 렌더한 화소별 a(색 측정과 같음, 원래 해상도). visiblePixels = a ≥ 0.02, 마스크 = a ≥ 0.5 × maxAlpha. circularity = 4π·넓이/둘레²(마칭 스퀘어 둘레, 원 ≈ 1). components = 8-이웃 덩어리 중 마스크 넓이의 0.005 이상(componentsRaw = 모두). edgeFalloffPx = (넓이(a ≥ 0.1·max) − 넓이(a ≥ 0.9·max)) / 둘레 = 덮임이 10%→90%로 오르는 띠의 평균 폭(화소)."
+      },
       "pngDetail": "R05_frag_large_detail.png",
       "renderStats": {
         "unityStats": {
@@ -2018,7 +2272,22 @@
           "note": "직접 계산(추정): 렌더러별 패스(LightMode = ForwardBase/ForwardAdd/ShadowCaster)×메시 삼각형. 하늘 메시 삼각형은 제외. 눈당 값 = 단일 패스 인스턴싱 스테레오 프레임과 같은 수의 드로콜. 멀티패스(눈마다 Camera.Render, 이 도구의 시간 측정 방식)면 그림자 맵까지 ×2.",
           "renderers": [
             {
-              "name": "fragment 0",
+              "name": "floor (1 m grid)",
+              "triangles": 200,
+              "inView": true,
+              "forwardPasses": 1,
+              "shadowCasterPasses": 0,
+              "castsShadow": false,
+              "transparent": false,
+              "passLightModes": [
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "META"
+              ]
+            },
+            {
+              "name": "fragment 2",
               "triangles": 5120,
               "inView": true,
               "forwardPasses": 2,
@@ -2058,7 +2327,7 @@
               ]
             },
             {
-              "name": "fragment 4",
+              "name": "fragment 0",
               "triangles": 5120,
               "inView": true,
               "forwardPasses": 2,
@@ -2098,7 +2367,7 @@
               ]
             },
             {
-              "name": "fragment 2",
+              "name": "fragment 4",
               "triangles": 5120,
               "inView": true,
               "forwardPasses": 2,
@@ -2116,21 +2385,6 @@
                 "SHADOWCASTER",
                 "META"
               ]
-            },
-            {
-              "name": "floor (1 m grid)",
-              "triangles": 200,
-              "inView": true,
-              "forwardPasses": 1,
-              "shadowCasterPasses": 0,
-              "castsShadow": false,
-              "transparent": false,
-              "passLightModes": [
-                "FORWARDBASE",
-                "FORWARDADD",
-                "DEFERRED",
-                "META"
-              ]
             }
           ]
         }
@@ -2142,11 +2396,11 @@
         "msaa": 4,
         "frames": 300,
         "warmupFrames": 30,
-        "frameMsP50": 0.854,
-        "frameMsP95": 0.961,
-        "frameMsMax": 1.016,
-        "frameMsMean": 0.869,
-        "fpsAtP95": 1040.3
+        "frameMsP50": 0.856,
+        "frameMsP95": 0.972,
+        "frameMsMax": 1.143,
+        "frameMsMean": 0.875,
+        "fpsAtP95": 1028.3
       },
       "console": {
         "errors": 0,
@@ -2215,6 +2469,31 @@
         "viaPrefab": null,
         "formType": "shell",
         "words": []
+      },
+      "renderPath": "shell",
+      "renderPlan": {
+        "renderer": "shell",
+        "formType": "shell",
+        "shapeModel": null,
+        "shapeApplied": null,
+        "color": [
+          0.7,
+          0.7,
+          0.7
+        ],
+        "opacity": 1.0,
+        "brightness": 0.5,
+        "roughness": 0.5,
+        "erosion": 0.0,
+        "fade": false,
+        "preset": {
+          "lumpiness": 0.04,
+          "noiseScale": 2.0,
+          "fuzz": 0.0,
+          "density": 1.0,
+          "shellOpen": 0.35
+        },
+        "zeroDisplacement": false
       },
       "placement": {
         "objectCenter": [
@@ -2406,6 +2685,17 @@
         },
         "sceneVsInContextDeltaE2000": 0.0
       },
+      "visiblePixels": 48907,
+      "maxAlpha": 1.0,
+      "silhouette": {
+        "circularity": 0.835,
+        "components": 1,
+        "edgeFalloffPx": 0.44,
+        "maskPixels": 48781,
+        "perimeterPx": 856.9,
+        "componentsRaw": 1,
+        "method": "덮임 = 장면 조명에서 형상만 검은·흰 배경에 렌더한 화소별 a(색 측정과 같음, 원래 해상도). visiblePixels = a ≥ 0.02, 마스크 = a ≥ 0.5 × maxAlpha. circularity = 4π·넓이/둘레²(마칭 스퀘어 둘레, 원 ≈ 1). components = 8-이웃 덩어리 중 마스크 넓이의 0.005 이상(componentsRaw = 모두). edgeFalloffPx = (넓이(a ≥ 0.1·max) − 넓이(a ≥ 0.9·max)) / 둘레 = 덮임이 10%→90%로 오르는 띠의 평균 폭(화소)."
+      },
       "pngDetail": "R06_shell_detail.png",
       "renderStats": {
         "unityStats": {
@@ -2469,6 +2759,21 @@
           "note": "직접 계산(추정): 렌더러별 패스(LightMode = ForwardBase/ForwardAdd/ShadowCaster)×메시 삼각형. 하늘 메시 삼각형은 제외. 눈당 값 = 단일 패스 인스턴싱 스테레오 프레임과 같은 수의 드로콜. 멀티패스(눈마다 Camera.Render, 이 도구의 시간 측정 방식)면 그림자 맵까지 ×2.",
           "renderers": [
             {
+              "name": "floor (1 m grid)",
+              "triangles": 200,
+              "inView": true,
+              "forwardPasses": 1,
+              "shadowCasterPasses": 0,
+              "castsShadow": false,
+              "transparent": false,
+              "passLightModes": [
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "META"
+              ]
+            },
+            {
               "name": "model (shell)",
               "triangles": 5120,
               "inView": true,
@@ -2487,21 +2792,6 @@
                 "SHADOWCASTER",
                 "META"
               ]
-            },
-            {
-              "name": "floor (1 m grid)",
-              "triangles": 200,
-              "inView": true,
-              "forwardPasses": 1,
-              "shadowCasterPasses": 0,
-              "castsShadow": false,
-              "transparent": false,
-              "passLightModes": [
-                "FORWARDBASE",
-                "FORWARDADD",
-                "DEFERRED",
-                "META"
-              ]
             }
           ]
         }
@@ -2513,11 +2803,11 @@
         "msaa": 4,
         "frames": 300,
         "warmupFrames": 30,
-        "frameMsP50": 0.705,
-        "frameMsP95": 0.819,
-        "frameMsMax": 1.061,
-        "frameMsMean": 0.725,
-        "fpsAtP95": 1221.2
+        "frameMsP50": 0.707,
+        "frameMsP95": 0.834,
+        "frameMsMax": 0.858,
+        "frameMsMean": 0.728,
+        "fpsAtP95": 1199.0
       },
       "console": {
         "errors": 0,
@@ -2586,6 +2876,31 @@
         "viaPrefab": null,
         "formType": "blob",
         "words": []
+      },
+      "renderPath": "blob",
+      "renderPlan": {
+        "renderer": "blob",
+        "formType": "blob",
+        "shapeModel": null,
+        "shapeApplied": null,
+        "color": [
+          0.7,
+          0.7,
+          0.7
+        ],
+        "opacity": 1.0,
+        "brightness": 0.5,
+        "roughness": 0.5,
+        "erosion": 0.0,
+        "fade": false,
+        "preset": {
+          "lumpiness": 0.14,
+          "noiseScale": 1.6,
+          "fuzz": 0.0,
+          "density": 1.0,
+          "shellOpen": 0.0
+        },
+        "zeroDisplacement": false
       },
       "placement": {
         "objectCenter": [
@@ -2777,6 +3092,17 @@
         },
         "sceneVsInContextDeltaE2000": 0.0
       },
+      "visiblePixels": 62619,
+      "maxAlpha": 1.0,
+      "silhouette": {
+        "circularity": 0.963,
+        "components": 1,
+        "edgeFalloffPx": 0.69,
+        "maskPixels": 62323,
+        "perimeterPx": 901.8,
+        "componentsRaw": 1,
+        "method": "덮임 = 장면 조명에서 형상만 검은·흰 배경에 렌더한 화소별 a(색 측정과 같음, 원래 해상도). visiblePixels = a ≥ 0.02, 마스크 = a ≥ 0.5 × maxAlpha. circularity = 4π·넓이/둘레²(마칭 스퀘어 둘레, 원 ≈ 1). components = 8-이웃 덩어리 중 마스크 넓이의 0.005 이상(componentsRaw = 모두). edgeFalloffPx = (넓이(a ≥ 0.1·max) − 넓이(a ≥ 0.9·max)) / 둘레 = 덮임이 10%→90%로 오르는 띠의 평균 폭(화소)."
+      },
       "pngDetail": "R07_blob_default_detail.png",
       "renderStats": {
         "unityStats": {
@@ -2840,6 +3166,21 @@
           "note": "직접 계산(추정): 렌더러별 패스(LightMode = ForwardBase/ForwardAdd/ShadowCaster)×메시 삼각형. 하늘 메시 삼각형은 제외. 눈당 값 = 단일 패스 인스턴싱 스테레오 프레임과 같은 수의 드로콜. 멀티패스(눈마다 Camera.Render, 이 도구의 시간 측정 방식)면 그림자 맵까지 ×2.",
           "renderers": [
             {
+              "name": "floor (1 m grid)",
+              "triangles": 200,
+              "inView": true,
+              "forwardPasses": 1,
+              "shadowCasterPasses": 0,
+              "castsShadow": false,
+              "transparent": false,
+              "passLightModes": [
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "META"
+              ]
+            },
+            {
               "name": "model (blob)",
               "triangles": 5120,
               "inView": true,
@@ -2858,21 +3199,6 @@
                 "SHADOWCASTER",
                 "META"
               ]
-            },
-            {
-              "name": "floor (1 m grid)",
-              "triangles": 200,
-              "inView": true,
-              "forwardPasses": 1,
-              "shadowCasterPasses": 0,
-              "castsShadow": false,
-              "transparent": false,
-              "passLightModes": [
-                "FORWARDBASE",
-                "FORWARDADD",
-                "DEFERRED",
-                "META"
-              ]
             }
           ]
         }
@@ -2884,11 +3210,11 @@
         "msaa": 4,
         "frames": 300,
         "warmupFrames": 30,
-        "frameMsP50": 0.704,
-        "frameMsP95": 0.827,
-        "frameMsMax": 0.859,
-        "frameMsMean": 0.727,
-        "fpsAtP95": 1208.6
+        "frameMsP50": 0.705,
+        "frameMsP95": 0.822,
+        "frameMsMax": 0.851,
+        "frameMsMean": 0.724,
+        "fpsAtP95": 1216.8
       },
       "console": {
         "errors": 0,
@@ -2949,6 +3275,31 @@
         "viaPrefab": null,
         "formType": "blob",
         "words": []
+      },
+      "renderPath": "blob",
+      "renderPlan": {
+        "renderer": "blob",
+        "formType": "blob",
+        "shapeModel": null,
+        "shapeApplied": null,
+        "color": [
+          0.26,
+          0.75,
+          0.25
+        ],
+        "opacity": 1.0,
+        "brightness": 0.8,
+        "roughness": 0.5,
+        "erosion": 0.0,
+        "fade": false,
+        "preset": {
+          "lumpiness": 0.14,
+          "noiseScale": 1.6,
+          "fuzz": 0.0,
+          "density": 1.0,
+          "shellOpen": 0.0
+        },
+        "zeroDisplacement": false
       },
       "placement": {
         "objectCenter": [
@@ -3136,6 +3487,17 @@
         },
         "sceneVsInContextDeltaE2000": 0.0
       },
+      "visiblePixels": 62619,
+      "maxAlpha": 1.0,
+      "silhouette": {
+        "circularity": 0.968,
+        "components": 1,
+        "edgeFalloffPx": 0.69,
+        "maskPixels": 62315,
+        "perimeterPx": 899.6,
+        "componentsRaw": 1,
+        "method": "덮임 = 장면 조명에서 형상만 검은·흰 배경에 렌더한 화소별 a(색 측정과 같음, 원래 해상도). visiblePixels = a ≥ 0.02, 마스크 = a ≥ 0.5 × maxAlpha. circularity = 4π·넓이/둘레²(마칭 스퀘어 둘레, 원 ≈ 1). components = 8-이웃 덩어리 중 마스크 넓이의 0.005 이상(componentsRaw = 모두). edgeFalloffPx = (넓이(a ≥ 0.1·max) − 넓이(a ≥ 0.9·max)) / 둘레 = 덮임이 10%→90%로 오르는 띠의 평균 폭(화소)."
+      },
       "pngDetail": "R08_blob_green_bright_detail.png",
       "renderStats": {
         "unityStats": {
@@ -3243,11 +3605,11 @@
         "msaa": 4,
         "frames": 300,
         "warmupFrames": 30,
-        "frameMsP50": 0.701,
+        "frameMsP50": 0.707,
         "frameMsP95": 0.832,
-        "frameMsMax": 0.906,
-        "frameMsMean": 0.724,
-        "fpsAtP95": 1201.3
+        "frameMsMax": 0.878,
+        "frameMsMean": 0.73,
+        "fpsAtP95": 1202.2
       },
       "console": {
         "errors": 0,
@@ -3312,6 +3674,31 @@
         "viaPrefab": null,
         "formType": null,
         "words": []
+      },
+      "renderPath": "blob",
+      "renderPlan": {
+        "renderer": "blob",
+        "formType": "blob",
+        "shapeModel": null,
+        "shapeApplied": null,
+        "color": [
+          0.65,
+          0.53,
+          0.35
+        ],
+        "opacity": 1.0,
+        "brightness": 0.5,
+        "roughness": 0.5,
+        "erosion": 0.0,
+        "fade": false,
+        "preset": {
+          "lumpiness": 0.14,
+          "noiseScale": 1.6,
+          "fuzz": 0.0,
+          "density": 1.0,
+          "shellOpen": 0.0
+        },
+        "zeroDisplacement": false
       },
       "placement": {
         "objectCenter": [
@@ -3499,6 +3886,17 @@
         },
         "sceneVsInContextDeltaE2000": 0.0
       },
+      "visiblePixels": 62619,
+      "maxAlpha": 1.0,
+      "silhouette": {
+        "circularity": 0.964,
+        "components": 1,
+        "edgeFalloffPx": 0.69,
+        "maskPixels": 62388,
+        "perimeterPx": 901.7,
+        "componentsRaw": 1,
+        "method": "덮임 = 장면 조명에서 형상만 검은·흰 배경에 렌더한 화소별 a(색 측정과 같음, 원래 해상도). visiblePixels = a ≥ 0.02, 마스크 = a ≥ 0.5 × maxAlpha. circularity = 4π·넓이/둘레²(마칭 스퀘어 둘레, 원 ≈ 1). components = 8-이웃 덩어리 중 마스크 넓이의 0.005 이상(componentsRaw = 모두). edgeFalloffPx = (넓이(a ≥ 0.1·max) − 넓이(a ≥ 0.9·max)) / 둘레 = 덮임이 10%→90%로 오르는 띠의 평균 폭(화소)."
+      },
       "pngDetail": "R09_form_null_detail.png",
       "renderStats": {
         "unityStats": {
@@ -3562,6 +3960,21 @@
           "note": "직접 계산(추정): 렌더러별 패스(LightMode = ForwardBase/ForwardAdd/ShadowCaster)×메시 삼각형. 하늘 메시 삼각형은 제외. 눈당 값 = 단일 패스 인스턴싱 스테레오 프레임과 같은 수의 드로콜. 멀티패스(눈마다 Camera.Render, 이 도구의 시간 측정 방식)면 그림자 맵까지 ×2.",
           "renderers": [
             {
+              "name": "floor (1 m grid)",
+              "triangles": 200,
+              "inView": true,
+              "forwardPasses": 1,
+              "shadowCasterPasses": 0,
+              "castsShadow": false,
+              "transparent": false,
+              "passLightModes": [
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "META"
+              ]
+            },
+            {
               "name": "model (blob)",
               "triangles": 5120,
               "inView": true,
@@ -3580,21 +3993,6 @@
                 "SHADOWCASTER",
                 "META"
               ]
-            },
-            {
-              "name": "floor (1 m grid)",
-              "triangles": 200,
-              "inView": true,
-              "forwardPasses": 1,
-              "shadowCasterPasses": 0,
-              "castsShadow": false,
-              "transparent": false,
-              "passLightModes": [
-                "FORWARDBASE",
-                "FORWARDADD",
-                "DEFERRED",
-                "META"
-              ]
             }
           ]
         }
@@ -3606,11 +4004,11 @@
         "msaa": 4,
         "frames": 300,
         "warmupFrames": 30,
-        "frameMsP50": 0.706,
-        "frameMsP95": 0.827,
-        "frameMsMax": 1.051,
-        "frameMsMean": 0.728,
-        "fpsAtP95": 1209.8
+        "frameMsP50": 0.705,
+        "frameMsP95": 0.819,
+        "frameMsMax": 1.018,
+        "frameMsMean": 0.726,
+        "fpsAtP95": 1220.9
       },
       "console": {
         "errors": 0,
@@ -3690,6 +4088,31 @@
             "status": "applied"
           }
         ]
+      },
+      "renderPath": "shapePrefab(Sphere)",
+      "renderPlan": {
+        "renderer": "shapeModel",
+        "formType": "blob",
+        "shapeModel": "Sphere",
+        "shapeApplied": "round",
+        "color": [
+          0.7,
+          0.7,
+          0.7
+        ],
+        "opacity": 1.0,
+        "brightness": 0.3,
+        "roughness": 0.5,
+        "erosion": 0.0,
+        "fade": false,
+        "preset": {
+          "lumpiness": 0.0,
+          "noiseScale": 1.6,
+          "fuzz": 0.0,
+          "density": 1.0,
+          "shellOpen": 0.0
+        },
+        "zeroDisplacement": true
       },
       "placement": {
         "objectCenter": [
@@ -3881,6 +4304,17 @@
         },
         "sceneVsInContextDeltaE2000": 0.0
       },
+      "visiblePixels": 63336,
+      "maxAlpha": 1.0,
+      "silhouette": {
+        "circularity": 0.969,
+        "components": 1,
+        "edgeFalloffPx": 0.7,
+        "maskPixels": 63074,
+        "perimeterPx": 904.2,
+        "componentsRaw": 1,
+        "method": "덮임 = 장면 조명에서 형상만 검은·흰 배경에 렌더한 화소별 a(색 측정과 같음, 원래 해상도). visiblePixels = a ≥ 0.02, 마스크 = a ≥ 0.5 × maxAlpha. circularity = 4π·넓이/둘레²(마칭 스퀘어 둘레, 원 ≈ 1). components = 8-이웃 덩어리 중 마스크 넓이의 0.005 이상(componentsRaw = 모두). edgeFalloffPx = (넓이(a ≥ 0.1·max) − 넓이(a ≥ 0.9·max)) / 둘레 = 덮임이 10%→90%로 오르는 띠의 평균 폭(화소)."
+      },
       "pngDetail": "R10_shape_round_detail.png",
       "renderStats": {
         "unityStats": {
@@ -3944,6 +4378,21 @@
           "note": "직접 계산(추정): 렌더러별 패스(LightMode = ForwardBase/ForwardAdd/ShadowCaster)×메시 삼각형. 하늘 메시 삼각형은 제외. 눈당 값 = 단일 패스 인스턴싱 스테레오 프레임과 같은 수의 드로콜. 멀티패스(눈마다 Camera.Render, 이 도구의 시간 측정 방식)면 그림자 맵까지 ×2.",
           "renderers": [
             {
+              "name": "floor (1 m grid)",
+              "triangles": 200,
+              "inView": true,
+              "forwardPasses": 1,
+              "shadowCasterPasses": 0,
+              "castsShadow": false,
+              "transparent": false,
+              "passLightModes": [
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "META"
+              ]
+            },
+            {
               "name": "mesh",
               "triangles": 768,
               "inView": true,
@@ -3962,21 +4411,6 @@
                 "SHADOWCASTER",
                 "META"
               ]
-            },
-            {
-              "name": "floor (1 m grid)",
-              "triangles": 200,
-              "inView": true,
-              "forwardPasses": 1,
-              "shadowCasterPasses": 0,
-              "castsShadow": false,
-              "transparent": false,
-              "passLightModes": [
-                "FORWARDBASE",
-                "FORWARDADD",
-                "DEFERRED",
-                "META"
-              ]
             }
           ]
         }
@@ -3989,10 +4423,10 @@
         "frames": 300,
         "warmupFrames": 30,
         "frameMsP50": 0.696,
-        "frameMsP95": 0.815,
-        "frameMsMax": 0.935,
-        "frameMsMean": 0.717,
-        "fpsAtP95": 1227.4
+        "frameMsP95": 0.814,
+        "frameMsMax": 0.931,
+        "frameMsMean": 0.715,
+        "fpsAtP95": 1227.9
       },
       "console": {
         "errors": 0,
@@ -4072,6 +4506,31 @@
             "status": "applied"
           }
         ]
+      },
+      "renderPath": "shapePrefab(Cube)",
+      "renderPlan": {
+        "renderer": "shapeModel",
+        "formType": "blob",
+        "shapeModel": "Cube",
+        "shapeApplied": "square",
+        "color": [
+          0.7,
+          0.7,
+          0.7
+        ],
+        "opacity": 1.0,
+        "brightness": 0.5,
+        "roughness": 0.5,
+        "erosion": 0.0,
+        "fade": false,
+        "preset": {
+          "lumpiness": 0.0,
+          "noiseScale": 1.6,
+          "fuzz": 0.0,
+          "density": 1.0,
+          "shellOpen": 0.0
+        },
+        "zeroDisplacement": true
       },
       "placement": {
         "objectCenter": [
@@ -4263,6 +4722,17 @@
         },
         "sceneVsInContextDeltaE2000": 0.0
       },
+      "visiblePixels": 113605,
+      "maxAlpha": 1.0,
+      "silhouette": {
+        "circularity": 0.825,
+        "components": 1,
+        "edgeFalloffPx": 0.41,
+        "maskPixels": 113315,
+        "perimeterPx": 1313.5,
+        "componentsRaw": 1,
+        "method": "덮임 = 장면 조명에서 형상만 검은·흰 배경에 렌더한 화소별 a(색 측정과 같음, 원래 해상도). visiblePixels = a ≥ 0.02, 마스크 = a ≥ 0.5 × maxAlpha. circularity = 4π·넓이/둘레²(마칭 스퀘어 둘레, 원 ≈ 1). components = 8-이웃 덩어리 중 마스크 넓이의 0.005 이상(componentsRaw = 모두). edgeFalloffPx = (넓이(a ≥ 0.1·max) − 넓이(a ≥ 0.9·max)) / 둘레 = 덮임이 10%→90%로 오르는 띠의 평균 폭(화소)."
+      },
       "pngDetail": "R11_shape_square_detail.png",
       "renderStats": {
         "unityStats": {
@@ -4326,6 +4796,21 @@
           "note": "직접 계산(추정): 렌더러별 패스(LightMode = ForwardBase/ForwardAdd/ShadowCaster)×메시 삼각형. 하늘 메시 삼각형은 제외. 눈당 값 = 단일 패스 인스턴싱 스테레오 프레임과 같은 수의 드로콜. 멀티패스(눈마다 Camera.Render, 이 도구의 시간 측정 방식)면 그림자 맵까지 ×2.",
           "renderers": [
             {
+              "name": "floor (1 m grid)",
+              "triangles": 200,
+              "inView": true,
+              "forwardPasses": 1,
+              "shadowCasterPasses": 0,
+              "castsShadow": false,
+              "transparent": false,
+              "passLightModes": [
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "META"
+              ]
+            },
+            {
               "name": "mesh",
               "triangles": 12,
               "inView": true,
@@ -4344,21 +4829,6 @@
                 "SHADOWCASTER",
                 "META"
               ]
-            },
-            {
-              "name": "floor (1 m grid)",
-              "triangles": 200,
-              "inView": true,
-              "forwardPasses": 1,
-              "shadowCasterPasses": 0,
-              "castsShadow": false,
-              "transparent": false,
-              "passLightModes": [
-                "FORWARDBASE",
-                "FORWARDADD",
-                "DEFERRED",
-                "META"
-              ]
             }
           ]
         }
@@ -4370,11 +4840,11 @@
         "msaa": 4,
         "frames": 300,
         "warmupFrames": 30,
-        "frameMsP50": 0.696,
-        "frameMsP95": 0.806,
-        "frameMsMax": 0.842,
-        "frameMsMean": 0.714,
-        "fpsAtP95": 1241.3
+        "frameMsP50": 0.699,
+        "frameMsP95": 0.822,
+        "frameMsMax": 0.886,
+        "frameMsMean": 0.72,
+        "fpsAtP95": 1216.5
       },
       "console": {
         "errors": 0,
@@ -4450,6 +4920,31 @@
             "status": "applied"
           }
         ]
+      },
+      "renderPath": "shapePrefab(FlatCylinder)",
+      "renderPlan": {
+        "renderer": "shapeModel",
+        "formType": "blob",
+        "shapeModel": "FlatCylinder",
+        "shapeApplied": "flat",
+        "color": [
+          0.5,
+          0.3,
+          0.7
+        ],
+        "opacity": 1.0,
+        "brightness": 0.5,
+        "roughness": 0.5,
+        "erosion": 0.0,
+        "fade": false,
+        "preset": {
+          "lumpiness": 0.0,
+          "noiseScale": 1.6,
+          "fuzz": 0.0,
+          "density": 1.0,
+          "shellOpen": 0.0
+        },
+        "zeroDisplacement": true
       },
       "placement": {
         "objectCenter": [
@@ -4637,6 +5132,17 @@
         },
         "sceneVsInContextDeltaE2000": 0.0
       },
+      "visiblePixels": 47743,
+      "maxAlpha": 1.0,
+      "silhouette": {
+        "circularity": 0.841,
+        "components": 1,
+        "edgeFalloffPx": 0.72,
+        "maskPixels": 47505,
+        "perimeterPx": 842.5,
+        "componentsRaw": 1,
+        "method": "덮임 = 장면 조명에서 형상만 검은·흰 배경에 렌더한 화소별 a(색 측정과 같음, 원래 해상도). visiblePixels = a ≥ 0.02, 마스크 = a ≥ 0.5 × maxAlpha. circularity = 4π·넓이/둘레²(마칭 스퀘어 둘레, 원 ≈ 1). components = 8-이웃 덩어리 중 마스크 넓이의 0.005 이상(componentsRaw = 모두). edgeFalloffPx = (넓이(a ≥ 0.1·max) − 넓이(a ≥ 0.9·max)) / 둘레 = 덮임이 10%→90%로 오르는 띠의 평균 폭(화소)."
+      },
       "pngDetail": "R12_shape_flat_detail.png",
       "renderStats": {
         "unityStats": {
@@ -4700,6 +5206,21 @@
           "note": "직접 계산(추정): 렌더러별 패스(LightMode = ForwardBase/ForwardAdd/ShadowCaster)×메시 삼각형. 하늘 메시 삼각형은 제외. 눈당 값 = 단일 패스 인스턴싱 스테레오 프레임과 같은 수의 드로콜. 멀티패스(눈마다 Camera.Render, 이 도구의 시간 측정 방식)면 그림자 맵까지 ×2.",
           "renderers": [
             {
+              "name": "floor (1 m grid)",
+              "triangles": 200,
+              "inView": true,
+              "forwardPasses": 1,
+              "shadowCasterPasses": 0,
+              "castsShadow": false,
+              "transparent": false,
+              "passLightModes": [
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "META"
+              ]
+            },
+            {
               "name": "mesh",
               "triangles": 80,
               "inView": true,
@@ -4718,21 +5239,6 @@
                 "SHADOWCASTER",
                 "META"
               ]
-            },
-            {
-              "name": "floor (1 m grid)",
-              "triangles": 200,
-              "inView": true,
-              "forwardPasses": 1,
-              "shadowCasterPasses": 0,
-              "castsShadow": false,
-              "transparent": false,
-              "passLightModes": [
-                "FORWARDBASE",
-                "FORWARDADD",
-                "DEFERRED",
-                "META"
-              ]
             }
           ]
         }
@@ -4745,10 +5251,10 @@
         "frames": 300,
         "warmupFrames": 30,
         "frameMsP50": 0.688,
-        "frameMsP95": 0.809,
-        "frameMsMax": 0.992,
-        "frameMsMean": 0.708,
-        "fpsAtP95": 1236.7
+        "frameMsP95": 0.806,
+        "frameMsMax": 0.842,
+        "frameMsMean": 0.704,
+        "fpsAtP95": 1240.1
       },
       "console": {
         "errors": 0,
@@ -4830,6 +5336,31 @@
             "status": "applied"
           }
         ]
+      },
+      "renderPath": "shapePrefab(Cone)",
+      "renderPlan": {
+        "renderer": "shapeModel",
+        "formType": "blob",
+        "shapeModel": "Cone",
+        "shapeApplied": "pointed",
+        "color": [
+          0.7,
+          0.7,
+          0.7
+        ],
+        "opacity": 1.0,
+        "brightness": 0.5,
+        "roughness": 0.5,
+        "erosion": 0.0,
+        "fade": false,
+        "preset": {
+          "lumpiness": 0.0,
+          "noiseScale": 1.6,
+          "fuzz": 0.0,
+          "density": 1.0,
+          "shellOpen": 0.0
+        },
+        "zeroDisplacement": true
       },
       "placement": {
         "objectCenter": [
@@ -5021,6 +5552,17 @@
         },
         "sceneVsInContextDeltaE2000": 0.0
       },
+      "visiblePixels": 50928,
+      "maxAlpha": 1.0,
+      "silhouette": {
+        "circularity": 0.701,
+        "components": 1,
+        "edgeFalloffPx": 0.7,
+        "maskPixels": 50683,
+        "perimeterPx": 953.0,
+        "componentsRaw": 1,
+        "method": "덮임 = 장면 조명에서 형상만 검은·흰 배경에 렌더한 화소별 a(색 측정과 같음, 원래 해상도). visiblePixels = a ≥ 0.02, 마스크 = a ≥ 0.5 × maxAlpha. circularity = 4π·넓이/둘레²(마칭 스퀘어 둘레, 원 ≈ 1). components = 8-이웃 덩어리 중 마스크 넓이의 0.005 이상(componentsRaw = 모두). edgeFalloffPx = (넓이(a ≥ 0.1·max) − 넓이(a ≥ 0.9·max)) / 둘레 = 덮임이 10%→90%로 오르는 띠의 평균 폭(화소)."
+      },
       "pngDetail": "R13_shape_pointed_detail.png",
       "renderStats": {
         "unityStats": {
@@ -5084,6 +5626,21 @@
           "note": "직접 계산(추정): 렌더러별 패스(LightMode = ForwardBase/ForwardAdd/ShadowCaster)×메시 삼각형. 하늘 메시 삼각형은 제외. 눈당 값 = 단일 패스 인스턴싱 스테레오 프레임과 같은 수의 드로콜. 멀티패스(눈마다 Camera.Render, 이 도구의 시간 측정 방식)면 그림자 맵까지 ×2.",
           "renderers": [
             {
+              "name": "floor (1 m grid)",
+              "triangles": 200,
+              "inView": true,
+              "forwardPasses": 1,
+              "shadowCasterPasses": 0,
+              "castsShadow": false,
+              "transparent": false,
+              "passLightModes": [
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "META"
+              ]
+            },
+            {
               "name": "mesh",
               "triangles": 96,
               "inView": true,
@@ -5102,21 +5659,6 @@
                 "SHADOWCASTER",
                 "META"
               ]
-            },
-            {
-              "name": "floor (1 m grid)",
-              "triangles": 200,
-              "inView": true,
-              "forwardPasses": 1,
-              "shadowCasterPasses": 0,
-              "castsShadow": false,
-              "transparent": false,
-              "passLightModes": [
-                "FORWARDBASE",
-                "FORWARDADD",
-                "DEFERRED",
-                "META"
-              ]
             }
           ]
         }
@@ -5128,11 +5670,11 @@
         "msaa": 4,
         "frames": 300,
         "warmupFrames": 30,
-        "frameMsP50": 0.695,
-        "frameMsP95": 0.809,
-        "frameMsMax": 0.861,
-        "frameMsMean": 0.716,
-        "fpsAtP95": 1235.6
+        "frameMsP50": 0.691,
+        "frameMsP95": 0.808,
+        "frameMsMax": 0.875,
+        "frameMsMean": 0.71,
+        "fpsAtP95": 1237.6
       },
       "console": {
         "errors": 0,
