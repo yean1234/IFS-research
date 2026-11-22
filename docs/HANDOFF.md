@@ -4,6 +4,30 @@
 > 모델 배정(decisions.md D09): 메인 세션(판단·검토 반영 분류·AC 판정·보고서)은 Fable, Workflow 서브에이전트(구현·테스트 실행·검토·수정)는 `model: 'opus'`로 지정.
 > 이 파일은 단계가 끝날 때와 최소 30분마다 갱신하고, 갱신 때마다 WIP 커밋을 남깁니다.
 
+## ★ RQ V4 무인 작업 (2026-11-22 밤) — 지금 진행 중인 일은 이 절입니다
+
+> 갱신: 2026-11-22 밤, 메인 세션(Claude Fable 5.2). 아래 0절부터는 11/16–17 야간 작업의 기록이고 그대로 뒀습니다.
+
+- **브랜치: `claude/gallant-galileo-u02gqf`** (main보다 앞. main은 건드리지 않음). 커밋·푸시는 이 브랜치에만. PR은 만들지 않음.
+- 커밋하지 않고 둔 것: `CLAUDE.md`의 수정(사용자 것), `refine-logs/`(사용자 것).
+- 지시 원문 요약: ① 선행 연구 검증 → ② 설계 결정(Codex·Claude 독립안 비교) → ③ 구현. 사용자·교수님이 정할 것(심상 종류와 심의, 통제 조건, 주 척도)은 확정하지 않고 "⚠ 팀 결정"으로 둠. `docs/research-design.md`와 노션은 고치지 않음. Codex는 이 작업 전체에서 최대 3회.
+
+| 단계 | 상태 | 산출물 |
+| --- | --- | --- |
+| 1. 선행 연구 검증 | **끝** | `docs/rq-v4-lit-check.md`(요약 표 + 부록 A–F). Prudenzi 2019 전문은 두 번 시도하고도 못 엶 |
+| 2. 설계 결정 | **끝** | `docs/codex-reviews/D2.md`(Codex, 1/3회), `docs/codex-reviews/D2_claude.md`, `docs/decisions.md` X42–X54, `docs/rq-v4-proposal.md` 0절(달라진 점 표)과 본문 갱신 |
+| 3. 구현 | 진행 중(하위 에이전트 2건: Unity 러너, Python 분석기) | `unity/Assets/IFS/Runtime/Placement/`, `chatbot/ifs_chatbot/eval/placement.py` (작성 중, 아직 커밋 전) |
+
+이어받을 때:
+```powershell
+git branch --show-current      # claude/gallant-galileo-u02gqf 여야 함
+git log --oneline -6
+git status --short             # CLAUDE.md 수정과 refine-logs/ 는 원래 있던 것
+cd chatbot; .\.venv\Scripts\python.exe -m pytest -q -m "not live"; cd ..
+```
+- 3단계의 기록 형식은 `unity/README.md`의 "배치 실험 러너" 절(구현되면)과 `docs/decisions.md` X54에 있습니다. 하위 에이전트는 다른 세션에서 재개할 수 없으니, 끊겼으면 git 상태를 보고 남은 부분만 새로 시킵니다.
+- 사람이 정하거나 해야 할 일: `docs/morning-todo.md` 맨 위 절. 결과 요약: `docs/morning-report.md`.
+
 ## 0. 이어받으면 맨 처음 할 것 (확인 명령)
 
 PowerShell 기준입니다(Git Bash도 가능). 모든 명령은 저장소 루트(이 파일이 있는 저장소의 최상위 폴더, 원본 PC의 D 드라이브 연구 폴더 아래 `IFS-research`)에서 실행합니다. 개인 경로가 공개 저장소에 남지 않도록 절대 경로는 적지 않습니다.

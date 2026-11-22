@@ -674,7 +674,7 @@
 
 #### 4-3. 코드
 
-경로: `C:\Users\User\AppData\Local\Temp\claude\80edff47150fbeb2\a872dde8-3229-4aac-abf5-b9bbdc2677af\scratchpad\power_calc.py` (Python 3.11.7, scipy. statsmodels는 설치되어 있지 않아 scipy.stats.nct를 직접 썼다)
+경로: `<임시 폴더>/power_calc.py`(저장소에는 넣지 않았고, 코드는 아래에 그대로 있음) (Python 3.11.7, scipy. statsmodels는 설치되어 있지 않아 scipy.stats.nct를 직접 썼다)
 
 ```python
 import math
