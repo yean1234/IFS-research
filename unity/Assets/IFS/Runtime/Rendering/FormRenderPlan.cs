@@ -28,6 +28,9 @@ namespace IFS.SceneSpec
         public const string RendererFragments = "fragments";
         public const string RendererShapeModel = "shapeModel";
 
+        /// <summary>안개 레이마칭 걸음 수(형상 프리셋 기본값). 셰이더 SceneSpecMist의 IFS_MIST_STEPS와 같아야 한다(테스트가 확인).</summary>
+        public const int MistSteps = 8;
+
         /// <summary>형태별 프리셋. 값을 바꾸면 OwnershipVariantGenerator의 밀도 표·unity/README.md도 같이 본다.</summary>
         public static readonly IReadOnlyDictionary<string, FormPreset> FormPresets = new Dictionary<string, FormPreset>
         {
@@ -91,6 +94,7 @@ namespace IFS.SceneSpec
             else FormPresets.TryGetValue(form ?? "", out preset);
             string renderer = shapeModel ? RendererShapeModel : RendererFor(form);
             bool fragments = renderer == RendererFragments;
+            var inv = System.Globalization.CultureInfo.InvariantCulture;
             return new FormRenderPlan
             {
                 Renderer = renderer,
@@ -109,7 +113,10 @@ namespace IFS.SceneSpec
                 FragmentSeed = fragments ? FragmentMesh.DefaultSeed : 0,
                 PresetNote = fragments
                     ? $"form.type=fragments: 형상 프리셋 기본값 — 각진 조각 {FragmentMesh.DefaultPieces}개를 합친 메시 하나" +
-                      $"(seed {FragmentMesh.DefaultSeed}, 평면 음영, 정점 변위 0, 노이즈 크기 {preset.NoiseScale.ToString(System.Globalization.CultureInfo.InvariantCulture)})"
+                      $"(seed {FragmentMesh.DefaultSeed}, 평면 음영, 정점 변위 0, 노이즈 크기 {preset.NoiseScale.ToString(inv)})"
+                    : renderer == RendererMist
+                    ? $"form.type=mist: 형상 프리셋 기본값 — 구 대리 메시 + 레이마칭 {MistSteps}걸음, 반지름 흔들림 {preset.Lumpiness.ToString(inv)}, " +
+                      $"노이즈 크기 {preset.NoiseScale.ToString(inv)}, 밀도 {preset.Density.ToString(inv)}(중심 알파 ≈ opacity × 밀도)"
                     : null,
             };
         }
@@ -150,6 +157,7 @@ namespace IFS.SceneSpec
             ["zeroDisplacement"] = ZeroDisplacement,
             ["fragmentPieces"] = FragmentPieces,
             ["fragmentSeed"] = FragmentSeed,
+            ["mistSteps"] = Renderer == RendererMist ? MistSteps : 0,
         };
     }
 }

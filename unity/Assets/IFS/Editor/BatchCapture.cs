@@ -62,7 +62,7 @@ namespace IFS.SceneSpec.EditorTools
 
         static readonly string[] IfsShaders =
         {
-            "IFS/SceneSpecOpaque", "IFS/SceneSpecFade", EnvironmentBuilder.FloorShaderResource, EnvironmentBuilder.SkyShaderResource,
+            "IFS/SceneSpecOpaque", "IFS/SceneSpecFade", FormRenderResources.MistShaderResource, EnvironmentBuilder.FloorShaderResource, EnvironmentBuilder.SkyShaderResource,
         };
 
         /// <summary>명령줄 진입점(-executeMethod).</summary>

@@ -462,6 +462,9 @@ namespace IFS.SceneSpec
                 RenderPath = renderer.Name;
                 Note($"form.type={form}: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시", false);
                 if (RenderPlan.PresetNote != null) Note(RenderPlan.PresetNote, false);
+                if (renderer.Name == FormRenderers.MistLegacyName)
+                    Note("form.type=mist: 안개 셰이더(Resources/" + FormRenderResources.MistShaderResource +
+                         ")를 쓸 수 없어 이전 경로(구 + Fade 셰이더)로 표시", true);
             }
             else
             {

@@ -198,7 +198,7 @@ namespace IFS.SceneSpec.Tests
                 Assert.That(loader.Load(WriteSpec("mist", "mist", ("square", "네모", 12))), Is.True);
                 Assert.That(loader.Shape.Status, Is.EqualTo("not_applied_form"));
                 Assert.That(loader.ShowingShapeModel, Is.False);
-                Assert.That(loader.Root.GetComponentInChildren<MeshFilter>().sharedMesh.name, Is.EqualTo("IFS IcoSphere"));
+                Assert.That(loader.Root.GetComponentInChildren<MeshFilter>().sharedMesh.name, Is.EqualTo("IFS Mist Proxy"));   // mist 렌더러의 형태 모형(X66)
                 Assert.That(loader.Notes.Any(n => n.Contains("not_applied_form")), Is.True);
             }
             finally

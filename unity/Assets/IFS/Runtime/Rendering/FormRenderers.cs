@@ -1,6 +1,7 @@
 // 형상별 렌더러(X64): FormRenderPlan → 절차 모형(메시·머티리얼)과 IFS 셰이더 프로퍼티.
 //   blob · shell      : 잘게 나눈 구(icosphere) 하나 + IFS 불투명/반투명 셰이더(정점 변위로 덩어리·껍질)
-//   mist              : (지금은 blob과 같은 구 + Fade 셰이더)
+//   mist              : 구 대리 메시 하나를 안쪽 면으로 그리고 물체 좌표 레이마칭으로 밀도를 쌓는 SceneSpecMist 셰이더(X66).
+//                       안개 셰이더를 못 쓰면 이전 경로(구 + Fade 셰이더, renderPath "mist(legacy)")
 //   fragments         : 불규칙한 각진 조각 5개를 합친 메시 하나(FragmentMesh, 평면 음영, 정점 변위 0) + IFS 셰이더
 //   shapeModel        : 모양 모형 4종(ShapeModelFactory) + 정점 변위 0
 // 렌더러는 FormRenderPlan만 본다(매퍼 정보를 모른다, X65). 프리팹·프리미티브 대체 경로는 SceneLoader가 맡는다.
@@ -33,12 +34,45 @@ namespace IFS.SceneSpec
         public const string OpaqueShaderResource = "IFS/SceneSpecOpaque";
         public const string FadeShaderResource = "IFS/SceneSpecFade";
         public const string DisplacementProperty = "_Displacement";
+        public const string MistShaderResource = "IFS/SceneSpecMist";
+        /// <summary>안개 대리 구의 반지름(물체 좌표). 셰이더 IFS_MIST_RADIUS와 같게.</summary>
+        public const float MistRadius = 0.75f;
 
-        static Shader _opaque, _fade;
+        static Shader _opaque, _fade, _mist;
+        static Mesh _mistMesh;
         static Mesh _ico, _cone;
 
         public static Shader Opaque => _opaque;
         public static Shader Fade => _fade;
+        public static Shader Mist => _mist;
+
+        /// <summary>안개 셰이더를 읽는다. 없거나 지원되지 않으면 false(안개는 이전 경로로).</summary>
+        public static bool LoadMistShader()
+        {
+            if (_mist == null) _mist = Resources.Load<Shader>(MistShaderResource);
+            return _mist != null && _mist.isSupported;
+        }
+
+        /// <summary>안개 대리 구: 3번 나눈 icosphere(삼각형 1,280개). 면이 셰이더의 구(반지름 MistRadius)를 덮도록 조금 크게.
+        /// 바운즈는 이전 안개(IcoMesh)와 같은 1.6 상자 → 배치·소유감 러너가 읽는 렌더러 바운즈가 그대로다.</summary>
+        public static Mesh MistMesh()
+        {
+            if (_mistMesh != null) return _mistMesh;
+            IcoSphere.Build(3, MistRadius * 1.02f, out float[] xyz, out int[] tris);
+            var verts = new Vector3[xyz.Length / 3];
+            var normals = new Vector3[verts.Length];
+            for (int i = 0; i < verts.Length; i++)
+            {
+                verts[i] = new Vector3(xyz[i * 3], xyz[i * 3 + 1], xyz[i * 3 + 2]);
+                normals[i] = verts[i].normalized;
+            }
+            _mistMesh = new Mesh { name = "IFS Mist Proxy" };
+            _mistMesh.vertices = verts;
+            _mistMesh.normals = normals;
+            _mistMesh.triangles = tris;
+            _mistMesh.bounds = new Bounds(Vector3.zero, Vector3.one * 1.6f);
+            return _mistMesh;
+        }
 
         public static bool LoadIfsShaders()
         {
@@ -175,6 +209,41 @@ namespace IFS.SceneSpec
         }
     }
 
+    /// <summary>mist(X66): 구 대리 메시 + 부피 레이마칭 셰이더(SceneSpecMist). 그림자 없음(U5).
+    /// 재질 슬롯은 로더가 공통 프로퍼티(_BaseColor·_Brightness·_Roughness·_Opacity·_Erosion)로 넣고, 여기서는 형상 프리셋만 넣는다.</summary>
+    public sealed class MistRenderer : IFormRenderer
+    {
+        public string Name => FormRenderPlan.RendererMist;
+
+        public GameObject CreateModel(FormRenderPlan plan)
+        {
+            var go = new GameObject(plan.FormType);
+            go.AddComponent<MeshFilter>().sharedMesh = FormRenderResources.MistMesh();
+            var mat = new Material(FormRenderResources.Mist);
+            mat.SetFloat("_Seed", 0f);
+            go.AddComponent<MeshRenderer>().sharedMaterial = mat;
+            go.AddComponent<SphereCollider>();
+            return go;
+        }
+
+        public bool ApplyShader(Material m, FormRenderPlan plan)
+        {
+            if (m != null && FormRenderResources.Mist != null && m.shader == FormRenderResources.Mist)
+            {
+                m.SetFloat("_Lumpiness", plan.Preset.Lumpiness);
+                m.SetFloat("_NoiseScale", plan.Preset.NoiseScale);
+                m.SetFloat("_Density", plan.Preset.Density);
+                return true;
+            }
+            // 프리팹 등 이전 IFS 셰이더 머티리얼은 이전 방식(구 + Fade)
+            if (!FormRenderResources.IsLegacyIfs(m)) return false;
+            FormRenderResources.ApplyLegacyPreset(m, plan);
+            return true;
+        }
+
+        public ShadowCastingMode Shadow(FormRenderPlan plan) => ShadowCastingMode.Off;
+    }
+
     /// <summary>모양 모형(구·큐브·납작 원기둥·원뿔). 메뉴와 같은 함수(ShapeModelFactory)로 만든다.</summary>
     public sealed class ShapeModelRenderer : IcoFormRenderer
     {
@@ -192,14 +261,22 @@ namespace IFS.SceneSpec
         static readonly Dictionary<string, IFormRenderer> ByName = new Dictionary<string, IFormRenderer>
         {
             { FormRenderPlan.RendererBlob, new IcoFormRenderer(FormRenderPlan.RendererBlob) },
-            { FormRenderPlan.RendererMist, new IcoFormRenderer(FormRenderPlan.RendererMist) },
+            { FormRenderPlan.RendererMist, new MistRenderer() },
             { FormRenderPlan.RendererShell, new IcoFormRenderer(FormRenderPlan.RendererShell) },
             { FormRenderPlan.RendererFragments, new FragmentsRenderer() },
             { FormRenderPlan.RendererShapeModel, new ShapeModelRenderer() },
         };
 
-        /// <summary>계획의 렌더러. 표에 없는 form.type은 구 하나(프리셋 없음)로 — 이전 로더와 같은 동작.</summary>
-        public static IFormRenderer For(FormRenderPlan plan) =>
-            plan.Renderer != null && ByName.TryGetValue(plan.Renderer, out var r) ? r : new IcoFormRenderer(plan.Renderer);
+        /// <summary>안개 셰이더를 못 쓸 때의 안개(이전 경로: 구 + Fade 셰이더).</summary>
+        public const string MistLegacyName = "mist(legacy)";
+        static readonly IFormRenderer MistLegacy = new IcoFormRenderer(MistLegacyName);
+
+        /// <summary>계획의 렌더러. 표에 없는 form.type은 구 하나(프리셋 없음)로 — 이전 로더와 같은 동작.
+        /// mist는 안개 셰이더를 쓸 수 있을 때만 부피 렌더러, 아니면 이전 경로.</summary>
+        public static IFormRenderer For(FormRenderPlan plan)
+        {
+            if (plan.Renderer == FormRenderPlan.RendererMist && !FormRenderResources.LoadMistShader()) return MistLegacy;
+            return plan.Renderer != null && ByName.TryGetValue(plan.Renderer, out var r) ? r : new IcoFormRenderer(plan.Renderer);
+        }
     }
 }

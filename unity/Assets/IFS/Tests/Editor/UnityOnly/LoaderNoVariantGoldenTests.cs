@@ -3,6 +3,7 @@
 // 지문 = 적용값·기본값 목록·notes·모양 판정·계층(이름·변환)·렌더러·머티리얼 프로퍼티·움직임 묶음·initialScene.json·events.csv.
 // spec은 StreamingAssets 예시 4개 + EX02에 합성 값을 넣은 3개(참여자 데이터 아님).
 // 지문을 다시 만들 때만: 환경 변수 IFS_WRITE_LOADER_GOLDEN=1로 Unity -runTests를 돌린다(바꾼 이유를 기록할 것).
+// 2026-11-23 다시 만듦: 형상별 렌더 경로(X66) — GOLD-mist 항목만 바뀜(안개 셰이더·대리 메시·프리셋 기본값 notes). 나머지 6개 spec은 그대로.
 using System;
 using System.Collections.Generic;
 using System.Globalization;
