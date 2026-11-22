@@ -1,0 +1,685 @@
+{
+  "meta": {
+    "specVersion": "2.1.0",
+    "participantId": null,
+    "sessionId": "M04",
+    "condition": "static",
+    "sourceTextHash": "sha256:a394829c19c4d724157fa63681462877805e13b66dcf6985d75e211e2cc2a8ec",
+    "pipeline": {
+      "builder": "scene-spec-builder-v1/1.2.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@1.0.0",
+        "layer1Base": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@1.0.0",
+        "vad": "vad-ko@0.1.0"
+      }
+    },
+    "mapping": {
+      "requested": "v1",
+      "used": "v1",
+      "fallbackReason": null
+    }
+  },
+  "form": {
+    "type": "mist",
+    "posture": null
+  },
+  "material": {
+    "color": null,
+    "brightness": null,
+    "saturation": null,
+    "roughness": null,
+    "opacity": 0.0,
+    "erosion": null
+  },
+  "layout": {
+    "size": 0.641,
+    "distance": null,
+    "verticalOffset": null
+  },
+  "motion": {
+    "type": "rising",
+    "speed": null
+  },
+  "body": {
+    "part": "throat_neck",
+    "layer": "surface"
+  },
+  "_provenance": {
+    "form.type": [
+      {
+        "source": "simile_marker",
+        "trigger": "김 같",
+        "charSpan": [
+          47,
+          50
+        ],
+        "rule": "simile.같은>prototype.김>form.type:mist"
+      },
+      {
+        "source": "simile_marker",
+        "trigger": "김처럼",
+        "charSpan": [
+          71,
+          74
+        ],
+        "rule": "simile.처럼>prototype.김>form.type:mist"
+      }
+    ],
+    "material.opacity": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "투명",
+        "charSpan": [
+          98,
+          100
+        ],
+        "rule": "opacityLexicon.투명>material.opacity:transparent"
+      }
+    ],
+    "layout.size": [
+      {
+        "source": "phrase_rule",
+        "trigger": "손바닥 두 개 정도요",
+        "charSpan": [
+          116,
+          127
+        ],
+        "rule": "compare.equal.손바닥>layout.size:0.36m"
+      }
+    ],
+    "motion.type": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "올라와요",
+        "charSpan": [
+          54,
+          58
+        ],
+        "rule": "motionLexicon.올라오>motion.type:rising"
+      },
+      {
+        "source": "explicit_lexicon",
+        "trigger": "올라가요",
+        "charSpan": [
+          81,
+          85
+        ],
+        "rule": "motionLexicon.올라가>motion.type:rising"
+      }
+    ],
+    "body.part": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "목",
+        "charSpan": [
+          18,
+          19
+        ],
+        "rule": "bodyPartLexicon.목>body.part:throat_neck"
+      },
+      {
+        "source": "explicit_lexicon",
+        "trigger": "목",
+        "charSpan": [
+          39,
+          40
+        ],
+        "rule": "bodyPartLexicon.목>body.part:throat_neck"
+      }
+    ],
+    "body.layer": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "표면",
+        "charSpan": [
+          33,
+          35
+        ],
+        "rule": "bodyLayerLexicon.표면>body.layer:surface"
+      }
+    ]
+  },
+  "_unmatched": [
+    {
+      "lemma": "저녁",
+      "tag": "NNG",
+      "surface": "저녁",
+      "charSpan": [
+        0,
+        2
+      ]
+    },
+    {
+      "lemma": "저녁",
+      "tag": "EOJEOL",
+      "surface": "저녁에",
+      "charSpan": [
+        0,
+        3
+      ]
+    },
+    {
+      "lemma": "라면",
+      "tag": "NNG",
+      "surface": "라면",
+      "charSpan": [
+        7,
+        9
+      ]
+    },
+    {
+      "lemma": "끓이",
+      "tag": "VV",
+      "surface": "끓이",
+      "charSpan": [
+        10,
+        12
+      ]
+    },
+    {
+      "lemma": "끓이",
+      "tag": "EOJEOL",
+      "surface": "끓이던",
+      "charSpan": [
+        10,
+        13
+      ]
+    },
+    {
+      "lemma": "때",
+      "tag": "EOJEOL",
+      "surface": "때요",
+      "charSpan": [
+        14,
+        16
+      ]
+    },
+    {
+      "lemma": "언저리",
+      "tag": "NNG",
+      "surface": "언저리",
+      "charSpan": [
+        20,
+        23
+      ]
+    },
+    {
+      "lemma": "언저리",
+      "tag": "EOJEOL",
+      "surface": "언저리가",
+      "charSpan": [
+        20,
+        24
+      ]
+    },
+    {
+      "lemma": "앞쪽",
+      "tag": "EOJEOL",
+      "surface": "앞쪽에요",
+      "charSpan": [
+        41,
+        45
+      ]
+    },
+    {
+      "lemma": "것",
+      "tag": "EOJEOL",
+      "surface": "게",
+      "charSpan": [
+        52,
+        53
+      ]
+    },
+    {
+      "lemma": "물",
+      "tag": "EOJEOL",
+      "surface": "물에서",
+      "charSpan": [
+        64,
+        67
+      ]
+    },
+    {
+      "lemma": "나",
+      "tag": "VV",
+      "surface": "나",
+      "charSpan": [
+        68,
+        69
+      ]
+    },
+    {
+      "lemma": "나",
+      "tag": "EOJEOL",
+      "surface": "나는",
+      "charSpan": [
+        68,
+        70
+      ]
+    },
+    {
+      "lemma": "위",
+      "tag": "EOJEOL",
+      "surface": "위로",
+      "charSpan": [
+        75,
+        77
+      ]
+    },
+    {
+      "lemma": "솔솔",
+      "tag": "MAG",
+      "surface": "솔솔",
+      "charSpan": [
+        78,
+        80
+      ]
+    },
+    {
+      "lemma": "거의",
+      "tag": "MAG",
+      "surface": "거의",
+      "charSpan": [
+        95,
+        97
+      ]
+    },
+    {
+      "lemma": "잘",
+      "tag": "MAG",
+      "surface": "잘",
+      "charSpan": [
+        103,
+        104
+      ]
+    },
+    {
+      "lemma": "안",
+      "tag": "MAG",
+      "surface": "안",
+      "charSpan": [
+        105,
+        106
+      ]
+    },
+    {
+      "lemma": "보이",
+      "tag": "EOJEOL",
+      "surface": "보일",
+      "charSpan": [
+        107,
+        109
+      ]
+    },
+    {
+      "lemma": "정도",
+      "tag": "EOJEOL",
+      "surface": "정도예요",
+      "charSpan": [
+        110,
+        114
+      ]
+    }
+  ],
+  "_unmapped": [
+    {
+      "lemma": "혼자",
+      "category": "relation",
+      "value": {
+        "relation": "alone"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "혼자",
+        "charSpan": [
+          4,
+          6
+        ],
+        "rule": "relationLexicon.혼자"
+      }
+    },
+    {
+      "lemma": "따뜻",
+      "category": "temperature",
+      "value": {
+        "temperature": "warm"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "따뜻해요",
+        "charSpan": [
+          25,
+          29
+        ],
+        "rule": "temperatureLexicon.따뜻"
+      }
+    },
+    {
+      "lemma": "뜨겁",
+      "category": "temperature",
+      "value": {
+        "temperature": "hot"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "뜨거운",
+        "charSpan": [
+          60,
+          63
+        ],
+        "rule": "temperatureLexicon.뜨겁"
+      }
+    },
+    {
+      "lemma": "물",
+      "category": "object",
+      "value": {
+        "object": "water"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "물",
+        "charSpan": [
+          64,
+          65
+        ],
+        "rule": "objectLexicon.물"
+      }
+    }
+  ],
+  "_negated": [
+    {
+      "lemma": "색",
+      "category": "dimension",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "색은 없어요",
+        "charSpan": [
+          87,
+          93
+        ],
+        "rule": "dimensionLexicon.색+없"
+      }
+    }
+  ],
+  "_alternatives": [
+    {
+      "path": "body.part",
+      "value": "body",
+      "reason": "lower_priority",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "몸",
+          "charSpan": [
+            31,
+            32
+          ],
+          "rule": "bodyPartLexicon.몸>body.part:body"
+        }
+      ]
+    },
+    {
+      "path": "body.layer",
+      "value": "around_front",
+      "reason": "lower_priority",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "앞쪽",
+          "charSpan": [
+            41,
+            43
+          ],
+          "rule": "bodyLayerLexicon.앞>body.layer:around_front"
+        }
+      ]
+    },
+    {
+      "path": "body.layer",
+      "value": "surface_above",
+      "reason": "lower_priority",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "위",
+          "charSpan": [
+            75,
+            76
+          ],
+          "rule": "bodyLayerLexicon.위>body.layer:surface_above"
+        }
+      ]
+    }
+  ],
+  "_inferred": {
+    "layout.verticalOffset": {
+      "value": 0.85,
+      "_provenance": [
+        {
+          "source": "body_part_height",
+          "trigger": "목",
+          "charSpan": [
+            18,
+            19
+          ],
+          "rule": "bodyPartHeight.throat_neck>layout.verticalOffset:0.85"
+        }
+      ]
+    }
+  },
+  "_context": [],
+  "_parts": [],
+  "_uncertain": [],
+  "_measurements": [
+    {
+      "text": "손바닥 두 개 정도요",
+      "charSpan": [
+        116,
+        127
+      ],
+      "kind": "reference",
+      "meters": 0.36,
+      "dimension": "size",
+      "reference": "손바닥",
+      "usedFor": "layout.size"
+    }
+  ],
+  "_direction": [],
+  "_needsConfirmation": [],
+  "_clauses": [
+    {
+      "charSpan": [
+        0,
+        16
+      ],
+      "text": "저녁에 혼자 라면 끓이던 때요",
+      "usedFor": [],
+      "status": "context"
+    },
+    {
+      "charSpan": [
+        16,
+        17
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        18,
+        29
+      ],
+      "text": "목 언저리가 따뜻해요",
+      "usedFor": [
+        "body.part"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        29,
+        30
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        31,
+        37
+      ],
+      "text": "몸 표면이요",
+      "usedFor": [
+        "body.layer"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        37,
+        38
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        39,
+        45
+      ],
+      "text": "목 앞쪽에요",
+      "usedFor": [
+        "body.part"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        45,
+        46
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        47,
+        58
+      ],
+      "text": "김 같은 게 올라와요",
+      "usedFor": [
+        "form.type",
+        "motion.type"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        58,
+        59
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        60,
+        85
+      ],
+      "text": "뜨거운 물에서 나는 김처럼 위로 솔솔 올라가요",
+      "usedFor": [
+        "form.type",
+        "motion.type"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        85,
+        86
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        87,
+        93
+      ],
+      "text": "색은 없어요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        93,
+        94
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        95,
+        102
+      ],
+      "text": "거의 투명해서",
+      "usedFor": [
+        "material.opacity"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        103,
+        114
+      ],
+      "text": "잘 안 보일 정도예요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        114,
+        115
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        116,
+        127
+      ],
+      "text": "손바닥 두 개 정도요",
+      "usedFor": [
+        "layout.size"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        127,
+        128
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    }
+  ]
+}

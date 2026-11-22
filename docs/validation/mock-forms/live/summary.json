@@ -1,0 +1,161 @@
+{
+  "model": {
+    "name": "gemma4:e4b",
+    "quant": "Q4_K_M",
+    "parameterSize": "7.5B",
+    "digest": "sha256:dc35e8d9c6061baa6f0fa870975ab6932e2542b579b13ea0f199fa4bb7300c9c",
+    "runtime": "ollama 0.40.17",
+    "sampling": {
+      "temperature": 0.2,
+      "top_p": 0.9,
+      "seed": 7,
+      "thinking": false
+    },
+    "numCtx": 8192
+  },
+  "header": {
+    "protocol": {
+      "promptVersion": "1.0.0",
+      "promptSha256": "sha256:44ef327734877e77ea653bdd88dd48d5ee73673e6b589124d49a3bf49b82e7a3",
+      "contextTemplateVersion": "0.2.0",
+      "lexiconVersion": "0.1.0",
+      "safetyLexiconVersion": "0.1.0",
+      "controllerVersion": "0.1.0",
+      "protocolId": "ifs-imagery-elicitation",
+      "protocolVersion": "1.0.0"
+    },
+    "model": {
+      "name": "gemma4:e4b",
+      "quant": "Q4_K_M",
+      "parameterSize": "7.5B",
+      "digest": "sha256:dc35e8d9c6061baa6f0fa870975ab6932e2542b579b13ea0f199fa4bb7300c9c",
+      "runtime": "ollama 0.40.17",
+      "sampling": {
+        "temperature": 0.2,
+        "top_p": 0.9,
+        "seed": 7,
+        "thinking": false
+      },
+      "numCtx": 8192
+    },
+    "guard": {
+      "keywordLexicon": {
+        "file": "safety_ko.v0.json",
+        "version": "0.1.0"
+      },
+      "model": {
+        "name": "hf.co/mradermacher/kanana-safeguard-8b-GGUF:Q4_K_M",
+        "format": "kanana",
+        "digest": "34ca9739d8a4bcf9127501b114b775af807b48f7ce64befeec115d308c927c69",
+        "runtime": "ollama"
+      },
+      "name": "hf.co/mradermacher/kanana-safeguard-8b-GGUF:Q4_K_M",
+      "digest": "34ca9739d8a4bcf9127501b114b775af807b48f7ce64befeec115d308c927c69"
+    },
+    "analyzer": {
+      "backend": "kiwi",
+      "version": "0.24.1"
+    },
+    "validator": {
+      "strictNovelContent": true,
+      "l5Depth": "present_focus",
+      "maxAnchorEojeol": 3,
+      "maxRegenerations": 2
+    }
+  },
+  "warnings": [],
+  "items": [
+    {
+      "id": "M01",
+      "endedBy": "completed",
+      "llmTurns": 5,
+      "attempts": 5,
+      "firstTryPass": 5,
+      "blockedAttempts": 0,
+      "fallbacks": 0,
+      "blockReasons": [],
+      "softChecks": 0,
+      "elapsedSec": 5.3
+    },
+    {
+      "id": "M05",
+      "endedBy": "completed",
+      "llmTurns": 4,
+      "attempts": 7,
+      "firstTryPass": 2,
+      "blockedAttempts": 3,
+      "fallbacks": 0,
+      "blockReasons": [
+        "V1:hold_without_risk_signal",
+        "V3:anchor_is_sentence:딱딱한 덩어리예요",
+        "V5:leak:느낌"
+      ],
+      "softChecks": 0,
+      "elapsedSec": 5.2
+    },
+    {
+      "id": "M08",
+      "endedBy": "completed",
+      "llmTurns": 4,
+      "attempts": 6,
+      "firstTryPass": 3,
+      "blockedAttempts": 3,
+      "fallbacks": 1,
+      "blockReasons": [
+        "V3:anchor_too_long:나무껍질처럼 거칠고 딱딱한 껍질",
+        "V3:anchor_too_long:나무껍질처럼 거칠고 딱딱한 껍질이 가슴을 덮고 있어요. 갈색이에요."
+      ],
+      "softChecks": 0,
+      "elapsedSec": 4.8
+    },
+    {
+      "id": "M12",
+      "endedBy": "completed",
+      "llmTurns": 5,
+      "attempts": 8,
+      "firstTryPass": 3,
+      "blockedAttempts": 4,
+      "fallbacks": 1,
+      "blockReasons": [
+        "V3:anchor_too_long:깨진 유리 파편들이 공중에 떠 있는데, 거의 투명하고 빛을 받으면 반짝반",
+        "V3:anchor_too_long:팔 뻗으면 닿을 거리쯤",
+        "V5:novel:과",
+        "V7:template_literal"
+      ],
+      "softChecks": 0,
+      "elapsedSec": 6.0
+    },
+    {
+      "id": "M18",
+      "endedBy": "completed",
+      "llmTurns": 5,
+      "attempts": 10,
+      "firstTryPass": 2,
+      "blockedAttempts": 7,
+      "fallbacks": 2,
+      "blockReasons": [
+        "V1:hold_without_risk_signal",
+        "V3:anchor_too_long:엉켜서 어디가 끝인지 모르겠어요",
+        "V5:novel:늘",
+        "V7:template_literal"
+      ],
+      "softChecks": 0,
+      "elapsedSec": 7.0
+    },
+    {
+      "id": "M31",
+      "endedBy": "completed",
+      "llmTurns": 5,
+      "attempts": 8,
+      "firstTryPass": 3,
+      "blockedAttempts": 4,
+      "fallbacks": 1,
+      "blockReasons": [
+        "V3:anchor_is_sentence:동그랗게 말려 있어요",
+        "V3:anchor_is_sentence:뭔가 기대 있어요"
+      ],
+      "softChecks": 0,
+      "elapsedSec": 6.0
+    }
+  ]
+}

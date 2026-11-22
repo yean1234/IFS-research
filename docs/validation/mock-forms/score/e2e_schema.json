@@ -1,0 +1,1086 @@
+{
+  "v0": [
+    {
+      "id": "M01",
+      "mapper": "v0",
+      "file": "specs/M01.v0.json",
+      "specVersion": "2.0.0",
+      "schema": "scene-spec.v2.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": null,
+      "fallback": false
+    },
+    {
+      "id": "M02",
+      "mapper": "v0",
+      "file": "specs/M02.v0.json",
+      "specVersion": "2.0.0",
+      "schema": "scene-spec.v2.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": null,
+      "fallback": false
+    },
+    {
+      "id": "M03",
+      "mapper": "v0",
+      "file": "specs/M03.v0.json",
+      "specVersion": "2.0.0",
+      "schema": "scene-spec.v2.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": null,
+      "fallback": false
+    },
+    {
+      "id": "M04",
+      "mapper": "v0",
+      "file": "specs/M04.v0.json",
+      "specVersion": "2.0.0",
+      "schema": "scene-spec.v2.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": null,
+      "fallback": false
+    },
+    {
+      "id": "M05",
+      "mapper": "v0",
+      "file": "specs/M05.v0.json",
+      "specVersion": "2.0.0",
+      "schema": "scene-spec.v2.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": null,
+      "fallback": false
+    },
+    {
+      "id": "M06",
+      "mapper": "v0",
+      "file": "specs/M06.v0.json",
+      "specVersion": "2.0.0",
+      "schema": "scene-spec.v2.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": null,
+      "fallback": false
+    },
+    {
+      "id": "M07",
+      "mapper": "v0",
+      "file": "specs/M07.v0.json",
+      "specVersion": "2.0.0",
+      "schema": "scene-spec.v2.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": null,
+      "fallback": false
+    },
+    {
+      "id": "M08",
+      "mapper": "v0",
+      "file": "specs/M08.v0.json",
+      "specVersion": "2.0.0",
+      "schema": "scene-spec.v2.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": null,
+      "fallback": false
+    },
+    {
+      "id": "M09",
+      "mapper": "v0",
+      "file": "specs/M09.v0.json",
+      "specVersion": "2.0.0",
+      "schema": "scene-spec.v2.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": null,
+      "fallback": false
+    },
+    {
+      "id": "M10",
+      "mapper": "v0",
+      "file": "specs/M10.v0.json",
+      "specVersion": "2.0.0",
+      "schema": "scene-spec.v2.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": null,
+      "fallback": false
+    },
+    {
+      "id": "M11",
+      "mapper": "v0",
+      "file": "specs/M11.v0.json",
+      "specVersion": "2.0.0",
+      "schema": "scene-spec.v2.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": null,
+      "fallback": false
+    },
+    {
+      "id": "M12",
+      "mapper": "v0",
+      "file": "specs/M12.v0.json",
+      "specVersion": "2.0.0",
+      "schema": "scene-spec.v2.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": null,
+      "fallback": false
+    },
+    {
+      "id": "M13",
+      "mapper": "v0",
+      "file": "specs/M13.v0.json",
+      "specVersion": "2.0.0",
+      "schema": "scene-spec.v2.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": null,
+      "fallback": false
+    },
+    {
+      "id": "M14",
+      "mapper": "v0",
+      "file": "specs/M14.v0.json",
+      "specVersion": "2.0.0",
+      "schema": "scene-spec.v2.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": null,
+      "fallback": false
+    },
+    {
+      "id": "M15",
+      "mapper": "v0",
+      "file": "specs/M15.v0.json",
+      "specVersion": "2.0.0",
+      "schema": "scene-spec.v2.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": null,
+      "fallback": false
+    },
+    {
+      "id": "M16",
+      "mapper": "v0",
+      "file": "specs/M16.v0.json",
+      "specVersion": "2.0.0",
+      "schema": "scene-spec.v2.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": null,
+      "fallback": false
+    },
+    {
+      "id": "M17",
+      "mapper": "v0",
+      "file": "specs/M17.v0.json",
+      "specVersion": "2.0.0",
+      "schema": "scene-spec.v2.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": null,
+      "fallback": false
+    },
+    {
+      "id": "M18",
+      "mapper": "v0",
+      "file": "specs/M18.v0.json",
+      "specVersion": "2.0.0",
+      "schema": "scene-spec.v2.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": null,
+      "fallback": false
+    },
+    {
+      "id": "M19",
+      "mapper": "v0",
+      "file": "specs/M19.v0.json",
+      "specVersion": "2.0.0",
+      "schema": "scene-spec.v2.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": null,
+      "fallback": false
+    },
+    {
+      "id": "M20",
+      "mapper": "v0",
+      "file": "specs/M20.v0.json",
+      "specVersion": "2.0.0",
+      "schema": "scene-spec.v2.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": null,
+      "fallback": false
+    },
+    {
+      "id": "M21",
+      "mapper": "v0",
+      "file": "specs/M21.v0.json",
+      "specVersion": "2.0.0",
+      "schema": "scene-spec.v2.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": null,
+      "fallback": false
+    },
+    {
+      "id": "M22",
+      "mapper": "v0",
+      "file": "specs/M22.v0.json",
+      "specVersion": "2.0.0",
+      "schema": "scene-spec.v2.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": null,
+      "fallback": false
+    },
+    {
+      "id": "M23",
+      "mapper": "v0",
+      "file": "specs/M23.v0.json",
+      "specVersion": "2.0.0",
+      "schema": "scene-spec.v2.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": null,
+      "fallback": false
+    },
+    {
+      "id": "M24",
+      "mapper": "v0",
+      "file": "specs/M24.v0.json",
+      "specVersion": "2.0.0",
+      "schema": "scene-spec.v2.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": null,
+      "fallback": false
+    },
+    {
+      "id": "M25",
+      "mapper": "v0",
+      "file": "specs/M25.v0.json",
+      "specVersion": "2.0.0",
+      "schema": "scene-spec.v2.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": null,
+      "fallback": false
+    },
+    {
+      "id": "M26",
+      "mapper": "v0",
+      "file": "specs/M26.v0.json",
+      "specVersion": "2.0.0",
+      "schema": "scene-spec.v2.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": null,
+      "fallback": false
+    },
+    {
+      "id": "M27",
+      "mapper": "v0",
+      "file": "specs/M27.v0.json",
+      "specVersion": "2.0.0",
+      "schema": "scene-spec.v2.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": null,
+      "fallback": false
+    },
+    {
+      "id": "M28",
+      "mapper": "v0",
+      "file": "specs/M28.v0.json",
+      "specVersion": "2.0.0",
+      "schema": "scene-spec.v2.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": null,
+      "fallback": false
+    },
+    {
+      "id": "M29",
+      "mapper": "v0",
+      "file": "specs/M29.v0.json",
+      "specVersion": "2.0.0",
+      "schema": "scene-spec.v2.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": null,
+      "fallback": false
+    },
+    {
+      "id": "M30",
+      "mapper": "v0",
+      "file": "specs/M30.v0.json",
+      "specVersion": "2.0.0",
+      "schema": "scene-spec.v2.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": null,
+      "fallback": false
+    },
+    {
+      "id": "M31",
+      "mapper": "v0",
+      "file": "specs/M31.v0.json",
+      "specVersion": "2.0.0",
+      "schema": "scene-spec.v2.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": null,
+      "fallback": false
+    },
+    {
+      "id": "M32",
+      "mapper": "v0",
+      "file": "specs/M32.v0.json",
+      "specVersion": "2.0.0",
+      "schema": "scene-spec.v2.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": null,
+      "fallback": false
+    },
+    {
+      "id": "M33",
+      "mapper": "v0",
+      "file": "specs/M33.v0.json",
+      "specVersion": "2.0.0",
+      "schema": "scene-spec.v2.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": null,
+      "fallback": false
+    },
+    {
+      "id": "M34",
+      "mapper": "v0",
+      "file": "specs/M34.v0.json",
+      "specVersion": "2.0.0",
+      "schema": "scene-spec.v2.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": null,
+      "fallback": false
+    },
+    {
+      "id": "M35",
+      "mapper": "v0",
+      "file": "specs/M35.v0.json",
+      "specVersion": "2.0.0",
+      "schema": "scene-spec.v2.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": null,
+      "fallback": false
+    },
+    {
+      "id": "M36",
+      "mapper": "v0",
+      "file": "specs/M36.v0.json",
+      "specVersion": "2.0.0",
+      "schema": "scene-spec.v2.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": null,
+      "fallback": false
+    }
+  ],
+  "v1": [
+    {
+      "id": "M01",
+      "mapper": "v1",
+      "file": "specs/M01.v1.json",
+      "specVersion": "2.1.0",
+      "schema": "scene-spec.v2.1.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": {
+        "requested": "v1",
+        "used": "v1",
+        "fallbackReason": null
+      },
+      "fallback": false
+    },
+    {
+      "id": "M02",
+      "mapper": "v1",
+      "file": "specs/M02.v1.json",
+      "specVersion": "2.1.0",
+      "schema": "scene-spec.v2.1.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": {
+        "requested": "v1",
+        "used": "v1",
+        "fallbackReason": null
+      },
+      "fallback": false
+    },
+    {
+      "id": "M03",
+      "mapper": "v1",
+      "file": "specs/M03.v1.json",
+      "specVersion": "2.1.0",
+      "schema": "scene-spec.v2.1.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": {
+        "requested": "v1",
+        "used": "v1",
+        "fallbackReason": null
+      },
+      "fallback": false
+    },
+    {
+      "id": "M04",
+      "mapper": "v1",
+      "file": "specs/M04.v1.json",
+      "specVersion": "2.1.0",
+      "schema": "scene-spec.v2.1.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": {
+        "requested": "v1",
+        "used": "v1",
+        "fallbackReason": null
+      },
+      "fallback": false
+    },
+    {
+      "id": "M05",
+      "mapper": "v1",
+      "file": "specs/M05.v1.json",
+      "specVersion": "2.1.0",
+      "schema": "scene-spec.v2.1.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": {
+        "requested": "v1",
+        "used": "v1",
+        "fallbackReason": null
+      },
+      "fallback": false
+    },
+    {
+      "id": "M06",
+      "mapper": "v1",
+      "file": "specs/M06.v1.json",
+      "specVersion": "2.1.0",
+      "schema": "scene-spec.v2.1.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": {
+        "requested": "v1",
+        "used": "v1",
+        "fallbackReason": null
+      },
+      "fallback": false
+    },
+    {
+      "id": "M07",
+      "mapper": "v1",
+      "file": "specs/M07.v1.json",
+      "specVersion": "2.1.0",
+      "schema": "scene-spec.v2.1.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": {
+        "requested": "v1",
+        "used": "v1",
+        "fallbackReason": null
+      },
+      "fallback": false
+    },
+    {
+      "id": "M08",
+      "mapper": "v1",
+      "file": "specs/M08.v1.json",
+      "specVersion": "2.1.0",
+      "schema": "scene-spec.v2.1.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": {
+        "requested": "v1",
+        "used": "v1",
+        "fallbackReason": null
+      },
+      "fallback": false
+    },
+    {
+      "id": "M09",
+      "mapper": "v1",
+      "file": "specs/M09.v1.json",
+      "specVersion": "2.1.0",
+      "schema": "scene-spec.v2.1.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": {
+        "requested": "v1",
+        "used": "v1",
+        "fallbackReason": null
+      },
+      "fallback": false
+    },
+    {
+      "id": "M10",
+      "mapper": "v1",
+      "file": "specs/M10.v1.json",
+      "specVersion": "2.1.0",
+      "schema": "scene-spec.v2.1.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": {
+        "requested": "v1",
+        "used": "v1",
+        "fallbackReason": null
+      },
+      "fallback": false
+    },
+    {
+      "id": "M11",
+      "mapper": "v1",
+      "file": "specs/M11.v1.json",
+      "specVersion": "2.1.0",
+      "schema": "scene-spec.v2.1.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": {
+        "requested": "v1",
+        "used": "v1",
+        "fallbackReason": null
+      },
+      "fallback": false
+    },
+    {
+      "id": "M12",
+      "mapper": "v1",
+      "file": "specs/M12.v1.json",
+      "specVersion": "2.1.0",
+      "schema": "scene-spec.v2.1.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": {
+        "requested": "v1",
+        "used": "v1",
+        "fallbackReason": null
+      },
+      "fallback": false
+    },
+    {
+      "id": "M13",
+      "mapper": "v1",
+      "file": "specs/M13.v1.json",
+      "specVersion": "2.1.0",
+      "schema": "scene-spec.v2.1.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": {
+        "requested": "v1",
+        "used": "v1",
+        "fallbackReason": null
+      },
+      "fallback": false
+    },
+    {
+      "id": "M14",
+      "mapper": "v1",
+      "file": "specs/M14.v1.json",
+      "specVersion": "2.1.0",
+      "schema": "scene-spec.v2.1.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": {
+        "requested": "v1",
+        "used": "v1",
+        "fallbackReason": null
+      },
+      "fallback": false
+    },
+    {
+      "id": "M15",
+      "mapper": "v1",
+      "file": "specs/M15.v1.json",
+      "specVersion": "2.1.0",
+      "schema": "scene-spec.v2.1.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": {
+        "requested": "v1",
+        "used": "v1",
+        "fallbackReason": null
+      },
+      "fallback": false
+    },
+    {
+      "id": "M16",
+      "mapper": "v1",
+      "file": "specs/M16.v1.json",
+      "specVersion": "2.1.0",
+      "schema": "scene-spec.v2.1.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": {
+        "requested": "v1",
+        "used": "v1",
+        "fallbackReason": null
+      },
+      "fallback": false
+    },
+    {
+      "id": "M17",
+      "mapper": "v1",
+      "file": "specs/M17.v1.json",
+      "specVersion": "2.1.0",
+      "schema": "scene-spec.v2.1.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": {
+        "requested": "v1",
+        "used": "v1",
+        "fallbackReason": null
+      },
+      "fallback": false
+    },
+    {
+      "id": "M18",
+      "mapper": "v1",
+      "file": "specs/M18.v1.json",
+      "specVersion": "2.1.0",
+      "schema": "scene-spec.v2.1.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": {
+        "requested": "v1",
+        "used": "v1",
+        "fallbackReason": null
+      },
+      "fallback": false
+    },
+    {
+      "id": "M19",
+      "mapper": "v1",
+      "file": "specs/M19.v1.json",
+      "specVersion": "2.1.0",
+      "schema": "scene-spec.v2.1.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": {
+        "requested": "v1",
+        "used": "v1",
+        "fallbackReason": null
+      },
+      "fallback": false
+    },
+    {
+      "id": "M20",
+      "mapper": "v1",
+      "file": "specs/M20.v1.json",
+      "specVersion": "2.1.0",
+      "schema": "scene-spec.v2.1.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": {
+        "requested": "v1",
+        "used": "v1",
+        "fallbackReason": null
+      },
+      "fallback": false
+    },
+    {
+      "id": "M21",
+      "mapper": "v1",
+      "file": "specs/M21.v1.json",
+      "specVersion": "2.1.0",
+      "schema": "scene-spec.v2.1.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": {
+        "requested": "v1",
+        "used": "v1",
+        "fallbackReason": null
+      },
+      "fallback": false
+    },
+    {
+      "id": "M22",
+      "mapper": "v1",
+      "file": "specs/M22.v1.json",
+      "specVersion": "2.1.0",
+      "schema": "scene-spec.v2.1.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": {
+        "requested": "v1",
+        "used": "v1",
+        "fallbackReason": null
+      },
+      "fallback": false
+    },
+    {
+      "id": "M23",
+      "mapper": "v1",
+      "file": "specs/M23.v1.json",
+      "specVersion": "2.1.0",
+      "schema": "scene-spec.v2.1.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": {
+        "requested": "v1",
+        "used": "v1",
+        "fallbackReason": null
+      },
+      "fallback": false
+    },
+    {
+      "id": "M24",
+      "mapper": "v1",
+      "file": "specs/M24.v1.json",
+      "specVersion": "2.1.0",
+      "schema": "scene-spec.v2.1.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": {
+        "requested": "v1",
+        "used": "v1",
+        "fallbackReason": null
+      },
+      "fallback": false
+    },
+    {
+      "id": "M25",
+      "mapper": "v1",
+      "file": "specs/M25.v1.json",
+      "specVersion": "2.1.0",
+      "schema": "scene-spec.v2.1.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": {
+        "requested": "v1",
+        "used": "v1",
+        "fallbackReason": null
+      },
+      "fallback": false
+    },
+    {
+      "id": "M26",
+      "mapper": "v1",
+      "file": "specs/M26.v1.json",
+      "specVersion": "2.1.0",
+      "schema": "scene-spec.v2.1.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": {
+        "requested": "v1",
+        "used": "v1",
+        "fallbackReason": null
+      },
+      "fallback": false
+    },
+    {
+      "id": "M27",
+      "mapper": "v1",
+      "file": "specs/M27.v1.json",
+      "specVersion": "2.1.0",
+      "schema": "scene-spec.v2.1.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": {
+        "requested": "v1",
+        "used": "v1",
+        "fallbackReason": null
+      },
+      "fallback": false
+    },
+    {
+      "id": "M28",
+      "mapper": "v1",
+      "file": "specs/M28.v1.json",
+      "specVersion": "2.1.0",
+      "schema": "scene-spec.v2.1.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": {
+        "requested": "v1",
+        "used": "v1",
+        "fallbackReason": null
+      },
+      "fallback": false
+    },
+    {
+      "id": "M29",
+      "mapper": "v1",
+      "file": "specs/M29.v1.json",
+      "specVersion": "2.1.0",
+      "schema": "scene-spec.v2.1.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": {
+        "requested": "v1",
+        "used": "v1",
+        "fallbackReason": null
+      },
+      "fallback": false
+    },
+    {
+      "id": "M30",
+      "mapper": "v1",
+      "file": "specs/M30.v1.json",
+      "specVersion": "2.1.0",
+      "schema": "scene-spec.v2.1.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": {
+        "requested": "v1",
+        "used": "v1",
+        "fallbackReason": null
+      },
+      "fallback": false
+    },
+    {
+      "id": "M31",
+      "mapper": "v1",
+      "file": "specs/M31.v1.json",
+      "specVersion": "2.1.0",
+      "schema": "scene-spec.v2.1.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": {
+        "requested": "v1",
+        "used": "v1",
+        "fallbackReason": null
+      },
+      "fallback": false
+    },
+    {
+      "id": "M32",
+      "mapper": "v1",
+      "file": "specs/M32.v1.json",
+      "specVersion": "2.1.0",
+      "schema": "scene-spec.v2.1.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": {
+        "requested": "v1",
+        "used": "v1",
+        "fallbackReason": null
+      },
+      "fallback": false
+    },
+    {
+      "id": "M33",
+      "mapper": "v1",
+      "file": "specs/M33.v1.json",
+      "specVersion": "2.1.0",
+      "schema": "scene-spec.v2.1.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": {
+        "requested": "v1",
+        "used": "v1",
+        "fallbackReason": null
+      },
+      "fallback": false
+    },
+    {
+      "id": "M34",
+      "mapper": "v1",
+      "file": "specs/M34.v1.json",
+      "specVersion": "2.1.0",
+      "schema": "scene-spec.v2.1.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": {
+        "requested": "v1",
+        "used": "v1",
+        "fallbackReason": null
+      },
+      "fallback": false
+    },
+    {
+      "id": "M35",
+      "mapper": "v1",
+      "file": "specs/M35.v1.json",
+      "specVersion": "2.1.0",
+      "schema": "scene-spec.v2.1.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": {
+        "requested": "v1",
+        "used": "v1",
+        "fallbackReason": null
+      },
+      "fallback": false
+    },
+    {
+      "id": "M36",
+      "mapper": "v1",
+      "file": "specs/M36.v1.json",
+      "specVersion": "2.1.0",
+      "schema": "scene-spec.v2.1.json",
+      "fileEqualsRunSpec": true,
+      "schemaErrors": [],
+      "principleProblems": [],
+      "valid": true,
+      "mapping": {
+        "requested": "v1",
+        "used": "v1",
+        "fallbackReason": null
+      },
+      "fallback": false
+    }
+  ]
+}

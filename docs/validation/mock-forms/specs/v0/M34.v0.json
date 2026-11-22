@@ -1,0 +1,192 @@
+{
+  "meta": {
+    "specVersion": "2.0.0",
+    "participantId": null,
+    "sessionId": "M34",
+    "condition": "static",
+    "sourceTextHash": "sha256:deceec78027c0b821fe1e9040b36fb03c436e9e7bcca78453446e4ab33835fdb",
+    "pipeline": {
+      "builder": "scene-spec-builder/0.1.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@0.1.0",
+        "vad": "vad-ko@0.1.0"
+      }
+    }
+  },
+  "form": {
+    "type": null,
+    "posture": null
+  },
+  "material": {
+    "color": null,
+    "brightness": null,
+    "saturation": null,
+    "roughness": null,
+    "opacity": null,
+    "erosion": null
+  },
+  "layout": {
+    "size": null,
+    "distance": null,
+    "verticalOffset": 0.72
+  },
+  "motion": {
+    "type": null,
+    "speed": null
+  },
+  "body": {
+    "part": "chest",
+    "layer": "inner"
+  },
+  "_provenance": {
+    "layout.verticalOffset": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "가슴",
+        "charSpan": [
+          14,
+          16
+        ],
+        "rule": "bodyPartLexicon.가슴>layout.verticalOffset:chest"
+      }
+    ],
+    "body.part": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "가슴",
+        "charSpan": [
+          14,
+          16
+        ],
+        "rule": "bodyPartLexicon.가슴>body.part:chest"
+      }
+    ],
+    "body.layer": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "안",
+        "charSpan": [
+          17,
+          18
+        ],
+        "rule": "bodyLayerLexicon.안>body.layer:inner"
+      }
+    ]
+  },
+  "_unmatched": [
+    {
+      "lemma": "어제",
+      "tag": "MAG",
+      "surface": "어제",
+      "charSpan": [
+        0,
+        2
+      ]
+    },
+    {
+      "lemma": "회의",
+      "tag": "NNG",
+      "surface": "회의",
+      "charSpan": [
+        3,
+        5
+      ]
+    },
+    {
+      "lemma": "계속",
+      "tag": "MAG",
+      "surface": "계속",
+      "charSpan": [
+        22,
+        24
+      ]
+    },
+    {
+      "lemma": "꽉",
+      "tag": "MAG",
+      "surface": "꽉",
+      "charSpan": [
+        39,
+        40
+      ]
+    }
+  ],
+  "_unmapped": [
+    {
+      "lemma": "답답",
+      "category": "sensation",
+      "value": {
+        "sensation": "stifled",
+        "vadHint": "arousal mid-high"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "답답해요",
+        "charSpan": [
+          8,
+          12
+        ],
+        "rule": "sensationLexicon.답답"
+      }
+    },
+    {
+      "lemma": "답답",
+      "category": "sensation",
+      "value": {
+        "sensation": "stifled",
+        "vadHint": "arousal mid-high"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "답답해요",
+        "charSpan": [
+          25,
+          29
+        ],
+        "rule": "sensationLexicon.답답"
+      }
+    },
+    {
+      "lemma": "답답",
+      "category": "sensation",
+      "value": {
+        "sensation": "stifled",
+        "vadHint": "arousal mid-high"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "답답하고",
+        "charSpan": [
+          34,
+          38
+        ],
+        "rule": "sensationLexicon.답답"
+      }
+    },
+    {
+      "lemma": "막히",
+      "category": "sensation",
+      "value": {
+        "sensation": "blocked"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "막힌",
+        "charSpan": [
+          41,
+          43
+        ],
+        "rule": "sensationLexicon.막히"
+      }
+    }
+  ],
+  "_negated": [],
+  "_alternatives": [],
+  "_inferred": {}
+}

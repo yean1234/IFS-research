@@ -1,0 +1,731 @@
+{
+  "meta": {
+    "specVersion": "2.1.0",
+    "participantId": null,
+    "sessionId": "M08",
+    "condition": "static",
+    "sourceTextHash": "sha256:6a1fe35e90a07b07dee225c24e1d45d4dca9c43c689ffbd9fe6d1844dd533d65",
+    "pipeline": {
+      "builder": "scene-spec-builder-v1/1.2.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@1.0.0",
+        "layer1Base": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@1.0.0",
+        "vad": "vad-ko@0.1.0"
+      }
+    },
+    "mapping": {
+      "requested": "v1",
+      "used": "v1",
+      "fallbackReason": null
+    }
+  },
+  "form": {
+    "type": "shell",
+    "posture": null
+  },
+  "material": {
+    "color": {
+      "h": 0.069,
+      "s": 0.45,
+      "l": 0.3
+    },
+    "brightness": null,
+    "saturation": null,
+    "roughness": 0.85,
+    "opacity": null,
+    "erosion": null
+  },
+  "layout": {
+    "size": 1.0,
+    "distance": null,
+    "verticalOffset": null
+  },
+  "motion": {
+    "type": "still",
+    "speed": null
+  },
+  "body": {
+    "part": "chest",
+    "layer": "surface"
+  },
+  "_provenance": {
+    "form.type": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "껍질",
+        "charSpan": [
+          79,
+          81
+        ],
+        "rule": "formLexicon.껍질>form.type:shell"
+      }
+    ],
+    "material.color": [
+      {
+        "source": "phrase_rule",
+        "trigger": "갈색이에요",
+        "charSpan": [
+          95,
+          100
+        ],
+        "rule": "colorTerm.갈색>material.color:hsl"
+      }
+    ],
+    "material.roughness": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "거칠고",
+        "charSpan": [
+          71,
+          74
+        ],
+        "rule": "textureLexicon.거칠>material.roughness:rough"
+      }
+    ],
+    "layout.size": [
+      {
+        "source": "phrase_rule",
+        "trigger": "앞을 덮",
+        "charSpan": [
+          41,
+          45
+        ],
+        "rule": "compare.cover.앞>layout.size:1.7m"
+      }
+    ],
+    "motion.type": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "움직여요",
+        "charSpan": [
+          124,
+          128
+        ],
+        "rule": "motionLexicon.움직이>motion.type:still(negated)"
+      }
+    ],
+    "body.part": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "가슴",
+        "charSpan": [
+          14,
+          16
+        ],
+        "rule": "bodyPartLexicon.가슴>body.part:chest"
+      },
+      {
+        "source": "explicit_lexicon",
+        "trigger": "가슴",
+        "charSpan": [
+          38,
+          40
+        ],
+        "rule": "bodyPartLexicon.가슴>body.part:chest"
+      }
+    ],
+    "body.layer": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "표면",
+        "charSpan": [
+          32,
+          34
+        ],
+        "rule": "bodyLayerLexicon.표면>body.layer:surface"
+      }
+    ]
+  },
+  "_unmatched": [
+    {
+      "lemma": "회사",
+      "tag": "NNG",
+      "surface": "회사",
+      "charSpan": [
+        0,
+        2
+      ]
+    },
+    {
+      "lemma": "회사",
+      "tag": "EOJEOL",
+      "surface": "회사에서",
+      "charSpan": [
+        0,
+        4
+      ]
+    },
+    {
+      "lemma": "혼나",
+      "tag": "VV",
+      "surface": "혼났",
+      "charSpan": [
+        5,
+        7
+      ]
+    },
+    {
+      "lemma": "혼나",
+      "tag": "EOJEOL",
+      "surface": "혼났던",
+      "charSpan": [
+        5,
+        8
+      ]
+    },
+    {
+      "lemma": "일",
+      "tag": "NNG",
+      "surface": "일",
+      "charSpan": [
+        9,
+        10
+      ]
+    },
+    {
+      "lemma": "일",
+      "tag": "EOJEOL",
+      "surface": "일이요",
+      "charSpan": [
+        9,
+        12
+      ]
+    },
+    {
+      "lemma": "앞",
+      "tag": "EOJEOL",
+      "surface": "앞이",
+      "charSpan": [
+        17,
+        19
+      ]
+    },
+    {
+      "lemma": "느낌",
+      "tag": "EOJEOL",
+      "surface": "느낌이에요",
+      "charSpan": [
+        23,
+        28
+      ]
+    },
+    {
+      "lemma": "덮",
+      "tag": "EOJEOL",
+      "surface": "덮고",
+      "charSpan": [
+        44,
+        46
+      ]
+    },
+    {
+      "lemma": "있",
+      "tag": "EOJEOL",
+      "surface": "있어요",
+      "charSpan": [
+        47,
+        50
+      ]
+    },
+    {
+      "lemma": "같",
+      "tag": "EOJEOL",
+      "surface": "같아요",
+      "charSpan": [
+        59,
+        62
+      ]
+    },
+    {
+      "lemma": "나무",
+      "tag": "NNG",
+      "surface": "나무",
+      "charSpan": [
+        64,
+        66
+      ]
+    },
+    {
+      "lemma": "나무+껍질",
+      "tag": "EOJEOL",
+      "surface": "나무껍질처럼",
+      "charSpan": [
+        64,
+        70
+      ]
+    },
+    {
+      "lemma": "덮",
+      "tag": "EOJEOL",
+      "surface": "덮고",
+      "charSpan": [
+        87,
+        89
+      ]
+    },
+    {
+      "lemma": "있",
+      "tag": "EOJEOL",
+      "surface": "있어요",
+      "charSpan": [
+        90,
+        93
+      ]
+    },
+    {
+      "lemma": "만큼",
+      "tag": "EOJEOL",
+      "surface": "만큼이요",
+      "charSpan": [
+        111,
+        115
+      ]
+    },
+    {
+      "lemma": "아니요",
+      "tag": "EOJEOL",
+      "surface": "아니요",
+      "charSpan": [
+        117,
+        120
+      ]
+    },
+    {
+      "lemma": "안",
+      "tag": "MAG",
+      "surface": "안",
+      "charSpan": [
+        122,
+        123
+      ]
+    }
+  ],
+  "_unmapped": [
+    {
+      "lemma": "굳",
+      "category": "texture",
+      "value": {
+        "texture": "hardened"
+      },
+      "reason": "no_value_mapping",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "굳는",
+        "charSpan": [
+          20,
+          22
+        ],
+        "rule": "textureLexicon.굳"
+      }
+    },
+    {
+      "lemma": "딱딱",
+      "category": "texture",
+      "value": {
+        "texture": "hard"
+      },
+      "reason": "no_value_mapping",
+      "_provenance": {
+        "source": "simile_marker",
+        "trigger": "딱딱한",
+        "charSpan": [
+          52,
+          55
+        ],
+        "rule": "simile.같은>textureLexicon.딱딱"
+      }
+    },
+    {
+      "lemma": "딱딱",
+      "category": "texture",
+      "value": {
+        "texture": "hard"
+      },
+      "reason": "no_value_mapping",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "딱딱한",
+        "charSpan": [
+          75,
+          78
+        ],
+        "rule": "textureLexicon.딱딱"
+      }
+    }
+  ],
+  "_negated": [],
+  "_alternatives": [
+    {
+      "path": "form.type",
+      "value": "shell",
+      "reason": "lower_layer",
+      "_provenance": [
+        {
+          "source": "simile_marker",
+          "trigger": "껍질",
+          "charSpan": [
+            56,
+            58
+          ],
+          "rule": "simile.같은>formLexicon.껍질>form.type:shell"
+        }
+      ]
+    },
+    {
+      "path": "form.type",
+      "value": "shell",
+      "reason": "lower_layer",
+      "_provenance": [
+        {
+          "source": "simile_marker",
+          "trigger": "껍질",
+          "charSpan": [
+            66,
+            68
+          ],
+          "rule": "simile.처럼>formLexicon.껍질>form.type:shell"
+        }
+      ]
+    },
+    {
+      "path": "layout.size",
+      "value": 0.667,
+      "reason": "later_mention",
+      "_provenance": [
+        {
+          "source": "phrase_rule",
+          "trigger": "가슴을 덮",
+          "charSpan": [
+            83,
+            88
+          ],
+          "rule": "compare.cover.가슴>layout.size:0.4m"
+        }
+      ]
+    },
+    {
+      "path": "layout.size",
+      "value": 0.667,
+      "reason": "later_mention",
+      "_provenance": [
+        {
+          "source": "phrase_rule",
+          "trigger": "가슴을 다 덮을 만큼",
+          "charSpan": [
+            102,
+            113
+          ],
+          "rule": "compare.cover.가슴>layout.size:0.4m"
+        }
+      ]
+    },
+    {
+      "path": "body.part",
+      "value": "body",
+      "reason": "lower_priority",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "몸",
+          "charSpan": [
+            30,
+            31
+          ],
+          "rule": "bodyPartLexicon.몸>body.part:body"
+        }
+      ]
+    },
+    {
+      "path": "body.layer",
+      "value": "around_front",
+      "reason": "lower_priority",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "앞",
+          "charSpan": [
+            17,
+            18
+          ],
+          "rule": "bodyLayerLexicon.앞>body.layer:around_front"
+        }
+      ]
+    }
+  ],
+  "_inferred": {
+    "layout.verticalOffset": {
+      "value": 0.72,
+      "_provenance": [
+        {
+          "source": "body_part_height",
+          "trigger": "가슴",
+          "charSpan": [
+            14,
+            16
+          ],
+          "rule": "bodyPartHeight.chest>layout.verticalOffset:0.72"
+        }
+      ]
+    }
+  },
+  "_context": [],
+  "_parts": [],
+  "_uncertain": [],
+  "_measurements": [
+    {
+      "text": "앞을 덮",
+      "charSpan": [
+        41,
+        45
+      ],
+      "kind": "cover",
+      "meters": 1.7,
+      "dimension": "size",
+      "reference": "앞",
+      "usedFor": "layout.size"
+    },
+    {
+      "text": "가슴을 덮",
+      "charSpan": [
+        83,
+        88
+      ],
+      "kind": "cover",
+      "meters": 0.4,
+      "dimension": "size",
+      "reference": "가슴",
+      "usedFor": null
+    },
+    {
+      "text": "가슴을 다 덮을 만큼",
+      "charSpan": [
+        102,
+        113
+      ],
+      "kind": "cover",
+      "meters": 0.4,
+      "dimension": "size",
+      "reference": "가슴",
+      "usedFor": null
+    }
+  ],
+  "_direction": [],
+  "_needsConfirmation": [],
+  "_clauses": [
+    {
+      "charSpan": [
+        0,
+        12
+      ],
+      "text": "회사에서 혼났던 일이요",
+      "usedFor": [],
+      "status": "context"
+    },
+    {
+      "charSpan": [
+        12,
+        13
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        14,
+        28
+      ],
+      "text": "가슴 앞이 굳는 느낌이에요",
+      "usedFor": [
+        "body.part"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        28,
+        29
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        30,
+        36
+      ],
+      "text": "몸 표면이요",
+      "usedFor": [
+        "body.layer"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        36,
+        37
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        38,
+        46
+      ],
+      "text": "가슴 앞을 덮고",
+      "usedFor": [
+        "layout.size",
+        "body.part"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        47,
+        50
+      ],
+      "text": "있어요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        50,
+        51
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        52,
+        62
+      ],
+      "text": "딱딱한 껍질 같아요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        62,
+        63
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        64,
+        74
+      ],
+      "text": "나무껍질처럼 거칠고",
+      "usedFor": [
+        "material.roughness"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        75,
+        89
+      ],
+      "text": "딱딱한 껍질이 가슴을 덮고",
+      "usedFor": [
+        "form.type"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        90,
+        93
+      ],
+      "text": "있어요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        93,
+        94
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        95,
+        100
+      ],
+      "text": "갈색이에요",
+      "usedFor": [
+        "material.color"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        100,
+        101
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        102,
+        115
+      ],
+      "text": "가슴을 다 덮을 만큼이요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        115,
+        116
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        117,
+        121
+      ],
+      "text": "아니요,",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        122,
+        128
+      ],
+      "text": "안 움직여요",
+      "usedFor": [
+        "motion.type"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        128,
+        129
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    }
+  ]
+}

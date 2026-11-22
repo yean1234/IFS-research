@@ -1,0 +1,382 @@
+{
+  "meta": {
+    "specVersion": "2.0.0",
+    "participantId": null,
+    "sessionId": "M09",
+    "condition": "static",
+    "sourceTextHash": "sha256:b7e81ab66213be2b25ce7fab7f2d41e0ff116ecdb167ab4e33243099f06fabb2",
+    "pipeline": {
+      "builder": "scene-spec-builder/0.1.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@0.1.0",
+        "vad": "vad-ko@0.1.0"
+      }
+    }
+  },
+  "form": {
+    "type": "shell",
+    "posture": null
+  },
+  "material": {
+    "color": null,
+    "brightness": 0.7,
+    "saturation": null,
+    "roughness": null,
+    "opacity": 0.1,
+    "erosion": null
+  },
+  "layout": {
+    "size": 0.621,
+    "distance": null,
+    "verticalOffset": null
+  },
+  "motion": {
+    "type": "rotating",
+    "speed": null
+  },
+  "body": {
+    "part": "body",
+    "layer": "around"
+  },
+  "_provenance": {
+    "form.type": [
+      {
+        "source": "simile_marker",
+        "trigger": "비눗방울 막처럼",
+        "charSpan": [
+          74,
+          82
+        ],
+        "rule": "simile.처럼>prototype.막>form.type:shell"
+      }
+    ],
+    "material.brightness": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "빛",
+        "charSpan": [
+          91,
+          92
+        ],
+        "rule": "brightnessLexicon.빛>material.brightness:light"
+      }
+    ],
+    "material.opacity": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "투명",
+        "charSpan": [
+          105,
+          107
+        ],
+        "rule": "opacityLexicon.투명>material.opacity:transparent"
+      }
+    ],
+    "layout.size": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "커요",
+        "charSpan": [
+          136,
+          138
+        ],
+        "rule": "sizeLexicon.크>layout.size:logScale(1.4)"
+      }
+    ],
+    "motion.type": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "돌아요",
+        "charSpan": [
+          97,
+          100
+        ],
+        "rule": "motionLexicon.돌>motion.type:rotating"
+      }
+    ],
+    "body.part": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "몸",
+        "charSpan": [
+          21,
+          22
+        ],
+        "rule": "bodyPartLexicon.몸>body.part:body"
+      },
+      {
+        "source": "explicit_lexicon",
+        "trigger": "몸",
+        "charSpan": [
+          40,
+          41
+        ],
+        "rule": "bodyPartLexicon.몸>body.part:body"
+      }
+    ],
+    "body.layer": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "둘레",
+        "charSpan": [
+          23,
+          25
+        ],
+        "rule": "bodyLayerLexicon.둘레>body.layer:around"
+      },
+      {
+        "source": "explicit_lexicon",
+        "trigger": "주변",
+        "charSpan": [
+          42,
+          44
+        ],
+        "rule": "bodyLayerLexicon.주변>body.layer:around"
+      }
+    ]
+  },
+  "_unmatched": [
+    {
+      "lemma": "동네",
+      "tag": "NNG",
+      "surface": "동네",
+      "charSpan": [
+        2,
+        4
+      ]
+    },
+    {
+      "lemma": "이사",
+      "tag": "NNG",
+      "surface": "이사",
+      "charSpan": [
+        6,
+        8
+      ]
+    },
+    {
+      "lemma": "오",
+      "tag": "VV",
+      "surface": "온",
+      "charSpan": [
+        9,
+        10
+      ]
+    },
+    {
+      "lemma": "첫날",
+      "tag": "NNG",
+      "surface": "첫날",
+      "charSpan": [
+        11,
+        13
+      ]
+    },
+    {
+      "lemma": "생각나",
+      "tag": "VV",
+      "surface": "생각나",
+      "charSpan": [
+        15,
+        18
+      ]
+    },
+    {
+      "lemma": "빙",
+      "tag": "MAG",
+      "surface": "빙",
+      "charSpan": [
+        51,
+        52
+      ]
+    },
+    {
+      "lemma": "비눗방울",
+      "tag": "NNG",
+      "surface": "비눗방울",
+      "charSpan": [
+        74,
+        78
+      ]
+    },
+    {
+      "lemma": "연두색",
+      "tag": "NNG",
+      "surface": "연두색",
+      "charSpan": [
+        87,
+        90
+      ]
+    },
+    {
+      "lemma": "살짝",
+      "tag": "MAG",
+      "surface": "살짝",
+      "charSpan": [
+        94,
+        96
+      ]
+    },
+    {
+      "lemma": "반쯤",
+      "tag": "NNG",
+      "surface": "반쯤",
+      "charSpan": [
+        102,
+        104
+      ]
+    },
+    {
+      "lemma": "통째",
+      "tag": "NNG",
+      "surface": "통째",
+      "charSpan": [
+        126,
+        128
+      ]
+    }
+  ],
+  "_unmapped": [
+    {
+      "lemma": "얇",
+      "category": "shape",
+      "value": {
+        "shape": "thin"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "얇은",
+        "charSpan": [
+          30,
+          32
+        ],
+        "rule": "shapeLexicon.얇"
+      }
+    },
+    {
+      "lemma": "둘러싸",
+      "category": "relation",
+      "value": {
+        "relation": "enclosing"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "둘러싸고",
+        "charSpan": [
+          53,
+          57
+        ],
+        "rule": "relationLexicon.둘러싸"
+      }
+    },
+    {
+      "lemma": "얇",
+      "category": "shape",
+      "value": {
+        "shape": "thin"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "얇은",
+        "charSpan": [
+          68,
+          70
+        ],
+        "rule": "shapeLexicon.얇"
+      }
+    },
+    {
+      "lemma": "막",
+      "category": "object",
+      "value": {
+        "object": "membrane"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "막",
+        "charSpan": [
+          71,
+          72
+        ],
+        "rule": "objectLexicon.막"
+      }
+    },
+    {
+      "lemma": "얇",
+      "category": "shape",
+      "value": {
+        "shape": "thin"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "얇은데",
+        "charSpan": [
+          83,
+          86
+        ],
+        "rule": "shapeLexicon.얇"
+      }
+    },
+    {
+      "lemma": "바깥",
+      "category": "body_layer",
+      "value": {
+        "layer": "around"
+      },
+      "reason": "no_body_part_context",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "바깥",
+        "charSpan": [
+          110,
+          112
+        ],
+        "rule": "bodyLayerLexicon.바깥"
+      }
+    },
+    {
+      "lemma": "감싸",
+      "category": "relation",
+      "value": {
+        "relation": "wrapping"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "감쌀",
+        "charSpan": [
+          130,
+          132
+        ],
+        "rule": "relationLexicon.감싸"
+      }
+    }
+  ],
+  "_negated": [],
+  "_alternatives": [
+    {
+      "path": "material.brightness",
+      "value": 0.3,
+      "reason": "later_mention",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "흐리게",
+          "charSpan": [
+            114,
+            117
+          ],
+          "rule": "brightnessLexicon.흐리>material.brightness:dim"
+        }
+      ]
+    }
+  ],
+  "_inferred": {}
+}

@@ -1,0 +1,546 @@
+{
+  "meta": {
+    "specVersion": "2.1.0",
+    "participantId": null,
+    "sessionId": "M35",
+    "condition": "static",
+    "sourceTextHash": "sha256:6a2ea2609a0054a86e3c87d0c88ffd2a0e3987169bf919a494211bc2857c4b9f",
+    "pipeline": {
+      "builder": "scene-spec-builder-v1/1.2.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@1.0.0",
+        "layer1Base": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@1.0.0",
+        "vad": "vad-ko@0.1.0"
+      }
+    },
+    "mapping": {
+      "requested": "v1",
+      "used": "v1",
+      "fallbackReason": null
+    }
+  },
+  "form": {
+    "type": null,
+    "posture": "drooping"
+  },
+  "material": {
+    "color": null,
+    "brightness": 0.15,
+    "saturation": null,
+    "roughness": null,
+    "opacity": null,
+    "erosion": null
+  },
+  "layout": {
+    "size": null,
+    "distance": null,
+    "verticalOffset": null
+  },
+  "motion": {
+    "type": "sinking",
+    "speed": null
+  },
+  "body": {
+    "part": "body",
+    "layer": "inner"
+  },
+  "_provenance": {
+    "form.posture": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "처져요",
+        "charSpan": [
+          19,
+          22
+        ],
+        "rule": "postureLexicon.처지>form.posture:drooping"
+      }
+    ],
+    "material.brightness": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "어두운",
+        "charSpan": [
+          94,
+          97
+        ],
+        "rule": "brightnessLexicon.어둡>material.brightness:dark"
+      }
+    ],
+    "motion.type": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "가라앉는",
+        "charSpan": [
+          61,
+          65
+        ],
+        "rule": "motionLexicon.가라앉>motion.type:sinking"
+      }
+    ],
+    "body.part": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "몸",
+        "charSpan": [
+          12,
+          13
+        ],
+        "rule": "bodyPartLexicon.몸>body.part:body"
+      },
+      {
+        "source": "explicit_lexicon",
+        "trigger": "몸",
+        "charSpan": [
+          24,
+          25
+        ],
+        "rule": "bodyPartLexicon.몸>body.part:body"
+      },
+      {
+        "source": "explicit_lexicon",
+        "trigger": "몸",
+        "charSpan": [
+          84,
+          85
+        ],
+        "rule": "bodyPartLexicon.몸>body.part:body"
+      }
+    ],
+    "body.layer": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "안쪽",
+        "charSpan": [
+          31,
+          33
+        ],
+        "rule": "bodyLayerLexicon.안쪽>body.layer:inner"
+      }
+    ]
+  },
+  "_unmatched": [
+    {
+      "lemma": "월말",
+      "tag": "NNG",
+      "surface": "월말",
+      "charSpan": [
+        0,
+        2
+      ]
+    },
+    {
+      "lemma": "정산",
+      "tag": "NNG",
+      "surface": "정산",
+      "charSpan": [
+        3,
+        5
+      ]
+    },
+    {
+      "lemma": "정산",
+      "tag": "EOJEOL",
+      "surface": "정산하던",
+      "charSpan": [
+        3,
+        7
+      ]
+    },
+    {
+      "lemma": "때",
+      "tag": "EOJEOL",
+      "surface": "때요",
+      "charSpan": [
+        8,
+        10
+      ]
+    },
+    {
+      "lemma": "전체",
+      "tag": "NNG",
+      "surface": "전체",
+      "charSpan": [
+        26,
+        28
+      ]
+    },
+    {
+      "lemma": "전체",
+      "tag": "EOJEOL",
+      "surface": "전체요",
+      "charSpan": [
+        26,
+        29
+      ]
+    },
+    {
+      "lemma": "그냥",
+      "tag": "EOJEOL",
+      "surface": "그냥",
+      "charSpan": [
+        37,
+        39
+      ]
+    },
+    {
+      "lemma": "뭐",
+      "tag": "EOJEOL",
+      "surface": "뭔가",
+      "charSpan": [
+        46,
+        48
+      ]
+    },
+    {
+      "lemma": "느낌",
+      "tag": "EOJEOL",
+      "surface": "느낌만",
+      "charSpan": [
+        66,
+        69
+      ]
+    },
+    {
+      "lemma": "있",
+      "tag": "EOJEOL",
+      "surface": "있어요",
+      "charSpan": [
+        70,
+        73
+      ]
+    },
+    {
+      "lemma": "전체",
+      "tag": "NNG",
+      "surface": "전체",
+      "charSpan": [
+        86,
+        88
+      ]
+    },
+    {
+      "lemma": "전체",
+      "tag": "EOJEOL",
+      "surface": "전체만큼이요",
+      "charSpan": [
+        86,
+        92
+      ]
+    },
+    {
+      "lemma": "느낌",
+      "tag": "EOJEOL",
+      "surface": "느낌이에요",
+      "charSpan": [
+        98,
+        103
+      ]
+    }
+  ],
+  "_unmapped": [
+    {
+      "lemma": "무겁",
+      "category": "weight",
+      "value": {
+        "weight": "heavy"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "무겁고",
+        "charSpan": [
+          15,
+          18
+        ],
+        "rule": "weightLexicon.무겁"
+      }
+    },
+    {
+      "lemma": "무겁",
+      "category": "weight",
+      "value": {
+        "weight": "heavy"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "무거워요",
+        "charSpan": [
+          40,
+          44
+        ],
+        "rule": "weightLexicon.무겁"
+      }
+    },
+    {
+      "lemma": "무겁",
+      "category": "weight",
+      "value": {
+        "weight": "heavy"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "무겁게",
+        "charSpan": [
+          57,
+          60
+        ],
+        "rule": "weightLexicon.무겁"
+      }
+    }
+  ],
+  "_negated": [
+    {
+      "lemma": "모양",
+      "category": "dimension",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "모양은 없고",
+        "charSpan": [
+          49,
+          55
+        ],
+        "rule": "dimensionLexicon.모양+없"
+      }
+    },
+    {
+      "lemma": "모양",
+      "category": "dimension",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "모양은 없어요",
+        "charSpan": [
+          75,
+          82
+        ],
+        "rule": "dimensionLexicon.모양+없"
+      }
+    }
+  ],
+  "_alternatives": [],
+  "_inferred": {},
+  "_context": [],
+  "_parts": [],
+  "_uncertain": [],
+  "_measurements": [],
+  "_direction": [],
+  "_needsConfirmation": [],
+  "_clauses": [
+    {
+      "charSpan": [
+        0,
+        10
+      ],
+      "text": "월말 정산하던 때요",
+      "usedFor": [],
+      "status": "context"
+    },
+    {
+      "charSpan": [
+        10,
+        11
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        12,
+        18
+      ],
+      "text": "몸이 무겁고",
+      "usedFor": [
+        "body.part"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        19,
+        22
+      ],
+      "text": "처져요",
+      "usedFor": [
+        "form.posture"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        22,
+        23
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        24,
+        29
+      ],
+      "text": "몸 전체요",
+      "usedFor": [
+        "body.part"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        29,
+        30
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        31,
+        35
+      ],
+      "text": "안쪽이요",
+      "usedFor": [
+        "body.layer"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        35,
+        36
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        37,
+        44
+      ],
+      "text": "그냥 무거워요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        44,
+        45
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        46,
+        48
+      ],
+      "text": "뭔가",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        49,
+        55
+      ],
+      "text": "모양은 없고",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        55,
+        56
+      ],
+      "text": ",",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        57,
+        73
+      ],
+      "text": "무겁게 가라앉는 느낌만 있어요",
+      "usedFor": [
+        "motion.type"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        73,
+        74
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        75,
+        82
+      ],
+      "text": "모양은 없어요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        82,
+        83
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        84,
+        92
+      ],
+      "text": "몸 전체만큼이요",
+      "usedFor": [
+        "body.part"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        92,
+        93
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        94,
+        103
+      ],
+      "text": "어두운 느낌이에요",
+      "usedFor": [
+        "material.brightness"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        103,
+        104
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    }
+  ]
+}

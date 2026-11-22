@@ -1,0 +1,775 @@
+{
+  "meta": {
+    "specVersion": "2.1.0",
+    "participantId": null,
+    "sessionId": "M21",
+    "condition": "static",
+    "sourceTextHash": "sha256:191bda94e2e5f4fd1f2a59e3dde28eae04219e3222bf20b34122e9db7283a1e4",
+    "pipeline": {
+      "builder": "scene-spec-builder-v1/1.2.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@1.0.0",
+        "layer1Base": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@1.0.0",
+        "vad": "vad-ko@0.1.0"
+      }
+    },
+    "mapping": {
+      "requested": "v1",
+      "used": "v1",
+      "fallbackReason": null
+    }
+  },
+  "form": {
+    "type": null,
+    "posture": null
+  },
+  "material": {
+    "color": {
+      "h": 0.764,
+      "s": 0.45,
+      "l": 0.45
+    },
+    "brightness": null,
+    "saturation": null,
+    "roughness": null,
+    "opacity": 0.5,
+    "erosion": null
+  },
+  "layout": {
+    "size": null,
+    "distance": null,
+    "verticalOffset": null
+  },
+  "motion": {
+    "type": null,
+    "speed": null
+  },
+  "body": {
+    "part": "shoulder",
+    "layer": "surface"
+  },
+  "_provenance": {
+    "material.color": [
+      {
+        "source": "phrase_rule",
+        "trigger": "보라색이랑",
+        "charSpan": [
+          81,
+          86
+        ],
+        "rule": "colorTerm.보라색>material.color:hsl"
+      }
+    ],
+    "material.opacity": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "반투명",
+        "charSpan": [
+          97,
+          100
+        ],
+        "rule": "opacityLexicon.반투명>material.opacity:translucent"
+      }
+    ],
+    "body.part": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "어깨",
+        "charSpan": [
+          14,
+          16
+        ],
+        "rule": "bodyPartLexicon.어깨>body.part:shoulder"
+      },
+      {
+        "source": "explicit_lexicon",
+        "trigger": "어깨",
+        "charSpan": [
+          34,
+          36
+        ],
+        "rule": "bodyPartLexicon.어깨>body.part:shoulder"
+      },
+      {
+        "source": "explicit_lexicon",
+        "trigger": "어깨",
+        "charSpan": [
+          62,
+          64
+        ],
+        "rule": "bodyPartLexicon.어깨>body.part:shoulder"
+      }
+    ],
+    "body.layer": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "표면",
+        "charSpan": [
+          28,
+          30
+        ],
+        "rule": "bodyLayerLexicon.표면>body.layer:surface"
+      }
+    ]
+  },
+  "_unmatched": [
+    {
+      "lemma": "엄마",
+      "tag": "NNG",
+      "surface": "엄마",
+      "charSpan": [
+        0,
+        2
+      ]
+    },
+    {
+      "lemma": "엄마",
+      "tag": "EOJEOL",
+      "surface": "엄마랑",
+      "charSpan": [
+        0,
+        3
+      ]
+    },
+    {
+      "lemma": "통화",
+      "tag": "NNG",
+      "surface": "통화",
+      "charSpan": [
+        4,
+        6
+      ]
+    },
+    {
+      "lemma": "통화",
+      "tag": "EOJEOL",
+      "surface": "통화하고",
+      "charSpan": [
+        4,
+        8
+      ]
+    },
+    {
+      "lemma": "나",
+      "tag": "EOJEOL",
+      "surface": "나서요",
+      "charSpan": [
+        9,
+        12
+      ]
+    },
+    {
+      "lemma": "어깨",
+      "tag": "EOJEOL",
+      "surface": "어깨가",
+      "charSpan": [
+        14,
+        17
+      ]
+    },
+    {
+      "lemma": "덮이",
+      "tag": "VV",
+      "surface": "덮인",
+      "charSpan": [
+        18,
+        20
+      ]
+    },
+    {
+      "lemma": "느낌",
+      "tag": "EOJEOL",
+      "surface": "느낌이에요",
+      "charSpan": [
+        21,
+        26
+      ]
+    },
+    {
+      "lemma": "등",
+      "tag": "EOJEOL",
+      "surface": "등을",
+      "charSpan": [
+        38,
+        40
+      ]
+    },
+    {
+      "lemma": "덮",
+      "tag": "VV",
+      "surface": "덮",
+      "charSpan": [
+        41,
+        42
+      ]
+    },
+    {
+      "lemma": "덮",
+      "tag": "EOJEOL",
+      "surface": "덮고",
+      "charSpan": [
+        41,
+        43
+      ]
+    },
+    {
+      "lemma": "있",
+      "tag": "EOJEOL",
+      "surface": "있어요",
+      "charSpan": [
+        44,
+        47
+      ]
+    },
+    {
+      "lemma": "천",
+      "tag": "NNG",
+      "surface": "천",
+      "charSpan": [
+        49,
+        50
+      ]
+    },
+    {
+      "lemma": "같",
+      "tag": "EOJEOL",
+      "surface": "같아요",
+      "charSpan": [
+        51,
+        54
+      ]
+    },
+    {
+      "lemma": "천",
+      "tag": "NNG",
+      "surface": "천",
+      "charSpan": [
+        59,
+        60
+      ]
+    },
+    {
+      "lemma": "천",
+      "tag": "EOJEOL",
+      "surface": "천이",
+      "charSpan": [
+        59,
+        61
+      ]
+    },
+    {
+      "lemma": "걸치",
+      "tag": "VV",
+      "surface": "걸쳐",
+      "charSpan": [
+        66,
+        68
+      ]
+    },
+    {
+      "lemma": "걸치",
+      "tag": "EOJEOL",
+      "surface": "걸쳐서",
+      "charSpan": [
+        66,
+        69
+      ]
+    },
+    {
+      "lemma": "아래",
+      "tag": "EOJEOL",
+      "surface": "아래로",
+      "charSpan": [
+        70,
+        73
+      ]
+    },
+    {
+      "lemma": "흘러내리",
+      "tag": "VV",
+      "surface": "흘러내려",
+      "charSpan": [
+        74,
+        78
+      ]
+    },
+    {
+      "lemma": "흘러내리",
+      "tag": "EOJEOL",
+      "surface": "흘러내려요",
+      "charSpan": [
+        74,
+        79
+      ]
+    },
+    {
+      "lemma": "섞이",
+      "tag": "VV",
+      "surface": "섞여",
+      "charSpan": [
+        91,
+        93
+      ]
+    },
+    {
+      "lemma": "있",
+      "tag": "EOJEOL",
+      "surface": "있고",
+      "charSpan": [
+        94,
+        96
+      ]
+    },
+    {
+      "lemma": "손",
+      "tag": "EOJEOL",
+      "surface": "손으로",
+      "charSpan": [
+        104,
+        107
+      ]
+    },
+    {
+      "lemma": "만지",
+      "tag": "VV",
+      "surface": "만지",
+      "charSpan": [
+        108,
+        110
+      ]
+    },
+    {
+      "lemma": "만지",
+      "tag": "EOJEOL",
+      "surface": "만지면",
+      "charSpan": [
+        108,
+        111
+      ]
+    },
+    {
+      "lemma": "것",
+      "tag": "EOJEOL",
+      "surface": "것",
+      "charSpan": [
+        117,
+        118
+      ]
+    },
+    {
+      "lemma": "같",
+      "tag": "EOJEOL",
+      "surface": "같아요",
+      "charSpan": [
+        119,
+        122
+      ]
+    },
+    {
+      "lemma": "저",
+      "tag": "EOJEOL",
+      "surface": "제",
+      "charSpan": [
+        124,
+        125
+      ]
+    },
+    {
+      "lemma": "상체",
+      "tag": "NNG",
+      "surface": "상체",
+      "charSpan": [
+        126,
+        128
+      ]
+    },
+    {
+      "lemma": "상체",
+      "tag": "EOJEOL",
+      "surface": "상체를",
+      "charSpan": [
+        126,
+        129
+      ]
+    },
+    {
+      "lemma": "다",
+      "tag": "MAG",
+      "surface": "다",
+      "charSpan": [
+        130,
+        131
+      ]
+    },
+    {
+      "lemma": "덮",
+      "tag": "VV",
+      "surface": "덮",
+      "charSpan": [
+        132,
+        133
+      ]
+    },
+    {
+      "lemma": "덮",
+      "tag": "EOJEOL",
+      "surface": "덮을",
+      "charSpan": [
+        132,
+        134
+      ]
+    },
+    {
+      "lemma": "정도",
+      "tag": "EOJEOL",
+      "surface": "정도요",
+      "charSpan": [
+        135,
+        138
+      ]
+    }
+  ],
+  "_unmapped": [
+    {
+      "lemma": "얇",
+      "category": "shape",
+      "value": {
+        "shape": "thin"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "얇은",
+        "charSpan": [
+          56,
+          58
+        ],
+        "rule": "shapeLexicon.얇"
+      }
+    },
+    {
+      "lemma": "부드럽",
+      "category": "texture",
+      "value": {
+        "texture": "soft"
+      },
+      "reason": "no_value_mapping",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "부드러울",
+        "charSpan": [
+          112,
+          116
+        ],
+        "rule": "textureLexicon.부드럽"
+      }
+    }
+  ],
+  "_negated": [],
+  "_alternatives": [
+    {
+      "path": "material.color",
+      "value": {
+        "h": 0.639,
+        "s": 0.55,
+        "l": 0.25
+      },
+      "reason": "later_mention",
+      "_provenance": [
+        {
+          "source": "phrase_rule",
+          "trigger": "남색이",
+          "charSpan": [
+            87,
+            90
+          ],
+          "rule": "colorTerm.남색>material.color:hsl"
+        }
+      ]
+    },
+    {
+      "path": "body.part",
+      "value": "back",
+      "reason": "later_mention",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "등",
+          "charSpan": [
+            38,
+            39
+          ],
+          "rule": "bodyPartLexicon.등>body.part:back"
+        }
+      ]
+    },
+    {
+      "path": "body.part",
+      "value": "hand",
+      "reason": "later_mention",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "손",
+          "charSpan": [
+            104,
+            105
+          ],
+          "rule": "bodyPartLexicon.손>body.part:hand"
+        }
+      ]
+    },
+    {
+      "path": "body.layer",
+      "value": "around_below",
+      "reason": "lower_priority",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "아래",
+          "charSpan": [
+            70,
+            72
+          ],
+          "rule": "bodyLayerLexicon.아래>body.layer:around_below"
+        }
+      ]
+    }
+  ],
+  "_inferred": {
+    "layout.verticalOffset": {
+      "value": 0.82,
+      "_provenance": [
+        {
+          "source": "body_part_height",
+          "trigger": "어깨",
+          "charSpan": [
+            14,
+            16
+          ],
+          "rule": "bodyPartHeight.shoulder>layout.verticalOffset:0.82"
+        }
+      ]
+    }
+  },
+  "_context": [],
+  "_parts": [],
+  "_uncertain": [],
+  "_measurements": [],
+  "_direction": [],
+  "_needsConfirmation": [],
+  "_clauses": [
+    {
+      "charSpan": [
+        0,
+        8
+      ],
+      "text": "엄마랑 통화하고",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        9,
+        12
+      ],
+      "text": "나서요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        12,
+        13
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        14,
+        26
+      ],
+      "text": "어깨가 덮인 느낌이에요",
+      "usedFor": [
+        "body.part"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        26,
+        27
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        28,
+        32
+      ],
+      "text": "표면이요",
+      "usedFor": [
+        "body.layer"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        32,
+        33
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        34,
+        43
+      ],
+      "text": "어깨랑 등을 덮고",
+      "usedFor": [
+        "body.part"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        44,
+        47
+      ],
+      "text": "있어요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        47,
+        48
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        49,
+        54
+      ],
+      "text": "천 같아요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        54,
+        55
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        56,
+        69
+      ],
+      "text": "얇은 천이 어깨에 걸쳐서",
+      "usedFor": [
+        "body.part"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        70,
+        79
+      ],
+      "text": "아래로 흘러내려요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        79,
+        80
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        81,
+        96
+      ],
+      "text": "보라색이랑 남색이 섞여 있고",
+      "usedFor": [
+        "material.color"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        97,
+        102
+      ],
+      "text": "반투명해요",
+      "usedFor": [
+        "material.opacity"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        102,
+        103
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        104,
+        122
+      ],
+      "text": "손으로 만지면 부드러울 것 같아요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        122,
+        123
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        124,
+        138
+      ],
+      "text": "제 상체를 다 덮을 정도요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        138,
+        139
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    }
+  ]
+}

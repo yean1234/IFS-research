@@ -1,0 +1,324 @@
+{
+  "meta": {
+    "specVersion": "2.0.0",
+    "participantId": null,
+    "sessionId": "M10",
+    "condition": "static",
+    "sourceTextHash": "sha256:3c18fb7879fdae29b91b263158d395cf203434a4beef8e2b3a3f7775af59d446",
+    "pipeline": {
+      "builder": "scene-spec-builder/0.1.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@0.1.0",
+        "vad": "vad-ko@0.1.0"
+      }
+    }
+  },
+  "form": {
+    "type": null,
+    "posture": null
+  },
+  "material": {
+    "color": {
+      "h": 0.0,
+      "s": 0.0,
+      "l": 0.95
+    },
+    "brightness": 0.7,
+    "saturation": null,
+    "roughness": null,
+    "opacity": null,
+    "erosion": null
+  },
+  "layout": {
+    "size": 0.621,
+    "distance": null,
+    "verticalOffset": null
+  },
+  "motion": {
+    "type": "trembling",
+    "speed": null
+  },
+  "body": {
+    "part": "body",
+    "layer": "inner"
+  },
+  "_provenance": {
+    "material.color": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "하얗고",
+        "charSpan": [
+          57,
+          60
+        ],
+        "rule": "colorLexicon.하얗>material.color:hsl"
+      }
+    ],
+    "material.brightness": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "빛",
+        "charSpan": [
+          88,
+          89
+        ],
+        "rule": "brightnessLexicon.빛>material.brightness:light"
+      }
+    ],
+    "layout.size": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "커요",
+        "charSpan": [
+          115,
+          117
+        ],
+        "rule": "sizeLexicon.크>layout.size:logScale(1.4)"
+      }
+    ],
+    "motion.type": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "떨려요",
+        "charSpan": [
+          123,
+          126
+        ],
+        "rule": "motionLexicon.떨리>motion.type:trembling"
+      }
+    ],
+    "body.part": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "몸",
+        "charSpan": [
+          18,
+          19
+        ],
+        "rule": "bodyPartLexicon.몸>body.part:body"
+      }
+    ],
+    "body.layer": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "안",
+        "charSpan": [
+          20,
+          21
+        ],
+        "rule": "bodyLayerLexicon.안>body.layer:inner"
+      }
+    ]
+  },
+  "_unmatched": [
+    {
+      "lemma": "시험",
+      "tag": "NNG",
+      "surface": "시험",
+      "charSpan": [
+        0,
+        2
+      ]
+    },
+    {
+      "lemma": "결과",
+      "tag": "NNG",
+      "surface": "결과",
+      "charSpan": [
+        3,
+        5
+      ]
+    },
+    {
+      "lemma": "기다리",
+      "tag": "VV",
+      "surface": "기다리",
+      "charSpan": [
+        6,
+        9
+      ]
+    },
+    {
+      "lemma": "껍데기",
+      "tag": "NNG",
+      "surface": "껍데기",
+      "charSpan": [
+        35,
+        38
+      ]
+    },
+    {
+      "lemma": "달걀",
+      "tag": "NNG",
+      "surface": "달걀",
+      "charSpan": [
+        45,
+        47
+      ]
+    },
+    {
+      "lemma": "껍데기",
+      "tag": "NNG",
+      "surface": "껍데기",
+      "charSpan": [
+        48,
+        51
+      ]
+    },
+    {
+      "lemma": "군데군데",
+      "tag": "MAG",
+      "surface": "군데군데",
+      "charSpan": [
+        65,
+        69
+      ]
+    },
+    {
+      "lemma": "금",
+      "tag": "NNG",
+      "surface": "금",
+      "charSpan": [
+        70,
+        71
+      ]
+    },
+    {
+      "lemma": "가",
+      "tag": "VV",
+      "surface": "가",
+      "charSpan": [
+        73,
+        74
+      ]
+    },
+    {
+      "lemma": "금",
+      "tag": "NNG",
+      "surface": "금",
+      "charSpan": [
+        80,
+        81
+      ]
+    },
+    {
+      "lemma": "가",
+      "tag": "VV",
+      "surface": "간",
+      "charSpan": [
+        82,
+        83
+      ]
+    },
+    {
+      "lemma": "비치",
+      "tag": "VV",
+      "surface": "비쳐",
+      "charSpan": [
+        91,
+        93
+      ]
+    },
+    {
+      "lemma": "달걀",
+      "tag": "NNG",
+      "surface": "달걀",
+      "charSpan": [
+        107,
+        109
+      ]
+    }
+  ],
+  "_unmapped": [
+    {
+      "lemma": "속",
+      "category": "body_layer",
+      "value": {
+        "layer": "inner"
+      },
+      "reason": "no_body_part_context",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "속",
+        "charSpan": [
+          30,
+          31
+        ],
+        "rule": "bodyLayerLexicon.속"
+      }
+    },
+    {
+      "lemma": "비",
+      "category": "shape",
+      "value": {
+        "shape": "hollow"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "빈",
+        "charSpan": [
+          33,
+          34
+        ],
+        "rule": "shapeLexicon.비"
+      }
+    },
+    {
+      "lemma": "얇",
+      "category": "shape",
+      "value": {
+        "shape": "thin"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "얇은데",
+        "charSpan": [
+          61,
+          64
+        ],
+        "rule": "shapeLexicon.얇"
+      }
+    },
+    {
+      "lemma": "안",
+      "category": "body_layer",
+      "value": {
+        "layer": "inner"
+      },
+      "reason": "no_body_part_context",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "안",
+        "charSpan": [
+          96,
+          97
+        ],
+        "rule": "bodyLayerLexicon.안"
+      }
+    },
+    {
+      "lemma": "비",
+      "category": "shape",
+      "value": {
+        "shape": "hollow"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "비어",
+        "charSpan": [
+          99,
+          101
+        ],
+        "rule": "shapeLexicon.비"
+      }
+    }
+  ],
+  "_negated": [],
+  "_alternatives": [],
+  "_inferred": {}
+}

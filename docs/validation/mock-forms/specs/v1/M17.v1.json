@@ -1,0 +1,626 @@
+{
+  "meta": {
+    "specVersion": "2.1.0",
+    "participantId": null,
+    "sessionId": "M17",
+    "condition": "static",
+    "sourceTextHash": "sha256:564d2bc790414e4131da494233b251c7d653ee78769a075a06c667d81fd3eff1",
+    "pipeline": {
+      "builder": "scene-spec-builder-v1/1.2.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@1.0.0",
+        "layer1Base": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@1.0.0",
+        "vad": "vad-ko@0.1.0"
+      }
+    },
+    "mapping": {
+      "requested": "v1",
+      "used": "v1",
+      "fallbackReason": null
+    }
+  },
+  "form": {
+    "type": null,
+    "posture": null
+  },
+  "material": {
+    "color": {
+      "h": 0.0,
+      "s": 0.75,
+      "l": 0.45
+    },
+    "brightness": null,
+    "saturation": null,
+    "roughness": null,
+    "opacity": null,
+    "erosion": null
+  },
+  "layout": {
+    "size": 0.044,
+    "distance": null,
+    "verticalOffset": null
+  },
+  "motion": {
+    "type": "trembling",
+    "speed": null
+  },
+  "body": {
+    "part": "throat_neck",
+    "layer": "inner"
+  },
+  "_provenance": {
+    "material.color": [
+      {
+        "source": "phrase_rule",
+        "trigger": "빨갛고",
+        "charSpan": [
+          72,
+          75
+        ],
+        "rule": "colorTerm.빨갛>material.color:hsl"
+      }
+    ],
+    "layout.size": [
+      {
+        "source": "phrase_rule",
+        "trigger": "새끼손가락 반만 해요",
+        "charSpan": [
+          77,
+          88
+        ],
+        "rule": "compare.equal.새끼손가락>layout.size:0.03m"
+      }
+    ],
+    "motion.type": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "파르르",
+        "charSpan": [
+          93,
+          96
+        ],
+        "rule": "motionLexicon.파르르>motion.type:trembling"
+      },
+      {
+        "source": "explicit_lexicon",
+        "trigger": "떨려요",
+        "charSpan": [
+          97,
+          100
+        ],
+        "rule": "motionLexicon.떨리>motion.type:trembling"
+      }
+    ],
+    "body.part": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "목",
+        "charSpan": [
+          17,
+          18
+        ],
+        "rule": "bodyPartLexicon.목>body.part:throat_neck"
+      }
+    ],
+    "body.layer": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "안",
+        "charSpan": [
+          35,
+          36
+        ],
+        "rule": "bodyLayerLexicon.안>body.layer:inner"
+      }
+    ]
+  },
+  "_unmatched": [
+    {
+      "lemma": "동료",
+      "tag": "NNG",
+      "surface": "동료",
+      "charSpan": [
+        0,
+        2
+      ]
+    },
+    {
+      "lemma": "동료",
+      "tag": "EOJEOL",
+      "surface": "동료가",
+      "charSpan": [
+        0,
+        3
+      ]
+    },
+    {
+      "lemma": "하",
+      "tag": "EOJEOL",
+      "surface": "한",
+      "charSpan": [
+        4,
+        5
+      ]
+    },
+    {
+      "lemma": "말",
+      "tag": "NNG",
+      "surface": "말",
+      "charSpan": [
+        6,
+        7
+      ]
+    },
+    {
+      "lemma": "말",
+      "tag": "EOJEOL",
+      "surface": "말이",
+      "charSpan": [
+        6,
+        8
+      ]
+    },
+    {
+      "lemma": "계속",
+      "tag": "MAG",
+      "surface": "계속",
+      "charSpan": [
+        9,
+        11
+      ]
+    },
+    {
+      "lemma": "목",
+      "tag": "EOJEOL",
+      "surface": "목에",
+      "charSpan": [
+        17,
+        19
+      ]
+    },
+    {
+      "lemma": "뭐",
+      "tag": "EOJEOL",
+      "surface": "뭔가",
+      "charSpan": [
+        20,
+        22
+      ]
+    },
+    {
+      "lemma": "것",
+      "tag": "EOJEOL",
+      "surface": "것",
+      "charSpan": [
+        26,
+        27
+      ]
+    },
+    {
+      "lemma": "같",
+      "tag": "EOJEOL",
+      "surface": "같아요",
+      "charSpan": [
+        28,
+        31
+      ]
+    },
+    {
+      "lemma": "쪽",
+      "tag": "EOJEOL",
+      "surface": "쪽",
+      "charSpan": [
+        44,
+        45
+      ]
+    },
+    {
+      "lemma": "것",
+      "tag": "EOJEOL",
+      "surface": "게",
+      "charSpan": [
+        51,
+        52
+      ]
+    },
+    {
+      "lemma": "있",
+      "tag": "EOJEOL",
+      "surface": "있어요",
+      "charSpan": [
+        53,
+        56
+      ]
+    },
+    {
+      "lemma": "끝",
+      "tag": "NNG",
+      "surface": "끝",
+      "charSpan": [
+        63,
+        64
+      ]
+    },
+    {
+      "lemma": "끝",
+      "tag": "EOJEOL",
+      "surface": "끝이",
+      "charSpan": [
+        63,
+        65
+      ]
+    }
+  ],
+  "_unmapped": [
+    {
+      "lemma": "뾰족",
+      "category": "shape",
+      "value": {
+        "shape": "pointed"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "뾰족한",
+        "charSpan": [
+          47,
+          50
+        ],
+        "rule": "shapeLexicon.뾰족"
+      }
+    },
+    {
+      "lemma": "가시",
+      "category": "object",
+      "value": {
+        "object": "thorn"
+      },
+      "reason": "simile_prototype_pending",
+      "_provenance": {
+        "source": "simile_marker",
+        "trigger": "가시처럼",
+        "charSpan": [
+          58,
+          62
+        ],
+        "rule": "simile.처럼>objectLexicon.가시"
+      }
+    },
+    {
+      "lemma": "뾰족",
+      "category": "shape",
+      "value": {
+        "shape": "pointed"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "뾰족해요",
+        "charSpan": [
+          66,
+          70
+        ],
+        "rule": "shapeLexicon.뾰족"
+      }
+    }
+  ],
+  "_negated": [],
+  "_alternatives": [
+    {
+      "path": "motion.type",
+      "value": "trembling",
+      "reason": "needs_confirmation",
+      "_provenance": [
+        {
+          "source": "fuzzy_lexicon",
+          "trigger": "걸려요",
+          "charSpan": [
+            12,
+            15
+          ],
+          "rule": "fuzzy(d=1).떨리>motionLexicon.떨리>motion.type:trembling",
+          "needsConfirmation": true
+        }
+      ]
+    },
+    {
+      "path": "motion.type",
+      "value": "trembling",
+      "reason": "needs_confirmation",
+      "_provenance": [
+        {
+          "source": "fuzzy_lexicon",
+          "trigger": "걸린",
+          "charSpan": [
+            23,
+            25
+          ],
+          "rule": "fuzzy(d=1).떨리>motionLexicon.떨리>motion.type:trembling",
+          "needsConfirmation": true
+        }
+      ]
+    },
+    {
+      "path": "body.part",
+      "value": "body",
+      "reason": "lower_priority",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "몸",
+          "charSpan": [
+            33,
+            34
+          ],
+          "rule": "bodyPartLexicon.몸>body.part:body"
+        }
+      ]
+    },
+    {
+      "path": "body.part",
+      "value": "throat",
+      "reason": "later_mention",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "목구멍",
+          "charSpan": [
+            40,
+            43
+          ],
+          "rule": "bodyPartLexicon.목구멍>body.part:throat"
+        }
+      ]
+    },
+    {
+      "path": "body.part",
+      "value": "chest",
+      "reason": "needs_confirmation",
+      "_provenance": [
+        {
+          "source": "fuzzy_lexicon",
+          "trigger": "가끔",
+          "charSpan": [
+            90,
+            92
+          ],
+          "rule": "fuzzy(d=1).가슴>bodyPartLexicon.가슴>body.part:chest",
+          "needsConfirmation": true
+        }
+      ]
+    }
+  ],
+  "_inferred": {
+    "layout.verticalOffset": {
+      "value": 0.85,
+      "_provenance": [
+        {
+          "source": "body_part_height",
+          "trigger": "목",
+          "charSpan": [
+            17,
+            18
+          ],
+          "rule": "bodyPartHeight.throat_neck>layout.verticalOffset:0.85"
+        }
+      ]
+    }
+  },
+  "_context": [],
+  "_parts": [],
+  "_uncertain": [],
+  "_measurements": [
+    {
+      "text": "새끼손가락 반만 해요",
+      "charSpan": [
+        77,
+        88
+      ],
+      "kind": "reference",
+      "meters": 0.03,
+      "dimension": "size",
+      "reference": "새끼손가락",
+      "usedFor": "layout.size"
+    }
+  ],
+  "_direction": [],
+  "_needsConfirmation": [
+    {
+      "path": "motion.type",
+      "trigger": "걸려요",
+      "charSpan": [
+        12,
+        15
+      ],
+      "reason": "fuzzy_lexicon",
+      "matched": "떨리"
+    },
+    {
+      "path": "motion.type",
+      "trigger": "걸린",
+      "charSpan": [
+        23,
+        25
+      ],
+      "reason": "fuzzy_lexicon",
+      "matched": "떨리"
+    },
+    {
+      "path": "body.part",
+      "trigger": "가끔",
+      "charSpan": [
+        90,
+        92
+      ],
+      "reason": "fuzzy_lexicon",
+      "matched": "가슴"
+    }
+  ],
+  "_clauses": [
+    {
+      "charSpan": [
+        0,
+        15
+      ],
+      "text": "동료가 한 말이 계속 걸려요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        15,
+        16
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        17,
+        31
+      ],
+      "text": "목에 뭔가 걸린 것 같아요",
+      "usedFor": [
+        "body.part"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        31,
+        32
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        33,
+        38
+      ],
+      "text": "몸 안이요",
+      "usedFor": [
+        "body.layer"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        38,
+        39
+      ],
+      "text": ",",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        40,
+        46
+      ],
+      "text": "목구멍 쪽.",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        47,
+        56
+      ],
+      "text": "뾰족한 게 있어요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        56,
+        57
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        58,
+        70
+      ],
+      "text": "가시처럼 끝이 뾰족해요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        70,
+        71
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        72,
+        75
+      ],
+      "text": "빨갛고",
+      "usedFor": [
+        "material.color"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        75,
+        76
+      ],
+      "text": ",",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        77,
+        88
+      ],
+      "text": "새끼손가락 반만 해요",
+      "usedFor": [
+        "layout.size"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        88,
+        89
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        90,
+        100
+      ],
+      "text": "가끔 파르르 떨려요",
+      "usedFor": [
+        "motion.type"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        100,
+        101
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    }
+  ]
+}

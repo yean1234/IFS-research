@@ -1,0 +1,861 @@
+{
+  "meta": {
+    "specVersion": "2.1.0",
+    "participantId": null,
+    "sessionId": "M18-live",
+    "condition": "chatbot",
+    "sourceTextHash": "sha256:f3a45c5bb4faf678233687d6d9687372ccd5a4c05ff1fcbf6387f8224be96d48",
+    "pipeline": {
+      "builder": "scene-spec-builder-v1/1.2.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@1.0.0",
+        "layer1Base": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@1.0.0",
+        "vad": "vad-ko@0.1.0"
+      }
+    },
+    "mapping": {
+      "requested": "v1",
+      "used": "v1",
+      "fallbackReason": null
+    }
+  },
+  "form": {
+    "type": null,
+    "posture": null
+  },
+  "material": {
+    "color": {
+      "h": 0.0,
+      "s": 0.0,
+      "l": 0.08
+    },
+    "brightness": null,
+    "saturation": null,
+    "roughness": null,
+    "opacity": null,
+    "erosion": null
+  },
+  "layout": {
+    "size": null,
+    "distance": null,
+    "verticalOffset": null
+  },
+  "motion": {
+    "type": null,
+    "speed": null
+  },
+  "body": {
+    "part": "hand",
+    "layer": "surface"
+  },
+  "_provenance": {
+    "material.color": [
+      {
+        "source": "phrase_rule",
+        "trigger": "검은",
+        "charSpan": [
+          78,
+          80
+        ],
+        "rule": "colorTerm.검은>material.color:hsl"
+      }
+    ],
+    "body.part": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "손끝",
+        "charSpan": [
+          22,
+          24
+        ],
+        "rule": "bodyPartLexicon.손>body.part:hand"
+      },
+      {
+        "source": "explicit_lexicon",
+        "trigger": "손",
+        "charSpan": [
+          38,
+          39
+        ],
+        "rule": "bodyPartLexicon.손>body.part:hand"
+      },
+      {
+        "source": "explicit_lexicon",
+        "trigger": "손가락",
+        "charSpan": [
+          43,
+          46
+        ],
+        "rule": "bodyPartLexicon.손가락>body.part:hand"
+      },
+      {
+        "source": "explicit_lexicon",
+        "trigger": "손가락",
+        "charSpan": [
+          84,
+          87
+        ],
+        "rule": "bodyPartLexicon.손가락>body.part:hand"
+      }
+    ],
+    "body.layer": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "표면",
+        "charSpan": [
+          34,
+          36
+        ],
+        "rule": "bodyLayerLexicon.표면>body.layer:surface"
+      }
+    ]
+  },
+  "_unmatched": [
+    {
+      "lemma": "음",
+      "tag": "EOJEOL",
+      "surface": "음",
+      "charSpan": [
+        0,
+        1
+      ]
+    },
+    {
+      "lemma": "뭐",
+      "tag": "EOJEOL",
+      "surface": "뭐라고",
+      "charSpan": [
+        3,
+        6
+      ]
+    },
+    {
+      "lemma": "하",
+      "tag": "EOJEOL",
+      "surface": "해야",
+      "charSpan": [
+        7,
+        9
+      ]
+    },
+    {
+      "lemma": "하",
+      "tag": "EOJEOL",
+      "surface": "할지",
+      "charSpan": [
+        10,
+        12
+      ]
+    },
+    {
+      "lemma": "어제",
+      "tag": "NNG",
+      "surface": "어제",
+      "charSpan": [
+        14,
+        16
+      ]
+    },
+    {
+      "lemma": "일",
+      "tag": "NNG",
+      "surface": "일",
+      "charSpan": [
+        17,
+        18
+      ]
+    },
+    {
+      "lemma": "일",
+      "tag": "EOJEOL",
+      "surface": "일이요",
+      "charSpan": [
+        17,
+        20
+      ]
+    },
+    {
+      "lemma": "손끝",
+      "tag": "EOJEOL",
+      "surface": "손끝이",
+      "charSpan": [
+        22,
+        25
+      ]
+    },
+    {
+      "lemma": "저릿",
+      "tag": "XR",
+      "surface": "저릿",
+      "charSpan": [
+        26,
+        28
+      ]
+    },
+    {
+      "lemma": "저릿",
+      "tag": "EOJEOL",
+      "surface": "저릿해요",
+      "charSpan": [
+        26,
+        30
+      ]
+    },
+    {
+      "lemma": "묶이",
+      "tag": "VV",
+      "surface": "묶인",
+      "charSpan": [
+        48,
+        50
+      ]
+    },
+    {
+      "lemma": "느낌",
+      "tag": "EOJEOL",
+      "surface": "느낌이에요",
+      "charSpan": [
+        51,
+        56
+      ]
+    },
+    {
+      "lemma": "같",
+      "tag": "EOJEOL",
+      "surface": "같은",
+      "charSpan": [
+        60,
+        62
+      ]
+    },
+    {
+      "lemma": "것",
+      "tag": "EOJEOL",
+      "surface": "게",
+      "charSpan": [
+        63,
+        64
+      ]
+    },
+    {
+      "lemma": "감기",
+      "tag": "VV",
+      "surface": "감겨",
+      "charSpan": [
+        65,
+        67
+      ]
+    },
+    {
+      "lemma": "있",
+      "tag": "EOJEOL",
+      "surface": "있어요",
+      "charSpan": [
+        68,
+        71
+      ]
+    },
+    {
+      "lemma": "가느다랗",
+      "tag": "VA-I",
+      "surface": "가느다란",
+      "charSpan": [
+        73,
+        77
+      ]
+    },
+    {
+      "lemma": "실",
+      "tag": "EOJEOL",
+      "surface": "실이",
+      "charSpan": [
+        81,
+        83
+      ]
+    },
+    {
+      "lemma": "여러",
+      "tag": "EOJEOL",
+      "surface": "여러",
+      "charSpan": [
+        89,
+        91
+      ]
+    },
+    {
+      "lemma": "번",
+      "tag": "EOJEOL",
+      "surface": "번",
+      "charSpan": [
+        92,
+        93
+      ]
+    },
+    {
+      "lemma": "칭칭",
+      "tag": "MAG",
+      "surface": "칭칭",
+      "charSpan": [
+        94,
+        96
+      ]
+    },
+    {
+      "lemma": "감기",
+      "tag": "VV",
+      "surface": "감겨",
+      "charSpan": [
+        97,
+        99
+      ]
+    },
+    {
+      "lemma": "있",
+      "tag": "EOJEOL",
+      "surface": "있어요",
+      "charSpan": [
+        100,
+        103
+      ]
+    },
+    {
+      "lemma": "끝",
+      "tag": "NNG",
+      "surface": "끝",
+      "charSpan": [
+        113,
+        114
+      ]
+    },
+    {
+      "lemma": "모르",
+      "tag": "VV",
+      "surface": "모르",
+      "charSpan": [
+        117,
+        119
+      ]
+    },
+    {
+      "lemma": "실",
+      "tag": "EOJEOL",
+      "surface": "실이",
+      "charSpan": [
+        124,
+        126
+      ]
+    },
+    {
+      "lemma": "아주",
+      "tag": "EOJEOL",
+      "surface": "아주",
+      "charSpan": [
+        127,
+        129
+      ]
+    },
+    {
+      "lemma": "가늘",
+      "tag": "VA",
+      "surface": "가늘",
+      "charSpan": [
+        130,
+        132
+      ]
+    },
+    {
+      "lemma": "가늘",
+      "tag": "EOJEOL",
+      "surface": "가늘어요",
+      "charSpan": [
+        130,
+        134
+      ]
+    },
+    {
+      "lemma": "있",
+      "tag": "EOJEOL",
+      "surface": "있어요",
+      "charSpan": [
+        139,
+        142
+      ]
+    },
+    {
+      "lemma": "실은",
+      "tag": "MAG",
+      "surface": "실은",
+      "charSpan": [
+        144,
+        146
+      ]
+    },
+    {
+      "lemma": "머리카락",
+      "tag": "NNG",
+      "surface": "머리카락",
+      "charSpan": [
+        147,
+        151
+      ]
+    },
+    {
+      "lemma": "머리카락",
+      "tag": "EOJEOL",
+      "surface": "머리카락만큼",
+      "charSpan": [
+        147,
+        153
+      ]
+    },
+    {
+      "lemma": "가늘",
+      "tag": "VA",
+      "surface": "가늘",
+      "charSpan": [
+        154,
+        156
+      ]
+    },
+    {
+      "lemma": "가늘",
+      "tag": "EOJEOL",
+      "surface": "가늘어요",
+      "charSpan": [
+        154,
+        158
+      ]
+    },
+    {
+      "lemma": "조금",
+      "tag": "EOJEOL",
+      "surface": "조금씩",
+      "charSpan": [
+        160,
+        163
+      ]
+    },
+    {
+      "lemma": "오",
+      "tag": "EOJEOL",
+      "surface": "와요",
+      "charSpan": [
+        167,
+        169
+      ]
+    }
+  ],
+  "_unmapped": [
+    {
+      "lemma": "실",
+      "category": "shape",
+      "value": {
+        "shape": "thread"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "simile_marker",
+        "trigger": "실",
+        "charSpan": [
+          58,
+          59
+        ],
+        "rule": "simile.같은>shapeLexicon.실"
+      }
+    },
+    {
+      "lemma": "실",
+      "category": "shape",
+      "value": {
+        "shape": "thread"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "실",
+        "charSpan": [
+          81,
+          82
+        ],
+        "rule": "shapeLexicon.실"
+      }
+    },
+    {
+      "lemma": "엉키",
+      "category": "texture",
+      "value": {
+        "texture": "tangled"
+      },
+      "reason": "no_value_mapping",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "엉켜서",
+        "charSpan": [
+          105,
+          108
+        ],
+        "rule": "textureLexicon.엉키"
+      }
+    },
+    {
+      "lemma": "실",
+      "category": "shape",
+      "value": {
+        "shape": "thread"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "실",
+        "charSpan": [
+          124,
+          125
+        ],
+        "rule": "shapeLexicon.실"
+      }
+    },
+    {
+      "lemma": "엉키",
+      "category": "texture",
+      "value": {
+        "texture": "tangled"
+      },
+      "reason": "no_value_mapping",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "엉켜",
+        "charSpan": [
+          136,
+          138
+        ],
+        "rule": "textureLexicon.엉키"
+      }
+    },
+    {
+      "lemma": "조이",
+      "category": "sensation",
+      "value": {
+        "sensation": "tightening"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "조여",
+        "charSpan": [
+          164,
+          166
+        ],
+        "rule": "sensationLexicon.조이"
+      }
+    }
+  ],
+  "_negated": [],
+  "_alternatives": [
+    {
+      "path": "body.part",
+      "value": "body",
+      "reason": "lower_priority",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "몸",
+          "charSpan": [
+            32,
+            33
+          ],
+          "rule": "bodyPartLexicon.몸>body.part:body"
+        }
+      ]
+    }
+  ],
+  "_inferred": {
+    "layout.verticalOffset": {
+      "value": 0.49,
+      "_provenance": [
+        {
+          "source": "body_part_height",
+          "trigger": "손끝",
+          "charSpan": [
+            22,
+            24
+          ],
+          "rule": "bodyPartHeight.hand>layout.verticalOffset:0.49"
+        }
+      ]
+    }
+  },
+  "_context": [],
+  "_parts": [],
+  "_uncertain": [
+    {
+      "text": "어디가 끝인지 모르겠어요",
+      "charSpan": [
+        109,
+        122
+      ],
+      "paths": [],
+      "marker": "모르"
+    }
+  ],
+  "_measurements": [],
+  "_direction": [],
+  "_needsConfirmation": [],
+  "_clauses": [
+    {
+      "charSpan": [
+        0,
+        2
+      ],
+      "text": "음…",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        3,
+        12
+      ],
+      "text": "뭐라고 해야 할지",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        12,
+        13
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        14,
+        20
+      ],
+      "text": "어제 일이요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        20,
+        21
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        22,
+        30
+      ],
+      "text": "손끝이 저릿해요",
+      "usedFor": [
+        "body.part"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        30,
+        31
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        32,
+        37
+      ],
+      "text": "몸 표면,",
+      "usedFor": [
+        "body.layer"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        38,
+        41
+      ],
+      "text": "손이요",
+      "usedFor": [
+        "body.part"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        41,
+        42
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        43,
+        56
+      ],
+      "text": "손가락이 묶인 느낌이에요",
+      "usedFor": [
+        "body.part"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        56,
+        57
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        58,
+        71
+      ],
+      "text": "실 같은 게 감겨 있어요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        71,
+        72
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        73,
+        103
+      ],
+      "text": "가느다란 검은 실이 손가락에 여러 번 칭칭 감겨 있어요",
+      "usedFor": [
+        "material.color",
+        "body.part"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        103,
+        104
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        105,
+        108
+      ],
+      "text": "엉켜서",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        109,
+        122
+      ],
+      "text": "어디가 끝인지 모르겠어요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        122,
+        123
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        124,
+        134
+      ],
+      "text": "실이 아주 가늘어요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        134,
+        135
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        136,
+        142
+      ],
+      "text": "엉켜 있어요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        142,
+        143
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        144,
+        158
+      ],
+      "text": "실은 머리카락만큼 가늘어요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        158,
+        159
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        160,
+        169
+      ],
+      "text": "조금씩 조여 와요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        169,
+        170
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    }
+  ]
+}

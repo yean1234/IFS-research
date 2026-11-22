@@ -1,0 +1,215 @@
+{
+  "meta": {
+    "specVersion": "2.0.0",
+    "participantId": null,
+    "sessionId": "M03",
+    "condition": "static",
+    "sourceTextHash": "sha256:ac475426d41af974cd56e7dc326c81d0abc1434ad2aa0aa7e195137ec31d0882",
+    "pipeline": {
+      "builder": "scene-spec-builder/0.1.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@0.1.0",
+        "vad": "vad-ko@0.1.0"
+      }
+    }
+  },
+  "form": {
+    "type": null,
+    "posture": null
+  },
+  "material": {
+    "color": {
+      "h": 0.0,
+      "s": 0.0,
+      "l": 0.95
+    },
+    "brightness": null,
+    "saturation": null,
+    "roughness": null,
+    "opacity": null,
+    "erosion": null
+  },
+  "layout": {
+    "size": 0.621,
+    "distance": null,
+    "verticalOffset": 0.93
+  },
+  "motion": {
+    "type": "floating",
+    "speed": null
+  },
+  "body": {
+    "part": "head",
+    "layer": null
+  },
+  "_provenance": {
+    "material.color": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "하얀",
+        "charSpan": [
+          36,
+          38
+        ],
+        "rule": "colorLexicon.하얗>material.color:hsl"
+      }
+    ],
+    "layout.size": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "커요",
+        "charSpan": [
+          56,
+          58
+        ],
+        "rule": "sizeLexicon.크>layout.size:logScale(1.4)"
+      }
+    ],
+    "layout.verticalOffset": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "머리",
+        "charSpan": [
+          48,
+          50
+        ],
+        "rule": "bodyPartLexicon.머리>layout.verticalOffset:head"
+      }
+    ],
+    "motion.type": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "떠",
+        "charSpan": [
+          63,
+          64
+        ],
+        "rule": "motionLexicon.뜨>motion.type:floating"
+      }
+    ],
+    "body.part": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "머리",
+        "charSpan": [
+          48,
+          50
+        ],
+        "rule": "bodyPartLexicon.머리>body.part:head"
+      }
+    ]
+  },
+  "_unmatched": [
+    {
+      "lemma": "출근길",
+      "tag": "NNG",
+      "surface": "출근길",
+      "charSpan": [
+        0,
+        3
+      ]
+    },
+    {
+      "lemma": "몽글몽글",
+      "tag": "MAG",
+      "surface": "몽글몽글",
+      "charSpan": [
+        10,
+        14
+      ]
+    },
+    {
+      "lemma": "둥둥",
+      "tag": "MAG",
+      "surface": "둥둥",
+      "charSpan": [
+        60,
+        62
+      ]
+    },
+    {
+      "lemma": "작아지",
+      "tag": "VV",
+      "surface": "작아졌",
+      "charSpan": [
+        78,
+        81
+      ]
+    }
+  ],
+  "_unmapped": [
+    {
+      "lemma": "주변",
+      "category": "body_layer",
+      "value": {
+        "layer": "around"
+      },
+      "reason": "no_body_part_context",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "주변",
+        "charSpan": [
+          23,
+          25
+        ],
+        "rule": "bodyLayerLexicon.주변"
+      }
+    },
+    {
+      "lemma": "구름",
+      "category": "object",
+      "value": {
+        "object": "cloud"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "구름",
+        "charSpan": [
+          29,
+          31
+        ],
+        "rule": "objectLexicon.구름"
+      }
+    },
+    {
+      "lemma": "구름",
+      "category": "object",
+      "value": {
+        "object": "cloud"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "구름",
+        "charSpan": [
+          39,
+          41
+        ],
+        "rule": "objectLexicon.구름"
+      }
+    },
+    {
+      "lemma": "커지",
+      "category": "size",
+      "value": {
+        "size": "growing"
+      },
+      "reason": "no_value_mapping",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "커졌다",
+        "charSpan": [
+          74,
+          77
+        ],
+        "rule": "sizeLexicon.커지"
+      }
+    }
+  ],
+  "_negated": [],
+  "_alternatives": [],
+  "_inferred": {}
+}

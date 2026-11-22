@@ -1,0 +1,212 @@
+{
+  "meta": {
+    "specVersion": "2.0.0",
+    "participantId": null,
+    "sessionId": "M35",
+    "condition": "static",
+    "sourceTextHash": "sha256:6a2ea2609a0054a86e3c87d0c88ffd2a0e3987169bf919a494211bc2857c4b9f",
+    "pipeline": {
+      "builder": "scene-spec-builder/0.1.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@0.1.0",
+        "vad": "vad-ko@0.1.0"
+      }
+    }
+  },
+  "form": {
+    "type": null,
+    "posture": "drooping"
+  },
+  "material": {
+    "color": null,
+    "brightness": 0.15,
+    "saturation": null,
+    "roughness": null,
+    "opacity": null,
+    "erosion": null
+  },
+  "layout": {
+    "size": null,
+    "distance": null,
+    "verticalOffset": null
+  },
+  "motion": {
+    "type": "sinking",
+    "speed": null
+  },
+  "body": {
+    "part": "body",
+    "layer": "inner"
+  },
+  "_provenance": {
+    "form.posture": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "처져요",
+        "charSpan": [
+          19,
+          22
+        ],
+        "rule": "postureLexicon.처지>form.posture:drooping"
+      }
+    ],
+    "material.brightness": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "어두운",
+        "charSpan": [
+          94,
+          97
+        ],
+        "rule": "brightnessLexicon.어둡>material.brightness:dark"
+      }
+    ],
+    "motion.type": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "가라앉는",
+        "charSpan": [
+          61,
+          65
+        ],
+        "rule": "motionLexicon.가라앉>motion.type:sinking"
+      }
+    ],
+    "body.part": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "몸",
+        "charSpan": [
+          12,
+          13
+        ],
+        "rule": "bodyPartLexicon.몸>body.part:body"
+      },
+      {
+        "source": "explicit_lexicon",
+        "trigger": "몸",
+        "charSpan": [
+          24,
+          25
+        ],
+        "rule": "bodyPartLexicon.몸>body.part:body"
+      },
+      {
+        "source": "explicit_lexicon",
+        "trigger": "몸",
+        "charSpan": [
+          84,
+          85
+        ],
+        "rule": "bodyPartLexicon.몸>body.part:body"
+      }
+    ],
+    "body.layer": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "안쪽",
+        "charSpan": [
+          31,
+          33
+        ],
+        "rule": "bodyLayerLexicon.안쪽>body.layer:inner"
+      }
+    ]
+  },
+  "_unmatched": [
+    {
+      "lemma": "월말",
+      "tag": "NNG",
+      "surface": "월말",
+      "charSpan": [
+        0,
+        2
+      ]
+    },
+    {
+      "lemma": "정산",
+      "tag": "NNG",
+      "surface": "정산",
+      "charSpan": [
+        3,
+        5
+      ]
+    },
+    {
+      "lemma": "전체",
+      "tag": "NNG",
+      "surface": "전체",
+      "charSpan": [
+        26,
+        28
+      ]
+    },
+    {
+      "lemma": "전체",
+      "tag": "NNG",
+      "surface": "전체",
+      "charSpan": [
+        86,
+        88
+      ]
+    }
+  ],
+  "_unmapped": [
+    {
+      "lemma": "무겁",
+      "category": "weight",
+      "value": {
+        "weight": "heavy"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "무겁고",
+        "charSpan": [
+          15,
+          18
+        ],
+        "rule": "weightLexicon.무겁"
+      }
+    },
+    {
+      "lemma": "무겁",
+      "category": "weight",
+      "value": {
+        "weight": "heavy"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "무거워요",
+        "charSpan": [
+          40,
+          44
+        ],
+        "rule": "weightLexicon.무겁"
+      }
+    },
+    {
+      "lemma": "무겁",
+      "category": "weight",
+      "value": {
+        "weight": "heavy"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "무겁게",
+        "charSpan": [
+          57,
+          60
+        ],
+        "rule": "weightLexicon.무겁"
+      }
+    }
+  ],
+  "_negated": [],
+  "_alternatives": [],
+  "_inferred": {}
+}

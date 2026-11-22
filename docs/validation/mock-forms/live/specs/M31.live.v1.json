@@ -1,0 +1,895 @@
+{
+  "meta": {
+    "specVersion": "2.1.0",
+    "participantId": null,
+    "sessionId": "M31-live",
+    "condition": "chatbot",
+    "sourceTextHash": "sha256:02f59f405d99875950f2030c33442bf2ba373013d42098c8e2c1193ee0c39558",
+    "pipeline": {
+      "builder": "scene-spec-builder-v1/1.2.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@1.0.0",
+        "layer1Base": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@1.0.0",
+        "vad": "vad-ko@0.1.0"
+      }
+    },
+    "mapping": {
+      "requested": "v1",
+      "used": "v1",
+      "fallbackReason": null
+    }
+  },
+  "form": {
+    "type": null,
+    "posture": "lying"
+  },
+  "material": {
+    "color": {
+      "h": 0.0,
+      "s": 0.0,
+      "l": 0.06
+    },
+    "brightness": null,
+    "saturation": null,
+    "roughness": null,
+    "opacity": null,
+    "erosion": null
+  },
+  "layout": {
+    "size": null,
+    "distance": null,
+    "verticalOffset": null
+  },
+  "motion": {
+    "type": null,
+    "speed": null
+  },
+  "body": {
+    "part": "leg",
+    "layer": "around"
+  },
+  "_provenance": {
+    "form.posture": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "누웠을",
+        "charSpan": [
+          9,
+          12
+        ],
+        "rule": "postureLexicon.눕>form.posture:lying"
+      }
+    ],
+    "material.color": [
+      {
+        "source": "phrase_rule",
+        "trigger": "까만",
+        "charSpan": [
+          70,
+          72
+        ],
+        "rule": "colorTerm.까만>material.color:hsl"
+      },
+      {
+        "source": "phrase_rule",
+        "trigger": "까매요",
+        "charSpan": [
+          142,
+          145
+        ],
+        "rule": "colorTerm.까매>material.color:hsl"
+      }
+    ],
+    "body.part": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "다리",
+        "charSpan": [
+          17,
+          19
+        ],
+        "rule": "bodyPartLexicon.다리>body.part:leg"
+      },
+      {
+        "source": "explicit_lexicon",
+        "trigger": "다리",
+        "charSpan": [
+          42,
+          44
+        ],
+        "rule": "bodyPartLexicon.다리>body.part:leg"
+      },
+      {
+        "source": "explicit_lexicon",
+        "trigger": "다리",
+        "charSpan": [
+          83,
+          85
+        ],
+        "rule": "bodyPartLexicon.다리>body.part:leg"
+      }
+    ],
+    "body.layer": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "주변",
+        "charSpan": [
+          36,
+          38
+        ],
+        "rule": "bodyLayerLexicon.주변>body.layer:around"
+      }
+    ]
+  },
+  "_unmatched": [
+    {
+      "lemma": "퇴근",
+      "tag": "NNG",
+      "surface": "퇴근",
+      "charSpan": [
+        0,
+        2
+      ]
+    },
+    {
+      "lemma": "퇴근",
+      "tag": "EOJEOL",
+      "surface": "퇴근하고",
+      "charSpan": [
+        0,
+        4
+      ]
+    },
+    {
+      "lemma": "소파",
+      "tag": "NNG",
+      "surface": "소파",
+      "charSpan": [
+        5,
+        7
+      ]
+    },
+    {
+      "lemma": "소파",
+      "tag": "EOJEOL",
+      "surface": "소파에",
+      "charSpan": [
+        5,
+        8
+      ]
+    },
+    {
+      "lemma": "때",
+      "tag": "EOJEOL",
+      "surface": "때요",
+      "charSpan": [
+        13,
+        15
+      ]
+    },
+    {
+      "lemma": "쪽",
+      "tag": "EOJEOL",
+      "surface": "쪽에",
+      "charSpan": [
+        20,
+        22
+      ]
+    },
+    {
+      "lemma": "뭐",
+      "tag": "EOJEOL",
+      "surface": "뭔가",
+      "charSpan": [
+        23,
+        25
+      ]
+    },
+    {
+      "lemma": "기대",
+      "tag": "VV",
+      "surface": "기대",
+      "charSpan": [
+        26,
+        28
+      ]
+    },
+    {
+      "lemma": "있",
+      "tag": "EOJEOL",
+      "surface": "있어요",
+      "charSpan": [
+        29,
+        32
+      ]
+    },
+    {
+      "lemma": "옆",
+      "tag": "EOJEOL",
+      "surface": "옆이요",
+      "charSpan": [
+        45,
+        48
+      ]
+    },
+    {
+      "lemma": "것",
+      "tag": "EOJEOL",
+      "surface": "게",
+      "charSpan": [
+        54,
+        55
+      ]
+    },
+    {
+      "lemma": "기대",
+      "tag": "VV",
+      "surface": "기대",
+      "charSpan": [
+        56,
+        58
+      ]
+    },
+    {
+      "lemma": "있",
+      "tag": "EOJEOL",
+      "surface": "있어요",
+      "charSpan": [
+        59,
+        62
+      ]
+    },
+    {
+      "lemma": "고양이",
+      "tag": "NNG",
+      "surface": "고양이",
+      "charSpan": [
+        64,
+        67
+      ]
+    },
+    {
+      "lemma": "고양이",
+      "tag": "EOJEOL",
+      "surface": "고양이요",
+      "charSpan": [
+        64,
+        68
+      ]
+    },
+    {
+      "lemma": "고양이",
+      "tag": "NNG",
+      "surface": "고양이",
+      "charSpan": [
+        73,
+        76
+      ]
+    },
+    {
+      "lemma": "한",
+      "tag": "EOJEOL",
+      "surface": "한",
+      "charSpan": [
+        77,
+        78
+      ]
+    },
+    {
+      "lemma": "마리",
+      "tag": "EOJEOL",
+      "surface": "마리가",
+      "charSpan": [
+        79,
+        82
+      ]
+    },
+    {
+      "lemma": "몸",
+      "tag": "EOJEOL",
+      "surface": "몸을",
+      "charSpan": [
+        87,
+        89
+      ]
+    },
+    {
+      "lemma": "붙이",
+      "tag": "VV",
+      "surface": "붙이",
+      "charSpan": [
+        90,
+        92
+      ]
+    },
+    {
+      "lemma": "붙이",
+      "tag": "EOJEOL",
+      "surface": "붙이고",
+      "charSpan": [
+        90,
+        93
+      ]
+    },
+    {
+      "lemma": "말리",
+      "tag": "VV",
+      "surface": "말려",
+      "charSpan": [
+        99,
+        101
+      ]
+    },
+    {
+      "lemma": "있",
+      "tag": "EOJEOL",
+      "surface": "있어요",
+      "charSpan": [
+        102,
+        105
+      ]
+    },
+    {
+      "lemma": "털",
+      "tag": "NNG",
+      "surface": "털",
+      "charSpan": [
+        107,
+        108
+      ]
+    },
+    {
+      "lemma": "털",
+      "tag": "EOJEOL",
+      "surface": "털이",
+      "charSpan": [
+        107,
+        109
+      ]
+    },
+    {
+      "lemma": "쉬",
+      "tag": "VV",
+      "surface": "쉴",
+      "charSpan": [
+        120,
+        121
+      ]
+    },
+    {
+      "lemma": "때",
+      "tag": "EOJEOL",
+      "surface": "때마다",
+      "charSpan": [
+        122,
+        125
+      ]
+    },
+    {
+      "lemma": "등",
+      "tag": "EOJEOL",
+      "surface": "등이",
+      "charSpan": [
+        126,
+        128
+      ]
+    },
+    {
+      "lemma": "오르락내리락",
+      "tag": "MAG",
+      "surface": "오르락내리락",
+      "charSpan": [
+        129,
+        135
+      ]
+    },
+    {
+      "lemma": "오르락내리락",
+      "tag": "EOJEOL",
+      "surface": "오르락내리락해요",
+      "charSpan": [
+        129,
+        137
+      ]
+    },
+    {
+      "lemma": "털",
+      "tag": "NNG",
+      "surface": "털",
+      "charSpan": [
+        139,
+        140
+      ]
+    },
+    {
+      "lemma": "털",
+      "tag": "EOJEOL",
+      "surface": "털이",
+      "charSpan": [
+        139,
+        141
+      ]
+    },
+    {
+      "lemma": "말리",
+      "tag": "VV",
+      "surface": "말려",
+      "charSpan": [
+        152,
+        154
+      ]
+    },
+    {
+      "lemma": "있",
+      "tag": "EOJEOL",
+      "surface": "있어요",
+      "charSpan": [
+        155,
+        158
+      ]
+    },
+    {
+      "lemma": "보통",
+      "tag": "MAG",
+      "surface": "보통",
+      "charSpan": [
+        160,
+        162
+      ]
+    },
+    {
+      "lemma": "고양이",
+      "tag": "NNG",
+      "surface": "고양이",
+      "charSpan": [
+        163,
+        166
+      ]
+    },
+    {
+      "lemma": "고양이",
+      "tag": "EOJEOL",
+      "surface": "고양이만",
+      "charSpan": [
+        163,
+        167
+      ]
+    },
+    {
+      "lemma": "하",
+      "tag": "EOJEOL",
+      "surface": "해요",
+      "charSpan": [
+        168,
+        170
+      ]
+    }
+  ],
+  "_unmapped": [
+    {
+      "lemma": "따뜻",
+      "category": "temperature",
+      "value": {
+        "temperature": "warm"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "따뜻한",
+        "charSpan": [
+          50,
+          53
+        ],
+        "rule": "temperatureLexicon.따뜻"
+      }
+    },
+    {
+      "lemma": "동그랗",
+      "category": "shape",
+      "value": {
+        "shape": "round"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "동그랗게",
+        "charSpan": [
+          94,
+          98
+        ],
+        "rule": "shapeLexicon.동그랗"
+      }
+    },
+    {
+      "lemma": "보송보송",
+      "category": "texture",
+      "value": {
+        "texture": "fluffy"
+      },
+      "reason": "no_value_mapping",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "보송보송해요",
+        "charSpan": [
+          110,
+          116
+        ],
+        "rule": "textureLexicon.보송보송"
+      }
+    },
+    {
+      "lemma": "숨",
+      "category": "sensation",
+      "value": {
+        "sensation": "breath"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "숨",
+        "charSpan": [
+          118,
+          119
+        ],
+        "rule": "sensationLexicon.숨"
+      }
+    },
+    {
+      "lemma": "동그랗",
+      "category": "shape",
+      "value": {
+        "shape": "round"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "동그랗게",
+        "charSpan": [
+          147,
+          151
+        ],
+        "rule": "shapeLexicon.동그랗"
+      }
+    }
+  ],
+  "_negated": [],
+  "_alternatives": [
+    {
+      "path": "body.part",
+      "value": "body",
+      "reason": "lower_priority",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "몸",
+          "charSpan": [
+            34,
+            35
+          ],
+          "rule": "bodyPartLexicon.몸>body.part:body"
+        }
+      ]
+    },
+    {
+      "path": "body.part",
+      "value": "body",
+      "reason": "lower_priority",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "몸",
+          "charSpan": [
+            87,
+            88
+          ],
+          "rule": "bodyPartLexicon.몸>body.part:body"
+        }
+      ]
+    },
+    {
+      "path": "body.part",
+      "value": "back",
+      "reason": "later_mention",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "등",
+          "charSpan": [
+            126,
+            127
+          ],
+          "rule": "bodyPartLexicon.등>body.part:back"
+        }
+      ]
+    },
+    {
+      "path": "body.layer",
+      "value": "around_side",
+      "reason": "lower_priority",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "옆",
+          "charSpan": [
+            45,
+            46
+          ],
+          "rule": "bodyLayerLexicon.옆>body.layer:around_side"
+        }
+      ]
+    }
+  ],
+  "_inferred": {
+    "layout.verticalOffset": {
+      "value": 0.28,
+      "_provenance": [
+        {
+          "source": "body_part_height",
+          "trigger": "다리",
+          "charSpan": [
+            17,
+            19
+          ],
+          "rule": "bodyPartHeight.leg>layout.verticalOffset:0.28"
+        }
+      ]
+    }
+  },
+  "_context": [],
+  "_parts": [],
+  "_uncertain": [],
+  "_measurements": [],
+  "_direction": [],
+  "_needsConfirmation": [],
+  "_clauses": [
+    {
+      "charSpan": [
+        0,
+        4
+      ],
+      "text": "퇴근하고",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        5,
+        15
+      ],
+      "text": "소파에 누웠을 때요",
+      "usedFor": [
+        "form.posture"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        15,
+        16
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        17,
+        32
+      ],
+      "text": "다리 쪽에 뭔가 기대 있어요",
+      "usedFor": [
+        "body.part"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        32,
+        33
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        34,
+        40
+      ],
+      "text": "몸 주변이요",
+      "usedFor": [
+        "body.layer"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        40,
+        41
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        42,
+        48
+      ],
+      "text": "다리 옆이요",
+      "usedFor": [
+        "body.part"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        48,
+        49
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        50,
+        62
+      ],
+      "text": "따뜻한 게 기대 있어요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        62,
+        63
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        64,
+        68
+      ],
+      "text": "고양이요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        68,
+        69
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        70,
+        93
+      ],
+      "text": "까만 고양이 한 마리가 다리에 몸을 붙이고",
+      "usedFor": [
+        "material.color",
+        "body.part"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        94,
+        105
+      ],
+      "text": "동그랗게 말려 있어요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        105,
+        106
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        107,
+        116
+      ],
+      "text": "털이 보송보송해요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        116,
+        117
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        118,
+        137
+      ],
+      "text": "숨 쉴 때마다 등이 오르락내리락해요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        137,
+        138
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        139,
+        145
+      ],
+      "text": "털이 까매요",
+      "usedFor": [
+        "material.color"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        145,
+        146
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        147,
+        158
+      ],
+      "text": "동그랗게 말려 있어요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        158,
+        159
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        160,
+        170
+      ],
+      "text": "보통 고양이만 해요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        170,
+        171
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    }
+  ]
+}

@@ -1,0 +1,364 @@
+{
+  "tool": "e2e/0.2.0",
+  "scorer": "fidelity/0.3.0",
+  "corpus": {
+    "corpusId": "imagery-mock-forms",
+    "version": "0.1.0",
+    "file": "docs/validation/mock-forms/mock_corpus.json",
+    "sha256": "94df62030f6c6a9883cd7efec13ed7d05876cb5600e9fcafd49e685ec5f2c5a3",
+    "synthetic": true,
+    "checkErrors": 0,
+    "checkWarnings": 0
+  },
+  "items": 36,
+  "mappers": [
+    "v0",
+    "v1"
+  ],
+  "condition": "static",
+  "network": {
+    "guard": true,
+    "targets": [
+      "socket.connect",
+      "httpx.get",
+      "httpx.post",
+      "Client.send",
+      "urllib.request.urlopen",
+      "OllamaBackend.generate",
+      "OllamaBackend._post",
+      "OfflineTemplateBackend.generate"
+    ],
+    "calls": []
+  },
+  "builders": {
+    "v0": "scene-spec-builder/0.1.0",
+    "v1": "scene-spec-builder-v1/1.2.0"
+  },
+  "analyzer": {
+    "backend": "kiwi",
+    "version": "0.24.1"
+  },
+  "drift": {
+    "version": "drift/1.1.0",
+    "info": {
+      "driftVersion": "drift/1.1.0",
+      "params": "drift-params/1.1.0",
+      "snapshotBuilder": "v1",
+      "builder": "scene-spec-builder-v1/1.2.0"
+    },
+    "byMapper": {
+      "v0": {
+        "predictedDrift": 10,
+        "noDrift": 10,
+        "undecidable": 16,
+        "other": 0,
+        "errors": 0,
+        "undecidableReasons": {
+          "null": 12,
+          "no_later_snapshot": 3,
+          "no_snapshot": 1
+        }
+      },
+      "v1": {
+        "predictedDrift": 10,
+        "noDrift": 10,
+        "undecidable": 16,
+        "other": 0,
+        "errors": 0,
+        "undecidableReasons": {
+          "null": 12,
+          "no_later_snapshot": 3,
+          "no_snapshot": 1
+        }
+      }
+    }
+  },
+  "schema": {
+    "v0": {
+      "files": 36,
+      "valid": 36,
+      "schemaFiles": [
+        "scene-spec.v2.json"
+      ],
+      "principleProblems": 0,
+      "fileEqualsRunSpec": 36,
+      "fallbacks": 0,
+      "fallbackIds": []
+    },
+    "v1": {
+      "files": 36,
+      "valid": 36,
+      "schemaFiles": [
+        "scene-spec.v2.1.json"
+      ],
+      "principleProblems": 0,
+      "fileEqualsRunSpec": 36,
+      "fallbacks": 0,
+      "fallbackIds": []
+    }
+  },
+  "scores": {
+    "v0": {
+      "attributes": 258,
+      "slotAttributes": 200,
+      "slotStatus": {
+        "reflected": 116,
+        "distorted": 25,
+        "preserved": 4,
+        "lost": 41,
+        "dropped_by_controller": 14
+      },
+      "reflectRate": 0.58,
+      "distortRate": 0.125,
+      "lostRate": 0.205,
+      "droppedRate": 0.07,
+      "preserveRate": 0.5271,
+      "unreflectedVerbatimRate": 0.127,
+      "unreflectedVerbatimRateWithClauseIndex": 0.127,
+      "unreflected": 126,
+      "lostClauseIndexOnly": 0,
+      "fuzzyValues": 0,
+      "spuriousRate": 0.2865,
+      "unsupportedRate": 0.4595,
+      "spuriousValues": 53,
+      "unsupportedValues": 85,
+      "unsupportedReasons": {
+        "no_evidence": 0,
+        "no_gold_span": 59,
+        "outside_gold_span": 26
+      },
+      "valuesFilled": 185,
+      "bootstrap": {
+        "reflectRate": {
+          "estimate": 0.58,
+          "lo": 0.5189,
+          "hi": 0.6398,
+          "replicates": 10000
+        },
+        "distortRate": {
+          "estimate": 0.125,
+          "lo": 0.085,
+          "hi": 0.1667,
+          "replicates": 10000
+        },
+        "lostRate": {
+          "estimate": 0.205,
+          "lo": 0.16,
+          "hi": 0.2512,
+          "replicates": 10000
+        },
+        "droppedRate": {
+          "estimate": 0.07,
+          "lo": 0.0303,
+          "hi": 0.1165,
+          "replicates": 10000
+        },
+        "preserveRate": {
+          "estimate": 0.5271,
+          "lo": 0.4625,
+          "hi": 0.5907,
+          "replicates": 10000
+        },
+        "unreflectedVerbatimRate": {
+          "estimate": 0.127,
+          "lo": 0.0803,
+          "hi": 0.1742,
+          "replicates": 10000
+        },
+        "unreflectedVerbatimRateWithClauseIndex": {
+          "estimate": 0.127,
+          "lo": 0.0803,
+          "hi": 0.1742,
+          "replicates": 10000
+        },
+        "spuriousRate": {
+          "estimate": 0.2865,
+          "lo": 0.25,
+          "hi": 0.3272,
+          "replicates": 10000
+        },
+        "unsupportedRate": {
+          "estimate": 0.4595,
+          "lo": 0.4162,
+          "hi": 0.5057,
+          "replicates": 10000
+        },
+        "fuzzyValueRate": {
+          "estimate": 0.0,
+          "lo": 0.0,
+          "hi": 0.0,
+          "replicates": 10000
+        }
+      },
+      "mappingFallback": 0
+    },
+    "v1": {
+      "attributes": 258,
+      "slotAttributes": 200,
+      "slotStatus": {
+        "reflected": 153,
+        "distorted": 12,
+        "preserved": 19,
+        "lost": 2,
+        "dropped_by_controller": 14
+      },
+      "reflectRate": 0.765,
+      "distortRate": 0.06,
+      "lostRate": 0.01,
+      "droppedRate": 0.07,
+      "preserveRate": 0.8721,
+      "unreflectedVerbatimRate": 0.7674,
+      "unreflectedVerbatimRateWithClauseIndex": 1.0,
+      "unreflected": 86,
+      "lostClauseIndexOnly": 6,
+      "fuzzyValues": 0,
+      "spuriousRate": 0.1354,
+      "unsupportedRate": 0.2552,
+      "spuriousValues": 26,
+      "unsupportedValues": 49,
+      "unsupportedReasons": {
+        "no_evidence": 0,
+        "no_gold_span": 31,
+        "outside_gold_span": 18
+      },
+      "valuesFilled": 192,
+      "bootstrap": {
+        "reflectRate": {
+          "estimate": 0.765,
+          "lo": 0.7135,
+          "hi": 0.8137,
+          "replicates": 10000
+        },
+        "distortRate": {
+          "estimate": 0.06,
+          "lo": 0.0311,
+          "hi": 0.0918,
+          "replicates": 10000
+        },
+        "lostRate": {
+          "estimate": 0.01,
+          "lo": 0.0,
+          "hi": 0.0251,
+          "replicates": 10000
+        },
+        "droppedRate": {
+          "estimate": 0.07,
+          "lo": 0.0303,
+          "hi": 0.1165,
+          "replicates": 10000
+        },
+        "preserveRate": {
+          "estimate": 0.8721,
+          "lo": 0.8182,
+          "hi": 0.92,
+          "replicates": 10000
+        },
+        "unreflectedVerbatimRate": {
+          "estimate": 0.7674,
+          "lo": 0.6629,
+          "hi": 0.863,
+          "replicates": 10000
+        },
+        "unreflectedVerbatimRateWithClauseIndex": {
+          "estimate": 1.0,
+          "lo": 1.0,
+          "hi": 1.0,
+          "replicates": 10000
+        },
+        "spuriousRate": {
+          "estimate": 0.1354,
+          "lo": 0.0884,
+          "hi": 0.1818,
+          "replicates": 10000
+        },
+        "unsupportedRate": {
+          "estimate": 0.2552,
+          "lo": 0.1989,
+          "hi": 0.31,
+          "replicates": 10000
+        },
+        "fuzzyValueRate": {
+          "estimate": 0.0,
+          "lo": 0.0,
+          "hi": 0.0,
+          "replicates": 10000
+        }
+      },
+      "mappingFallback": 0
+    }
+  },
+  "paired": {
+    "reflectRate": {
+      "a": 0.58,
+      "b": 0.765,
+      "diff": 0.185,
+      "lo": 0.1414,
+      "hi": 0.2297
+    },
+    "distortRate": {
+      "a": 0.125,
+      "b": 0.06,
+      "diff": -0.065,
+      "lo": -0.1047,
+      "hi": -0.0254
+    },
+    "lostRate": {
+      "a": 0.205,
+      "b": 0.01,
+      "diff": -0.195,
+      "lo": -0.2421,
+      "hi": -0.1493
+    },
+    "droppedRate": {
+      "a": 0.07,
+      "b": 0.07,
+      "diff": 0.0,
+      "lo": 0.0,
+      "hi": 0.0
+    },
+    "preserveRate": {
+      "a": 0.5271,
+      "b": 0.8721,
+      "diff": 0.345,
+      "lo": 0.2892,
+      "hi": 0.4007
+    },
+    "unreflectedVerbatimRate": {
+      "a": 0.127,
+      "b": 0.7674,
+      "diff": 0.6405,
+      "lo": 0.5416,
+      "hi": 0.7374
+    },
+    "unreflectedVerbatimRateWithClauseIndex": {
+      "a": 0.127,
+      "b": 1.0,
+      "diff": 0.873,
+      "lo": 0.8258,
+      "hi": 0.9197
+    },
+    "spuriousRate": {
+      "a": 0.2865,
+      "b": 0.1354,
+      "diff": -0.1511,
+      "lo": -0.186,
+      "hi": -0.1184
+    },
+    "unsupportedRate": {
+      "a": 0.4595,
+      "b": 0.2552,
+      "diff": -0.2043,
+      "lo": -0.2569,
+      "hi": -0.1569
+    },
+    "fuzzyValueRate": {
+      "a": 0.0,
+      "b": 0.0,
+      "diff": 0.0,
+      "lo": 0.0,
+      "hi": 0.0
+    }
+  },
+  "ok": true,
+  "failures": []
+}

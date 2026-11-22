@@ -1,0 +1,358 @@
+{
+  "meta": {
+    "specVersion": "2.0.0",
+    "participantId": null,
+    "sessionId": "M29",
+    "condition": "static",
+    "sourceTextHash": "sha256:4dd3607bee98578b6847c915a2a8ebadbdd46b4c236bddfa7bdcec5bb4fdf8fc",
+    "pipeline": {
+      "builder": "scene-spec-builder/0.1.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@0.1.0",
+        "vad": "vad-ko@0.1.0"
+      }
+    }
+  },
+  "form": {
+    "type": null,
+    "posture": null
+  },
+  "material": {
+    "color": null,
+    "brightness": null,
+    "saturation": null,
+    "roughness": null,
+    "opacity": null,
+    "erosion": null
+  },
+  "layout": {
+    "size": null,
+    "distance": null,
+    "verticalOffset": 0.6
+  },
+  "motion": {
+    "type": null,
+    "speed": null
+  },
+  "body": {
+    "part": "belly",
+    "layer": "inner"
+  },
+  "_provenance": {
+    "layout.verticalOffset": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "배",
+        "charSpan": [
+          18,
+          19
+        ],
+        "rule": "bodyPartLexicon.배>layout.verticalOffset:belly"
+      },
+      {
+        "source": "explicit_lexicon",
+        "trigger": "배",
+        "charSpan": [
+          41,
+          42
+        ],
+        "rule": "bodyPartLexicon.배>layout.verticalOffset:belly"
+      },
+      {
+        "source": "explicit_lexicon",
+        "trigger": "배",
+        "charSpan": [
+          99,
+          100
+        ],
+        "rule": "bodyPartLexicon.배>layout.verticalOffset:belly"
+      }
+    ],
+    "body.part": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "배",
+        "charSpan": [
+          18,
+          19
+        ],
+        "rule": "bodyPartLexicon.배>body.part:belly"
+      },
+      {
+        "source": "explicit_lexicon",
+        "trigger": "배",
+        "charSpan": [
+          41,
+          42
+        ],
+        "rule": "bodyPartLexicon.배>body.part:belly"
+      },
+      {
+        "source": "explicit_lexicon",
+        "trigger": "배",
+        "charSpan": [
+          99,
+          100
+        ],
+        "rule": "bodyPartLexicon.배>body.part:belly"
+      }
+    ],
+    "body.layer": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "속",
+        "charSpan": [
+          20,
+          21
+        ],
+        "rule": "bodyLayerLexicon.속>body.layer:inner"
+      },
+      {
+        "source": "explicit_lexicon",
+        "trigger": "속",
+        "charSpan": [
+          43,
+          44
+        ],
+        "rule": "bodyLayerLexicon.속>body.layer:inner"
+      }
+    ]
+  },
+  "_unmatched": [
+    {
+      "lemma": "주말",
+      "tag": "NNG",
+      "surface": "주말",
+      "charSpan": [
+        0,
+        2
+      ]
+    },
+    {
+      "lemma": "집",
+      "tag": "NNG",
+      "surface": "집",
+      "charSpan": [
+        7,
+        8
+      ]
+    },
+    {
+      "lemma": "오후",
+      "tag": "NNG",
+      "surface": "오후",
+      "charSpan": [
+        13,
+        15
+      ]
+    },
+    {
+      "lemma": "텅",
+      "tag": "MAG",
+      "surface": "텅",
+      "charSpan": [
+        23,
+        24
+      ]
+    },
+    {
+      "lemma": "안",
+      "tag": "MAG",
+      "surface": "안",
+      "charSpan": [
+        36,
+        37
+      ]
+    },
+    {
+      "lemma": "아무것",
+      "tag": "NNG",
+      "surface": "아무것",
+      "charSpan": [
+        56,
+        59
+      ]
+    },
+    {
+      "lemma": "공간",
+      "tag": "NNG",
+      "surface": "공간",
+      "charSpan": [
+        64,
+        66
+      ]
+    },
+    {
+      "lemma": "텅",
+      "tag": "MAG",
+      "surface": "텅",
+      "charSpan": [
+        70,
+        71
+      ]
+    },
+    {
+      "lemma": "공간",
+      "tag": "NNG",
+      "surface": "공간",
+      "charSpan": [
+        74,
+        76
+      ]
+    },
+    {
+      "lemma": "전체",
+      "tag": "NNG",
+      "surface": "전체",
+      "charSpan": [
+        101,
+        103
+      ]
+    },
+    {
+      "lemma": "넓",
+      "tag": "VA",
+      "surface": "넓",
+      "charSpan": [
+        106,
+        107
+      ]
+    },
+    {
+      "lemma": "가끔",
+      "tag": "MAG",
+      "surface": "가끔",
+      "charSpan": [
+        111,
+        113
+      ]
+    },
+    {
+      "lemma": "넓",
+      "tag": "VA",
+      "surface": "넓",
+      "charSpan": [
+        114,
+        115
+      ]
+    },
+    {
+      "lemma": "좁",
+      "tag": "VA-R",
+      "surface": "좁",
+      "charSpan": [
+        119,
+        120
+      ]
+    }
+  ],
+  "_unmapped": [
+    {
+      "lemma": "혼자",
+      "category": "relation",
+      "value": {
+        "relation": "alone"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "혼자",
+        "charSpan": [
+          4,
+          6
+        ],
+        "rule": "relationLexicon.혼자"
+      }
+    },
+    {
+      "lemma": "비",
+      "category": "shape",
+      "value": {
+        "shape": "hollow"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "빈",
+        "charSpan": [
+          25,
+          26
+        ],
+        "rule": "shapeLexicon.비"
+      }
+    },
+    {
+      "lemma": "비",
+      "category": "shape",
+      "value": {
+        "shape": "hollow"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "비어",
+        "charSpan": [
+          48,
+          50
+        ],
+        "rule": "shapeLexicon.비"
+      }
+    },
+    {
+      "lemma": "비",
+      "category": "shape",
+      "value": {
+        "shape": "hollow"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "빈",
+        "charSpan": [
+          72,
+          73
+        ],
+        "rule": "shapeLexicon.비"
+      }
+    },
+    {
+      "lemma": "비",
+      "category": "shape",
+      "value": {
+        "shape": "hollow"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "비어",
+        "charSpan": [
+          91,
+          93
+        ],
+        "rule": "shapeLexicon.비"
+      }
+    }
+  ],
+  "_negated": [],
+  "_alternatives": [
+    {
+      "path": "body.part",
+      "value": "body",
+      "reason": "later_mention",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "몸",
+          "charSpan": [
+            34,
+            35
+          ],
+          "rule": "bodyPartLexicon.몸>body.part:body"
+        }
+      ]
+    }
+  ],
+  "_inferred": {}
+}

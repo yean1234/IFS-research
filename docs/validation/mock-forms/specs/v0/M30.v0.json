@@ -1,0 +1,373 @@
+{
+  "meta": {
+    "specVersion": "2.0.0",
+    "participantId": null,
+    "sessionId": "M30",
+    "condition": "static",
+    "sourceTextHash": "sha256:e1156339d3f37eec444fa793e1a28773d30ecd919bc3d3be2a3d177ad824036a",
+    "pipeline": {
+      "builder": "scene-spec-builder/0.1.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@0.1.0",
+        "vad": "vad-ko@0.1.0"
+      }
+    }
+  },
+  "form": {
+    "type": null,
+    "posture": "crouched"
+  },
+  "material": {
+    "color": {
+      "h": 0.0,
+      "s": 0.03,
+      "l": 0.55
+    },
+    "brightness": null,
+    "saturation": null,
+    "roughness": null,
+    "opacity": null,
+    "erosion": null
+  },
+  "layout": {
+    "size": 0.316,
+    "distance": null,
+    "verticalOffset": 0.92
+  },
+  "motion": {
+    "type": null,
+    "speed": null
+  },
+  "body": {
+    "part": "body",
+    "layer": "around"
+  },
+  "_provenance": {
+    "form.posture": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "쪼그려",
+        "charSpan": [
+          62,
+          65
+        ],
+        "rule": "postureLexicon.쪼그리>form.posture:crouched"
+      }
+    ],
+    "material.color": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "잿빛",
+        "charSpan": [
+          97,
+          99
+        ],
+        "rule": "colorLexicon.잿빛>material.color:hsl"
+      }
+    ],
+    "layout.size": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "작은",
+        "charSpan": [
+          52,
+          54
+        ],
+        "rule": "sizeLexicon.작>layout.size:logScale(0.6)"
+      },
+      {
+        "source": "explicit_lexicon",
+        "trigger": "작은",
+        "charSpan": [
+          87,
+          89
+        ],
+        "rule": "sizeLexicon.작>layout.size:logScale(0.6)"
+      },
+      {
+        "source": "explicit_lexicon",
+        "trigger": "작아요",
+        "charSpan": [
+          125,
+          128
+        ],
+        "rule": "sizeLexicon.작>layout.size:logScale(0.6)"
+      }
+    ],
+    "layout.verticalOffset": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "얼굴",
+        "charSpan": [
+          102,
+          104
+        ],
+        "rule": "bodyPartLexicon.얼굴>layout.verticalOffset:face"
+      }
+    ],
+    "body.part": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "몸",
+        "charSpan": [
+          36,
+          37
+        ],
+        "rule": "bodyPartLexicon.몸>body.part:body"
+      },
+      {
+        "source": "explicit_lexicon",
+        "trigger": "몸",
+        "charSpan": [
+          136,
+          137
+        ],
+        "rule": "bodyPartLexicon.몸>body.part:body"
+      }
+    ],
+    "body.layer": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "주변",
+        "charSpan": [
+          38,
+          40
+        ],
+        "rule": "bodyLayerLexicon.주변>body.layer:around"
+      }
+    ]
+  },
+  "_unmatched": [
+    {
+      "lemma": "회식",
+      "tag": "NNG",
+      "surface": "회식",
+      "charSpan": [
+        0,
+        2
+      ]
+    },
+    {
+      "lemma": "자리",
+      "tag": "NNG",
+      "surface": "자리",
+      "charSpan": [
+        3,
+        5
+      ]
+    },
+    {
+      "lemma": "말",
+      "tag": "NNG",
+      "surface": "말",
+      "charSpan": [
+        8,
+        9
+      ]
+    },
+    {
+      "lemma": "못",
+      "tag": "MAG",
+      "surface": "못",
+      "charSpan": [
+        11,
+        12
+      ]
+    },
+    {
+      "lemma": "왼쪽",
+      "tag": "NNG",
+      "surface": "왼쪽",
+      "charSpan": [
+        44,
+        46
+      ]
+    },
+    {
+      "lemma": "무릎",
+      "tag": "NNG",
+      "surface": "무릎",
+      "charSpan": [
+        74,
+        76
+      ]
+    },
+    {
+      "lemma": "끌어안",
+      "tag": "VV",
+      "surface": "끌어안",
+      "charSpan": [
+        78,
+        81
+      ]
+    },
+    {
+      "lemma": "안",
+      "tag": "MAG",
+      "surface": "안",
+      "charSpan": [
+        106,
+        107
+      ]
+    },
+    {
+      "lemma": "무릎",
+      "tag": "NNG",
+      "surface": "무릎",
+      "charSpan": [
+        115,
+        117
+      ]
+    },
+    {
+      "lemma": "높이",
+      "tag": "NNG",
+      "surface": "높이",
+      "charSpan": [
+        118,
+        120
+      ]
+    },
+    {
+      "lemma": "살짝",
+      "tag": "MAG",
+      "surface": "살짝",
+      "charSpan": [
+        133,
+        135
+      ]
+    },
+    {
+      "lemma": "흔들",
+      "tag": "VV",
+      "surface": "흔들",
+      "charSpan": [
+        139,
+        141
+      ]
+    }
+  ],
+  "_unmapped": [
+    {
+      "lemma": "옆",
+      "category": "body_layer",
+      "value": {
+        "layer": "around_side"
+      },
+      "reason": "no_body_part_context",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "옆",
+        "charSpan": [
+          20,
+          21
+        ],
+        "rule": "bodyLayerLexicon.옆"
+      }
+    },
+    {
+      "lemma": "사람",
+      "category": "object",
+      "value": {
+        "object": "person_figure"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "사람",
+        "charSpan": [
+          55,
+          57
+        ],
+        "rule": "objectLexicon.사람"
+      }
+    },
+    {
+      "lemma": "사람",
+      "category": "object",
+      "value": {
+        "object": "person_figure"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "사람",
+        "charSpan": [
+          90,
+          92
+        ],
+        "rule": "objectLexicon.사람"
+      }
+    }
+  ],
+  "_negated": [],
+  "_alternatives": [
+    {
+      "path": "form.posture",
+      "value": "sitting",
+      "reason": "later_mention",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "앉아",
+          "charSpan": [
+            66,
+            68
+          ],
+          "rule": "postureLexicon.앉>form.posture:sitting"
+        }
+      ]
+    },
+    {
+      "path": "form.posture",
+      "value": "curled",
+      "reason": "later_mention",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "웅크린",
+          "charSpan": [
+            83,
+            86
+          ],
+          "rule": "postureLexicon.웅크리>form.posture:curled"
+        }
+      ]
+    },
+    {
+      "path": "body.part",
+      "value": "face",
+      "reason": "later_mention",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "얼굴",
+          "charSpan": [
+            102,
+            104
+          ],
+          "rule": "bodyPartLexicon.얼굴>body.part:face"
+        }
+      ]
+    },
+    {
+      "path": "body.layer",
+      "value": "around_side",
+      "reason": "later_mention",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "옆",
+          "charSpan": [
+            47,
+            48
+          ],
+          "rule": "bodyLayerLexicon.옆>body.layer:around_side"
+        }
+      ]
+    }
+  ],
+  "_inferred": {}
+}

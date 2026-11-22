@@ -1,0 +1,319 @@
+{
+  "meta": {
+    "specVersion": "2.0.0",
+    "participantId": null,
+    "sessionId": "M24",
+    "condition": "static",
+    "sourceTextHash": "sha256:7f0f4589524a249a25b1cf99e0da34793947a5a851b7357111290bbdaa068720",
+    "pipeline": {
+      "builder": "scene-spec-builder/0.1.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@0.1.0",
+        "vad": "vad-ko@0.1.0"
+      }
+    }
+  },
+  "form": {
+    "type": null,
+    "posture": null
+  },
+  "material": {
+    "color": {
+      "h": 0.144,
+      "s": 0.85,
+      "l": 0.6
+    },
+    "brightness": 0.7,
+    "saturation": null,
+    "roughness": null,
+    "opacity": null,
+    "erosion": null
+  },
+  "layout": {
+    "size": null,
+    "distance": null,
+    "verticalOffset": 0.85
+  },
+  "motion": {
+    "type": null,
+    "speed": 0.25
+  },
+  "body": {
+    "part": "throat_neck",
+    "layer": null
+  },
+  "_provenance": {
+    "material.color": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "노란",
+        "charSpan": [
+          41,
+          43
+        ],
+        "rule": "colorLexicon.노랗>material.color:hsl"
+      }
+    ],
+    "material.brightness": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "빛",
+        "charSpan": [
+          59,
+          60
+        ],
+        "rule": "brightnessLexicon.빛>material.brightness:light"
+      }
+    ],
+    "layout.verticalOffset": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "목",
+        "charSpan": [
+          15,
+          16
+        ],
+        "rule": "bodyPartLexicon.목>layout.verticalOffset:throat_neck"
+      }
+    ],
+    "motion.speed": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "천천히",
+        "charSpan": [
+          48,
+          51
+        ],
+        "rule": "motionLexicon.천천히>motion.speed:slow"
+      }
+    ],
+    "body.part": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "목",
+        "charSpan": [
+          15,
+          16
+        ],
+        "rule": "bodyPartLexicon.목>body.part:throat_neck"
+      }
+    ]
+  },
+  "_unmatched": [
+    {
+      "lemma": "피곤",
+      "tag": "NNG",
+      "surface": "피곤",
+      "charSpan": [
+        0,
+        2
+      ]
+    },
+    {
+      "lemma": "금요일",
+      "tag": "NNG",
+      "surface": "금요일",
+      "charSpan": [
+        5,
+        8
+      ]
+    },
+    {
+      "lemma": "저녁",
+      "tag": "NNG",
+      "surface": "저녁",
+      "charSpan": [
+        9,
+        11
+      ]
+    },
+    {
+      "lemma": "내려가",
+      "tag": "VV",
+      "surface": "내려가",
+      "charSpan": [
+        27,
+        30
+      ]
+    },
+    {
+      "lemma": "꿀",
+      "tag": "NNG",
+      "surface": "꿀",
+      "charSpan": [
+        33,
+        34
+      ]
+    },
+    {
+      "lemma": "진득",
+      "tag": "XR",
+      "surface": "진득",
+      "charSpan": [
+        37,
+        39
+      ]
+    },
+    {
+      "lemma": "액체",
+      "tag": "NNG",
+      "surface": "액체",
+      "charSpan": [
+        44,
+        46
+      ]
+    },
+    {
+      "lemma": "흐르",
+      "tag": "VV",
+      "surface": "흘",
+      "charSpan": [
+        52,
+        53
+      ]
+    },
+    {
+      "lemma": "내리",
+      "tag": "VV",
+      "surface": "내리",
+      "charSpan": [
+        54,
+        56
+      ]
+    },
+    {
+      "lemma": "받",
+      "tag": "VV-R",
+      "surface": "받",
+      "charSpan": [
+        62,
+        63
+      ]
+    },
+    {
+      "lemma": "양",
+      "tag": "NNG",
+      "surface": "양",
+      "charSpan": [
+        72,
+        73
+      ]
+    },
+    {
+      "lemma": "컵",
+      "tag": "NNG",
+      "surface": "컵",
+      "charSpan": [
+        77,
+        78
+      ]
+    },
+    {
+      "lemma": "안",
+      "tag": "MAG",
+      "surface": "안",
+      "charSpan": [
+        85,
+        86
+      ]
+    },
+    {
+      "lemma": "계속",
+      "tag": "MAG",
+      "surface": "계속",
+      "charSpan": [
+        90,
+        92
+      ]
+    },
+    {
+      "lemma": "내려가",
+      "tag": "VV",
+      "surface": "내려가",
+      "charSpan": [
+        93,
+        96
+      ]
+    },
+    {
+      "lemma": "끈적끈적",
+      "tag": "MAG",
+      "surface": "끈적끈적",
+      "charSpan": [
+        103,
+        107
+      ]
+    }
+  ],
+  "_unmapped": [],
+  "_negated": [],
+  "_alternatives": [
+    {
+      "path": "material.brightness",
+      "value": 0.85,
+      "reason": "later_mention",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "반짝여요",
+          "charSpan": [
+            66,
+            70
+          ],
+          "rule": "brightnessLexicon.반짝이>material.brightness:sparkling"
+        }
+      ]
+    },
+    {
+      "path": "layout.verticalOffset",
+      "value": 0.72,
+      "reason": "later_mention",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "가슴",
+          "charSpan": [
+            19,
+            21
+          ],
+          "rule": "bodyPartLexicon.가슴>layout.verticalOffset:chest"
+        }
+      ]
+    },
+    {
+      "path": "body.part",
+      "value": "chest",
+      "reason": "later_mention",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "가슴",
+          "charSpan": [
+            19,
+            21
+          ],
+          "rule": "bodyPartLexicon.가슴>body.part:chest"
+        }
+      ]
+    },
+    {
+      "path": "body.part",
+      "value": "body",
+      "reason": "later_mention",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "몸",
+          "charSpan": [
+            83,
+            84
+          ],
+          "rule": "bodyPartLexicon.몸>body.part:body"
+        }
+      ]
+    }
+  ],
+  "_inferred": {}
+}

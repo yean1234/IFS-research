@@ -1,0 +1,8323 @@
+{
+ "note": "형태 판정은 analyze.py 규칙, 화면 판정은 AI(visual.json). 사람 판정 아님.",
+ "visualCounts": {
+  "v0": {
+   "부분적": 8,
+   "그 형상답다": 6,
+   "다른 것으로 보임": 15,
+   "거의 안 보임": 3,
+   "기본 덩어리(형상 없음)": 4
+  },
+  "v1": {
+   "부분적": 8,
+   "그 형상답다": 6,
+   "다른 것으로 보임": 14,
+   "거의 안 보임": 4,
+   "기본 덩어리(형상 없음)": 4
+  },
+  "live": {
+   "부분적": 1,
+   "그 형상답다": 2,
+   "거의 안 보임": 1,
+   "다른 것으로 보임": 2
+  }
+ },
+ "visualByCategory": {
+  "v0": {
+   "mist": {
+    "부분적": 1,
+    "그 형상답다": 1,
+    "다른 것으로 보임": 1,
+    "거의 안 보임": 1
+   },
+   "lump": {
+    "그 형상답다": 1,
+    "부분적": 1
+   },
+   "lines": {
+    "부분적": 1,
+    "다른 것으로 보임": 2
+   },
+   "shell": {
+    "부분적": 1,
+    "거의 안 보임": 1,
+    "다른 것으로 보임": 1
+   },
+   "fragments": {
+    "그 형상답다": 2,
+    "다른 것으로 보임": 1
+   },
+   "round": {
+    "그 형상답다": 1
+   },
+   "square": {
+    "부분적": 1
+   },
+   "flat": {
+    "부분적": 1
+   },
+   "pointed": {
+    "그 형상답다": 1
+   },
+   "sheet": {
+    "다른 것으로 보임": 1,
+    "거의 안 보임": 1
+   },
+   "liquid": {
+    "부분적": 1,
+    "다른 것으로 보임": 2
+   },
+   "light": {
+    "부분적": 1,
+    "다른 것으로 보임": 2
+   },
+   "hole": {
+    "다른 것으로 보임": 2
+   },
+   "figure": {
+    "다른 것으로 보임": 3
+   },
+   "none": {
+    "기본 덩어리(형상 없음)": 4
+   }
+  },
+  "v1": {
+   "mist": {
+    "부분적": 1,
+    "그 형상답다": 1,
+    "다른 것으로 보임": 1,
+    "거의 안 보임": 1
+   },
+   "lump": {
+    "그 형상답다": 2
+   },
+   "lines": {
+    "부분적": 1,
+    "다른 것으로 보임": 2
+   },
+   "shell": {
+    "그 형상답다": 1,
+    "부분적": 2
+   },
+   "fragments": {
+    "거의 안 보임": 2,
+    "그 형상답다": 1
+   },
+   "round": {
+    "그 형상답다": 1
+   },
+   "square": {
+    "부분적": 1
+   },
+   "flat": {
+    "부분적": 1
+   },
+   "pointed": {
+    "부분적": 1
+   },
+   "sheet": {
+    "다른 것으로 보임": 2
+   },
+   "liquid": {
+    "거의 안 보임": 1,
+    "다른 것으로 보임": 2
+   },
+   "light": {
+    "부분적": 1,
+    "다른 것으로 보임": 2
+   },
+   "hole": {
+    "다른 것으로 보임": 2
+   },
+   "figure": {
+    "다른 것으로 보임": 3
+   },
+   "none": {
+    "기본 덩어리(형상 없음)": 4
+   }
+  }
+ },
+ "formCounts": {
+  "v0": {
+   "mist": {
+    "반영": 2,
+    "미반영": 1,
+    "기본값": 1
+   },
+   "lump": {
+    "반영": 3
+   },
+   "lines": {
+    "미반영": 3
+   },
+   "shell": {
+    "반영": 2,
+    "기본값": 1
+   },
+   "hole": {
+    "미반영": 3
+   },
+   "fragments": {
+    "반영": 2,
+    "기본값": 1
+   },
+   "pointed": {
+    "미반영": 1,
+    "반영": 1
+   },
+   "round": {
+    "반영": 1
+   },
+   "square": {
+    "반영": 1
+   },
+   "flat": {
+    "반영+form": 1
+   },
+   "sheet": {
+    "미반영": 2
+   },
+   "liquid": {
+    "미반영": 1,
+    "기본값": 2
+   },
+   "light": {
+    "기본값": 3
+   },
+   "figure": {
+    "미반영": 1,
+    "기본값": 2
+   },
+   "none": {
+    "반영(비어 있음)": 4
+   }
+  },
+  "v1": {
+   "mist": {
+    "반영": 3,
+    "미반영": 1
+   },
+   "lump": {
+    "반영": 3
+   },
+   "lines": {
+    "미반영": 3
+   },
+   "shell": {
+    "반영": 3
+   },
+   "hole": {
+    "미반영": 3
+   },
+   "fragments": {
+    "반영": 3
+   },
+   "pointed": {
+    "미반영": 1,
+    "반영": 1
+   },
+   "round": {
+    "반영+form": 1
+   },
+   "square": {
+    "반영": 1
+   },
+   "flat": {
+    "반영+form": 1
+   },
+   "sheet": {
+    "미반영": 2
+   },
+   "liquid": {
+    "미반영": 1,
+    "기본값": 2
+   },
+   "light": {
+    "기본값": 3
+   },
+   "figure": {
+    "미반영": 1,
+    "기본값": 2
+   },
+   "none": {
+    "반영(비어 있음)": 4
+   }
+  }
+ },
+ "attrCounts": {
+  "v0": {
+   "색": {
+    "reflected": 27,
+    "preserved": 3,
+    "dropped_by_controller": 2,
+    "distorted": 1
+   },
+   "크기": {
+    "lost": 21,
+    "reflected": 5,
+    "dropped_by_controller": 2,
+    "distorted": 7
+   },
+   "투명": {
+    "lost": 6,
+    "reflected": 2,
+    "distorted": 2
+   },
+   "움직임": {
+    "dropped_by_controller": 10,
+    "reflected": 13,
+    "lost": 14,
+    "distorted": 4
+   },
+   "몸 위치": {
+    "reflected": 49,
+    "lost": 6,
+    "distorted": 6
+   },
+   "질감": {
+    "reflected": 4,
+    "lost": 1,
+    "distorted": 1
+   },
+   "밝기": {
+    "reflected": 4,
+    "distorted": 2,
+    "captured": 1
+   },
+   "높이·거리": {
+    "distorted": 1,
+    "lost": 2,
+    "reflected": 2
+   },
+   "자세": {
+    "reflected": 1,
+    "distorted": 1
+   }
+  },
+  "v1": {
+   "색": {
+    "reflected": 30,
+    "dropped_by_controller": 2,
+    "distorted": 1
+   },
+   "크기": {
+    "distorted": 5,
+    "reflected": 17,
+    "dropped_by_controller": 2,
+    "preserved": 10,
+    "lost": 1
+   },
+   "투명": {
+    "reflected": 5,
+    "distorted": 1,
+    "captured": 3,
+    "preserved": 1
+   },
+   "움직임": {
+    "dropped_by_controller": 10,
+    "reflected": 16,
+    "preserved": 10,
+    "distorted": 1,
+    "lost": 4
+   },
+   "몸 위치": {
+    "reflected": 60,
+    "distorted": 1
+   },
+   "질감": {
+    "reflected": 5,
+    "preserved": 1
+   },
+   "밝기": {
+    "reflected": 4,
+    "distorted": 1,
+    "captured": 1,
+    "lost": 1
+   },
+   "높이·거리": {
+    "distorted": 1,
+    "preserved": 1,
+    "reflected": 3
+   },
+   "자세": {
+    "reflected": 1,
+    "distorted": 1
+   }
+  }
+ },
+ "fidelityOverall": {
+  "v0": {
+   "reflectRate": 0.58,
+   "distortRate": 0.125,
+   "lostRate": 0.205,
+   "droppedRate": 0.07,
+   "preserveRate": 0.5271,
+   "slotStatus": {
+    "reflected": 116,
+    "distorted": 25,
+    "preserved": 4,
+    "lost": 41,
+    "dropped_by_controller": 14
+   },
+   "spuriousRate": 0.2865,
+   "unsupportedRate": 0.4595
+  },
+  "v1": {
+   "reflectRate": 0.765,
+   "distortRate": 0.06,
+   "lostRate": 0.01,
+   "droppedRate": 0.07,
+   "preserveRate": 0.8721,
+   "slotStatus": {
+    "reflected": 153,
+    "distorted": 12,
+    "preserved": 19,
+    "lost": 2,
+    "dropped_by_controller": 14
+   },
+   "spuriousRate": 0.1354,
+   "unsupportedRate": 0.2552
+  }
+ },
+ "items": [
+  {
+   "id": "M01",
+   "expected": "안개 · 잿빛 · 방을 채울 만큼 큼 · 반투명 · 천천히 떠다님 · 머리 주변",
+   "tags": {
+    "form": [
+     "mist"
+    ],
+    "color": [
+     "mid"
+    ],
+    "size": [
+     "relative",
+     "body"
+    ],
+    "texture": [
+     "semi_transparent"
+    ],
+    "motion": [
+     "floating"
+    ],
+    "response": "all",
+    "speech": "보통"
+   },
+   "mappers": {
+    "v0": {
+     "slots": {
+      "form.type": "mist",
+      "form.posture": null,
+      "color": {
+       "h": 0.0,
+       "s": 0.03,
+       "l": 0.55
+      },
+      "opacity": null,
+      "brightness": 0.4,
+      "roughness": null,
+      "size": null,
+      "distance": null,
+      "verticalOffset": 0.93,
+      "motion.type": "spreading",
+      "body.part": "head",
+      "body.layer": "around"
+     },
+     "forms": [
+      {
+       "category": "mist",
+       "phrase": "안개가 끼어 있어요",
+       "verdict": "반영",
+       "why": "form.type=mist"
+      }
+     ],
+     "others": [
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "잿빛 안개",
+       "status": "reflected",
+       "actual": {
+        "hue_deg": 0.0,
+        "s": 0.03,
+        "l": 0.55
+       }
+      },
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "방을 채울 만큼",
+       "status": "lost",
+       "actual": null
+      },
+      {
+       "attr": "opacity",
+       "group": "투명",
+       "phrase": "뒤가 비쳐 보이긴 하는데 흐릿해요",
+       "status": "lost",
+       "actual": null
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "이리저리 떠다녀요",
+       "status": "dropped_by_controller",
+       "actual": null
+      },
+      {
+       "attr": "motion_speed",
+       "group": "움직임",
+       "phrase": "천천히",
+       "status": "dropped_by_controller",
+       "actual": null
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "몸 주변이요",
+       "status": "reflected",
+       "actual": "around"
+      },
+      {
+       "attr": "body_part",
+       "group": "몸 위치",
+       "phrase": "머리를 둘러싸고",
+       "status": "reflected",
+       "actual": "head"
+      }
+     ],
+     "unity": {
+      "renderPath": "mist",
+      "visiblePixels": 53906,
+      "maxAlpha": 0.582,
+      "circularity": 0.505,
+      "components": 1,
+      "edgeFalloffPx": 55.57,
+      "defaultsUsed": [
+       "form.posture",
+       "material.roughness",
+       "material.opacity",
+       "material.erosion",
+       "layout.size",
+       "layout.distance",
+       "motion.speed"
+      ],
+      "png": "M01.v0.png"
+     },
+     "visual": {
+      "verdict": "부분적",
+      "why": "안개 덩이로는 읽히나 멀리 작은 얼룩. 방을 채우는 크기 아님"
+     }
+    },
+    "v1": {
+     "slots": {
+      "form.type": "mist",
+      "form.posture": null,
+      "color": {
+       "h": 0.0,
+       "s": 0.03,
+       "l": 0.55
+      },
+      "opacity": 0.5,
+      "brightness": 0.4,
+      "roughness": null,
+      "size": 0.621,
+      "distance": null,
+      "verticalOffset": null,
+      "motion.type": "spreading",
+      "body.part": "head",
+      "body.layer": "around"
+     },
+     "forms": [
+      {
+       "category": "mist",
+       "phrase": "안개가 끼어 있어요",
+       "verdict": "반영",
+       "why": "form.type=mist"
+      }
+     ],
+     "others": [
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "잿빛 안개",
+       "status": "reflected",
+       "actual": {
+        "hue_deg": 0.0,
+        "s": 0.03,
+        "l": 0.55
+       }
+      },
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "방을 채울 만큼",
+       "status": "distorted",
+       "actual": 0.621
+      },
+      {
+       "attr": "opacity",
+       "group": "투명",
+       "phrase": "뒤가 비쳐 보이긴 하는데 흐릿해요",
+       "status": "reflected",
+       "actual": 0.5
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "이리저리 떠다녀요",
+       "status": "dropped_by_controller",
+       "actual": null
+      },
+      {
+       "attr": "motion_speed",
+       "group": "움직임",
+       "phrase": "천천히",
+       "status": "dropped_by_controller",
+       "actual": null
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "몸 주변이요",
+       "status": "reflected",
+       "actual": "around"
+      },
+      {
+       "attr": "body_part",
+       "group": "몸 위치",
+       "phrase": "머리를 둘러싸고",
+       "status": "reflected",
+       "actual": "head"
+      }
+     ],
+     "unity": {
+      "renderPath": "mist",
+      "visiblePixels": 91927,
+      "maxAlpha": 0.294,
+      "circularity": 0.336,
+      "components": 1,
+      "edgeFalloffPx": 63.8,
+      "defaultsUsed": [
+       "form.posture",
+       "material.roughness",
+       "material.erosion",
+       "layout.distance",
+       "layout.verticalOffset",
+       "motion.speed"
+      ],
+      "png": "M01.v1.png"
+     },
+     "visual": {
+      "verdict": "부분적",
+      "why": "옅은 회색 얼룩. 크기 0.62로 방을 채우지 않음"
+     }
+    }
+   },
+   "live": {
+    "slots": {
+     "form.type": "mist",
+     "form.posture": null,
+     "color": {
+      "h": 0.0,
+      "s": 0.03,
+      "l": 0.55
+     },
+     "opacity": 0.5,
+     "brightness": 0.4,
+     "roughness": 0.15,
+     "size": 0.621,
+     "distance": null,
+     "verticalOffset": null,
+     "motion.type": "spreading",
+     "body.part": "head",
+     "body.layer": "around"
+    },
+    "unity": {
+     "renderPath": "mist",
+     "visiblePixels": 103077,
+     "circularity": 0.383,
+     "components": 1
+    },
+    "visual": {
+     "verdict": "부분적",
+     "why": "조건 1 v1과 거의 같음(옅은 얼룩)"
+    }
+   }
+  },
+  {
+   "id": "M02",
+   "expected": "연기 · 검정 · 크기 모름 · 조금 비침 · 피어오름 · 가슴 안",
+   "tags": {
+    "form": [
+     "mist"
+    ],
+    "color": [
+     "basic"
+    ],
+    "size": [
+     "body",
+     "unknown"
+    ],
+    "texture": [
+     "semi_transparent"
+    ],
+    "motion": [
+     "rising"
+    ],
+    "response": "dont_know_part",
+    "speech": "머뭇거림·한 번에 길게"
+   },
+   "mappers": {
+    "v0": {
+     "slots": {
+      "form.type": "mist",
+      "form.posture": null,
+      "color": {
+       "h": 0.0,
+       "s": 0.0,
+       "l": 0.08
+      },
+      "opacity": null,
+      "brightness": null,
+      "roughness": null,
+      "size": null,
+      "distance": null,
+      "verticalOffset": 0.72,
+      "motion.type": "rising",
+      "body.part": "chest",
+      "body.layer": "inner"
+     },
+     "forms": [
+      {
+       "category": "mist",
+       "phrase": "검은 연기 같은 게",
+       "verdict": "반영",
+       "why": "form.type=mist"
+      }
+     ],
+     "others": [
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "검은 연기",
+       "status": "reflected",
+       "actual": {
+        "hue_deg": 0.0,
+        "s": 0.0,
+        "l": 0.08
+       }
+      },
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "크기는 잘 모르겠고",
+       "status": "reflected",
+       "actual": null
+      },
+      {
+       "attr": "opacity",
+       "group": "투명",
+       "phrase": "아주 진하진 않고 좀 비쳐요",
+       "status": "lost",
+       "actual": null
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "스멀스멀 피어올라요",
+       "status": "reflected",
+       "actual": "rising"
+      },
+      {
+       "attr": "body_part",
+       "group": "몸 위치",
+       "phrase": "가슴 안쪽",
+       "status": "reflected",
+       "actual": "chest"
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "몸 안이요",
+       "status": "reflected",
+       "actual": "inner"
+      }
+     ],
+     "unity": {
+      "renderPath": "mist",
+      "visiblePixels": 49525,
+      "maxAlpha": 0.569,
+      "circularity": 0.474,
+      "components": 1,
+      "edgeFalloffPx": 50.94,
+      "defaultsUsed": [
+       "form.posture",
+       "material.brightness",
+       "material.roughness",
+       "material.opacity",
+       "material.erosion",
+       "layout.size",
+       "layout.distance",
+       "motion.speed"
+      ],
+      "png": "M02.v0.png"
+     },
+     "visual": {
+      "verdict": "그 형상답다",
+      "why": "어두운 연기 덩이(작음)"
+     }
+    },
+    "v1": {
+     "slots": {
+      "form.type": "mist",
+      "form.posture": null,
+      "color": {
+       "h": 0.0,
+       "s": 0.0,
+       "l": 0.08
+      },
+      "opacity": 0.7,
+      "brightness": null,
+      "roughness": null,
+      "size": null,
+      "distance": null,
+      "verticalOffset": null,
+      "motion.type": "rising",
+      "body.part": "chest",
+      "body.layer": "inner"
+     },
+     "forms": [
+      {
+       "category": "mist",
+       "phrase": "검은 연기 같은 게",
+       "verdict": "반영",
+       "why": "form.type=mist"
+      }
+     ],
+     "others": [
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "검은 연기",
+       "status": "reflected",
+       "actual": {
+        "hue_deg": 0.0,
+        "s": 0.0,
+        "l": 0.08
+       }
+      },
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "크기는 잘 모르겠고",
+       "status": "reflected",
+       "actual": null
+      },
+      {
+       "attr": "opacity",
+       "group": "투명",
+       "phrase": "아주 진하진 않고 좀 비쳐요",
+       "status": "reflected",
+       "actual": 0.7
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "스멀스멀 피어올라요",
+       "status": "reflected",
+       "actual": "rising"
+      },
+      {
+       "attr": "body_part",
+       "group": "몸 위치",
+       "phrase": "가슴 안쪽",
+       "status": "reflected",
+       "actual": "chest"
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "몸 안이요",
+       "status": "reflected",
+       "actual": "inner"
+      }
+     ],
+     "unity": {
+      "renderPath": "mist",
+      "visiblePixels": 48207,
+      "maxAlpha": 0.405,
+      "circularity": 0.397,
+      "components": 1,
+      "edgeFalloffPx": 49.0,
+      "defaultsUsed": [
+       "form.posture",
+       "material.brightness",
+       "material.roughness",
+       "material.erosion",
+       "layout.size",
+       "layout.distance",
+       "layout.verticalOffset",
+       "motion.speed"
+      ],
+      "png": "M02.v1.png"
+     },
+     "visual": {
+      "verdict": "그 형상답다",
+      "why": "어두운 연기 덩이(작음)"
+     }
+    }
+   }
+  },
+  {
+   "id": "M03",
+   "expected": "구름(평서 명사) · 하양 · 머리보다 조금 큼 · 떠 있음 · 커졌다 작아졌다",
+   "tags": {
+    "form": [
+     "mist"
+    ],
+    "color": [
+     "basic"
+    ],
+    "size": [
+     "relative"
+    ],
+    "texture": [],
+    "motion": [
+     "floating",
+     "grow_shrink"
+    ],
+    "response": "partial",
+    "speech": "짧게 한마디"
+   },
+   "mappers": {
+    "v0": {
+     "slots": {
+      "form.type": null,
+      "form.posture": null,
+      "color": {
+       "h": 0.0,
+       "s": 0.0,
+       "l": 0.95
+      },
+      "opacity": null,
+      "brightness": null,
+      "roughness": null,
+      "size": 0.621,
+      "distance": null,
+      "verticalOffset": 0.93,
+      "motion.type": "floating",
+      "body.part": "head",
+      "body.layer": null
+     },
+     "forms": [
+      {
+       "category": "mist",
+       "phrase": "구름이에요",
+       "verdict": "미반영",
+       "why": "_unmapped 구름→{\"object\": \"cloud\"}"
+      }
+     ],
+     "others": [
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "하얀 구름",
+       "status": "reflected",
+       "actual": {
+        "hue_deg": 0.0,
+        "s": 0.0,
+        "l": 0.95
+       }
+      },
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "제 머리보다 조금 커요",
+       "status": "reflected",
+       "actual": 0.621
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "둥둥 떠 있으면서",
+       "status": "reflected",
+       "actual": "floating"
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "주변이요",
+       "status": "lost",
+       "actual": null
+      }
+     ],
+     "unity": {
+      "renderPath": "blob",
+      "visiblePixels": 134671,
+      "maxAlpha": 1.0,
+      "circularity": 0.958,
+      "components": 1,
+      "edgeFalloffPx": 0.71,
+      "defaultsUsed": [
+       "form.type",
+       "form.posture",
+       "material.brightness",
+       "material.roughness",
+       "material.opacity",
+       "material.erosion",
+       "layout.distance",
+       "motion.speed"
+      ],
+      "png": "M03.v0.png"
+     },
+     "visual": {
+      "verdict": "다른 것으로 보임",
+      "why": "흰 울퉁불퉁한 공(눈덩이). 구름 아님"
+     }
+    },
+    "v1": {
+     "slots": {
+      "form.type": null,
+      "form.posture": null,
+      "color": {
+       "h": 0.0,
+       "s": 0.0,
+       "l": 0.95
+      },
+      "opacity": null,
+      "brightness": null,
+      "roughness": null,
+      "size": 0.557,
+      "distance": null,
+      "verticalOffset": null,
+      "motion.type": "floating",
+      "body.part": null,
+      "body.layer": "around"
+     },
+     "forms": [
+      {
+       "category": "mist",
+       "phrase": "구름이에요",
+       "verdict": "미반영",
+       "why": "_unmapped 구름→{\"object\": \"cloud\"}"
+      }
+     ],
+     "others": [
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "하얀 구름",
+       "status": "reflected",
+       "actual": {
+        "hue_deg": 0.0,
+        "s": 0.0,
+        "l": 0.95
+       }
+      },
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "제 머리보다 조금 커요",
+       "status": "reflected",
+       "actual": 0.557
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "둥둥 떠 있으면서",
+       "status": "reflected",
+       "actual": "floating"
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "주변이요",
+       "status": "reflected",
+       "actual": "around"
+      }
+     ],
+     "unity": {
+      "renderPath": "blob",
+      "visiblePixels": 86490,
+      "maxAlpha": 1.0,
+      "circularity": 0.955,
+      "components": 1,
+      "edgeFalloffPx": 0.7,
+      "defaultsUsed": [
+       "form.type",
+       "form.posture",
+       "material.brightness",
+       "material.roughness",
+       "material.opacity",
+       "material.erosion",
+       "layout.distance",
+       "layout.verticalOffset",
+       "motion.speed"
+      ],
+      "png": "M03.v1.png"
+     },
+     "visual": {
+      "verdict": "다른 것으로 보임",
+      "why": "흰 울퉁불퉁한 공(눈덩이). 구름 아님"
+     }
+    }
+   }
+  },
+  {
+   "id": "M04",
+   "expected": "김 · 색 없음 · 거의 투명 · 손바닥 두 개 · 위로 올라감 · 목 앞 표면",
+   "tags": {
+    "form": [
+     "mist"
+    ],
+    "color": [
+     "none"
+    ],
+    "size": [
+     "numeric_ref",
+     "body"
+    ],
+    "texture": [
+     "almost_transparent"
+    ],
+    "motion": [
+     "rising"
+    ],
+    "response": "partial",
+    "speech": "보통"
+   },
+   "mappers": {
+    "v0": {
+     "slots": {
+      "form.type": null,
+      "form.posture": null,
+      "color": null,
+      "opacity": 0.1,
+      "brightness": null,
+      "roughness": null,
+      "size": null,
+      "distance": null,
+      "verticalOffset": 0.85,
+      "motion.type": "rising",
+      "body.part": "throat_neck",
+      "body.layer": "surface"
+     },
+     "forms": [
+      {
+       "category": "mist",
+       "phrase": "김 같은 게",
+       "verdict": "기본값",
+       "why": "form.type=null"
+      }
+     ],
+     "others": [
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "색은 없어요",
+       "status": "reflected",
+       "actual": null
+      },
+      {
+       "attr": "opacity",
+       "group": "투명",
+       "phrase": "거의 투명해서",
+       "status": "reflected",
+       "actual": 0.1
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "위로 솔솔 올라가요",
+       "status": "reflected",
+       "actual": "rising"
+      },
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "손바닥 두 개 정도요",
+       "status": "lost",
+       "actual": null
+      },
+      {
+       "attr": "body_part",
+       "group": "몸 위치",
+       "phrase": "목 앞쪽",
+       "status": "reflected",
+       "actual": "throat_neck"
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "몸 표면이요",
+       "status": "reflected",
+       "actual": "surface"
+      }
+     ],
+     "unity": {
+      "renderPath": "blob",
+      "visiblePixels": 66024,
+      "maxAlpha": 0.194,
+      "circularity": 0.006,
+      "components": 3,
+      "edgeFalloffPx": 7.4,
+      "defaultsUsed": [
+       "form.type",
+       "form.posture",
+       "material.color.h",
+       "material.color.s",
+       "material.color.l",
+       "material.brightness",
+       "material.roughness",
+       "material.erosion",
+       "layout.size",
+       "layout.distance",
+       "motion.speed"
+      ],
+      "png": "M04.v0.png"
+     },
+     "visual": {
+      "verdict": "거의 안 보임",
+      "why": "opacity 0.1 구가 아주 옅게"
+     }
+    },
+    "v1": {
+     "slots": {
+      "form.type": "mist",
+      "form.posture": null,
+      "color": null,
+      "opacity": 0.0,
+      "brightness": null,
+      "roughness": null,
+      "size": 0.641,
+      "distance": null,
+      "verticalOffset": null,
+      "motion.type": "rising",
+      "body.part": "throat_neck",
+      "body.layer": "surface"
+     },
+     "forms": [
+      {
+       "category": "mist",
+       "phrase": "김 같은 게",
+       "verdict": "반영",
+       "why": "form.type=mist"
+      }
+     ],
+     "others": [
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "색은 없어요",
+       "status": "reflected",
+       "actual": null
+      },
+      {
+       "attr": "opacity",
+       "group": "투명",
+       "phrase": "거의 투명해서",
+       "status": "reflected",
+       "actual": 0.0
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "위로 솔솔 올라가요",
+       "status": "reflected",
+       "actual": "rising"
+      },
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "손바닥 두 개 정도요",
+       "status": "distorted",
+       "actual": 0.641
+      },
+      {
+       "attr": "body_part",
+       "group": "몸 위치",
+       "phrase": "목 앞쪽",
+       "status": "reflected",
+       "actual": "throat_neck"
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "몸 표면이요",
+       "status": "reflected",
+       "actual": "surface"
+      }
+     ],
+     "unity": {
+      "renderPath": "mist",
+      "visiblePixels": 0,
+      "maxAlpha": 0.0,
+      "circularity": 0.0,
+      "components": 0,
+      "edgeFalloffPx": 0.0,
+      "defaultsUsed": [
+       "form.posture",
+       "material.color.h",
+       "material.color.s",
+       "material.color.l",
+       "material.brightness",
+       "material.roughness",
+       "material.erosion",
+       "layout.distance",
+       "layout.verticalOffset",
+       "motion.speed"
+      ],
+      "png": "M04.v1.png"
+     },
+     "visual": {
+      "verdict": "거의 안 보임",
+      "why": "mist · opacity 0 → visiblePixels 0(화면에 없음)"
+     }
+    }
+   }
+  },
+  {
+   "id": "M05",
+   "expected": "덩어리 · 남색 · 주먹만 · 딱딱·거칠 · 안 움직임 · 명치 아래",
+   "tags": {
+    "form": [
+     "lump"
+    ],
+    "color": [
+     "mid"
+    ],
+    "size": [
+     "numeric_ref",
+     "body"
+    ],
+    "texture": [
+     "hard",
+     "rough"
+    ],
+    "motion": [
+     "still"
+    ],
+    "response": "all",
+    "speech": "보통"
+   },
+   "mappers": {
+    "v0": {
+     "slots": {
+      "form.type": "blob",
+      "form.posture": null,
+      "color": {
+       "h": 0.639,
+       "s": 0.55,
+       "l": 0.25
+      },
+      "opacity": null,
+      "brightness": null,
+      "roughness": 0.85,
+      "size": null,
+      "distance": null,
+      "verticalOffset": 0.6,
+      "motion.type": "still",
+      "body.part": "belly",
+      "body.layer": "inner"
+     },
+     "forms": [
+      {
+       "category": "lump",
+       "phrase": "덩어리가 하나",
+       "verdict": "반영",
+       "why": "form.type=blob"
+      }
+     ],
+     "others": [
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "남색",
+       "status": "reflected",
+       "actual": {
+        "hue_deg": 230.0,
+        "s": 0.55,
+        "l": 0.25
+       }
+      },
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "주먹만 해요",
+       "status": "lost",
+       "actual": null
+      },
+      {
+       "attr": "texture_roughness",
+       "group": "질감",
+       "phrase": "겉은 조금 거칠어요",
+       "status": "reflected",
+       "actual": 0.85
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "움직이진 않아요",
+       "status": "reflected",
+       "actual": "still"
+      },
+      {
+       "attr": "body_part",
+       "group": "몸 위치",
+       "phrase": "명치 아래",
+       "status": "reflected",
+       "actual": "belly"
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "몸 안이요",
+       "status": "reflected",
+       "actual": "inner"
+      }
+     ],
+     "unity": {
+      "renderPath": "blob",
+      "visiblePixels": 54449,
+      "maxAlpha": 1.0,
+      "circularity": 0.948,
+      "components": 1,
+      "edgeFalloffPx": 0.67,
+      "defaultsUsed": [
+       "form.posture",
+       "material.brightness",
+       "material.opacity",
+       "material.erosion",
+       "layout.size",
+       "layout.distance",
+       "motion.speed"
+      ],
+      "png": "M05.v0.png"
+     },
+     "visual": {
+      "verdict": "그 형상답다",
+      "why": "남색 덩어리"
+     }
+    },
+    "v1": {
+     "slots": {
+      "form.type": "blob",
+      "form.posture": null,
+      "color": {
+       "h": 0.639,
+       "s": 0.55,
+       "l": 0.25
+      },
+      "opacity": null,
+      "brightness": null,
+      "roughness": 0.71,
+      "size": 0.333,
+      "distance": null,
+      "verticalOffset": null,
+      "motion.type": "still",
+      "body.part": "belly",
+      "body.layer": "inner"
+     },
+     "forms": [
+      {
+       "category": "lump",
+       "phrase": "덩어리가 하나",
+       "verdict": "반영",
+       "why": "form.type=blob"
+      }
+     ],
+     "others": [
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "남색",
+       "status": "reflected",
+       "actual": {
+        "hue_deg": 230.0,
+        "s": 0.55,
+        "l": 0.25
+       }
+      },
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "주먹만 해요",
+       "status": "reflected",
+       "actual": 0.333
+      },
+      {
+       "attr": "texture_roughness",
+       "group": "질감",
+       "phrase": "겉은 조금 거칠어요",
+       "status": "reflected",
+       "actual": 0.71
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "움직이진 않아요",
+       "status": "reflected",
+       "actual": "still"
+      },
+      {
+       "attr": "body_part",
+       "group": "몸 위치",
+       "phrase": "명치 아래",
+       "status": "reflected",
+       "actual": "belly"
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "몸 안이요",
+       "status": "reflected",
+       "actual": "inner"
+      }
+     ],
+     "unity": {
+      "renderPath": "blob",
+      "visiblePixels": 24670,
+      "maxAlpha": 1.0,
+      "circularity": 0.952,
+      "components": 1,
+      "edgeFalloffPx": 0.7,
+      "defaultsUsed": [
+       "form.posture",
+       "material.brightness",
+       "material.opacity",
+       "material.erosion",
+       "layout.distance",
+       "layout.verticalOffset",
+       "motion.speed"
+      ],
+      "png": "M05.v1.png"
+     },
+     "visual": {
+      "verdict": "그 형상답다",
+      "why": "남색 덩어리(주먹 크기로 작아짐)"
+     }
+    }
+   },
+   "live": {
+    "slots": {
+     "form.type": "blob",
+     "form.posture": null,
+     "color": {
+      "h": 0.639,
+      "s": 0.55,
+      "l": 0.25
+     },
+     "opacity": null,
+     "brightness": null,
+     "roughness": 0.71,
+     "size": 0.333,
+     "distance": null,
+     "verticalOffset": null,
+     "motion.type": "still",
+     "body.part": "belly",
+     "body.layer": "inner"
+    },
+    "unity": {
+     "renderPath": "blob",
+     "visiblePixels": 24670,
+     "circularity": 0.952,
+     "components": 1
+    },
+    "visual": {
+     "verdict": "그 형상답다",
+     "why": "조건 1 v1과 같은 화면"
+    }
+   }
+  },
+  {
+   "id": "M06",
+   "expected": "엉킨 실 뭉치 · 빨강+파랑 섞임 · 테니스공 · 꿈틀",
+   "tags": {
+    "form": [
+     "lump",
+     "lines"
+    ],
+    "color": [
+     "mixed"
+    ],
+    "size": [
+     "numeric_ref"
+    ],
+    "texture": [],
+    "motion": [
+     "wriggling"
+    ],
+    "response": "partial",
+    "speech": "비유"
+   },
+   "mappers": {
+    "v0": {
+     "slots": {
+      "form.type": "blob",
+      "form.posture": null,
+      "color": {
+       "h": 0.0,
+       "s": 0.75,
+       "l": 0.45
+      },
+      "opacity": null,
+      "brightness": null,
+      "roughness": null,
+      "size": null,
+      "distance": null,
+      "verticalOffset": 0.93,
+      "motion.type": "wriggling",
+      "body.part": "body",
+      "body.layer": "inner"
+     },
+     "forms": [
+      {
+       "category": "lines",
+       "phrase": "실이 마구 엉켜서",
+       "verdict": "미반영",
+       "why": "_unmapped 실→{\"shape\": \"thread\"},엉키→{\"texture\": \"tangled\"}"
+      },
+      {
+       "category": "lump",
+       "phrase": "동그랗게 뭉쳐 있어요",
+       "verdict": "반영",
+       "why": "form.type=blob"
+      }
+     ],
+     "others": [
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "빨간 실",
+       "status": "reflected",
+       "actual": {
+        "hue_deg": 0.0,
+        "s": 0.75,
+        "l": 0.45
+       }
+      },
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "테니스공 정도요",
+       "status": "lost",
+       "actual": null
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "꿈틀거려요",
+       "status": "reflected",
+       "actual": "wriggling"
+      },
+      {
+       "attr": "body_part",
+       "group": "몸 위치",
+       "phrase": "머리 안쪽",
+       "status": "distorted",
+       "actual": "body"
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "몸 안",
+       "status": "reflected",
+       "actual": "inner"
+      }
+     ],
+     "unity": {
+      "renderPath": "shapePrefab(Sphere)",
+      "visiblePixels": 67996,
+      "maxAlpha": 1.0,
+      "circularity": 0.972,
+      "components": 1,
+      "edgeFalloffPx": 0.71,
+      "defaultsUsed": [
+       "form.posture",
+       "material.brightness",
+       "material.roughness",
+       "material.opacity",
+       "material.erosion",
+       "layout.size",
+       "layout.distance",
+       "motion.speed"
+      ],
+      "png": "M06.v0.png"
+     },
+     "visual": {
+      "verdict": "부분적",
+      "why": "매끈한 빨간 구(모양어 '동그랗' → 구 모형). 실·엉킴·파랑은 안 보임"
+     }
+    },
+    "v1": {
+     "slots": {
+      "form.type": "blob",
+      "form.posture": null,
+      "color": {
+       "h": 0.0,
+       "s": 0.75,
+       "l": 0.45
+      },
+      "opacity": null,
+      "brightness": null,
+      "roughness": null,
+      "size": 0.237,
+      "distance": null,
+      "verticalOffset": null,
+      "motion.type": "wriggling",
+      "body.part": "head",
+      "body.layer": "inner"
+     },
+     "forms": [
+      {
+       "category": "lines",
+       "phrase": "실이 마구 엉켜서",
+       "verdict": "미반영",
+       "why": "_unmapped 실→{\"shape\": \"thread\"},엉키→{\"texture\": \"tangled\"}"
+      },
+      {
+       "category": "lump",
+       "phrase": "동그랗게 뭉쳐 있어요",
+       "verdict": "반영",
+       "why": "form.type=blob"
+      }
+     ],
+     "others": [
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "빨간 실",
+       "status": "reflected",
+       "actual": {
+        "hue_deg": 0.0,
+        "s": 0.75,
+        "l": 0.45
+       }
+      },
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "테니스공 정도요",
+       "status": "reflected",
+       "actual": 0.237
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "꿈틀거려요",
+       "status": "reflected",
+       "actual": "wriggling"
+      },
+      {
+       "attr": "body_part",
+       "group": "몸 위치",
+       "phrase": "머리 안쪽",
+       "status": "reflected",
+       "actual": "head"
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "몸 안",
+       "status": "reflected",
+       "actual": "inner"
+      }
+     ],
+     "unity": {
+      "renderPath": "shapePrefab(Sphere)",
+      "visiblePixels": 14582,
+      "maxAlpha": 1.0,
+      "circularity": 0.972,
+      "components": 1,
+      "edgeFalloffPx": 0.7,
+      "defaultsUsed": [
+       "form.posture",
+       "material.brightness",
+       "material.roughness",
+       "material.opacity",
+       "material.erosion",
+       "layout.distance",
+       "layout.verticalOffset",
+       "motion.speed"
+      ],
+      "png": "M06.v1.png"
+     },
+     "visual": {
+      "verdict": "부분적",
+      "why": "작은 빨간 구. 실·엉킴·파랑 없음"
+     }
+    }
+   }
+  },
+  {
+   "id": "M07",
+   "expected": "뭉치 · 살구색 · 말랑 · 귤 크기 · 숨 쉬듯 부풀었다 줄었다 · 아랫배",
+   "tags": {
+    "form": [
+     "lump"
+    ],
+    "color": [
+     "mid"
+    ],
+    "size": [
+     "numeric_ref",
+     "body"
+    ],
+    "texture": [
+     "soft"
+    ],
+    "motion": [
+     "pulsing",
+     "grow_shrink"
+    ],
+    "response": "all",
+    "speech": "비유"
+   },
+   "mappers": {
+    "v0": {
+     "slots": {
+      "form.type": "blob",
+      "form.posture": null,
+      "color": null,
+      "opacity": null,
+      "brightness": null,
+      "roughness": null,
+      "size": null,
+      "distance": null,
+      "verticalOffset": 0.6,
+      "motion.type": null,
+      "body.part": "belly",
+      "body.layer": "inner"
+     },
+     "forms": [
+      {
+       "category": "lump",
+       "phrase": "말랑한 뭉치",
+       "verdict": "반영",
+       "why": "form.type=blob"
+      }
+     ],
+     "others": [
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "살구색",
+       "status": "preserved",
+       "actual": null
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "부풀었다 줄었다 해요",
+       "status": "lost",
+       "actual": null
+      },
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "귤 하나 정도요",
+       "status": "dropped_by_controller",
+       "actual": null
+      },
+      {
+       "attr": "body_part",
+       "group": "몸 위치",
+       "phrase": "아랫배",
+       "status": "reflected",
+       "actual": "belly"
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "몸 안에요",
+       "status": "reflected",
+       "actual": "inner"
+      }
+     ],
+     "unity": {
+      "renderPath": "blob",
+      "visiblePixels": 54198,
+      "maxAlpha": 1.0,
+      "circularity": 0.958,
+      "components": 1,
+      "edgeFalloffPx": 0.7,
+      "defaultsUsed": [
+       "form.posture",
+       "material.color.h",
+       "material.color.s",
+       "material.color.l",
+       "material.brightness",
+       "material.roughness",
+       "material.opacity",
+       "material.erosion",
+       "layout.size",
+       "layout.distance",
+       "motion.type",
+       "motion.speed"
+      ],
+      "png": "M07.v0.png"
+     },
+     "visual": {
+      "verdict": "부분적",
+      "why": "덩어리지만 색이 기본 회백색"
+     }
+    },
+    "v1": {
+     "slots": {
+      "form.type": "blob",
+      "form.posture": null,
+      "color": {
+       "h": 0.069,
+       "s": 0.75,
+       "l": 0.75
+      },
+      "opacity": null,
+      "brightness": null,
+      "roughness": null,
+      "size": null,
+      "distance": null,
+      "verticalOffset": null,
+      "motion.type": null,
+      "body.part": "belly",
+      "body.layer": "inner"
+     },
+     "forms": [
+      {
+       "category": "lump",
+       "phrase": "말랑한 뭉치",
+       "verdict": "반영",
+       "why": "form.type=blob"
+      }
+     ],
+     "others": [
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "살구색",
+       "status": "reflected",
+       "actual": {
+        "hue_deg": 24.8,
+        "s": 0.75,
+        "l": 0.75
+       }
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "부풀었다 줄었다 해요",
+       "status": "preserved",
+       "actual": null
+      },
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "귤 하나 정도요",
+       "status": "dropped_by_controller",
+       "actual": null
+      },
+      {
+       "attr": "body_part",
+       "group": "몸 위치",
+       "phrase": "아랫배",
+       "status": "reflected",
+       "actual": "belly"
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "몸 안에요",
+       "status": "reflected",
+       "actual": "inner"
+      }
+     ],
+     "unity": {
+      "renderPath": "blob",
+      "visiblePixels": 62619,
+      "maxAlpha": 1.0,
+      "circularity": 0.963,
+      "components": 1,
+      "edgeFalloffPx": 0.69,
+      "defaultsUsed": [
+       "form.posture",
+       "material.brightness",
+       "material.roughness",
+       "material.opacity",
+       "material.erosion",
+       "layout.size",
+       "layout.distance",
+       "layout.verticalOffset",
+       "motion.type",
+       "motion.speed"
+      ],
+      "png": "M07.v1.png"
+     },
+     "visual": {
+      "verdict": "그 형상답다",
+      "why": "살구색 말랑해 보이는 덩어리"
+     }
+    }
+   }
+  },
+  {
+   "id": "M08",
+   "expected": "껍질 · 갈색 · 거칠·딱딱 · 가슴을 덮을 만큼 · 안 움직임 · 가슴 표면",
+   "tags": {
+    "form": [
+     "shell"
+    ],
+    "color": [
+     "basic"
+    ],
+    "size": [
+     "relative",
+     "body"
+    ],
+    "texture": [
+     "rough",
+     "hard"
+    ],
+    "motion": [
+     "still"
+    ],
+    "response": "all",
+    "speech": "보통"
+   },
+   "mappers": {
+    "v0": {
+     "slots": {
+      "form.type": "shell",
+      "form.posture": null,
+      "color": {
+       "h": 0.069,
+       "s": 0.45,
+       "l": 0.3
+      },
+      "opacity": null,
+      "brightness": null,
+      "roughness": 0.85,
+      "size": null,
+      "distance": null,
+      "verticalOffset": 0.72,
+      "motion.type": "still",
+      "body.part": "chest",
+      "body.layer": "around_front"
+     },
+     "forms": [
+      {
+       "category": "shell",
+       "phrase": "딱딱한 껍질",
+       "verdict": "반영",
+       "why": "form.type=shell"
+      }
+     ],
+     "others": [
+      {
+       "attr": "texture_roughness",
+       "group": "질감",
+       "phrase": "나무껍질처럼 거칠고",
+       "status": "reflected",
+       "actual": 0.85
+      },
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "갈색이에요",
+       "status": "reflected",
+       "actual": {
+        "hue_deg": 24.8,
+        "s": 0.45,
+        "l": 0.3
+       }
+      },
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "가슴을 다 덮을 만큼",
+       "status": "distorted",
+       "actual": null
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "안 움직여요",
+       "status": "reflected",
+       "actual": "still"
+      },
+      {
+       "attr": "body_part",
+       "group": "몸 위치",
+       "phrase": "가슴 앞",
+       "status": "reflected",
+       "actual": "chest"
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "몸 표면이요",
+       "status": "distorted",
+       "actual": "around_front"
+      }
+     ],
+     "unity": {
+      "renderPath": "shell",
+      "visiblePixels": 48768,
+      "maxAlpha": 1.0,
+      "circularity": 0.829,
+      "components": 1,
+      "edgeFalloffPx": 0.44,
+      "defaultsUsed": [
+       "form.posture",
+       "material.brightness",
+       "material.opacity",
+       "material.erosion",
+       "layout.size",
+       "layout.distance",
+       "motion.speed"
+      ],
+      "png": "M08.v0.png"
+     },
+     "visual": {
+      "verdict": "부분적",
+      "why": "작은 갈색 그릇 모양 껍질. 가슴을 덮는 크기 아님"
+     }
+    },
+    "v1": {
+     "slots": {
+      "form.type": "shell",
+      "form.posture": null,
+      "color": {
+       "h": 0.069,
+       "s": 0.45,
+       "l": 0.3
+      },
+      "opacity": null,
+      "brightness": null,
+      "roughness": 0.85,
+      "size": 1.0,
+      "distance": null,
+      "verticalOffset": null,
+      "motion.type": "still",
+      "body.part": "chest",
+      "body.layer": "surface"
+     },
+     "forms": [
+      {
+       "category": "shell",
+       "phrase": "딱딱한 껍질",
+       "verdict": "반영",
+       "why": "form.type=shell"
+      }
+     ],
+     "others": [
+      {
+       "attr": "texture_roughness",
+       "group": "질감",
+       "phrase": "나무껍질처럼 거칠고",
+       "status": "reflected",
+       "actual": 0.85
+      },
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "갈색이에요",
+       "status": "reflected",
+       "actual": {
+        "hue_deg": 24.8,
+        "s": 0.45,
+        "l": 0.3
+       }
+      },
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "가슴을 다 덮을 만큼",
+       "status": "distorted",
+       "actual": 1.0
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "안 움직여요",
+       "status": "reflected",
+       "actual": "still"
+      },
+      {
+       "attr": "body_part",
+       "group": "몸 위치",
+       "phrase": "가슴 앞",
+       "status": "reflected",
+       "actual": "chest"
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "몸 표면이요",
+       "status": "reflected",
+       "actual": "surface"
+      }
+     ],
+     "unity": {
+      "renderPath": "shell",
+      "visiblePixels": 995489,
+      "maxAlpha": 1.0,
+      "circularity": 0.75,
+      "components": 1,
+      "edgeFalloffPx": 0.43,
+      "defaultsUsed": [
+       "form.posture",
+       "material.brightness",
+       "material.opacity",
+       "material.erosion",
+       "layout.distance",
+       "layout.verticalOffset",
+       "motion.speed"
+      ],
+      "png": "M08.v1.png"
+     },
+     "visual": {
+      "verdict": "그 형상답다",
+      "why": "크고 거친 갈색 껍질(시야 아래를 채움)"
+     }
+    }
+   },
+   "live": {
+    "slots": {
+     "form.type": "shell",
+     "form.posture": null,
+     "color": {
+      "h": 0.069,
+      "s": 0.45,
+      "l": 0.3
+     },
+     "opacity": null,
+     "brightness": null,
+     "roughness": 0.85,
+     "size": 1.0,
+     "distance": null,
+     "verticalOffset": null,
+     "motion.type": "still",
+     "body.part": "chest",
+     "body.layer": "surface"
+    },
+    "unity": {
+     "renderPath": "shell",
+     "visiblePixels": 995489,
+     "circularity": 0.75,
+     "components": 1
+    },
+    "visual": {
+     "verdict": "그 형상답다",
+     "why": "조건 1 v1과 같은 화면"
+    }
+   }
+  },
+  {
+   "id": "M09",
+   "expected": "막 · 연두 · 반투명 · 몸 전체를 감쌀 만큼 · 일렁임 · 몸 주변",
+   "tags": {
+    "form": [
+     "shell",
+     "sheet"
+    ],
+    "color": [
+     "mid"
+    ],
+    "size": [
+     "relative"
+    ],
+    "texture": [
+     "semi_transparent"
+    ],
+    "motion": [
+     "rippling"
+    ],
+    "response": "all",
+    "speech": "비유"
+   },
+   "mappers": {
+    "v0": {
+     "slots": {
+      "form.type": "shell",
+      "form.posture": null,
+      "color": null,
+      "opacity": 0.1,
+      "brightness": 0.7,
+      "roughness": null,
+      "size": 0.621,
+      "distance": null,
+      "verticalOffset": null,
+      "motion.type": "rotating",
+      "body.part": "body",
+      "body.layer": "around"
+     },
+     "forms": [
+      {
+       "category": "shell",
+       "phrase": "얇은 막",
+       "verdict": "반영",
+       "why": "form.type=shell"
+      }
+     ],
+     "others": [
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "연두색",
+       "status": "preserved",
+       "actual": null
+      },
+      {
+       "attr": "opacity",
+       "group": "투명",
+       "phrase": "반쯤 투명해서",
+       "status": "distorted",
+       "actual": 0.1
+      },
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "저를 통째로 감쌀 만큼 커요",
+       "status": "distorted",
+       "actual": 0.621
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "일렁여요",
+       "status": "dropped_by_controller",
+       "actual": null
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "몸 주변이요",
+       "status": "reflected",
+       "actual": "around"
+      }
+     ],
+     "unity": {
+      "renderPath": "shell",
+      "visiblePixels": 72280,
+      "maxAlpha": 0.195,
+      "circularity": 0.003,
+      "components": 10,
+      "edgeFalloffPx": 5.56,
+      "defaultsUsed": [
+       "form.posture",
+       "material.color.h",
+       "material.color.s",
+       "material.color.l",
+       "material.roughness",
+       "material.erosion",
+       "layout.distance",
+       "layout.verticalOffset",
+       "motion.speed"
+      ],
+      "png": "M09.v0.png"
+     },
+     "visual": {
+      "verdict": "거의 안 보임",
+      "why": "opacity 0.1 그릇 모양이 거의 투명"
+     }
+    },
+    "v1": {
+     "slots": {
+      "form.type": "shell",
+      "form.posture": null,
+      "color": {
+       "h": 0.25,
+       "s": 0.55,
+       "l": 0.55
+      },
+      "opacity": 0.1,
+      "brightness": 0.7,
+      "roughness": null,
+      "size": 0.621,
+      "distance": null,
+      "verticalOffset": null,
+      "motion.type": null,
+      "body.part": "body",
+      "body.layer": "around"
+     },
+     "forms": [
+      {
+       "category": "shell",
+       "phrase": "얇은 막",
+       "verdict": "반영",
+       "why": "form.type=shell"
+      }
+     ],
+     "others": [
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "연두색",
+       "status": "reflected",
+       "actual": {
+        "hue_deg": 90.0,
+        "s": 0.55,
+        "l": 0.55
+       }
+      },
+      {
+       "attr": "opacity",
+       "group": "투명",
+       "phrase": "반쯤 투명해서",
+       "status": "distorted",
+       "actual": 0.1
+      },
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "저를 통째로 감쌀 만큼 커요",
+       "status": "distorted",
+       "actual": 0.621
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "일렁여요",
+       "status": "dropped_by_controller",
+       "actual": null
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "몸 주변이요",
+       "status": "reflected",
+       "actual": "around"
+      }
+     ],
+     "unity": {
+      "renderPath": "shell",
+      "visiblePixels": 72281,
+      "maxAlpha": 0.203,
+      "circularity": 0.011,
+      "components": 44,
+      "edgeFalloffPx": 90.57,
+      "defaultsUsed": [
+       "form.posture",
+       "material.roughness",
+       "material.erosion",
+       "layout.distance",
+       "layout.verticalOffset",
+       "motion.type",
+       "motion.speed"
+      ],
+      "png": "M09.v1.png"
+     },
+     "visual": {
+      "verdict": "부분적",
+      "why": "옅은 연두 반투명 그릇 모양. 몸을 감싸지 않고 멀리 작게"
+     }
+    }
+   }
+  },
+  {
+   "id": "M10",
+   "expected": "달걀 껍데기 · 하양 · 금 감 · 금 간 곳만 비침 · 속 빔 · 달걀보다 조금 큼 · 떨림",
+   "tags": {
+    "form": [
+     "shell",
+     "hole"
+    ],
+    "color": [
+     "basic"
+    ],
+    "size": [
+     "numeric_ref"
+    ],
+    "texture": [
+     "partial_transparent"
+    ],
+    "motion": [
+     "trembling"
+    ],
+    "response": "partial",
+    "speech": "머뭇거림"
+   },
+   "mappers": {
+    "v0": {
+     "slots": {
+      "form.type": null,
+      "form.posture": null,
+      "color": {
+       "h": 0.0,
+       "s": 0.0,
+       "l": 0.95
+      },
+      "opacity": null,
+      "brightness": 0.7,
+      "roughness": null,
+      "size": 0.621,
+      "distance": null,
+      "verticalOffset": null,
+      "motion.type": "trembling",
+      "body.part": "body",
+      "body.layer": "inner"
+     },
+     "forms": [
+      {
+       "category": "shell",
+       "phrase": "껍데기",
+       "verdict": "기본값",
+       "why": "form.type=null"
+      },
+      {
+       "category": "hole",
+       "phrase": "안은 비어 있고요",
+       "verdict": "미반영",
+       "why": "_unmapped 비→{\"shape\": \"hollow\"},안→{\"layer\": \"inner\"}"
+      }
+     ],
+     "others": [
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "하얗고",
+       "status": "reflected",
+       "actual": {
+        "hue_deg": 0.0,
+        "s": 0.0,
+        "l": 0.95
+       }
+      },
+      {
+       "attr": "erosion",
+       "group": "질감",
+       "phrase": "군데군데 금이 가 있어요",
+       "status": "lost",
+       "actual": null
+      },
+      {
+       "attr": "opacity",
+       "group": "투명",
+       "phrase": "금 간 데로만 빛이 비쳐요",
+       "status": "lost",
+       "actual": null
+      },
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "달걀보다 조금 커요",
+       "status": "distorted",
+       "actual": 0.621
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "조금씩 떨려요",
+       "status": "reflected",
+       "actual": "trembling"
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "몸 안인 것 같아요",
+       "status": "reflected",
+       "actual": "inner"
+      }
+     ],
+     "unity": {
+      "renderPath": "blob",
+      "visiblePixels": 124702,
+      "maxAlpha": 1.0,
+      "circularity": 0.954,
+      "components": 1,
+      "edgeFalloffPx": 0.6,
+      "defaultsUsed": [
+       "form.type",
+       "form.posture",
+       "material.roughness",
+       "material.opacity",
+       "material.erosion",
+       "layout.distance",
+       "layout.verticalOffset",
+       "motion.speed"
+      ],
+      "png": "M10.v0.png"
+     },
+     "visual": {
+      "verdict": "다른 것으로 보임",
+      "why": "흰 덩어리 공"
+     }
+    },
+    "v1": {
+     "slots": {
+      "form.type": "shell",
+      "form.posture": null,
+      "color": {
+       "h": 0.0,
+       "s": 0.0,
+       "l": 0.95
+      },
+      "opacity": 0.5,
+      "brightness": 0.7,
+      "roughness": null,
+      "size": 0.244,
+      "distance": null,
+      "verticalOffset": null,
+      "motion.type": "trembling",
+      "body.part": "body",
+      "body.layer": "inner"
+     },
+     "forms": [
+      {
+       "category": "shell",
+       "phrase": "껍데기",
+       "verdict": "반영",
+       "why": "form.type=shell"
+      },
+      {
+       "category": "hole",
+       "phrase": "안은 비어 있고요",
+       "verdict": "미반영",
+       "why": "_unmapped 비→{\"shape\": \"hollow\"},안→{\"layer\": \"inner\"}"
+      }
+     ],
+     "others": [
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "하얗고",
+       "status": "reflected",
+       "actual": {
+        "hue_deg": 0.0,
+        "s": 0.0,
+        "l": 0.95
+       }
+      },
+      {
+       "attr": "erosion",
+       "group": "질감",
+       "phrase": "군데군데 금이 가 있어요",
+       "status": "preserved",
+       "actual": null
+      },
+      {
+       "attr": "opacity",
+       "group": "투명",
+       "phrase": "금 간 데로만 빛이 비쳐요",
+       "status": "captured",
+       "actual": 0.5
+      },
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "달걀보다 조금 커요",
+       "status": "reflected",
+       "actual": 0.244
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "조금씩 떨려요",
+       "status": "reflected",
+       "actual": "trembling"
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "몸 안인 것 같아요",
+       "status": "reflected",
+       "actual": "inner"
+      }
+     ],
+     "unity": {
+      "renderPath": "shell",
+      "visiblePixels": 8640,
+      "maxAlpha": 0.75,
+      "circularity": 0.559,
+      "components": 1,
+      "edgeFalloffPx": 19.72,
+      "defaultsUsed": [
+       "form.posture",
+       "material.roughness",
+       "material.erosion",
+       "layout.distance",
+       "layout.verticalOffset",
+       "motion.speed"
+      ],
+      "png": "M10.v1.png"
+     },
+     "visual": {
+      "verdict": "부분적",
+      "why": "흰 반쪽 껍데기 모양이나 아주 작고 멀리. 금 간 것 안 보임"
+     }
+    }
+   }
+  },
+  {
+   "id": "M11",
+   "expected": "조각 · 파랑 · 엄지손톱만 · 모서리 날카로움 · 느리게 맴돎 · 가슴 안",
+   "tags": {
+    "form": [
+     "fragments",
+     "pointed"
+    ],
+    "color": [
+     "basic"
+    ],
+    "size": [
+     "numeric_ref",
+     "body"
+    ],
+    "texture": [],
+    "motion": [
+     "floating"
+    ],
+    "response": "partial",
+    "speech": "보통"
+   },
+   "mappers": {
+    "v0": {
+     "slots": {
+      "form.type": "fragments",
+      "form.posture": null,
+      "color": {
+       "h": 0.597,
+       "s": 0.7,
+       "l": 0.5
+      },
+      "opacity": null,
+      "brightness": null,
+      "roughness": null,
+      "size": null,
+      "distance": null,
+      "verticalOffset": 0.72,
+      "motion.type": "scattering",
+      "body.part": "chest",
+      "body.layer": null
+     },
+     "forms": [
+      {
+       "category": "fragments",
+       "phrase": "조각들이 흩어져",
+       "verdict": "반영",
+       "why": "form.type=fragments"
+      },
+      {
+       "category": "pointed",
+       "phrase": "모서리가 날카로워요",
+       "verdict": "미반영",
+       "why": "_unmapped 날카롭→{\"shape\": \"sharp\"}"
+      }
+     ],
+     "others": [
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "파란 조각",
+       "status": "reflected",
+       "actual": {
+        "hue_deg": 214.9,
+        "s": 0.7,
+        "l": 0.5
+       }
+      },
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "엄지손톱만 하고",
+       "status": "lost",
+       "actual": null
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "맴돌아요",
+       "status": "dropped_by_controller",
+       "actual": null
+      },
+      {
+       "attr": "motion_speed",
+       "group": "움직임",
+       "phrase": "느릿느릿",
+       "status": "dropped_by_controller",
+       "actual": null
+      },
+      {
+       "attr": "body_part",
+       "group": "몸 위치",
+       "phrase": "가슴 쪽",
+       "status": "reflected",
+       "actual": "chest"
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "몸 안이요",
+       "status": "lost",
+       "actual": null
+      }
+     ],
+     "unity": {
+      "renderPath": "fragments",
+      "visiblePixels": 11588,
+      "maxAlpha": 1.0,
+      "circularity": 0.062,
+      "components": 7,
+      "edgeFalloffPx": 0.22,
+      "defaultsUsed": [
+       "form.posture",
+       "material.brightness",
+       "material.roughness",
+       "material.opacity",
+       "layout.size",
+       "layout.distance",
+       "motion.speed"
+      ],
+      "png": "M11.v0.png"
+     },
+     "visual": {
+      "verdict": "그 형상답다",
+      "why": "파란 각진 조각 여러 개"
+     }
+    },
+    "v1": {
+     "slots": {
+      "form.type": "fragments",
+      "form.posture": null,
+      "color": {
+       "h": 0.597,
+       "s": 0.7,
+       "l": 0.5
+      },
+      "opacity": null,
+      "brightness": null,
+      "roughness": null,
+      "size": 0.0,
+      "distance": null,
+      "verticalOffset": null,
+      "motion.type": "scattering",
+      "body.part": "chest",
+      "body.layer": "inner"
+     },
+     "forms": [
+      {
+       "category": "fragments",
+       "phrase": "조각들이 흩어져",
+       "verdict": "반영",
+       "why": "form.type=fragments"
+      },
+      {
+       "category": "pointed",
+       "phrase": "모서리가 날카로워요",
+       "verdict": "미반영",
+       "why": "_unmapped 날카롭→{\"shape\": \"sharp\"}"
+      }
+     ],
+     "others": [
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "파란 조각",
+       "status": "reflected",
+       "actual": {
+        "hue_deg": 214.9,
+        "s": 0.7,
+        "l": 0.5
+       }
+      },
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "엄지손톱만 하고",
+       "status": "reflected",
+       "actual": 0.0
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "맴돌아요",
+       "status": "dropped_by_controller",
+       "actual": null
+      },
+      {
+       "attr": "motion_speed",
+       "group": "움직임",
+       "phrase": "느릿느릿",
+       "status": "dropped_by_controller",
+       "actual": null
+      },
+      {
+       "attr": "body_part",
+       "group": "몸 위치",
+       "phrase": "가슴 쪽",
+       "status": "reflected",
+       "actual": "chest"
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "몸 안이요",
+       "status": "reflected",
+       "actual": "inner"
+      }
+     ],
+     "unity": {
+      "renderPath": "fragments",
+      "visiblePixels": 749,
+      "maxAlpha": 1.0,
+      "circularity": 0.076,
+      "components": 7,
+      "edgeFalloffPx": 0.3,
+      "defaultsUsed": [
+       "form.posture",
+       "material.brightness",
+       "material.roughness",
+       "material.opacity",
+       "layout.distance",
+       "layout.verticalOffset",
+       "motion.speed"
+      ],
+      "png": "M11.v1.png"
+     },
+     "visual": {
+      "verdict": "거의 안 보임",
+      "why": "size 0 → 749화소. 확대해야 조각"
+     }
+    }
+   }
+  },
+  {
+   "id": "M12",
+   "expected": "유리 파편 · 거의 투명 · 반짝 · 베개만 · 팔 길이 앞 · 떠 있음",
+   "tags": {
+    "form": [
+     "fragments"
+    ],
+    "color": [
+     "none"
+    ],
+    "size": [
+     "relative",
+     "distance"
+    ],
+    "texture": [
+     "almost_transparent",
+     "sparkle"
+    ],
+    "motion": [
+     "still",
+     "floating"
+    ],
+    "response": "all",
+    "speech": "길게 풀어서"
+   },
+   "mappers": {
+    "v0": {
+     "slots": {
+      "form.type": "fragments",
+      "form.posture": null,
+      "color": null,
+      "opacity": 0.1,
+      "brightness": 0.85,
+      "roughness": null,
+      "size": null,
+      "distance": null,
+      "verticalOffset": 0.63,
+      "motion.type": "floating",
+      "body.part": "body",
+      "body.layer": "around"
+     },
+     "forms": [
+      {
+       "category": "fragments",
+       "phrase": "유리 파편",
+       "verdict": "반영",
+       "why": "form.type=fragments"
+      }
+     ],
+     "others": [
+      {
+       "attr": "opacity",
+       "group": "투명",
+       "phrase": "거의 투명하고",
+       "status": "reflected",
+       "actual": 0.1
+      },
+      {
+       "attr": "brightness",
+       "group": "밝기",
+       "phrase": "빛을 받으면 반짝반짝해요",
+       "status": "reflected",
+       "actual": 0.85
+      },
+      {
+       "attr": "distance",
+       "group": "높이·거리",
+       "phrase": "팔 뻗으면 닿을 거리쯤에",
+       "status": "distorted",
+       "actual": null
+      },
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "다 모으면 베개만 해요",
+       "status": "lost",
+       "actual": null
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "거의 안 움직이고 떠 있기만 해요",
+       "status": "dropped_by_controller",
+       "actual": null
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "몸 앞쪽, 주변이요",
+       "status": "reflected",
+       "actual": "around"
+      }
+     ],
+     "unity": {
+      "renderPath": "fragments",
+      "visiblePixels": 17677,
+      "maxAlpha": 0.191,
+      "circularity": 0.013,
+      "components": 5,
+      "edgeFalloffPx": 4.79,
+      "defaultsUsed": [
+       "form.posture",
+       "material.color.h",
+       "material.color.s",
+       "material.color.l",
+       "material.roughness",
+       "layout.size",
+       "layout.distance",
+       "motion.speed"
+      ],
+      "png": "M12.v0.png"
+     },
+     "visual": {
+      "verdict": "그 형상답다",
+      "why": "옅은 투명 파편들(유리 느낌)"
+     }
+    },
+    "v1": {
+     "slots": {
+      "form.type": "fragments",
+      "form.posture": null,
+      "color": null,
+      "opacity": 0.0,
+      "brightness": 0.85,
+      "roughness": null,
+      "size": 0.72,
+      "distance": null,
+      "verticalOffset": null,
+      "motion.type": "floating",
+      "body.part": "arm",
+      "body.layer": "around"
+     },
+     "forms": [
+      {
+       "category": "fragments",
+       "phrase": "유리 파편",
+       "verdict": "반영",
+       "why": "form.type=fragments"
+      }
+     ],
+     "others": [
+      {
+       "attr": "opacity",
+       "group": "투명",
+       "phrase": "거의 투명하고",
+       "status": "reflected",
+       "actual": 0.0
+      },
+      {
+       "attr": "brightness",
+       "group": "밝기",
+       "phrase": "빛을 받으면 반짝반짝해요",
+       "status": "reflected",
+       "actual": 0.85
+      },
+      {
+       "attr": "distance",
+       "group": "높이·거리",
+       "phrase": "팔 뻗으면 닿을 거리쯤에",
+       "status": "distorted",
+       "actual": null
+      },
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "다 모으면 베개만 해요",
+       "status": "reflected",
+       "actual": 0.72
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "거의 안 움직이고 떠 있기만 해요",
+       "status": "dropped_by_controller",
+       "actual": null
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "몸 앞쪽, 주변이요",
+       "status": "reflected",
+       "actual": "around"
+      }
+     ],
+     "unity": {
+      "renderPath": "fragments",
+      "visiblePixels": 0,
+      "maxAlpha": 0.0,
+      "circularity": 0.0,
+      "components": 0,
+      "edgeFalloffPx": 0.0,
+      "defaultsUsed": [
+       "form.posture",
+       "material.color.h",
+       "material.color.s",
+       "material.color.l",
+       "material.roughness",
+       "layout.distance",
+       "layout.verticalOffset",
+       "motion.speed"
+      ],
+      "png": "M12.v1.png"
+     },
+     "visual": {
+      "verdict": "거의 안 보임",
+      "why": "opacity 0 → visiblePixels 0"
+     }
+    }
+   },
+   "live": {
+    "slots": {
+     "form.type": "fragments",
+     "form.posture": null,
+     "color": null,
+     "opacity": 0.0,
+     "brightness": 0.85,
+     "roughness": null,
+     "size": 0.72,
+     "distance": null,
+     "verticalOffset": null,
+     "motion.type": "floating",
+     "body.part": "arm",
+     "body.layer": "around"
+    },
+    "unity": {
+     "renderPath": "fragments",
+     "visiblePixels": 0,
+     "circularity": 0.0,
+     "components": 0
+    },
+    "visual": {
+     "verdict": "거의 안 보임",
+     "why": "opacity 0 → visiblePixels 0"
+    }
+   }
+  },
+  {
+   "id": "M13",
+   "expected": "부스러기 · 회색 · 깨알만 · 아래로 떨어짐 · 어깨 표면",
+   "tags": {
+    "form": [
+     "fragments"
+    ],
+    "color": [
+     "basic"
+    ],
+    "size": [
+     "numeric_ref",
+     "body"
+    ],
+    "texture": [],
+    "motion": [
+     "dripping"
+    ],
+    "response": "partial",
+    "speech": "머뭇거림"
+   },
+   "mappers": {
+    "v0": {
+     "slots": {
+      "form.type": null,
+      "form.posture": null,
+      "color": {
+       "h": 0.0,
+       "s": 0.05,
+       "l": 0.45
+      },
+      "opacity": null,
+      "brightness": null,
+      "roughness": null,
+      "size": null,
+      "distance": 0.6,
+      "verticalOffset": 0.82,
+      "motion.type": null,
+      "body.part": "shoulder",
+      "body.layer": "surface"
+     },
+     "forms": [
+      {
+       "category": "fragments",
+       "phrase": "부스러기 같은 게",
+       "verdict": "기본값",
+       "why": "form.type=null"
+      }
+     ],
+     "others": [
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "회색 부스러기",
+       "status": "reflected",
+       "actual": {
+        "hue_deg": 0.0,
+        "s": 0.05,
+        "l": 0.45
+       }
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "아래로 떨어져요",
+       "status": "distorted",
+       "actual": null
+      },
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "깨알만 해요",
+       "status": "lost",
+       "actual": null
+      },
+      {
+       "attr": "body_part",
+       "group": "몸 위치",
+       "phrase": "어깨 위요",
+       "status": "reflected",
+       "actual": "shoulder"
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "표면이요",
+       "status": "reflected",
+       "actual": "surface"
+      }
+     ],
+     "unity": {
+      "renderPath": "blob",
+      "visiblePixels": 25260,
+      "maxAlpha": 1.0,
+      "circularity": 0.959,
+      "components": 1,
+      "edgeFalloffPx": 0.71,
+      "defaultsUsed": [
+       "form.type",
+       "form.posture",
+       "material.brightness",
+       "material.roughness",
+       "material.opacity",
+       "material.erosion",
+       "layout.size",
+       "motion.type",
+       "motion.speed"
+      ],
+      "png": "M13.v0.png"
+     },
+     "visual": {
+      "verdict": "다른 것으로 보임",
+      "why": "회색 덩어리 공"
+     }
+    },
+    "v1": {
+     "slots": {
+      "form.type": "fragments",
+      "form.posture": null,
+      "color": {
+       "h": 0.0,
+       "s": 0.05,
+       "l": 0.45
+      },
+      "opacity": null,
+      "brightness": null,
+      "roughness": null,
+      "size": null,
+      "distance": 0.6,
+      "verticalOffset": null,
+      "motion.type": null,
+      "body.part": "shoulder",
+      "body.layer": "surface"
+     },
+     "forms": [
+      {
+       "category": "fragments",
+       "phrase": "부스러기 같은 게",
+       "verdict": "반영",
+       "why": "form.type=fragments"
+      }
+     ],
+     "others": [
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "회색 부스러기",
+       "status": "reflected",
+       "actual": {
+        "hue_deg": 0.0,
+        "s": 0.05,
+        "l": 0.45
+       }
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "아래로 떨어져요",
+       "status": "distorted",
+       "actual": null
+      },
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "깨알만 해요",
+       "status": "preserved",
+       "actual": null
+      },
+      {
+       "attr": "body_part",
+       "group": "몸 위치",
+       "phrase": "어깨 위요",
+       "status": "reflected",
+       "actual": "shoulder"
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "표면이요",
+       "status": "reflected",
+       "actual": "surface"
+      }
+     ],
+     "unity": {
+      "renderPath": "fragments",
+      "visiblePixels": 9581,
+      "maxAlpha": 1.0,
+      "circularity": 0.153,
+      "components": 5,
+      "edgeFalloffPx": 0.67,
+      "defaultsUsed": [
+       "form.posture",
+       "material.brightness",
+       "material.roughness",
+       "material.opacity",
+       "material.erosion",
+       "layout.size",
+       "layout.verticalOffset",
+       "motion.type",
+       "motion.speed"
+      ],
+      "png": "M13.v1.png"
+     },
+     "visual": {
+      "verdict": "그 형상답다",
+      "why": "회색 각진 부스러기(깨알보다는 큼)"
+     }
+    }
+   }
+  },
+  {
+   "id": "M14",
+   "expected": "둥근 공 · 주황 · 매끈 · 은은히 빛남 · 배구공 · 한두 걸음 앞 · 굴러감",
+   "tags": {
+    "form": [
+     "round"
+    ],
+    "color": [
+     "basic"
+    ],
+    "size": [
+     "numeric_ref",
+     "distance"
+    ],
+    "texture": [
+     "smooth",
+     "glow"
+    ],
+    "motion": [
+     "rotating"
+    ],
+    "response": "all",
+    "speech": "보통"
+   },
+   "mappers": {
+    "v0": {
+     "slots": {
+      "form.type": null,
+      "form.posture": null,
+      "color": {
+       "h": 0.078,
+       "s": 0.85,
+       "l": 0.55
+      },
+      "opacity": null,
+      "brightness": 0.9,
+      "roughness": 0.1,
+      "size": null,
+      "distance": null,
+      "verticalOffset": 0.6,
+      "motion.type": null,
+      "body.part": "belly",
+      "body.layer": "around_front"
+     },
+     "forms": [
+      {
+       "category": "round",
+       "phrase": "완전히 둥근 공 모양",
+       "verdict": "반영",
+       "why": "_unmapped shape=round"
+      }
+     ],
+     "others": [
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "주황색",
+       "status": "reflected",
+       "actual": {
+        "hue_deg": 28.1,
+        "s": 0.85,
+        "l": 0.55
+       }
+      },
+      {
+       "attr": "texture_roughness",
+       "group": "질감",
+       "phrase": "미끄러울 만큼 매끈해요",
+       "status": "reflected",
+       "actual": 0.1
+      },
+      {
+       "attr": "brightness",
+       "group": "밝기",
+       "phrase": "은은하게 빛나요",
+       "status": "distorted",
+       "actual": 0.9
+      },
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "배구공만 해요",
+       "status": "lost",
+       "actual": null
+      },
+      {
+       "attr": "distance",
+       "group": "높이·거리",
+       "phrase": "한두 걸음 앞에",
+       "status": "lost",
+       "actual": null
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "제자리에서 천천히 굴러요",
+       "status": "distorted",
+       "actual": null
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "몸 앞에, 주변이요",
+       "status": "reflected",
+       "actual": "around_front"
+      }
+     ],
+     "unity": {
+      "renderPath": "shapePrefab(Sphere)",
+      "visiblePixels": 54929,
+      "maxAlpha": 1.0,
+      "circularity": 0.969,
+      "components": 1,
+      "edgeFalloffPx": 0.69,
+      "defaultsUsed": [
+       "form.type",
+       "form.posture",
+       "material.opacity",
+       "material.erosion",
+       "layout.size",
+       "layout.distance",
+       "motion.type"
+      ],
+      "png": "M14.v0.png"
+     },
+     "visual": {
+      "verdict": "그 형상답다",
+      "why": "매끈한 주황 공"
+     }
+    },
+    "v1": {
+     "slots": {
+      "form.type": "blob",
+      "form.posture": null,
+      "color": {
+       "h": 0.078,
+       "s": 0.85,
+       "l": 0.55
+      },
+      "opacity": null,
+      "brightness": 0.5,
+      "roughness": 0.15,
+      "size": 0.512,
+      "distance": null,
+      "verticalOffset": null,
+      "motion.type": "rotating",
+      "body.part": "belly",
+      "body.layer": "around"
+     },
+     "forms": [
+      {
+       "category": "round",
+       "phrase": "완전히 둥근 공 모양",
+       "verdict": "반영+form",
+       "why": "_unmapped shape=round, form.type=blob"
+      }
+     ],
+     "others": [
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "주황색",
+       "status": "reflected",
+       "actual": {
+        "hue_deg": 28.1,
+        "s": 0.85,
+        "l": 0.55
+       }
+      },
+      {
+       "attr": "texture_roughness",
+       "group": "질감",
+       "phrase": "미끄러울 만큼 매끈해요",
+       "status": "reflected",
+       "actual": 0.15
+      },
+      {
+       "attr": "brightness",
+       "group": "밝기",
+       "phrase": "은은하게 빛나요",
+       "status": "reflected",
+       "actual": 0.5
+      },
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "배구공만 해요",
+       "status": "reflected",
+       "actual": 0.512
+      },
+      {
+       "attr": "distance",
+       "group": "높이·거리",
+       "phrase": "한두 걸음 앞에",
+       "status": "preserved",
+       "actual": null
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "제자리에서 천천히 굴러요",
+       "status": "reflected",
+       "actual": "rotating"
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "몸 앞에, 주변이요",
+       "status": "reflected",
+       "actual": "around"
+      }
+     ],
+     "unity": {
+      "renderPath": "shapePrefab(Sphere)",
+      "visiblePixels": 67775,
+      "maxAlpha": 1.0,
+      "circularity": 0.97,
+      "components": 1,
+      "edgeFalloffPx": 0.69,
+      "defaultsUsed": [
+       "form.posture",
+       "material.opacity",
+       "material.erosion",
+       "layout.distance",
+       "layout.verticalOffset"
+      ],
+      "png": "M14.v1.png"
+     },
+     "visual": {
+      "verdict": "그 형상답다",
+      "why": "매끈한 주황 공"
+     }
+    }
+   }
+  },
+  {
+   "id": "M15",
+   "expected": "네모난 상자 · 검정 · 딱딱 · 신발 상자만 · 안 움직임 · 등 표면",
+   "tags": {
+    "form": [
+     "square"
+    ],
+    "color": [
+     "basic"
+    ],
+    "size": [
+     "numeric_ref",
+     "body"
+    ],
+    "texture": [
+     "hard"
+    ],
+    "motion": [
+     "still"
+    ],
+    "response": "partial",
+    "speech": "짧게"
+   },
+   "mappers": {
+    "v0": {
+     "slots": {
+      "form.type": null,
+      "form.posture": null,
+      "color": {
+       "h": 0.0,
+       "s": 0.0,
+       "l": 0.06
+      },
+      "opacity": null,
+      "brightness": null,
+      "roughness": null,
+      "size": null,
+      "distance": 0.0,
+      "verticalOffset": 0.72,
+      "motion.type": "still",
+      "body.part": "back",
+      "body.layer": "surface"
+     },
+     "forms": [
+      {
+       "category": "square",
+       "phrase": "네모난 상자",
+       "verdict": "반영",
+       "why": "_unmapped shape=square"
+      }
+     ],
+     "others": [
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "까만",
+       "status": "reflected",
+       "actual": {
+        "hue_deg": 0.0,
+        "s": 0.0,
+        "l": 0.06
+       }
+      },
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "신발 상자만 해요",
+       "status": "lost",
+       "actual": null
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "움직임은 없어요",
+       "status": "reflected",
+       "actual": "still"
+      },
+      {
+       "attr": "body_part",
+       "group": "몸 위치",
+       "phrase": "등에 붙어",
+       "status": "reflected",
+       "actual": "back"
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "몸 표면이요",
+       "status": "reflected",
+       "actual": "surface"
+      }
+     ],
+     "unity": {
+      "renderPath": "shapePrefab(Cube)",
+      "visiblePixels": 1167377,
+      "maxAlpha": 1.0,
+      "circularity": 0.861,
+      "components": 1,
+      "edgeFalloffPx": 0.77,
+      "defaultsUsed": [
+       "form.type",
+       "form.posture",
+       "material.brightness",
+       "material.roughness",
+       "material.opacity",
+       "material.erosion",
+       "layout.size",
+       "motion.speed"
+      ],
+      "png": "M15.v0.png"
+     },
+     "visual": {
+      "verdict": "부분적",
+      "why": "검은 큐브가 아주 가까이(distance 0) 커서 육각형 윤곽으로 보임"
+     }
+    },
+    "v1": {
+     "slots": {
+      "form.type": null,
+      "form.posture": null,
+      "color": {
+       "h": 0.0,
+       "s": 0.0,
+       "l": 0.06
+      },
+      "opacity": null,
+      "brightness": null,
+      "roughness": null,
+      "size": null,
+      "distance": 0.0,
+      "verticalOffset": null,
+      "motion.type": "still",
+      "body.part": "back",
+      "body.layer": "surface"
+     },
+     "forms": [
+      {
+       "category": "square",
+       "phrase": "네모난 상자",
+       "verdict": "반영",
+       "why": "_unmapped shape=square"
+      }
+     ],
+     "others": [
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "까만",
+       "status": "reflected",
+       "actual": {
+        "hue_deg": 0.0,
+        "s": 0.0,
+        "l": 0.06
+       }
+      },
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "신발 상자만 해요",
+       "status": "preserved",
+       "actual": null
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "움직임은 없어요",
+       "status": "reflected",
+       "actual": "still"
+      },
+      {
+       "attr": "body_part",
+       "group": "몸 위치",
+       "phrase": "등에 붙어",
+       "status": "reflected",
+       "actual": "back"
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "몸 표면이요",
+       "status": "reflected",
+       "actual": "surface"
+      }
+     ],
+     "unity": {
+      "renderPath": "shapePrefab(Cube)",
+      "visiblePixels": 1481824,
+      "maxAlpha": 1.0,
+      "circularity": 0.854,
+      "components": 1,
+      "edgeFalloffPx": 0.59,
+      "defaultsUsed": [
+       "form.type",
+       "form.posture",
+       "material.brightness",
+       "material.roughness",
+       "material.opacity",
+       "material.erosion",
+       "layout.size",
+       "layout.verticalOffset",
+       "motion.speed"
+      ],
+      "png": "M15.v1.png"
+     },
+     "visual": {
+      "verdict": "부분적",
+      "why": "검은 큐브가 아주 가까이 커서 육각형 윤곽으로 보임"
+     }
+    }
+   }
+  },
+  {
+   "id": "M16",
+   "expected": "납작한 돌 · 회색+하얀 줄 · 9 cm · 매끈 · 가만히 · 명치 안",
+   "tags": {
+    "form": [
+     "flat"
+    ],
+    "color": [
+     "mixed"
+    ],
+    "size": [
+     "numeric_unit",
+     "body"
+    ],
+    "texture": [
+     "smooth"
+    ],
+    "motion": [
+     "still"
+    ],
+    "response": "all",
+    "speech": "한 번에 길게"
+   },
+   "mappers": {
+    "v0": {
+     "slots": {
+      "form.type": "blob",
+      "form.posture": null,
+      "color": {
+       "h": 0.0,
+       "s": 0.05,
+       "l": 0.45
+      },
+      "opacity": null,
+      "brightness": null,
+      "roughness": 0.1,
+      "size": null,
+      "distance": null,
+      "verticalOffset": 0.67,
+      "motion.type": null,
+      "body.part": "solar_plexus",
+      "body.layer": null
+     },
+     "forms": [
+      {
+       "category": "flat",
+       "phrase": "납작한 돌처럼",
+       "verdict": "반영+form",
+       "why": "_unmapped shape=flat, form.type=blob"
+      }
+     ],
+     "others": [
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "9 cm쯤",
+       "status": "lost",
+       "actual": null
+      },
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "회색에",
+       "status": "reflected",
+       "actual": {
+        "hue_deg": 0.0,
+        "s": 0.05,
+        "l": 0.45
+       }
+      },
+      {
+       "attr": "texture_roughness",
+       "group": "질감",
+       "phrase": "매끄러워요",
+       "status": "reflected",
+       "actual": 0.1
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "그대로 놓여 있어요",
+       "status": "lost",
+       "actual": null
+      },
+      {
+       "attr": "body_part",
+       "group": "몸 위치",
+       "phrase": "명치 쪽",
+       "status": "reflected",
+       "actual": "solar_plexus"
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "몸 안이요",
+       "status": "lost",
+       "actual": null
+      }
+     ],
+     "unity": {
+      "renderPath": "shapePrefab(FlatCylinder)",
+      "visiblePixels": 49297,
+      "maxAlpha": 1.0,
+      "circularity": 0.885,
+      "components": 1,
+      "edgeFalloffPx": 0.73,
+      "defaultsUsed": [
+       "form.posture",
+       "material.brightness",
+       "material.opacity",
+       "material.erosion",
+       "layout.size",
+       "layout.distance",
+       "motion.type",
+       "motion.speed"
+      ],
+      "png": "M16.v0.png"
+     },
+     "visual": {
+      "verdict": "부분적",
+      "why": "납작 원기둥(통조림 같음). 돌·흰 줄 없음"
+     }
+    },
+    "v1": {
+     "slots": {
+      "form.type": "blob",
+      "form.posture": null,
+      "color": {
+       "h": 0.0,
+       "s": 0.05,
+       "l": 0.45
+      },
+      "opacity": null,
+      "brightness": null,
+      "roughness": 0.1,
+      "size": null,
+      "distance": null,
+      "verticalOffset": null,
+      "motion.type": null,
+      "body.part": "solar_plexus",
+      "body.layer": "inner"
+     },
+     "forms": [
+      {
+       "category": "flat",
+       "phrase": "납작한 돌처럼",
+       "verdict": "반영+form",
+       "why": "_unmapped shape=flat, form.type=blob"
+      }
+     ],
+     "others": [
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "9 cm쯤",
+       "status": "preserved",
+       "actual": null
+      },
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "회색에",
+       "status": "reflected",
+       "actual": {
+        "hue_deg": 0.0,
+        "s": 0.05,
+        "l": 0.45
+       }
+      },
+      {
+       "attr": "texture_roughness",
+       "group": "질감",
+       "phrase": "매끄러워요",
+       "status": "reflected",
+       "actual": 0.1
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "그대로 놓여 있어요",
+       "status": "preserved",
+       "actual": null
+      },
+      {
+       "attr": "body_part",
+       "group": "몸 위치",
+       "phrase": "명치 쪽",
+       "status": "reflected",
+       "actual": "solar_plexus"
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "몸 안이요",
+       "status": "reflected",
+       "actual": "inner"
+      }
+     ],
+     "unity": {
+      "renderPath": "shapePrefab(FlatCylinder)",
+      "visiblePixels": 47743,
+      "maxAlpha": 1.0,
+      "circularity": 0.842,
+      "components": 1,
+      "edgeFalloffPx": 0.72,
+      "defaultsUsed": [
+       "form.posture",
+       "material.brightness",
+       "material.opacity",
+       "material.erosion",
+       "layout.size",
+       "layout.distance",
+       "layout.verticalOffset",
+       "motion.type",
+       "motion.speed"
+      ],
+      "png": "M16.v1.png"
+     },
+     "visual": {
+      "verdict": "부분적",
+      "why": "납작 원기둥(통조림 같음). 돌·흰 줄 없음"
+     }
+    }
+   }
+  },
+  {
+   "id": "M17",
+   "expected": "뾰족한 가시 · 빨강 · 새끼손가락 반 · 파르르 떨림 · 목 안",
+   "tags": {
+    "form": [
+     "pointed"
+    ],
+    "color": [
+     "basic"
+    ],
+    "size": [
+     "numeric_ref",
+     "body"
+    ],
+    "texture": [],
+    "motion": [
+     "trembling"
+    ],
+    "response": "all",
+    "speech": "비유"
+   },
+   "mappers": {
+    "v0": {
+     "slots": {
+      "form.type": null,
+      "form.posture": null,
+      "color": {
+       "h": 0.0,
+       "s": 0.75,
+       "l": 0.45
+      },
+      "opacity": null,
+      "brightness": null,
+      "roughness": null,
+      "size": null,
+      "distance": null,
+      "verticalOffset": 0.85,
+      "motion.type": "trembling",
+      "body.part": "throat_neck",
+      "body.layer": "inner"
+     },
+     "forms": [
+      {
+       "category": "pointed",
+       "phrase": "끝이 뾰족해요",
+       "verdict": "반영",
+       "why": "_unmapped shape=pointed"
+      }
+     ],
+     "others": [
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "빨갛고",
+       "status": "reflected",
+       "actual": {
+        "hue_deg": 0.0,
+        "s": 0.75,
+        "l": 0.45
+       }
+      },
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "새끼손가락 반만 해요",
+       "status": "lost",
+       "actual": null
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "파르르 떨려요",
+       "status": "reflected",
+       "actual": "trembling"
+      },
+      {
+       "attr": "body_part",
+       "group": "몸 위치",
+       "phrase": "목구멍 쪽",
+       "status": "reflected",
+       "actual": "throat_neck"
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "몸 안이요",
+       "status": "reflected",
+       "actual": "inner"
+      }
+     ],
+     "unity": {
+      "renderPath": "shapePrefab(Cone)",
+      "visiblePixels": 51506,
+      "maxAlpha": 1.0,
+      "circularity": 0.674,
+      "components": 1,
+      "edgeFalloffPx": 0.67,
+      "defaultsUsed": [
+       "form.type",
+       "form.posture",
+       "material.brightness",
+       "material.roughness",
+       "material.opacity",
+       "material.erosion",
+       "layout.size",
+       "layout.distance",
+       "motion.speed"
+      ],
+      "png": "M17.v0.png"
+     },
+     "visual": {
+      "verdict": "그 형상답다",
+      "why": "빨간 원뿔(뾰족함)"
+     }
+    },
+    "v1": {
+     "slots": {
+      "form.type": null,
+      "form.posture": null,
+      "color": {
+       "h": 0.0,
+       "s": 0.75,
+       "l": 0.45
+      },
+      "opacity": null,
+      "brightness": null,
+      "roughness": null,
+      "size": 0.044,
+      "distance": null,
+      "verticalOffset": null,
+      "motion.type": "trembling",
+      "body.part": "throat_neck",
+      "body.layer": "inner"
+     },
+     "forms": [
+      {
+       "category": "pointed",
+       "phrase": "끝이 뾰족해요",
+       "verdict": "반영",
+       "why": "_unmapped shape=pointed"
+      }
+     ],
+     "others": [
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "빨갛고",
+       "status": "reflected",
+       "actual": {
+        "hue_deg": 0.0,
+        "s": 0.75,
+        "l": 0.45
+       }
+      },
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "새끼손가락 반만 해요",
+       "status": "reflected",
+       "actual": 0.044
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "파르르 떨려요",
+       "status": "reflected",
+       "actual": "trembling"
+      },
+      {
+       "attr": "body_part",
+       "group": "몸 위치",
+       "phrase": "목구멍 쪽",
+       "status": "reflected",
+       "actual": "throat_neck"
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "몸 안이요",
+       "status": "reflected",
+       "actual": "inner"
+      }
+     ],
+     "unity": {
+      "renderPath": "shapePrefab(Cone)",
+      "visiblePixels": 3910,
+      "maxAlpha": 1.0,
+      "circularity": 0.688,
+      "components": 1,
+      "edgeFalloffPx": 0.7,
+      "defaultsUsed": [
+       "form.type",
+       "form.posture",
+       "material.brightness",
+       "material.roughness",
+       "material.opacity",
+       "material.erosion",
+       "layout.distance",
+       "layout.verticalOffset",
+       "motion.speed"
+      ],
+      "png": "M17.v1.png"
+     },
+     "visual": {
+      "verdict": "부분적",
+      "why": "빨간 원뿔이나 아주 작음(3,910화소)"
+     }
+    }
+   }
+  },
+  {
+   "id": "M18",
+   "expected": "엉킨 검은 실 · 머리카락 굵기 · 조여 옴 · 손 표면",
+   "tags": {
+    "form": [
+     "lines"
+    ],
+    "color": [
+     "basic"
+    ],
+    "size": [
+     "width_only",
+     "body"
+    ],
+    "texture": [],
+    "motion": [
+     "other"
+    ],
+    "response": "partial",
+    "speech": "머뭇거림"
+   },
+   "mappers": {
+    "v0": {
+     "slots": {
+      "form.type": null,
+      "form.posture": null,
+      "color": {
+       "h": 0.0,
+       "s": 0.0,
+       "l": 0.08
+      },
+      "opacity": null,
+      "brightness": null,
+      "roughness": null,
+      "size": null,
+      "distance": null,
+      "verticalOffset": 0.49,
+      "motion.type": null,
+      "body.part": "hand",
+      "body.layer": "surface"
+     },
+     "forms": [
+      {
+       "category": "lines",
+       "phrase": "가느다란 검은 실",
+       "verdict": "미반영",
+       "why": "_unmapped 실→{\"shape\": \"thread\"}"
+      }
+     ],
+     "others": [
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "검은 실",
+       "status": "reflected",
+       "actual": {
+        "hue_deg": 0.0,
+        "s": 0.0,
+        "l": 0.08
+       }
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "조금씩 조여 와요",
+       "status": "lost",
+       "actual": null
+      },
+      {
+       "attr": "body_part",
+       "group": "몸 위치",
+       "phrase": "손가락",
+       "status": "reflected",
+       "actual": "hand"
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "몸 표면",
+       "status": "reflected",
+       "actual": "surface"
+      }
+     ],
+     "unity": {
+      "renderPath": "blob",
+      "visiblePixels": 47419,
+      "maxAlpha": 1.0,
+      "circularity": 0.956,
+      "components": 1,
+      "edgeFalloffPx": 0.69,
+      "defaultsUsed": [
+       "form.type",
+       "form.posture",
+       "material.brightness",
+       "material.roughness",
+       "material.opacity",
+       "material.erosion",
+       "layout.size",
+       "layout.distance",
+       "motion.type",
+       "motion.speed"
+      ],
+      "png": "M18.v0.png"
+     },
+     "visual": {
+      "verdict": "다른 것으로 보임",
+      "why": "검은 덩어리 공. 실 아님"
+     }
+    },
+    "v1": {
+     "slots": {
+      "form.type": null,
+      "form.posture": null,
+      "color": {
+       "h": 0.0,
+       "s": 0.0,
+       "l": 0.08
+      },
+      "opacity": null,
+      "brightness": null,
+      "roughness": null,
+      "size": null,
+      "distance": null,
+      "verticalOffset": null,
+      "motion.type": null,
+      "body.part": "hand",
+      "body.layer": "surface"
+     },
+     "forms": [
+      {
+       "category": "lines",
+       "phrase": "가느다란 검은 실",
+       "verdict": "미반영",
+       "why": "_unmapped 실→{\"shape\": \"thread\"}"
+      }
+     ],
+     "others": [
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "검은 실",
+       "status": "reflected",
+       "actual": {
+        "hue_deg": 0.0,
+        "s": 0.0,
+        "l": 0.08
+       }
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "조금씩 조여 와요",
+       "status": "preserved",
+       "actual": null
+      },
+      {
+       "attr": "body_part",
+       "group": "몸 위치",
+       "phrase": "손가락",
+       "status": "reflected",
+       "actual": "hand"
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "몸 표면",
+       "status": "reflected",
+       "actual": "surface"
+      }
+     ],
+     "unity": {
+      "renderPath": "blob",
+      "visiblePixels": 62619,
+      "maxAlpha": 1.0,
+      "circularity": 0.962,
+      "components": 1,
+      "edgeFalloffPx": 0.69,
+      "defaultsUsed": [
+       "form.type",
+       "form.posture",
+       "material.brightness",
+       "material.roughness",
+       "material.opacity",
+       "material.erosion",
+       "layout.size",
+       "layout.distance",
+       "layout.verticalOffset",
+       "motion.type",
+       "motion.speed"
+      ],
+      "png": "M18.v1.png"
+     },
+     "visual": {
+      "verdict": "다른 것으로 보임",
+      "why": "검은 덩어리 공. 실 아님"
+     }
+    }
+   },
+   "live": {
+    "slots": {
+     "form.type": null,
+     "form.posture": null,
+     "color": {
+      "h": 0.0,
+      "s": 0.0,
+      "l": 0.08
+     },
+     "opacity": null,
+     "brightness": null,
+     "roughness": null,
+     "size": null,
+     "distance": null,
+     "verticalOffset": null,
+     "motion.type": null,
+     "body.part": "hand",
+     "body.layer": "surface"
+    },
+    "unity": {
+     "renderPath": "blob",
+     "visiblePixels": 62619,
+     "circularity": 0.962,
+     "components": 1
+    },
+    "visual": {
+     "verdict": "다른 것으로 보임",
+     "why": "검은 덩어리 공"
+    }
+   }
+  },
+  {
+   "id": "M19",
+   "expected": "가는 선 · 금빛 · 희미하게 빛남 · 40 cm · 아래로 흘러내림 · 척추 안",
+   "tags": {
+    "form": [
+     "lines",
+     "light"
+    ],
+    "color": [
+     "mid"
+    ],
+    "size": [
+     "numeric_unit"
+    ],
+    "texture": [
+     "glow"
+    ],
+    "motion": [
+     "dripping"
+    ],
+    "response": "all",
+    "speech": "짧게"
+   },
+   "mappers": {
+    "v0": {
+     "slots": {
+      "form.type": null,
+      "form.posture": null,
+      "color": null,
+      "opacity": null,
+      "brightness": 0.25,
+      "roughness": null,
+      "size": null,
+      "distance": null,
+      "verticalOffset": 0.72,
+      "motion.type": null,
+      "body.part": "back",
+      "body.layer": null
+     },
+     "forms": [
+      {
+       "category": "lines",
+       "phrase": "가느다란 선 하나",
+       "verdict": "미반영",
+       "why": "_unmapped 선→{\"shape\": \"line\"}"
+      }
+     ],
+     "others": [
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "금빛",
+       "status": "preserved",
+       "actual": null
+      },
+      {
+       "attr": "brightness",
+       "group": "밝기",
+       "phrase": "희미하게 빛나요",
+       "status": "distorted",
+       "actual": 0.25
+      },
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "길이는 40센티쯤이요",
+       "status": "lost",
+       "actual": null
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "아래로 천천히 흘러내려요",
+       "status": "lost",
+       "actual": null
+      },
+      {
+       "attr": "motion_speed",
+       "group": "움직임",
+       "phrase": "천천히 흘러내려요",
+       "status": "reflected",
+       "actual": 0.25
+      },
+      {
+       "attr": "body_part",
+       "group": "몸 위치",
+       "phrase": "척추를 따라서요",
+       "status": "reflected",
+       "actual": "back"
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "몸 안이요",
+       "status": "lost",
+       "actual": null
+      }
+     ],
+     "unity": {
+      "renderPath": "blob",
+      "visiblePixels": 61127,
+      "maxAlpha": 1.0,
+      "circularity": 0.96,
+      "components": 1,
+      "edgeFalloffPx": 0.71,
+      "defaultsUsed": [
+       "form.type",
+       "form.posture",
+       "material.color.h",
+       "material.color.s",
+       "material.color.l",
+       "material.roughness",
+       "material.opacity",
+       "material.erosion",
+       "layout.size",
+       "layout.distance",
+       "motion.type"
+      ],
+      "png": "M19.v0.png"
+     },
+     "visual": {
+      "verdict": "다른 것으로 보임",
+      "why": "회색 덩어리 공. 선·빛 아님"
+     }
+    },
+    "v1": {
+     "slots": {
+      "form.type": null,
+      "form.posture": null,
+      "color": {
+       "h": 0.125,
+       "s": 0.75,
+       "l": 0.5
+      },
+      "opacity": null,
+      "brightness": 0.25,
+      "roughness": null,
+      "size": 0.667,
+      "distance": null,
+      "verticalOffset": null,
+      "motion.type": null,
+      "body.part": "back",
+      "body.layer": "inner"
+     },
+     "forms": [
+      {
+       "category": "lines",
+       "phrase": "가느다란 선 하나",
+       "verdict": "미반영",
+       "why": "_unmapped 선→{\"shape\": \"line\"}"
+      }
+     ],
+     "others": [
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "금빛",
+       "status": "reflected",
+       "actual": {
+        "hue_deg": 45.0,
+        "s": 0.75,
+        "l": 0.5
+       }
+      },
+      {
+       "attr": "brightness",
+       "group": "밝기",
+       "phrase": "희미하게 빛나요",
+       "status": "distorted",
+       "actual": 0.25
+      },
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "길이는 40센티쯤이요",
+       "status": "reflected",
+       "actual": 0.667
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "아래로 천천히 흘러내려요",
+       "status": "lost",
+       "actual": null
+      },
+      {
+       "attr": "motion_speed",
+       "group": "움직임",
+       "phrase": "천천히 흘러내려요",
+       "status": "reflected",
+       "actual": 0.25
+      },
+      {
+       "attr": "body_part",
+       "group": "몸 위치",
+       "phrase": "척추를 따라서요",
+       "status": "reflected",
+       "actual": "back"
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "몸 안이요",
+       "status": "reflected",
+       "actual": "inner"
+      }
+     ],
+     "unity": {
+      "renderPath": "blob",
+      "visiblePixels": 162753,
+      "maxAlpha": 1.0,
+      "circularity": 0.959,
+      "components": 1,
+      "edgeFalloffPx": 0.72,
+      "defaultsUsed": [
+       "form.type",
+       "form.posture",
+       "material.roughness",
+       "material.opacity",
+       "material.erosion",
+       "layout.distance",
+       "layout.verticalOffset",
+       "motion.type"
+      ],
+      "png": "M19.v1.png"
+     },
+     "visual": {
+      "verdict": "다른 것으로 보임",
+      "why": "금색 덩어리 공. 선·빛 아님"
+     }
+    }
+   }
+  },
+  {
+   "id": "M20",
+   "expected": "종이 한 장 · 하양 · A4 · 눈높이 · 팔랑임",
+   "tags": {
+    "form": [
+     "sheet"
+    ],
+    "color": [
+     "basic"
+    ],
+    "size": [
+     "numeric_ref",
+     "height"
+    ],
+    "texture": [],
+    "motion": [
+     "floating"
+    ],
+    "response": "partial",
+    "speech": "짧게"
+   },
+   "mappers": {
+    "v0": {
+     "slots": {
+      "form.type": null,
+      "form.posture": null,
+      "color": {
+       "h": 0.0,
+       "s": 0.0,
+       "l": 0.95
+      },
+      "opacity": null,
+      "brightness": null,
+      "roughness": null,
+      "size": null,
+      "distance": null,
+      "verticalOffset": null,
+      "motion.type": "floating",
+      "body.part": null,
+      "body.layer": null
+     },
+     "forms": [
+      {
+       "category": "sheet",
+       "phrase": "종이 한 장",
+       "verdict": "미반영",
+       "why": "_unmapped 종이→{\"object\": \"paper\"}"
+      }
+     ],
+     "others": [
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "A4 종이 한 장",
+       "status": "lost",
+       "actual": null
+      },
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "하얘요",
+       "status": "reflected",
+       "actual": {
+        "hue_deg": 0.0,
+        "s": 0.0,
+        "l": 0.95
+       }
+      },
+      {
+       "attr": "height",
+       "group": "높이·거리",
+       "phrase": "눈높이쯤에",
+       "status": "lost",
+       "actual": null
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "팔랑거려요",
+       "status": "dropped_by_controller",
+       "actual": null
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "주변이요",
+       "status": "lost",
+       "actual": null
+      }
+     ],
+     "unity": {
+      "renderPath": "blob",
+      "visiblePixels": 62619,
+      "maxAlpha": 1.0,
+      "circularity": 0.961,
+      "components": 1,
+      "edgeFalloffPx": 0.69,
+      "defaultsUsed": [
+       "form.type",
+       "form.posture",
+       "material.brightness",
+       "material.roughness",
+       "material.opacity",
+       "material.erosion",
+       "layout.size",
+       "layout.distance",
+       "layout.verticalOffset",
+       "motion.speed"
+      ],
+      "png": "M20.v0.png"
+     },
+     "visual": {
+      "verdict": "다른 것으로 보임",
+      "why": "흰 덩어리 공. 종이 아님"
+     }
+    },
+    "v1": {
+     "slots": {
+      "form.type": null,
+      "form.posture": null,
+      "color": {
+       "h": 0.0,
+       "s": 0.0,
+       "l": 0.95
+      },
+      "opacity": null,
+      "brightness": null,
+      "roughness": null,
+      "size": null,
+      "distance": null,
+      "verticalOffset": 0.93,
+      "motion.type": "floating",
+      "body.part": null,
+      "body.layer": "around"
+     },
+     "forms": [
+      {
+       "category": "sheet",
+       "phrase": "종이 한 장",
+       "verdict": "미반영",
+       "why": "_unmapped 종이→{\"object\": \"paper\"}"
+      }
+     ],
+     "others": [
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "A4 종이 한 장",
+       "status": "preserved",
+       "actual": null
+      },
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "하얘요",
+       "status": "reflected",
+       "actual": {
+        "hue_deg": 0.0,
+        "s": 0.0,
+        "l": 0.95
+       }
+      },
+      {
+       "attr": "height",
+       "group": "높이·거리",
+       "phrase": "눈높이쯤에",
+       "status": "reflected",
+       "actual": 0.93
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "팔랑거려요",
+       "status": "dropped_by_controller",
+       "actual": null
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "주변이요",
+       "status": "reflected",
+       "actual": "around"
+      }
+     ],
+     "unity": {
+      "renderPath": "blob",
+      "visiblePixels": 67207,
+      "maxAlpha": 1.0,
+      "circularity": 0.957,
+      "components": 1,
+      "edgeFalloffPx": 0.71,
+      "defaultsUsed": [
+       "form.type",
+       "form.posture",
+       "material.brightness",
+       "material.roughness",
+       "material.opacity",
+       "material.erosion",
+       "layout.size",
+       "layout.distance",
+       "motion.speed"
+      ],
+      "png": "M20.v1.png"
+     },
+     "visual": {
+      "verdict": "다른 것으로 보임",
+      "why": "흰 덩어리 공. 종이 아님"
+     }
+    }
+   }
+  },
+  {
+   "id": "M21",
+   "expected": "얇은 천 · 보라+남색 · 반투명 · 상체를 덮을 만큼 · 흘러내림 · 어깨 표면",
+   "tags": {
+    "form": [
+     "sheet"
+    ],
+    "color": [
+     "mixed",
+     "mid"
+    ],
+    "size": [
+     "relative",
+     "body"
+    ],
+    "texture": [
+     "semi_transparent",
+     "soft"
+    ],
+    "motion": [
+     "dripping"
+    ],
+    "response": "all",
+    "speech": "길게 풀어서"
+   },
+   "mappers": {
+    "v0": {
+     "slots": {
+      "form.type": null,
+      "form.posture": null,
+      "color": {
+       "h": 0.764,
+       "s": 0.45,
+       "l": 0.45
+      },
+      "opacity": 0.1,
+      "brightness": null,
+      "roughness": null,
+      "size": null,
+      "distance": null,
+      "verticalOffset": 0.82,
+      "motion.type": null,
+      "body.part": "shoulder",
+      "body.layer": "surface"
+     },
+     "forms": [
+      {
+       "category": "sheet",
+       "phrase": "얇은 천",
+       "verdict": "미반영",
+       "why": "_unmapped 얇→{\"shape\": \"thin\"}"
+      }
+     ],
+     "others": [
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "보라색",
+       "status": "reflected",
+       "actual": {
+        "hue_deg": 275.0,
+        "s": 0.45,
+        "l": 0.45
+       }
+      },
+      {
+       "attr": "opacity",
+       "group": "투명",
+       "phrase": "반투명해요",
+       "status": "distorted",
+       "actual": 0.1
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "아래로 흘러내려요",
+       "status": "lost",
+       "actual": null
+      },
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "상체를 다 덮을 정도요",
+       "status": "lost",
+       "actual": null
+      },
+      {
+       "attr": "body_part",
+       "group": "몸 위치",
+       "phrase": "어깨랑 등",
+       "status": "reflected",
+       "actual": "shoulder"
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "표면이요",
+       "status": "reflected",
+       "actual": "surface"
+      }
+     ],
+     "unity": {
+      "renderPath": "blob",
+      "visiblePixels": 65236,
+      "maxAlpha": 0.19,
+      "circularity": 0.499,
+      "components": 1,
+      "edgeFalloffPx": 51.2,
+      "defaultsUsed": [
+       "form.type",
+       "form.posture",
+       "material.brightness",
+       "material.roughness",
+       "material.erosion",
+       "layout.size",
+       "layout.distance",
+       "motion.type",
+       "motion.speed"
+      ],
+      "png": "M21.v0.png"
+     },
+     "visual": {
+      "verdict": "거의 안 보임",
+      "why": "opacity 0.1 보라 구가 아주 옅게"
+     }
+    },
+    "v1": {
+     "slots": {
+      "form.type": null,
+      "form.posture": null,
+      "color": {
+       "h": 0.764,
+       "s": 0.45,
+       "l": 0.45
+      },
+      "opacity": 0.5,
+      "brightness": null,
+      "roughness": null,
+      "size": null,
+      "distance": null,
+      "verticalOffset": null,
+      "motion.type": null,
+      "body.part": "shoulder",
+      "body.layer": "surface"
+     },
+     "forms": [
+      {
+       "category": "sheet",
+       "phrase": "얇은 천",
+       "verdict": "미반영",
+       "why": "_unmapped 얇→{\"shape\": \"thin\"}"
+      }
+     ],
+     "others": [
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "보라색",
+       "status": "reflected",
+       "actual": {
+        "hue_deg": 275.0,
+        "s": 0.45,
+        "l": 0.45
+       }
+      },
+      {
+       "attr": "opacity",
+       "group": "투명",
+       "phrase": "반투명해요",
+       "status": "reflected",
+       "actual": 0.5
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "아래로 흘러내려요",
+       "status": "preserved",
+       "actual": null
+      },
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "상체를 다 덮을 정도요",
+       "status": "preserved",
+       "actual": null
+      },
+      {
+       "attr": "body_part",
+       "group": "몸 위치",
+       "phrase": "어깨랑 등",
+       "status": "reflected",
+       "actual": "shoulder"
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "표면이요",
+       "status": "reflected",
+       "actual": "surface"
+      }
+     ],
+     "unity": {
+      "renderPath": "blob",
+      "visiblePixels": 62476,
+      "maxAlpha": 0.75,
+      "circularity": 0.902,
+      "components": 1,
+      "edgeFalloffPx": 67.18,
+      "defaultsUsed": [
+       "form.type",
+       "form.posture",
+       "material.brightness",
+       "material.roughness",
+       "material.erosion",
+       "layout.size",
+       "layout.distance",
+       "layout.verticalOffset",
+       "motion.type",
+       "motion.speed"
+      ],
+      "png": "M21.v1.png"
+     },
+     "visual": {
+      "verdict": "다른 것으로 보임",
+      "why": "반투명 보라 덩어리 공. 천 아님"
+     }
+    }
+   }
+  },
+  {
+   "id": "M22",
+   "expected": "물방울 · 색 없음 · 가운데만 맑음(부분 투명) · 콩알(1 cm) · 매달려 있음 · 눈 뒤",
+   "tags": {
+    "form": [
+     "liquid",
+     "round"
+    ],
+    "color": [
+     "none"
+    ],
+    "size": [
+     "numeric_unit",
+     "body"
+    ],
+    "texture": [
+     "partial_transparent"
+    ],
+    "motion": [
+     "still"
+    ],
+    "response": "partial",
+    "speech": "짧게"
+   },
+   "mappers": {
+    "v0": {
+     "slots": {
+      "form.type": null,
+      "form.posture": "hanging",
+      "color": null,
+      "opacity": null,
+      "brightness": 0.4,
+      "roughness": null,
+      "size": null,
+      "distance": 0.6,
+      "verticalOffset": null,
+      "motion.type": null,
+      "body.part": "body",
+      "body.layer": null
+     },
+     "forms": [
+      {
+       "category": "liquid",
+       "phrase": "물방울 하나가 맺혀",
+       "verdict": "미반영",
+       "why": "_unmapped 물방울→{\"object\": \"droplet\"}"
+      }
+     ],
+     "others": [
+      {
+       "attr": "opacity",
+       "group": "투명",
+       "phrase": "가운데는 맑게 비치는데 가장자리만 뿌예요",
+       "status": "lost",
+       "actual": null
+      },
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "콩알만 해요",
+       "status": "lost",
+       "actual": null
+      },
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "색은 딱히 없어요",
+       "status": "dropped_by_controller",
+       "actual": null
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "떨어질 듯 말 듯 매달려 있어요",
+       "status": "lost",
+       "actual": null
+      },
+      {
+       "attr": "body_part",
+       "group": "몸 위치",
+       "phrase": "눈 뒤쪽",
+       "status": "distorted",
+       "actual": "body"
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "몸 안이요",
+       "status": "distorted",
+       "actual": null
+      }
+     ],
+     "unity": {
+      "renderPath": "shapePrefab(Sphere)",
+      "visiblePixels": 28131,
+      "maxAlpha": 1.0,
+      "circularity": 0.934,
+      "components": 1,
+      "edgeFalloffPx": 0.69,
+      "defaultsUsed": [
+       "form.type",
+       "material.color.h",
+       "material.color.s",
+       "material.color.l",
+       "material.roughness",
+       "material.opacity",
+       "material.erosion",
+       "layout.size",
+       "layout.verticalOffset",
+       "motion.type",
+       "motion.speed"
+      ],
+      "png": "M22.v0.png"
+     },
+     "visual": {
+      "verdict": "부분적",
+      "why": "불투명 회색 타원 구(물방울 윤곽은 비슷, 투명감 없음)"
+     }
+    },
+    "v1": {
+     "slots": {
+      "form.type": null,
+      "form.posture": "hanging",
+      "color": null,
+      "opacity": 0.5,
+      "brightness": null,
+      "roughness": null,
+      "size": 0.0,
+      "distance": 0.6,
+      "verticalOffset": null,
+      "motion.type": null,
+      "body.part": "body",
+      "body.layer": "inner"
+     },
+     "forms": [
+      {
+       "category": "liquid",
+       "phrase": "물방울 하나가 맺혀",
+       "verdict": "미반영",
+       "why": "_unmapped 물방울→{\"object\": \"droplet\"}"
+      }
+     ],
+     "others": [
+      {
+       "attr": "opacity",
+       "group": "투명",
+       "phrase": "가운데는 맑게 비치는데 가장자리만 뿌예요",
+       "status": "captured",
+       "actual": 0.5
+      },
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "콩알만 해요",
+       "status": "reflected",
+       "actual": 0.0
+      },
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "색은 딱히 없어요",
+       "status": "dropped_by_controller",
+       "actual": null
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "떨어질 듯 말 듯 매달려 있어요",
+       "status": "lost",
+       "actual": null
+      },
+      {
+       "attr": "body_part",
+       "group": "몸 위치",
+       "phrase": "눈 뒤쪽",
+       "status": "distorted",
+       "actual": "body"
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "몸 안이요",
+       "status": "reflected",
+       "actual": "inner"
+      }
+     ],
+     "unity": {
+      "renderPath": "shapePrefab(Sphere)",
+      "visiblePixels": 1770,
+      "maxAlpha": 0.504,
+      "circularity": 0.934,
+      "components": 1,
+      "edgeFalloffPx": 0.6,
+      "defaultsUsed": [
+       "form.type",
+       "material.color.h",
+       "material.color.s",
+       "material.color.l",
+       "material.brightness",
+       "material.roughness",
+       "material.erosion",
+       "layout.verticalOffset",
+       "motion.type",
+       "motion.speed"
+      ],
+      "png": "M22.v1.png"
+     },
+     "visual": {
+      "verdict": "거의 안 보임",
+      "why": "size 0 → 1,770화소"
+     }
+    }
+   }
+  },
+  {
+   "id": "M23",
+   "expected": "웅덩이 · 탁한 초록 · 불투명(바닥 안 보임) · 서 있는 자리보다 조금 넓음 · 발밑 · 잔물결",
+   "tags": {
+    "form": [
+     "liquid"
+    ],
+    "color": [
+     "mid"
+    ],
+    "size": [
+     "relative",
+     "height"
+    ],
+    "texture": [
+     "dark"
+    ],
+    "motion": [
+     "rippling"
+    ],
+    "response": "all",
+    "speech": "보통"
+   },
+   "mappers": {
+    "v0": {
+     "slots": {
+      "form.type": null,
+      "form.posture": "standing",
+      "color": {
+       "h": 0.333,
+       "s": 0.45,
+       "l": 0.4
+      },
+      "opacity": null,
+      "brightness": null,
+      "roughness": null,
+      "size": null,
+      "distance": null,
+      "verticalOffset": 0.04,
+      "motion.type": "rippling",
+      "body.part": "foot",
+      "body.layer": "around"
+     },
+     "forms": [
+      {
+       "category": "liquid",
+       "phrase": "고인 웅덩이",
+       "verdict": "기본값",
+       "why": "근거 없음(_unmatched만)"
+      }
+     ],
+     "others": [
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "탁한 초록색",
+       "status": "reflected",
+       "actual": {
+        "hue_deg": 119.9,
+        "s": 0.45,
+        "l": 0.4
+       }
+      },
+      {
+       "attr": "opacity",
+       "group": "투명",
+       "phrase": "바닥이 안 보여요",
+       "status": "lost",
+       "actual": null
+      },
+      {
+       "attr": "height",
+       "group": "높이·거리",
+       "phrase": "발밑에",
+       "status": "reflected",
+       "actual": 0.04
+      },
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "서 있는 자리보다 조금 넓어요",
+       "status": "distorted",
+       "actual": null
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "잔물결처럼 일렁여요",
+       "status": "reflected",
+       "actual": "rippling"
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "몸 주변",
+       "status": "reflected",
+       "actual": "around"
+      }
+     ],
+     "unity": {
+      "renderPath": "blob",
+      "visiblePixels": 22475,
+      "maxAlpha": 1.0,
+      "circularity": 0.958,
+      "components": 1,
+      "edgeFalloffPx": 0.7,
+      "defaultsUsed": [
+       "form.type",
+       "material.brightness",
+       "material.roughness",
+       "material.opacity",
+       "material.erosion",
+       "layout.size",
+       "layout.distance",
+       "motion.speed"
+      ],
+      "png": "M23.v0.png"
+     },
+     "visual": {
+      "verdict": "다른 것으로 보임",
+      "why": "바닥 근처 초록 덩어리 공. 웅덩이 아님"
+     }
+    },
+    "v1": {
+     "slots": {
+      "form.type": null,
+      "form.posture": "standing",
+      "color": {
+       "h": 0.333,
+       "s": 0.248,
+       "l": 0.4
+      },
+      "opacity": null,
+      "brightness": null,
+      "roughness": null,
+      "size": 0.573,
+      "distance": null,
+      "verticalOffset": 0.02,
+      "motion.type": "rippling",
+      "body.part": "foot",
+      "body.layer": "around"
+     },
+     "forms": [
+      {
+       "category": "liquid",
+       "phrase": "고인 웅덩이",
+       "verdict": "기본값",
+       "why": "근거 없음(_unmatched만)"
+      }
+     ],
+     "others": [
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "탁한 초록색",
+       "status": "reflected",
+       "actual": {
+        "hue_deg": 119.9,
+        "s": 0.248,
+        "l": 0.4
+       }
+      },
+      {
+       "attr": "opacity",
+       "group": "투명",
+       "phrase": "바닥이 안 보여요",
+       "status": "preserved",
+       "actual": null
+      },
+      {
+       "attr": "height",
+       "group": "높이·거리",
+       "phrase": "발밑에",
+       "status": "reflected",
+       "actual": 0.02
+      },
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "서 있는 자리보다 조금 넓어요",
+       "status": "reflected",
+       "actual": 0.573
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "잔물결처럼 일렁여요",
+       "status": "reflected",
+       "actual": "rippling"
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "몸 주변",
+       "status": "reflected",
+       "actual": "around"
+      }
+     ],
+     "unity": {
+      "renderPath": "blob",
+      "visiblePixels": 31316,
+      "maxAlpha": 1.0,
+      "circularity": 0.958,
+      "components": 1,
+      "edgeFalloffPx": 0.72,
+      "defaultsUsed": [
+       "form.type",
+       "material.brightness",
+       "material.roughness",
+       "material.opacity",
+       "material.erosion",
+       "layout.distance",
+       "motion.speed"
+      ],
+      "png": "M23.v1.png"
+     },
+     "visual": {
+      "verdict": "다른 것으로 보임",
+      "why": "바닥 근처 초록 덩어리 공. 웅덩이 아님"
+     }
+    }
+   }
+  },
+  {
+   "id": "M24",
+   "expected": "꿀 같은 액체 · 노랑 · 반짝(광택) · 한 컵 · 천천히 흘러내림 · 목→가슴 안",
+   "tags": {
+    "form": [
+     "liquid"
+    ],
+    "color": [
+     "basic"
+    ],
+    "size": [
+     "numeric_ref"
+    ],
+    "texture": [
+     "sparkle"
+    ],
+    "motion": [
+     "dripping"
+    ],
+    "response": "all",
+    "speech": "한 번에 길게·비유"
+   },
+   "mappers": {
+    "v0": {
+     "slots": {
+      "form.type": null,
+      "form.posture": null,
+      "color": {
+       "h": 0.144,
+       "s": 0.85,
+       "l": 0.6
+      },
+      "opacity": null,
+      "brightness": 0.7,
+      "roughness": null,
+      "size": null,
+      "distance": null,
+      "verticalOffset": 0.85,
+      "motion.type": null,
+      "body.part": "throat_neck",
+      "body.layer": null
+     },
+     "forms": [
+      {
+       "category": "liquid",
+       "phrase": "진득한 노란 액체",
+       "verdict": "기본값",
+       "why": "근거 없음(_unmatched만)"
+      }
+     ],
+     "others": [
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "노란 액체",
+       "status": "reflected",
+       "actual": {
+        "hue_deg": 51.8,
+        "s": 0.85,
+        "l": 0.6
+       }
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "천천히 흘러내리는데",
+       "status": "lost",
+       "actual": null
+      },
+      {
+       "attr": "motion_speed",
+       "group": "움직임",
+       "phrase": "천천히",
+       "status": "reflected",
+       "actual": 0.25
+      },
+      {
+       "attr": "texture_roughness",
+       "group": "질감",
+       "phrase": "빛을 받으면 반짝여요",
+       "status": "distorted",
+       "actual": null
+      },
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "양은 한 컵쯤이요",
+       "status": "lost",
+       "actual": null
+      },
+      {
+       "attr": "body_part",
+       "group": "몸 위치",
+       "phrase": "목에서 가슴으로",
+       "status": "reflected",
+       "actual": "throat_neck"
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "몸 안이요",
+       "status": "lost",
+       "actual": null
+      }
+     ],
+     "unity": {
+      "renderPath": "blob",
+      "visiblePixels": 66220,
+      "maxAlpha": 1.0,
+      "circularity": 0.956,
+      "components": 1,
+      "edgeFalloffPx": 0.7,
+      "defaultsUsed": [
+       "form.type",
+       "form.posture",
+       "material.roughness",
+       "material.opacity",
+       "material.erosion",
+       "layout.size",
+       "layout.distance",
+       "motion.type"
+      ],
+      "png": "M24.v0.png"
+     },
+     "visual": {
+      "verdict": "다른 것으로 보임",
+      "why": "노란 덩어리 공. 액체 아님"
+     }
+    },
+    "v1": {
+     "slots": {
+      "form.type": null,
+      "form.posture": null,
+      "color": {
+       "h": 0.144,
+       "s": 0.85,
+       "l": 0.6
+      },
+      "opacity": null,
+      "brightness": 0.7,
+      "roughness": 0.3,
+      "size": null,
+      "distance": null,
+      "verticalOffset": null,
+      "motion.type": "sinking",
+      "body.part": "throat_neck",
+      "body.layer": "inner"
+     },
+     "forms": [
+      {
+       "category": "liquid",
+       "phrase": "진득한 노란 액체",
+       "verdict": "기본값",
+       "why": "근거 없음(_unmatched만)"
+      }
+     ],
+     "others": [
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "노란 액체",
+       "status": "reflected",
+       "actual": {
+        "hue_deg": 51.8,
+        "s": 0.85,
+        "l": 0.6
+       }
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "천천히 흘러내리는데",
+       "status": "lost",
+       "actual": "sinking"
+      },
+      {
+       "attr": "motion_speed",
+       "group": "움직임",
+       "phrase": "천천히",
+       "status": "reflected",
+       "actual": 0.25
+      },
+      {
+       "attr": "texture_roughness",
+       "group": "질감",
+       "phrase": "빛을 받으면 반짝여요",
+       "status": "reflected",
+       "actual": 0.3
+      },
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "양은 한 컵쯤이요",
+       "status": "preserved",
+       "actual": null
+      },
+      {
+       "attr": "body_part",
+       "group": "몸 위치",
+       "phrase": "목에서 가슴으로",
+       "status": "reflected",
+       "actual": "throat_neck"
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "몸 안이요",
+       "status": "reflected",
+       "actual": "inner"
+      }
+     ],
+     "unity": {
+      "renderPath": "blob",
+      "visiblePixels": 62421,
+      "maxAlpha": 1.0,
+      "circularity": 0.963,
+      "components": 1,
+      "edgeFalloffPx": 0.7,
+      "defaultsUsed": [
+       "form.type",
+       "form.posture",
+       "material.opacity",
+       "material.erosion",
+       "layout.size",
+       "layout.distance",
+       "layout.verticalOffset"
+      ],
+      "png": "M24.v1.png"
+     },
+     "visual": {
+      "verdict": "다른 것으로 보임",
+      "why": "노란 덩어리 공. 액체 아님"
+     }
+    }
+   }
+  },
+  {
+   "id": "M25",
+   "expected": "작은 빛 · 하양 · 밝아졌다 어두워졌다 · 콩닥콩닥(맥동) · 구슬만 · 가슴 왼쪽",
+   "tags": {
+    "form": [
+     "light"
+    ],
+    "color": [
+     "basic"
+    ],
+    "size": [
+     "numeric_ref",
+     "body"
+    ],
+    "texture": [
+     "glow"
+    ],
+    "motion": [
+     "pulsing"
+    ],
+    "response": "all",
+    "speech": "비유"
+   },
+   "mappers": {
+    "v0": {
+     "slots": {
+      "form.type": null,
+      "form.posture": null,
+      "color": {
+       "h": 0.0,
+       "s": 0.0,
+       "l": 0.95
+      },
+      "opacity": null,
+      "brightness": 0.8,
+      "roughness": null,
+      "size": 0.316,
+      "distance": null,
+      "verticalOffset": 0.72,
+      "motion.type": null,
+      "body.part": "chest",
+      "body.layer": "inner"
+     },
+     "forms": [
+      {
+       "category": "light",
+       "phrase": "작은 빛",
+       "verdict": "기본값",
+       "why": "근거 없음(_unmatched만)"
+      }
+     ],
+     "others": [
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "하얀 빛",
+       "status": "reflected",
+       "actual": {
+        "hue_deg": 0.0,
+        "s": 0.0,
+        "l": 0.95
+       }
+      },
+      {
+       "attr": "brightness",
+       "group": "밝기",
+       "phrase": "밝아졌다 어두워졌다 해요",
+       "status": "captured",
+       "actual": 0.8
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "콩닥콩닥 뛰듯이",
+       "status": "lost",
+       "actual": null
+      },
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "구슬만 해요",
+       "status": "distorted",
+       "actual": 0.316
+      },
+      {
+       "attr": "body_part",
+       "group": "몸 위치",
+       "phrase": "가슴 왼쪽",
+       "status": "reflected",
+       "actual": "chest"
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "몸 안이요",
+       "status": "reflected",
+       "actual": "inner"
+      }
+     ],
+     "unity": {
+      "renderPath": "blob",
+      "visiblePixels": 21855,
+      "maxAlpha": 1.0,
+      "circularity": 0.954,
+      "components": 1,
+      "edgeFalloffPx": 0.49,
+      "defaultsUsed": [
+       "form.type",
+       "form.posture",
+       "material.roughness",
+       "material.opacity",
+       "material.erosion",
+       "layout.distance",
+       "motion.type",
+       "motion.speed"
+      ],
+      "png": "M25.v0.png"
+     },
+     "visual": {
+      "verdict": "부분적",
+      "why": "흰 구슬(빛나는 느낌은 약함)"
+     }
+    },
+    "v1": {
+     "slots": {
+      "form.type": null,
+      "form.posture": null,
+      "color": {
+       "h": 0.0,
+       "s": 0.0,
+       "l": 0.95
+      },
+      "opacity": null,
+      "brightness": 0.8,
+      "roughness": null,
+      "size": 0.0,
+      "distance": null,
+      "verticalOffset": null,
+      "motion.type": null,
+      "body.part": "chest",
+      "body.layer": "inner"
+     },
+     "forms": [
+      {
+       "category": "light",
+       "phrase": "작은 빛",
+       "verdict": "기본값",
+       "why": "근거 없음(_unmatched만)"
+      }
+     ],
+     "others": [
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "하얀 빛",
+       "status": "reflected",
+       "actual": {
+        "hue_deg": 0.0,
+        "s": 0.0,
+        "l": 0.95
+       }
+      },
+      {
+       "attr": "brightness",
+       "group": "밝기",
+       "phrase": "밝아졌다 어두워졌다 해요",
+       "status": "captured",
+       "actual": 0.8
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "콩닥콩닥 뛰듯이",
+       "status": "preserved",
+       "actual": null
+      },
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "구슬만 해요",
+       "status": "reflected",
+       "actual": 0.0
+      },
+      {
+       "attr": "body_part",
+       "group": "몸 위치",
+       "phrase": "가슴 왼쪽",
+       "status": "reflected",
+       "actual": "chest"
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "몸 안이요",
+       "status": "reflected",
+       "actual": "inner"
+      }
+     ],
+     "unity": {
+      "renderPath": "blob",
+      "visiblePixels": 3901,
+      "maxAlpha": 1.0,
+      "circularity": 0.955,
+      "components": 1,
+      "edgeFalloffPx": 0.52,
+      "defaultsUsed": [
+       "form.type",
+       "form.posture",
+       "material.roughness",
+       "material.opacity",
+       "material.erosion",
+       "layout.distance",
+       "layout.verticalOffset",
+       "motion.type",
+       "motion.speed"
+      ],
+      "png": "M25.v1.png"
+     },
+     "visual": {
+      "verdict": "부분적",
+      "why": "흰 점(3,901화소). 빛으로 읽기 어려움"
+     }
+    }
+   }
+  },
+  {
+   "id": "M26",
+   "expected": "촛불 불꽃 · 아래 파랑+위 주황 · 하늘하늘 흔들림 · 손가락 한 마디 · 배 안",
+   "tags": {
+    "form": [
+     "light",
+     "pointed"
+    ],
+    "color": [
+     "mixed"
+    ],
+    "size": [
+     "numeric_ref",
+     "body"
+    ],
+    "texture": [
+     "glow"
+    ],
+    "motion": [
+     "trembling"
+    ],
+    "response": "all",
+    "speech": "머뭇거림·비유"
+   },
+   "mappers": {
+    "v0": {
+     "slots": {
+      "form.type": null,
+      "form.posture": null,
+      "color": {
+       "h": 0.597,
+       "s": 0.7,
+       "l": 0.5
+      },
+      "opacity": null,
+      "brightness": null,
+      "roughness": null,
+      "size": null,
+      "distance": null,
+      "verticalOffset": 0.6,
+      "motion.type": "swaying",
+      "body.part": "belly",
+      "body.layer": "inner"
+     },
+     "forms": [
+      {
+       "category": "light",
+       "phrase": "불꽃 같은 게",
+       "verdict": "기본값",
+       "why": "근거 없음(_unmatched만)"
+      }
+     ],
+     "others": [
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "주황색이에요",
+       "status": "distorted",
+       "actual": {
+        "hue_deg": 214.9,
+        "s": 0.7,
+        "l": 0.5
+       }
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "하늘하늘 흔들려요",
+       "status": "reflected",
+       "actual": "swaying"
+      },
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "손가락 한 마디만 해요",
+       "status": "lost",
+       "actual": null
+      },
+      {
+       "attr": "body_part",
+       "group": "몸 위치",
+       "phrase": "배 한가운데",
+       "status": "reflected",
+       "actual": "belly"
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "몸 안이요",
+       "status": "reflected",
+       "actual": "inner"
+      }
+     ],
+     "unity": {
+      "renderPath": "blob",
+      "visiblePixels": 54198,
+      "maxAlpha": 1.0,
+      "circularity": 0.96,
+      "components": 1,
+      "edgeFalloffPx": 0.7,
+      "defaultsUsed": [
+       "form.type",
+       "form.posture",
+       "material.brightness",
+       "material.roughness",
+       "material.opacity",
+       "material.erosion",
+       "layout.size",
+       "layout.distance",
+       "motion.speed"
+      ],
+      "png": "M26.v0.png"
+     },
+     "visual": {
+      "verdict": "다른 것으로 보임",
+      "why": "파란 덩어리 공. 불꽃 아님, 주색이 주황이 아니라 파랑"
+     }
+    },
+    "v1": {
+     "slots": {
+      "form.type": null,
+      "form.posture": null,
+      "color": {
+       "h": 0.597,
+       "s": 0.7,
+       "l": 0.5
+      },
+      "opacity": null,
+      "brightness": null,
+      "roughness": null,
+      "size": null,
+      "distance": null,
+      "verticalOffset": null,
+      "motion.type": "swaying",
+      "body.part": "belly",
+      "body.layer": "inner"
+     },
+     "forms": [
+      {
+       "category": "light",
+       "phrase": "불꽃 같은 게",
+       "verdict": "기본값",
+       "why": "근거 없음(_unmatched만)"
+      }
+     ],
+     "others": [
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "주황색이에요",
+       "status": "distorted",
+       "actual": {
+        "hue_deg": 214.9,
+        "s": 0.7,
+        "l": 0.5
+       }
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "하늘하늘 흔들려요",
+       "status": "reflected",
+       "actual": "swaying"
+      },
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "손가락 한 마디만 해요",
+       "status": "preserved",
+       "actual": null
+      },
+      {
+       "attr": "body_part",
+       "group": "몸 위치",
+       "phrase": "배 한가운데",
+       "status": "reflected",
+       "actual": "belly"
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "몸 안이요",
+       "status": "reflected",
+       "actual": "inner"
+      }
+     ],
+     "unity": {
+      "renderPath": "blob",
+      "visiblePixels": 62619,
+      "maxAlpha": 1.0,
+      "circularity": 0.964,
+      "components": 1,
+      "edgeFalloffPx": 0.69,
+      "defaultsUsed": [
+       "form.type",
+       "form.posture",
+       "material.brightness",
+       "material.roughness",
+       "material.opacity",
+       "material.erosion",
+       "layout.size",
+       "layout.distance",
+       "layout.verticalOffset",
+       "motion.speed"
+      ],
+      "png": "M26.v1.png"
+     },
+     "visual": {
+      "verdict": "다른 것으로 보임",
+      "why": "파란 덩어리 공. 불꽃 아님, 주색이 파랑"
+     }
+    }
+   }
+  },
+  {
+   "id": "M27",
+   "expected": "빛 · 노랑 · 눈부심 · 냄비 뚜껑만 · 머리 위 한 뼘 · 원을 그리며 돎 · 가장자리만 비침",
+   "tags": {
+    "form": [
+     "light"
+    ],
+    "color": [
+     "basic"
+    ],
+    "size": [
+     "numeric_ref",
+     "height"
+    ],
+    "texture": [
+     "glow",
+     "partial_transparent"
+    ],
+    "motion": [
+     "floating"
+    ],
+    "response": "all",
+    "speech": "한 번에 길게"
+   },
+   "mappers": {
+    "v0": {
+     "slots": {
+      "form.type": null,
+      "form.posture": null,
+      "color": {
+       "h": 0.144,
+       "s": 0.85,
+       "l": 0.6
+      },
+      "opacity": null,
+      "brightness": 0.8,
+      "roughness": null,
+      "size": null,
+      "distance": null,
+      "verticalOffset": 0.93,
+      "motion.type": "floating",
+      "body.part": "head",
+      "body.layer": "surface_above"
+     },
+     "forms": [
+      {
+       "category": "light",
+       "phrase": "노란빛이 떠 있어요",
+       "verdict": "기본값",
+       "why": "근거 없음(_unmatched만)"
+      }
+     ],
+     "others": [
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "노란빛",
+       "status": "reflected",
+       "actual": {
+        "hue_deg": 51.8,
+        "s": 0.85,
+        "l": 0.6
+       }
+      },
+      {
+       "attr": "brightness",
+       "group": "밝기",
+       "phrase": "눈이 부실 만큼 밝은",
+       "status": "reflected",
+       "actual": 0.8
+      },
+      {
+       "attr": "height",
+       "group": "높이·거리",
+       "phrase": "머리 위 한 뼘쯤 높이에",
+       "status": "reflected",
+       "actual": 0.93
+      },
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "냄비 뚜껑만 하고",
+       "status": "lost",
+       "actual": null
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "원을 그리며 돌아요",
+       "status": "distorted",
+       "actual": "floating"
+      },
+      {
+       "attr": "motion_speed",
+       "group": "움직임",
+       "phrase": "느긋하게",
+       "status": "lost",
+       "actual": null
+      },
+      {
+       "attr": "opacity",
+       "group": "투명",
+       "phrase": "가장자리는 흐려서 뒤가 살짝 비쳐요",
+       "status": "lost",
+       "actual": null
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "몸 주변이요",
+       "status": "distorted",
+       "actual": "surface_above"
+      }
+     ],
+     "unity": {
+      "renderPath": "blob",
+      "visiblePixels": 67207,
+      "maxAlpha": 1.0,
+      "circularity": 0.958,
+      "components": 1,
+      "edgeFalloffPx": 0.71,
+      "defaultsUsed": [
+       "form.type",
+       "form.posture",
+       "material.roughness",
+       "material.opacity",
+       "material.erosion",
+       "layout.size",
+       "layout.distance",
+       "motion.speed"
+      ],
+      "png": "M27.v0.png"
+     },
+     "visual": {
+      "verdict": "다른 것으로 보임",
+      "why": "노란 덩어리 공(빛 아님)"
+     }
+    },
+    "v1": {
+     "slots": {
+      "form.type": null,
+      "form.posture": null,
+      "color": {
+       "h": 0.144,
+       "s": 0.85,
+       "l": 0.74
+      },
+      "opacity": 0.7,
+      "brightness": null,
+      "roughness": null,
+      "size": null,
+      "distance": 0.0,
+      "verticalOffset": 1.0,
+      "motion.type": "rotating",
+      "body.part": "head",
+      "body.layer": "around"
+     },
+     "forms": [
+      {
+       "category": "light",
+       "phrase": "노란빛이 떠 있어요",
+       "verdict": "기본값",
+       "why": "근거 없음(_unmatched만)"
+      }
+     ],
+     "others": [
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "노란빛",
+       "status": "reflected",
+       "actual": {
+        "hue_deg": 51.8,
+        "s": 0.85,
+        "l": 0.74
+       }
+      },
+      {
+       "attr": "brightness",
+       "group": "밝기",
+       "phrase": "눈이 부실 만큼 밝은",
+       "status": "lost",
+       "actual": null
+      },
+      {
+       "attr": "height",
+       "group": "높이·거리",
+       "phrase": "머리 위 한 뼘쯤 높이에",
+       "status": "reflected",
+       "actual": 1.0
+      },
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "냄비 뚜껑만 하고",
+       "status": "preserved",
+       "actual": null
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "원을 그리며 돌아요",
+       "status": "reflected",
+       "actual": "rotating"
+      },
+      {
+       "attr": "motion_speed",
+       "group": "움직임",
+       "phrase": "느긋하게",
+       "status": "reflected",
+       "actual": 0.25
+      },
+      {
+       "attr": "opacity",
+       "group": "투명",
+       "phrase": "가장자리는 흐려서 뒤가 살짝 비쳐요",
+       "status": "captured",
+       "actual": 0.7
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "몸 주변이요",
+       "status": "reflected",
+       "actual": "around"
+      }
+     ],
+     "unity": {
+      "renderPath": "blob",
+      "visiblePixels": 1329489,
+      "maxAlpha": 0.957,
+      "circularity": 0.892,
+      "components": 1,
+      "edgeFalloffPx": 307.23,
+      "defaultsUsed": [
+       "form.type",
+       "form.posture",
+       "material.brightness",
+       "material.roughness",
+       "material.erosion",
+       "layout.size"
+      ],
+      "png": "M27.v1.png"
+     },
+     "visual": {
+      "verdict": "다른 것으로 보임",
+      "why": "탁한 반투명 노란 덩어리가 눈앞을 가림(distance 0). 눈부신 빛 아님"
+     }
+    }
+   }
+  },
+  {
+   "id": "M28",
+   "expected": "구멍 · 안은 깜깜 · 도넛 크기 · 그대로 · 가슴 안",
+   "tags": {
+    "form": [
+     "hole",
+     "round"
+    ],
+    "color": [],
+    "size": [
+     "numeric_ref",
+     "body"
+    ],
+    "texture": [
+     "dark"
+    ],
+    "motion": [
+     "still"
+    ],
+    "response": "partial",
+    "speech": "머뭇거림"
+   },
+   "mappers": {
+    "v0": {
+     "slots": {
+      "form.type": null,
+      "form.posture": null,
+      "color": null,
+      "opacity": null,
+      "brightness": 0.15,
+      "roughness": null,
+      "size": null,
+      "distance": null,
+      "verticalOffset": 0.72,
+      "motion.type": null,
+      "body.part": "chest",
+      "body.layer": "inner"
+     },
+     "forms": [
+      {
+       "category": "hole",
+       "phrase": "동그란 구멍",
+       "verdict": "미반영",
+       "why": "_unmapped 구멍→{\"shape\": \"hole\"},동그랗→{\"shape\": \"round\"}"
+      }
+     ],
+     "others": [
+      {
+       "attr": "brightness",
+       "group": "밝기",
+       "phrase": "안은 깜깜해요",
+       "status": "reflected",
+       "actual": 0.15
+      },
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "도넛 하나 크기요",
+       "status": "lost",
+       "actual": null
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "그대로예요",
+       "status": "lost",
+       "actual": null
+      },
+      {
+       "attr": "body_part",
+       "group": "몸 위치",
+       "phrase": "가슴 한가운데",
+       "status": "reflected",
+       "actual": "chest"
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "몸 안이요",
+       "status": "reflected",
+       "actual": "inner"
+      }
+     ],
+     "unity": {
+      "renderPath": "shapePrefab(Sphere)",
+      "visiblePixels": 61905,
+      "maxAlpha": 1.0,
+      "circularity": 0.97,
+      "components": 1,
+      "edgeFalloffPx": 0.69,
+      "defaultsUsed": [
+       "form.type",
+       "form.posture",
+       "material.color.h",
+       "material.color.s",
+       "material.color.l",
+       "material.roughness",
+       "material.opacity",
+       "material.erosion",
+       "layout.size",
+       "layout.distance",
+       "motion.type",
+       "motion.speed"
+      ],
+      "png": "M28.v0.png"
+     },
+     "visual": {
+      "verdict": "다른 것으로 보임",
+      "why": "회색 구. 구멍이 공(채워진 형상)으로"
+     }
+    },
+    "v1": {
+     "slots": {
+      "form.type": null,
+      "form.posture": null,
+      "color": null,
+      "opacity": null,
+      "brightness": 0.15,
+      "roughness": null,
+      "size": null,
+      "distance": null,
+      "verticalOffset": null,
+      "motion.type": null,
+      "body.part": "chest",
+      "body.layer": "inner"
+     },
+     "forms": [
+      {
+       "category": "hole",
+       "phrase": "동그란 구멍",
+       "verdict": "미반영",
+       "why": "_unmapped 구멍→{\"shape\": \"hole\"},동그랗→{\"shape\": \"round\"}"
+      }
+     ],
+     "others": [
+      {
+       "attr": "brightness",
+       "group": "밝기",
+       "phrase": "안은 깜깜해요",
+       "status": "reflected",
+       "actual": 0.15
+      },
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "도넛 하나 크기요",
+       "status": "preserved",
+       "actual": null
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "그대로예요",
+       "status": "preserved",
+       "actual": null
+      },
+      {
+       "attr": "body_part",
+       "group": "몸 위치",
+       "phrase": "가슴 한가운데",
+       "status": "reflected",
+       "actual": "chest"
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "몸 안이요",
+       "status": "reflected",
+       "actual": "inner"
+      }
+     ],
+     "unity": {
+      "renderPath": "shapePrefab(Sphere)",
+      "visiblePixels": 63336,
+      "maxAlpha": 1.0,
+      "circularity": 0.97,
+      "components": 1,
+      "edgeFalloffPx": 0.7,
+      "defaultsUsed": [
+       "form.type",
+       "form.posture",
+       "material.color.h",
+       "material.color.s",
+       "material.color.l",
+       "material.roughness",
+       "material.opacity",
+       "material.erosion",
+       "layout.size",
+       "layout.distance",
+       "layout.verticalOffset",
+       "motion.type",
+       "motion.speed"
+      ],
+      "png": "M28.v1.png"
+     },
+     "visual": {
+      "verdict": "다른 것으로 보임",
+      "why": "회색 구. 구멍이 공으로"
+     }
+    }
+   }
+  },
+  {
+   "id": "M29",
+   "expected": "텅 빈 공간 · 색 없음 · 배 전체만큼 · 넓어졌다 좁아졌다 · 배 안",
+   "tags": {
+    "form": [
+     "hole"
+    ],
+    "color": [
+     "none"
+    ],
+    "size": [
+     "relative",
+     "body"
+    ],
+    "texture": [],
+    "motion": [
+     "grow_shrink"
+    ],
+    "response": "partial",
+    "speech": "보통"
+   },
+   "mappers": {
+    "v0": {
+     "slots": {
+      "form.type": null,
+      "form.posture": null,
+      "color": null,
+      "opacity": null,
+      "brightness": null,
+      "roughness": null,
+      "size": null,
+      "distance": null,
+      "verticalOffset": 0.6,
+      "motion.type": null,
+      "body.part": "belly",
+      "body.layer": "inner"
+     },
+     "forms": [
+      {
+       "category": "hole",
+       "phrase": "텅 빈 공간이에요",
+       "verdict": "미반영",
+       "why": "_unmapped 비→{\"shape\": \"hollow\"}"
+      }
+     ],
+     "others": [
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "색은 없고",
+       "status": "reflected",
+       "actual": null
+      },
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "배 전체만큼 넓어요",
+       "status": "distorted",
+       "actual": null
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "넓어졌다 좁아졌다 해요",
+       "status": "lost",
+       "actual": null
+      },
+      {
+       "attr": "body_part",
+       "group": "몸 위치",
+       "phrase": "배 속이요",
+       "status": "reflected",
+       "actual": "belly"
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "몸 안이요",
+       "status": "reflected",
+       "actual": "inner"
+      }
+     ],
+     "unity": {
+      "renderPath": "blob",
+      "visiblePixels": 54198,
+      "maxAlpha": 1.0,
+      "circularity": 0.958,
+      "components": 1,
+      "edgeFalloffPx": 0.7,
+      "defaultsUsed": [
+       "form.type",
+       "form.posture",
+       "material.color.h",
+       "material.color.s",
+       "material.color.l",
+       "material.brightness",
+       "material.roughness",
+       "material.opacity",
+       "material.erosion",
+       "layout.size",
+       "layout.distance",
+       "motion.type",
+       "motion.speed"
+      ],
+      "png": "M29.v0.png"
+     },
+     "visual": {
+      "verdict": "다른 것으로 보임",
+      "why": "흰 덩어리. 빈 공간이 덩어리로"
+     }
+    },
+    "v1": {
+     "slots": {
+      "form.type": null,
+      "form.posture": null,
+      "color": null,
+      "opacity": null,
+      "brightness": null,
+      "roughness": null,
+      "size": 0.621,
+      "distance": null,
+      "verticalOffset": null,
+      "motion.type": null,
+      "body.part": "belly",
+      "body.layer": "inner"
+     },
+     "forms": [
+      {
+       "category": "hole",
+       "phrase": "텅 빈 공간이에요",
+       "verdict": "미반영",
+       "why": "_unmapped 비→{\"shape\": \"hollow\"}"
+      }
+     ],
+     "others": [
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "색은 없고",
+       "status": "reflected",
+       "actual": null
+      },
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "배 전체만큼 넓어요",
+       "status": "reflected",
+       "actual": 0.621
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "넓어졌다 좁아졌다 해요",
+       "status": "lost",
+       "actual": null
+      },
+      {
+       "attr": "body_part",
+       "group": "몸 위치",
+       "phrase": "배 속이요",
+       "status": "reflected",
+       "actual": "belly"
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "몸 안이요",
+       "status": "reflected",
+       "actual": "inner"
+      }
+     ],
+     "unity": {
+      "renderPath": "blob",
+      "visiblePixels": 124702,
+      "maxAlpha": 1.0,
+      "circularity": 0.961,
+      "components": 1,
+      "edgeFalloffPx": 0.69,
+      "defaultsUsed": [
+       "form.type",
+       "form.posture",
+       "material.color.h",
+       "material.color.s",
+       "material.color.l",
+       "material.brightness",
+       "material.roughness",
+       "material.opacity",
+       "material.erosion",
+       "layout.distance",
+       "layout.verticalOffset",
+       "motion.type",
+       "motion.speed"
+      ],
+      "png": "M29.v1.png"
+     },
+     "visual": {
+      "verdict": "다른 것으로 보임",
+      "why": "흰 덩어리(더 큼). 빈 공간이 덩어리로"
+     }
+    }
+   }
+  },
+  {
+   "id": "M30",
+   "expected": "웅크린 작은 사람 · 잿빛 · 무릎 높이 · 살짝 흔들림 · 왼쪽 옆",
+   "tags": {
+    "form": [
+     "figure"
+    ],
+    "color": [
+     "mid"
+    ],
+    "size": [
+     "relative"
+    ],
+    "texture": [],
+    "motion": [
+     "trembling"
+    ],
+    "response": "all",
+    "speech": "보통"
+   },
+   "mappers": {
+    "v0": {
+     "slots": {
+      "form.type": null,
+      "form.posture": "crouched",
+      "color": {
+       "h": 0.0,
+       "s": 0.03,
+       "l": 0.55
+      },
+      "opacity": null,
+      "brightness": null,
+      "roughness": null,
+      "size": 0.316,
+      "distance": null,
+      "verticalOffset": 0.92,
+      "motion.type": null,
+      "body.part": "body",
+      "body.layer": "around"
+     },
+     "forms": [
+      {
+       "category": "figure",
+       "phrase": "작은 사람 모양",
+       "verdict": "미반영",
+       "why": "_unmapped 사람→{\"object\": \"person_figure\"}"
+      }
+     ],
+     "others": [
+      {
+       "attr": "posture",
+       "group": "자세",
+       "phrase": "웅크린",
+       "status": "reflected",
+       "actual": "crouched"
+      },
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "잿빛이고",
+       "status": "reflected",
+       "actual": {
+        "hue_deg": 0.0,
+        "s": 0.03,
+        "l": 0.55
+       }
+      },
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "무릎 높이 정도로 작아요",
+       "status": "reflected",
+       "actual": 0.316
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "살짝 몸을 흔들어요",
+       "status": "distorted",
+       "actual": null
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "몸 주변이요",
+       "status": "reflected",
+       "actual": "around"
+      }
+     ],
+     "unity": {
+      "renderPath": "blob",
+      "visiblePixels": 19314,
+      "maxAlpha": 1.0,
+      "circularity": 0.877,
+      "components": 1,
+      "edgeFalloffPx": 0.7,
+      "defaultsUsed": [
+       "form.type",
+       "material.brightness",
+       "material.roughness",
+       "material.opacity",
+       "material.erosion",
+       "layout.distance",
+       "motion.type",
+       "motion.speed"
+      ],
+      "png": "M30.v0.png"
+     },
+     "visual": {
+      "verdict": "다른 것으로 보임",
+      "why": "납작하게 눌린 회색 덩어리(웅크림 → 눌림). 사람 아님"
+     }
+    },
+    "v1": {
+     "slots": {
+      "form.type": null,
+      "form.posture": "crouched",
+      "color": {
+       "h": 0.0,
+       "s": 0.03,
+       "l": 0.55
+      },
+      "opacity": null,
+      "brightness": null,
+      "roughness": null,
+      "size": 0.316,
+      "distance": null,
+      "verticalOffset": 0.28,
+      "motion.type": null,
+      "body.part": "leg",
+      "body.layer": "around"
+     },
+     "forms": [
+      {
+       "category": "figure",
+       "phrase": "작은 사람 모양",
+       "verdict": "미반영",
+       "why": "_unmapped 사람→{\"object\": \"person_figure\"}"
+      }
+     ],
+     "others": [
+      {
+       "attr": "posture",
+       "group": "자세",
+       "phrase": "웅크린",
+       "status": "reflected",
+       "actual": "crouched"
+      },
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "잿빛이고",
+       "status": "reflected",
+       "actual": {
+        "hue_deg": 0.0,
+        "s": 0.03,
+        "l": 0.55
+       }
+      },
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "무릎 높이 정도로 작아요",
+       "status": "reflected",
+       "actual": 0.316
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "살짝 몸을 흔들어요",
+       "status": "preserved",
+       "actual": null
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "몸 주변이요",
+       "status": "reflected",
+       "actual": "around"
+      }
+     ],
+     "unity": {
+      "renderPath": "blob",
+      "visiblePixels": 13836,
+      "maxAlpha": 1.0,
+      "circularity": 0.948,
+      "components": 1,
+      "edgeFalloffPx": 0.69,
+      "defaultsUsed": [
+       "form.type",
+       "material.brightness",
+       "material.roughness",
+       "material.opacity",
+       "material.erosion",
+       "layout.distance",
+       "motion.type",
+       "motion.speed"
+      ],
+      "png": "M30.v1.png"
+     },
+     "visual": {
+      "verdict": "다른 것으로 보임",
+      "why": "눌린 회색 덩어리. 사람 아님"
+     }
+    }
+   }
+  },
+  {
+   "id": "M31",
+   "expected": "고양이 · 검정 · 동그랗게 말림 · 보송보송 · 숨 쉬듯 오르내림 · 다리 옆",
+   "tags": {
+    "form": [
+     "figure"
+    ],
+    "color": [
+     "basic"
+    ],
+    "size": [
+     "numeric_ref"
+    ],
+    "texture": [
+     "soft"
+    ],
+    "motion": [
+     "pulsing"
+    ],
+    "response": "all",
+    "speech": "길게 풀어서"
+   },
+   "mappers": {
+    "v0": {
+     "slots": {
+      "form.type": null,
+      "form.posture": "lying",
+      "color": {
+       "h": 0.0,
+       "s": 0.0,
+       "l": 0.06
+      },
+      "opacity": null,
+      "brightness": null,
+      "roughness": null,
+      "size": null,
+      "distance": null,
+      "verticalOffset": 0.28,
+      "motion.type": null,
+      "body.part": "leg",
+      "body.layer": "around"
+     },
+     "forms": [
+      {
+       "category": "figure",
+       "phrase": "까만 고양이 한 마리",
+       "verdict": "기본값",
+       "why": "근거 없음(_unmatched만)"
+      }
+     ],
+     "others": [
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "까만 고양이",
+       "status": "reflected",
+       "actual": {
+        "hue_deg": 0.0,
+        "s": 0.0,
+        "l": 0.06
+       }
+      },
+      {
+       "attr": "posture",
+       "group": "자세",
+       "phrase": "동그랗게 말려 있어요",
+       "status": "distorted",
+       "actual": "lying"
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "등이 오르락내리락해요",
+       "status": "lost",
+       "actual": null
+      },
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "보통 고양이만 해요",
+       "status": "lost",
+       "actual": null
+      },
+      {
+       "attr": "body_part",
+       "group": "몸 위치",
+       "phrase": "다리 옆이요",
+       "status": "reflected",
+       "actual": "leg"
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "몸 주변이요",
+       "status": "reflected",
+       "actual": "around"
+      }
+     ],
+     "unity": {
+      "renderPath": "shapePrefab(Sphere)",
+      "visiblePixels": 44839,
+      "maxAlpha": 1.0,
+      "circularity": 0.937,
+      "components": 1,
+      "edgeFalloffPx": 0.71,
+      "defaultsUsed": [
+       "form.type",
+       "material.brightness",
+       "material.roughness",
+       "material.opacity",
+       "material.erosion",
+       "layout.size",
+       "layout.distance",
+       "motion.type",
+       "motion.speed"
+      ],
+      "png": "M31.v0.png"
+     },
+     "visual": {
+      "verdict": "다른 것으로 보임",
+      "why": "검은 납작한 구. 고양이 아님"
+     }
+    },
+    "v1": {
+     "slots": {
+      "form.type": null,
+      "form.posture": "lying",
+      "color": {
+       "h": 0.0,
+       "s": 0.0,
+       "l": 0.06
+      },
+      "opacity": null,
+      "brightness": null,
+      "roughness": null,
+      "size": null,
+      "distance": null,
+      "verticalOffset": null,
+      "motion.type": null,
+      "body.part": "leg",
+      "body.layer": "around"
+     },
+     "forms": [
+      {
+       "category": "figure",
+       "phrase": "까만 고양이 한 마리",
+       "verdict": "기본값",
+       "why": "근거 없음(_unmatched만)"
+      }
+     ],
+     "others": [
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "까만 고양이",
+       "status": "reflected",
+       "actual": {
+        "hue_deg": 0.0,
+        "s": 0.0,
+        "l": 0.06
+       }
+      },
+      {
+       "attr": "posture",
+       "group": "자세",
+       "phrase": "동그랗게 말려 있어요",
+       "status": "distorted",
+       "actual": "lying"
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "등이 오르락내리락해요",
+       "status": "preserved",
+       "actual": null
+      },
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "보통 고양이만 해요",
+       "status": "preserved",
+       "actual": null
+      },
+      {
+       "attr": "body_part",
+       "group": "몸 위치",
+       "phrase": "다리 옆이요",
+       "status": "reflected",
+       "actual": "leg"
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "몸 주변이요",
+       "status": "reflected",
+       "actual": "around"
+      }
+     ],
+     "unity": {
+      "renderPath": "shapePrefab(Sphere)",
+      "visiblePixels": 49365,
+      "maxAlpha": 1.0,
+      "circularity": 0.778,
+      "components": 1,
+      "edgeFalloffPx": 0.7,
+      "defaultsUsed": [
+       "form.type",
+       "material.brightness",
+       "material.roughness",
+       "material.opacity",
+       "material.erosion",
+       "layout.size",
+       "layout.distance",
+       "layout.verticalOffset",
+       "motion.type",
+       "motion.speed"
+      ],
+      "png": "M31.v1.png"
+     },
+     "visual": {
+      "verdict": "다른 것으로 보임",
+      "why": "검은 납작한 원반(lying). 고양이 아님"
+     }
+    }
+   },
+   "live": {
+    "slots": {
+     "form.type": null,
+     "form.posture": "lying",
+     "color": {
+      "h": 0.0,
+      "s": 0.0,
+      "l": 0.06
+     },
+     "opacity": null,
+     "brightness": null,
+     "roughness": null,
+     "size": null,
+     "distance": null,
+     "verticalOffset": null,
+     "motion.type": null,
+     "body.part": "leg",
+     "body.layer": "around"
+    },
+    "unity": {
+     "renderPath": "shapePrefab(Sphere)",
+     "visiblePixels": 49365,
+     "circularity": 0.778,
+     "components": 1
+    },
+    "visual": {
+     "verdict": "다른 것으로 보임",
+     "why": "조건 1 v1과 같은 화면"
+    }
+   }
+  },
+  {
+   "id": "M32",
+   "expected": "작은 새 · 하늘색+날개 끝 노랑 · 참새만 · 파닥임 · 오른쪽 어깨 위",
+   "tags": {
+    "form": [
+     "figure"
+    ],
+    "color": [
+     "mixed",
+     "mid"
+    ],
+    "size": [
+     "numeric_ref",
+     "body"
+    ],
+    "texture": [],
+    "motion": [
+     "trembling"
+    ],
+    "response": "all",
+    "speech": "보통"
+   },
+   "mappers": {
+    "v0": {
+     "slots": {
+      "form.type": null,
+      "form.posture": "sitting",
+      "color": {
+       "h": 0.556,
+       "s": 0.7,
+       "l": 0.75
+      },
+      "opacity": null,
+      "brightness": null,
+      "roughness": null,
+      "size": 0.316,
+      "distance": null,
+      "verticalOffset": 0.82,
+      "motion.type": null,
+      "body.part": "shoulder",
+      "body.layer": "surface"
+     },
+     "forms": [
+      {
+       "category": "figure",
+       "phrase": "작은 새",
+       "verdict": "기본값",
+       "why": "근거 없음(_unmatched만)"
+      }
+     ],
+     "others": [
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "참새만 한",
+       "status": "distorted",
+       "actual": 0.316
+      },
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "하늘색",
+       "status": "reflected",
+       "actual": {
+        "hue_deg": 200.2,
+        "s": 0.7,
+        "l": 0.75
+       }
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "날개를 파닥파닥해요",
+       "status": "lost",
+       "actual": null
+      },
+      {
+       "attr": "body_part",
+       "group": "몸 위치",
+       "phrase": "오른쪽 어깨 위",
+       "status": "reflected",
+       "actual": "shoulder"
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "몸 표면 위요",
+       "status": "reflected",
+       "actual": "surface"
+      }
+     ],
+     "unity": {
+      "renderPath": "blob",
+      "visiblePixels": 21039,
+      "maxAlpha": 1.0,
+      "circularity": 0.955,
+      "components": 1,
+      "edgeFalloffPx": 0.71,
+      "defaultsUsed": [
+       "form.type",
+       "material.brightness",
+       "material.roughness",
+       "material.opacity",
+       "material.erosion",
+       "layout.distance",
+       "motion.type",
+       "motion.speed"
+      ],
+      "png": "M32.v0.png"
+     },
+     "visual": {
+      "verdict": "다른 것으로 보임",
+      "why": "하늘색 덩어리 공. 새 아님"
+     }
+    },
+    "v1": {
+     "slots": {
+      "form.type": null,
+      "form.posture": "sitting",
+      "color": {
+       "h": 0.556,
+       "s": 0.7,
+       "l": 0.75
+      },
+      "opacity": null,
+      "brightness": null,
+      "roughness": null,
+      "size": 0.316,
+      "distance": null,
+      "verticalOffset": null,
+      "motion.type": null,
+      "body.part": "shoulder",
+      "body.layer": "surface"
+     },
+     "forms": [
+      {
+       "category": "figure",
+       "phrase": "작은 새",
+       "verdict": "기본값",
+       "why": "근거 없음(_unmatched만)"
+      }
+     ],
+     "others": [
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "참새만 한",
+       "status": "distorted",
+       "actual": 0.316
+      },
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "하늘색",
+       "status": "reflected",
+       "actual": {
+        "hue_deg": 200.2,
+        "s": 0.7,
+        "l": 0.75
+       }
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "날개를 파닥파닥해요",
+       "status": "preserved",
+       "actual": null
+      },
+      {
+       "attr": "body_part",
+       "group": "몸 위치",
+       "phrase": "오른쪽 어깨 위",
+       "status": "reflected",
+       "actual": "shoulder"
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "몸 표면 위요",
+       "status": "reflected",
+       "actual": "surface"
+      }
+     ],
+     "unity": {
+      "renderPath": "blob",
+      "visiblePixels": 20300,
+      "maxAlpha": 1.0,
+      "circularity": 0.955,
+      "components": 1,
+      "edgeFalloffPx": 0.68,
+      "defaultsUsed": [
+       "form.type",
+       "material.brightness",
+       "material.roughness",
+       "material.opacity",
+       "material.erosion",
+       "layout.distance",
+       "layout.verticalOffset",
+       "motion.type",
+       "motion.speed"
+      ],
+      "png": "M32.v1.png"
+     },
+     "visual": {
+      "verdict": "다른 것으로 보임",
+      "why": "하늘색 덩어리 공. 새 아님"
+     }
+    }
+   }
+  },
+  {
+   "id": "M33",
+   "expected": "전부 모름(멍함) — 모든 슬롯 null이어야 함",
+   "tags": {
+    "form": [],
+    "color": [
+     "unknown"
+    ],
+    "size": [
+     "unknown"
+    ],
+    "texture": [],
+    "motion": [
+     "unknown"
+    ],
+    "response": "dont_know",
+    "speech": "짧게·머뭇거림"
+   },
+   "mappers": {
+    "v0": {
+     "slots": {
+      "form.type": null,
+      "form.posture": null,
+      "color": null,
+      "opacity": null,
+      "brightness": null,
+      "roughness": null,
+      "size": null,
+      "distance": null,
+      "verticalOffset": null,
+      "motion.type": null,
+      "body.part": null,
+      "body.layer": null
+     },
+     "forms": [
+      {
+       "category": "none",
+       "phrase": "",
+       "verdict": "반영(비어 있음)",
+       "why": "form.type=None"
+      }
+     ],
+     "others": [
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "그것도 모르겠어요",
+       "status": "dropped_by_controller",
+       "actual": null
+      },
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "색도 모르겠어요",
+       "status": "dropped_by_controller",
+       "actual": null
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "움직임도 잘 모르겠어요",
+       "status": "dropped_by_controller",
+       "actual": null
+      }
+     ],
+     "unity": {
+      "renderPath": "blob",
+      "visiblePixels": 62619,
+      "maxAlpha": 1.0,
+      "circularity": 0.963,
+      "components": 1,
+      "edgeFalloffPx": 0.69,
+      "defaultsUsed": [
+       "form.type",
+       "form.posture",
+       "material.color.h",
+       "material.color.s",
+       "material.color.l",
+       "material.brightness",
+       "material.roughness",
+       "material.opacity",
+       "material.erosion",
+       "layout.size",
+       "layout.distance",
+       "layout.verticalOffset",
+       "motion.type",
+       "motion.speed"
+      ],
+      "png": "M33.v0.png"
+     },
+     "visual": {
+      "verdict": "기본 덩어리(형상 없음)",
+      "why": "말하지 않은 형상이 기본 회색 덩어리로 그려짐"
+     }
+    },
+    "v1": {
+     "slots": {
+      "form.type": null,
+      "form.posture": null,
+      "color": null,
+      "opacity": null,
+      "brightness": null,
+      "roughness": null,
+      "size": null,
+      "distance": null,
+      "verticalOffset": null,
+      "motion.type": null,
+      "body.part": null,
+      "body.layer": null
+     },
+     "forms": [
+      {
+       "category": "none",
+       "phrase": "",
+       "verdict": "반영(비어 있음)",
+       "why": "form.type=None"
+      }
+     ],
+     "others": [
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "그것도 모르겠어요",
+       "status": "dropped_by_controller",
+       "actual": null
+      },
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "색도 모르겠어요",
+       "status": "dropped_by_controller",
+       "actual": null
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "움직임도 잘 모르겠어요",
+       "status": "dropped_by_controller",
+       "actual": null
+      }
+     ],
+     "unity": {
+      "renderPath": "blob",
+      "visiblePixels": 62619,
+      "maxAlpha": 1.0,
+      "circularity": 0.963,
+      "components": 1,
+      "edgeFalloffPx": 0.69,
+      "defaultsUsed": [
+       "form.type",
+       "form.posture",
+       "material.color.h",
+       "material.color.s",
+       "material.color.l",
+       "material.brightness",
+       "material.roughness",
+       "material.opacity",
+       "material.erosion",
+       "layout.size",
+       "layout.distance",
+       "layout.verticalOffset",
+       "motion.type",
+       "motion.speed"
+      ],
+      "png": "M33.v1.png"
+     },
+     "visual": {
+      "verdict": "기본 덩어리(형상 없음)",
+      "why": "기본 회색 덩어리"
+     }
+    }
+   }
+  },
+  {
+   "id": "M34",
+   "expected": "형상 없음 · 답답함(느낌만) · 가슴 안 — 형태·색·크기 null이어야 함",
+   "tags": {
+    "form": [],
+    "color": [
+     "none"
+    ],
+    "size": [
+     "unknown"
+    ],
+    "texture": [],
+    "motion": [
+     "unknown"
+    ],
+    "response": "feeling_only",
+    "speech": "짧게"
+   },
+   "mappers": {
+    "v0": {
+     "slots": {
+      "form.type": null,
+      "form.posture": null,
+      "color": null,
+      "opacity": null,
+      "brightness": null,
+      "roughness": null,
+      "size": null,
+      "distance": null,
+      "verticalOffset": 0.72,
+      "motion.type": null,
+      "body.part": "chest",
+      "body.layer": "inner"
+     },
+     "forms": [
+      {
+       "category": "none",
+       "phrase": "",
+       "verdict": "반영(비어 있음)",
+       "why": "form.type=None"
+      }
+     ],
+     "others": [
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "그런 건 없어요",
+       "status": "reflected",
+       "actual": null
+      },
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "색 같은 건 없어요",
+       "status": "reflected",
+       "actual": null
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "모르겠어요",
+       "status": "dropped_by_controller",
+       "actual": null
+      },
+      {
+       "attr": "body_part",
+       "group": "몸 위치",
+       "phrase": "가슴 안이요",
+       "status": "reflected",
+       "actual": "chest"
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "가슴 안이요",
+       "status": "reflected",
+       "actual": "inner"
+      }
+     ],
+     "unity": {
+      "renderPath": "blob",
+      "visiblePixels": 61127,
+      "maxAlpha": 1.0,
+      "circularity": 0.958,
+      "components": 1,
+      "edgeFalloffPx": 0.71,
+      "defaultsUsed": [
+       "form.type",
+       "form.posture",
+       "material.color.h",
+       "material.color.s",
+       "material.color.l",
+       "material.brightness",
+       "material.roughness",
+       "material.opacity",
+       "material.erosion",
+       "layout.size",
+       "layout.distance",
+       "motion.type",
+       "motion.speed"
+      ],
+      "png": "M34.v0.png"
+     },
+     "visual": {
+      "verdict": "기본 덩어리(형상 없음)",
+      "why": "기본 회색 덩어리"
+     }
+    },
+    "v1": {
+     "slots": {
+      "form.type": null,
+      "form.posture": null,
+      "color": null,
+      "opacity": null,
+      "brightness": null,
+      "roughness": null,
+      "size": null,
+      "distance": null,
+      "verticalOffset": null,
+      "motion.type": null,
+      "body.part": "chest",
+      "body.layer": "inner"
+     },
+     "forms": [
+      {
+       "category": "none",
+       "phrase": "",
+       "verdict": "반영(비어 있음)",
+       "why": "form.type=None"
+      }
+     ],
+     "others": [
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "그런 건 없어요",
+       "status": "reflected",
+       "actual": null
+      },
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "색 같은 건 없어요",
+       "status": "reflected",
+       "actual": null
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "모르겠어요",
+       "status": "dropped_by_controller",
+       "actual": null
+      },
+      {
+       "attr": "body_part",
+       "group": "몸 위치",
+       "phrase": "가슴 안이요",
+       "status": "reflected",
+       "actual": "chest"
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "가슴 안이요",
+       "status": "reflected",
+       "actual": "inner"
+      }
+     ],
+     "unity": {
+      "renderPath": "blob",
+      "visiblePixels": 62619,
+      "maxAlpha": 1.0,
+      "circularity": 0.963,
+      "components": 1,
+      "edgeFalloffPx": 0.69,
+      "defaultsUsed": [
+       "form.type",
+       "form.posture",
+       "material.color.h",
+       "material.color.s",
+       "material.color.l",
+       "material.brightness",
+       "material.roughness",
+       "material.opacity",
+       "material.erosion",
+       "layout.size",
+       "layout.distance",
+       "layout.verticalOffset",
+       "motion.type",
+       "motion.speed"
+      ],
+      "png": "M34.v1.png"
+     },
+     "visual": {
+      "verdict": "기본 덩어리(형상 없음)",
+      "why": "기본 회색 덩어리"
+     }
+    }
+   }
+  },
+  {
+   "id": "M35",
+   "expected": "형상 없음 · 무거움(느낌) · 몸 전체만큼 · 어두움 · 가라앉음",
+   "tags": {
+    "form": [],
+    "color": [],
+    "size": [
+     "relative",
+     "body"
+    ],
+    "texture": [
+     "dark"
+    ],
+    "motion": [
+     "dripping"
+    ],
+    "response": "feeling_only",
+    "speech": "보통"
+   },
+   "mappers": {
+    "v0": {
+     "slots": {
+      "form.type": null,
+      "form.posture": "drooping",
+      "color": null,
+      "opacity": null,
+      "brightness": 0.15,
+      "roughness": null,
+      "size": null,
+      "distance": null,
+      "verticalOffset": null,
+      "motion.type": "sinking",
+      "body.part": "body",
+      "body.layer": "inner"
+     },
+     "forms": [
+      {
+       "category": "none",
+       "phrase": "",
+       "verdict": "반영(비어 있음)",
+       "why": "form.type=None"
+      }
+     ],
+     "others": [
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "몸 전체만큼이요",
+       "status": "lost",
+       "actual": null
+      },
+      {
+       "attr": "brightness",
+       "group": "밝기",
+       "phrase": "어두운 느낌이에요",
+       "status": "reflected",
+       "actual": 0.15
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "아래로 가라앉아요",
+       "status": "dropped_by_controller",
+       "actual": null
+      },
+      {
+       "attr": "body_part",
+       "group": "몸 위치",
+       "phrase": "몸 전체요",
+       "status": "reflected",
+       "actual": "body"
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "안쪽이요",
+       "status": "reflected",
+       "actual": "inner"
+      }
+     ],
+     "unity": {
+      "renderPath": "blob",
+      "visiblePixels": 49839,
+      "maxAlpha": 1.0,
+      "circularity": 0.842,
+      "components": 1,
+      "edgeFalloffPx": 0.68,
+      "defaultsUsed": [
+       "form.type",
+       "material.color.h",
+       "material.color.s",
+       "material.color.l",
+       "material.roughness",
+       "material.opacity",
+       "material.erosion",
+       "layout.size",
+       "layout.distance",
+       "layout.verticalOffset",
+       "motion.speed"
+      ],
+      "png": "M35.v0.png"
+     },
+     "visual": {
+      "verdict": "기본 덩어리(형상 없음)",
+      "why": "기본 회색 덩어리가 눌림(몸이 '처져요' → posture drooping)"
+     }
+    },
+    "v1": {
+     "slots": {
+      "form.type": null,
+      "form.posture": "drooping",
+      "color": null,
+      "opacity": null,
+      "brightness": 0.15,
+      "roughness": null,
+      "size": null,
+      "distance": null,
+      "verticalOffset": null,
+      "motion.type": "sinking",
+      "body.part": "body",
+      "body.layer": "inner"
+     },
+     "forms": [
+      {
+       "category": "none",
+       "phrase": "",
+       "verdict": "반영(비어 있음)",
+       "why": "form.type=None"
+      }
+     ],
+     "others": [
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "몸 전체만큼이요",
+       "status": "lost",
+       "actual": null
+      },
+      {
+       "attr": "brightness",
+       "group": "밝기",
+       "phrase": "어두운 느낌이에요",
+       "status": "reflected",
+       "actual": 0.15
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "아래로 가라앉아요",
+       "status": "dropped_by_controller",
+       "actual": null
+      },
+      {
+       "attr": "body_part",
+       "group": "몸 위치",
+       "phrase": "몸 전체요",
+       "status": "reflected",
+       "actual": "body"
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "안쪽이요",
+       "status": "reflected",
+       "actual": "inner"
+      }
+     ],
+     "unity": {
+      "renderPath": "blob",
+      "visiblePixels": 49839,
+      "maxAlpha": 1.0,
+      "circularity": 0.842,
+      "components": 1,
+      "edgeFalloffPx": 0.68,
+      "defaultsUsed": [
+       "form.type",
+       "material.color.h",
+       "material.color.s",
+       "material.color.l",
+       "material.roughness",
+       "material.opacity",
+       "material.erosion",
+       "layout.size",
+       "layout.distance",
+       "layout.verticalOffset",
+       "motion.speed"
+      ],
+      "png": "M35.v1.png"
+     },
+     "visual": {
+      "verdict": "기본 덩어리(형상 없음)",
+      "why": "기본 회색 덩어리가 눌림(posture drooping)"
+     }
+    }
+   }
+  },
+  {
+   "id": "M36",
+   "expected": "형상 없음 · 초조함(느낌) · 들썩들썩 · 배 안 — 색·크기 null이어야 함",
+   "tags": {
+    "form": [],
+    "color": [
+     "none"
+    ],
+    "size": [
+     "unknown"
+    ],
+    "texture": [],
+    "motion": [
+     "trembling"
+    ],
+    "response": "feeling_only",
+    "speech": "짧게"
+   },
+   "mappers": {
+    "v0": {
+     "slots": {
+      "form.type": null,
+      "form.posture": null,
+      "color": null,
+      "opacity": null,
+      "brightness": null,
+      "roughness": null,
+      "size": null,
+      "distance": null,
+      "verticalOffset": 0.6,
+      "motion.type": null,
+      "body.part": "body",
+      "body.layer": "inner"
+     },
+     "forms": [
+      {
+       "category": "none",
+       "phrase": "",
+       "verdict": "반영(비어 있음)",
+       "why": "form.type=None"
+      }
+     ],
+     "others": [
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "크기는 없어요",
+       "status": "reflected",
+       "actual": null
+      },
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "색은 없어요",
+       "status": "reflected",
+       "actual": null
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "계속 들썩들썩해요",
+       "status": "lost",
+       "actual": null
+      },
+      {
+       "attr": "body_part",
+       "group": "몸 위치",
+       "phrase": "배 쪽이요",
+       "status": "distorted",
+       "actual": "body"
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "몸 안",
+       "status": "reflected",
+       "actual": "inner"
+      }
+     ],
+     "unity": {
+      "renderPath": "blob",
+      "visiblePixels": 54198,
+      "maxAlpha": 1.0,
+      "circularity": 0.958,
+      "components": 1,
+      "edgeFalloffPx": 0.7,
+      "defaultsUsed": [
+       "form.type",
+       "form.posture",
+       "material.color.h",
+       "material.color.s",
+       "material.color.l",
+       "material.brightness",
+       "material.roughness",
+       "material.opacity",
+       "material.erosion",
+       "layout.size",
+       "layout.distance",
+       "motion.type",
+       "motion.speed"
+      ],
+      "png": "M36.v0.png"
+     },
+     "visual": {
+      "verdict": "기본 덩어리(형상 없음)",
+      "why": "기본 회색 덩어리"
+     }
+    },
+    "v1": {
+     "slots": {
+      "form.type": null,
+      "form.posture": null,
+      "color": null,
+      "opacity": null,
+      "brightness": null,
+      "roughness": null,
+      "size": null,
+      "distance": null,
+      "verticalOffset": null,
+      "motion.type": null,
+      "body.part": "belly",
+      "body.layer": "inner"
+     },
+     "forms": [
+      {
+       "category": "none",
+       "phrase": "",
+       "verdict": "반영(비어 있음)",
+       "why": "form.type=None"
+      }
+     ],
+     "others": [
+      {
+       "attr": "size",
+       "group": "크기",
+       "phrase": "크기는 없어요",
+       "status": "reflected",
+       "actual": null
+      },
+      {
+       "attr": "color",
+       "group": "색",
+       "phrase": "색은 없어요",
+       "status": "reflected",
+       "actual": null
+      },
+      {
+       "attr": "motion_type",
+       "group": "움직임",
+       "phrase": "계속 들썩들썩해요",
+       "status": "preserved",
+       "actual": null
+      },
+      {
+       "attr": "body_part",
+       "group": "몸 위치",
+       "phrase": "배 쪽이요",
+       "status": "reflected",
+       "actual": "belly"
+      },
+      {
+       "attr": "body_layer",
+       "group": "몸 위치",
+       "phrase": "몸 안",
+       "status": "reflected",
+       "actual": "inner"
+      }
+     ],
+     "unity": {
+      "renderPath": "blob",
+      "visiblePixels": 62619,
+      "maxAlpha": 1.0,
+      "circularity": 0.963,
+      "components": 1,
+      "edgeFalloffPx": 0.69,
+      "defaultsUsed": [
+       "form.type",
+       "form.posture",
+       "material.color.h",
+       "material.color.s",
+       "material.color.l",
+       "material.brightness",
+       "material.roughness",
+       "material.opacity",
+       "material.erosion",
+       "layout.size",
+       "layout.distance",
+       "layout.verticalOffset",
+       "motion.type",
+       "motion.speed"
+      ],
+      "png": "M36.v1.png"
+     },
+     "visual": {
+      "verdict": "기본 덩어리(형상 없음)",
+      "why": "기본 회색 덩어리"
+     }
+    }
+   }
+  }
+ ]
+}

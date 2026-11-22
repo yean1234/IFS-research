@@ -1,0 +1,349 @@
+{
+  "id": "M12",
+  "synthetic": true,
+  "condition": "chatbot",
+  "elapsedSec": 6.0,
+  "endedBy": "completed",
+  "llmTurns": 5,
+  "attempts": 8,
+  "firstTryPass": 3,
+  "blockedAttempts": 4,
+  "fallbacks": 1,
+  "blockReasons": [
+    "V3:anchor_too_long:깨진 유리 파편들이 공중에 떠 있는데, 거의 투명하고 빛을 받으면 반짝반",
+    "V3:anchor_too_long:팔 뻗으면 닿을 거리쯤",
+    "V5:novel:과",
+    "V7:template_literal"
+  ],
+  "softChecks": 0,
+  "probes": {
+    "asked": [
+      "size_shape"
+    ],
+    "skippedAsCovered": [
+      "color_brightness",
+      "movement"
+    ]
+  },
+  "alerts": [],
+  "inputs": [
+    {
+      "key": "opening",
+      "reply": "오래된 사진을 정리하던 저녁이요. 눈앞에 반짝이는 게 보여요."
+    },
+    {
+      "key": "location",
+      "reply": "몸 앞쪽, 주변이요."
+    },
+    {
+      "key": "llm:find",
+      "reply": "반짝이는 게 여러 개예요."
+    },
+    {
+      "key": "focus",
+      "reply": "유리 파편 같은 게 떠 있어요."
+    },
+    {
+      "key": "llm:flesh_out",
+      "reply": "깨진 유리 파편들이 공중에 떠 있는데, 거의 투명하고 빛을 받으면 반짝반짝해요. 팔 뻗으면 닿을 거리쯤에 있어요."
+    },
+    {
+      "key": "llm:flesh_out",
+      "reply": "유리처럼 투명해요."
+    },
+    {
+      "key": "llm:flesh_out",
+      "reply": "끝이 뾰족뾰족해요."
+    },
+    {
+      "key": "probe_size_shape",
+      "reply": "다 모으면 베개만 해요."
+    }
+  ],
+  "turns": [
+    {
+      "i": 0,
+      "speaker": "system",
+      "source": "fixed:intro",
+      "stage": null,
+      "text": "안녕하세요. 저는 연구용 AI 면담 보조자예요. 상담이나 치료가 아니라, 지금 마음에 떠오르는 것을 참여자분 자신의 말로 조금 더 표현해 보도록 질문만 드려요. 떠오르지 않으면 '잘 모르겠어요'라고 하셔도 괜찮고, 언제든 [그만]을 누르거나 '그만'이라고 쓰면 바로 멈춰요."
+    },
+    {
+      "i": 1,
+      "speaker": "participant",
+      "source": "control:start",
+      "stage": null,
+      "text": "[시작]"
+    },
+    {
+      "i": 2,
+      "speaker": "system",
+      "source": "fixed:opening",
+      "stage": "find",
+      "text": "너무 힘들지 않은 정도로, 최근 마음에 남아 있는 상황 하나를 떠올려 주세요. 그 상황을 떠올릴 때 지금 가장 먼저 알아차려지는 것은 무엇인가요?"
+    },
+    {
+      "i": 3,
+      "speaker": "participant",
+      "source": "typed",
+      "stage": "find",
+      "text": "오래된 사진을 정리하던 저녁이요. 눈앞에 반짝이는 게 보여요."
+    },
+    {
+      "i": 4,
+      "speaker": "system",
+      "source": "fixed:location",
+      "stage": "find",
+      "text": "그것이 몸 안에, 몸 표면에, 아니면 몸 주변에 있나요?"
+    },
+    {
+      "i": 5,
+      "speaker": "participant",
+      "source": "typed",
+      "stage": "find",
+      "text": "몸 앞쪽, 주변이요."
+    },
+    {
+      "i": 6,
+      "speaker": "interviewer",
+      "source": "llm",
+      "stage": "find",
+      "text": "그 '반짝이는 게'는 마치 무엇 같나요?",
+      "move": "ask",
+      "attempts": [
+        {
+          "attempt": 0,
+          "passed": true,
+          "reasons": [],
+          "utterance": "그 '반짝이는 게'는 마치 무엇 같나요?",
+          "template": "like_what",
+          "anchor": null,
+          "latencyMs": 506
+        }
+      ],
+      "checks": {
+        "passed": true,
+        "reasons": [],
+        "regenerations": 0,
+        "fallback": false
+      }
+    },
+    {
+      "i": 7,
+      "speaker": "participant",
+      "source": "typed",
+      "stage": "find",
+      "text": "반짝이는 게 여러 개예요."
+    },
+    {
+      "i": 8,
+      "speaker": "system",
+      "source": "fixed:focus_hold",
+      "stage": "focus",
+      "text": "거기에 주의를 두고 잠시 머물러 보세요. 준비가 되면, 지금 알아차려지는 것을 적어 주세요."
+    },
+    {
+      "i": 9,
+      "speaker": "participant",
+      "source": "typed",
+      "stage": "focus",
+      "text": "유리 파편 같은 게 떠 있어요."
+    },
+    {
+      "i": 10,
+      "speaker": "interviewer",
+      "source": "llm",
+      "stage": "flesh_out",
+      "text": "그 '유리 파편'은 어떤 '유리 파편'인가요?",
+      "move": "ask",
+      "attempts": [
+        {
+          "attempt": 0,
+          "passed": true,
+          "reasons": [],
+          "utterance": "그 '유리 파편'은 어떤 '유리 파편'인가요?",
+          "template": "what_kind",
+          "anchor": null,
+          "latencyMs": 529
+        }
+      ],
+      "checks": {
+        "passed": true,
+        "reasons": [],
+        "regenerations": 0,
+        "fallback": false
+      }
+    },
+    {
+      "i": 11,
+      "speaker": "participant",
+      "source": "typed",
+      "stage": "flesh_out",
+      "text": "깨진 유리 파편들이 공중에 떠 있는데, 거의 투명하고 빛을 받으면 반짝반짝해요. 팔 뻗으면 닿을 거리쯤에 있어요."
+    },
+    {
+      "i": 12,
+      "speaker": "interviewer",
+      "source": "llm",
+      "stage": "flesh_out",
+      "text": "'유리 파편'에 대해 더 있나요?",
+      "move": "ask",
+      "attempts": [
+        {
+          "attempt": 0,
+          "passed": false,
+          "reasons": [
+            "V3:anchor_too_long:깨진 유리 파편들이 공중에 떠 있는데, 거의 투명하고 빛을 받으면 반짝반"
+          ],
+          "utterance": "그 '깨진 유리 파편들이 공중에 떠 있는데, 거의 투명하고 빛을 받으면 반짝반짝해요. 팔 뻗으면 닿을 거리쯤에 있어요'에 대해 더 있나요?",
+          "template": "anything_else",
+          "anchor": null,
+          "latencyMs": 709
+        },
+        {
+          "attempt": 1,
+          "passed": true,
+          "reasons": [],
+          "utterance": "'유리 파편'에 대해 더 있나요?",
+          "template": "anything_else",
+          "anchor": null,
+          "latencyMs": 471
+        }
+      ],
+      "checks": {
+        "passed": true,
+        "reasons": [],
+        "regenerations": 1,
+        "fallback": false
+      }
+    },
+    {
+      "i": 13,
+      "speaker": "participant",
+      "source": "typed",
+      "stage": "flesh_out",
+      "text": "유리처럼 투명해요."
+    },
+    {
+      "i": 14,
+      "speaker": "interviewer",
+      "source": "fixed:fallback",
+      "stage": "flesh_out",
+      "text": "방금 말씀하신 것에 대해 더 있나요?",
+      "attempts": [
+        {
+          "attempt": 0,
+          "passed": false,
+          "reasons": [
+            "V5:novel:과",
+            "V7:template_literal"
+          ],
+          "utterance": "'유리 파편'과(과) '투명해요' 사이에는 어떤 관계가 있나요?",
+          "template": "relationship",
+          "anchor": null,
+          "latencyMs": 556
+        },
+        {
+          "attempt": 1,
+          "passed": false,
+          "reasons": [
+            "V3:anchor_too_long:팔 뻗으면 닿을 거리쯤"
+          ],
+          "utterance": "그 '팔 뻗으면 닿을 거리쯤'은 어디쯤 있나요?",
+          "template": "where",
+          "anchor": null,
+          "latencyMs": 503
+        },
+        {
+          "attempt": 2,
+          "passed": false,
+          "reasons": [
+            "V3:anchor_too_long:팔 뻗으면 닿을 거리쯤"
+          ],
+          "utterance": "그 '팔 뻗으면 닿을 거리쯤'은 어디쯤 있나요?",
+          "template": "where",
+          "anchor": null,
+          "latencyMs": 517
+        }
+      ],
+      "checks": {
+        "passed": false,
+        "reasons": [
+          "V3:anchor_too_long:팔 뻗으면 닿을 거리쯤"
+        ],
+        "regenerations": 2,
+        "fallback": true
+      }
+    },
+    {
+      "i": 15,
+      "speaker": "participant",
+      "source": "typed",
+      "stage": "flesh_out",
+      "text": "끝이 뾰족뾰족해요."
+    },
+    {
+      "i": 16,
+      "speaker": "interviewer",
+      "source": "llm",
+      "stage": "flesh_out",
+      "text": "",
+      "note": "ready_to_advance — 참여자에게 나가지 않음",
+      "move": "ready_to_advance",
+      "attempts": [
+        {
+          "attempt": 0,
+          "passed": true,
+          "reasons": [],
+          "utterance": "그 '끝이 뾰족뾰족해요'에 대해 더 있나요?",
+          "template": "anything_else",
+          "anchor": null,
+          "latencyMs": 550
+        }
+      ],
+      "checks": {
+        "passed": true,
+        "reasons": [],
+        "regenerations": 0,
+        "fallback": false
+      }
+    },
+    {
+      "i": 17,
+      "speaker": "system",
+      "source": "fixed:probe_size_shape",
+      "stage": "flesh_out",
+      "probe": "size_shape",
+      "text": "그것에 크기나 모양이 있나요?"
+    },
+    {
+      "i": 18,
+      "speaker": "participant",
+      "source": "typed",
+      "stage": "flesh_out",
+      "text": "다 모으면 베개만 해요."
+    },
+    {
+      "i": 19,
+      "speaker": "system",
+      "source": "fixed:confirm_intro",
+      "stage": null,
+      "text": "지금까지 적어 주신 말을 그대로 모았어요. 이대로 맞는지 확인해 주세요. 고치고 싶은 곳이 있으면 직접 고쳐도 돼요."
+    },
+    {
+      "i": 20,
+      "speaker": "participant",
+      "source": "control:confirm",
+      "stage": null,
+      "text": "[이대로 맞아요]"
+    },
+    {
+      "i": 21,
+      "speaker": "system",
+      "source": "fixed:closing",
+      "stage": null,
+      "text": "확인해 주셔서 고마워요. 면담은 여기까지예요. 이제 연구자의 안내에 따라 다음 단계로 넘어갈게요."
+    }
+  ],
+  "confirmedText": "오래된 사진을 정리하던 저녁이요. 눈앞에 반짝이는 게 보여요.\n몸 앞쪽, 주변이요.\n반짝이는 게 여러 개예요.\n유리 파편 같은 게 떠 있어요.\n깨진 유리 파편들이 공중에 떠 있는데, 거의 투명하고 빛을 받으면 반짝반짝해요. 팔 뻗으면 닿을 거리쯤에 있어요.\n유리처럼 투명해요.\n끝이 뾰족뾰족해요.\n다 모으면 베개만 해요."
+}

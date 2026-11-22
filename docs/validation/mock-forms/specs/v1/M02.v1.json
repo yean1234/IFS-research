@@ -1,0 +1,511 @@
+{
+  "meta": {
+    "specVersion": "2.1.0",
+    "participantId": null,
+    "sessionId": "M02",
+    "condition": "static",
+    "sourceTextHash": "sha256:141bcd5db071cf6c938cce1df4ddc0515f7ef9182d801745efa4e200a589079b",
+    "pipeline": {
+      "builder": "scene-spec-builder-v1/1.2.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@1.0.0",
+        "layer1Base": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@1.0.0",
+        "vad": "vad-ko@0.1.0"
+      }
+    },
+    "mapping": {
+      "requested": "v1",
+      "used": "v1",
+      "fallbackReason": null
+    }
+  },
+  "form": {
+    "type": "mist",
+    "posture": null
+  },
+  "material": {
+    "color": {
+      "h": 0.0,
+      "s": 0.0,
+      "l": 0.08
+    },
+    "brightness": null,
+    "saturation": null,
+    "roughness": null,
+    "opacity": 0.7,
+    "erosion": null
+  },
+  "layout": {
+    "size": null,
+    "distance": null,
+    "verticalOffset": null
+  },
+  "motion": {
+    "type": "rising",
+    "speed": null
+  },
+  "body": {
+    "part": "chest",
+    "layer": "inner"
+  },
+  "_provenance": {
+    "form.type": [
+      {
+        "source": "simile_marker",
+        "trigger": "연기 같",
+        "charSpan": [
+          30,
+          34
+        ],
+        "rule": "simile.같은>prototype.연기>form.type:mist"
+      }
+    ],
+    "material.color": [
+      {
+        "source": "phrase_rule",
+        "trigger": "검은",
+        "charSpan": [
+          27,
+          29
+        ],
+        "rule": "colorTerm.검은>material.color:hsl"
+      }
+    ],
+    "material.opacity": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "비쳐요",
+        "charSpan": [
+          74,
+          77
+        ],
+        "rule": "opacityLexicon.비치>material.opacity:see_through"
+      }
+    ],
+    "motion.type": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "피어올라요",
+        "charSpan": [
+          43,
+          48
+        ],
+        "rule": "motionLexicon.피어오르>motion.type:rising"
+      },
+      {
+        "source": "explicit_lexicon",
+        "trigger": "올라와요",
+        "charSpan": [
+          89,
+          93
+        ],
+        "rule": "motionLexicon.올라오>motion.type:rising"
+      }
+    ],
+    "body.part": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "가슴",
+        "charSpan": [
+          19,
+          21
+        ],
+        "rule": "bodyPartLexicon.가슴>body.part:chest"
+      }
+    ],
+    "body.layer": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "안쪽",
+        "charSpan": [
+          22,
+          24
+        ],
+        "rule": "bodyLayerLexicon.안쪽>body.layer:inner"
+      },
+      {
+        "source": "explicit_lexicon",
+        "trigger": "안",
+        "charSpan": [
+          81,
+          82
+        ],
+        "rule": "bodyLayerLexicon.안>body.layer:inner"
+      }
+    ]
+  },
+  "_unmatched": [
+    {
+      "lemma": "음",
+      "tag": "EOJEOL",
+      "surface": "음",
+      "charSpan": [
+        0,
+        1
+      ]
+    },
+    {
+      "lemma": "친구",
+      "tag": "NNG",
+      "surface": "친구",
+      "charSpan": [
+        3,
+        5
+      ]
+    },
+    {
+      "lemma": "친구",
+      "tag": "EOJEOL",
+      "surface": "친구랑",
+      "charSpan": [
+        3,
+        6
+      ]
+    },
+    {
+      "lemma": "연락",
+      "tag": "NNG",
+      "surface": "연락",
+      "charSpan": [
+        7,
+        9
+      ]
+    },
+    {
+      "lemma": "연락",
+      "tag": "EOJEOL",
+      "surface": "연락이",
+      "charSpan": [
+        7,
+        10
+      ]
+    },
+    {
+      "lemma": "끊기",
+      "tag": "VV",
+      "surface": "끊긴",
+      "charSpan": [
+        11,
+        13
+      ]
+    },
+    {
+      "lemma": "일",
+      "tag": "NNG",
+      "surface": "일",
+      "charSpan": [
+        14,
+        15
+      ]
+    },
+    {
+      "lemma": "일",
+      "tag": "EOJEOL",
+      "surface": "일이요",
+      "charSpan": [
+        14,
+        17
+      ]
+    },
+    {
+      "lemma": "것",
+      "tag": "EOJEOL",
+      "surface": "게",
+      "charSpan": [
+        36,
+        37
+      ]
+    },
+    {
+      "lemma": "스멀스멀",
+      "tag": "MAG",
+      "surface": "스멀스멀",
+      "charSpan": [
+        38,
+        42
+      ]
+    },
+    {
+      "lemma": "잘",
+      "tag": "MAG",
+      "surface": "잘",
+      "charSpan": [
+        54,
+        55
+      ]
+    },
+    {
+      "lemma": "모르",
+      "tag": "VV",
+      "surface": "모르",
+      "charSpan": [
+        56,
+        58
+      ]
+    },
+    {
+      "lemma": "아주",
+      "tag": "EOJEOL",
+      "surface": "아주",
+      "charSpan": [
+        62,
+        64
+      ]
+    },
+    {
+      "lemma": "않",
+      "tag": "EOJEOL",
+      "surface": "않고",
+      "charSpan": [
+        69,
+        71
+      ]
+    },
+    {
+      "lemma": "좀",
+      "tag": "EOJEOL",
+      "surface": "좀",
+      "charSpan": [
+        72,
+        73
+      ]
+    },
+    {
+      "lemma": "안",
+      "tag": "MAG",
+      "surface": "안",
+      "charSpan": [
+        81,
+        82
+      ]
+    },
+    {
+      "lemma": "안",
+      "tag": "EOJEOL",
+      "surface": "안이요",
+      "charSpan": [
+        81,
+        84
+      ]
+    },
+    {
+      "lemma": "계속",
+      "tag": "MAG",
+      "surface": "계속",
+      "charSpan": [
+        86,
+        88
+      ]
+    }
+  ],
+  "_unmapped": [],
+  "_negated": [
+    {
+      "lemma": "진하",
+      "category": "saturation",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "진하진",
+        "charSpan": [
+          65,
+          68
+        ],
+        "rule": "saturationLexicon.진하"
+      }
+    }
+  ],
+  "_alternatives": [
+    {
+      "path": "body.part",
+      "value": "body",
+      "reason": "lower_priority",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "몸",
+          "charSpan": [
+            79,
+            80
+          ],
+          "rule": "bodyPartLexicon.몸>body.part:body"
+        }
+      ]
+    }
+  ],
+  "_inferred": {
+    "layout.verticalOffset": {
+      "value": 0.72,
+      "_provenance": [
+        {
+          "source": "body_part_height",
+          "trigger": "가슴",
+          "charSpan": [
+            19,
+            21
+          ],
+          "rule": "bodyPartHeight.chest>layout.verticalOffset:0.72"
+        }
+      ]
+    }
+  },
+  "_context": [],
+  "_parts": [],
+  "_uncertain": [
+    {
+      "text": "크기는 잘 모르겠고",
+      "charSpan": [
+        50,
+        60
+      ],
+      "paths": [
+        "layout.size"
+      ],
+      "marker": "모르"
+    }
+  ],
+  "_measurements": [],
+  "_direction": [],
+  "_needsConfirmation": [],
+  "_clauses": [
+    {
+      "charSpan": [
+        0,
+        2
+      ],
+      "text": "음…",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        3,
+        17
+      ],
+      "text": "친구랑 연락이 끊긴 일이요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        17,
+        18
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        19,
+        48
+      ],
+      "text": "가슴 안쪽에서 검은 연기 같은 게 스멀스멀 피어올라요",
+      "usedFor": [
+        "form.type",
+        "material.color",
+        "motion.type",
+        "body.part",
+        "body.layer"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        48,
+        49
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        50,
+        60
+      ],
+      "text": "크기는 잘 모르겠고",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        60,
+        61
+      ],
+      "text": ",",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        62,
+        71
+      ],
+      "text": "아주 진하진 않고",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        72,
+        77
+      ],
+      "text": "좀 비쳐요",
+      "usedFor": [
+        "material.opacity"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        77,
+        78
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        79,
+        84
+      ],
+      "text": "몸 안이요",
+      "usedFor": [
+        "body.layer"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        84,
+        85
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        86,
+        93
+      ],
+      "text": "계속 올라와요",
+      "usedFor": [
+        "motion.type"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        93,
+        94
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    }
+  ]
+}

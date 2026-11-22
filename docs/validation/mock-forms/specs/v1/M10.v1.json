@@ -1,0 +1,674 @@
+{
+  "meta": {
+    "specVersion": "2.1.0",
+    "participantId": null,
+    "sessionId": "M10",
+    "condition": "static",
+    "sourceTextHash": "sha256:3c18fb7879fdae29b91b263158d395cf203434a4beef8e2b3a3f7775af59d446",
+    "pipeline": {
+      "builder": "scene-spec-builder-v1/1.2.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@1.0.0",
+        "layer1Base": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@1.0.0",
+        "vad": "vad-ko@0.1.0"
+      }
+    },
+    "mapping": {
+      "requested": "v1",
+      "used": "v1",
+      "fallbackReason": null
+    }
+  },
+  "form": {
+    "type": "shell",
+    "posture": null
+  },
+  "material": {
+    "color": {
+      "h": 0.0,
+      "s": 0.0,
+      "l": 0.95
+    },
+    "brightness": 0.7,
+    "saturation": null,
+    "roughness": null,
+    "opacity": 0.5,
+    "erosion": null
+  },
+  "layout": {
+    "size": 0.244,
+    "distance": null,
+    "verticalOffset": null
+  },
+  "motion": {
+    "type": "trembling",
+    "speed": null
+  },
+  "body": {
+    "part": "body",
+    "layer": "inner"
+  },
+  "_provenance": {
+    "form.type": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "껍데기",
+        "charSpan": [
+          35,
+          38
+        ],
+        "rule": "formLexicon.껍데기>form.type:shell"
+      }
+    ],
+    "material.color": [
+      {
+        "source": "phrase_rule",
+        "trigger": "하얗고",
+        "charSpan": [
+          57,
+          60
+        ],
+        "rule": "colorTerm.하얗>material.color:hsl"
+      }
+    ],
+    "material.brightness": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "빛",
+        "charSpan": [
+          88,
+          89
+        ],
+        "rule": "brightnessLexicon.빛>material.brightness:light"
+      }
+    ],
+    "material.opacity": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "비쳐요",
+        "charSpan": [
+          91,
+          94
+        ],
+        "rule": "opacityLexicon.비치>material.opacity:see_through"
+      }
+    ],
+    "layout.size": [
+      {
+        "source": "phrase_rule",
+        "trigger": "달걀보다 조금 커요",
+        "charSpan": [
+          107,
+          117
+        ],
+        "rule": "compare.than.달걀>layout.size:0.069m"
+      }
+    ],
+    "motion.type": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "떨려요",
+        "charSpan": [
+          123,
+          126
+        ],
+        "rule": "motionLexicon.떨리>motion.type:trembling"
+      }
+    ],
+    "body.part": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "몸",
+        "charSpan": [
+          18,
+          19
+        ],
+        "rule": "bodyPartLexicon.몸>body.part:body"
+      }
+    ],
+    "body.layer": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "안",
+        "charSpan": [
+          20,
+          21
+        ],
+        "rule": "bodyLayerLexicon.안>body.layer:inner"
+      }
+    ]
+  },
+  "_unmatched": [
+    {
+      "lemma": "시험",
+      "tag": "NNG",
+      "surface": "시험",
+      "charSpan": [
+        0,
+        2
+      ]
+    },
+    {
+      "lemma": "결과",
+      "tag": "NNG",
+      "surface": "결과",
+      "charSpan": [
+        3,
+        5
+      ]
+    },
+    {
+      "lemma": "기다리",
+      "tag": "VV",
+      "surface": "기다리",
+      "charSpan": [
+        6,
+        9
+      ]
+    },
+    {
+      "lemma": "기다리",
+      "tag": "EOJEOL",
+      "surface": "기다리던",
+      "charSpan": [
+        6,
+        10
+      ]
+    },
+    {
+      "lemma": "때",
+      "tag": "EOJEOL",
+      "surface": "때요",
+      "charSpan": [
+        11,
+        13
+      ]
+    },
+    {
+      "lemma": "음",
+      "tag": "EOJEOL",
+      "surface": "음",
+      "charSpan": [
+        15,
+        16
+      ]
+    },
+    {
+      "lemma": "것",
+      "tag": "EOJEOL",
+      "surface": "것",
+      "charSpan": [
+        23,
+        24
+      ]
+    },
+    {
+      "lemma": "같",
+      "tag": "EOJEOL",
+      "surface": "같아요",
+      "charSpan": [
+        25,
+        28
+      ]
+    },
+    {
+      "lemma": "속",
+      "tag": "EOJEOL",
+      "surface": "속이",
+      "charSpan": [
+        30,
+        32
+      ]
+    },
+    {
+      "lemma": "있",
+      "tag": "EOJEOL",
+      "surface": "있어요",
+      "charSpan": [
+        40,
+        43
+      ]
+    },
+    {
+      "lemma": "달걀",
+      "tag": "NNG",
+      "surface": "달걀",
+      "charSpan": [
+        45,
+        47
+      ]
+    },
+    {
+      "lemma": "같",
+      "tag": "EOJEOL",
+      "surface": "같아요",
+      "charSpan": [
+        52,
+        55
+      ]
+    },
+    {
+      "lemma": "군데군데",
+      "tag": "MAG",
+      "surface": "군데군데",
+      "charSpan": [
+        65,
+        69
+      ]
+    },
+    {
+      "lemma": "금",
+      "tag": "NNG",
+      "surface": "금",
+      "charSpan": [
+        70,
+        71
+      ]
+    },
+    {
+      "lemma": "금",
+      "tag": "EOJEOL",
+      "surface": "금이",
+      "charSpan": [
+        70,
+        72
+      ]
+    },
+    {
+      "lemma": "가",
+      "tag": "VV",
+      "surface": "가",
+      "charSpan": [
+        73,
+        74
+      ]
+    },
+    {
+      "lemma": "있",
+      "tag": "EOJEOL",
+      "surface": "있어요",
+      "charSpan": [
+        75,
+        78
+      ]
+    },
+    {
+      "lemma": "금",
+      "tag": "NNG",
+      "surface": "금",
+      "charSpan": [
+        80,
+        81
+      ]
+    },
+    {
+      "lemma": "가",
+      "tag": "VV",
+      "surface": "간",
+      "charSpan": [
+        82,
+        83
+      ]
+    },
+    {
+      "lemma": "데",
+      "tag": "EOJEOL",
+      "surface": "데로만",
+      "charSpan": [
+        84,
+        87
+      ]
+    },
+    {
+      "lemma": "안",
+      "tag": "EOJEOL",
+      "surface": "안은",
+      "charSpan": [
+        96,
+        98
+      ]
+    },
+    {
+      "lemma": "있",
+      "tag": "EOJEOL",
+      "surface": "있고요",
+      "charSpan": [
+        102,
+        105
+      ]
+    },
+    {
+      "lemma": "조금",
+      "tag": "EOJEOL",
+      "surface": "조금씩",
+      "charSpan": [
+        119,
+        122
+      ]
+    }
+  ],
+  "_unmapped": [
+    {
+      "lemma": "속",
+      "category": "body_layer",
+      "value": {
+        "layer": "inner"
+      },
+      "reason": "no_body_part_context",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "속",
+        "charSpan": [
+          30,
+          31
+        ],
+        "rule": "bodyLayerLexicon.속"
+      }
+    },
+    {
+      "lemma": "비",
+      "category": "shape",
+      "value": {
+        "shape": "hollow"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "빈",
+        "charSpan": [
+          33,
+          34
+        ],
+        "rule": "shapeLexicon.비"
+      }
+    },
+    {
+      "lemma": "얇",
+      "category": "shape",
+      "value": {
+        "shape": "thin"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "얇은데",
+        "charSpan": [
+          61,
+          64
+        ],
+        "rule": "shapeLexicon.얇"
+      }
+    },
+    {
+      "lemma": "안",
+      "category": "body_layer",
+      "value": {
+        "layer": "inner"
+      },
+      "reason": "no_body_part_context",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "안",
+        "charSpan": [
+          96,
+          97
+        ],
+        "rule": "bodyLayerLexicon.안"
+      }
+    },
+    {
+      "lemma": "비",
+      "category": "shape",
+      "value": {
+        "shape": "hollow"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "비어",
+        "charSpan": [
+          99,
+          101
+        ],
+        "rule": "shapeLexicon.비"
+      }
+    }
+  ],
+  "_negated": [],
+  "_alternatives": [
+    {
+      "path": "form.type",
+      "value": "shell",
+      "reason": "lower_layer",
+      "_provenance": [
+        {
+          "source": "simile_marker",
+          "trigger": "껍데기",
+          "charSpan": [
+            48,
+            51
+          ],
+          "rule": "simile.같은>formLexicon.껍데기>form.type:shell"
+        }
+      ]
+    }
+  ],
+  "_inferred": {},
+  "_context": [],
+  "_parts": [],
+  "_uncertain": [],
+  "_measurements": [
+    {
+      "text": "달걀보다 조금 커요",
+      "charSpan": [
+        107,
+        117
+      ],
+      "kind": "reference",
+      "meters": 0.069,
+      "dimension": "size",
+      "reference": "달걀",
+      "usedFor": "layout.size"
+    }
+  ],
+  "_direction": [],
+  "_needsConfirmation": [],
+  "_clauses": [
+    {
+      "charSpan": [
+        0,
+        13
+      ],
+      "text": "시험 결과 기다리던 때요",
+      "usedFor": [],
+      "status": "context"
+    },
+    {
+      "charSpan": [
+        13,
+        14
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        15,
+        17
+      ],
+      "text": "음…",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        18,
+        28
+      ],
+      "text": "몸 안인 것 같아요",
+      "usedFor": [
+        "body.part",
+        "body.layer"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        28,
+        29
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        30,
+        43
+      ],
+      "text": "속이 빈 껍데기가 있어요",
+      "usedFor": [
+        "form.type"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        43,
+        44
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        45,
+        55
+      ],
+      "text": "달걀 껍데기 같아요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        55,
+        56
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        57,
+        60
+      ],
+      "text": "하얗고",
+      "usedFor": [
+        "material.color"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        61,
+        78
+      ],
+      "text": "얇은데 군데군데 금이 가 있어요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        78,
+        79
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        80,
+        94
+      ],
+      "text": "금 간 데로만 빛이 비쳐요",
+      "usedFor": [
+        "material.brightness",
+        "material.opacity"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        94,
+        95
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        96,
+        105
+      ],
+      "text": "안은 비어 있고요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        105,
+        106
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        107,
+        117
+      ],
+      "text": "달걀보다 조금 커요",
+      "usedFor": [
+        "layout.size"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        117,
+        118
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        119,
+        126
+      ],
+      "text": "조금씩 떨려요",
+      "usedFor": [
+        "motion.type"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        126,
+        127
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    }
+  ]
+}

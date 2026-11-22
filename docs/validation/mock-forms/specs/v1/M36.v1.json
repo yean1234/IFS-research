@@ -1,0 +1,516 @@
+{
+  "meta": {
+    "specVersion": "2.1.0",
+    "participantId": null,
+    "sessionId": "M36",
+    "condition": "static",
+    "sourceTextHash": "sha256:2b991d9d29c5d7ee5d12182f565b53a312d7e4d84df42f70e6752343fdc769c9",
+    "pipeline": {
+      "builder": "scene-spec-builder-v1/1.2.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@1.0.0",
+        "layer1Base": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@1.0.0",
+        "vad": "vad-ko@0.1.0"
+      }
+    },
+    "mapping": {
+      "requested": "v1",
+      "used": "v1",
+      "fallbackReason": null
+    }
+  },
+  "form": {
+    "type": null,
+    "posture": null
+  },
+  "material": {
+    "color": null,
+    "brightness": null,
+    "saturation": null,
+    "roughness": null,
+    "opacity": null,
+    "erosion": null
+  },
+  "layout": {
+    "size": null,
+    "distance": null,
+    "verticalOffset": null
+  },
+  "motion": {
+    "type": null,
+    "speed": null
+  },
+  "body": {
+    "part": "belly",
+    "layer": "inner"
+  },
+  "_provenance": {
+    "body.part": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "배",
+        "charSpan": [
+          23,
+          24
+        ],
+        "rule": "bodyPartLexicon.배>body.part:belly"
+      }
+    ],
+    "body.layer": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "안",
+        "charSpan": [
+          20,
+          21
+        ],
+        "rule": "bodyLayerLexicon.안>body.layer:inner"
+      }
+    ]
+  },
+  "_unmatched": [
+    {
+      "lemma": "면접",
+      "tag": "NNG",
+      "surface": "면접",
+      "charSpan": [
+        0,
+        2
+      ]
+    },
+    {
+      "lemma": "보",
+      "tag": "VV",
+      "surface": "보",
+      "charSpan": [
+        3,
+        4
+      ]
+    },
+    {
+      "lemma": "보",
+      "tag": "EOJEOL",
+      "surface": "보기",
+      "charSpan": [
+        3,
+        5
+      ]
+    },
+    {
+      "lemma": "직전",
+      "tag": "NNG",
+      "surface": "직전",
+      "charSpan": [
+        6,
+        8
+      ]
+    },
+    {
+      "lemma": "직전",
+      "tag": "EOJEOL",
+      "surface": "직전이요",
+      "charSpan": [
+        6,
+        10
+      ]
+    },
+    {
+      "lemma": "쪽",
+      "tag": "EOJEOL",
+      "surface": "쪽이요",
+      "charSpan": [
+        25,
+        28
+      ]
+    },
+    {
+      "lemma": "안절부절못하",
+      "tag": "VV",
+      "surface": "안절부절못하",
+      "charSpan": [
+        30,
+        36
+      ]
+    },
+    {
+      "lemma": "안절부절못하",
+      "tag": "EOJEOL",
+      "surface": "안절부절못하는",
+      "charSpan": [
+        30,
+        37
+      ]
+    },
+    {
+      "lemma": "느낌",
+      "tag": "EOJEOL",
+      "surface": "느낌이에요",
+      "charSpan": [
+        38,
+        43
+      ]
+    },
+    {
+      "lemma": "뭐",
+      "tag": "EOJEOL",
+      "surface": "뭐가",
+      "charSpan": [
+        45,
+        47
+      ]
+    },
+    {
+      "lemma": "있",
+      "tag": "EOJEOL",
+      "surface": "있다기보다",
+      "charSpan": [
+        48,
+        53
+      ]
+    },
+    {
+      "lemma": "계속",
+      "tag": "MAG",
+      "surface": "계속",
+      "charSpan": [
+        54,
+        56
+      ]
+    },
+    {
+      "lemma": "들썩들썩",
+      "tag": "MAG",
+      "surface": "들썩들썩",
+      "charSpan": [
+        57,
+        61
+      ]
+    },
+    {
+      "lemma": "들썩들썩",
+      "tag": "EOJEOL",
+      "surface": "들썩들썩해요",
+      "charSpan": [
+        57,
+        63
+      ]
+    },
+    {
+      "lemma": "계속",
+      "tag": "MAG",
+      "surface": "계속",
+      "charSpan": [
+        82,
+        84
+      ]
+    },
+    {
+      "lemma": "들썩거리",
+      "tag": "VV",
+      "surface": "들썩거려",
+      "charSpan": [
+        85,
+        89
+      ]
+    },
+    {
+      "lemma": "들썩거리",
+      "tag": "EOJEOL",
+      "surface": "들썩거려요",
+      "charSpan": [
+        85,
+        90
+      ]
+    }
+  ],
+  "_unmapped": [
+    {
+      "lemma": "초조",
+      "category": "emotion",
+      "value": {
+        "emotion": "anxious"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "초조해요",
+        "charSpan": [
+          12,
+          16
+        ],
+        "rule": "emotionLexicon.초조"
+      }
+    }
+  ],
+  "_negated": [
+    {
+      "lemma": "크기",
+      "category": "dimension",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "크기는 없어요",
+        "charSpan": [
+          65,
+          72
+        ],
+        "rule": "dimensionLexicon.크기+없"
+      }
+    },
+    {
+      "lemma": "색",
+      "category": "dimension",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "색은 없어요",
+        "charSpan": [
+          74,
+          80
+        ],
+        "rule": "dimensionLexicon.색+없"
+      }
+    }
+  ],
+  "_alternatives": [
+    {
+      "path": "body.part",
+      "value": "body",
+      "reason": "lower_priority",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "몸",
+          "charSpan": [
+            18,
+            19
+          ],
+          "rule": "bodyPartLexicon.몸>body.part:body"
+        }
+      ]
+    }
+  ],
+  "_inferred": {
+    "material.brightness": {
+      "value": 0.2,
+      "_provenance": [
+        {
+          "source": "vad_lexicon",
+          "trigger": "초조해요",
+          "charSpan": [
+            12,
+            16
+          ],
+          "rule": "vadLexicon.초조>material.brightness:valence"
+        }
+      ]
+    },
+    "layout.size": {
+      "value": 0.25,
+      "_provenance": [
+        {
+          "source": "vad_lexicon",
+          "trigger": "초조해요",
+          "charSpan": [
+            12,
+            16
+          ],
+          "rule": "vadLexicon.초조>layout.size:dominance"
+        }
+      ]
+    },
+    "layout.verticalOffset": {
+      "value": 0.6,
+      "_provenance": [
+        {
+          "source": "body_part_height",
+          "trigger": "배",
+          "charSpan": [
+            23,
+            24
+          ],
+          "rule": "bodyPartHeight.belly>layout.verticalOffset:0.6"
+        }
+      ]
+    },
+    "motion.speed": {
+      "value": 0.8,
+      "_provenance": [
+        {
+          "source": "vad_lexicon",
+          "trigger": "초조해요",
+          "charSpan": [
+            12,
+            16
+          ],
+          "rule": "vadLexicon.초조>motion.speed:arousal"
+        }
+      ]
+    }
+  },
+  "_context": [],
+  "_parts": [],
+  "_uncertain": [],
+  "_measurements": [],
+  "_direction": [],
+  "_needsConfirmation": [],
+  "_clauses": [
+    {
+      "charSpan": [
+        0,
+        10
+      ],
+      "text": "면접 보기 직전이요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        10,
+        11
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        12,
+        16
+      ],
+      "text": "초조해요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        16,
+        17
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        18,
+        22
+      ],
+      "text": "몸 안,",
+      "usedFor": [
+        "body.layer"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        23,
+        28
+      ],
+      "text": "배 쪽이요",
+      "usedFor": [
+        "body.part"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        28,
+        29
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        30,
+        43
+      ],
+      "text": "안절부절못하는 느낌이에요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        43,
+        44
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        45,
+        63
+      ],
+      "text": "뭐가 있다기보다 계속 들썩들썩해요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        63,
+        64
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        65,
+        72
+      ],
+      "text": "크기는 없어요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        72,
+        73
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        74,
+        80
+      ],
+      "text": "색은 없어요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        80,
+        81
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        82,
+        90
+      ],
+      "text": "계속 들썩거려요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        90,
+        91
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    }
+  ]
+}

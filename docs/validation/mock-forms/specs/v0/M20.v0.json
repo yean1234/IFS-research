@@ -1,0 +1,251 @@
+{
+  "meta": {
+    "specVersion": "2.0.0",
+    "participantId": null,
+    "sessionId": "M20",
+    "condition": "static",
+    "sourceTextHash": "sha256:3fd3bfa292c667b52e92d357625d87b7b4b336022d9b1ae5f3037e5c57b2137c",
+    "pipeline": {
+      "builder": "scene-spec-builder/0.1.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@0.1.0",
+        "vad": "vad-ko@0.1.0"
+      }
+    }
+  },
+  "form": {
+    "type": null,
+    "posture": null
+  },
+  "material": {
+    "color": {
+      "h": 0.0,
+      "s": 0.0,
+      "l": 0.95
+    },
+    "brightness": null,
+    "saturation": null,
+    "roughness": null,
+    "opacity": null,
+    "erosion": null
+  },
+  "layout": {
+    "size": null,
+    "distance": null,
+    "verticalOffset": null
+  },
+  "motion": {
+    "type": "floating",
+    "speed": null
+  },
+  "body": {
+    "part": null,
+    "layer": null
+  },
+  "_provenance": {
+    "material.color": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "하얘요",
+        "charSpan": [
+          64,
+          67
+        ],
+        "rule": "colorLexicon.하얗>material.color:hsl"
+      }
+    ],
+    "motion.type": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "떠",
+        "charSpan": [
+          54,
+          55
+        ],
+        "rule": "motionLexicon.뜨>motion.type:floating"
+      }
+    ]
+  },
+  "_unmatched": [
+    {
+      "lemma": "제출",
+      "tag": "NNG",
+      "surface": "제출",
+      "charSpan": [
+        0,
+        2
+      ]
+    },
+    {
+      "lemma": "마감",
+      "tag": "NNG",
+      "surface": "마감",
+      "charSpan": [
+        3,
+        5
+      ]
+    },
+    {
+      "lemma": "직전",
+      "tag": "NNG",
+      "surface": "직전",
+      "charSpan": [
+        6,
+        8
+      ]
+    },
+    {
+      "lemma": "눈",
+      "tag": "NNG",
+      "surface": "눈",
+      "charSpan": [
+        48,
+        49
+      ]
+    },
+    {
+      "lemma": "높이",
+      "tag": "NNG",
+      "surface": "높이",
+      "charSpan": [
+        49,
+        51
+      ]
+    },
+    {
+      "lemma": "살짝",
+      "tag": "MAG",
+      "surface": "살짝",
+      "charSpan": [
+        75,
+        77
+      ]
+    }
+  ],
+  "_unmapped": [
+    {
+      "lemma": "주변",
+      "category": "body_layer",
+      "value": {
+        "layer": "around"
+      },
+      "reason": "no_body_part_context",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "주변",
+        "charSpan": [
+          12,
+          14
+        ],
+        "rule": "bodyLayerLexicon.주변"
+      }
+    },
+    {
+      "lemma": "앞",
+      "category": "body_layer",
+      "value": {
+        "layer": "around_front"
+      },
+      "reason": "no_body_part_context",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "눈앞",
+        "charSpan": [
+          18,
+          20
+        ],
+        "rule": "bodyLayerLexicon.앞"
+      }
+    },
+    {
+      "lemma": "종이",
+      "category": "object",
+      "value": {
+        "object": "paper"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "종이",
+        "charSpan": [
+          24,
+          26
+        ],
+        "rule": "objectLexicon.종이"
+      }
+    },
+    {
+      "lemma": "종이",
+      "category": "object",
+      "value": {
+        "object": "paper"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "종이",
+        "charSpan": [
+          40,
+          42
+        ],
+        "rule": "objectLexicon.종이"
+      }
+    },
+    {
+      "lemma": "얇",
+      "category": "shape",
+      "value": {
+        "shape": "thin"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "얇고",
+        "charSpan": [
+          61,
+          63
+        ],
+        "rule": "shapeLexicon.얇"
+      }
+    },
+    {
+      "lemma": "가장자리",
+      "category": "shape",
+      "value": {
+        "shape": "edge"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "가장자리",
+        "charSpan": [
+          69,
+          73
+        ],
+        "rule": "shapeLexicon.가장자리"
+      }
+    },
+    {
+      "lemma": "구겨지",
+      "category": "texture",
+      "value": {
+        "texture": "crumpled"
+      },
+      "reason": "no_value_mapping",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "구겨져",
+        "charSpan": [
+          78,
+          81
+        ],
+        "rule": "textureLexicon.구겨지"
+      }
+    }
+  ],
+  "_negated": [],
+  "_alternatives": [],
+  "_inferred": {}
+}

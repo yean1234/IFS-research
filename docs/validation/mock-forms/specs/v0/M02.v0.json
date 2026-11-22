@@ -1,0 +1,251 @@
+{
+  "meta": {
+    "specVersion": "2.0.0",
+    "participantId": null,
+    "sessionId": "M02",
+    "condition": "static",
+    "sourceTextHash": "sha256:141bcd5db071cf6c938cce1df4ddc0515f7ef9182d801745efa4e200a589079b",
+    "pipeline": {
+      "builder": "scene-spec-builder/0.1.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@0.1.0",
+        "vad": "vad-ko@0.1.0"
+      }
+    }
+  },
+  "form": {
+    "type": "mist",
+    "posture": null
+  },
+  "material": {
+    "color": {
+      "h": 0.0,
+      "s": 0.0,
+      "l": 0.08
+    },
+    "brightness": null,
+    "saturation": null,
+    "roughness": null,
+    "opacity": null,
+    "erosion": null
+  },
+  "layout": {
+    "size": null,
+    "distance": null,
+    "verticalOffset": 0.72
+  },
+  "motion": {
+    "type": "rising",
+    "speed": null
+  },
+  "body": {
+    "part": "chest",
+    "layer": "inner"
+  },
+  "_provenance": {
+    "form.type": [
+      {
+        "source": "simile_marker",
+        "trigger": "연기 같",
+        "charSpan": [
+          30,
+          34
+        ],
+        "rule": "simile.같은>prototype.연기>form.type:mist"
+      }
+    ],
+    "material.color": [
+      {
+        "source": "simile_marker",
+        "trigger": "검은",
+        "charSpan": [
+          27,
+          29
+        ],
+        "rule": "simile.같은>colorLexicon.검>material.color:hsl"
+      }
+    ],
+    "layout.verticalOffset": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "가슴",
+        "charSpan": [
+          19,
+          21
+        ],
+        "rule": "bodyPartLexicon.가슴>layout.verticalOffset:chest"
+      }
+    ],
+    "motion.type": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "올라와요",
+        "charSpan": [
+          89,
+          93
+        ],
+        "rule": "motionLexicon.올라오>motion.type:rising"
+      }
+    ],
+    "body.part": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "가슴",
+        "charSpan": [
+          19,
+          21
+        ],
+        "rule": "bodyPartLexicon.가슴>body.part:chest"
+      }
+    ],
+    "body.layer": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "안쪽",
+        "charSpan": [
+          22,
+          24
+        ],
+        "rule": "bodyLayerLexicon.안쪽>body.layer:inner"
+      }
+    ]
+  },
+  "_unmatched": [
+    {
+      "lemma": "친구",
+      "tag": "NNG",
+      "surface": "친구",
+      "charSpan": [
+        3,
+        5
+      ]
+    },
+    {
+      "lemma": "연락",
+      "tag": "NNG",
+      "surface": "연락",
+      "charSpan": [
+        7,
+        9
+      ]
+    },
+    {
+      "lemma": "끊기",
+      "tag": "VV",
+      "surface": "끊긴",
+      "charSpan": [
+        11,
+        13
+      ]
+    },
+    {
+      "lemma": "일",
+      "tag": "NNG",
+      "surface": "일",
+      "charSpan": [
+        14,
+        15
+      ]
+    },
+    {
+      "lemma": "스멀스멀",
+      "tag": "MAG",
+      "surface": "스멀스멀",
+      "charSpan": [
+        38,
+        42
+      ]
+    },
+    {
+      "lemma": "피어오르",
+      "tag": "VV",
+      "surface": "피어올",
+      "charSpan": [
+        43,
+        46
+      ]
+    },
+    {
+      "lemma": "잘",
+      "tag": "MAG",
+      "surface": "잘",
+      "charSpan": [
+        54,
+        55
+      ]
+    },
+    {
+      "lemma": "모르",
+      "tag": "VV",
+      "surface": "모르",
+      "charSpan": [
+        56,
+        58
+      ]
+    },
+    {
+      "lemma": "비치",
+      "tag": "VV",
+      "surface": "비쳐",
+      "charSpan": [
+        74,
+        76
+      ]
+    },
+    {
+      "lemma": "안",
+      "tag": "MAG",
+      "surface": "안",
+      "charSpan": [
+        81,
+        82
+      ]
+    },
+    {
+      "lemma": "계속",
+      "tag": "MAG",
+      "surface": "계속",
+      "charSpan": [
+        86,
+        88
+      ]
+    }
+  ],
+  "_unmapped": [],
+  "_negated": [
+    {
+      "lemma": "진하",
+      "category": "saturation",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "진하진",
+        "charSpan": [
+          65,
+          68
+        ],
+        "rule": "saturationLexicon.진하"
+      }
+    }
+  ],
+  "_alternatives": [
+    {
+      "path": "body.part",
+      "value": "body",
+      "reason": "later_mention",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "몸",
+          "charSpan": [
+            79,
+            80
+          ],
+          "rule": "bodyPartLexicon.몸>body.part:body"
+        }
+      ]
+    }
+  ],
+  "_inferred": {}
+}

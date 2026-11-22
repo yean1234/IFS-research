@@ -1,0 +1,464 @@
+{
+  "meta": {
+    "specVersion": "2.1.0",
+    "participantId": null,
+    "sessionId": "M03",
+    "condition": "static",
+    "sourceTextHash": "sha256:ac475426d41af974cd56e7dc326c81d0abc1434ad2aa0aa7e195137ec31d0882",
+    "pipeline": {
+      "builder": "scene-spec-builder-v1/1.2.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@1.0.0",
+        "layer1Base": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@1.0.0",
+        "vad": "vad-ko@0.1.0"
+      }
+    },
+    "mapping": {
+      "requested": "v1",
+      "used": "v1",
+      "fallbackReason": null
+    }
+  },
+  "form": {
+    "type": null,
+    "posture": null
+  },
+  "material": {
+    "color": {
+      "h": 0.0,
+      "s": 0.0,
+      "l": 0.95
+    },
+    "brightness": null,
+    "saturation": null,
+    "roughness": null,
+    "opacity": null,
+    "erosion": null
+  },
+  "layout": {
+    "size": 0.557,
+    "distance": null,
+    "verticalOffset": null
+  },
+  "motion": {
+    "type": "floating",
+    "speed": null
+  },
+  "body": {
+    "part": null,
+    "layer": "around"
+  },
+  "_provenance": {
+    "material.color": [
+      {
+        "source": "phrase_rule",
+        "trigger": "하얀",
+        "charSpan": [
+          36,
+          38
+        ],
+        "rule": "colorTerm.하얀>material.color:hsl"
+      }
+    ],
+    "layout.size": [
+      {
+        "source": "phrase_rule",
+        "trigger": "머리보다 조금 커요",
+        "charSpan": [
+          48,
+          58
+        ],
+        "rule": "compare.than.머리>layout.size:0.253m"
+      }
+    ],
+    "motion.type": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "둥둥",
+        "charSpan": [
+          60,
+          62
+        ],
+        "rule": "motionLexicon.둥둥>motion.type:floating"
+      },
+      {
+        "source": "explicit_lexicon",
+        "trigger": "떠",
+        "charSpan": [
+          63,
+          64
+        ],
+        "rule": "motionLexicon.뜨>motion.type:floating"
+      }
+    ],
+    "body.layer": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "주변",
+        "charSpan": [
+          23,
+          25
+        ],
+        "rule": "bodyLayerLexicon.주변>body.layer:around"
+      }
+    ]
+  },
+  "_unmatched": [
+    {
+      "lemma": "출근길",
+      "tag": "NNG",
+      "surface": "출근길",
+      "charSpan": [
+        0,
+        3
+      ]
+    },
+    {
+      "lemma": "출근길",
+      "tag": "EOJEOL",
+      "surface": "출근길이요",
+      "charSpan": [
+        0,
+        5
+      ]
+    },
+    {
+      "lemma": "뭐",
+      "tag": "EOJEOL",
+      "surface": "뭔가",
+      "charSpan": [
+        7,
+        9
+      ]
+    },
+    {
+      "lemma": "것",
+      "tag": "EOJEOL",
+      "surface": "게",
+      "charSpan": [
+        16,
+        17
+      ]
+    },
+    {
+      "lemma": "있",
+      "tag": "EOJEOL",
+      "surface": "있어요",
+      "charSpan": [
+        18,
+        21
+      ]
+    },
+    {
+      "lemma": "구름",
+      "tag": "EOJEOL",
+      "surface": "구름이에요",
+      "charSpan": [
+        29,
+        34
+      ]
+    },
+    {
+      "lemma": "구름",
+      "tag": "EOJEOL",
+      "surface": "구름이에요",
+      "charSpan": [
+        39,
+        44
+      ]
+    },
+    {
+      "lemma": "저",
+      "tag": "EOJEOL",
+      "surface": "제",
+      "charSpan": [
+        46,
+        47
+      ]
+    },
+    {
+      "lemma": "있",
+      "tag": "EOJEOL",
+      "surface": "있으면서",
+      "charSpan": [
+        65,
+        69
+      ]
+    },
+    {
+      "lemma": "조금",
+      "tag": "EOJEOL",
+      "surface": "조금씩",
+      "charSpan": [
+        70,
+        73
+      ]
+    },
+    {
+      "lemma": "작아지",
+      "tag": "VV",
+      "surface": "작아졌",
+      "charSpan": [
+        78,
+        81
+      ]
+    },
+    {
+      "lemma": "작아지",
+      "tag": "EOJEOL",
+      "surface": "작아졌다",
+      "charSpan": [
+        78,
+        82
+      ]
+    },
+    {
+      "lemma": "하",
+      "tag": "EOJEOL",
+      "surface": "해요",
+      "charSpan": [
+        83,
+        85
+      ]
+    }
+  ],
+  "_unmapped": [
+    {
+      "lemma": "몽글몽글",
+      "category": "texture",
+      "value": {
+        "texture": "soft_clumpy"
+      },
+      "reason": "no_value_mapping",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "몽글몽글한",
+        "charSpan": [
+          10,
+          15
+        ],
+        "rule": "textureLexicon.몽글몽글"
+      }
+    },
+    {
+      "lemma": "구름",
+      "category": "object",
+      "value": {
+        "object": "cloud"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "구름",
+        "charSpan": [
+          29,
+          31
+        ],
+        "rule": "objectLexicon.구름"
+      }
+    },
+    {
+      "lemma": "구름",
+      "category": "object",
+      "value": {
+        "object": "cloud"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "구름",
+        "charSpan": [
+          39,
+          41
+        ],
+        "rule": "objectLexicon.구름"
+      }
+    },
+    {
+      "lemma": "커지",
+      "category": "size",
+      "value": {
+        "size": "growing"
+      },
+      "reason": "no_value_mapping",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "커졌다",
+        "charSpan": [
+          74,
+          77
+        ],
+        "rule": "sizeLexicon.커지"
+      }
+    }
+  ],
+  "_negated": [],
+  "_alternatives": [],
+  "_inferred": {},
+  "_context": [],
+  "_parts": [],
+  "_uncertain": [],
+  "_measurements": [
+    {
+      "text": "머리보다 조금 커요",
+      "charSpan": [
+        48,
+        58
+      ],
+      "kind": "reference",
+      "meters": 0.253,
+      "dimension": "size",
+      "reference": "머리",
+      "usedFor": "layout.size"
+    }
+  ],
+  "_direction": [],
+  "_needsConfirmation": [],
+  "_clauses": [
+    {
+      "charSpan": [
+        0,
+        5
+      ],
+      "text": "출근길이요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        5,
+        6
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        7,
+        21
+      ],
+      "text": "뭔가 몽글몽글한 게 있어요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        21,
+        22
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        23,
+        27
+      ],
+      "text": "주변이요",
+      "usedFor": [
+        "body.layer"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        27,
+        28
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        29,
+        34
+      ],
+      "text": "구름이에요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        34,
+        35
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        36,
+        44
+      ],
+      "text": "하얀 구름이에요",
+      "usedFor": [
+        "material.color"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        44,
+        45
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        46,
+        58
+      ],
+      "text": "제 머리보다 조금 커요",
+      "usedFor": [
+        "layout.size"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        58,
+        59
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        60,
+        69
+      ],
+      "text": "둥둥 떠 있으면서",
+      "usedFor": [
+        "motion.type"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        70,
+        85
+      ],
+      "text": "조금씩 커졌다 작아졌다 해요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        85,
+        86
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    }
+  ]
+}

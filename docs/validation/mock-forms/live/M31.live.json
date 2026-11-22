@@ -1,0 +1,365 @@
+{
+  "id": "M31",
+  "synthetic": true,
+  "condition": "chatbot",
+  "elapsedSec": 6.0,
+  "endedBy": "completed",
+  "llmTurns": 5,
+  "attempts": 8,
+  "firstTryPass": 3,
+  "blockedAttempts": 4,
+  "fallbacks": 1,
+  "blockReasons": [
+    "V3:anchor_is_sentence:동그랗게 말려 있어요",
+    "V3:anchor_is_sentence:뭔가 기대 있어요"
+  ],
+  "softChecks": 0,
+  "probes": {
+    "asked": [
+      "size_shape",
+      "movement"
+    ],
+    "skippedAsCovered": [
+      "color_brightness"
+    ]
+  },
+  "alerts": [],
+  "inputs": [
+    {
+      "key": "opening",
+      "reply": "퇴근하고 소파에 누웠을 때요. 다리 쪽에 뭔가 기대 있어요."
+    },
+    {
+      "key": "location",
+      "reply": "몸 주변이요. 다리 옆이요."
+    },
+    {
+      "key": "llm:find",
+      "reply": "따뜻한 게 기대 있어요."
+    },
+    {
+      "key": "focus",
+      "reply": "고양이요."
+    },
+    {
+      "key": "llm:flesh_out",
+      "reply": "까만 고양이 한 마리가 다리에 몸을 붙이고 동그랗게 말려 있어요. 털이 보송보송해요. 숨 쉴 때마다 등이 오르락내리락해요."
+    },
+    {
+      "key": "llm:flesh_out",
+      "reply": "털이 까매요."
+    },
+    {
+      "key": "llm:flesh_out",
+      "reply": "동그랗게 말려 있어요."
+    },
+    {
+      "key": "probe_size_shape",
+      "reply": "보통 고양이만 해요."
+    },
+    {
+      "key": "probe_movement",
+      "action": "skip"
+    }
+  ],
+  "turns": [
+    {
+      "i": 0,
+      "speaker": "system",
+      "source": "fixed:intro",
+      "stage": null,
+      "text": "안녕하세요. 저는 연구용 AI 면담 보조자예요. 상담이나 치료가 아니라, 지금 마음에 떠오르는 것을 참여자분 자신의 말로 조금 더 표현해 보도록 질문만 드려요. 떠오르지 않으면 '잘 모르겠어요'라고 하셔도 괜찮고, 언제든 [그만]을 누르거나 '그만'이라고 쓰면 바로 멈춰요."
+    },
+    {
+      "i": 1,
+      "speaker": "participant",
+      "source": "control:start",
+      "stage": null,
+      "text": "[시작]"
+    },
+    {
+      "i": 2,
+      "speaker": "system",
+      "source": "fixed:opening",
+      "stage": "find",
+      "text": "너무 힘들지 않은 정도로, 최근 마음에 남아 있는 상황 하나를 떠올려 주세요. 그 상황을 떠올릴 때 지금 가장 먼저 알아차려지는 것은 무엇인가요?"
+    },
+    {
+      "i": 3,
+      "speaker": "participant",
+      "source": "typed",
+      "stage": "find",
+      "text": "퇴근하고 소파에 누웠을 때요. 다리 쪽에 뭔가 기대 있어요."
+    },
+    {
+      "i": 4,
+      "speaker": "system",
+      "source": "fixed:location",
+      "stage": "find",
+      "text": "그것이 몸 안에, 몸 표면에, 아니면 몸 주변에 있나요?"
+    },
+    {
+      "i": 5,
+      "speaker": "participant",
+      "source": "typed",
+      "stage": "find",
+      "text": "몸 주변이요. 다리 옆이요."
+    },
+    {
+      "i": 6,
+      "speaker": "interviewer",
+      "source": "fixed:fallback",
+      "stage": "find",
+      "text": "방금 말씀하신 것에 대해 더 있나요?",
+      "attempts": [
+        {
+          "attempt": 0,
+          "passed": false,
+          "reasons": [
+            "V3:anchor_is_sentence:뭔가 기대 있어요"
+          ],
+          "utterance": "'뭔가 기대 있어요'에 대해 더 있나요?",
+          "template": "anything_else",
+          "anchor": null,
+          "latencyMs": 523
+        },
+        {
+          "attempt": 1,
+          "passed": false,
+          "reasons": [
+            "V3:anchor_is_sentence:뭔가 기대 있어요"
+          ],
+          "utterance": "'뭔가 기대 있어요'에 대해 더 있나요?",
+          "template": "anything_else",
+          "anchor": null,
+          "latencyMs": 501
+        },
+        {
+          "attempt": 2,
+          "passed": false,
+          "reasons": [
+            "V3:anchor_is_sentence:뭔가 기대 있어요"
+          ],
+          "utterance": "'뭔가 기대 있어요'에 대해 더 있나요?",
+          "template": "anything_else",
+          "anchor": null,
+          "latencyMs": 489
+        }
+      ],
+      "checks": {
+        "passed": false,
+        "reasons": [
+          "V3:anchor_is_sentence:뭔가 기대 있어요"
+        ],
+        "regenerations": 2,
+        "fallback": true
+      }
+    },
+    {
+      "i": 7,
+      "speaker": "participant",
+      "source": "typed",
+      "stage": "find",
+      "text": "따뜻한 게 기대 있어요."
+    },
+    {
+      "i": 8,
+      "speaker": "system",
+      "source": "fixed:focus_hold",
+      "stage": "focus",
+      "text": "거기에 주의를 두고 잠시 머물러 보세요. 준비가 되면, 지금 알아차려지는 것을 적어 주세요."
+    },
+    {
+      "i": 9,
+      "speaker": "participant",
+      "source": "typed",
+      "stage": "focus",
+      "text": "고양이요."
+    },
+    {
+      "i": 10,
+      "speaker": "interviewer",
+      "source": "llm",
+      "stage": "flesh_out",
+      "text": "그 '고양이'는 어떤 '고양이'인가요?",
+      "move": "ask",
+      "attempts": [
+        {
+          "attempt": 0,
+          "passed": true,
+          "reasons": [],
+          "utterance": "그 '고양이'는 어떤 '고양이'인가요?",
+          "template": "what_kind",
+          "anchor": null,
+          "latencyMs": 510
+        }
+      ],
+      "checks": {
+        "passed": true,
+        "reasons": [],
+        "regenerations": 0,
+        "fallback": false
+      }
+    },
+    {
+      "i": 11,
+      "speaker": "participant",
+      "source": "typed",
+      "stage": "flesh_out",
+      "text": "까만 고양이 한 마리가 다리에 몸을 붙이고 동그랗게 말려 있어요. 털이 보송보송해요. 숨 쉴 때마다 등이 오르락내리락해요."
+    },
+    {
+      "i": 12,
+      "speaker": "interviewer",
+      "source": "llm",
+      "stage": "flesh_out",
+      "text": "'까만 고양이'에 대해 더 있나요?",
+      "move": "ask",
+      "attempts": [
+        {
+          "attempt": 0,
+          "passed": true,
+          "reasons": [],
+          "utterance": "'까만 고양이'에 대해 더 있나요?",
+          "template": "anything_else",
+          "anchor": null,
+          "latencyMs": 536
+        }
+      ],
+      "checks": {
+        "passed": true,
+        "reasons": [],
+        "regenerations": 0,
+        "fallback": false
+      }
+    },
+    {
+      "i": 13,
+      "speaker": "participant",
+      "source": "typed",
+      "stage": "flesh_out",
+      "text": "털이 까매요."
+    },
+    {
+      "i": 14,
+      "speaker": "interviewer",
+      "source": "llm",
+      "stage": "flesh_out",
+      "text": "'보송보송'한 것에 대해 더 있나요?",
+      "move": "ask",
+      "attempts": [
+        {
+          "attempt": 0,
+          "passed": true,
+          "reasons": [],
+          "utterance": "'보송보송'한 것에 대해 더 있나요?",
+          "template": "anything_else",
+          "anchor": null,
+          "latencyMs": 544
+        }
+      ],
+      "checks": {
+        "passed": true,
+        "reasons": [],
+        "regenerations": 0,
+        "fallback": false
+      }
+    },
+    {
+      "i": 15,
+      "speaker": "participant",
+      "source": "typed",
+      "stage": "flesh_out",
+      "text": "동그랗게 말려 있어요."
+    },
+    {
+      "i": 16,
+      "speaker": "interviewer",
+      "source": "llm",
+      "stage": "flesh_out",
+      "text": "",
+      "note": "ready_to_advance — 참여자에게 나가지 않음",
+      "move": "ready_to_advance",
+      "attempts": [
+        {
+          "attempt": 0,
+          "passed": false,
+          "reasons": [
+            "V3:anchor_is_sentence:동그랗게 말려 있어요"
+          ],
+          "utterance": "'동그랗게 말려 있어요'에 대해 더 있나요?",
+          "template": "anything_else",
+          "anchor": null,
+          "latencyMs": 530
+        },
+        {
+          "attempt": 1,
+          "passed": true,
+          "reasons": [],
+          "utterance": "그 '동그랗게 말려 있어요'에 대해 더 있나요?",
+          "template": "anything_else",
+          "anchor": null,
+          "latencyMs": 522
+        }
+      ],
+      "checks": {
+        "passed": true,
+        "reasons": [],
+        "regenerations": 1,
+        "fallback": false
+      }
+    },
+    {
+      "i": 17,
+      "speaker": "system",
+      "source": "fixed:probe_size_shape",
+      "stage": "flesh_out",
+      "probe": "size_shape",
+      "text": "그것에 크기나 모양이 있나요?"
+    },
+    {
+      "i": 18,
+      "speaker": "participant",
+      "source": "typed",
+      "stage": "flesh_out",
+      "text": "보통 고양이만 해요."
+    },
+    {
+      "i": 19,
+      "speaker": "system",
+      "source": "fixed:probe_movement",
+      "stage": "flesh_out",
+      "probe": "movement",
+      "text": "그것에 움직임이 있나요?"
+    },
+    {
+      "i": 20,
+      "speaker": "participant",
+      "source": "control:skip",
+      "stage": "flesh_out",
+      "text": "넘어갈게요"
+    },
+    {
+      "i": 21,
+      "speaker": "system",
+      "source": "fixed:confirm_intro",
+      "stage": null,
+      "text": "지금까지 적어 주신 말을 그대로 모았어요. 이대로 맞는지 확인해 주세요. 고치고 싶은 곳이 있으면 직접 고쳐도 돼요."
+    },
+    {
+      "i": 22,
+      "speaker": "participant",
+      "source": "control:confirm",
+      "stage": null,
+      "text": "[이대로 맞아요]"
+    },
+    {
+      "i": 23,
+      "speaker": "system",
+      "source": "fixed:closing",
+      "stage": null,
+      "text": "확인해 주셔서 고마워요. 면담은 여기까지예요. 이제 연구자의 안내에 따라 다음 단계로 넘어갈게요."
+    }
+  ],
+  "confirmedText": "퇴근하고 소파에 누웠을 때요. 다리 쪽에 뭔가 기대 있어요.\n몸 주변이요. 다리 옆이요.\n따뜻한 게 기대 있어요.\n고양이요.\n까만 고양이 한 마리가 다리에 몸을 붙이고 동그랗게 말려 있어요. 털이 보송보송해요. 숨 쉴 때마다 등이 오르락내리락해요.\n털이 까매요.\n동그랗게 말려 있어요.\n보통 고양이만 해요."
+}
