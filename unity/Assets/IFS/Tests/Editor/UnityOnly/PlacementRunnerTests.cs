@@ -41,6 +41,9 @@ namespace IFS.SceneSpec.Tests
             Assert.That((string)m["headSource"], Is.EqualTo("desktop"));
             Assert.That((string)m["inputSource"], Is.EqualTo("auto"));
             Assert.That((string)m["unityVersion"], Is.Not.Empty);
+            Assert.That((double)m["object"]["boundingRadiusM"], Is.GreaterThan(0.05).And.LessThan(1.0), "물체 렌더 경계 반지름(EX02 size 0.316)");
+            Assert.That((bool)m["flags"]["layoutIgnored"], Is.False, "EX02는 layout.distance·verticalOffset이 null");
+            Assert.That((string)m["space"]["startPlacementSource"], Is.EqualTo("experiment_config"));
             var pl = OwnershipVariantTests.ParseNoDates(File.ReadAllText(Path.Combine(place, "placement.json")));
             Assert.That((int)pl["grabCount"], Is.EqualTo(2), "물체 경계로 정한 잡기 구에 광선이 맞는다");
             Assert.That((double)pl["finalDistanceM"], Is.EqualTo(2.6).Within(1e-3));

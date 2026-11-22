@@ -16,7 +16,7 @@
 | --- | --- | --- |
 | 1. 선행 연구 검증 | **끝** | `docs/rq-v4-lit-check.md`(요약 표 + 부록 A–F). Prudenzi 2019 전문은 두 번 시도하고도 못 엶 |
 | 2. 설계 결정 | **끝** | `docs/codex-reviews/D2.md`(Codex, 1/3회), `docs/codex-reviews/D2_claude.md`, `docs/decisions.md` X42–X54, `docs/rq-v4-proposal.md` 0절(달라진 점 표)과 본문 갱신 |
-| 3. 구현 | 진행 중(하위 에이전트 2건: Unity 러너, Python 분석기) | `unity/Assets/IFS/Runtime/Placement/`, `chatbot/ifs_chatbot/eval/placement.py` (작성 중, 아직 커밋 전) |
+| 3. 구현 | **끝**(데스크톱 모의 조작. 헤드셋 실기·XR 입력은 하지 않음) | `unity/Assets/IFS/Runtime/Placement/`, `chatbot/ifs_chatbot/eval/placement.py`, `docs/validation/placement/`, Codex 검토 `docs/codex-reviews/CP7.md`(2/3회)와 판정 X55–X63. dotnet 168/168, Unity EditMode 192/192, pytest 443 통과 |
 
 이어받을 때:
 ```powershell

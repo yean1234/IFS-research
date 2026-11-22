@@ -44,6 +44,7 @@ namespace IFS.SceneSpec.Placement
             f.PushPullAxis = (Input.GetKey(KeyCode.E) ? 1.0 : 0.0) - (Input.GetKey(KeyCode.Q) ? 1.0 : 0.0);
             f.ConfirmDown = Input.GetKeyDown(KeyCode.F);
             f.StopDown = Input.GetKeyDown(KeyCode.Space);
+            f.StopHeld = Input.GetKey(KeyCode.Space);
             return f;
         }
     }

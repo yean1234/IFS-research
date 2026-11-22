@@ -78,6 +78,7 @@ namespace IFS.SceneSpec.Placement
         // ── 내부 ───────────────────────────────────────────────────────────
         PlacementAutoScript _auto;
         string _specFullPath, _specSha;
+        string _layoutWarning;
         PlacementTrajectory _replay;
         string _replayFullPath, _replaySha;
         GameObject _anchor;
@@ -196,6 +197,7 @@ namespace IFS.SceneSpec.Placement
             Warnings.Clear();
             Spec = null;
             _replay = null;
+            _layoutWarning = null;
             if (!int.TryParse((ParticipantNumberText ?? "").Trim(), out int number) || number < 1)
                 Errors.Add("참여자 번호는 1 이상의 정수여야 합니다");
             string path = (SpecPathText ?? "").Trim().Trim('"');
@@ -217,6 +219,8 @@ namespace IFS.SceneSpec.Placement
             }
             _specFullPath = path;
             foreach (var problem in SceneSpecJson.Validate(Spec)) Warnings.Add("spec 형식 경고: " + problem);
+            _layoutWarning = PlacementManifest.LayoutIgnoredWarning(Spec.Layout?.Distance, Spec.Layout?.VerticalOffset, config);
+            if (_layoutWarning != null) Warnings.Add(_layoutWarning);   // events.csv에도 warning(detail layout_ignored…)으로 남는다
             try { TaskText = PlacementTaskText.Load(ResolvedTaskTextPath); }
             catch (Exception e) { TaskText = null; Errors.Add("문구 파일을 읽지 못했습니다(" + PlacementTaskText.DefaultRelativePath + "): " + e.Message); }
             if (DraftPhraseNotice != null) Warnings.Add(DraftPhraseNotice);   // events.csv에도 warning으로 남는다
@@ -303,6 +307,7 @@ namespace IFS.SceneSpec.Placement
                 return false;
             }
 
+            double objectRadius = ObjectRadius();   // 물체 렌더 경계(AABB 가장 큰 반폭). 없으면 0 → manifest null
             if (_auto != null && headProvider != null) headProvider.BeginScripted();
             else if (headProvider != null) headProvider.Step(0f);
             string sessionId = Spec.Meta.SessionId ?? Path.GetFileNameWithoutExtension(_specFullPath);
@@ -323,6 +328,8 @@ namespace IFS.SceneSpec.Placement
                 ReplayFile = _replay != null ? Path.GetFileName(_replayFullPath) : null,
                 ReplaySha256 = _replay != null ? _replaySha : null,
                 ReplaySourceSessionId = _replay?.SourceSessionId,
+                ObjectBoundingRadiusM = objectRadius > 0 ? objectRadius : (double?)null,
+                LayoutIgnored = _layoutWarning != null,
             };
             try
             {
@@ -335,7 +342,7 @@ namespace IFS.SceneSpec.Placement
                 Cleanup();
                 return false;
             }
-            Session.GrabRadiusM = Math.Max(config.grabRadiusMinM, ObjectRadius());
+            Session.GrabRadiusM = Math.Max(config.grabRadiusMinM, objectRadius);
             LastRecordDirectory = Session.RecordDirectory;
             LastCompleted = false;
             LastAbortedAt = null;
@@ -345,8 +352,10 @@ namespace IFS.SceneSpec.Placement
             return true;
         }
 
+        /// <summary>물체 렌더러 경계 상자(세계 AABB)의 가장 큰 반폭(m). 불러온 직후(움직임 적용 전) 값이다.</summary>
         double ObjectRadius()
         {
+            if (_loader == null || _loader.Root == null) return 0;
             var rs = _loader.Root.GetComponentsInChildren<Renderer>();
             if (rs.Length == 0) return 0;
             var b = rs[0].bounds;
@@ -404,7 +413,7 @@ namespace IFS.SceneSpec.Placement
             var head = CurrentHead();
             if (_auto != null)
             {
-                Session.Tick(dt, _auto.Participant(Session), head);
+                Session.Tick(dt, _auto.Participant(Session, dt), head);
                 _auto.Experimenter(Session);
             }
             else Session.Tick(dt, inp != null ? inp.Read() : new PlacementInputFrame(), head);

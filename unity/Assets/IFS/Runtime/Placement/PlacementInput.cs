@@ -21,8 +21,11 @@ namespace IFS.SceneSpec.Placement
         public double PushPullDeltaM;
         /// <summary>확인 버튼을 눌렀다(직접 배치: "여기에 둔다", 가리켜 지정: 가리킨 점 확정).</summary>
         public bool ConfirmDown;
-        /// <summary>멈춤 거리 버튼을 눌렀다.</summary>
+        /// <summary>멈춤 거리 버튼을 눌렀다(눌린 순간).</summary>
         public bool StopDown;
+        /// <summary>멈춤 거리 버튼을 누르고 있다(모르면 false). 세션은 직전 프레임에 눌려 있지 않았을 때의 StopDown만
+        /// 누름으로 센다 — 시행 시작 전부터 누르고 있던 버튼이 시행을 바로 멈추지 않게(눌림 상태를 StopDown으로 주는 구현도 막는다).</summary>
+        public bool StopHeld;
     }
 
     public interface IPlacementInput

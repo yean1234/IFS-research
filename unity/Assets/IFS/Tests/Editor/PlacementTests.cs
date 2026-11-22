@@ -54,8 +54,11 @@ namespace IFS.SceneSpec.Tests
             };
         }
 
+        /// <summary>participantOverride: 자동 스크립트가 만든 참여자 입력을 (세션, dt, 입력)으로 바꾼다. setup: 시작 전 info·경고를 고친다.</summary>
         string Run(PlacementConfig cfg, int participant = 1, PlacementTrajectory replay = null, PlacementAutoScript script = null,
-            PlacementTaskText text = null, string replayFile = null, double dt = 0.02, Func<PlacementSession, bool> abortWhen = null)
+            PlacementTaskText text = null, string replayFile = null, double dt = 0.02, Func<PlacementSession, bool> abortWhen = null,
+            Func<PlacementSession, double, PlacementInputFrame, PlacementInputFrame> participantOverride = null,
+            Action<PlacementSessionInfo, List<string>> setup = null)
         {
             var info = new PlacementSessionInfo
             {
@@ -69,13 +72,18 @@ namespace IFS.SceneSpec.Tests
             var warnings = new List<string>();
             var notice = PlacementTaskText.DraftNotice(text, cfg.requireSpecPhrases);
             if (notice != null) warnings.Add(notice);
+            setup?.Invoke(info, warnings);
             script = script ?? new PlacementAutoScript();
             using (var s = new PlacementSession(cfg, text, info, Path.Combine(_tmp, "records"), replay, warnings))
             {
                 for (int i = 0; i < 200000 && !s.Finished; i++)
                 {
                     if (abortWhen != null && abortWhen(s)) { s.Abort(); break; }
-                    script.Step(s, dt, PlacementAutoScript.ScriptedHead(s.Now));
+                    var head = PlacementAutoScript.ScriptedHead(s.Now);
+                    var f = script.Participant(s, dt);
+                    if (participantOverride != null) f = participantOverride(s, dt, f);
+                    s.Tick(dt, f, head);   // = script.Step(s, dt, head)
+                    script.Experimenter(s);
                 }
                 Assert.That(s.Finished, Is.True, "끝까지 돌았다");
                 return s.RecordDirectory;
@@ -240,7 +248,7 @@ namespace IFS.SceneSpec.Tests
             Assert.That(m.Properties().Select(p => p.Name), Is.EquivalentTo(new[]
             {
                 "recordVersion", "participantNumber", "sessionId", "specFile", "specSha256", "startedAtUtc", "unityVersion", "headSource", "inputSource",
-                "condition", "controlMode", "space", "stopDistance", "replaySource", "systemMoveTarget", "taskText", "config", "flags",
+                "condition", "controlMode", "space", "stopDistance", "object", "replaySource", "systemMoveTarget", "taskText", "config", "flags",
             }));
             Assert.That((string)m["recordVersion"], Is.EqualTo("ifs-placement/0.1"));
             Assert.That((int)m["participantNumber"], Is.EqualTo(7));
@@ -250,7 +258,11 @@ namespace IFS.SceneSpec.Tests
             Assert.That((string)m["inputSource"], Is.EqualTo("auto"));
             Assert.That((string)m["condition"], Is.EqualTo("place"));
             Assert.That((string)m["controlMode"], Is.EqualTo("none"));
-            Assert.That(((JObject)m["space"]).Properties().Select(p => p.Name), Is.EquivalentTo(new[] { "floorRadiusM", "ringRadiiM", "showRings", "startDistanceM", "startHeightM" }));
+            Assert.That(((JObject)m["space"]).Properties().Select(p => p.Name), Is.EquivalentTo(new[] { "floorRadiusM", "ringRadiiM", "showRings", "startDistanceM", "startHeightM", "startPlacementSource" }));
+            Assert.That((string)m["space"]["startPlacementSource"], Is.EqualTo("experiment_config"), "시작 자리는 실험 설정(spec layout 아님)");
+            Assert.That(((JObject)m["object"]).Properties().Select(p => p.Name), Is.EqualTo(new[] { "boundingRadiusM" }));
+            Assert.That(m["object"]["boundingRadiusM"].Type, Is.EqualTo(JTokenType.Null), "구할 수 없으면 null(dotnet 테스트에는 렌더러가 없다)");
+            Assert.That((bool)m["flags"]["layoutIgnored"], Is.False);
             Assert.That(m["space"]["ringRadiiM"].Select(r => (double)r), Is.EqualTo(new[] { 1.0, 2.0, 3.0 }));
             Assert.That(((JObject)m["stopDistance"]).Properties().Select(p => p.Name),
                 Is.EquivalentTo(new[] { "speedMps", "approachStartM", "recedeStartM", "trialsPerDirection", "practiceTrials", "minM", "maxM" }));
@@ -264,8 +276,9 @@ namespace IFS.SceneSpec.Tests
             Assert.That(pl.Properties().Select(p => p.Name), Is.EquivalentTo(new[]
             {
                 "condition", "controlMode", "phaseDurationMs", "finalX", "finalY", "finalZ", "finalDistanceM", "finalAzimuthDeg", "finalHeightM",
-                "grabCount", "firstGrabMs", "heldMs", "pathLengthM", "confirmed", "confirmMs",
+                "grabCount", "firstGrabMs", "heldMs", "pathLengthM", "confirmed", "confirmMs", "conditionCompleted",
             }));
+            Assert.That((bool)pl["conditionCompleted"], Is.True, "정해진 길이를 다 채움");
             var sum = Json(dir, "summary.json");
             Assert.That(sum.Properties().Select(p => p.Name), Is.EqualTo(new[] { "completed", "abortedAt", "endedAtUtc" }));
             Assert.That((bool)sum["completed"], Is.True);
@@ -451,6 +464,7 @@ namespace IFS.SceneSpec.Tests
             var pl = Json(dir, "placement.json");
             Assert.That((long)pl["phaseDurationMs"], Is.EqualTo(10000).Within(40));
             Assert.That((long)pl["confirmMs"], Is.EqualTo((long)pl["phaseDurationMs"]));
+            Assert.That((bool)pl["conditionCompleted"], Is.True, "설정으로 정한 끝(확인)은 중단이 아니다");
         }
 
         // ── 멈춤 거리 ────────────────────────────────────────────────────
@@ -548,9 +562,131 @@ namespace IFS.SceneSpec.Tests
             var pl = Json(dir, "placement.json");
             Assert.That((long)pl["phaseDurationMs"], Is.EqualTo(2000).Within(40));
             Assert.That((int)pl["grabCount"], Is.EqualTo(1));
+            Assert.That((bool)pl["conditionCompleted"], Is.False, "중단으로 조기 종료한 조건 단계");
             var ev = Csv(dir, "events.csv");
             Assert.That(ev.Any(c => c[1] == "release" && string.Join(",", c.Skip(2)).Contains("reason=phase_end")), Is.True, "잡은 채 끝나면 놓기로 기록");
             Assert.That(ev.Last()[1] + "," + ev.Last()[2], Is.EqualTo("phase,done"));
+        }
+
+        // ── 멈춤 거리 경계(CP7 F2·F9) ───────────────────────────────────
+        static PlacementConfig OneTrialEach()
+        {
+            var cfg = ShortConfig("view");
+            cfg.stopPracticeTrials = 0;
+            cfg.stopTrialsPerDirection = 1;
+            return cfg;
+        }
+
+        [Test]
+        public void Stop_button_held_before_the_trial_does_not_stop_it()
+        {
+            // (가) 눌림 상태를 StopDown으로 계속 주는 입력(잘못 만든 XR 구현 흉내): 시행 전부터 0.25 m 갈 때까지 누르고 있다가 떼고, 0.5 m 갔을 때 다시 누름
+            // (나) 올바른 입력: 시행 전(시행 사이 숨김)에 한 번 누르고 0.25 m 갈 때까지 누르고만 있다가 떼고, 0.5 m 갔을 때 다시 누름
+            foreach (bool repeatDown in new[] { true, false })
+            {
+                bool pressedOnce = false;
+                string dir = Run(OneTrialEach(), participant: 1, script: new PlacementAutoScript { ApproachStopM = new[] { double.NaN } },
+                    participantOverride: (s, dt, f) =>
+                    {
+                        if (s.Phase != PlacementPhase.StopDistance || !s.StopTrialsStarted) return f;
+                        var plan = s.CurrentStopTrial;
+                        if (plan != null && (plan.Trial != 1 || !s.StopTrialActive)) return f;   // 첫 시행(approach)과 그 앞 숨김 시간만
+                        double moved = s.StopTrialActive ? 3.0 - s.StopDistanceNow : 0;
+                        if (moved < 0.25)
+                        {
+                            f.StopHeld = true;
+                            f.StopDown = repeatDown || !pressedOnce;
+                            pressedOnce = true;
+                        }
+                        else if (moved >= 0.5) { f.StopDown = true; f.StopHeld = true; }
+                        return f;
+                    });
+                var rows = Csv(dir, "stopdistance.csv");
+                Assert.That(rows[0][2], Is.EqualTo("approach"));
+                Assert.That(rows[0][7], Is.EqualTo("0"), "누름으로 끝남");
+                Assert.That(D(rows[0][5]), Is.EqualTo(2.5).Within(0.011), $"다시 누른 자리(0.5 m 뒤)에서 멈춤 — 미리 누른 버튼으로 바로 멈추지 않음(repeatDown={repeatDown})");
+                Assert.That(long.Parse(rows[0][6]), Is.EqualTo(2000).Within(45));
+                Assert.That(rows[1][2], Is.EqualTo("recede"));
+                Assert.That(D(rows[1][5]), Is.EqualTo(1.60).Within(0.0051), "다음 시행은 평소대로");
+            }
+        }
+
+        [Test]
+        public void Press_on_the_frame_that_reaches_the_limit_counts_as_a_press()
+        {
+            const double speed = 0.25, minM = 0.2;
+            bool pressed = false;
+            string dir = Run(OneTrialEach(), participant: 1, script: new PlacementAutoScript { ApproachStopM = new[] { double.NaN } },
+                participantOverride: (s, dt, f) =>
+                {
+                    if (pressed || s.Phase != PlacementPhase.StopDistance || !s.StopTrialActive || !s.CurrentStopTrial.IsApproach) return f;
+                    if (s.StopDistanceNow - speed * dt <= minM + 1e-9) { f.StopDown = f.StopHeld = true; pressed = true; }   // 경계에 닿는 바로 그 프레임
+                    return f;
+                });
+            Assert.That(pressed, Is.True);
+            var rows = Csv(dir, "stopdistance.csv");
+            Assert.That(rows[0][2], Is.EqualTo("approach"));
+            Assert.That(rows[0][7], Is.EqualTo("0"), "같은 프레임이면 누름이 이긴다(timed_out 아님)");
+            Assert.That(rows[0][5], Is.EqualTo("0.2000"), "거리 = 경계값");
+            Assert.That(long.Parse(rows[0][6]), Is.EqualTo((long)((3.0 - minM) / speed * 1000)).Within(20));
+            var evs = Csv(dir, "events.csv");
+            Assert.That(evs.Count(c => c[1] == "stop_press" && string.Join(",", c.Skip(2)).StartsWith("trial=1;")), Is.EqualTo(1));
+            Assert.That(evs.Any(c => c[1] == "stop_timeout"), Is.False);
+        }
+
+        [Test]
+        public void Stop_distance_is_the_position_after_this_frames_move()
+        {
+            // 기록 거리 = 시작 거리 ∓ 속도 × rt(이번 프레임 이동을 먼저 반영) — 누른 순간과의 차는 속도 × dt 이하
+            string dir = Run(ShortConfig("view"), participant: 1);
+            var pressed = Csv(dir, "stopdistance.csv").Where(r => r[7] == "0").ToList();
+            Assert.That(pressed.Count, Is.EqualTo(9));
+            foreach (var r in pressed)
+            {
+                double start = D(r[3]), d = D(r[5]), rt = long.Parse(r[6]) / 1000.0;
+                double expect = r[2] == "approach" ? start - 0.25 * rt : start + 0.25 * rt;
+                Assert.That(d, Is.EqualTo(expect).Within(0.25 * 0.0005 + 1e-4), "trial " + r[0]);
+            }
+        }
+
+        [Test]
+        public void Different_dt_gives_the_same_condition_length_and_stop_trial_count()
+        {
+            string a = Run(ShortConfig("view", "static"), dt: 0.02);
+            string b = Run(ShortConfig("view", "static"), dt: 0.011);
+            long da = (long)Json(a, "placement.json")["phaseDurationMs"], db = (long)Json(b, "placement.json")["phaseDurationMs"];
+            Assert.That(da, Is.EqualTo(12000).Within(20), "dt 0.02");
+            Assert.That(db, Is.EqualTo(12000).Within(11), "dt 0.011");
+            Assert.That((bool)Json(b, "placement.json")["conditionCompleted"], Is.True);
+            var ra = Csv(a, "stopdistance.csv");
+            var rb = Csv(b, "stopdistance.csv");
+            Assert.That(rb.Count, Is.EqualTo(ra.Count), "멈춤 거리 시행 수");
+            Assert.That(rb.Select(r => r[2] + r[7]), Is.EqualTo(ra.Select(r => r[2] + r[7])), "방향·timed_out 순서");
+            for (int i = 0; i < ra.Count; i++)
+                if (ra[i][7] == "0") Assert.That(D(rb[i][5]), Is.EqualTo(D(ra[i][5])).Within(0.25 * 0.02 + 1e-6), "trial " + ra[i][0]);
+        }
+
+        // ── 시작 자리 출처·물체 반지름(CP7 F3·F7) ───────────────────────
+        [Test]
+        public void Layout_in_spec_is_ignored_with_a_warning_and_flag()
+        {
+            var cfg = ShortConfig("view");
+            Assert.That(PlacementManifest.LayoutIgnoredWarning(null, null, cfg), Is.Null, "layout 값이 없으면 경고 없음");
+            string w = PlacementManifest.LayoutIgnoredWarning(2.0, null, cfg);
+            Assert.That(w, Does.StartWith("layout_ignored"));
+            Assert.That(PlacementManifest.LayoutIgnoredWarning(null, -0.3, cfg), Does.StartWith("layout_ignored"));
+            string dir = Run(cfg, setup: (info, warnings) =>
+            {
+                info.LayoutIgnored = true;
+                info.ObjectBoundingRadiusM = 0.31234;
+                warnings.Add(w);
+            });
+            var m = Json(dir, "manifest.json");
+            Assert.That((bool)m["flags"]["layoutIgnored"], Is.True);
+            Assert.That((string)m["space"]["startPlacementSource"], Is.EqualTo("experiment_config"));
+            Assert.That((double)m["object"]["boundingRadiusM"], Is.EqualTo(0.3123));
+            var warn = Csv(dir, "events.csv").Where(c => c[1] == "warning").Select(c => string.Join(",", c.Skip(2)).Trim('"')).ToList();
+            Assert.That(warn.Count(x => x.StartsWith("layout_ignored")), Is.EqualTo(1), "events.csv warning 한 줄");
         }
 
         [Test]

@@ -1,0 +1,109 @@
+{
+  "recordVersion": "ifs-placement/0.1",
+  "participantNumber": 4,
+  "sessionId": "EX02",
+  "specFile": "EX02.json",
+  "specSha256": "7d42fd56f98a3d75da09f894b41f955a5cd8b534cb83d23e2b2b23244618cf13",
+  "startedAtUtc": "2026-11-22T12:21:27.044Z",
+  "unityVersion": "6000.0.85f2",
+  "headSource": "desktop",
+  "inputSource": "auto",
+  "condition": "view",
+  "controlMode": "system_move",
+  "space": {
+    "floorRadiusM": 4.0,
+    "ringRadiiM": [
+      1.0,
+      2.0,
+      3.0
+    ],
+    "showRings": true,
+    "startDistanceM": 1.5,
+    "startHeightM": 1.2,
+    "startPlacementSource": "experiment_config"
+  },
+  "object": {
+    "boundingRadiusM": 0.1933
+  },
+  "stopDistance": {
+    "speedMps": 0.25,
+    "approachStartM": 3.0,
+    "recedeStartM": 0.5,
+    "trialsPerDirection": 4,
+    "practiceTrials": 2,
+    "minM": 0.2,
+    "maxM": 4.0
+  },
+  "replaySource": null,
+  "systemMoveTarget": {
+    "distanceM": 2.5,
+    "azimuthDeg": 0.0,
+    "heightM": 1.2
+  },
+  "taskText": {
+    "file": "placement_task.v0.json",
+    "version": "0.1",
+    "draftCount": 12,
+    "draftKeys": [
+      "baseline",
+      "condition_place",
+      "condition_point_select",
+      "condition_view",
+      "done",
+      "intro",
+      "own",
+      "placed_by_me",
+      "stop_distance",
+      "wait",
+      "want_to_know",
+      "withdraw_attention"
+    ]
+  },
+  "config": {
+    "condition": "view",
+    "controlMode": "system_move",
+    "floorRadiusM": 4.0,
+    "ringRadiiM": [
+      1.0,
+      2.0,
+      3.0
+    ],
+    "showRings": true,
+    "startDistanceM": 1.5,
+    "startHeightM": 1.2,
+    "baselineSeconds": 30.0,
+    "conditionSeconds": 90.0,
+    "conditionEndsOnConfirm": false,
+    "headSampleHz": 20.0,
+    "pushPullSpeedMps": 1.0,
+    "holdMinM": 0.3,
+    "holdMaxM": 8.0,
+    "grabRadiusMinM": 0.15,
+    "minHeightM": 0.05,
+    "maxHeightM": 2.5,
+    "systemMoveTargetDistanceM": 2.5,
+    "systemMoveTargetAzimuthDeg": 0.0,
+    "systemMoveTargetHeightM": 1.2,
+    "systemMoveSpeedMps": 0.25,
+    "systemMoveDelaySeconds": 2.0,
+    "replayFile": null,
+    "stopSpeedMps": 0.25,
+    "stopApproachStartM": 3.0,
+    "stopRecedeStartM": 0.5,
+    "stopTrialsPerDirection": 4,
+    "stopPracticeTrials": 2,
+    "stopMinM": 0.2,
+    "stopMaxM": 4.0,
+    "stopItiSeconds": 2.0,
+    "stopHeightM": 1.2,
+    "stopFirstDirection": "by_participant",
+    "requireSpecPhrases": false
+  },
+  "flags": {
+    "autoMode": true,
+    "stopFirstDirection": "recede",
+    "conditionEndsOnConfirm": false,
+    "requireSpecPhrases": false,
+    "layoutIgnored": false
+  }
+}

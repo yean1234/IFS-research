@@ -50,8 +50,9 @@ namespace IFS.SceneSpec.Placement
 
         static double Lerp(double a, double b, double u) => a + (b - a) * u;
 
-        /// <summary>이번 프레임의 참여자 입력.</summary>
-        public PlacementInputFrame Participant(PlacementSession s)
+        /// <summary>이번 프레임의 참여자 입력. dt는 이번 프레임 길이(멈춤 거리: 세션은 이동을 먼저 반영한 뒤 버튼을 보므로,
+        /// 이번 프레임 이동 뒤 위치가 목표에 닿는 프레임에 누른다. 0이면 지금 위치로 판단).</summary>
+        public PlacementInputFrame Participant(PlacementSession s, double dt = 0)
         {
             var f = new PlacementInputFrame();
             if (s == null || s.Finished) return f;
@@ -61,7 +62,8 @@ namespace IFS.SceneSpec.Placement
                 var plan = s.CurrentStopTrial;
                 var arr = plan.IsApproach ? ApproachStopM : RecedeStopM;
                 double target = arr.Length > 0 ? arr[plan.DirectionIndex % arr.Length] : double.NaN;
-                if (!double.IsNaN(target) && (plan.IsApproach ? s.StopDistanceNow <= target : s.StopDistanceNow >= target)) f.StopDown = true;
+                double next = s.StopDistanceNow + (plan.IsApproach ? -1 : 1) * s.Config.stopSpeedMps * Math.Max(0, dt);
+                if (!double.IsNaN(target) && (plan.IsApproach ? next <= target : next >= target)) f.StopDown = f.StopHeld = true;
             }
             return f;
         }
@@ -157,7 +159,7 @@ namespace IFS.SceneSpec.Placement
         public void Step(PlacementSession s, double dt, HeadPose head)
         {
             if (s == null || s.Finished) return;
-            s.Tick(dt, Participant(s), head);
+            s.Tick(dt, Participant(s, dt), head);
             Experimenter(s);
         }
 

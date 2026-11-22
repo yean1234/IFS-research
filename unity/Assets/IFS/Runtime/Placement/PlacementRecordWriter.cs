@@ -199,10 +199,29 @@ namespace IFS.SceneSpec.Placement
         public string[] TaskTextDraftKeys;
         /// <summary>replay 원본(파일 이름만, sha256, 원본 sessionId). replay가 아니면 null.</summary>
         public string ReplayFile, ReplaySha256, ReplaySourceSessionId;
+        /// <summary>물체 렌더 경계의 반지름(m): 불러온 물체 렌더러 경계 상자(AABB)의 가장 큰 반폭. 구할 수 없으면 null.
+        /// 거리 기록은 모두 물체 중심 기준이라, 보이는 가장자리까지의 거리는 대략 이만큼 짧다.</summary>
+        public double? ObjectBoundingRadiusM;
+        /// <summary>spec에 layout.distance·verticalOffset 값이 있었는데 실험 설정의 시작 자리를 쓰느라 무시했다.</summary>
+        public bool LayoutIgnored;
     }
 
     public static class PlacementManifest
     {
+        /// <summary>manifest space.startPlacementSource: 시작 자리는 참여자가 말한 속성(spec layout)이 아니라 실험 설정이다.</summary>
+        public const string StartPlacementSource = "experiment_config";
+        public const string LayoutIgnoredTag = "layout_ignored";
+
+        /// <summary>spec layout에 거리·높이 값이 있으면 events.csv warning에 남길 문장(detail이 layout_ignored로 시작). 없으면 null.</summary>
+        public static string LayoutIgnoredWarning(double? distance, double? verticalOffset, PlacementConfig cfg)
+        {
+            if (!distance.HasValue && !verticalOffset.HasValue) return null;
+            var inv = CultureInfo.InvariantCulture;
+            string Val(double? v) => v.HasValue ? v.Value.ToString("0.###", inv) : "null";
+            return $"{LayoutIgnoredTag}: spec layout.distance={Val(distance)}, layout.verticalOffset={Val(verticalOffset)} 대신 " +
+                   $"실험 설정 startDistanceM={(cfg?.startDistanceM ?? 0).ToString("0.###", inv)}, startHeightM={(cfg?.startHeightM ?? 0).ToString("0.###", inv)}을 씀(두 조건이 같은 자리에서 시작)";
+        }
+
         public static JObject Build(PlacementConfig cfg, PlacementSessionInfo info)
         {
             if (cfg == null) throw new ArgumentNullException(nameof(cfg));
@@ -228,6 +247,12 @@ namespace IFS.SceneSpec.Placement
                     ["showRings"] = cfg.showRings,
                     ["startDistanceM"] = cfg.startDistanceM,
                     ["startHeightM"] = cfg.startHeightM,
+                    ["startPlacementSource"] = StartPlacementSource,   // 참여자가 말한 속성이 아니라 실험 설정(spec layout을 쓰지 않음)
+                },
+                ["object"] = new JObject
+                {
+                    ["boundingRadiusM"] = info.ObjectBoundingRadiusM.HasValue && info.ObjectBoundingRadiusM.Value > 0
+                        ? Math.Round(info.ObjectBoundingRadiusM.Value, 4) : (double?)null,
                 },
                 ["stopDistance"] = new JObject
                 {
@@ -269,6 +294,7 @@ namespace IFS.SceneSpec.Placement
                     ["stopFirstDirection"] = cfg.FirstDirectionFor(info.ParticipantNumber),
                     ["conditionEndsOnConfirm"] = cfg.conditionEndsOnConfirm,
                     ["requireSpecPhrases"] = cfg.requireSpecPhrases,
+                    ["layoutIgnored"] = info.LayoutIgnored,
                 },
             };
         }

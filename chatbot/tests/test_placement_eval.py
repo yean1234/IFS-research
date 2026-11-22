@@ -3,6 +3,7 @@
 import csv
 import json
 import math
+from pathlib import Path
 
 import pytest
 
@@ -54,7 +55,7 @@ def make_placement_session(root, pnum=1, sid="sess-a", condition="place", contro
                            approach=(1.2, 1.4, 1.0, 1.3), recede=(1.6, 1.8, 1.7, None),
                            head=None, ratings=None, show_rings=True, rings=(1.0, 2.0, 3.0), completed=True,
                            omit=(), version="ifs-placement/0.1", draft_keys=(), auto_mode=False, events=None,
-                           placement_override=None):
+                           placement_override=None, manifest_extra=None, aborted_at="stop_distance"):
     """placement/P###/<sid>/<utc>/ 아래에 합성 기록 한 벌을 쓴다.
     path = 조건 단계 물체 위치 목록(기본: place·system_move·replay는 시작 → 최종 직선, static은 시작 고정)."""
     control = control or ("none" if condition == "place" else "static")
@@ -80,6 +81,7 @@ def make_placement_session(root, pnum=1, sid="sess-a", condition="place", contro
                      "draftKeys": list(draft_keys)},
         "config": {"headSampleHz": 20}, "flags": {"autoMode": auto_mode},
     }
+    manifest.update(manifest_extra or {})
     files = {}
     files["manifest.json"] = json.dumps(manifest)
     head = DEFAULT_HEAD if head is None else head
@@ -107,7 +109,7 @@ def make_placement_session(root, pnum=1, sid="sess-a", condition="place", contro
     traj = {"version": "ifs-trajectory/0.1", "sourceSessionId": sid, "sampleHz": 20, "startDistanceM": 1.5,
             "startHeightM": 0.8, "samples": [{"t_ms": 50 * i, "x": p[0], "y": p[1], "z": p[2]}
                                              for i, p in enumerate(path)]}
-    summ = {"completed": completed, "abortedAt": None if completed else "stop_distance", "endedAtUtc": utc}
+    summ = {"completed": completed, "abortedAt": None if completed else aborted_at, "endedAtUtc": utc}
     writers = {
         "headpose.csv": lambda p: _csv(p, HEAD_COLS, hrows),
         "objpose.csv": lambda p: _csv(p, OBJ_COLS, orows),
@@ -169,17 +171,21 @@ def test_cohen_d_hand_computed():
     e = cohen_d([1.0, 1.2, 1.4], [1.4, 1.6, 1.8])
     assert e["d"] == pytest.approx(-2.0)
     assert e["sdPooled"] == pytest.approx(0.2)
-    assert e["ciLow"] == pytest.approx(-2.0 - 1.96, abs=1e-3)
-    assert e["ciHigh"] == pytest.approx(-2.0 + 1.96, abs=1e-3)
+    assert e["ci95_normal_approx"]["low"] == pytest.approx(-2.0 - 1.96, abs=1e-3)
+    assert e["ci95_normal_approx"]["high"] == pytest.approx(-2.0 + 1.96, abs=1e-3)
+    assert e["ci_method"] == "normal_approx"
+    # Hedges g: df = 4, J = 1 − 3/(4·4 − 1) = 0.8 → g = −1.6
+    assert e["hedges_g"] == pytest.approx(-1.6)
     assert e["meanDiff"] == pytest.approx(-0.4)
 
 
 def test_cohen_d_small_n_and_zero_variance():
     e = cohen_d([1.0], [1.4, 1.6])
-    assert e["d"] is None and e["ciLow"] is None and e["nA"] == 1 and e["meanA"] == 1.0
+    assert e["d"] is None and e["hedges_g"] is None and e["ci95_normal_approx"] is None
+    assert e["nA"] == 1 and e["meanA"] == 1.0
     assert cohen_d([], [])["d"] is None
     z = cohen_d([1.0, 1.0], [1.0, 1.0])
-    assert z["d"] is None and z["sdPooled"] == 0
+    assert z["d"] is None and z["sdPooled"] == 0 and z["hedges_g"] is None
 
 
 def test_pearson_hand_computed_and_small_n():
@@ -266,10 +272,12 @@ def test_head_behavior_condition_phase_only(tmp_path):
     make_placement_session(tmp_path)
     s = analyze(tmp_path)["sessions"][0]
     assert s["head_obj_distance_mean_m"] == pytest.approx(1.3)     # 1.0·1.2·1.4·1.6, baseline 9.9 제외
-    assert s["gaze_ratio"] == pytest.approx(0.5)                  # 5·10 ≤ 15° < 20·40
+    assert s["head_facing_ratio"] == pytest.approx(0.5)           # 5·10 ≤ 15° < 20·40
+    assert "gaze_ratio" not in s                                   # 눈 추적이 아니라 머리 방향 — 옛 이름은 쓰지 않는다
     assert s["head_yaw_range_deg"] == pytest.approx(90.0)         # −30…60, ±170 제외
-    s30 = analyze(tmp_path, gaze_deg=30)["sessions"][0]
-    assert s30["gaze_ratio"] == pytest.approx(0.75)
+    s30 = analyze(tmp_path, facing_deg=30)["sessions"][0]
+    assert s30["head_facing_ratio"] == pytest.approx(0.75)
+    assert analyze(tmp_path, gaze_deg=30)["sessions"][0]["head_facing_ratio"] == pytest.approx(0.75)   # 옛 인자 이름(별칭)
 
 
 def test_yaw_range_wraps_around_back(tmp_path):
@@ -320,7 +328,7 @@ def test_missing_and_empty_files_do_not_crash(tmp_path):
         assert f"missing_file:{name}" in s["flags"]
     assert "empty_file:ratings.csv" in s["flags"]
     assert "unreadable_file:placement.json" in s["flags"]
-    assert s["gaze_ratio"] is None and s["stop_mean_m"] is None and s["stop_n_valid"] == 0
+    assert s["head_facing_ratio"] is None and s["stop_mean_m"] is None and s["stop_n_valid"] == 0
     assert s["final_distance_m"] == pytest.approx(2.05)           # objpose 마지막 행으로 대신
 
 
@@ -332,7 +340,9 @@ def test_aborted_session_flagged_and_excluded(tmp_path):
     assert row(res, "aborted")["completed"] is False and row(res, "aborted")["aborted_at"] == "stop_distance"
     assert "missing_file:summary.json" in row(res, "nosummary")["flags"]
     rec = res["summary"]["records"]
-    assert rec == {"sessions": 3, "included": 1, "excludedIncomplete": 2, "skipped": 0}
+    assert rec == {"sessions": 3, "included": 1, "excludedIncomplete": 2, "excludedPartialCondition": 0, "skipped": 0}
+    assert row(res, "aborted")["condition_complete"] is True      # 옛 기록: 조건 단계 뒤(stop_distance)에서 중단
+    assert "partial_condition" not in row(res, "aborted")["flags"]
     assert res["summary"]["summaries"]["byCondition"]["place"]["n"] == 1
     assert any("미완료 세션 2개" in w for w in res["summary"]["warnings"])
 
@@ -375,7 +385,9 @@ def test_condition_effect_size_and_correlation(tmp_path):
     e = s["stopConditionEffect"]["stop_mean_m"]["place_vs_view"]
     assert e["nA"] == 3 and e["nB"] == 3
     assert e["d"] == pytest.approx(-2.0, abs=1e-3)
-    assert e["ciLow"] == pytest.approx(-3.96, abs=1e-2) and e["ciHigh"] == pytest.approx(-0.04, abs=1e-2)
+    assert e["ci95_normal_approx"]["low"] == pytest.approx(-3.96, abs=1e-2)
+    assert e["ci95_normal_approx"]["high"] == pytest.approx(-0.04, abs=1e-2)
+    assert e["hedges_g"] == pytest.approx(-1.6, abs=1e-3)
     assert s["stopConditionEffect"]["stop_mean_m"]["place_vs_view_static"]["d"] == pytest.approx(-2.0, abs=1e-3)
     c = s["placeDistanceStopCorrelation"]["final_distance_m~stop_mean_m"]
     assert c["n"] == 3 and c["r"] == pytest.approx(0.5)
@@ -429,7 +441,7 @@ def test_cli_round_trip(tmp_path, capsys):
     four_conditions(rec)
     make_ownership_session(rec)
     out = tmp_path / "out"
-    placement.main(["--records", str(rec), "--out", str(out), "--gaze-deg", "15"])
+    placement.main(["--records", str(rec), "--out", str(out), "--facing-deg", "15"])
     assert "세션 4개" in capsys.readouterr().out
     with (out / "placement_sessions.csv").open(encoding="utf-8", newline="") as f:
         rows = list(csv.DictReader(f))
@@ -438,6 +450,7 @@ def test_cli_round_trip(tmp_path, capsys):
         "place/none", "view/static", "view/replay", "view/system_move"}
     p = next(r for r in rows if r["condition"] == "place")
     assert p["completed"] == "1" and p["ring_offset_m"] == "0.05" and p["rating_know_more_pre"] == "4"
+    assert p["condition_complete"] == "1" and "head_facing_ratio" in p and "gaze_ratio" not in p
     with (out / "stop_trials.csv").open(encoding="utf-8", newline="") as f:
         trials = list(csv.DictReader(f))
     assert len(trials) == 40 and set(trials[0]) == set(placement.STOP_COLUMNS)
@@ -454,3 +467,94 @@ def test_deterministic_output(tmp_path):
     analyze(tmp_path / "r", tmp_path / "o2")
     for name in ("placement_sessions.csv", "stop_trials.csv", "placement_summary.json"):
         assert (tmp_path / "o1" / name).read_bytes() == (tmp_path / "o2" / name).read_bytes()
+
+
+# ---------------------------------------------------------------- CP7 반영: 중단된 조건 단계·물체 반지름·설정 일치
+
+def test_partial_condition_blanks_condition_metrics_and_is_excluded(tmp_path):
+    make_placement_session(tmp_path, 1, "done")
+    make_placement_session(tmp_path, 2, "cut", completed=False, aborted_at="condition",
+                           placement_override={"conditionCompleted": False, "phaseDurationMs": 2000})
+    # summary는 완료인데 조건 단계가 끝까지 가지 않았다고 적힌 기록(계약상 생기면 안 되지만 분석기는 막아야 함)
+    make_placement_session(tmp_path, 3, "odd", placement_override={"conditionCompleted": False})
+    res = analyze(tmp_path)
+    for sid in ("cut", "odd"):
+        s = row(res, sid)
+        assert s["condition_complete"] is False and "partial_condition" in s["flags"]
+        for k in placement.CONDITION_METRICS:
+            assert s[k] is None, (sid, k)
+        assert s["stop_approach_mean_m"] == pytest.approx(1.225)   # 조건 단계 밖 지표는 그대로
+    assert row(res, "done")["condition_complete"] is True and row(res, "done")["final_distance_m"] is not None
+    rec = res["summary"]["records"]
+    assert rec["included"] == 1 and rec["excludedIncomplete"] == 1 and rec["excludedPartialCondition"] == 1
+    place = res["summary"]["summaries"]["byCondition"]["place"]
+    assert place["n"] == 1 and place["final_distance_m"]["n"] == 1 and place["stop_mean_m"]["n"] == 1
+    assert any("partial_condition" in w and "P003/odd" in w for w in res["summary"]["warnings"])
+
+
+def test_condition_complete_inferred_for_old_records(tmp_path):
+    make_placement_session(tmp_path, 1, "ok")
+    make_placement_session(tmp_path, 2, "in-cond", completed=False, aborted_at="condition")
+    make_placement_session(tmp_path, 3, "after", completed=False, aborted_at="post_items")
+    make_placement_session(tmp_path, 4, "before", completed=False, aborted_at="baseline", omit=("placement.json",))
+    res = analyze(tmp_path)
+    assert row(res, "ok")["condition_complete"] is True
+    assert row(res, "in-cond")["condition_complete"] is False and row(res, "in-cond")["final_distance_m"] is None
+    assert row(res, "after")["condition_complete"] is True and row(res, "after")["final_distance_m"] is not None
+    assert row(res, "before")["condition_complete"] is False
+
+
+def test_object_radius_column(tmp_path):
+    make_placement_session(tmp_path, 1, "r", manifest_extra={"object": {"boundingRadiusM": 0.2512}})
+    make_placement_session(tmp_path, 2, "none", manifest_extra={"object": {"boundingRadiusM": None}})
+    make_placement_session(tmp_path, 3, "old")
+    res = analyze(tmp_path)
+    assert row(res, "r")["object_radius_m"] == pytest.approx(0.2512)
+    assert row(res, "none")["object_radius_m"] is None and row(res, "old")["object_radius_m"] is None
+    assert "object_radius_m" in res["columns"]
+
+
+def test_config_mismatch_between_included_sessions(tmp_path):
+    cfg = {"baselineSeconds": 30, "conditionSeconds": 90, "conditionEndsOnConfirm": False, "headSampleHz": 20}
+    make_placement_session(tmp_path, 1, "a", manifest_extra={"config": cfg})
+    make_placement_session(tmp_path, 2, "b", "view", manifest_extra={"config": cfg})
+    same = analyze(tmp_path)["summary"]
+    assert same["configMismatch"] == {} and not any(w.startswith("config_mismatch") for w in same["warnings"])
+
+    other = tmp_path / "other"
+    make_placement_session(other, 1, "a", manifest_extra={"config": cfg})
+    make_placement_session(other, 2, "b", "view", manifest_extra={
+        "config": {**cfg, "conditionSeconds": 60, "conditionEndsOnConfirm": True},
+        "space": {"floorRadiusM": 4.0, "ringRadiiM": [1.0, 2.0, 3.0], "showRings": False,
+                  "startDistanceM": 1.5, "startHeightM": 0.8}})
+    # 요약에서 빠지는 세션(미완료)의 설정은 점검하지 않는다
+    make_placement_session(other, 3, "c", completed=False, manifest_extra={"config": {**cfg, "baselineSeconds": 10}})
+    summ = analyze(other)["summary"]
+    assert set(summ["configMismatch"]) == {"conditionSeconds", "conditionEndsOnConfirm", "space"}
+    assert summ["configMismatch"]["conditionSeconds"] == [60, 90]
+    for key in ("conditionSeconds", "conditionEndsOnConfirm", "space"):
+        assert f"config_mismatch:{key}" in summ["warnings"]
+    assert "config_mismatch:baselineSeconds" not in summ["warnings"]
+    assert "config_mismatch:stopDistance" not in summ["warnings"]
+
+
+# ---------------------------------------------------------------- 계약 테스트: 실제 Unity 기록
+
+REAL_RECORDS = Path(__file__).resolve().parents[2] / "docs" / "validation" / "placement" / "records"
+
+
+@pytest.mark.skipif(not REAL_RECORDS.is_dir(), reason="Unity 자동 시행 기록(docs/validation/placement/records)이 없음")
+def test_real_unity_records_follow_the_contract():
+    """Unity 러너가 실제로 쓴 합성 자동 시행 기록 5개(place, view/static·replay·system_move·point_select)를 분석기가 읽는다."""
+    res = analyze(REAL_RECORDS)
+    sessions = res["sessions"]
+    assert len(sessions) == 5
+    assert {f"{s['condition']}/{s['control_mode']}" for s in sessions} == {
+        "place/none", "view/static", "view/replay", "view/system_move", "view/point_select"}
+    for s in sessions:
+        flags = s["flags"].split(";") if s["flags"] else []
+        assert not [f for f in flags if f.startswith("missing_file:")], (s["session_id"], flags)
+        assert "version_mismatch" not in flags and "objpose_path_mismatch" not in flags, (s["session_id"], flags)
+        assert s["completed"] is True and s["condition_complete"] is True and s["auto_mode"] is True
+        assert s["final_distance_m"] is not None and s["stop_n_valid"] > 0
+    assert res["summary"]["records"]["included"] == 5

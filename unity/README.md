@@ -312,7 +312,7 @@ spec마다 참여자 번호를 하나씩 올립니다. 씬 만들기 배치: `-e
 
 확정 spec의 물체 하나(변형본 없음, 장면 속성은 기존 `SceneLoader` 경로 그대로)를 '나' 기준 공간에 두고, 직접 배치(place) 또는 보기만(view) 조건으로 한 회기를 진행합니다. 설계는 `docs/rq-v4-proposal.md` 4절, 결정은 `docs/decisions.md` X42–X54. 후보1 소유감 러너(`OwnershipRunner`)와 그 기록 형식은 건드리지 않고 `Assets/IFS/Runtime/Placement/`에 따로 있습니다(같은 어셈블리 `IFS.SceneSpec`).
 
-**헤드셋 실기에서 확인하지 않았고, XR 컨트롤러 입력은 아직 없습니다.** 입력은 데스크톱 모의 조작(`DesktopPlacementInput`)과 자동 시행 스크립트뿐입니다. 러너는 `IPlacementInput`(광선 원점·방향, 잡기 버튼, 당기기/밀기 축, 확인 버튼, 멈춤 버튼)만 보므로, XR 패키지를 넣은 뒤 이 인터페이스를 구현한 컴포넌트를 하나 만들어 `PlacementRunner ▸ Input Component`에 연결하면 됩니다(사람이 할 일. 그때 manifest `inputSource`는 `xr`).
+**헤드셋 실기에서 확인하지 않았고, XR 컨트롤러 입력은 아직 없습니다.** 입력은 데스크톱 모의 조작(`DesktopPlacementInput`)과 자동 시행 스크립트뿐입니다. 러너는 `IPlacementInput`(광선 원점·방향, 잡기 버튼, 당기기/밀기 축, 확인 버튼, 멈춤 버튼의 눌린 순간 `StopDown`과 누르고 있음 `StopHeld`)만 보므로, XR 패키지를 넣은 뒤 이 인터페이스를 구현한 컴포넌트를 하나 만들어 `PlacementRunner ▸ Input Component`에 연결하면 됩니다(사람이 할 일. 그때 manifest `inputSource`는 `xr`).
 
 | 구성 | 파일 | 하는 일 |
 | --- | --- | --- |
@@ -345,6 +345,11 @@ spec마다 참여자 번호를 하나씩 올립니다. 씬 만들기 배치: `-e
 
 멈춤 거리: 물체가 가까워지거나(approach, 3.0 m에서) 멀어지는(recede, 0.5 m에서) 동안 참여자가 버튼을 누르면 멈춥니다. 연습 2회 뒤 방향당 4시행, 둘 다 방향 교차. 첫 방향은 `stopFirstDirection`(기본 `by_participant`: 홀수 번호 approach, 짝수 recede). `stopMinM`/`stopMaxM`에 닿으면 `timed_out`. 시행 사이 `stopItiSeconds` 동안 숨김.
 
+- 한 프레임 순서는 "이번 프레임 이동을 먼저 반영 → 버튼 검사 → 기록"으로 고정했습니다. 그래서 `stop_distance_m` = 시작 거리 ∓ `speed_mps` × `rt_ms`가 늘 맞고, 실제로 누른 순간의 거리와 기록 거리의 차는 최대 `stopSpeedMps` × dt(프레임 길이)입니다(기본 0.25 m/s, 72 Hz면 약 3.5 mm).
+- 누름은 버튼이 내려가는 순간만 셉니다(직전 프레임에 눌려 있지 않던 `StopDown`). 시행 시작 전부터 누르고 있던 버튼으로는 그 시행이 바로 멈추지 않고, 떼었다가 다시 눌러야 합니다. 시행을 시작하는 프레임의 누름은 버립니다.
+- 경계 거리에 닿는 같은 프레임에 누르면 누름으로 기록합니다(`stop_distance_m` = 경계값, `timed_out` = 0).
+- **첫 방향과 조건 배정이 얽힐 수 있습니다.** `stopFirstDirection`의 기본값 `by_participant`는 참여자 번호 홀짝으로 첫 방향을 정하므로, 조건 배정도 번호 홀짝으로 하면 조건과 첫 방향이 완전히 겹칩니다. 조건 배정표를 따로 만들 때는 각 조건 안에서 첫 방향이 반반이 되도록 균형을 잡고, 세션마다 `approach`/`recede`로 직접 지정하세요.
+
 ### 데스크톱 조작 키
 
 | 누가 | 키 | 동작 |
@@ -372,7 +377,9 @@ spec마다 참여자 번호를 하나씩 올립니다. 씬 만들기 배치: `-e
 | 멈춤 거리 | `stopSpeedMps`(0.25), `stopApproachStartM`(3.0), `stopRecedeStartM`(0.5), `stopTrialsPerDirection`(4), `stopPracticeTrials`(2), `stopMinM`(0.2), `stopMaxM`(4.0, 바닥 반지름 이하), `stopItiSeconds`(2), `stopHeightM`(1.2), `stopFirstDirection`(by_participant) |
 | 문구 | `requireSpecPhrases`(false. 켜면 draft 문구가 있을 때 시작 거부) |
 
-물체 시작 자리는 spec의 `layout.distance`·`verticalOffset` 대신 `startDistanceM`·`startHeightM`을 씁니다(두 조건이 같은 자리에서 시작해야 하므로). 크기·모양·색·움직임은 spec 그대로입니다.
+물체 시작 자리는 spec의 `layout.distance`·`verticalOffset` 대신 `startDistanceM`·`startHeightM`을 씁니다(두 조건이 같은 자리에서 시작해야 하므로). 크기·모양·색·움직임은 spec 그대로입니다. 시작 자리는 참여자가 말한 속성이 아니라 실험 설정이라는 것을 manifest `space.startPlacementSource: "experiment_config"`로 남깁니다. spec의 `layout.distance`나 `verticalOffset`에 값이 있었는데 이렇게 무시하면, 확인 화면 경고와 `events.csv`의 `warning` 한 줄(detail이 `layout_ignored`로 시작)을 남기고 manifest `flags.layoutIgnored`를 true로 둡니다.
+
+거리는 모두 물체 중심 기준입니다(놓은 거리, `objpose.csv`·`headpose.csv`의 거리, 멈춤 거리). 참여자에게 보이는 물체 가장자리까지의 거리는 물체 반지름만큼 짧습니다. 반지름은 manifest `object.boundingRadiusM`에 남깁니다(불러온 직후 물체 렌더러 경계 상자의 가장 큰 반폭, 움직임으로 커지는 몫은 빠짐. 구할 수 없으면 null).
 
 ### 문구 파일
 
@@ -384,17 +391,17 @@ spec마다 참여자 번호를 하나씩 올립니다. 씬 만들기 배치: `-e
 
 | 파일 | 내용 |
 | --- | --- |
-| `manifest.json` | `recordVersion`, `participantNumber`, `sessionId`, `specFile`(이름만), `specSha256`, `startedAtUtc`, `unityVersion`, `headSource`(xr/desktop), `inputSource`(desktop/auto/xr), `condition`, `controlMode`, `space`, `stopDistance`, `replaySource`(null 또는 file·sha256·sourceSessionId), `systemMoveTarget`(null 또는 distanceM·azimuthDeg·heightM), `taskText`, `config`, `flags`(`autoMode`, 실제 첫 방향 등) |
+| `manifest.json` | `recordVersion`, `participantNumber`, `sessionId`, `specFile`(이름만), `specSha256`, `startedAtUtc`, `unityVersion`, `headSource`(xr/desktop), `inputSource`(desktop/auto/xr), `condition`, `controlMode`, `space`(`startPlacementSource: "experiment_config"` 포함), `stopDistance`, `object`(`boundingRadiusM`, 없으면 null), `replaySource`(null 또는 file·sha256·sourceSessionId), `systemMoveTarget`(null 또는 distanceM·azimuthDeg·heightM), `taskText`, `config`, `flags`(`autoMode`, 실제 첫 방향, `layoutIgnored` 등) |
 | `headpose.csv` | `time_ms,phase,head_x..head_qw,obj_x,obj_y,obj_z,distance_m,angle_deg` — 머리–물체 3D 거리·시선 각(소유감 기록과 같은 뜻). 물체가 숨은 동안 물체 칸은 빈칸 |
 | `objpose.csv` | `time_ms,phase,obj_x,obj_y,obj_z,distance_m,azimuth_deg,height_m,state` — 물체가 보일 때만, headpose와 같은 표본 시각. `distance_m`은 '나'에서 수평 거리, 방위는 오른쪽 + (−180, 180], state ∈ idle/held/system/replay/stop |
 | `events.csv` | `phase`(detail = 단계 이름), `grab`, `release`, `confirm`, `point_select`, `system_move_start/end`, `replay_start/end`, `stop_trial_start`, `stop_press`, `stop_timeout`, `rating`, `auto_mode`, `warning`, `head_source`. 계약에 더해 `session_start`, `rating_cancel`, `abort`, `quit` |
-| `placement.json` | 조건 단계 요약(두 조건 모두): `phaseDurationMs`, 최종 위치·거리·방위·높이, `grabCount`, `firstGrabMs`, `heldMs`, `pathLengthM`(누가 옮겼든 실제 이동 길이. static만 0), `confirmed`, `confirmMs` |
+| `placement.json` | 조건 단계 요약(두 조건 모두): `phaseDurationMs`, 최종 위치·거리·방위·높이, `grabCount`, `firstGrabMs`, `heldMs`, `pathLengthM`(누가 옮겼든 실제 이동 길이. static만 0), `confirmed`, `confirmMs`, `conditionCompleted`(정해진 끝 — `conditionSeconds`를 다 채움 또는 `conditionEndsOnConfirm`의 확인 — 까지 갔으면 true, 중단으로 조기 종료하면 false) |
 | `stopdistance.csv` | `trial,practice,direction,start_distance_m,speed_mps,stop_distance_m,rt_ms,timed_out` — timed_out이면 `stop_distance_m` 빈칸 |
 | `ratings.csv` | `item,when,rating,rt_ms` — 확정한 평정만(취소는 `events.csv`의 `rating_cancel`) |
 | `trajectory.json` | `ifs-trajectory/0.1`: 조건 단계 궤적. 표본 t_ms는 조건 단계 시작부터, 첫 표본 0 ms, 마지막 표본은 단계가 끝난 시각 |
 | `summary.json` | `completed`, `abortedAt`, `endedAtUtc` |
 
-중단(Esc·Play 멈춤)하면 그때까지의 CSV가 남고, 조건 단계 중이었으면 그때까지의 `placement.json`·`trajectory.json`도 씁니다.
+중단(Esc·Play 멈춤)하면 그때까지의 CSV가 남고, 조건 단계 중이었으면 그때까지의 `placement.json`(`conditionCompleted: false`)·`trajectory.json`도 씁니다. 분석기는 이런 세션에 `partial_condition`을 달고 조건 단계 지표 칸을 비웁니다.
 
 ### 실행
 
@@ -411,7 +418,7 @@ spec마다 참여자 번호를 하나씩 올립니다. 씬 만들기 배치: `-e
 
 `-quit` 없이(끝나면 스스로 닫음), 성공 0·실패 1. 씬 만들기 배치: `-executeMethod IFS.SceneSpec.EditorTools.PlacementExperimentMenu.CreateSceneBatch`.
 
-2026-11-22 확인: 합성 예시 `EX02.json`으로 기본 설정(제시 30 s, 조건 90 s) 자동 시행 5개(place, view의 static·replay(place의 궤적)·system_move·point_select)가 모두 완료됐고, 기록은 `docs/validation/placement/records/`(합성), 분석기 출력은 `docs/validation/placement/analysis/`에 있습니다. 분석기 플래그는 세션마다 `runner_warning:1`(draft 문구 경고, 의도한 것)뿐이었습니다.
+2026-11-22 확인: 합성 예시 `EX02.json`으로 기본 설정(제시 30 s, 조건 90 s) 자동 시행 5개(place, view의 static·replay(place의 궤적)·system_move·point_select)가 모두 완료됐고, 기록은 `docs/validation/placement/records/`(합성), 분석기 출력은 `docs/validation/placement/analysis/`에 있습니다. 분석기 플래그는 세션마다 `runner_warning:1`(draft 문구 경고, 의도한 것)뿐이었습니다. 외부 검토 CP7 반영 뒤 같은 설정으로 다시 만들었습니다(`conditionCompleted` true 5개, `object.boundingRadiusM` 0.1933, `layoutIgnored` false, 플래그는 그대로 `runner_warning:1`뿐, `config_mismatch` 없음).
 
 ### 한계와 사람이 할 일
 
@@ -427,7 +434,7 @@ spec마다 참여자 번호를 하나씩 올립니다. 씬 만들기 배치: `-e
   -runTests -testPlatform EditMode -testResults <결과.xml> -logFile <로그>
 ```
 
-EditMode 187개(2026-11-22 배치 실험 러너 추가 뒤 배치모드로 전부 통과. 그 전 161개):
+EditMode 192개(2026-11-22 배치 실험 러너 외부 검토 CP7 반영 뒤 배치모드로 전부 통과. 러너 추가 때 187개, 그 전 161개):
 
 | 파일 | 개수 | 내용 |
 | --- | --- | --- |
@@ -439,7 +446,7 @@ EditMode 187개(2026-11-22 배치 실험 러너 추가 뒤 배치모드로 전�
 | `OwnershipVariantTests.cs` | 74 | 소유감 실험 변형본: Williams 표 성질(각 조건이 각 위치에 2번, 순서쌍 2번씩), cb·순서 행, 1–20번 행 × cb 완전 교차, 같은 입력 → 같은 manifest 문자열, manifest 필드·specFile 이름만, 크기 방향·강제, 색(유채색은 색상만·최소 각·ΔE ≥ 목표, 무채색은 명도만, 명도 대체, belowTarget, 밝기 배율을 넣은 알베도 기준, 합성 ΔE00은 기록만), 움직임 add/remove·보이지 않는 조합(표 고정, 모양 모형 없는 형태는 보임, 자세 변형 + 흔들림은 보임)·motionAltersScale, 형태 표 4행, source·saidNotRendered, 원본과 같으면 오류, lowVisibility, `_inferred` 안 씀, SpecCheck 구분(말한 값/기본값/근거 없음)이 생성기 source와 같은 기준 |
 | `OwnershipRecordTests.cs` | 10 | 기록 파일 헤더(계약 문자열 고정)·폴더 구조·UTF-8 BOM 없음·줄바꿈 LF, 같은 초 재시작, 중단 요약, 표본 시각(밀린 프레임 하나에 표본 하나, 실제 시각), `viewing_start` detail 형식, 문구 파일(초안·금지 표현), draft 문구 목록·경고·`requireSpecPhrases` 거부, 글 줄바꿈, 시선 각·호 배치 계산 |
 | `UnityOnly/LoaderNoVariantGoldenTests.cs` | 1 | 변형 경로를 넣기 전 로더로 만든 지문(`Golden/loader_no_variant.golden.txt`: 적용값·notes·계층·머티리얼·기록)과 `Load(path)`가 같음 |
-| `PlacementTests.cs` | 23 | 배치 실험(2026-11-22): 설정 검증, 거리·방위·높이, 바닥 경계 clamp, 광선 잡기·바닥 가리키기, 문구 파일(전부 draft·출처·금지어·`when`), draft 경고(events·manifest)·`requireSpecPhrases`, 기록 파일 헤더·manifest/placement/summary/trajectory 키가 계약과 같음, 조건별 흐름(place·static·system_move·point_select·replay), 평정·취소, 궤적 쓰기→재생 왕복, 확인으로 조건 끝내기, 멈춤 거리 순서·역균형·timed_out, 문항 없는 단계 건너뛰기, 조건 단계 중단, 표본 주기 |
+| `PlacementTests.cs` | 28 | 배치 실험(2026-11-22): 설정 검증, 거리·방위·높이, 바닥 경계 clamp, 광선 잡기·바닥 가리키기, 문구 파일(전부 draft·출처·금지어·`when`), draft 경고(events·manifest)·`requireSpecPhrases`, 기록 파일 헤더·manifest/placement/summary/trajectory 키가 계약과 같음, 조건별 흐름(place·static·system_move·point_select·replay), 평정·취소, 궤적 쓰기→재생 왕복, 확인으로 조건 끝내기, 멈춤 거리 순서·역균형·timed_out, 문항 없는 단계 건너뛰기, 조건 단계 중단(`conditionCompleted` false), 표본 주기. CP7 반영: 미리 누르고 있던 멈춤 버튼, 경계에 닿는 프레임의 누름, 기록 거리 = 시작 ∓ 속도 × rt, dt 0.02·0.011에서 조건 단계 길이·시행 수 같음, spec layout 무시 경고·`layoutIgnored`·물체 반지름 |
 | `UnityOnly/PlacementRunnerTests.cs` | 3 | 배치 러너 + SceneLoader(EX02) 자동 시행 place → 그 궤적으로 view/replay, 세션 위치가 Unity 물체 위치에 그대로, 공간(반지름·윗면 y = 0·고리 끄기) |
 | `UnityOnly/OwnershipLoaderTests.cs` | 10 | `Load(path, null)`·빈 덮어쓰기도 golden과 같음, 변형본이 계획대로 그려지고 조정 기록에 남지 않음(3종), 잘못된 덮어쓰기 거부, 자동 시행 한 바퀴의 기록 폴더(draft 수·경고 포함), `requireSpecPhrases` 켜면 시작 거부, 합성 배경 = 하늘 지평선 색, 로더 `_BaseColor` = `RenderedColor.BaseSrgb`, 0.3초 밀린 프레임이 있는 자동 시행(표본 시각 중복 없음·빈 간격·형상마다 `viewing_start` ≤ 첫 표본) |
 
@@ -453,7 +460,7 @@ Unity가 없는 곳(CI 등)에서는 `Tools/compile-check/`에서 dotnet으로 �
 cd unity/Tools/compile-check && dotnet build IFS.SceneSpec.CompileCheck.csproj && dotnet test Tests/IFS.SceneSpec.CompileCheck.Tests.csproj
 ```
 
-- Unity에 의존하지 않는 코드와 EditMode 테스트 파일은 실제 Newtonsoft·NUnit으로 컴파일·실행됩니다(163개, 2026-11-22 배치 실험 러너 추가 뒤. 그 전 140개). `Tests/Editor/UnityOnly/`는 실제 렌더가 필요해 뺍니다.
+- Unity에 의존하지 않는 코드와 EditMode 테스트 파일은 실제 Newtonsoft·NUnit으로 컴파일·실행됩니다(168개, 2026-11-22 배치 실험 러너 CP7 반영 뒤. 러너 추가 때 163개, 그 전 140개). `Tests/Editor/UnityOnly/`는 실제 렌더가 필요해 뺍니다.
 - MonoBehaviour·Editor 스크립트는 UnityEngine/UnityEditor **스텁**(이름·시그니처만)으로 타입 검사만 합니다. 새 Unity API를 쓰면 `Stubs/UnityStubs.cs`(소유감 실험의 입력·글자·IMGUI·XR은 `Stubs/UnityStubsOwnership.cs`)에 같은 시그니처를 추가합니다. 배치 러너용으로 `Camera.ScreenPointToRay`, `Mathf.Max`, `Ray`, `Input.mousePosition`·`GetMouseButtonDown`, `KeyCode.E/F/Q`를 더했습니다.
 
 ## 한계

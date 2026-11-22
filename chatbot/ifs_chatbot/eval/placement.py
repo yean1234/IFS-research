@@ -1,7 +1,8 @@
 """배치 실험(RQ V4) 기록 요약 — Unity 배치 러너가 남긴 placement 기록을 읽어 세션 표·멈춤 거리 시행 표·기술 통계를 낸다.
 LLM 없음, 표준 라이브러리만, 결정론적(같은 기록 → 같은 출력).
 
-  python -m ifs_chatbot.eval.placement --records <기록 루트 또는 그 아래 폴더> --out <폴더> [--gaze-deg 15]
+  python -m ifs_chatbot.eval.placement --records <기록 루트 또는 그 아래 폴더> --out <폴더> [--facing-deg 15]
+  (--gaze-deg는 --facing-deg의 옛 이름으로 남겨 둔 별칭)
   → <폴더>/placement_sessions.csv(세션 1행), stop_trials.csv(멈춤 거리 시행 1행), placement_summary.json
 
 기록 형식은 계약 `ifs-placement/0.1`(Unity 러너와 따로 구현하므로 둘 사이의 약속)을 따른다.
@@ -28,8 +29,9 @@ LLM 없음, 표준 라이브러리만, 결정론적(같은 기록 → 같은 출
 - 멈춤 거리: practice=1 행과 timed_out=1 행을 뺀다. 방향별 평균을 먼저 내고 stop_mean_m = 두 방향 평균의 평균
   (한 방향이라도 값이 없으면 빈칸). stop_sd_m = 남은 시행 전체(방향 구분 없이)의 표본 표준편차(n−1).
   stop_n_timeout은 본 시행(연습 제외)의 timeout 수.
-- 머리 행동: headpose.csv의 phase가 "condition"인 표본만. gaze_ratio = angle_deg ≤ --gaze-deg인 표본 수 / angle_deg가
-  있는 표본 수(표본 비율, 시간 적분 아님). head_yaw_range_deg = 머리 쿼터니언의 정면(+z)을 수평면에 투영한 yaw들이
+- 머리 행동: headpose.csv의 phase가 "condition"인 표본만. head_facing_ratio = angle_deg ≤ --facing-deg인 표본 수 / angle_deg가
+  있는 표본 수(표본 비율, 시간 적분 아님). angle_deg는 머리 정면(+z) 방향과 머리→물체 방향 사이 각이다. 눈 추적이 아니므로
+  시선(gaze)이 아니라 "머리가 물체 쪽을 향한 비율"이라는 대리 지표다(예전 이름 gaze_ratio). head_yaw_range_deg = 머리 쿼터니언의 정면(+z)을 수평면에 투영한 yaw들이
   덮은 원형 범위(360 − 가장 큰 빈 구간). yaw는 +z 기준, 오른쪽(+x)이 +.
 - obj_path_from_objpose_m: 조건 단계 objpose.csv 연속 행 사이 3차원 위치 거리의 합. placement.json pathLengthM과
   차이가 max(PATH_TOL_ABS_M, PATH_TOL_REL × 큰 값)을 넘으면 objpose_path_mismatch. pathLengthM이 누가 움직였든
@@ -39,10 +41,20 @@ LLM 없음, 표준 라이브러리만, 결정론적(같은 기록 → 같은 출
   recordVersion이 "ifs-placement/0.1"이 아니면 version_mismatch. placement.json의 condition·controlMode가 manifest와
   다르면 condition_mismatch. events.csv의 warning 행이 있으면 runner_warning:<개수>.
 - summary.json이 없으면 미완료로 본다. completed=false 세션은 표에는 남기고 요약 통계에서 빼며 개수만 보고한다.
+- 조건 단계 완료(condition_complete): placement.json의 conditionCompleted(bool)를 쓴다. 필드가 없는 옛 기록은
+  summary.completed가 true면 true, 아니면 abortedAt이 조건 단계 뒤 단계면 true, 그 밖(조건 단계·그 앞에서 중단,
+  summary 없음)은 false로 추정한다. false면 flags에 partial_condition을 달고 조건 단계 지표(놓은 자리·고리·잡기·경로·확인·
+  머리 행동) 칸을 비운다(원자료 파일은 그대로라 필요하면 다시 계산할 수 있다). 이런 세션은 요약 통계에서 뺀다.
+- object_radius_m: manifest object.boundingRadiusM(물체 렌더 경계 반지름, 없으면 빈칸). 거리 지표는 모두 물체 중심
+  기준이고, 보이는 가장자리까지의 거리는 대략 이만큼 짧다.
+- 설정 일치 점검: 요약에 넣은 세션들 사이에서 manifest config의 baselineSeconds·conditionSeconds·conditionEndsOnConfirm,
+  manifest space·stopDistance가 다르면 요약 warnings에 config_mismatch:<키>를 넣는다(빠진 값도 하나의 값으로 본다).
 
 효과크기
-- Cohen d = (평균A − 평균B) / 합동 표준편차(n−1 가중). 근사 95% CI = d ± 1.96·√((nA+nB)/(nA·nB) + d²/(2(nA+nB))).
-  집단당 n < 2이거나 합동 표준편차가 0이면 d와 CI는 null.
+- Cohen d = (평균A − 평균B) / 합동 표준편차(n−1 가중). Hedges g = J·d, J = 1 − 3/(4·df − 1), df = nA + nB − 2
+  (소표본 보정). d의 95% 구간 ci95_normal_approx = d ± 1.96·√((nA+nB)/(nA·nB) + d²/(2(nA+nB)))
+  (정규 근사, ci_method "normal_approx" — 소표본에서는 정확하지 않다). 집단당 n < 2이거나 합동 표준편차가 0이면
+  d·g·구간은 null.
 - 상관은 Pearson r(place 조건, 짝 n < 3이거나 한쪽 분산이 0이면 null).
 """
 from __future__ import annotations
@@ -59,7 +71,8 @@ RECORD_PREFIX = "ifs-placement/"
 KNOWN_VERSIONS = ("ifs-placement/0.1",)
 TRAJECTORY_PREFIX = "ifs-trajectory/"
 SUMMARY_VERSION = "placement-summary/0.1"
-DEFAULT_GAZE_DEG = 15.0
+DEFAULT_FACING_DEG = 15.0
+DEFAULT_GAZE_DEG = DEFAULT_FACING_DEG   # 옛 이름(별칭)
 RING_TOL_M = 0.1             # 고리 반지름에서 이 거리 안이면 "고리에 몰림"으로 센다
 FINAL_TOL_M = 0.05           # placement.json 최종 거리와 objpose 마지막 행 거리의 허용 차
 PATH_TOL_ABS_M = 0.05        # 궤적 길이 교차 점검 허용 차(절대)
@@ -68,24 +81,36 @@ Z95 = 1.959963984540054
 CONDITIONS = ("place", "view")
 DIRECTIONS = ("approach", "recede")
 WHEN_ORDER = {"pre": 0, "post": 1, "check": 2}
+# abortedAt이 이 단계들이면 조건 단계는 끝까지 갔다(옛 기록에서 condition_complete를 추정할 때)
+PHASES_AFTER_CONDITION = ("post_items", "post_wait", "stop_distance", "check_items", "done")
+# 세션 간 설정 일치 점검: (요약 키, manifest에서 값을 꺼내는 경로)
+CONFIG_CHECK_KEYS = (("baselineSeconds", ("config", "baselineSeconds")),
+                     ("conditionSeconds", ("config", "conditionSeconds")),
+                     ("conditionEndsOnConfirm", ("config", "conditionEndsOnConfirm")),
+                     ("space", ("space",)),
+                     ("stopDistance", ("stopDistance",)))
 EXPECTED_FILES = ("headpose.csv", "objpose.csv", "events.csv", "placement.json", "stopdistance.csv",
                   "ratings.csv", "trajectory.json", "summary.json")
 
 SESSION_HEAD = [
     "participant", "session_id", "record_folder", "condition", "control_mode", "completed", "aborted_at",
-    "input_source", "head_source", "auto_mode", "draft_phrases",
+    "condition_complete", "input_source", "head_source", "auto_mode", "draft_phrases", "object_radius_m",
     "final_distance_m", "final_azimuth_deg", "final_height_m", "grab_count", "first_grab_ms", "held_ms",
     "path_length_m", "confirmed",
     "show_rings", "nearest_ring_m", "ring_offset_m",
     "stop_approach_mean_m", "stop_recede_mean_m", "stop_mean_m", "stop_n_valid", "stop_n_timeout", "stop_sd_m",
-    "head_obj_distance_mean_m", "gaze_ratio", "head_yaw_range_deg",
+    "head_obj_distance_mean_m", "head_facing_ratio", "head_yaw_range_deg",
 ]
+# condition_complete가 false면 비우는 조건 단계 지표
+CONDITION_METRICS = ("final_distance_m", "final_azimuth_deg", "final_height_m", "grab_count", "first_grab_ms", "held_ms",
+                     "path_length_m", "confirmed", "nearest_ring_m", "ring_offset_m",
+                     "head_obj_distance_mean_m", "head_facing_ratio", "head_yaw_range_deg", "obj_path_from_objpose_m")
 SESSION_TAIL = ["obj_path_from_objpose_m", "flags"]
 STOP_COLUMNS = ["participant", "session_id", "condition", "control_mode", "completed", "trial", "practice",
                 "direction", "start_distance_m", "speed_mps", "stop_distance_m", "rt_ms", "timed_out", "included"]
 DESC_METRICS = ("final_distance_m", "final_height_m", "grab_count", "first_grab_ms", "held_ms", "path_length_m",
                 "stop_approach_mean_m", "stop_recede_mean_m", "stop_mean_m", "stop_sd_m",
-                "head_obj_distance_mean_m", "gaze_ratio", "head_yaw_range_deg", "obj_path_from_objpose_m")
+                "head_obj_distance_mean_m", "head_facing_ratio", "head_yaw_range_deg", "obj_path_from_objpose_m")
 STOP_METRICS = ("stop_mean_m", "stop_approach_mean_m", "stop_recede_mean_m")
 
 
@@ -137,8 +162,16 @@ def _sd(vals: list[float]) -> float | None:
     return math.sqrt(sum((v - m) ** 2 for v in vals) / (len(vals) - 1))
 
 
+def hedges_j(df: int) -> float | None:
+    """Hedges 소표본 보정 J = 1 − 3/(4·df − 1). df < 1이면 None."""
+    if df < 1:
+        return None
+    return 1.0 - 3.0 / (4.0 * df - 1.0)
+
+
 def cohen_d(a, b) -> dict:
-    """A − B의 Cohen d(합동 표준편차)와 정규 근사 95% CI. 집단당 n < 2거나 합동 sd가 0이면 d·CI null."""
+    """A − B의 Cohen d(합동 표준편차), Hedges g, d의 정규 근사 95% 구간(ci95_normal_approx).
+    집단당 n < 2거나 합동 sd가 0이면 d·g·구간 null."""
     xa = [float(v) for v in a if v is not None]
     xb = [float(v) for v in b if v is not None]
     na, nb = len(xa), len(xb)
@@ -146,7 +179,8 @@ def cohen_d(a, b) -> dict:
     mb = sum(xb) / nb if nb else None
     out = {"nA": na, "nB": nb, "meanA": _r(ma), "meanB": _r(mb),
            "meanDiff": _r(ma - mb) if ma is not None and mb is not None else None,
-           "sdPooled": None, "d": None, "ciLow": None, "ciHigh": None}
+           "sdPooled": None, "d": None, "hedges_g": None,
+           "ci95_normal_approx": None, "ci_method": "normal_approx"}
     if na < 2 or nb < 2:
         return out
     sa, sb = _sd(xa), _sd(xb)
@@ -156,7 +190,9 @@ def cohen_d(a, b) -> dict:
         return out
     d = (ma - mb) / sp
     se = math.sqrt((na + nb) / (na * nb) + d * d / (2 * (na + nb)))
-    out.update({"d": _r(d), "ciLow": _r(d - Z95 * se), "ciHigh": _r(d + Z95 * se)})
+    j = hedges_j(na + nb - 2)
+    out.update({"d": _r(d), "hedges_g": _r(j * d) if j is not None else None,
+                "ci95_normal_approx": {"low": _r(d - Z95 * se), "high": _r(d + Z95 * se)}})
     return out
 
 
@@ -227,7 +263,25 @@ def _dict(v) -> dict:
     return v if isinstance(v, dict) else {}
 
 
-def load_session(cand: dict, gaze_deg: float = DEFAULT_GAZE_DEG) -> tuple[dict, dict, list[dict]]:
+def _condition_complete(pl: dict, summ: dict) -> bool:
+    """조건 단계를 정해진 끝까지 마쳤나. placement.json conditionCompleted가 있으면 그것, 없으면 summary로 추정."""
+    v = pl.get("conditionCompleted")
+    if isinstance(v, bool):
+        return v
+    if summ.get("completed") is True:
+        return True
+    return summ.get("abortedAt") in PHASES_AFTER_CONDITION
+
+
+def _path(d: dict, keys: tuple):
+    for k in keys:
+        if not isinstance(d, dict) or k not in d:
+            return None
+        d = d[k]
+    return d
+
+
+def load_session(cand: dict, facing_deg: float = DEFAULT_FACING_DEG) -> tuple[dict, dict, list[dict]]:
     """→ (세션 행, 평정 {열 이름: 값}, 멈춤 거리 시행 행 목록). 값은 파이썬 값(None = 빈칸)."""
     folder, rel, man = cand["folder"], cand["rel"], cand["manifest"]
     flags: list[str] = []
@@ -373,13 +427,19 @@ def load_session(cand: dict, gaze_deg: float = DEFAULT_GAZE_DEG) -> tuple[dict, 
 
     participant = f"P{pnum:03d}"
     completed = summ.get("completed") is True
+    cond_complete = _condition_complete(pl, summ)
+    if not cond_complete:
+        flags.append("partial_condition")
+    radius = _num(_dict(man.get("object")).get("boundingRadiusM"))
     srow = {
         "participant": participant, "session_id": sid, "record_folder": rel,
         "condition": condition, "control_mode": control,
         "completed": completed, "aborted_at": summ.get("abortedAt"),
+        "condition_complete": cond_complete,
         "input_source": man.get("inputSource"), "head_source": man.get("headSource"),
         "auto_mode": _dict(man.get("flags")).get("autoMode") is True,
         "draft_phrases": _int(_dict(man.get("taskText")).get("draftCount")),
+        "object_radius_m": _r(radius),
         "final_distance_m": _r(final_d), "final_azimuth_deg": _r(final_az), "final_height_m": _r(final_h),
         "grab_count": _int(pl.get("grabCount")), "first_grab_ms": _num(pl.get("firstGrabMs")),
         "held_ms": _num(pl.get("heldMs")), "path_length_m": _r(path_len),
@@ -389,12 +449,16 @@ def load_session(cand: dict, gaze_deg: float = DEFAULT_GAZE_DEG) -> tuple[dict, 
         "stop_mean_m": _r((m_app + m_rec) / 2) if m_app is not None and m_rec is not None else None,
         "stop_n_valid": len(valid), "stop_n_timeout": n_timeout, "stop_sd_m": _r(_sd(valid)),
         "head_obj_distance_mean_m": _r(_mean(dists)),
-        "gaze_ratio": _r(sum(1 for a in angles if a <= gaze_deg) / len(angles)) if angles else None,
+        "head_facing_ratio": _r(sum(1 for a in angles if a <= facing_deg) / len(angles)) if angles else None,
         "head_yaw_range_deg": _r(circular_range_deg(yaws), 3),
         "obj_path_from_objpose_m": _r(obj_path),
         "flags": ";".join(flags),
         "_space": space,
+        "_manifest": man,
     }
+    if not cond_complete:
+        for k in CONDITION_METRICS:     # 중단된 조건 단계: 완료 자료처럼 보이지 않게 비운다(원자료 파일은 그대로)
+            srow[k] = None
     ident = {"participant": participant, "session_id": sid, "condition": condition, "control_mode": control,
              "completed": completed}
     return srow, ratings, [{**ident, **r} for r in stop_rows]
@@ -457,7 +521,8 @@ def summarize(included: list[dict], rating_cols: list[str]) -> dict:
 
     place, view = by_cond.get("place", []), by_cond.get("view", [])
     view_modes = sorted({str(s["control_mode"]) for s in view})
-    effect: dict = {"definition": "A − B, A = place. d = 평균 차 / 합동 sd(n−1), CI = 정규 근사 95%"}
+    effect: dict = {"definition": "A − B, A = place. d = 평균 차 / 합동 sd(n−1), hedges_g = J·d (J = 1 − 3/(4·df − 1)), "
+                                  "ci95_normal_approx = d의 정규 근사 95% 구간(소표본에서 부정확)"}
     for m in STOP_METRICS:
         e = {"place_vs_view": cohen_d([s[m] for s in place], [s[m] for s in view])}
         for mode in view_modes:
@@ -494,14 +559,31 @@ def summarize(included: list[dict], rating_cols: list[str]) -> dict:
 
 # ---------------------------------------------------------------- 전체 실행
 
-def analyze(records: str | Path, out_dir: str | Path | None = None, gaze_deg: float = DEFAULT_GAZE_DEG) -> dict:
+def config_mismatches(sessions: list[dict]) -> dict[str, list]:
+    """세션들 사이에서 값이 다른 설정 키 → 서로 다른 값 목록(정렬, JSON 문자열 기준). 같으면 빠진다."""
+    out: dict[str, list] = {}
+    for key, path in CONFIG_CHECK_KEYS:
+        seen: dict[str, object] = {}
+        for s in sessions:
+            v = _path(s.get("_manifest") or {}, path)
+            seen.setdefault(json.dumps(v, sort_keys=True, ensure_ascii=False), v)
+        if len(seen) > 1:
+            out[key] = [seen[k] for k in sorted(seen)]
+    return out
+
+
+def analyze(records: str | Path, out_dir: str | Path | None = None, facing_deg: float = DEFAULT_FACING_DEG,
+            gaze_deg: float | None = None) -> dict:
+    """gaze_deg는 facing_deg의 옛 이름(별칭). 둘 다 주면 gaze_deg를 쓴다."""
+    if gaze_deg is not None:
+        facing_deg = gaze_deg
     root = Path(records)
     if not root.exists():
         raise FileNotFoundError(f"기록 경로가 없습니다: {records}")
     chosen, skipped = discover(root)
     sessions, stops, rating_map = [], [], []
     for cand in chosen:
-        srow, ratings, rows = load_session(cand, gaze_deg)
+        srow, ratings, rows = load_session(cand, facing_deg)
         sessions.append(srow)
         rating_map.append(ratings)
         stops.extend(rows)
@@ -509,13 +591,20 @@ def analyze(records: str | Path, out_dir: str | Path | None = None, gaze_deg: fl
     for s, r in zip(sessions, rating_map):
         for c in rating_cols:
             s[c] = r.get(c)
-    included = [s for s in sessions if s["completed"]]
+    included = [s for s in sessions if s["completed"] and s["condition_complete"]]
     incomplete = [s for s in sessions if not s["completed"]]
+    partial = [s for s in sessions if s["completed"] and not s["condition_complete"]]
 
     warnings: list[str] = []
     if incomplete:
         warnings.append(f"미완료 세션 {len(incomplete)}개는 요약 통계에서 뺌("
                         + ", ".join(f"{s['participant']}/{s['session_id']}" for s in incomplete) + ")")
+    if partial:
+        warnings.append(f"조건 단계가 끝까지 가지 않은 세션 {len(partial)}개(partial_condition)는 요약 통계에서 뺌("
+                        + ", ".join(f"{s['participant']}/{s['session_id']}" for s in partial) + ")")
+    mismatch = config_mismatches(included)
+    for key in mismatch:
+        warnings.append(f"config_mismatch:{key}")
     drafted = [s for s in sessions if (s["draft_phrases"] or 0) > 0]
     if drafted:
         warnings.append(f"초안 문구: 세션 {len(drafted)}개가 status draft 문구로 수집됨 — IRB 확인 전 문구라 본 실험 자료로 쓰기 전에 확인")
@@ -537,11 +626,16 @@ def analyze(records: str | Path, out_dir: str | Path | None = None, gaze_deg: fl
         "version": SUMMARY_VERSION,
         "tool": "ifs_chatbot.eval.placement",
         "descriptiveOnly": True,
-        "note": "기술 통계와 효과크기 추정만 낸다. 거리 지표는 '고른 거리'이며 심리적 거리의 측정이라고 해석하지 않는다.",
-        "gazeDeg": gaze_deg,
+        "note": "기술 통계와 효과크기 추정만 낸다. 거리 지표는 '고른 거리'이며 심리적 거리의 측정이라고 해석하지 않는다. "
+                "거리는 모두 물체 중심 기준이다(보이는 가장자리까지는 object_radius_m만큼 짧다). "
+                "head_facing_ratio는 눈 추적이 아니라 머리 정면 방향 기준 대리 지표다(시선 지표가 아님). "
+                "효과크기 구간은 정규 근사(ci_method normal_approx)라 소표본에서 부정확하다.",
+        "facingDeg": facing_deg,
         "recordVersions": sorted({str(c["manifest"].get("recordVersion")) for c in chosen}),
         "records": {"sessions": len(sessions), "included": len(included),
-                    "excludedIncomplete": len(incomplete), "skipped": len(skipped)},
+                    "excludedIncomplete": len(incomplete), "excludedPartialCondition": len(partial),
+                    "skipped": len(skipped)},
+        "configMismatch": mismatch,
         "nByConditionControl": {"all": _count(sessions, _group_key), "included": _count(included, _group_key)},
         "draftPhraseSessions": len(drafted),
         "autoModeSessions": len(auto),
@@ -559,6 +653,7 @@ def analyze(records: str | Path, out_dir: str | Path | None = None, gaze_deg: fl
                                                     encoding="utf-8")
     for s in sessions:
         s.pop("_space", None)
+        s.pop("_manifest", None)
     return {"sessions": sessions, "stop_trials": stops, "summary": summary, "columns": columns}
 
 
@@ -582,12 +677,13 @@ def main(argv: list[str] | None = None) -> None:
     ap = argparse.ArgumentParser(prog="python -m ifs_chatbot.eval.placement", description="배치 실험(RQ V4) 기록 요약(기술 통계)")
     ap.add_argument("--records", required=True, help="기록 루트(placement/P###/... 위) 또는 그 아래 아무 폴더")
     ap.add_argument("--out", required=True, help="결과 폴더(placement_sessions.csv, stop_trials.csv, placement_summary.json)")
-    ap.add_argument("--gaze-deg", type=float, default=DEFAULT_GAZE_DEG,
-                    help=f"응시로 셀 머리 정면–물체 방향 최대 각(기본 {DEFAULT_GAZE_DEG:g}°)")
+    ap.add_argument("--facing-deg", "--gaze-deg", dest="facing_deg", type=float, default=DEFAULT_FACING_DEG,
+                    help=f"head_facing_ratio로 셀 머리 정면–물체 방향 최대 각(기본 {DEFAULT_FACING_DEG:g}°). "
+                         "눈 추적이 아니라 머리 방향 기준. --gaze-deg는 옛 이름(별칭)")
     args = ap.parse_args(argv)
     if not Path(args.records).exists():
         ap.error(f"--records 경로가 없습니다: {args.records}")
-    res = analyze(args.records, args.out, args.gaze_deg)
+    res = analyze(args.records, args.out, args.facing_deg)
     _print_summary(res["summary"])
     print(f"결과: {Path(args.out) / 'placement_summary.json'}")
 

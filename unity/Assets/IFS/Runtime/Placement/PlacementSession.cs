@@ -63,6 +63,7 @@ namespace IFS.SceneSpec.Placement
         // 조건 단계 결과
         PlacementTrajectory _trajectory;
         bool _conditionWritten;
+        bool _conditionCompleted;
         PVec3 _conditionFinal;
 
         // 평정
@@ -77,6 +78,7 @@ namespace IFS.SceneSpec.Placement
         int _stopIndex = -1;
         bool _stopStarted, _trialActive;
         double _itiUntil, _trialStart, _stopD;
+        bool _stopPrevHeld;   // 직전 프레임에 멈춤 버튼이 눌려 있었나(눌림의 '내려가는 순간'만 인정하려고)
 
         public PlacementSession(PlacementConfig cfg, PlacementTaskText text, PlacementSessionInfo info, string recordRoot,
             PlacementTrajectory replay = null, IEnumerable<string> warnings = null)
@@ -303,6 +305,7 @@ namespace IFS.SceneSpec.Placement
             _pointer = null;
             _replayEnded = false;
             _conditionWritten = false;
+            _conditionCompleted = false;
             var start = Mode == PlacementConfig.ModeReplay ? ClampSpace(_replay.PositionAt(0)) : StartPosition;
             SetObject(start, false);
             _visible = true;
@@ -452,10 +455,13 @@ namespace IFS.SceneSpec.Placement
             _state = _replayEnded ? StateIdle : StateReplay;
         }
 
-        /// <summary>조건 단계를 끝내고 placement.json·trajectory.json을 쓴다. advance면 다음 단계로 간다.</summary>
+        /// <summary>조건 단계를 끝내고 placement.json·trajectory.json을 쓴다. advance면 다음 단계로 간다.
+        /// advance = 정해진 끝(conditionSeconds를 다 채움, 또는 conditionEndsOnConfirm을 켠 확인)이라 conditionCompleted = true.
+        /// 중단(Abort·Quit)으로 부르면 advance = false라 conditionCompleted = false(조기 종료 — 분석기는 조건 단계 지표를 비운다).</summary>
         void EndCondition(bool advance = true)
         {
             if (_conditionWritten) return;
+            _conditionCompleted = advance;
             if (_held) Release("phase_end");
             if (_moving)
             {
@@ -498,11 +504,17 @@ namespace IFS.SceneSpec.Placement
                 ["pathLengthM"] = Math.Round(_pathLength, 4),
                 ["confirmed"] = _confirmed,
                 ["confirmMs"] = _confirmMs,
+                ["conditionCompleted"] = _conditionCompleted,
             };
         }
 
         // ── 멈춤 거리 ────────────────────────────────────────────────────
-        void StepStop(double dt, PlacementInputFrame input)
+        // 한 프레임의 순서(고정): ① 이번 프레임 이동을 먼저 반영 → ② 버튼 검사 → ③ 기록.
+        //   기록 거리 = 이 프레임 이동을 반영한 위치, rt = 이 프레임 시각 − 시행 시작 → 거리 = 시작 거리 ∓ 속도 × rt가 늘 맞는다.
+        //   실제 누른 순간은 직전 프레임과 이 프레임 사이 어딘가라 기록 거리의 최대 오차는 stopSpeedMps × dt.
+        //   경계(stopMinM·stopMaxM)에 닿는 같은 프레임에 누르면 누름이 이긴다(거리 = 경계값, timed_out = 0).
+        //   누름은 stopPress(직전 프레임에 눌려 있지 않던 StopDown)만 센다. 시행을 시작하는 프레임의 누름은 버린다.
+        void StepStop(double dt, bool stopPress)
         {
             if (!_stopStarted) return;
             if (!_trialActive)
@@ -513,22 +525,23 @@ namespace IFS.SceneSpec.Placement
                 return;
             }
             var plan = _stopPlan[_stopIndex];
-            if (input.StopDown)
+            // ① 이동
+            double d = _stopD + (plan.IsApproach ? -1 : 1) * _cfg.stopSpeedMps * dt;
+            bool atLimit = plan.IsApproach ? d <= _cfg.stopMinM + Eps : d >= _cfg.stopMaxM - Eps;
+            if (atLimit) d = plan.IsApproach ? _cfg.stopMinM : _cfg.stopMaxM;
+            _stopD = d;
+            SetObject(PlacementGeometry.FromPolar(d, 0, _cfg.stopHeightM), false);
+            long rt = Ms(_now - _trialStart);
+            // ② 버튼 → ③ 기록
+            if (stopPress)
             {
-                long rt = Ms(_now - _trialStart);
                 _writer.Stop(plan.Trial, plan.Practice, plan.Direction, plan.StartM, _cfg.stopSpeedMps, _stopD, rt, false);
                 Event("stop_press", $"trial={plan.Trial};distance_m={F(_stopD)};rt_ms={rt}");
                 EndTrial();
                 return;
             }
-            double d = _stopD + (plan.IsApproach ? -1 : 1) * _cfg.stopSpeedMps * dt;
-            bool timeout = plan.IsApproach ? d <= _cfg.stopMinM + Eps : d >= _cfg.stopMaxM - Eps;
-            if (timeout) d = plan.IsApproach ? _cfg.stopMinM : _cfg.stopMaxM;
-            _stopD = d;
-            SetObject(PlacementGeometry.FromPolar(d, 0, _cfg.stopHeightM), false);
-            if (timeout)
+            if (atLimit)
             {
-                long rt = Ms(_now - _trialStart);
                 _writer.Stop(plan.Trial, plan.Practice, plan.Direction, plan.StartM, _cfg.stopSpeedMps, null, rt, true);
                 Event("stop_timeout", $"trial={plan.Trial};distance_m={F(_stopD)};rt_ms={rt}");
                 EndTrial();
@@ -638,6 +651,8 @@ namespace IFS.SceneSpec.Placement
             if (Finished) return;
             _now += Math.Max(0, dt);
             _head = head;
+            bool stopPress = input.StopDown && !_stopPrevHeld;   // 내려가는 순간만(미리 누르고 있던 버튼은 떼었다 다시 눌러야 함)
+            _stopPrevHeld = input.StopHeld || input.StopDown;
             switch (Phase)
             {
                 case PlacementPhase.Baseline:
@@ -648,7 +663,7 @@ namespace IFS.SceneSpec.Placement
                     else StepCondition(dt, input);
                     break;
                 case PlacementPhase.StopDistance:
-                    StepStop(dt, input);
+                    StepStop(dt, stopPress);
                     break;
             }
             Sample();
