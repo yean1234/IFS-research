@@ -1,6 +1,7 @@
 // SceneSpec v2 JSON → VR 오브젝트.
 //   form.type      → 프리팹 4종(blob/mist/shell/fragments). 비어 있으면 기본 절차 모형(잘게 나눈 구 + IFS 셰이더,
 //                    형태별 프리셋). IFS 셰이더를 못 쓰는 환경이면 임시 프리미티브(로그 + initialScene notes)
+//                    형상별 모형은 FormRenderPlan(슬롯 값 → 렌더러 입력) + IFormRenderer(Runtime/Rendering)가 만든다(X64)
 //   _unmapped 모양어 → 모양 모형(round 구 · square 큐브 · flat 납작 원기둥 · pointed 원뿔, ShapeMapping).
 //                    form.type이 null·blob일 때만. 표에 없는 모양어는 경고하고 unmapped_shape로 기록(구로 바꾸지 않음).
 //                    판정은 initialScene.json·report.json의 "shape"(docs/shape-mapping.md)
@@ -84,30 +85,7 @@ namespace IFS.SceneSpec
             { "hanging", new Vector3(0.9f, 1.25f, 0.9f) },
         };
 
-        // 형태별 모양 프리셋(IFS 셰이더 전용): 굴곡, 노이즈 크기, 안개 가장자리, 밀도, 껍질 열림
-        struct FormPreset
-        {
-            public float lumpiness, noiseScale, fuzz, density, shellOpen;
-            public FormPreset(float l, float n, float f, float d, float s) { lumpiness = l; noiseScale = n; fuzz = f; density = d; shellOpen = s; }
-        }
-
-        static readonly Dictionary<string, FormPreset> FormPresets = new Dictionary<string, FormPreset>
-        {
-            { "blob", new FormPreset(0.14f, 1.6f, 0f, 1f, 0f) },
-            { "mist", new FormPreset(0.30f, 1.1f, 1f, 0.5f, 0f) },
-            { "shell", new FormPreset(0.04f, 2.0f, 0f, 1f, 0.35f) },
-            { "fragments", new FormPreset(0.25f, 2.4f, 0f, 1f, 0f) },
-        };
-
-        // 모양 모형(구·큐브·원기둥·원뿔): 굴곡 0, 안개 가장자리 0, 껍질 열림 0 + 정점 변위 0(_Displacement) → 윤곽 유지.
-        // 노이즈 크기는 blob과 같게 둬 거칠기 얼룩·침식 무늬의 크기가 기본 모형과 같다.
-        static readonly FormPreset ShapePreset = new FormPreset(0f, 1.6f, 0f, 1f, 0f);
-        const string DisplacementProperty = "_Displacement";
-
-        const string OpaqueShaderResource = "IFS/SceneSpecOpaque";
-        const string FadeShaderResource = "IFS/SceneSpecFade";
-        static Shader _opaqueShader, _fadeShader;
-        static Mesh _icoMesh, _coneMesh;
+        // 형상별 모양(프리셋·메시·셰이더)은 FormRenderPlan(규칙 기반 어댑터)과 IFormRenderer(형상별 렌더러)가 정한다(X64).
 
         [Header("경로")]
         [Tooltip("ISceneSpecPathSource를 구현한 컴포넌트. 비우면 같은 GameObject에서 찾는다(InspectorPathSource).")]
@@ -164,6 +142,11 @@ namespace IFS.SceneSpec
         /// <summary>지금 보이는 모형이 모양 모형인가(참여자가 form.type을 바꾸면 그 형태 모형으로 돌아간다).</summary>
         public bool ShowingShapeModel => _isShapeModel;
         public IReadOnlyList<ShapePrefab> ShapePrefabs => shapePrefabs;
+        /// <summary>지금 적용한 형상별 렌더 계획(FormRenderPlan). 로드 전이면 null.</summary>
+        public FormRenderPlan RenderPlan { get; private set; }
+        /// <summary>지금 모형을 만든 경로: 렌더러 이름(blob·mist·shell·fragments·shapeModel) 또는
+        /// prefab(형태)·shapePrefab(모형)·primitive(형태)·shapeModelPrimitive(모형). report.json의 renderPath.</summary>
+        public string RenderPath { get; private set; }
         public event Action<SceneLoader> Loaded;
 
         ISceneSpecPathSource _source;
@@ -293,6 +276,8 @@ namespace IFS.SceneSpec
             _root = _model = null;
             _motion = null;
             _isShapeModel = false;
+            RenderPlan = null;
+            RenderPath = null;
             Shape = null;
             Spec = null;
             InitialParams = CurrentParams = null;
@@ -451,9 +436,10 @@ namespace IFS.SceneSpec
             _isShapeModel = false;
 
             string form = CurrentParams.GetCategory("form.type");
-            // 모양 모형: 판정이 적용(applied)이고, 참여자가 form.type을 처음 값에서 바꾸지 않았을 때.
+            // 모양 모형: 판정이 적용(applied)이고, 참여자가 form.type을 처음 값에서 바꾸지 않았을 때(FormRenderPlan이 판정).
             // (조정 중 form.type을 바꾸면 그 형태 모형을 보여 주고, 처음 값으로 돌아오면 모양 모형으로 돌아온다)
-            if (Shape?.Model != null && form == InitialParams.GetCategory("form.type"))
+            RenderPlan = BuildPlan();
+            if (RenderPlan.Renderer == FormRenderPlan.RendererShapeModel)
             {
                 BuildShapeModel(form);
                 return;
@@ -463,14 +449,17 @@ namespace IFS.SceneSpec
             if (prefab != null)
             {
                 _model = Instantiate(prefab, _motion.transform, false);
+                RenderPath = "prefab(" + form + ")";
             }
-            else if (useProceduralModels && LoadIfsShaders())
+            else if (useProceduralModels && FormRenderResources.LoadIfsShaders())
             {
-                _model = CreateProceduralModel(form);
+                var renderer = FormRenderers.For(RenderPlan);
+                _model = renderer.CreateModel(RenderPlan);
                 foreach (var r in _model.GetComponentsInChildren<Renderer>())   // 로더가 만든 머티리얼 = 이미 사본
                     foreach (var m in r.sharedMaterials) _ownedMaterials.Add(m);
                 _model.transform.SetParent(_motion.transform, false);
                 _model.transform.localScale = Vector3.one * placement.primitiveBaseSize;
+                RenderPath = renderer.Name;
                 Note($"form.type={form}: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시", false);
             }
             else
@@ -478,7 +467,8 @@ namespace IFS.SceneSpec
                 _model = CreatePrimitive(form);
                 _model.transform.SetParent(_motion.transform, false);
                 _model.transform.localScale = Vector3.one * placement.primitiveBaseSize;
-                string why = useProceduralModels ? IfsShaderProblem() : "useProceduralModels가 꺼져 있음";
+                RenderPath = "primitive(" + form + ")";
+                string why = useProceduralModels ? FormRenderResources.IfsShaderProblem() : "useProceduralModels가 꺼져 있음";
                 Note($"form.type={form}: 프리팹이 연결되지 않아 임시 프리미티브로 대체 — 이유: {why}", true);
             }
             _model.name = "model (" + form + ")";
@@ -490,28 +480,35 @@ namespace IFS.SceneSpec
         void BuildShapeModel(string form)
         {
             string shape = Shape.Applied, model = Shape.Model;
-            bool ifs = LoadIfsShaders();   // 프리팹 머티리얼이 IFS 셰이더인지 ApplyMaterial이 알아보려면 셰이더를 먼저 읽어야 한다
+            bool ifs = FormRenderResources.LoadIfsShaders();   // 프리팹 머티리얼이 IFS 셰이더인지 ApplyMaterial이 알아보려면 셰이더를 먼저 읽어야 한다
             var prefab = FindShapePrefab(shape);
             if (prefab != null)
             {
                 _model = Instantiate(prefab, _motion.transform, false);
                 Shape.ViaPrefab = true;
+                RenderPath = "shapePrefab(" + model + ")";
             }
             else
             {
-                Material mat = null;
                 if (ifs)
                 {
-                    mat = new Material(_opaqueShader) { name = "IFS shape (" + model + ")" };
-                    _ownedMaterials.Add(mat);
+                    var renderer = FormRenderers.For(RenderPlan);
+                    _model = renderer.CreateModel(RenderPlan);
+                    foreach (var r in _model.GetComponentsInChildren<Renderer>())
+                        foreach (var m in r.sharedMaterials) if (m != null) _ownedMaterials.Add(m);
+                    RenderPath = renderer.Name;
                 }
-                _model = ShapeModelFactory.Create(model, mat, ConeMeshCached());
+                else
+                {
+                    _model = ShapeModelFactory.Create(model, null, FormRenderResources.ConeMesh());
+                    RenderPath = "shapeModelPrimitive(" + model + ")";
+                }
                 _model.transform.SetParent(_motion.transform, false);
                 Shape.ViaPrefab = false;
                 Note($"shape={shape} → {model}: 모양 프리팹이 연결되지 않아 같은 형상을 코드로 만듦" +
                      " (메뉴 IFS ▸ Create Shape Prefabs로 연결)", true);
                 if (!ifs)
-                    Note($"shape={shape} → {model}: IFS 셰이더를 쓸 수 없어 프리미티브 기본 머티리얼로 표시 — 이유: {IfsShaderProblem()}", true);
+                    Note($"shape={shape} → {model}: IFS 셰이더를 쓸 수 없어 프리미티브 기본 머티리얼로 표시 — 이유: {FormRenderResources.IfsShaderProblem()}", true);
             }
             _model.transform.localScale = Vector3.one * placement.primitiveBaseSize;
             _model.name = "model (" + form + ", shape " + shape + " → " + model + ")";
@@ -540,11 +537,8 @@ namespace IFS.SceneSpec
             shapePrefabs = list.ToArray();
         }
 
-        static Mesh ConeMeshCached()
-        {
-            if (_coneMesh == null) _coneMesh = ShapeModelFactory.BuildConeMesh();
-            return _coneMesh;
-        }
+        // 지금 값(CurrentParams)·처음 form.type·모양어 판정 → 렌더 계획. 매퍼 정보(meta.mapping)는 넘기지 않는다(X65).
+        FormRenderPlan BuildPlan() => FormRenderPlan.Build(CurrentParams, InitialParams.GetCategory("form.type"), Shape);
 
         // 모양어마다 무엇을 했는지 콘솔·notes에 남긴다. 적용하지 못한 모양어(표에 없음·형태 때문·충돌)는 경고.
         void NoteShapeWords(string file, string sessionId)
@@ -590,74 +584,6 @@ namespace IFS.SceneSpec
             foreach (var fp in formPrefabs)
                 if (fp != null && fp.formType == form && fp.prefab != null) return fp.prefab;
             return null;
-        }
-
-        static bool LoadIfsShaders()
-        {
-            if (_opaqueShader == null) _opaqueShader = Resources.Load<Shader>(OpaqueShaderResource);
-            if (_fadeShader == null) _fadeShader = Resources.Load<Shader>(FadeShaderResource);
-            // URP 등 Built-in이 아닌 파이프라인에서는 서피스 셰이더가 지원되지 않는다 → 프리미티브로
-            return _opaqueShader != null && _fadeShader != null && _opaqueShader.isSupported && _fadeShader.isSupported;
-        }
-
-        static string IfsShaderProblem()
-        {
-            if (_opaqueShader == null || _fadeShader == null)
-                return $"Resources/{OpaqueShaderResource}·{FadeShaderResource} 셰이더를 찾지 못함(파일이 없거나 import 전)";
-            if (!_opaqueShader.isSupported || !_fadeShader.isSupported)
-                return "IFS 셰이더가 지원되지 않음 — 셰이더 컴파일 오류이거나 Built-in이 아닌 렌더 파이프라인(URP 등). " +
-                       "Project 창에서 SceneSpecOpaque 셰이더를 선택해 Inspector의 오류를 확인";
-            return "알 수 없음";
-        }
-
-        static Mesh IcoMesh()
-        {
-            if (_icoMesh != null) return _icoMesh;
-            IcoSphere.Build(4, 0.5f, out float[] xyz, out int[] tris);
-            var verts = new Vector3[xyz.Length / 3];
-            var normals = new Vector3[verts.Length];
-            for (int i = 0; i < verts.Length; i++)
-            {
-                verts[i] = new Vector3(xyz[i * 3], xyz[i * 3 + 1], xyz[i * 3 + 2]);
-                normals[i] = verts[i] * 2f;   // 반지름 0.5 → 단위 법선
-            }
-            _icoMesh = new Mesh { name = "IFS IcoSphere" };
-            _icoMesh.vertices = verts;
-            _icoMesh.normals = normals;
-            _icoMesh.triangles = tris;
-            _icoMesh.bounds = new Bounds(Vector3.zero, Vector3.one * 1.6f);   // 셰이더가 정점을 밀어내므로 넉넉하게
-            return _icoMesh;
-        }
-
-        static GameObject CreateProceduralModel(string form)
-        {
-            GameObject Piece(string name, float seed)
-            {
-                var go = new GameObject(name);
-                go.AddComponent<MeshFilter>().sharedMesh = IcoMesh();
-                var mat = new Material(_opaqueShader);
-                mat.SetFloat("_Seed", seed);
-                go.AddComponent<MeshRenderer>().sharedMaterial = mat;
-                go.AddComponent<SphereCollider>();
-                return go;
-            }
-
-            if (form != "fragments") return Piece(form, 0f);
-            var group = new GameObject("fragments");
-            Vector3[] offsets =
-            {
-                new Vector3(-0.38f, 0.1f, 0f), new Vector3(0.32f, -0.16f, 0.1f), new Vector3(0f, 0.38f, -0.1f),
-                new Vector3(0.16f, 0.06f, 0.38f), new Vector3(-0.12f, -0.32f, -0.26f),
-            };
-            for (int i = 0; i < offsets.Length; i++)
-            {
-                var c = Piece("fragment " + i, i + 1);
-                c.transform.SetParent(group.transform, false);
-                c.transform.localPosition = offsets[i];
-                c.transform.localRotation = Quaternion.Euler(17f * i, 31f * i, 11f * i);
-                c.transform.localScale = Vector3.one * (0.42f - 0.04f * i);
-            }
-            return group;
         }
 
         static GameObject CreatePrimitive(string form)
@@ -724,41 +650,20 @@ namespace IFS.SceneSpec
 
         void ApplyMaterial()
         {
-            var p = CurrentParams;
-            // 색·Fade 판정은 변형본 생성기(색 변형 ΔE00)와 같은 함수(RenderedColor)를 쓴다.
-            RenderedColor.BaseSrgb(p.GetNumber("material.color.h"), p.GetNumber("material.color.s"),
-                p.GetNumber("material.color.l"), out double r, out double g, out double b);
-            float opacity = (float)p.GetNumber("material.opacity");
-            float brightness = (float)p.GetNumber("material.brightness");
-            float roughness = (float)p.GetNumber("material.roughness");
-            float erosion = (float)p.GetNumber("material.erosion");
-            var color = new Color((float)r, (float)g, (float)b, opacity);
+            // 색·Fade 판정은 변형본 생성기(색 변형 ΔE00)와 같은 함수(RenderedColor)를 쓴다(FormRenderPlan.Build 안).
+            var plan = RenderPlan = BuildPlan();
+            float opacity = plan.Opacity, brightness = plan.Brightness, roughness = plan.Roughness, erosion = plan.Erosion;
+            var color = new Color(plan.ColorR, plan.ColorG, plan.ColorB, opacity);
             var sp = shaderParams;
-            string form = p.GetCategory("form.type");
-            FormPreset preset;
-            if (_isShapeModel) preset = ShapePreset;
-            else FormPresets.TryGetValue(form, out preset);
-            bool fade = RenderedColor.UsesFadeShader(form, opacity);
+            var formRenderer = FormRenderers.For(plan);
 
             foreach (var rend in _model.GetComponentsInChildren<Renderer>())
             {
                 bool anyIfs = false;
                 foreach (var m in InstanceMaterials(rend))   // 렌더러마다 인스턴스(공유 머티리얼을 바꾸지 않는다)
                 {
-                    bool ifsShader = _opaqueShader != null && (m.shader == _opaqueShader || m.shader == _fadeShader);
-                    if (ifsShader)
-                    {
-                        anyIfs = true;
-                        var wanted = fade ? _fadeShader : _opaqueShader;   // 안개·반투명이면 Fade로 바꾼다
-                        if (m.shader != wanted) m.shader = wanted;
-                        m.SetFloat("_Lumpiness", preset.lumpiness);
-                        m.SetFloat("_NoiseScale", preset.noiseScale);
-                        m.SetFloat("_Fuzz", preset.fuzz);
-                        m.SetFloat("_Density", preset.density);
-                        m.SetFloat("_ShellOpen", preset.shellOpen);
-                        // 모양 모형만 정점 변위 0(각진 면이 벌어지지 않고 윤곽 유지). 그 밖의 모형은 셰이더 기본값 1 그대로.
-                        if (_isShapeModel) m.SetFloat(DisplacementProperty, 0f);
-                    }
+                    // IFS 셰이더면 형상별 렌더러가 셰이더 선택·형상 프리셋을 넣는다
+                    if (formRenderer.ApplyShader(m, plan)) anyIfs = true;
                     if (m.HasProperty(sp.baseColor)) m.SetColor(sp.baseColor, color);
                     else if (m.HasProperty(sp.colorFallback)) m.SetColor(sp.colorFallback, color);
                     else Note($"{m.shader.name}: 색 프로퍼티({sp.baseColor}) 없음", true);
@@ -784,8 +689,8 @@ namespace IFS.SceneSpec
                     if (m.HasProperty(sp.erosion)) m.SetFloat(sp.erosion, erosion);
                     else if (erosion > 0.001f) Note($"{m.shader.name}: {sp.erosion} 없음 → material.erosion 적용 안 됨", true);
                 }
-                // 반투명(Fade)은 Built-in에서 그림자를 받지 못하고, 불투명 그림자를 드리우면 안개가 덩어리처럼 보인다 → 그림자 끔.
-                if (anyIfs) rend.shadowCastingMode = fade ? ShadowCastingMode.Off : ShadowCastingMode.On;
+                // 그림자는 렌더러가 정한다(반투명·안개는 끔).
+                if (anyIfs) rend.shadowCastingMode = formRenderer.Shadow(plan);
             }
         }
 

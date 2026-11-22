@@ -249,7 +249,7 @@ namespace IFS.SceneSpec.EditorTools
                     entry["png"] = Path.GetFileName(png);
 
                     // 2) 색 정확도(형상만 렌더해 가림 마스크·중앙 영역을 구한다)
-                    bool fade = p.GetCategory("form.type") == "mist" || p.GetNumber("material.opacity") < 0.99;
+                    bool fade = RenderedColor.UsesFadeShader(p.GetCategory("form.type"), p.GetNumber("material.opacity"));   // 로더와 같은 판정
                     var colorReport = MeasureColor(c, cam, p, full, fade, out var maskBox);
                     entry["color"] = colorReport;
                     if (maskBox.HasValue)
