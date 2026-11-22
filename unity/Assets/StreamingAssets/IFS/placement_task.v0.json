@@ -1,0 +1,74 @@
+{
+  "version": "0.1",
+  "protocol": "placement-task",
+  "texts": {
+    "intro": {
+      "text": "지금부터 물체 하나를 보여 드려요. 안내가 나오면 그대로 따라 주세요.",
+      "status": "draft",
+      "source": "배치 러너 진행 안내 초안(2026-11-22), IRB 검토 전"
+    },
+    "baseline": {
+      "text": "지금 이것을 편하게 바라봐 주세요.",
+      "status": "draft",
+      "source": "docs/rq-v4-proposal.md 4.3절 지시문 초안(2026-11-22), IRB 검토 전"
+    },
+    "condition_place": {
+      "text": "지금 이것이 있기에 알맞다고 느껴지는 자리에 놓아 주세요. 몇 번이든 다시 옮길 수 있어요. 정했으면 확인을 눌러 주세요.",
+      "status": "draft",
+      "source": "docs/rq-v4-proposal.md 4.3절 지시문 초안(2026-11-22), IRB 검토 전. 둘째·셋째 문장은 4.3절 형식(다시 옮기기 자유, 확정 동작)을 옮긴 것"
+    },
+    "condition_view": {
+      "text": "지금 이것을 편하게 바라봐 주세요.",
+      "status": "draft",
+      "source": "docs/rq-v4-proposal.md 4.3절 지시문 초안(2026-11-22), IRB 검토 전"
+    },
+    "condition_point_select": {
+      "text": "지금 이것이 있기에 알맞다고 느껴지는 자리를 바닥에서 가리키고 확인을 눌러 주세요. 그 자리로 옮겨 드려요.",
+      "status": "draft",
+      "source": "docs/rq-v4-proposal.md 4.3절 지시문 초안(2026-11-22)을 가리켜 지정 조건(X44)에 맞게 옮긴 것, IRB 검토 전"
+    },
+    "wait": {
+      "text": "잠시 기다려 주세요. 안내에 따라 다음으로 넘어가요.",
+      "status": "draft",
+      "source": "배치 러너 진행 안내 초안(2026-11-22), IRB 검토 전"
+    },
+    "stop_distance": {
+      "text": "이것이 움직이는 동안, 알맞다고 느껴지는 자리에 왔을 때 버튼을 눌러 주세요.",
+      "status": "draft",
+      "source": "docs/rq-v4-proposal.md 4.5절 멈춤 거리 지시문 초안(2026-11-22), IRB 검토 전"
+    },
+    "done": {
+      "text": "여기까지예요. 고맙습니다.",
+      "status": "draft",
+      "source": "배치 러너 진행 안내 초안(2026-11-22), IRB 검토 전"
+    },
+    "own": {
+      "text": "이것이 얼마나 '내 것' 같나요?",
+      "when": ["pre", "post"],
+      "anchors": { "low": "전혀 내 것 같지 않다", "high": "완전히 내 것 같다" },
+      "status": "draft",
+      "source": "docs/rq-v4-proposal.md 4.5절 측정 표 문항 초안(2026-11-22), IRB 검토 전. 양 끝 뜻은 ownership_task.v0.json rating과 같음"
+    },
+    "want_to_know": {
+      "text": "이것에 대해 더 알고 싶다",
+      "when": "post",
+      "anchors": { "low": "전혀 그렇지 않다", "high": "매우 그렇다" },
+      "status": "draft",
+      "source": "docs/rq-v4-proposal.md 4.5절 측정 표 문항 초안(2026-11-22, V3 문항), IRB 검토 전"
+    },
+    "withdraw_attention": {
+      "text": "이것에서 주의를 거두고 싶다",
+      "when": "post",
+      "anchors": { "low": "전혀 그렇지 않다", "high": "매우 그렇다" },
+      "status": "draft",
+      "source": "docs/rq-v4-proposal.md 4.5절 측정 표 문항 초안(2026-11-22, V3 문항), IRB 검토 전"
+    },
+    "placed_by_me": {
+      "text": "방금 그것의 자리는 내가 정했다",
+      "when": "check",
+      "anchors": { "low": "전혀 그렇지 않다", "high": "매우 그렇다" },
+      "status": "draft",
+      "source": "docs/rq-v4-proposal.md 4.5절 측정 표 점검 문항 초안(2026-11-22, V3 문항), IRB 검토 전"
+    }
+  }
+}

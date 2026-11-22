@@ -1,0 +1,1223 @@
+{
+  "version": "placement-summary/0.1",
+  "tool": "ifs_chatbot.eval.placement",
+  "descriptiveOnly": true,
+  "note": "기술 통계와 효과크기 추정만 낸다. 거리 지표는 '고른 거리'이며 심리적 거리의 측정이라고 해석하지 않는다.",
+  "gazeDeg": 15.0,
+  "recordVersions": [
+    "ifs-placement/0.1"
+  ],
+  "records": {
+    "sessions": 5,
+    "included": 5,
+    "excludedIncomplete": 0,
+    "skipped": 0
+  },
+  "nByConditionControl": {
+    "all": {
+      "place/none": 1,
+      "view/point_select": 1,
+      "view/replay": 1,
+      "view/static": 1,
+      "view/system_move": 1
+    },
+    "included": {
+      "place/none": 1,
+      "view/point_select": 1,
+      "view/replay": 1,
+      "view/static": 1,
+      "view/system_move": 1
+    }
+  },
+  "draftPhraseSessions": 5,
+  "autoModeSessions": 5,
+  "summaries": {
+    "byCondition": {
+      "place": {
+        "n": 1,
+        "final_distance_m": {
+          "n": 1,
+          "mean": 2.6,
+          "sd": null,
+          "min": 2.6,
+          "max": 2.6
+        },
+        "final_height_m": {
+          "n": 1,
+          "mean": 0.9,
+          "sd": null,
+          "min": 0.9,
+          "max": 0.9
+        },
+        "grab_count": {
+          "n": 1,
+          "mean": 2.0,
+          "sd": null,
+          "min": 2.0,
+          "max": 2.0
+        },
+        "first_grab_ms": {
+          "n": 1,
+          "mean": 1020.0,
+          "sd": null,
+          "min": 1020.0,
+          "max": 1020.0
+        },
+        "held_ms": {
+          "n": 1,
+          "mean": 5200.0,
+          "sd": null,
+          "min": 5200.0,
+          "max": 5200.0
+        },
+        "path_length_m": {
+          "n": 1,
+          "mean": 1.8013,
+          "sd": null,
+          "min": 1.8013,
+          "max": 1.8013
+        },
+        "stop_approach_mean_m": {
+          "n": 1,
+          "mean": 1.245,
+          "sd": null,
+          "min": 1.245,
+          "max": 1.245
+        },
+        "stop_recede_mean_m": {
+          "n": 1,
+          "mean": 1.73,
+          "sd": null,
+          "min": 1.73,
+          "max": 1.73
+        },
+        "stop_mean_m": {
+          "n": 1,
+          "mean": 1.4875,
+          "sd": null,
+          "min": 1.4875,
+          "max": 1.4875
+        },
+        "stop_sd_m": {
+          "n": 1,
+          "mean": 0.2648,
+          "sd": null,
+          "min": 0.2648,
+          "max": 0.2648
+        },
+        "head_obj_distance_mean_m": {
+          "n": 1,
+          "mean": 2.6437,
+          "sd": null,
+          "min": 2.6437,
+          "max": 2.6437
+        },
+        "gaze_ratio": {
+          "n": 1,
+          "mean": 0.174,
+          "sd": null,
+          "min": 0.174,
+          "max": 0.174
+        },
+        "head_yaw_range_deg": {
+          "n": 1,
+          "mean": 50.0,
+          "sd": null,
+          "min": 50.0,
+          "max": 50.0
+        },
+        "obj_path_from_objpose_m": {
+          "n": 1,
+          "mean": 1.8013,
+          "sd": null,
+          "min": 1.8013,
+          "max": 1.8013
+        },
+        "rating_own_pre": {
+          "n": 1,
+          "mean": 5.0,
+          "sd": null,
+          "min": 5.0,
+          "max": 5.0
+        },
+        "rating_own_post": {
+          "n": 1,
+          "mean": 3.0,
+          "sd": null,
+          "min": 3.0,
+          "max": 3.0
+        },
+        "rating_placed_by_me_check": {
+          "n": 1,
+          "mean": 6.0,
+          "sd": null,
+          "min": 6.0,
+          "max": 6.0
+        },
+        "rating_want_to_know_post": {
+          "n": 1,
+          "mean": 4.0,
+          "sd": null,
+          "min": 4.0,
+          "max": 4.0
+        },
+        "rating_withdraw_attention_post": {
+          "n": 1,
+          "mean": 2.0,
+          "sd": null,
+          "min": 2.0,
+          "max": 2.0
+        }
+      },
+      "view": {
+        "n": 4,
+        "final_distance_m": {
+          "n": 4,
+          "mean": 2.25,
+          "sd": 0.5066,
+          "min": 1.5,
+          "max": 2.6
+        },
+        "final_height_m": {
+          "n": 4,
+          "mean": 1.125,
+          "sd": 0.15,
+          "min": 0.9,
+          "max": 1.2
+        },
+        "grab_count": {
+          "n": 4,
+          "mean": 0.0,
+          "sd": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "first_grab_ms": {
+          "n": 0,
+          "mean": null,
+          "sd": null,
+          "min": null,
+          "max": null
+        },
+        "held_ms": {
+          "n": 4,
+          "mean": 0.0,
+          "sd": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "path_length_m": {
+          "n": 4,
+          "mean": 1.0049,
+          "sd": 0.7505,
+          "min": 0.0,
+          "max": 1.8013
+        },
+        "stop_approach_mean_m": {
+          "n": 4,
+          "mean": 1.245,
+          "sd": 0.0,
+          "min": 1.245,
+          "max": 1.245
+        },
+        "stop_recede_mean_m": {
+          "n": 4,
+          "mean": 1.73,
+          "sd": 0.0,
+          "min": 1.73,
+          "max": 1.73
+        },
+        "stop_mean_m": {
+          "n": 4,
+          "mean": 1.4875,
+          "sd": 0.0,
+          "min": 1.4875,
+          "max": 1.4875
+        },
+        "stop_sd_m": {
+          "n": 4,
+          "mean": 0.2648,
+          "sd": 0.0,
+          "min": 0.2648,
+          "max": 0.2648
+        },
+        "head_obj_distance_mean_m": {
+          "n": 4,
+          "mean": 2.2698,
+          "sd": 0.4871,
+          "min": 1.5562,
+          "max": 2.6437
+        },
+        "gaze_ratio": {
+          "n": 4,
+          "mean": 0.2035,
+          "sd": 0.0583,
+          "min": 0.1367,
+          "max": 0.262
+        },
+        "head_yaw_range_deg": {
+          "n": 4,
+          "mean": 50.0,
+          "sd": 0.0,
+          "min": 50.0,
+          "max": 50.0
+        },
+        "obj_path_from_objpose_m": {
+          "n": 4,
+          "mean": 1.0049,
+          "sd": 0.7505,
+          "min": 0.0,
+          "max": 1.8013
+        },
+        "rating_own_pre": {
+          "n": 4,
+          "mean": 5.0,
+          "sd": 0.0,
+          "min": 5.0,
+          "max": 5.0
+        },
+        "rating_own_post": {
+          "n": 4,
+          "mean": 3.0,
+          "sd": 0.0,
+          "min": 3.0,
+          "max": 3.0
+        },
+        "rating_placed_by_me_check": {
+          "n": 4,
+          "mean": 6.0,
+          "sd": 0.0,
+          "min": 6.0,
+          "max": 6.0
+        },
+        "rating_want_to_know_post": {
+          "n": 4,
+          "mean": 4.0,
+          "sd": 0.0,
+          "min": 4.0,
+          "max": 4.0
+        },
+        "rating_withdraw_attention_post": {
+          "n": 4,
+          "mean": 2.0,
+          "sd": 0.0,
+          "min": 2.0,
+          "max": 2.0
+        }
+      }
+    },
+    "byConditionControl": {
+      "place/none": {
+        "n": 1,
+        "final_distance_m": {
+          "n": 1,
+          "mean": 2.6,
+          "sd": null,
+          "min": 2.6,
+          "max": 2.6
+        },
+        "final_height_m": {
+          "n": 1,
+          "mean": 0.9,
+          "sd": null,
+          "min": 0.9,
+          "max": 0.9
+        },
+        "grab_count": {
+          "n": 1,
+          "mean": 2.0,
+          "sd": null,
+          "min": 2.0,
+          "max": 2.0
+        },
+        "first_grab_ms": {
+          "n": 1,
+          "mean": 1020.0,
+          "sd": null,
+          "min": 1020.0,
+          "max": 1020.0
+        },
+        "held_ms": {
+          "n": 1,
+          "mean": 5200.0,
+          "sd": null,
+          "min": 5200.0,
+          "max": 5200.0
+        },
+        "path_length_m": {
+          "n": 1,
+          "mean": 1.8013,
+          "sd": null,
+          "min": 1.8013,
+          "max": 1.8013
+        },
+        "stop_approach_mean_m": {
+          "n": 1,
+          "mean": 1.245,
+          "sd": null,
+          "min": 1.245,
+          "max": 1.245
+        },
+        "stop_recede_mean_m": {
+          "n": 1,
+          "mean": 1.73,
+          "sd": null,
+          "min": 1.73,
+          "max": 1.73
+        },
+        "stop_mean_m": {
+          "n": 1,
+          "mean": 1.4875,
+          "sd": null,
+          "min": 1.4875,
+          "max": 1.4875
+        },
+        "stop_sd_m": {
+          "n": 1,
+          "mean": 0.2648,
+          "sd": null,
+          "min": 0.2648,
+          "max": 0.2648
+        },
+        "head_obj_distance_mean_m": {
+          "n": 1,
+          "mean": 2.6437,
+          "sd": null,
+          "min": 2.6437,
+          "max": 2.6437
+        },
+        "gaze_ratio": {
+          "n": 1,
+          "mean": 0.174,
+          "sd": null,
+          "min": 0.174,
+          "max": 0.174
+        },
+        "head_yaw_range_deg": {
+          "n": 1,
+          "mean": 50.0,
+          "sd": null,
+          "min": 50.0,
+          "max": 50.0
+        },
+        "obj_path_from_objpose_m": {
+          "n": 1,
+          "mean": 1.8013,
+          "sd": null,
+          "min": 1.8013,
+          "max": 1.8013
+        },
+        "rating_own_pre": {
+          "n": 1,
+          "mean": 5.0,
+          "sd": null,
+          "min": 5.0,
+          "max": 5.0
+        },
+        "rating_own_post": {
+          "n": 1,
+          "mean": 3.0,
+          "sd": null,
+          "min": 3.0,
+          "max": 3.0
+        },
+        "rating_placed_by_me_check": {
+          "n": 1,
+          "mean": 6.0,
+          "sd": null,
+          "min": 6.0,
+          "max": 6.0
+        },
+        "rating_want_to_know_post": {
+          "n": 1,
+          "mean": 4.0,
+          "sd": null,
+          "min": 4.0,
+          "max": 4.0
+        },
+        "rating_withdraw_attention_post": {
+          "n": 1,
+          "mean": 2.0,
+          "sd": null,
+          "min": 2.0,
+          "max": 2.0
+        }
+      },
+      "view/point_select": {
+        "n": 1,
+        "final_distance_m": {
+          "n": 1,
+          "mean": 2.4,
+          "sd": null,
+          "min": 2.4,
+          "max": 2.4
+        },
+        "final_height_m": {
+          "n": 1,
+          "mean": 1.2,
+          "sd": null,
+          "min": 1.2,
+          "max": 1.2
+        },
+        "grab_count": {
+          "n": 1,
+          "mean": 0.0,
+          "sd": null,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "first_grab_ms": {
+          "n": 0,
+          "mean": null,
+          "sd": null,
+          "min": null,
+          "max": null
+        },
+        "held_ms": {
+          "n": 1,
+          "mean": 0.0,
+          "sd": null,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "path_length_m": {
+          "n": 1,
+          "mean": 1.2184,
+          "sd": null,
+          "min": 1.2184,
+          "max": 1.2184
+        },
+        "stop_approach_mean_m": {
+          "n": 1,
+          "mean": 1.245,
+          "sd": null,
+          "min": 1.245,
+          "max": 1.245
+        },
+        "stop_recede_mean_m": {
+          "n": 1,
+          "mean": 1.73,
+          "sd": null,
+          "min": 1.73,
+          "max": 1.73
+        },
+        "stop_mean_m": {
+          "n": 1,
+          "mean": 1.4875,
+          "sd": null,
+          "min": 1.4875,
+          "max": 1.4875
+        },
+        "stop_sd_m": {
+          "n": 1,
+          "mean": 0.2648,
+          "sd": null,
+          "min": 0.2648,
+          "max": 0.2648
+        },
+        "head_obj_distance_mean_m": {
+          "n": 1,
+          "mean": 2.3887,
+          "sd": null,
+          "min": 2.3887,
+          "max": 2.3887
+        },
+        "gaze_ratio": {
+          "n": 1,
+          "mean": 0.262,
+          "sd": null,
+          "min": 0.262,
+          "max": 0.262
+        },
+        "head_yaw_range_deg": {
+          "n": 1,
+          "mean": 50.0,
+          "sd": null,
+          "min": 50.0,
+          "max": 50.0
+        },
+        "obj_path_from_objpose_m": {
+          "n": 1,
+          "mean": 1.2184,
+          "sd": null,
+          "min": 1.2184,
+          "max": 1.2184
+        },
+        "rating_own_pre": {
+          "n": 1,
+          "mean": 5.0,
+          "sd": null,
+          "min": 5.0,
+          "max": 5.0
+        },
+        "rating_own_post": {
+          "n": 1,
+          "mean": 3.0,
+          "sd": null,
+          "min": 3.0,
+          "max": 3.0
+        },
+        "rating_placed_by_me_check": {
+          "n": 1,
+          "mean": 6.0,
+          "sd": null,
+          "min": 6.0,
+          "max": 6.0
+        },
+        "rating_want_to_know_post": {
+          "n": 1,
+          "mean": 4.0,
+          "sd": null,
+          "min": 4.0,
+          "max": 4.0
+        },
+        "rating_withdraw_attention_post": {
+          "n": 1,
+          "mean": 2.0,
+          "sd": null,
+          "min": 2.0,
+          "max": 2.0
+        }
+      },
+      "view/replay": {
+        "n": 1,
+        "final_distance_m": {
+          "n": 1,
+          "mean": 2.6,
+          "sd": null,
+          "min": 2.6,
+          "max": 2.6
+        },
+        "final_height_m": {
+          "n": 1,
+          "mean": 0.9,
+          "sd": null,
+          "min": 0.9,
+          "max": 0.9
+        },
+        "grab_count": {
+          "n": 1,
+          "mean": 0.0,
+          "sd": null,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "first_grab_ms": {
+          "n": 0,
+          "mean": null,
+          "sd": null,
+          "min": null,
+          "max": null
+        },
+        "held_ms": {
+          "n": 1,
+          "mean": 0.0,
+          "sd": null,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "path_length_m": {
+          "n": 1,
+          "mean": 1.8013,
+          "sd": null,
+          "min": 1.8013,
+          "max": 1.8013
+        },
+        "stop_approach_mean_m": {
+          "n": 1,
+          "mean": 1.245,
+          "sd": null,
+          "min": 1.245,
+          "max": 1.245
+        },
+        "stop_recede_mean_m": {
+          "n": 1,
+          "mean": 1.73,
+          "sd": null,
+          "min": 1.73,
+          "max": 1.73
+        },
+        "stop_mean_m": {
+          "n": 1,
+          "mean": 1.4875,
+          "sd": null,
+          "min": 1.4875,
+          "max": 1.4875
+        },
+        "stop_sd_m": {
+          "n": 1,
+          "mean": 0.2648,
+          "sd": null,
+          "min": 0.2648,
+          "max": 0.2648
+        },
+        "head_obj_distance_mean_m": {
+          "n": 1,
+          "mean": 2.6437,
+          "sd": null,
+          "min": 2.6437,
+          "max": 2.6437
+        },
+        "gaze_ratio": {
+          "n": 1,
+          "mean": 0.174,
+          "sd": null,
+          "min": 0.174,
+          "max": 0.174
+        },
+        "head_yaw_range_deg": {
+          "n": 1,
+          "mean": 50.0,
+          "sd": null,
+          "min": 50.0,
+          "max": 50.0
+        },
+        "obj_path_from_objpose_m": {
+          "n": 1,
+          "mean": 1.8013,
+          "sd": null,
+          "min": 1.8013,
+          "max": 1.8013
+        },
+        "rating_own_pre": {
+          "n": 1,
+          "mean": 5.0,
+          "sd": null,
+          "min": 5.0,
+          "max": 5.0
+        },
+        "rating_own_post": {
+          "n": 1,
+          "mean": 3.0,
+          "sd": null,
+          "min": 3.0,
+          "max": 3.0
+        },
+        "rating_placed_by_me_check": {
+          "n": 1,
+          "mean": 6.0,
+          "sd": null,
+          "min": 6.0,
+          "max": 6.0
+        },
+        "rating_want_to_know_post": {
+          "n": 1,
+          "mean": 4.0,
+          "sd": null,
+          "min": 4.0,
+          "max": 4.0
+        },
+        "rating_withdraw_attention_post": {
+          "n": 1,
+          "mean": 2.0,
+          "sd": null,
+          "min": 2.0,
+          "max": 2.0
+        }
+      },
+      "view/static": {
+        "n": 1,
+        "final_distance_m": {
+          "n": 1,
+          "mean": 1.5,
+          "sd": null,
+          "min": 1.5,
+          "max": 1.5
+        },
+        "final_height_m": {
+          "n": 1,
+          "mean": 1.2,
+          "sd": null,
+          "min": 1.2,
+          "max": 1.2
+        },
+        "grab_count": {
+          "n": 1,
+          "mean": 0.0,
+          "sd": null,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "first_grab_ms": {
+          "n": 0,
+          "mean": null,
+          "sd": null,
+          "min": null,
+          "max": null
+        },
+        "held_ms": {
+          "n": 1,
+          "mean": 0.0,
+          "sd": null,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "path_length_m": {
+          "n": 1,
+          "mean": 0.0,
+          "sd": null,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "stop_approach_mean_m": {
+          "n": 1,
+          "mean": 1.245,
+          "sd": null,
+          "min": 1.245,
+          "max": 1.245
+        },
+        "stop_recede_mean_m": {
+          "n": 1,
+          "mean": 1.73,
+          "sd": null,
+          "min": 1.73,
+          "max": 1.73
+        },
+        "stop_mean_m": {
+          "n": 1,
+          "mean": 1.4875,
+          "sd": null,
+          "min": 1.4875,
+          "max": 1.4875
+        },
+        "stop_sd_m": {
+          "n": 1,
+          "mean": 0.2648,
+          "sd": null,
+          "min": 0.2648,
+          "max": 0.2648
+        },
+        "head_obj_distance_mean_m": {
+          "n": 1,
+          "mean": 1.5562,
+          "sd": null,
+          "min": 1.5562,
+          "max": 1.5562
+        },
+        "gaze_ratio": {
+          "n": 1,
+          "mean": 0.1367,
+          "sd": null,
+          "min": 0.1367,
+          "max": 0.1367
+        },
+        "head_yaw_range_deg": {
+          "n": 1,
+          "mean": 50.0,
+          "sd": null,
+          "min": 50.0,
+          "max": 50.0
+        },
+        "obj_path_from_objpose_m": {
+          "n": 1,
+          "mean": 0.0,
+          "sd": null,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "rating_own_pre": {
+          "n": 1,
+          "mean": 5.0,
+          "sd": null,
+          "min": 5.0,
+          "max": 5.0
+        },
+        "rating_own_post": {
+          "n": 1,
+          "mean": 3.0,
+          "sd": null,
+          "min": 3.0,
+          "max": 3.0
+        },
+        "rating_placed_by_me_check": {
+          "n": 1,
+          "mean": 6.0,
+          "sd": null,
+          "min": 6.0,
+          "max": 6.0
+        },
+        "rating_want_to_know_post": {
+          "n": 1,
+          "mean": 4.0,
+          "sd": null,
+          "min": 4.0,
+          "max": 4.0
+        },
+        "rating_withdraw_attention_post": {
+          "n": 1,
+          "mean": 2.0,
+          "sd": null,
+          "min": 2.0,
+          "max": 2.0
+        }
+      },
+      "view/system_move": {
+        "n": 1,
+        "final_distance_m": {
+          "n": 1,
+          "mean": 2.5,
+          "sd": null,
+          "min": 2.5,
+          "max": 2.5
+        },
+        "final_height_m": {
+          "n": 1,
+          "mean": 1.2,
+          "sd": null,
+          "min": 1.2,
+          "max": 1.2
+        },
+        "grab_count": {
+          "n": 1,
+          "mean": 0.0,
+          "sd": null,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "first_grab_ms": {
+          "n": 0,
+          "mean": null,
+          "sd": null,
+          "min": null,
+          "max": null
+        },
+        "held_ms": {
+          "n": 1,
+          "mean": 0.0,
+          "sd": null,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "path_length_m": {
+          "n": 1,
+          "mean": 1.0,
+          "sd": null,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "stop_approach_mean_m": {
+          "n": 1,
+          "mean": 1.245,
+          "sd": null,
+          "min": 1.245,
+          "max": 1.245
+        },
+        "stop_recede_mean_m": {
+          "n": 1,
+          "mean": 1.73,
+          "sd": null,
+          "min": 1.73,
+          "max": 1.73
+        },
+        "stop_mean_m": {
+          "n": 1,
+          "mean": 1.4875,
+          "sd": null,
+          "min": 1.4875,
+          "max": 1.4875
+        },
+        "stop_sd_m": {
+          "n": 1,
+          "mean": 0.2648,
+          "sd": null,
+          "min": 0.2648,
+          "max": 0.2648
+        },
+        "head_obj_distance_mean_m": {
+          "n": 1,
+          "mean": 2.4905,
+          "sd": null,
+          "min": 2.4905,
+          "max": 2.4905
+        },
+        "gaze_ratio": {
+          "n": 1,
+          "mean": 0.2413,
+          "sd": null,
+          "min": 0.2413,
+          "max": 0.2413
+        },
+        "head_yaw_range_deg": {
+          "n": 1,
+          "mean": 50.0,
+          "sd": null,
+          "min": 50.0,
+          "max": 50.0
+        },
+        "obj_path_from_objpose_m": {
+          "n": 1,
+          "mean": 1.0,
+          "sd": null,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "rating_own_pre": {
+          "n": 1,
+          "mean": 5.0,
+          "sd": null,
+          "min": 5.0,
+          "max": 5.0
+        },
+        "rating_own_post": {
+          "n": 1,
+          "mean": 3.0,
+          "sd": null,
+          "min": 3.0,
+          "max": 3.0
+        },
+        "rating_placed_by_me_check": {
+          "n": 1,
+          "mean": 6.0,
+          "sd": null,
+          "min": 6.0,
+          "max": 6.0
+        },
+        "rating_want_to_know_post": {
+          "n": 1,
+          "mean": 4.0,
+          "sd": null,
+          "min": 4.0,
+          "max": 4.0
+        },
+        "rating_withdraw_attention_post": {
+          "n": 1,
+          "mean": 2.0,
+          "sd": null,
+          "min": 2.0,
+          "max": 2.0
+        }
+      }
+    },
+    "stopDirectionEffect": {
+      "definition": "세션별 stop_approach_mean_m − stop_recede_mean_m",
+      "all": {
+        "n": 5,
+        "mean": -0.485,
+        "sd": 0.0,
+        "min": -0.485,
+        "max": -0.485
+      },
+      "byCondition": {
+        "place": {
+          "n": 1,
+          "mean": -0.485,
+          "sd": null,
+          "min": -0.485,
+          "max": -0.485
+        },
+        "view": {
+          "n": 4,
+          "mean": -0.485,
+          "sd": 0.0,
+          "min": -0.485,
+          "max": -0.485
+        }
+      }
+    },
+    "stopConditionEffect": {
+      "definition": "A − B, A = place. d = 평균 차 / 합동 sd(n−1), CI = 정규 근사 95%",
+      "stop_mean_m": {
+        "place_vs_view": {
+          "nA": 1,
+          "nB": 4,
+          "meanA": 1.4875,
+          "meanB": 1.4875,
+          "meanDiff": 0.0,
+          "sdPooled": null,
+          "d": null,
+          "ciLow": null,
+          "ciHigh": null
+        },
+        "place_vs_view_point_select": {
+          "nA": 1,
+          "nB": 1,
+          "meanA": 1.4875,
+          "meanB": 1.4875,
+          "meanDiff": 0.0,
+          "sdPooled": null,
+          "d": null,
+          "ciLow": null,
+          "ciHigh": null
+        },
+        "place_vs_view_replay": {
+          "nA": 1,
+          "nB": 1,
+          "meanA": 1.4875,
+          "meanB": 1.4875,
+          "meanDiff": 0.0,
+          "sdPooled": null,
+          "d": null,
+          "ciLow": null,
+          "ciHigh": null
+        },
+        "place_vs_view_static": {
+          "nA": 1,
+          "nB": 1,
+          "meanA": 1.4875,
+          "meanB": 1.4875,
+          "meanDiff": 0.0,
+          "sdPooled": null,
+          "d": null,
+          "ciLow": null,
+          "ciHigh": null
+        },
+        "place_vs_view_system_move": {
+          "nA": 1,
+          "nB": 1,
+          "meanA": 1.4875,
+          "meanB": 1.4875,
+          "meanDiff": 0.0,
+          "sdPooled": null,
+          "d": null,
+          "ciLow": null,
+          "ciHigh": null
+        }
+      },
+      "stop_approach_mean_m": {
+        "place_vs_view": {
+          "nA": 1,
+          "nB": 4,
+          "meanA": 1.245,
+          "meanB": 1.245,
+          "meanDiff": 0.0,
+          "sdPooled": null,
+          "d": null,
+          "ciLow": null,
+          "ciHigh": null
+        },
+        "place_vs_view_point_select": {
+          "nA": 1,
+          "nB": 1,
+          "meanA": 1.245,
+          "meanB": 1.245,
+          "meanDiff": 0.0,
+          "sdPooled": null,
+          "d": null,
+          "ciLow": null,
+          "ciHigh": null
+        },
+        "place_vs_view_replay": {
+          "nA": 1,
+          "nB": 1,
+          "meanA": 1.245,
+          "meanB": 1.245,
+          "meanDiff": 0.0,
+          "sdPooled": null,
+          "d": null,
+          "ciLow": null,
+          "ciHigh": null
+        },
+        "place_vs_view_static": {
+          "nA": 1,
+          "nB": 1,
+          "meanA": 1.245,
+          "meanB": 1.245,
+          "meanDiff": 0.0,
+          "sdPooled": null,
+          "d": null,
+          "ciLow": null,
+          "ciHigh": null
+        },
+        "place_vs_view_system_move": {
+          "nA": 1,
+          "nB": 1,
+          "meanA": 1.245,
+          "meanB": 1.245,
+          "meanDiff": 0.0,
+          "sdPooled": null,
+          "d": null,
+          "ciLow": null,
+          "ciHigh": null
+        }
+      },
+      "stop_recede_mean_m": {
+        "place_vs_view": {
+          "nA": 1,
+          "nB": 4,
+          "meanA": 1.73,
+          "meanB": 1.73,
+          "meanDiff": 0.0,
+          "sdPooled": null,
+          "d": null,
+          "ciLow": null,
+          "ciHigh": null
+        },
+        "place_vs_view_point_select": {
+          "nA": 1,
+          "nB": 1,
+          "meanA": 1.73,
+          "meanB": 1.73,
+          "meanDiff": 0.0,
+          "sdPooled": null,
+          "d": null,
+          "ciLow": null,
+          "ciHigh": null
+        },
+        "place_vs_view_replay": {
+          "nA": 1,
+          "nB": 1,
+          "meanA": 1.73,
+          "meanB": 1.73,
+          "meanDiff": 0.0,
+          "sdPooled": null,
+          "d": null,
+          "ciLow": null,
+          "ciHigh": null
+        },
+        "place_vs_view_static": {
+          "nA": 1,
+          "nB": 1,
+          "meanA": 1.73,
+          "meanB": 1.73,
+          "meanDiff": 0.0,
+          "sdPooled": null,
+          "d": null,
+          "ciLow": null,
+          "ciHigh": null
+        },
+        "place_vs_view_system_move": {
+          "nA": 1,
+          "nB": 1,
+          "meanA": 1.73,
+          "meanB": 1.73,
+          "meanDiff": 0.0,
+          "sdPooled": null,
+          "d": null,
+          "ciLow": null,
+          "ciHigh": null
+        }
+      }
+    },
+    "placeDistanceStopCorrelation": {
+      "final_distance_m~stop_mean_m": {
+        "n": 1,
+        "r": null
+      },
+      "final_distance_m~stop_approach_mean_m": {
+        "n": 1,
+        "r": null
+      },
+      "final_distance_m~stop_recede_mean_m": {
+        "n": 1,
+        "r": null
+      }
+    },
+    "ringClustering": {
+      "toleranceM": 0.1,
+      "condition": "place",
+      "nWithRings": 1,
+      "nWithin": 0,
+      "proportionWithin": 0.0,
+      "nRingsHidden": 0,
+      "uniformReference": 0.15,
+      "uniformReferenceNote": "놓은 거리가 0–floorRadiusM에 고르게 퍼졌을 때 기대 비율(참고값, 검정 아님)"
+    }
+  },
+  "skipped": [],
+  "warnings": [
+    "초안 문구: 세션 5개가 status draft 문구로 수집됨 — IRB 확인 전 문구라 본 실험 자료로 쓰기 전에 확인",
+    "자동 시행(autoMode) 세션 5개 — 참여자 자료가 아님",
+    "flags가 있는 세션 5개 — placement_sessions.csv의 flags 열 확인",
+    "place 조건 완료 세션이 1개 — 이 조건이 들어가는 효과크기는 null"
+  ]
+}

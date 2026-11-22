@@ -1,0 +1,509 @@
+// 배치 실험 러너(RQ V4, 프로토타입). 확정 spec의 물체 하나(변형본 없음)를 '나' 기준 공간에 두고,
+// 조건(place | view)·통제 방식(static | system_move | replay | point_select)에 따라 한 회기를 진행한다.
+// 단계 흐름·기록은 PlacementSession(UnityEngine 없음)이 맡고, 이 컴포넌트는 그것을 그린다:
+//   물체(SceneLoader — 장면 속성은 기존 로더 경로 그대로), 공간(PlacementSpace), 참여자 글(ParticipantTextDisplay), 입력(IPlacementInput).
+// 실험자 키: 1–7 평정, Backspace 직전 입력 취소, Enter 확정·다음, Esc 중단. 참여자 데스크톱 조작은 DesktopPlacementInput.
+// 자동 시행(검증용): BeginAuto(스크립트, 설정) 뒤 Tick(dt)을 밖에서 부르면 사람 없이 끝까지 간다(시뮬레이션 시계).
+// 헤드셋 실기는 확인하지 않았고, XR 컨트롤러 입력은 아직 없다(IPlacementInput 구현을 더해야 함 — unity/README.md).
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using IFS.SceneSpec.Ownership;
+using UnityEngine;
+
+namespace IFS.SceneSpec.Placement
+{
+    public enum PlacementRunnerStage { Setup, Checked, Running, Done }
+
+    [DisallowMultipleComponent]
+    [AddComponentMenu("IFS/Placement/Placement Experiment Runner")]
+    public sealed class PlacementRunner : MonoBehaviour
+    {
+        [Header("설정(manifest.json에 기록)")]
+        [SerializeField] PlacementConfig config = new PlacementConfig();
+        [Tooltip("null 슬롯 기본값(형상 로더와 같은 값)")]
+        [SerializeField] SceneDefaults defaults = new SceneDefaults();
+
+        [Header("경로")]
+        [Tooltip("spec 목록 폴더. 비우면 에디터에서는 <프로젝트>/../chatbot/logs/scenes, 빌드에서는 persistentDataPath/IFS/scenes")]
+        [SerializeField] string specFolder = "";
+        [Tooltip("기록 루트. 비우면 persistentDataPath/IFS/sessions(저장소 밖). 그 아래 placement/P###/…")]
+        [SerializeField] string recordRoot = "";
+        [Tooltip("문구 파일. 비우면 StreamingAssets/IFS/placement_task.v0.json")]
+        [SerializeField] string taskTextPath = "";
+
+        [Header("모양 프리팹 (메뉴 IFS ▸ Create Shape Prefabs가 연결)")]
+        [SerializeField] ShapePrefab[] shapePrefabs =
+        {
+            new ShapePrefab("round"), new ShapePrefab("square"), new ShapePrefab("flat"), new ShapePrefab("pointed"),
+        };
+
+        [Header("구성 요소")]
+        [SerializeField] HeadPoseProvider headProvider = null;
+        [SerializeField] ParticipantTextDisplay textDisplay = null;
+        [Tooltip("IPlacementInput을 구현한 컴포넌트(기본 DesktopPlacementInput). XR 입력으로 바꿔 끼운다")]
+        [SerializeField] MonoBehaviour inputComponent = null;
+
+        [Header("참여자 글 자리('나' 기준)")]
+        [SerializeField] float textForwardM = 2.5f;
+        [SerializeField] float textHeightM = 2.1f;
+        [Tooltip("SceneLoader 앵커(눈높이) — 물체 크기·모양 계산에만 쓰고 위치는 이 러너가 정한다")]
+        [SerializeField] float anchorEyeHeightM = 1.6f;
+
+        // ── 상태(실험자 화면이 읽는다) ─────────────────────────────────────
+        public PlacementRunnerStage Stage { get; private set; } = PlacementRunnerStage.Setup;
+        public string ParticipantNumberText { get; set; } = "";
+        public string SpecPathText { get; set; } = "";
+        public string SpecFolderText { get; set; }
+        public List<string> Errors { get; } = new List<string>();
+        public List<string> Warnings { get; } = new List<string>();
+        public SceneSpecV2 Spec { get; private set; }
+        public PlacementTaskText TaskText { get; private set; }
+        public PlacementSession Session { get; private set; }
+        public string LastRecordDirectory { get; private set; }
+        public bool LastCompleted { get; private set; }
+        public string LastAbortedAt { get; private set; }
+        public bool GuiHasKeyboardFocus { get; set; }
+        public PlacementConfig Config => config;
+        public bool IsAuto => _auto != null;
+        public string HeadSource => headProvider != null ? headProvider.Source : HeadPoseProvider.SourceDesktop;
+        public IPlacementInput Input => inputComponent as IPlacementInput;
+        public SceneLoader Loader => _loader;
+        public PlacementSpaceHandle Space => _space;
+        public string DraftPhraseNotice => PlacementTaskText.DraftNotice(TaskText, config.requireSpecPhrases);
+        public List<SpecFileEntry> SpecFiles { get; } = new List<SpecFileEntry>();
+
+        // ── 내부 ───────────────────────────────────────────────────────────
+        PlacementAutoScript _auto;
+        string _specFullPath, _specSha;
+        PlacementTrajectory _replay;
+        string _replayFullPath, _replaySha;
+        GameObject _anchor;
+        SceneLoader _loader;
+        PlacementSpaceHandle _space;
+        string _shownText;
+
+        // ── 수명 ─────────────────────────────────────────────────────────
+        void Awake()
+        {
+            if (SpecFolderText == null) SpecFolderText = specFolder;
+            RefreshSpecList();
+            PreloadTaskText();
+            BuildSpace();   // 시작 전에도 공간이 보이게(재생 모드)
+        }
+
+        void Update()
+        {
+            if (_auto != null) return;   // 자동 시행은 Tick을 밖에서 부른다
+            Tick(Time.unscaledDeltaTime);
+            PollKeys();
+        }
+
+        void OnDestroy()
+        {
+            Session?.Quit("runner destroyed (play mode stopped or scene closed)");
+            AfterSession();
+            Cleanup();
+            _space?.Dispose();
+            _space = null;
+        }
+
+        void OnApplicationQuit()
+        {
+            Session?.Quit("application quit");
+            AfterSession();
+        }
+
+        // ── 경로 ─────────────────────────────────────────────────────────
+        public string ResolvedSpecFolder
+        {
+            get
+            {
+                string f = string.IsNullOrWhiteSpace(SpecFolderText ?? specFolder) ? null : (SpecFolderText ?? specFolder).Trim();
+                if (f != null) return f;
+                return Application.isEditor
+                    ? Path.GetFullPath(Path.Combine(Application.dataPath, "..", "..", "chatbot", "logs", "scenes"))
+                    : Path.Combine(Application.persistentDataPath, "IFS", "scenes");
+            }
+        }
+
+        public string ResolvedRecordRoot => string.IsNullOrWhiteSpace(recordRoot)
+            ? Path.Combine(Application.persistentDataPath, "IFS", "sessions")
+            : recordRoot;
+
+        string ResolvedTaskTextPath => string.IsNullOrWhiteSpace(taskTextPath)
+            ? Path.Combine(Application.streamingAssetsPath, PlacementTaskText.DefaultRelativePath)
+            : (Path.IsPathRooted(taskTextPath) ? taskTextPath : Path.Combine(Application.streamingAssetsPath, taskTextPath));
+
+        /// <summary>replay 원본 경로: 절대 경로면 그대로, 아니면 기록 루트 기준.</summary>
+        string ResolvedReplayPath
+        {
+            get
+            {
+                string p = (config.replayPath ?? "").Trim().Trim('"');
+                if (p.Length == 0) return null;
+                return Path.IsPathRooted(p) ? p : Path.GetFullPath(Path.Combine(ResolvedRecordRoot, p));
+            }
+        }
+
+        public void RefreshSpecList()
+        {
+            SpecFiles.Clear();
+            string dir = ResolvedSpecFolder;
+            if (!Directory.Exists(dir)) return;
+            foreach (var p in Directory.GetFiles(dir, "*.json").OrderBy(p => Path.GetFileName(p), StringComparer.Ordinal))
+                SpecFiles.Add(new SpecFileEntry { Path = p, Name = Path.GetFileName(p) });
+        }
+
+        void PreloadTaskText()
+        {
+            try { TaskText = File.Exists(ResolvedTaskTextPath) ? PlacementTaskText.Load(ResolvedTaskTextPath) : null; }
+            catch (Exception) { TaskText = null; }
+        }
+
+        // ── 설정(에디터 메뉴·자동 시행) ───────────────────────────────────
+        public void Configure(HeadPoseProvider head, ParticipantTextDisplay text, MonoBehaviour input, IEnumerable<ShapePrefab> shapes)
+        {
+            headProvider = head;
+            textDisplay = text;
+            inputComponent = input;
+            if (shapes != null) shapePrefabs = shapes.Where(s => s != null).Select(s => new ShapePrefab(s.shape, s.prefab)).ToArray();
+        }
+
+        public void SetRecordRoot(string root) => recordRoot = root ?? "";
+
+        /// <summary>설정을 통째로 바꾼다(Setup에서만).</summary>
+        public void SetConfig(PlacementConfig cfg)
+        {
+            if (Session != null || cfg == null) return;
+            config = cfg.Clone();
+        }
+
+        /// <summary>자동 시행: 시뮬레이션 시계, 정해진 입력(합성), 정해진 머리 경로.</summary>
+        public void BeginAuto(PlacementAutoScript script, PlacementConfig cfg)
+        {
+            _auto = script ?? new PlacementAutoScript();
+            if (cfg != null) config = cfg.Clone();
+        }
+
+        // ── Setup → Checked ─────────────────────────────────────────────
+        public bool Check()
+        {
+            if (Session != null) return false;
+            Errors.Clear();
+            Warnings.Clear();
+            Spec = null;
+            _replay = null;
+            if (!int.TryParse((ParticipantNumberText ?? "").Trim(), out int number) || number < 1)
+                Errors.Add("참여자 번호는 1 이상의 정수여야 합니다");
+            string path = (SpecPathText ?? "").Trim().Trim('"');
+            if (path.Length == 0) Errors.Add("spec 파일을 고르세요");
+            else if (!Path.IsPathRooted(path)) path = Path.Combine(ResolvedSpecFolder, path);
+            Errors.AddRange(config.Validate().Select(e => "설정 오류: " + e));
+            if (Errors.Count > 0) { Stage = PlacementRunnerStage.Setup; return false; }
+            if (!File.Exists(path)) { Errors.Add("spec 파일이 없습니다: " + Path.GetFileName(path)); return false; }
+            try
+            {
+                var bytes = File.ReadAllBytes(path);
+                _specSha = OwnershipManifest.Sha256Hex(bytes);
+                Spec = SceneSpecJson.Parse(Encoding.UTF8.GetString(bytes));
+            }
+            catch (Exception e)
+            {
+                Errors.Add("spec을 읽지 못했습니다: " + e.Message);
+                return false;
+            }
+            _specFullPath = path;
+            foreach (var problem in SceneSpecJson.Validate(Spec)) Warnings.Add("spec 형식 경고: " + problem);
+            try { TaskText = PlacementTaskText.Load(ResolvedTaskTextPath); }
+            catch (Exception e) { TaskText = null; Errors.Add("문구 파일을 읽지 못했습니다(" + PlacementTaskText.DefaultRelativePath + "): " + e.Message); }
+            if (DraftPhraseNotice != null) Warnings.Add(DraftPhraseNotice);   // events.csv에도 warning으로 남는다
+            string refusal = PlacementTaskText.SpecPhraseRefusal(TaskText, config.requireSpecPhrases);
+            if (refusal != null) Errors.Add(refusal);
+            if (config.EffectiveControlMode == PlacementConfig.ModeReplay) CheckReplay();
+            if (textDisplay != null) { textDisplay.EnsureFont(); if (textDisplay.FontWarning != null) Warnings.Add(textDisplay.FontWarning); }
+            Stage = PlacementRunnerStage.Checked;
+            return Errors.Count == 0;
+        }
+
+        void CheckReplay()
+        {
+            _replayFullPath = ResolvedReplayPath;
+            if (_replayFullPath == null || !File.Exists(_replayFullPath))
+            {
+                Errors.Add("재생 원본 trajectory.json이 없습니다: " + (config.replayPath ?? ""));
+                return;
+            }
+            try
+            {
+                var bytes = File.ReadAllBytes(_replayFullPath);
+                _replaySha = OwnershipManifest.Sha256Hex(bytes);
+                _replay = PlacementTrajectory.Parse(Encoding.UTF8.GetString(bytes));
+            }
+            catch (Exception e)
+            {
+                Errors.Add("재생 원본을 읽지 못했습니다: " + e.Message);
+                _replay = null;
+                return;
+            }
+            var start = PlacementGeometry.FromPolar(config.startDistanceM, 0, config.startHeightM);
+            double off = PVec3.Distance(start, _replay.Samples[0].Position);
+            if (off > 0.01)
+                Warnings.Add($"재생 원본의 시작 위치가 설정 시작 위치와 {off:0.###} m 다릅니다(제시 단계와 조건 단계 사이에 물체가 옮겨 보임)");
+            if (_replay.DurationMs < config.conditionSeconds * 1000 - 1)
+                Warnings.Add($"재생 원본 길이 {_replay.DurationMs} ms < 조건 단계 {config.conditionSeconds} s — 끝난 뒤에는 마지막 자리에 머문다");
+            if (Math.Abs(_replay.SampleHz - config.headSampleHz) > 1e-6)
+                Warnings.Add($"재생 원본 sampleHz {_replay.SampleHz} ≠ headSampleHz {config.headSampleHz}");
+        }
+
+        public void BackToSetup()
+        {
+            if (Session != null) return;
+            Stage = PlacementRunnerStage.Setup;
+            Errors.Clear();
+            Warnings.Clear();
+            RefreshSpecList();
+            PreloadTaskText();
+        }
+
+        // ── 시작 ─────────────────────────────────────────────────────────
+        public bool StartSession()
+        {
+            if (Stage != PlacementRunnerStage.Checked || Session != null) return false;
+            if (Spec == null || TaskText == null || Errors.Count > 0)
+            {
+                if (!Errors.Contains("확인 오류가 있어 시작할 수 없습니다")) Errors.Add("확인 오류가 있어 시작할 수 없습니다");
+                return false;
+            }
+            string sha;
+            try { sha = OwnershipManifest.Sha256OfFile(_specFullPath); }
+            catch (Exception e) { Errors.Add("spec 파일을 다시 읽지 못했습니다: " + e.Message); return false; }
+            if (sha != _specSha) { Errors.Add("확인한 뒤 spec 파일이 바뀌었습니다 — 다시 확인하세요"); return false; }
+
+            Cleanup();
+            BuildSpace();
+            _anchor = new GameObject("Placement Anchor ('나' 눈높이)");
+            _anchor.transform.SetPositionAndRotation(new Vector3(0f, anchorEyeHeightM, 0f), Quaternion.identity);
+            var go = new GameObject("Placement Object");
+            _loader = go.AddComponent<SceneLoader>();
+            _loader.ConfigureForRunner(_anchor.transform, defaults);
+            _loader.ConfigureShapePrefabs(shapePrefabs);
+            if (!_loader.Load(_specFullPath, null))   // 원본 하나만(변형 없음)
+            {
+                Errors.Add("물체를 로드하지 못했습니다(콘솔 확인)");
+                Cleanup();
+                return false;
+            }
+            if (_loader.InitialParams.InferredUsed.Count > 0)
+            {
+                Errors.Add("_inferred를 썼습니다(실행 거부)");
+                Cleanup();
+                return false;
+            }
+
+            if (_auto != null && headProvider != null) headProvider.BeginScripted();
+            else if (headProvider != null) headProvider.Step(0f);
+            string sessionId = Spec.Meta.SessionId ?? Path.GetFileNameWithoutExtension(_specFullPath);
+            var info = new PlacementSessionInfo
+            {
+                ParticipantNumber = int.Parse(ParticipantNumberText.Trim()),
+                SessionId = sessionId,
+                SpecFile = Path.GetFileName(_specFullPath),
+                SpecSha256 = _specSha,
+                StartedUtc = DateTime.UtcNow,
+                HeadSource = HeadSource,
+                InputSource = _auto != null ? "auto" : (Input?.SourceName ?? DesktopPlacementInput.Source),
+                UnityVersion = Application.unityVersion,
+                AutoMode = _auto != null,
+                TaskTextFile = TaskText.FileName,
+                TaskTextVersion = TaskText.Version,
+                TaskTextDraftKeys = TaskText.DraftKeys.ToArray(),
+                ReplayFile = _replay != null ? Path.GetFileName(_replayFullPath) : null,
+                ReplaySha256 = _replay != null ? _replaySha : null,
+                ReplaySourceSessionId = _replay?.SourceSessionId,
+            };
+            try
+            {
+                Session = new PlacementSession(config, TaskText, info, ResolvedRecordRoot, _replay, Warnings);
+            }
+            catch (Exception e)
+            {
+                Errors.Add("세션을 시작하지 못했습니다: " + e.Message);
+                Session = null;
+                Cleanup();
+                return false;
+            }
+            Session.GrabRadiusM = Math.Max(config.grabRadiusMinM, ObjectRadius());
+            LastRecordDirectory = Session.RecordDirectory;
+            LastCompleted = false;
+            LastAbortedAt = null;
+            _shownText = null;
+            Stage = PlacementRunnerStage.Running;
+            ApplyVisuals();
+            return true;
+        }
+
+        double ObjectRadius()
+        {
+            var rs = _loader.Root.GetComponentsInChildren<Renderer>();
+            if (rs.Length == 0) return 0;
+            var b = rs[0].bounds;
+            for (int i = 1; i < rs.Length; i++) b.Encapsulate(rs[i].bounds);
+            return Math.Max(b.extents.x, Math.Max(b.extents.y, b.extents.z));
+        }
+
+        void BuildSpace()
+        {
+            _space?.Dispose();
+            _space = PlacementSpace.Build(config, transform);
+            PlacementSpace.HideEnvironmentFloor();
+        }
+
+        void Cleanup()
+        {
+            if (_loader != null)
+            {
+                _loader.Unload();
+                DestroySafe(_loader.gameObject);
+            }
+            _loader = null;
+            DestroySafe(_anchor);
+            _anchor = null;
+        }
+
+        static void DestroySafe(UnityEngine.Object o)
+        {
+            if (o == null) return;
+            if (Application.isPlaying) Destroy(o);
+            else DestroyImmediate(o);
+        }
+
+        // ── 한 프레임 ────────────────────────────────────────────────────
+        HeadPose CurrentHead()
+        {
+            if (headProvider == null) return _auto != null && Session != null ? PlacementAutoScript.ScriptedHead(Session.Now) : HeadPose.At(0, 1.6, 0);
+            var p = headProvider.Position;
+            var q = headProvider.Rotation;
+            return new HeadPose { X = p.x, Y = p.y, Z = p.z, Qx = q.x, Qy = q.y, Qz = q.z, Qw = q.w };
+        }
+
+        /// <summary>한 프레임: 머리 자세 → 참여자 입력 → 세션 진행·기록 → 그리기.</summary>
+        public void Tick(double dt)
+        {
+            if (Session == null) return;
+            if (headProvider != null)
+            {
+                if (headProvider.Scripted) headProvider.ScriptedPose(Session.Now + dt);
+                headProvider.DesktopInputEnabled = !GuiHasKeyboardFocus;
+            }
+            var inp = Input;
+            if (inp != null) inp.Enabled = !GuiHasKeyboardFocus;
+            Session.SetHeadSource(HeadSource);
+            var head = CurrentHead();
+            if (_auto != null)
+            {
+                Session.Tick(dt, _auto.Participant(Session), head);
+                _auto.Experimenter(Session);
+            }
+            else Session.Tick(dt, inp != null ? inp.Read() : new PlacementInputFrame(), head);
+            ApplyVisuals();
+            AfterSession();
+        }
+
+        void AfterSession()
+        {
+            if (Session == null || !Session.Finished) return;
+            LastRecordDirectory = Session.RecordDirectory;
+            LastCompleted = Session.Completed;
+            LastAbortedAt = Session.AbortedAt;
+            Stage = PlacementRunnerStage.Done;
+        }
+
+        void ApplyVisuals()
+        {
+            if (Session == null) return;
+            if (_loader != null && _loader.Root != null)
+            {
+                var root = _loader.Root;
+                var pos = PlacementSpace.ToUnity(Session.ObjectPosition);
+                var look = new Vector3(-pos.x, 0f, -pos.z);   // '나' 쪽을 본다(SpecMotion의 다가오기 방향이 참여자 쪽이 되도록)
+                root.transform.SetPositionAndRotation(pos, look.sqrMagnitude > 1e-6f ? Quaternion.LookRotation(look.normalized, Vector3.up) : Quaternion.identity);
+                if (root.activeSelf != Session.ObjectVisible) root.SetActive(Session.ObjectVisible);
+            }
+            if (textDisplay != null && Session.ParticipantText != _shownText)
+            {
+                _shownText = Session.ParticipantText;
+                if (_shownText == null) textDisplay.Hide();
+                else textDisplay.Show(_shownText, new Vector3(0f, textHeightM, textForwardM), new Vector3(0f, anchorEyeHeightM, 0f));
+            }
+            if (_space != null)
+            {
+                SetMarker(_space.PointerMarker, Session.Phase == PlacementPhase.Condition ? Session.PointerHit : null);
+                var target = Session.MoveTarget;
+                SetMarker(_space.TargetMarker, Session.Phase == PlacementPhase.Condition && Session.Config.controlMode == PlacementConfig.ModePointSelect && target.HasValue
+                    ? new PVec3(target.Value.X, 0, target.Value.Z) : (PVec3?)null);
+            }
+        }
+
+        static void SetMarker(GameObject marker, PVec3? at)
+        {
+            if (marker == null) return;
+            if (at.HasValue)
+            {
+                var p = PlacementSpace.ToUnity(at.Value);
+                marker.transform.localPosition = new Vector3(p.x, 0.004f, p.z);
+                if (!marker.activeSelf) marker.SetActive(true);
+            }
+            else if (marker.activeSelf) marker.SetActive(false);
+        }
+
+        // ── 실험자 키 ────────────────────────────────────────────────────
+        void PollKeys()
+        {
+            if (GuiHasKeyboardFocus && Stage != PlacementRunnerStage.Running) return;
+            if (UnityEngine.Input.GetKeyDown(KeyCode.Escape)) PressAbort();
+            for (int d = 1; d <= 9; d++)
+                if (UnityEngine.Input.GetKeyDown((KeyCode)((int)KeyCode.Alpha0 + d)) || UnityEngine.Input.GetKeyDown((KeyCode)((int)KeyCode.Keypad0 + d)))
+                    Session?.PressDigit(d);
+            if (UnityEngine.Input.GetKeyDown(KeyCode.Backspace)) Session?.PressBackspace();
+            if (UnityEngine.Input.GetKeyDown(KeyCode.Return) || UnityEngine.Input.GetKeyDown(KeyCode.KeypadEnter)) PressConfirm();
+        }
+
+        public void PressConfirm()
+        {
+            if (Stage == PlacementRunnerStage.Checked && Session == null) { StartSession(); return; }
+            Session?.PressConfirm();
+            ApplyVisuals();
+            AfterSession();
+        }
+
+        public void PressAbort()
+        {
+            if (Stage == PlacementRunnerStage.Checked && Session == null) { BackToSetup(); return; }
+            if (Session == null || Session.Finished) return;
+            Session.Abort();
+            ApplyVisuals();
+            AfterSession();
+        }
+
+        /// <summary>Done 뒤 같은 화면에서 다음 참여자를 준비한다.</summary>
+        public void ResetForNext()
+        {
+            if (Session != null && !Session.Finished) return;
+            Session = null;
+            Cleanup();
+            if (textDisplay != null) textDisplay.HideAll();
+            _shownText = null;
+            Stage = PlacementRunnerStage.Setup;
+            Spec = null;
+            _replay = null;
+            Errors.Clear();
+            Warnings.Clear();
+            ParticipantNumberText = "";
+            RefreshSpecList();
+            PreloadTaskText();
+        }
+    }
+}

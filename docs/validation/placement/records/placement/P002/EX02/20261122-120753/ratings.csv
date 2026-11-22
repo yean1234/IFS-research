@@ -1,0 +1,6 @@
+item,when,rating,rt_ms
+own,pre,5,320
+own,post,3,320
+want_to_know,post,4,320
+withdraw_attention,post,2,320
+placed_by_me,check,6,300

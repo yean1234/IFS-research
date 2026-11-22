@@ -212,6 +212,7 @@ namespace UnityEngine
         public RenderTexture targetTexture { get; set; }
         public void Render() { }
         public bool RenderToCubemap(RenderTexture cubemap, int faceMask) => true;
+        public Ray ScreenPointToRay(Vector3 pos) => default;
     }
 
     public enum CameraClearFlags { Skybox = 1, SolidColor = 2, Depth = 3, Nothing = 4 }
@@ -374,6 +375,7 @@ namespace UnityEngine
         public const float Rad2Deg = 57.29578f;
         public static float Atan2(float y, float x) => 0f;
         public static float Min(float a, float b) => a < b ? a : b;
+        public static float Max(float a, float b) => a > b ? a : b;
         public static float Lerp(float a, float b, float t) => a;
         public static float Clamp01(float v) => v;
         public static float Clamp(float value, float min, float max) => value;

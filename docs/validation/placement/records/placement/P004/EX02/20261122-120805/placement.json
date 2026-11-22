@@ -1,0 +1,17 @@
+{
+  "condition": "view",
+  "controlMode": "system_move",
+  "phaseDurationMs": 90000,
+  "finalX": 0.0,
+  "finalY": 1.2,
+  "finalZ": 2.5,
+  "finalDistanceM": 2.5,
+  "finalAzimuthDeg": 0.0,
+  "finalHeightM": 1.2,
+  "grabCount": 0,
+  "firstGrabMs": null,
+  "heldMs": 0,
+  "pathLengthM": 1.0,
+  "confirmed": false,
+  "confirmMs": null
+}
