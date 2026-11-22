@@ -139,7 +139,8 @@ namespace IFS.SceneSpec.Placement
                 case PlacementPhase.PreItems:
                 case PlacementPhase.PostItems:
                 case PlacementPhase.CheckItems:
-                    if (s.PendingRating == null)
+                    if (s.ItemsInstructionActive) s.PressNext();   // 문구 파일에 평정 지시문이 있으면 먼저 넘긴다
+                    else if (s.PendingRating == null)
                         s.PressDigit(CancelFirstRating && !_cancelled ? MistakeRating : Ratings[_ratingCount % Ratings.Length]);
                     else if (CancelFirstRating && !_cancelled)
                     {

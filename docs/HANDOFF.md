@@ -28,6 +28,23 @@ cd chatbot; .\.venv\Scripts\python.exe -m pytest -q -m "not live"; cd ..
 - 3단계의 기록 형식은 `unity/README.md`의 "배치 실험 러너" 절(구현되면)과 `docs/decisions.md` X54에 있습니다. 하위 에이전트는 다른 세션에서 재개할 수 없으니, 끊겼으면 git 상태를 보고 남은 부분만 새로 시킵니다.
 - 사람이 정하거나 해야 할 일: `docs/morning-todo.md` 맨 위 절. 결과 요약: `docs/morning-report.md`.
 
+## 헤드셋 프로토타입(2026-11-23)
+
+> 하위 에이전트(Claude) 구현. 사용자가 Quest 3 헤드셋으로 배치 실험 러너를 돌릴 수 있게 해 달라고 지시. 1차 경로 = PC Unity(에디터 Play 또는 Windows 빌드) + Quest Link(OpenXR). 로컬 커밋 2개(푸시 없음).
+
+한 일:
+- **XR 기반**(커밋 ①, 되돌리기 쉽게 분리): 패키지 `com.unity.xr.management` 4.6.1 · `com.unity.xr.openxr` 1.16.1 · `com.unity.inputsystem` 1.20.0(Unity 6000.0.85 권장 버전). ProjectSettings `activeInputHandler` 0 → 2(Both), `EditorBuildSettings` config 객체 2개, `Assets/XR/`(Standalone: OpenXR 로더·Initialize XR on Startup, OpenXR 렌더 모드 Single Pass Instanced, Oculus Touch + Meta Quest Touch Plus 프로필). Android 설정 없음.
+- **러너**(커밋 ②): XR 리그(`PlacementXrRig` — 바닥 원점 요청, 실험자 R = 정면 재설정), XR 컨트롤러 입력(`XrPlacementInput` + 규칙 `XrPlacementInputLogic`, 가짜 장치로 테스트), 입력 고르기(`inputMode` auto/desktop/xr), 헤드셋 안 참여자 판(`PlacementTextPanel`: 정면 2 m·중심 높이 0.6 m, 평정 문항 + 1–7 기준점, 글 깊이 검사), 평정 지시문·anchors 숫자 키(문구 형식 추가, 기존 파일 호환), 두 번째 문구 파일 `placement_task.scaleA.v0.json`(A 7문항 + S4–S8, 전부 draft), 설정 `participantRatesWithController`·`hideObjectDuringItems`(둘 다 기본 false), Setup 화면에서 입력·손·문구 파일 고르기, Windows 빌드 메뉴, `SceneSpecMist.shader`에 인스턴스 ID 전달(스테레오 인스턴싱), XR 설정 메뉴 `Editor/XR/XrProjectSetup.cs`.
+- 기록 형식 `ifs-placement/0.1`은 추가만: manifest `config` 키 4개, `inputSource: xr`, events `items_instruction`·`xr_status`·`recenter`·`rating …;by=controller`. 분석기는 바꾸지 않음.
+
+실행 방법: `unity/README.md` 「헤드셋 연결 (Quest 3 + Quest Link, OpenXR)」. 헤드셋 점검표: `docs/headset-checklist.md`.
+
+확인한 것(헤드셋 없이): dotnet 234/234, Unity EditMode 278/278, pytest 443. 기존 자동 시행 5개(EX02, 기본 설정) 모두 완료·분석기 플래그 `runner_warning:1`(초안 문구)뿐. 배치 캡처(EX01·EX02) 콘솔 오류 0, 배치모드에서 XR 초기화 시도 없음. Windows 빌드 성공, 헤드셋 없이 실행하면 OpenXR이 `XR_ERROR_FORM_FACTOR_UNAVAILABLE`로 초기화에 실패하고 앱은 계속 돎(25초, 관리 코드 예외 없음).
+
+**미검증(헤드셋을 쓰고 봐야 함)**: 작업 시점에 헤드셋이 연결돼 있지 않았습니다(OVRService 중지, Quest USB 장치 없음). XR 초기화 성공·`headSource = xr`, 바닥 높이·'나' 자리, 컨트롤러 조준 pose 이름(`PointerPosition` — 못 읽으면 grip pose + 30° 기울임으로 대체), 광선 잡기·밀기 체감, 판 글 가독성·자리, 스테레오 인스턴싱에서 안개 셰이더가 두 눈에 맞게 보이는지, Unity 자동 카메라 추적과 `HeadPoseProvider`의 이중 적용 여부, 72 Hz 유지, 멀미.
+
+후속: Quest 단독(Android) 빌드(Android 로더·Meta Quest 기능·`adb`), IOS 그림 문항(S3)과 S1, 눈 추적 없음(Quest 3에는 장치가 없음 — 시선 각은 머리 방향), 소유감 러너의 헤드셋 경로(리그·입력), 헤드셋 성능 측정.
+
 ## 렌더 경로 개선(2026-11-23)
 
 > 하위 에이전트(Claude) 구현, 설계는 `docs/decisions.md` X64–X72. 단계마다 로컬 커밋(푸시 없음).

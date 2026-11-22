@@ -77,6 +77,7 @@ Shader "IFS/SceneSpec Mist"
             {
                 float4 pos : SV_POSITION;
                 float3 objPos : TEXCOORD0;
+                UNITY_VERTEX_INPUT_INSTANCE_ID   // 조각 단계도 물체 행렬(unity_WorldToObject)을 쓰므로 인스턴스 ID를 넘긴다(GPU 인스턴싱·스테레오 인스턴싱)
                 UNITY_VERTEX_OUTPUT_STEREO
             };
 
@@ -85,6 +86,7 @@ Shader "IFS/SceneSpec Mist"
                 v2f o;
                 UNITY_SETUP_INSTANCE_ID(v);
                 UNITY_INITIALIZE_OUTPUT(v2f, o);
+                UNITY_TRANSFER_INSTANCE_ID(v, o);
                 UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
                 o.pos = UnityObjectToClipPos(v.vertex);
                 o.objPos = v.vertex.xyz;
@@ -123,6 +125,7 @@ Shader "IFS/SceneSpec Mist"
 
             fixed4 fragMist(v2f i) : SV_Target
             {
+                UNITY_SETUP_INSTANCE_ID(i);
                 UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(i);
                 // 물체 좌표 광선(눈마다 카메라 위치가 다르다: 스테레오 인스턴싱이면 _WorldSpaceCameraPos가 눈별 값)
                 float3 ro = mul(unity_WorldToObject, float4(_WorldSpaceCameraPos, 1.0)).xyz;

@@ -99,6 +99,25 @@ namespace IFS.SceneSpec.Placement
         /// <summary>켜면 문구 파일에 status draft 문구가 하나라도 있을 때 세션 시작을 거부한다(IRB 확인 뒤 본 실험용).</summary>
         public bool requireSpecPhrases = false;
 
+        // ── 헤드셋(2026-11-23 프로토타입) ──────────────────────────────
+        /// <summary>참여자 입력: auto(XR 헤드셋이 켜져 있으면 XR 컨트롤러, 없으면 데스크톱) | desktop | xr(헤드셋이 없으면 시작 거부).</summary>
+        public string inputMode = InputModeAuto;
+        /// <summary>XR 컨트롤러 주 사용 손: right | left.</summary>
+        public string xrHand = HandRight;
+        /// <summary>켜면 평정 단계에서 참여자가 썸스틱 좌우로 고르고 트리거로 확정할 수도 있다(실험자 키보드 입력도 그대로 된다).
+        /// 기본 꺼짐: 참여자는 말로 답하고 실험자가 숫자를 넣는다.</summary>
+        public bool participantRatesWithController = false;
+        /// <summary>켜면 평정 단계(pre/post/check items) 동안 물체를 숨긴다(docs/rq-v4-questionnaire-draft.md 제안). 절차 변경이라 기본 꺼짐.</summary>
+        public bool hideObjectDuringItems = false;
+
+        public const string InputModeAuto = "auto";
+        public const string InputModeDesktop = "desktop";
+        public const string InputModeXr = "xr";
+        public const string HandRight = "right";
+        public const string HandLeft = "left";
+        public static readonly string[] InputModes = { InputModeAuto, InputModeDesktop, InputModeXr };
+        public static readonly string[] Hands = { HandRight, HandLeft };
+
         public PlacementConfig Clone()
         {
             var c = (PlacementConfig)MemberwiseClone();
@@ -157,6 +176,8 @@ namespace IFS.SceneSpec.Placement
             if (!(stopHeightM >= minHeightM && stopHeightM <= maxHeightM)) e.Add($"stopHeightM {stopHeightM}: [minHeightM, maxHeightM] 밖");
             if (stopFirstDirection != DirectionApproach && stopFirstDirection != DirectionRecede && stopFirstDirection != FirstByParticipant)
                 e.Add($"stopFirstDirection {stopFirstDirection}: approach | recede | by_participant 중 하나");
+            if (!InputModes.Contains(inputMode)) e.Add($"inputMode {inputMode}: auto | desktop | xr 중 하나");
+            if (!Hands.Contains(xrHand)) e.Add($"xrHand {xrHand}: right | left 중 하나");
             return e;
         }
 
@@ -196,6 +217,11 @@ namespace IFS.SceneSpec.Placement
             ["stopHeightM"] = stopHeightM,
             ["stopFirstDirection"] = stopFirstDirection,
             ["requireSpecPhrases"] = requireSpecPhrases,
+            // 2026-11-23 추가(헤드셋). 기존 키는 그대로다.
+            ["inputMode"] = inputMode,
+            ["xrHand"] = xrHand,
+            ["participantRatesWithController"] = participantRatesWithController,
+            ["hideObjectDuringItems"] = hideObjectDuringItems,
         };
     }
 }

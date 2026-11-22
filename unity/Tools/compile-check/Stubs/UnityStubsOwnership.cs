@@ -8,7 +8,7 @@ namespace UnityEngine
     {
         None = 0, Backspace = 8, Return = 13, Escape = 27, Space = 32,
         Alpha0 = 48, Alpha1 = 49, Alpha2 = 50, Alpha3 = 51, Alpha4 = 52, Alpha5 = 53, Alpha6 = 54, Alpha7 = 55, Alpha8 = 56, Alpha9 = 57,
-        A = 97, D = 100, E = 101, F = 102, Q = 113, S = 115, W = 119,
+        A = 97, D = 100, E = 101, F = 102, Q = 113, R = 114, S = 115, W = 119,
         Keypad0 = 256, Keypad1 = 257, Keypad2 = 258, Keypad3 = 259, Keypad4 = 260, Keypad5 = 261, Keypad6 = 262, Keypad7 = 263,
         Keypad8 = 264, Keypad9 = 265, KeypadEnter = 271, F1 = 282,
     }
@@ -39,6 +39,7 @@ namespace UnityEngine
         public Material material => null;
         public static Font CreateDynamicFontFromOSFont(string fontname, int size) => new Font();
         public static string[] GetOSInstalledFontNames() => Array.Empty<string>();
+        public static event Action<Font> textureRebuilt { add { } remove { } }
     }
 
     public sealed class TextMesh : Component
@@ -50,6 +51,7 @@ namespace UnityEngine
         public TextAnchor anchor { get; set; }
         public TextAlignment alignment { get; set; }
         public Color color { get; set; }
+        public bool richText { get; set; }
     }
 
     public static class Screen
@@ -105,6 +107,7 @@ namespace UnityEngine
         public static void Label(string text, GUIStyle style, params GUILayoutOption[] options) { }
         public static string TextField(string text, params GUILayoutOption[] options) => text;
         public static bool Button(string text, params GUILayoutOption[] options) => false;
+        public static bool Toggle(bool value, string text, params GUILayoutOption[] options) => value;
         public static GUILayoutOption Width(float width) => new GUILayoutOption();
         public static GUILayoutOption Height(float height) => new GUILayoutOption();
         public static GUILayoutOption ExpandWidth(bool expand) => new GUILayoutOption();
@@ -125,11 +128,20 @@ namespace UnityEngine.XR
     {
         public static InputFeatureUsage<Vector3> devicePosition => new InputFeatureUsage<Vector3>("DevicePosition");
         public static InputFeatureUsage<Quaternion> deviceRotation => new InputFeatureUsage<Quaternion>("DeviceRotation");
+        public static InputFeatureUsage<float> trigger => new InputFeatureUsage<float>("Trigger");
+        public static InputFeatureUsage<bool> triggerButton => new InputFeatureUsage<bool>("TriggerButton");
+        public static InputFeatureUsage<bool> gripButton => new InputFeatureUsage<bool>("GripButton");
+        public static InputFeatureUsage<bool> primaryButton => new InputFeatureUsage<bool>("PrimaryButton");
+        public static InputFeatureUsage<Vector2> primary2DAxis => new InputFeatureUsage<Vector2>("Primary2DAxis");
     }
 
     public struct InputDevice
     {
         public bool isValid => false;
+        public string name => "";
+        public bool TryGetFeatureValue(InputFeatureUsage<bool> usage, out bool value) { value = default; return false; }
+        public bool TryGetFeatureValue(InputFeatureUsage<float> usage, out float value) { value = default; return false; }
+        public bool TryGetFeatureValue(InputFeatureUsage<Vector2> usage, out Vector2 value) { value = default; return false; }
         public bool TryGetFeatureValue(InputFeatureUsage<Vector3> usage, out Vector3 value) { value = default; return false; }
         public bool TryGetFeatureValue(InputFeatureUsage<Quaternion> usage, out Quaternion value) { value = default; return false; }
     }

@@ -1,5 +1,7 @@
-// 배치 실험 실험자 화면(IMGUI, 데스크톱 창에만 보인다). 최소 구성: 지금 단계, 남은 시간, 조건, draft 경고, 대기 단계의 "다음".
-// 참여자에게 보이는 글은 ParticipantTextDisplay(월드 공간)가 맡는다. F1 = 숨기기/보이기.
+// 배치 실험 실험자 화면(IMGUI, PC 모니터의 Game 창에만 보인다 — 헤드셋에는 그리지 않는다).
+// 최소 구성: 지금 단계, 남은 시간, 조건, draft 경고, 대기 단계의 "다음", XR 상태(헤드셋·컨트롤러·추적 원점)와 정면 재설정.
+// Setup에서 조건·통제 방식·참여자 입력(auto | desktop | xr)·주 사용 손·문구 파일·평정 선택 기능을 고른다.
+// 참여자에게 보이는 글은 PlacementTextPanel(세계 고정 판)이 맡는다. F1 = 숨기기/보이기.
 using UnityEngine;
 
 namespace IFS.SceneSpec.Placement
@@ -28,7 +30,8 @@ namespace IFS.SceneSpec.Placement
             _scroll = GUILayout.BeginScrollView(_scroll);
             var cfg = runner.Config;
             string mode = cfg.EffectiveControlMode;
-            GUILayout.Label($"<b>배치 실험(RQ V4, 프로토타입)</b> — {runner.Stage}   조건: {cfg.condition} / {mode}   머리: {runner.HeadSource}   (F1 숨기기)", _wrap);
+            GUILayout.Label($"<b>배치 실험(RQ V4, 프로토타입)</b> — {runner.Stage}   조건: {cfg.condition} / {mode}   머리: {runner.HeadSource}   입력: {runner.ActiveInputSource ?? "(확인 전)"}   (F1 숨기기)", _wrap);
+            DrawXrStatus(cfg);
             string notice = runner.DraftPhraseNotice;
             if (notice != null) GUILayout.Label("<size=14><b><color=#ff9a30>[초안 문구] " + notice + "</color></b></size>", _wrap);
             switch (runner.Stage)
@@ -71,7 +74,43 @@ namespace IFS.SceneSpec.Placement
                     cfg.replayPath = GUILayout.TextField(cfg.replayPath ?? "");
                 }
             }
+            GUILayout.Label("참여자 입력(auto = 헤드셋이 켜져 있으면 XR 컨트롤러, 없으면 데스크톱)");
+            GUILayout.BeginHorizontal();
+            foreach (var m in PlacementConfig.InputModes)
+                if (GUILayout.Button((cfg.inputMode == m ? "● " : "") + m, GUILayout.Width(120))) cfg.inputMode = m;
+            GUILayout.Label("  주 사용 손");
+            foreach (var h in PlacementConfig.Hands)
+                if (GUILayout.Button((cfg.xrHand == h ? "● " : "") + h, GUILayout.Width(90))) cfg.xrHand = h;
+            GUILayout.EndHorizontal();
+            cfg.participantRatesWithController = GUILayout.Toggle(cfg.participantRatesWithController,
+                " 참여자가 컨트롤러로 평정(썸스틱 좌우 고르기, 트리거 확정) — 꺼 두면 참여자는 말로 답하고 실험자가 숫자를 넣는다");
+            cfg.hideObjectDuringItems = GUILayout.Toggle(cfg.hideObjectDuringItems, " 평정 동안 물체 숨기기(설문 초안의 제안, 절차 변경이라 팀 결정 전)");
+            GUILayout.Label("문구 파일(StreamingAssets): 지금 " + runner.TaskTextDisplayName, _wrap);
+            GUILayout.BeginHorizontal();
+            foreach (var f in runner.TaskTextFiles)
+                if (GUILayout.Button((SameTaskText(runner.TaskTextDisplayName, f) ? "● " : "") + f.Replace(PlacementTaskText.TaskTextFolder + "/", ""), GUILayout.ExpandWidth(false)))
+                    runner.SelectTaskText(f);
+            GUILayout.EndHorizontal();
             if (GUILayout.Button("확인", GUILayout.Height(30))) runner.Check();
+        }
+
+        static bool SameTaskText(string a, string b) =>
+            string.Equals((a ?? "").Replace('\\', '/').Trim(), (b ?? "").Replace('\\', '/').Trim(), System.StringComparison.OrdinalIgnoreCase);
+
+        void DrawXrStatus(PlacementConfig cfg)
+        {
+            var rig = runner.XrRig;
+            if (rig == null && runner.XrInput == null) return;
+            bool head = runner.XrHeadActive;
+            string hand = cfg.xrHand == PlacementConfig.HandLeft ? "왼손" : "오른손";
+            string line = head
+                ? $"XR: 헤드셋 켜짐({PlacementXrRig.LoadedDeviceName} / {PlacementXrRig.HeadDeviceName ?? "-"})  컨트롤러({hand}): {(runner.XrControllerPresent || runner.Stage == PlacementRunnerStage.Running ? (runner.XrInput?.DeviceName ?? "연결됨") : "<color=#ffc060>안 보임</color>")}  추적 원점: {rig?.TrackingOrigin ?? "-"}"
+                : "XR: 헤드셋 없음(데스크톱 모의 조작). Quest Link를 켜고 Play를 다시 누르면 잡힌다";
+            GUILayout.BeginHorizontal();
+            GUILayout.Label(line, _wrap);
+            if (head && GUILayout.Button("정면 재설정 (R)", GUILayout.Width(140))) runner.Recenter();
+            GUILayout.EndHorizontal();
+            if (runner.LastRecenterMessage != null) GUILayout.Label("<size=11>" + runner.LastRecenterMessage + "</size>", _wrap);
         }
 
         void DrawChecked()
@@ -95,8 +134,13 @@ namespace IFS.SceneSpec.Placement
             GUILayout.Label($"물체: {(s.ObjectVisible ? "보임" : "숨김")} {s.ObjectState}  거리 {PlacementGeometry.HorizontalDistance(o):0.00} m  방위 {PlacementGeometry.AzimuthDeg(o):0} °  높이 {o.Y:0.00} m  잡기 {s.GrabCount}회", _wrap);
             if (s.ParticipantText != null) GUILayout.Label("참여자 글: " + s.ParticipantText.Replace("\n", " / "), _wrap);
             var item = s.CurrentItem;
+            if (s.ItemsInstructionActive)
+                GUILayout.Label($"평정 지시문({s.CurrentItemWhen}) — 참여자가 다 읽으면 Enter(다음)로 첫 문항", _wrap);
             if (item != null)
-                GUILayout.Label($"평정 {item.Key}({s.CurrentItemWhen}) — 숫자 1–7, Backspace 취소, Enter 확정.  입력: {(s.PendingRating?.ToString() ?? "-")}", _wrap);
+            {
+                string cursor = s.Config.participantRatesWithController ? $"   참여자 컨트롤러 고르는 중: {(s.RatingCursor?.ToString() ?? "-")}" : "";
+                GUILayout.Label($"평정 {s.ItemNumber}/{s.ItemCount} {item.Key}({s.CurrentItemWhen}) — 숫자 1–7, Backspace 취소, Enter 확정.  입력: {(s.PendingRating?.ToString() ?? "-")}{cursor}", _wrap);
+            }
             if (s.Phase == PlacementPhase.StopDistance)
             {
                 var t = s.CurrentStopTrial;
@@ -104,14 +148,18 @@ namespace IFS.SceneSpec.Placement
                     : $"멈춤 거리 시행 {t?.Trial ?? 0}/{s.StopPlan.Count} {(t != null && t.Practice ? "(연습)" : "")} {t?.Direction}  지금 {s.StopDistanceNow:0.00} m", _wrap);
             }
             bool waits = s.Phase == PlacementPhase.Intro || s.Phase == PlacementPhase.PreWait || s.Phase == PlacementPhase.PostWait
-                         || (s.Phase == PlacementPhase.StopDistance && !s.StopTrialsStarted);
+                         || (s.Phase == PlacementPhase.StopDistance && !s.StopTrialsStarted) || s.ItemsInstructionActive;
             GUILayout.BeginHorizontal();
             GUI.enabled = waits;
             if (GUILayout.Button("다음 (Enter)", GUILayout.Height(30))) runner.PressConfirm();
             GUI.enabled = true;
             if (GUILayout.Button("중단 (Esc)", GUILayout.Height(30))) runner.PressAbort();
             GUILayout.EndHorizontal();
-            GUILayout.Label("참여자 데스크톱 조작: 왼쪽 단추 누르고 있기 = 잡기, 휠 또는 E/Q = 밀기/당기기, F = 확인, Space = 멈춤 거리 버튼. 오른쪽 드래그·WASD = 둘러보기·이동", _wrap);
+            if (runner.ActiveInputSource == XrPlacementInput.Source)
+                GUILayout.Label("참여자 XR 조작: 광선으로 가리키고 트리거(또는 그립) 누르고 있기 = 잡기, 썸스틱 앞/뒤 = 밀기/당기기, A·X = 확인, 트리거 = 멈춤 거리 버튼" +
+                                (s.Config.participantRatesWithController ? ", 평정: 썸스틱 좌우 고르기·트리거 확정" : "") + ".  실험자 R = 정면 재설정", _wrap);
+            else
+                GUILayout.Label("참여자 데스크톱 조작: 왼쪽 단추 누르고 있기 = 잡기, 휠 또는 E/Q = 밀기/당기기, F = 확인, Space = 멈춤 거리 버튼. 오른쪽 드래그·WASD = 둘러보기·이동", _wrap);
         }
 
         void DrawDone()

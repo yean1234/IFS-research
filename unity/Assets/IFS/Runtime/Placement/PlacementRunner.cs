@@ -2,9 +2,12 @@
 // 조건(place | view)·통제 방식(static | system_move | replay | point_select)에 따라 한 회기를 진행한다.
 // 단계 흐름·기록은 PlacementSession(UnityEngine 없음)이 맡고, 이 컴포넌트는 그것을 그린다:
 //   물체(SceneLoader — 장면 속성은 기존 로더 경로 그대로), 공간(PlacementSpace), 참여자 글(ParticipantTextDisplay), 입력(IPlacementInput).
-// 실험자 키: 1–7 평정, Backspace 직전 입력 취소, Enter 확정·다음, Esc 중단. 참여자 데스크톱 조작은 DesktopPlacementInput.
+// 실험자 키: 1–7 평정, Backspace 직전 입력 취소, Enter 확정·다음, Esc 중단, R 정면 재설정(XR).
+// 참여자 입력: 설정 inputMode(auto | desktop | xr)에 따라 Check 때 고른다(PlacementInputSelection) —
+//   XR 헤드셋이 켜져 있으면 XrPlacementInput(컨트롤러 광선), 없으면 DesktopPlacementInput(마우스·키보드).
+// 참여자 글: PlacementTextPanel(세계 고정 판, 헤드셋 안에서 읽힘)이 있으면 그것, 없으면 ParticipantTextDisplay(예전 씬).
 // 자동 시행(검증용): BeginAuto(스크립트, 설정) 뒤 Tick(dt)을 밖에서 부르면 사람 없이 끝까지 간다(시뮬레이션 시계).
-// 헤드셋 실기는 확인하지 않았고, XR 컨트롤러 입력은 아직 없다(IPlacementInput 구현을 더해야 함 — unity/README.md).
+// 헤드셋 실기는 확인하지 않았다(2026-11-23 — docs/headset-checklist.md).
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -43,12 +46,24 @@ namespace IFS.SceneSpec.Placement
         [Header("구성 요소")]
         [SerializeField] HeadPoseProvider headProvider = null;
         [SerializeField] ParticipantTextDisplay textDisplay = null;
-        [Tooltip("IPlacementInput을 구현한 컴포넌트(기본 DesktopPlacementInput). XR 입력으로 바꿔 끼운다")]
+        [Tooltip("데스크톱 참여자 입력(IPlacementInput, 기본 DesktopPlacementInput). XR이 없을 때 쓴다")]
         [SerializeField] MonoBehaviour inputComponent = null;
 
-        [Header("참여자 글 자리('나' 기준)")]
-        [SerializeField] float textForwardM = 2.5f;
-        [SerializeField] float textHeightM = 2.1f;
+        [Header("헤드셋(XR)")]
+        [Tooltip("XR 리그(카메라 부모, 바닥 원점·정면 재설정)")]
+        [SerializeField] PlacementXrRig xrRig = null;
+        [Tooltip("XR 컨트롤러 입력")]
+        [SerializeField] XrPlacementInput xrInput = null;
+        [Tooltip("참여자 안내 판(헤드셋 안). 비우면 ParticipantTextDisplay로 그린다")]
+        [SerializeField] PlacementTextPanel panel = null;
+        [Tooltip("켜면 XR 광선을 입력을 쓰는 때(조건 단계의 직접 배치·가리켜 지정)만 보인다")]
+        [SerializeField] bool rayOnlyWhenUsable = true;
+
+        [Header("참여자 글 자리('나' 기준) — 판 중심")]
+        [Tooltip("정면 거리(m)")]
+        [SerializeField] float textForwardM = 2.0f;
+        [Tooltip("판 중심 높이(m). 기본 0.6: 눈높이 1.6에서 약 27° 아래 — 시작 자리(1.5 m, 높이 1.2)의 물체(반지름 0.3 m까지)보다 아래")]
+        [SerializeField] float textHeightM = 0.6f;
         [Tooltip("SceneLoader 앵커(눈높이) — 물체 크기·모양 계산에만 쓰고 위치는 이 러너가 정한다")]
         [SerializeField] float anchorEyeHeightM = 1.6f;
 
@@ -69,7 +84,23 @@ namespace IFS.SceneSpec.Placement
         public PlacementConfig Config => config;
         public bool IsAuto => _auto != null;
         public string HeadSource => headProvider != null ? headProvider.Source : HeadPoseProvider.SourceDesktop;
-        public IPlacementInput Input => inputComponent as IPlacementInput;
+        /// <summary>지금 쓰는 참여자 입력(Check에서 고른 것, 고르기 전이면 데스크톱).</summary>
+        public IPlacementInput Input => _activeInput ?? inputComponent as IPlacementInput;
+        /// <summary>Check에서 고른 참여자 입력: desktop | xr | auto(자동 시행). 고르기 전이면 null.</summary>
+        public string ActiveInputSource => _activeSource;
+        public PlacementXrRig XrRig => xrRig;
+        public XrPlacementInput XrInput => xrInput;
+        public PlacementTextPanel Panel => panel;
+        /// <summary>XR 헤드셋이 켜져 있고 머리 자세가 읽힌다.</summary>
+        public bool XrHeadActive => xrRig != null ? xrRig.HeadActive : HeadPoseProvider.TryReadXrHead(out _, out _);
+        /// <summary>주 사용 손 컨트롤러가 보였나(Setup·Checked에서 매 프레임 갱신).</summary>
+        public bool XrControllerPresent { get; private set; }
+        /// <summary>마지막 정면 재설정 결과(실험자 화면).</summary>
+        public string LastRecenterMessage { get; private set; }
+        /// <summary>문구 파일(StreamingAssets 기준 상대 경로 또는 절대 경로). Setup에서 고른다. null이면 Inspector의 taskTextPath.</summary>
+        public string TaskTextPathText { get; set; }
+        /// <summary>StreamingAssets/IFS 안의 문구 파일들(Setup 목록).</summary>
+        public List<string> TaskTextFiles { get; } = new List<string>();
         public SceneLoader Loader => _loader;
         public PlacementSpaceHandle Space => _space;
         public string DraftPhraseNotice => PlacementTaskText.DraftNotice(TaskText, config.requireSpecPhrases);
@@ -85,6 +116,8 @@ namespace IFS.SceneSpec.Placement
         SceneLoader _loader;
         PlacementSpaceHandle _space;
         string _shownText;
+        IPlacementInput _activeInput;
+        string _activeSource;
 
         // ── 수명 ─────────────────────────────────────────────────────────
         void Awake()
@@ -98,6 +131,11 @@ namespace IFS.SceneSpec.Placement
         void Update()
         {
             if (_auto != null) return;   // 자동 시행은 Tick을 밖에서 부른다
+            if (Stage != PlacementRunnerStage.Running && xrInput != null)
+            {
+                if (XrHeadActive) { xrInput.Configure(xrRig != null ? xrRig.transform : null, config.xrHand); XrControllerPresent = xrInput.ControllerPresent; }
+                else XrControllerPresent = false;
+            }
             Tick(Time.unscaledDeltaTime);
             PollKeys();
         }
@@ -134,9 +172,34 @@ namespace IFS.SceneSpec.Placement
             ? Path.Combine(Application.persistentDataPath, "IFS", "sessions")
             : recordRoot;
 
-        string ResolvedTaskTextPath => string.IsNullOrWhiteSpace(taskTextPath)
-            ? Path.Combine(Application.streamingAssetsPath, PlacementTaskText.DefaultRelativePath)
-            : (Path.IsPathRooted(taskTextPath) ? taskTextPath : Path.Combine(Application.streamingAssetsPath, taskTextPath));
+        string ResolvedTaskTextPath
+        {
+            get
+            {
+                string p = (TaskTextPathText ?? taskTextPath ?? "").Trim().Trim('"');
+                return p.Length == 0
+                    ? Path.Combine(Application.streamingAssetsPath, PlacementTaskText.DefaultRelativePath)
+                    : (Path.IsPathRooted(p) ? p : Path.Combine(Application.streamingAssetsPath, p));
+            }
+        }
+
+        /// <summary>Setup 화면에 보일 문구 파일 이름(StreamingAssets 기준).</summary>
+        public string TaskTextDisplayName
+        {
+            get
+            {
+                string p = (TaskTextPathText ?? taskTextPath ?? "").Trim();
+                return p.Length == 0 ? PlacementTaskText.DefaultRelativePath : p;
+            }
+        }
+
+        /// <summary>Setup에서 문구 파일을 고른다(StreamingAssets 기준 상대 경로). 바로 다시 읽는다.</summary>
+        public void SelectTaskText(string relativePath)
+        {
+            if (Session != null) return;
+            TaskTextPathText = relativePath;
+            PreloadTaskText();
+        }
 
         /// <summary>replay 원본 경로: 절대 경로면 그대로, 아니면 기록 루트 기준.</summary>
         string ResolvedReplayPath
@@ -160,6 +223,9 @@ namespace IFS.SceneSpec.Placement
 
         void PreloadTaskText()
         {
+            TaskTextFiles.Clear();
+            try { TaskTextFiles.AddRange(PlacementTaskText.ListTaskTextFiles(Application.streamingAssetsPath)); }
+            catch (Exception) { /* 목록은 보조 기능 */ }
             try { TaskText = File.Exists(ResolvedTaskTextPath) ? PlacementTaskText.Load(ResolvedTaskTextPath) : null; }
             catch (Exception) { TaskText = null; }
         }
@@ -171,6 +237,14 @@ namespace IFS.SceneSpec.Placement
             textDisplay = text;
             inputComponent = input;
             if (shapes != null) shapePrefabs = shapes.Where(s => s != null).Select(s => new ShapePrefab(s.shape, s.prefab)).ToArray();
+        }
+
+        /// <summary>헤드셋 구성 요소(리그·XR 입력·참여자 판)를 연결한다.</summary>
+        public void ConfigureXr(PlacementXrRig rig, XrPlacementInput xr, PlacementTextPanel participantPanel)
+        {
+            xrRig = rig;
+            xrInput = xr;
+            panel = participantPanel;
         }
 
         public void SetRecordRoot(string root) => recordRoot = root ?? "";
@@ -227,9 +301,41 @@ namespace IFS.SceneSpec.Placement
             string refusal = PlacementTaskText.SpecPhraseRefusal(TaskText, config.requireSpecPhrases);
             if (refusal != null) Errors.Add(refusal);
             if (config.EffectiveControlMode == PlacementConfig.ModeReplay) CheckReplay();
-            if (textDisplay != null) { textDisplay.EnsureFont(); if (textDisplay.FontWarning != null) Warnings.Add(textDisplay.FontWarning); }
+            Font font = null;
+            if (textDisplay != null) { font = textDisplay.EnsureFont(); if (textDisplay.FontWarning != null) Warnings.Add(textDisplay.FontWarning); }
+            if (panel != null) panel.SetFont(font);
+            SelectInput();
             Stage = PlacementRunnerStage.Checked;
             return Errors.Count == 0;
+        }
+
+        /// <summary>참여자 입력을 고른다(설정 inputMode, XR 헤드셋·컨트롤러 유무). 자동 시행은 합성 입력("auto").</summary>
+        void SelectInput()
+        {
+            if (_auto != null) { _activeInput = null; _activeSource = "auto"; return; }
+            bool head = XrHeadActive;
+            bool controller = false;
+            if (xrInput != null)
+            {
+                xrInput.Configure(xrRig != null ? xrRig.transform : null, config.xrHand);
+                if (head) controller = xrInput.ControllerPresent;
+            }
+            XrControllerPresent = controller;
+            var r = PlacementInputSelection.Choose(config.inputMode, head, controller, config.xrHand);
+            if (r.Error != null) Errors.Add(r.Error);
+            if (r.Warning != null) Warnings.Add(r.Warning);
+            _activeSource = r.Source;
+            _activeInput = null;
+            if (r.Source == XrPlacementInput.Source)
+            {
+                if (xrInput == null) Errors.Add("XR 입력 구성 요소(XrPlacementInput)가 씬에 없습니다 — 메뉴 IFS ▸ Experiment ▸ Create Placement Experiment Scene으로 씬을 다시 만드세요");
+                else _activeInput = xrInput;
+                if (xrRig != null && !xrRig.HeadActiveOverride.HasValue && !xrRig.FloorOrigin)
+                    Warnings.Add("XR 추적 원점이 바닥(Floor)이 아닙니다(" + xrRig.TrackingOrigin + ") — 눈높이·바닥 높이가 맞지 않을 수 있음");
+            }
+            else _activeInput = inputComponent as IPlacementInput;
+            if (config.participantRatesWithController && r.Source != XrPlacementInput.Source)
+                Warnings.Add("participantRatesWithController가 켜져 있지만 XR 입력이 아니어서 평정은 실험자 키보드로만 받습니다");
         }
 
         void CheckReplay()
@@ -319,7 +425,7 @@ namespace IFS.SceneSpec.Placement
                 SpecSha256 = _specSha,
                 StartedUtc = DateTime.UtcNow,
                 HeadSource = HeadSource,
-                InputSource = _auto != null ? "auto" : (Input?.SourceName ?? DesktopPlacementInput.Source),
+                InputSource = _auto != null ? "auto" : (_activeSource ?? Input?.SourceName ?? DesktopPlacementInput.Source),
                 UnityVersion = Application.unityVersion,
                 AutoMode = _auto != null,
                 TaskTextFile = TaskText.FileName,
@@ -343,6 +449,9 @@ namespace IFS.SceneSpec.Placement
                 return false;
             }
             Session.GrabRadiusM = Math.Max(config.grabRadiusMinM, objectRadius);
+            if (_auto == null && XrHeadActive)
+                Session.Note("xr_status", $"device={Clean(PlacementXrRig.LoadedDeviceName)};head={Clean(PlacementXrRig.HeadDeviceName)};" +
+                                          $"controller={Clean(xrInput?.DeviceName)};hand={config.xrHand};trackingOrigin={Clean(xrRig?.TrackingOrigin)}");
             LastRecordDirectory = Session.RecordDirectory;
             LastCompleted = false;
             LastAbortedAt = null;
@@ -351,6 +460,10 @@ namespace IFS.SceneSpec.Placement
             ApplyVisuals();
             return true;
         }
+
+        /// <summary>events.csv 상세(key=value;…)에 넣을 값: 비면 "-", 구분자(;·=·줄바꿈)는 공백으로.</summary>
+        static string Clean(string s) =>
+            string.IsNullOrWhiteSpace(s) ? "-" : s.Replace(';', ' ').Replace('=', ' ').Replace('\n', ' ').Replace('\r', ' ').Trim();
 
         /// <summary>물체 렌더러 경계 상자(세계 AABB)의 가장 큰 반폭(m). 불러온 직후(움직임 적용 전) 값이다.</summary>
         double ObjectRadius()
@@ -441,12 +554,23 @@ namespace IFS.SceneSpec.Placement
                 root.transform.SetPositionAndRotation(pos, look.sqrMagnitude > 1e-6f ? Quaternion.LookRotation(look.normalized, Vector3.up) : Quaternion.identity);
                 if (root.activeSelf != Session.ObjectVisible) root.SetActive(Session.ObjectVisible);
             }
-            if (textDisplay != null && Session.ParticipantText != _shownText)
+            var textAt = new Vector3(0f, textHeightM, textForwardM);
+            var eye = new Vector3(0f, anchorEyeHeightM, 0f);
+            if (panel != null)
+            {
+                // 헤드셋 안 판: 평정 문항이면 문항 + 1–7 기준점(참여자가 고르는 중인 값 강조), 아니면 안내 글
+                var item = Session.CurrentItem;
+                if (item != null) panel.ShowItem(item, Session.RatingCursor, textAt, eye);
+                else if (Session.ParticipantText == null) panel.Hide();
+                else panel.ShowText(Session.ParticipantText, textAt, eye);
+            }
+            else if (textDisplay != null && Session.ParticipantText != _shownText)
             {
                 _shownText = Session.ParticipantText;
                 if (_shownText == null) textDisplay.Hide();
-                else textDisplay.Show(_shownText, new Vector3(0f, textHeightM, textForwardM), new Vector3(0f, anchorEyeHeightM, 0f));
+                else textDisplay.Show(_shownText, textAt, eye);
             }
+            ApplyXrRay();
             if (_space != null)
             {
                 SetMarker(_space.PointerMarker, Session.Phase == PlacementPhase.Condition ? Session.PointerHit : null);
@@ -454,6 +578,24 @@ namespace IFS.SceneSpec.Placement
                 SetMarker(_space.TargetMarker, Session.Phase == PlacementPhase.Condition && Session.Config.controlMode == PlacementConfig.ModePointSelect && target.HasValue
                     ? new PVec3(target.Value.X, 0, target.Value.Z) : (PVec3?)null);
             }
+        }
+
+        /// <summary>XR 광선: XR 입력을 쓰는 중이고 (rayOnlyWhenUsable이면) 광선이 쓰이는 단계에서만 보인다.</summary>
+        void ApplyXrRay()
+        {
+            if (xrInput == null) return;
+            bool xrActive = _auto == null && ReferenceEquals(_activeInput, xrInput);
+            var s = Session;
+            bool usable = s != null && !s.Finished && s.Phase == PlacementPhase.Condition
+                          && (s.Config.IsPlace || s.Config.controlMode == PlacementConfig.ModePointSelect);
+            bool show = xrActive && s != null && !s.Finished && (usable || !rayOnlyWhenUsable);
+            double end = 0;
+            if (show)
+            {
+                var smp = xrInput.LastSample;
+                end = XrRayVisual.EndDistance(smp.RayOrigin, smp.RayDirection, s.Held, s.ObjectPosition, s.ObjectVisible, s.GrabRadiusM, xrInput.RayMaxLengthM);
+            }
+            xrInput.ShowRay(show, end);
         }
 
         static void SetMarker(GameObject marker, PVec3? at)
@@ -478,6 +620,22 @@ namespace IFS.SceneSpec.Placement
                     Session?.PressDigit(d);
             if (UnityEngine.Input.GetKeyDown(KeyCode.Backspace)) Session?.PressBackspace();
             if (UnityEngine.Input.GetKeyDown(KeyCode.Return) || UnityEngine.Input.GetKeyDown(KeyCode.KeypadEnter)) PressConfirm();
+            if (UnityEngine.Input.GetKeyDown(KeyCode.R)) Recenter();
+        }
+
+        /// <summary>정면 재설정(XR): 지금 머리 자리를 '나'의 자리로, 보는 방향을 정면으로. 세션 중이면 events.csv에 recenter로 남긴다.
+        /// XR 헤드셋이 없으면 아무것도 하지 않는다.</summary>
+        public string Recenter()
+        {
+            string r = xrRig != null ? xrRig.Recenter() : null;
+            if (r == null)
+            {
+                LastRecenterMessage = "XR 헤드셋이 없어 정면 재설정을 하지 않았습니다";
+                return null;
+            }
+            Session?.Note("recenter", r);
+            LastRecenterMessage = "정면 재설정 " + DateTime.Now.ToString("HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture) + ": " + r;
+            return r;
         }
 
         public void PressConfirm()
@@ -504,7 +662,11 @@ namespace IFS.SceneSpec.Placement
             Session = null;
             Cleanup();
             if (textDisplay != null) textDisplay.HideAll();
+            if (panel != null) panel.Hide();
+            if (xrInput != null) xrInput.ShowRay(false, 0);
             _shownText = null;
+            _activeInput = null;
+            _activeSource = null;
             Stage = PlacementRunnerStage.Setup;
             Spec = null;
             _replay = null;

@@ -284,15 +284,11 @@ JSON 하나마다 하는 일:
 - 마지막 선택·차이 평정에서 형상끼리 겹치면 반지름을 늘려 같은 거리에 다시 놓습니다(`events.csv`의 `final_layout`·`difference_layout`에 반지름 기록).
 - Play를 멈추거나 앱을 닫으면 중단으로 기록합니다(`quit` 이벤트).
 
-### 헤드셋 연결 (사람이 할 단계, 실기 미검증)
+### 헤드셋 연결
 
-이 저장소는 XR 패키지·uGUI·TextMeshPro·Input System 없이 만들었습니다(`Packages/manifest.json`·ProjectSettings를 바꾸지 않음). 러너는 내장 XR 모듈의 `InputDevices`(Head 노드)만 읽습니다.
+2026-11-23부터 프로젝트에 XR 패키지(OpenXR)가 들어 있고 Windows(Standalone)에서 Play하면 XR이 자동으로 시작됩니다. 연결 절차·조작·문제 해결은 아래 **「헤드셋 연결 (Quest 3 + Quest Link, OpenXR)」** 절에 있습니다(배치 실험 러너 기준).
 
-1. Package Manager에서 **XR Plugin Management**와 **OpenXR**(Quest Link로 PC VR) 또는 **Oculus XR Plugin**을 설치합니다. 패키지 추가는 manifest.json을 바꾸므로 팀 결정 후 커밋합니다.
-2. Project Settings ▸ XR Plug-in Management ▸ PC(Standalone) 탭에서 플러그인을 켭니다. Quest를 Link로 연결하고 Play.
-3. 실험자 화면 위쪽 `머리: xr`이면 헤드셋 자세를 쓰는 중입니다. `desktop`이면 헤드셋을 찾지 못한 것입니다(manifest의 `headSource`에도 남음).
-
-**헤드셋 실기에서는 검증하지 않았습니다.** 확인한 것은 데스크톱 모의 조작 경로와 배치모드 자동 시행입니다. 기기에서 볼 것: Head 노드 자세가 카메라에 맞게 들어가는지(이중 추적 여부), IMGUI가 헤드셋 화면에 나오지 않는지, TextMesh 글의 크기·거리, 72 Hz 유지.
+소유감 러너는 이번에 바꾸지 않았습니다. 그 씬의 카메라에도 `HeadPoseProvider`가 있어 헤드셋이 연결돼 있으면 XR Head 노드로 머리 자세를 넣고 `머리: xr`(manifest `headSource`)로 기록하지만, 소유감 씬은 XR 리그·바닥 원점 요청·정면 재설정·컨트롤러 입력이 없어(키보드 입력만) **헤드셋에서 확인하지 않았습니다**. 소유감 실험을 헤드셋으로 하려면 배치 러너처럼 리그를 넣는 작업이 따로 필요합니다.
 
 ### 기록 (참여자 데이터 — git 밖)
 
@@ -328,12 +324,13 @@ spec마다 참여자 번호를 하나씩 올립니다. 씬 만들기 배치: `-e
 
 확정 spec의 물체 하나(변형본 없음, 장면 속성은 기존 `SceneLoader` 경로 그대로)를 '나' 기준 공간에 두고, 직접 배치(place) 또는 보기만(view) 조건으로 한 회기를 진행합니다. 설계는 `docs/rq-v4-proposal.md` 4절, 결정은 `docs/decisions.md` X42–X54. 후보1 소유감 러너(`OwnershipRunner`)와 그 기록 형식은 건드리지 않고 `Assets/IFS/Runtime/Placement/`에 따로 있습니다(같은 어셈블리 `IFS.SceneSpec`).
 
-**헤드셋 실기에서 확인하지 않았고, XR 컨트롤러 입력은 아직 없습니다.** 입력은 데스크톱 모의 조작(`DesktopPlacementInput`)과 자동 시행 스크립트뿐입니다. 러너는 `IPlacementInput`(광선 원점·방향, 잡기 버튼, 당기기/밀기 축, 확인 버튼, 멈춤 버튼의 눌린 순간 `StopDown`과 누르고 있음 `StopHeld`)만 보므로, XR 패키지를 넣은 뒤 이 인터페이스를 구현한 컴포넌트를 하나 만들어 `PlacementRunner ▸ Input Component`에 연결하면 됩니다(사람이 할 일. 그때 manifest `inputSource`는 `xr`).
+**헤드셋(Quest 3 + Quest Link) 경로를 2026-11-23에 넣었지만 사람이 헤드셋을 쓰고 확인하지는 않았습니다**(`docs/headset-checklist.md`). 참여자 입력은 `IPlacementInput` 하나로 받고, Setup의 확인 때 설정 `inputMode`에 따라 XR 컨트롤러(`XrPlacementInput`) 또는 데스크톱 모의 조작(`DesktopPlacementInput`)을 고릅니다. 자동 시행은 합성 입력(`inputSource: auto`)입니다.
 
 | 구성 | 파일 | 하는 일 |
 | --- | --- | --- |
-| 단계·기록 | `PlacementSession.cs` | 단계 흐름, 잡기·옮기기, 시스템 이동·재생·가리켜 지정, 멈춤 거리, 평정, 기록. UnityEngine 없음(dotnet 테스트에서 끝까지 돎) |
-| 그리기 | `PlacementRunner.cs` | spec 로드·확인, 물체·글·표식 그리기, 실험자 키 |
+| 단계·기록 | `PlacementSession.cs` | 단계 흐름, 잡기·옮기기, 시스템 이동·재생·가리켜 지정, 멈춤 거리, 평정(평정 지시문, 참여자 컨트롤러 평정 선택), 기록. UnityEngine 없음(dotnet 테스트에서 끝까지 돎) |
+| 그리기 | `PlacementRunner.cs` | spec 로드·확인, 참여자 입력 고르기, 물체·글·표식·XR 광선 그리기, 실험자 키(R = 정면 재설정) |
+| 헤드셋 | `PlacementXrRig.cs` · `XrPlacementInput.cs` · `XrPlacementInputLogic.cs` · `PlacementTextPanel.cs` | XR 리그(바닥 원점 요청·정면 재설정), 컨트롤러 입력(장치 읽기 / 버튼 규칙 — 규칙 부분은 UnityEngine 없음), 헤드셋 안 참여자 판 |
 | 공간 | `PlacementSpace.cs` | 원형 바닥(경계 띠), 중심 '나' 표식(지름 0.5 m), 거리 고리, 가리킴 표식. 코드로 만듦. 중립 환경의 격자 바닥은 이 장면에서만 숨김 |
 | 설정 | `PlacementConfig.cs` | 아래 표. 전부 manifest `config`에 남음 |
 | 기타 | `PlacementTaskText.cs` · `PlacementRecordWriter.cs` · `PlacementTrajectory.cs` · `StopDistanceSchedule.cs` · `PlacementGeometry.cs` · `PlacementAutoScript.cs` · `PlacementExperimenterGui.cs` · `Editor/PlacementExperimentMenu.cs` | 문구, 기록 형식, 궤적, 시행 순서, 기하, 자동 시행, 실험자 화면, 씬 만들기·배치 진입점 |
@@ -346,7 +343,7 @@ spec마다 참여자 번호를 하나씩 올립니다. 씬 만들기 배치: `-e
 | --- | --- | --- |
 | intro | 숨김 | 실험자 Enter |
 | baseline(제시) | 시작 자리(정면 1.5 m, 높이 1.2 m) | `baselineSeconds`(30) 뒤 자동 |
-| pre_items / post_items / check_items | 사전은 시작 자리, 사후·점검은 조건 단계가 끝난 자리 | 문항마다 숫자 1–7 → Enter. 해당 `when` 문항이 없으면 단계째 건너뜀 |
+| pre_items / post_items / check_items | 사전은 시작 자리, 사후·점검은 조건 단계가 끝난 자리(`hideObjectDuringItems`를 켜면 숨김) | 문구 파일에 평정 지시문이 있으면 먼저 지시문 → 실험자 Enter. 문항마다 숫자 1–7 → Enter(선택: 참여자 컨트롤러). 해당 `when` 문항이 없으면 단계째 건너뜀 |
 | pre_wait / post_wait | 숨김 | 헤드셋 밖 설문(주 척도는 팀 결정 전이라 러너에 없음) 뒤 실험자 Enter/"다음" |
 | condition | 조건별(아래) | `conditionSeconds`(90) 뒤 자동. `conditionEndsOnConfirm`을 켜면 직접 배치의 확인에서 끝남(기본 꺼짐) |
 | stop_distance | 시행 중에만 보임, 정면 직선 위 | 실험자 Enter로 시행 시작 → 시행이 다 끝나면 자동 |
@@ -377,8 +374,9 @@ spec마다 참여자 번호를 하나씩 올립니다. 씬 만들기 배치: `-e
 | 참여자(모의) | 마우스 오른쪽 드래그 · WASD | 둘러보기 · 이동(`HeadPoseProvider`, 위와 겹치지 않음) |
 | 실험자 | 1–7 · Backspace · Enter | 평정 입력 · 취소 · 확정. Enter는 안내·대기 넘기기, 멈춤 거리 시작, 확인 화면에서 시작 |
 | 실험자 | Esc · F1 | 중단(자료는 남고 `summary.json`에 `abortedAt`) · 실험자 화면 숨기기 |
+| 실험자 | R | 정면 재설정(XR일 때만. 아래 「헤드셋 연결」) |
 
-실험자 화면(IMGUI, 최소): Setup(참여자 번호, spec, 조건·통제 방식, 재생 원본 경로) → 확인 → 시작. 진행 중에는 단계, 남은 시간, 조건, 물체 거리·방위·높이, draft 경고, 대기 단계의 "다음" 단추.
+실험자 화면(IMGUI, PC 모니터에만): Setup(참여자 번호, spec, 조건·통제 방식, 재생 원본 경로, 참여자 입력 auto/desktop/xr, 주 사용 손, 평정 선택 기능 두 개, 문구 파일) → 확인 → 시작. 진행 중에는 단계, 남은 시간, 조건, 물체 거리·방위·높이, draft 경고, 대기 단계의 "다음" 단추, XR 상태(헤드셋·컨트롤러·추적 원점)와 정면 재설정 단추.
 
 ### 설정값(`PlacementConfig`, 잠정값 — 팀 결정 전)
 
@@ -392,6 +390,9 @@ spec마다 참여자 번호를 하나씩 올립니다. 씬 만들기 배치: `-e
 | 재생 | `replayPath`(절대 경로 또는 기록 루트 기준. manifest에는 파일 이름만) |
 | 멈춤 거리 | `stopSpeedMps`(0.25), `stopApproachStartM`(3.0), `stopRecedeStartM`(0.5), `stopTrialsPerDirection`(4), `stopPracticeTrials`(2), `stopMinM`(0.2), `stopMaxM`(4.0, 바닥 반지름 이하), `stopItiSeconds`(2), `stopHeightM`(1.2), `stopFirstDirection`(by_participant) |
 | 문구 | `requireSpecPhrases`(false. 켜면 draft 문구가 있을 때 시작 거부) |
+| 헤드셋(2026-11-23 추가) | `inputMode`(auto: 헤드셋이 켜져 있으면 XR, 없으면 데스크톱 · desktop · xr: 헤드셋이 없으면 시작 거부), `xrHand`(right · left), `participantRatesWithController`(false), `hideObjectDuringItems`(false — 설문 초안의 제안이지만 절차 변경이라 팀 결정 전) |
+
+헤드셋 표시값은 기록에 영향이 없어 `PlacementConfig`가 아니라 컴포넌트 Inspector에 있습니다: `PlacementRunner`의 판 자리 `textForwardM`(2.0)·`textHeightM`(0.6, 판 중심), `rayOnlyWhenUsable`(true), `PlacementTextPanel`의 글자 크기(`characterSize` 0.0085 ≈ 글자 높이 5 cm)·줄 길이(20자)·기준점 칸 너비(0.2 m), `XrPlacementInput`의 광선 굵기·길이와 썸스틱 데드존(0.2)·트리거 이력(0.55/0.35).
 
 물체 시작 자리는 spec의 `layout.distance`·`verticalOffset` 대신 `startDistanceM`·`startHeightM`을 씁니다(두 조건이 같은 자리에서 시작해야 하므로). 크기·모양·색·움직임은 spec 그대로입니다. 시작 자리는 참여자가 말한 속성이 아니라 실험 설정이라는 것을 manifest `space.startPlacementSource: "experiment_config"`로 남깁니다. spec의 `layout.distance`나 `verticalOffset`에 값이 있었는데 이렇게 무시하면, 확인 화면 경고와 `events.csv`의 `warning` 한 줄(detail이 `layout_ignored`로 시작)을 남기고 manifest `flags.layoutIgnored`를 true로 둡니다.
 
@@ -400,6 +401,13 @@ spec마다 참여자 번호를 하나씩 올립니다. 씬 만들기 배치: `-e
 ### 문구 파일
 
 `StreamingAssets/IFS/placement_task.v0.json` — `ownership_task.v0.json`과 같은 구조(`version`, `protocol`, `texts.{key}.text · status · source`)에 평정 문항 필드 `when`(pre | post | check 또는 배열), `anchors.low/high`(1과 7의 뜻)를 더했습니다. **12개 모두 `status: draft`**(IRB 검토 전, `source`에 출처). 배치 지시문은 방향을 암시하는 말("멀리", "치우다")을 쓰지 않습니다. draft 문구가 있으면 확인 화면 맨 위 경고, `events.csv`의 `warning`, manifest `taskText.draftCount`·`draftKeys`에 남습니다(소유감 러너와 같은 방식).
+
+2026-11-23 형식 추가(선택 필드, 기존 파일은 그대로 유효 — 테스트가 확인):
+
+- `anchors`의 숫자 키 `"1"`…`"7"`: 기준점마다의 뜻(예: 7점 모두, 또는 양극 척도의 1·4·7). `low`·`high`가 없으면 숫자 키의 양 끝을 씁니다. `low`·`high`·범위 안 숫자 말고 다른 키는 오류입니다. 헤드셋 판은 문항 아래에 1–7 숫자와 그 아래 뜻을 칸마다 보입니다.
+- `items_instruction`(공통)과 `items_instruction_pre`·`_post`·`_check`(단계별 덧붙임): 평정 단계 첫 문항 앞에 보이는 지시문. 실험자 Enter로 첫 문항으로 넘어갑니다(`rt_ms`는 문항이 보인 때부터). `events.csv`에 `items_instruction` 줄.
+
+**두 번째 문구 파일 `placement_task.scaleA.v0.json`**(선택, Setup에서 고름): `docs/rq-v4-questionnaire-draft.md` 3절의 주 척도안 A 7문항(사전·사후, 7점 기준점 모두 이름)과 보조 문항 S4(사전)·S5·S6(사전·사후)·S7(사후)·S8(사전, 1·4·7 양극), 공통 지시문과 사후 덧붙임 문장. **22개 모두 `status: draft`**, `source`에 초안 문서의 절과 문항 ID. 순서는 초안 3.7절(사전 A1–A7·S5·S6·S4·S8 = 11문항, 사후 A1–A7·S5·S6·S7 = 10문항). S3(겹침 그림 IOS)은 그림 선택지가 필요해 뺐고, S1(심리 거리)은 이번 묶음에서 함께 뺐습니다(S1 자체는 글 양극 척도라 anchors 1·4·7로 넣을 수 있음). S2는 초안에서도 선택 문항이라 넣지 않았습니다. 단계 안내 문구(intro 등)는 기본 파일과 같습니다. 기본 문구 파일은 바뀌지 않았고 기본 선택도 그대로입니다.
 
 ### 기록 (계약 `ifs-placement/0.1`, 참여자 데이터 — git 밖)
 
@@ -410,12 +418,14 @@ spec마다 참여자 번호를 하나씩 올립니다. 씬 만들기 배치: `-e
 | `manifest.json` | `recordVersion`, `participantNumber`, `sessionId`, `specFile`(이름만), `specSha256`, `startedAtUtc`, `unityVersion`, `headSource`(xr/desktop), `inputSource`(desktop/auto/xr), `condition`, `controlMode`, `space`(`startPlacementSource: "experiment_config"` 포함), `stopDistance`, `object`(`boundingRadiusM`, 없으면 null), `replaySource`(null 또는 file·sha256·sourceSessionId), `systemMoveTarget`(null 또는 distanceM·azimuthDeg·heightM), `taskText`, `config`, `flags`(`autoMode`, 실제 첫 방향, `layoutIgnored` 등) |
 | `headpose.csv` | `time_ms,phase,head_x..head_qw,obj_x,obj_y,obj_z,distance_m,angle_deg` — 머리–물체 3D 거리·시선 각(소유감 기록과 같은 뜻). 물체가 숨은 동안 물체 칸은 빈칸 |
 | `objpose.csv` | `time_ms,phase,obj_x,obj_y,obj_z,distance_m,azimuth_deg,height_m,state` — 물체가 보일 때만, headpose와 같은 표본 시각. `distance_m`은 '나'에서 수평 거리, 방위는 오른쪽 + (−180, 180], state ∈ idle/held/system/replay/stop |
-| `events.csv` | `phase`(detail = 단계 이름), `grab`, `release`, `confirm`, `point_select`, `system_move_start/end`, `replay_start/end`, `stop_trial_start`, `stop_press`, `stop_timeout`, `rating`, `auto_mode`, `warning`, `head_source`. 계약에 더해 `session_start`, `rating_cancel`, `abort`, `quit` |
+| `events.csv` | `phase`(detail = 단계 이름), `grab`, `release`, `confirm`, `point_select`, `system_move_start/end`, `replay_start/end`, `stop_trial_start`, `stop_press`, `stop_timeout`, `rating`, `auto_mode`, `warning`, `head_source`. 계약에 더해 `session_start`, `rating_cancel`, `abort`, `quit`. 2026-11-23 추가(쓸 때만 나옴): `items_instruction`(평정 지시문, detail `when=…;keys=…`), `xr_status`(XR로 시작할 때 장치 이름·손·추적 원점), `recenter`(정면 재설정: 돌린 각·옮긴 거리·머리 높이), 참여자가 컨트롤러로 확정한 `rating`은 detail 끝에 `;by=controller` |
 | `placement.json` | 조건 단계 요약(두 조건 모두): `phaseDurationMs`, 최종 위치·거리·방위·높이, `grabCount`, `firstGrabMs`, `heldMs`, `pathLengthM`(누가 옮겼든 실제 이동 길이. static만 0), `confirmed`, `confirmMs`, `conditionCompleted`(정해진 끝 — `conditionSeconds`를 다 채움 또는 `conditionEndsOnConfirm`의 확인 — 까지 갔으면 true, 중단으로 조기 종료하면 false) |
 | `stopdistance.csv` | `trial,practice,direction,start_distance_m,speed_mps,stop_distance_m,rt_ms,timed_out` — timed_out이면 `stop_distance_m` 빈칸 |
 | `ratings.csv` | `item,when,rating,rt_ms` — 확정한 평정만(취소는 `events.csv`의 `rating_cancel`) |
 | `trajectory.json` | `ifs-trajectory/0.1`: 조건 단계 궤적. 표본 t_ms는 조건 단계 시작부터, 첫 표본 0 ms, 마지막 표본은 단계가 끝난 시각 |
 | `summary.json` | `completed`, `abortedAt`, `endedAtUtc` |
+
+2026-11-23 기록 형식 변경은 추가만 했습니다(`recordVersion`은 그대로 `ifs-placement/0.1`, 기존 열·키 삭제 없음): manifest `config`에 `inputMode`·`xrHand`·`participantRatesWithController`·`hideObjectDuringItems` 네 키, `inputSource`에 실제 값 `xr`, 위 `events.csv` 사건들. `hideObjectDuringItems`를 켜면 평정 단계 동안 물체가 숨어 `objpose.csv`에 그 단계 행이 없고 `headpose.csv`의 물체 칸이 빈칸입니다(숨은 단계의 기존 규칙). 분석기(`ifs_chatbot.eval.placement`)는 바꾸지 않았습니다(추가 키·사건을 읽지 않음, 문항 열은 `rating_A1_pre`처럼 자동으로 생김).
 
 중단(Esc·Play 멈춤)하면 그때까지의 CSV가 남고, 조건 단계 중이었으면 그때까지의 `placement.json`(`conditionCompleted: false`)·`trajectory.json`도 씁니다. 분석기는 이런 세션에 `partial_condition`을 달고 조건 단계 지표 칸을 비웁니다.
 
@@ -429,19 +439,84 @@ spec마다 참여자 번호를 하나씩 올립니다. 씬 만들기 배치: `-e
   -executeMethod IFS.SceneSpec.EditorTools.PlacementExperimentMenu.RunAutoTrialBatch \
   -recordRoot <기록 루트> -specPath <spec.json> -condition place|view -controlMode static|system_move|replay|point_select \
   [-replayPath <trajectory.json>] [-participant 1] [-conditionSeconds 90] [-baselineSeconds 30] [-headSampleHz 20] \
-  [-stopItiSeconds 2] [-showRings true|false] [-dt 0.02] -logFile <로그>
+  [-stopItiSeconds 2] [-showRings true|false] [-hideObjectDuringItems true|false] \
+  [-taskTextFile IFS/placement_task.scaleA.v0.json] [-dt 0.02] -logFile <로그>
 ```
 
-`-quit` 없이(끝나면 스스로 닫음), 성공 0·실패 1. 씬 만들기 배치: `-executeMethod IFS.SceneSpec.EditorTools.PlacementExperimentMenu.CreateSceneBatch`.
+`-quit` 없이(끝나면 스스로 닫음), 성공 0·실패 1. 씬 만들기 배치: `-executeMethod IFS.SceneSpec.EditorTools.PlacementExperimentMenu.CreateSceneBatch`. 자동 시행·씬 만들기·배치 캡처는 에디트 모드라 XR을 시작하지 않습니다(XR은 Play·빌드 실행 때만).
 
-2026-11-22 확인: 합성 예시 `EX02.json`으로 기본 설정(제시 30 s, 조건 90 s) 자동 시행 5개(place, view의 static·replay(place의 궤적)·system_move·point_select)가 모두 완료됐고, 기록은 `docs/validation/placement/records/`(합성), 분석기 출력은 `docs/validation/placement/analysis/`에 있습니다. 분석기 플래그는 세션마다 `runner_warning:1`(draft 문구 경고, 의도한 것)뿐이었습니다. 외부 검토 CP7 반영 뒤 같은 설정으로 다시 만들었습니다(`conditionCompleted` true 5개, `object.boundingRadiusM` 0.1933, `layoutIgnored` false, 플래그는 그대로 `runner_warning:1`뿐, `config_mismatch` 없음).
+2026-11-22 확인: 합성 예시 `EX02.json`으로 기본 설정(제시 30 s, 조건 90 s) 자동 시행 5개(place, view의 static·replay(place의 궤적)·system_move·point_select)가 모두 완료됐고, 기록은 `docs/validation/placement/records/`(합성), 분석기 출력은 `docs/validation/placement/analysis/`에 있습니다. 분석기 플래그는 세션마다 `runner_warning:1`(draft 문구 경고, 의도한 것)뿐이었습니다. 외부 검토 CP7 반영 뒤 같은 설정으로 다시 만들었습니다(`conditionCompleted` true 5개, `object.boundingRadiusM` 0.1933, `layoutIgnored` false, 플래그는 그대로 `runner_warning:1`뿐, `config_mismatch` 없음). 2026-11-23 헤드셋 프로토타입(XR 패키지 추가) 뒤 같은 5개를 저장소 밖 임시 폴더에 다시 돌려 모두 완료, 분석기 플래그는 세션마다 `runner_warning:1`뿐이었습니다(`docs/validation/placement/`은 갱신하지 않음).
 
 ### 한계와 사람이 할 일
 
-- 헤드셋 실기 미검증. XR 입력 미구현(위 `IPlacementInput`). 패키지 추가는 팀 결정 뒤.
-- 참여자 글은 정면 2.5 m·높이 2.1 m에 고정(물체를 가리지 않게). VR에서 읽히는 크기·자리는 기기에서 봐야 합니다.
-- 잡힌 물체 강조, 광선 그리기(데스크톱은 마우스 커서가 대신함)는 없습니다.
+- 헤드셋 경로는 사람이 헤드셋을 쓰고 확인하지 않았습니다(`docs/headset-checklist.md`로 확인할 것).
+- 참여자 판은 정면 2.0 m·중심 높이 0.6 m(눈높이 1.6 m에서 약 27° 아래)에 고정입니다. 시작 자리(1.5 m, 높이 1.2 m)의 물체가 반지름 약 0.3 m까지면 판과 겹쳐 보이지 않게 잡은 값이고, 판 글은 깊이 검사를 해서 물체가 앞에 오면 물체가 글을 가립니다(글이 물체를 덮지 않음). 직접 배치에서 참여자가 물체를 판 앞으로 가져오면 글이 가려질 수 있습니다. 읽히는 크기·자리는 기기에서 봐야 합니다.
+- 데스크톱 모의 조작에서는 광선이 보이지 않습니다(마우스 커서가 대신함). 잡힌 물체 강조는 없습니다(XR 광선 끝이 물체 중심에 붙는 것으로만 보임).
 - 재생은 원본의 물체 위치만 따릅니다(원본 참여자의 머리 움직임은 재생하지 않음).
+- 눈 추적은 없습니다(Quest 3에는 눈 추적 장치가 없고, `headpose.csv`의 시선 각은 머리 방향 기준).
+
+## 헤드셋 연결 (Quest 3 + Quest Link, OpenXR)
+
+2026-11-23 추가. PC에서 Unity(에디터 Play 또는 Windows 빌드)를 돌리고 Quest 3를 Quest Link(케이블 또는 Air Link)로 연결합니다. 실험자는 PC 모니터와 키보드로 진행하고, 참여자는 헤드셋과 컨트롤러 하나를 씁니다. **사람이 헤드셋을 쓰고 확인하지는 않았습니다** — 처음 쓸 때 `docs/headset-checklist.md`를 따라 확인하고 결과를 적어 주세요. Quest 단독(Android) 빌드는 하지 않았습니다(후속).
+
+### 프로젝트에 들어간 것
+
+| 항목 | 값 |
+| --- | --- |
+| 패키지 | `com.unity.xr.management` 4.6.1, `com.unity.xr.openxr` 1.16.1, `com.unity.inputsystem` 1.20.0(OpenXR이 의존). Unity 6000.0.85 에디터가 권장하는 버전(에디터의 `PackageManager/Editor/manifest.json`). Meta XR SDK 같은 큰 SDK·분석 SDK는 넣지 않았습니다 |
+| Active Input Handling | **Both**(`ProjectSettings.asset`의 `activeInputHandler: 2`). 기존 코드가 구 Input Manager(`UnityEngine.Input`)를 쓰므로 둘 다 켜 둡니다 |
+| XR Plug-in Management(PC, Standalone) | OpenXR 로더, *Initialize XR on Startup* 켬 — `Assets/XR/XRGeneralSettingsPerBuildTarget.asset`, `Assets/XR/Loaders/OpenXRLoader.asset`, `EditorBuildSettings.asset`의 config 객체 |
+| OpenXR(Standalone) | Render Mode **Single Pass Instanced**, 상호작용 프로필 **Oculus Touch** + **Meta Quest Touch Plus** — `Assets/XR/Settings/OpenXRPackageSettings.asset` |
+| 다시 맞추기·확인 | 메뉴 **IFS ▸ XR ▸ Configure OpenXR (Windows, Quest Link)** · **IFS ▸ XR ▸ Report XR Settings**(배치: `-executeMethod IFS.SceneSpec.EditorTools.XrProjectSetup.ConfigureBatch` / `ReportBatch`). 코드는 `Editor/XR/XrProjectSetup.cs`(패키지가 있을 때만 컴파일) |
+
+XR 런타임 API는 러너 코드에서 직접 쓰지 않습니다. 러너는 내장 XR 모듈(`UnityEngine.XR.InputDevices`·`XRSettings`·`XRInputSubsystem`)만 읽으므로, XR 패키지 커밋을 되돌려도 러너는 데스크톱 모의 조작으로 그대로 컴파일·동작합니다.
+
+### 실행 순서(처음 한 번)
+
+1. PC에서 **Meta Horizon Link**(Oculus 앱)를 켜고 Quest 3를 USB-C 케이블(또는 Air Link)로 연결한 뒤, 헤드셋 안에서 Link를 시작합니다. Link 앱 ▸ 설정 ▸ 일반에서 OpenXR 런타임이 Meta(Oculus)로 "활성"인지 봅니다(이 PC는 레지스트리 `ActiveRuntime`가 `oculus_openxr_64.json`).
+2. Quest에서 경계(Guardian)를 **실제 바닥 높이**로 맞춰 둡니다(바닥 원판 y = 0이 실제 바닥과 맞으려면 필요).
+3. Unity에서 `Assets/IFS/Scenes/PlacementExperiment.unity`를 열고 **Play**. Game 창을 한 번 클릭해 키보드 포커스를 줍니다(Scene 창은 닫아 두는 편이 프레임에 좋습니다). XR은 Play를 누를 때만 초기화되므로, Link를 Play 뒤에 켰으면 Play를 다시 누릅니다.
+4. 실험자 화면 맨 위에 `머리: xr`, `XR: 헤드셋 켜짐(…)`, `추적 원점: Floor`가 보이는지 확인합니다. 참여자를 '나'의 자리(바닥 원판 가운데 둥근 표식)에 세우고 정면을 보게 한 뒤 **R**(정면 재설정)을 누릅니다 — 물체 시작 자리가 참여자 정면 1.5 m에 옵니다.
+5. Setup: 참여자 번호, spec, 조건·통제 방식, 참여자 입력(**auto** 그대로), 주 사용 손, (선택) 평정 기능·문구 파일 → **확인**. 경고(컨트롤러 안 보임, 추적 원점, 초안 문구)를 읽고 → **시작(Enter)**.
+6. 끝나면 실험자 화면에 기록 폴더가 나옵니다. 분석: `cd chatbot; .venv\Scripts\python.exe -m ifs_chatbot.eval.placement --records <기록 루트> --out <결과 폴더>`.
+
+Windows 빌드(선택): 메뉴 **IFS ▸ Experiment ▸ Build Placement Experiment (Windows)**(배치: `PlacementExperimentMenu.BuildWindowsBatch`) → `unity/Builds/Placement/IFSPlacement.exe`(git 제외). 빌드에서 spec 목록 폴더는 `persistentDataPath/IFS/scenes`(기본 `%USERPROFILE%\AppData\LocalLow\DefaultCompany\unity\IFS\scenes`, 실험자 화면에 경로가 보임)이고 기록은 `persistentDataPath/IFS/sessions`입니다. spec을 그 폴더에 넣거나 절대 경로를 적습니다. Link를 켠 뒤 exe를 실행합니다.
+
+### 컨트롤러 조작(참여자, 주 사용 손 하나 — 기본 오른손)
+
+| 조작 | 동작 |
+| --- | --- |
+| 광선(가는 파란 선 + 끝점 구) | 컨트롤러 조준 방향. 조건 단계의 직접 배치·가리켜 지정에서만 보입니다(`rayOnlyWhenUsable`). 끝은 잡은 물체 중심 → 맞은 물체 겉면 → 바닥 점 → 최대 8 m 순 |
+| 트리거(또는 그립) 누르고 있기 | 광선이 물체에 맞으면 잡기, 떼면 놓기. 다시 잡기 됨. 팔 길이보다 먼 물체도 광선으로 잡힘 |
+| 썸스틱 앞 / 뒤 | 잡은 물체 밀기 / 당기기(`pushPullSpeedMps` 1 m/s, 광선 원점에서 0.3–8 m, 바닥 원판 밖으로는 못 나감) |
+| A(오른손) · X(왼손) | 확인("여기에 둔다" / 가리킨 바닥 점 확정) |
+| 트리거 | 멈춤 거리 버튼. 누르는 순간만 셉니다(시행 전부터 누르고 있었으면 떼었다 다시) |
+| 썸스틱 좌·우 + 트리거 | 평정 고르기·확정 — `participantRatesWithController`를 켰을 때만(기본 꺼짐: 참여자는 말로 답하고 실험자가 숫자 키). 처음 젖히면 가운데 값(4)에서 시작, 판에서 고른 숫자가 파랗게 보임 |
+| 실험자 R | 정면 재설정(지금 머리 자리 = '나'의 자리, 보는 방향 = 정면). 세션 중이면 `events.csv`에 `recenter` |
+
+보기만 조건(static·system_move·replay)은 기존 규칙대로 잡기·밀기 입력을 받지 않습니다(테스트로 확인). 트리거 아날로그 값은 이력(0.55에서 눌림, 0.35에서 뗌)으로 떨림에 여러 번 눌리지 않게 했고, 썸스틱 데드존은 0.2입니다. 컨트롤러 추적이 끊기면 그 프레임은 입력이 없는 것으로 보고(잡은 물체는 놓임), 다시 잡혔을 때 계속 누르고 있던 버튼은 새 '눌림'으로 세지 않습니다.
+
+### 헤드셋 안 표시와 렌더
+
+- **참여자 판**(`PlacementTextPanel`): 정면 2.0 m, 판 중심 높이 0.6 m(눈높이 1.6 m에서 약 27° 아래), 판이 눈을 보게 기울어 있습니다. 글자 높이 약 5 cm(2 m에서 약 1.4°), 한 줄 20자, 옅은 회색 판 위 짙은 글. 한글은 기존 방식 그대로 OS 동적 폰트(맑은 고딕 등, `ParticipantTextDisplay.EnsureFont`)와 `TextMesh`입니다(uGUI·TextMeshPro 없음). 평정 단계에서는 문항 아래 1–7 숫자와 기준점 뜻을 칸마다 보입니다. TextMesh 기본 재질은 깊이 검사 없이 모든 것 위에 그리므로, 판 글 재질은 `unity_GUIZTestMode = LessEqual`로 바꿔 물체가 판 앞에 오면 물체가 글을 가리게 했습니다(글이 물체를 덮지 않음).
+- **실험자 화면**(IMGUI)은 PC 모니터의 Game 창에만 그려지고 헤드셋에는 나오지 않습니다.
+- **스테레오**: OpenXR 단일 패스 인스턴싱. 커스텀 셰이더 점검: `SceneSpecMist.shader`(정점/조각)는 스테레오 매크로를 갖추고 있었고, 조각 단계에서 물체 행렬을 읽으므로 인스턴스 ID를 조각 단계까지 넘기도록(`UNITY_TRANSFER_INSTANCE_ID`·조각의 `UNITY_SETUP_INSTANCE_ID`) 보탰습니다. `EnvironmentSky.shader`는 이미 갖춤(조각 단계에서 눈별 값을 쓰지 않음). `SceneSpecOpaque`·`SceneSpecFade`·`EnvironmentFloor`는 표면 셰이더라 Unity가 스테레오 코드를 만듭니다. 판·광선은 내장 셰이더(GUI/Text, Standard)입니다. 스테레오 인스턴싱 변형의 실제 컴파일·두 눈 일치는 헤드셋 Play에서만 확인됩니다(미검증). 문제가 있으면 `Assets/XR/Settings/OpenXRPackageSettings.asset`(Project Settings ▸ XR Plug-in Management ▸ OpenXR ▸ Render Mode)을 Multi Pass로 바꿔 비교합니다.
+- **카메라 리그**: `XR Rig ('나' 자리)`(원점 = '나'의 자리) 아래에 카메라. XR이 켜지면 추적 원점을 바닥(Floor)으로 요청하고, 카메라 로컬 자세 = 헤드셋 자세(`HeadPoseProvider`, 렌더 직전에 한 번 더). 기록 좌표계는 그대로입니다('나' = 원점, 바닥 y = 0, 정면 +z).
+
+### 헤드셋이 없을 때(자동 대체)
+
+`inputMode` auto(기본)에서 헤드셋이 없으면 데스크톱 모의 조작으로 돕니다. Link가 꺼진 채 Play하면 OpenXR 초기화가 실패하면서 콘솔에 OpenXR 경고·오류가 찍힐 수 있지만 Play는 계속되고 `머리: desktop`, `입력: desktop`이 됩니다. `inputMode` xr로 강제하면 헤드셋이 없을 때 확인 단계에서 시작을 거부합니다. 배치모드(테스트·자동 시행·씬 만들기·배치 캡처)는 Play가 아니라 XR을 시작하지 않습니다.
+
+### 문제 해결
+
+| 증상 | 확인할 것 |
+| --- | --- |
+| XR이 안 잡힘(`XR: 헤드셋 없음`, `머리: desktop`) | Link 앱 실행·헤드셋 안 Link 켜짐 → OpenXR 런타임이 Meta로 활성인지 → **Play 다시**(XR은 Play 시작 때만 초기화) → 콘솔의 OpenXR 메시지 → 메뉴 IFS ▸ XR ▸ Report XR Settings에서 `standalone.loaders=…OpenXRLoader`, `initManagerOnStart=True` → Project Settings ▸ XR Plug-in Management ▸ OpenXR의 *Play Mode OpenXR Runtime*이 System Default(또는 Oculus)인지 |
+| 컨트롤러가 안 보임(확인 화면 경고) | 컨트롤러를 흔들어 깨우기, 손 추적 모드면 컨트롤러를 집어 들기, 주 사용 손 설정(right/left) 확인. 경고만 뜨고 시작은 됩니다 |
+| 글자가 안 보임 | 판은 정면 아래쪽(약 27°)에 있습니다 — 고개를 조금 숙이게 안내. 물체·판이 엉뚱한 쪽이면 R(정면 재설정). 한글이 □로 나오면 확인 화면의 폰트 경고(맑은 고딕 없음). 물체를 판 앞으로 가져오면 글이 가려집니다(의도). 자리·크기는 `PlacementRunner ▸ Text Forward M / Text Height M`, `PlacementTextPanel ▸ Character Size` |
+| 바닥 높이가 안 맞음(원판이 떠 있거나 발 아래로 꺼짐) | 확인 화면 경고 "추적 원점이 바닥(Floor)이 아닙니다" → Quest 경계·바닥 높이를 다시 설정(헤드셋 설정 ▸ 물리적 공간 ▸ 경계/바닥) → Play 다시. 기록의 머리 높이(`headpose.csv` head_y)가 참여자 눈높이와 맞는지 봅니다 |
+| 물체가 정면에 없음·'나' 자리가 어긋남 | 참여자를 원판 가운데에 세우고 R. 세션 중에 누르면 기록 좌표가 그 순간 바뀌므로(`events.csv`의 `recenter`) 가능하면 시작 전에 맞춥니다 |
+| 끊김·멀미 | Scene 창을 닫고 Game 창만, 또는 Windows 빌드로 실행. 72 Hz 유지는 미측정 |
 
 ## 테스트
 
@@ -450,7 +525,7 @@ spec마다 참여자 번호를 하나씩 올립니다. 씬 만들기 배치: `-e
   -runTests -testPlatform EditMode -testResults <결과.xml> -logFile <로그>
 ```
 
-EditMode 192개(2026-11-22 배치 실험 러너 외부 검토 CP7 반영 뒤 배치모드로 전부 통과. 러너 추가 때 187개, 그 전 161개):
+EditMode 278개(2026-11-23 헤드셋 프로토타입 뒤 배치모드로 전부 통과. 그 전 257개, 배치 러너 CP7 반영 때 192개). 아래 표는 2026-11-22 기준이고, 그 뒤 더한 것은 표 아래에 적었습니다:
 
 | 파일 | 개수 | 내용 |
 | --- | --- | --- |
@@ -466,6 +541,14 @@ EditMode 192개(2026-11-22 배치 실험 러너 외부 검토 CP7 반영 뒤 배
 | `UnityOnly/PlacementRunnerTests.cs` | 3 | 배치 러너 + SceneLoader(EX02) 자동 시행 place → 그 궤적으로 view/replay, 세션 위치가 Unity 물체 위치에 그대로, 공간(반지름·윗면 y = 0·고리 끄기) |
 | `UnityOnly/OwnershipLoaderTests.cs` | 10 | `Load(path, null)`·빈 덮어쓰기도 golden과 같음, 변형본이 계획대로 그려지고 조정 기록에 남지 않음(3종), 잘못된 덮어쓰기 거부, 자동 시행 한 바퀴의 기록 폴더(draft 수·경고 포함), `requireSpecPhrases` 켜면 시작 거부, 합성 배경 = 하늘 지평선 색, 로더 `_BaseColor` = `RenderedColor.BaseSrgb`, 0.3초 밀린 프레임이 있는 자동 시행(표본 시각 중복 없음·빈 간격·형상마다 `viewing_start` ≤ 첫 표본) |
 
+2026-11-23 헤드셋 프로토타입에서 더한 것(21개):
+
+| 파일 | 개수 | 내용 |
+| --- | --- | --- |
+| `PlacementXrTests.cs` | 15 | 입력 고르기 규칙(XR 유/무 × auto·desktop·xr), 새 설정 기본값·검증, XR 입력 규칙(가짜 장치: 트리거 이력·눌린 순간, 그립, A 확인, 꺼 둔 동안·장치 끊김 뒤 가짜 눌림 없음, 썸스틱 데드존·평정 한 칸씩), 광선 끝 길이, view 조건에서 XR 잡기·밀기 무시, XR 밀기로 팔 길이 너머 → holdMaxM·바닥 경계 clamp → 당기기 holdMinM, anchors 숫자 키·기존 파일 호환·잘못된 키 거부, scaleA 파일(전부 draft·출처·순서·기준점·금지어), scaleA 한 바퀴(지시문 → 문항, 평정 21개), `hideObjectDuringItems`, 참여자 컨트롤러 평정(가운데에서 시작·트리거 확정·`by=controller`, 끄면 무시, 실험자 입력 우선), `recenter` 기록 |
+| `MistShaderSourceTests.cs` | +1 | 안개·하늘 셰이더의 스테레오 인스턴싱 매크로(인스턴스 ID를 조각 단계까지) |
+| `UnityOnly/PlacementRunnerXrTests.cs` | 5 | 씬 구성(리그 아래 눈높이 카메라, XR 없으면 정면 재설정 안 함), 헤드셋 없으면 auto → desktop·강제 xr 거부, 헤드셋 있음(흉내) + 가짜 컨트롤러 → `inputSource: xr`·잡기·밀기가 세션과 그리기에 반영·`xr_status`, 참여자 판 자리(정면 2 m, 눈높이 아래)·평정 기준점 줄·평정 동안 숨김, scaleA 자동 시행 |
+
 로그 확인: EditMode 로그에는 테스트 프레임워크의 스택 프레임 `UnityLogCheckDelegatingCommand:CaptureException`이 정상 실행에서도 찍힙니다(CP4 실행 36줄, 외부 리뷰 반영 실행은 로그 문구가 늘어 더 많음). 오류를 찾을 때는 `Select-String -Pattern 'error CS|Shader error|^\w*Exception:|\[Exception\]'`처럼 좁히거나 이 프레임을 빼고 셉니다(이번 실행 0건). 캡처 로그는 넓은 패턴(`Exception|error CS|Shader error`)으로도 0건입니다.
 
 ## 컴파일 확인 (dotnet)
@@ -476,7 +559,8 @@ Unity가 없는 곳(CI 등)에서는 `Tools/compile-check/`에서 dotnet으로 �
 cd unity/Tools/compile-check && dotnet build IFS.SceneSpec.CompileCheck.csproj && dotnet test Tests/IFS.SceneSpec.CompileCheck.Tests.csproj
 ```
 
-- Unity에 의존하지 않는 코드와 EditMode 테스트 파일은 실제 Newtonsoft·NUnit으로 컴파일·실행됩니다(168개, 2026-11-22 배치 실험 러너 CP7 반영 뒤. 러너 추가 때 163개, 그 전 140개). `Tests/Editor/UnityOnly/`는 실제 렌더가 필요해 뺍니다.
+- Unity에 의존하지 않는 코드와 EditMode 테스트 파일은 실제 Newtonsoft·NUnit으로 컴파일·실행됩니다(234개, 2026-11-23 헤드셋 프로토타입 뒤. 그 전 218개, 배치 러너 CP7 반영 때 168개). `Tests/Editor/UnityOnly/`는 실제 렌더가 필요해 뺍니다.
+- 헤드셋 경로(2026-11-23): 러너는 내장 XR 모듈 API만 쓰므로 `Stubs/UnityStubsXr.cs`(`XRSettings`·`XRInputSubsystem`·`SubsystemManager`·`Application.onBeforeRender`·Windows 빌드용 `BuildPipeline`)와 기존 스텁의 몇 줄(`InputDevice`의 bool·float·Vector2 값, `CommonUsages` 버튼들, `TextMesh.richText`, `Font.textureRebuilt`, `GUILayout.Toggle`, `KeyCode.R` 등)로 타입 검사합니다. XR 패키지 API를 쓰는 `Editor/XR/XrProjectSetup.cs`는 asmdef `versionDefines`(`IFS_HAS_OPENXR`·`IFS_HAS_XR_MANAGEMENT`)로 패키지가 있을 때만 컴파일되므로, compile-check에서는 빈 파일로 컴파일됩니다(그 파일의 타입 검사는 Unity에서만 — 2026-11-23 Unity 배치 실행으로 컴파일·실행 확인).
 - MonoBehaviour·Editor 스크립트는 UnityEngine/UnityEditor **스텁**(이름·시그니처만)으로 타입 검사만 합니다. 새 Unity API를 쓰면 `Stubs/UnityStubs.cs`(소유감 실험의 입력·글자·IMGUI·XR은 `Stubs/UnityStubsOwnership.cs`)에 같은 시그니처를 추가합니다. 배치 러너용으로 `Camera.ScreenPointToRay`, `Mathf.Max`, `Ray`, `Input.mousePosition`·`GetMouseButtonDown`, `KeyCode.E/F/Q`를 더했습니다.
 
 ## 한계

@@ -1,0 +1,240 @@
+{
+  "version": "0.1-scaleA",
+  "protocol": "placement-task",
+  "note": "docs/rq-v4-questionnaire-draft.md 3절의 주 척도안 A(7문항)와 보조 문항 S4–S8을 담은 선택용 문구 파일(2026-11-23). 모든 문구는 status draft(IRB 검토 전, 타당화 전 번안·수정판). 기본 문구 파일(placement_task.v0.json)은 그대로이고 Setup에서 고른다. 제외: S3(겹침 그림 IOS)은 그림 선택지가 필요해 이번 판에서 뺐다. S1(심리 거리)은 지시에 따라 S3과 함께 이번 묶음에서 뺐다(S1 자체는 글로 된 양극 척도라 그림 없이 anchors 1·4·7로 넣을 수 있다). S2는 초안에서 선택 문항이라 넣지 않았다. 문항 순서는 초안 3.7절(사전 A1–A7, S5, S6, S4, S8 / 사후 A1–A7, S5, S6, S7). 단계 안내 문구(intro 등)는 placement_task.v0.json과 같다.",
+  "texts": {
+    "intro": {
+      "text": "지금부터 물체 하나를 보여 드려요. 안내가 나오면 그대로 따라 주세요.",
+      "status": "draft",
+      "source": "배치 러너 진행 안내 초안(2026-11-22), IRB 검토 전 — placement_task.v0.json과 같은 문구"
+    },
+    "baseline": {
+      "text": "지금 이것을 편하게 바라봐 주세요.",
+      "status": "draft",
+      "source": "docs/rq-v4-proposal.md 4.3절 지시문 초안(2026-11-22), IRB 검토 전 — placement_task.v0.json과 같은 문구"
+    },
+    "condition_place": {
+      "text": "지금 이것이 있기에 알맞다고 느껴지는 자리에 놓아 주세요. 몇 번이든 다시 옮길 수 있어요. 정했으면 확인을 눌러 주세요.",
+      "status": "draft",
+      "source": "docs/rq-v4-proposal.md 4.3절 지시문 초안(2026-11-22), IRB 검토 전. 둘째·셋째 문장은 4.3절 형식(다시 옮기기 자유, 확정 동작)을 옮긴 것 — placement_task.v0.json과 같은 문구"
+    },
+    "condition_view": {
+      "text": "지금 이것을 편하게 바라봐 주세요.",
+      "status": "draft",
+      "source": "docs/rq-v4-proposal.md 4.3절 지시문 초안(2026-11-22), IRB 검토 전 — placement_task.v0.json과 같은 문구"
+    },
+    "condition_point_select": {
+      "text": "지금 이것이 있기에 알맞다고 느껴지는 자리를 바닥에서 가리키고 확인을 눌러 주세요. 그 자리로 옮겨 드려요.",
+      "status": "draft",
+      "source": "docs/rq-v4-proposal.md 4.3절 지시문 초안(2026-11-22)을 가리켜 지정 조건(X44)에 맞게 옮긴 것, IRB 검토 전 — placement_task.v0.json과 같은 문구"
+    },
+    "wait": {
+      "text": "잠시 기다려 주세요. 안내에 따라 다음으로 넘어가요.",
+      "status": "draft",
+      "source": "배치 러너 진행 안내 초안(2026-11-22), IRB 검토 전 — placement_task.v0.json과 같은 문구"
+    },
+    "stop_distance": {
+      "text": "이것이 움직이는 동안, 알맞다고 느껴지는 자리에 왔을 때 버튼을 눌러 주세요.",
+      "status": "draft",
+      "source": "docs/rq-v4-proposal.md 4.5절 멈춤 거리 지시문 초안(2026-11-22), IRB 검토 전 — placement_task.v0.json과 같은 문구"
+    },
+    "done": {
+      "text": "여기까지예요. 고맙습니다.",
+      "status": "draft",
+      "source": "배치 러너 진행 안내 초안(2026-11-22), IRB 검토 전 — placement_task.v0.json과 같은 문구"
+    },
+    "items_instruction": {
+      "text": "지금부터 몇 가지 문장을 보여 드리겠습니다. 문장 속 '이것'은 면담에서 말씀하신, 지금 마음에 걸려 있는 그것을 가리킵니다. 조금 전 본 물체는 그것을 말씀하신 대로 나타낸 것입니다. 평소가 아니라 바로 지금 이 순간을 기준으로, 각 문장이 지금의 나에게 얼마나 맞는지 골라 주세요. 맞거나 틀린 답은 없습니다.",
+      "status": "draft",
+      "source": "docs/rq-v4-questionnaire-draft.md 3.1절 공통 지시문(자작, SCFQ의 'at this moment' 지시를 따름, 2026-11-22), IRB 검토 전. '지금 마음에 걸려 있는'은 면담 첫 질문의 실제 고정 문구에 맞춰야 함(초안 3.1절 주)"
+    },
+    "items_instruction_post": {
+      "text": "앞에서 보신 문장이 다시 나옵니다. 앞의 답을 떠올려 맞추려 하지 마시고, 지금 이 순간을 기준으로 답해 주세요.",
+      "status": "draft",
+      "source": "docs/rq-v4-questionnaire-draft.md 3.1절 사후에만 덧붙이는 문장(자작, 2026-11-22), IRB 검토 전"
+    },
+    "A1": {
+      "text": "지금 이것 때문에 마음이 힘들다.",
+      "when": [
+        "pre",
+        "post"
+      ],
+      "anchors": {
+        "1": "전혀 그렇지 않다",
+        "2": "그렇지 않다",
+        "3": "약간 그렇지 않다",
+        "4": "반반이다",
+        "5": "약간 그렇다",
+        "6": "그렇다",
+        "7": "완전히 그렇다"
+      },
+      "status": "draft",
+      "source": "docs/rq-v4-questionnaire-draft.md 3.3절 주 척도안 A A1(CFQ-7 1번 수정. ⚑ 부정 정서를 전제함, 2026-11-22), IRB 검토 전. 기준점은 3.2절 A용 7점(자작, SCFQ 기준점 미입수)"
+    },
+    "A2": {
+      "text": "지금 나는 이것에 사로잡혀서 다른 데 마음을 두기 어렵다.",
+      "when": [
+        "pre",
+        "post"
+      ],
+      "anchors": {
+        "1": "전혀 그렇지 않다",
+        "2": "그렇지 않다",
+        "3": "약간 그렇지 않다",
+        "4": "반반이다",
+        "5": "약간 그렇다",
+        "6": "그렇다",
+        "7": "완전히 그렇다"
+      },
+      "status": "draft",
+      "source": "docs/rq-v4-questionnaire-draft.md 3.3절 주 척도안 A A2(CFQ-7 2번 수정, 2026-11-22), IRB 검토 전. 기준점은 3.2절 A용 7점(자작, SCFQ 기준점 미입수)"
+    },
+    "A3": {
+      "text": "지금 나는 도움이 안 될 만큼 이것을 이리저리 따지고 있다.",
+      "when": [
+        "pre",
+        "post"
+      ],
+      "anchors": {
+        "1": "전혀 그렇지 않다",
+        "2": "그렇지 않다",
+        "3": "약간 그렇지 않다",
+        "4": "반반이다",
+        "5": "약간 그렇다",
+        "6": "그렇다",
+        "7": "완전히 그렇다"
+      },
+      "status": "draft",
+      "source": "docs/rq-v4-questionnaire-draft.md 3.3절 주 척도안 A A3(CFQ-7 3번 수정, 2026-11-22), IRB 검토 전. 기준점은 3.2절 A용 7점(자작, SCFQ 기준점 미입수)"
+    },
+    "A4": {
+      "text": "지금 나는 이것과 씨름하고 있다.",
+      "when": [
+        "pre",
+        "post"
+      ],
+      "anchors": {
+        "1": "전혀 그렇지 않다",
+        "2": "그렇지 않다",
+        "3": "약간 그렇지 않다",
+        "4": "반반이다",
+        "5": "약간 그렇다",
+        "6": "그렇다",
+        "7": "완전히 그렇다"
+      },
+      "status": "draft",
+      "source": "docs/rq-v4-questionnaire-draft.md 3.3절 주 척도안 A A4(CFQ-7 4번 수정(SCFQ 대응 예시 참고), 2026-11-22), IRB 검토 전. 기준점은 3.2절 A용 7점(자작, SCFQ 기준점 미입수)"
+    },
+    "A5": {
+      "text": "이것이 내 안에 있다는 것 때문에 지금 나 자신을 탓하게 된다.",
+      "when": [
+        "pre",
+        "post"
+      ],
+      "anchors": {
+        "1": "전혀 그렇지 않다",
+        "2": "그렇지 않다",
+        "3": "약간 그렇지 않다",
+        "4": "반반이다",
+        "5": "약간 그렇다",
+        "6": "그렇다",
+        "7": "완전히 그렇다"
+      },
+      "status": "draft",
+      "source": "docs/rq-v4-questionnaire-draft.md 3.3절 주 척도안 A A5(CFQ-7 5번 수정. ⚑ 자기 비난을 전제함, 2026-11-22), IRB 검토 전. 기준점은 3.2절 A용 7점(자작, SCFQ 기준점 미입수)"
+    },
+    "A6": {
+      "text": "지금 나는 이것과 깊이 얽혀 있다.",
+      "when": [
+        "pre",
+        "post"
+      ],
+      "anchors": {
+        "1": "전혀 그렇지 않다",
+        "2": "그렇지 않다",
+        "3": "약간 그렇지 않다",
+        "4": "반반이다",
+        "5": "약간 그렇다",
+        "6": "그렇다",
+        "7": "완전히 그렇다"
+      },
+      "status": "draft",
+      "source": "docs/rq-v4-questionnaire-draft.md 3.3절 주 척도안 A A6(CFQ-7 6번 수정, 2026-11-22), IRB 검토 전. 기준점은 3.2절 A용 7점(자작, SCFQ 기준점 미입수)"
+    },
+    "A7": {
+      "text": "그만두는 편이 낫다는 걸 알면서도, 지금은 이것에 매달리기를 그만두기 어렵다.",
+      "when": [
+        "pre",
+        "post"
+      ],
+      "anchors": {
+        "1": "전혀 그렇지 않다",
+        "2": "그렇지 않다",
+        "3": "약간 그렇지 않다",
+        "4": "반반이다",
+        "5": "약간 그렇다",
+        "6": "그렇다",
+        "7": "완전히 그렇다"
+      },
+      "status": "draft",
+      "source": "docs/rq-v4-questionnaire-draft.md 3.3절 주 척도안 A A7(CFQ-7 7번 수정. ⚑ 의미가 조금 달라짐, 2026-11-22), IRB 검토 전. 기준점은 3.2절 A용 7점(자작, SCFQ 기준점 미입수)"
+    },
+    "S5": {
+      "text": "지금 나는 이것에 대해 더 알고 싶다.",
+      "when": [
+        "pre",
+        "post"
+      ],
+      "anchors": {
+        "1": "전혀 그렇지 않다",
+        "7": "매우 그렇다"
+      },
+      "status": "draft",
+      "source": "docs/rq-v4-questionnaire-draft.md 3.6절 보조 문항 S5 접근(자작, V3 '더 알고 싶다'에 '지금'·'이것'을 붙임, 2026-11-22), IRB 검토 전"
+    },
+    "S6": {
+      "text": "지금 나는 이것에서 주의를 거두고 싶다.",
+      "when": [
+        "pre",
+        "post"
+      ],
+      "anchors": {
+        "1": "전혀 그렇지 않다",
+        "7": "매우 그렇다"
+      },
+      "status": "draft",
+      "source": "docs/rq-v4-questionnaire-draft.md 3.6절 보조 문항 S6 회피(자작, V3 '주의를 거두고 싶다', 2026-11-22), IRB 검토 전"
+    },
+    "S4": {
+      "text": "방금 본 것이 얼마나 '내 것' 같나요?",
+      "when": "pre",
+      "anchors": {
+        "1": "전혀 내 것 같지 않다",
+        "7": "완전히 내 것 같다"
+      },
+      "status": "draft",
+      "source": "docs/rq-v4-questionnaire-draft.md 3.6절 보조 문항 S4 내 것 같다(자작, 기존 V3·research-design 4.1 문구 재사용, 공변량, 사전만, 2026-11-22), IRB 검토 전"
+    },
+    "S7": {
+      "text": "조금 전 이것과 함께 있던 시간 동안, 이것이 있던 자리는 내가 정했다.",
+      "when": "post",
+      "anchors": {
+        "1": "전혀 그렇지 않다",
+        "7": "매우 그렇다"
+      },
+      "status": "draft",
+      "source": "docs/rq-v4-questionnaire-draft.md 3.6절 보조 문항 S7 조작 확인(자작, V3 수정, 사후만 — 멈춤 거리 과제 앞, 2026-11-22), IRB 검토 전"
+    },
+    "S8": {
+      "text": "지금 이것은 나에게 어떻게 느껴지나요?",
+      "when": "pre",
+      "anchors": {
+        "1": "매우 싫다",
+        "4": "좋지도 싫지도 않다",
+        "7": "매우 좋다"
+      },
+      "status": "draft",
+      "source": "docs/rq-v4-questionnaire-draft.md 3.6절 보조 문항 S8 정서가(자작, 양극 척도, 사전 — 사후는 선택이라 넣지 않음, 2026-11-22), IRB 검토 전"
+    }
+  }
+}

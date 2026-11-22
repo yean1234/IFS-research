@@ -1,5 +1,5 @@
-// 참여자 입력(배치 실험). 데스크톱 모의 조작·자동 시행·(나중에) XR 컨트롤러가 같은 모양의 한 프레임 입력을 낸다.
-// 러너는 이 인터페이스만 본다 — XR 컨트롤러로 바꿀 때 IPlacementInput 구현 하나만 더하면 된다(unity/README.md 「배치 실험 러너」).
+// 참여자 입력(배치 실험). 데스크톱 모의 조작(DesktopPlacementInput)·자동 시행·XR 컨트롤러(XrPlacementInput)가 같은 모양의 한 프레임 입력을 낸다.
+// 러너는 이 인터페이스만 본다. 어느 것을 쓸지는 PlacementInputSelection(설정 inputMode)이 정한다.
 // 실험자 입력(평정 숫자·다음·중단)은 여기 넣지 않는다(실험자 키보드·화면이 따로 맡는다).
 // UnityEngine에 의존하지 않는다.
 namespace IFS.SceneSpec.Placement
@@ -26,6 +26,11 @@ namespace IFS.SceneSpec.Placement
         /// <summary>멈춤 거리 버튼을 누르고 있다(모르면 false). 세션은 직전 프레임에 눌려 있지 않았을 때의 StopDown만
         /// 누름으로 센다 — 시행 시작 전부터 누르고 있던 버튼이 시행을 바로 멈추지 않게(눌림 상태를 StopDown으로 주는 구현도 막는다).</summary>
         public bool StopHeld;
+        /// <summary>평정 고르기(참여자 컨트롤러, 설정 participantRatesWithController): 이 프레임에 썸스틱을 왼쪽(−1)·오른쪽(+1)으로
+        /// 젖힌 순간. 0 = 없음. 데스크톱·자동 시행은 쓰지 않는다.</summary>
+        public int RateStep;
+        /// <summary>평정 확정(참여자 컨트롤러): 이 프레임에 트리거를 누른 순간.</summary>
+        public bool RateSubmitDown;
     }
 
     public interface IPlacementInput

@@ -24,6 +24,7 @@ namespace UnityEngine
         public T GetComponent<T>() => default;
         public T[] GetComponentsInChildren<T>() => Array.Empty<T>();
         public T[] GetComponentsInChildren<T>(bool includeInactive) => Array.Empty<T>();
+        public T GetComponentInChildren<T>() => default;
     }
 
     public class Behaviour : Component
@@ -60,6 +61,8 @@ namespace UnityEngine
         public void SetParent(Transform parent, bool worldPositionStays) { }
         public void SetPositionAndRotation(Vector3 position, Quaternion rotation) { }
         public Matrix4x4 localToWorldMatrix => default;
+        public Vector3 TransformPoint(Vector3 position) => position;
+        public Vector3 TransformDirection(Vector3 direction) => direction;
     }
 
     public struct Matrix4x4
@@ -151,6 +154,7 @@ namespace UnityEngine
         public Material(Material source) { }
         public Shader shader { get; set; }
         public Color color { get; set; }
+        public Texture mainTexture { get; set; }
         public int renderQueue { get; set; }
         public int passCount => 0;
         public string GetPassName(int pass) => "";
@@ -363,6 +367,7 @@ namespace UnityEngine
         public static string unityVersion => "";
         public delegate void LogCallback(string condition, string stackTrace, LogType type);
         public static event LogCallback logMessageReceived { add { } remove { } }
+        public static event Events.UnityAction onBeforeRender { add { } remove { } }
     }
 
     public static class Debug
@@ -382,6 +387,7 @@ namespace UnityEngine
         public static float Atan2(float y, float x) => 0f;
         public static float Min(float a, float b) => a < b ? a : b;
         public static float Max(float a, float b) => a > b ? a : b;
+        public static int Max(int a, int b) => a > b ? a : b;
         public static float Lerp(float a, float b, float t) => a;
         public static float Clamp01(float v) => v;
         public static float Clamp(float value, float min, float max) => value;

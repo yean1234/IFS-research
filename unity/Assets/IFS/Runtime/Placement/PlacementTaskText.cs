@@ -2,6 +2,11 @@
 // ownership_task.v0.json과 같은 구조(version, protocol, texts.{key}.text · status(spec|draft) · source)에
 // 평정 문항용 필드를 더한다: when(pre | post | check, 또는 그 배열), anchors.low · anchors.high(1과 7의 뜻).
 // when이 있는 키 = 1–7 평정 문항. 단계마다 파일에 적힌 순서대로 묻는다. 필요한 키가 빠지면 오류(실험을 시작하지 않음).
+// 2026-11-23 추가(선택, 기존 파일은 그대로 유효):
+//   · anchors의 숫자 키("1"…"7"): 기준점마다의 뜻(예: 1 전혀 그렇지 않다 … 7 완전히 그렇다, 양극 척도면 가운데 4도).
+//     low·high가 없으면 숫자 키의 양 끝 값을 low·high로 쓴다. anchors의 다른 키(low·high·숫자 밖)는 오류.
+//   · items_instruction(공통), items_instruction_pre · _post · _check(단계별 덧붙임): 평정 단계 첫 문항 앞에 보이는 지시문.
+//     공통과 단계별이 둘 다 있으면 공통 뒤에 줄을 바꿔 단계별을 붙인다. 실험자 Enter(다음)로 첫 문항으로 넘어간다.
 // UnityEngine에 의존하지 않는다.
 using System;
 using System.Collections.Generic;
@@ -21,11 +26,27 @@ namespace IFS.SceneSpec.Placement
         public string[] When;
         public int Min = 1;
         public int Max = 7;
+        /// <summary>기준점별 뜻(anchors의 숫자 키). 없으면 비어 있다.</summary>
+        public SortedDictionary<int, string> Points = new SortedDictionary<int, string>();
+
+        /// <summary>기준점 v의 뜻: 숫자 키 → (v가 양 끝이면) low·high → 없으면 null.</summary>
+        public string AnchorAt(int v)
+        {
+            if (Points != null && Points.TryGetValue(v, out var s)) return s;
+            if (v == Min) return AnchorLow;
+            if (v == Max) return AnchorHigh;
+            return null;
+        }
     }
 
     public sealed class PlacementTaskText
     {
         public const string DefaultRelativePath = "IFS/placement_task.v0.json";
+        /// <summary>StreamingAssets 안에서 고를 수 있는 문구 파일(이 폴더의 placement_task*.json).</summary>
+        public const string TaskTextFolder = "IFS";
+        public const string TaskTextPattern = "placement_task*.json";
+        /// <summary>평정 지시문 키(선택). 단계별 키는 InstructionKey + "_" + when.</summary>
+        public const string InstructionKey = "items_instruction";
         public const string WhenPre = "pre";
         public const string WhenPost = "post";
         public const string WhenCheck = "check";
@@ -66,6 +87,34 @@ namespace IFS.SceneSpec.Placement
 
         public bool HasDraft => DraftKeys.Count > 0;
 
+        /// <summary>평정 단계(when)의 지시문 키(파일에 있는 것만, 보일 순서). 없으면 빈 목록.</summary>
+        public List<string> InstructionKeysFor(string when)
+        {
+            var keys = new List<string>();
+            if (_text.ContainsKey(InstructionKey)) keys.Add(InstructionKey);
+            if (when != null && _text.ContainsKey(InstructionKey + "_" + when)) keys.Add(InstructionKey + "_" + when);
+            return keys;
+        }
+
+        /// <summary>평정 단계(when)의 지시문(공통 + 줄바꿈 + 단계별). 없으면 null.</summary>
+        public string InstructionFor(string when)
+        {
+            var keys = InstructionKeysFor(when);
+            return keys.Count == 0 ? null : string.Join("\n", keys.Select(k => _text[k]));
+        }
+
+        /// <summary>StreamingAssets/IFS 안의 문구 파일(이름순, StreamingAssets 기준 상대 경로). 폴더가 없으면 빈 목록.</summary>
+        public static List<string> ListTaskTextFiles(string streamingAssetsPath)
+        {
+            var dir = Path.Combine(streamingAssetsPath ?? "", TaskTextFolder);
+            if (!Directory.Exists(dir)) return new List<string>();
+            return Directory.GetFiles(dir, TaskTextPattern)
+                .Select(Path.GetFileName)
+                .OrderBy(n => n, StringComparer.Ordinal)
+                .Select(n => TaskTextFolder + "/" + n)
+                .ToList();
+        }
+
         /// <summary>평정 문항을 참여자 화면에 보일 글: 문항 + 줄바꿈 + "1(…) — 7(…)".</summary>
         public static string ItemDisplay(PlacementItem item)
         {
@@ -92,15 +141,30 @@ namespace IFS.SceneSpec.Placement
                 t._status[p.Name] = status;
                 var when = item["when"];
                 if (when == null || when.Type == JTokenType.Null) continue;
+                if (p.Name.StartsWith(InstructionKey, StringComparison.Ordinal))
+                    throw new FormatException(p.Name + ": 지시문 키에는 when을 쓰지 않습니다");
                 string[] whens = when.Type == JTokenType.Array ? when.Select(w => (string)w).ToArray() : new[] { (string)when };
                 if (whens.Length == 0 || whens.Any(w => !WhenValues.Contains(w)))
                     throw new FormatException(p.Name + ": when은 pre | post | check(또는 그 배열)");
                 var anchors = item["anchors"] as JObject;
-                t._items.Add(new PlacementItem
+                var it = new PlacementItem
                 {
                     Key = p.Name, Text = text, When = whens,
                     AnchorLow = (string)anchors?["low"], AnchorHigh = (string)anchors?["high"],
-                });
+                };
+                foreach (var a in anchors?.Properties() ?? Enumerable.Empty<JProperty>())
+                {
+                    if (a.Name == "low" || a.Name == "high") continue;
+                    if (!int.TryParse(a.Name, System.Globalization.NumberStyles.None, System.Globalization.CultureInfo.InvariantCulture, out int v)
+                        || v < it.Min || v > it.Max)
+                        throw new FormatException($"{p.Name}: anchors의 키는 low | high | {it.Min}–{it.Max} 숫자({a.Name})");
+                    string label = (string)a.Value;
+                    if (string.IsNullOrWhiteSpace(label)) throw new FormatException($"{p.Name}: anchors.{a.Name}이 비어 있습니다");
+                    it.Points[v] = label;
+                }
+                if (it.AnchorLow == null && it.Points.TryGetValue(it.Min, out var lo)) it.AnchorLow = lo;
+                if (it.AnchorHigh == null && it.Points.TryGetValue(it.Max, out var hi)) it.AnchorHigh = hi;
+                t._items.Add(it);
             }
             foreach (var k in RequiredKeys)
                 if (!t._text.ContainsKey(k)) throw new FormatException("문구가 없습니다: " + k);

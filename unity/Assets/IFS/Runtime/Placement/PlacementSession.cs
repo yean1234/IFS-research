@@ -72,6 +72,8 @@ namespace IFS.SceneSpec.Placement
         string _itemsWhen;
         int? _pending;
         double _askedAt, _pendingAt;
+        bool _instruction;   // 평정 지시문을 보이는 중(첫 문항 전)
+        int? _cursor;        // 참여자 컨트롤러로 고르는 중인 값(participantRatesWithController)
 
         // 멈춤 거리
         List<StopTrialPlan> _stopPlan;
@@ -146,9 +148,16 @@ namespace IFS.SceneSpec.Placement
         /// <summary>참여자에게 보일 글(없으면 null).</summary>
         public string ParticipantText { get; private set; }
         public PlacementItem CurrentItem => (Phase == PlacementPhase.PreItems || Phase == PlacementPhase.PostItems || Phase == PlacementPhase.CheckItems)
-            && _items != null && _itemIndex < _items.Count ? _items[_itemIndex] : null;
+            && !_instruction && _items != null && _itemIndex < _items.Count ? _items[_itemIndex] : null;
         public string CurrentItemWhen => _itemsWhen;
         public int? PendingRating => _pending;
+        /// <summary>평정 단계의 지시문을 보이는 중(첫 문항 전, 실험자 Enter로 넘어감).</summary>
+        public bool ItemsInstructionActive => InItems && _instruction;
+        /// <summary>참여자가 컨트롤러로 고르는 중인 값(participantRatesWithController, 아직 확정 전). 없으면 null.</summary>
+        public int? RatingCursor => CurrentItem != null ? _cursor : null;
+        /// <summary>지금 문항 번호(1부터)와 이 단계의 문항 수. 평정 단계가 아니면 (0, 0).</summary>
+        public int ItemNumber => CurrentItem != null ? _itemIndex + 1 : 0;
+        public int ItemCount => InItems && _items != null ? _items.Count : 0;
         public bool StopTrialsStarted => _stopStarted;
         public bool StopTrialActive => _trialActive;
         public StopTrialPlan CurrentStopTrial => _stopIndex >= 0 && _stopIndex < _stopPlan.Count ? _stopPlan[_stopIndex] : null;
@@ -197,6 +206,13 @@ namespace IFS.SceneSpec.Placement
 
         static string Where(PVec3 p) =>
             $"distance_m={F(PlacementGeometry.HorizontalDistance(p))};azimuth_deg={F(PlacementGeometry.AzimuthDeg(p), "0.00")};height_m={F(p.Y)}";
+
+        /// <summary>러너가 남기는 사건(예: recenter — 정면 재설정). 끝난 뒤에는 무시한다.</summary>
+        public void Note(string ev, string detail)
+        {
+            if (Finished || string.IsNullOrEmpty(ev)) return;
+            Event(ev, detail ?? "");
+        }
 
         /// <summary>머리 자세 공급원이 바뀌면 events.csv에 head_source로 남긴다.</summary>
         public void SetHeadSource(string source)
@@ -252,9 +268,20 @@ namespace IFS.SceneSpec.Placement
                     _itemIndex = 0;
                     // 사전 문항은 시작 자리, 사후·점검 문항은 조건 단계가 끝난 자리에 물체를 둔다
                     SetObject(p == PlacementPhase.PreItems ? StartPosition : _conditionFinal, false);
-                    _visible = true;
+                    _visible = !_cfg.hideObjectDuringItems;   // 설정으로 평정 동안 숨길 수 있다(기본은 보임)
                     _state = StateIdle;
-                    AskItem();
+                    var instructionKeys = _text.InstructionKeysFor(when);
+                    if (instructionKeys.Count > 0)
+                    {
+                        // 문구 파일에 평정 지시문이 있으면 첫 문항 앞에 보인다(실험자 Enter로 넘어감)
+                        _instruction = true;
+                        _pending = null;
+                        _cursor = null;
+                        ParticipantTextKey = string.Join("+", instructionKeys);
+                        ParticipantText = _text.InstructionFor(when);
+                        Event("items_instruction", $"when={when};keys={string.Join("+", instructionKeys)}");
+                    }
+                    else AskItem();
                     break;
                 }
                 case PlacementPhase.PreWait:
@@ -282,11 +309,46 @@ namespace IFS.SceneSpec.Placement
 
         void AskItem()
         {
+            _instruction = false;
             var item = _items[_itemIndex];
             ParticipantTextKey = item.Key;
             ParticipantText = PlacementTaskText.ItemDisplay(item);
             _pending = null;
+            _cursor = null;
             _askedAt = _now;
+        }
+
+        // 참여자 컨트롤러 평정(participantRatesWithController). 썸스틱 좌우 = 값 고르기(처음 젖히면 가운데 값에서 시작),
+        // 트리거 = 고른 값 확정(바로 기록). 실험자가 이미 숫자를 넣었으면(확정 전) 참여자 확정은 무시하고 실험자 Enter를 기다린다.
+        void StepItems(PlacementInputFrame input)
+        {
+            if (!_cfg.participantRatesWithController) return;
+            var item = CurrentItem;
+            if (item == null) return;
+            if (input.RateStep != 0)
+            {
+                int mid = (item.Min + item.Max) / 2;
+                _cursor = _cursor == null ? mid : Math.Min(item.Max, Math.Max(item.Min, _cursor.Value + Math.Sign(input.RateStep)));
+            }
+            if (input.RateSubmitDown && _cursor != null && _pending == null)
+            {
+                _pending = _cursor.Value;
+                _pendingAt = _now;
+                RecordPending("controller");
+            }
+        }
+
+        /// <summary>확정 전 평정(_pending)을 ratings.csv에 쓰고 다음 문항(또는 다음 단계)으로 간다.</summary>
+        void RecordPending(string by)
+        {
+            var item = CurrentItem;
+            int v = _pending.Value;
+            long rt = Ms(_pendingAt - _askedAt);
+            _writer.Rating(item.Key, _itemsWhen, v, rt);
+            Event("rating", $"item={item.Key};when={_itemsWhen};rating={v};rt_ms={rt}" + (by != null ? ";by=" + by : ""));
+            _itemIndex++;
+            if (_itemIndex < _items.Count) AskItem();
+            else GoTo(NextOf(Phase));
         }
 
         // ── 조건 단계 ────────────────────────────────────────────────────
@@ -616,17 +678,9 @@ namespace IFS.SceneSpec.Placement
                 case PlacementPhase.PreItems:
                 case PlacementPhase.PostItems:
                 case PlacementPhase.CheckItems:
+                    if (_instruction) { AskItem(); return; }   // 지시문 → 첫 문항(rt는 문항이 보인 때부터)
                     if (_pending == null) return;
-                    {
-                        var item = CurrentItem;
-                        int v = _pending.Value;
-                        long rt = Ms(_pendingAt - _askedAt);
-                        _writer.Rating(item.Key, _itemsWhen, v, rt);
-                        Event("rating", $"item={item.Key};when={_itemsWhen};rating={v};rt_ms={rt}");
-                        _itemIndex++;
-                        if (_itemIndex < _items.Count) AskItem();
-                        else GoTo(NextOf(Phase));
-                    }
+                    RecordPending(null);   // 실험자 입력: events.csv rating 상세는 예전 형식 그대로
                     break;
             }
         }
@@ -653,6 +707,7 @@ namespace IFS.SceneSpec.Placement
             _head = head;
             bool stopPress = input.StopDown && !_stopPrevHeld;   // 내려가는 순간만(미리 누르고 있던 버튼은 떼었다 다시 눌러야 함)
             _stopPrevHeld = input.StopHeld || input.StopDown;
+            if (InItems) StepItems(input);
             switch (Phase)
             {
                 case PlacementPhase.Baseline:
