@@ -11,7 +11,7 @@ Holodeck(CVPR 2024)처럼 "자연어 → 구조화된 장면 JSON → Unity" 순
 
 - 형식: `shared/schemas/scene-spec.v2.json` (JSON Schema 2020-12). 개선 매핑 v1의 출력은 상위 호환 `scene-spec.v2.1.json`(6절)
 - 정답 예시: `chatbot/tests/fixtures/scene_spec/EX01.json`, `EX02.json`
-- 만드는 코드: `chatbot/ifs_chatbot/scene_builder.py`(v0, 규칙 기반 기준선), `scene_builder_v1.py`(v1, 개선 매핑 — 6절) (형식 도우미는 `scene_spec.py`)
+- 만드는 코드: `chatbot/ifs_chatbot/scene_builder.py`(v0, 규칙 기반 기준선), `scene_builder_v1.py`(v1, 개선 매핑 — 6절), `scene_builder_v2.py`(v2, RQ V4 새 흐름 설정에서만 — 7절) (형식 도우미는 `scene_spec.py`)
 - 읽는 코드: `unity/Assets/IFS/Runtime/` (`SceneSpecV2.cs`, `SceneLoader.cs`)
 - 결정 기록: `docs/decision-log.md`
 
@@ -194,7 +194,7 @@ v0(`scene_builder.py`)는 비교 기준선이라 그대로 두고, 개선 매핑
 
 | 키 | 기본 | 뜻 |
 | --- | --- | --- |
-| `mode` | `"v1"` | 주 매핑. `scenes/{sessionId}.json`을 만든다. `"v0"`이면 규칙 기반 기준선 |
+| `mode` | `"v1"` | 주 매핑. `scenes/{sessionId}.json`을 만든다. `"v0"`이면 규칙 기반 기준선. `"v2"`는 RQ V4 새 흐름 설정(`config/v4.toml`)에서만 쓴다(7절) |
 | `save_both` | `true` | 같은 확정 텍스트로 `scenes/{sessionId}.v0.json`(순수 v0, specVersion 2.0.0)과 `.v1.json`도 만든다 — 비교 설계(`docs/research-design.md` 3.1). 철회하면 셋 다 지운다 |
 | `clarify_loop` | `false` | 확인 질문 루프(`docs/chatbot-design.md` 5-1). 확증 비교에서는 끈다 |
 | `clarify_max` | `2` | 확인 질문 최대 횟수 |
@@ -219,3 +219,86 @@ cd chatbot
 - 참조 사물 크기표(m)·색 이름 HSL·색 수식 비율·정도 부사 배율·높이어 값은 모두 초안입니다(`status: draft`). 출처 문헌이 없고 연구팀 확인이 필요합니다.
 - ⚠ **크기 가정.** 말한 물리 크기 m(가장 긴 변)를 `size = 0.5 + log2(m / 0.2 m) / 6`로 옮깁니다. size 0.5 = 20 cm, 0 = 2.5 cm, 1 = 1.6 m입니다. 렌더 배율(×0.25–×4, 16배)에 사람이 말하는 크기 범위(손톱–사람 키, 약 64배)를 압축해 넣은 것이라, Unity에서 보이는 크기는 말한 크기와 1:1이 아닙니다(Unity 기본 크기 0.35 m 기준 30 cm → 약 0.46 m). 물리 크기를 그대로 쓰려면 `_measurements.meters`를 씁니다.
 - 거리는 v2 정의(0.3–3.0 m 선형) 그대로입니다.
+
+## 7. RQ V4 실험 프로토타입(2026-11-23): 매퍼 v2, 출처 네 가지, 기본 형상 경로(계획), 스키마 영향
+
+근거: `docs/prompts/prototype-v4-build.md` 단계 C·D, `docs/decisions.md` G14–G28. 구현 결과는 `docs/validation/mapper-v2/README.md`(D1·D2), `docs/validation/selection-flow/README.md`(D3·D5·D9), `docs/validation/runner-selection/README.md`(D8)에 있습니다.
+
+### 7.1 매퍼 v2와 v0·v1의 관계 (G24)
+
+- 매퍼 수정(D1 사전에 없는 명사 기록, D2 형상이 사라지거나 눈앞을 가리는 오류)은 **새 빌더 `scene_builder_v2.py`**에만 넣었습니다. `SceneSpecBuilderV1`을 상속하고 바뀌는 메서드만 다시 씁니다. 규칙과 수치는 `shared/lexicon/scene_params.v2.json`, 불용 명사는 `noun_stoplist.v2.json`입니다.
+- **v0·v1 출력은 바뀌지 않습니다.** v0·v1의 코드와 사전 파일은 고치지 않았습니다. v0 sha256 고정 테스트(`chatbot/tests/test_scene_builder_v1.py::test_v0_output_byte_identical_to_baseline_hashes`, 고정값 `fixtures/v0_output_sha256.json`), 목업 v1 spec 36개 바이트 비교(`test_scene_builder_v2.py::test_v1_mock_specs_unchanged`), Unity v1 예시 비교(`test_unity_v1_examples_are_current_v1_output`)가 그대로 통과합니다. held-out v1 수치(반영률 0.698 등)도 그대로 유효합니다.
+- **v2는 새 흐름 설정에서만 씁니다.** `chatbot/config/v4.toml`의 `[mapping] mode = "v2"`입니다. 기본 설정(`default.toml`·`pilot.toml`)과 `MappingConfig.mode` 기본값은 v1 그대로이고, v2 빌더는 v2를 요청할 때만 만듭니다(`test_default_mode_is_unchanged_and_v2_not_built`). v4 설정은 `save_both = true`라 같은 확정 텍스트로 `scenes/{sessionId}.v0.json`·`.v1.json`·`.v2.json` 비교 파일도 남깁니다.
+- v2는 dev 코퍼스와 목업 36개만 보고 고쳤습니다. 목업 v1 → v2는 반영률 0.765 → 0.775, 왜곡률 0.060 → 0.045입니다(개발 자료 수치). held-out은 열지 않았고, v2를 주 매핑으로 보고하려면 규칙을 보지 않은 사람이 쓴 새 평가 문장이 필요합니다(X13).
+- 스키마를 바꾸지 않았기 때문에 v2 출력은 `specVersion` 2.1.0입니다. `meta.mapping = {requested: "v2", used: "v1", fallbackReason: null}`(2.1 스키마의 `used`가 v0·v1만 받음)과 `meta.pipeline.builder = "scene-spec-builder-v2/…"`로 v2임을 남기고, 대체 판정은 `scene_spec.is_mapping_fallback()`이 합니다.
+
+### 7.2 사전에 없는 명사 (`_unmapped`, category `unlisted_noun`)
+
+v1까지는 사전에 없는 명사(화분, 물병, 인형)가 기록 없이 사라졌습니다. v2는 확정 텍스트의 명사(Kiwi NNG·NNP) 가운데 다음을 모두 만족하는 것을 `_unmapped`에 남깁니다. 규칙은 결정적입니다(같은 텍스트 → 같은 목록).
+
+1. 1층 사전(v0 + v1 오버레이, 표제어·이형 562개)에 없음
+2. 값 근거(`_provenance`)와 다른 보존 기록(`_unmapped`·`_negated`·`_alternatives`·`_context`·`_parts`·`_measurements`·`_direction`·`_needsConfirmation`)이 이미 덮지 않음
+3. 불용 명사(326개: 신체 부위·시간·장소 일반어·기능·차원·감정 명사 등)가 아님
+4. 바로 뒤에 -하다가 붙지 않음('퇴근하고'의 퇴근은 빠짐)
+
+```json
+{"lemma": "화분", "category": "unlisted_noun", "reason": "no_scene_param",
+ "value": {"noun": "화분", "role": "subject", "scope": "main"},
+ "_provenance": {"source": "phrase_rule", "trigger": "화분", "charSpan": [9, 11], "rule": "unlistedNoun.화분"}}
+```
+
+- `role`은 뒤에 붙은 조사로 정합니다(subject·named·location·object·modifier·other). `scope`는 맥락 명사(회상 문장, 상황 명사, '생각나다' 류 문장 등)면 `context`, 아니면 `main`입니다. 둘 다 조사·문장 규칙이라 사람이 판단한 "형상 명사"와 같지 않습니다(예: '창가에 작은 화분이 있어요'에서는 '창가'도 `main`으로 남습니다).
+- `reason`과 `_provenance.source`는 2.1 스키마 enum에 "사전에 없음"이 없어 가장 가까운 값(`no_scene_param`, `phrase_rule`)을 썼습니다. 2.2.0에서 값을 더할지는 정하지 않았습니다.
+- 사전에 없는 명사는 **기록만** 합니다. 대신할 형상을 고르지 않고 값도 만들지 않습니다(원칙 2). 화면에는 기본 모형이 그려지고, 후보 단계에서 형태 자리는 비어 있는 것으로 봅니다.
+
+### 7.3 속성 출처 네 가지는 spec이 아니라 `selection.json`에 (G15)
+
+| 출처 | 뜻 | 어디에 |
+| --- | --- | --- |
+| 말함(`said`) | 확정 텍스트에서 규칙이 읽은 값 | spec의 `_provenance`(지금과 같음). `selection.json`의 `sources`에도 `said` |
+| 고름(`chosen`) | 고른 후보가 정한 값(후보의 축 슬롯) | `selection.json`에만 |
+| 고침(`edited`) | 조절에서 마지막 값이 처음 값과 다른 슬롯. 말한 값을 고치면 `edited`가 되고 `sourceDetails.saidValue`에 원래 값이 남음 | `selection.json`에만 |
+| 기본값(`default`) | 아무도 정하지 않아 기본값으로 그려지는 슬롯 | `selection.json`에만(Unity 기록의 `defaultsUsed`와 같은 뜻) |
+
+- **`_provenance`는 "말함"만 뜻하게 그대로 둡니다.** `_provenance`에 고름·기본값을 넣으면 참여자가 말한 것처럼 보이기 때문입니다. 원본 spec은 후보·조절 단계에서 바뀌지 않습니다(G14).
+- `selection.json`(형식 `ifs-selection/0.1`, 스키마 `shared/schemas/selection.v0.1.json`)은 세션 기록 폴더(`<log_dir>/selection/<sessionId>/`, git 밖)에 생깁니다. 헤드셋 러너는 원본 spec과 이 파일을 함께 읽고, `specSha256`(원본 spec 파일 바이트의 sha256)이 다르면 시작을 거부합니다.
+- 헤드셋 러너는 지금 `sources`를 해석하지 않고 기록에 옮깁니다. 출처 값 검사(G27)와 `spec.sha256Basis`가 파일 기준이 아니면 거부하는 것(G26)은 판정만 됐고 구현 전입니다.
+
+### 7.4 덮어쓰기 키 형식
+
+후보 하나와 최종 형상은 "원본 spec + 덮어쓰기"입니다. 덮어쓰기는 Unity `SceneOverrideJson`이 받는 **평평한 객체**입니다.
+
+```json
+{"form.type": "mist", "layout.size": 0.7, "material.color.h": 0.583, "material.color.s": 0.6, "material.color.l": 0.5}
+```
+
+- 수치 키는 0–1 숫자, 범주 키는 문자열입니다. 쓰는 키는 `form.type`, `motion.type`, `material.color.h`·`.s`·`.l`(색은 세 키로 나뉨, `SceneParams.NumericKeys`), `material.brightness`, `material.opacity`, `material.roughness`, `layout.size`입니다(선택 기록 스키마의 `flatOverrides`).
+- 위치·거리 키(`layout.distance`·`layout.verticalOffset`)는 들어갈 수 없습니다(G10). 선택 기록 스키마와 헤드셋 러너가 둘 다 거부합니다.
+- Unity `SceneOverrideJson`은 모양 모형을 강제하는 `shapeModel` 키도 받지만, 챗봇은 이 키를 쓰지 않습니다.
+
+### 7.5 낱말 → 범주 → 기본 형상(`form.base`) 경로 — 계획, 아직 구현하지 않음
+
+**이 절은 계획입니다.** 기본 형상 경로(단계 D6)는 에셋 계획(`docs/asset-plan.md`, `status: draft`)을 연구 책임자가 승인한 뒤에 합니다. 지금 코드·스키마·사전에는 `form.base`가 없고, 형태 값은 `form.type` 네 개(blob·mist·shell·fragments)뿐입니다.
+
+- **표현(G21):** 기본 형상은 새 슬롯 `form.base`로 둡니다. `form.type`은 표면·밀도 방식(덩어리·안개·껍질·조각)으로 그대로 둡니다. `form.type`에 섞으면 렌더 경로 선택과 소유감 러너의 형태 변형 규칙(X22·X23)이 흔들리기 때문입니다. `_unmapped`는 반영하지 못한 말의 기록이지 렌더 값이 아니므로 그 경로를 넓히지 않습니다.
+- **경로(에셋 계획 3절 제안):** 새 사전 `shared/lexicon/base_shapes.v1.json`의 명사 → 범주(담는 것·선·끈·얇은 판·불꽃·물방울) → `form.base` 키(`container`·`line`·`sheet`·`flame`·`drop`, 이름은 승인 대상). 기본 형상 목록은 "IFS가 정한 범주"가 아니라 "문헌을 참고해 연구팀이 정한 목록"입니다(G6).
+- **어떤 명사가 base가 되는가(제안):** 7.2의 `role`이 형상 자체(subject·named)이고 `scope`가 `main`일 때만입니다. 부정·회상·맥락 문장의 명사는 쓰지 않습니다. 사전에 없는 명사는 지금처럼 `_unmapped`(`unlisted_noun`)에 남고 `form.base`는 null입니다.
+- **출처:** `form.base`를 말했으면 `_provenance`에 근거가 생기고 `selection.json`에서 `said`입니다. 말하지 않았으면 후보에서 기본 형상을 내밀지 않을 것을 제안합니다(에셋 계획 결정 8). 조절의 "형태" 항목에 승인된 기본 형상을 둘지도 같은 결정에 걸려 있습니다.
+- **`form.type`과 함께 있을 때(제안, 결정 10):** 첫 묶음에서는 `form.type`이 비었거나 blob일 때만 base를 그립니다.
+
+### 7.6 스키마 영향
+
+**이번 작업에서 SceneSpec 스키마는 바뀌지 않았습니다.** `scene-spec.v2.json`(2.0.0)과 `scene-spec.v2.1.json`(2.1.0) 그대로이고, 매퍼 v2도 2.1.0 문서를 냅니다. **새 스키마는 `shared/schemas/selection.v0.1.json`(선택 기록) 하나뿐입니다.** 헤드셋 러너 기록 형식은 `ifs-placement/0.1` → `0.2`로 올렸지만 추가만 했습니다(`unity/README.md` 배치 러너 기록 절).
+
+`form.base`를 넣어 스키마를 2.2.0으로 올리면(계획) 영향은 아래와 같습니다. 코드를 읽어 확인한 것이고, 아직 아무것도 바꾸지 않았습니다.
+
+| 어디 | 지금 | 2.2.0에서 해야 할 일 / 영향 |
+| --- | --- | --- |
+| v0 출력과 고정 해시 | v0 빌더는 2.0.0 문서를 냄 | **영향 없음.** v0 코드·사전을 건드리지 않으면 `v0_output_sha256.json` 고정 테스트와 golden 파일 비교가 그대로 통과 |
+| v1 출력과 기존 평가 | v1은 2.1.0 문서를 냄 | **영향 없음.** 목업 v1 36개 바이트 비교, Unity v1 예시, held-out v1 수치가 그대로. 채점기의 정답 라벨에 `form.base`가 없으므로 v1 채점 결과도 같음 |
+| v2 출력 | 2.1.0 | `form.base`를 내는 것은 v2뿐(G21). v2 출력 바이트가 바뀌므로 후보 출력 고정 해시(`test_candidates.py::test_output_sha256_is_pinned`)와 후보 id(정규화 spec 해시에서 만듦)가 바뀌고, `docs/validation/mapper-v2/specs/`·`docs/validation/selection-flow/runs/`의 spec은 다시 만들어야 함. v2를 채점하려면 `form.base` 정답 기준을 새로 정해야 함 |
+| Python 스키마 검사 | `scene_spec.validate()`는 specVersion이 2.1.0이면 v2.1 스키마, **그 밖은 v2.0 스키마**로 검사 | `scene-spec.v2.2.json`을 만들고 분기를 더해야 함. 그대로 두면 2.2.0 문서는 v2.0 스키마로 검사돼 실패(specVersion enum, `form`의 `additionalProperties: false`, `_provenance` 키 enum) |
+| Unity 파서 | `SceneSpecJson.Strict`가 `MissingMemberHandling.Error`라 모르는 필드가 있으면 파싱 실패. `FormSpec`에는 `type`·`posture`뿐. `SupportedSpecVersions` = 2.0.0·2.1.0 | **Unity 파서가 2.2를 받도록 바꿔야 함.** 바꾸지 않으면 `form.base`가 든 문서는 로드 자체가 실패해 형상이 그려지지 않음. `FormSpec.Base`, 지원 버전, `SlotPaths`(`_provenance` 경로 검사), 2.0·2.1 문서에 `form.base`가 있으면 경고하는 검사, `FormRenderPlan`의 base 판정을 더함. 2.0·2.1 문서의 왕복 직렬화와 golden 지문은 바뀌지 않아야 함 |
+| 덮어쓰기·선택 기록 | `SceneParams.CategoricalKeys` = form.type·form.posture·motion.type. 선택 기록 스키마의 `flatOverrides`·`slotName`에 `form.base` 없음 | 조절에서 기본 형상을 고르게 하면 `form.base` 범주 키를 Unity 덮어쓰기, 선택 기록 스키마(→ 0.2), 러너 검사, 후보 값 표에 함께 더해야 함 |
+| 소유감 러너 | 형태 변형은 `form.type`만 바꿈 | 형태 변형이 `form.base`를 건드리지 않게 둠(G21) |
+| 사전 버전 | 없음 | 새 사전 `base_shapes.v1.json`의 버전이 `meta.pipeline.lexicons`에 남게 함 |

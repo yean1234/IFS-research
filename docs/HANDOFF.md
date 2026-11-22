@@ -4,7 +4,65 @@
 > 모델 배정(decisions.md D09): 메인 세션(판단·검토 반영 분류·AC 판정·보고서)은 Fable, Workflow 서브에이전트(구현·테스트 실행·검토·수정)는 `model: 'opus'`로 지정.
 > 이 파일은 단계가 끝날 때와 최소 30분마다 갱신하고, 갱신 때마다 WIP 커밋을 남깁니다.
 
-## ★ RQ V4 무인 작업 (2026-11-22 밤) — 지금 진행 중인 일은 이 절입니다
+## ★★ 실험 프로토타입 구현 (2026-11-23, 브랜치 `claude/prototype-v4-build`) — 가장 최근 작업은 이 절입니다
+
+> 갱신: 2026-11-23, 하위 에이전트(Claude)가 단계 C·D10 문서 작업 끝에 적음. 지시문은 `docs/prompts/prototype-v4-build.md`(2026-11-22 클라우드 세션에서 연구 책임자와 정함). 결정은 `docs/decisions.md`의 「형상 표현 범위와 생성 모델」 절(G1–G28)과 X79–X85. 아래 ★ 절부터는 이전 작업의 기록이고 그대로 뒀습니다.
+
+- **브랜치: `claude/prototype-v4-build`.** 로컬 `claude/gallant-galileo-u02gqf` 위에 만들고 `origin/claude/focused-lamport-auymxq`를 합쳤습니다(`acdfd28`). main은 건드리지 않았습니다.
+- 커밋: `acdfd28` 병합 → `1985e17` G7–G13 → `235c3e7` G14–G24 → `7383abd` 조사·매퍼 v2(D1·D2) → `e999dbf` 에셋 계획 → `6719582` 미리보기(D4) → `c9d1eb2` 구름(D7)·러너(D8)·기록 → `1051d48` 후보·조절·사전 측정(D3·D5·D9) → `5d8bb1a` Codex CP9 판정(G26–G28).
+- 커밋하지 않고 둔 것: `CLAUDE.md` 수정과 `refine-logs/`(사용자 것). 단계 C·D10 문서와 미리보기 캡처 2장(`docs/validation/selection-flow/screens/image_1_candidates_2x2.png`·`image_2_adjust.png`)은 이 문서를 쓴 시점에 커밋 전이었습니다(커밋은 메인 세션이 함).
+- **IRB 승인을 받을 수 없어 사람을 모집하는 실험은 하지 않습니다(X79).** 헤드셋과 1–6단계 흐름은 연구팀 내부 시스템 점검에만 씁니다(X80).
+
+| 단계 | 상태 | 산출물 |
+| --- | --- | --- |
+| 0 로컬 상태·병합·시트 대조 | 끝 | `docs/decisions.md` 「지시문이 쓰인 뒤 로컬에서 달라진 것」·「렌더 시트 3장과 구름 진단의 대조」 |
+| 결정 기록 | 끝 | G7–G13(지시문 그대로), G14–G24(Codex `D5.md`·Claude `D5_claude.md` 독립안 비교), G25(미리보기 대안), G26–G28(Codex `CP9.md`). Codex 자문 `D4.md`(원래 D2) 대조 |
+| A 조사 | 끝 | `reports/심상 외재화 형태 목록 조사.md`, `research_notes/심상 외재화 형태 목록 조사/` |
+| B 에셋 계획 | 끝, **승인 대기** | `docs/asset-plan.md`(`status: draft`, 승인 결정 11개) |
+| C 계획을 문서에 반영 | 끝 | `docs/rq-v4-proposal.md` 0·4.4·4.5·7절, `docs/chatbot-design.md` 7절(면담 밖, 유도 위험), `docs/scene-spec-mapping.md` 7절(매퍼 v2, 출처 네 가지, `form.base` 계획, 스키마 영향), `docs/shape-mapping.md` 「기본 형상 경로·후보 단계와의 관계」 |
+| D1·D2 매퍼 v2 | 끝 | `chatbot/ifs_chatbot/scene_builder_v2.py`, `docs/validation/mapper-v2/`. v0·v1 출력 불변 |
+| D3 후보 생성기 | 끝 | `chatbot/ifs_chatbot/candidates.py`, `shared/lexicon/candidate_values.v0.json` |
+| D4 미리보기 | WebGL 못 함 → 대안(상주 Windows 플레이어 → PNG) 측정·채택(G25) | `docs/validation/webgl/` |
+| D5 후보·조절·사전 측정 화면과 API | 끝 | `selection.py`·`server.py`·`web/stage.js`·`preview.py`, `shared/protocol/selection_protocol.v0.json`(문구 29개 draft), `docs/validation/selection-flow/` |
+| D6 기본 형상 경로 | **하지 않음**(에셋 계획 승인 대기) | — |
+| D7 구름 | 끝(헤드셋 미확인) | `docs/validation/cloud/` |
+| D8 러너 연결 | 끝 | `unity/Assets/IFS/Runtime/Placement/PlacementSelection.cs`, 기록 `ifs-placement/0.2`, `docs/validation/runner-selection/` |
+| D9 기록 | 끝 | `selection.json`(`ifs-selection/0.1`, 스키마 `shared/schemas/selection.v0.1.json`), `premeasure.json`, 러너 manifest `selection`·`appliedOverrides` |
+| D10 내부 시행 준비 | 끝(문서) | `docs/internal-trial-guide.md`(실행 안내, 점검표, 중립 심상 예시 10개) |
+| 미리보기 플레이어 재빌드 | 끝 | 저장소 밖 `../webgl-build/preview-win/`(D7 반영). image 모드 캡처 다시 만듦 — 안개 후보가 덩어리 구름으로 나옴 |
+
+하지 않은 것·확인하지 못한 것:
+- **D6**(기본 형상 경로, `form.base`, 스키마 2.2.0): 에셋 계획 승인 대기. 2.2.0으로 올릴 때의 영향은 `docs/scene-spec-mapping.md` 7.6절.
+- **WebGL 빌드**: Web Build Support 모듈 설치가 관리자 확인(UAC) 때문에 두 번 실패. 사람이 Unity Hub ▸ Installs ▸ 6000.0.85f2 ▸ Add modules ▸ Web Build Support를 설치한 뒤 `docs/validation/webgl/README.md` 8절로 다시 판정.
+- **헤드셋 실기**: 사람이 헤드셋을 쓰고 확인한 항목 없음(`docs/headset-checklist.md`).
+- G26·G27(러너가 `sha256Basis`·출처 값을 검사)은 판정만 되고 구현 전. G22의 "조절 항목 × 렌더러 조합이 화면에 반영되는지" 검사 테스트와 Unity 쪽 후보 덮어쓰기 교차 테스트가 없음.
+- `docs/validation/selection-flow/runs/`의 후보 PNG는 D7 전 플레이어로 찍은 것(S1·S4의 안개 후보가 옛 모양). 다시 만들지 않았음.
+- 실제 브라우저로 화면을 눌러 보지는 않았음(헤드리스 캡처와 HTTP API로만 확인).
+
+검증 명령(저장소 루트, PowerShell):
+```powershell
+git branch --show-current      # claude/prototype-v4-build
+git status --short             # CLAUDE.md 수정과 refine-logs/ 는 원래 있던 것
+cd chatbot; .\.venv\Scripts\python.exe -m pytest -q -m "not live"; cd ..             # 2026-11-23: 691 passed, 6 xfailed, 14 deselected
+cd chatbot; .\.venv\Scripts\python.exe -m ifs_chatbot.selection_sim --out <임시 폴더>; cd ..   # 합성 시나리오 5개, "기대 불일치 0"(2026-11-23 확인)
+cd chatbot; .\.venv\Scripts\python.exe -m ifs_chatbot.server --config v4 --backend offline --condition static   # 직접 해 보기 http://127.0.0.1:8000 (docs/internal-trial-guide.md)
+cd unity/Tools/compile-check; dotnet test Tests/IFS.SceneSpec.CompileCheck.Tests.csproj; cd ../../..   # 283 통과(c9d1eb2 때 에이전트 보고, 이번에 다시 돌리지 않음)
+& "C:\Program Files\Unity\Hub\Editor\6000.0.85f2\Editor\Unity.exe" -batchmode -projectPath unity -runTests -testPlatform EditMode -testResults <xml> -logFile <log>   # 335 통과(같음)
+```
+- Unity는 한 번에 하나만 띄웁니다. 배치 실행 뒤 `unity/Assets/XR/Settings/OpenXRPackageSettings.asset`이 줄바꿈만 바뀌어 있으면 `git checkout --`로 되돌립니다.
+
+이어받을 때 볼 문서: `docs/prompts/prototype-v4-build.md`(1절 흐름 표, 6·7절), `docs/decisions.md` G1–G28·X79–X85, `docs/asset-plan.md`, `docs/internal-trial-guide.md`, `docs/validation/selection-flow/README.md`, `docs/validation/mapper-v2/README.md`, `docs/validation/webgl/README.md`, `docs/validation/cloud/README.md`, `docs/validation/runner-selection/README.md`, `docs/chatbot-design.md` 7절, `docs/scene-spec-mapping.md` 7절. 사람이 정할 것은 `docs/morning-todo.md` 맨 위 절.
+
+후속 작업:
+1. 에셋 계획 승인(결정 11개) → D6: 스키마 2.2.0(`form.base`), Python 검증, Unity 파서, 절차 모형, 사전 `base_shapes.v1.json`.
+2. G26·G27 러너 구현, G28대로 "같은 후보"와 "같은 표시 순서" 테스트를 나눴는지 확인.
+3. G22 반영 검사 테스트와 `adjustItems.availability` 채우기(어두운 색에서 밝기 등), Unity 교차 테스트.
+4. 내부 시행(`docs/internal-trial-guide.md`) → 사람이 정할 것(후보 개수, 대표성 하한, 통과 기준 등) 결정.
+5. WebGL 모듈 설치 뒤 재판정. 새 플레이어로 `selection-flow/runs/` 다시 만들기.
+6. 분석기(`ifs_chatbot.eval.placement`) 아는 버전 목록에 `ifs-placement/0.2` 추가, `selection`·`appliedOverrides` 읽기.
+7. 헤드셋 실기 점검.
+
+## ★ RQ V4 무인 작업 (2026-11-22 밤)
 
 > 갱신: 2026-11-22 밤, 메인 세션(Claude Fable 5.2). 아래 0절부터는 11/16–17 야간 작업의 기록이고 그대로 뒀습니다.
 
