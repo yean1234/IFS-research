@@ -148,6 +148,9 @@ namespace IFS.SceneSpec
         /// <summary>지금 모형을 만든 경로: 렌더러 이름(blob·mist·shell·fragments·shapeModel) 또는
         /// prefab(형태)·shapePrefab(모형)·primitive(형태)·shapeModelPrimitive(모형). report.json의 renderPath.</summary>
         public string RenderPath { get; private set; }
+        /// <summary>안개 셰이더(_FloorY가 있는 머티리얼)를 쓸 때 안개 구가 바닥 아래로 걸치는가(지금 배치 기준). 안개 셰이더가 아니면 null.
+        /// report.json의 mistFloor. 잘렸으면 로드 때 notes에도 남긴다(화면 처리는 바꾸지 않는다).</summary>
+        public MistFloorClip MistFloor { get; private set; }
         public event Action<SceneLoader> Loaded;
 
         ISceneSpecPathSource _source;
@@ -253,6 +256,7 @@ namespace IFS.SceneSpec
             CaptureAnchor();
             BuildHierarchy();
             ApplyAll();
+            if (MistFloor != null && MistFloor.FloorClipped) Note(MistFloor.Note(), false);
 
             if (record)
             {
@@ -279,6 +283,7 @@ namespace IFS.SceneSpec
             _isShapeModel = false;
             RenderPlan = null;
             RenderPath = null;
+            MistFloor = null;
             Shape = null;
             Spec = null;
             InitialParams = CurrentParams = null;
@@ -627,6 +632,24 @@ namespace IFS.SceneSpec
             ApplyLayout();
             ApplyMaterial();
             ApplyMotion();
+            MeasureMistFloor();
+        }
+
+        // 안개 셰이더는 바닥 높이 아래 밀도를 0으로 자른다 → 레이마칭 구(물체 좌표 반지름 MistRadius)가 바닥 아래로 걸치는지 기록만 한다.
+        // 구의 세계 세로 반높이 = 반지름 × 물체→세계 행렬 y행(선형 부분)의 길이(회전·비균일 배율에도 정확).
+        void MeasureMistFloor()
+        {
+            MistFloor = null;
+            foreach (var rend in _model.GetComponentsInChildren<Renderer>())
+            {
+                bool mist = false;
+                foreach (var m in rend.sharedMaterials) if (m != null && m.HasProperty(MistFloorProperty)) mist = true;
+                if (!mist) continue;
+                var w = rend.transform.localToWorldMatrix;
+                double half = FormRenderResources.MistRadius * Math.Sqrt((double)w.m10 * w.m10 + (double)w.m11 * w.m11 + (double)w.m12 * w.m12);
+                var clip = MistFloorClip.Measure(w.m13, half, placement.floorY);
+                if (MistFloor == null || clip.ClippedHeightFraction > MistFloor.ClippedHeightFraction) MistFloor = clip;
+            }
         }
 
         void ApplyLayout()

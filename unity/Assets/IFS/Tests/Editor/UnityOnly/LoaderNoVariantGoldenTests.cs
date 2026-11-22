@@ -4,6 +4,8 @@
 // spec은 StreamingAssets 예시 4개 + EX02에 합성 값을 넣은 3개(참여자 데이터 아님).
 // 지문을 다시 만들 때만: 환경 변수 IFS_WRITE_LOADER_GOLDEN=1로 Unity -runTests를 돌린다(바꾼 이유를 기록할 것).
 // 2026-11-23 다시 만듦: 형상별 렌더 경로(X66) — GOLD-mist 항목만 바뀜(안개 셰이더·대리 메시·프리셋 기본값 notes). 나머지 6개 spec은 그대로.
+// 2026-11-23 다시 만듦(CP8 G2·G3): GOLD-fragments 항목을 맨 뒤에 추가(조각 메시·조각 규칙 버전). GOLD-mist는 프리셋 notes 문장만 바뀜
+// (mist에서 roughness의 뜻, "중심 광선 알파의 목표 근사"). 나머지 6개 spec은 그대로.
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -93,7 +95,12 @@ namespace IFS.SceneSpec.Tests
             ShapeWord(round, "round", "동그란", 3);
             Slot(round, "motion.type", "rotating", "돌아");
             Slot(round, "layout.size", 0.8, "커다란");
-            foreach (var (n, o) in new[] { ("GOLD-square", square), ("GOLD-mist", mist), ("GOLD-round", round) })
+            // fragments(X67): 조각 메시·규칙 버전(fragmentRule)·프리셋 notes를 지문에 묶는다. 맨 뒤에 붙여 기존 항목 순서를 바꾸지 않는다.
+            var fragments = Base("GOLD-fragments");
+            Slot(fragments, "form.type", "fragments", "조각");
+            Slot(fragments, "material.roughness", 0.7, "거친");
+            Slot(fragments, "material.color", new JObject { ["h"] = 0.08, ["s"] = 0.5, ["l"] = 0.45 }, "갈색");
+            foreach (var (n, o) in new[] { ("GOLD-square", square), ("GOLD-mist", mist), ("GOLD-round", round), ("GOLD-fragments", fragments) })
             {
                 string p = Path.Combine(dir, n + ".json");
                 File.WriteAllText(p, o.ToString(Formatting.Indented).Replace("\r\n", "\n"), new UTF8Encoding(false));

@@ -231,6 +231,8 @@ namespace IFS.SceneSpec.EditorTools
                     entry["shape"] = loader.Shape.ToJson();
                     entry["renderPath"] = loader.RenderPath;
                     entry["renderPlan"] = loader.RenderPlan?.ToJson();
+                    // 안개 셰이더가 바닥 아래 밀도를 0으로 자르는가(안개 셰이더가 아니면 null). 잘렸으면 notes에도 있다.
+                    entry["mistFloor"] = loader.MistFloor?.ToJson();
 
                     var renderers = loader.Root.GetComponentsInChildren<Renderer>();
                     var bounds = Encapsulate(renderers);
@@ -253,8 +255,11 @@ namespace IFS.SceneSpec.EditorTools
                     entry["png"] = Path.GetFileName(png);
 
                     // 2) 색 정확도(형상만 렌더해 가림 마스크·중앙 영역을 구한다)
-                    bool fade = RenderedColor.UsesFadeShader(p.GetCategory("form.type"), p.GetNumber("material.opacity"));   // 로더와 같은 판정
-                    var colorReport = MeasureColor(c, cam, p, full, fade, out var maskBox, out var coverage);
+                    // 측정 경로는 form.type 판정(RenderedColor.UsesFadeShader)이 아니라 실제로 모형을 그린 렌더 경로로 고른다
+                    // (mist는 Fade 서피스가 아니라 SceneSpecMist 부피 셰이더다).
+                    string measuredWith = ColorMeasurePath(loader.RenderPath, loader.RenderPlan);
+                    bool transparent = IsTransparentMeasure(measuredWith, loader.RenderPlan);
+                    var colorReport = MeasureColor(c, cam, p, full, measuredWith, transparent, out var maskBox, out var coverage);
                     entry["color"] = colorReport;
                     // 형상 지표(X72): 장면 조명·형상만 렌더의 화소별 덮임으로 잰다(색 측정과 같은 덮임)
                     var sil = SilhouetteMetrics.Measure(coverage, c.O.Width, c.O.Height);
@@ -369,7 +374,52 @@ namespace IFS.SceneSpec.EditorTools
         }
 
         // ── 색 정확도 ───────────────────────────────────────────────────────
-        static JObject MeasureColor(Ctx c, Camera cam, SceneParams p, Color32[] scenePixels, bool fade, out RectInt? maskBox, out float[] coverage)
+        /// <summary>색 측정 경로(report.json color.measuredWith): 무엇의 화면 색을 쟀는가.</summary>
+        public const string MeasuredOpaqueSurface = "opaqueSurface";
+        public const string MeasuredFadeSurface = "fadeSurface";
+        public const string MeasuredMistVolume = "mistVolume";
+        public const string MeasuredNonIfsMaterial = "nonIfsMaterial";
+
+        /// <summary>
+        /// 실제 렌더 경로(SceneLoader.RenderPath) + 계획 → 색 측정 경로. form.type만 보는 RenderedColor.UsesFadeShader(소유감 러너가 쓰는 뜻)와 달리
+        /// 모형을 실제로 그린 셰이더를 따른다: mist 렌더러 = SceneSpecMist 부피 셰이더, mist(legacy) = Fade 서피스,
+        /// 그 밖의 IFS 렌더러 = 계획의 Fade 판정(불투명/반투명 서피스), 프리팹·프리미티브 = IFS 셰이더가 아님(반투명 여부는 계획의 판정).
+        /// </summary>
+        public static string ColorMeasurePath(string renderPath, FormRenderPlan plan)
+        {
+            if (renderPath == FormRenderPlan.RendererMist) return MeasuredMistVolume;
+            if (renderPath == FormRenderers.MistLegacyName) return MeasuredFadeSurface;
+            if (renderPath != null && (renderPath.StartsWith("prefab(", StringComparison.Ordinal) ||
+                                       renderPath.StartsWith("primitive(", StringComparison.Ordinal) ||
+                                       renderPath.StartsWith("shapeModelPrimitive(", StringComparison.Ordinal)))
+                return MeasuredNonIfsMaterial;
+            return plan != null && plan.Fade ? MeasuredFadeSurface : MeasuredOpaqueSurface;
+        }
+
+        /// <summary>측정 경로가 반투명(배경과 섞임)인가. 반투명이면 덮임 문턱을 낮추고 primary = scene(배경과 섞이기 전 색).</summary>
+        public static bool IsTransparentMeasure(string measuredWith, FormRenderPlan plan) =>
+            measuredWith == MeasuredMistVolume || measuredWith == MeasuredFadeSurface ||
+            (measuredWith == MeasuredNonIfsMaterial && plan != null && plan.Fade);
+
+        /// <summary>측정 경로마다 무엇을 쟀는지(report.json color.measuredWithNote).</summary>
+        public static string ColorMeasureNote(string measuredWith)
+        {
+            switch (measuredWith)
+            {
+                case MeasuredMistVolume:
+                    return "SceneSpecMist 부피 셰이딩 결과의 화면 색(레이마칭으로 앞에서 뒤로 쌓은 미리 곱한 색 ÷ 덮임). " +
+                           "조명 = 구 바깥 방향 법선의 감싼 확산 + 주변광, 색 얼룩 포함, 표면 정반사 없음. " +
+                           "shaderTargetSrgb·deltaE2000VsShaderTarget는 알베도 기준(RenderedColor·서피스 셰이더의 밝기 식)이라 부피 셰이딩과 같은 모델이 아니다";
+                case MeasuredFadeSurface:
+                    return "IFS Fade 서피스 셰이더(Standard PBR, alpha:fade)의 화면 색 ÷ 덮임. shaderTargetSrgb는 같은 서피스 모델의 알베도 기준";
+                case MeasuredOpaqueSurface:
+                    return "IFS 불투명 서피스 셰이더(Standard PBR)의 화면 색. shaderTargetSrgb는 같은 서피스 모델의 알베도 기준";
+                default:
+                    return "IFS 셰이더가 아닌 머티리얼(프리팹·프리미티브)의 화면 색. 반투명 여부는 계획의 Fade 판정이라 실제 머티리얼과 다를 수 있다";
+            }
+        }
+
+        static JObject MeasureColor(Ctx c, Camera cam, SceneParams p, Color32[] scenePixels, string measuredWith, bool fade, out RectInt? maskBox, out float[] coverage)
         {
             maskBox = null;
             SceneParams.HslToRgb(p.GetNumber("material.color.h"), p.GetNumber("material.color.s"), p.GetNumber("material.color.l"),
@@ -464,6 +514,8 @@ namespace IFS.SceneSpec.EditorTools
                 ["brightness"] = R(brightness),
                 ["brightnessIsDefault"] = p.DefaultsUsed.Contains("material.brightness"),
                 ["shaderTargetSrgb"] = new JArray(R(tr), R(tg), R(tb)),
+                ["measuredWith"] = measuredWith,
+                ["measuredWithNote"] = ColorMeasureNote(measuredWith),
                 ["transparent"] = fade,
                 ["primary"] = fade ? "scene" : "inContext",
                 ["floorDuringIsolatedRenders"] = floorSwapped ? "unlitBackgroundColor" : "disabled",

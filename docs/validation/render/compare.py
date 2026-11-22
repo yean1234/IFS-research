@@ -64,6 +64,21 @@ def summary(before, after):
     return "\n".join(lines)
 
 
+def mist_color(after):
+    """후(after) mist spec의 색 측정 경로(color.measuredWith)·바닥 잘림(mistFloor). 전(before) report에는 없는 키라 후만 본다."""
+    out = ["| spec | measuredWith | primary | ΔE00 vs spec | ΔE00 vs 셰이더 목표(알베도 기준) | floorClipped | 잘린 높이 비율 |",
+           "| --- | --- | --- | --- | --- | --- | --- |"]
+    for e in after["specs"]:
+        if e["params"]["form.type"] != "mist":
+            continue
+        c = e["color"]
+        p = c.get(c.get("primary"), {}) or {}
+        mf = e.get("mistFloor") or {}
+        out.append(f"| {e['spec'][:-5]} | {c.get('measuredWith')} | {c.get('primary')} | {p.get('deltaE2000VsSpec')} | "
+                   f"{p.get('deltaE2000VsShaderTarget')} | {mf.get('floorClipped')} | {mf.get('clippedHeightFraction')} |")
+    return "\n".join(out)
+
+
 def sheet(pairs, out):
     from PIL import Image, ImageDraw
     cell = 260
@@ -99,6 +114,10 @@ if __name__ == "__main__":
     print("\n" + summary(hb, ha))
     print("\n## held-out — mist·fragments spec\n")
     print(table(hb, ha, only={"mist", "fragments"}))
+    print("\n## mist 색 측정 경로·바닥 잘림(후)\n")
+    print(mist_color(a))
+    print()
+    print(mist_color(ha).split("\n", 2)[2])
     pairs = [(n, f"before/{n}_detail.png", f"after/{n}_detail.png") for n in
              ("R01_mist_op100", "R02_mist_op060", "R03_mist_op015", "R04_frag_small", "R05_frag_large",
               "R07_blob_default", "R11_shape_square", "R13_shape_pointed")]

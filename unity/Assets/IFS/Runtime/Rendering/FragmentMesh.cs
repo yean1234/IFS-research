@@ -1,6 +1,7 @@
 // fragments 형상의 메시(X67): 불규칙한 각진 조각 여러 개를 메시 하나로 합친다(드로콜 1). 평면 음영(면마다 정점을 따로 둠).
 // 조각마다 정이십면체 꼭짓점을 반지름 방향으로 흔들고(각진 덩이), 축마다 늘이고 줄인 뒤(납작한 파편), 돌려서 놓는다.
 // 크기·방향·흔들림은 seed로 정한다(같은 seed → 같은 메시). 조각 수·배치·seed는 형상 프리셋 기본값이다(참여자가 말한 값 아님).
+// 규칙 자체를 바꾸면 같은 seed라도 메시가 달라지므로 RuleVersion을 올린다(계획 JSON·notes의 fragmentRule로 추적).
 // 배치(중심)와 대략의 크기는 이전 경로(구 5개: 중심 BaseOffsets, 반지름 0.5 × (0.42 − 0.04 i))를 따라 전체 범위가 비슷하다
 // → layout.size의 뜻(기본 크기 대비 배율)이 바뀌지 않는다.
 // UnityEngine에 의존하지 않는다(dotnet 테스트 가능). 난수는 자체 구현(SplitMix64)이라 런타임이 달라도 같은 수열이다.
@@ -10,6 +11,10 @@ namespace IFS.SceneSpec
 {
     public static class FragmentMesh
     {
+        /// <summary>조각 생성 규칙의 버전. 같은 seed라도 규칙(배치·크기·늘이기·흔들기·난수 순서)이 바뀌면 메시가 달라지므로
+        /// 규칙을 바꿀 때 올린다(FragmentMeshTests가 기본 메시 해시를 이 버전에 묶어 둔다). 계획 JSON·로더 notes의 fragmentRule.</summary>
+        public const string RuleVersion = "angular5/1";
+
         /// <summary>형상 프리셋 기본값: 조각 수.</summary>
         public const int DefaultPieces = 5;
         /// <summary>형상 프리셋 기본값: seed(이전 경로처럼 spec과 무관한 고정값 → 같은 spec이면 같은 메시).</summary>
@@ -25,6 +30,27 @@ namespace IFS.SceneSpec
 
         /// <summary>조각 크기 배율: 납작하게 늘이고 줄인 조각의 화면 넓이가 이전 구와 비슷하도록(형상 프리셋 기본값).</summary>
         const double SizeScale = 1.2;
+        /// <summary>조각 기준 반지름 = SizeScale × 0.5 × (0.42 − 0.04 i) × [SizeJitterLo, SizeJitterHi).</summary>
+        const double SizeJitterLo = 0.9, SizeJitterHi = 1.1;
+
+        /// <summary>모형의 기준 반지름(구 지름 1). 아래 비율의 분모.</summary>
+        public const double NominalRadius = 0.5;
+
+        /// <summary>배치 반경 비율: 조각 중심(BaseOffsets, 흔들기 ±0.03 전)이 원점에서 가장 먼 거리 / 기준 반지름 0.5.
+        /// 조각이 5개를 넘으면 6번째부터는 ±0.4 상자 안의 임의 위치다(기본값 5개에는 해당 없음).</summary>
+        public static double PlacementRadiusRatio
+        {
+            get
+            {
+                double max = 0;
+                foreach (var o in BaseOffsets) max = Math.Max(max, Math.Sqrt(o[0] * o[0] + o[1] * o[1] + o[2] * o[2]));
+                return max / NominalRadius;
+            }
+        }
+
+        /// <summary>조각 기준 반지름의 범위 / 기준 반지름 0.5(축마다 늘이기 0.45–1.35·꼭짓점 흔들기 0.6–1.15 전).</summary>
+        public static double PieceSizeMinRatio => SizeScale * 0.5 * (0.42 - 0.04 * (BaseOffsets.Length - 1)) * SizeJitterLo / NominalRadius;
+        public static double PieceSizeMaxRatio => SizeScale * 0.5 * 0.42 * SizeJitterHi / NominalRadius;
 
         // 정이십면체(꼭짓점 12개, 면 20개). 면은 cross(b − a, c − a)가 바깥을 향하도록 만든 뒤 다시 확인한다.
         static readonly double[][] IcoVerts;
@@ -73,7 +99,7 @@ namespace IFS.SceneSpec
                     ? new[] { BaseOffsets[piece][0] + rng.Range(-0.03, 0.03), BaseOffsets[piece][1] + rng.Range(-0.03, 0.03), BaseOffsets[piece][2] + rng.Range(-0.03, 0.03) }
                     : new[] { rng.Range(-0.4, 0.4), rng.Range(-0.4, 0.4), rng.Range(-0.4, 0.4) };
                 // 크기: 이전 구 반지름 0.5 × (0.42 − 0.04 i) × SizeScale(6번째부터는 가장 작은 것)
-                double size = SizeScale * 0.5 * (0.42 - 0.04 * Math.Min(piece, BaseOffsets.Length - 1)) * rng.Range(0.9, 1.1);
+                double size = SizeScale * 0.5 * (0.42 - 0.04 * Math.Min(piece, BaseOffsets.Length - 1)) * rng.Range(SizeJitterLo, SizeJitterHi);
                 // 축마다 늘이고 줄임(납작한 파편) + 꼭짓점마다 반지름 흔들기(각진 덩이)
                 double sx = rng.Range(0.85, 1.35), sy = rng.Range(0.45, 0.8), sz = rng.Range(0.7, 1.1);
                 var rot = RandomRotation(rng);

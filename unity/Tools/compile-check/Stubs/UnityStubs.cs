@@ -59,6 +59,12 @@ namespace UnityEngine
         public Vector3 right => new Vector3(1, 0, 0);
         public void SetParent(Transform parent, bool worldPositionStays) { }
         public void SetPositionAndRotation(Vector3 position, Quaternion rotation) { }
+        public Matrix4x4 localToWorldMatrix => default;
+    }
+
+    public struct Matrix4x4
+    {
+        public float m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23, m30, m31, m32, m33;
     }
 
     public struct Vector3

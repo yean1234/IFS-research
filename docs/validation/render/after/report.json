@@ -1,6 +1,6 @@
 {
   "format": "ifs-batch-capture/0.1",
-  "generatedAtUtc": "2026-11-22T15:35:38Z",
+  "generatedAtUtc": "2026-11-22T15:48:39Z",
   "ok": true,
   "disclaimer": "데스크톱 GPU에서 잰 대리 측정값입니다. Quest 3 헤드셋(모바일 GPU, 타일 렌더링, 단일 패스 인스턴싱)의 프레임시간이 아닙니다. 헤드셋 성능은 기기에서 OVR Metrics Tool 등으로 따로 재야 합니다.",
   "system": {
@@ -147,8 +147,8 @@
     "captureFailures": 0,
     "consoleErrors": 0,
     "consoleExceptions": 0,
-    "frameMsP95Max": 2.186,
-    "frameMsMaxMax": 2.43,
+    "frameMsP95Max": 2.179,
+    "frameMsMaxMax": 2.538,
     "drawCallsPerEyeMax": 8,
     "submittedTrianglesPerEyeMax": 20880,
     "realtimeShadowLights": 1,
@@ -217,7 +217,7 @@
         "circularityMean": 0.965,
         "componentsMean": 1.0,
         "edgeFalloffPxMean": 0.69,
-        "frameMsP95Max": 0.843
+        "frameMsP95Max": 0.839
       },
       "fragments": {
         "specs": 2,
@@ -226,7 +226,7 @@
         "circularityMean": 0.154,
         "componentsMean": 5.0,
         "edgeFalloffPxMean": 0.685,
-        "frameMsP95Max": 0.828
+        "frameMsP95Max": 0.858
       },
       "mist": {
         "specs": 3,
@@ -235,7 +235,7 @@
         "circularityMean": 0.389,
         "componentsMean": 1.0,
         "edgeFalloffPxMean": 48.863,
-        "frameMsP95Max": 2.186
+        "frameMsP95Max": 2.179
       },
       "shapePrefab(Cone)": {
         "specs": 1,
@@ -244,7 +244,7 @@
         "circularityMean": 0.701,
         "componentsMean": 1.0,
         "edgeFalloffPxMean": 0.7,
-        "frameMsP95Max": 0.81
+        "frameMsP95Max": 0.822
       },
       "shapePrefab(Cube)": {
         "specs": 1,
@@ -253,7 +253,7 @@
         "circularityMean": 0.825,
         "componentsMean": 1.0,
         "edgeFalloffPxMean": 0.41,
-        "frameMsP95Max": 0.823
+        "frameMsP95Max": 0.844
       },
       "shapePrefab(FlatCylinder)": {
         "specs": 1,
@@ -262,7 +262,7 @@
         "circularityMean": 0.841,
         "componentsMean": 1.0,
         "edgeFalloffPxMean": 0.72,
-        "frameMsP95Max": 0.828
+        "frameMsP95Max": 0.811
       },
       "shapePrefab(Sphere)": {
         "specs": 1,
@@ -271,7 +271,7 @@
         "circularityMean": 0.969,
         "componentsMean": 1.0,
         "edgeFalloffPxMean": 0.7,
-        "frameMsP95Max": 0.827
+        "frameMsP95Max": 0.82
       },
       "shell": {
         "specs": 1,
@@ -280,7 +280,7 @@
         "circularityMean": 0.835,
         "componentsMean": 1.0,
         "edgeFalloffPxMean": 0.44,
-        "frameMsP95Max": 0.827
+        "frameMsP95Max": 0.858
       }
     }
   },
@@ -338,7 +338,7 @@
         "motion.type: SceneSpec 값이 null → 기본값 still 사용",
         "motion.speed: SceneSpec 값이 null → 기본값 0.5 사용",
         "form.type=mist: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시",
-        "form.type=mist: 형상 프리셋 기본값 — 구 대리 메시 + 레이마칭 8걸음, 반지름 흔들림 0.3, 노이즈 크기 1.1, 밀도 0.5(중심 알파 ≈ opacity × 밀도)"
+        "form.type=mist: 형상 프리셋 기본값 — 구 대리 메시 + 레이마칭 8걸음, 반지름 흔들림 0.3, 노이즈 크기 1.1, 밀도 0.5(중심 광선 알파의 목표 근사 ≈ opacity × 밀도). mist에서 material.roughness는 표면 반사(광택)가 아니라 밀도 노이즈 크기 배율(0.7–1.3)과 색 얼룩 세기를 정함"
       ],
       "shape": {
         "status": "none",
@@ -374,7 +374,16 @@
         "zeroDisplacement": false,
         "fragmentPieces": 0,
         "fragmentSeed": 0,
+        "fragmentRule": null,
         "mistSteps": 8
+      },
+      "mistFloor": {
+        "floorClipped": false,
+        "clippedHeightFraction": 0.0,
+        "floorY": 0.0,
+        "sphereBottomY": 1.01955,
+        "sphereTopY": 1.54455,
+        "method": "레이마칭 구(물체 좌표 반지름 0.75)의 세계 높이 범위 vs 배치 설정 바닥 높이(_FloorY). 잘린 높이 비율 = (바닥 − 구 아래 끝) / 구 높이. 실제 밀도는 구 안쪽에서 풀리므로 상한"
       },
       "placement": {
         "objectCenter": [
@@ -408,6 +417,8 @@
           0.564,
           0.78
         ],
+        "measuredWith": "mistVolume",
+        "measuredWithNote": "SceneSpecMist 부피 셰이딩 결과의 화면 색(레이마칭으로 앞에서 뒤로 쌓은 미리 곱한 색 ÷ 덮임). 조명 = 구 바깥 방향 법선의 감싼 확산 + 주변광, 색 얼룩 포함, 표면 정반사 없음. shaderTargetSrgb·deltaE2000VsShaderTarget는 알베도 기준(RenderedColor·서피스 셰이더의 밝기 식)이라 부피 셰이딩과 같은 모델이 아니다",
         "transparent": true,
         "primary": "scene",
         "floorDuringIsolatedRenders": "unlitBackgroundColor",
@@ -636,6 +647,18 @@
           "note": "직접 계산(추정): 렌더러별 패스(LightMode = ForwardBase/ForwardAdd/ShadowCaster)×메시 삼각형. 하늘 메시 삼각형은 제외. 눈당 값 = 단일 패스 인스턴싱 스테레오 프레임과 같은 수의 드로콜. 멀티패스(눈마다 Camera.Render, 이 도구의 시간 측정 방식)면 그림자 맵까지 ×2.",
           "renderers": [
             {
+              "name": "model (mist)",
+              "triangles": 1280,
+              "inView": true,
+              "forwardPasses": 1,
+              "shadowCasterPasses": 0,
+              "castsShadow": false,
+              "transparent": true,
+              "passLightModes": [
+                "FORWARDBASE"
+              ]
+            },
+            {
               "name": "floor (1 m grid)",
               "triangles": 200,
               "inView": true,
@@ -649,18 +672,6 @@
                 "DEFERRED",
                 "META"
               ]
-            },
-            {
-              "name": "model (mist)",
-              "triangles": 1280,
-              "inView": true,
-              "forwardPasses": 1,
-              "shadowCasterPasses": 0,
-              "castsShadow": false,
-              "transparent": true,
-              "passLightModes": [
-                "FORWARDBASE"
-              ]
             }
           ]
         }
@@ -672,11 +683,11 @@
         "msaa": 4,
         "frames": 300,
         "warmupFrames": 30,
-        "frameMsP50": 0.62,
-        "frameMsP95": 2.186,
-        "frameMsMax": 2.43,
-        "frameMsMean": 1.104,
-        "fpsAtP95": 457.4
+        "frameMsP50": 0.595,
+        "frameMsP95": 2.179,
+        "frameMsMax": 2.538,
+        "frameMsMean": 0.902,
+        "fpsAtP95": 459.0
       },
       "console": {
         "errors": 0,
@@ -729,7 +740,7 @@
         "motion.type: SceneSpec 값이 null → 기본값 still 사용",
         "motion.speed: SceneSpec 값이 null → 기본값 0.5 사용",
         "form.type=mist: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시",
-        "form.type=mist: 형상 프리셋 기본값 — 구 대리 메시 + 레이마칭 8걸음, 반지름 흔들림 0.3, 노이즈 크기 1.1, 밀도 0.5(중심 알파 ≈ opacity × 밀도)"
+        "form.type=mist: 형상 프리셋 기본값 — 구 대리 메시 + 레이마칭 8걸음, 반지름 흔들림 0.3, 노이즈 크기 1.1, 밀도 0.5(중심 광선 알파의 목표 근사 ≈ opacity × 밀도). mist에서 material.roughness는 표면 반사(광택)가 아니라 밀도 노이즈 크기 배율(0.7–1.3)과 색 얼룩 세기를 정함"
       ],
       "shape": {
         "status": "none",
@@ -765,7 +776,16 @@
         "zeroDisplacement": false,
         "fragmentPieces": 0,
         "fragmentSeed": 0,
+        "fragmentRule": null,
         "mistSteps": 8
+      },
+      "mistFloor": {
+        "floorClipped": false,
+        "clippedHeightFraction": 0.0,
+        "floorY": 0.0,
+        "sphereBottomY": 1.01955,
+        "sphereTopY": 1.54455,
+        "method": "레이마칭 구(물체 좌표 반지름 0.75)의 세계 높이 범위 vs 배치 설정 바닥 높이(_FloorY). 잘린 높이 비율 = (바닥 − 구 아래 끝) / 구 높이. 실제 밀도는 구 안쪽에서 풀리므로 상한"
       },
       "placement": {
         "objectCenter": [
@@ -799,6 +819,8 @@
           0.564,
           0.78
         ],
+        "measuredWith": "mistVolume",
+        "measuredWithNote": "SceneSpecMist 부피 셰이딩 결과의 화면 색(레이마칭으로 앞에서 뒤로 쌓은 미리 곱한 색 ÷ 덮임). 조명 = 구 바깥 방향 법선의 감싼 확산 + 주변광, 색 얼룩 포함, 표면 정반사 없음. shaderTargetSrgb·deltaE2000VsShaderTarget는 알베도 기준(RenderedColor·서피스 셰이더의 밝기 식)이라 부피 셰이딩과 같은 모델이 아니다",
         "transparent": true,
         "primary": "scene",
         "floorDuringIsolatedRenders": "unlitBackgroundColor",
@@ -1063,11 +1085,11 @@
         "msaa": 4,
         "frames": 300,
         "warmupFrames": 30,
-        "frameMsP50": 0.572,
-        "frameMsP95": 0.679,
-        "frameMsMax": 0.88,
-        "frameMsMean": 0.591,
-        "fpsAtP95": 1473.4
+        "frameMsP50": 0.577,
+        "frameMsP95": 0.7,
+        "frameMsMax": 0.923,
+        "frameMsMean": 0.599,
+        "fpsAtP95": 1429.4
       },
       "console": {
         "errors": 0,
@@ -1120,7 +1142,7 @@
         "motion.type: SceneSpec 값이 null → 기본값 still 사용",
         "motion.speed: SceneSpec 값이 null → 기본값 0.5 사용",
         "form.type=mist: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시",
-        "form.type=mist: 형상 프리셋 기본값 — 구 대리 메시 + 레이마칭 8걸음, 반지름 흔들림 0.3, 노이즈 크기 1.1, 밀도 0.5(중심 알파 ≈ opacity × 밀도)"
+        "form.type=mist: 형상 프리셋 기본값 — 구 대리 메시 + 레이마칭 8걸음, 반지름 흔들림 0.3, 노이즈 크기 1.1, 밀도 0.5(중심 광선 알파의 목표 근사 ≈ opacity × 밀도). mist에서 material.roughness는 표면 반사(광택)가 아니라 밀도 노이즈 크기 배율(0.7–1.3)과 색 얼룩 세기를 정함"
       ],
       "shape": {
         "status": "none",
@@ -1156,7 +1178,16 @@
         "zeroDisplacement": false,
         "fragmentPieces": 0,
         "fragmentSeed": 0,
+        "fragmentRule": null,
         "mistSteps": 8
+      },
+      "mistFloor": {
+        "floorClipped": false,
+        "clippedHeightFraction": 0.0,
+        "floorY": 0.0,
+        "sphereBottomY": 1.01955,
+        "sphereTopY": 1.54455,
+        "method": "레이마칭 구(물체 좌표 반지름 0.75)의 세계 높이 범위 vs 배치 설정 바닥 높이(_FloorY). 잘린 높이 비율 = (바닥 − 구 아래 끝) / 구 높이. 실제 밀도는 구 안쪽에서 풀리므로 상한"
       },
       "placement": {
         "objectCenter": [
@@ -1190,6 +1221,8 @@
           0.564,
           0.78
         ],
+        "measuredWith": "mistVolume",
+        "measuredWithNote": "SceneSpecMist 부피 셰이딩 결과의 화면 색(레이마칭으로 앞에서 뒤로 쌓은 미리 곱한 색 ÷ 덮임). 조명 = 구 바깥 방향 법선의 감싼 확산 + 주변광, 색 얼룩 포함, 표면 정반사 없음. shaderTargetSrgb·deltaE2000VsShaderTarget는 알베도 기준(RenderedColor·서피스 셰이더의 밝기 식)이라 부피 셰이딩과 같은 모델이 아니다",
         "transparent": true,
         "primary": "scene",
         "floorDuringIsolatedRenders": "unlitBackgroundColor",
@@ -1454,11 +1487,11 @@
         "msaa": 4,
         "frames": 300,
         "warmupFrames": 30,
-        "frameMsP50": 0.576,
-        "frameMsP95": 0.69,
-        "frameMsMax": 0.861,
-        "frameMsMean": 0.597,
-        "fpsAtP95": 1448.9
+        "frameMsP50": 0.577,
+        "frameMsP95": 0.702,
+        "frameMsMax": 0.789,
+        "frameMsMean": 0.598,
+        "fpsAtP95": 1424.7
       },
       "console": {
         "errors": 0,
@@ -1517,7 +1550,7 @@
         "motion.type: SceneSpec 값이 null → 기본값 still 사용",
         "motion.speed: SceneSpec 값이 null → 기본값 0.5 사용",
         "form.type=fragments: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시",
-        "form.type=fragments: 형상 프리셋 기본값 — 각진 조각 5개를 합친 메시 하나(seed 0, 평면 음영, 정점 변위 0, 노이즈 크기 2.4)"
+        "form.type=fragments: 형상 프리셋 기본값 — 각진 조각 5개를 합친 메시 하나(조각 규칙 angular5/1, seed 0, 배치 반경 비율 0.884, 조각 크기 비율 0.281–0.554, 평면 음영, 정점 변위 0, 노이즈 크기 2.4)"
       ],
       "shape": {
         "status": "none",
@@ -1553,8 +1586,19 @@
         "zeroDisplacement": true,
         "fragmentPieces": 5,
         "fragmentSeed": 0,
+        "fragmentRule": {
+          "version": "angular5/1",
+          "pieces": 5,
+          "seed": 0,
+          "placementRadiusRatio": 0.88363,
+          "pieceSizeRatioRange": [
+            0.2808,
+            0.5544
+          ]
+        },
         "mistSteps": 0
       },
+      "mistFloor": null,
       "placement": {
         "objectCenter": [
           0.013,
@@ -1591,6 +1635,8 @@
           0.7,
           0.7
         ],
+        "measuredWith": "opaqueSurface",
+        "measuredWithNote": "IFS 불투명 서피스 셰이더(Standard PBR)의 화면 색. shaderTargetSrgb는 같은 서피스 모델의 알베도 기준",
         "transparent": false,
         "primary": "inContext",
         "floorDuringIsolatedRenders": "unlitBackgroundColor",
@@ -1863,11 +1909,11 @@
         "msaa": 4,
         "frames": 300,
         "warmupFrames": 30,
-        "frameMsP50": 0.683,
-        "frameMsP95": 0.817,
-        "frameMsMax": 0.932,
-        "frameMsMean": 0.71,
-        "fpsAtP95": 1223.8
+        "frameMsP50": 0.693,
+        "frameMsP95": 0.825,
+        "frameMsMax": 1.066,
+        "frameMsMean": 0.72,
+        "fpsAtP95": 1212.7
       },
       "console": {
         "errors": 0,
@@ -1916,7 +1962,7 @@
         "motion.type: SceneSpec 값이 null → 기본값 still 사용",
         "motion.speed: SceneSpec 값이 null → 기본값 0.5 사용",
         "form.type=fragments: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시",
-        "form.type=fragments: 형상 프리셋 기본값 — 각진 조각 5개를 합친 메시 하나(seed 0, 평면 음영, 정점 변위 0, 노이즈 크기 2.4)"
+        "form.type=fragments: 형상 프리셋 기본값 — 각진 조각 5개를 합친 메시 하나(조각 규칙 angular5/1, seed 0, 배치 반경 비율 0.884, 조각 크기 비율 0.281–0.554, 평면 음영, 정점 변위 0, 노이즈 크기 2.4)"
       ],
       "shape": {
         "status": "none",
@@ -1952,8 +1998,19 @@
         "zeroDisplacement": true,
         "fragmentPieces": 5,
         "fragmentSeed": 0,
+        "fragmentRule": {
+          "version": "angular5/1",
+          "pieces": 5,
+          "seed": 0,
+          "placementRadiusRatio": 0.88363,
+          "pieceSizeRatioRange": [
+            0.2808,
+            0.5544
+          ]
+        },
         "mistSteps": 0
       },
+      "mistFloor": null,
       "placement": {
         "objectCenter": [
           0.029,
@@ -1986,6 +2043,8 @@
           0.245,
           0.18
         ],
+        "measuredWith": "opaqueSurface",
+        "measuredWithNote": "IFS 불투명 서피스 셰이더(Standard PBR)의 화면 색. shaderTargetSrgb는 같은 서피스 모델의 알베도 기준",
         "transparent": false,
         "primary": "inContext",
         "floorDuringIsolatedRenders": "unlitBackgroundColor",
@@ -2258,11 +2317,11 @@
         "msaa": 4,
         "frames": 300,
         "warmupFrames": 30,
-        "frameMsP50": 0.71,
-        "frameMsP95": 0.828,
-        "frameMsMax": 0.955,
-        "frameMsMean": 0.73,
-        "fpsAtP95": 1208.3
+        "frameMsP50": 0.719,
+        "frameMsP95": 0.858,
+        "frameMsMax": 0.999,
+        "frameMsMean": 0.746,
+        "fpsAtP95": 1165.0
       },
       "console": {
         "errors": 0,
@@ -2358,8 +2417,10 @@
         "zeroDisplacement": false,
         "fragmentPieces": 0,
         "fragmentSeed": 0,
+        "fragmentRule": null,
         "mistSteps": 0
       },
+      "mistFloor": null,
       "placement": {
         "objectCenter": [
           0.0,
@@ -2396,6 +2457,8 @@
           0.7,
           0.7
         ],
+        "measuredWith": "opaqueSurface",
+        "measuredWithNote": "IFS 불투명 서피스 셰이더(Standard PBR)의 화면 색. shaderTargetSrgb는 같은 서피스 모델의 알베도 기준",
         "transparent": false,
         "primary": "inContext",
         "floorDuringIsolatedRenders": "unlitBackgroundColor",
@@ -2624,21 +2687,6 @@
           "note": "직접 계산(추정): 렌더러별 패스(LightMode = ForwardBase/ForwardAdd/ShadowCaster)×메시 삼각형. 하늘 메시 삼각형은 제외. 눈당 값 = 단일 패스 인스턴싱 스테레오 프레임과 같은 수의 드로콜. 멀티패스(눈마다 Camera.Render, 이 도구의 시간 측정 방식)면 그림자 맵까지 ×2.",
           "renderers": [
             {
-              "name": "floor (1 m grid)",
-              "triangles": 200,
-              "inView": true,
-              "forwardPasses": 1,
-              "shadowCasterPasses": 0,
-              "castsShadow": false,
-              "transparent": false,
-              "passLightModes": [
-                "FORWARDBASE",
-                "FORWARDADD",
-                "DEFERRED",
-                "META"
-              ]
-            },
-            {
               "name": "model (shell)",
               "triangles": 5120,
               "inView": true,
@@ -2657,6 +2705,21 @@
                 "SHADOWCASTER",
                 "META"
               ]
+            },
+            {
+              "name": "floor (1 m grid)",
+              "triangles": 200,
+              "inView": true,
+              "forwardPasses": 1,
+              "shadowCasterPasses": 0,
+              "castsShadow": false,
+              "transparent": false,
+              "passLightModes": [
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "META"
+              ]
             }
           ]
         }
@@ -2668,11 +2731,11 @@
         "msaa": 4,
         "frames": 300,
         "warmupFrames": 30,
-        "frameMsP50": 0.706,
-        "frameMsP95": 0.827,
-        "frameMsMax": 0.964,
-        "frameMsMean": 0.728,
-        "fpsAtP95": 1209.2
+        "frameMsP50": 0.708,
+        "frameMsP95": 0.858,
+        "frameMsMax": 0.982,
+        "frameMsMean": 0.737,
+        "fpsAtP95": 1165.5
       },
       "console": {
         "errors": 0,
@@ -2768,8 +2831,10 @@
         "zeroDisplacement": false,
         "fragmentPieces": 0,
         "fragmentSeed": 0,
+        "fragmentRule": null,
         "mistSteps": 0
       },
+      "mistFloor": null,
       "placement": {
         "objectCenter": [
           0.0,
@@ -2806,6 +2871,8 @@
           0.7,
           0.7
         ],
+        "measuredWith": "opaqueSurface",
+        "measuredWithNote": "IFS 불투명 서피스 셰이더(Standard PBR)의 화면 색. shaderTargetSrgb는 같은 서피스 모델의 알베도 기준",
         "transparent": false,
         "primary": "inContext",
         "floorDuringIsolatedRenders": "unlitBackgroundColor",
@@ -3078,11 +3145,11 @@
         "msaa": 4,
         "frames": 300,
         "warmupFrames": 30,
-        "frameMsP50": 0.706,
-        "frameMsP95": 0.825,
-        "frameMsMax": 0.884,
-        "frameMsMean": 0.728,
-        "fpsAtP95": 1211.7
+        "frameMsP50": 0.712,
+        "frameMsP95": 0.839,
+        "frameMsMax": 0.944,
+        "frameMsMean": 0.738,
+        "fpsAtP95": 1191.9
       },
       "console": {
         "errors": 0,
@@ -3170,8 +3237,10 @@
         "zeroDisplacement": false,
         "fragmentPieces": 0,
         "fragmentSeed": 0,
+        "fragmentRule": null,
         "mistSteps": 0
       },
+      "mistFloor": null,
       "placement": {
         "objectCenter": [
           0.0,
@@ -3204,6 +3273,8 @@
           0.954,
           0.327
         ],
+        "measuredWith": "opaqueSurface",
+        "measuredWithNote": "IFS 불투명 서피스 셰이더(Standard PBR)의 화면 색. shaderTargetSrgb는 같은 서피스 모델의 알베도 기준",
         "transparent": false,
         "primary": "inContext",
         "floorDuringIsolatedRenders": "unlitBackgroundColor",
@@ -3476,11 +3547,11 @@
         "msaa": 4,
         "frames": 300,
         "warmupFrames": 30,
-        "frameMsP50": 0.704,
-        "frameMsP95": 0.829,
-        "frameMsMax": 0.946,
+        "frameMsP50": 0.702,
+        "frameMsP95": 0.835,
+        "frameMsMax": 1.032,
         "frameMsMean": 0.726,
-        "fpsAtP95": 1206.4
+        "fpsAtP95": 1197.6
       },
       "console": {
         "errors": 0,
@@ -3572,8 +3643,10 @@
         "zeroDisplacement": false,
         "fragmentPieces": 0,
         "fragmentSeed": 0,
+        "fragmentRule": null,
         "mistSteps": 0
       },
+      "mistFloor": null,
       "placement": {
         "objectCenter": [
           0.0,
@@ -3606,6 +3679,8 @@
           0.53,
           0.35
         ],
+        "measuredWith": "opaqueSurface",
+        "measuredWithNote": "IFS 불투명 서피스 셰이더(Standard PBR)의 화면 색. shaderTargetSrgb는 같은 서피스 모델의 알베도 기준",
         "transparent": false,
         "primary": "inContext",
         "floorDuringIsolatedRenders": "unlitBackgroundColor",
@@ -3834,21 +3909,6 @@
           "note": "직접 계산(추정): 렌더러별 패스(LightMode = ForwardBase/ForwardAdd/ShadowCaster)×메시 삼각형. 하늘 메시 삼각형은 제외. 눈당 값 = 단일 패스 인스턴싱 스테레오 프레임과 같은 수의 드로콜. 멀티패스(눈마다 Camera.Render, 이 도구의 시간 측정 방식)면 그림자 맵까지 ×2.",
           "renderers": [
             {
-              "name": "floor (1 m grid)",
-              "triangles": 200,
-              "inView": true,
-              "forwardPasses": 1,
-              "shadowCasterPasses": 0,
-              "castsShadow": false,
-              "transparent": false,
-              "passLightModes": [
-                "FORWARDBASE",
-                "FORWARDADD",
-                "DEFERRED",
-                "META"
-              ]
-            },
-            {
               "name": "model (blob)",
               "triangles": 5120,
               "inView": true,
@@ -3867,6 +3927,21 @@
                 "SHADOWCASTER",
                 "META"
               ]
+            },
+            {
+              "name": "floor (1 m grid)",
+              "triangles": 200,
+              "inView": true,
+              "forwardPasses": 1,
+              "shadowCasterPasses": 0,
+              "castsShadow": false,
+              "transparent": false,
+              "passLightModes": [
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "META"
+              ]
             }
           ]
         }
@@ -3878,11 +3953,11 @@
         "msaa": 4,
         "frames": 300,
         "warmupFrames": 30,
-        "frameMsP50": 0.707,
-        "frameMsP95": 0.843,
-        "frameMsMax": 1.031,
-        "frameMsMean": 0.731,
-        "fpsAtP95": 1186.7
+        "frameMsP50": 0.714,
+        "frameMsP95": 0.839,
+        "frameMsMax": 0.933,
+        "frameMsMean": 0.739,
+        "fpsAtP95": 1191.8
       },
       "console": {
         "errors": 0,
@@ -3989,8 +4064,10 @@
         "zeroDisplacement": true,
         "fragmentPieces": 0,
         "fragmentSeed": 0,
+        "fragmentRule": null,
         "mistSteps": 0
       },
+      "mistFloor": null,
       "placement": {
         "objectCenter": [
           0.0,
@@ -4027,6 +4104,8 @@
           0.618,
           0.618
         ],
+        "measuredWith": "opaqueSurface",
+        "measuredWithNote": "IFS 불투명 서피스 셰이더(Standard PBR)의 화면 색. shaderTargetSrgb는 같은 서피스 모델의 알베도 기준",
         "transparent": false,
         "primary": "inContext",
         "floorDuringIsolatedRenders": "unlitBackgroundColor",
@@ -4255,21 +4334,6 @@
           "note": "직접 계산(추정): 렌더러별 패스(LightMode = ForwardBase/ForwardAdd/ShadowCaster)×메시 삼각형. 하늘 메시 삼각형은 제외. 눈당 값 = 단일 패스 인스턴싱 스테레오 프레임과 같은 수의 드로콜. 멀티패스(눈마다 Camera.Render, 이 도구의 시간 측정 방식)면 그림자 맵까지 ×2.",
           "renderers": [
             {
-              "name": "floor (1 m grid)",
-              "triangles": 200,
-              "inView": true,
-              "forwardPasses": 1,
-              "shadowCasterPasses": 0,
-              "castsShadow": false,
-              "transparent": false,
-              "passLightModes": [
-                "FORWARDBASE",
-                "FORWARDADD",
-                "DEFERRED",
-                "META"
-              ]
-            },
-            {
               "name": "mesh",
               "triangles": 768,
               "inView": true,
@@ -4288,6 +4352,21 @@
                 "SHADOWCASTER",
                 "META"
               ]
+            },
+            {
+              "name": "floor (1 m grid)",
+              "triangles": 200,
+              "inView": true,
+              "forwardPasses": 1,
+              "shadowCasterPasses": 0,
+              "castsShadow": false,
+              "transparent": false,
+              "passLightModes": [
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "META"
+              ]
             }
           ]
         }
@@ -4299,11 +4378,11 @@
         "msaa": 4,
         "frames": 300,
         "warmupFrames": 30,
-        "frameMsP50": 0.695,
-        "frameMsP95": 0.827,
-        "frameMsMax": 0.92,
-        "frameMsMean": 0.72,
-        "fpsAtP95": 1209.3
+        "frameMsP50": 0.7,
+        "frameMsP95": 0.82,
+        "frameMsMax": 1.025,
+        "frameMsMean": 0.722,
+        "fpsAtP95": 1220.3
       },
       "console": {
         "errors": 0,
@@ -4410,8 +4489,10 @@
         "zeroDisplacement": true,
         "fragmentPieces": 0,
         "fragmentSeed": 0,
+        "fragmentRule": null,
         "mistSteps": 0
       },
+      "mistFloor": null,
       "placement": {
         "objectCenter": [
           0.0,
@@ -4448,6 +4529,8 @@
           0.7,
           0.7
         ],
+        "measuredWith": "opaqueSurface",
+        "measuredWithNote": "IFS 불투명 서피스 셰이더(Standard PBR)의 화면 색. shaderTargetSrgb는 같은 서피스 모델의 알베도 기준",
         "transparent": false,
         "primary": "inContext",
         "floorDuringIsolatedRenders": "unlitBackgroundColor",
@@ -4720,11 +4803,11 @@
         "msaa": 4,
         "frames": 300,
         "warmupFrames": 30,
-        "frameMsP50": 0.7,
-        "frameMsP95": 0.823,
-        "frameMsMax": 0.952,
-        "frameMsMean": 0.727,
-        "fpsAtP95": 1214.5
+        "frameMsP50": 0.703,
+        "frameMsP95": 0.844,
+        "frameMsMax": 1.042,
+        "frameMsMean": 0.735,
+        "fpsAtP95": 1184.3
       },
       "console": {
         "errors": 0,
@@ -4827,8 +4910,10 @@
         "zeroDisplacement": true,
         "fragmentPieces": 0,
         "fragmentSeed": 0,
+        "fragmentRule": null,
         "mistSteps": 0
       },
+      "mistFloor": null,
       "placement": {
         "objectCenter": [
           0.0,
@@ -4861,6 +4946,8 @@
           0.3,
           0.7
         ],
+        "measuredWith": "opaqueSurface",
+        "measuredWithNote": "IFS 불투명 서피스 셰이더(Standard PBR)의 화면 색. shaderTargetSrgb는 같은 서피스 모델의 알베도 기준",
         "transparent": false,
         "primary": "inContext",
         "floorDuringIsolatedRenders": "unlitBackgroundColor",
@@ -5133,11 +5220,11 @@
         "msaa": 4,
         "frames": 300,
         "warmupFrames": 30,
-        "frameMsP50": 0.693,
-        "frameMsP95": 0.828,
-        "frameMsMax": 0.932,
-        "frameMsMean": 0.72,
-        "fpsAtP95": 1207.1
+        "frameMsP50": 0.69,
+        "frameMsP95": 0.811,
+        "frameMsMax": 1.02,
+        "frameMsMean": 0.711,
+        "fpsAtP95": 1232.9
       },
       "console": {
         "errors": 0,
@@ -5246,8 +5333,10 @@
         "zeroDisplacement": true,
         "fragmentPieces": 0,
         "fragmentSeed": 0,
+        "fragmentRule": null,
         "mistSteps": 0
       },
+      "mistFloor": null,
       "placement": {
         "objectCenter": [
           0.0,
@@ -5284,6 +5373,8 @@
           0.7,
           0.7
         ],
+        "measuredWith": "opaqueSurface",
+        "measuredWithNote": "IFS 불투명 서피스 셰이더(Standard PBR)의 화면 색. shaderTargetSrgb는 같은 서피스 모델의 알베도 기준",
         "transparent": false,
         "primary": "inContext",
         "floorDuringIsolatedRenders": "unlitBackgroundColor",
@@ -5556,11 +5647,11 @@
         "msaa": 4,
         "frames": 300,
         "warmupFrames": 30,
-        "frameMsP50": 0.692,
-        "frameMsP95": 0.81,
-        "frameMsMax": 0.93,
-        "frameMsMean": 0.713,
-        "fpsAtP95": 1235.2
+        "frameMsP50": 0.694,
+        "frameMsP95": 0.822,
+        "frameMsMax": 1.068,
+        "frameMsMean": 0.717,
+        "fpsAtP95": 1216.5
       },
       "console": {
         "errors": 0,

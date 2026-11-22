@@ -52,7 +52,7 @@ UnityEngine에 의존하지 않는 부분(데이터 클래스·파싱·파라미
 | `form.posture` | 크기 변형 프리셋(웅크림 y×0.7, 납작 y×0.5–0.6, 곧음 y×1.2) | 변형 없음 |
 | `material.color` (+`saturation`) | `_BaseColor` (Built-in은 `_Color`), 알파 = opacity | h 0, s 0, l 0.7 |
 | `material.brightness` | `_Brightness` (없으면 `_EmissionColor`로 근사) | 0.5 |
-| `material.roughness` | `_Roughness` (기본 셰이더: 광택↓ · 얼룩↑ · 잔요철↑, 없으면 URP `_Smoothness` = 1 − r) | 0.5 |
+| `material.roughness` | `_Roughness` (기본 셰이더: 광택↓ · 얼룩↑ · 잔요철↑, 없으면 URP `_Smoothness` = 1 − r. mist 안개 셰이더에서는 광택이 아니라 노이즈 크기 배율·얼룩, 아래 형상별 렌더러 표) | 0.5 |
 | `material.opacity` | `_Opacity` | 1 |
 | `material.erosion` | `_Erosion` (기본 셰이더: 노이즈로 구멍을 뚫고 가장자리를 어둡게 삭은 색으로) | 0 |
 | `layout.size` | 크기 배율 2^((size − 0.5) × 4) | 0.5 (×1) |
@@ -134,8 +134,8 @@ UnityEngine에 의존하지 않는 부분(데이터 클래스·파싱·파라미
 | 렌더러(`renderPath`) | 메시 | 셰이더 | 드로콜·삼각형(눈당 추정) | 비고 |
 | --- | --- | --- | --- | --- |
 | `blob` · `shell` | icosphere(4단계, 삼각형 5,120) | Opaque(안쪽·바깥 두 패스) / opacity < 0.99면 Fade | 8 · 20,880 | 이전과 같음(golden 그대로) |
-| `mist` | 대리 구(icosphere 3단계, 반지름 0.75, 삼각형 1,280, 바운즈 1.6 상자) | `SceneSpecMist`: 한 패스, 물체 좌표 레이마칭 8걸음(`IFS_MIST_STEPS` = `FormRenderPlan.MistSteps`) | 5 · 1,680 | 밀도 = 흔든 반지름 감쇠 × 덩이 노이즈 × 침식 결손. 중심 광선 누적 알파 ≈ opacity × 0.5(`RenderedColor.SurfaceAlpha`와 같은 정의). 거칠기 → 노이즈 크기 배율(0.5에서 1). 그림자 없음. 카메라가 구 밖이면 앞면, 안이면 안쪽 면만 남김. 배치 설정 바닥 높이(`_FloorY`) 아래는 밀도 0. 셰이더를 못 쓰면 `mist(legacy)`(구 + Fade) |
-| `fragments` | 각진 조각 5개를 합친 메시 하나(`FragmentMesh`, 삼각형 100, 평면 음영, seed 0) | Opaque/Fade, 정점 변위 0 | 8 · 800 | 이전: 구 5개(24 · 102,800) |
+| `mist` | 대리 구(icosphere 3단계, 반지름 0.75, 삼각형 1,280, 바운즈 1.6 상자) | `SceneSpecMist`: 한 패스, 물체 좌표 레이마칭 8걸음(`IFS_MIST_STEPS` = `FormRenderPlan.MistSteps`) | 5 · 1,680 | 밀도 = 흔든 반지름 감쇠 × 덩이 노이즈 × 침식 결손. opacity × 0.5는 중심 광선 누적 알파의 **목표 근사**(`RenderedColor.SurfaceAlpha`를 목표로 노이즈 평균 적분으로 광학 깊이를 맞춤, 실제 알파는 다를 수 있음). 걸음마다 구간 가운데에서 표본(중점 샘플링, 화소별 지터 없음). **mist에서 roughness의 뜻**: 표면 반사(광택)가 아니라 밀도 노이즈 크기 배율 lerp(0.7, 1.3, R)(0.5에서 1)과 색 얼룩 세기. 이전 Fade 경로에서는 잔요철 정점 변위·색 얼룩·PBR 광택(스무드니스 = 1 − R)이었고 색 얼룩 식만 같다. 그림자 없음. 카메라가 구 밖이면 앞면, 안이면 안쪽 면만 남김. 배치 설정 바닥 높이(`_FloorY`) 아래는 밀도 0 — 구가 바닥에 걸치면 notes와 report.json `mistFloor`(`floorClipped`, 잘린 높이 비율)에 기록(화면은 그대로). 배치 캡처의 색 측정은 `color.measuredWith = mistVolume`(부피 셰이딩의 화면 색, 알베도 기준 목표와 비교). 셰이더를 못 쓰면 `mist(legacy)`(구 + Fade) |
+| `fragments` | 각진 조각 5개를 합친 메시 하나(`FragmentMesh`, 삼각형 100, 평면 음영, seed 0) | Opaque/Fade, 정점 변위 0 | 8 · 800 | 이전: 구 5개(24 · 102,800). 조각 생성 규칙 버전 `angular5/1`(배치 반경 비율 0.884, 조각 크기 비율 0.281–0.554)을 notes와 계획 JSON `fragmentRule`에 남김. 규칙을 바꾸면 버전을 올린다(같은 seed라도 메시가 달라지므로) |
 | `shapeModel` / `shapePrefab(모형)` | 모양 모형 4종 | Opaque, 정점 변위 0 | 8 · 448–3,472 | 이전과 같음 |
 | `prefab(형태)` · `primitive(형태)` · `shapeModelPrimitive(모형)` | 연결한 프리팹 / IFS 셰이더를 못 쓸 때 | — | — | 대체 경로(그대로) |
 

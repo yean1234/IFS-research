@@ -87,6 +87,44 @@ namespace IFS.SceneSpec.Tests
             Assert.That(sum["withDefaults"].Value<double>("primaryMean"), Is.EqualTo(0.5).Within(1e-9));
         }
 
+        static FormRenderPlan PlanFor(string form, double opacity)
+        {
+            var o = OwnershipTestSpecs.Empty("MEASURE").Slot("material.opacity", opacity, "합성");
+            if (form != null) o = o.Slot("form.type", form, "합성");
+            var spec = o.Parse();
+            var p = SceneParams.FromSpec(spec, new SceneDefaults());
+            return FormRenderPlan.Build(p, p.GetCategory("form.type"), ShapeMapping.Resolve(spec));
+        }
+
+        // 색 측정 경로는 실제 렌더 경로를 따른다(G1): mist 렌더러는 Fade 서피스가 아니라 부피 셰이더.
+        [TestCase("mist", 1.0, "mist", BatchCapture.MeasuredMistVolume, true)]
+        [TestCase("mist", 0.6, "mist", BatchCapture.MeasuredMistVolume, true)]
+        [TestCase("mist", 1.0, "mist(legacy)", BatchCapture.MeasuredFadeSurface, true)]
+        [TestCase("blob", 1.0, "blob", BatchCapture.MeasuredOpaqueSurface, false)]
+        [TestCase("blob", 0.6, "blob", BatchCapture.MeasuredFadeSurface, true)]
+        [TestCase("fragments", 1.0, "fragments", BatchCapture.MeasuredOpaqueSurface, false)]
+        [TestCase("shell", 0.5, "shell", BatchCapture.MeasuredFadeSurface, true)]
+        [TestCase("mist", 1.0, "primitive(mist)", BatchCapture.MeasuredNonIfsMaterial, true)]
+        [TestCase("blob", 1.0, "prefab(blob)", BatchCapture.MeasuredNonIfsMaterial, false)]
+        public void Color_measure_path_follows_the_actual_render_path(string form, double opacity, string renderPath, string expected, bool transparent)
+        {
+            var plan = PlanFor(form, opacity);
+            string path = BatchCapture.ColorMeasurePath(renderPath, plan);
+            Assert.That(path, Is.EqualTo(expected));
+            Assert.That(BatchCapture.IsTransparentMeasure(path, plan), Is.EqualTo(transparent));
+            Assert.That(BatchCapture.ColorMeasureNote(path), Is.Not.Empty);
+        }
+
+        [Test]
+        public void Mist_measure_note_says_it_is_volume_shading_not_the_albedo_reference()
+        {
+            string note = BatchCapture.ColorMeasureNote(BatchCapture.MeasuredMistVolume);
+            Assert.That(note, Does.Contain("SceneSpecMist"));
+            Assert.That(note, Does.Contain("알베도 기준"));
+            // 소유감 러너가 쓰는 판정(form.type 기준)은 그대로: mist는 언제나 반투명
+            Assert.That(RenderedColor.UsesFadeShader("mist", 1.0), Is.True);
+        }
+
         [Test]
         public void Percentile_is_nearest_rank()
         {

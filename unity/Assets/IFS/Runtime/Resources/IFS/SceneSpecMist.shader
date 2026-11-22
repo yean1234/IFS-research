@@ -10,9 +10,12 @@
 //   _BaseColor  밀도의 색(HSL → sRGB, 채도어는 SceneParams가 이미 s에 넣음)
 //   _Brightness 밝기 배율 lerp(0.4, 1, saturate(2B)) — IFSSceneSpecCommon.cginc·C# RenderedColor.BrightnessFactor와 같은 식.
 //               0.5 초과분은 발광(색 × (B − 0.5) × 2.4, 기존 방식)
-//   _Opacity    밀도 배율. 중심 광선의 누적 알파 ≈ saturate(_Opacity × _Density)가 되도록 광학 깊이를 맞춘다
-//               (= C# RenderedColor.SurfaceAlpha(mist) = opacity × 형태 밀도 0.5와 같은 정의. 노이즈 평균 기준이라 화소마다 다르다)
-//   _Roughness  노이즈 크기 배율 lerp(0.7, 1.3, R) — 기본값 0.5에서 1(프리셋 _NoiseScale 그대로), 거칠수록 결이 잘다. 얼룩 세기도 기존 식
+//   _Opacity    밀도 배율. saturate(_Opacity × _Density)는 중심 광선 누적 알파의 "목표 근사"다: 노이즈 평균으로 어림한
+//               중심 광선 적분(IFS_MIST_CENTER_INTEGRAL)으로 광학 깊이를 맞출 뿐이라, 실제 중심 알파는 노이즈·걸음 수에 따라 이 값과 다르고
+//               화소마다도 다르다(C# RenderedColor.SurfaceAlpha(mist) = opacity × 형태 밀도 0.5를 목표로 삼는다는 뜻이지 같다는 뜻이 아니다)
+//   _Roughness  표면 반사(광택)가 아니다. 노이즈 크기 배율 lerp(0.7, 1.3, R) — 기본값 0.5에서 1(프리셋 _NoiseScale 그대로), 거칠수록 결이 잘다.
+//               색 얼룩 세기도 기존 식(IFSSceneSpecCommon.cginc와 같은 lerp(1, 0.7 + 0.6·얼룩, 0.25 + 0.6R)).
+//               이전 Fade 경로에서는 잔요철 정점 변위(0.035R) · 색 얼룩 · PBR 광택(스무드니스 = 1 − R)이었다
 //   _Erosion    밀도 결손(노이즈가 기준보다 낮은 곳의 밀도를 0으로, 기존 Opaque의 침식과 같은 문턱 erosion × 0.62)
 // 형상 프리셋(로더가 넣음): _Lumpiness(반지름 흔들림), _NoiseScale, _Density(0.5), _Seed. _Fuzz·_ShellOpen·_Displacement는 쓰지 않는다.
 // 그림자 없음(U5): ShadowCaster 패스가 없고 FallBack도 없다. 투명 겹침 1층(ZWrite Off), 드로콜 1.
@@ -137,10 +140,12 @@ Shader "IFS/SceneSpec Mist"
                 float t1 = -b + sq;
                 if (t1 <= t0) discard;
                 float dt = (t1 - t0) / IFS_MIST_STEPS;
-                // 화소마다 고정된 시작 흔들기(걸음 무늬 줄이기). 화면 좌표만 쓰므로 같은 화면이면 같은 값
-                float jitter = 0.5;   // 걸음 가운데에서 표본(화소별 흔들기는 결정적이지만 화면에 낟알 무늬를 남겨 쓰지 않는다)
+                // 중점 샘플링: 걸음마다 구간 가운데(0.5)에서 표본을 뽑는다. 화소별 흔들기(지터)는 쓰지 않는다
+                // (결정적이더라도 화면에 낟알 무늬를 남긴다). 그래서 걸음 무늬가 남을 수 있다
+                float jitter = 0.5;
 
-                // 목표 중심 알파 A = saturate(opacity × 형태 밀도) → 광학 깊이 τ = −ln(1 − A)
+                // 중심 광선 알파의 목표 근사 A = saturate(opacity × 형태 밀도) → 광학 깊이 τ = −ln(1 − A)
+                // (노이즈 평균으로 어림한 적분으로 맞추므로 실제 중심 알파는 A와 다를 수 있다)
                 float target = min(saturate(_Opacity * _Density), 0.995);
                 float sigma = -log(1.0 - target) / (IFS_MIST_CENTER_INTEGRAL * IFS_MIST_RADIUS);
                 float noiseMul = lerp(0.7, 1.3, _Roughness);

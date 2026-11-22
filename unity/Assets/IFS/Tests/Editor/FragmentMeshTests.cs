@@ -1,6 +1,7 @@
 // fragments 조각 메시(X67, FragmentMesh) 테스트: 결정성·조각 수·바운즈·다른 seed.
 using System;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 
 namespace IFS.SceneSpec.Tests
@@ -88,6 +89,15 @@ namespace IFS.SceneSpec.Tests
         }
 
         [Test]
+        public void Default_mesh_is_pinned_to_the_rule_version()
+        {
+            // 같은 seed라도 조각 생성 규칙이 바뀌면 메시가 달라진다. 규칙을 바꿀 때는 RuleVersion을 올리고 이 해시를 함께 바꾼다
+            // (계획 JSON·로더 notes의 fragmentRule로 어느 규칙이 그린 화면인지 추적한다).
+            Assert.That(FragmentMesh.RuleVersion, Is.EqualTo("angular5/1"));
+            Assert.That(FragmentMesh.Hash(Build(FragmentMesh.DefaultSeed).xyz), Is.EqualTo(1426501965761909582UL));
+        }
+
+        [Test]
         public void Fragments_plan_carries_the_preset_defaults()
         {
             var o = OwnershipTestSpecs.Empty("FRAGPLAN").Slot("form.type", "fragments", "조각");
@@ -98,6 +108,27 @@ namespace IFS.SceneSpec.Tests
             Assert.That(plan.FragmentSeed, Is.EqualTo(FragmentMesh.DefaultSeed));
             Assert.That(plan.ZeroDisplacement, Is.True);
             Assert.That(plan.PresetNote, Does.Contain("형상 프리셋 기본값"));
+            // 조각 생성 규칙 버전·주요 매개변수가 notes와 계획 JSON에 함께 남는다(같은 seed라도 규칙이 바뀌면 추적)
+            Assert.That(plan.FragmentRule, Is.EqualTo(FragmentMesh.RuleVersion));
+            Assert.That(plan.PresetNote, Does.Contain("조각 규칙 " + FragmentMesh.RuleVersion));
+            Assert.That(plan.PresetNote, Does.Contain("배치 반경 비율 0.884"));
+            Assert.That(plan.PresetNote, Does.Contain("조각 크기 비율 0.281–0.554"));
+            var rule = plan.ToJson()["fragmentRule"];
+            Assert.That(rule.Value<string>("version"), Is.EqualTo("angular5/1"));
+            Assert.That(rule.Value<int>("pieces"), Is.EqualTo(5));
+            Assert.That(rule.Value<int>("seed"), Is.EqualTo(0));
+            Assert.That(rule.Value<double>("placementRadiusRatio"), Is.EqualTo(0.88363).Within(1e-5));
+            Assert.That(rule["pieceSizeRatioRange"][0].Value<double>(), Is.EqualTo(0.2808).Within(1e-9));
+            Assert.That(rule["pieceSizeRatioRange"][1].Value<double>(), Is.EqualTo(0.5544).Within(1e-9));
+        }
+
+        [Test]
+        public void Other_renderers_have_no_fragment_rule()
+        {
+            var spec = OwnershipTestSpecs.Empty("NOFRAG").Slot("form.type", "blob", "덩어리").Parse();
+            var plan = FormRenderPlan.Build(SceneParams.FromSpec(spec, new SceneDefaults()), "blob", ShapeMapping.Resolve(spec));
+            Assert.That(plan.FragmentRule, Is.Null);
+            Assert.That(plan.ToJson()["fragmentRule"].Type, Is.EqualTo(JTokenType.Null));
         }
     }
 }

@@ -2,6 +2,8 @@
 //   - 안개 셰이더가 있고 컴파일 오류가 없다
 //   - 로더가 안개 머티리얼에 재질 슬롯·형상 프리셋을 넣고 그림자를 끈다
 //   - opacity 0.15 → 0.6 → 1.0이면 보이는 화소 수(visiblePixels)가 늘어난다(값을 바닥값으로 올리지 않는다, X70)
+//   - 배치 캡처의 색 측정 경로가 실제 렌더 경로(mistVolume)를 따른다(CP8 G1)
+//   - 안개 구가 바닥 아래로 걸치면 notes·MistFloor에 기록한다(CP8 G4, 화면 처리는 그대로)
 using System;
 using System.IO;
 using System.Linq;
@@ -79,6 +81,37 @@ namespace IFS.SceneSpec.Tests
             });
         }
 
+        // 안개 셰이더는 바닥 아래 밀도를 0으로 자른다 → 구가 바닥에 걸치면 notes·MistFloor에 기록(G4). 화면 처리는 그대로.
+        [TestCase(0.04, true)]
+        [TestCase(0.75, false)]
+        public void Floor_clipping_is_recorded_when_the_mist_sphere_reaches_below_the_floor(double verticalOffset, bool clipped)
+        {
+            var spec = OwnershipTestSpecs.Empty("MISTFLOOR").Slot("form.type", "mist", "안개")
+                .Slot("layout.verticalOffset", verticalOffset, "높이");
+            FormRendererTests.WithLoaded(_tmp, spec, "mist-floor-" + (clipped ? "low" : "high"), l =>
+            {
+                Assert.That(l.RenderPath, Is.EqualTo(FormRenderPlan.RendererMist));
+                Assert.That(l.MistFloor, Is.Not.Null);
+                Assert.That(l.MistFloor.FloorClipped, Is.EqualTo(clipped));
+                Assert.That(l.MistFloor.FloorY, Is.EqualTo(0.0));
+                if (clipped) Assert.That(l.MistFloor.ClippedHeightFraction, Is.GreaterThan(0.0).And.LessThanOrEqualTo(1.0));
+                else Assert.That(l.MistFloor.ClippedHeightFraction, Is.EqualTo(0.0));
+                Assert.That(l.Notes.Any(n => n.Contains("바닥 아래 밀도를 0으로 자름")), Is.EqualTo(clipped));
+                return 0;
+            });
+        }
+
+        [Test]
+        public void Non_mist_forms_have_no_floor_clip_record()
+        {
+            var spec = OwnershipTestSpecs.Empty("BLOBFLOOR").Slot("form.type", "blob", "덩어리").Slot("layout.verticalOffset", 0.04, "높이");
+            FormRendererTests.WithLoaded(_tmp, spec, "blob-floor", l =>
+            {
+                Assert.That(l.MistFloor, Is.Null);
+                return 0;
+            });
+        }
+
         [Test]
         public void Visible_pixels_increase_with_opacity()
         {
@@ -98,6 +131,11 @@ namespace IFS.SceneSpec.Tests
             {
                 Assert.That(s["console"].Value<int>("errors"), Is.EqualTo(0), s["console"].ToString());
                 Assert.That(s.Value<string>("renderPath"), Is.EqualTo(FormRenderPlan.RendererMist));
+                // 색 측정 경로는 실제 렌더 경로(부피 셰이더)를 따른다(G1)
+                Assert.That(s["color"].Value<string>("measuredWith"), Is.EqualTo(BatchCapture.MeasuredMistVolume));
+                Assert.That(s["color"].Value<bool>("transparent"), Is.True);
+                Assert.That(s["color"].Value<string>("primary"), Is.EqualTo("scene"));
+                Assert.That(s["mistFloor"].Value<bool>("floorClipped"), Is.False, "기본 높이(verticalOffset 0.75)는 바닥에 닿지 않음");
             }
             int v015 = specs["M015.json"].Value<int>("visiblePixels");
             int v060 = specs["M060.json"].Value<int>("visiblePixels");
