@@ -20,7 +20,8 @@ unity/
 │  │  │  ├─ SceneSpec/SceneOverride.cs · MotionGroups.cs  변형본 덮어쓰기, motion.type → 움직임 묶음 표
 │  │  │  └─ Ownership/                     소유감 실험: 변형본 생성기 · 러너 · 머리 자세 · 기록 (아래 「소유감 실험」)
 │  │  ├─ Editor/                          메뉴: 예시 테스트 씬 다시 만들기 · Create Shape Prefabs · BatchCapture(배치 캡처·성능 측정) · Ownership 실험 씬·자동 시행
-│  │  ├─ Runtime/Resources/IFS/          셰이더(Built-in): SceneSpec Opaque · Fade + 공통 노이즈, Environment Floor · Sky
+│  │  ├─ Runtime/Rendering/              형상별 렌더 경로: FormRenderPlan(슬롯 값 → 렌더러 입력) · IFormRenderer(blob·mist·shell·fragments·shapeModel) · FragmentMesh
+│  │  ├─ Runtime/Resources/IFS/          셰이더(Built-in): SceneSpec Opaque · Fade · Mist(부피 레이마칭) + 공통 노이즈, Environment Floor · Sky
 │  │  ├─ Tests/Editor/                    EditMode 테스트(아래 「테스트」), UnityOnly/ = Unity에서만 도는 것
 │  │  └─ Scenes/                          SceneSpecExamples.unity(예시 2개 테스트 씬) · OwnershipExperiment.unity(소유감 실험)
 │  ├─ Prefabs/Shapes/                     모양 모형 프리팹 4개(Sphere · Cube · FlatCylinder · Cone) + 원뿔 메시 + 머티리얼(메뉴가 만듦)
@@ -37,7 +38,7 @@ UnityEngine에 의존하지 않는 부분(데이터 클래스·파싱·파라미
 2. **패키지** — Package Manager ▸ `+` ▸ *Add package by name* ▸ `com.unity.nuget.newtonsoft-json`(3.2.1 이상). 테스트를 돌리려면 `com.unity.test-framework`(새 프로젝트에는 보통 있음). 로더는 XR Interaction Toolkit 없이도 컴파일됩니다.
 3. **테스트** — Window ▸ General ▸ Test Runner ▸ EditMode ▸ *Run All* → 134개 통과해야 합니다(2026-11-17 기준, 배치모드 명령은 아래 「테스트」).
 4. **테스트 씬** — `Assets/IFS/Scenes/SceneSpecExamples.unity`를 열고 Play. 중립 환경(회색 바닥·1 m 격자·하늘·방향광 그림자)이 먼저 만들어지고, 왼쪽이 EX01(회색 덩어리, 가슴 높이), 오른쪽이 EX02(웅크린 작은 형상). Console에 "SceneSpec 값이 null → 기본값 … 사용" 줄과 기록 폴더 경로가 나옵니다. 씬이 열리지 않으면 메뉴 **IFS ▸ SceneSpec ▸ 예시 테스트 씬 다시 만들기**.
-5. **형태 모형** — 프리팹이 없어도 기본 절차 모형이 뜹니다: 잘게 나눈 구를 `IFS/SceneSpec` 셰이더가 노이즈로 밀어 형태별로 다르게 보이게 합니다(blob 울퉁불퉁한 덩어리, mist 가장자리가 흐린 반투명 안개, shell 위가 깨져 열린 껍데기, fragments 조각 5개). 디자이너가 만든 에셋이 생기면 SceneLoader ▸ *Form Prefabs* 4칸에 넣으면 그쪽이 우선입니다. 참여자가 모양어(동그랗다·네모·납작하다·뾰족하다)를 말했으면 구·큐브·납작 원기둥·원뿔 모형으로 바꿉니다(spec `_unmapped`의 모양어, `form.type`이 null·blob일 때만). 프리팹은 메뉴 **IFS ▸ Create Shape Prefabs**가 만들고 연결합니다. 규칙·기록은 `docs/shape-mapping.md`. 이 셰이더는 **Built-in 렌더 파이프라인 전용**이라 URP로 바꾸면 지원되지 않고 임시 프리미티브로 돌아갑니다(그때 Shader Graph 판이 필요).
+5. **형태 모형** — 프리팹이 없어도 기본 절차 모형이 뜹니다: 잘게 나눈 구를 `IFS/SceneSpec` 셰이더가 노이즈로 밀어 형태별로 다르게 보이게 합니다(blob 울퉁불퉁한 덩어리, shell 위가 깨져 열린 껍데기). mist는 구 대리 메시 + 부피 레이마칭 셰이더(`IFS/SceneSpec Mist`)로 몽글몽글한 안개, fragments는 각진 조각 5개를 합친 메시 하나입니다(아래 「형상별 렌더 경로」). 디자이너가 만든 에셋이 생기면 SceneLoader ▸ *Form Prefabs* 4칸에 넣으면 그쪽이 우선입니다. 참여자가 모양어(동그랗다·네모·납작하다·뾰족하다)를 말했으면 구·큐브·납작 원기둥·원뿔 모형으로 바꿉니다(spec `_unmapped`의 모양어, `form.type`이 null·blob일 때만). 프리팹은 메뉴 **IFS ▸ Create Shape Prefabs**가 만들고 연결합니다. 규칙·기록은 `docs/shape-mapping.md`. 이 셰이더는 **Built-in 렌더 파이프라인 전용**이라 URP로 바꾸면 지원되지 않고 임시 프리미티브로 돌아갑니다(그때 Shader Graph 판이 필요).
 6. **직접 만든 셰이더를 쓸 때** — 아래 Reference 이름으로 프로퍼티를 만들면 로더가 값을 넣습니다. 이름이 다르면 SceneLoader ▸ *Shader Params*에서 바꿉니다.
 7. **챗봇 출력 연결** — InspectorPathSource ▸ *Spec Path*에 `…/chatbot/logs/scenes/{sessionId}.json`의 절대 경로를 넣습니다(상대 경로는 StreamingAssets 기준).
 8. **참여자 조정 입력** — 컨트롤러·슬라이더(XRI)를 `SceneLoader.SetNumber("material.brightness", v)`, `SetCategory("form.type", "mist")`, 끝날 때 `SaveFinal()`에 연결합니다. 이 연결 UI는 아직 없습니다.
@@ -121,10 +122,24 @@ UnityEngine에 의존하지 않는 부분(데이터 클래스·파싱·파라미
 
 - Standard 금속도 워크플로, 금속도 0(유전체). 확산·정반사 합의 에너지 보존은 Standard BRDF가 맡습니다.
 - 스무드니스 = (1 − roughness) × 0.92 × 얼룩. 0.92 상한은 완전 거울면이 VR에서 깜빡이는 정반사 앨리어싱을 막기 위해서입니다.
-- 노멀맵은 쓰지 않습니다. 절차 메시(icosphere, 삼각형 5,120개)에 UV·탄젠트가 없기 때문입니다. 잔요철은 정점 변위 + 스무드니스 얼룩으로 표현합니다.
-- 반투명(Fade: mist 또는 opacity < 1)은 그림자를 끕니다. Built-in의 반투명은 그림자를 받지 못하고, 불투명 그림자를 드리우면 안개가 덩어리처럼 보이기 때문입니다. ZWrite Off · Cull Back이라 오목한 곳은 겹침 순서가 틀릴 수 있습니다(형상이 하나라 오브젝트 사이 정렬 문제는 없음).
+- 노멀맵은 쓰지 않습니다. 절차 메시(icosphere 삼각형 5,120개, 조각 메시 100개)에 UV·탄젠트가 없기 때문입니다. 잔요철은 정점 변위 + 스무드니스 얼룩으로 표현합니다.
+- 반투명(Fade: opacity < 1, 그리고 안개 셰이더를 못 쓸 때의 mist)과 안개(`SceneSpecMist`)는 그림자를 끕니다. Built-in의 반투명은 그림자를 받지 못하고, 불투명 그림자를 드리우면 안개가 덩어리처럼 보이기 때문입니다. ZWrite Off · Cull Back이라 오목한 곳은 겹침 순서가 틀릴 수 있습니다(형상이 하나라 오브젝트 사이 정렬 문제는 없음).
 - 로더는 에디트 모드에서도 머티리얼을 직접 복제합니다(`renderer.materials`는 에디트 모드에서 누수 오류를 냄). 배치 캡처가 이 경로를 씁니다. 조정 중 `form.type`이 바뀌면 이전 형상의 머티리얼 사본도 함께 지웁니다(`OwnedMaterialCount`로 확인, EditMode 테스트).
 - 불투명 셰이더(`SceneSpecOpaque`)는 안쪽 면(Cull Front)·바깥 면(Cull Back) 두 패스로 그리고, **그림자 캐스터는 바깥 면 패스에만** 둡니다. Built-in은 첫 ShadowCaster 패스로 카메라 깊이 텍스처(화면 공간 그림자)를 그립니다. 안쪽 면 패스에도 캐스터가 있으면 그것이 먼저 쓰여 깊이 텍스처에 형상 뒤쪽 면이 들어갑니다. 그러면 바깥 면 그림자를 엉뚱한 위치에서 읽습니다. 침식 구멍 뒤로 바닥이 보이는 곳은 바닥 깊이로 읽습니다. 그래서 바닥이 있을 때와 없을 때 EX01 형상 밝기가 L\* 2 정도 달랐습니다(2026-11-16 배치 캡처 진단으로 확인, 수정 후 0).
+
+### 형상별 렌더 경로 (`Runtime/Rendering/`, docs/decisions.md X64–X72)
+
+`SceneParams` + 모양어 판정 → `FormRenderPlan`(규칙 기반 어댑터) → `IFormRenderer`. 렌더러는 `form.type`과 슬롯 값만 봅니다. `meta.mapping` 등 매퍼 정보는 받지 않습니다(X65, `FormRenderPlanTests`·`FormRendererTests`가 v0/v1 같은 계획·같은 화면을 확인). 조각 수·seed·걸음 수 같은 값은 **형상 프리셋 기본값**이고 참여자가 말한 값이 아닙니다. 로더 notes에 그대로 적습니다.
+
+| 렌더러(`renderPath`) | 메시 | 셰이더 | 드로콜·삼각형(눈당 추정) | 비고 |
+| --- | --- | --- | --- | --- |
+| `blob` · `shell` | icosphere(4단계, 삼각형 5,120) | Opaque(안쪽·바깥 두 패스) / opacity < 0.99면 Fade | 8 · 20,880 | 이전과 같음(golden 그대로) |
+| `mist` | 대리 구(icosphere 3단계, 반지름 0.75, 삼각형 1,280, 바운즈 1.6 상자) | `SceneSpecMist`: 한 패스, 물체 좌표 레이마칭 8걸음(`IFS_MIST_STEPS` = `FormRenderPlan.MistSteps`) | 5 · 1,680 | 밀도 = 흔든 반지름 감쇠 × 덩이 노이즈 × 침식 결손. 중심 광선 누적 알파 ≈ opacity × 0.5(`RenderedColor.SurfaceAlpha`와 같은 정의). 거칠기 → 노이즈 크기 배율(0.5에서 1). 그림자 없음. 카메라가 구 밖이면 앞면, 안이면 안쪽 면만 남김. 배치 설정 바닥 높이(`_FloorY`) 아래는 밀도 0. 셰이더를 못 쓰면 `mist(legacy)`(구 + Fade) |
+| `fragments` | 각진 조각 5개를 합친 메시 하나(`FragmentMesh`, 삼각형 100, 평면 음영, seed 0) | Opaque/Fade, 정점 변위 0 | 8 · 800 | 이전: 구 5개(24 · 102,800) |
+| `shapeModel` / `shapePrefab(모형)` | 모양 모형 4종 | Opaque, 정점 변위 0 | 8 · 448–3,472 | 이전과 같음 |
+| `prefab(형태)` · `primitive(형태)` · `shapeModelPrimitive(모형)` | 연결한 프리팹 / IFS 셰이더를 못 쓸 때 | — | — | 대체 경로(그대로) |
+
+한계: 카메라가 안개 구 안에 있고 구 뒤쪽이 바닥 아래면 바닥을 내려다보는 화소의 안개가 빠집니다. 바닥에 걸친 안개는 바닥 높이에서 잘린 경계가 옅게 보일 수 있습니다. 헤드셋(Quest 모바일 GPU)의 레이마칭 채움 비용은 재지 않았습니다.
 
 ### 후처리
 
@@ -175,7 +190,8 @@ JSON 하나마다 하는 일:
    - `specColorIsDefault`: h·s·l 중 **하나라도** 기본값으로 채웠으면 true, 어느 성분인지는 `specColorDefaultComponents`. 요약(`summary.color`)은 참여자가 h·s·l을 모두 말한 spec(`stated`)과 기본값이 섞인 spec(`withDefaults`)을 따로 집계합니다. 기본 무채색은 맞추기 쉬워 색 반영 정확도를 좋게 보이게 하기 때문입니다(AGENTS.md 원칙 2). 논문·판정에는 `stated.primaryMean`·`stated.primaryMax`를 씁니다.
    - `shaderTarget`은 brightness에 따른 셰이더의 의도된 어둡게·발광을 반영한 기대 색입니다.
 6. **렌더 통계(추정)**: `UnityStats`와 `ProfilerRecorder`(Draw Calls Count·Triangles Count 등)를 모두 걸어 봤지만, 배치모드 에디트 모드의 수동 `Camera.Render()`에서는 둘 다 0으로 남습니다(`meaningful: false`로 기록). 그래서 직접 계산한 **추정**을 씁니다: 화면 안 렌더러 수, 메시 삼각형, 렌더러별 패스(LightMode = ForwardBase/ForwardAdd/ShadowCaster)로 눈당 드로콜·삼각형 추정(전방 패스 + 화면 공간 그림자용 카메라 깊이 + 그림자 맵 + 하늘 + 그림자 해상), 그림자 광원 수. `summary.ac4`의 키도 `drawCallsPerEyeEstimateAtMost100`·`trianglesPerEyeEstimateAtMost300k`로 추정임을 밝히고, `estimatedItems`·`drawCallsTrianglesMeasuredByProfiler`(false)를 함께 적습니다. 실측은 PlayMode나 기기에서 해야 합니다.
-7. **프레임시간**: 한 프레임 = 눈 수만큼 `Camera.Render()`(눈 위치를 IPD 64 mm의 절반씩 옮김) → RenderTexture에서 1×1 화소를 `Texture2D.ReadPixels`로 읽어 CPU가 GPU 완료를 기다리게 합니다(동기화). `Stopwatch`로 렌더 시작부터 동기화 끝까지 잽니다. 준비 프레임은 버리고 p50·p95·max·평균을 냅니다. 에디터 오버헤드와 MSAA 해상 비용이 들어 있습니다.
+7. **형상 지표(X72)**: `renderPath`(렌더러 이름), `renderPlan`(FormRenderPlan 전체), `visiblePixels`(장면 조명·형상만 렌더의 덮임 a ≥ 0.02 화소 수, 원래 해상도), `maxAlpha`, `silhouette{circularity(4π·넓이/둘레², 마스크 = a ≥ 0.5 × maxAlpha, 마칭 스퀘어 둘레), components(8-이웃 덩어리, 마스크 넓이의 0.5% 이상), edgeFalloffPx((넓이(a ≥ 0.1·max) − 넓이(a ≥ 0.9·max)) / 둘레), maskPixels, perimeterPx, componentsRaw}`. 요약은 `summary.renderPaths`(렌더 경로별 평균). 계산은 `Editor/SilhouetteMetrics.cs`(UnityEngine 없음, `SilhouetteMetricsTests`). "더 그 형상답다"의 대리 지표일 뿐입니다. 전후 비교: `docs/validation/render/README.md`.
+8. **프레임시간**: 한 프레임 = 눈 수만큼 `Camera.Render()`(눈 위치를 IPD 64 mm의 절반씩 옮김) → RenderTexture에서 1×1 화소를 `Texture2D.ReadPixels`로 읽어 CPU가 GPU 완료를 기다리게 합니다(동기화). `Stopwatch`로 렌더 시작부터 동기화 끝까지 잽니다. 준비 프레임은 버리고 p50·p95·max·평균을 냅니다. 에디터 오버헤드와 MSAA 해상 비용이 들어 있습니다.
 
 > 프레임시간은 **데스크톱 GPU(RTX 5080)에서 잰 대리 측정**입니다. Quest 3 헤드셋(모바일 GPU, 타일 렌더링, 단일 패스 인스턴싱)의 성능이 아닙니다. `report.json`의 `disclaimer`에도 적혀 있습니다. 헤드셋 성능은 기기에서 따로 재야 합니다.
 

@@ -28,6 +28,34 @@ cd chatbot; .\.venv\Scripts\python.exe -m pytest -q -m "not live"; cd ..
 - 3단계의 기록 형식은 `unity/README.md`의 "배치 실험 러너" 절(구현되면)과 `docs/decisions.md` X54에 있습니다. 하위 에이전트는 다른 세션에서 재개할 수 없으니, 끊겼으면 git 상태를 보고 남은 부분만 새로 시킵니다.
 - 사람이 정하거나 해야 할 일: `docs/morning-todo.md` 맨 위 절. 결과 요약: `docs/morning-report.md`.
 
+## 렌더 경로 개선(2026-11-23)
+
+> 하위 에이전트(Claude) 구현, 설계는 `docs/decisions.md` X64–X72. 단계마다 로컬 커밋(푸시 없음).
+
+한 일:
+- 0단계 `ba36db1`: 합성 spec 13개(`docs/validation/render/specs/`, `make_specs.py`)와 기준선 캡처(`before/`, held-out은 `before/heldout/`).
+- 1단계 `b1ab311`: `SceneLoader`의 형상 생성부를 `Runtime/Rendering/`의 `FormRenderPlan`(슬롯 값 → 렌더러 입력, meta.mapping을 받지 않음) + `IFormRenderer`로 옮김. 화면 변화 없음(golden 그대로, 캡처 params·color·renderStats 같음). BatchCapture의 Fade 판정 중복을 `RenderedColor.UsesFadeShader`로 합침.
+- 2단계 `5dc9d91`: report.json에 `renderPath`·`renderPlan`·`visiblePixels`·`maxAlpha`·`silhouette{circularity, components, edgeFalloffPx …}`, `summary.renderPaths` (X72).
+- 3단계 `dd3b815`: fragments = 각진 조각 5개를 합친 메시 하나(X67). 드로콜/눈 24 → 8, 삼각형 102,800 → 800, components 4 → 5.
+- 4단계 `b81b801` + 보완 `ff3d483`: mist = 대리 구 + 부피 레이마칭 셰이더 `SceneSpecMist`(8걸음, X66). 처음 안(안쪽 면만)은 바닥 위 안개(H02)가 깊이 테스트로 사라져, 카메라 위치로 면을 고르는 한 패스(Cull Off) + 바닥 아래 밀도 0으로 바꿈. golden은 GOLD-mist 항목만 바뀜.
+- 5단계: `after/`·`after/heldout/` 캡처, `docs/validation/render/README.md`(전후 표·요약), `sheet.png`, `unity/README.md` 렌더 절.
+
+검증 명령:
+```powershell
+cd unity/Tools/compile-check; dotnet test Tests/IFS.SceneSpec.CompileCheck.Tests.csproj; cd ../../..   # 201 통과
+& "C:\Program Files\Unity\Hub\Editor\6000.0.85f2\Editor\Unity.exe" -batchmode -projectPath unity -runTests -testPlatform EditMode -testResults <xml> -logFile <log>   # 237 통과
+cd chatbot; .\.venv\Scripts\python.exe -m pytest -q -m "not live"; cd ..   # 443 통과
+python docs/validation/render/compare.py   # 전후 표 다시 만들기(캡처 명령은 docs/validation/render/README.md)
+```
+
+후속 작업:
+- shell 렌더러(X69): 이번에 바꾸지 않음(구 + 껍질 열림 프리셋 그대로).
+- 정반사 남기기(X70 보류분): 넣지 않음. opacity 바닥값·윤곽선 보정도 없음 — 낮은 opacity는 거의 안 보이는 그대로(R03·H09).
+- 헤드셋 실기에서 mist 채움 비용 측정: 데스크톱 대리 측정만 함(mist frameMsP95 +0.1–0.15 ms, 카메라가 안개 속이면 약 3–3.7 ms). Quest 모바일 GPU의 레이마칭 비용·셰이더 컴파일(GLES3/Vulkan)은 확인 안 함.
+- 소유감 러너(X71): 규칙·기록·테스트는 그대로지만, 형태 변형 자극 중 mist·fragments의 화면이 달라졌다. 이전 내부 보정 시행 값을 다시 볼 것.
+- 지표 한계: mist의 edgeFalloffPx는 넓어지지 않고 줄었다(둘레로 나누는 정의 때문). 사람 판정 필요. fragments 색 ΔE00은 평면 음영 때문에 커졌다(약 5 → 9–11).
+- 매퍼 쪽 문제(H09의 부분 투명 → 전체 opacity 등)는 이번 범위 밖.
+
 ## 0. 이어받으면 맨 처음 할 것 (확인 명령)
 
 PowerShell 기준입니다(Git Bash도 가능). 모든 명령은 저장소 루트(이 파일이 있는 저장소의 최상위 폴더, 원본 PC의 D 드라이브 연구 폴더 아래 `IFS-research`)에서 실행합니다. 개인 경로가 공개 저장소에 남지 않도록 절대 경로는 적지 않습니다.
