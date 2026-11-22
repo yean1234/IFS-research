@@ -6,6 +6,8 @@
 // 2026-11-23 다시 만듦: 형상별 렌더 경로(X66) — GOLD-mist 항목만 바뀜(안개 셰이더·대리 메시·프리셋 기본값 notes). 나머지 6개 spec은 그대로.
 // 2026-11-23 다시 만듦(CP8 G2·G3): GOLD-fragments 항목을 맨 뒤에 추가(조각 메시·조각 규칙 버전). GOLD-mist는 프리셋 notes 문장만 바뀜
 // (mist에서 roughness의 뜻, "중심 광선 알파의 목표 근사"). 나머지 6개 spec은 그대로.
+// 2026-11-23 다시 만듦(D7 구름 수정): GOLD-mist의 프리셋 notes 문장만 바뀜(둥근 덩어리 5개·배치 규칙 lumps5/1·밀도 0.5의 뜻).
+// 머티리얼 float 프로퍼티(_Density 0.5 등)는 그대로이고 덩어리 벡터(_Lump0…)는 지문 대상 밖. 나머지 7개 spec은 그대로.
 using System;
 using System.Collections.Generic;
 using System.Globalization;

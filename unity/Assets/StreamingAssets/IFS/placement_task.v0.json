@@ -1,5 +1,5 @@
 {
-  "version": "0.1",
+  "version": "0.2",
   "protocol": "placement-task",
   "texts": {
     "intro": {
@@ -48,6 +48,22 @@
       "anchors": { "low": "전혀 내 것 같지 않다", "high": "완전히 내 것 같다" },
       "status": "draft",
       "source": "docs/rq-v4-proposal.md 4.5절 측정 표 문항 초안(2026-11-22), IRB 검토 전. 양 끝 뜻은 ownership_task.v0.json rating과 같음"
+    },
+    "appearance_match": {
+      "text": "이 형상의 모습은 내가 떠올린 것과 비슷하다",
+      "when": "post",
+      "optionalWhen": "pre",
+      "anchors": { "low": "전혀 그렇지 않다", "high": "매우 그렇다" },
+      "status": "draft",
+      "source": "docs/prompts/prototype-v4-build.md G13, 2026-11-22 — 모습 일치 문항(두 문항 분리의 하나). 기본은 사후만(when post), 사전은 설정 askOptionalItems(optionalWhen pre — 사전 측정은 데스크톱에서 하므로, G11). IRB 검토 전"
+    },
+    "representativeness": {
+      "text": "이 형상은 내가 떠올린 그것을 나타낸다",
+      "when": "post",
+      "optionalWhen": "pre",
+      "anchors": { "low": "전혀 그렇지 않다", "high": "매우 그렇다" },
+      "status": "draft",
+      "source": "docs/prompts/prototype-v4-build.md G13, 2026-11-22 — 대표성 문항(두 문항 분리의 하나, 하한 점검 기준 문항 — 기준값은 정하지 않음). 기본은 사후만(when post), 사전은 설정 askOptionalItems(optionalWhen pre — 사전 측정은 데스크톱에서 하므로, G11). IRB 검토 전"
     },
     "want_to_know": {
       "text": "이것에 대해 더 알고 싶다",

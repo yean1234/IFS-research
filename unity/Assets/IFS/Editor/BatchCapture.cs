@@ -266,6 +266,8 @@ namespace IFS.SceneSpec.EditorTools
                     entry["visiblePixels"] = sil.VisiblePixels;
                     entry["maxAlpha"] = R(sil.MaxAlpha);
                     entry["silhouette"] = SilhouetteJson(sil);
+                    // 형상 영역과 주변 배경의 밝기 대비(D7): 실제 장면 렌더(배경과 섞인 화면)의 L*
+                    entry["contrast"] = ContrastJson(SilhouetteMetrics.BackgroundContrast(coverage, LStar(full), c.O.Width, c.O.Height));
                     if (maskBox.HasValue)
                     {
                         string detail = Path.Combine(c.OutDir, name + "_detail.png");
@@ -612,6 +614,34 @@ namespace IFS.SceneSpec.EditorTools
                          "edgeFalloffPx = (넓이(a ≥ 0.1·max) − 넓이(a ≥ 0.9·max)) / 둘레 = 덮임이 10%→90%로 오르는 띠의 평균 폭(화소).",
         };
 
+        /// <summary>형상 영역과 주변 배경의 밝기 대비 한 spec분(report.json의 contrast). 값이 없으면(보이는 화소·배경 띠 없음) 수치는 null.</summary>
+        public static JObject ContrastJson(ContrastResult r) => new JObject
+        {
+            ["deltaL"] = r.HasValue ? R(r.DeltaL, 2) : (double?)null,
+            ["shapeL"] = r.HasValue ? R(r.ShapeL, 2) : (double?)null,
+            ["backgroundL"] = r.HasValue ? R(r.BackgroundL, 2) : (double?)null,
+            ["shapeLStd"] = r.HasValue ? R(r.ShapeLStd, 2) : (double?)null,
+            ["shapePixels"] = r.ShapePixels,
+            ["backgroundPixels"] = r.BackgroundPixels,
+            ["method"] = "실제 장면 렌더(배경과 섞인 화면, sRGB → 상대 휘도 Y → CIE L*)에서 형상 영역(윤곽 마스크 a ≥ " +
+                         SilhouetteMetrics.MaskFraction.ToString(CultureInfo.InvariantCulture) + " × maxAlpha) 평균 L* − 주변 배경 평균 L*. " +
+                         "주변 배경 = 보이는 화소(a ≥ " + SilhouetteMetrics.VisibleAlpha.ToString(CultureInfo.InvariantCulture) + ")의 경계 상자를 긴 변 × " +
+                         SilhouetteMetrics.BackgroundMarginFraction.ToString(CultureInfo.InvariantCulture) + "만큼 넓힌 상자 안의 a < " +
+                         SilhouetteMetrics.VisibleAlpha.ToString(CultureInfo.InvariantCulture) + " 화소(하늘·바닥). shapeLStd = 형상 영역 안 L*의 표준편차. 대리 지표다",
+        };
+
+        /// <summary>화소별 CIE L*(D65, sRGB → 선형 → 상대 휘도 Y).</summary>
+        static double[] LStar(Color32[] px)
+        {
+            var l = new double[px.Length];
+            for (int i = 0; i < px.Length; i++)
+            {
+                double y = 0.2126 * Lin[px[i].r] + 0.7152 * Lin[px[i].g] + 0.0722 * Lin[px[i].b];
+                l[i] = y > 216.0 / 24389.0 ? 116.0 * Math.Pow(y, 1.0 / 3.0) - 16.0 : y * 24389.0 / 27.0;
+            }
+            return l;
+        }
+
         /// <summary>렌더 경로별 집계(spec 수, 지표 평균, frameMsP95 최댓값). 대리 지표다.</summary>
         public static JObject RenderPathSummary(JArray specs)
         {
@@ -633,6 +663,7 @@ namespace IFS.SceneSpec.EditorTools
                     ["circularityMean"] = Mean(s => s["silhouette"]?["circularity"]),
                     ["componentsMean"] = Mean(s => s["silhouette"]?["components"]),
                     ["edgeFalloffPxMean"] = Mean(s => s["silhouette"]?["edgeFalloffPx"]),
+                    ["contrastDeltaLMean"] = Mean(s => s["contrast"]?["deltaL"]),
                     ["frameMsP95Max"] = perf.Length > 0 ? R(perf.Max()) : (double?)null,
                 };
             }

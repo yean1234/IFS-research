@@ -1,7 +1,8 @@
 // 참여자 안내 패널(배치 실험, 헤드셋 안에서 읽히게): 세계 공간에 고정된 판(머리를 따라다니지 않는다).
 //   · 글: TextMesh + OS 동적 폰트(맑은 고딕 등 — ParticipantTextDisplay.EnsureFont와 같은 방식, uGUI·TextMeshPro 없음).
 //   · 판: 옅은 회색 사각형(글 뒤 1 cm). 판 전체를 눈 쪽으로 기울여(피치 포함) 글이 눈을 똑바로 보게 한다.
-//   · 평정 문항: 문항 글 + 아래에 1–7 기준점(숫자와 그 아래 기준점 뜻). 참여자 컨트롤러로 고르는 중이면 그 숫자를 강조한다.
+//   · 평정 문항: 문항 글 + 아래에 기준점 줄(문항 범위 min–max, 기본 1–7 — 숫자와 그 아래 기준점 뜻). 참여자 컨트롤러로 고르는 중이면 그 숫자를 강조한다.
+//     칸이 7개보다 많으면(예: 0–10의 11칸) 줄 전체 너비가 7칸 너비를 넘지 않게 칸을 좁힌다.
 //   · 깊이: 기본 TextMesh 재질(GUI/Text Shader)은 깊이 검사 없이 모든 것 위에 그려져, 판이 물체 뒤에 있어도 글이 물체를 덮는다.
 //     그래서 글 재질을 복제해 unity_GUIZTestMode = LessEqual(4)로 둔다(물체가 앞에 있으면 물체가 글을 가린다 — 글이 물체를 가리지 않게).
 // 자리·크기는 러너 설정값(PlacementRunner textForwardM·textHeightM, 이 컴포넌트의 글자 크기). 실기 미검증(docs/headset-checklist.md).
@@ -223,6 +224,9 @@ namespace IFS.SceneSpec.Placement
             return maxLines;
         }
 
+        /// <summary>기준점 한 칸 너비(m): 7칸까지는 columnWidthM, 그보다 많으면 줄 전체가 7칸 너비가 되게 좁힌다.</summary>
+        float ColumnWidth(int n) => n > 7 ? columnWidthM * 7f / n : columnWidthM;
+
         static float LineUnits(string line)
         {
             float u = 0f;
@@ -241,7 +245,8 @@ namespace IFS.SceneSpec.Placement
             float bodyW = 0f;
             foreach (var l in lines) bodyW = Mathf.Max(bodyW, LineUnits(l) * glyph);
             float bodyH = lines.Length * line;
-            float scaleW = n * columnWidthM;
+            float col = ColumnWidth(n);
+            float scaleW = n * col;
             float scaleH = n > 0 ? line * 0.4f + line + labelLines * labelLine : 0f;
             float w = Mathf.Max(bodyW, scaleW) + 2f * marginM;
             float h = bodyH + scaleH + 2f * marginM;
@@ -253,7 +258,7 @@ namespace IFS.SceneSpec.Placement
             float rowTop = top - bodyH - line * 0.4f;
             for (int i = 0; i < n; i++)
             {
-                float x = (i - (n - 1) * 0.5f) * columnWidthM;
+                float x = (i - (n - 1) * 0.5f) * col;
                 _numbers[i].transform.localPosition = new Vector3(x, rowTop, 0f);
                 _numbers[i].transform.localRotation = Quaternion.identity;
                 _labels[i].transform.localPosition = new Vector3(x, rowTop - line, 0f);

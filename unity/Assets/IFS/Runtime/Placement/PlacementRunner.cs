@@ -2,7 +2,9 @@
 // 조건(place | view)·통제 방식(static | system_move | replay | point_select)에 따라 한 회기를 진행한다.
 // 단계 흐름·기록은 PlacementSession(UnityEngine 없음)이 맡고, 이 컴포넌트는 그것을 그린다:
 //   물체(SceneLoader — 장면 속성은 기존 로더 경로 그대로), 공간(PlacementSpace), 참여자 글(ParticipantTextDisplay), 입력(IPlacementInput).
-// 실험자 키: 1–7 평정, Backspace 직전 입력 취소, Enter 확정·다음, Esc 중단, R 정면 재설정(XR).
+// 실험자 키: 숫자 0–9 평정(문항 범위 안, 두 자리 범위는 이어 침), Backspace 직전 입력 취소, Enter 확정·다음, Esc 중단, R 정면 재설정(XR).
+// 선택 파일(선택, D8): 챗봇의 selection.json(ifs-selection/0.1 — PlacementSelection). 있으면 원본 spec + finalOverrides로 형상을 한 번 만들고
+//   (조건 단계 동안 바뀌지 않음), sha 불일치·모르는 키·적용하지 못한 키는 시작 거부. 없으면 예전처럼 spec만.
 // 참여자 입력: 설정 inputMode(auto | desktop | xr)에 따라 Check 때 고른다(PlacementInputSelection) —
 //   XR 헤드셋이 켜져 있으면 XrPlacementInput(컨트롤러 광선), 없으면 DesktopPlacementInput(마우스·키보드).
 // 참여자 글: PlacementTextPanel(세계 고정 판, 헤드셋 안에서 읽힘)이 있으면 그것, 없으면 ParticipantTextDisplay(예전 씬).
@@ -72,6 +74,12 @@ namespace IFS.SceneSpec.Placement
         public string ParticipantNumberText { get; set; } = "";
         public string SpecPathText { get; set; } = "";
         public string SpecFolderText { get; set; }
+        /// <summary>선택 파일(selection.json) 경로(선택). 절대 경로이거나 spec 목록 폴더 기준. 비우면 spec만으로 진행.</summary>
+        public string SelectionPathText { get; set; } = "";
+        /// <summary>확인(Check)에서 읽은 선택 파일. 없으면 null.</summary>
+        public PlacementSelection Selection { get; private set; }
+        /// <summary>마지막으로 시작한 세션에 실제로 적용된 덮어쓰기(키 → 그려지는 값).</summary>
+        public Newtonsoft.Json.Linq.JObject AppliedOverrides { get; private set; }
         public List<string> Errors { get; } = new List<string>();
         public List<string> Warnings { get; } = new List<string>();
         public SceneSpecV2 Spec { get; private set; }
@@ -109,6 +117,7 @@ namespace IFS.SceneSpec.Placement
         // ── 내부 ───────────────────────────────────────────────────────────
         PlacementAutoScript _auto;
         string _specFullPath, _specSha;
+        string _selectionFullPath, _selectionSha;
         string _layoutWarning;
         PlacementTrajectory _replay;
         string _replayFullPath, _replaySha;
@@ -270,6 +279,7 @@ namespace IFS.SceneSpec.Placement
             Errors.Clear();
             Warnings.Clear();
             Spec = null;
+            Selection = null;
             _replay = null;
             _layoutWarning = null;
             if (!int.TryParse((ParticipantNumberText ?? "").Trim(), out int number) || number < 1)
@@ -298,6 +308,10 @@ namespace IFS.SceneSpec.Placement
             try { TaskText = PlacementTaskText.Load(ResolvedTaskTextPath); }
             catch (Exception e) { TaskText = null; Errors.Add("문구 파일을 읽지 못했습니다(" + PlacementTaskText.DefaultRelativePath + "): " + e.Message); }
             if (DraftPhraseNotice != null) Warnings.Add(DraftPhraseNotice);   // events.csv에도 warning으로 남는다
+            if (TaskText != null)
+                foreach (var k in config.UnknownDisabledItems(TaskText))
+                    Errors.Add($"disabledItems의 {k}: 문구 파일({TaskText.FileName})에 그 평정 문항이 없습니다");
+            CheckSelection();
             string refusal = PlacementTaskText.SpecPhraseRefusal(TaskText, config.requireSpecPhrases);
             if (refusal != null) Errors.Add(refusal);
             if (config.EffectiveControlMode == PlacementConfig.ModeReplay) CheckReplay();
@@ -336,6 +350,38 @@ namespace IFS.SceneSpec.Placement
             else _activeInput = inputComponent as IPlacementInput;
             if (config.participantRatesWithController && r.Source != XrPlacementInput.Source)
                 Warnings.Add("participantRatesWithController가 켜져 있지만 XR 입력이 아니어서 평정은 실험자 키보드로만 받습니다");
+        }
+
+        /// <summary>선택 파일 경로: 비면 null, 절대 경로면 그대로, 아니면 spec 목록 폴더 기준.</summary>
+        string ResolvedSelectionPath
+        {
+            get
+            {
+                string p = (SelectionPathText ?? "").Trim().Trim('"');
+                if (p.Length == 0) return null;
+                return Path.IsPathRooted(p) ? p : Path.GetFullPath(Path.Combine(ResolvedSpecFolder, p));
+            }
+        }
+
+        /// <summary>선택 파일(있으면): 형식·sha·덮어쓰기 키 확인. 오류는 Errors(시작 거부), 형식 버전 경고는 Warnings(events.csv warning).</summary>
+        void CheckSelection()
+        {
+            _selectionFullPath = ResolvedSelectionPath;
+            _selectionSha = null;
+            if (_selectionFullPath == null) return;   // 선택 파일 없음: 예전처럼 spec만
+            if (!File.Exists(_selectionFullPath)) { Errors.Add("선택 파일이 없습니다: " + Path.GetFileName(_selectionFullPath)); return; }
+            var sel = PlacementSelection.Load(_selectionFullPath, out var errors);
+            if (sel == null)
+            {
+                foreach (var e in errors) Errors.Add("선택 파일 " + Path.GetFileName(_selectionFullPath) + ": " + e);
+                return;
+            }
+            string mismatch = sel.SpecMismatch(_specSha);
+            if (mismatch != null) Errors.Add(mismatch);
+            foreach (var e in sel.CheckApplicable(Spec, defaults)) Errors.Add("선택 파일: " + e);
+            foreach (var w in sel.Warnings) Warnings.Add(w);
+            Selection = sel;
+            _selectionSha = sel.Sha256;
         }
 
         void CheckReplay()
@@ -391,6 +437,13 @@ namespace IFS.SceneSpec.Placement
             try { sha = OwnershipManifest.Sha256OfFile(_specFullPath); }
             catch (Exception e) { Errors.Add("spec 파일을 다시 읽지 못했습니다: " + e.Message); return false; }
             if (sha != _specSha) { Errors.Add("확인한 뒤 spec 파일이 바뀌었습니다 — 다시 확인하세요"); return false; }
+            if (Selection != null)
+            {
+                string selSha;
+                try { selSha = OwnershipManifest.Sha256OfFile(_selectionFullPath); }
+                catch (Exception e) { Errors.Add("선택 파일을 다시 읽지 못했습니다: " + e.Message); return false; }
+                if (selSha != _selectionSha) { Errors.Add("확인한 뒤 선택 파일이 바뀌었습니다 — 다시 확인하세요"); return false; }
+            }
 
             Cleanup();
             BuildSpace();
@@ -400,7 +453,9 @@ namespace IFS.SceneSpec.Placement
             _loader = go.AddComponent<SceneLoader>();
             _loader.ConfigureForRunner(_anchor.transform, defaults);
             _loader.ConfigureShapePrefabs(shapePrefabs);
-            if (!_loader.Load(_specFullPath, null))   // 원본 하나만(변형 없음)
+            // 원본 spec + 선택 파일의 덮어쓰기를 형상을 만들 때 한 번만 얹는다(조건 단계 동안 바뀌지 않음). 덮어쓰기가 없으면 예전과 같은 Load(path, null)
+            var overrides = Selection != null && Selection.Overrides != null && !Selection.Overrides.IsEmpty ? Selection.Overrides : null;
+            if (!_loader.Load(_specFullPath, overrides))
             {
                 Errors.Add("물체를 로드하지 못했습니다(콘솔 확인)");
                 Cleanup();
@@ -409,6 +464,14 @@ namespace IFS.SceneSpec.Placement
             if (_loader.InitialParams.InferredUsed.Count > 0)
             {
                 Errors.Add("_inferred를 썼습니다(실행 거부)");
+                Cleanup();
+                return false;
+            }
+
+            AppliedOverrides = PlacementSelection.AppliedOverrides(overrides, _loader.CurrentParams, _loader.Shape?.Model, out var notApplied);
+            if (notApplied.Count > 0)
+            {
+                foreach (var n in notApplied) Errors.Add("선택 파일 덮어쓰기를 적용하지 못했습니다(시작 거부): " + n);
                 Cleanup();
                 return false;
             }
@@ -436,6 +499,8 @@ namespace IFS.SceneSpec.Placement
                 ReplaySourceSessionId = _replay?.SourceSessionId,
                 ObjectBoundingRadiusM = objectRadius > 0 ? objectRadius : (double?)null,
                 LayoutIgnored = _layoutWarning != null,
+                Selection = Selection,
+                AppliedOverrides = AppliedOverrides,
             };
             try
             {
@@ -449,6 +514,9 @@ namespace IFS.SceneSpec.Placement
                 return false;
             }
             Session.GrabRadiusM = Math.Max(config.grabRadiusMinM, objectRadius);
+            if (Selection != null)   // events.csv에 선택 파일 한 줄(경고가 아님 — manifest selection·appliedOverrides가 정본)
+                Session.Note("selection", $"file={Clean(Selection.FileName)};none={(Selection.None ? 1 : 0)};candidate={Clean(Selection.SelectedCandidateId)};" +
+                                          $"applied={AppliedOverrides?.Count ?? 0}");
             if (_auto == null && XrHeadActive)
                 Session.Note("xr_status", $"device={Clean(PlacementXrRig.LoadedDeviceName)};head={Clean(PlacementXrRig.HeadDeviceName)};" +
                                           $"controller={Clean(xrInput?.DeviceName)};hand={config.xrHand};trackingOrigin={Clean(xrRig?.TrackingOrigin)}");
@@ -615,7 +683,7 @@ namespace IFS.SceneSpec.Placement
         {
             if (GuiHasKeyboardFocus && Stage != PlacementRunnerStage.Running) return;
             if (UnityEngine.Input.GetKeyDown(KeyCode.Escape)) PressAbort();
-            for (int d = 1; d <= 9; d++)
+            for (int d = 0; d <= 9; d++)   // 0은 0을 포함하는 범위(예: 0–10)와 두 자리 입력(10)에 쓴다
                 if (UnityEngine.Input.GetKeyDown((KeyCode)((int)KeyCode.Alpha0 + d)) || UnityEngine.Input.GetKeyDown((KeyCode)((int)KeyCode.Keypad0 + d)))
                     Session?.PressDigit(d);
             if (UnityEngine.Input.GetKeyDown(KeyCode.Backspace)) Session?.PressBackspace();
@@ -669,6 +737,9 @@ namespace IFS.SceneSpec.Placement
             _activeSource = null;
             Stage = PlacementRunnerStage.Setup;
             Spec = null;
+            Selection = null;
+            SelectionPathText = "";   // 선택 파일은 참여자마다 다르다 — 다음 참여자에게 이전 선택이 남지 않게
+            AppliedOverrides = null;
             _replay = null;
             Errors.Clear();
             Warnings.Clear();

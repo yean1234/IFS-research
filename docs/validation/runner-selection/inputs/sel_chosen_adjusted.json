@@ -1,0 +1,24 @@
+{
+  "formatVersion": "ifs-selection/0.1",
+  "_note": "합성 선택 파일(참여자 자료 아님). 후보 c2를 고르고 조절 단계에서 색·밝기를 고친 경우. 러너는 이 필드(_note)와 candidatesShown을 읽지 않는다.",
+  "specSha256": "7d42fd56f98a3d75da09f894b41f955a5cd8b534cb83d23e2b2b23244618cf13",
+  "candidatesShown": ["c1", "c2", "c3", "c0"],
+  "selection": { "selectedCandidateId": "c2", "none": false },
+  "finalOverrides": {
+    "form.type": "fragments",
+    "material.opacity": 0.85,
+    "material.brightness": 0.35,
+    "material.color.h": 0.58,
+    "material.color.s": 0.4
+  },
+  "sources": {
+    "form.type": "chosen",
+    "form.posture": "said",
+    "material.opacity": "chosen",
+    "material.brightness": "edited",
+    "material.color": "edited",
+    "material.roughness": "default",
+    "layout.size": "said",
+    "motion.type": "default"
+  }
+}

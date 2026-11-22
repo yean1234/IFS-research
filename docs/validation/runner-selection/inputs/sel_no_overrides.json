@@ -1,0 +1,17 @@
+{
+  "formatVersion": "ifs-selection/0.1",
+  "_note": "합성 선택 파일(참여자 자료 아님). 후보 c0(기준 후보)을 고르고 아무것도 고치지 않은 경우: 덮어쓰기 없음 → 형상은 spec만으로 그린 것과 같다.",
+  "specSha256": "7d42fd56f98a3d75da09f894b41f955a5cd8b534cb83d23e2b2b23244618cf13",
+  "selection": { "selectedCandidateId": "c0", "none": false },
+  "finalOverrides": {},
+  "sources": {
+    "form.type": "default",
+    "form.posture": "said",
+    "material.opacity": "default",
+    "material.brightness": "default",
+    "material.color": "default",
+    "material.roughness": "default",
+    "layout.size": "said",
+    "motion.type": "default"
+  }
+}

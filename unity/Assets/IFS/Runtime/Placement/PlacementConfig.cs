@@ -110,6 +110,13 @@ namespace IFS.SceneSpec.Placement
         /// <summary>켜면 평정 단계(pre/post/check items) 동안 물체를 숨긴다(docs/rq-v4-questionnaire-draft.md 제안). 절차 변경이라 기본 꺼짐.</summary>
         public bool hideObjectDuringItems = false;
 
+        // ── 평정 문항(2026-11-23 D8) ───────────────────────────────────
+        /// <summary>켜면 문구 파일 문항의 optionalWhen 단계에서도 묻는다. 두 평정 문항(모습 일치·대표성, G13)은 when post · optionalWhen pre라
+        /// 기본(꺼짐)에서는 헤드셋에서 사후에만 묻는다(사전 측정은 데스크톱에서 하므로 — G11). 사전에도 물으려면 켠다.</summary>
+        public bool askOptionalItems = false;
+        /// <summary>묻지 않을 평정 문항 키(예: 기존 "내 것 같다" 문항 own·S4를 끌 때). 문구 파일에 없는 키면 확인 단계에서 오류.</summary>
+        public string[] disabledItems = new string[0];
+
         public const string InputModeAuto = "auto";
         public const string InputModeDesktop = "desktop";
         public const string InputModeXr = "xr";
@@ -122,6 +129,7 @@ namespace IFS.SceneSpec.Placement
         {
             var c = (PlacementConfig)MemberwiseClone();
             c.ringRadiiM = (double[])(ringRadiiM ?? new double[0]).Clone();
+            c.disabledItems = (string[])(disabledItems ?? new string[0]).Clone();
             return c;
         }
 
@@ -178,6 +186,8 @@ namespace IFS.SceneSpec.Placement
                 e.Add($"stopFirstDirection {stopFirstDirection}: approach | recede | by_participant 중 하나");
             if (!InputModes.Contains(inputMode)) e.Add($"inputMode {inputMode}: auto | desktop | xr 중 하나");
             if (!Hands.Contains(xrHand)) e.Add($"xrHand {xrHand}: right | left 중 하나");
+            foreach (var k in disabledItems ?? new string[0])
+                if (string.IsNullOrWhiteSpace(k)) e.Add("disabledItems: 빈 키");
             return e;
         }
 
@@ -222,6 +232,13 @@ namespace IFS.SceneSpec.Placement
             ["xrHand"] = xrHand,
             ["participantRatesWithController"] = participantRatesWithController,
             ["hideObjectDuringItems"] = hideObjectDuringItems,
+            // 2026-11-23 D8 추가(평정 문항). 기존 키는 그대로다.
+            ["askOptionalItems"] = askOptionalItems,
+            ["disabledItems"] = new JArray((disabledItems ?? new string[0]).Cast<object>().ToArray()),
         };
+
+        /// <summary>disabledItems 가운데 문구 파일에 없는 평정 문항 키(오타 방지 — 러너가 확인 단계에서 오류로 낸다).</summary>
+        public List<string> UnknownDisabledItems(PlacementTaskText text) =>
+            (disabledItems ?? new string[0]).Where(k => text == null || !text.Items.Any(i => i.Key == k)).ToList();
     }
 }

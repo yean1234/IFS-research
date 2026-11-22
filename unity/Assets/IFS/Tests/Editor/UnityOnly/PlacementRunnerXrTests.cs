@@ -181,7 +181,7 @@ namespace IFS.SceneSpec.Tests
                 for (int i = 0; i < 200000 && runner.Stage != PlacementRunnerStage.Done; i++) runner.Tick(0.02);
                 Assert.That(runner.LastCompleted, Is.True);
                 var rows = File.ReadAllLines(Path.Combine(runner.LastRecordDirectory, "ratings.csv")).Skip(1).ToList();
-                Assert.That(rows.Count, Is.EqualTo(21), "scaleA: 사전 11 + 사후 10");
+                Assert.That(rows.Count, Is.EqualTo(23), "scaleA: 사전 11 + 사후 12(G13 두 문항 포함)");
             }
             finally { runner.ResetForNext(); }
         }
@@ -194,7 +194,7 @@ namespace IFS.SceneSpec.Tests
             var m = JObject.Parse(File.ReadAllText(Path.Combine(dir, "manifest.json")));
             Assert.That((string)m["taskText"]["file"], Is.EqualTo("placement_task.scaleA.v0.json"));
             Assert.That((string)m["inputSource"], Is.EqualTo("auto"));
-            Assert.That(File.ReadAllLines(Path.Combine(dir, "ratings.csv")).Length - 1, Is.EqualTo(21));
+            Assert.That(File.ReadAllLines(Path.Combine(dir, "ratings.csv")).Length - 1, Is.EqualTo(23), "사전 11 + 사후 12(G13 두 문항 포함)");
         }
     }
 }

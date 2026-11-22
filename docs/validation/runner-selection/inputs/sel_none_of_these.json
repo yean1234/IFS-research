@@ -1,0 +1,19 @@
+{
+  "formatVersion": "ifs-selection/0.1",
+  "_note": "합성 선택 파일(참여자 자료 아님). '맞는 것이 없다'를 고른 경우(G23): 기준 후보(0번, 전부 기본값)로 조절 단계에 들어가 밝기 하나를 고침.",
+  "specSha256": "7d42fd56f98a3d75da09f894b41f955a5cd8b534cb83d23e2b2b23244618cf13",
+  "selection": { "selectedCandidateId": null, "none": true },
+  "finalOverrides": {
+    "material.brightness": 0.3
+  },
+  "sources": {
+    "form.type": "default",
+    "form.posture": "said",
+    "material.opacity": "default",
+    "material.brightness": "edited",
+    "material.color": "default",
+    "material.roughness": "default",
+    "layout.size": "said",
+    "motion.type": "default"
+  }
+}

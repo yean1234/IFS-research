@@ -7,6 +7,12 @@
 //     low·high가 없으면 숫자 키의 양 끝 값을 low·high로 쓴다. anchors의 다른 키(low·high·숫자 밖)는 오류.
 //   · items_instruction(공통), items_instruction_pre · _post · _check(단계별 덧붙임): 평정 단계 첫 문항 앞에 보이는 지시문.
 //     공통과 단계별이 둘 다 있으면 공통 뒤에 줄을 바꿔 단계별을 붙인다. 실험자 Enter(다음)로 첫 문항으로 넘어간다.
+// 2026-11-23 D8 추가(선택, 기존 파일은 그대로 유효):
+//   · min · max(정수): 문항의 평정 범위. 없으면 1–7. 0 ≤ min < max ≤ 100. anchors 숫자 키도 이 범위 안이어야 한다
+//     (예: 구별 프로파일의 0–10 문항 — 실험자 키보드는 두 자리 숫자 10까지, 컨트롤러는 가운데 값에서 한 칸씩).
+//   · optionalWhen(pre | post | check 또는 배열): 설정 askOptionalItems를 켰을 때만 그 단계에서도 묻는다
+//     (예: 두 평정 문항 G13은 when post, optionalWhen pre — 사전 측정은 데스크톱에서 하므로(G11) 헤드셋에서는 기본 사후만).
+//   · 설정 disabledItems(문항 키 목록)에 든 문항은 묻지 않는다(예: 기존 "내 것 같다" 문항을 끌 때). 문구 파일은 그대로 둔다.
 // UnityEngine에 의존하지 않는다.
 using System;
 using System.Collections.Generic;
@@ -24,8 +30,16 @@ namespace IFS.SceneSpec.Placement
         public string AnchorLow;
         public string AnchorHigh;
         public string[] When;
-        public int Min = 1;
-        public int Max = 7;
+        /// <summary>askOptionalItems를 켰을 때만 더 묻는 단계(없으면 빈 배열).</summary>
+        public string[] OptionalWhen = new string[0];
+        /// <summary>평정 범위(문구 파일 min·max, 기본 1–7).</summary>
+        public int Min = DefaultMin;
+        public int Max = DefaultMax;
+        public const int DefaultMin = 1;
+        public const int DefaultMax = 7;
+        /// <summary>문구 파일이 쓸 수 있는 범위의 끝(키보드 입력은 최대 세 자리).</summary>
+        public const int LowestMin = 0;
+        public const int HighestMax = 100;
         /// <summary>기준점별 뜻(anchors의 숫자 키). 없으면 비어 있다.</summary>
         public SortedDictionary<int, string> Points = new SortedDictionary<int, string>();
 
@@ -74,6 +88,11 @@ namespace IFS.SceneSpec.Placement
         /// <summary>when이 맞는 평정 문항(파일 순서).</summary>
         public List<PlacementItem> ItemsFor(string when) => _items.Where(i => i.When.Contains(when)).ToList();
 
+        /// <summary>세션이 실제로 묻는 문항(파일 순서): when이 맞거나(includeOptional이면) optionalWhen이 맞고, disabled에 없는 것.</summary>
+        public List<PlacementItem> ItemsFor(string when, bool includeOptional, ICollection<string> disabled) =>
+            _items.Where(i => (i.When.Contains(when) || (includeOptional && i.OptionalWhen.Contains(when)))
+                              && (disabled == null || !disabled.Contains(i.Key))).ToList();
+
         /// <summary>status가 draft인 문구 키(이름순).</summary>
         public List<string> DraftKeys
         {
@@ -115,7 +134,7 @@ namespace IFS.SceneSpec.Placement
                 .ToList();
         }
 
-        /// <summary>평정 문항을 참여자 화면에 보일 글: 문항 + 줄바꿈 + "1(…) — 7(…)".</summary>
+        /// <summary>평정 문항을 참여자 화면에 보일 글: 문항 + 줄바꿈 + "min(…) — max(…)"(기본 "1(…) — 7(…)").</summary>
         public static string ItemDisplay(PlacementItem item)
         {
             if (item == null) return null;
@@ -147,9 +166,21 @@ namespace IFS.SceneSpec.Placement
                 if (whens.Length == 0 || whens.Any(w => !WhenValues.Contains(w)))
                     throw new FormatException(p.Name + ": when은 pre | post | check(또는 그 배열)");
                 var anchors = item["anchors"] as JObject;
+                int min = RangeEnd(item, "min", PlacementItem.DefaultMin, p.Name);
+                int max = RangeEnd(item, "max", PlacementItem.DefaultMax, p.Name);
+                if (!(min >= PlacementItem.LowestMin && max <= PlacementItem.HighestMax && min < max))
+                    throw new FormatException($"{p.Name}: 평정 범위 min {min} · max {max}는 {PlacementItem.LowestMin} ≤ min < max ≤ {PlacementItem.HighestMax}여야 합니다");
+                string[] optional = new string[0];
+                var ow = item["optionalWhen"];
+                if (ow != null && ow.Type != JTokenType.Null)
+                {
+                    optional = ow.Type == JTokenType.Array ? ow.Select(w => (string)w).ToArray() : new[] { (string)ow };
+                    if (optional.Length == 0 || optional.Any(w => !WhenValues.Contains(w)))
+                        throw new FormatException(p.Name + ": optionalWhen은 pre | post | check(또는 그 배열)");
+                }
                 var it = new PlacementItem
                 {
-                    Key = p.Name, Text = text, When = whens,
+                    Key = p.Name, Text = text, When = whens, OptionalWhen = optional, Min = min, Max = max,
                     AnchorLow = (string)anchors?["low"], AnchorHigh = (string)anchors?["high"],
                 };
                 foreach (var a in anchors?.Properties() ?? Enumerable.Empty<JProperty>())
@@ -166,9 +197,23 @@ namespace IFS.SceneSpec.Placement
                 if (it.AnchorHigh == null && it.Points.TryGetValue(it.Max, out var hi)) it.AnchorHigh = hi;
                 t._items.Add(it);
             }
+            foreach (var p in texts.Properties())
+                if (p.Value is JObject o2 && (o2["when"] == null || o2["when"].Type == JTokenType.Null)
+                    && (o2["min"] != null || o2["max"] != null || o2["optionalWhen"] != null))
+                    throw new FormatException(p.Name + ": min · max · optionalWhen은 평정 문항(when이 있는 키)에만 씁니다");
             foreach (var k in RequiredKeys)
                 if (!t._text.ContainsKey(k)) throw new FormatException("문구가 없습니다: " + k);
             return t;
+        }
+
+        static int RangeEnd(JObject item, string name, int fallback, string key)
+        {
+            var v = item[name];
+            if (v == null || v.Type == JTokenType.Null) return fallback;
+            if (v.Type != JTokenType.Integer) throw new FormatException($"{key}: {name}은 정수여야 합니다(지금 {v.Type})");
+            long x = (long)v;
+            if (x < int.MinValue || x > int.MaxValue) throw new FormatException($"{key}: {name} {x}가 너무 큽니다");
+            return (int)x;
         }
 
         public static PlacementTaskText Load(string path) => Parse(File.ReadAllText(path, Encoding.UTF8), Path.GetFileName(path));

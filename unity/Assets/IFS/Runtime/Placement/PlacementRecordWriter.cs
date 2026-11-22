@@ -1,4 +1,7 @@
-// 배치 실험 기록기(기록 형식 계약 ifs-placement/0.1 — Python 분석기 ifs_chatbot.eval.placement와의 계약. 헤더·필드 이름을 바꾸지 않는다).
+// 배치 실험 기록기(기록 형식 계약 ifs-placement/0.2 — Python 분석기 ifs_chatbot.eval.placement와의 계약. 헤더·필드 이름을 바꾸지 않는다).
+// 0.1 → 0.2(2026-11-23, D8·D9): 추가만 했다. manifest에 selection(선택 파일: 이름·sha256·formatVersion·none·selectedCandidateId·
+//   finalOverrides·sources, 선택 파일이 없으면 null)과 appliedOverrides(실제로 적용된 덮어쓰기 키 → 그려지는 값, 없으면 {}).
+//   CSV 헤더·다른 manifest 키·파일 목록은 그대로다.
 //   {recordRoot}/placement/P{번호:000}/{sessionId}/{UTC yyyyMMdd-HHmmss}[-n]/
 //     manifest.json · headpose.csv · objpose.csv · events.csv · placement.json · stopdistance.csv · ratings.csv · trajectory.json · summary.json
 //   UTF-8(BOM 없음), 숫자는 InvariantCulture, 줄바꿈 \n. CSV는 줄마다 바로 쓰므로 중간에 꺼져도 그때까지 남는다.
@@ -16,7 +19,7 @@ namespace IFS.SceneSpec.Placement
 {
     public sealed class PlacementRecordWriter : IDisposable
     {
-        public const string RecordVersion = "ifs-placement/0.1";
+        public const string RecordVersion = "ifs-placement/0.2";
 
         public const string HeadposeHeader = "time_ms,phase,head_x,head_y,head_z,head_qx,head_qy,head_qz,head_qw,obj_x,obj_y,obj_z,distance_m,angle_deg";
         public const string ObjposeHeader = "time_ms,phase,obj_x,obj_y,obj_z,distance_m,azimuth_deg,height_m,state";
@@ -204,6 +207,10 @@ namespace IFS.SceneSpec.Placement
         public double? ObjectBoundingRadiusM;
         /// <summary>spec에 layout.distance·verticalOffset 값이 있었는데 실험 설정의 시작 자리를 쓰느라 무시했다.</summary>
         public bool LayoutIgnored;
+        /// <summary>선택 파일(selection.json). 없으면 null(spec만으로 진행 — manifest selection: null).</summary>
+        public PlacementSelection Selection;
+        /// <summary>실제로 적용된 덮어쓰기(키 → 그려지는 값). null이면 빈 객체로 기록.</summary>
+        public JObject AppliedOverrides;
     }
 
     public static class PlacementManifest
@@ -288,6 +295,9 @@ namespace IFS.SceneSpec.Placement
                     ["draftKeys"] = new JArray(info.TaskTextDraftKeys ?? new string[0]),
                 },
                 ["config"] = cfg.ToJson(),
+                // 0.2 추가: 선택 파일(없으면 null)과 실제로 적용된 덮어쓰기(없으면 {})
+                ["selection"] = info.Selection?.ManifestJson(),
+                ["appliedOverrides"] = info.AppliedOverrides != null ? (JObject)info.AppliedOverrides.DeepClone() : new JObject(),
                 ["flags"] = new JObject
                 {
                     ["autoMode"] = info.AutoMode,

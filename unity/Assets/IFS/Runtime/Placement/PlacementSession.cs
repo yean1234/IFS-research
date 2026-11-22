@@ -3,7 +3,9 @@
 //   (setup은 러너가 세션을 만들기 전 단계라 기록에 없다. *_items는 해당 when 문항이 없으면 건너뛴다.)
 // 시계: Tick(dt)으로 받은 dt를 더한 시각(사람 실행은 Time.unscaledDeltaTime, 자동 시행은 고정 dt).
 // 물체 위치·보이기·참여자 글은 이 클래스가 정하고, Unity 러너(PlacementRunner)는 그대로 그린다.
-// 기록 형식: 계약 ifs-placement/0.1(PlacementRecordWriter).
+// 기록 형식: 계약 ifs-placement/0.2(PlacementRecordWriter — 0.1에 선택 파일·적용한 덮어쓰기 키만 더함).
+// 평정: 문항마다 범위(문구 파일 min·max, 기본 1–7). 실험자 숫자 키는 범위가 한 자리(max ≤ 9)면 예전처럼 한 번 누르면 입력,
+//   두 자리 이상이면 숫자를 이어 붙인다(0–10에서 1 → 0 = 10, 범위를 넘는 숫자는 받지 않음, 0 뒤에는 붙이지 않음). Backspace 취소, Enter 확정.
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -71,6 +73,7 @@ namespace IFS.SceneSpec.Placement
         int _itemIndex;
         string _itemsWhen;
         int? _pending;
+        string _digits = "";   // 여러 자리 범위에서 실험자가 이어 친 숫자(확정 전)
         double _askedAt, _pendingAt;
         bool _instruction;   // 평정 지시문을 보이는 중(첫 문항 전)
         int? _cursor;        // 참여자 컨트롤러로 고르는 중인 값(participantRatesWithController)
@@ -229,6 +232,7 @@ namespace IFS.SceneSpec.Placement
             _phaseStart = _now;
             _clock.Reset();   // 새 단계의 첫 표본은 다음 프레임에 바로
             _pending = null;
+            _digits = "";
             Event("phase", PhaseName(p));
         }
 
@@ -260,7 +264,7 @@ namespace IFS.SceneSpec.Placement
                 {
                     string when = p == PlacementPhase.PreItems ? PlacementTaskText.WhenPre
                         : p == PlacementPhase.PostItems ? PlacementTaskText.WhenPost : PlacementTaskText.WhenCheck;
-                    var items = _text.ItemsFor(when);
+                    var items = _text.ItemsFor(when, _cfg.askOptionalItems, _cfg.disabledItems);   // optionalWhen은 설정을 켰을 때만, disabledItems는 뺀다
                     if (items.Count == 0) { GoTo(NextOf(p)); return; }
                     SetPhase(p);
                     _items = items;
@@ -276,6 +280,7 @@ namespace IFS.SceneSpec.Placement
                         // 문구 파일에 평정 지시문이 있으면 첫 문항 앞에 보인다(실험자 Enter로 넘어감)
                         _instruction = true;
                         _pending = null;
+                        _digits = "";
                         _cursor = null;
                         ParticipantTextKey = string.Join("+", instructionKeys);
                         ParticipantText = _text.InstructionFor(when);
@@ -314,6 +319,7 @@ namespace IFS.SceneSpec.Placement
             ParticipantTextKey = item.Key;
             ParticipantText = PlacementTaskText.ItemDisplay(item);
             _pending = null;
+            _digits = "";
             _cursor = null;
             _askedAt = _now;
         }
@@ -636,22 +642,47 @@ namespace IFS.SceneSpec.Placement
         // ── 실험자 입력 ──────────────────────────────────────────────────
         bool InItems => Phase == PlacementPhase.PreItems || Phase == PlacementPhase.PostItems || Phase == PlacementPhase.CheckItems;
 
+        /// <summary>실험자 숫자 키(0–9). 문항 범위가 한 자리(max ≤ 9)면 예전처럼 한 번에 입력(범위 밖 무시, 이미 입력됐으면 Backspace 뒤 다시).
+        /// 두 자리 이상이면 이어 붙인다: 붙인 값이 max를 넘거나 자릿수가 max보다 길면 그 숫자는 받지 않고, 0 뒤에는 붙이지 않는다.
+        /// 붙인 값이 min 이상이면 확정 대기(PendingRating), 아니면 아직 입력 중.</summary>
         public void PressDigit(int d)
         {
             if (Finished || !InItems) return;
             var item = CurrentItem;
-            if (item == null || d < item.Min || d > item.Max) return;
-            if (_pending != null) return;   // 이미 입력됨 — Backspace로 취소한 뒤 다시
-            _pending = d;
+            if (item == null || d < 0 || d > 9) return;
+            if (item.Max <= 9)
+            {
+                if (d < item.Min || d > item.Max) return;
+                if (_pending != null) return;   // 이미 입력됨 — Backspace로 취소한 뒤 다시
+                _pending = d;
+                _pendingAt = _now;
+                return;
+            }
+            if (_digits == "0") return;   // "0" 뒤에 숫자를 붙이지 않는다(05 같은 입력 방지)
+            string next = _digits + d.ToString(Inv);
+            if (next.Length > item.Max.ToString(Inv).Length) return;
+            int v = int.Parse(next, Inv);
+            if (v > item.Max) return;   // 범위를 넘는 숫자는 받지 않는다(예: 0–10에서 1 다음 1)
+            _digits = next;
+            _pending = v >= item.Min ? v : (int?)null;
             _pendingAt = _now;
         }
 
+        /// <summary>여러 자리 범위에서 실험자가 지금까지 친 숫자(확정 전). 없으면 빈 문자열.</summary>
+        public string PendingDigits => _digits;
+
         public void PressBackspace()
         {
-            if (Finished || !InItems || _pending == null) return;
+            if (Finished || !InItems) return;
+            if (_pending == null)
+            {
+                _digits = "";   // 범위에 아직 닿지 않은 입력은 기록 없이 지운다
+                return;
+            }
             var item = CurrentItem;
             Event("rating_cancel", $"item={item.Key};when={_itemsWhen};rating={_pending.Value}");
             _pending = null;
+            _digits = "";
             _askedAt = _now;   // 다시 묻는 시각부터 rt를 잰다
         }
 

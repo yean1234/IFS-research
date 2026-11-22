@@ -26,6 +26,25 @@ namespace IFS.SceneSpec.Tests
                 Is.EqualTo(FormRenderResources.MistRadius));
         }
 
+        // D7: 둥근 덩어리 밀도장. 덩어리 수·가장자리 폭이 C#(MistLumps)과 같고, 로더가 채우는 _Lump0…가 선언돼 있다.
+        [Test]
+        public void Lump_count_edge_ramp_and_lump_properties_match_the_csharp_side()
+        {
+            string src = Source();
+            Assert.That(int.Parse(Define(src, "IFS_MIST_LUMPS")), Is.EqualTo(MistLumps.Count));
+            Assert.That(double.Parse(Define(src, "IFS_MIST_EDGE_RAMP"), System.Globalization.CultureInfo.InvariantCulture),
+                Is.EqualTo(MistLumps.EdgeRamp));
+            for (int k = 0; k < MistLumps.Count; k++)
+            {
+                string name = FormRenderResources.MistLumpProperty(k);
+                Assert.That(src, Does.Contain(name + " (\"Lump " + k + "\", Vector)"), name);
+                Assert.That(src, Does.Contain(name).And.Contain("float4 _Lump0"), name);
+            }
+            // opacity는 최종 알파에 그대로 곱한다(그 위로 올리지 않음, X70) — 보정 상수나 바닥값이 없다
+            Assert.That(src, Does.Contain("return fixed4(acc * op, accA * op);"));
+            Assert.That(src, Does.Contain("float op = saturate(_Opacity);"));
+        }
+
         [Test]
         public void Shader_picks_faces_by_camera_position_without_shadows_or_depth_writes()
         {

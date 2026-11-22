@@ -71,6 +71,18 @@ namespace IFS.SceneSpec.Tests
                 Assert.That(m.GetFloat("_NoiseScale"), Is.EqualTo(preset.NoiseScale));
                 Assert.That(m.GetFloat("_Density"), Is.EqualTo(preset.Density));
                 Assert.That(m.GetFloat("_FloorY"), Is.EqualTo(0f), "배치 설정의 바닥 높이(기본 0)");
+                // D7: 둥근 덩어리 밀도장 — seed로 정한 덩어리 중심·반지름이 _Lump0…에 그대로 들어간다
+                Assert.That(m.GetFloat("_Seed"), Is.EqualTo((float)MistLumps.DefaultSeed));
+                var lumps = MistLumps.Build(MistLumps.DefaultSeed);
+                for (int k = 0; k < MistLumps.Count; k++)
+                {
+                    var v = m.GetVector(FormRenderResources.MistLumpProperty(k));
+                    Assert.That(v.x, Is.EqualTo((float)lumps[k * 4]).Within(1e-6), "lump " + k);
+                    Assert.That(v.y, Is.EqualTo((float)lumps[k * 4 + 1]).Within(1e-6), "lump " + k);
+                    Assert.That(v.z, Is.EqualTo((float)lumps[k * 4 + 2]).Within(1e-6), "lump " + k);
+                    Assert.That(v.w, Is.EqualTo((float)lumps[k * 4 + 3]).Within(1e-6), "lump " + k);
+                }
+                Assert.That(l.Notes.Any(n => n.Contains("둥근 덩어리 " + MistLumps.Count + "개") && n.Contains(MistLumps.RuleVersion)), Is.True);
                 RenderedColor.BaseSrgb(0.6, 0.45, 0.6, out double cr, out double cg, out double cb);
                 var c = m.GetColor("_BaseColor");
                 Assert.That(c.r, Is.EqualTo((float)cr).Within(1e-5));
@@ -143,6 +155,14 @@ namespace IFS.SceneSpec.Tests
             Assert.That(v060, Is.GreaterThan(v015));
             Assert.That(v100, Is.GreaterThan(v060));
             Assert.That(specs["M100.json"].Value<double>("maxAlpha"), Is.GreaterThan(specs["M015.json"].Value<double>("maxAlpha")));
+            // D7: 덩어리 속은 누적 알파가 opacity 가까이까지 차고, opacity를 넘지 않는다(X70 — 값을 올리지 않음)
+            foreach (var (name, op) in new[] { ("M015.json", 0.15), ("M060.json", 0.6), ("M100.json", 1.0) })
+            {
+                double maxA = specs[name].Value<double>("maxAlpha");
+                Assert.That(maxA, Is.LessThanOrEqualTo(op + 0.01), name);
+                Assert.That(maxA, Is.GreaterThanOrEqualTo(op * 0.9), name);
+                Assert.That(specs[name]["contrast"].Value<double?>("deltaL"), Is.Not.Null, name + " 밝기 대비 지표");
+            }
         }
     }
 }

@@ -1,7 +1,7 @@
 {
-  "version": "0.1-scaleA",
+  "version": "0.2-scaleA",
   "protocol": "placement-task",
-  "note": "docs/rq-v4-questionnaire-draft.md 3절의 주 척도안 A(7문항)와 보조 문항 S4–S8을 담은 선택용 문구 파일(2026-11-23). 모든 문구는 status draft(IRB 검토 전, 타당화 전 번안·수정판). 기본 문구 파일(placement_task.v0.json)은 그대로이고 Setup에서 고른다. 제외: S3(겹침 그림 IOS)은 그림 선택지가 필요해 이번 판에서 뺐다. S1(심리 거리)은 지시에 따라 S3과 함께 이번 묶음에서 뺐다(S1 자체는 글로 된 양극 척도라 그림 없이 anchors 1·4·7로 넣을 수 있다). S2는 초안에서 선택 문항이라 넣지 않았다. 문항 순서는 초안 3.7절(사전 A1–A7, S5, S6, S4, S8 / 사후 A1–A7, S5, S6, S7). 단계 안내 문구(intro 등)는 placement_task.v0.json과 같다.",
+  "note": "docs/rq-v4-questionnaire-draft.md 3절의 주 척도안 A(7문항)와 보조 문항 S4–S8을 담은 선택용 문구 파일(2026-11-23). 모든 문구는 status draft(IRB 검토 전, 타당화 전 번안·수정판). 기본 문구 파일(placement_task.v0.json)은 그대로이고 Setup에서 고른다. 제외: S3(겹침 그림 IOS)은 그림 선택지가 필요해 이번 판에서 뺐다. S1(심리 거리)은 지시에 따라 S3과 함께 이번 묶음에서 뺐다(S1 자체는 글로 된 양극 척도라 그림 없이 anchors 1·4·7로 넣을 수 있다). S2는 초안에서 선택 문항이라 넣지 않았다. 문항 순서는 초안 3.7절(사전 A1–A7, S5, S6, S4, S8 / 사후 A1–A7, S5, S6, S7). 단계 안내 문구(intro 등)는 placement_task.v0.json과 같다. 0.2(2026-11-23): 두 평정 문항 G13(모습 일치 appearance_match·대표성 representativeness)을 사후 끝에 더함(사전은 설정 askOptionalItems).",
   "texts": {
     "intro": {
       "text": "지금부터 물체 하나를 보여 드려요. 안내가 나오면 그대로 따라 주세요.",
@@ -235,6 +235,28 @@
       },
       "status": "draft",
       "source": "docs/rq-v4-questionnaire-draft.md 3.6절 보조 문항 S8 정서가(자작, 양극 척도, 사전 — 사후는 선택이라 넣지 않음, 2026-11-22), IRB 검토 전"
+    },
+    "appearance_match": {
+      "text": "이 형상의 모습은 내가 떠올린 것과 비슷하다",
+      "when": "post",
+      "optionalWhen": "pre",
+      "anchors": {
+        "1": "전혀 그렇지 않다",
+        "7": "매우 그렇다"
+      },
+      "status": "draft",
+      "source": "docs/prompts/prototype-v4-build.md G13, 2026-11-22 — 모습 일치 문항(두 문항 분리의 하나). 기본은 사후만(when post), 사전은 설정 askOptionalItems(optionalWhen pre — 사전 측정은 데스크톱에서 하므로, G11). IRB 검토 전"
+    },
+    "representativeness": {
+      "text": "이 형상은 내가 떠올린 그것을 나타낸다",
+      "when": "post",
+      "optionalWhen": "pre",
+      "anchors": {
+        "1": "전혀 그렇지 않다",
+        "7": "매우 그렇다"
+      },
+      "status": "draft",
+      "source": "docs/prompts/prototype-v4-build.md G13, 2026-11-22 — 대표성 문항(두 문항 분리의 하나, 하한 점검 기준 문항 — 기준값은 정하지 않음). 기본은 사후만(when post), 사전은 설정 askOptionalItems(optionalWhen pre — 사전 측정은 데스크톱에서 하므로, G11). IRB 검토 전"
     }
   }
 }

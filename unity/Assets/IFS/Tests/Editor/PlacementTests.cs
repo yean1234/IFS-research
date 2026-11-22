@@ -1,4 +1,4 @@
-// EditMode 테스트: 배치 실험(RQ V4) — 설정 검증, 공간 기하, 단계 흐름(조건별), 멈춤 거리, 기록 형식(계약 ifs-placement/0.1),
+// EditMode 테스트: 배치 실험(RQ V4) — 설정 검증, 공간 기하, 단계 흐름(조건별), 멈춤 거리, 기록 형식(계약 ifs-placement/0.2),
 // 궤적 쓰기→재생 왕복, draft 문구 경고. UnityEngine 없이 돈다(dotnet compile-check에서도 실행).
 // 회기는 PlacementSession + PlacementAutoScript(합성 입력)로 끝까지 돌린다. 기록은 임시 폴더에 쓰고 지운다.
 using System;
@@ -179,7 +179,8 @@ namespace IFS.SceneSpec.Tests
             Assert.That(t.Protocol, Is.EqualTo("placement-task"));
             Assert.That(t.DraftKeys.Count, Is.EqualTo(t.Count), "모든 문구 status draft(IRB 전)");
             Assert.That(t.ItemsFor("pre").Select(i => i.Key), Is.EqualTo(new[] { "own" }));
-            Assert.That(t.ItemsFor("post").Select(i => i.Key), Is.EqualTo(new[] { "own", "want_to_know", "withdraw_attention" }));
+            Assert.That(t.ItemsFor("post").Select(i => i.Key), Is.EqualTo(new[] { "own", "appearance_match", "representativeness", "want_to_know", "withdraw_attention" }),
+                "두 평정 문항(G13)은 기본 사후만");
             Assert.That(t.ItemsFor("check").Select(i => i.Key), Is.EqualTo(new[] { "placed_by_me" }));
             Assert.That(t["condition_place"], Does.StartWith("지금 이것이 있기에 알맞다고 느껴지는 자리에 놓아 주세요."));
             Assert.That(t["condition_view"], Is.EqualTo("지금 이것을 편하게 바라봐 주세요."));
@@ -249,8 +250,11 @@ namespace IFS.SceneSpec.Tests
             {
                 "recordVersion", "participantNumber", "sessionId", "specFile", "specSha256", "startedAtUtc", "unityVersion", "headSource", "inputSource",
                 "condition", "controlMode", "space", "stopDistance", "object", "replaySource", "systemMoveTarget", "taskText", "config", "flags",
+                "selection", "appliedOverrides",   // 0.2 추가
             }));
-            Assert.That((string)m["recordVersion"], Is.EqualTo("ifs-placement/0.1"));
+            Assert.That((string)m["recordVersion"], Is.EqualTo("ifs-placement/0.2"));
+            Assert.That(m["selection"].Type, Is.EqualTo(JTokenType.Null), "선택 파일이 없으면 null");
+            Assert.That(((JObject)m["appliedOverrides"]).Count, Is.EqualTo(0), "덮어쓰기가 없으면 빈 객체");
             Assert.That((int)m["participantNumber"], Is.EqualTo(7));
             Assert.That((string)m["specFile"], Is.EqualTo("synthetic.json"), "파일 이름만");
             Assert.That(File.ReadAllText(Path.Combine(dir, "manifest.json")), Does.Not.Contain("someone"), "로컬 경로 없음");
@@ -337,7 +341,8 @@ namespace IFS.SceneSpec.Tests
             var rows = Csv(dir, "ratings.csv");
             Assert.That(rows.Select(r => r[0] + "/" + r[1] + "/" + r[2]), Is.EqualTo(new[]
             {
-                "own/pre/5", "own/post/3", "want_to_know/post/4", "withdraw_attention/post/2", "placed_by_me/check/6",
+                "own/pre/5", "own/post/3", "appearance_match/post/4", "representativeness/post/2", "want_to_know/post/6", "withdraw_attention/post/4",
+                "placed_by_me/check/5",
             }));
             Assert.That(rows.All(r => long.Parse(r[3]) >= 0), Is.True);
             Assert.That(Csv(dir, "events.csv").Count(c => c[1] == "rating_cancel"), Is.EqualTo(1));

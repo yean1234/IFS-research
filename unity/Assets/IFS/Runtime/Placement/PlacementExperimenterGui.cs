@@ -1,7 +1,8 @@
 // 배치 실험 실험자 화면(IMGUI, PC 모니터의 Game 창에만 보인다 — 헤드셋에는 그리지 않는다).
 // 최소 구성: 지금 단계, 남은 시간, 조건, draft 경고, 대기 단계의 "다음", XR 상태(헤드셋·컨트롤러·추적 원점)와 정면 재설정.
-// Setup에서 조건·통제 방식·참여자 입력(auto | desktop | xr)·주 사용 손·문구 파일·평정 선택 기능을 고른다.
+// Setup에서 조건·통제 방식·참여자 입력(auto | desktop | xr)·주 사용 손·문구 파일·평정 선택 기능·선택 파일(selection.json, 선택)을 고른다.
 // 참여자에게 보이는 글은 PlacementTextPanel(세계 고정 판)이 맡는다. F1 = 숨기기/보이기.
+using System.Linq;
 using UnityEngine;
 
 namespace IFS.SceneSpec.Placement
@@ -57,6 +58,8 @@ namespace IFS.SceneSpec.Placement
             runner.SpecPathText = GUILayout.TextField(runner.SpecPathText ?? "");
             foreach (var f in runner.SpecFiles)
                 if (GUILayout.Button(f.Name, GUILayout.ExpandWidth(true))) runner.SpecPathText = f.Path;
+            GUILayout.Label("선택 파일 selection.json(선택 — 후보 선택·조절 결과. 비우면 spec만. 절대 경로 또는 spec 폴더 기준 이름)", _wrap);
+            runner.SelectionPathText = GUILayout.TextField(runner.SelectionPathText ?? "");
             GUILayout.Label("조건(무선 배정은 실험자가 한다)");
             GUILayout.BeginHorizontal();
             foreach (var c in PlacementConfig.Conditions)
@@ -85,6 +88,10 @@ namespace IFS.SceneSpec.Placement
             cfg.participantRatesWithController = GUILayout.Toggle(cfg.participantRatesWithController,
                 " 참여자가 컨트롤러로 평정(썸스틱 좌우 고르기, 트리거 확정) — 꺼 두면 참여자는 말로 답하고 실험자가 숫자를 넣는다");
             cfg.hideObjectDuringItems = GUILayout.Toggle(cfg.hideObjectDuringItems, " 평정 동안 물체 숨기기(설문 초안의 제안, 절차 변경이라 팀 결정 전)");
+            cfg.askOptionalItems = GUILayout.Toggle(cfg.askOptionalItems, " 선택 단계 문항도 묻기(optionalWhen — 두 평정 문항 모습 일치·대표성을 사전에도. 기본 꺼짐: 사전 측정은 데스크톱)");
+            GUILayout.Label("묻지 않을 평정 문항 키(쉼표로, 예: own 또는 S4 — 기존 '내 것 같다' 문항 끄기)", _wrap);
+            string disabled = GUILayout.TextField(string.Join(",", cfg.disabledItems ?? new string[0]));
+            cfg.disabledItems = disabled.Split(',').Select(k => k.Trim()).Where(k => k.Length > 0).ToArray();
             GUILayout.Label("문구 파일(StreamingAssets): 지금 " + runner.TaskTextDisplayName, _wrap);
             GUILayout.BeginHorizontal();
             foreach (var f in runner.TaskTextFiles)
@@ -116,6 +123,9 @@ namespace IFS.SceneSpec.Placement
         void DrawChecked()
         {
             GUILayout.Label($"참여자 {runner.ParticipantNumberText}   spec {runner.Spec?.Meta?.SessionId}", _wrap);
+            var sel = runner.Selection;
+            GUILayout.Label(sel == null ? "선택 파일: 없음(spec만)"
+                : $"선택 파일: {sel.FileName}  {(sel.None ? "맞는 것이 없다(기준 후보)" : "후보 " + (sel.SelectedCandidateId ?? "-"))}  덮어쓰기: {sel.Overrides}", _wrap);
             GUILayout.BeginHorizontal();
             GUI.enabled = runner.Errors.Count == 0;
             if (GUILayout.Button("시작 (Enter)", GUILayout.Height(30))) runner.PressConfirm();
@@ -139,7 +149,7 @@ namespace IFS.SceneSpec.Placement
             if (item != null)
             {
                 string cursor = s.Config.participantRatesWithController ? $"   참여자 컨트롤러 고르는 중: {(s.RatingCursor?.ToString() ?? "-")}" : "";
-                GUILayout.Label($"평정 {s.ItemNumber}/{s.ItemCount} {item.Key}({s.CurrentItemWhen}) — 숫자 1–7, Backspace 취소, Enter 확정.  입력: {(s.PendingRating?.ToString() ?? "-")}{cursor}", _wrap);
+                GUILayout.Label($"평정 {s.ItemNumber}/{s.ItemCount} {item.Key}({s.CurrentItemWhen}) — 숫자 {item.Min}–{item.Max}{(item.Max > 9 ? "(두 자리는 이어 침)" : "")}, Backspace 취소, Enter 확정.  입력: {(s.PendingRating?.ToString() ?? (s.PendingDigits.Length > 0 ? s.PendingDigits + "…" : "-"))}{cursor}", _wrap);
             }
             if (s.Phase == PlacementPhase.StopDistance)
             {

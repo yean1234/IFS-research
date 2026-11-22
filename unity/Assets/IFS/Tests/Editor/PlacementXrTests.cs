@@ -333,9 +333,10 @@ namespace IFS.SceneSpec.Tests
             Assert.That(t.DraftKeys.Count, Is.EqualTo(t.Count), "모든 문구 status draft");
             var A = Enumerable.Range(1, 7).Select(i => "A" + i).ToArray();
             Assert.That(t.ItemsFor("pre").Select(i => i.Key), Is.EqualTo(A.Concat(new[] { "S5", "S6", "S4", "S8" })), "초안 3.7절 사전 순서(S1·S3 제외)");
-            Assert.That(t.ItemsFor("post").Select(i => i.Key), Is.EqualTo(A.Concat(new[] { "S5", "S6", "S7" })), "초안 3.7절 사후 순서");
+            Assert.That(t.ItemsFor("post").Select(i => i.Key), Is.EqualTo(A.Concat(new[] { "S5", "S6", "S7", "appearance_match", "representativeness" })),
+                "초안 3.7절 사후 순서 + 두 평정 문항(G13, 0.2에서 사후 끝에 더함)");
             Assert.That(t.ItemsFor("check"), Is.Empty);
-            Assert.That(t.Items.Count, Is.EqualTo(12), "A 7문항 + S4–S8 5문항");
+            Assert.That(t.Items.Count, Is.EqualTo(14), "A 7문항 + S4–S8 5문항 + G13 2문항");
             foreach (var a in A)
             {
                 var it = t.Items.First(i => i.Key == a);
@@ -392,15 +393,15 @@ namespace IFS.SceneSpec.Tests
                 dir = s.RecordDirectory;
             }
             var ratings = File.ReadAllLines(Path.Combine(dir, "ratings.csv")).Skip(1).Select(l => l.Split(',')).ToList();
-            Assert.That(ratings.Count, Is.EqualTo(11 + 10), "사전 11 + 사후 10");
+            Assert.That(ratings.Count, Is.EqualTo(11 + 12), "사전 11 + 사후 12(G13 두 문항 포함, 기본 사후만)");
             Assert.That(ratings.Where(r => r[1] == "pre").Select(r => r[0]).Last(), Is.EqualTo("S8"));
-            Assert.That(ratings.Where(r => r[1] == "post").Select(r => r[0]).Last(), Is.EqualTo("S7"));
+            Assert.That(ratings.Where(r => r[1] == "post").Select(r => r[0]).Last(), Is.EqualTo("representativeness"));
             var ev = File.ReadAllLines(Path.Combine(dir, "events.csv")).Skip(1).ToList();
             Assert.That(ev.Count(l => l.Contains(",items_instruction,")), Is.EqualTo(2));
             Assert.That(ev.Any(l => l.Contains("items_instruction,when=post;keys=items_instruction+items_instruction_post")), Is.True);
             var m = JObject.Parse(File.ReadAllText(Path.Combine(dir, "manifest.json")));
             Assert.That((string)m["taskText"]["file"], Is.EqualTo("placement_task.scaleA.v0.json"));
-            Assert.That((string)m["taskText"]["version"], Is.EqualTo("0.1-scaleA"));
+            Assert.That((string)m["taskText"]["version"], Is.EqualTo("0.2-scaleA"));
             Assert.That((int)m["taskText"]["draftCount"], Is.EqualTo(t.Count));
         }
 

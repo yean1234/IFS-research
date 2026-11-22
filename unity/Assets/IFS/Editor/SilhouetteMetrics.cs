@@ -7,6 +7,7 @@
 //                  가장자리가 부드러운(MSAA) 원 ≈ 1, 정사각형 ≈ π/4
 //   components     8-이웃으로 이어진 덩어리 중 넓이가 마스크 전체의 MinComponentFraction 이상인 것의 수(침식 부스러기 제외)
 //   edgeFalloffPx  (넓이(덮임 ≥ 0.1·max) − 넓이(덮임 ≥ 0.9·max)) / 둘레(마스크). 가장자리 띠의 평균 폭 = 덮임이 10%→90%로 오르는 폭
+//   contrast       (D7) 실제 장면 렌더의 L*: 마스크 안 평균 − 주변 배경 띠 평균(BackgroundContrast)
 using System;
 using System.Collections.Generic;
 
@@ -22,6 +23,14 @@ namespace IFS.SceneSpec.EditorTools
         public int Components;
         public int ComponentsRaw;
         public double EdgeFalloffPx;
+    }
+
+    /// <summary>형상 영역과 주변 배경의 밝기 대비(SilhouetteMetrics.BackgroundContrast).</summary>
+    public sealed class ContrastResult
+    {
+        public bool HasValue;
+        public double ShapeL, BackgroundL, DeltaL, ShapeLStd;
+        public int ShapePixels, BackgroundPixels;
     }
 
     public static class SilhouetteMetrics
@@ -111,6 +120,55 @@ namespace IFS.SceneSpec.EditorTools
                     }
                 }
             return len;
+        }
+
+        /// <summary>배경 대비의 주변 띠: 보이는 화소(덮임 ≥ VisibleAlpha)의 경계 상자를 긴 변 × 이 비율만큼 사방으로 넓힌 상자 안에서 덮임 &lt; VisibleAlpha인 화소.</summary>
+        public const double BackgroundMarginFraction = 0.25;
+
+        /// <summary>
+        /// 형상 영역과 주변 배경의 밝기 대비(D7, 2026-11-23). lstar = 실제 장면 렌더(배경과 섞인 화면)의 화소별 CIE L*(0–100), alpha = 덮임.
+        ///   형상 영역 = 윤곽 마스크(덮임 ≥ MaskFraction × maxAlpha), 주변 배경 = BackgroundMarginFraction의 띠(덮임 &lt; VisibleAlpha).
+        ///   deltaL = 형상 영역 평균 L* − 주변 배경 평균 L*. shapeLStd = 형상 영역 안 L*의 표준편차(덩이 음영처럼 안쪽 밝기 차가 있는가).
+        /// 보이는 화소가 없거나 배경 띠가 비면 null을 담는다(HasValue = false).
+        /// </summary>
+        public static ContrastResult BackgroundContrast(float[] alpha, double[] lstar, int w, int h)
+        {
+            if (alpha == null || lstar == null) throw new ArgumentNullException(alpha == null ? nameof(alpha) : nameof(lstar));
+            if (alpha.Length != w * h || lstar.Length != w * h) throw new ArgumentException("길이 ≠ width × height");
+            var r = new ContrastResult();
+            double max = 0;
+            int minX = w, minY = h, maxX = -1, maxY = -1;
+            for (int y = 0; y < h; y++)
+                for (int x = 0; x < w; x++)
+                {
+                    float a = alpha[y * w + x];
+                    if (a > max) max = a;
+                    if (a < VisibleAlpha) continue;
+                    if (x < minX) minX = x;
+                    if (x > maxX) maxX = x;
+                    if (y < minY) minY = y;
+                    if (y > maxY) maxY = y;
+                }
+            if (maxX < 0 || max <= 0) return r;
+            int margin = (int)Math.Ceiling(BackgroundMarginFraction * Math.Max(maxX - minX + 1, maxY - minY + 1));
+            int x0 = Math.Max(0, minX - margin), x1 = Math.Min(w - 1, maxX + margin);
+            int y0 = Math.Max(0, minY - margin), y1 = Math.Min(h - 1, maxY + margin);
+            double iso = MaskFraction * max;
+            double sumS = 0, sumS2 = 0, sumB = 0;
+            for (int y = y0; y <= y1; y++)
+                for (int x = x0; x <= x1; x++)
+                {
+                    int i = y * w + x;
+                    if (alpha[i] >= iso) { sumS += lstar[i]; sumS2 += lstar[i] * lstar[i]; r.ShapePixels++; }
+                    else if (alpha[i] < VisibleAlpha) { sumB += lstar[i]; r.BackgroundPixels++; }
+                }
+            if (r.ShapePixels == 0 || r.BackgroundPixels == 0) return r;
+            r.HasValue = true;
+            r.ShapeL = sumS / r.ShapePixels;
+            r.BackgroundL = sumB / r.BackgroundPixels;
+            r.DeltaL = r.ShapeL - r.BackgroundL;
+            r.ShapeLStd = Math.Sqrt(Math.Max(0, sumS2 / r.ShapePixels - r.ShapeL * r.ShapeL));
+            return r;
         }
 
         /// <summary>8-이웃 연결 덩어리 수. minArea 미만은 세지 않는다(raw는 모두 센 값).</summary>

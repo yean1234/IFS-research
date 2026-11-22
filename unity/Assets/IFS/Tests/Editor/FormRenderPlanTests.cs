@@ -124,7 +124,8 @@ namespace IFS.SceneSpec.Tests
         {
             string note = Plan(Mist("MISTNOTE")).PresetNote;
             Assert.That(note, Does.Contain("material.roughness는 표면 반사(광택)가 아니라 밀도 노이즈 크기 배율"));
-            Assert.That(note, Does.Contain("목표 근사"));
+            // D7: 밀도 0.5는 중심 광선 알파의 목표가 아니라 광학 두께 배율이고, 덩어리 속 알파는 opacity를 넘지 않는다
+            Assert.That(note, Does.Contain("광학 두께 배율").And.Contain("opacity를 넘지 않음"));
         }
 
         // 안개 구가 바닥 아래로 걸치면 floorClipped와 잘린 높이 비율(G4). 화면은 바꾸지 않고 기록만 한다.

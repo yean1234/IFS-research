@@ -1,0 +1,79 @@
+{
+  "meta": {
+    "specVersion": "2.1.0",
+    "participantId": "SYNCLOUD",
+    "sessionId": "C02",
+    "condition": "static",
+    "sourceTextHash": "sha256:facd90480688efccc82f5e409be99eeb91c73ee5cf7a1c37bfc5c6634ed3abbc",
+    "pipeline": {
+      "builder": "synthetic-cloud-check/1.0.0",
+      "analyzer": "kiwi",
+      "lexicons": {}
+    }
+  },
+  "form": {
+    "type": "mist",
+    "posture": null
+  },
+  "material": {
+    "color": {
+      "h": 0.0,
+      "s": 0.03,
+      "l": 0.55
+    },
+    "brightness": null,
+    "saturation": null,
+    "roughness": null,
+    "opacity": null,
+    "erosion": null
+  },
+  "layout": {
+    "size": null,
+    "distance": null,
+    "verticalOffset": null
+  },
+  "motion": {
+    "type": null,
+    "speed": null
+  },
+  "body": {
+    "part": null,
+    "layer": null
+  },
+  "_provenance": {
+    "form.type": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "구름",
+        "charSpan": [
+          0,
+          2
+        ],
+        "rule": "synthetic.구름>form.type"
+      }
+    ],
+    "material.color": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "잿빛",
+        "charSpan": [
+          3,
+          5
+        ],
+        "rule": "synthetic.잿빛>material.color"
+      }
+    ]
+  },
+  "_unmatched": [],
+  "_unmapped": [],
+  "_negated": [],
+  "_alternatives": [],
+  "_inferred": {},
+  "_context": [],
+  "_parts": [],
+  "_uncertain": [],
+  "_measurements": [],
+  "_direction": [],
+  "_needsConfirmation": [],
+  "_clauses": []
+}

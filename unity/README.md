@@ -136,12 +136,12 @@ UnityEngine에 의존하지 않는 부분(데이터 클래스·파싱·파라미
 | 렌더러(`renderPath`) | 메시 | 셰이더 | 드로콜·삼각형(눈당 추정) | 비고 |
 | --- | --- | --- | --- | --- |
 | `blob` · `shell` | icosphere(4단계, 삼각형 5,120) | Opaque(안쪽·바깥 두 패스) / opacity < 0.99면 Fade | 8 · 20,880 | 이전과 같음(golden 그대로) |
-| `mist` | 대리 구(icosphere 3단계, 반지름 0.75, 삼각형 1,280, 바운즈 1.6 상자) | `SceneSpecMist`: 한 패스, 물체 좌표 레이마칭 8걸음(`IFS_MIST_STEPS` = `FormRenderPlan.MistSteps`) | 5 · 1,680 | 밀도 = 흔든 반지름 감쇠 × 덩이 노이즈 × 침식 결손. opacity × 0.5는 중심 광선 누적 알파의 **목표 근사**(`RenderedColor.SurfaceAlpha`를 목표로 노이즈 평균 적분으로 광학 깊이를 맞춤, 실제 알파는 다를 수 있음). 걸음마다 구간 가운데에서 표본(중점 샘플링, 화소별 지터 없음). **mist에서 roughness의 뜻**: 표면 반사(광택)가 아니라 밀도 노이즈 크기 배율 lerp(0.7, 1.3, R)(0.5에서 1)과 색 얼룩 세기. 이전 Fade 경로에서는 잔요철 정점 변위·색 얼룩·PBR 광택(스무드니스 = 1 − R)이었고 색 얼룩 식만 같다. 그림자 없음. 카메라가 구 밖이면 앞면, 안이면 안쪽 면만 남김. 배치 설정 바닥 높이(`_FloorY`) 아래는 밀도 0 — 구가 바닥에 걸치면 notes와 report.json `mistFloor`(`floorClipped`, 잘린 높이 비율)에 기록(화면은 그대로). 배치 캡처의 색 측정은 `color.measuredWith = mistVolume`(부피 셰이딩의 화면 색, 알베도 기준 목표와 비교). 셰이더를 못 쓰면 `mist(legacy)`(구 + Fade) |
+| `mist` | 대리 구(icosphere 3단계, 반지름 0.75, 삼각형 1,280, 바운즈 1.6 상자) | `SceneSpecMist`: 한 패스, 물체 좌표 레이마칭 8걸음(`IFS_MIST_STEPS` = `FormRenderPlan.MistSteps`) | 5 · 1,680 | **밀도장(D7, 2026-11-23) = 둥근 덩어리 5개의 합집합 + 중간 주파수 노이즈 × 침식 결손.** 덩어리 중심·반지름은 `MistLumps.Build(seed)`(배치 규칙 `lumps5/1`, seed 0 — 형상 프리셋 기본값)가 정해 `_Lump0…_Lump4`에 넣고 notes·계획 JSON `mistRule`에 남김. 최종 알파 = opacity × 쌓인 알파(덩어리 속 ≈ opacity, opacity보다 커지지 않음 — X70). 형태 밀도 0.5(숫자 그대로)는 셰이더에서 광학 두께 배율(σ = 0.5 × 16). 덩어리마다 감싼 확산 + 빛 쪽 두께만큼의 자기 그림자 + 주변광(위가 밝고 아래가 어두움). 걸음 구간은 덩어리 전체를 감싼 구와 겹치는 부분만(밖은 버림). 걸음마다 구간 가운데에서 표본(중점 샘플링, 화소별 지터 없음). 이전(X66) 밀도장은 흔든 반지름 감쇠 × 덩이 노이즈였고 중심 광선 알파 목표가 opacity × 0.5였다 — 전후 비교 `docs/validation/cloud/README.md`. **mist에서 roughness의 뜻**: 표면 반사(광택)가 아니라 밀도 노이즈 크기 배율 lerp(0.7, 1.3, R)(0.5에서 1)과 색 얼룩 세기. 이전 Fade 경로에서는 잔요철 정점 변위·색 얼룩·PBR 광택(스무드니스 = 1 − R)이었고 색 얼룩 식만 같다. 그림자 없음. 카메라가 구 밖이면 앞면, 안이면 안쪽 면만 남김. 배치 설정 바닥 높이(`_FloorY`) 아래는 밀도 0 — 구가 바닥에 걸치면 notes와 report.json `mistFloor`(`floorClipped`, 잘린 높이 비율)에 기록(화면은 그대로). 배치 캡처의 색 측정은 `color.measuredWith = mistVolume`(부피 셰이딩의 화면 색, 알베도 기준 목표와 비교). 셰이더를 못 쓰면 `mist(legacy)`(구 + Fade) |
 | `fragments` | 각진 조각 5개를 합친 메시 하나(`FragmentMesh`, 삼각형 100, 평면 음영, seed 0) | Opaque/Fade, 정점 변위 0 | 8 · 800 | 이전: 구 5개(24 · 102,800). 조각 생성 규칙 버전 `angular5/1`(배치 반경 비율 0.884, 조각 크기 비율 0.281–0.554)을 notes와 계획 JSON `fragmentRule`에 남김. 규칙을 바꾸면 버전을 올린다(같은 seed라도 메시가 달라지므로) |
 | `shapeModel` / `shapePrefab(모형)` | 모양 모형 4종 | Opaque, 정점 변위 0 | 8 · 448–3,472 | 이전과 같음 |
 | `prefab(형태)` · `primitive(형태)` · `shapeModelPrimitive(모형)` | 연결한 프리팹 / IFS 셰이더를 못 쓸 때 | — | — | 대체 경로(그대로) |
 
-한계: 카메라가 안개 구 안에 있고 구 뒤쪽이 바닥 아래면 바닥을 내려다보는 화소의 안개가 빠집니다. 바닥에 걸친 안개는 바닥 높이에서 잘린 경계가 옅게 보일 수 있습니다. 헤드셋(Quest 모바일 GPU)의 레이마칭 채움 비용은 재지 않았습니다.
+한계: 카메라가 안개 덩어리 안에 들어가면 시야가 opacity만큼 가려집니다(D7 뒤: 덩어리 속 알파 ≈ opacity. 헤드셋에서 직접 배치로 구름을 끌어올 때 확인 필요). 카메라가 안개 구 안에 있고 구 뒤쪽이 바닥 아래면 바닥을 내려다보는 화소의 안개가 빠집니다. 바닥에 걸친 안개는 바닥 높이에서 잘린 경계가 옅게 보일 수 있습니다. 헤드셋(Quest 모바일 GPU)의 레이마칭 채움 비용은 재지 않았습니다.
 
 ### 후처리
 
@@ -192,7 +192,7 @@ JSON 하나마다 하는 일:
    - `specColorIsDefault`: h·s·l 중 **하나라도** 기본값으로 채웠으면 true, 어느 성분인지는 `specColorDefaultComponents`. 요약(`summary.color`)은 참여자가 h·s·l을 모두 말한 spec(`stated`)과 기본값이 섞인 spec(`withDefaults`)을 따로 집계합니다. 기본 무채색은 맞추기 쉬워 색 반영 정확도를 좋게 보이게 하기 때문입니다(AGENTS.md 원칙 2). 논문·판정에는 `stated.primaryMean`·`stated.primaryMax`를 씁니다.
    - `shaderTarget`은 brightness에 따른 셰이더의 의도된 어둡게·발광을 반영한 기대 색입니다.
 6. **렌더 통계(추정)**: `UnityStats`와 `ProfilerRecorder`(Draw Calls Count·Triangles Count 등)를 모두 걸어 봤지만, 배치모드 에디트 모드의 수동 `Camera.Render()`에서는 둘 다 0으로 남습니다(`meaningful: false`로 기록). 그래서 직접 계산한 **추정**을 씁니다: 화면 안 렌더러 수, 메시 삼각형, 렌더러별 패스(LightMode = ForwardBase/ForwardAdd/ShadowCaster)로 눈당 드로콜·삼각형 추정(전방 패스 + 화면 공간 그림자용 카메라 깊이 + 그림자 맵 + 하늘 + 그림자 해상), 그림자 광원 수. `summary.ac4`의 키도 `drawCallsPerEyeEstimateAtMost100`·`trianglesPerEyeEstimateAtMost300k`로 추정임을 밝히고, `estimatedItems`·`drawCallsTrianglesMeasuredByProfiler`(false)를 함께 적습니다. 실측은 PlayMode나 기기에서 해야 합니다.
-7. **형상 지표(X72)**: `renderPath`(렌더러 이름), `renderPlan`(FormRenderPlan 전체), `visiblePixels`(장면 조명·형상만 렌더의 덮임 a ≥ 0.02 화소 수, 원래 해상도), `maxAlpha`, `silhouette{circularity(4π·넓이/둘레², 마스크 = a ≥ 0.5 × maxAlpha, 마칭 스퀘어 둘레), components(8-이웃 덩어리, 마스크 넓이의 0.5% 이상), edgeFalloffPx((넓이(a ≥ 0.1·max) − 넓이(a ≥ 0.9·max)) / 둘레), maskPixels, perimeterPx, componentsRaw}`. 요약은 `summary.renderPaths`(렌더 경로별 평균). 계산은 `Editor/SilhouetteMetrics.cs`(UnityEngine 없음, `SilhouetteMetricsTests`). "더 그 형상답다"의 대리 지표일 뿐입니다. 전후 비교: `docs/validation/render/README.md`.
+7. **형상 지표(X72)**: `renderPath`(렌더러 이름), `renderPlan`(FormRenderPlan 전체), `visiblePixels`(장면 조명·형상만 렌더의 덮임 a ≥ 0.02 화소 수, 원래 해상도), `maxAlpha`, `silhouette{circularity(4π·넓이/둘레², 마스크 = a ≥ 0.5 × maxAlpha, 마칭 스퀘어 둘레), components(8-이웃 덩어리, 마스크 넓이의 0.5% 이상), edgeFalloffPx((넓이(a ≥ 0.1·max) − 넓이(a ≥ 0.9·max)) / 둘레), maskPixels, perimeterPx, componentsRaw}`. 요약은 `summary.renderPaths`(렌더 경로별 평균). 2026-11-23(D7) 추가: `contrast{deltaL, shapeL, backgroundL, shapeLStd, shapePixels, backgroundPixels}` — 실제 장면 렌더의 L\*로 형상 영역(윤곽 마스크) 평균 − 주변 배경(보이는 화소 경계 상자를 긴 변 × 0.25 넓힌 상자 안의 a < 0.02 화소) 평균, `summary.renderPaths.*.contrastDeltaLMean`. 계산은 `Editor/SilhouetteMetrics.cs`(UnityEngine 없음, `SilhouetteMetricsTests`). "더 그 형상답다"의 대리 지표일 뿐입니다. 전후 비교: `docs/validation/render/README.md`.
 8. **프레임시간**: 한 프레임 = 눈 수만큼 `Camera.Render()`(눈 위치를 IPD 64 mm의 절반씩 옮김) → RenderTexture에서 1×1 화소를 `Texture2D.ReadPixels`로 읽어 CPU가 GPU 완료를 기다리게 합니다(동기화). `Stopwatch`로 렌더 시작부터 동기화 끝까지 잽니다. 준비 프레임은 버리고 p50·p95·max·평균을 냅니다. 에디터 오버헤드와 MSAA 해상 비용이 들어 있습니다.
 
 > 프레임시간은 **데스크톱 GPU(RTX 5080)에서 잰 대리 측정**입니다. Quest 3 헤드셋(모바일 GPU, 타일 렌더링, 단일 패스 인스턴싱)의 성능이 아닙니다. `report.json`의 `disclaimer`에도 적혀 있습니다. 헤드셋 성능은 기기에서 따로 재야 합니다.
@@ -345,7 +345,7 @@ spec마다 참여자 번호를 하나씩 올립니다. 씬 만들기 배치: `-e
 | --- | --- | --- |
 | intro | 숨김 | 실험자 Enter |
 | baseline(제시) | 시작 자리(정면 1.5 m, 높이 1.2 m) | `baselineSeconds`(30) 뒤 자동 |
-| pre_items / post_items / check_items | 사전은 시작 자리, 사후·점검은 조건 단계가 끝난 자리(`hideObjectDuringItems`를 켜면 숨김) | 문구 파일에 평정 지시문이 있으면 먼저 지시문 → 실험자 Enter. 문항마다 숫자 1–7 → Enter(선택: 참여자 컨트롤러). 해당 `when` 문항이 없으면 단계째 건너뜀 |
+| pre_items / post_items / check_items | 사전은 시작 자리, 사후·점검은 조건 단계가 끝난 자리(`hideObjectDuringItems`를 켜면 숨김) | 문구 파일에 평정 지시문이 있으면 먼저 지시문 → 실험자 Enter. 문항마다 숫자(문항 범위, 기본 1–7) → Enter(선택: 참여자 컨트롤러). 해당 `when` 문항이 없으면(또는 `disabledItems`로 모두 껐으면) 단계째 건너뜀 |
 | pre_wait / post_wait | 숨김 | 헤드셋 밖 설문(주 척도는 팀 결정 전이라 러너에 없음) 뒤 실험자 Enter/"다음" |
 | condition | 조건별(아래) | `conditionSeconds`(90) 뒤 자동. `conditionEndsOnConfirm`을 켜면 직접 배치의 확인에서 끝남(기본 꺼짐) |
 | stop_distance | 시행 중에만 보임, 정면 직선 위 | 실험자 Enter로 시행 시작 → 시행이 다 끝나면 자동 |
@@ -374,11 +374,11 @@ spec마다 참여자 번호를 하나씩 올립니다. 씬 만들기 배치: `-e
 | 참여자(모의) | F | 확인("여기에 둔다", 가리킨 점 확정) |
 | 참여자(모의) | Space | 멈춤 거리 버튼 |
 | 참여자(모의) | 마우스 오른쪽 드래그 · WASD | 둘러보기 · 이동(`HeadPoseProvider`, 위와 겹치지 않음) |
-| 실험자 | 1–7 · Backspace · Enter | 평정 입력 · 취소 · 확정. Enter는 안내·대기 넘기기, 멈춤 거리 시작, 확인 화면에서 시작 |
+| 실험자 | 0–9 · Backspace · Enter | 평정 입력 · 취소 · 확정. 범위가 한 자리(기본 1–7)면 숫자 하나로 입력(범위 밖 숫자 무시, 예전과 같음). 두 자리 범위(예: 0–10)는 이어 칩니다: 1 → 0 = 10, 범위를 넘는 숫자(1 다음 1)·세 번째 자리·0 뒤의 숫자는 받지 않음. Backspace는 친 숫자 전체 취소. Enter는 안내·대기 넘기기, 멈춤 거리 시작, 확인 화면에서 시작 |
 | 실험자 | Esc · F1 | 중단(자료는 남고 `summary.json`에 `abortedAt`) · 실험자 화면 숨기기 |
 | 실험자 | R | 정면 재설정(XR일 때만. 아래 「헤드셋 연결」) |
 
-실험자 화면(IMGUI, PC 모니터에만): Setup(참여자 번호, spec, 조건·통제 방식, 재생 원본 경로, 참여자 입력 auto/desktop/xr, 주 사용 손, 평정 선택 기능 두 개, 문구 파일) → 확인 → 시작. 진행 중에는 단계, 남은 시간, 조건, 물체 거리·방위·높이, draft 경고, 대기 단계의 "다음" 단추, XR 상태(헤드셋·컨트롤러·추적 원점)와 정면 재설정 단추.
+실험자 화면(IMGUI, PC 모니터에만): Setup(참여자 번호, spec, **선택 파일 selection.json(선택)**, 조건·통제 방식, 재생 원본 경로, 참여자 입력 auto/desktop/xr, 주 사용 손, 평정 선택 기능 두 개, 선택 단계 문항 묻기·끌 문항 키, 문구 파일) → 확인(선택 파일 요약: 고른 후보 또는 "맞는 것이 없다", 덮어쓰기) → 시작. 진행 중에는 단계, 남은 시간, 조건, 물체 거리·방위·높이, draft 경고, 대기 단계의 "다음" 단추, XR 상태(헤드셋·컨트롤러·추적 원점)와 정면 재설정 단추.
 
 ### 설정값(`PlacementConfig`, 잠정값 — 팀 결정 전)
 
@@ -393,8 +393,24 @@ spec마다 참여자 번호를 하나씩 올립니다. 씬 만들기 배치: `-e
 | 멈춤 거리 | `stopSpeedMps`(0.25), `stopApproachStartM`(3.0), `stopRecedeStartM`(0.5), `stopTrialsPerDirection`(4), `stopPracticeTrials`(2), `stopMinM`(0.2), `stopMaxM`(4.0, 바닥 반지름 이하), `stopItiSeconds`(2), `stopHeightM`(1.2), `stopFirstDirection`(by_participant) |
 | 문구 | `requireSpecPhrases`(false. 켜면 draft 문구가 있을 때 시작 거부) |
 | 헤드셋(2026-11-23 추가) | `inputMode`(auto: 헤드셋이 켜져 있으면 XR, 없으면 데스크톱 · desktop · xr: 헤드셋이 없으면 시작 거부), `xrHand`(right · left), `participantRatesWithController`(false), `hideObjectDuringItems`(false — 설문 초안의 제안이지만 절차 변경이라 팀 결정 전) |
+| 평정 문항(2026-11-23 D8 추가) | `askOptionalItems`(false — 켜면 문항의 `optionalWhen` 단계에서도 묻는다. 두 평정 문항 G13을 헤드셋 사전에도 물을 때), `disabledItems`([] — 묻지 않을 문항 키. 예: 기존 "내 것 같다" `own`(기본 파일)·`S4`(scaleA). 문구 파일에 없는 키면 확인 단계 오류) |
 
 헤드셋 표시값은 기록에 영향이 없어 `PlacementConfig`가 아니라 컴포넌트 Inspector에 있습니다: `PlacementRunner`의 판 자리 `textForwardM`(2.0)·`textHeightM`(0.6, 판 중심), `rayOnlyWhenUsable`(true), `PlacementTextPanel`의 글자 크기(`characterSize` 0.0085 ≈ 글자 높이 5 cm)·줄 길이(20자)·기준점 칸 너비(0.2 m), `XrPlacementInput`의 광선 굵기·길이와 썸스틱 데드존(0.2)·트리거 이력(0.55/0.35).
+
+### 선택 파일(`selection.json`, 2026-11-23 D8 — 결정 G15·G23)
+
+챗봇의 후보 선택·조절 단계(D5)가 세션 기록에 쓰는 선택 파일을 원본 spec과 함께 읽습니다(`PlacementSelection.cs`, UnityEngine 없음). Setup의 "선택 파일" 칸(절대 경로 또는 spec 목록 폴더 기준 이름), 자동 시행 `-selectionPath`. 비우면 예전처럼 spec만으로 진행합니다(기존 자동 시행·테스트 그대로, manifest `selection: null`).
+
+| 필드 | 러너가 하는 일 |
+| --- | --- |
+| `formatVersion` | 필수. 접두어가 `ifs-selection/`이 아니거나 `ifs-selection/0.1`이 아니면 **경고**(확인 화면, `events.csv` `warning`)만 하고 읽는 필드를 확인 |
+| `specSha256` | 필수(16진 64자, 대소문자 무관). 러너가 읽은 spec 파일 **바이트**의 sha256과 다르면 **시작 거부**(이유 표시). 줄바꿈 설정(git autocrlf)이 다르면 같은 spec도 sha가 달라지므로, 선택 파일은 실험 PC의 spec 파일 바이트로 계산해야 합니다 |
+| `finalOverrides` | 필수 객체(`{}` = 덮어쓰기 없음). `SceneOverrideJson.Parse` 형식(평평한 키 → 값, `shapeModel`). 모르는 키·0–1 밖·잘못된 값, 위치·거리 키(`layout.distance`·`layout.verticalOffset` — 시작 자리는 실험 설정이라 G10), form.type이 blob이 아닌데 모양 모형 강제는 **시작 거부** |
+| `selection.selectedCandidateId` · `selection.none` | 그대로 기록. `none: true`인데 id가 있으면 거부, `none: false`인데 id가 null이면 경고 |
+| `sources` | 해석하지 않고 manifest에 그대로(없으면 null) |
+| 그 밖 | 읽지 않음(무시) |
+
+덮어쓰기는 형상을 만들 때 `SceneLoader.Load(spec, 덮어쓰기)`로 **한 번** 얹고(소유감 변형본과 같은 경로, 참여자 조정 기록을 타지 않음) 조건 단계 동안 바뀌지 않습니다(VR 안에서 속성을 고치는 입력은 없음 — G11). 로드한 뒤 덮어쓰기 키마다 그려지는 해석값(모양 모형은 그려지는 모형)이 덮어쓰기 값과 같은지 확인하고, 다른 키가 하나라도 있으면 시작을 거부합니다. 확인 뒤 시작 전에 선택 파일이 바뀌면 거부합니다(spec과 같은 규칙). 시작하면 `events.csv`에 `selection` 한 줄(`file=…;none=0|1;candidate=…;applied=<키 수>`, 경고가 아님)을 남깁니다. 합성 예시·자동 시행 결과: `docs/validation/runner-selection/`.
 
 물체 시작 자리는 spec의 `layout.distance`·`verticalOffset` 대신 `startDistanceM`·`startHeightM`을 씁니다(두 조건이 같은 자리에서 시작해야 하므로). 크기·모양·색·움직임은 spec 그대로입니다. 시작 자리는 참여자가 말한 속성이 아니라 실험 설정이라는 것을 manifest `space.startPlacementSource: "experiment_config"`로 남깁니다. spec의 `layout.distance`나 `verticalOffset`에 값이 있었는데 이렇게 무시하면, 확인 화면 경고와 `events.csv`의 `warning` 한 줄(detail이 `layout_ignored`로 시작)을 남기고 manifest `flags.layoutIgnored`를 true로 둡니다.
 
@@ -402,22 +418,28 @@ spec마다 참여자 번호를 하나씩 올립니다. 씬 만들기 배치: `-e
 
 ### 문구 파일
 
-`StreamingAssets/IFS/placement_task.v0.json` — `ownership_task.v0.json`과 같은 구조(`version`, `protocol`, `texts.{key}.text · status · source`)에 평정 문항 필드 `when`(pre | post | check 또는 배열), `anchors.low/high`(1과 7의 뜻)를 더했습니다. **12개 모두 `status: draft`**(IRB 검토 전, `source`에 출처). 배치 지시문은 방향을 암시하는 말("멀리", "치우다")을 쓰지 않습니다. draft 문구가 있으면 확인 화면 맨 위 경고, `events.csv`의 `warning`, manifest `taskText.draftCount`·`draftKeys`에 남습니다(소유감 러너와 같은 방식).
+`StreamingAssets/IFS/placement_task.v0.json` — `ownership_task.v0.json`과 같은 구조(`version`, `protocol`, `texts.{key}.text · status · source`)에 평정 문항 필드 `when`(pre | post | check 또는 배열), `anchors.low/high`(1과 7의 뜻)를 더했습니다. **14개 모두 `status: draft`**(IRB 검토 전, `source`에 출처. 2026-11-23 D8에서 두 평정 문항을 더해 version 0.1 → 0.2). 배치 지시문은 방향을 암시하는 말("멀리", "치우다")을 쓰지 않습니다. draft 문구가 있으면 확인 화면 맨 위 경고, `events.csv`의 `warning`, manifest `taskText.draftCount`·`draftKeys`에 남습니다(소유감 러너와 같은 방식).
 
 2026-11-23 형식 추가(선택 필드, 기존 파일은 그대로 유효 — 테스트가 확인):
 
 - `anchors`의 숫자 키 `"1"`…`"7"`: 기준점마다의 뜻(예: 7점 모두, 또는 양극 척도의 1·4·7). `low`·`high`가 없으면 숫자 키의 양 끝을 씁니다. `low`·`high`·범위 안 숫자 말고 다른 키는 오류입니다. 헤드셋 판은 문항 아래에 1–7 숫자와 그 아래 뜻을 칸마다 보입니다.
 - `items_instruction`(공통)과 `items_instruction_pre`·`_post`·`_check`(단계별 덧붙임): 평정 단계 첫 문항 앞에 보이는 지시문. 실험자 Enter로 첫 문항으로 넘어갑니다(`rt_ms`는 문항이 보인 때부터). `events.csv`에 `items_instruction` 줄.
 
-**두 번째 문구 파일 `placement_task.scaleA.v0.json`**(선택, Setup에서 고름): `docs/rq-v4-questionnaire-draft.md` 3절의 주 척도안 A 7문항(사전·사후, 7점 기준점 모두 이름)과 보조 문항 S4(사전)·S5·S6(사전·사후)·S7(사후)·S8(사전, 1·4·7 양극), 공통 지시문과 사후 덧붙임 문장. **22개 모두 `status: draft`**, `source`에 초안 문서의 절과 문항 ID. 순서는 초안 3.7절(사전 A1–A7·S5·S6·S4·S8 = 11문항, 사후 A1–A7·S5·S6·S7 = 10문항). S3(겹침 그림 IOS)은 그림 선택지가 필요해 뺐고, S1(심리 거리)은 이번 묶음에서 함께 뺐습니다(S1 자체는 글 양극 척도라 anchors 1·4·7로 넣을 수 있음). S2는 초안에서도 선택 문항이라 넣지 않았습니다. 단계 안내 문구(intro 등)는 기본 파일과 같습니다. 기본 문구 파일은 바뀌지 않았고 기본 선택도 그대로입니다.
+2026-11-23 D8 형식 추가(선택 필드, 기존 파일은 그대로 유효 — 테스트가 확인):
 
-### 기록 (계약 `ifs-placement/0.1`, 참여자 데이터 — git 밖)
+- 문항별 범위 `min`·`max`(정수, 없으면 1–7, 0 ≤ min < max ≤ 100). `anchors` 숫자 키도 이 범위 안이어야 합니다. 구별 프로파일의 0–10 문항(M1p·M2·M3, `docs/rq-v4-differentiation-measure.md`)을 받기 위한 것이고, **0–10 문항을 문구 파일에 실제로 넣지는 않았습니다**(주 척도는 사람이 정할 것 — 기능과 테스트만). 실험자 키보드는 두 자리(10)까지 이어 치고, 참여자 컨트롤러는 가운데 값(0–10이면 5)에서 시작해 범위 안에서 한 칸씩, 헤드셋 판의 숫자 줄도 범위만큼(칸이 7개보다 많으면 줄 전체가 7칸 너비가 되게 칸을 좁힘). `ratings.csv` 형식은 그대로(값만 범위대로).
+- `optionalWhen`(pre | post | check 또는 배열): 설정 `askOptionalItems`를 켰을 때만 그 단계에서도 묻습니다. 평정 문항이 아닌 키(when 없음)에 `min`·`max`·`optionalWhen`을 쓰면 오류.
+- **두 평정 문항(G13)**: 모습 일치 `appearance_match`("이 형상의 모습은 내가 떠올린 것과 비슷하다")와 대표성 `representativeness`("이 형상은 내가 떠올린 그것을 나타낸다"), 1–7, `status: draft`, `source`는 "docs/prompts/prototype-v4-build.md G13, 2026-11-22 …". 두 파일 모두 `when: post`, `optionalWhen: pre` — 흐름상 사전 측정은 데스크톱에서 하므로(G11) 헤드셋에서는 기본 **사후만** 묻고, 사전에도 물으려면 `askOptionalItems`를 켭니다. 기본 파일은 `own` 바로 뒤, scaleA는 사후 끝(S7 뒤). 기존 "내 것 같다"(`own`, scaleA `S4`)는 지우지 않았고 `disabledItems`로 끌 수 있습니다. 하한 점검 기준(대표성)의 값은 정하지 않았습니다(⚠ 사람이 정할 것).
+
+**두 번째 문구 파일 `placement_task.scaleA.v0.json`**(선택, Setup에서 고름): `docs/rq-v4-questionnaire-draft.md` 3절의 주 척도안 A 7문항(사전·사후, 7점 기준점 모두 이름)과 보조 문항 S4(사전)·S5·S6(사전·사후)·S7(사후)·S8(사전, 1·4·7 양극), 공통 지시문과 사후 덧붙임 문장. **24개 모두 `status: draft`**, `source`에 초안 문서의 절과 문항 ID(두 평정 문항 G13은 지시문 G13). 순서는 초안 3.7절(사전 A1–A7·S5·S6·S4·S8 = 11문항, 사후 A1–A7·S5·S6·S7 = 10문항)에 사후 끝 G13 두 문항(= 사후 12문항, version 0.1-scaleA → 0.2-scaleA). S3(겹침 그림 IOS)은 그림 선택지가 필요해 뺐고, S1(심리 거리)은 이번 묶음에서 함께 뺐습니다(S1 자체는 글 양극 척도라 anchors 1·4·7로 넣을 수 있음). S2는 초안에서도 선택 문항이라 넣지 않았습니다. 단계 안내 문구(intro 등)는 기본 파일과 같습니다. 기본 문구 파일은 바뀌지 않았고 기본 선택도 그대로입니다.
+
+### 기록 (계약 `ifs-placement/0.2`, 참여자 데이터 — git 밖)
 
 `{recordRoot}/placement/P{번호:000}/{sessionId}/{UTC yyyyMMdd-HHmmss}[-n]/`. UTF-8(BOM 없음), InvariantCulture, `\n`. 좌표: '나'의 자리 = 바닥 중심(세계 원점), 바닥 y = 0, 정면 +z. Python 분석기 `ifs_chatbot.eval.placement`가 읽습니다(헤더·필드 이름은 EditMode 테스트가 고정).
 
 | 파일 | 내용 |
 | --- | --- |
-| `manifest.json` | `recordVersion`, `participantNumber`, `sessionId`, `specFile`(이름만), `specSha256`, `startedAtUtc`, `unityVersion`, `headSource`(xr/desktop), `inputSource`(desktop/auto/xr), `condition`, `controlMode`, `space`(`startPlacementSource: "experiment_config"` 포함), `stopDistance`, `object`(`boundingRadiusM`, 없으면 null), `replaySource`(null 또는 file·sha256·sourceSessionId), `systemMoveTarget`(null 또는 distanceM·azimuthDeg·heightM), `taskText`, `config`, `flags`(`autoMode`, 실제 첫 방향, `layoutIgnored` 등) |
+| `manifest.json` | `recordVersion`, `participantNumber`, `sessionId`, `specFile`(이름만), `specSha256`, `startedAtUtc`, `unityVersion`, `headSource`(xr/desktop), `inputSource`(desktop/auto/xr), `condition`, `controlMode`, `space`(`startPlacementSource: "experiment_config"` 포함), `stopDistance`, `object`(`boundingRadiusM`, 없으면 null), `replaySource`(null 또는 file·sha256·sourceSessionId), `systemMoveTarget`(null 또는 distanceM·azimuthDeg·heightM), `taskText`, `config`, `flags`(`autoMode`, 실제 첫 방향, `layoutIgnored` 등), **0.2 추가:** `selection`(선택 파일이 없으면 null, 있으면 `file`(이름만)·`sha256`(선택 파일의)·`formatVersion`·`none`·`selectedCandidateId`·`finalOverrides`(원문)·`sources`(원문, 없으면 null)), `appliedOverrides`(실제로 적용된 키 → 그려지는 값, 키 이름순, 덮어쓰기가 없거나 선택 파일이 없으면 `{}`) |
 | `headpose.csv` | `time_ms,phase,head_x..head_qw,obj_x,obj_y,obj_z,distance_m,angle_deg` — 머리–물체 3D 거리·시선 각(소유감 기록과 같은 뜻). 물체가 숨은 동안 물체 칸은 빈칸 |
 | `objpose.csv` | `time_ms,phase,obj_x,obj_y,obj_z,distance_m,azimuth_deg,height_m,state` — 물체가 보일 때만, headpose와 같은 표본 시각. `distance_m`은 '나'에서 수평 거리, 방위는 오른쪽 + (−180, 180], state ∈ idle/held/system/replay/stop |
 | `events.csv` | `phase`(detail = 단계 이름), `grab`, `release`, `confirm`, `point_select`, `system_move_start/end`, `replay_start/end`, `stop_trial_start`, `stop_press`, `stop_timeout`, `rating`, `auto_mode`, `warning`, `head_source`. 계약에 더해 `session_start`, `rating_cancel`, `abort`, `quit`. 2026-11-23 추가(쓸 때만 나옴): `items_instruction`(평정 지시문, detail `when=…;keys=…`), `xr_status`(XR로 시작할 때 장치 이름·손·추적 원점), `recenter`(정면 재설정: 돌린 각·옮긴 거리·머리 높이), 참여자가 컨트롤러로 확정한 `rating`은 detail 끝에 `;by=controller` |
@@ -428,6 +450,8 @@ spec마다 참여자 번호를 하나씩 올립니다. 씬 만들기 배치: `-e
 | `summary.json` | `completed`, `abortedAt`, `endedAtUtc` |
 
 2026-11-23 기록 형식 변경은 추가만 했습니다(`recordVersion`은 그대로 `ifs-placement/0.1`, 기존 열·키 삭제 없음): manifest `config`에 `inputMode`·`xrHand`·`participantRatesWithController`·`hideObjectDuringItems` 네 키, `inputSource`에 실제 값 `xr`, 위 `events.csv` 사건들. `hideObjectDuringItems`를 켜면 평정 단계 동안 물체가 숨어 `objpose.csv`에 그 단계 행이 없고 `headpose.csv`의 물체 칸이 빈칸입니다(숨은 단계의 기존 규칙). 분석기(`ifs_chatbot.eval.placement`)는 바꾸지 않았습니다(추가 키·사건을 읽지 않음, 문항 열은 `rating_A1_pre`처럼 자동으로 생김).
+
+**0.1 → 0.2(2026-11-23 D8·D9)**: 추가만 했습니다. manifest에 `selection`·`appliedOverrides` 두 키, `config`에 `askOptionalItems`·`disabledItems` 두 키, `events.csv`에 `selection` 사건(선택 파일로 시작할 때만). CSV 헤더·다른 manifest 키·파일 목록은 그대로이고, 선택 파일 없이 돌리면 내용은 0.1과 같고 `recordVersion`과 두 키(`selection: null`, `appliedOverrides: {}`)만 다릅니다. `ratings.csv`의 값은 문항 범위대로(기본 1–7, 범위를 넓힌 문항은 예: 0–10). 분석기 `ifs_chatbot.eval.placement`는 `recordVersion`이 접두어 `ifs-placement/`로 시작하는 manifest를 모두 읽으므로 0.2 기록도 읽힙니다. 다만 아는 버전 목록(`KNOWN_VERSIONS`)이 `ifs-placement/0.1`뿐이라 0.2 세션에는 `version_mismatch` 플래그가 붙습니다(분석기는 이번에 고치지 않음 — 목록에 0.2를 더하는 것은 chatbot 쪽 작업). 분석기는 `selection`·`appliedOverrides`를 읽지 않습니다.
 
 중단(Esc·Play 멈춤)하면 그때까지의 CSV가 남고, 조건 단계 중이었으면 그때까지의 `placement.json`(`conditionCompleted: false`)·`trajectory.json`도 씁니다. 분석기는 이런 세션에 `partial_condition`을 달고 조건 단계 지표 칸을 비웁니다.
 
@@ -442,7 +466,8 @@ spec마다 참여자 번호를 하나씩 올립니다. 씬 만들기 배치: `-e
   -recordRoot <기록 루트> -specPath <spec.json> -condition place|view -controlMode static|system_move|replay|point_select \
   [-replayPath <trajectory.json>] [-participant 1] [-conditionSeconds 90] [-baselineSeconds 30] [-headSampleHz 20] \
   [-stopItiSeconds 2] [-showRings true|false] [-hideObjectDuringItems true|false] \
-  [-taskTextFile IFS/placement_task.scaleA.v0.json] [-dt 0.02] -logFile <로그>
+  [-taskTextFile IFS/placement_task.scaleA.v0.json] [-selectionPath <selection.json>] \
+  [-askOptionalItems true|false] [-disabledItems own,S4] [-dt 0.02] -logFile <로그>
 ```
 
 `-quit` 없이(끝나면 스스로 닫음), 성공 0·실패 1. 씬 만들기 배치: `-executeMethod IFS.SceneSpec.EditorTools.PlacementExperimentMenu.CreateSceneBatch`. 자동 시행·씬 만들기·배치 캡처는 에디트 모드라 XR을 시작하지 않습니다(XR은 Play·빌드 실행 때만).
@@ -539,7 +564,7 @@ Windows 빌드(선택): 메뉴 **IFS ▸ Experiment ▸ Build Placement Experime
   -runTests -testPlatform EditMode -testResults <결과.xml> -logFile <로그>
 ```
 
-EditMode 307개(2026-11-23 미리보기(D4) 뒤 배치모드로 전부 통과. 그 전 278개(헤드셋 프로토타입), 257개, 배치 러너 CP7 반영 때 192개). 아래 표는 2026-11-22 기준이고, 그 뒤 더한 것은 표 아래에 적었습니다:
+EditMode 335개(2026-11-23 구름 수정(D7)·러너 선택 파일(D8·D9) 뒤 배치모드로 전부 통과. 그 전 307개(미리보기 D4). 그 전 278개(헤드셋 프로토타입), 257개, 배치 러너 CP7 반영 때 192개). 아래 표는 2026-11-22 기준이고, 그 뒤 더한 것은 표 아래에 적었습니다:
 
 | 파일 | 개수 | 내용 |
 | --- | --- | --- |
@@ -563,6 +588,10 @@ EditMode 307개(2026-11-23 미리보기(D4) 뒤 배치모드로 전부 통과. �
 | `MistShaderSourceTests.cs` | +1 | 안개·하늘 셰이더의 스테레오 인스턴싱 매크로(인스턴스 ID를 조각 단계까지) |
 | `UnityOnly/PlacementRunnerXrTests.cs` | 5 | 씬 구성(리그 아래 눈높이 카메라, XR 없으면 정면 재설정 안 함), 헤드셋 없으면 auto → desktop·강제 xr 거부, 헤드셋 있음(흉내) + 가짜 컨트롤러 → `inputSource: xr`·잡기·밀기가 세션과 그리기에 반영·`xr_status`, 참여자 판 자리(정면 2 m, 눈높이 아래)·평정 기준점 줄·평정 동안 숨김, scaleA 자동 시행 |
 
+2026-11-23 구름 수정(D7)에서 더한 것: `MistLumpsTests.cs`(덩어리 배치 seed 결정성·다른 seed·규칙 버전에 묶인 기본 배치·대리 구 안·덩어리 겹침·계획 JSON `mistRule`·밀도 프리셋 0.5 그대로·밝기 대비 지표), `MistShaderSourceTests`(+1: 덩어리 수·가장자리 폭·`_Lump0…` 선언·opacity를 최종 알파에 그대로 곱함), `UnityOnly/MistRendererTests`(머티리얼 `_Lump0…`·`_Seed`, maxAlpha가 opacity의 0.9–1배·대비 지표 있음), golden은 GOLD-mist notes만 다시 씀. `Stubs/UnityStubsMist.cs`(`Vector4`, `Material.SetVector`·`GetVector`).
+
+2026-11-23 러너 선택 파일(D8·D9)에서 더한 것: `PlacementSelectionTests.cs`(13: 선택 파일 파싱·sha 불일치 거부·모르는 키·위치/거리 키 거부·모르는 formatVersion 경고·없을 때 기존 동작·manifest 0.2 키 `selection`·`appliedOverrides`·문항 범위 0–10 키보드 두 자리·컨트롤러·G13 두 문항 draft·사전/사후 설정·기존 문항 끄기), `PlacementTests`·`PlacementXrTests` 기대값 갱신(평정 순서·개수), `UnityOnly/PlacementRunnerSelectionTests.cs`(3: 덮어쓰기가 형상에 한 번 그려지고 manifest 0.2에 남음, sha 불일치·적용 못 한 덮어쓰기는 시작 거부, 선택 파일 없을 때 기존 동작과 "맞는 것이 없다" 기록).
+
 2026-11-23 미리보기(D4)에서 더한 것(29개):
 
 | 파일 | 개수 | 내용 |
@@ -581,7 +610,7 @@ cd unity/Tools/compile-check && dotnet build IFS.SceneSpec.CompileCheck.csproj &
 ```
 
 - 미리보기(D4)에서 `Stubs/UnityStubsPreview.cs`(`PlayerSettings.WebGL`·`EditorUserBuildSettings`·`WebGLCompressionFormat`·`SceneAsset`·`StereoTargetEyeMask`·`RuntimePlatform`)와 기존 스텁 몇 줄(`Camera.stereoTargetEye`, `Transform.eulerAngles`, `Application.platform`·`Quit`, `SystemInfo.graphicsDeviceVersion`, `Input.GetMouseButtonUp`, `BuildTarget.WebGL`·`BuildTargetGroup`·`IsBuildTargetSupported`, `BuildSummary` 시간·크기, `AssetDatabase.LoadAllAssetsAtPath`)을 더했습니다. `#if UNITY_WEBGL && !UNITY_EDITOR` 부분(.jslib 호출)은 dotnet에서 컴파일되지 않습니다.
-- Unity에 의존하지 않는 코드와 EditMode 테스트 파일은 실제 Newtonsoft·NUnit으로 컴파일·실행됩니다(258개, 2026-11-23 미리보기 뒤. 그 전 234개(헤드셋 프로토타입). 그 전 218개, 배치 러너 CP7 반영 때 168개). `Tests/Editor/UnityOnly/`는 실제 렌더가 필요해 뺍니다.
+- Unity에 의존하지 않는 코드와 EditMode 테스트 파일은 실제 Newtonsoft·NUnit으로 컴파일·실행됩니다(283개, 2026-11-23 D7·D8 뒤. 그 전 258개(미리보기 뒤). 그 전 234개(헤드셋 프로토타입). 그 전 218개, 배치 러너 CP7 반영 때 168개). `Tests/Editor/UnityOnly/`는 실제 렌더가 필요해 뺍니다.
 - 헤드셋 경로(2026-11-23): 러너는 내장 XR 모듈 API만 쓰므로 `Stubs/UnityStubsXr.cs`(`XRSettings`·`XRInputSubsystem`·`SubsystemManager`·`Application.onBeforeRender`·Windows 빌드용 `BuildPipeline`)와 기존 스텁의 몇 줄(`InputDevice`의 bool·float·Vector2 값, `CommonUsages` 버튼들, `TextMesh.richText`, `Font.textureRebuilt`, `GUILayout.Toggle`, `KeyCode.R` 등)로 타입 검사합니다. XR 패키지 API를 쓰는 `Editor/XR/XrProjectSetup.cs`는 asmdef `versionDefines`(`IFS_HAS_OPENXR`·`IFS_HAS_XR_MANAGEMENT`)로 패키지가 있을 때만 컴파일되므로, compile-check에서는 빈 파일로 컴파일됩니다(그 파일의 타입 검사는 Unity에서만 — 2026-11-23 Unity 배치 실행으로 컴파일·실행 확인).
 - MonoBehaviour·Editor 스크립트는 UnityEngine/UnityEditor **스텁**(이름·시그니처만)으로 타입 검사만 합니다. 새 Unity API를 쓰면 `Stubs/UnityStubs.cs`(소유감 실험의 입력·글자·IMGUI·XR은 `Stubs/UnityStubsOwnership.cs`)에 같은 시그니처를 추가합니다. 배치 러너용으로 `Camera.ScreenPointToRay`, `Mathf.Max`, `Ray`, `Input.mousePosition`·`GetMouseButtonDown`, `KeyCode.E/F/Q`를 더했습니다.
 
@@ -592,7 +621,7 @@ cd unity/Tools/compile-check && dotnet build IFS.SceneSpec.CompileCheck.csproj &
 - **정지 화면입니다.** 캡처는 에디트 모드라 `motion.type`이 이미지에 보이지 않습니다(`placement.motionNote`).
 - **색 정확도 수치의 범위**: 형상 가운데 영역의 평균이라 얼룩·침식 가장자리·정반사가 섞입니다. 형상 전체의 색 분포는 아닙니다. 정면 조명(`frontal`)은 방향광이 정면에서 비춰 spec보다 밝게 나옵니다(EX01 ΔE00 6.90). 말한 색의 primary ΔE00은 무채색 EX01 1.20, 합성 유채색 4개 6.3–8.1이었습니다. 고채도·광택 높은 빨강(SYN-U4, roughness 0.1)은 무채색 환경의 정반사로 채도가 낮아 보여 7.72였습니다. 유채색 일치도가 낮다는 뜻이라, 일치도 평가에서 색 속성 결과를 해석할 때 함께 적어야 합니다.
 - **소유감 실험 색 변형 크기**는 셰이더 알베도(밝기 배율 포함) 기준 ΔE00입니다. 조명·그림자·정반사·표면 얼룩·발광(밝기 0.5 초과분)은 넣지 않았고, 합성 ΔE00은 하늘 지평선 색 하나를 배경으로 가정합니다.
-- **mist가 매우 옅습니다.** 형태 프리셋 밀도 0.5 × opacity라, opacity 0.6이면 가운데 덮임 평균이 0.26이었습니다(SYN-U1). 배경과 섞인 inContext ΔE00은 12.87입니다. 참여자가 "안 보인다"고 느낄 수 있어 프리셋 확인이 필요합니다.
+- **mist가 매우 옅었습니다(D7에서 고침).** 이전에는 형태 프리셋 밀도 0.5 × opacity가 중심 알파의 목표라, opacity 0.6이면 가운데 덮임 평균이 0.26이었습니다(SYN-U1). D7 뒤에는 덩어리 속 알파가 opacity 가까이 찹니다(R02 opacity 0.6에서 maxAlpha 0.598). C# 쪽 유효 불투명도 `opacity × 0.5`(소유감 러너 lowVisibility, 합성 ΔE 기록)는 숫자를 그대로 두어 이제 실제 화면 알파보다 낮게 잡힌 값입니다(`docs/validation/cloud/README.md`).
 - **안쪽 면의 그림자**: 그림자 캐스터를 바깥 면 패스에만 두어서, 침식 구멍·껍질 입구 너머로 보이는 안쪽 면은 그 뒤에 있는 것(바닥 등)의 깊이로 그림자를 읽습니다. 안쪽 면은 0.3배로 어둡게 그려 눈에 띄는 차이는 작습니다. 완전히 맞추려면 Cull Off인 직접 작성 ShadowCaster 패스(정점 변위·침식 clip 포함)가 필요합니다.
 - **반사**는 환경만 찍은 큐브맵 + 단순 밉맵(GGX 컨볼루션 아님)이라 거친 면의 반사가 실제와 조금 다를 수 있습니다.
 - 셰이더는 **Built-in 렌더 파이프라인 전용**입니다(URP로 가면 Shader Graph 판이 필요).

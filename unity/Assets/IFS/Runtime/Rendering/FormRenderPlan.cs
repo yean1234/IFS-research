@@ -76,6 +76,9 @@ namespace IFS.SceneSpec
         public int FragmentSeed { get; private set; }
         /// <summary>fragments 조각 생성 규칙 버전(FragmentMesh.RuleVersion). 그 밖의 렌더러는 null.</summary>
         public string FragmentRule { get; private set; }
+        /// <summary>mist 덩어리 배치 규칙 버전(MistLumps.RuleVersion)과 seed(형상 프리셋 기본값). 그 밖의 렌더러는 null·0.</summary>
+        public string MistRule { get; private set; }
+        public int MistSeed { get; private set; }
         /// <summary>형상 프리셋 기본값을 적은 로더 메모(notes). 없으면 null.</summary>
         public string PresetNote { get; private set; }
 
@@ -98,6 +101,7 @@ namespace IFS.SceneSpec
             else FormPresets.TryGetValue(form ?? "", out preset);
             string renderer = shapeModel ? RendererShapeModel : RendererFor(form);
             bool fragments = renderer == RendererFragments;
+            bool mist = renderer == RendererMist;
             var inv = System.Globalization.CultureInfo.InvariantCulture;
             return new FormRenderPlan
             {
@@ -116,14 +120,17 @@ namespace IFS.SceneSpec
                 FragmentPieces = fragments ? FragmentMesh.DefaultPieces : 0,
                 FragmentSeed = fragments ? FragmentMesh.DefaultSeed : 0,
                 FragmentRule = fragments ? FragmentMesh.RuleVersion : null,
+                MistRule = mist ? MistLumps.RuleVersion : null,
+                MistSeed = mist ? MistLumps.DefaultSeed : 0,
                 PresetNote = fragments
                     ? $"form.type=fragments: 형상 프리셋 기본값 — 각진 조각 {FragmentMesh.DefaultPieces}개를 합친 메시 하나" +
                       $"(조각 규칙 {FragmentMesh.RuleVersion}, seed {FragmentMesh.DefaultSeed}, 배치 반경 비율 {R3(FragmentMesh.PlacementRadiusRatio)}, " +
                       $"조각 크기 비율 {R3(FragmentMesh.PieceSizeMinRatio)}–{R3(FragmentMesh.PieceSizeMaxRatio)}, " +
                       $"평면 음영, 정점 변위 0, 노이즈 크기 {preset.NoiseScale.ToString(inv)})"
                     : renderer == RendererMist
-                    ? $"form.type=mist: 형상 프리셋 기본값 — 구 대리 메시 + 레이마칭 {MistSteps}걸음, 반지름 흔들림 {preset.Lumpiness.ToString(inv)}, " +
-                      $"노이즈 크기 {preset.NoiseScale.ToString(inv)}, 밀도 {preset.Density.ToString(inv)}(중심 광선 알파의 목표 근사 ≈ opacity × 밀도). " +
+                    ? $"form.type=mist: 형상 프리셋 기본값 — 구 대리 메시 + 레이마칭 {MistSteps}걸음, 둥근 덩어리 {MistLumps.Count}개(배치 규칙 {MistLumps.RuleVersion}, " +
+                      $"seed {MistLumps.DefaultSeed}) + 중간 주파수 노이즈(겉면 흔들림 {preset.Lumpiness.ToString(inv)}, 노이즈 크기 {preset.NoiseScale.ToString(inv)}), " +
+                      $"밀도 {preset.Density.ToString(inv)}(광학 두께 배율. 덩어리 속 알파는 opacity 가까이까지 차고 opacity를 넘지 않음). " +
                       "mist에서 material.roughness는 표면 반사(광택)가 아니라 밀도 노이즈 크기 배율(0.7–1.3)과 색 얼룩 세기를 정함"
                     : null,
             };
@@ -156,6 +163,18 @@ namespace IFS.SceneSpec
             ["pieceSizeRatioRange"] = new JArray(System.Math.Round(FragmentMesh.PieceSizeMinRatio, 5), System.Math.Round(FragmentMesh.PieceSizeMaxRatio, 5)),
         };
 
+        /// <summary>mist 덩어리 배치 규칙(버전·seed·덩어리 중심과 반지름). mist가 아니면 null.
+        /// 같은 seed라도 규칙이 바뀌면 구름 모양이 달라지므로 계획 JSON에 함께 남긴다.</summary>
+        public JObject MistRuleJson()
+        {
+            if (MistRule == null) return null;
+            var lumps = new JArray();
+            var l = MistLumps.Build(MistSeed);
+            for (int k = 0; k < l.Length / 4; k++)
+                lumps.Add(new JArray(System.Math.Round(l[k * 4], 5), System.Math.Round(l[k * 4 + 1], 5), System.Math.Round(l[k * 4 + 2], 5), System.Math.Round(l[k * 4 + 3], 5)));
+            return new JObject { ["version"] = MistRule, ["seed"] = MistSeed, ["lumps"] = lumps };
+        }
+
         /// <summary>계획 전체(비교·기록용). 키 순서가 고정이라 문자열 비교로 같은 계획인지 볼 수 있다.</summary>
         public JObject ToJson() => new JObject
         {
@@ -179,6 +198,7 @@ namespace IFS.SceneSpec
             ["fragmentSeed"] = FragmentSeed,
             ["fragmentRule"] = FragmentRuleJson(),
             ["mistSteps"] = Renderer == RendererMist ? MistSteps : 0,
+            ["mistRule"] = MistRuleJson(),
         };
     }
 

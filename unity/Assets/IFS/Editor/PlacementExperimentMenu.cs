@@ -10,7 +10,8 @@
 //               -recordRoot <기록 루트> -specPath <spec.json> -condition place|view -controlMode static|system_move|replay|point_select
 //               [-replayPath <trajectory.json>] [-participant 1] [-conditionSeconds 90] [-baselineSeconds 30] [-headSampleHz 20]
 //               [-stopItiSeconds 2] [-showRings true|false] [-hideObjectDuringItems true|false]
-//               [-taskTextFile IFS/placement_task.scaleA.v0.json] [-dt 0.02] -logFile <로그>
+//               [-taskTextFile IFS/placement_task.scaleA.v0.json] [-selectionPath <selection.json>]
+//               [-askOptionalItems true|false] [-disabledItems own,S4] [-dt 0.02] -logFile <로그>
 //   Windows 빌드: Unity.exe -batchmode -projectPath <unity> -executeMethod IFS.SceneSpec.EditorTools.PlacementExperimentMenu.BuildWindowsBatch -logFile <로그>
 //   (둘 다 -quit 없이 — 끝나면 EditorApplication.Exit(0/1)로 닫는다)
 // 자동 시행은 검증용이다: 합성 입력(PlacementAutoScript)으로 intro → done을 한 바퀴 돌고 기록 폴더를 만든다.
@@ -109,7 +110,7 @@ namespace IFS.SceneSpec.EditorTools
                 var cfg = ConfigFromArgs(args);
                 int participant = int.Parse(Value(args, "-participant") ?? "1", CultureInfo.InvariantCulture);
                 double dt = double.Parse(Value(args, "-dt") ?? "0.02", CultureInfo.InvariantCulture);
-                string dir = RunAutoTrial(spec, root, participant, cfg, dt, null, Value(args, "-taskTextFile"));
+                string dir = RunAutoTrial(spec, root, participant, cfg, dt, null, Value(args, "-taskTextFile"), Value(args, "-selectionPath"));
                 Debug.Log($"[IFS] 배치 실험 자동 시행 완료({cfg.condition}/{cfg.EffectiveControlMode}): {dir}");
                 exit = 0;
             }
@@ -135,13 +136,16 @@ namespace IFS.SceneSpec.EditorTools
             if ((v = Value(args, "-hideObjectDuringItems")) != null) cfg.hideObjectDuringItems = bool.Parse(v);
             if ((v = Value(args, "-inputMode")) != null) cfg.inputMode = v;
             if ((v = Value(args, "-xrHand")) != null) cfg.xrHand = v;
+            if ((v = Value(args, "-askOptionalItems")) != null) cfg.askOptionalItems = bool.Parse(v);
+            if ((v = Value(args, "-disabledItems")) != null) cfg.disabledItems = v.Split(',').Select(k => k.Trim()).Where(k => k.Length > 0).ToArray();
             return cfg;
         }
 
         /// <summary>새 빈 씬에서 spec 하나로 intro → done을 사람 없이 돈다. 기록 폴더 경로를 돌려준다(실패하면 예외).
-        /// taskTextFile: StreamingAssets 기준 문구 파일(예: IFS/placement_task.scaleA.v0.json). null이면 기본 파일.</summary>
+        /// taskTextFile: StreamingAssets 기준 문구 파일(예: IFS/placement_task.scaleA.v0.json). null이면 기본 파일.
+        /// selectionPath: 선택 파일(selection.json, ifs-selection/0.1). null이면 spec만(예전과 같음).</summary>
         public static string RunAutoTrial(string specPath, string recordRoot, int participant, PlacementConfig cfg, double dt, PlacementAutoScript script,
-            string taskTextFile = null)
+            string taskTextFile = null, string selectionPath = null)
         {
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             var runner = BuildObjects();
@@ -152,6 +156,7 @@ namespace IFS.SceneSpec.EditorTools
                 runner.BeginAuto(script ?? new PlacementAutoScript(), cfg ?? new PlacementConfig());
                 runner.ParticipantNumberText = participant.ToString(CultureInfo.InvariantCulture);
                 runner.SpecPathText = Path.GetFullPath(specPath);
+                runner.SelectionPathText = string.IsNullOrWhiteSpace(selectionPath) ? "" : Path.GetFullPath(selectionPath);
                 if (!runner.Check()) throw new InvalidOperationException("확인 오류: " + string.Join("; ", runner.Errors));
                 if (!runner.StartSession()) throw new InvalidOperationException("시작 실패: " + string.Join("; ", runner.Errors));
                 int maxSteps = 2000000;

@@ -1,6 +1,7 @@
 // 형상별 렌더러(X64): FormRenderPlan → 절차 모형(메시·머티리얼)과 IFS 셰이더 프로퍼티.
 //   blob · shell      : 잘게 나눈 구(icosphere) 하나 + IFS 불투명/반투명 셰이더(정점 변위로 덩어리·껍질)
-//   mist              : 구 대리 메시 하나를 안쪽 면으로 그리고 물체 좌표 레이마칭으로 밀도를 쌓는 SceneSpecMist 셰이더(X66).
+//   mist              : 구 대리 메시 하나를 그리고 물체 좌표 레이마칭으로 밀도를 쌓는 SceneSpecMist 셰이더(X66).
+//                       밀도장은 seed로 고정한 둥근 덩어리 5개 + 중간 주파수 노이즈(D7, MistLumps)
 //                       안개 셰이더를 못 쓰면 이전 경로(구 + Fade 셰이더, renderPath "mist(legacy)")
 //   fragments         : 불규칙한 각진 조각 5개를 합친 메시 하나(FragmentMesh, 평면 음영, 정점 변위 0) + IFS 셰이더
 //   shapeModel        : 모양 모형 4종(ShapeModelFactory) + 정점 변위 0
@@ -158,6 +159,17 @@ namespace IFS.SceneSpec
             if (plan.ZeroDisplacement) m.SetFloat(DisplacementProperty, 0f);
         }
 
+        /// <summary>mist 덩어리(D7): MistLumps.Build(seed)의 중심·반지름을 _Lump0…로 넣는다(물체 좌표 xyz = 중심, w = 반지름).</summary>
+        public static void ApplyMistLumps(Material m, int seed)
+        {
+            var l = MistLumps.Build(seed);
+            for (int k = 0; k < MistLumps.Count; k++)
+                m.SetVector(MistLumpProperty(k), new Vector4((float)l[k * 4], (float)l[k * 4 + 1], (float)l[k * 4 + 2], (float)l[k * 4 + 3]));
+        }
+
+        /// <summary>덩어리 k의 머티리얼 프로퍼티 이름(_Lump0…).</summary>
+        public static string MistLumpProperty(int k) => "_Lump" + k.ToString(System.Globalization.CultureInfo.InvariantCulture);
+
         /// <summary>구 메시 하나 + IFS 불투명 머티리얼(_Seed) + 구 콜라이더.</summary>
         public static GameObject IcoPiece(string name, float seed)
         {
@@ -233,6 +245,8 @@ namespace IFS.SceneSpec
                 m.SetFloat("_Lumpiness", plan.Preset.Lumpiness);
                 m.SetFloat("_NoiseScale", plan.Preset.NoiseScale);
                 m.SetFloat("_Density", plan.Preset.Density);
+                m.SetFloat("_Seed", plan.MistSeed);
+                FormRenderResources.ApplyMistLumps(m, plan.MistSeed);
                 return true;
             }
             // 프리팹 등 이전 IFS 셰이더 머티리얼은 이전 방식(구 + Fade)
