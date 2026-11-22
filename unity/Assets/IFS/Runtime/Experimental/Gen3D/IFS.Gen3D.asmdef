@@ -1,0 +1,16 @@
+{
+    "name": "IFS.Gen3D",
+    "rootNamespace": "IFS.Gen3D",
+    "references": [
+        "glTFast"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

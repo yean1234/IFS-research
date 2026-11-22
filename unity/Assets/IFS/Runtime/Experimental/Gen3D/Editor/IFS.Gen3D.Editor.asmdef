@@ -1,0 +1,20 @@
+{
+    "name": "IFS.Gen3D.Editor",
+    "rootNamespace": "IFS.Gen3D.EditorTools",
+    "references": [
+        "IFS.Gen3D",
+        "IFS.SceneSpec",
+        "glTFast"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

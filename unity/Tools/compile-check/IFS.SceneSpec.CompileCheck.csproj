@@ -12,6 +12,8 @@
     <Compile Include="../../Assets/IFS/Runtime/**/*.cs" />
     <Compile Include="../../Assets/IFS/Editor/**/*.cs" />
     <Compile Include="Stubs/*.cs" />
+    <!-- 실험 경로(Runtime/Experimental/, glTFast 의존)는 스텁이 없어 뺀다. Unity에서만 컴파일한다(docs/gen3d-feasibility.md). -->
+    <Compile Remove="../../Assets/IFS/Runtime/Experimental/**/*.cs" />
   </ItemGroup>
   <ItemGroup>
     <!-- com.unity.nuget.newtonsoft-json 3.2.x = Newtonsoft.Json 13.0.x -->
