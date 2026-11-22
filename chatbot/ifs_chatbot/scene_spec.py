@@ -38,6 +38,20 @@ def text_hash(text: str) -> str:
     return "sha256:" + hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
+# 스키마 2.1의 meta.mapping.used는 v0 | v1만 허용한다. 매핑 v2(scene_builder_v2.py)는 스키마를 바꾸지 않고
+# requested = "v2", used = "v1"로 적는다(v2는 v1 위의 수정). 요청 매핑별 정상 used 값.
+MAPPING_USED_FOR: dict[str, str] = {"v2": "v1"}
+
+
+def is_mapping_fallback(mp) -> bool:
+    """spec.meta.mapping이 '요청한 매핑 대신 v0로 대체됨'을 뜻하는가. v0·v1에서는 기존 판정
+    (used ≠ requested 또는 fallbackReason 있음)과 같다. v2는 used = "v1"이 정상 값이다."""
+    if not isinstance(mp, dict):
+        return False
+    req = mp.get("requested")
+    return mp.get("used") != MAPPING_USED_FOR.get(req, req) or bool(mp.get("fallbackReason"))
+
+
 @lru_cache(maxsize=2)
 def schema(version: str = SPEC_VERSION) -> dict:
     name = SCHEMA_FILE_V21 if version == SPEC_VERSION_V21 else SCHEMA_FILE

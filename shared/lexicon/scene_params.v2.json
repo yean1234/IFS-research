@@ -1,0 +1,66 @@
+{
+  "lexiconId": "scene-params-v2",
+  "lexiconVersion": "2.0.0",
+  "status": "draft",
+  "description": "개선 매핑 v2(chatbot/ifs_chatbot/scene_builder_v2.py) 전용 규칙·수치. v2는 scene_params.v1.json을 그대로 읽고, 이 파일에는 v2가 v1과 다르게 하는 부분만 담는다. v0·v1 파일은 고치지 않는다(v0·v1 출력 불변). 수치는 모두 초안이며 Unity 화면으로 확인하지 않았다.",
+  "howToEdit": [
+    "수치나 낱말을 바꾸면 lexiconVersion을 올린다. 장면 파일 meta.pipeline.lexicons.sceneParamsV2에 버전이 남는다.",
+    "낱말은 Kiwi 형태(용언은 어간) 또는 어절 표면형이다. 항목마다 어느 쪽인지 note에 적었다.",
+    "참여자의 실제 응답 문장을 넣지 않는다. 예문은 모두 합성이다(AGENTS.md 6).",
+    "v2 규칙은 dev.json과 docs/validation/mock-forms/mock_corpus.json(이미 본 합성 자료)만 보고 만들었다. held-out은 열지 않았다."
+  ],
+  "opacity": {
+    "nearlyWords": ["거의"],
+    "nearlyTransparent": 0.15,
+    "nearlyNote": "D2(a). '거의 투명' · '투명에 가까운'. v1은 '거의'를 강한 정도 부사(×1.5)로 읽어 투명(0.1)을 0.5 쪽에서 반대로 밀어 0 아래로 보낸 뒤 0으로 잘랐다(화면에서 사라짐, 목업 M04·M12). '거의'는 끝에 닿기 직전이라는 뜻이므로 v2는 '투명'(0.1)보다 덜 투명한 값을 준다. 0.15는 Unity 러너가 원본 유효 opacity가 0.15 미만이면 lowVisibility 경고를 내는 기준(docs/mapping-audit.md 6절)과 같게 맞춘 값이다. 어절 표면형.",
+    "nearPredicates": ["가깝"],
+    "nearPredicatesNote": "'투명에 가까운/가까워요'(Kiwi 어간). 앞 어절이 투명도 낱말 + '에'이면 거리 말이 아니라 '거의 투명'이다. v1은 이 규칙을 색('초록에 가까운')에만 썼고 투명에서는 distance near(0.25)를 만들었다.",
+    "opacityNouns": ["투명", "반투명", "불투명"],
+    "totalWords": ["완전히", "완전", "아예"],
+    "total": 0.0,
+    "totalNote": "참여자가 '완전히 투명해요'라고 말한 경우. 말한 그대로 0을 둔다(원칙 2: 말한 것이 덮어쓴다). 화면에서 안 보이는 것은 참여자가 말한 결과이고, 렌더러 최소 가시도 하한은 Unity 쪽 결정이다. 어절 표면형.",
+    "halfWords": ["반쯤", "절반", "절반쯤", "반절"],
+    "halfValue": 0.5,
+    "halfNote": "'반쯤 투명해요'(mapping-audit A14). Kiwi는 '반쯤'을 명사 한 토큰으로 내서 v1의 '반'+'투명' 규칙에 걸리지 않았다. 반투명(translucent)과 같은 0.5. 어절 표면형.",
+    "floor": 0.05,
+    "floorNote": "'아주 투명'처럼 '완전히' 류가 아닌 강한 정도 부사가 '투명'(0.1)을 0으로 보내는 경우의 하한. 강조는 '매우'이지 '없음'이 아니다. '투명'(0.1)의 절반.",
+    "partScoped": true,
+    "partScopedNote": "D2(a). v2는 material.opacity를 부분 한정 슬롯에 넣는다(v1 partScopedSlots에는 없음 — mapping-audit A06). 부분 명사(가장자리·끝·안쪽 …)가 주제·꾸밈말로 붙은 투명도는 전체 값으로 올리지 않고 _parts에 남긴다. v1의 색 규칙과 달리 안쪽(inner)만 말한 투명도도 전체로 올리지 않는다(투명도 0 근처 값이 전체에 번지면 형상이 사라지므로). 단 '속이 비쳐요'(안쪽 + 비치다)는 속이 들여다보인다 = 형상 전체가 비친다는 뜻이라 v1처럼 전체 값으로 둔다(dev D02·D16)."
+  },
+  "distance": {
+    "floor": 0.1,
+    "floorNote": "D2(b). layout.distance 하한. 0은 머리에서 0.3 m라 형상이 시야를 덮는다(목업 M15 '등에 붙어', M27 '한 뼘' → visiblePixels 약 130만). 0.1(약 0.57 m)은 1층 사전의 '코앞'(very_near)과 같은 값으로, v1이 이미 '가장 가깝다고 말한 거리'로 쓰는 값이다. 말한 값은 provenance rule에 '+floor(0.1)'로 남는다. Unity에서 확인하지 않았다.",
+    "bodyAttachLemmas": ["붙", "붙이"],
+    "bodyAttachNote": "'등에 붙어 있어요'처럼 신체 부위(또는 '저한테')에 붙었다는 말은 참여자 머리와의 거리가 아니라 몸 위치다(위치는 body.part가 맡음). v2는 이 말로 distance를 채우지 않고 _unmapped(category distance, reason no_scene_param)에 남긴다. 판정: ① 같은 절 앞에 신체 부위(+쪽) + 처소 조사 → 몸 ② 같은 절 앞에 다른 처소어('눈앞에'·'얼굴 앞에') → 거리(하한 적용) ③ 처소어가 없으면 텍스트에 신체 부위를 말했을 때 몸('옆구리 쪽에 … 붙어 있어요. … 가만히 붙어 있어요'). Kiwi 어간.",
+    "attachParticles": ["에", "에다", "에게", "한테", "께"],
+    "selfWords": ["저", "나", "제", "내"],
+    "verticalCues": ["위", "위쪽", "아래", "아래쪽", "밑", "높이", "천장", "바닥"],
+    "verticalNote": "'머리 위 한 뼘쯤 높이에'처럼 수치 + 단위 바로 앞(3토큰)이나 뒤(3토큰)에 높이 말이 있으면 수평 거리가 아니다. v1은 뒤의 처소 조사 '에'를 보고 distance로 읽었다. v2는 _measurements에 dimension unknown(usedFor null)으로만 남긴다. Kiwi 형태."
+  },
+  "cover": {
+    "relationalAfterBodyNote": "D2(d). '가슴 앞을 덮고'의 '앞'은 덮는 크기 기준(coverObjects '앞' 1.7 m = 시야 전체)이 아니라 '가슴 앞'이라는 위치다. 신체 부위 바로 뒤의 위치 명사(v1 relationalNouns)는 덮음 비교의 기준 사물로 쓰지 않는다(목업 M08: size 1.0이 되어 화면을 덮음)."
+  },
+  "posture": {
+    "situationNouns": ["때", "적", "순간", "동안", "때마다"],
+    "conditionalEndings": ["면", "으면"],
+    "selfPronouns": ["저", "나", "제", "내"],
+    "subjectParticles": ["이", "가", "은", "는", "ᆫ", "도"],
+    "note": "D2(c). 자세어가 참여자 자신의 상태를 말한 절이면 form.posture에 넣지 않고 _context에 남긴다. ① 상황절: 자세어 뒤 같은 절에 관형형 어미 + 때·적·순간·동안('소파에 누웠을 때'), 또는 조건 어미 -면('서 있으면') → reason recollection_sentence. ② 주어가 1인칭 대명사('제가 서 있는') → reason background_subject. ③ 주어가 신체 부위이고 그 앞에 다른 소유 명사가 없음('몸이 축 처져요') → reason background_subject. 주어는 같은 절에서 먼저 찾고, 없으면 같은 문장 앞 절(-고 등으로 이어진 서술)에서 가장 가까운 것을 쓴다. 주어가 없으면(생략) v1처럼 형상의 자세로 둔다. Kiwi 형태."
+  },
+  "figureNoun": {
+    "existencePredicates": ["있", "생기", "놓이"],
+    "note": "D1('작은 화분'). v1 backgroundNouns(배경 사물: 화분·소파·벽 …)가 '있다'·'생기다'·'놓이다'의 주어(이/가/은/는)이고 같은 절에 다른 배경 명사 처소어('창가에')가 없으면, 그 낱말은 형상 자체다. 같은 텍스트의 같은 낱말은 모두 배경 판정에서 뺀다. v1은 '가슴 앞에 작은 화분이 있어요'의 '작은'을 배경 사물의 속성(_context background_object)으로 보내 크기를 버렸다. Kiwi 형태."
+  },
+  "unlistedNouns": {
+    "tags": ["NNG", "NNP"],
+    "category": "unlisted_noun",
+    "reason": "no_scene_param",
+    "provenanceSource": "phrase_rule",
+    "alsoExclude": ["v1.partNouns", "v1.relationalNouns", "v1.dimensionTopics", "v1.contextSentence.situationNouns", "v1.formerMarkers", "v1.currentMarkers", "v1.bodyGeneral", "v1.units"],
+    "alsoExcludeNote": "점 경로가 가리키는 scene_params.v1.json 표. 목록이면 그 낱말, 값이 목록인 사전(partNouns)이면 값 낱말 전부, 그 밖의 사전(dimensionTopics·bodyGeneral·units)이면 키 낱말.",
+    "sceneTimeNouns": ["오늘", "어제", "그제", "아침", "점심", "저녁", "밤", "낮", "새벽", "오전", "오후", "주말", "평일", "월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일", "요일", "전날", "첫날", "다음날", "직전", "직후", "시절", "오랜만", "출근길", "퇴근길"],
+    "unambiguousRecallVerbs": ["생각나", "기억나", "떠올리"],
+    "scopeNote": "value.scope = context: ① v1 회상 문장(_context_sentences) ② 관형형 + 상황 명사(v1 situationNouns)로 끝나는 문장('연락이 끊긴 일이요') ③ '생각나다'·'기억나다'·'떠올리다'가 있는 문장('떠오르다'는 '위로 떠오르다'와 같은 꼴이라 넣지 않음) ④ 상황 명사·장면 시간 명사(sceneTimeNouns)가 있고 그 문장에서 슬롯 값이 하나도 나오지 않은 문장('주말 아침 산책이요') ⑤ 같은 절에서 상황 표지(관형형 + 때·적·순간·동안) 앞, 가장 가까운 어미·문장부호 뒤에 있는 명사('소파에 누웠을 때'). 조건 어미 -면은 형상의 행동('빛을 받으면 반짝여요')에 자주 쓰여 명사 표시에는 쓰지 않고 자세 규칙에만 쓴다. 그 밖은 main. 표지 없이 상황을 이름만 말한 답('출근길이요'는 sceneTimeNouns로 잡지만 '할머니 댁 마당이 떠올라요'는 못 잡음)은 main으로 남는다.",
+    "note": "D1. 확정 텍스트의 일반·고유 명사(Kiwi NNG·NNP) 중 ① 1층 사전(v0 + v1 오버레이, 모든 범주의 표제어·이형)에 없고 ② 슬롯 값의 근거(_provenance)와 다른 보존 기록(_unmapped·_negated·_alternatives·_context·_parts·_measurements·_direction·_needsConfirmation)이 덮지 않았고 ③ 불용 명사(noun_stoplist.v2.json + alsoExclude 표)가 아니고 ④ 바로 뒤에 -하다 접미사(XSV·XSA)가 붙은 서술성 명사('퇴근하고')가 아닌 것을 _unmapped에 남긴다. 띄어쓰기 없이 붙은 명사 연속('빵가루')은 하나로 묶는다. value.role(subject·named·location·object·modifier·other)과 value.scope(main·context)는 조사·절 규칙으로 정한다. 스키마 2.1의 reason 값에 '사전에 없음'이 없어 가장 가까운 no_scene_param을 쓴다."
+  }
+}

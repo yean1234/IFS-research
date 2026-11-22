@@ -1,0 +1,650 @@
+{
+  "meta": {
+    "specVersion": "2.1.0",
+    "participantId": null,
+    "sessionId": "M24",
+    "condition": "static",
+    "sourceTextHash": "sha256:7f0f4589524a249a25b1cf99e0da34793947a5a851b7357111290bbdaa068720",
+    "pipeline": {
+      "builder": "scene-spec-builder-v2/2.0.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@1.0.0",
+        "layer1Base": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@1.0.0",
+        "vad": "vad-ko@0.1.0",
+        "sceneParamsV2": "scene-params-v2@2.0.0",
+        "nounStoplist": "noun-stoplist-v2@1.0.0"
+      }
+    },
+    "mapping": {
+      "requested": "v2",
+      "used": "v1",
+      "fallbackReason": null
+    }
+  },
+  "form": {
+    "type": null,
+    "posture": null
+  },
+  "material": {
+    "color": {
+      "h": 0.144,
+      "s": 0.85,
+      "l": 0.6
+    },
+    "brightness": 0.7,
+    "saturation": null,
+    "roughness": 0.3,
+    "opacity": null,
+    "erosion": null
+  },
+  "layout": {
+    "size": null,
+    "distance": null,
+    "verticalOffset": null
+  },
+  "motion": {
+    "type": "sinking",
+    "speed": 0.25
+  },
+  "body": {
+    "part": "throat_neck",
+    "layer": "inner"
+  },
+  "_provenance": {
+    "material.color": [
+      {
+        "source": "phrase_rule",
+        "trigger": "노란",
+        "charSpan": [
+          41,
+          43
+        ],
+        "rule": "colorTerm.노란>material.color:hsl"
+      }
+    ],
+    "material.brightness": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "빛",
+        "charSpan": [
+          59,
+          60
+        ],
+        "rule": "brightnessLexicon.빛>material.brightness:light"
+      }
+    ],
+    "material.roughness": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "끈적끈적해요",
+        "charSpan": [
+          103,
+          109
+        ],
+        "rule": "mimeticDerivation.끈적>textureLexicon.끈적>material.roughness:sticky"
+      }
+    ],
+    "motion.type": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "내려가요",
+        "charSpan": [
+          27,
+          31
+        ],
+        "rule": "motionLexicon.내려가>motion.type:sinking"
+      },
+      {
+        "source": "explicit_lexicon",
+        "trigger": "내려가고",
+        "charSpan": [
+          93,
+          97
+        ],
+        "rule": "motionLexicon.내려가>motion.type:sinking"
+      }
+    ],
+    "motion.speed": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "천천히",
+        "charSpan": [
+          48,
+          51
+        ],
+        "rule": "motionLexicon.천천히>motion.speed:slow"
+      }
+    ],
+    "body.part": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "목",
+        "charSpan": [
+          15,
+          16
+        ],
+        "rule": "bodyPartLexicon.목>body.part:throat_neck"
+      }
+    ],
+    "body.layer": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "안",
+        "charSpan": [
+          85,
+          86
+        ],
+        "rule": "bodyLayerLexicon.안>body.layer:inner"
+      }
+    ]
+  },
+  "_unmatched": [
+    {
+      "lemma": "피곤",
+      "tag": "NNG",
+      "surface": "피곤",
+      "charSpan": [
+        0,
+        2
+      ]
+    },
+    {
+      "lemma": "피곤",
+      "tag": "EOJEOL",
+      "surface": "피곤했던",
+      "charSpan": [
+        0,
+        4
+      ]
+    },
+    {
+      "lemma": "금요일",
+      "tag": "NNG",
+      "surface": "금요일",
+      "charSpan": [
+        5,
+        8
+      ]
+    },
+    {
+      "lemma": "저녁",
+      "tag": "NNG",
+      "surface": "저녁",
+      "charSpan": [
+        9,
+        11
+      ]
+    },
+    {
+      "lemma": "저녁",
+      "tag": "EOJEOL",
+      "surface": "저녁이요",
+      "charSpan": [
+        9,
+        13
+      ]
+    },
+    {
+      "lemma": "목",
+      "tag": "EOJEOL",
+      "surface": "목에서",
+      "charSpan": [
+        15,
+        18
+      ]
+    },
+    {
+      "lemma": "가슴",
+      "tag": "EOJEOL",
+      "surface": "가슴으로",
+      "charSpan": [
+        19,
+        23
+      ]
+    },
+    {
+      "lemma": "뭐",
+      "tag": "EOJEOL",
+      "surface": "뭔가",
+      "charSpan": [
+        24,
+        26
+      ]
+    },
+    {
+      "lemma": "꿀",
+      "tag": "EOJEOL",
+      "surface": "꿀처럼",
+      "charSpan": [
+        33,
+        36
+      ]
+    },
+    {
+      "lemma": "진득",
+      "tag": "XR",
+      "surface": "진득",
+      "charSpan": [
+        37,
+        39
+      ]
+    },
+    {
+      "lemma": "진득",
+      "tag": "EOJEOL",
+      "surface": "진득한",
+      "charSpan": [
+        37,
+        40
+      ]
+    },
+    {
+      "lemma": "액체",
+      "tag": "EOJEOL",
+      "surface": "액체가",
+      "charSpan": [
+        44,
+        47
+      ]
+    },
+    {
+      "lemma": "내리",
+      "tag": "VV",
+      "surface": "내리",
+      "charSpan": [
+        54,
+        56
+      ]
+    },
+    {
+      "lemma": "받",
+      "tag": "VV-R",
+      "surface": "받",
+      "charSpan": [
+        62,
+        63
+      ]
+    },
+    {
+      "lemma": "받",
+      "tag": "EOJEOL",
+      "surface": "받으면",
+      "charSpan": [
+        62,
+        65
+      ]
+    },
+    {
+      "lemma": "양",
+      "tag": "NNG",
+      "surface": "양",
+      "charSpan": [
+        72,
+        73
+      ]
+    },
+    {
+      "lemma": "양",
+      "tag": "EOJEOL",
+      "surface": "양은",
+      "charSpan": [
+        72,
+        74
+      ]
+    },
+    {
+      "lemma": "한",
+      "tag": "EOJEOL",
+      "surface": "한",
+      "charSpan": [
+        75,
+        76
+      ]
+    },
+    {
+      "lemma": "컵",
+      "tag": "EOJEOL",
+      "surface": "컵쯤이요",
+      "charSpan": [
+        77,
+        81
+      ]
+    },
+    {
+      "lemma": "안",
+      "tag": "MAG",
+      "surface": "안",
+      "charSpan": [
+        85,
+        86
+      ]
+    },
+    {
+      "lemma": "안",
+      "tag": "EOJEOL",
+      "surface": "안이요",
+      "charSpan": [
+        85,
+        88
+      ]
+    },
+    {
+      "lemma": "계속",
+      "tag": "MAG",
+      "surface": "계속",
+      "charSpan": [
+        90,
+        92
+      ]
+    },
+    {
+      "lemma": "있",
+      "tag": "EOJEOL",
+      "surface": "있어요",
+      "charSpan": [
+        98,
+        101
+      ]
+    }
+  ],
+  "_unmapped": [
+    {
+      "lemma": "꿀",
+      "category": "unlisted_noun",
+      "value": {
+        "noun": "꿀",
+        "role": "other",
+        "scope": "main"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "phrase_rule",
+        "trigger": "꿀",
+        "charSpan": [
+          33,
+          34
+        ],
+        "rule": "unlistedNoun.꿀"
+      }
+    },
+    {
+      "lemma": "액체",
+      "category": "unlisted_noun",
+      "value": {
+        "noun": "액체",
+        "role": "subject",
+        "scope": "main"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "phrase_rule",
+        "trigger": "액체",
+        "charSpan": [
+          44,
+          46
+        ],
+        "rule": "unlistedNoun.액체"
+      }
+    },
+    {
+      "lemma": "컵",
+      "category": "unlisted_noun",
+      "value": {
+        "noun": "컵",
+        "role": "named",
+        "scope": "main"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "phrase_rule",
+        "trigger": "컵",
+        "charSpan": [
+          77,
+          78
+        ],
+        "rule": "unlistedNoun.컵"
+      }
+    }
+  ],
+  "_negated": [],
+  "_alternatives": [
+    {
+      "path": "material.brightness",
+      "value": 0.85,
+      "reason": "later_mention",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "반짝여요",
+          "charSpan": [
+            66,
+            70
+          ],
+          "rule": "brightnessLexicon.반짝이>material.brightness:sparkling"
+        }
+      ]
+    },
+    {
+      "path": "motion.type",
+      "value": "drifting",
+      "reason": "later_mention",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "흘러내리는데",
+          "charSpan": [
+            52,
+            58
+          ],
+          "rule": "motionLexicon.흐르>motion.type:drifting"
+        }
+      ]
+    },
+    {
+      "path": "body.part",
+      "value": "chest",
+      "reason": "later_mention",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "가슴",
+          "charSpan": [
+            19,
+            21
+          ],
+          "rule": "bodyPartLexicon.가슴>body.part:chest"
+        }
+      ]
+    },
+    {
+      "path": "body.part",
+      "value": "body",
+      "reason": "lower_priority",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "몸",
+          "charSpan": [
+            83,
+            84
+          ],
+          "rule": "bodyPartLexicon.몸>body.part:body"
+        }
+      ]
+    }
+  ],
+  "_inferred": {
+    "layout.verticalOffset": {
+      "value": 0.85,
+      "_provenance": [
+        {
+          "source": "body_part_height",
+          "trigger": "목",
+          "charSpan": [
+            15,
+            16
+          ],
+          "rule": "bodyPartHeight.throat_neck>layout.verticalOffset:0.85"
+        }
+      ]
+    }
+  },
+  "_context": [],
+  "_parts": [],
+  "_uncertain": [],
+  "_measurements": [],
+  "_direction": [],
+  "_needsConfirmation": [],
+  "_clauses": [
+    {
+      "charSpan": [
+        0,
+        13
+      ],
+      "text": "피곤했던 금요일 저녁이요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        13,
+        14
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        15,
+        31
+      ],
+      "text": "목에서 가슴으로 뭔가 내려가요",
+      "usedFor": [
+        "motion.type",
+        "body.part"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        31,
+        32
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        33,
+        70
+      ],
+      "text": "꿀처럼 진득한 노란 액체가 천천히 흘러내리는데 빛을 받으면 반짝여요",
+      "usedFor": [
+        "material.color",
+        "material.brightness",
+        "motion.speed"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        70,
+        71
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        72,
+        81
+      ],
+      "text": "양은 한 컵쯤이요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        81,
+        82
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        83,
+        88
+      ],
+      "text": "몸 안이요",
+      "usedFor": [
+        "body.layer"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        88,
+        89
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        90,
+        97
+      ],
+      "text": "계속 내려가고",
+      "usedFor": [
+        "motion.type"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        98,
+        101
+      ],
+      "text": "있어요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        101,
+        102
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        103,
+        109
+      ],
+      "text": "끈적끈적해요",
+      "usedFor": [
+        "material.roughness"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        109,
+        110
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    }
+  ]
+}

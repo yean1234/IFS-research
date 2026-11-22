@@ -55,7 +55,8 @@ from pathlib import Path
 
 from ..config import Config, load_config
 from ..scene_builder import normalize_confirmed
-from ..scene_spec import SCHEMA_FILE, SCHEMA_FILE_V21, SPEC_VERSION_V21, check_principles, schema_errors
+from ..scene_spec import (SCHEMA_FILE, SCHEMA_FILE_V21, SPEC_VERSION_V21, check_principles, is_mapping_fallback,
+                          schema_errors)
 from . import fidelity
 from .corpus_run import RUNNER_VERSION, make_runtime, mapping_fallbacks, run_items
 
@@ -229,8 +230,7 @@ def check_specs(runs: dict, files: dict, mapper: str) -> list[dict]:
                      "fileEqualsRunSpec": spec == it.get("spec"),
                      "schemaErrors": errs, "principleProblems": principles,
                      "valid": spec is not None and not errs,
-                     "mapping": mp, "fallback": bool(isinstance(mp, dict) and (mp.get("used") != mp.get("requested")
-                                                                               or mp.get("fallbackReason")))})
+                     "mapping": mp, "fallback": is_mapping_fallback(mp)})
     return rows
 
 

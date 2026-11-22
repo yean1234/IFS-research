@@ -36,6 +36,7 @@ from .protocol import Protocol, Step
 from .safety import Guard, GuardVerdict, OllamaGuardModel, SafetyLexicon
 from .scene_builder import SceneSpecBuilder, normalize_confirmed, write_spec
 from .scene_builder_v1 import SceneSpecBuilderV1, fallback_spec
+from .scene_builder_v2 import SceneSpecBuilderV2
 from .scene_spec import check_principles
 from .session_log import SessionLog, now_iso
 from .validator import TurnContext, Validator, describe
@@ -102,8 +103,8 @@ class Runtime:
         # scene_builder는 주 매핑(config [mapping] mode). corpus_run이 이 자리에 다른 매핑을 끼울 수 있다.
         self.scene_builders: dict[str, object] = {"v0": SceneSpecBuilder(self.lexicon, self.analyzer)}
         self.mapping_load_error: str | None = None
-        if cfg.mapping.mode not in ("v0", "v1"):
-            raise ValueError(f"모르는 mapping.mode: {cfg.mapping.mode} (v0 | v1)")
+        if cfg.mapping.mode not in ("v0", "v1", "v2"):
+            raise ValueError(f"모르는 mapping.mode: {cfg.mapping.mode} (v0 | v1 | v2)")
         # [mapping] strict: 시작 시점(여기) 실패만 다룬다. strict이고 v1을 요청했으면 v0로 넘어가지 않고 시작을 멈춘다
         # (참여자 결과가 요청한 매핑과 달라지는 것을 막음, Codex CP2 #3). 세션 도중 확정 시점에 v1 build가 예외를
         # 내는 경우는 strict여도 Session._build_scene이 v0로 대체하고 meta.mapping·연구자 알림을 남긴다
@@ -118,6 +119,18 @@ class Runtime:
                     "[mapping] strict = true라 v0로 대체하지 않고 시작을 멈춥니다. "
                     "원인을 고치거나, 개발·시연에서만 strict = false로 두세요.") from exc
             self.warnings.append(f"개선 매핑(v1)을 불러오지 못해 v0로 대체합니다: {self.mapping_load_error}")
+        # 매핑 v2(scene_builder_v2.py, D1·D2 수정)는 mode = "v2"로 요청했을 때만 만든다(기본 v1 세션의 동작·기록은 그대로).
+        # 실패 처리는 v1과 같다: strict면 시작을 멈추고, 아니면 v0로 대체하고 경고를 남긴다.
+        if cfg.mapping.mode == "v2":
+            try:
+                self.scene_builders["v2"] = SceneSpecBuilderV2(self.analyzer)
+            except Exception as exc:  # noqa: BLE001
+                self.mapping_load_error = f"{type(exc).__name__}: {exc}"
+                if cfg.mapping.strict:
+                    raise RuntimeError(
+                        f"매핑 v2를 불러오지 못했습니다: {self.mapping_load_error}. "
+                        "[mapping] strict = true라 v0로 대체하지 않고 시작을 멈춥니다.") from exc
+                self.warnings.append(f"매핑 v2를 불러오지 못해 v0로 대체합니다: {self.mapping_load_error}")
         self.scene_builder = self.scene_builders.get(cfg.mapping.mode) or self.scene_builders["v0"]
         self.clarify_validator = Validator(
             self.protocol, self.lexicon, self.safety, self.analyzer, self.schema, guard=None,
@@ -843,7 +856,8 @@ class Session:
     def _write_variants(self, text: str, spec: dict, mapping: dict, norm: str, problems: list) -> dict:
         kw = {"session_id": self.id, "participant_id": self.participant_id, "condition": self.condition}
         out: dict = {}
-        for name in ("v0", "v1"):
+        # v2는 mode = "v2"일 때만 만들어지므로 그때만 비교 파일({sid}.v2.json)도 남는다(v0·v1 세션 기록 형식은 그대로)
+        for name in ("v0", "v1", *(("v2",) if "v2" in self.rt.scene_builders else ())):
             b = self.rt.scene_builders.get(name)
             if b is None:
                 out[name] = None

@@ -1,0 +1,450 @@
+{
+  "meta": {
+    "specVersion": "2.1.0",
+    "participantId": null,
+    "sessionId": "M34",
+    "condition": "static",
+    "sourceTextHash": "sha256:deceec78027c0b821fe1e9040b36fb03c436e9e7bcca78453446e4ab33835fdb",
+    "pipeline": {
+      "builder": "scene-spec-builder-v2/2.0.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@1.0.0",
+        "layer1Base": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@1.0.0",
+        "vad": "vad-ko@0.1.0",
+        "sceneParamsV2": "scene-params-v2@2.0.0",
+        "nounStoplist": "noun-stoplist-v2@1.0.0"
+      }
+    },
+    "mapping": {
+      "requested": "v2",
+      "used": "v1",
+      "fallbackReason": null
+    }
+  },
+  "form": {
+    "type": null,
+    "posture": null
+  },
+  "material": {
+    "color": null,
+    "brightness": null,
+    "saturation": null,
+    "roughness": null,
+    "opacity": null,
+    "erosion": null
+  },
+  "layout": {
+    "size": null,
+    "distance": null,
+    "verticalOffset": null
+  },
+  "motion": {
+    "type": null,
+    "speed": null
+  },
+  "body": {
+    "part": "chest",
+    "layer": "inner"
+  },
+  "_provenance": {
+    "body.part": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "가슴",
+        "charSpan": [
+          14,
+          16
+        ],
+        "rule": "bodyPartLexicon.가슴>body.part:chest"
+      }
+    ],
+    "body.layer": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "안",
+        "charSpan": [
+          17,
+          18
+        ],
+        "rule": "bodyLayerLexicon.안>body.layer:inner"
+      }
+    ]
+  },
+  "_unmatched": [
+    {
+      "lemma": "어제",
+      "tag": "MAG",
+      "surface": "어제",
+      "charSpan": [
+        0,
+        2
+      ]
+    },
+    {
+      "lemma": "회의",
+      "tag": "EOJEOL",
+      "surface": "회의요",
+      "charSpan": [
+        3,
+        6
+      ]
+    },
+    {
+      "lemma": "계속",
+      "tag": "MAG",
+      "surface": "계속",
+      "charSpan": [
+        22,
+        24
+      ]
+    },
+    {
+      "lemma": "그냥",
+      "tag": "EOJEOL",
+      "surface": "그냥",
+      "charSpan": [
+        31,
+        33
+      ]
+    },
+    {
+      "lemma": "꽉",
+      "tag": "MAG",
+      "surface": "꽉",
+      "charSpan": [
+        39,
+        40
+      ]
+    },
+    {
+      "lemma": "느낌",
+      "tag": "EOJEOL",
+      "surface": "느낌이에요",
+      "charSpan": [
+        44,
+        49
+      ]
+    },
+    {
+      "lemma": "그런",
+      "tag": "EOJEOL",
+      "surface": "그런",
+      "charSpan": [
+        51,
+        53
+      ]
+    },
+    {
+      "lemma": "거",
+      "tag": "EOJEOL",
+      "surface": "건",
+      "charSpan": [
+        54,
+        55
+      ]
+    },
+    {
+      "lemma": "없",
+      "tag": "EOJEOL",
+      "surface": "없어요",
+      "charSpan": [
+        56,
+        59
+      ]
+    },
+    {
+      "lemma": "색",
+      "tag": "EOJEOL",
+      "surface": "색",
+      "charSpan": [
+        61,
+        62
+      ]
+    },
+    {
+      "lemma": "같",
+      "tag": "EOJEOL",
+      "surface": "같은",
+      "charSpan": [
+        63,
+        65
+      ]
+    },
+    {
+      "lemma": "거",
+      "tag": "EOJEOL",
+      "surface": "건",
+      "charSpan": [
+        66,
+        67
+      ]
+    },
+    {
+      "lemma": "없",
+      "tag": "EOJEOL",
+      "surface": "없어요",
+      "charSpan": [
+        68,
+        71
+      ]
+    }
+  ],
+  "_unmapped": [
+    {
+      "lemma": "회의",
+      "category": "unlisted_noun",
+      "value": {
+        "noun": "회의",
+        "role": "named",
+        "scope": "context"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "phrase_rule",
+        "trigger": "회의",
+        "charSpan": [
+          3,
+          5
+        ],
+        "rule": "unlistedNoun.회의"
+      }
+    },
+    {
+      "lemma": "답답",
+      "category": "sensation",
+      "value": {
+        "sensation": "stifled",
+        "vadHint": "arousal mid-high"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "답답해요",
+        "charSpan": [
+          8,
+          12
+        ],
+        "rule": "sensationLexicon.답답"
+      }
+    },
+    {
+      "lemma": "답답",
+      "category": "sensation",
+      "value": {
+        "sensation": "stifled",
+        "vadHint": "arousal mid-high"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "답답해요",
+        "charSpan": [
+          25,
+          29
+        ],
+        "rule": "sensationLexicon.답답"
+      }
+    },
+    {
+      "lemma": "답답",
+      "category": "sensation",
+      "value": {
+        "sensation": "stifled",
+        "vadHint": "arousal mid-high"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "답답하고",
+        "charSpan": [
+          34,
+          38
+        ],
+        "rule": "sensationLexicon.답답"
+      }
+    },
+    {
+      "lemma": "막히",
+      "category": "sensation",
+      "value": {
+        "sensation": "blocked"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "막힌",
+        "charSpan": [
+          41,
+          43
+        ],
+        "rule": "sensationLexicon.막히"
+      }
+    }
+  ],
+  "_negated": [],
+  "_alternatives": [],
+  "_inferred": {
+    "layout.verticalOffset": {
+      "value": 0.72,
+      "_provenance": [
+        {
+          "source": "body_part_height",
+          "trigger": "가슴",
+          "charSpan": [
+            14,
+            16
+          ],
+          "rule": "bodyPartHeight.chest>layout.verticalOffset:0.72"
+        }
+      ]
+    }
+  },
+  "_context": [],
+  "_parts": [],
+  "_uncertain": [],
+  "_measurements": [],
+  "_direction": [],
+  "_needsConfirmation": [],
+  "_clauses": [
+    {
+      "charSpan": [
+        0,
+        6
+      ],
+      "text": "어제 회의요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        6,
+        7
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        8,
+        12
+      ],
+      "text": "답답해요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        12,
+        13
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        14,
+        20
+      ],
+      "text": "가슴 안이요",
+      "usedFor": [
+        "body.part",
+        "body.layer"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        20,
+        21
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        22,
+        29
+      ],
+      "text": "계속 답답해요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        29,
+        30
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        31,
+        38
+      ],
+      "text": "그냥 답답하고",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        39,
+        49
+      ],
+      "text": "꽉 막힌 느낌이에요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        49,
+        50
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        51,
+        59
+      ],
+      "text": "그런 건 없어요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        59,
+        60
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        61,
+        71
+      ],
+      "text": "색 같은 건 없어요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        71,
+        72
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    }
+  ]
+}

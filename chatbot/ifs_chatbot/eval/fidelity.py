@@ -98,7 +98,7 @@ from functools import lru_cache
 from pathlib import Path
 
 from ..korean import normalize
-from ..scene_spec import SLOT_PATHS
+from ..scene_spec import SLOT_PATHS, is_mapping_fallback
 
 SCORER_VERSION = "0.3.0"
 STATUSES = ("reflected", "distorted", "preserved", "lost", "dropped_by_controller", "captured")
@@ -746,7 +746,7 @@ def mapping_fallbacks(runs: dict) -> dict:
     out = []
     for r in runs.get("items") or []:
         mp = ((r.get("spec") or {}).get("meta") or {}).get("mapping")
-        if isinstance(mp, dict) and (mp.get("used") != mp.get("requested") or mp.get("fallbackReason")):
+        if isinstance(mp, dict) and is_mapping_fallback(mp):
             out.append({"id": r.get("id"), "requested": mp.get("requested"), "used": mp.get("used"),
                         "reason": mp.get("fallbackReason")})
     return {"count": len(out), "ids": [x["id"] for x in out], "items": out}
@@ -1027,7 +1027,7 @@ def main(argv: list[str] | None = None) -> None:
             pass
     ap = argparse.ArgumentParser(prog="python -m ifs_chatbot.eval.fidelity", description="심상-구현 일치도 채점")
     ap.add_argument("--corpus")
-    ap.add_argument("--mapper", default="v0", help="v0(기본) 또는 '모듈:factory'")
+    ap.add_argument("--mapper", default="v0", help="v0(기본) · v1 · v2 또는 '모듈:factory'")
     ap.add_argument("--compare", help="두 번째 매핑(v0 또는 '모듈:factory'). 주면 항목 단위 쌍 비교를 낸다")
     ap.add_argument("--out", help="결과 폴더")
     ap.add_argument("--bootstrap", type=int, default=BOOTSTRAP_B, help=f"부트스트랩 반복 수(기본 {BOOTSTRAP_B})")

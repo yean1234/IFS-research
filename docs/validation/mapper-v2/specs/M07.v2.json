@@ -1,0 +1,606 @@
+{
+  "meta": {
+    "specVersion": "2.1.0",
+    "participantId": null,
+    "sessionId": "M07",
+    "condition": "static",
+    "sourceTextHash": "sha256:df6f9de61936802defc141c3908bb2116480c1e0cfdfa408b514e6220a77fadc",
+    "pipeline": {
+      "builder": "scene-spec-builder-v2/2.0.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@1.0.0",
+        "layer1Base": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@1.0.0",
+        "vad": "vad-ko@0.1.0",
+        "sceneParamsV2": "scene-params-v2@2.0.0",
+        "nounStoplist": "noun-stoplist-v2@1.0.0"
+      }
+    },
+    "mapping": {
+      "requested": "v2",
+      "used": "v1",
+      "fallbackReason": null
+    }
+  },
+  "form": {
+    "type": "blob",
+    "posture": null
+  },
+  "material": {
+    "color": {
+      "h": 0.069,
+      "s": 0.75,
+      "l": 0.75
+    },
+    "brightness": null,
+    "saturation": null,
+    "roughness": null,
+    "opacity": null,
+    "erosion": null
+  },
+  "layout": {
+    "size": null,
+    "distance": null,
+    "verticalOffset": null
+  },
+  "motion": {
+    "type": null,
+    "speed": null
+  },
+  "body": {
+    "part": "belly",
+    "layer": "inner"
+  },
+  "_provenance": {
+    "form.type": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "뭉치",
+        "charSpan": [
+          69,
+          71
+        ],
+        "rule": "formLexicon.뭉치>form.type:blob"
+      }
+    ],
+    "material.color": [
+      {
+        "source": "phrase_rule",
+        "trigger": "살구색",
+        "charSpan": [
+          65,
+          68
+        ],
+        "rule": "colorTerm.살구색>material.color:hsl"
+      }
+    ],
+    "body.part": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "배",
+        "charSpan": [
+          19,
+          20
+        ],
+        "rule": "bodyPartLexicon.배>body.part:belly"
+      }
+    ],
+    "body.layer": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "안",
+        "charSpan": [
+          37,
+          38
+        ],
+        "rule": "bodyLayerLexicon.안>body.layer:inner"
+      }
+    ]
+  },
+  "_unmatched": [
+    {
+      "lemma": "동생",
+      "tag": "EOJEOL",
+      "surface": "동생이랑",
+      "charSpan": [
+        0,
+        4
+      ]
+    },
+    {
+      "lemma": "오랜만",
+      "tag": "NNG",
+      "surface": "오랜만",
+      "charSpan": [
+        5,
+        8
+      ]
+    },
+    {
+      "lemma": "오랜만",
+      "tag": "EOJEOL",
+      "surface": "오랜만에",
+      "charSpan": [
+        5,
+        9
+      ]
+    },
+    {
+      "lemma": "통화",
+      "tag": "NNG",
+      "surface": "통화",
+      "charSpan": [
+        10,
+        12
+      ]
+    },
+    {
+      "lemma": "통화",
+      "tag": "EOJEOL",
+      "surface": "통화했던",
+      "charSpan": [
+        10,
+        14
+      ]
+    },
+    {
+      "lemma": "거",
+      "tag": "EOJEOL",
+      "surface": "거요",
+      "charSpan": [
+        15,
+        17
+      ]
+    },
+    {
+      "lemma": "배",
+      "tag": "EOJEOL",
+      "surface": "배가",
+      "charSpan": [
+        19,
+        21
+      ]
+    },
+    {
+      "lemma": "간질간질",
+      "tag": "MAG",
+      "surface": "간질간질",
+      "charSpan": [
+        22,
+        26
+      ]
+    },
+    {
+      "lemma": "간질간질",
+      "tag": "EOJEOL",
+      "surface": "간질간질한",
+      "charSpan": [
+        22,
+        27
+      ]
+    },
+    {
+      "lemma": "느낌",
+      "tag": "EOJEOL",
+      "surface": "느낌이에요",
+      "charSpan": [
+        28,
+        33
+      ]
+    },
+    {
+      "lemma": "아랫배",
+      "tag": "EOJEOL",
+      "surface": "아랫배요",
+      "charSpan": [
+        42,
+        46
+      ]
+    },
+    {
+      "lemma": "같",
+      "tag": "EOJEOL",
+      "surface": "같은",
+      "charSpan": [
+        55,
+        57
+      ]
+    },
+    {
+      "lemma": "것",
+      "tag": "EOJEOL",
+      "surface": "게",
+      "charSpan": [
+        58,
+        59
+      ]
+    },
+    {
+      "lemma": "있",
+      "tag": "EOJEOL",
+      "surface": "있어요",
+      "charSpan": [
+        60,
+        63
+      ]
+    },
+    {
+      "lemma": "말랑말랑",
+      "tag": "MAG",
+      "surface": "말랑말랑",
+      "charSpan": [
+        80,
+        84
+      ]
+    },
+    {
+      "lemma": "말랑말랑",
+      "tag": "EOJEOL",
+      "surface": "말랑말랑하고",
+      "charSpan": [
+        80,
+        86
+      ]
+    },
+    {
+      "lemma": "쉬",
+      "tag": "VV",
+      "surface": "쉬",
+      "charSpan": [
+        90,
+        91
+      ]
+    },
+    {
+      "lemma": "쉬",
+      "tag": "EOJEOL",
+      "surface": "쉬듯이",
+      "charSpan": [
+        90,
+        93
+      ]
+    },
+    {
+      "lemma": "줄",
+      "tag": "VV",
+      "surface": "줄",
+      "charSpan": [
+        99,
+        100
+      ]
+    },
+    {
+      "lemma": "줄",
+      "tag": "EOJEOL",
+      "surface": "줄었다",
+      "charSpan": [
+        99,
+        102
+      ]
+    },
+    {
+      "lemma": "하",
+      "tag": "EOJEOL",
+      "surface": "해요",
+      "charSpan": [
+        103,
+        105
+      ]
+    }
+  ],
+  "_unmapped": [
+    {
+      "lemma": "동생",
+      "category": "unlisted_noun",
+      "value": {
+        "noun": "동생",
+        "role": "other",
+        "scope": "context"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "phrase_rule",
+        "trigger": "동생",
+        "charSpan": [
+          0,
+          2
+        ],
+        "rule": "unlistedNoun.동생"
+      }
+    },
+    {
+      "lemma": "말랑",
+      "category": "texture",
+      "value": {
+        "texture": "squishy"
+      },
+      "reason": "no_value_mapping",
+      "_provenance": {
+        "source": "simile_marker",
+        "trigger": "말랑한",
+        "charSpan": [
+          48,
+          51
+        ],
+        "rule": "simile.같은>textureLexicon.말랑"
+      }
+    },
+    {
+      "lemma": "숨",
+      "category": "sensation",
+      "value": {
+        "sensation": "breath"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "숨",
+        "charSpan": [
+          88,
+          89
+        ],
+        "rule": "sensationLexicon.숨"
+      }
+    },
+    {
+      "lemma": "부풀",
+      "category": "size",
+      "value": {
+        "size": "swelling"
+      },
+      "reason": "no_value_mapping",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "부풀었다",
+        "charSpan": [
+          94,
+          98
+        ],
+        "rule": "sizeLexicon.부풀"
+      }
+    }
+  ],
+  "_negated": [],
+  "_alternatives": [
+    {
+      "path": "form.type",
+      "value": "blob",
+      "reason": "lower_layer",
+      "_provenance": [
+        {
+          "source": "simile_marker",
+          "trigger": "뭉치",
+          "charSpan": [
+            52,
+            54
+          ],
+          "rule": "simile.같은>formLexicon.뭉치>form.type:blob"
+        }
+      ]
+    },
+    {
+      "path": "form.type",
+      "value": "blob",
+      "reason": "lower_layer",
+      "_provenance": [
+        {
+          "source": "simile_marker",
+          "trigger": "찰흙처럼",
+          "charSpan": [
+            75,
+            79
+          ],
+          "rule": "simile.처럼>prototype.찰흙>form.type:blob"
+        }
+      ]
+    },
+    {
+      "path": "body.part",
+      "value": "body",
+      "reason": "lower_priority",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "몸",
+          "charSpan": [
+            35,
+            36
+          ],
+          "rule": "bodyPartLexicon.몸>body.part:body"
+        }
+      ]
+    },
+    {
+      "path": "body.part",
+      "value": "lower_belly",
+      "reason": "later_mention",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "아랫배",
+          "charSpan": [
+            42,
+            45
+          ],
+          "rule": "bodyPartLexicon.아랫배>body.part:lower_belly"
+        }
+      ]
+    }
+  ],
+  "_inferred": {
+    "layout.verticalOffset": {
+      "value": 0.6,
+      "_provenance": [
+        {
+          "source": "body_part_height",
+          "trigger": "배",
+          "charSpan": [
+            19,
+            20
+          ],
+          "rule": "bodyPartHeight.belly>layout.verticalOffset:0.6"
+        }
+      ]
+    }
+  },
+  "_context": [],
+  "_parts": [],
+  "_uncertain": [],
+  "_measurements": [],
+  "_direction": [],
+  "_needsConfirmation": [],
+  "_clauses": [
+    {
+      "charSpan": [
+        0,
+        17
+      ],
+      "text": "동생이랑 오랜만에 통화했던 거요",
+      "usedFor": [],
+      "status": "context"
+    },
+    {
+      "charSpan": [
+        17,
+        18
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        19,
+        33
+      ],
+      "text": "배가 간질간질한 느낌이에요",
+      "usedFor": [
+        "body.part"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        33,
+        34
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        35,
+        40
+      ],
+      "text": "몸 안에요",
+      "usedFor": [
+        "body.layer"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        40,
+        41
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        42,
+        46
+      ],
+      "text": "아랫배요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        46,
+        47
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        48,
+        63
+      ],
+      "text": "말랑한 뭉치 같은 게 있어요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        63,
+        64
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        65,
+        73
+      ],
+      "text": "살구색 뭉치예요",
+      "usedFor": [
+        "form.type",
+        "material.color"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        73,
+        74
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        75,
+        86
+      ],
+      "text": "찰흙처럼 말랑말랑하고",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        86,
+        87
+      ],
+      "text": ",",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        88,
+        105
+      ],
+      "text": "숨 쉬듯이 부풀었다 줄었다 해요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        105,
+        106
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    }
+  ]
+}

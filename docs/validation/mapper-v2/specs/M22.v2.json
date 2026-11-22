@@ -1,0 +1,703 @@
+{
+  "meta": {
+    "specVersion": "2.1.0",
+    "participantId": null,
+    "sessionId": "M22",
+    "condition": "static",
+    "sourceTextHash": "sha256:5abdae42b0d85e4b26ea75dc72b9835ec9e3e6e2bfd3dff6e9ee1f989c7ce6f5",
+    "pipeline": {
+      "builder": "scene-spec-builder-v2/2.0.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@1.0.0",
+        "layer1Base": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@1.0.0",
+        "vad": "vad-ko@0.1.0",
+        "sceneParamsV2": "scene-params-v2@2.0.0",
+        "nounStoplist": "noun-stoplist-v2@1.0.0"
+      }
+    },
+    "mapping": {
+      "requested": "v2",
+      "used": "v1",
+      "fallbackReason": null
+    }
+  },
+  "form": {
+    "type": null,
+    "posture": "hanging"
+  },
+  "material": {
+    "color": null,
+    "brightness": null,
+    "saturation": null,
+    "roughness": null,
+    "opacity": 0.5,
+    "erosion": null
+  },
+  "layout": {
+    "size": 0.0,
+    "distance": 0.6,
+    "verticalOffset": null
+  },
+  "motion": {
+    "type": null,
+    "speed": null
+  },
+  "body": {
+    "part": "body",
+    "layer": "inner"
+  },
+  "_provenance": {
+    "form.posture": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "매달려",
+        "charSpan": [
+          112,
+          115
+        ],
+        "rule": "postureLexicon.매달리>form.posture:hanging"
+      }
+    ],
+    "material.opacity": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "비치는데",
+        "charSpan": [
+          68,
+          72
+        ],
+        "rule": "opacityLexicon.비치>material.opacity:see_through"
+      }
+    ],
+    "layout.size": [
+      {
+        "source": "phrase_rule",
+        "trigger": "1센티쯤",
+        "charSpan": [
+          92,
+          96
+        ],
+        "rule": "measure.센티>layout.size:0.01m"
+      }
+    ],
+    "layout.distance": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "떨어질",
+        "charSpan": [
+          102,
+          105
+        ],
+        "rule": "distanceLexicon.떨어지>layout.distance:apart"
+      }
+    ],
+    "body.part": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "몸",
+        "charSpan": [
+          17,
+          18
+        ],
+        "rule": "bodyPartLexicon.몸>body.part:body"
+      }
+    ],
+    "body.layer": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "안",
+        "charSpan": [
+          19,
+          20
+        ],
+        "rule": "bodyLayerLexicon.안>body.layer:inner"
+      }
+    ]
+  },
+  "_unmatched": [
+    {
+      "lemma": "비",
+      "tag": "NNG",
+      "surface": "비",
+      "charSpan": [
+        0,
+        1
+      ]
+    },
+    {
+      "lemma": "오",
+      "tag": "VV",
+      "surface": "오",
+      "charSpan": [
+        2,
+        3
+      ]
+    },
+    {
+      "lemma": "오",
+      "tag": "EOJEOL",
+      "surface": "오는",
+      "charSpan": [
+        2,
+        4
+      ]
+    },
+    {
+      "lemma": "날",
+      "tag": "NNG",
+      "surface": "날",
+      "charSpan": [
+        5,
+        6
+      ]
+    },
+    {
+      "lemma": "정류장",
+      "tag": "EOJEOL",
+      "surface": "정류장이요",
+      "charSpan": [
+        10,
+        15
+      ]
+    },
+    {
+      "lemma": "안",
+      "tag": "MAG",
+      "surface": "안",
+      "charSpan": [
+        19,
+        20
+      ]
+    },
+    {
+      "lemma": "안",
+      "tag": "EOJEOL",
+      "surface": "안이요",
+      "charSpan": [
+        19,
+        22
+      ]
+    },
+    {
+      "lemma": "눈",
+      "tag": "NNG",
+      "surface": "눈",
+      "charSpan": [
+        24,
+        25
+      ]
+    },
+    {
+      "lemma": "뒤쪽",
+      "tag": "EOJEOL",
+      "surface": "뒤쪽이요",
+      "charSpan": [
+        26,
+        30
+      ]
+    },
+    {
+      "lemma": "하나",
+      "tag": "EOJEOL",
+      "surface": "하나가",
+      "charSpan": [
+        36,
+        39
+      ]
+    },
+    {
+      "lemma": "맺히",
+      "tag": "VV",
+      "surface": "맺혀",
+      "charSpan": [
+        40,
+        42
+      ]
+    },
+    {
+      "lemma": "있",
+      "tag": "EOJEOL",
+      "surface": "있어요",
+      "charSpan": [
+        43,
+        46
+      ]
+    },
+    {
+      "lemma": "물방울",
+      "tag": "EOJEOL",
+      "surface": "물방울이에요",
+      "charSpan": [
+        52,
+        58
+      ]
+    },
+    {
+      "lemma": "가운데",
+      "tag": "NNG",
+      "surface": "가운데",
+      "charSpan": [
+        60,
+        63
+      ]
+    },
+    {
+      "lemma": "가운데",
+      "tag": "EOJEOL",
+      "surface": "가운데는",
+      "charSpan": [
+        60,
+        64
+      ]
+    },
+    {
+      "lemma": "맑",
+      "tag": "VA",
+      "surface": "맑",
+      "charSpan": [
+        65,
+        66
+      ]
+    },
+    {
+      "lemma": "맑",
+      "tag": "EOJEOL",
+      "surface": "맑게",
+      "charSpan": [
+        65,
+        67
+      ]
+    },
+    {
+      "lemma": "가장자리",
+      "tag": "EOJEOL",
+      "surface": "가장자리만",
+      "charSpan": [
+        73,
+        78
+      ]
+    },
+    {
+      "lemma": "콩알",
+      "tag": "EOJEOL",
+      "surface": "콩알만",
+      "charSpan": [
+        84,
+        87
+      ]
+    },
+    {
+      "lemma": "하",
+      "tag": "EOJEOL",
+      "surface": "해요",
+      "charSpan": [
+        88,
+        90
+      ]
+    },
+    {
+      "lemma": "1+센티",
+      "tag": "EOJEOL",
+      "surface": "1센티쯤이요",
+      "charSpan": [
+        92,
+        98
+      ]
+    },
+    {
+      "lemma": "톡",
+      "tag": "MAG",
+      "surface": "톡",
+      "charSpan": [
+        100,
+        101
+      ]
+    },
+    {
+      "lemma": "듯",
+      "tag": "EOJEOL",
+      "surface": "듯",
+      "charSpan": [
+        106,
+        107
+      ]
+    },
+    {
+      "lemma": "말",
+      "tag": "VV",
+      "surface": "말",
+      "charSpan": [
+        108,
+        109
+      ]
+    },
+    {
+      "lemma": "듯",
+      "tag": "EOJEOL",
+      "surface": "듯",
+      "charSpan": [
+        110,
+        111
+      ]
+    },
+    {
+      "lemma": "있",
+      "tag": "EOJEOL",
+      "surface": "있어요",
+      "charSpan": [
+        116,
+        119
+      ]
+    }
+  ],
+  "_unmapped": [
+    {
+      "lemma": "버스",
+      "category": "unlisted_noun",
+      "value": {
+        "noun": "버스",
+        "role": "modifier",
+        "scope": "context"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "phrase_rule",
+        "trigger": "버스",
+        "charSpan": [
+          7,
+          9
+        ],
+        "rule": "unlistedNoun.버스"
+      }
+    },
+    {
+      "lemma": "정류장",
+      "category": "unlisted_noun",
+      "value": {
+        "noun": "정류장",
+        "role": "named",
+        "scope": "context"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "phrase_rule",
+        "trigger": "정류장",
+        "charSpan": [
+          10,
+          13
+        ],
+        "rule": "unlistedNoun.정류장"
+      }
+    },
+    {
+      "lemma": "물방울",
+      "category": "object",
+      "value": {
+        "object": "droplet"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "물방울",
+        "charSpan": [
+          32,
+          35
+        ],
+        "rule": "objectLexicon.물방울"
+      }
+    },
+    {
+      "lemma": "동그랗",
+      "category": "shape",
+      "value": {
+        "shape": "round"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "동그란",
+        "charSpan": [
+          48,
+          51
+        ],
+        "rule": "shapeLexicon.동그랗"
+      }
+    },
+    {
+      "lemma": "물방울",
+      "category": "object",
+      "value": {
+        "object": "droplet"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "물방울",
+        "charSpan": [
+          52,
+          55
+        ],
+        "rule": "objectLexicon.물방울"
+      }
+    },
+    {
+      "lemma": "가장자리",
+      "category": "shape",
+      "value": {
+        "shape": "edge"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "가장자리",
+        "charSpan": [
+          73,
+          77
+        ],
+        "rule": "shapeLexicon.가장자리"
+      }
+    },
+    {
+      "lemma": "콩알",
+      "category": "unlisted_noun",
+      "value": {
+        "noun": "콩알",
+        "role": "subject",
+        "scope": "main"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "phrase_rule",
+        "trigger": "콩알",
+        "charSpan": [
+          84,
+          86
+        ],
+        "rule": "unlistedNoun.콩알"
+      }
+    }
+  ],
+  "_negated": [],
+  "_alternatives": [],
+  "_inferred": {},
+  "_context": [
+    {
+      "text": "뒤쪽",
+      "charSpan": [
+        26,
+        28
+      ],
+      "reason": "object_relative_position",
+      "path": "body.layer",
+      "value": "around_behind",
+      "rule": "bodyLayerLexicon.뒤>body.layer:around_behind"
+    }
+  ],
+  "_parts": [
+    {
+      "text": "뿌예요",
+      "charSpan": [
+        79,
+        82
+      ],
+      "part": "가장자리",
+      "partClass": "detail",
+      "path": "material.brightness",
+      "value": 0.4,
+      "rule": "brightnessLexicon.뿌옇>material.brightness:hazy"
+    }
+  ],
+  "_uncertain": [],
+  "_measurements": [
+    {
+      "text": "1센티쯤",
+      "charSpan": [
+        92,
+        96
+      ],
+      "kind": "number_unit",
+      "meters": 0.01,
+      "dimension": "size",
+      "reference": null,
+      "usedFor": "layout.size"
+    }
+  ],
+  "_direction": [],
+  "_needsConfirmation": [],
+  "_clauses": [
+    {
+      "charSpan": [
+        0,
+        15
+      ],
+      "text": "비 오는 날 버스 정류장이요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        15,
+        16
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        17,
+        22
+      ],
+      "text": "몸 안이요",
+      "usedFor": [
+        "body.part",
+        "body.layer"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        22,
+        23
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        24,
+        30
+      ],
+      "text": "눈 뒤쪽이요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        30,
+        31
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        32,
+        46
+      ],
+      "text": "물방울 하나가 맺혀 있어요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        46,
+        47
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        48,
+        58
+      ],
+      "text": "동그란 물방울이에요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        58,
+        59
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        60,
+        82
+      ],
+      "text": "가운데는 맑게 비치는데 가장자리만 뿌예요",
+      "usedFor": [
+        "material.opacity"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        82,
+        83
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        84,
+        90
+      ],
+      "text": "콩알만 해요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        90,
+        91
+      ],
+      "text": ",",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        92,
+        98
+      ],
+      "text": "1센티쯤이요",
+      "usedFor": [
+        "layout.size"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        98,
+        99
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        100,
+        119
+      ],
+      "text": "톡 떨어질 듯 말 듯 매달려 있어요",
+      "usedFor": [
+        "form.posture",
+        "layout.distance"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        119,
+        120
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    }
+  ]
+}

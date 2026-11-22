@@ -29,6 +29,7 @@ from typing import Callable
 from ..config import Config, load_config
 from ..controller import Runtime, Session
 from ..korean import normalize
+from ..scene_spec import is_mapping_fallback
 
 RUNNER_VERSION = "0.1.0"
 CONDITION = "static"
@@ -45,12 +46,15 @@ def resolve_mapper(mapper: str | Callable | None) -> tuple[str, Callable | None]
     if mapper == "v1":                                   # 개선 매핑(= ifs_chatbot.scene_builder_v1:factory)
         from ..scene_builder_v1 import factory
         return "v1", factory
+    if mapper == "v2":                                   # 매핑 v2(= ifs_chatbot.scene_builder_v2:factory, D1·D2 수정)
+        from ..scene_builder_v2 import factory as factory_v2
+        return "v2", factory_v2
     if callable(mapper):
         return getattr(mapper, "__name__", "custom"), mapper
     if isinstance(mapper, str) and ":" in mapper:
         mod_name, attr = mapper.split(":", 1)
         return mapper, getattr(importlib.import_module(mod_name), attr)
-    raise ValueError(f"모르는 매핑: {mapper!r} (v0 또는 '모듈:이름')")
+    raise ValueError(f"모르는 매핑: {mapper!r} (v0 · v1 · v2 또는 '모듈:이름')")
 
 
 def offline_config(work_dir: Path, base: Config | None = None) -> Config:
@@ -179,7 +183,7 @@ def mapping_fallbacks(items: list[dict]) -> dict:
     ids = []
     for it in items:
         mp = ((it.get("spec") or {}).get("meta") or {}).get("mapping")
-        if isinstance(mp, dict) and (mp.get("used") != mp.get("requested") or mp.get("fallbackReason")):
+        if isinstance(mp, dict) and is_mapping_fallback(mp):
             ids.append(it.get("id"))
     return {"count": len(ids), "ids": ids}
 

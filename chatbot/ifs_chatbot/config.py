@@ -57,7 +57,7 @@ class SessionConfig:
 
 @dataclass(frozen=True)
 class MappingConfig:
-    mode: str = "v1"              # 확정 텍스트 → SceneSpec 매핑. v1(개선 매핑) | v0(규칙 기반 기준선)
+    mode: str = "v1"              # 확정 텍스트 → SceneSpec 매핑. v1(개선 매핑) | v0(규칙 기반 기준선) | v2(D1·D2 수정, 선택)
     save_both: bool = True        # scenes/{sid}.v0.json · {sid}.v1.json도 저장(같은 텍스트를 두 매핑으로 — 비교 설계)
     clarify_loop: bool = False    # 확정 직후 what_kind 틀 확인 질문. 확증 비교에서는 끈다(research-design 3.2)
     clarify_max: int = 2          # 확인 질문 최대 횟수
