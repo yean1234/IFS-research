@@ -1,0 +1,68 @@
+{
+  "meta": {
+    "specVersion": "2.1.0",
+    "participantId": "SYNRENDER",
+    "sessionId": "R09",
+    "condition": "static",
+    "sourceTextHash": "sha256:6c353afe7f9ea283c859f299fa54b7fff222ef9fcabab0bb44a63ed3b3e99979",
+    "pipeline": {
+      "builder": "synthetic-render-check/1.0.0",
+      "analyzer": "kiwi",
+      "lexicons": {}
+    }
+  },
+  "form": {
+    "type": null,
+    "posture": null
+  },
+  "material": {
+    "color": {
+      "h": 0.1,
+      "s": 0.3,
+      "l": 0.5
+    },
+    "brightness": null,
+    "saturation": null,
+    "roughness": null,
+    "opacity": null,
+    "erosion": null
+  },
+  "layout": {
+    "size": null,
+    "distance": null,
+    "verticalOffset": null
+  },
+  "motion": {
+    "type": null,
+    "speed": null
+  },
+  "body": {
+    "part": null,
+    "layer": null
+  },
+  "_provenance": {
+    "material.color": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "갈색",
+        "charSpan": [
+          0,
+          2
+        ],
+        "rule": "synthetic.갈색>material.color"
+      }
+    ]
+  },
+  "_unmatched": [],
+  "_unmapped": [],
+  "_negated": [],
+  "_alternatives": [],
+  "_inferred": {},
+  "_context": [],
+  "_parts": [],
+  "_uncertain": [],
+  "_measurements": [],
+  "_direction": [],
+  "_needsConfirmation": [],
+  "_clauses": []
+}

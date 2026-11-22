@@ -1,0 +1,86 @@
+{
+  "meta": {
+    "specVersion": "2.1.0",
+    "participantId": "SYNRENDER",
+    "sessionId": "R12",
+    "condition": "static",
+    "sourceTextHash": "sha256:d7a2b0e073da512177e4fdd8acbe7b0fca3a90008ab1d4ffc4265a336f7b23cb",
+    "pipeline": {
+      "builder": "synthetic-render-check/1.0.0",
+      "analyzer": "kiwi",
+      "lexicons": {}
+    }
+  },
+  "form": {
+    "type": null,
+    "posture": null
+  },
+  "material": {
+    "color": {
+      "h": 0.75,
+      "s": 0.4,
+      "l": 0.5
+    },
+    "brightness": null,
+    "saturation": null,
+    "roughness": null,
+    "opacity": null,
+    "erosion": null
+  },
+  "layout": {
+    "size": null,
+    "distance": null,
+    "verticalOffset": null
+  },
+  "motion": {
+    "type": null,
+    "speed": null
+  },
+  "body": {
+    "part": null,
+    "layer": null
+  },
+  "_provenance": {
+    "material.color": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "보라",
+        "charSpan": [
+          0,
+          2
+        ],
+        "rule": "synthetic.보라>material.color"
+      }
+    ]
+  },
+  "_unmatched": [],
+  "_unmapped": [
+    {
+      "lemma": "납작한",
+      "category": "shape",
+      "value": {
+        "shape": "flat"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "납작한",
+        "charSpan": [
+          3,
+          6
+        ],
+        "rule": "shapeLexicon.납작한"
+      }
+    }
+  ],
+  "_negated": [],
+  "_alternatives": [],
+  "_inferred": {},
+  "_context": [],
+  "_parts": [],
+  "_uncertain": [],
+  "_measurements": [],
+  "_direction": [],
+  "_needsConfirmation": [],
+  "_clauses": []
+}

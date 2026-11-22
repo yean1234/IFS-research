@@ -1,0 +1,112 @@
+{
+  "meta": {
+    "specVersion": "2.1.0",
+    "participantId": "SYNRENDER",
+    "sessionId": "R05",
+    "condition": "static",
+    "sourceTextHash": "sha256:8a912e109e34da60c5169f19b4a9aae09098a1ac04dac02f18dfe6462eb9fd8d",
+    "pipeline": {
+      "builder": "synthetic-render-check/1.0.0",
+      "analyzer": "kiwi",
+      "lexicons": {}
+    }
+  },
+  "form": {
+    "type": "fragments",
+    "posture": null
+  },
+  "material": {
+    "color": {
+      "h": 0.02,
+      "s": 0.6,
+      "l": 0.45
+    },
+    "brightness": null,
+    "saturation": null,
+    "roughness": 0.8,
+    "opacity": null,
+    "erosion": 0.3
+  },
+  "layout": {
+    "size": 0.7,
+    "distance": null,
+    "verticalOffset": null
+  },
+  "motion": {
+    "type": null,
+    "speed": null
+  },
+  "body": {
+    "part": null,
+    "layer": null
+  },
+  "_provenance": {
+    "form.type": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "조각",
+        "charSpan": [
+          0,
+          2
+        ],
+        "rule": "synthetic.조각>form.type"
+      }
+    ],
+    "layout.size": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "큰",
+        "charSpan": [
+          3,
+          4
+        ],
+        "rule": "synthetic.큰>layout.size"
+      }
+    ],
+    "material.color": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "붉은",
+        "charSpan": [
+          5,
+          7
+        ],
+        "rule": "synthetic.붉은>material.color"
+      }
+    ],
+    "material.roughness": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "거친",
+        "charSpan": [
+          8,
+          10
+        ],
+        "rule": "synthetic.거친>material.roughness"
+      }
+    ],
+    "material.erosion": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "삭은",
+        "charSpan": [
+          11,
+          13
+        ],
+        "rule": "synthetic.삭은>material.erosion"
+      }
+    ]
+  },
+  "_unmatched": [],
+  "_unmapped": [],
+  "_negated": [],
+  "_alternatives": [],
+  "_inferred": {},
+  "_context": [],
+  "_parts": [],
+  "_uncertain": [],
+  "_measurements": [],
+  "_direction": [],
+  "_needsConfirmation": [],
+  "_clauses": []
+}

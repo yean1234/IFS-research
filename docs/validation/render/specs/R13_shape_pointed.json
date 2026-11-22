@@ -1,0 +1,70 @@
+{
+  "meta": {
+    "specVersion": "2.1.0",
+    "participantId": "SYNRENDER",
+    "sessionId": "R13",
+    "condition": "static",
+    "sourceTextHash": "sha256:bc51aa7d45e6549919d9e3cd7aa62d85f93efcbcc2f999f2f57196bf901e7731",
+    "pipeline": {
+      "builder": "synthetic-render-check/1.0.0",
+      "analyzer": "kiwi",
+      "lexicons": {}
+    }
+  },
+  "form": {
+    "type": null,
+    "posture": null
+  },
+  "material": {
+    "color": null,
+    "brightness": null,
+    "saturation": null,
+    "roughness": null,
+    "opacity": null,
+    "erosion": null
+  },
+  "layout": {
+    "size": null,
+    "distance": null,
+    "verticalOffset": null
+  },
+  "motion": {
+    "type": null,
+    "speed": null
+  },
+  "body": {
+    "part": null,
+    "layer": null
+  },
+  "_provenance": {},
+  "_unmatched": [],
+  "_unmapped": [
+    {
+      "lemma": "뾰족한",
+      "category": "shape",
+      "value": {
+        "shape": "pointed"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "뾰족한",
+        "charSpan": [
+          0,
+          3
+        ],
+        "rule": "shapeLexicon.뾰족한"
+      }
+    }
+  ],
+  "_negated": [],
+  "_alternatives": [],
+  "_inferred": {},
+  "_context": [],
+  "_parts": [],
+  "_uncertain": [],
+  "_measurements": [],
+  "_direction": [],
+  "_needsConfirmation": [],
+  "_clauses": []
+}

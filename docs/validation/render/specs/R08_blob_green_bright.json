@@ -1,0 +1,90 @@
+{
+  "meta": {
+    "specVersion": "2.1.0",
+    "participantId": "SYNRENDER",
+    "sessionId": "R08",
+    "condition": "static",
+    "sourceTextHash": "sha256:111f63b46bcec54262ed679523e9a2f23c60b166805a07d088a2bed123f7513c",
+    "pipeline": {
+      "builder": "synthetic-render-check/1.0.0",
+      "analyzer": "kiwi",
+      "lexicons": {}
+    }
+  },
+  "form": {
+    "type": "blob",
+    "posture": null
+  },
+  "material": {
+    "color": {
+      "h": 0.33,
+      "s": 0.5,
+      "l": 0.5
+    },
+    "brightness": 0.8,
+    "saturation": null,
+    "roughness": null,
+    "opacity": null,
+    "erosion": null
+  },
+  "layout": {
+    "size": null,
+    "distance": null,
+    "verticalOffset": null
+  },
+  "motion": {
+    "type": null,
+    "speed": null
+  },
+  "body": {
+    "part": null,
+    "layer": null
+  },
+  "_provenance": {
+    "form.type": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "덩어리",
+        "charSpan": [
+          0,
+          3
+        ],
+        "rule": "synthetic.덩어리>form.type"
+      }
+    ],
+    "material.color": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "초록",
+        "charSpan": [
+          4,
+          6
+        ],
+        "rule": "synthetic.초록>material.color"
+      }
+    ],
+    "material.brightness": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "밝은",
+        "charSpan": [
+          7,
+          9
+        ],
+        "rule": "synthetic.밝은>material.brightness"
+      }
+    ]
+  },
+  "_unmatched": [],
+  "_unmapped": [],
+  "_negated": [],
+  "_alternatives": [],
+  "_inferred": {},
+  "_context": [],
+  "_parts": [],
+  "_uncertain": [],
+  "_measurements": [],
+  "_direction": [],
+  "_needsConfirmation": [],
+  "_clauses": []
+}

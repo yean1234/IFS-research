@@ -1,0 +1,82 @@
+{
+  "meta": {
+    "specVersion": "2.1.0",
+    "participantId": "SYNRENDER",
+    "sessionId": "R10",
+    "condition": "static",
+    "sourceTextHash": "sha256:9bf7e183fea7a311e803934deb5b38c9ddaf4c2e7c7eafbddbe212bebf2a3432",
+    "pipeline": {
+      "builder": "synthetic-render-check/1.0.0",
+      "analyzer": "kiwi",
+      "lexicons": {}
+    }
+  },
+  "form": {
+    "type": null,
+    "posture": null
+  },
+  "material": {
+    "color": null,
+    "brightness": 0.3,
+    "saturation": null,
+    "roughness": null,
+    "opacity": null,
+    "erosion": null
+  },
+  "layout": {
+    "size": null,
+    "distance": null,
+    "verticalOffset": null
+  },
+  "motion": {
+    "type": null,
+    "speed": null
+  },
+  "body": {
+    "part": null,
+    "layer": null
+  },
+  "_provenance": {
+    "material.brightness": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "어두운",
+        "charSpan": [
+          0,
+          3
+        ],
+        "rule": "synthetic.어두운>material.brightness"
+      }
+    ]
+  },
+  "_unmatched": [],
+  "_unmapped": [
+    {
+      "lemma": "동그란",
+      "category": "shape",
+      "value": {
+        "shape": "round"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "동그란",
+        "charSpan": [
+          4,
+          7
+        ],
+        "rule": "shapeLexicon.동그란"
+      }
+    }
+  ],
+  "_negated": [],
+  "_alternatives": [],
+  "_inferred": {},
+  "_context": [],
+  "_parts": [],
+  "_uncertain": [],
+  "_measurements": [],
+  "_direction": [],
+  "_needsConfirmation": [],
+  "_clauses": []
+}

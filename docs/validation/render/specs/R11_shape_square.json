@@ -1,0 +1,82 @@
+{
+  "meta": {
+    "specVersion": "2.1.0",
+    "participantId": "SYNRENDER",
+    "sessionId": "R11",
+    "condition": "static",
+    "sourceTextHash": "sha256:eba33f8b24da5d62ab6051debe0705cb8a232ce0002d863794eb924218cd6a89",
+    "pipeline": {
+      "builder": "synthetic-render-check/1.0.0",
+      "analyzer": "kiwi",
+      "lexicons": {}
+    }
+  },
+  "form": {
+    "type": "blob",
+    "posture": null
+  },
+  "material": {
+    "color": null,
+    "brightness": null,
+    "saturation": null,
+    "roughness": null,
+    "opacity": null,
+    "erosion": null
+  },
+  "layout": {
+    "size": null,
+    "distance": null,
+    "verticalOffset": null
+  },
+  "motion": {
+    "type": null,
+    "speed": null
+  },
+  "body": {
+    "part": null,
+    "layer": null
+  },
+  "_provenance": {
+    "form.type": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "덩어리",
+        "charSpan": [
+          0,
+          3
+        ],
+        "rule": "synthetic.덩어리>form.type"
+      }
+    ]
+  },
+  "_unmatched": [],
+  "_unmapped": [
+    {
+      "lemma": "네모난",
+      "category": "shape",
+      "value": {
+        "shape": "square"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "네모난",
+        "charSpan": [
+          4,
+          7
+        ],
+        "rule": "shapeLexicon.네모난"
+      }
+    }
+  ],
+  "_negated": [],
+  "_alternatives": [],
+  "_inferred": {},
+  "_context": [],
+  "_parts": [],
+  "_uncertain": [],
+  "_measurements": [],
+  "_direction": [],
+  "_needsConfirmation": [],
+  "_clauses": []
+}

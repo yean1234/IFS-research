@@ -1,0 +1,5146 @@
+{
+  "format": "ifs-batch-capture/0.1",
+  "generatedAtUtc": "2026-11-22T15:06:54Z",
+  "ok": true,
+  "disclaimer": "데스크톱 GPU에서 잰 대리 측정값입니다. Quest 3 헤드셋(모바일 GPU, 타일 렌더링, 단일 패스 인스턴싱)의 프레임시간이 아닙니다. 헤드셋 성능은 기기에서 OVR Metrics Tool 등으로 따로 재야 합니다.",
+  "system": {
+    "unityVersion": "6000.0.85f2",
+    "graphicsDevice": "NVIDIA GeForce RTX 5080",
+    "graphicsApi": "Direct3D11",
+    "os": "Windows 11  (10.0.26300)",
+    "batchMode": true
+  },
+  "rendering": {
+    "pipeline": "Built-in",
+    "colorSpace": "Linear",
+    "qualityLevel": "VR PC",
+    "msaa": 4,
+    "shadows": "All",
+    "shadowResolution": "High",
+    "shadowDistance": 8.0,
+    "shadowCascades": 1,
+    "pixelLightCount": 1,
+    "hdr": false,
+    "postProcessing": "없음(색 정확도 우선 — unity/README.md)"
+  },
+  "options": {
+    "specDir": "../docs/validation/render/specs",
+    "width": 2064,
+    "height": 2208,
+    "frames": 300,
+    "warmupFrames": 30,
+    "eyes": 2,
+    "pngWidth": 1024,
+    "fovDeg": 96.0,
+    "eyeHeightM": 1.6,
+    "ipdM": 0.064
+  },
+  "timingMethod": "한 프레임 = 눈 수만큼 Camera.Render()(눈 위치를 IPD/2씩 옮김, 멀티패스 = 가장 불리한 경우) 후 RenderTexture에서 1×1 화소를 Texture2D.ReadPixels로 읽어 CPU가 GPU 완료를 기다리게 함(동기화). Stopwatch로 렌더 시작부터 동기화 끝까지 잼. 준비 프레임은 버림. 에디터 오버헤드·MSAA 해상(resolve) 비용이 포함됨.",
+  "environment": {
+    "floorSizeM": 200.0,
+    "floorColor": [
+      0.46,
+      0.46,
+      0.46
+    ],
+    "gridMajorColor": [
+      0.39,
+      0.39,
+      0.39
+    ],
+    "gridMinorColor": [
+      0.43,
+      0.43,
+      0.43
+    ],
+    "gridLineWidthM": 0.012,
+    "gridFadeDistanceM": 14.0,
+    "skyZenith": [
+      0.6,
+      0.62,
+      0.65
+    ],
+    "skyHorizon": [
+      0.74,
+      0.74,
+      0.75
+    ],
+    "skyGround": [
+      0.42,
+      0.42,
+      0.42
+    ],
+    "ambientSky": [
+      0.56,
+      0.57,
+      0.59
+    ],
+    "ambientEquator": [
+      0.5,
+      0.5,
+      0.5
+    ],
+    "ambientGround": [
+      0.34,
+      0.34,
+      0.34
+    ],
+    "lightColor": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "lightIntensity": 1.0,
+    "lightElevationDeg": 50.0,
+    "lightAzimuthDeg": 30.0,
+    "shadowStrength": 0.7,
+    "softShadows": true,
+    "reflections": true,
+    "reflectionResolution": 128,
+    "reflectionMode": "Custom"
+  },
+  "shaders": [
+    {
+      "resource": "IFS/SceneSpecOpaque",
+      "name": "IFS/SceneSpec Opaque",
+      "found": true,
+      "supported": true,
+      "hasErrors": false,
+      "messages": []
+    },
+    {
+      "resource": "IFS/SceneSpecFade",
+      "name": "IFS/SceneSpec Fade",
+      "found": true,
+      "supported": true,
+      "hasErrors": false,
+      "messages": []
+    },
+    {
+      "resource": "IFS/EnvironmentFloor",
+      "name": "IFS/Environment Floor",
+      "found": true,
+      "supported": true,
+      "hasErrors": false,
+      "messages": []
+    },
+    {
+      "resource": "IFS/EnvironmentSky",
+      "name": "IFS/Environment Sky",
+      "found": true,
+      "supported": true,
+      "hasErrors": false,
+      "messages": []
+    }
+  ],
+  "summary": {
+    "specFiles": 13,
+    "loaded": 13,
+    "captureFailures": 0,
+    "consoleErrors": 0,
+    "consoleExceptions": 0,
+    "frameMsP95Max": 1.981,
+    "frameMsMaxMax": 3.209,
+    "drawCallsPerEyeMax": 24,
+    "submittedTrianglesPerEyeMax": 102800,
+    "realtimeShadowLights": 1,
+    "color": {
+      "stated": {
+        "specs": 7,
+        "primaryMean": 5.35,
+        "primaryMax": 9.96,
+        "inContextMean": 8.84,
+        "inContextMax": 17.05,
+        "sceneMean": 5.35,
+        "sceneMax": 9.96,
+        "frontalMean": 5.85,
+        "frontalMax": 13.88
+      },
+      "withDefaults": {
+        "specs": 6,
+        "primaryMean": 5.24,
+        "primaryMax": 8.25,
+        "inContextMean": 5.24,
+        "inContextMax": 8.25,
+        "sceneMean": 5.24,
+        "sceneMax": 8.25,
+        "frontalMean": 2.78,
+        "frontalMax": 4.55
+      },
+      "note": "ΔE00(CIEDE2000) vs SceneSpec 색. stated = h·s·l을 모두 참여자가 말한 spec만(1차 보고값). withDefaults = 하나라도 기본값으로 채운 spec(색 반영 정확도에 넣지 않음). primary = 불투명 inContext, 반투명 scene."
+    },
+    "ac4": {
+      "loadErrorsAndExceptionsZero": true,
+      "frameMsP95AtMost13_9": true,
+      "drawCallsPerEyeEstimateAtMost100": true,
+      "trianglesPerEyeEstimateAtMost300k": true,
+      "realtimeShadowLightsAtMost1": true,
+      "estimatedItems": [
+        "drawCallsPerEyeEstimateAtMost100",
+        "trianglesPerEyeEstimateAtMost300k"
+      ],
+      "drawCallsTrianglesMeasuredByProfiler": false,
+      "note": "EditMode 테스트 통과는 이 보고서가 아니라 -runTests 결과(xml)로 확인. 프레임시간은 데스크톱 대리 측정. 드로콜·삼각형은 실측이 아니라 패스 수 × 메시 삼각형으로 계산한 추정(renderStats.computed). UnityStats·ProfilerRecorder가 이 실행 방식에서 0이라 교차 확인하지 못함 → PlayMode·기기 실측 필요."
+    },
+    "shapes": {
+      "specs": 13,
+      "byStatus": {
+        "applied": 4,
+        "none": 9
+      },
+      "byModel": {
+        "Sphere": 1,
+        "Cube": 1,
+        "FlatCylinder": 1,
+        "Cone": 1
+      },
+      "viaPrefab": 4,
+      "viaCode": 0,
+      "unmappedValues": {},
+      "notAppliedForm": {},
+      "conflict": {},
+      "note": "status: applied = 모양 모형 적용, none = 모양어 없음(기본 모형), unmapped_shape = 표에 없는 모양어만 있어 모양 정보 없이 만든 모형, not_applied_form = spec이 mist·shell·fragments를 말해 그 형태 모형을 지킴. 표: round→Sphere, square→Cube, flat→FlatCylinder, pointed→Cone."
+    }
+  },
+  "shapePrefabs": {
+    "folder": "Assets/Prefabs/Shapes",
+    "connected": {
+      "round": "Assets/Prefabs/Shapes/Sphere.prefab",
+      "square": "Assets/Prefabs/Shapes/Cube.prefab",
+      "flat": "Assets/Prefabs/Shapes/FlatCylinder.prefab",
+      "pointed": "Assets/Prefabs/Shapes/Cone.prefab"
+    },
+    "note": "모양 값 → 프리팹 경로(null = 프리팹 없음 → 로더가 같은 형상을 코드로 만들고 경고, spec별 shape.viaPrefab = false)."
+  },
+  "specs": [
+    {
+      "spec": "R01_mist_op100.json",
+      "loaded": true,
+      "sessionId": "R01",
+      "params": {
+        "form.posture": "none",
+        "form.type": "mist",
+        "layout.distance": 0.33,
+        "layout.size": 0.5,
+        "layout.verticalOffset": 0.75,
+        "material.brightness": 0.5,
+        "material.color.h": 0.6,
+        "material.color.l": 0.6,
+        "material.color.s": 0.45,
+        "material.erosion": 0.0,
+        "material.opacity": 1.0,
+        "material.roughness": 0.5,
+        "motion.speed": 0.5,
+        "motion.type": "still"
+      },
+      "defaultsUsed": [
+        "form.posture",
+        "material.brightness",
+        "material.roughness",
+        "material.erosion",
+        "layout.size",
+        "layout.distance",
+        "layout.verticalOffset",
+        "motion.type",
+        "motion.speed"
+      ],
+      "inferredUsed": [],
+      "notes": [
+        "form.posture: SceneSpec 값이 null → 기본값 none 사용",
+        "material.brightness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.roughness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.erosion: SceneSpec 값이 null → 기본값 0 사용",
+        "layout.size: SceneSpec 값이 null → 기본값 0.5 사용",
+        "layout.distance: SceneSpec 값이 null → 기본값 0.33 사용",
+        "layout.verticalOffset: SceneSpec 값이 null → 기본값 0.75 사용",
+        "motion.type: SceneSpec 값이 null → 기본값 still 사용",
+        "motion.speed: SceneSpec 값이 null → 기본값 0.5 사용",
+        "form.type=mist: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시"
+      ],
+      "shape": {
+        "status": "none",
+        "applied": null,
+        "model": null,
+        "viaPrefab": null,
+        "formType": "mist",
+        "words": []
+      },
+      "placement": {
+        "objectCenter": [
+          0.0,
+          1.282,
+          1.191
+        ],
+        "horizontalDistanceM": 1.191,
+        "heightM": 1.282,
+        "cameraPitchDeg": 14.947,
+        "motionNote": "에디트 모드 정지 화면 — motion.type은 이 PNG에 보이지 않음(재생 중에만 움직임)"
+      },
+      "png": "R01_mist_op100.png",
+      "color": {
+        "specHsl": [
+          0.6,
+          0.45,
+          0.6
+        ],
+        "specSrgb": [
+          0.42,
+          0.564,
+          0.78
+        ],
+        "specColorIsDefault": false,
+        "specColorDefaultComponents": [],
+        "brightness": 0.5,
+        "brightnessIsDefault": true,
+        "shaderTargetSrgb": [
+          0.42,
+          0.564,
+          0.78
+        ],
+        "transparent": true,
+        "primary": "scene",
+        "floorDuringIsolatedRenders": "unlitBackgroundColor",
+        "method": "형상만 검은·흰 배경에 렌더해 화소별 덮임 a = 1 − (W − B)와 배경과 섞이기 전 색 c = B / a를 구함(선형). 이때 바닥은 끄지 않고 배경과 같은 색의 Unlit 머티리얼로 바꿔 그림자 수신자 구성을 실제 장면과 같게 둠. 덮인 화소(a ≥ 0.05)의 경계 상자 가운데 50%×50% 안에서 선형 평균 → sRGB. frontal = 광원을 카메라 시선 방향으로 돌린 정면 조명, scene = 장면 방향광 그대로, inContext = 실제 장면 렌더(바닥·하늘·반투명이면 배경과 섞인 값). primary = 보고·판정에 쓰는 값: 불투명이면 inContext(참여자가 보는 색), 반투명이면 scene(배경과 섞이기 전 색).",
+        "coveredPixels": 52250,
+        "screenBox": [
+          910,
+          968,
+          266,
+          252
+        ],
+        "meanCoverageInCenter": 0.431,
+        "frontal": {
+          "label": "정면 조명(광원 = 카메라 시선 방향), 형상만",
+          "pixels": 16758,
+          "meanSrgb": [
+            0.479,
+            0.614,
+            0.827
+          ],
+          "meanSrgb8": [
+            122,
+            157,
+            211
+          ],
+          "lab": [
+            64.04,
+            2.08,
+            -31.39
+          ],
+          "deltaE2000VsSpec": 4.27,
+          "deltaE76VsSpec": 5.05,
+          "deltaE2000VsShaderTarget": 4.27,
+          "deltaLVsSpec": 4.93
+        },
+        "scene": {
+          "label": "장면 조명(방향광 고도·방위 그대로), 형상만",
+          "pixels": 16758,
+          "meanSrgb": [
+            0.392,
+            0.509,
+            0.692
+          ],
+          "meanSrgb8": [
+            100,
+            130,
+            177
+          ],
+          "lab": [
+            53.77,
+            1.89,
+            -28.03
+          ],
+          "deltaE2000VsSpec": 5.29,
+          "deltaE76VsSpec": 6.94,
+          "deltaE2000VsShaderTarget": 5.29,
+          "deltaLVsSpec": -5.33
+        },
+        "inContext": {
+          "label": "실제 장면 렌더(바닥·하늘·그림자 포함), 같은 화소",
+          "pixels": 16758,
+          "meanSrgb": [
+            0.468,
+            0.514,
+            0.603
+          ],
+          "meanSrgb8": [
+            119,
+            131,
+            154
+          ],
+          "lab": [
+            54.59,
+            0.8,
+            -13.49
+          ],
+          "deltaE2000VsSpec": 10.16,
+          "deltaE76VsSpec": 19.55,
+          "deltaE2000VsShaderTarget": 10.16,
+          "deltaLVsSpec": -4.51
+        },
+        "diagnostics": {
+          "litFloorBlackBackground": {
+            "label": "진단: 바닥 원래 머티리얼 + 검은 배경(하늘 없음), 같은 화소",
+            "pixels": 16758,
+            "meanSrgb": [
+              0.468,
+              0.514,
+              0.603
+            ],
+            "meanSrgb8": [
+              119,
+              131,
+              154
+            ],
+            "lab": [
+              54.59,
+              0.8,
+              -13.49
+            ],
+            "deltaE2000VsSpec": 10.16,
+            "deltaE76VsSpec": 19.55,
+            "deltaE2000VsShaderTarget": 10.16,
+            "deltaLVsSpec": -4.51
+          },
+          "noFloorSkybox": {
+            "label": "진단: 하늘 그대로 + 바닥 끔, 같은 화소",
+            "pixels": 16758,
+            "meanSrgb": [
+              0.429,
+              0.479,
+              0.573
+            ],
+            "meanSrgb8": [
+              109,
+              122,
+              146
+            ],
+            "lab": [
+              51.02,
+              0.92,
+              -14.57
+            ],
+            "deltaE2000VsSpec": 11.56,
+            "deltaE76VsSpec": 19.67,
+            "deltaE2000VsShaderTarget": 11.56,
+            "deltaLVsSpec": -8.09
+          },
+          "inContextAgain": {
+            "label": "진단: 실제 장면을 한 번 더 렌더, 같은 화소",
+            "pixels": 16758,
+            "meanSrgb": [
+              0.468,
+              0.514,
+              0.603
+            ],
+            "meanSrgb8": [
+              119,
+              131,
+              154
+            ],
+            "lab": [
+              54.59,
+              0.8,
+              -13.49
+            ],
+            "deltaE2000VsSpec": 10.16,
+            "deltaE76VsSpec": 19.55,
+            "deltaE2000VsShaderTarget": 10.16,
+            "deltaLVsSpec": -4.51
+          }
+        },
+        "sceneVsInContextDeltaE2000": 7.51
+      },
+      "pngDetail": "R01_mist_op100_detail.png",
+      "renderStats": {
+        "unityStats": {
+          "drawCalls": 0,
+          "batches": 0,
+          "setPassCalls": 0,
+          "triangles": 0,
+          "vertices": 0,
+          "shadowCasters": 0,
+          "meaningful": false,
+          "note": "배치모드·에디트 모드의 수동 Camera.Render()에서는 UnityStats가 채워지지 않음(0) → 직접 계산값을 쓴다."
+        },
+        "profilerRecorder": {
+          "drawCalls": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "batches": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "setPassCalls": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "triangles": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "vertices": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "shadowCasters": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "meaningful": false,
+          "note": "배치모드·에디트 모드의 수동 Camera.Render()에서는 렌더 카운터가 프레임 끝에 갱신되지 않아 0 → 실측은 PlayMode 또는 기기(OVR Metrics)에서."
+        },
+        "computed": {
+          "visibleRenderers": 2,
+          "meshTrianglesInView": 5320,
+          "shadowLights": 1,
+          "drawCallsPerEyeEstimate": 5,
+          "drawCallsBreakdown": {
+            "forward": 2,
+            "cameraDepth": 1,
+            "shadowMap": 0,
+            "skybox": 1,
+            "screenSpaceShadowResolve": 1
+          },
+          "submittedTrianglesPerEyeEstimate": 5520,
+          "drawCallsPerStereoFrameMultiPass": 10,
+          "note": "직접 계산(추정): 렌더러별 패스(LightMode = ForwardBase/ForwardAdd/ShadowCaster)×메시 삼각형. 하늘 메시 삼각형은 제외. 눈당 값 = 단일 패스 인스턴싱 스테레오 프레임과 같은 수의 드로콜. 멀티패스(눈마다 Camera.Render, 이 도구의 시간 측정 방식)면 그림자 맵까지 ×2.",
+          "renderers": [
+            {
+              "name": "model (mist)",
+              "triangles": 5120,
+              "inView": true,
+              "forwardPasses": 1,
+              "shadowCasterPasses": 0,
+              "castsShadow": false,
+              "transparent": true,
+              "passLightModes": [
+                "FORWARDBASE",
+                "FORWARDADD",
+                "META"
+              ]
+            },
+            {
+              "name": "floor (1 m grid)",
+              "triangles": 200,
+              "inView": true,
+              "forwardPasses": 1,
+              "shadowCasterPasses": 0,
+              "castsShadow": false,
+              "transparent": false,
+              "passLightModes": [
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "META"
+              ]
+            }
+          ]
+        }
+      },
+      "performance": {
+        "eyeWidth": 2064,
+        "eyeHeight": 2208,
+        "eyes": 2,
+        "msaa": 4,
+        "frames": 300,
+        "warmupFrames": 30,
+        "frameMsP50": 0.426,
+        "frameMsP95": 1.981,
+        "frameMsMax": 3.209,
+        "frameMsMean": 0.714,
+        "fpsAtP95": 504.9
+      },
+      "console": {
+        "errors": 0,
+        "exceptions": 0,
+        "warnings": 0,
+        "infos": 11,
+        "messages": []
+      }
+    },
+    {
+      "spec": "R02_mist_op060.json",
+      "loaded": true,
+      "sessionId": "R02",
+      "params": {
+        "form.posture": "none",
+        "form.type": "mist",
+        "layout.distance": 0.33,
+        "layout.size": 0.5,
+        "layout.verticalOffset": 0.75,
+        "material.brightness": 0.5,
+        "material.color.h": 0.6,
+        "material.color.l": 0.6,
+        "material.color.s": 0.45,
+        "material.erosion": 0.0,
+        "material.opacity": 0.6,
+        "material.roughness": 0.5,
+        "motion.speed": 0.5,
+        "motion.type": "still"
+      },
+      "defaultsUsed": [
+        "form.posture",
+        "material.brightness",
+        "material.roughness",
+        "material.erosion",
+        "layout.size",
+        "layout.distance",
+        "layout.verticalOffset",
+        "motion.type",
+        "motion.speed"
+      ],
+      "inferredUsed": [],
+      "notes": [
+        "form.posture: SceneSpec 값이 null → 기본값 none 사용",
+        "material.brightness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.roughness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.erosion: SceneSpec 값이 null → 기본값 0 사용",
+        "layout.size: SceneSpec 값이 null → 기본값 0.5 사용",
+        "layout.distance: SceneSpec 값이 null → 기본값 0.33 사용",
+        "layout.verticalOffset: SceneSpec 값이 null → 기본값 0.75 사용",
+        "motion.type: SceneSpec 값이 null → 기본값 still 사용",
+        "motion.speed: SceneSpec 값이 null → 기본값 0.5 사용",
+        "form.type=mist: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시"
+      ],
+      "shape": {
+        "status": "none",
+        "applied": null,
+        "model": null,
+        "viaPrefab": null,
+        "formType": "mist",
+        "words": []
+      },
+      "placement": {
+        "objectCenter": [
+          0.0,
+          1.282,
+          1.191
+        ],
+        "horizontalDistanceM": 1.191,
+        "heightM": 1.282,
+        "cameraPitchDeg": 14.947,
+        "motionNote": "에디트 모드 정지 화면 — motion.type은 이 PNG에 보이지 않음(재생 중에만 움직임)"
+      },
+      "png": "R02_mist_op060.png",
+      "color": {
+        "specHsl": [
+          0.6,
+          0.45,
+          0.6
+        ],
+        "specSrgb": [
+          0.42,
+          0.564,
+          0.78
+        ],
+        "specColorIsDefault": false,
+        "specColorDefaultComponents": [],
+        "brightness": 0.5,
+        "brightnessIsDefault": true,
+        "shaderTargetSrgb": [
+          0.42,
+          0.564,
+          0.78
+        ],
+        "transparent": true,
+        "primary": "scene",
+        "floorDuringIsolatedRenders": "unlitBackgroundColor",
+        "method": "형상만 검은·흰 배경에 렌더해 화소별 덮임 a = 1 − (W − B)와 배경과 섞이기 전 색 c = B / a를 구함(선형). 이때 바닥은 끄지 않고 배경과 같은 색의 Unlit 머티리얼로 바꿔 그림자 수신자 구성을 실제 장면과 같게 둠. 덮인 화소(a ≥ 0.05)의 경계 상자 가운데 50%×50% 안에서 선형 평균 → sRGB. frontal = 광원을 카메라 시선 방향으로 돌린 정면 조명, scene = 장면 방향광 그대로, inContext = 실제 장면 렌더(바닥·하늘·반투명이면 배경과 섞인 값). primary = 보고·판정에 쓰는 값: 불투명이면 inContext(참여자가 보는 색), 반투명이면 scene(배경과 섞이기 전 색).",
+        "coveredPixels": 50283,
+        "screenBox": [
+          911,
+          970,
+          263,
+          248
+        ],
+        "meanCoverageInCenter": 0.259,
+        "frontal": {
+          "label": "정면 조명(광원 = 카메라 시선 방향), 형상만",
+          "pixels": 16368,
+          "meanSrgb": [
+            0.48,
+            0.615,
+            0.827
+          ],
+          "meanSrgb8": [
+            122,
+            157,
+            211
+          ],
+          "lab": [
+            64.1,
+            2.1,
+            -31.39
+          ],
+          "deltaE2000VsSpec": 4.32,
+          "deltaE76VsSpec": 5.11,
+          "deltaE2000VsShaderTarget": 4.32,
+          "deltaLVsSpec": 4.99
+        },
+        "scene": {
+          "label": "장면 조명(방향광 고도·방위 그대로), 형상만",
+          "pixels": 16368,
+          "meanSrgb": [
+            0.392,
+            0.509,
+            0.692
+          ],
+          "meanSrgb8": [
+            100,
+            130,
+            177
+          ],
+          "lab": [
+            53.8,
+            1.89,
+            -28.04
+          ],
+          "deltaE2000VsSpec": 5.27,
+          "deltaE76VsSpec": 6.92,
+          "deltaE2000VsShaderTarget": 5.27,
+          "deltaLVsSpec": -5.31
+        },
+        "inContext": {
+          "label": "실제 장면 렌더(바닥·하늘·그림자 포함), 같은 화소",
+          "pixels": 16368,
+          "meanSrgb": [
+            0.488,
+            0.516,
+            0.572
+          ],
+          "meanSrgb8": [
+            124,
+            132,
+            146
+          ],
+          "lab": [
+            54.83,
+            0.48,
+            -8.56
+          ],
+          "deltaE2000VsSpec": 12.99,
+          "deltaE76VsSpec": 24.33,
+          "deltaE2000VsShaderTarget": 12.99,
+          "deltaLVsSpec": -4.27
+        },
+        "diagnostics": {
+          "litFloorBlackBackground": {
+            "label": "진단: 바닥 원래 머티리얼 + 검은 배경(하늘 없음), 같은 화소",
+            "pixels": 16368,
+            "meanSrgb": [
+              0.488,
+              0.516,
+              0.572
+            ],
+            "meanSrgb8": [
+              124,
+              132,
+              146
+            ],
+            "lab": [
+              54.83,
+              0.48,
+              -8.56
+            ],
+            "deltaE2000VsSpec": 12.99,
+            "deltaE76VsSpec": 24.33,
+            "deltaE2000VsShaderTarget": 12.99,
+            "deltaLVsSpec": -4.27
+          },
+          "noFloorSkybox": {
+            "label": "진단: 하늘 그대로 + 바닥 끔, 같은 화소",
+            "pixels": 16368,
+            "meanSrgb": [
+              0.438,
+              0.468,
+              0.53
+            ],
+            "meanSrgb8": [
+              112,
+              119,
+              135
+            ],
+            "lab": [
+              50.07,
+              0.61,
+              -9.48
+            ],
+            "deltaE2000VsSpec": 14.63,
+            "deltaE76VsSpec": 24.74,
+            "deltaE2000VsShaderTarget": 14.63,
+            "deltaLVsSpec": -9.03
+          },
+          "inContextAgain": {
+            "label": "진단: 실제 장면을 한 번 더 렌더, 같은 화소",
+            "pixels": 16368,
+            "meanSrgb": [
+              0.488,
+              0.516,
+              0.572
+            ],
+            "meanSrgb8": [
+              124,
+              132,
+              146
+            ],
+            "lab": [
+              54.83,
+              0.48,
+              -8.56
+            ],
+            "deltaE2000VsSpec": 12.99,
+            "deltaE76VsSpec": 24.33,
+            "deltaE2000VsShaderTarget": 12.99,
+            "deltaLVsSpec": -4.27
+          }
+        },
+        "sceneVsInContextDeltaE2000": 10.7
+      },
+      "pngDetail": "R02_mist_op060_detail.png",
+      "renderStats": {
+        "unityStats": {
+          "drawCalls": 0,
+          "batches": 0,
+          "setPassCalls": 0,
+          "triangles": 0,
+          "vertices": 0,
+          "shadowCasters": 0,
+          "meaningful": false,
+          "note": "배치모드·에디트 모드의 수동 Camera.Render()에서는 UnityStats가 채워지지 않음(0) → 직접 계산값을 쓴다."
+        },
+        "profilerRecorder": {
+          "drawCalls": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "batches": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "setPassCalls": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "triangles": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "vertices": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "shadowCasters": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "meaningful": false,
+          "note": "배치모드·에디트 모드의 수동 Camera.Render()에서는 렌더 카운터가 프레임 끝에 갱신되지 않아 0 → 실측은 PlayMode 또는 기기(OVR Metrics)에서."
+        },
+        "computed": {
+          "visibleRenderers": 2,
+          "meshTrianglesInView": 5320,
+          "shadowLights": 1,
+          "drawCallsPerEyeEstimate": 5,
+          "drawCallsBreakdown": {
+            "forward": 2,
+            "cameraDepth": 1,
+            "shadowMap": 0,
+            "skybox": 1,
+            "screenSpaceShadowResolve": 1
+          },
+          "submittedTrianglesPerEyeEstimate": 5520,
+          "drawCallsPerStereoFrameMultiPass": 10,
+          "note": "직접 계산(추정): 렌더러별 패스(LightMode = ForwardBase/ForwardAdd/ShadowCaster)×메시 삼각형. 하늘 메시 삼각형은 제외. 눈당 값 = 단일 패스 인스턴싱 스테레오 프레임과 같은 수의 드로콜. 멀티패스(눈마다 Camera.Render, 이 도구의 시간 측정 방식)면 그림자 맵까지 ×2.",
+          "renderers": [
+            {
+              "name": "model (mist)",
+              "triangles": 5120,
+              "inView": true,
+              "forwardPasses": 1,
+              "shadowCasterPasses": 0,
+              "castsShadow": false,
+              "transparent": true,
+              "passLightModes": [
+                "FORWARDBASE",
+                "FORWARDADD",
+                "META"
+              ]
+            },
+            {
+              "name": "floor (1 m grid)",
+              "triangles": 200,
+              "inView": true,
+              "forwardPasses": 1,
+              "shadowCasterPasses": 0,
+              "castsShadow": false,
+              "transparent": false,
+              "passLightModes": [
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "META"
+              ]
+            }
+          ]
+        }
+      },
+      "performance": {
+        "eyeWidth": 2064,
+        "eyeHeight": 2208,
+        "eyes": 2,
+        "msaa": 4,
+        "frames": 300,
+        "warmupFrames": 30,
+        "frameMsP50": 0.421,
+        "frameMsP95": 0.541,
+        "frameMsMax": 0.718,
+        "frameMsMean": 0.441,
+        "fpsAtP95": 1849.8
+      },
+      "console": {
+        "errors": 0,
+        "exceptions": 0,
+        "warnings": 0,
+        "infos": 11,
+        "messages": []
+      }
+    },
+    {
+      "spec": "R03_mist_op015.json",
+      "loaded": true,
+      "sessionId": "R03",
+      "params": {
+        "form.posture": "none",
+        "form.type": "mist",
+        "layout.distance": 0.33,
+        "layout.size": 0.5,
+        "layout.verticalOffset": 0.75,
+        "material.brightness": 0.5,
+        "material.color.h": 0.6,
+        "material.color.l": 0.6,
+        "material.color.s": 0.45,
+        "material.erosion": 0.0,
+        "material.opacity": 0.15,
+        "material.roughness": 0.5,
+        "motion.speed": 0.5,
+        "motion.type": "still"
+      },
+      "defaultsUsed": [
+        "form.posture",
+        "material.brightness",
+        "material.roughness",
+        "material.erosion",
+        "layout.size",
+        "layout.distance",
+        "layout.verticalOffset",
+        "motion.type",
+        "motion.speed"
+      ],
+      "inferredUsed": [],
+      "notes": [
+        "form.posture: SceneSpec 값이 null → 기본값 none 사용",
+        "material.brightness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.roughness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.erosion: SceneSpec 값이 null → 기본값 0 사용",
+        "layout.size: SceneSpec 값이 null → 기본값 0.5 사용",
+        "layout.distance: SceneSpec 값이 null → 기본값 0.33 사용",
+        "layout.verticalOffset: SceneSpec 값이 null → 기본값 0.75 사용",
+        "motion.type: SceneSpec 값이 null → 기본값 still 사용",
+        "motion.speed: SceneSpec 값이 null → 기본값 0.5 사용",
+        "form.type=mist: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시"
+      ],
+      "shape": {
+        "status": "none",
+        "applied": null,
+        "model": null,
+        "viaPrefab": null,
+        "formType": "mist",
+        "words": []
+      },
+      "placement": {
+        "objectCenter": [
+          0.0,
+          1.282,
+          1.191
+        ],
+        "horizontalDistanceM": 1.191,
+        "heightM": 1.282,
+        "cameraPitchDeg": 14.947,
+        "motionNote": "에디트 모드 정지 화면 — motion.type은 이 PNG에 보이지 않음(재생 중에만 움직임)"
+      },
+      "png": "R03_mist_op015.png",
+      "color": {
+        "specHsl": [
+          0.6,
+          0.45,
+          0.6
+        ],
+        "specSrgb": [
+          0.42,
+          0.564,
+          0.78
+        ],
+        "specColorIsDefault": false,
+        "specColorDefaultComponents": [],
+        "brightness": 0.5,
+        "brightnessIsDefault": true,
+        "shaderTargetSrgb": [
+          0.42,
+          0.564,
+          0.78
+        ],
+        "transparent": true,
+        "primary": "scene",
+        "floorDuringIsolatedRenders": "unlitBackgroundColor",
+        "method": "형상만 검은·흰 배경에 렌더해 화소별 덮임 a = 1 − (W − B)와 배경과 섞이기 전 색 c = B / a를 구함(선형). 이때 바닥은 끄지 않고 배경과 같은 색의 Unlit 머티리얼로 바꿔 그림자 수신자 구성을 실제 장면과 같게 둠. 덮인 화소(a ≥ 0.05)의 경계 상자 가운데 50%×50% 안에서 선형 평균 → sRGB. frontal = 광원을 카메라 시선 방향으로 돌린 정면 조명, scene = 장면 방향광 그대로, inContext = 실제 장면 렌더(바닥·하늘·반투명이면 배경과 섞인 값). primary = 보고·판정에 쓰는 값: 불투명이면 inContext(참여자가 보는 색), 반투명이면 scene(배경과 섞이기 전 색).",
+        "coveredPixels": 22734,
+        "screenBox": [
+          942,
+          1008,
+          198,
+          185
+        ],
+        "meanCoverageInCenter": 0.067,
+        "frontal": {
+          "label": "정면 조명(광원 = 카메라 시선 방향), 형상만",
+          "pixels": 9108,
+          "meanSrgb": [
+            0.489,
+            0.622,
+            0.833
+          ],
+          "meanSrgb8": [
+            125,
+            159,
+            212
+          ],
+          "lab": [
+            64.79,
+            2.03,
+            -31.07
+          ],
+          "deltaE2000VsSpec": 4.9,
+          "deltaE76VsSpec": 5.85,
+          "deltaE2000VsShaderTarget": 4.9,
+          "deltaLVsSpec": 5.69
+        },
+        "scene": {
+          "label": "장면 조명(방향광 고도·방위 그대로), 형상만",
+          "pixels": 9108,
+          "meanSrgb": [
+            0.392,
+            0.51,
+            0.693
+          ],
+          "meanSrgb8": [
+            100,
+            130,
+            177
+          ],
+          "lab": [
+            53.84,
+            1.91,
+            -28.1
+          ],
+          "deltaE2000VsSpec": 5.22,
+          "deltaE76VsSpec": 6.84,
+          "deltaE2000VsShaderTarget": 5.22,
+          "deltaLVsSpec": -5.26
+        },
+        "inContext": {
+          "label": "실제 장면 렌더(바닥·하늘·그림자 포함), 같은 화소",
+          "pixels": 9108,
+          "meanSrgb": [
+            0.51,
+            0.518,
+            0.535
+          ],
+          "meanSrgb8": [
+            130,
+            132,
+            136
+          ],
+          "lab": [
+            55.14,
+            0.12,
+            -2.62
+          ],
+          "deltaE2000VsSpec": 17.05,
+          "deltaE76VsSpec": 30.17,
+          "deltaE2000VsShaderTarget": 17.05,
+          "deltaLVsSpec": -3.96
+        },
+        "diagnostics": {
+          "litFloorBlackBackground": {
+            "label": "진단: 바닥 원래 머티리얼 + 검은 배경(하늘 없음), 같은 화소",
+            "pixels": 9108,
+            "meanSrgb": [
+              0.51,
+              0.518,
+              0.535
+            ],
+            "meanSrgb8": [
+              130,
+              132,
+              136
+            ],
+            "lab": [
+              55.14,
+              0.12,
+              -2.62
+            ],
+            "deltaE2000VsSpec": 17.05,
+            "deltaE76VsSpec": 30.17,
+            "deltaE2000VsShaderTarget": 17.05,
+            "deltaLVsSpec": -3.96
+          },
+          "noFloorSkybox": {
+            "label": "진단: 하늘 그대로 + 바닥 끔, 같은 화소",
+            "pixels": 9108,
+            "meanSrgb": [
+              0.449,
+              0.457,
+              0.475
+            ],
+            "meanSrgb8": [
+              114,
+              116,
+              121
+            ],
+            "lab": [
+              48.97,
+              0.2,
+              -2.79
+            ],
+            "deltaE2000VsSpec": 19.24,
+            "deltaE76VsSpec": 31.41,
+            "deltaE2000VsShaderTarget": 19.24,
+            "deltaLVsSpec": -10.13
+          },
+          "inContextAgain": {
+            "label": "진단: 실제 장면을 한 번 더 렌더, 같은 화소",
+            "pixels": 9108,
+            "meanSrgb": [
+              0.51,
+              0.518,
+              0.535
+            ],
+            "meanSrgb8": [
+              130,
+              132,
+              136
+            ],
+            "lab": [
+              55.14,
+              0.12,
+              -2.62
+            ],
+            "deltaE2000VsSpec": 17.05,
+            "deltaE76VsSpec": 30.17,
+            "deltaE2000VsShaderTarget": 17.05,
+            "deltaLVsSpec": -3.96
+          }
+        },
+        "sceneVsInContextDeltaE2000": 15.13
+      },
+      "pngDetail": "R03_mist_op015_detail.png",
+      "renderStats": {
+        "unityStats": {
+          "drawCalls": 0,
+          "batches": 0,
+          "setPassCalls": 0,
+          "triangles": 0,
+          "vertices": 0,
+          "shadowCasters": 0,
+          "meaningful": false,
+          "note": "배치모드·에디트 모드의 수동 Camera.Render()에서는 UnityStats가 채워지지 않음(0) → 직접 계산값을 쓴다."
+        },
+        "profilerRecorder": {
+          "drawCalls": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "batches": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "setPassCalls": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "triangles": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "vertices": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "shadowCasters": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "meaningful": false,
+          "note": "배치모드·에디트 모드의 수동 Camera.Render()에서는 렌더 카운터가 프레임 끝에 갱신되지 않아 0 → 실측은 PlayMode 또는 기기(OVR Metrics)에서."
+        },
+        "computed": {
+          "visibleRenderers": 2,
+          "meshTrianglesInView": 5320,
+          "shadowLights": 1,
+          "drawCallsPerEyeEstimate": 5,
+          "drawCallsBreakdown": {
+            "forward": 2,
+            "cameraDepth": 1,
+            "shadowMap": 0,
+            "skybox": 1,
+            "screenSpaceShadowResolve": 1
+          },
+          "submittedTrianglesPerEyeEstimate": 5520,
+          "drawCallsPerStereoFrameMultiPass": 10,
+          "note": "직접 계산(추정): 렌더러별 패스(LightMode = ForwardBase/ForwardAdd/ShadowCaster)×메시 삼각형. 하늘 메시 삼각형은 제외. 눈당 값 = 단일 패스 인스턴싱 스테레오 프레임과 같은 수의 드로콜. 멀티패스(눈마다 Camera.Render, 이 도구의 시간 측정 방식)면 그림자 맵까지 ×2.",
+          "renderers": [
+            {
+              "name": "model (mist)",
+              "triangles": 5120,
+              "inView": true,
+              "forwardPasses": 1,
+              "shadowCasterPasses": 0,
+              "castsShadow": false,
+              "transparent": true,
+              "passLightModes": [
+                "FORWARDBASE",
+                "FORWARDADD",
+                "META"
+              ]
+            },
+            {
+              "name": "floor (1 m grid)",
+              "triangles": 200,
+              "inView": true,
+              "forwardPasses": 1,
+              "shadowCasterPasses": 0,
+              "castsShadow": false,
+              "transparent": false,
+              "passLightModes": [
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "META"
+              ]
+            }
+          ]
+        }
+      },
+      "performance": {
+        "eyeWidth": 2064,
+        "eyeHeight": 2208,
+        "eyes": 2,
+        "msaa": 4,
+        "frames": 300,
+        "warmupFrames": 30,
+        "frameMsP50": 0.42,
+        "frameMsP95": 0.524,
+        "frameMsMax": 0.596,
+        "frameMsMean": 0.435,
+        "fpsAtP95": 1908.0
+      },
+      "console": {
+        "errors": 0,
+        "exceptions": 0,
+        "warnings": 0,
+        "infos": 11,
+        "messages": []
+      }
+    },
+    {
+      "spec": "R04_frag_small.json",
+      "loaded": true,
+      "sessionId": "R04",
+      "params": {
+        "form.posture": "none",
+        "form.type": "fragments",
+        "layout.distance": 0.33,
+        "layout.size": 0.4,
+        "layout.verticalOffset": 0.75,
+        "material.brightness": 0.5,
+        "material.color.h": 0.0,
+        "material.color.l": 0.7,
+        "material.color.s": 0.0,
+        "material.erosion": 0.0,
+        "material.opacity": 1.0,
+        "material.roughness": 0.5,
+        "motion.speed": 0.5,
+        "motion.type": "still"
+      },
+      "defaultsUsed": [
+        "form.posture",
+        "material.color.h",
+        "material.color.s",
+        "material.color.l",
+        "material.brightness",
+        "material.roughness",
+        "material.opacity",
+        "material.erosion",
+        "layout.distance",
+        "layout.verticalOffset",
+        "motion.type",
+        "motion.speed"
+      ],
+      "inferredUsed": [],
+      "notes": [
+        "form.posture: SceneSpec 값이 null → 기본값 none 사용",
+        "material.color.h: SceneSpec 값이 null → 기본값 0 사용",
+        "material.color.s: SceneSpec 값이 null → 기본값 0 사용",
+        "material.color.l: SceneSpec 값이 null → 기본값 0.7 사용",
+        "material.brightness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.roughness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.opacity: SceneSpec 값이 null → 기본값 1 사용",
+        "material.erosion: SceneSpec 값이 null → 기본값 0 사용",
+        "layout.distance: SceneSpec 값이 null → 기본값 0.33 사용",
+        "layout.verticalOffset: SceneSpec 값이 null → 기본값 0.75 사용",
+        "motion.type: SceneSpec 값이 null → 기본값 still 사용",
+        "motion.speed: SceneSpec 값이 null → 기본값 0.5 사용",
+        "form.type=fragments: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시"
+      ],
+      "shape": {
+        "status": "none",
+        "applied": null,
+        "model": null,
+        "viaPrefab": null,
+        "formType": "fragments",
+        "words": []
+      },
+      "placement": {
+        "objectCenter": [
+          -0.003,
+          1.309,
+          1.17
+        ],
+        "horizontalDistanceM": 1.17,
+        "heightM": 1.309,
+        "cameraPitchDeg": 13.971,
+        "motionNote": "에디트 모드 정지 화면 — motion.type은 이 PNG에 보이지 않음(재생 중에만 움직임)"
+      },
+      "png": "R04_frag_small.png",
+      "color": {
+        "specHsl": [
+          0.0,
+          0.0,
+          0.7
+        ],
+        "specSrgb": [
+          0.7,
+          0.7,
+          0.7
+        ],
+        "specColorIsDefault": true,
+        "specColorDefaultComponents": [
+          "h",
+          "s",
+          "l"
+        ],
+        "brightness": 0.5,
+        "brightnessIsDefault": true,
+        "shaderTargetSrgb": [
+          0.7,
+          0.7,
+          0.7
+        ],
+        "transparent": false,
+        "primary": "inContext",
+        "floorDuringIsolatedRenders": "unlitBackgroundColor",
+        "method": "형상만 검은·흰 배경에 렌더해 화소별 덮임 a = 1 − (W − B)와 배경과 섞이기 전 색 c = B / a를 구함(선형). 이때 바닥은 끄지 않고 배경과 같은 색의 Unlit 머티리얼로 바꿔 그림자 수신자 구성을 실제 장면과 같게 둠. 덮인 화소(a ≥ 0.98)의 경계 상자 가운데 50%×50% 안에서 선형 평균 → sRGB. frontal = 광원을 카메라 시선 방향으로 돌린 정면 조명, scene = 장면 방향광 그대로, inContext = 실제 장면 렌더(바닥·하늘·반투명이면 배경과 섞인 값). primary = 보고·판정에 쓰는 값: 불투명이면 inContext(참여자가 보는 색), 반투명이면 scene(배경과 섞이기 전 색).",
+        "coveredPixels": 20990,
+        "screenBox": [
+          924,
+          1005,
+          236,
+          206
+        ],
+        "meanCoverageInCenter": 1.0,
+        "frontal": {
+          "label": "정면 조명(광원 = 카메라 시선 방향), 형상만",
+          "pixels": 6106,
+          "meanSrgb": [
+            0.662,
+            0.663,
+            0.665
+          ],
+          "meanSrgb8": [
+            169,
+            169,
+            170
+          ],
+          "lab": [
+            69.28,
+            0.01,
+            -0.31
+          ],
+          "deltaE2000VsSpec": 2.68,
+          "deltaE76VsSpec": 3.5,
+          "deltaE2000VsShaderTarget": 2.68,
+          "deltaLVsSpec": -3.48
+        },
+        "scene": {
+          "label": "장면 조명(방향광 고도·방위 그대로), 형상만",
+          "pixels": 6106,
+          "meanSrgb": [
+            0.625,
+            0.626,
+            0.628
+          ],
+          "meanSrgb8": [
+            159,
+            160,
+            160
+          ],
+          "lab": [
+            65.69,
+            0.01,
+            -0.33
+          ],
+          "deltaE2000VsSpec": 5.53,
+          "deltaE76VsSpec": 7.08,
+          "deltaE2000VsShaderTarget": 5.53,
+          "deltaLVsSpec": -7.07
+        },
+        "inContext": {
+          "label": "실제 장면 렌더(바닥·하늘·그림자 포함), 같은 화소",
+          "pixels": 6106,
+          "meanSrgb": [
+            0.625,
+            0.626,
+            0.628
+          ],
+          "meanSrgb8": [
+            159,
+            160,
+            160
+          ],
+          "lab": [
+            65.69,
+            0.01,
+            -0.33
+          ],
+          "deltaE2000VsSpec": 5.53,
+          "deltaE76VsSpec": 7.08,
+          "deltaE2000VsShaderTarget": 5.53,
+          "deltaLVsSpec": -7.07
+        },
+        "diagnostics": {
+          "litFloorBlackBackground": {
+            "label": "진단: 바닥 원래 머티리얼 + 검은 배경(하늘 없음), 같은 화소",
+            "pixels": 6106,
+            "meanSrgb": [
+              0.625,
+              0.626,
+              0.628
+            ],
+            "meanSrgb8": [
+              159,
+              160,
+              160
+            ],
+            "lab": [
+              65.69,
+              0.01,
+              -0.33
+            ],
+            "deltaE2000VsSpec": 5.53,
+            "deltaE76VsSpec": 7.08,
+            "deltaE2000VsShaderTarget": 5.53,
+            "deltaLVsSpec": -7.07
+          },
+          "noFloorSkybox": {
+            "label": "진단: 하늘 그대로 + 바닥 끔, 같은 화소",
+            "pixels": 6106,
+            "meanSrgb": [
+              0.625,
+              0.626,
+              0.628
+            ],
+            "meanSrgb8": [
+              159,
+              160,
+              160
+            ],
+            "lab": [
+              65.69,
+              0.01,
+              -0.33
+            ],
+            "deltaE2000VsSpec": 5.53,
+            "deltaE76VsSpec": 7.08,
+            "deltaE2000VsShaderTarget": 5.53,
+            "deltaLVsSpec": -7.07
+          },
+          "inContextAgain": {
+            "label": "진단: 실제 장면을 한 번 더 렌더, 같은 화소",
+            "pixels": 6106,
+            "meanSrgb": [
+              0.625,
+              0.626,
+              0.628
+            ],
+            "meanSrgb8": [
+              159,
+              160,
+              160
+            ],
+            "lab": [
+              65.69,
+              0.01,
+              -0.33
+            ],
+            "deltaE2000VsSpec": 5.53,
+            "deltaE76VsSpec": 7.08,
+            "deltaE2000VsShaderTarget": 5.53,
+            "deltaLVsSpec": -7.07
+          }
+        },
+        "sceneVsInContextDeltaE2000": 0.0
+      },
+      "pngDetail": "R04_frag_small_detail.png",
+      "renderStats": {
+        "unityStats": {
+          "drawCalls": 0,
+          "batches": 0,
+          "setPassCalls": 0,
+          "triangles": 0,
+          "vertices": 0,
+          "shadowCasters": 0,
+          "meaningful": false,
+          "note": "배치모드·에디트 모드의 수동 Camera.Render()에서는 UnityStats가 채워지지 않음(0) → 직접 계산값을 쓴다."
+        },
+        "profilerRecorder": {
+          "drawCalls": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "batches": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "setPassCalls": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "triangles": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "vertices": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "shadowCasters": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "meaningful": false,
+          "note": "배치모드·에디트 모드의 수동 Camera.Render()에서는 렌더 카운터가 프레임 끝에 갱신되지 않아 0 → 실측은 PlayMode 또는 기기(OVR Metrics)에서."
+        },
+        "computed": {
+          "visibleRenderers": 6,
+          "meshTrianglesInView": 25800,
+          "shadowLights": 1,
+          "drawCallsPerEyeEstimate": 24,
+          "drawCallsBreakdown": {
+            "forward": 11,
+            "cameraDepth": 6,
+            "shadowMap": 5,
+            "skybox": 1,
+            "screenSpaceShadowResolve": 1
+          },
+          "submittedTrianglesPerEyeEstimate": 102800,
+          "drawCallsPerStereoFrameMultiPass": 48,
+          "note": "직접 계산(추정): 렌더러별 패스(LightMode = ForwardBase/ForwardAdd/ShadowCaster)×메시 삼각형. 하늘 메시 삼각형은 제외. 눈당 값 = 단일 패스 인스턴싱 스테레오 프레임과 같은 수의 드로콜. 멀티패스(눈마다 Camera.Render, 이 도구의 시간 측정 방식)면 그림자 맵까지 ×2.",
+          "renderers": [
+            {
+              "name": "fragment 0",
+              "triangles": 5120,
+              "inView": true,
+              "forwardPasses": 2,
+              "shadowCasterPasses": 1,
+              "castsShadow": true,
+              "transparent": false,
+              "passLightModes": [
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "META",
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "SHADOWCASTER",
+                "META"
+              ]
+            },
+            {
+              "name": "fragment 2",
+              "triangles": 5120,
+              "inView": true,
+              "forwardPasses": 2,
+              "shadowCasterPasses": 1,
+              "castsShadow": true,
+              "transparent": false,
+              "passLightModes": [
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "META",
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "SHADOWCASTER",
+                "META"
+              ]
+            },
+            {
+              "name": "fragment 4",
+              "triangles": 5120,
+              "inView": true,
+              "forwardPasses": 2,
+              "shadowCasterPasses": 1,
+              "castsShadow": true,
+              "transparent": false,
+              "passLightModes": [
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "META",
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "SHADOWCASTER",
+                "META"
+              ]
+            },
+            {
+              "name": "fragment 1",
+              "triangles": 5120,
+              "inView": true,
+              "forwardPasses": 2,
+              "shadowCasterPasses": 1,
+              "castsShadow": true,
+              "transparent": false,
+              "passLightModes": [
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "META",
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "SHADOWCASTER",
+                "META"
+              ]
+            },
+            {
+              "name": "fragment 3",
+              "triangles": 5120,
+              "inView": true,
+              "forwardPasses": 2,
+              "shadowCasterPasses": 1,
+              "castsShadow": true,
+              "transparent": false,
+              "passLightModes": [
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "META",
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "SHADOWCASTER",
+                "META"
+              ]
+            },
+            {
+              "name": "floor (1 m grid)",
+              "triangles": 200,
+              "inView": true,
+              "forwardPasses": 1,
+              "shadowCasterPasses": 0,
+              "castsShadow": false,
+              "transparent": false,
+              "passLightModes": [
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "META"
+              ]
+            }
+          ]
+        }
+      },
+      "performance": {
+        "eyeWidth": 2064,
+        "eyeHeight": 2208,
+        "eyes": 2,
+        "msaa": 4,
+        "frames": 300,
+        "warmupFrames": 30,
+        "frameMsP50": 0.77,
+        "frameMsP95": 0.908,
+        "frameMsMax": 1.378,
+        "frameMsMean": 0.795,
+        "fpsAtP95": 1101.0
+      },
+      "console": {
+        "errors": 0,
+        "exceptions": 0,
+        "warnings": 0,
+        "infos": 14,
+        "messages": []
+      }
+    },
+    {
+      "spec": "R05_frag_large.json",
+      "loaded": true,
+      "sessionId": "R05",
+      "params": {
+        "form.posture": "none",
+        "form.type": "fragments",
+        "layout.distance": 0.33,
+        "layout.size": 0.7,
+        "layout.verticalOffset": 0.75,
+        "material.brightness": 0.5,
+        "material.color.h": 0.02,
+        "material.color.l": 0.45,
+        "material.color.s": 0.6,
+        "material.erosion": 0.3,
+        "material.opacity": 1.0,
+        "material.roughness": 0.8,
+        "motion.speed": 0.5,
+        "motion.type": "still"
+      },
+      "defaultsUsed": [
+        "form.posture",
+        "material.brightness",
+        "material.opacity",
+        "layout.distance",
+        "layout.verticalOffset",
+        "motion.type",
+        "motion.speed"
+      ],
+      "inferredUsed": [],
+      "notes": [
+        "form.posture: SceneSpec 값이 null → 기본값 none 사용",
+        "material.brightness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.opacity: SceneSpec 값이 null → 기본값 1 사용",
+        "layout.distance: SceneSpec 값이 null → 기본값 0.33 사용",
+        "layout.verticalOffset: SceneSpec 값이 null → 기본값 0.75 사용",
+        "motion.type: SceneSpec 값이 null → 기본값 still 사용",
+        "motion.speed: SceneSpec 값이 null → 기본값 0.5 사용",
+        "form.type=fragments: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시"
+      ],
+      "shape": {
+        "status": "none",
+        "applied": null,
+        "model": null,
+        "viaPrefab": null,
+        "formType": "fragments",
+        "words": []
+      },
+      "placement": {
+        "objectCenter": [
+          -0.007,
+          1.344,
+          1.143
+        ],
+        "horizontalDistanceM": 1.143,
+        "heightM": 1.344,
+        "cameraPitchDeg": 12.638,
+        "motionNote": "에디트 모드 정지 화면 — motion.type은 이 PNG에 보이지 않음(재생 중에만 움직임)"
+      },
+      "png": "R05_frag_large.png",
+      "color": {
+        "specHsl": [
+          0.02,
+          0.6,
+          0.45
+        ],
+        "specSrgb": [
+          0.72,
+          0.245,
+          0.18
+        ],
+        "specColorIsDefault": false,
+        "specColorDefaultComponents": [],
+        "brightness": 0.5,
+        "brightnessIsDefault": true,
+        "shaderTargetSrgb": [
+          0.72,
+          0.245,
+          0.18
+        ],
+        "transparent": false,
+        "primary": "inContext",
+        "floorDuringIsolatedRenders": "unlitBackgroundColor",
+        "method": "형상만 검은·흰 배경에 렌더해 화소별 덮임 a = 1 − (W − B)와 배경과 섞이기 전 색 c = B / a를 구함(선형). 이때 바닥은 끄지 않고 배경과 같은 색의 Unlit 머티리얼로 바꿔 그림자 수신자 구성을 실제 장면과 같게 둠. 덮인 화소(a ≥ 0.98)의 경계 상자 가운데 50%×50% 안에서 선형 평균 → sRGB. frontal = 광원을 카메라 시선 방향으로 돌린 정면 조명, scene = 장면 방향광 그대로, inContext = 실제 장면 렌더(바닥·하늘·반투명이면 배경과 섞인 값). primary = 보고·판정에 쓰는 값: 불투명이면 inContext(참여자가 보는 색), 반투명이면 scene(배경과 섞이기 전 색).",
+        "coveredPixels": 117190,
+        "screenBox": [
+          776,
+          868,
+          556,
+          481
+        ],
+        "meanCoverageInCenter": 1.0,
+        "frontal": {
+          "label": "정면 조명(광원 = 카메라 시선 방향), 형상만",
+          "pixels": 35734,
+          "meanSrgb": [
+            0.675,
+            0.273,
+            0.231
+          ],
+          "meanSrgb8": [
+            172,
+            70,
+            59
+          ],
+          "lab": [
+            43.42,
+            41.28,
+            27.85
+          ],
+          "deltaE2000VsSpec": 3.6,
+          "deltaE76VsSpec": 10.93,
+          "deltaE2000VsShaderTarget": 3.6,
+          "deltaLVsSpec": -0.57
+        },
+        "scene": {
+          "label": "장면 조명(방향광 고도·방위 그대로), 형상만",
+          "pixels": 35734,
+          "meanSrgb": [
+            0.636,
+            0.258,
+            0.219
+          ],
+          "meanSrgb8": [
+            162,
+            66,
+            56
+          ],
+          "lab": [
+            40.98,
+            39.21,
+            26.25
+          ],
+          "deltaE2000VsSpec": 5.11,
+          "deltaE76VsSpec": 13.8,
+          "deltaE2000VsShaderTarget": 5.11,
+          "deltaLVsSpec": -3.01
+        },
+        "inContext": {
+          "label": "실제 장면 렌더(바닥·하늘·그림자 포함), 같은 화소",
+          "pixels": 35734,
+          "meanSrgb": [
+            0.636,
+            0.258,
+            0.219
+          ],
+          "meanSrgb8": [
+            162,
+            66,
+            56
+          ],
+          "lab": [
+            40.98,
+            39.21,
+            26.25
+          ],
+          "deltaE2000VsSpec": 5.11,
+          "deltaE76VsSpec": 13.8,
+          "deltaE2000VsShaderTarget": 5.11,
+          "deltaLVsSpec": -3.01
+        },
+        "diagnostics": {
+          "litFloorBlackBackground": {
+            "label": "진단: 바닥 원래 머티리얼 + 검은 배경(하늘 없음), 같은 화소",
+            "pixels": 35734,
+            "meanSrgb": [
+              0.636,
+              0.258,
+              0.219
+            ],
+            "meanSrgb8": [
+              162,
+              66,
+              56
+            ],
+            "lab": [
+              40.98,
+              39.21,
+              26.25
+            ],
+            "deltaE2000VsSpec": 5.11,
+            "deltaE76VsSpec": 13.8,
+            "deltaE2000VsShaderTarget": 5.11,
+            "deltaLVsSpec": -3.01
+          },
+          "noFloorSkybox": {
+            "label": "진단: 하늘 그대로 + 바닥 끔, 같은 화소",
+            "pixels": 35734,
+            "meanSrgb": [
+              0.636,
+              0.258,
+              0.219
+            ],
+            "meanSrgb8": [
+              162,
+              66,
+              56
+            ],
+            "lab": [
+              40.98,
+              39.21,
+              26.25
+            ],
+            "deltaE2000VsSpec": 5.11,
+            "deltaE76VsSpec": 13.8,
+            "deltaE2000VsShaderTarget": 5.11,
+            "deltaLVsSpec": -3.01
+          },
+          "inContextAgain": {
+            "label": "진단: 실제 장면을 한 번 더 렌더, 같은 화소",
+            "pixels": 35734,
+            "meanSrgb": [
+              0.636,
+              0.258,
+              0.219
+            ],
+            "meanSrgb8": [
+              162,
+              66,
+              56
+            ],
+            "lab": [
+              40.98,
+              39.21,
+              26.25
+            ],
+            "deltaE2000VsSpec": 5.11,
+            "deltaE76VsSpec": 13.8,
+            "deltaE2000VsShaderTarget": 5.11,
+            "deltaLVsSpec": -3.01
+          }
+        },
+        "sceneVsInContextDeltaE2000": 0.0
+      },
+      "pngDetail": "R05_frag_large_detail.png",
+      "renderStats": {
+        "unityStats": {
+          "drawCalls": 0,
+          "batches": 0,
+          "setPassCalls": 0,
+          "triangles": 0,
+          "vertices": 0,
+          "shadowCasters": 0,
+          "meaningful": false,
+          "note": "배치모드·에디트 모드의 수동 Camera.Render()에서는 UnityStats가 채워지지 않음(0) → 직접 계산값을 쓴다."
+        },
+        "profilerRecorder": {
+          "drawCalls": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "batches": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "setPassCalls": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "triangles": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "vertices": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "shadowCasters": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "meaningful": false,
+          "note": "배치모드·에디트 모드의 수동 Camera.Render()에서는 렌더 카운터가 프레임 끝에 갱신되지 않아 0 → 실측은 PlayMode 또는 기기(OVR Metrics)에서."
+        },
+        "computed": {
+          "visibleRenderers": 6,
+          "meshTrianglesInView": 25800,
+          "shadowLights": 1,
+          "drawCallsPerEyeEstimate": 24,
+          "drawCallsBreakdown": {
+            "forward": 11,
+            "cameraDepth": 6,
+            "shadowMap": 5,
+            "skybox": 1,
+            "screenSpaceShadowResolve": 1
+          },
+          "submittedTrianglesPerEyeEstimate": 102800,
+          "drawCallsPerStereoFrameMultiPass": 48,
+          "note": "직접 계산(추정): 렌더러별 패스(LightMode = ForwardBase/ForwardAdd/ShadowCaster)×메시 삼각형. 하늘 메시 삼각형은 제외. 눈당 값 = 단일 패스 인스턴싱 스테레오 프레임과 같은 수의 드로콜. 멀티패스(눈마다 Camera.Render, 이 도구의 시간 측정 방식)면 그림자 맵까지 ×2.",
+          "renderers": [
+            {
+              "name": "fragment 0",
+              "triangles": 5120,
+              "inView": true,
+              "forwardPasses": 2,
+              "shadowCasterPasses": 1,
+              "castsShadow": true,
+              "transparent": false,
+              "passLightModes": [
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "META",
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "SHADOWCASTER",
+                "META"
+              ]
+            },
+            {
+              "name": "fragment 3",
+              "triangles": 5120,
+              "inView": true,
+              "forwardPasses": 2,
+              "shadowCasterPasses": 1,
+              "castsShadow": true,
+              "transparent": false,
+              "passLightModes": [
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "META",
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "SHADOWCASTER",
+                "META"
+              ]
+            },
+            {
+              "name": "fragment 4",
+              "triangles": 5120,
+              "inView": true,
+              "forwardPasses": 2,
+              "shadowCasterPasses": 1,
+              "castsShadow": true,
+              "transparent": false,
+              "passLightModes": [
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "META",
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "SHADOWCASTER",
+                "META"
+              ]
+            },
+            {
+              "name": "fragment 1",
+              "triangles": 5120,
+              "inView": true,
+              "forwardPasses": 2,
+              "shadowCasterPasses": 1,
+              "castsShadow": true,
+              "transparent": false,
+              "passLightModes": [
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "META",
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "SHADOWCASTER",
+                "META"
+              ]
+            },
+            {
+              "name": "fragment 2",
+              "triangles": 5120,
+              "inView": true,
+              "forwardPasses": 2,
+              "shadowCasterPasses": 1,
+              "castsShadow": true,
+              "transparent": false,
+              "passLightModes": [
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "META",
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "SHADOWCASTER",
+                "META"
+              ]
+            },
+            {
+              "name": "floor (1 m grid)",
+              "triangles": 200,
+              "inView": true,
+              "forwardPasses": 1,
+              "shadowCasterPasses": 0,
+              "castsShadow": false,
+              "transparent": false,
+              "passLightModes": [
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "META"
+              ]
+            }
+          ]
+        }
+      },
+      "performance": {
+        "eyeWidth": 2064,
+        "eyeHeight": 2208,
+        "eyes": 2,
+        "msaa": 4,
+        "frames": 300,
+        "warmupFrames": 30,
+        "frameMsP50": 0.854,
+        "frameMsP95": 0.961,
+        "frameMsMax": 1.016,
+        "frameMsMean": 0.869,
+        "fpsAtP95": 1040.3
+      },
+      "console": {
+        "errors": 0,
+        "exceptions": 0,
+        "warnings": 0,
+        "infos": 9,
+        "messages": []
+      }
+    },
+    {
+      "spec": "R06_shell.json",
+      "loaded": true,
+      "sessionId": "R06",
+      "params": {
+        "form.posture": "none",
+        "form.type": "shell",
+        "layout.distance": 0.33,
+        "layout.size": 0.5,
+        "layout.verticalOffset": 0.75,
+        "material.brightness": 0.5,
+        "material.color.h": 0.0,
+        "material.color.l": 0.7,
+        "material.color.s": 0.0,
+        "material.erosion": 0.0,
+        "material.opacity": 1.0,
+        "material.roughness": 0.5,
+        "motion.speed": 0.5,
+        "motion.type": "still"
+      },
+      "defaultsUsed": [
+        "form.posture",
+        "material.color.h",
+        "material.color.s",
+        "material.color.l",
+        "material.brightness",
+        "material.roughness",
+        "material.opacity",
+        "material.erosion",
+        "layout.size",
+        "layout.distance",
+        "layout.verticalOffset",
+        "motion.type",
+        "motion.speed"
+      ],
+      "inferredUsed": [],
+      "notes": [
+        "form.posture: SceneSpec 값이 null → 기본값 none 사용",
+        "material.color.h: SceneSpec 값이 null → 기본값 0 사용",
+        "material.color.s: SceneSpec 값이 null → 기본값 0 사용",
+        "material.color.l: SceneSpec 값이 null → 기본값 0.7 사용",
+        "material.brightness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.roughness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.opacity: SceneSpec 값이 null → 기본값 1 사용",
+        "material.erosion: SceneSpec 값이 null → 기본값 0 사용",
+        "layout.size: SceneSpec 값이 null → 기본값 0.5 사용",
+        "layout.distance: SceneSpec 값이 null → 기본값 0.33 사용",
+        "layout.verticalOffset: SceneSpec 값이 null → 기본값 0.75 사용",
+        "motion.type: SceneSpec 값이 null → 기본값 still 사용",
+        "motion.speed: SceneSpec 값이 null → 기본값 0.5 사용",
+        "form.type=shell: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시"
+      ],
+      "shape": {
+        "status": "none",
+        "applied": null,
+        "model": null,
+        "viaPrefab": null,
+        "formType": "shell",
+        "words": []
+      },
+      "placement": {
+        "objectCenter": [
+          0.0,
+          1.282,
+          1.191
+        ],
+        "horizontalDistanceM": 1.191,
+        "heightM": 1.282,
+        "cameraPitchDeg": 14.947,
+        "motionNote": "에디트 모드 정지 화면 — motion.type은 이 PNG에 보이지 않음(재생 중에만 움직임)"
+      },
+      "png": "R06_shell.png",
+      "color": {
+        "specHsl": [
+          0.0,
+          0.0,
+          0.7
+        ],
+        "specSrgb": [
+          0.7,
+          0.7,
+          0.7
+        ],
+        "specColorIsDefault": true,
+        "specColorDefaultComponents": [
+          "h",
+          "s",
+          "l"
+        ],
+        "brightness": 0.5,
+        "brightnessIsDefault": true,
+        "shaderTargetSrgb": [
+          0.7,
+          0.7,
+          0.7
+        ],
+        "transparent": false,
+        "primary": "inContext",
+        "floorDuringIsolatedRenders": "unlitBackgroundColor",
+        "method": "형상만 검은·흰 배경에 렌더해 화소별 덮임 a = 1 − (W − B)와 배경과 섞이기 전 색 c = B / a를 구함(선형). 이때 바닥은 끄지 않고 배경과 같은 색의 Unlit 머티리얼로 바꿔 그림자 수신자 구성을 실제 장면과 같게 둠. 덮인 화소(a ≥ 0.98)의 경계 상자 가운데 50%×50% 안에서 선형 평균 → sRGB. frontal = 광원을 카메라 시선 방향으로 돌린 정면 조명, scene = 장면 방향광 그대로, inContext = 실제 장면 렌더(바닥·하늘·반투명이면 배경과 섞인 값). primary = 보고·판정에 쓰는 값: 불투명이면 inContext(참여자가 보는 색), 반투명이면 scene(배경과 섞이기 전 색).",
+        "coveredPixels": 48532,
+        "screenBox": [
+          892,
+          960,
+          285,
+          211
+        ],
+        "meanCoverageInCenter": 1.0,
+        "frontal": {
+          "label": "정면 조명(광원 = 카메라 시선 방향), 형상만",
+          "pixels": 15052,
+          "meanSrgb": [
+            0.725,
+            0.725,
+            0.726
+          ],
+          "meanSrgb8": [
+            185,
+            185,
+            185
+          ],
+          "lab": [
+            75.14,
+            0.02,
+            -0.08
+          ],
+          "deltaE2000VsSpec": 1.76,
+          "deltaE76VsSpec": 2.38,
+          "deltaE2000VsShaderTarget": 1.76,
+          "deltaLVsSpec": 2.38
+        },
+        "scene": {
+          "label": "장면 조명(방향광 고도·방위 그대로), 형상만",
+          "pixels": 15052,
+          "meanSrgb": [
+            0.591,
+            0.592,
+            0.592
+          ],
+          "meanSrgb8": [
+            151,
+            151,
+            151
+          ],
+          "lab": [
+            62.41,
+            0.03,
+            -0.12
+          ],
+          "deltaE2000VsSpec": 8.25,
+          "deltaE76VsSpec": 10.35,
+          "deltaE2000VsShaderTarget": 8.25,
+          "deltaLVsSpec": -10.35
+        },
+        "inContext": {
+          "label": "실제 장면 렌더(바닥·하늘·그림자 포함), 같은 화소",
+          "pixels": 15052,
+          "meanSrgb": [
+            0.591,
+            0.592,
+            0.592
+          ],
+          "meanSrgb8": [
+            151,
+            151,
+            151
+          ],
+          "lab": [
+            62.41,
+            0.03,
+            -0.12
+          ],
+          "deltaE2000VsSpec": 8.25,
+          "deltaE76VsSpec": 10.35,
+          "deltaE2000VsShaderTarget": 8.25,
+          "deltaLVsSpec": -10.35
+        },
+        "diagnostics": {
+          "litFloorBlackBackground": {
+            "label": "진단: 바닥 원래 머티리얼 + 검은 배경(하늘 없음), 같은 화소",
+            "pixels": 15052,
+            "meanSrgb": [
+              0.591,
+              0.592,
+              0.592
+            ],
+            "meanSrgb8": [
+              151,
+              151,
+              151
+            ],
+            "lab": [
+              62.41,
+              0.03,
+              -0.12
+            ],
+            "deltaE2000VsSpec": 8.25,
+            "deltaE76VsSpec": 10.35,
+            "deltaE2000VsShaderTarget": 8.25,
+            "deltaLVsSpec": -10.35
+          },
+          "noFloorSkybox": {
+            "label": "진단: 하늘 그대로 + 바닥 끔, 같은 화소",
+            "pixels": 15052,
+            "meanSrgb": [
+              0.591,
+              0.592,
+              0.592
+            ],
+            "meanSrgb8": [
+              151,
+              151,
+              151
+            ],
+            "lab": [
+              62.41,
+              0.03,
+              -0.12
+            ],
+            "deltaE2000VsSpec": 8.25,
+            "deltaE76VsSpec": 10.35,
+            "deltaE2000VsShaderTarget": 8.25,
+            "deltaLVsSpec": -10.35
+          },
+          "inContextAgain": {
+            "label": "진단: 실제 장면을 한 번 더 렌더, 같은 화소",
+            "pixels": 15052,
+            "meanSrgb": [
+              0.591,
+              0.592,
+              0.592
+            ],
+            "meanSrgb8": [
+              151,
+              151,
+              151
+            ],
+            "lab": [
+              62.41,
+              0.03,
+              -0.12
+            ],
+            "deltaE2000VsSpec": 8.25,
+            "deltaE76VsSpec": 10.35,
+            "deltaE2000VsShaderTarget": 8.25,
+            "deltaLVsSpec": -10.35
+          }
+        },
+        "sceneVsInContextDeltaE2000": 0.0
+      },
+      "pngDetail": "R06_shell_detail.png",
+      "renderStats": {
+        "unityStats": {
+          "drawCalls": 0,
+          "batches": 0,
+          "setPassCalls": 0,
+          "triangles": 0,
+          "vertices": 0,
+          "shadowCasters": 0,
+          "meaningful": false,
+          "note": "배치모드·에디트 모드의 수동 Camera.Render()에서는 UnityStats가 채워지지 않음(0) → 직접 계산값을 쓴다."
+        },
+        "profilerRecorder": {
+          "drawCalls": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "batches": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "setPassCalls": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "triangles": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "vertices": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "shadowCasters": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "meaningful": false,
+          "note": "배치모드·에디트 모드의 수동 Camera.Render()에서는 렌더 카운터가 프레임 끝에 갱신되지 않아 0 → 실측은 PlayMode 또는 기기(OVR Metrics)에서."
+        },
+        "computed": {
+          "visibleRenderers": 2,
+          "meshTrianglesInView": 5320,
+          "shadowLights": 1,
+          "drawCallsPerEyeEstimate": 8,
+          "drawCallsBreakdown": {
+            "forward": 3,
+            "cameraDepth": 2,
+            "shadowMap": 1,
+            "skybox": 1,
+            "screenSpaceShadowResolve": 1
+          },
+          "submittedTrianglesPerEyeEstimate": 20880,
+          "drawCallsPerStereoFrameMultiPass": 16,
+          "note": "직접 계산(추정): 렌더러별 패스(LightMode = ForwardBase/ForwardAdd/ShadowCaster)×메시 삼각형. 하늘 메시 삼각형은 제외. 눈당 값 = 단일 패스 인스턴싱 스테레오 프레임과 같은 수의 드로콜. 멀티패스(눈마다 Camera.Render, 이 도구의 시간 측정 방식)면 그림자 맵까지 ×2.",
+          "renderers": [
+            {
+              "name": "model (shell)",
+              "triangles": 5120,
+              "inView": true,
+              "forwardPasses": 2,
+              "shadowCasterPasses": 1,
+              "castsShadow": true,
+              "transparent": false,
+              "passLightModes": [
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "META",
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "SHADOWCASTER",
+                "META"
+              ]
+            },
+            {
+              "name": "floor (1 m grid)",
+              "triangles": 200,
+              "inView": true,
+              "forwardPasses": 1,
+              "shadowCasterPasses": 0,
+              "castsShadow": false,
+              "transparent": false,
+              "passLightModes": [
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "META"
+              ]
+            }
+          ]
+        }
+      },
+      "performance": {
+        "eyeWidth": 2064,
+        "eyeHeight": 2208,
+        "eyes": 2,
+        "msaa": 4,
+        "frames": 300,
+        "warmupFrames": 30,
+        "frameMsP50": 0.705,
+        "frameMsP95": 0.819,
+        "frameMsMax": 1.061,
+        "frameMsMean": 0.725,
+        "fpsAtP95": 1221.2
+      },
+      "console": {
+        "errors": 0,
+        "exceptions": 0,
+        "warnings": 0,
+        "infos": 15,
+        "messages": []
+      }
+    },
+    {
+      "spec": "R07_blob_default.json",
+      "loaded": true,
+      "sessionId": "R07",
+      "params": {
+        "form.posture": "none",
+        "form.type": "blob",
+        "layout.distance": 0.33,
+        "layout.size": 0.5,
+        "layout.verticalOffset": 0.75,
+        "material.brightness": 0.5,
+        "material.color.h": 0.0,
+        "material.color.l": 0.7,
+        "material.color.s": 0.0,
+        "material.erosion": 0.0,
+        "material.opacity": 1.0,
+        "material.roughness": 0.5,
+        "motion.speed": 0.5,
+        "motion.type": "still"
+      },
+      "defaultsUsed": [
+        "form.posture",
+        "material.color.h",
+        "material.color.s",
+        "material.color.l",
+        "material.brightness",
+        "material.roughness",
+        "material.opacity",
+        "material.erosion",
+        "layout.size",
+        "layout.distance",
+        "layout.verticalOffset",
+        "motion.type",
+        "motion.speed"
+      ],
+      "inferredUsed": [],
+      "notes": [
+        "form.posture: SceneSpec 값이 null → 기본값 none 사용",
+        "material.color.h: SceneSpec 값이 null → 기본값 0 사용",
+        "material.color.s: SceneSpec 값이 null → 기본값 0 사용",
+        "material.color.l: SceneSpec 값이 null → 기본값 0.7 사용",
+        "material.brightness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.roughness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.opacity: SceneSpec 값이 null → 기본값 1 사용",
+        "material.erosion: SceneSpec 값이 null → 기본값 0 사용",
+        "layout.size: SceneSpec 값이 null → 기본값 0.5 사용",
+        "layout.distance: SceneSpec 값이 null → 기본값 0.33 사용",
+        "layout.verticalOffset: SceneSpec 값이 null → 기본값 0.75 사용",
+        "motion.type: SceneSpec 값이 null → 기본값 still 사용",
+        "motion.speed: SceneSpec 값이 null → 기본값 0.5 사용",
+        "form.type=blob: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시"
+      ],
+      "shape": {
+        "status": "none",
+        "applied": null,
+        "model": null,
+        "viaPrefab": null,
+        "formType": "blob",
+        "words": []
+      },
+      "placement": {
+        "objectCenter": [
+          0.0,
+          1.282,
+          1.191
+        ],
+        "horizontalDistanceM": 1.191,
+        "heightM": 1.282,
+        "cameraPitchDeg": 14.947,
+        "motionNote": "에디트 모드 정지 화면 — motion.type은 이 PNG에 보이지 않음(재생 중에만 움직임)"
+      },
+      "png": "R07_blob_default.png",
+      "color": {
+        "specHsl": [
+          0.0,
+          0.0,
+          0.7
+        ],
+        "specSrgb": [
+          0.7,
+          0.7,
+          0.7
+        ],
+        "specColorIsDefault": true,
+        "specColorDefaultComponents": [
+          "h",
+          "s",
+          "l"
+        ],
+        "brightness": 0.5,
+        "brightnessIsDefault": true,
+        "shaderTargetSrgb": [
+          0.7,
+          0.7,
+          0.7
+        ],
+        "transparent": false,
+        "primary": "inContext",
+        "floorDuringIsolatedRenders": "unlitBackgroundColor",
+        "method": "형상만 검은·흰 배경에 렌더해 화소별 덮임 a = 1 − (W − B)와 배경과 섞이기 전 색 c = B / a를 구함(선형). 이때 바닥은 끄지 않고 배경과 같은 색의 Unlit 머티리얼로 바꿔 그림자 수신자 구성을 실제 장면과 같게 둠. 덮인 화소(a ≥ 0.98)의 경계 상자 가운데 50%×50% 안에서 선형 평균 → sRGB. frontal = 광원을 카메라 시선 방향으로 돌린 정면 조명, scene = 장면 방향광 그대로, inContext = 실제 장면 렌더(바닥·하늘·반투명이면 배경과 섞인 값). primary = 보고·판정에 쓰는 값: 불투명이면 inContext(참여자가 보는 색), 반투명이면 scene(배경과 섞이기 전 색).",
+        "coveredPixels": 61994,
+        "screenBox": [
+          897,
+          958,
+          282,
+          282
+        ],
+        "meanCoverageInCenter": 1.0,
+        "frontal": {
+          "label": "정면 조명(광원 = 카메라 시선 방향), 형상만",
+          "pixels": 19881,
+          "meanSrgb": [
+            0.747,
+            0.748,
+            0.749
+          ],
+          "meanSrgb8": [
+            190,
+            191,
+            191
+          ],
+          "lab": [
+            77.21,
+            0.01,
+            -0.21
+          ],
+          "deltaE2000VsSpec": 3.26,
+          "deltaE76VsSpec": 4.46,
+          "deltaE2000VsShaderTarget": 3.26,
+          "deltaLVsSpec": 4.45
+        },
+        "scene": {
+          "label": "장면 조명(방향광 고도·방위 그대로), 형상만",
+          "pixels": 19881,
+          "meanSrgb": [
+            0.651,
+            0.651,
+            0.653
+          ],
+          "meanSrgb8": [
+            166,
+            166,
+            167
+          ],
+          "lab": [
+            68.16,
+            0.01,
+            -0.26
+          ],
+          "deltaE2000VsSpec": 3.55,
+          "deltaE76VsSpec": 4.61,
+          "deltaE2000VsShaderTarget": 3.55,
+          "deltaLVsSpec": -4.6
+        },
+        "inContext": {
+          "label": "실제 장면 렌더(바닥·하늘·그림자 포함), 같은 화소",
+          "pixels": 19881,
+          "meanSrgb": [
+            0.651,
+            0.651,
+            0.653
+          ],
+          "meanSrgb8": [
+            166,
+            166,
+            167
+          ],
+          "lab": [
+            68.16,
+            0.01,
+            -0.26
+          ],
+          "deltaE2000VsSpec": 3.55,
+          "deltaE76VsSpec": 4.61,
+          "deltaE2000VsShaderTarget": 3.55,
+          "deltaLVsSpec": -4.6
+        },
+        "diagnostics": {
+          "litFloorBlackBackground": {
+            "label": "진단: 바닥 원래 머티리얼 + 검은 배경(하늘 없음), 같은 화소",
+            "pixels": 19881,
+            "meanSrgb": [
+              0.651,
+              0.651,
+              0.653
+            ],
+            "meanSrgb8": [
+              166,
+              166,
+              167
+            ],
+            "lab": [
+              68.16,
+              0.01,
+              -0.26
+            ],
+            "deltaE2000VsSpec": 3.55,
+            "deltaE76VsSpec": 4.61,
+            "deltaE2000VsShaderTarget": 3.55,
+            "deltaLVsSpec": -4.6
+          },
+          "noFloorSkybox": {
+            "label": "진단: 하늘 그대로 + 바닥 끔, 같은 화소",
+            "pixels": 19881,
+            "meanSrgb": [
+              0.651,
+              0.651,
+              0.653
+            ],
+            "meanSrgb8": [
+              166,
+              166,
+              167
+            ],
+            "lab": [
+              68.16,
+              0.01,
+              -0.26
+            ],
+            "deltaE2000VsSpec": 3.55,
+            "deltaE76VsSpec": 4.61,
+            "deltaE2000VsShaderTarget": 3.55,
+            "deltaLVsSpec": -4.6
+          },
+          "inContextAgain": {
+            "label": "진단: 실제 장면을 한 번 더 렌더, 같은 화소",
+            "pixels": 19881,
+            "meanSrgb": [
+              0.651,
+              0.651,
+              0.653
+            ],
+            "meanSrgb8": [
+              166,
+              166,
+              167
+            ],
+            "lab": [
+              68.16,
+              0.01,
+              -0.26
+            ],
+            "deltaE2000VsSpec": 3.55,
+            "deltaE76VsSpec": 4.61,
+            "deltaE2000VsShaderTarget": 3.55,
+            "deltaLVsSpec": -4.6
+          }
+        },
+        "sceneVsInContextDeltaE2000": 0.0
+      },
+      "pngDetail": "R07_blob_default_detail.png",
+      "renderStats": {
+        "unityStats": {
+          "drawCalls": 0,
+          "batches": 0,
+          "setPassCalls": 0,
+          "triangles": 0,
+          "vertices": 0,
+          "shadowCasters": 0,
+          "meaningful": false,
+          "note": "배치모드·에디트 모드의 수동 Camera.Render()에서는 UnityStats가 채워지지 않음(0) → 직접 계산값을 쓴다."
+        },
+        "profilerRecorder": {
+          "drawCalls": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "batches": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "setPassCalls": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "triangles": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "vertices": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "shadowCasters": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "meaningful": false,
+          "note": "배치모드·에디트 모드의 수동 Camera.Render()에서는 렌더 카운터가 프레임 끝에 갱신되지 않아 0 → 실측은 PlayMode 또는 기기(OVR Metrics)에서."
+        },
+        "computed": {
+          "visibleRenderers": 2,
+          "meshTrianglesInView": 5320,
+          "shadowLights": 1,
+          "drawCallsPerEyeEstimate": 8,
+          "drawCallsBreakdown": {
+            "forward": 3,
+            "cameraDepth": 2,
+            "shadowMap": 1,
+            "skybox": 1,
+            "screenSpaceShadowResolve": 1
+          },
+          "submittedTrianglesPerEyeEstimate": 20880,
+          "drawCallsPerStereoFrameMultiPass": 16,
+          "note": "직접 계산(추정): 렌더러별 패스(LightMode = ForwardBase/ForwardAdd/ShadowCaster)×메시 삼각형. 하늘 메시 삼각형은 제외. 눈당 값 = 단일 패스 인스턴싱 스테레오 프레임과 같은 수의 드로콜. 멀티패스(눈마다 Camera.Render, 이 도구의 시간 측정 방식)면 그림자 맵까지 ×2.",
+          "renderers": [
+            {
+              "name": "model (blob)",
+              "triangles": 5120,
+              "inView": true,
+              "forwardPasses": 2,
+              "shadowCasterPasses": 1,
+              "castsShadow": true,
+              "transparent": false,
+              "passLightModes": [
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "META",
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "SHADOWCASTER",
+                "META"
+              ]
+            },
+            {
+              "name": "floor (1 m grid)",
+              "triangles": 200,
+              "inView": true,
+              "forwardPasses": 1,
+              "shadowCasterPasses": 0,
+              "castsShadow": false,
+              "transparent": false,
+              "passLightModes": [
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "META"
+              ]
+            }
+          ]
+        }
+      },
+      "performance": {
+        "eyeWidth": 2064,
+        "eyeHeight": 2208,
+        "eyes": 2,
+        "msaa": 4,
+        "frames": 300,
+        "warmupFrames": 30,
+        "frameMsP50": 0.704,
+        "frameMsP95": 0.827,
+        "frameMsMax": 0.859,
+        "frameMsMean": 0.727,
+        "fpsAtP95": 1208.6
+      },
+      "console": {
+        "errors": 0,
+        "exceptions": 0,
+        "warnings": 0,
+        "infos": 15,
+        "messages": []
+      }
+    },
+    {
+      "spec": "R08_blob_green_bright.json",
+      "loaded": true,
+      "sessionId": "R08",
+      "params": {
+        "form.posture": "none",
+        "form.type": "blob",
+        "layout.distance": 0.33,
+        "layout.size": 0.5,
+        "layout.verticalOffset": 0.75,
+        "material.brightness": 0.8,
+        "material.color.h": 0.33,
+        "material.color.l": 0.5,
+        "material.color.s": 0.5,
+        "material.erosion": 0.0,
+        "material.opacity": 1.0,
+        "material.roughness": 0.5,
+        "motion.speed": 0.5,
+        "motion.type": "still"
+      },
+      "defaultsUsed": [
+        "form.posture",
+        "material.roughness",
+        "material.opacity",
+        "material.erosion",
+        "layout.size",
+        "layout.distance",
+        "layout.verticalOffset",
+        "motion.type",
+        "motion.speed"
+      ],
+      "inferredUsed": [],
+      "notes": [
+        "form.posture: SceneSpec 값이 null → 기본값 none 사용",
+        "material.roughness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.opacity: SceneSpec 값이 null → 기본값 1 사용",
+        "material.erosion: SceneSpec 값이 null → 기본값 0 사용",
+        "layout.size: SceneSpec 값이 null → 기본값 0.5 사용",
+        "layout.distance: SceneSpec 값이 null → 기본값 0.33 사용",
+        "layout.verticalOffset: SceneSpec 값이 null → 기본값 0.75 사용",
+        "motion.type: SceneSpec 값이 null → 기본값 still 사용",
+        "motion.speed: SceneSpec 값이 null → 기본값 0.5 사용",
+        "form.type=blob: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시"
+      ],
+      "shape": {
+        "status": "none",
+        "applied": null,
+        "model": null,
+        "viaPrefab": null,
+        "formType": "blob",
+        "words": []
+      },
+      "placement": {
+        "objectCenter": [
+          0.0,
+          1.282,
+          1.191
+        ],
+        "horizontalDistanceM": 1.191,
+        "heightM": 1.282,
+        "cameraPitchDeg": 14.947,
+        "motionNote": "에디트 모드 정지 화면 — motion.type은 이 PNG에 보이지 않음(재생 중에만 움직임)"
+      },
+      "png": "R08_blob_green_bright.png",
+      "color": {
+        "specHsl": [
+          0.33,
+          0.5,
+          0.5
+        ],
+        "specSrgb": [
+          0.26,
+          0.75,
+          0.25
+        ],
+        "specColorIsDefault": false,
+        "specColorDefaultComponents": [],
+        "brightness": 0.8,
+        "brightnessIsDefault": false,
+        "shaderTargetSrgb": [
+          0.34,
+          0.954,
+          0.327
+        ],
+        "transparent": false,
+        "primary": "inContext",
+        "floorDuringIsolatedRenders": "unlitBackgroundColor",
+        "method": "형상만 검은·흰 배경에 렌더해 화소별 덮임 a = 1 − (W − B)와 배경과 섞이기 전 색 c = B / a를 구함(선형). 이때 바닥은 끄지 않고 배경과 같은 색의 Unlit 머티리얼로 바꿔 그림자 수신자 구성을 실제 장면과 같게 둠. 덮인 화소(a ≥ 0.98)의 경계 상자 가운데 50%×50% 안에서 선형 평균 → sRGB. frontal = 광원을 카메라 시선 방향으로 돌린 정면 조명, scene = 장면 방향광 그대로, inContext = 실제 장면 렌더(바닥·하늘·반투명이면 배경과 섞인 값). primary = 보고·판정에 쓰는 값: 불투명이면 inContext(참여자가 보는 색), 반투명이면 scene(배경과 섞이기 전 색).",
+        "coveredPixels": 61994,
+        "screenBox": [
+          897,
+          958,
+          282,
+          282
+        ],
+        "meanCoverageInCenter": 1.0,
+        "frontal": {
+          "label": "정면 조명(광원 = 카메라 시선 방향), 형상만",
+          "pixels": 19881,
+          "meanSrgb": [
+            0.407,
+            0.981,
+            0.398
+          ],
+          "meanSrgb8": [
+            104,
+            250,
+            102
+          ],
+          "lab": [
+            88.16,
+            -67.18,
+            58.44
+          ],
+          "deltaE2000VsSpec": 13.88,
+          "deltaE76VsSpec": 22.12,
+          "deltaE2000VsShaderTarget": 2.06,
+          "deltaLVsSpec": 19.48
+        },
+        "scene": {
+          "label": "장면 조명(방향광 고도·방위 그대로), 형상만",
+          "pixels": 19881,
+          "meanSrgb": [
+            0.366,
+            0.909,
+            0.358
+          ],
+          "meanSrgb8": [
+            93,
+            232,
+            91
+          ],
+          "lab": [
+            82.24,
+            -64.17,
+            56.01
+          ],
+          "deltaE2000VsSpec": 9.96,
+          "deltaE76VsSpec": 15.1,
+          "deltaE2000VsShaderTarget": 2.81,
+          "deltaLVsSpec": 13.56
+        },
+        "inContext": {
+          "label": "실제 장면 렌더(바닥·하늘·그림자 포함), 같은 화소",
+          "pixels": 19881,
+          "meanSrgb": [
+            0.366,
+            0.909,
+            0.358
+          ],
+          "meanSrgb8": [
+            93,
+            232,
+            91
+          ],
+          "lab": [
+            82.24,
+            -64.17,
+            56.01
+          ],
+          "deltaE2000VsSpec": 9.96,
+          "deltaE76VsSpec": 15.1,
+          "deltaE2000VsShaderTarget": 2.81,
+          "deltaLVsSpec": 13.56
+        },
+        "diagnostics": {
+          "litFloorBlackBackground": {
+            "label": "진단: 바닥 원래 머티리얼 + 검은 배경(하늘 없음), 같은 화소",
+            "pixels": 19881,
+            "meanSrgb": [
+              0.366,
+              0.909,
+              0.358
+            ],
+            "meanSrgb8": [
+              93,
+              232,
+              91
+            ],
+            "lab": [
+              82.24,
+              -64.17,
+              56.01
+            ],
+            "deltaE2000VsSpec": 9.96,
+            "deltaE76VsSpec": 15.1,
+            "deltaE2000VsShaderTarget": 2.81,
+            "deltaLVsSpec": 13.56
+          },
+          "noFloorSkybox": {
+            "label": "진단: 하늘 그대로 + 바닥 끔, 같은 화소",
+            "pixels": 19881,
+            "meanSrgb": [
+              0.366,
+              0.909,
+              0.358
+            ],
+            "meanSrgb8": [
+              93,
+              232,
+              91
+            ],
+            "lab": [
+              82.24,
+              -64.17,
+              56.01
+            ],
+            "deltaE2000VsSpec": 9.96,
+            "deltaE76VsSpec": 15.1,
+            "deltaE2000VsShaderTarget": 2.81,
+            "deltaLVsSpec": 13.56
+          },
+          "inContextAgain": {
+            "label": "진단: 실제 장면을 한 번 더 렌더, 같은 화소",
+            "pixels": 19881,
+            "meanSrgb": [
+              0.366,
+              0.909,
+              0.358
+            ],
+            "meanSrgb8": [
+              93,
+              232,
+              91
+            ],
+            "lab": [
+              82.24,
+              -64.17,
+              56.01
+            ],
+            "deltaE2000VsSpec": 9.96,
+            "deltaE76VsSpec": 15.1,
+            "deltaE2000VsShaderTarget": 2.81,
+            "deltaLVsSpec": 13.56
+          }
+        },
+        "sceneVsInContextDeltaE2000": 0.0
+      },
+      "pngDetail": "R08_blob_green_bright_detail.png",
+      "renderStats": {
+        "unityStats": {
+          "drawCalls": 0,
+          "batches": 0,
+          "setPassCalls": 0,
+          "triangles": 0,
+          "vertices": 0,
+          "shadowCasters": 0,
+          "meaningful": false,
+          "note": "배치모드·에디트 모드의 수동 Camera.Render()에서는 UnityStats가 채워지지 않음(0) → 직접 계산값을 쓴다."
+        },
+        "profilerRecorder": {
+          "drawCalls": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "batches": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "setPassCalls": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "triangles": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "vertices": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "shadowCasters": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "meaningful": false,
+          "note": "배치모드·에디트 모드의 수동 Camera.Render()에서는 렌더 카운터가 프레임 끝에 갱신되지 않아 0 → 실측은 PlayMode 또는 기기(OVR Metrics)에서."
+        },
+        "computed": {
+          "visibleRenderers": 2,
+          "meshTrianglesInView": 5320,
+          "shadowLights": 1,
+          "drawCallsPerEyeEstimate": 8,
+          "drawCallsBreakdown": {
+            "forward": 3,
+            "cameraDepth": 2,
+            "shadowMap": 1,
+            "skybox": 1,
+            "screenSpaceShadowResolve": 1
+          },
+          "submittedTrianglesPerEyeEstimate": 20880,
+          "drawCallsPerStereoFrameMultiPass": 16,
+          "note": "직접 계산(추정): 렌더러별 패스(LightMode = ForwardBase/ForwardAdd/ShadowCaster)×메시 삼각형. 하늘 메시 삼각형은 제외. 눈당 값 = 단일 패스 인스턴싱 스테레오 프레임과 같은 수의 드로콜. 멀티패스(눈마다 Camera.Render, 이 도구의 시간 측정 방식)면 그림자 맵까지 ×2.",
+          "renderers": [
+            {
+              "name": "model (blob)",
+              "triangles": 5120,
+              "inView": true,
+              "forwardPasses": 2,
+              "shadowCasterPasses": 1,
+              "castsShadow": true,
+              "transparent": false,
+              "passLightModes": [
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "META",
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "SHADOWCASTER",
+                "META"
+              ]
+            },
+            {
+              "name": "floor (1 m grid)",
+              "triangles": 200,
+              "inView": true,
+              "forwardPasses": 1,
+              "shadowCasterPasses": 0,
+              "castsShadow": false,
+              "transparent": false,
+              "passLightModes": [
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "META"
+              ]
+            }
+          ]
+        }
+      },
+      "performance": {
+        "eyeWidth": 2064,
+        "eyeHeight": 2208,
+        "eyes": 2,
+        "msaa": 4,
+        "frames": 300,
+        "warmupFrames": 30,
+        "frameMsP50": 0.701,
+        "frameMsP95": 0.832,
+        "frameMsMax": 0.906,
+        "frameMsMean": 0.724,
+        "fpsAtP95": 1201.3
+      },
+      "console": {
+        "errors": 0,
+        "exceptions": 0,
+        "warnings": 0,
+        "infos": 11,
+        "messages": []
+      }
+    },
+    {
+      "spec": "R09_form_null.json",
+      "loaded": true,
+      "sessionId": "R09",
+      "params": {
+        "form.posture": "none",
+        "form.type": "blob",
+        "layout.distance": 0.33,
+        "layout.size": 0.5,
+        "layout.verticalOffset": 0.75,
+        "material.brightness": 0.5,
+        "material.color.h": 0.1,
+        "material.color.l": 0.5,
+        "material.color.s": 0.3,
+        "material.erosion": 0.0,
+        "material.opacity": 1.0,
+        "material.roughness": 0.5,
+        "motion.speed": 0.5,
+        "motion.type": "still"
+      },
+      "defaultsUsed": [
+        "form.type",
+        "form.posture",
+        "material.brightness",
+        "material.roughness",
+        "material.opacity",
+        "material.erosion",
+        "layout.size",
+        "layout.distance",
+        "layout.verticalOffset",
+        "motion.type",
+        "motion.speed"
+      ],
+      "inferredUsed": [],
+      "notes": [
+        "form.type: SceneSpec 값이 null → 기본값 blob 사용",
+        "form.posture: SceneSpec 값이 null → 기본값 none 사용",
+        "material.brightness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.roughness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.opacity: SceneSpec 값이 null → 기본값 1 사용",
+        "material.erosion: SceneSpec 값이 null → 기본값 0 사용",
+        "layout.size: SceneSpec 값이 null → 기본값 0.5 사용",
+        "layout.distance: SceneSpec 값이 null → 기본값 0.33 사용",
+        "layout.verticalOffset: SceneSpec 값이 null → 기본값 0.75 사용",
+        "motion.type: SceneSpec 값이 null → 기본값 still 사용",
+        "motion.speed: SceneSpec 값이 null → 기본값 0.5 사용",
+        "form.type=blob: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시"
+      ],
+      "shape": {
+        "status": "none",
+        "applied": null,
+        "model": null,
+        "viaPrefab": null,
+        "formType": null,
+        "words": []
+      },
+      "placement": {
+        "objectCenter": [
+          0.0,
+          1.282,
+          1.191
+        ],
+        "horizontalDistanceM": 1.191,
+        "heightM": 1.282,
+        "cameraPitchDeg": 14.947,
+        "motionNote": "에디트 모드 정지 화면 — motion.type은 이 PNG에 보이지 않음(재생 중에만 움직임)"
+      },
+      "png": "R09_form_null.png",
+      "color": {
+        "specHsl": [
+          0.1,
+          0.3,
+          0.5
+        ],
+        "specSrgb": [
+          0.65,
+          0.53,
+          0.35
+        ],
+        "specColorIsDefault": false,
+        "specColorDefaultComponents": [],
+        "brightness": 0.5,
+        "brightnessIsDefault": true,
+        "shaderTargetSrgb": [
+          0.65,
+          0.53,
+          0.35
+        ],
+        "transparent": false,
+        "primary": "inContext",
+        "floorDuringIsolatedRenders": "unlitBackgroundColor",
+        "method": "형상만 검은·흰 배경에 렌더해 화소별 덮임 a = 1 − (W − B)와 배경과 섞이기 전 색 c = B / a를 구함(선형). 이때 바닥은 끄지 않고 배경과 같은 색의 Unlit 머티리얼로 바꿔 그림자 수신자 구성을 실제 장면과 같게 둠. 덮인 화소(a ≥ 0.98)의 경계 상자 가운데 50%×50% 안에서 선형 평균 → sRGB. frontal = 광원을 카메라 시선 방향으로 돌린 정면 조명, scene = 장면 방향광 그대로, inContext = 실제 장면 렌더(바닥·하늘·반투명이면 배경과 섞인 값). primary = 보고·판정에 쓰는 값: 불투명이면 inContext(참여자가 보는 색), 반투명이면 scene(배경과 섞이기 전 색).",
+        "coveredPixels": 61994,
+        "screenBox": [
+          897,
+          958,
+          282,
+          282
+        ],
+        "meanCoverageInCenter": 1.0,
+        "frontal": {
+          "label": "정면 조명(광원 = 카메라 시선 방향), 형상만",
+          "pixels": 19881,
+          "meanSrgb": [
+            0.698,
+            0.584,
+            0.423
+          ],
+          "meanSrgb8": [
+            178,
+            149,
+            108
+          ],
+          "lab": [
+            63.35,
+            5.06,
+            25.8
+          ],
+          "deltaE2000VsSpec": 4.71,
+          "deltaE76VsSpec": 6.08,
+          "deltaE2000VsShaderTarget": 4.71,
+          "deltaLVsSpec": 5.15
+        },
+        "scene": {
+          "label": "장면 조명(방향광 고도·방위 그대로), 형상만",
+          "pixels": 19881,
+          "meanSrgb": [
+            0.608,
+            0.507,
+            0.364
+          ],
+          "meanSrgb8": [
+            155,
+            129,
+            93
+          ],
+          "lab": [
+            55.58,
+            4.58,
+            23.39
+          ],
+          "deltaE2000VsSpec": 3.54,
+          "deltaE76VsSpec": 6.26,
+          "deltaE2000VsShaderTarget": 3.54,
+          "deltaLVsSpec": -2.62
+        },
+        "inContext": {
+          "label": "실제 장면 렌더(바닥·하늘·그림자 포함), 같은 화소",
+          "pixels": 19881,
+          "meanSrgb": [
+            0.608,
+            0.507,
+            0.364
+          ],
+          "meanSrgb8": [
+            155,
+            129,
+            93
+          ],
+          "lab": [
+            55.58,
+            4.58,
+            23.39
+          ],
+          "deltaE2000VsSpec": 3.54,
+          "deltaE76VsSpec": 6.26,
+          "deltaE2000VsShaderTarget": 3.54,
+          "deltaLVsSpec": -2.62
+        },
+        "diagnostics": {
+          "litFloorBlackBackground": {
+            "label": "진단: 바닥 원래 머티리얼 + 검은 배경(하늘 없음), 같은 화소",
+            "pixels": 19881,
+            "meanSrgb": [
+              0.608,
+              0.507,
+              0.364
+            ],
+            "meanSrgb8": [
+              155,
+              129,
+              93
+            ],
+            "lab": [
+              55.58,
+              4.58,
+              23.39
+            ],
+            "deltaE2000VsSpec": 3.54,
+            "deltaE76VsSpec": 6.26,
+            "deltaE2000VsShaderTarget": 3.54,
+            "deltaLVsSpec": -2.62
+          },
+          "noFloorSkybox": {
+            "label": "진단: 하늘 그대로 + 바닥 끔, 같은 화소",
+            "pixels": 19881,
+            "meanSrgb": [
+              0.608,
+              0.507,
+              0.364
+            ],
+            "meanSrgb8": [
+              155,
+              129,
+              93
+            ],
+            "lab": [
+              55.58,
+              4.58,
+              23.39
+            ],
+            "deltaE2000VsSpec": 3.54,
+            "deltaE76VsSpec": 6.26,
+            "deltaE2000VsShaderTarget": 3.54,
+            "deltaLVsSpec": -2.62
+          },
+          "inContextAgain": {
+            "label": "진단: 실제 장면을 한 번 더 렌더, 같은 화소",
+            "pixels": 19881,
+            "meanSrgb": [
+              0.608,
+              0.507,
+              0.364
+            ],
+            "meanSrgb8": [
+              155,
+              129,
+              93
+            ],
+            "lab": [
+              55.58,
+              4.58,
+              23.39
+            ],
+            "deltaE2000VsSpec": 3.54,
+            "deltaE76VsSpec": 6.26,
+            "deltaE2000VsShaderTarget": 3.54,
+            "deltaLVsSpec": -2.62
+          }
+        },
+        "sceneVsInContextDeltaE2000": 0.0
+      },
+      "pngDetail": "R09_form_null_detail.png",
+      "renderStats": {
+        "unityStats": {
+          "drawCalls": 0,
+          "batches": 0,
+          "setPassCalls": 0,
+          "triangles": 0,
+          "vertices": 0,
+          "shadowCasters": 0,
+          "meaningful": false,
+          "note": "배치모드·에디트 모드의 수동 Camera.Render()에서는 UnityStats가 채워지지 않음(0) → 직접 계산값을 쓴다."
+        },
+        "profilerRecorder": {
+          "drawCalls": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "batches": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "setPassCalls": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "triangles": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "vertices": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "shadowCasters": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "meaningful": false,
+          "note": "배치모드·에디트 모드의 수동 Camera.Render()에서는 렌더 카운터가 프레임 끝에 갱신되지 않아 0 → 실측은 PlayMode 또는 기기(OVR Metrics)에서."
+        },
+        "computed": {
+          "visibleRenderers": 2,
+          "meshTrianglesInView": 5320,
+          "shadowLights": 1,
+          "drawCallsPerEyeEstimate": 8,
+          "drawCallsBreakdown": {
+            "forward": 3,
+            "cameraDepth": 2,
+            "shadowMap": 1,
+            "skybox": 1,
+            "screenSpaceShadowResolve": 1
+          },
+          "submittedTrianglesPerEyeEstimate": 20880,
+          "drawCallsPerStereoFrameMultiPass": 16,
+          "note": "직접 계산(추정): 렌더러별 패스(LightMode = ForwardBase/ForwardAdd/ShadowCaster)×메시 삼각형. 하늘 메시 삼각형은 제외. 눈당 값 = 단일 패스 인스턴싱 스테레오 프레임과 같은 수의 드로콜. 멀티패스(눈마다 Camera.Render, 이 도구의 시간 측정 방식)면 그림자 맵까지 ×2.",
+          "renderers": [
+            {
+              "name": "model (blob)",
+              "triangles": 5120,
+              "inView": true,
+              "forwardPasses": 2,
+              "shadowCasterPasses": 1,
+              "castsShadow": true,
+              "transparent": false,
+              "passLightModes": [
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "META",
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "SHADOWCASTER",
+                "META"
+              ]
+            },
+            {
+              "name": "floor (1 m grid)",
+              "triangles": 200,
+              "inView": true,
+              "forwardPasses": 1,
+              "shadowCasterPasses": 0,
+              "castsShadow": false,
+              "transparent": false,
+              "passLightModes": [
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "META"
+              ]
+            }
+          ]
+        }
+      },
+      "performance": {
+        "eyeWidth": 2064,
+        "eyeHeight": 2208,
+        "eyes": 2,
+        "msaa": 4,
+        "frames": 300,
+        "warmupFrames": 30,
+        "frameMsP50": 0.706,
+        "frameMsP95": 0.827,
+        "frameMsMax": 1.051,
+        "frameMsMean": 0.728,
+        "fpsAtP95": 1209.8
+      },
+      "console": {
+        "errors": 0,
+        "exceptions": 0,
+        "warnings": 0,
+        "infos": 13,
+        "messages": []
+      }
+    },
+    {
+      "spec": "R10_shape_round.json",
+      "loaded": true,
+      "sessionId": "R10",
+      "params": {
+        "form.posture": "none",
+        "form.type": "blob",
+        "layout.distance": 0.33,
+        "layout.size": 0.5,
+        "layout.verticalOffset": 0.75,
+        "material.brightness": 0.3,
+        "material.color.h": 0.0,
+        "material.color.l": 0.7,
+        "material.color.s": 0.0,
+        "material.erosion": 0.0,
+        "material.opacity": 1.0,
+        "material.roughness": 0.5,
+        "motion.speed": 0.5,
+        "motion.type": "still"
+      },
+      "defaultsUsed": [
+        "form.type",
+        "form.posture",
+        "material.color.h",
+        "material.color.s",
+        "material.color.l",
+        "material.roughness",
+        "material.opacity",
+        "material.erosion",
+        "layout.size",
+        "layout.distance",
+        "layout.verticalOffset",
+        "motion.type",
+        "motion.speed"
+      ],
+      "inferredUsed": [],
+      "notes": [
+        "form.type: SceneSpec 값이 null → 기본값 blob 사용",
+        "form.posture: SceneSpec 값이 null → 기본값 none 사용",
+        "material.color.h: SceneSpec 값이 null → 기본값 0 사용",
+        "material.color.s: SceneSpec 값이 null → 기본값 0 사용",
+        "material.color.l: SceneSpec 값이 null → 기본값 0.7 사용",
+        "material.roughness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.opacity: SceneSpec 값이 null → 기본값 1 사용",
+        "material.erosion: SceneSpec 값이 null → 기본값 0 사용",
+        "layout.size: SceneSpec 값이 null → 기본값 0.5 사용",
+        "layout.distance: SceneSpec 값이 null → 기본값 0.33 사용",
+        "layout.verticalOffset: SceneSpec 값이 null → 기본값 0.75 사용",
+        "motion.type: SceneSpec 값이 null → 기본값 still 사용",
+        "motion.speed: SceneSpec 값이 null → 기본값 0.5 사용",
+        "shape=round → Sphere 모형으로 표시(form.type=blob, 트리거 '동그란', 프리팹)"
+      ],
+      "shape": {
+        "status": "applied",
+        "applied": "round",
+        "model": "Sphere",
+        "viaPrefab": true,
+        "formType": null,
+        "words": [
+          {
+            "shape": "round",
+            "lemma": "동그란",
+            "trigger": "동그란",
+            "charSpan": [
+              4,
+              7
+            ],
+            "status": "applied"
+          }
+        ]
+      },
+      "placement": {
+        "objectCenter": [
+          0.0,
+          1.282,
+          1.191
+        ],
+        "horizontalDistanceM": 1.191,
+        "heightM": 1.282,
+        "cameraPitchDeg": 14.947,
+        "motionNote": "에디트 모드 정지 화면 — motion.type은 이 PNG에 보이지 않음(재생 중에만 움직임)"
+      },
+      "png": "R10_shape_round.png",
+      "color": {
+        "specHsl": [
+          0.0,
+          0.0,
+          0.7
+        ],
+        "specSrgb": [
+          0.7,
+          0.7,
+          0.7
+        ],
+        "specColorIsDefault": true,
+        "specColorDefaultComponents": [
+          "h",
+          "s",
+          "l"
+        ],
+        "brightness": 0.3,
+        "brightnessIsDefault": false,
+        "shaderTargetSrgb": [
+          0.618,
+          0.618,
+          0.618
+        ],
+        "transparent": false,
+        "primary": "inContext",
+        "floorDuringIsolatedRenders": "unlitBackgroundColor",
+        "method": "형상만 검은·흰 배경에 렌더해 화소별 덮임 a = 1 − (W − B)와 배경과 섞이기 전 색 c = B / a를 구함(선형). 이때 바닥은 끄지 않고 배경과 같은 색의 Unlit 머티리얼로 바꿔 그림자 수신자 구성을 실제 장면과 같게 둠. 덮인 화소(a ≥ 0.98)의 경계 상자 가운데 50%×50% 안에서 선형 평균 → sRGB. frontal = 광원을 카메라 시선 방향으로 돌린 정면 조명, scene = 장면 방향광 그대로, inContext = 실제 장면 렌더(바닥·하늘·반투명이면 배경과 섞인 값). primary = 보고·판정에 쓰는 값: 불투명이면 inContext(참여자가 보는 색), 반투명이면 scene(배경과 섞이기 전 색).",
+        "coveredPixels": 62706,
+        "screenBox": [
+          890,
+          962,
+          284,
+          283
+        ],
+        "meanCoverageInCenter": 1.0,
+        "frontal": {
+          "label": "정면 조명(광원 = 카메라 시선 방향), 형상만",
+          "pixels": 20164,
+          "meanSrgb": [
+            0.666,
+            0.666,
+            0.668
+          ],
+          "meanSrgb8": [
+            170,
+            170,
+            170
+          ],
+          "lab": [
+            69.58,
+            0.0,
+            -0.23
+          ],
+          "deltaE2000VsSpec": 2.44,
+          "deltaE76VsSpec": 3.19,
+          "deltaE2000VsShaderTarget": 3.66,
+          "deltaLVsSpec": -3.18
+        },
+        "scene": {
+          "label": "장면 조명(방향광 고도·방위 그대로), 형상만",
+          "pixels": 20164,
+          "meanSrgb": [
+            0.597,
+            0.597,
+            0.599
+          ],
+          "meanSrgb8": [
+            152,
+            152,
+            153
+          ],
+          "lab": [
+            62.97,
+            0.0,
+            -0.27
+          ],
+          "deltaE2000VsSpec": 7.77,
+          "deltaE76VsSpec": 9.79,
+          "deltaE2000VsShaderTarget": 1.71,
+          "deltaLVsSpec": -9.79
+        },
+        "inContext": {
+          "label": "실제 장면 렌더(바닥·하늘·그림자 포함), 같은 화소",
+          "pixels": 20164,
+          "meanSrgb": [
+            0.597,
+            0.597,
+            0.599
+          ],
+          "meanSrgb8": [
+            152,
+            152,
+            153
+          ],
+          "lab": [
+            62.97,
+            0.0,
+            -0.27
+          ],
+          "deltaE2000VsSpec": 7.77,
+          "deltaE76VsSpec": 9.79,
+          "deltaE2000VsShaderTarget": 1.71,
+          "deltaLVsSpec": -9.79
+        },
+        "diagnostics": {
+          "litFloorBlackBackground": {
+            "label": "진단: 바닥 원래 머티리얼 + 검은 배경(하늘 없음), 같은 화소",
+            "pixels": 20164,
+            "meanSrgb": [
+              0.597,
+              0.597,
+              0.599
+            ],
+            "meanSrgb8": [
+              152,
+              152,
+              153
+            ],
+            "lab": [
+              62.97,
+              0.0,
+              -0.27
+            ],
+            "deltaE2000VsSpec": 7.77,
+            "deltaE76VsSpec": 9.79,
+            "deltaE2000VsShaderTarget": 1.71,
+            "deltaLVsSpec": -9.79
+          },
+          "noFloorSkybox": {
+            "label": "진단: 하늘 그대로 + 바닥 끔, 같은 화소",
+            "pixels": 20164,
+            "meanSrgb": [
+              0.597,
+              0.597,
+              0.599
+            ],
+            "meanSrgb8": [
+              152,
+              152,
+              153
+            ],
+            "lab": [
+              62.97,
+              0.0,
+              -0.27
+            ],
+            "deltaE2000VsSpec": 7.77,
+            "deltaE76VsSpec": 9.79,
+            "deltaE2000VsShaderTarget": 1.71,
+            "deltaLVsSpec": -9.79
+          },
+          "inContextAgain": {
+            "label": "진단: 실제 장면을 한 번 더 렌더, 같은 화소",
+            "pixels": 20164,
+            "meanSrgb": [
+              0.597,
+              0.597,
+              0.599
+            ],
+            "meanSrgb8": [
+              152,
+              152,
+              153
+            ],
+            "lab": [
+              62.97,
+              0.0,
+              -0.27
+            ],
+            "deltaE2000VsSpec": 7.77,
+            "deltaE76VsSpec": 9.79,
+            "deltaE2000VsShaderTarget": 1.71,
+            "deltaLVsSpec": -9.79
+          }
+        },
+        "sceneVsInContextDeltaE2000": 0.0
+      },
+      "pngDetail": "R10_shape_round_detail.png",
+      "renderStats": {
+        "unityStats": {
+          "drawCalls": 0,
+          "batches": 0,
+          "setPassCalls": 0,
+          "triangles": 0,
+          "vertices": 0,
+          "shadowCasters": 0,
+          "meaningful": false,
+          "note": "배치모드·에디트 모드의 수동 Camera.Render()에서는 UnityStats가 채워지지 않음(0) → 직접 계산값을 쓴다."
+        },
+        "profilerRecorder": {
+          "drawCalls": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "batches": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "setPassCalls": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "triangles": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "vertices": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "shadowCasters": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "meaningful": false,
+          "note": "배치모드·에디트 모드의 수동 Camera.Render()에서는 렌더 카운터가 프레임 끝에 갱신되지 않아 0 → 실측은 PlayMode 또는 기기(OVR Metrics)에서."
+        },
+        "computed": {
+          "visibleRenderers": 2,
+          "meshTrianglesInView": 968,
+          "shadowLights": 1,
+          "drawCallsPerEyeEstimate": 8,
+          "drawCallsBreakdown": {
+            "forward": 3,
+            "cameraDepth": 2,
+            "shadowMap": 1,
+            "skybox": 1,
+            "screenSpaceShadowResolve": 1
+          },
+          "submittedTrianglesPerEyeEstimate": 3472,
+          "drawCallsPerStereoFrameMultiPass": 16,
+          "note": "직접 계산(추정): 렌더러별 패스(LightMode = ForwardBase/ForwardAdd/ShadowCaster)×메시 삼각형. 하늘 메시 삼각형은 제외. 눈당 값 = 단일 패스 인스턴싱 스테레오 프레임과 같은 수의 드로콜. 멀티패스(눈마다 Camera.Render, 이 도구의 시간 측정 방식)면 그림자 맵까지 ×2.",
+          "renderers": [
+            {
+              "name": "mesh",
+              "triangles": 768,
+              "inView": true,
+              "forwardPasses": 2,
+              "shadowCasterPasses": 1,
+              "castsShadow": true,
+              "transparent": false,
+              "passLightModes": [
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "META",
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "SHADOWCASTER",
+                "META"
+              ]
+            },
+            {
+              "name": "floor (1 m grid)",
+              "triangles": 200,
+              "inView": true,
+              "forwardPasses": 1,
+              "shadowCasterPasses": 0,
+              "castsShadow": false,
+              "transparent": false,
+              "passLightModes": [
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "META"
+              ]
+            }
+          ]
+        }
+      },
+      "performance": {
+        "eyeWidth": 2064,
+        "eyeHeight": 2208,
+        "eyes": 2,
+        "msaa": 4,
+        "frames": 300,
+        "warmupFrames": 30,
+        "frameMsP50": 0.696,
+        "frameMsP95": 0.815,
+        "frameMsMax": 0.935,
+        "frameMsMean": 0.717,
+        "fpsAtP95": 1227.4
+      },
+      "console": {
+        "errors": 0,
+        "exceptions": 0,
+        "warnings": 0,
+        "infos": 15,
+        "messages": []
+      }
+    },
+    {
+      "spec": "R11_shape_square.json",
+      "loaded": true,
+      "sessionId": "R11",
+      "params": {
+        "form.posture": "none",
+        "form.type": "blob",
+        "layout.distance": 0.33,
+        "layout.size": 0.5,
+        "layout.verticalOffset": 0.75,
+        "material.brightness": 0.5,
+        "material.color.h": 0.0,
+        "material.color.l": 0.7,
+        "material.color.s": 0.0,
+        "material.erosion": 0.0,
+        "material.opacity": 1.0,
+        "material.roughness": 0.5,
+        "motion.speed": 0.5,
+        "motion.type": "still"
+      },
+      "defaultsUsed": [
+        "form.posture",
+        "material.color.h",
+        "material.color.s",
+        "material.color.l",
+        "material.brightness",
+        "material.roughness",
+        "material.opacity",
+        "material.erosion",
+        "layout.size",
+        "layout.distance",
+        "layout.verticalOffset",
+        "motion.type",
+        "motion.speed"
+      ],
+      "inferredUsed": [],
+      "notes": [
+        "form.posture: SceneSpec 값이 null → 기본값 none 사용",
+        "material.color.h: SceneSpec 값이 null → 기본값 0 사용",
+        "material.color.s: SceneSpec 값이 null → 기본값 0 사용",
+        "material.color.l: SceneSpec 값이 null → 기본값 0.7 사용",
+        "material.brightness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.roughness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.opacity: SceneSpec 값이 null → 기본값 1 사용",
+        "material.erosion: SceneSpec 값이 null → 기본값 0 사용",
+        "layout.size: SceneSpec 값이 null → 기본값 0.5 사용",
+        "layout.distance: SceneSpec 값이 null → 기본값 0.33 사용",
+        "layout.verticalOffset: SceneSpec 값이 null → 기본값 0.75 사용",
+        "motion.type: SceneSpec 값이 null → 기본값 still 사용",
+        "motion.speed: SceneSpec 값이 null → 기본값 0.5 사용",
+        "shape=square → Cube 모형으로 표시(form.type=blob, 트리거 '네모난', 프리팹)"
+      ],
+      "shape": {
+        "status": "applied",
+        "applied": "square",
+        "model": "Cube",
+        "viaPrefab": true,
+        "formType": "blob",
+        "words": [
+          {
+            "shape": "square",
+            "lemma": "네모난",
+            "trigger": "네모난",
+            "charSpan": [
+              4,
+              7
+            ],
+            "status": "applied"
+          }
+        ]
+      },
+      "placement": {
+        "objectCenter": [
+          0.0,
+          1.282,
+          1.191
+        ],
+        "horizontalDistanceM": 1.191,
+        "heightM": 1.282,
+        "cameraPitchDeg": 14.947,
+        "motionNote": "에디트 모드 정지 화면 — motion.type은 이 PNG에 보이지 않음(재생 중에만 움직임)"
+      },
+      "png": "R11_shape_square.png",
+      "color": {
+        "specHsl": [
+          0.0,
+          0.0,
+          0.7
+        ],
+        "specSrgb": [
+          0.7,
+          0.7,
+          0.7
+        ],
+        "specColorIsDefault": true,
+        "specColorDefaultComponents": [
+          "h",
+          "s",
+          "l"
+        ],
+        "brightness": 0.5,
+        "brightnessIsDefault": true,
+        "shaderTargetSrgb": [
+          0.7,
+          0.7,
+          0.7
+        ],
+        "transparent": false,
+        "primary": "inContext",
+        "floorDuringIsolatedRenders": "unlitBackgroundColor",
+        "method": "형상만 검은·흰 배경에 렌더해 화소별 덮임 a = 1 − (W − B)와 배경과 섞이기 전 색 c = B / a를 구함(선형). 이때 바닥은 끄지 않고 배경과 같은 색의 Unlit 머티리얼로 바꿔 그림자 수신자 구성을 실제 장면과 같게 둠. 덮인 화소(a ≥ 0.98)의 경계 상자 가운데 50%×50% 안에서 선형 평균 → sRGB. frontal = 광원을 카메라 시선 방향으로 돌린 정면 조명, scene = 장면 방향광 그대로, inContext = 실제 장면 렌더(바닥·하늘·반투명이면 배경과 섞인 값). primary = 보고·판정에 쓰는 값: 불투명이면 inContext(참여자가 보는 색), 반투명이면 scene(배경과 섞이기 전 색).",
+        "coveredPixels": 113060,
+        "screenBox": [
+          862,
+          912,
+          340,
+          349
+        ],
+        "meanCoverageInCenter": 1.0,
+        "frontal": {
+          "label": "정면 조명(광원 = 카메라 시선 방향), 형상만",
+          "pixels": 29580,
+          "meanSrgb": [
+            0.767,
+            0.767,
+            0.768
+          ],
+          "meanSrgb8": [
+            196,
+            196,
+            196
+          ],
+          "lab": [
+            79.04,
+            0.0,
+            -0.12
+          ],
+          "deltaE2000VsSpec": 4.55,
+          "deltaE76VsSpec": 6.29,
+          "deltaE2000VsShaderTarget": 4.55,
+          "deltaLVsSpec": 6.28
+        },
+        "scene": {
+          "label": "장면 조명(방향광 고도·방위 그대로), 형상만",
+          "pixels": 29580,
+          "meanSrgb": [
+            0.622,
+            0.622,
+            0.624
+          ],
+          "meanSrgb8": [
+            159,
+            159,
+            159
+          ],
+          "lab": [
+            65.38,
+            0.0,
+            -0.17
+          ],
+          "deltaE2000VsSpec": 5.77,
+          "deltaE76VsSpec": 7.38,
+          "deltaE2000VsShaderTarget": 5.77,
+          "deltaLVsSpec": -7.38
+        },
+        "inContext": {
+          "label": "실제 장면 렌더(바닥·하늘·그림자 포함), 같은 화소",
+          "pixels": 29580,
+          "meanSrgb": [
+            0.622,
+            0.622,
+            0.624
+          ],
+          "meanSrgb8": [
+            159,
+            159,
+            159
+          ],
+          "lab": [
+            65.38,
+            0.0,
+            -0.17
+          ],
+          "deltaE2000VsSpec": 5.77,
+          "deltaE76VsSpec": 7.38,
+          "deltaE2000VsShaderTarget": 5.77,
+          "deltaLVsSpec": -7.38
+        },
+        "diagnostics": {
+          "litFloorBlackBackground": {
+            "label": "진단: 바닥 원래 머티리얼 + 검은 배경(하늘 없음), 같은 화소",
+            "pixels": 29580,
+            "meanSrgb": [
+              0.622,
+              0.622,
+              0.624
+            ],
+            "meanSrgb8": [
+              159,
+              159,
+              159
+            ],
+            "lab": [
+              65.38,
+              0.0,
+              -0.17
+            ],
+            "deltaE2000VsSpec": 5.77,
+            "deltaE76VsSpec": 7.38,
+            "deltaE2000VsShaderTarget": 5.77,
+            "deltaLVsSpec": -7.38
+          },
+          "noFloorSkybox": {
+            "label": "진단: 하늘 그대로 + 바닥 끔, 같은 화소",
+            "pixels": 29580,
+            "meanSrgb": [
+              0.622,
+              0.622,
+              0.624
+            ],
+            "meanSrgb8": [
+              159,
+              159,
+              159
+            ],
+            "lab": [
+              65.38,
+              0.0,
+              -0.17
+            ],
+            "deltaE2000VsSpec": 5.77,
+            "deltaE76VsSpec": 7.38,
+            "deltaE2000VsShaderTarget": 5.77,
+            "deltaLVsSpec": -7.38
+          },
+          "inContextAgain": {
+            "label": "진단: 실제 장면을 한 번 더 렌더, 같은 화소",
+            "pixels": 29580,
+            "meanSrgb": [
+              0.622,
+              0.622,
+              0.624
+            ],
+            "meanSrgb8": [
+              159,
+              159,
+              159
+            ],
+            "lab": [
+              65.38,
+              0.0,
+              -0.17
+            ],
+            "deltaE2000VsSpec": 5.77,
+            "deltaE76VsSpec": 7.38,
+            "deltaE2000VsShaderTarget": 5.77,
+            "deltaLVsSpec": -7.38
+          }
+        },
+        "sceneVsInContextDeltaE2000": 0.0
+      },
+      "pngDetail": "R11_shape_square_detail.png",
+      "renderStats": {
+        "unityStats": {
+          "drawCalls": 0,
+          "batches": 0,
+          "setPassCalls": 0,
+          "triangles": 0,
+          "vertices": 0,
+          "shadowCasters": 0,
+          "meaningful": false,
+          "note": "배치모드·에디트 모드의 수동 Camera.Render()에서는 UnityStats가 채워지지 않음(0) → 직접 계산값을 쓴다."
+        },
+        "profilerRecorder": {
+          "drawCalls": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "batches": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "setPassCalls": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "triangles": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "vertices": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "shadowCasters": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "meaningful": false,
+          "note": "배치모드·에디트 모드의 수동 Camera.Render()에서는 렌더 카운터가 프레임 끝에 갱신되지 않아 0 → 실측은 PlayMode 또는 기기(OVR Metrics)에서."
+        },
+        "computed": {
+          "visibleRenderers": 2,
+          "meshTrianglesInView": 212,
+          "shadowLights": 1,
+          "drawCallsPerEyeEstimate": 8,
+          "drawCallsBreakdown": {
+            "forward": 3,
+            "cameraDepth": 2,
+            "shadowMap": 1,
+            "skybox": 1,
+            "screenSpaceShadowResolve": 1
+          },
+          "submittedTrianglesPerEyeEstimate": 448,
+          "drawCallsPerStereoFrameMultiPass": 16,
+          "note": "직접 계산(추정): 렌더러별 패스(LightMode = ForwardBase/ForwardAdd/ShadowCaster)×메시 삼각형. 하늘 메시 삼각형은 제외. 눈당 값 = 단일 패스 인스턴싱 스테레오 프레임과 같은 수의 드로콜. 멀티패스(눈마다 Camera.Render, 이 도구의 시간 측정 방식)면 그림자 맵까지 ×2.",
+          "renderers": [
+            {
+              "name": "mesh",
+              "triangles": 12,
+              "inView": true,
+              "forwardPasses": 2,
+              "shadowCasterPasses": 1,
+              "castsShadow": true,
+              "transparent": false,
+              "passLightModes": [
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "META",
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "SHADOWCASTER",
+                "META"
+              ]
+            },
+            {
+              "name": "floor (1 m grid)",
+              "triangles": 200,
+              "inView": true,
+              "forwardPasses": 1,
+              "shadowCasterPasses": 0,
+              "castsShadow": false,
+              "transparent": false,
+              "passLightModes": [
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "META"
+              ]
+            }
+          ]
+        }
+      },
+      "performance": {
+        "eyeWidth": 2064,
+        "eyeHeight": 2208,
+        "eyes": 2,
+        "msaa": 4,
+        "frames": 300,
+        "warmupFrames": 30,
+        "frameMsP50": 0.696,
+        "frameMsP95": 0.806,
+        "frameMsMax": 0.842,
+        "frameMsMean": 0.714,
+        "fpsAtP95": 1241.3
+      },
+      "console": {
+        "errors": 0,
+        "exceptions": 0,
+        "warnings": 0,
+        "infos": 15,
+        "messages": []
+      }
+    },
+    {
+      "spec": "R12_shape_flat.json",
+      "loaded": true,
+      "sessionId": "R12",
+      "params": {
+        "form.posture": "none",
+        "form.type": "blob",
+        "layout.distance": 0.33,
+        "layout.size": 0.5,
+        "layout.verticalOffset": 0.75,
+        "material.brightness": 0.5,
+        "material.color.h": 0.75,
+        "material.color.l": 0.5,
+        "material.color.s": 0.4,
+        "material.erosion": 0.0,
+        "material.opacity": 1.0,
+        "material.roughness": 0.5,
+        "motion.speed": 0.5,
+        "motion.type": "still"
+      },
+      "defaultsUsed": [
+        "form.type",
+        "form.posture",
+        "material.brightness",
+        "material.roughness",
+        "material.opacity",
+        "material.erosion",
+        "layout.size",
+        "layout.distance",
+        "layout.verticalOffset",
+        "motion.type",
+        "motion.speed"
+      ],
+      "inferredUsed": [],
+      "notes": [
+        "form.type: SceneSpec 값이 null → 기본값 blob 사용",
+        "form.posture: SceneSpec 값이 null → 기본값 none 사용",
+        "material.brightness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.roughness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.opacity: SceneSpec 값이 null → 기본값 1 사용",
+        "material.erosion: SceneSpec 값이 null → 기본값 0 사용",
+        "layout.size: SceneSpec 값이 null → 기본값 0.5 사용",
+        "layout.distance: SceneSpec 값이 null → 기본값 0.33 사용",
+        "layout.verticalOffset: SceneSpec 값이 null → 기본값 0.75 사용",
+        "motion.type: SceneSpec 값이 null → 기본값 still 사용",
+        "motion.speed: SceneSpec 값이 null → 기본값 0.5 사용",
+        "shape=flat → FlatCylinder 모형으로 표시(form.type=blob, 트리거 '납작한', 프리팹)"
+      ],
+      "shape": {
+        "status": "applied",
+        "applied": "flat",
+        "model": "FlatCylinder",
+        "viaPrefab": true,
+        "formType": null,
+        "words": [
+          {
+            "shape": "flat",
+            "lemma": "납작한",
+            "trigger": "납작한",
+            "charSpan": [
+              3,
+              6
+            ],
+            "status": "applied"
+          }
+        ]
+      },
+      "placement": {
+        "objectCenter": [
+          0.0,
+          1.282,
+          1.191
+        ],
+        "horizontalDistanceM": 1.191,
+        "heightM": 1.282,
+        "cameraPitchDeg": 14.947,
+        "motionNote": "에디트 모드 정지 화면 — motion.type은 이 PNG에 보이지 않음(재생 중에만 움직임)"
+      },
+      "png": "R12_shape_flat.png",
+      "color": {
+        "specHsl": [
+          0.75,
+          0.4,
+          0.5
+        ],
+        "specSrgb": [
+          0.5,
+          0.3,
+          0.7
+        ],
+        "specColorIsDefault": false,
+        "specColorDefaultComponents": [],
+        "brightness": 0.5,
+        "brightnessIsDefault": true,
+        "shaderTargetSrgb": [
+          0.5,
+          0.3,
+          0.7
+        ],
+        "transparent": false,
+        "primary": "inContext",
+        "floorDuringIsolatedRenders": "unlitBackgroundColor",
+        "method": "형상만 검은·흰 배경에 렌더해 화소별 덮임 a = 1 − (W − B)와 배경과 섞이기 전 색 c = B / a를 구함(선형). 이때 바닥은 끄지 않고 배경과 같은 색의 Unlit 머티리얼로 바꿔 그림자 수신자 구성을 실제 장면과 같게 둠. 덮인 화소(a ≥ 0.98)의 경계 상자 가운데 50%×50% 안에서 선형 평균 → sRGB. frontal = 광원을 카메라 시선 방향으로 돌린 정면 조명, scene = 장면 방향광 그대로, inContext = 실제 장면 렌더(바닥·하늘·반투명이면 배경과 섞인 값). primary = 보고·판정에 쓰는 값: 불투명이면 inContext(참여자가 보는 색), 반투명이면 scene(배경과 섞이기 전 색).",
+        "coveredPixels": 47139,
+        "screenBox": [
+          889,
+          1001,
+          286,
+          184
+        ],
+        "meanCoverageInCenter": 1.0,
+        "frontal": {
+          "label": "정면 조명(광원 = 카메라 시선 방향), 형상만",
+          "pixels": 13156,
+          "meanSrgb": [
+            0.54,
+            0.366,
+            0.731
+          ],
+          "meanSrgb8": [
+            138,
+            93,
+            186
+          ],
+          "lab": [
+            48.03,
+            36.77,
+            -42.51
+          ],
+          "deltaE2000VsSpec": 5.27,
+          "deltaE76VsSpec": 8.09,
+          "deltaE2000VsShaderTarget": 5.27,
+          "deltaLVsSpec": 5.23
+        },
+        "scene": {
+          "label": "장면 조명(방향광 고도·방위 그대로), 형상만",
+          "pixels": 13156,
+          "meanSrgb": [
+            0.465,
+            0.306,
+            0.638
+          ],
+          "meanSrgb8": [
+            119,
+            78,
+            163
+          ],
+          "lab": [
+            41.19,
+            34.44,
+            -39.59
+          ],
+          "deltaE2000VsSpec": 3.09,
+          "deltaE76VsSpec": 9.97,
+          "deltaE2000VsShaderTarget": 3.09,
+          "deltaLVsSpec": -1.61
+        },
+        "inContext": {
+          "label": "실제 장면 렌더(바닥·하늘·그림자 포함), 같은 화소",
+          "pixels": 13156,
+          "meanSrgb": [
+            0.465,
+            0.306,
+            0.638
+          ],
+          "meanSrgb8": [
+            119,
+            78,
+            163
+          ],
+          "lab": [
+            41.19,
+            34.44,
+            -39.59
+          ],
+          "deltaE2000VsSpec": 3.09,
+          "deltaE76VsSpec": 9.97,
+          "deltaE2000VsShaderTarget": 3.09,
+          "deltaLVsSpec": -1.61
+        },
+        "diagnostics": {
+          "litFloorBlackBackground": {
+            "label": "진단: 바닥 원래 머티리얼 + 검은 배경(하늘 없음), 같은 화소",
+            "pixels": 13156,
+            "meanSrgb": [
+              0.465,
+              0.306,
+              0.638
+            ],
+            "meanSrgb8": [
+              119,
+              78,
+              163
+            ],
+            "lab": [
+              41.19,
+              34.44,
+              -39.59
+            ],
+            "deltaE2000VsSpec": 3.09,
+            "deltaE76VsSpec": 9.97,
+            "deltaE2000VsShaderTarget": 3.09,
+            "deltaLVsSpec": -1.61
+          },
+          "noFloorSkybox": {
+            "label": "진단: 하늘 그대로 + 바닥 끔, 같은 화소",
+            "pixels": 13156,
+            "meanSrgb": [
+              0.465,
+              0.306,
+              0.638
+            ],
+            "meanSrgb8": [
+              119,
+              78,
+              163
+            ],
+            "lab": [
+              41.19,
+              34.44,
+              -39.59
+            ],
+            "deltaE2000VsSpec": 3.09,
+            "deltaE76VsSpec": 9.97,
+            "deltaE2000VsShaderTarget": 3.09,
+            "deltaLVsSpec": -1.61
+          },
+          "inContextAgain": {
+            "label": "진단: 실제 장면을 한 번 더 렌더, 같은 화소",
+            "pixels": 13156,
+            "meanSrgb": [
+              0.465,
+              0.306,
+              0.638
+            ],
+            "meanSrgb8": [
+              119,
+              78,
+              163
+            ],
+            "lab": [
+              41.19,
+              34.44,
+              -39.59
+            ],
+            "deltaE2000VsSpec": 3.09,
+            "deltaE76VsSpec": 9.97,
+            "deltaE2000VsShaderTarget": 3.09,
+            "deltaLVsSpec": -1.61
+          }
+        },
+        "sceneVsInContextDeltaE2000": 0.0
+      },
+      "pngDetail": "R12_shape_flat_detail.png",
+      "renderStats": {
+        "unityStats": {
+          "drawCalls": 0,
+          "batches": 0,
+          "setPassCalls": 0,
+          "triangles": 0,
+          "vertices": 0,
+          "shadowCasters": 0,
+          "meaningful": false,
+          "note": "배치모드·에디트 모드의 수동 Camera.Render()에서는 UnityStats가 채워지지 않음(0) → 직접 계산값을 쓴다."
+        },
+        "profilerRecorder": {
+          "drawCalls": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "batches": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "setPassCalls": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "triangles": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "vertices": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "shadowCasters": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "meaningful": false,
+          "note": "배치모드·에디트 모드의 수동 Camera.Render()에서는 렌더 카운터가 프레임 끝에 갱신되지 않아 0 → 실측은 PlayMode 또는 기기(OVR Metrics)에서."
+        },
+        "computed": {
+          "visibleRenderers": 2,
+          "meshTrianglesInView": 280,
+          "shadowLights": 1,
+          "drawCallsPerEyeEstimate": 8,
+          "drawCallsBreakdown": {
+            "forward": 3,
+            "cameraDepth": 2,
+            "shadowMap": 1,
+            "skybox": 1,
+            "screenSpaceShadowResolve": 1
+          },
+          "submittedTrianglesPerEyeEstimate": 720,
+          "drawCallsPerStereoFrameMultiPass": 16,
+          "note": "직접 계산(추정): 렌더러별 패스(LightMode = ForwardBase/ForwardAdd/ShadowCaster)×메시 삼각형. 하늘 메시 삼각형은 제외. 눈당 값 = 단일 패스 인스턴싱 스테레오 프레임과 같은 수의 드로콜. 멀티패스(눈마다 Camera.Render, 이 도구의 시간 측정 방식)면 그림자 맵까지 ×2.",
+          "renderers": [
+            {
+              "name": "mesh",
+              "triangles": 80,
+              "inView": true,
+              "forwardPasses": 2,
+              "shadowCasterPasses": 1,
+              "castsShadow": true,
+              "transparent": false,
+              "passLightModes": [
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "META",
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "SHADOWCASTER",
+                "META"
+              ]
+            },
+            {
+              "name": "floor (1 m grid)",
+              "triangles": 200,
+              "inView": true,
+              "forwardPasses": 1,
+              "shadowCasterPasses": 0,
+              "castsShadow": false,
+              "transparent": false,
+              "passLightModes": [
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "META"
+              ]
+            }
+          ]
+        }
+      },
+      "performance": {
+        "eyeWidth": 2064,
+        "eyeHeight": 2208,
+        "eyes": 2,
+        "msaa": 4,
+        "frames": 300,
+        "warmupFrames": 30,
+        "frameMsP50": 0.688,
+        "frameMsP95": 0.809,
+        "frameMsMax": 0.992,
+        "frameMsMean": 0.708,
+        "fpsAtP95": 1236.7
+      },
+      "console": {
+        "errors": 0,
+        "exceptions": 0,
+        "warnings": 0,
+        "infos": 13,
+        "messages": []
+      }
+    },
+    {
+      "spec": "R13_shape_pointed.json",
+      "loaded": true,
+      "sessionId": "R13",
+      "params": {
+        "form.posture": "none",
+        "form.type": "blob",
+        "layout.distance": 0.33,
+        "layout.size": 0.5,
+        "layout.verticalOffset": 0.75,
+        "material.brightness": 0.5,
+        "material.color.h": 0.0,
+        "material.color.l": 0.7,
+        "material.color.s": 0.0,
+        "material.erosion": 0.0,
+        "material.opacity": 1.0,
+        "material.roughness": 0.5,
+        "motion.speed": 0.5,
+        "motion.type": "still"
+      },
+      "defaultsUsed": [
+        "form.type",
+        "form.posture",
+        "material.color.h",
+        "material.color.s",
+        "material.color.l",
+        "material.brightness",
+        "material.roughness",
+        "material.opacity",
+        "material.erosion",
+        "layout.size",
+        "layout.distance",
+        "layout.verticalOffset",
+        "motion.type",
+        "motion.speed"
+      ],
+      "inferredUsed": [],
+      "notes": [
+        "form.type: SceneSpec 값이 null → 기본값 blob 사용",
+        "form.posture: SceneSpec 값이 null → 기본값 none 사용",
+        "material.color.h: SceneSpec 값이 null → 기본값 0 사용",
+        "material.color.s: SceneSpec 값이 null → 기본값 0 사용",
+        "material.color.l: SceneSpec 값이 null → 기본값 0.7 사용",
+        "material.brightness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.roughness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.opacity: SceneSpec 값이 null → 기본값 1 사용",
+        "material.erosion: SceneSpec 값이 null → 기본값 0 사용",
+        "layout.size: SceneSpec 값이 null → 기본값 0.5 사용",
+        "layout.distance: SceneSpec 값이 null → 기본값 0.33 사용",
+        "layout.verticalOffset: SceneSpec 값이 null → 기본값 0.75 사용",
+        "motion.type: SceneSpec 값이 null → 기본값 still 사용",
+        "motion.speed: SceneSpec 값이 null → 기본값 0.5 사용",
+        "shape=pointed → Cone 모형으로 표시(form.type=blob, 트리거 '뾰족한', 프리팹)"
+      ],
+      "shape": {
+        "status": "applied",
+        "applied": "pointed",
+        "model": "Cone",
+        "viaPrefab": true,
+        "formType": null,
+        "words": [
+          {
+            "shape": "pointed",
+            "lemma": "뾰족한",
+            "trigger": "뾰족한",
+            "charSpan": [
+              0,
+              3
+            ],
+            "status": "applied"
+          }
+        ]
+      },
+      "placement": {
+        "objectCenter": [
+          0.0,
+          1.282,
+          1.191
+        ],
+        "horizontalDistanceM": 1.191,
+        "heightM": 1.282,
+        "cameraPitchDeg": 14.947,
+        "motionNote": "에디트 모드 정지 화면 — motion.type은 이 PNG에 보이지 않음(재생 중에만 움직임)"
+      },
+      "png": "R13_shape_pointed.png",
+      "color": {
+        "specHsl": [
+          0.0,
+          0.0,
+          0.7
+        ],
+        "specSrgb": [
+          0.7,
+          0.7,
+          0.7
+        ],
+        "specColorIsDefault": true,
+        "specColorDefaultComponents": [
+          "h",
+          "s",
+          "l"
+        ],
+        "brightness": 0.5,
+        "brightnessIsDefault": true,
+        "shaderTargetSrgb": [
+          0.7,
+          0.7,
+          0.7
+        ],
+        "transparent": false,
+        "primary": "inContext",
+        "floorDuringIsolatedRenders": "unlitBackgroundColor",
+        "method": "형상만 검은·흰 배경에 렌더해 화소별 덮임 a = 1 − (W − B)와 배경과 섞이기 전 색 c = B / a를 구함(선형). 이때 바닥은 끄지 않고 배경과 같은 색의 Unlit 머티리얼로 바꿔 그림자 수신자 구성을 실제 장면과 같게 둠. 덮인 화소(a ≥ 0.98)의 경계 상자 가운데 50%×50% 안에서 선형 평균 → sRGB. frontal = 광원을 카메라 시선 방향으로 돌린 정면 조명, scene = 장면 방향광 그대로, inContext = 실제 장면 렌더(바닥·하늘·반투명이면 배경과 섞인 값). primary = 보고·판정에 쓰는 값: 불투명이면 inContext(참여자가 보는 색), 반투명이면 scene(배경과 섞이기 전 색).",
+        "coveredPixels": 50263,
+        "screenBox": [
+          895,
+          912,
+          274,
+          332
+        ],
+        "meanCoverageInCenter": 1.0,
+        "frontal": {
+          "label": "정면 조명(광원 = 카메라 시선 방향), 형상만",
+          "pixels": 21310,
+          "meanSrgb": [
+            0.727,
+            0.729,
+            0.731
+          ],
+          "meanSrgb8": [
+            185,
+            186,
+            186
+          ],
+          "lab": [
+            75.43,
+            0.01,
+            -0.34
+          ],
+          "deltaE2000VsSpec": 2.0,
+          "deltaE76VsSpec": 2.69,
+          "deltaE2000VsShaderTarget": 2.0,
+          "deltaLVsSpec": 2.67
+        },
+        "scene": {
+          "label": "장면 조명(방향광 고도·방위 그대로), 형상만",
+          "pixels": 21310,
+          "meanSrgb": [
+            0.705,
+            0.707,
+            0.709
+          ],
+          "meanSrgb8": [
+            180,
+            180,
+            181
+          ],
+          "lab": [
+            73.38,
+            0.01,
+            -0.36
+          ],
+          "deltaE2000VsSpec": 0.58,
+          "deltaE76VsSpec": 0.71,
+          "deltaE2000VsShaderTarget": 0.58,
+          "deltaLVsSpec": 0.62
+        },
+        "inContext": {
+          "label": "실제 장면 렌더(바닥·하늘·그림자 포함), 같은 화소",
+          "pixels": 21310,
+          "meanSrgb": [
+            0.705,
+            0.707,
+            0.709
+          ],
+          "meanSrgb8": [
+            180,
+            180,
+            181
+          ],
+          "lab": [
+            73.38,
+            0.01,
+            -0.36
+          ],
+          "deltaE2000VsSpec": 0.58,
+          "deltaE76VsSpec": 0.71,
+          "deltaE2000VsShaderTarget": 0.58,
+          "deltaLVsSpec": 0.62
+        },
+        "diagnostics": {
+          "litFloorBlackBackground": {
+            "label": "진단: 바닥 원래 머티리얼 + 검은 배경(하늘 없음), 같은 화소",
+            "pixels": 21310,
+            "meanSrgb": [
+              0.705,
+              0.707,
+              0.709
+            ],
+            "meanSrgb8": [
+              180,
+              180,
+              181
+            ],
+            "lab": [
+              73.38,
+              0.01,
+              -0.36
+            ],
+            "deltaE2000VsSpec": 0.58,
+            "deltaE76VsSpec": 0.71,
+            "deltaE2000VsShaderTarget": 0.58,
+            "deltaLVsSpec": 0.62
+          },
+          "noFloorSkybox": {
+            "label": "진단: 하늘 그대로 + 바닥 끔, 같은 화소",
+            "pixels": 21310,
+            "meanSrgb": [
+              0.705,
+              0.707,
+              0.709
+            ],
+            "meanSrgb8": [
+              180,
+              180,
+              181
+            ],
+            "lab": [
+              73.38,
+              0.01,
+              -0.36
+            ],
+            "deltaE2000VsSpec": 0.58,
+            "deltaE76VsSpec": 0.71,
+            "deltaE2000VsShaderTarget": 0.58,
+            "deltaLVsSpec": 0.62
+          },
+          "inContextAgain": {
+            "label": "진단: 실제 장면을 한 번 더 렌더, 같은 화소",
+            "pixels": 21310,
+            "meanSrgb": [
+              0.705,
+              0.707,
+              0.709
+            ],
+            "meanSrgb8": [
+              180,
+              180,
+              181
+            ],
+            "lab": [
+              73.38,
+              0.01,
+              -0.36
+            ],
+            "deltaE2000VsSpec": 0.58,
+            "deltaE76VsSpec": 0.71,
+            "deltaE2000VsShaderTarget": 0.58,
+            "deltaLVsSpec": 0.62
+          }
+        },
+        "sceneVsInContextDeltaE2000": 0.0
+      },
+      "pngDetail": "R13_shape_pointed_detail.png",
+      "renderStats": {
+        "unityStats": {
+          "drawCalls": 0,
+          "batches": 0,
+          "setPassCalls": 0,
+          "triangles": 0,
+          "vertices": 0,
+          "shadowCasters": 0,
+          "meaningful": false,
+          "note": "배치모드·에디트 모드의 수동 Camera.Render()에서는 UnityStats가 채워지지 않음(0) → 직접 계산값을 쓴다."
+        },
+        "profilerRecorder": {
+          "drawCalls": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "batches": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "setPassCalls": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "triangles": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "vertices": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "shadowCasters": {
+            "valid": true,
+            "current": 0,
+            "last": 0
+          },
+          "meaningful": false,
+          "note": "배치모드·에디트 모드의 수동 Camera.Render()에서는 렌더 카운터가 프레임 끝에 갱신되지 않아 0 → 실측은 PlayMode 또는 기기(OVR Metrics)에서."
+        },
+        "computed": {
+          "visibleRenderers": 2,
+          "meshTrianglesInView": 296,
+          "shadowLights": 1,
+          "drawCallsPerEyeEstimate": 8,
+          "drawCallsBreakdown": {
+            "forward": 3,
+            "cameraDepth": 2,
+            "shadowMap": 1,
+            "skybox": 1,
+            "screenSpaceShadowResolve": 1
+          },
+          "submittedTrianglesPerEyeEstimate": 784,
+          "drawCallsPerStereoFrameMultiPass": 16,
+          "note": "직접 계산(추정): 렌더러별 패스(LightMode = ForwardBase/ForwardAdd/ShadowCaster)×메시 삼각형. 하늘 메시 삼각형은 제외. 눈당 값 = 단일 패스 인스턴싱 스테레오 프레임과 같은 수의 드로콜. 멀티패스(눈마다 Camera.Render, 이 도구의 시간 측정 방식)면 그림자 맵까지 ×2.",
+          "renderers": [
+            {
+              "name": "mesh",
+              "triangles": 96,
+              "inView": true,
+              "forwardPasses": 2,
+              "shadowCasterPasses": 1,
+              "castsShadow": true,
+              "transparent": false,
+              "passLightModes": [
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "META",
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "SHADOWCASTER",
+                "META"
+              ]
+            },
+            {
+              "name": "floor (1 m grid)",
+              "triangles": 200,
+              "inView": true,
+              "forwardPasses": 1,
+              "shadowCasterPasses": 0,
+              "castsShadow": false,
+              "transparent": false,
+              "passLightModes": [
+                "FORWARDBASE",
+                "FORWARDADD",
+                "DEFERRED",
+                "META"
+              ]
+            }
+          ]
+        }
+      },
+      "performance": {
+        "eyeWidth": 2064,
+        "eyeHeight": 2208,
+        "eyes": 2,
+        "msaa": 4,
+        "frames": 300,
+        "warmupFrames": 30,
+        "frameMsP50": 0.695,
+        "frameMsP95": 0.809,
+        "frameMsMax": 0.861,
+        "frameMsMean": 0.716,
+        "fpsAtP95": 1235.6
+      },
+      "console": {
+        "errors": 0,
+        "exceptions": 0,
+        "warnings": 0,
+        "infos": 16,
+        "messages": []
+      }
+    }
+  ]
+}
