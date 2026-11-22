@@ -1,9 +1,9 @@
 {
   "formatVersion": "ifs-selection/0.1",
-  "specSha256": "17e1ca6a6827909e8bbd7709a3bd23a1ad61e5c39f14af3372907e1ac4d4a443",
+  "specSha256": "7b16e110333d5d87ecc162f8e99e9e338306a8005d22a07905ae7b5cb9977374",
   "sessionId": "SYN-SEL-S5",
-  "createdAt": "2026-11-23T03:48:57+09:00",
-  "updatedAt": "2026-11-23T03:48:57+09:00",
+  "createdAt": "2026-11-23T04:28:41+09:00",
+  "updatedAt": "2026-11-23T04:28:41+09:00",
   "stage": "done",
   "spec": {
     "path": "<log_dir>\\scenes\\SYN-SEL-S5.json",
@@ -206,7 +206,7 @@
     "c-a9983a9de7f6",
     "c-2cc4f5c4ec45"
   ],
-  "candidatesShownAt": "2026-11-23T03:48:57+09:00",
+  "candidatesShownAt": "2026-11-23T04:28:41+09:00",
   "selection": {
     "selectedCandidateId": "c-a9983a9de7f6",
     "selectedIndex": 1,
@@ -214,12 +214,12 @@
     "displayPosition": 2,
     "operationalId": "c-a9983a9de7f6",
     "operationalIndex": 1,
-    "at": "2026-11-23T03:48:57+09:00"
+    "at": "2026-11-23T04:28:41+09:00"
   },
   "adjustments": {
     "events": [],
     "items": {},
-    "finishedAt": "2026-11-23T03:48:57+09:00"
+    "finishedAt": "2026-11-23T04:28:41+09:00"
   },
   "finalOverrides": {
     "material.brightness": 0.25
@@ -368,8 +368,11 @@
   },
   "premeasure": {
     "path": "<log_dir>\\selection\\SYN-SEL-S5\\premeasure.json",
-    "completedAt": "2026-11-23T03:48:57+09:00",
+    "completedAt": "2026-11-23T04:28:41+09:00",
     "answered": 9,
     "skipped": 0
-  }
+  },
+  "adjustValueExtras": {},
+  "runnerReady": true,
+  "runnerBlockers": []
 }

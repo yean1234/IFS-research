@@ -1,6 +1,8 @@
 // EditMode 테스트(dotnet·Unity 공통): 배치 러너 D8·D9(2026-11-23)
 //   · 선택 파일(selection.json, ifs-selection/0.1): 파싱, sha 불일치 거부, 모르는 덮어쓰기 키·위치 키 거부, 모르는 formatVersion 경고,
 //     적용 확인(appliedOverrides / 적용하지 못한 키), manifest 0.2의 selection·appliedOverrides 키.
+//   · CP9 반영(G26·G27): sha256Basis가 file이 아니거나 runnerReady false면 이유를 밝히고 거부, sources 슬롯·출처 값 검사,
+//     챗봇이 쓴 spec 파일과 선택 파일의 바이트 대조(docs/validation/selection-flow/runs).
 //   · 문항별 평정 범위(min·max): 0–10 문항의 키보드 두 자리 입력(10)·컨트롤러 가운데 값(5), 기존 1–7 동작 그대로, 범위 검증.
 //   · 두 평정 문항(G13 모습 일치·대표성): 두 문구 파일에 draft·출처, 헤드셋 기본 사후만, askOptionalItems로 사전에도, disabledItems로 기존 문항 끄기.
 // 합성 값만 쓴다(참여자 자료 아님).
@@ -118,6 +120,111 @@ namespace IFS.SceneSpec.Tests
             Assert.That(why, Does.Contain("specSha256"));
             Assert.That(why, Does.Contain("시작하지 않습니다"));
             Assert.That(s.SpecMismatch(null), Is.Not.Null);
+        }
+
+        // ── G26: specSha256의 기준과 runnerReady (CP9 지적 1) ─────────────
+        [Test]
+        public void Sha_basis_other_than_file_is_refused_with_the_reason()
+        {
+            var file = Selection();
+            file["spec"] = new JObject { ["path"] = "x", ["sha256Basis"] = "file" };
+            Assert.That(ParseOk(file).SpecSha256, Is.EqualTo(Sha), "file 기준이면 그대로 읽음");
+            Assert.That(ParseOk(Selection()).SpecSha256, Is.EqualTo(Sha), "spec 객체가 없으면(러너 쪽 합성 파일) 파일 기준으로 봄");
+
+            var serialized = Selection();
+            serialized["spec"] = new JObject { ["sha256Basis"] = "serialized" };
+            string why = ParseErrors(serialized).Single();
+            Assert.That(why, Does.Contain("sha256Basis"));
+            Assert.That(why, Does.Contain("serialized"));
+            Assert.That(why, Does.Contain("파일 바이트"), "무엇이 문제인지 밝힘");
+
+            var nullBasis = Selection();
+            nullBasis["spec"] = new JObject { ["sha256Basis"] = null };
+            Assert.That(ParseErrors(nullBasis).Single(), Does.Contain("sha256Basis"));
+        }
+
+        [Test]
+        public void Runner_not_ready_file_from_a_run_without_spec_file_is_refused()
+        {
+            // 챗봇이 spec 파일 없이(persist_logs = false) 만든 기록: specSha256 null, 기준 none, runnerReady false + 이유
+            var o = Selection();
+            o["specSha256"] = null;
+            o["spec"] = new JObject { ["path"] = null, ["sha256Basis"] = "none" };
+            o["runnerReady"] = false;
+            o["runnerBlockers"] = new JArray("spec 파일이 저장되지 않은 실행입니다(합성)");
+            var errors = ParseErrors(o);
+            Assert.That(errors.Any(e => e.Contains("sha256Basis") && e.Contains("none")), Is.True);
+            Assert.That(errors.Any(e => e.Contains("runnerReady") && e.Contains("spec 파일이 저장되지 않은 실행입니다(합성)")), Is.True, "챗봇이 적은 이유를 붙임");
+            Assert.That(errors.Any(e => e.Contains("specSha256이 없음")), Is.True);
+
+            var ready = Selection();
+            ready["runnerReady"] = true;
+            ready["runnerBlockers"] = new JArray();
+            ParseOk(ready);
+            var bad = Selection();
+            bad["runnerReady"] = "yes";
+            Assert.That(ParseErrors(bad).Single(), Does.Contain("runnerReady"));
+        }
+
+        // ── G27: sources의 슬롯 이름·출처 값 검사 (CP9 지적 2) ────────────
+        [Test]
+        public void Sources_slot_names_and_values_are_checked()
+        {
+            var all = Selection();
+            var src = new JObject();
+            for (int i = 0; i < PlacementSelection.SlotNames.Length; i++)
+                src[PlacementSelection.SlotNames[i]] = PlacementSelection.SourceValues[i % PlacementSelection.SourceValues.Length];
+            all["sources"] = src;
+            Assert.That(JToken.DeepEquals(ParseOk(all).ManifestJson()["sources"], src), Is.True, "15개 슬롯 × 네 값은 그대로 옮김");
+            Assert.That(PlacementSelection.SourceValues, Is.EqualTo(new[] { "said", "chosen", "edited", "default" }));
+
+            var typo = Selection();
+            typo["sources"]["layout.size"] = "chosne";
+            string e1 = ParseErrors(typo).Single();
+            Assert.That(e1, Does.Contain("layout.size"));
+            Assert.That(e1, Does.Contain("chosne"));
+
+            var inferred = Selection();
+            inferred["sources"]["form.type"] = "inferred";
+            Assert.That(ParseErrors(inferred).Single(), Does.Contain("inferred"));
+
+            var number = Selection();
+            number["sources"]["form.type"] = 1;
+            Assert.That(ParseErrors(number).Single(), Does.Contain("form.type"));
+
+            var slot = Selection();
+            slot["sources"]["form.shape"] = "said";
+            Assert.That(ParseErrors(slot).Single(), Does.Contain("모르는 슬롯 form.shape"));
+
+            var arr = Selection();
+            arr["sources"] = new JArray("said");
+            Assert.That(ParseErrors(arr).Single(), Does.Contain("sources는 객체"));
+
+            var nul = Selection();
+            nul["sources"] = null;
+            Assert.That(ParseOk(nul).Sources, Is.Null, "null이면 null로 기록");
+        }
+
+        [Test]
+        public void Chatbot_selection_files_match_their_saved_spec_files_byte_for_byte()
+        {
+            // docs/validation/selection-flow/runs/<시나리오>/: 챗봇이 쓴 spec.json(바이트 그대로)과 selection.json(합성 시나리오).
+            // 러너가 읽는 방식(파일 바이트 sha256)으로 재서 selection.json의 specSha256과 같아야 한다(G26: 쓰는 쪽과 읽는 쪽 바이트가 같음).
+            // 이 폴더는 .gitattributes로 줄바꿈을 LF로 고정해 체크아웃 설정과 무관하다.
+            string dir = Path.GetFullPath(Path.Combine(Application.streamingAssetsPath, "..", "..", "..", "docs", "validation", "selection-flow", "runs"));
+            if (!Directory.Exists(dir)) Assert.Ignore("docs/validation/selection-flow/runs 없음: " + dir);
+            var folders = Directory.GetDirectories(dir).Where(d => File.Exists(Path.Combine(d, "selection.json"))).OrderBy(d => d, StringComparer.Ordinal).ToList();
+            Assert.That(folders.Count, Is.GreaterThanOrEqualTo(4));
+            foreach (var d in folders)
+            {
+                string name = Path.GetFileName(d);
+                var sel = PlacementSelection.Load(Path.Combine(d, "selection.json"), out var errors);
+                Assert.That(errors, Is.Empty, name);
+                byte[] spec = File.ReadAllBytes(Path.Combine(d, "spec.json"));
+                Assert.That(spec.Contains((byte)'\r'), Is.False, name + ": spec.json은 LF");
+                Assert.That(sel.SpecMismatch(OwnershipManifest.Sha256Hex(spec)), Is.Null, name);
+                Assert.That(sel.Sources, Is.Not.Null, name);
+            }
         }
 
         [Test]

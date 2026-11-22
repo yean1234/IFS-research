@@ -27,7 +27,9 @@
 - **색상(hue)**은 후보에서 벌리지 않습니다(G17).
 - **낱말 해석 갈림**(G18)은 닫힌 표에 등록된 것만 씁니다. spec당 한 축만 쓰고, 빈 차원보다 먼저 씁니다.
 - **화면 순서**는 `sha256(sessionId)[:8] mod n`만큼 순환시킵니다(G20). 후보 id는 `"c-" + sha256(generatorVersion | 정규화 spec 해시 | index)[:12]`입니다.
-- LLM·난수·시각을 쓰지 않습니다. 같은 spec과 같은 sessionId는 바이트까지 같은 출력을 냅니다. 확정 텍스트 3개의 출력 sha256을 테스트에 고정했습니다.
+- LLM·난수·시각을 쓰지 않습니다. 결정성은 두 가지로 나눠 테스트로 고정했습니다(G28).
+  - **(a) 같은 확정 텍스트 → 같은 spec·같은 후보.** 정규화 spec 해시, 후보 id, 덮어쓰기, 축 값이 같습니다. 세션 ID가 달라도 성립합니다(`test_g28a_…`, `test_g28_determinism_has_two_meanings_through_the_flow`).
+  - **(b) 같은 spec + 같은 세션 ID → 같은 표시 순서.** 표시 순서는 세션 ID 해시로 순환하므로(G20) 세션 ID가 다르면 달라질 수 있습니다(`test_g28b_…`). 출력 파일 전체 바이트에는 sessionId와 표시 순서가 들어 있어서, 세션 ID를 고정했을 때만 같습니다. 확정 텍스트 3개의 출력 sha256은 세션 ID `SYN-GOLD`로 고정했습니다.
 
 ### 값 표(v0.1.0, 잠정값)
 
@@ -42,6 +44,8 @@
 
 후보 값은 모두 조절 단계의 값 목록 위에 있습니다. 그래서 고른 후보에서 조절을 한 칸씩 이어 갈 수 있습니다(테스트로 고정). 기본값은 Unity `SceneParams.cs`의 `SceneDefaults`에서 옮겨 적었습니다. 파이썬 테스트가 그 C# 원문을 읽어 값을 대조합니다.
 
+**표에 없는 말한 값.** 참여자가 말한 범주형 값(예: 움직임 `scattering`)이 조절 표의 목록에 없으면, 그 값을 이 세션의 목록 끝에 하나 더해 현재 값으로 보여 줍니다. 그래서 다른 값을 골랐다가 말한 값으로 돌아올 수도 있습니다. 더하는 것은 말한 값 하나뿐이고, 말하지 않은 표 밖 값은 계속 거부합니다. 더한 사실은 `selection.json`의 `adjustValueExtras`와 세션 로그 `selection:candidates`에 남습니다. 형태 등 다른 범주형 항목에도 같은 규칙을 씁니다(지금 형태 표에는 스키마의 네 값이 모두 있어 실제로는 움직임에서만 생깁니다).
+
 **조절 값.** 형태는 form.type 네 값입니다. 색은 견본 17개(무채색 l 0.1/0.3/0.5/0.7/0.9, 유채색 색상 12칸 × s 0.6 × l 0.5)입니다. 밝기는 0–1을 0.125 간격으로, 투명도는 0.2–1.0을 0.2 간격으로, 크기는 0.2–0.8을 0.1 간격으로 나눴습니다. 질감은 0.1–0.9를 0.2 간격으로 나눴습니다. 움직임은 still·floating·swaying·trembling·pounding·sinking입니다. 값에는 이름을 붙이지 않습니다. 화면에는 형태 1–4, 색 견본, 단계 n/N으로만 보입니다.
 
 **갈림 표**에는 `구름 → form.type {blob, mist}` 하나만 넣었습니다. 근거는 렌더 시트 M03입니다('구름이에요'가 기본 blob으로 그려짐). 껍질·막과 빛은 넣지 않았고, 넣지 않은 이유는 표 파일 `notIncluded`에 적었습니다.
@@ -50,7 +54,9 @@
 
 - `candidates.json`: 생성기 출력 그대로입니다.
 - `selection.json`(`ifs-selection/0.1`, 스키마 `shared/schemas/selection.v0.1.json`)에는 다음을 적습니다.
-  - **헤드셋 러너 계약 필드**(`PlacementSelection.cs`): `formatVersion`, `specSha256`(저장된 spec **파일 바이트**의 sha256), `finalOverrides`(평평한 객체, 위치·거리 키 없음), `selection{selectedCandidateId, none}`, `sources`(슬롯 → said / chosen / edited / default).
+  - **헤드셋 러너 계약 필드**(`PlacementSelection.cs`): `formatVersion`, `specSha256`(저장된 spec **파일 바이트**의 sha256), `finalOverrides`(평평한 객체, 위치·거리 키 없음), `selection{selectedCandidateId, none}`, `sources`(슬롯 → said / chosen / edited / default. 러너도 슬롯 이름과 값을 검사합니다, G27).
+  - **러너에 넘길 수 있는지**(G26): `runnerReady`와 `runnerBlockers`(이유). `specSha256`에는 저장된 spec 파일 바이트의 해시만 적습니다. spec 파일이 없는 실행(`persist_logs = false` 등)이나 파일이 세션의 spec과 달라진 경우에는 `specSha256 = null`, `spec.sha256Basis = "none"`, `runnerReady = false`입니다. 조절을 마치기 전에도 `runnerReady = false`(이유: 조절을 마치지 않음)입니다. `/final` 응답 맨 위에도 `runnerReady`·`runnerBlockers`·`specPath`·`selectionPath`가 있습니다. 러너는 `spec.sha256Basis`가 `file`이 아니거나 `runnerReady = false`면 이유를 밝히고 시작을 거부합니다.
+  - **줄바꿈**: spec 파일은 `dumps(spec)`의 UTF-8 바이트 그대로(LF) 씁니다. 전에는 Windows에서 `write_text`가 CRLF로 바꿔 써서, 같은 spec이 OS나 체크아웃 설정에 따라 다른 해시가 될 수 있었습니다. `runs/`는 `.gitattributes`로 LF를 고정했고, Unity 테스트(`PlacementSelectionTests.Chatbot_selection_files_match_their_saved_spec_files_byte_for_byte`)가 두 파일을 바이트로 대조합니다.
   - 챗봇이 더 적는 것:
     - 보여 준 후보 전체(`candidates`)와 표시 순서(`candidatesShown`)
     - `selection`의 `selectedIndex`·`displayPosition`·`operationalId`·`operationalIndex`
@@ -73,7 +79,7 @@
 | `POST /api/sessions/{sid}/selection` `{candidateId}` | 후보 id 또는 `"none"`. none이면 기준 후보 0번으로 진행 |
 | `POST /api/sessions/{sid}/adjust` `{item, value}` | 조절 한 번. 항목·값이 표 밖이면 422, 순서가 틀리면 409 |
 | `POST /api/sessions/{sid}/adjust/finish` | 조절을 끝내고 `finalOverrides`·`sources`를 확정함 |
-| `GET /api/sessions/{sid}/final` | 헤드셋 러너용: 원본 spec(바꾸지 않음)과 selection.json |
+| `GET /api/sessions/{sid}/final` | 헤드셋 러너용: 원본 spec(바꾸지 않음)과 selection.json. 맨 위 `runnerReady`·`runnerBlockers`·`specPath`·`selectionPath`. 러너에는 이 응답의 spec이 아니라 `specPath`의 파일을 넘깁니다 |
 | `GET·POST /api/sessions/{sid}/premeasure` | 문항 조회와 응답 제출(`{responses: {id: 1–7 또는 null}}`) |
 | `GET /api/sessions/{sid}/preview/{후보 id 또는 current}.png` | image 모드의 미리보기 PNG. 플레이어가 실패하면 503을 내고 none으로 바뀜 |
 
@@ -101,12 +107,26 @@
 | S4 맞는 것이 없다 | 배 안쪽에 구름이 있어요. 하얀색이에요. | 4 | 형태(낱말 갈림 '구름')·크기 | none → 0번 | 형태·크기·투명도 각 1 | 3/0/3/9 |
 | S5 빈 자리 하나 | (S3에서 '어두워요'를 뺌) | 4 | 밝기(빈 자리) | 1번(화면 3번째) | 없음 | 7/1/0/7 |
 
-시나리오 폴더마다 `confirmed_text.txt`, `spec.json`(바이트 그대로이며 sha256 = selection.json `specSha256`), `candidates.json`, `selection.json`, `premeasure.json`, `candidate_<n>.png`, `final.png`가 있습니다. `selection.json`의 시각은 실행할 때마다 다르고 나머지는 같습니다. 로컬 경로는 `<log_dir>`로 바꿔 적었습니다.
+시나리오 폴더마다 `confirmed_text.txt`, `spec.json`(바이트 그대로이며 sha256 = selection.json `specSha256`), `candidates.json`, `selection.json`, `premeasure.json`, `candidate_<n>.png`, `final.png`가 있습니다. `selection.json`·`premeasure.json`의 시각은 실행할 때마다 다르고 나머지는 같습니다. 로컬 경로는 `<log_dir>`로 바꿔 적었습니다. 다섯 시나리오 모두 `runnerReady: true`입니다.
+
+**2026-11-23 다시 돌림(CP9 반영 뒤).** 구름 수정(D7) 뒤에 다시 빌드한 미리보기 플레이어(04:12 빌드)로 찍었습니다. 앞의 그림은 D7 전 플레이어로 찍은 것이었습니다. PNG 말고 달라진 것은 다음과 같습니다.
+- `specSha256`: spec 파일을 LF로 쓰게 되어(위 3절 "줄바꿈") 다섯 개 모두 값이 바뀌었습니다. spec 내용은 같습니다.
+- `selection.json`에 `runnerReady`·`runnerBlockers`·`adjustValueExtras`가 더해졌습니다(다섯 시나리오에는 표에 없는 말한 값이 없어 `{}`).
+- 후보, 축, 선택, 조절, 출처 분포, `finalOverrides`, 사전 측정 응답은 같습니다(시각만 다름).
+- 그림이 바뀐 것은 mist가 들어간 장면뿐입니다(S1 전부, S2 후보 2·3과 최종, S4 후보 2·3과 최종). 덩어리 공(blob)만 있는 장면은 바이트까지 같습니다.
 
 **그림을 보고 확인한 것(⚠).**
 - **S5**: 거의 검은 색(l 0.06)에서는 밝기 후보 4개가 화면에서 거의 구별되지 않습니다. 규칙은 "같은 넷"을 피했지만 렌더에서는 같아 보입니다. G22의 "반영되지 않는 조합" 표(`adjustItems.availability`, 지금 비어 있음)와 후보 차원 쪽 같은 점검이 필요합니다.
-- **S1·S4**: mist 후보는 작고 옅어서 배경과 거의 구분되지 않습니다. 렌더 시트 M01·M02와 같은 문제이며 D7 전입니다.
+- **S1·S4**: D7 뒤 mist 후보는 둥근 덩어리가 겹친 구름 모양으로 보이고, 전보다 배경과 잘 구분됩니다. S1은 크기를 작게 말해서 여전히 작습니다.
 - **S2**: 형태(blob/mist) × 크기 차이는 잘 보입니다.
+
+### 챗봇 → 배치 러너 끝에서 끝까지(2026-11-23, CP9 반영 뒤)
+
+합성 시나리오 S1으로 챗봇이 만든 `spec.json`과 `selection.json`(`runnerReady: true`)을 그대로 배치 러너 자동 시행(place 조건, 참여자 21)에 넣었습니다. 기록은 저장소 밖 임시 폴더에 두었습니다.
+- 끝까지 돌았습니다(`summary.json` `completed: true`, `recordVersion` `ifs-placement/0.2`, `inputSource: auto`).
+- manifest `specSha256`이 selection.json의 `specSha256`과 같았습니다. 줄바꿈 변환 없이 바이트가 맞았다는 뜻입니다.
+- manifest `selection`에 `none: false`, 고른 후보 id, `finalOverrides` 6키, `sources` 15슬롯이 남았습니다. `appliedOverrides`는 6키 모두 그려진 값과 같았습니다. `events.csv`에는 `selection` 한 줄(`applied=6`)이 있었습니다. manifest에 로컬 경로는 없었습니다.
+- 분석기(`python -m ifs_chatbot.eval.placement`)가 이 기록을 읽었습니다: `selection_none 0`, 후보 id, `n_final_overrides 6`, 플래그 `runner_warning:1`(초안 문구 경고).
 
 ## 7. 화면 캡처(`screens/`, 헤드리스 Edge)
 

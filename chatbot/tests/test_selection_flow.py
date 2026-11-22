@@ -102,6 +102,32 @@ def test_start_is_idempotent(rt4):
     assert sum(1 for e in s.log.data["events"] if e["type"] == "selection:candidates") == 1
 
 
+def test_g28_determinism_has_two_meanings_through_the_flow(tmp_path):
+    """G28 (a) 같은 확정 텍스트 → 같은 spec(정규화 해시)·같은 후보 id·같은 덮어쓰기. 세션 ID가 달라도 성립.
+    (b) 표시 순서는 같은 spec과 같은 세션 ID에서만 같다(G20 순환). 세션 ID가 다르면 달라질 수 있다."""
+    from ifs_chatbot.candidates import spec_sha256
+
+    def cands(rt, sid):
+        s = done_session(rt, sid, T_FEEL)
+        c = s.selection().start()
+        return s, s.selection_flow.cands, [x["id"] for x in c["candidates"]]
+
+    rt1, rt2 = Runtime(v4_cfg(tmp_path / "a")), Runtime(v4_cfg(tmp_path / "b"))
+    s_a, c_a, shown_a = cands(rt1, "SYN-G28-A")
+    s_b, c_b, shown_b = cands(rt1, "SYN-G28-B")
+    s_a2, c_a2, shown_a2 = cands(rt2, "SYN-G28-A")          # 다른 실행, 같은 세션 ID
+    # (a) 세션이 달라도 같은 spec·후보·덮어쓰기
+    assert spec_sha256(s_a.scene_spec) == spec_sha256(s_b.scene_spec) == spec_sha256(s_a2.scene_spec)
+    key = lambda c: [(x["id"], x["index"], x["overrides"], x["axisValues"]) for x in c["candidates"]]   # noqa: E731
+    assert key(c_a) == key(c_b) == key(c_a2)
+    assert sorted(shown_a) == sorted(shown_b)
+    # (b) 같은 spec + 같은 세션 ID → 같은 표시 순서(기록도 같음)
+    assert shown_a == shown_a2 == c_a["displayOrder"] == c_a2["displayOrder"]
+    assert s_a.selection_flow.data["candidatesShown"] == s_a2.selection_flow.data["candidatesShown"]
+    # (b) 세션 ID가 다르면 순서는 다를 수 있다(이 두 ID는 실제로 다름 — 순환 칸이 다르다)
+    assert c_a["orderRule"] != c_b["orderRule"] and shown_a != shown_b
+
+
 # ── 선택 · 맞는 것이 없다(G23) ─────────────────────────────────────────────────
 def test_select_records_display_position(rt4):
     s = done_session(rt4, "SYN-SEL", T_FEEL)
@@ -175,6 +201,60 @@ def test_adjust_accepts_table_values(rt4, item, value):
     else:
         assert cur == value
     assert v["adjustCounts"][item] == 1
+
+
+T_SCATTER = "가슴 앞에 연기가 흩어져요."   # motion.type = scattering(조절 표의 움직임 값 목록에 없음)
+
+
+def test_said_value_outside_table_is_added_to_adjust_list(rt4):
+    """말한 움직임 값이 표의 목록에 없으면 그 값을 이 세션의 목록 끝에 더해 현재 값으로 보인다(더한 사실은 기록).
+    다른 값을 골랐다가 말한 값으로 돌아올 수 있고, 말하지 않은 표 밖 값은 여전히 거부한다."""
+    s, f = started(rt4, "SYN-EXTRA", T_SCATTER)
+    table_vals = TABLE["adjustItems"]["items"]["motion"]["values"]
+    assert s.scene_spec["motion"]["type"] == "scattering" and "scattering" not in table_vals
+    v = f.view()
+    assert v["adjustExtras"] == {"motion": "scattering"}
+    assert v["current"]["items"]["motion"] == "scattering"
+    assert f.item_values("motion") == table_vals + ["scattering"]
+    assert f.data["adjustValueExtras"] == {"motion": {"slot": "motion.type", "value": "scattering",
+                                                      "reason": "said_value_not_in_table"}}
+    ev = next(e for e in s.log.data["events"] if e["type"] == "selection:candidates")
+    assert ev["payload"]["adjustValueExtras"] == ["motion"]
+    f.adjust("motion", "floating")
+    assert f.view()["current"]["items"]["motion"] == "floating"
+    f.adjust("motion", "scattering")                        # 말한 값으로 돌아옴
+    with pytest.raises(SelectionInvalid):
+        f.adjust("motion", "spreading")                     # 말하지 않은 표 밖 값
+    f.finish()
+    assert f.data["sourceDetails"]["motion.type"]["source"] == "said" and "motion.type" not in f.data["finalOverrides"]
+    valid(f.data)
+
+
+def test_same_rule_for_other_category_items(tmp_path):
+    """형태도 같은 규칙: 표에서 mist를 뺀 표로 '연기'(form.type = mist)를 말한 세션을 만들면 mist가 형태 목록에 더해진다."""
+    import copy
+    rt = Runtime(v4_cfg(tmp_path))
+    table = copy.deepcopy(rt.candidate_table)
+    table["adjustItems"]["items"]["form"]["values"] = ["blob", "shell", "fragments"]
+    rt.candidate_table = table
+    s, f = started(rt, "SYN-EXTRA-FORM", T_FORM)
+    assert s.scene_spec["form"]["type"] == "mist"
+    assert f.view()["adjustExtras"] == {"form": "mist"} and f.item_values("form")[-1] == "mist"
+    assert f.view()["current"]["items"]["form"] == "mist"
+    f.adjust("form", "shell")
+    f.adjust("form", "mist")
+    valid(f.data)
+
+
+@pytest.mark.parametrize("n,text", [(1, T_FEEL), (2, T_ALL), (3, T_FORM)])
+def test_no_extra_values_when_said_values_are_on_table(rt4, n, text):
+    _, f = started(rt4, f"SYN-NOEX-{n}", text)
+    assert f.view()["adjustExtras"] == {} and f.data["adjustValueExtras"] == {}
+
+
+def test_web_panel_appends_extra_value():
+    web = (REPO_ROOT / "chatbot" / "ifs_chatbot" / "web" / "stage.js").read_text(encoding="utf-8")
+    assert "adjustExtras" in web
 
 
 @pytest.mark.parametrize("item", ["layout.distance", "distance", "position", "layout.verticalOffset", "verticalOffset",
@@ -301,6 +381,95 @@ def test_final_returns_original_spec_unchanged(rt4):
     import hashlib
     assert out["selection"]["specSha256"] == hashlib.sha256(spec_file.read_bytes()).hexdigest()
     assert out["selection"]["spec"]["sha256Basis"] == "file" and out["selection"]["spec"]["normalizedSha256"]
+
+
+# ── 러너에 넘기는 spec 해시(G26, CP9 지적 1) ─────────────────────────────────────
+def test_spec_file_bytes_are_the_serialized_bytes_on_every_os(rt4, tmp_path):
+    """spec 파일은 dumps(spec)의 UTF-8 바이트 그대로(LF, BOM 없음) 쓴다. Windows write_text의 CRLF 변환 때문에 같은 spec이
+    OS에 따라 다른 sha256이 되던 경로를 막았다. 쓰는 쪽(챗봇)과 읽는 쪽(러너: 파일 바이트 sha256)이 같은 바이트를 본다."""
+    import hashlib
+    from ifs_chatbot.scene_builder import spec_bytes, write_spec
+    s, f = started(rt4, "SYN-LF", T_FORM)
+    raw = Path(s.log.data["sceneSpec"]["path"]).read_bytes()
+    assert b"\r" not in raw and not raw.startswith(b"\xef\xbb\xbf")
+    assert raw == spec_bytes(s.scene_spec)
+    assert f.data["specSha256"] == hashlib.sha256(raw).hexdigest()
+    # 같은 spec을 다른 곳에 다시 써도, /final 응답의 spec을 다시 직렬화해도 같은 바이트(같은 해시)
+    again = write_spec(json.loads(raw.decode("utf-8")), tmp_path / "copy" / "spec.json").read_bytes()
+    assert again == raw
+    f.finish()
+    assert spec_bytes(f.final()["spec"]) == raw
+    # 선택 기록도 LF로 쓴다
+    assert b"\r" not in (f.dir / "selection.json").read_bytes()
+
+
+def test_runner_ready_only_with_spec_file_and_after_finish(rt4):
+    from ifs_chatbot.selection import BLOCK_NOT_FINISHED
+    s, f = started(rt4, "SYN-READY", T_FEEL)
+    assert f.data["runnerReady"] is False and f.data["runnerBlockers"] == [BLOCK_NOT_FINISHED]
+    valid(f.data)
+    f.finish()
+    assert f.data["runnerReady"] is True and f.data["runnerBlockers"] == []
+    out = f.final()
+    assert out["runnerReady"] is True and out["runnerBlockers"] == []
+    assert out["specPath"] == s.log.data["sceneSpec"]["path"] and out["selectionPath"].endswith("selection.json")
+    saved = json.loads((f.dir / "selection.json").read_text(encoding="utf-8"))
+    assert saved["runnerReady"] is True and saved["spec"]["sha256Basis"] == "file"
+    assert runner_contract_errors(saved) == []
+    valid(saved)
+
+
+def test_run_without_spec_file_is_marked_not_for_runner(tmp_path):
+    """persist_logs = False(파일을 쓰지 않는 실행): specSha256은 null, sha256Basis none, /final과 기록에 runnerReady false와 이유."""
+    from ifs_chatbot.selection import BLOCK_NO_SPEC_FILE
+    rt = Runtime(v4_cfg(tmp_path), persist_logs=False)
+    c = TestClient(create_app(runtime=rt, warmup=False))
+    s = done_session(rt, "SYN-NOFILE", T_FEEL)
+    assert s.log.data["sceneSpec"]["path"] is None
+    c.post("/api/sessions/SYN-NOFILE/candidates")
+    c.post("/api/sessions/SYN-NOFILE/selection", json={"candidateId": "none"})
+    assert c.post("/api/sessions/SYN-NOFILE/adjust/finish").json()["runnerReady"] is False
+    fin = c.get("/api/sessions/SYN-NOFILE/final").json()
+    assert fin["runnerReady"] is False and fin["runnerBlockers"] == [BLOCK_NO_SPEC_FILE]
+    assert fin["specPath"] is None and fin["selectionPath"] is None
+    sel = fin["selection"]
+    assert sel["specSha256"] is None and sel["spec"]["sha256Basis"] == "none" and sel["runnerReady"] is False
+    assert sel["runnerBlockers"] == [BLOCK_NO_SPEC_FILE]
+    valid(sel)
+    assert {"specSha256", "runnerReady"} <= set(runner_contract_errors(sel))
+    assert not (tmp_path / "logs" / "selection").exists()
+
+
+def test_changed_spec_file_blocks_runner(rt4):
+    from ifs_chatbot.selection import BLOCK_SPEC_FILE_CHANGED
+    s = done_session(rt4, "SYN-CHG", T_FEEL)
+    p = Path(s.log.data["sceneSpec"]["path"])
+    d = json.loads(p.read_text(encoding="utf-8"))
+    d["form"]["type"] = "shell"                       # 확정 뒤 파일이 바뀐 경우(합성)
+    p.write_text(json.dumps(d, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    f = s.selection()
+    f.start()
+    f.select("none")
+    f.finish()
+    assert f.data["specSha256"] is None and f.data["spec"]["sha256Basis"] == "none"
+    assert f.data["runnerReady"] is False and f.data["runnerBlockers"] == [BLOCK_SPEC_FILE_CHANGED]
+    valid(f.data)
+
+
+def test_schema_ties_runner_ready_to_file_hash(rt4):
+    _, f = started(rt4, "SYN-SCH2", T_FEEL)
+    f.finish()
+    ok = json.loads(json.dumps(f.data))
+    valid(ok)
+    for mutate in (lambda d: d.update(specSha256=None),                              # 준비됐다면서 해시 없음
+                   lambda d: d["spec"].update(sha256Basis="serialized"),             # 준비됐다면서 파일 기준 아님
+                   lambda d: d.update(runnerBlockers=["x"]),                         # 준비됐다면서 막는 이유
+                   lambda d: d.update(runnerReady=False, runnerBlockers=[]),         # 안 됐다면서 이유 없음
+                   lambda d: d["sources"].update({"form.shape": "said"}),            # 모르는 슬롯
+                   lambda d: d["sources"].update({"layout.size": "chosne"})):        # 모르는 출처 값
+        d = json.loads(json.dumps(ok))
+        mutate(d)
+        assert list(VALIDATOR.iter_errors(d)), d
 
 
 # ── 사전 측정 ────────────────────────────────────────────────────────────────
@@ -558,9 +727,30 @@ def runner_contract_errors(data: dict) -> list[str]:
         errs.append("selection")
     elif sel["none"] and sel["selectedCandidateId"] is not None:
         errs.append("selection.none+id")
-    if not isinstance(data.get("sources"), dict):
+    src = data.get("sources")
+    if not isinstance(src, dict):
         errs.append("sources")
+    elif any(k not in RUNNER_SLOTS or v not in RUNNER_SOURCES for k, v in src.items()):
+        errs.append("sources.values")                       # G27
+    spec = data.get("spec")
+    if isinstance(spec, dict) and "sha256Basis" in spec and spec["sha256Basis"] != "file":
+        errs.append("sha256Basis")                          # G26
+    if data.get("runnerReady") is False:
+        errs.append("runnerReady")
     return errs
+
+
+RUNNER_SLOTS = set(SCHEMA["$defs"]["slotName"]["enum"])
+RUNNER_SOURCES = set(SCHEMA["$defs"]["source"]["enum"])
+
+
+def test_runner_slot_and_source_lists_match_csharp():
+    """러너(PlacementSelection.cs)의 슬롯 이름·출처 값 목록이 스키마와 같다(G27)."""
+    src = (REPO_ROOT / "unity" / "Assets" / "IFS" / "Runtime" / "Placement" / "PlacementSelection.cs").read_text(encoding="utf-8")
+    slots = re.search(r"SlotNames\s*=\s*\{([^}]*)\}", src).group(1)
+    sources = re.search(r"SourceValues\s*=\s*\{([^}]*)\}", src).group(1)
+    assert set(re.findall(r'"([^"]+)"', slots)) == RUNNER_SLOTS
+    assert set(re.findall(r'"([^"]+)"', sources)) == RUNNER_SOURCES == {"said", "chosen", "edited", "default"}
 
 
 @pytest.mark.parametrize("name", ["sel_chosen_adjusted.json", "sel_none_of_these.json", "sel_no_overrides.json"])

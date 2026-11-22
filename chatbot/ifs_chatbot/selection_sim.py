@@ -117,12 +117,15 @@ def run(scenarios: list[dict], out: Path, preview: str = "none", player: str = "
             if d.exists():
                 shutil.rmtree(d)
             d.mkdir(parents=True)
-            (d / "confirmed_text.txt").write_text(s.log.data["confirmedText"] + "\n", encoding="utf-8")
+            # 줄바꿈은 LF로 고정(Windows write_text의 CRLF 변환을 피함). spec.json은 저장된 파일 바이트 그대로라
+            # sha256이 selection.json의 specSha256과 같다(G26).
+            (d / "confirmed_text.txt").write_text(s.log.data["confirmedText"] + "\n", encoding="utf-8", newline="\n")
             (d / "spec.json").write_bytes(Path(s.log.data["sceneSpec"]["path"]).read_bytes())
             sel_dir = f.dir
             (d / "candidates.json").write_bytes((sel_dir / "candidates.json").read_bytes())
             for name in ("selection.json", "premeasure.json"):
-                (d / name).write_text(_scrub((sel_dir / name).read_text(encoding="utf-8"), log_dir), encoding="utf-8")
+                (d / name).write_text(_scrub((sel_dir / name).read_text(encoding="utf-8"), log_dir), encoding="utf-8",
+                                      newline="\n")
             if rt.preview.mode == "image":
                 for c in f.cands["candidates"]:
                     png = rt.preview.render(f.spec, c["overrides"])
@@ -160,8 +163,9 @@ def run(scenarios: list[dict], out: Path, preview: str = "none", player: str = "
     summary = {"results": results, "previewMode": preview,
                "sourceTotals": dict(sum((Counter(r["sourceCounts"]) for r in results), Counter())),
                "expectFailures": sum(len(r["expectFailures"]) for r in results)}
-    (out / "summary.json").write_text(json.dumps(summary, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    (out / "summary.md").write_text(to_markdown(summary), encoding="utf-8")
+    (out / "summary.json").write_text(json.dumps(summary, ensure_ascii=False, indent=2) + "\n", encoding="utf-8",
+                                      newline="\n")
+    (out / "summary.md").write_text(to_markdown(summary), encoding="utf-8", newline="\n")
     return summary
 
 

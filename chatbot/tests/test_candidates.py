@@ -53,9 +53,13 @@ GOLDEN = {
 }
 
 
+# 결정성은 두 가지로 나눠 고정한다(G28, CP9 지적 3).
+#  (a) 같은 확정 텍스트 → 같은 spec(정규화 해시) · 같은 후보 id · 같은 덮어쓰기. 세션 ID가 달라도 성립한다.
+#  (b) 표시 순서는 같은 spec과 같은 세션 ID에서 같다(G20). 세션 ID가 다르면 순서는 달라질 수 있다.
+# 출력 전체 바이트(candidates_bytes)에는 sessionId와 표시 순서가 들어 있으므로 세션 ID를 고정했을 때만 같다.
 @pytest.mark.parametrize("text", list(GOLDEN))
 def test_output_sha256_is_pinned(v2, text):
-    """같은 확정 텍스트 → 같은 spec → 같은 후보 바이트(sha256 고정). 표·생성기·매퍼를 바꾸면 이 값이 바뀐다."""
+    """같은 확정 텍스트 + 같은 세션 ID(SYN-GOLD) → 같은 후보 바이트(sha256 고정). 표·생성기·매퍼를 바꾸면 이 값이 바뀐다."""
     spec = v2.build(text, session_id="SYN-GOLD")
     assert hashlib.sha256(candidates_bytes(generate(spec, "SYN-GOLD"))).hexdigest() == GOLDEN[text]
 
@@ -67,13 +71,30 @@ def test_same_text_twice_same_spec_and_candidates(v2, text):
     assert candidates_bytes(generate(a, "SYN-A")) == candidates_bytes(generate(b, "SYN-A"))
 
 
-def test_candidate_content_independent_of_session_id(v2):
-    """sessionId가 달라도 후보 내용(id·덮어쓰기)은 같고 화면 순서만 바뀔 수 있다."""
-    a = generate(v2.build(T_FEEL, session_id="SYN-A"), "SYN-A")
-    b = generate(v2.build(T_FEEL, session_id="SYN-B"), "SYN-B")
-    assert a["specSha256"] == b["specSha256"]
-    assert a["candidates"] == b["candidates"]
-    assert sorted(a["displayOrder"]) == sorted(b["displayOrder"])
+@pytest.mark.parametrize("text", [T_FORM, T_FEEL, T_ALL, T_ONE, T_CLOUD, T_SHAPE])
+def test_g28a_same_text_gives_same_spec_ids_and_overrides_across_sessions(v2, text):
+    """(a) 세션 ID가 달라도 spec(세션을 가리키는 meta를 뺀 것)·후보 id·덮어쓰기·축 값이 같다."""
+    sids = ["SYN-A", "SYN-B", "SYN-C", "P07"]
+    specs = [v2.build(text, session_id=sid) for sid in sids]
+    assert len({spec_sha256(sp) for sp in specs}) == 1
+    outs = [generate(sp, sid) for sp, sid in zip(specs, sids)]
+    content = [[(c["id"], c["index"], c["overrides"], c["axisValues"], c["sources"]) for c in o["candidates"]] for o in outs]
+    assert all(x == content[0] for x in content)
+    assert all(o["axes"] == outs[0]["axes"] for o in outs)
+    assert all(sorted(o["displayOrder"]) == sorted(outs[0]["displayOrder"]) for o in outs)
+
+
+def test_g28b_display_order_is_fixed_only_by_spec_and_session_id(v2):
+    """(b) 같은 spec + 같은 세션 ID → 같은 표시 순서(몇 번을 불러도). 세션 ID가 다르면 순서가 달라질 수 있다."""
+    spec = v2.build(T_FEEL, session_id="SYN-A")
+    first = generate(spec, "SYN-A")
+    for _ in range(3):
+        again = generate(copy.deepcopy(spec), "SYN-A")
+        assert again["displayOrder"] == first["displayOrder"]
+        assert candidates_bytes(again) == candidates_bytes(first)
+    orders = {tuple(generate(spec, f"SYN-{i:03d}")["displayOrder"]) for i in range(20)}
+    assert len(orders) > 1, "세션 ID가 다르면 순서가 달라질 수 있어야 함(G20 순환)"
+    assert {tuple(sorted(o)) for o in orders} == {tuple(sorted(first["displayOrder"]))}, "순서만 다르고 후보는 같다"
 
 
 def test_candidate_ids_from_spec_hash_version_and_index(specs):

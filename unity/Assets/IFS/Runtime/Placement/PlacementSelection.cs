@@ -1,12 +1,17 @@
 // 배치 러너가 읽는 선택 파일(selection.json, 형식 ifs-selection/0.1 — 챗봇 쪽 후보 선택·조절 단계가 쓴다. 결정 G15·G23, D8).
 // 러너가 읽는 필드는 다음으로 고정한다. 그 밖의 필드는 읽지 않는다(무시).
 //   formatVersion      "ifs-selection/0.1". 접두어 "ifs-selection/"이 아니거나 모르는 버전이면 경고(시작은 함).
-//   specSha256         원본 spec 파일의 sha256(16진 64자). 러너가 읽은 spec 파일 바이트의 sha256과 다르면 시작 거부.
+//   specSha256         저장된 spec 파일 바이트의 sha256(16진 64자). 러너가 읽은 spec 파일 바이트의 sha256과 다르면 시작 거부.
+//   spec.sha256Basis   (있으면) specSha256을 무엇으로 쟀는지. "file"이 아니면(예: 예전 챗봇이 파일 없는 실행에서 쓰던 "serialized",
+//                      지금 챗봇의 "none") 파일 바이트 해시가 아니므로 이유를 밝히고 시작 거부(G26, CP9 지적 1).
+//                      없으면 파일 기준으로 본다(러너 쪽 합성 파일에는 spec 객체가 없다).
+//   runnerReady        (있으면) false면 챗봇이 러너에 넘길 수 없다고 적은 파일 — runnerBlockers(이유)를 붙여 시작 거부.
 //   finalOverrides     평평한 덮어쓰기 객체(SceneOverrideJson.Parse가 받는 형식, {} = 덮어쓰기 없음). 모르는 키·0–1 밖·잘못된 값이면 시작 거부.
 //                      위치·거리(layout.distance, layout.verticalOffset)는 실험 조건이라(G10, 시작 자리는 실험 설정) 넣을 수 없다 — 거부.
 //   selection          { selectedCandidateId: 문자열 | null, none: bool }. none = "맞는 것이 없다"(G23).
 //                      none이 true인데 selectedCandidateId가 있으면 거부(어느 쪽인지 모름), none이 false인데 id가 null이면 경고.
-//   sources            슬롯별 출처(말함/고름/고침/기본값). 러너는 해석하지 않고 manifest에 그대로 옮긴다(없으면 null).
+//   sources            슬롯별 출처(말함/고름/고침/기본값). 객체여야 하고, 키는 SlotNames, 값은 SourceValues(said|chosen|edited|default)
+//                      중 하나여야 한다 — 아니면 시작 거부(G27, CP9 지적 2). 검사를 통과하면 manifest에 그대로 옮긴다(없거나 null이면 null).
 // 덮어쓰기는 형상을 만들 때 한 번 적용하고 조건 단계 동안 바뀌지 않는다(VR 안에서 속성을 고치는 입력은 없음 — G11).
 // UnityEngine에 의존하지 않는다.
 using System;
@@ -25,6 +30,17 @@ namespace IFS.SceneSpec.Placement
         public const string KnownFormatVersion = "ifs-selection/0.1";
         /// <summary>선택 파일 덮어쓰기에 넣을 수 없는 키(위치·거리는 실험 조건 — G10). 러너가 시작 자리를 실험 설정으로 정한다.</summary>
         public static readonly string[] ForbiddenOverrideKeys = { "layout.distance", "layout.verticalOffset" };
+        /// <summary>specSha256을 저장된 spec 파일 바이트로 쟀다는 표시(spec.sha256Basis). 러너는 이것만 받는다(G26).</summary>
+        public const string FileBasis = "file";
+        /// <summary>sources의 슬롯 이름(shared/schemas/selection.v0.1.json $defs.slotName과 같게 — pytest가 대조한다).</summary>
+        public static readonly string[] SlotNames =
+        {
+            "form.type", "form.posture", "material.color", "material.brightness", "material.saturation",
+            "material.roughness", "material.opacity", "material.erosion", "layout.size", "layout.distance",
+            "layout.verticalOffset", "motion.type", "motion.speed", "body.part", "body.layer",
+        };
+        /// <summary>sources의 출처 값 네 가지: 말함 / 고름 / 고침 / 기본값(G15, 스키마 $defs.source).</summary>
+        public static readonly string[] SourceValues = { "said", "chosen", "edited", "default" };
 
         /// <summary>파일 이름만(경로는 기록에 남기지 않는다).</summary>
         public string FileName { get; private set; }
@@ -85,6 +101,23 @@ namespace IFS.SceneSpec.Placement
                     s.Warnings.Add($"선택 파일 formatVersion {s.FormatVersion}: 이 러너가 아는 버전은 {KnownFormatVersion} — 읽는 필드만 확인함");
             }
 
+            // specSha256의 기준(spec.sha256Basis)과 챗봇이 적은 runnerReady(G26). 기준이 파일이 아니면 해시를 비교하지 않고 거부한다.
+            if (o["spec"] is JObject specInfo && specInfo.TryGetValue("sha256Basis", out var basis))
+            {
+                string b = basis.Type == JTokenType.String ? (string)basis : basis.ToString(Formatting.None);
+                if (b != FileBasis)
+                    errors.Add($"spec.sha256Basis가 \"{b}\"임 — specSha256이 저장된 spec 파일 바이트의 해시가 아니라서 러너가 읽는 파일과 비교할 수 없음. " +
+                               "챗봇이 spec 파일을 저장한 실행(persist_logs = true)에서 만든 선택 파일과 그 spec 파일을 함께 쓰세요");
+            }
+            var ready = o["runnerReady"];
+            if (ready != null && ready.Type == JTokenType.Boolean && !(bool)ready)
+            {
+                var why = o["runnerBlockers"] is JArray arr ? string.Join(" / ", arr.Select(x => x.Type == JTokenType.String ? (string)x : x.ToString(Formatting.None))) : "";
+                errors.Add("runnerReady가 false임 — 챗봇이 이 선택 파일을 러너에 넘길 수 없다고 적었음" + (why.Length > 0 ? ": " + why : ""));
+            }
+            else if (ready != null && ready.Type != JTokenType.Boolean)
+                errors.Add("runnerReady는 true | false여야 함");
+
             // specSha256
             var ss = o["specSha256"];
             if (ss == null || ss.Type != JTokenType.String) errors.Add("specSha256이 없음(문자열이어야 함)");
@@ -133,9 +166,23 @@ namespace IFS.SceneSpec.Placement
                 }
             }
 
-            // sources(해석하지 않음)
+            // sources: 슬롯 이름과 출처 값만 검사하고(G27) 값은 해석하지 않고 옮긴다. 없거나 null이면 null.
             var src = o["sources"];
-            s.Sources = src == null ? null : src.DeepClone();
+            if (src == null || src.Type == JTokenType.Null) s.Sources = null;
+            else if (!(src is JObject srcObj)) errors.Add("sources는 객체여야 함(슬롯 → said | chosen | edited | default), 지금 " + src.Type);
+            else
+            {
+                int before = errors.Count;
+                foreach (var p in srcObj.Properties())
+                {
+                    if (Array.IndexOf(SlotNames, p.Name) < 0)
+                        errors.Add($"sources: 모르는 슬롯 {p.Name}(가능: {string.Join(", ", SlotNames)})");
+                    string v = p.Value.Type == JTokenType.String ? (string)p.Value : null;
+                    if (v == null || Array.IndexOf(SourceValues, v) < 0)
+                        errors.Add($"sources.{p.Name}: 출처 값 {p.Value.ToString(Formatting.None)}이 said | chosen | edited | default 중 하나가 아님");
+                }
+                if (errors.Count == before) s.Sources = srcObj.DeepClone();
+            }
 
             return errors.Count == 0 ? s : null;
         }

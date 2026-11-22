@@ -6,7 +6,8 @@ SceneSpec 하나뿐이고(원칙 2), 원본 spec과 그 _provenance는 바꾸지
 기록(참여자 자료, git 밖): <log_dir>/selection/<sessionId>/
   candidates.json  후보 생성기 출력 그대로(바이트 고정)
   selection.json   ifs-selection/0.1 (shared/schemas/selection.v0.1.json): 원본 spec 해시, 보여 준 후보와 순서, 고른 후보,
-                   "맞는 것이 없다" 여부, 조절 이력, finalOverrides(Unity SceneOverrideJson 형식), 슬롯별 출처 네 가지
+                   "맞는 것이 없다" 여부, 조절 이력, finalOverrides(Unity SceneOverrideJson 형식), 슬롯별 출처 네 가지,
+                   runnerReady·runnerBlockers(배치 러너에 넘길 수 있는지와 그 이유, G26)
   premeasure.json  ifs-premeasure/0.1: 사전 측정 응답
 세션 로그(elicit-log/0.1)에는 기존 events 배열에 요약만 더한다(형식 불변).
 """
@@ -23,13 +24,20 @@ from pathlib import Path
 
 from .candidates import SLOTS, candidates_bytes, effective_params, generate, slot_value, spec_sha256
 from .paths import shared
-from .scene_builder import dumps as spec_dumps
 from .session_log import now_iso
 
 FORMAT_VERSION = "ifs-selection/0.1"
 PREMEASURE_VERSION = "ifs-premeasure/0.1"
 ITEMS = ("form", "color", "brightness", "opacity", "size", "texture", "motion")
 NONE_CHOICE = "none"
+SAID_NOT_IN_TABLE = "said_value_not_in_table"
+
+# 러너에 넘길 수 없는 이유(runnerBlockers). 러너(PlacementSelection.cs)도 runnerReady = false면 이 글을 붙여 시작을 거부한다.
+BLOCK_NO_SPEC_FILE = ("spec 파일이 저장되지 않은 실행입니다(persist_logs = false 또는 spec 저장 실패). 배치 러너는 저장된 spec "
+                      "파일 바이트의 sha256만 비교하므로 이 선택 기록은 러너에 넘길 수 없습니다(G26)")
+BLOCK_SPEC_FILE_CHANGED = ("저장된 spec 파일의 내용이 이 세션의 spec과 다릅니다(파일이 바뀌었음). 이 선택 기록은 러너에 넘길 수 "
+                           "없습니다(G26)")
+BLOCK_NOT_FINISHED = "조절을 마치지 않았습니다([다 고쳤어요] 전이라 finalOverrides·sources가 아직 없음)"
 
 
 class SelectionError(Exception):
@@ -145,6 +153,8 @@ class SelectionFlow:
         self.current: dict = {}          # 지금 미리보기에 얹는 덮어쓰기(평평한 객체)
         self.premeasure: dict | None = None
         self._preview_alerted = False
+        self._spec_blockers: list[str] = []
+        self.extras: dict = self._said_value_extras()
 
     # ── 도우미 ──────────────────────────────────────────────────────────────
     @property
@@ -168,13 +178,62 @@ class SelectionFlow:
         v = params[it["key"]]
         return round(v, 4) if isinstance(v, float) else v
 
+    def _said_value_extras(self) -> dict:
+        """범주형 조절 항목(형태·움직임)에서 참여자가 말한 값이 표의 값 목록에 없으면, 그 값을 이 세션의 목록에 더한다.
+        더하지 않으면 자기 형상의 현재 값이 패널에 표시되지 않고, 다른 값을 골랐다가 말한 값으로 돌아올 수도 없다.
+        더하는 것은 말한 값 하나뿐이다(새 선택지를 지어내지 않음, 원칙 3). {항목: {slot, value, reason}}"""
+        out = {}
+        for name, it in self.table["adjustItems"]["items"].items():
+            if it["kind"] != "category":
+                continue
+            slot = it["slots"][0]
+            said = slot_value(self.spec, slot)
+            if isinstance(said, str) and said not in it["values"]:
+                out[name] = {"slot": slot, "value": said, "reason": SAID_NOT_IN_TABLE}
+        return out
+
+    def item_values(self, item: str) -> list:
+        """이 세션의 조절 값 목록(표의 값 + 표에 없던 말한 값)."""
+        it = self.table["adjustItems"]["items"][item]
+        vals = list(it["values"]) if it["kind"] != "swatch" else [s["id"] for s in it["swatches"]]
+        if item in self.extras:
+            vals.append(self.extras[item]["value"])
+        return vals
+
+    def _spec_file_hash(self) -> tuple[str | None, str, list[str]]:
+        """러너 계약의 specSha256(G26): 저장된 spec 파일 바이트의 sha256만 적는다. (sha | None, sha256Basis, 막는 이유)
+        파일이 없거나 파일 내용이 세션의 spec과 다르면 해시를 적지 않고(None) 이유를 남긴다 — 직렬화한 글의 해시로
+        대신하면 러너가 읽는 파일 바이트와 기준이 달라진다(CP9 지적 1)."""
+        path = (self.s.log.data.get("sceneSpec") or {}).get("path")
+        if not path or not Path(path).is_file():
+            return None, "none", [BLOCK_NO_SPEC_FILE]
+        raw = Path(path).read_bytes()
+        try:
+            same = json.loads(raw.decode("utf-8")) == json.loads(json.dumps(self.spec, ensure_ascii=False))
+        except ValueError:
+            same = False
+        if not same:
+            return None, "none", [BLOCK_SPEC_FILE_CHANGED]
+        return hashlib.sha256(raw).hexdigest(), "file", []
+
+    def _runner_status(self) -> None:
+        """runnerReady·runnerBlockers를 지금 상태로 맞춘다(저장할 때마다)."""
+        blockers = list(self._spec_blockers)
+        if self.data["finalOverrides"] is None or self.data["sources"] is None:
+            blockers.append(BLOCK_NOT_FINISHED)
+        self.data["runnerReady"] = not blockers
+        self.data["runnerBlockers"] = blockers
+
     def _save(self) -> None:
-        if not self.persist or self.data is None:
+        if self.data is None:
+            return
+        self._runner_status()
+        if not self.persist:
             return
         self.dir.mkdir(parents=True, exist_ok=True)
         self.data["updatedAt"] = now_iso()
         tmp = self.dir / "selection.json.tmp"
-        tmp.write_text(json.dumps(self.data, ensure_ascii=False, indent=2), encoding="utf-8")
+        tmp.write_text(json.dumps(self.data, ensure_ascii=False, indent=2), encoding="utf-8", newline="\n")
         os.replace(tmp, self.dir / "selection.json")
 
     def _log_event(self, kind: str, payload: dict) -> None:
@@ -198,12 +257,9 @@ class SelectionFlow:
             self.cands = generate(self.spec, self.s.id, self.table)
             scene = self.s.log.data.get("sceneSpec") or {}
             path = scene.get("path")
-            # 러너 계약: 맨 위 specSha256 = 원본 spec 파일 바이트의 sha256(러너가 읽는 파일과 다르면 시작 거부).
-            # 파일을 쓰지 않는 실행(persist_logs = False)에서는 직렬화한 텍스트로 재고 sha256Basis에 적는다.
-            if path and Path(path).exists():
-                file_sha, basis = hashlib.sha256(Path(path).read_bytes()).hexdigest(), "file"
-            else:
-                file_sha, basis = hashlib.sha256(spec_dumps(self.spec).encode("utf-8")).hexdigest(), "serialized"
+            # 러너 계약: 맨 위 specSha256 = 저장된 spec 파일 바이트의 sha256(러너가 읽는 파일과 다르면 시작 거부).
+            # spec 파일이 없는 실행에서는 null로 두고 runnerReady = false와 이유를 적는다(G26).
+            file_sha, basis, self._spec_blockers = self._spec_file_hash()
             now = now_iso()
             meta = self.spec.get("meta") or {}
             self.data = {
@@ -221,6 +277,8 @@ class SelectionFlow:
                 "selection": None,
                 "adjustments": {"events": [], "items": {}, "finishedAt": None},
                 "finalOverrides": None, "sources": None, "sourceDetails": None, "sourceCounts": None, "premeasure": None,
+                "adjustValueExtras": copy.deepcopy(self.extras),
+                "runnerReady": False, "runnerBlockers": [],
             }
             if self.persist:
                 self.dir.mkdir(parents=True, exist_ok=True)
@@ -232,7 +290,8 @@ class SelectionFlow:
                 "tableVersion": self.cands["tableVersion"], "candidateCount": len(self.cands["candidates"]),
                 "axes": [{"slot": a["slot"], "reason": a["reason"]} for a in self.cands["axes"]],
                 "displayOrder": self.cands["displayOrder"], "draftCount": pinfo["draftCount"],
-                "draftKeys": pinfo["draftKeys"], "previewMode": self.data["preview"]["mode"]})
+                "draftKeys": pinfo["draftKeys"], "previewMode": self.data["preview"]["mode"],
+                "sha256Basis": basis, "adjustValueExtras": sorted(self.extras)})
             return self.view()
 
     def select(self, choice: str) -> dict:
@@ -272,8 +331,9 @@ class SelectionFlow:
                 raise SelectionInvalid(f"색 견본 목록에 없는 값입니다: {value!r}")
             return {"material.color.h": sw["h"], "material.color.s": sw["s"], "material.color.l": sw["l"]}
         if it["kind"] == "category":
-            if not isinstance(value, str) or value not in it["values"]:
-                raise SelectionInvalid(f"{item}: 표에 없는 값입니다: {value!r} (가능: {it['values']})")
+            allowed = self.item_values(item)          # 표의 값 + 표에 없던 말한 값(있으면)
+            if not isinstance(value, str) or value not in allowed:
+                raise SelectionInvalid(f"{item}: 표에 없는 값입니다: {value!r} (가능: {allowed})")
             return {it["key"]: value}
         if isinstance(value, bool) or not isinstance(value, (int, float)):
             raise SelectionInvalid(f"{item}: 숫자가 아닙니다: {value!r}")
@@ -362,11 +422,17 @@ class SelectionFlow:
             return self.view()
 
     def final(self) -> dict:
-        """헤드셋 러너가 읽을 것: 원본 spec(바꾸지 않음) + selection.json."""
+        """헤드셋 러너가 읽을 것: 원본 spec(바꾸지 않음) + selection.json.
+        러너에는 이 응답의 spec이 아니라 저장된 spec 파일(specPath)과 selection.json을 넘긴다. runnerReady가 false면
+        넘길 수 없고 runnerBlockers에 이유가 있다(G26)."""
         with self.lock:
             if self.stage not in ("premeasure", "done"):
                 raise SelectionError("조절을 마친 뒤에 최종 형상이 정해집니다([다 고쳤어요] 뒤).")
-            return {"sessionId": self.s.id, "spec": self.spec, "selection": self.data}
+            return {"sessionId": self.s.id, "runnerReady": self.data["runnerReady"],
+                    "runnerBlockers": list(self.data["runnerBlockers"]),
+                    "specPath": self.data["spec"]["path"] if self.data["runnerReady"] else None,
+                    "selectionPath": str(self.dir / "selection.json") if self.persist else None,
+                    "spec": self.spec, "selection": self.data}
 
     # ── 6 사전 측정 ─────────────────────────────────────────────────────────
     def premeasure_view(self) -> dict:
@@ -414,7 +480,7 @@ class SelectionFlow:
             if self.persist:
                 self.dir.mkdir(parents=True, exist_ok=True)
                 p = self.dir / "premeasure.json"
-                p.write_text(json.dumps(self.premeasure, ensure_ascii=False, indent=2), encoding="utf-8")
+                p.write_text(json.dumps(self.premeasure, ensure_ascii=False, indent=2), encoding="utf-8", newline="\n")
                 path = str(p)
             answered = sum(1 for i in items if not i["skipped"])
             self.data["premeasure"] = {"path": path, "completedAt": now, "answered": answered,
@@ -473,6 +539,8 @@ class SelectionFlow:
             out["axes"] = self.cands["axes"]
             out["note"] = self.cands["note"]
             out["selection"] = self.data["selection"]
+            # 범주형 항목에서 표에 없던 말한 값: 화면은 표의 값 목록 뒤에 이 값을 하나 더 붙인다(현재 값 표시용)
+            out["adjustExtras"] = {k: v["value"] for k, v in self.extras.items()}
             if self.stage in ("adjusting", "premeasure", "done"):
                 params = effective_params(self.spec, self.defaults, self.current)
                 out["current"] = {"overrides": dict(self.current), "summary": self.summary(self.current),
@@ -481,6 +549,8 @@ class SelectionFlow:
             if self.stage in ("premeasure", "done"):
                 out["finalOverrides"] = self.data["finalOverrides"]
                 out["sourceCounts"] = self.data["sourceCounts"]
+                out["runnerReady"] = self.data["runnerReady"]
+                out["runnerBlockers"] = list(self.data["runnerBlockers"])
             if self.stage == "done":
                 out["premeasure"] = self.data["premeasure"]
                 out["donePhrase"] = self.protocol.text("premeasure_done")

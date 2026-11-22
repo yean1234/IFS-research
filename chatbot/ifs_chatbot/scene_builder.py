@@ -311,11 +311,19 @@ def dumps(spec: dict) -> str:
     return json.dumps(spec, ensure_ascii=False, indent=2) + "\n"
 
 
+def spec_bytes(spec: dict) -> bytes:
+    """spec 파일 바이트: dumps(spec)의 UTF-8 그대로(줄바꿈 LF, BOM 없음)."""
+    return dumps(spec).encode("utf-8")
+
+
 def write_spec(spec: dict, path: str | Path) -> Path:
-    """원자적 저장(중간에 꺼져도 반쯤 쓴 파일이 남지 않게)."""
+    """원자적 저장(중간에 꺼져도 반쯤 쓴 파일이 남지 않게).
+    바이트는 spec_bytes(spec) 그대로 쓴다. write_text는 Windows에서 줄바꿈을 CRLF로 바꿔, 같은 spec이 OS에 따라
+    다른 바이트(다른 sha256)가 되었다. 배치 러너는 이 파일 바이트의 sha256을 선택 파일의 specSha256과 비교하므로(G26)
+    같은 spec은 어디서 써도 같은 바이트여야 한다."""
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_suffix(".json.tmp")
-    tmp.write_text(dumps(spec), encoding="utf-8")
+    tmp.write_bytes(spec_bytes(spec))
     os.replace(tmp, path)
     return path

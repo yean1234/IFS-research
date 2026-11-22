@@ -1,9 +1,9 @@
 {
   "formatVersion": "ifs-selection/0.1",
-  "specSha256": "7c68951194844a509f05e345694a9b2d18b2258d16d23e3bfb13580be6d4808b",
+  "specSha256": "5e695b1e31d2d8976fb3812d0f81f15cac9623d5a8b2dcb459bed3db47529c29",
   "sessionId": "SYN-SEL-S1",
-  "createdAt": "2026-11-23T03:48:52+09:00",
-  "updatedAt": "2026-11-23T03:48:52+09:00",
+  "createdAt": "2026-11-23T04:28:39+09:00",
+  "updatedAt": "2026-11-23T04:28:39+09:00",
   "stage": "done",
   "spec": {
     "path": "<log_dir>\\scenes\\SYN-SEL-S1.json",
@@ -218,7 +218,7 @@
     "c-bfd1cb77b6d3",
     "c-199e7f618602"
   ],
-  "candidatesShownAt": "2026-11-23T03:48:52+09:00",
+  "candidatesShownAt": "2026-11-23T04:28:39+09:00",
   "selection": {
     "selectedCandidateId": "c-bfd1cb77b6d3",
     "selectedIndex": 2,
@@ -226,7 +226,7 @@
     "displayPosition": 2,
     "operationalId": "c-bfd1cb77b6d3",
     "operationalIndex": 2,
-    "at": "2026-11-23T03:48:52+09:00"
+    "at": "2026-11-23T04:28:39+09:00"
   },
   "adjustments": {
     "events": [
@@ -245,21 +245,21 @@
           "s": 0.0,
           "l": 0.7
         },
-        "at": "2026-11-23T03:48:52+09:00"
+        "at": "2026-11-23T04:28:39+09:00"
       },
       {
         "i": 1,
         "item": "size",
         "value": 0.4,
         "previous": 0.316,
-        "at": "2026-11-23T03:48:52+09:00"
+        "at": "2026-11-23T04:28:39+09:00"
       },
       {
         "i": 2,
         "item": "brightness",
         "value": 0.625,
         "previous": 0.5,
-        "at": "2026-11-23T03:48:52+09:00"
+        "at": "2026-11-23T04:28:39+09:00"
       }
     ],
     "items": {
@@ -277,25 +277,25 @@
           "s": 0.6,
           "l": 0.5
         },
-        "firstAt": "2026-11-23T03:48:52+09:00",
-        "lastAt": "2026-11-23T03:48:52+09:00"
+        "firstAt": "2026-11-23T04:28:39+09:00",
+        "lastAt": "2026-11-23T04:28:39+09:00"
       },
       "size": {
         "count": 1,
         "first": 0.316,
         "last": 0.4,
-        "firstAt": "2026-11-23T03:48:52+09:00",
-        "lastAt": "2026-11-23T03:48:52+09:00"
+        "firstAt": "2026-11-23T04:28:39+09:00",
+        "lastAt": "2026-11-23T04:28:39+09:00"
       },
       "brightness": {
         "count": 1,
         "first": 0.5,
         "last": 0.625,
-        "firstAt": "2026-11-23T03:48:52+09:00",
-        "lastAt": "2026-11-23T03:48:52+09:00"
+        "firstAt": "2026-11-23T04:28:39+09:00",
+        "lastAt": "2026-11-23T04:28:39+09:00"
       }
     },
-    "finishedAt": "2026-11-23T03:48:52+09:00"
+    "finishedAt": "2026-11-23T04:28:39+09:00"
   },
   "finalOverrides": {
     "layout.size": 0.4,
@@ -445,8 +445,11 @@
   },
   "premeasure": {
     "path": "<log_dir>\\selection\\SYN-SEL-S1\\premeasure.json",
-    "completedAt": "2026-11-23T03:48:52+09:00",
+    "completedAt": "2026-11-23T04:28:39+09:00",
     "answered": 9,
     "skipped": 0
-  }
+  },
+  "adjustValueExtras": {},
+  "runnerReady": true,
+  "runnerBlockers": []
 }

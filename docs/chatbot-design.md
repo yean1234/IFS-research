@@ -125,7 +125,7 @@ RQ V4 실험 프로토타입(`docs/prompts/prototype-v4-build.md`, 결정 G7–G
 ### 7.1 면담 밖이라는 것
 
 - **이 단계들은 면담이 아닙니다.** 면담은 확정([이대로 맞아요])에서 끝나고, 확정 텍스트와 그로부터 만든 spec은 그 뒤 바뀌지 않습니다. 후보·조절의 결과는 원본 spec을 고치지 않고 덮어쓰기 목록과 선택 기록(`selection.json`)에 따로 남습니다(G14·G15). 그래서 "참여자가 말한 것"(spec의 `_provenance`)과 "시스템이 보여 주고 참여자가 고른 것"이 기록에서 섞이지 않습니다.
-- **LLM을 부르지 않습니다.** 후보는 규칙과 버전을 붙인 값 표가 만듭니다(G8). 같은 spec과 같은 세션 ID는 바이트까지 같은 후보를 냅니다(`chatbot/tests/test_candidates.py::test_output_sha256_is_pinned`, `test_no_randomness_or_time_in_module`).
+- **LLM을 부르지 않습니다.** 후보는 규칙과 버전을 붙인 값 표가 만듭니다(G8). 같은 확정 텍스트는 세션 ID와 상관없이 같은 spec과 같은 후보(후보 id·덮어쓰기)를 냅니다. 표시 순서는 세션 ID로 순환하므로 같은 spec과 같은 세션 ID에서만 같고, 이때 출력은 바이트까지 같습니다(G28. `chatbot/tests/test_candidates.py::test_g28a_…`·`test_g28b_…`·`test_output_sha256_is_pinned`, `test_no_randomness_or_time_in_module`).
 - **면담 검증기 V1–V9를 쓰지 않습니다.** 이 단계의 글은 참여자 말을 인용하지 않는 고정 문구뿐이라 검증기가 검사할 생성 문장이 없습니다. 근거 테스트: `chatbot/tests/test_selection_flow.py::test_no_llm_or_validator_calls_in_stages`(LLM 백엔드 `generate`, 검증기 `check`, 확인 질문 검증기 `check`를 부르면 실패하게 바꾼 뒤 후보 → 선택 → 조절 → 끝내기 → 사전 측정을 돌려 호출 0, 면담 턴 수 그대로). 검증기를 약하게 한 변경은 없습니다.
 - **위기 대응은 그대로입니다.** 이 단계에는 자유 입력 칸이 없습니다(조절 값은 표 안에서만, 표 밖 값은 422). 후보 단계는 확정까지 마친 세션(`endedBy = completed`)에서만 열리므로, 면담 중 위기 판정이나 [그만]으로 멈춘 세션에서는 열리지 않습니다(`controller.py` `Session.selection`, API는 409).
 

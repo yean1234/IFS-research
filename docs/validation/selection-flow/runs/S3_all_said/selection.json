@@ -1,9 +1,9 @@
 {
   "formatVersion": "ifs-selection/0.1",
-  "specSha256": "abd88041ab7ec58db83b2deedaacabb0b9633c94fe5d55a3c2910245d817f0b9",
+  "specSha256": "1a7623b94019c34a93c70b9a3e310a54034aa4ee439d4782892fd32a3efa327e",
   "sessionId": "SYN-SEL-S3",
-  "createdAt": "2026-11-23T03:48:57+09:00",
-  "updatedAt": "2026-11-23T03:48:57+09:00",
+  "createdAt": "2026-11-23T04:28:41+09:00",
+  "updatedAt": "2026-11-23T04:28:41+09:00",
   "stage": "done",
   "spec": {
     "path": "<log_dir>\\scenes\\SYN-SEL-S3.json",
@@ -105,7 +105,7 @@
   "candidatesShown": [
     "c-f670bd7ef7ad"
   ],
-  "candidatesShownAt": "2026-11-23T03:48:57+09:00",
+  "candidatesShownAt": "2026-11-23T04:28:41+09:00",
   "selection": {
     "selectedCandidateId": "c-f670bd7ef7ad",
     "selectedIndex": 0,
@@ -113,7 +113,7 @@
     "displayPosition": 0,
     "operationalId": "c-f670bd7ef7ad",
     "operationalIndex": 0,
-    "at": "2026-11-23T03:48:57+09:00"
+    "at": "2026-11-23T04:28:41+09:00"
   },
   "adjustments": {
     "events": [
@@ -122,14 +122,14 @@
         "item": "motion",
         "value": "trembling",
         "previous": "still",
-        "at": "2026-11-23T03:48:57+09:00"
+        "at": "2026-11-23T04:28:41+09:00"
       },
       {
         "i": 1,
         "item": "motion",
         "value": "still",
         "previous": "trembling",
-        "at": "2026-11-23T03:48:57+09:00"
+        "at": "2026-11-23T04:28:41+09:00"
       }
     ],
     "items": {
@@ -137,11 +137,11 @@
         "count": 2,
         "first": "still",
         "last": "still",
-        "firstAt": "2026-11-23T03:48:57+09:00",
-        "lastAt": "2026-11-23T03:48:57+09:00"
+        "firstAt": "2026-11-23T04:28:41+09:00",
+        "lastAt": "2026-11-23T04:28:41+09:00"
       }
     },
-    "finishedAt": "2026-11-23T03:48:57+09:00"
+    "finishedAt": "2026-11-23T04:28:41+09:00"
   },
   "finalOverrides": {},
   "sources": {
@@ -288,8 +288,11 @@
   },
   "premeasure": {
     "path": "<log_dir>\\selection\\SYN-SEL-S3\\premeasure.json",
-    "completedAt": "2026-11-23T03:48:57+09:00",
+    "completedAt": "2026-11-23T04:28:41+09:00",
     "answered": 9,
     "skipped": 0
-  }
+  },
+  "adjustValueExtras": {},
+  "runnerReady": true,
+  "runnerBlockers": []
 }

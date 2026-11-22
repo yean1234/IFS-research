@@ -1,0 +1,5 @@
+# 챗봇이 쓴 바이트 그대로(LF) 체크아웃한다(G26). spec.json의 sha256이 selection.json의 specSha256과 같아야 하므로
+# core.autocrlf 등 체크아웃 줄바꿈 변환을 하지 않는다. PlacementSelectionTests가 이 폴더의 두 파일을 바이트로 대조한다.
+*.json text eol=lf
+*.txt text eol=lf
+*.md text eol=lf

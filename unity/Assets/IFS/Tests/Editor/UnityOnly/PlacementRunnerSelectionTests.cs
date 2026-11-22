@@ -42,7 +42,8 @@ namespace IFS.SceneSpec.Tests
                 ["specSha256"] = sha ?? OwnershipManifest.Sha256OfFile(Spec),
                 ["finalOverrides"] = overrides,
                 ["selection"] = new JObject { ["selectedCandidateId"] = none ? null : "c2", ["none"] = none },
-                ["sources"] = new JObject { ["form.type"] = "chosen", ["material.color.h"] = "edited", ["layout.size"] = "said" },
+                // sources 키는 덮어쓰기 키(material.color.h)가 아니라 슬롯 이름(material.color) — 러너가 검사한다(G27)
+                ["sources"] = new JObject { ["form.type"] = "chosen", ["material.color"] = "edited", ["layout.size"] = "said" },
             };
             string path = Path.Combine(_tmp, name);
             File.WriteAllText(path, o.ToString(), new UTF8Encoding(false));
@@ -89,7 +90,7 @@ namespace IFS.SceneSpec.Tests
                 Assert.That((string)m["selection"]["sha256"], Is.EqualTo(OwnershipManifest.Sha256OfFile(sel)));
                 Assert.That((string)m["selection"]["selectedCandidateId"], Is.EqualTo("c2"));
                 Assert.That((bool)m["selection"]["none"], Is.False);
-                Assert.That((string)m["selection"]["sources"]["material.color.h"], Is.EqualTo("edited"));
+                Assert.That((string)m["selection"]["sources"]["material.color"], Is.EqualTo("edited"));
                 Assert.That(((JObject)m["appliedOverrides"]).Properties().Select(x => x.Name),
                     Is.EqualTo(new[] { "form.type", "material.brightness", "material.color.h", "material.color.s" }));
                 Assert.That((string)m["appliedOverrides"]["form.type"], Is.EqualTo("fragments"));

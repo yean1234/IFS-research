@@ -169,7 +169,10 @@
         row.append(chips);
       } else if (it.kind === "category") {
         const opts = el("div", { class: "opts" });
-        it.values.forEach((val, k) => opts.append(el("button", { class: now === val ? "active" : "", onclick: () => send(it.id, val) }, String(k + 1))));
+        // 참여자가 말한 값이 표의 목록에 없으면 서버가 adjustExtras로 알려 준다 → 목록 끝에 붙여 현재 값으로 보이게 함
+        const extra = (v.adjustExtras || {})[it.id];
+        const vals = extra !== undefined && !it.values.includes(extra) ? it.values.concat([extra]) : it.values;
+        vals.forEach((val, k) => opts.append(el("button", { class: now === val ? "active" : "", onclick: () => send(it.id, val) }, String(k + 1))));
         row.append(opts);
       } else {
         const vals = it.values;

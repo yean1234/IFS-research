@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "ifs-selection/0.1",
   "title": "후보 선택·조절 기록 (selection.json, ifs-selection/0.1)",
-  "description": "세션 폴더(<log_dir>/selection/<sessionId>/selection.json, git 밖)에 쓰는 데스크톱 4–5단계 기록. 결정 G15: 속성 출처 네 가지(said 말함 / chosen 고름 / edited 고침 / default 기본값)는 spec의 _provenance가 아니라 이 파일에 슬롯별로 적는다. 러너 계약(unity/Assets/IFS/Runtime/Placement/PlacementSelection.cs): 맨 위 formatVersion, specSha256(원본 spec 파일 바이트의 sha256 — 러너가 읽은 spec과 다르면 시작 거부), finalOverrides(Unity SceneOverrideJson 형식의 평평한 객체, 위치·거리 키 금지), selection{selectedCandidateId(null 가능), none}, sources(슬롯 → said|chosen|edited|default). 러너는 모르는 필드를 무시하므로 챗봇은 그 밖의 필드(후보 전체, 조절 이력, sourceDetails 등)를 더 적는다. stage가 없는 파일(러너 쪽 합성 파일)이나 stage가 premeasure·done인 파일은 러너 계약 필드를 모두 가져야 한다.",
+  "description": "세션 폴더(<log_dir>/selection/<sessionId>/selection.json, git 밖)에 쓰는 데스크톱 4–5단계 기록. 결정 G15: 속성 출처 네 가지(said 말함 / chosen 고름 / edited 고침 / default 기본값)는 spec의 _provenance가 아니라 이 파일에 슬롯별로 적는다. 러너 계약(unity/Assets/IFS/Runtime/Placement/PlacementSelection.cs): 맨 위 formatVersion, specSha256(원본 spec 파일 바이트의 sha256 — 러너가 읽은 spec과 다르면 시작 거부), finalOverrides(Unity SceneOverrideJson 형식의 평평한 객체, 위치·거리 키 금지), selection{selectedCandidateId(null 가능), none}, sources(슬롯 → said|chosen|edited|default). 러너는 모르는 필드를 무시하므로 챗봇은 그 밖의 필드(후보 전체, 조절 이력, sourceDetails 등)를 더 적는다. stage가 없는 파일(러너 쪽 합성 파일)이나 stage가 premeasure·done인 파일은 러너 계약 필드를 모두 가져야 한다. 2026-11-23 CP9 반영(G26·G27, 형식 버전은 0.1 유지): specSha256은 저장된 spec 파일 바이트의 sha256만 적는다. spec 파일이 없는 실행에서는 null이고 runnerReady = false와 runnerBlockers(이유)를 적는다. 러너는 spec.sha256Basis가 있는데 file이 아니거나 runnerReady가 false면 이유를 밝히고 시작을 거부하며, sources의 슬롯 이름과 출처 값도 검사한다. 0.1을 유지한 이유: 러너 계약 필드의 뜻(specSha256 = 파일 바이트 해시)은 그대로이고, 이전 구현이 이 뜻을 어기던 경우(직렬화 해시)를 없앤 것이다. 더한 필드(runnerReady·runnerBlockers·adjustValueExtras)는 선택 필드라 이전 0.1 파일도 그대로 통과한다.",
   "type": "object",
   "required": ["formatVersion", "specSha256"],
   "$defs": {
@@ -44,11 +44,40 @@
                        {"required": ["stage"], "properties": {"stage": {"enum": ["premeasure", "done"]}}}]},
       "then": {"required": ["selection", "finalOverrides", "sources"],
                "properties": {"selection": {"type": "object"}, "finalOverrides": {"type": "object"}, "sources": {"type": "object"}}}
+    },
+    {
+      "description": "stage가 없는 파일(러너 쪽 합성 파일)은 러너에 넘기는 파일이므로 specSha256이 해시여야 한다",
+      "if": {"not": {"required": ["stage"]}},
+      "then": {"properties": {"specSha256": {"$ref": "#/$defs/sha256"}}}
+    },
+    {
+      "description": "runnerReady = true면 specSha256은 저장된 spec 파일 바이트의 해시이고 막는 이유가 없다",
+      "if": {"required": ["runnerReady"], "properties": {"runnerReady": {"const": true}}},
+      "then": {"properties": {"specSha256": {"$ref": "#/$defs/sha256"},
+                              "spec": {"properties": {"sha256Basis": {"const": "file"}}},
+                              "runnerBlockers": {"maxItems": 0}}}
+    },
+    {
+      "description": "runnerReady = false면 이유가 하나 이상 있다",
+      "if": {"required": ["runnerReady"], "properties": {"runnerReady": {"const": false}}},
+      "then": {"required": ["runnerBlockers"], "properties": {"runnerBlockers": {"minItems": 1}}}
     }
   ],
   "properties": {
     "formatVersion": {"const": "ifs-selection/0.1"},
-    "specSha256": {"$ref": "#/$defs/sha256", "description": "원본 spec 파일 바이트의 sha256(러너가 읽는 파일과 같아야 함)"},
+    "specSha256": {"oneOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}],
+                   "description": "저장된 spec 파일 바이트의 sha256(러너가 읽는 파일과 같아야 함). spec 파일이 없는 실행에서는 null(이때 runnerReady = false). 직렬화한 글의 해시는 적지 않는다(G26)"},
+    "runnerReady": {"type": "boolean", "description": "이 파일을 저장된 spec 파일과 함께 배치 러너에 넘길 수 있는지(G26). false면 러너도 시작을 거부한다"},
+    "runnerBlockers": {"type": "array", "items": {"type": "string", "minLength": 1},
+                       "description": "러너에 넘길 수 없는 이유(spec 파일 없음, spec 파일이 바뀜, 조절을 마치지 않음)"},
+    "adjustValueExtras": {
+      "type": "object",
+      "description": "범주형 조절 항목에서 참여자가 말한 값이 표의 값 목록에 없어 이 세션의 목록에 더한 것(현재 값을 패널에 보이게 함). 더하는 것은 말한 값 하나뿐",
+      "propertyNames": {"enum": ["form", "motion"]},
+      "additionalProperties": {"type": "object", "additionalProperties": false, "required": ["slot", "value", "reason"],
+                               "properties": {"slot": {"$ref": "#/$defs/slotName"}, "value": {"type": "string", "minLength": 1},
+                                              "reason": {"const": "said_value_not_in_table"}}}
+    },
     "sessionId": {"type": "string", "pattern": "^[A-Za-z0-9_-]{1,40}$"},
     "createdAt": {"$ref": "#/$defs/isoTime"},
     "updatedAt": {"$ref": "#/$defs/isoTime"},
@@ -60,7 +89,7 @@
       "properties": {
         "path": {"type": ["string", "null"]},
         "normalizedSha256": {"$ref": "#/$defs/sha256", "description": "후보 생성기가 쓰는 정규화 해시(sessionId·participantId·condition을 뺀 spec). candidates.specSha256과 같다"},
-        "sha256Basis": {"enum": ["file", "serialized"], "description": "맨 위 specSha256을 무엇으로 쟀는지(file = 저장된 spec 파일 바이트)"},
+        "sha256Basis": {"enum": ["file", "none", "serialized"], "description": "맨 위 specSha256을 무엇으로 쟀는지. file = 저장된 spec 파일 바이트. none = spec 파일이 없거나 바뀌어 해시를 적지 않음(specSha256 null). serialized = 2026-11-23 CP9 반영 전 구현이 파일 없는 실행에서 쓰던 값(직렬화한 글의 해시) — 이제 쓰지 않고, 러너는 file이 아닌 값을 모두 거부한다(G26)"},
         "builder": {"type": "string"},
         "specVersion": {"type": "string"},
         "mapping": {"type": ["object", "null"]}

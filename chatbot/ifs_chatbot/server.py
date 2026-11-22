@@ -3,6 +3,7 @@
 실행:  python -m ifs_chatbot.server                    (config/default.toml, http://127.0.0.1:8000)
        python -m ifs_chatbot.server --backend offline  (LLM 없이)
        python -m ifs_chatbot.server --config pilot      (연구 파일럿 설정)
+       python -m ifs_chatbot.server --config v4         (실험 프로토타입 흐름: 면담 뒤 후보 선택·조절·사전 측정)
 
 기본은 127.0.0.1에만 연다. 내적 경험 데이터가 연구실 컴퓨터 밖으로 나가지 않게 하려는 것이다.
 """
@@ -212,7 +213,8 @@ def create_app(cfg: Config | None = None, runtime: Runtime | None = None, warmup
 
     @app.get("/api/sessions/{sid}/final")
     def final(sid: str):
-        """헤드셋 러너가 읽을 원본 spec(바꾸지 않음) + selection.json(러너 계약: formatVersion·specSha256·finalOverrides·selection·sources)."""
+        """헤드셋 러너가 읽을 원본 spec(바꾸지 않음) + selection.json(러너 계약: formatVersion·specSha256·finalOverrides·selection·sources).
+        runnerReady가 false면(spec 파일이 저장되지 않은 실행 등) 러너에 넘길 수 없고 runnerBlockers에 이유가 있다(G26)."""
         return sel_run(flow(sid).final)
 
     @app.get("/api/sessions/{sid}/premeasure")
@@ -265,7 +267,9 @@ def build_config(args: argparse.Namespace) -> Config:
 
 def main(argv: list[str] | None = None) -> None:
     ap = argparse.ArgumentParser(prog="python -m ifs_chatbot.server", description="IFS 심상화 면담 서버")
-    ap.add_argument("--config", default=os.environ.get("IFS_CHATBOT_CONFIG"), help="config 이름(default|pilot) 또는 .toml 경로")
+    ap.add_argument("--config", default=os.environ.get("IFS_CHATBOT_CONFIG"),
+                    help="config 이름(default|pilot|v4) 또는 .toml 경로. v4 = 실험 프로토타입 흐름(매퍼 v2, 면담 뒤 "
+                         "후보 선택·조절·사전 측정 단계, 미리보기 image). 예: --config v4 --backend offline --condition static")
     ap.add_argument("--backend", choices=["ollama", "offline"], help="LLM 백엔드 덮어쓰기")
     ap.add_argument("--model", help="Ollama 모델 덮어쓰기 (예: gemma4:31b)")
     ap.add_argument("--condition", choices=["chatbot", "static"], help="기본 조건")
