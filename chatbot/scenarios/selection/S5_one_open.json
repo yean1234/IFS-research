@@ -1,0 +1,50 @@
+{
+  "id": "S5_one_open",
+  "title": "빈 자리가 한 차원(밝기)뿐인 경우 — 밝기 표 값 4개",
+  "sessionId": "SYN-SEL-S5",
+  "condition": "static",
+  "replies": [
+    "까만 덩어리가 있어요",
+    "눈앞이요",
+    "그대로예요",
+    "크고 무겁고 매끈해요",
+    "안 움직여요",
+    "불투명해요",
+    "없어요"
+  ],
+  "confirm": {
+    "edit": "까만 덩어리가 눈앞 가까이 있어요. 크고 무겁고 매끈해요. 안 움직여요. 불투명해요."
+  },
+  "selection": "index:1",
+  "adjust": [],
+  "premeasure": {
+    "A1": 5,
+    "A2": 4,
+    "A3": 3,
+    "A4": 5,
+    "A5": 2,
+    "A6": 4,
+    "A7": 3,
+    "G13_appearance": 5,
+    "G13_representation": 6
+  },
+  "expect": {
+    "candidateCount": 4,
+    "axes": [
+      "material.brightness"
+    ],
+    "axisReasons": [
+      "empty"
+    ],
+    "none": false,
+    "slotSources": {
+      "material.brightness": "chosen",
+      "form.type": "said"
+    },
+    "finalOverrides": {
+      "material.brightness": 0.25
+    }
+  },
+  "defaultReply": "없어요",
+  "note": "합성 대사. 실제 참여자 응답이 아니다(AGENTS.md 6). 정적 조건 1(LLM 없음)으로 면담하고 확정 때 한 문장으로 고쳐 [이대로 맞아요]."
+}

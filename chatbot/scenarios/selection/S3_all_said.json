@@ -1,0 +1,54 @@
+{
+  "id": "S3_all_said",
+  "title": "모든 것을 말한 경우 — 빈 자리 없음, 후보 1개('이 형상으로 진행'), 조절에서 움직임만 만졌다가 되돌림",
+  "sessionId": "SYN-SEL-S3",
+  "condition": "static",
+  "replies": [
+    "까만 덩어리가 있어요",
+    "눈앞이요",
+    "그대로예요",
+    "크고 무겁고 매끈해요",
+    "안 움직여요",
+    "불투명하고 어두워요",
+    "없어요"
+  ],
+  "confirm": {
+    "edit": "까만 덩어리가 눈앞 가까이 있어요. 크고 무겁고 매끈해요. 안 움직여요. 불투명해요. 어두워요."
+  },
+  "selection": "index:0",
+  "adjust": [
+    {
+      "item": "motion",
+      "value": "trembling"
+    },
+    {
+      "item": "motion",
+      "value": "still"
+    }
+  ],
+  "premeasure": {
+    "A1": 5,
+    "A2": 4,
+    "A3": 3,
+    "A4": 5,
+    "A5": 2,
+    "A6": 4,
+    "A7": 3,
+    "G13_appearance": 5,
+    "G13_representation": 6
+  },
+  "expect": {
+    "candidateCount": 1,
+    "axes": [],
+    "none": false,
+    "slotSources": {
+      "form.type": "said",
+      "layout.size": "said",
+      "motion.type": "said",
+      "material.brightness": "said"
+    },
+    "finalOverrides": {}
+  },
+  "defaultReply": "없어요",
+  "note": "합성 대사. 실제 참여자 응답이 아니다(AGENTS.md 6). 정적 조건 1(LLM 없음)으로 면담하고 확정 때 한 문장으로 고쳐 [이대로 맞아요]."
+}

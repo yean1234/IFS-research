@@ -1,0 +1,177 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ifs-selection/0.1",
+  "title": "후보 선택·조절 기록 (selection.json, ifs-selection/0.1)",
+  "description": "세션 폴더(<log_dir>/selection/<sessionId>/selection.json, git 밖)에 쓰는 데스크톱 4–5단계 기록. 결정 G15: 속성 출처 네 가지(said 말함 / chosen 고름 / edited 고침 / default 기본값)는 spec의 _provenance가 아니라 이 파일에 슬롯별로 적는다. 러너 계약(unity/Assets/IFS/Runtime/Placement/PlacementSelection.cs): 맨 위 formatVersion, specSha256(원본 spec 파일 바이트의 sha256 — 러너가 읽은 spec과 다르면 시작 거부), finalOverrides(Unity SceneOverrideJson 형식의 평평한 객체, 위치·거리 키 금지), selection{selectedCandidateId(null 가능), none}, sources(슬롯 → said|chosen|edited|default). 러너는 모르는 필드를 무시하므로 챗봇은 그 밖의 필드(후보 전체, 조절 이력, sourceDetails 등)를 더 적는다. stage가 없는 파일(러너 쪽 합성 파일)이나 stage가 premeasure·done인 파일은 러너 계약 필드를 모두 가져야 한다.",
+  "type": "object",
+  "required": ["formatVersion", "specSha256"],
+  "$defs": {
+    "isoTime": {"type": "string", "minLength": 10},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "overrideValue": {"oneOf": [{"type": "number", "minimum": 0, "maximum": 1}, {"type": "string"}]},
+    "flatOverrides": {
+      "type": "object",
+      "description": "SceneOverrideJson 형식: 수치 키는 0–1, 범주 키는 문자열. 위치·거리 키(layout.distance·layout.verticalOffset)는 들어갈 수 없다(G10, 러너도 거부).",
+      "propertyNames": {"enum": ["form.type", "motion.type", "material.color.h", "material.color.s", "material.color.l",
+                                 "material.brightness", "material.opacity", "material.roughness", "layout.size"]},
+      "additionalProperties": {"$ref": "#/$defs/overrideValue"}
+    },
+    "slotName": {"enum": ["form.type", "form.posture", "material.color", "material.brightness", "material.saturation",
+                          "material.roughness", "material.opacity", "material.erosion", "layout.size", "layout.distance",
+                          "layout.verticalOffset", "motion.type", "motion.speed", "body.part", "body.layer"]},
+    "source": {"enum": ["said", "chosen", "edited", "default"]},
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "index", "overrides", "axisValues", "sources"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^c-[0-9a-f]{12}$"},
+        "index": {"type": "integer", "minimum": 0, "maximum": 3},
+        "overrides": {"$ref": "#/$defs/flatOverrides"},
+        "axisValues": {"type": "object"},
+        "sources": {"type": "object", "propertyNames": {"$ref": "#/$defs/slotName"},
+                    "additionalProperties": {"enum": ["said", "default", "offered"]}}
+      }
+    },
+    "itemValue": {"oneOf": [{"type": "number"}, {"type": "string"},
+                            {"type": "object", "required": ["h", "s", "l"],
+                             "properties": {"swatch": {"type": ["string", "null"]}, "h": {"type": "number"},
+                                            "s": {"type": "number"}, "l": {"type": "number"}}}]}
+  },
+  "allOf": [
+    {
+      "if": {"anyOf": [{"not": {"required": ["stage"]}},
+                       {"required": ["stage"], "properties": {"stage": {"enum": ["premeasure", "done"]}}}]},
+      "then": {"required": ["selection", "finalOverrides", "sources"],
+               "properties": {"selection": {"type": "object"}, "finalOverrides": {"type": "object"}, "sources": {"type": "object"}}}
+    }
+  ],
+  "properties": {
+    "formatVersion": {"const": "ifs-selection/0.1"},
+    "specSha256": {"$ref": "#/$defs/sha256", "description": "원본 spec 파일 바이트의 sha256(러너가 읽는 파일과 같아야 함)"},
+    "sessionId": {"type": "string", "pattern": "^[A-Za-z0-9_-]{1,40}$"},
+    "createdAt": {"$ref": "#/$defs/isoTime"},
+    "updatedAt": {"$ref": "#/$defs/isoTime"},
+    "stage": {"enum": ["selecting", "adjusting", "premeasure", "done"]},
+    "spec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "normalizedSha256", "sha256Basis", "builder", "specVersion", "mapping"],
+      "properties": {
+        "path": {"type": ["string", "null"]},
+        "normalizedSha256": {"$ref": "#/$defs/sha256", "description": "후보 생성기가 쓰는 정규화 해시(sessionId·participantId·condition을 뺀 spec). candidates.specSha256과 같다"},
+        "sha256Basis": {"enum": ["file", "serialized"], "description": "맨 위 specSha256을 무엇으로 쟀는지(file = 저장된 spec 파일 바이트)"},
+        "builder": {"type": "string"},
+        "specVersion": {"type": "string"},
+        "mapping": {"type": ["object", "null"]}
+      }
+    },
+    "generator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["generatorVersion", "tableVersion", "tableSha256"],
+      "properties": {"generatorVersion": {"type": "string"}, "tableVersion": {"type": "string"},
+                     "tableSha256": {"$ref": "#/$defs/sha256"}}
+    },
+    "protocol": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["protocolId", "protocolVersion", "draftCount", "draftKeys"],
+      "properties": {"protocolId": {"type": "string"}, "protocolVersion": {"type": "string"},
+                     "draftCount": {"type": "integer", "minimum": 0},
+                     "draftKeys": {"type": "array", "items": {"type": "string"}}}
+    },
+    "preview": {
+      "type": "object",
+      "required": ["requested", "mode"],
+      "properties": {"requested": {"enum": ["webgl", "image", "none"]}, "mode": {"enum": ["webgl", "image", "none"]},
+                     "reason": {"type": ["string", "null"]}}
+    },
+    "candidates": {
+      "type": "object",
+      "required": ["generatorVersion", "tableVersion", "specSha256", "sessionId", "axes", "candidates", "displayOrder", "note"],
+      "properties": {
+        "axes": {"type": "array", "maxItems": 2, "items": {
+          "type": "object", "required": ["slot", "reason", "values"],
+          "properties": {"slot": {"$ref": "#/$defs/slotName"}, "reason": {"enum": ["empty", "ambiguous"]},
+                         "values": {"type": "array", "minItems": 2, "maxItems": 4}}}},
+        "candidates": {"type": "array", "minItems": 1, "maxItems": 4, "items": {"$ref": "#/$defs/candidate"}},
+        "displayOrder": {"type": "array", "minItems": 1, "maxItems": 4, "items": {"type": "string"}}
+      }
+    },
+    "candidatesShown": {"type": "array", "maxItems": 4, "items": {"type": "string"}, "description": "보여 준 순서대로 후보 id"},
+    "candidatesShownAt": {"$ref": "#/$defs/isoTime"},
+    "selection": {
+      "oneOf": [
+        {"type": "null"},
+        {"type": "object",
+         "required": ["selectedCandidateId", "none"],
+         "properties": {
+           "selectedCandidateId": {"oneOf": [{"type": "string", "minLength": 1}, {"type": "null"}]},
+           "none": {"type": "boolean", "description": "G23: '맞는 것이 없다'. true면 selectedCandidateId는 null이고 기준 후보(0번)로 진행"},
+           "selectedIndex": {"type": ["integer", "null"]},
+           "displayPosition": {"type": ["integer", "null"], "description": "고른 후보가 화면 몇 번째 자리였는지(0부터)"},
+           "operationalId": {"type": "string"},
+           "operationalIndex": {"type": "integer", "minimum": 0},
+           "at": {"$ref": "#/$defs/isoTime"}},
+         "if": {"properties": {"none": {"const": true}}},
+         "then": {"properties": {"selectedCandidateId": {"type": "null"}}}}
+      ]
+    },
+    "adjustments": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["events", "items", "finishedAt"],
+      "properties": {
+        "events": {"type": "array", "items": {
+          "type": "object", "additionalProperties": false, "required": ["i", "item", "value", "previous", "at"],
+          "properties": {"i": {"type": "integer"}, "item": {"enum": ["form", "color", "brightness", "opacity", "size", "texture", "motion"]},
+                         "value": {"$ref": "#/$defs/itemValue"}, "previous": {"$ref": "#/$defs/itemValue"},
+                         "at": {"$ref": "#/$defs/isoTime"}}}},
+        "items": {"type": "object",
+                  "propertyNames": {"enum": ["form", "color", "brightness", "opacity", "size", "texture", "motion"]},
+                  "additionalProperties": {"type": "object", "additionalProperties": false,
+                                           "required": ["count", "first", "last", "firstAt", "lastAt"],
+                                           "properties": {"count": {"type": "integer", "minimum": 1},
+                                                          "first": {"$ref": "#/$defs/itemValue"},
+                                                          "last": {"$ref": "#/$defs/itemValue"},
+                                                          "firstAt": {"$ref": "#/$defs/isoTime"},
+                                                          "lastAt": {"$ref": "#/$defs/isoTime"}}}},
+        "finishedAt": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/isoTime"}]}
+      }
+    },
+    "finalOverrides": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/flatOverrides"}]},
+    "sources": {
+      "oneOf": [
+        {"type": "null"},
+        {"type": "object", "propertyNames": {"$ref": "#/$defs/slotName"}, "additionalProperties": {"$ref": "#/$defs/source"}}
+      ]
+    },
+    "sourceDetails": {
+      "oneOf": [
+        {"type": "null"},
+        {"type": "object", "propertyNames": {"$ref": "#/$defs/slotName"},
+         "additionalProperties": {"type": "object", "additionalProperties": false,
+                                  "required": ["source", "value", "saidValue", "chosenValue", "defaultValue"],
+                                  "properties": {"source": {"$ref": "#/$defs/source"},
+                                                 "value": {}, "saidValue": {}, "chosenValue": {}, "defaultValue": {}}}}
+      ]
+    },
+    "sourceCounts": {
+      "oneOf": [
+        {"type": "null"},
+        {"type": "object", "additionalProperties": false, "required": ["said", "chosen", "edited", "default"],
+         "properties": {"said": {"type": "integer"}, "chosen": {"type": "integer"}, "edited": {"type": "integer"},
+                        "default": {"type": "integer"}}}
+      ]
+    },
+    "premeasure": {
+      "oneOf": [
+        {"type": "null"},
+        {"type": "object", "required": ["path", "completedAt", "answered", "skipped"],
+         "properties": {"path": {"type": ["string", "null"]}, "completedAt": {"$ref": "#/$defs/isoTime"},
+                        "answered": {"type": "integer"}, "skipped": {"type": "integer"}}}
+      ]
+    }
+  }
+}

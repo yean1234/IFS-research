@@ -57,6 +57,9 @@
       </form>
       <div id="buttons" class="buttons"></div>
       <p id="busy" class="busy" hidden>질문을 만들고 검사하는 중…</p>
+
+      <!-- 면담 뒤 데스크톱 단계(4 후보 선택 · 5 조절 · 6 사전 측정). 설정 [selection] enabled일 때만 열린다. -->
+      <div id="stage" class="stage" hidden></div>
     </section>
 
     <aside class="panel researcher" id="researcher" aria-label="연구자 화면">
@@ -77,5 +80,6 @@
   </main>
   <div id="toast" class="toast" role="status" hidden></div>
   <script src="/static/app.js"></script>
+  <script src="/static/stage.js"></script>
 </body>
 </html>

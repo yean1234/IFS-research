@@ -1,0 +1,452 @@
+{
+  "formatVersion": "ifs-selection/0.1",
+  "specSha256": "7c68951194844a509f05e345694a9b2d18b2258d16d23e3bfb13580be6d4808b",
+  "sessionId": "SYN-SEL-S1",
+  "createdAt": "2026-11-23T03:48:52+09:00",
+  "updatedAt": "2026-11-23T03:48:52+09:00",
+  "stage": "done",
+  "spec": {
+    "path": "<log_dir>\\scenes\\SYN-SEL-S1.json",
+    "normalizedSha256": "700f8da0fc248d764064ef095a0cff123b9ad36af4a972f882765e3d1f07f6ca",
+    "sha256Basis": "file",
+    "builder": "scene-spec-builder-v2/2.0.0",
+    "specVersion": "2.1.0",
+    "mapping": {
+      "requested": "v2",
+      "used": "v1",
+      "fallbackReason": null
+    }
+  },
+  "generator": {
+    "generatorVersion": "ifs-candidates/0.1.0",
+    "tableVersion": "0.1.0",
+    "tableSha256": "2f6bcf51ecdf59a3812599ed04533b099a96c706a2cd3ee51bbbb45fbd619773"
+  },
+  "protocol": {
+    "protocolId": "ifs-selection-flow",
+    "protocolVersion": "0.1.0",
+    "draftCount": 29,
+    "draftKeys": [
+      "phrases.figure_intro",
+      "phrases.candidates_intro",
+      "phrases.single_candidate_intro",
+      "phrases.choose_button",
+      "phrases.proceed_single_button",
+      "phrases.none_fit",
+      "phrases.adjust_intro",
+      "phrases.adjust_finish_button",
+      "phrases.premeasure_done",
+      "phrases.premeasure_submit_button",
+      "adjustItemLabels.form",
+      "adjustItemLabels.color",
+      "adjustItemLabels.brightness",
+      "adjustItemLabels.opacity",
+      "adjustItemLabels.size",
+      "adjustItemLabels.texture",
+      "adjustItemLabels.motion",
+      "premeasure.instruction",
+      "premeasure.scale",
+      "premeasure.skipLabel",
+      "premeasure.items.A1",
+      "premeasure.items.A2",
+      "premeasure.items.A3",
+      "premeasure.items.A4",
+      "premeasure.items.A5",
+      "premeasure.items.A6",
+      "premeasure.items.A7",
+      "premeasure.items.G13_appearance",
+      "premeasure.items.G13_representation"
+    ]
+  },
+  "preview": {
+    "requested": "image",
+    "mode": "image",
+    "reason": null
+  },
+  "candidates": {
+    "generatorVersion": "ifs-candidates/0.1.0",
+    "tableVersion": "0.1.0",
+    "tableSha256": "2f6bcf51ecdf59a3812599ed04533b099a96c706a2cd3ee51bbbb45fbd619773",
+    "specSha256": "700f8da0fc248d764064ef095a0cff123b9ad36af4a972f882765e3d1f07f6ca",
+    "sessionId": "SYN-SEL-S1",
+    "axes": [
+      {
+        "slot": "material.opacity",
+        "reason": "empty",
+        "values": [
+          1.0,
+          0.4
+        ],
+        "key": "material.opacity"
+      },
+      {
+        "slot": "material.brightness",
+        "reason": "empty",
+        "values": [
+          0.5,
+          0.75
+        ],
+        "key": "material.brightness"
+      }
+    ],
+    "candidates": [
+      {
+        "id": "c-29dac2ece0b3",
+        "index": 0,
+        "overrides": {},
+        "axisValues": {
+          "material.opacity": 1.0,
+          "material.brightness": 0.5
+        },
+        "sources": {
+          "form.type": "said",
+          "form.posture": "default",
+          "material.color": "default",
+          "material.brightness": "offered",
+          "material.saturation": "default",
+          "material.roughness": "default",
+          "material.opacity": "offered",
+          "material.erosion": "default",
+          "layout.size": "said",
+          "layout.distance": "default",
+          "layout.verticalOffset": "default",
+          "motion.type": "default",
+          "motion.speed": "default",
+          "body.part": "said",
+          "body.layer": "said"
+        }
+      },
+      {
+        "id": "c-190b6e542c34",
+        "index": 1,
+        "overrides": {
+          "material.brightness": 0.75
+        },
+        "axisValues": {
+          "material.opacity": 1.0,
+          "material.brightness": 0.75
+        },
+        "sources": {
+          "form.type": "said",
+          "form.posture": "default",
+          "material.color": "default",
+          "material.brightness": "offered",
+          "material.saturation": "default",
+          "material.roughness": "default",
+          "material.opacity": "offered",
+          "material.erosion": "default",
+          "layout.size": "said",
+          "layout.distance": "default",
+          "layout.verticalOffset": "default",
+          "motion.type": "default",
+          "motion.speed": "default",
+          "body.part": "said",
+          "body.layer": "said"
+        }
+      },
+      {
+        "id": "c-bfd1cb77b6d3",
+        "index": 2,
+        "overrides": {
+          "material.opacity": 0.4
+        },
+        "axisValues": {
+          "material.opacity": 0.4,
+          "material.brightness": 0.5
+        },
+        "sources": {
+          "form.type": "said",
+          "form.posture": "default",
+          "material.color": "default",
+          "material.brightness": "offered",
+          "material.saturation": "default",
+          "material.roughness": "default",
+          "material.opacity": "offered",
+          "material.erosion": "default",
+          "layout.size": "said",
+          "layout.distance": "default",
+          "layout.verticalOffset": "default",
+          "motion.type": "default",
+          "motion.speed": "default",
+          "body.part": "said",
+          "body.layer": "said"
+        }
+      },
+      {
+        "id": "c-199e7f618602",
+        "index": 3,
+        "overrides": {
+          "material.brightness": 0.75,
+          "material.opacity": 0.4
+        },
+        "axisValues": {
+          "material.opacity": 0.4,
+          "material.brightness": 0.75
+        },
+        "sources": {
+          "form.type": "said",
+          "form.posture": "default",
+          "material.color": "default",
+          "material.brightness": "offered",
+          "material.saturation": "default",
+          "material.roughness": "default",
+          "material.opacity": "offered",
+          "material.erosion": "default",
+          "layout.size": "said",
+          "layout.distance": "default",
+          "layout.verticalOffset": "default",
+          "motion.type": "default",
+          "motion.speed": "default",
+          "body.part": "said",
+          "body.layer": "said"
+        }
+      }
+    ],
+    "displayOrder": [
+      "c-29dac2ece0b3",
+      "c-190b6e542c34",
+      "c-bfd1cb77b6d3",
+      "c-199e7f618602"
+    ],
+    "orderRule": "sha256(sessionId)[:8] mod 4 = 0 만큼 순환",
+    "splitSkipped": [],
+    "note": "빈 자리 4개 가운데 위 두 차원(material.opacity, material.brightness)으로 2×2. 색상(hue)은 벌리지 않음(G17)."
+  },
+  "candidatesShown": [
+    "c-29dac2ece0b3",
+    "c-190b6e542c34",
+    "c-bfd1cb77b6d3",
+    "c-199e7f618602"
+  ],
+  "candidatesShownAt": "2026-11-23T03:48:52+09:00",
+  "selection": {
+    "selectedCandidateId": "c-bfd1cb77b6d3",
+    "selectedIndex": 2,
+    "none": false,
+    "displayPosition": 2,
+    "operationalId": "c-bfd1cb77b6d3",
+    "operationalIndex": 2,
+    "at": "2026-11-23T03:48:52+09:00"
+  },
+  "adjustments": {
+    "events": [
+      {
+        "i": 0,
+        "item": "color",
+        "value": {
+          "swatch": "h07",
+          "h": 0.5833,
+          "s": 0.6,
+          "l": 0.5
+        },
+        "previous": {
+          "swatch": "n70",
+          "h": 0.0,
+          "s": 0.0,
+          "l": 0.7
+        },
+        "at": "2026-11-23T03:48:52+09:00"
+      },
+      {
+        "i": 1,
+        "item": "size",
+        "value": 0.4,
+        "previous": 0.316,
+        "at": "2026-11-23T03:48:52+09:00"
+      },
+      {
+        "i": 2,
+        "item": "brightness",
+        "value": 0.625,
+        "previous": 0.5,
+        "at": "2026-11-23T03:48:52+09:00"
+      }
+    ],
+    "items": {
+      "color": {
+        "count": 1,
+        "first": {
+          "swatch": "n70",
+          "h": 0.0,
+          "s": 0.0,
+          "l": 0.7
+        },
+        "last": {
+          "swatch": "h07",
+          "h": 0.5833,
+          "s": 0.6,
+          "l": 0.5
+        },
+        "firstAt": "2026-11-23T03:48:52+09:00",
+        "lastAt": "2026-11-23T03:48:52+09:00"
+      },
+      "size": {
+        "count": 1,
+        "first": 0.316,
+        "last": 0.4,
+        "firstAt": "2026-11-23T03:48:52+09:00",
+        "lastAt": "2026-11-23T03:48:52+09:00"
+      },
+      "brightness": {
+        "count": 1,
+        "first": 0.5,
+        "last": 0.625,
+        "firstAt": "2026-11-23T03:48:52+09:00",
+        "lastAt": "2026-11-23T03:48:52+09:00"
+      }
+    },
+    "finishedAt": "2026-11-23T03:48:52+09:00"
+  },
+  "finalOverrides": {
+    "layout.size": 0.4,
+    "material.brightness": 0.625,
+    "material.color.h": 0.5833,
+    "material.color.l": 0.5,
+    "material.color.s": 0.6,
+    "material.opacity": 0.4
+  },
+  "sources": {
+    "form.type": "said",
+    "form.posture": "default",
+    "material.color": "edited",
+    "material.brightness": "edited",
+    "material.saturation": "edited",
+    "material.roughness": "default",
+    "material.opacity": "chosen",
+    "material.erosion": "default",
+    "layout.size": "edited",
+    "layout.distance": "default",
+    "layout.verticalOffset": "default",
+    "motion.type": "default",
+    "motion.speed": "default",
+    "body.part": "said",
+    "body.layer": "said"
+  },
+  "sourceDetails": {
+    "form.type": {
+      "source": "said",
+      "value": "mist",
+      "saidValue": "mist",
+      "chosenValue": null,
+      "defaultValue": "blob"
+    },
+    "form.posture": {
+      "source": "default",
+      "value": "none",
+      "saidValue": null,
+      "chosenValue": null,
+      "defaultValue": "none"
+    },
+    "material.color": {
+      "source": "edited",
+      "value": {
+        "h": 0.5833,
+        "s": 0.6,
+        "l": 0.5
+      },
+      "saidValue": null,
+      "chosenValue": null,
+      "defaultValue": {
+        "h": 0.0,
+        "s": 0.0,
+        "l": 0.7
+      }
+    },
+    "material.brightness": {
+      "source": "edited",
+      "value": 0.625,
+      "saidValue": null,
+      "chosenValue": 0.5,
+      "defaultValue": 0.5
+    },
+    "material.saturation": {
+      "source": "edited",
+      "value": 0.6,
+      "saidValue": null,
+      "chosenValue": null,
+      "defaultValue": 0.0
+    },
+    "material.roughness": {
+      "source": "default",
+      "value": 0.5,
+      "saidValue": null,
+      "chosenValue": null,
+      "defaultValue": 0.5
+    },
+    "material.opacity": {
+      "source": "chosen",
+      "value": 0.4,
+      "saidValue": null,
+      "chosenValue": 0.4,
+      "defaultValue": 1.0
+    },
+    "material.erosion": {
+      "source": "default",
+      "value": 0.0,
+      "saidValue": null,
+      "chosenValue": null,
+      "defaultValue": 0.0
+    },
+    "layout.size": {
+      "source": "edited",
+      "value": 0.4,
+      "saidValue": 0.316,
+      "chosenValue": null,
+      "defaultValue": 0.5
+    },
+    "layout.distance": {
+      "source": "default",
+      "value": 0.33,
+      "saidValue": null,
+      "chosenValue": null,
+      "defaultValue": 0.33
+    },
+    "layout.verticalOffset": {
+      "source": "default",
+      "value": 0.75,
+      "saidValue": null,
+      "chosenValue": null,
+      "defaultValue": 0.75
+    },
+    "motion.type": {
+      "source": "default",
+      "value": "still",
+      "saidValue": null,
+      "chosenValue": null,
+      "defaultValue": "still"
+    },
+    "motion.speed": {
+      "source": "default",
+      "value": 0.5,
+      "saidValue": null,
+      "chosenValue": null,
+      "defaultValue": 0.5
+    },
+    "body.part": {
+      "source": "said",
+      "value": "chest",
+      "saidValue": "chest",
+      "chosenValue": null,
+      "defaultValue": null
+    },
+    "body.layer": {
+      "source": "said",
+      "value": "around_front",
+      "saidValue": "around_front",
+      "chosenValue": null,
+      "defaultValue": null
+    }
+  },
+  "sourceCounts": {
+    "said": 3,
+    "chosen": 1,
+    "edited": 4,
+    "default": 7
+  },
+  "premeasure": {
+    "path": "<log_dir>\\selection\\SYN-SEL-S1\\premeasure.json",
+    "completedAt": "2026-11-23T03:48:52+09:00",
+    "answered": 9,
+    "skipped": 0
+  }
+}

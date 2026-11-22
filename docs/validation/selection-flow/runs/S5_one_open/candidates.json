@@ -1,0 +1,137 @@
+{
+  "axes": [
+    {
+      "key": "material.brightness",
+      "reason": "empty",
+      "slot": "material.brightness",
+      "values": [
+        0.5,
+        0.25,
+        0.75,
+        1.0
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "axisValues": {
+        "material.brightness": 0.5
+      },
+      "id": "c-3c09d19933bb",
+      "index": 0,
+      "overrides": {},
+      "sources": {
+        "body.layer": "default",
+        "body.part": "default",
+        "form.posture": "default",
+        "form.type": "said",
+        "layout.distance": "said",
+        "layout.size": "said",
+        "layout.verticalOffset": "default",
+        "material.brightness": "offered",
+        "material.color": "said",
+        "material.erosion": "default",
+        "material.opacity": "said",
+        "material.roughness": "said",
+        "material.saturation": "default",
+        "motion.speed": "default",
+        "motion.type": "said"
+      }
+    },
+    {
+      "axisValues": {
+        "material.brightness": 0.25
+      },
+      "id": "c-a9983a9de7f6",
+      "index": 1,
+      "overrides": {
+        "material.brightness": 0.25
+      },
+      "sources": {
+        "body.layer": "default",
+        "body.part": "default",
+        "form.posture": "default",
+        "form.type": "said",
+        "layout.distance": "said",
+        "layout.size": "said",
+        "layout.verticalOffset": "default",
+        "material.brightness": "offered",
+        "material.color": "said",
+        "material.erosion": "default",
+        "material.opacity": "said",
+        "material.roughness": "said",
+        "material.saturation": "default",
+        "motion.speed": "default",
+        "motion.type": "said"
+      }
+    },
+    {
+      "axisValues": {
+        "material.brightness": 0.75
+      },
+      "id": "c-2cc4f5c4ec45",
+      "index": 2,
+      "overrides": {
+        "material.brightness": 0.75
+      },
+      "sources": {
+        "body.layer": "default",
+        "body.part": "default",
+        "form.posture": "default",
+        "form.type": "said",
+        "layout.distance": "said",
+        "layout.size": "said",
+        "layout.verticalOffset": "default",
+        "material.brightness": "offered",
+        "material.color": "said",
+        "material.erosion": "default",
+        "material.opacity": "said",
+        "material.roughness": "said",
+        "material.saturation": "default",
+        "motion.speed": "default",
+        "motion.type": "said"
+      }
+    },
+    {
+      "axisValues": {
+        "material.brightness": 1.0
+      },
+      "id": "c-3ffb7d796f67",
+      "index": 3,
+      "overrides": {
+        "material.brightness": 1.0
+      },
+      "sources": {
+        "body.layer": "default",
+        "body.part": "default",
+        "form.posture": "default",
+        "form.type": "said",
+        "layout.distance": "said",
+        "layout.size": "said",
+        "layout.verticalOffset": "default",
+        "material.brightness": "offered",
+        "material.color": "said",
+        "material.erosion": "default",
+        "material.opacity": "said",
+        "material.roughness": "said",
+        "material.saturation": "default",
+        "motion.speed": "default",
+        "motion.type": "said"
+      }
+    }
+  ],
+  "displayOrder": [
+    "c-3ffb7d796f67",
+    "c-3c09d19933bb",
+    "c-a9983a9de7f6",
+    "c-2cc4f5c4ec45"
+  ],
+  "generatorVersion": "ifs-candidates/0.1.0",
+  "note": "빈 자리가 한 차원(material.brightness)뿐이라 그 차원의 표 값 4개. 색상(hue)은 벌리지 않음(G17).",
+  "orderRule": "sha256(sessionId)[:8] mod 4 = 3 만큼 순환",
+  "sessionId": "SYN-SEL-S5",
+  "specSha256": "197a47e72b450c17b7cb94f02f2ad77a8f8faf93d70d4a6d996004acd139dc22",
+  "splitSkipped": [],
+  "tableSha256": "2f6bcf51ecdf59a3812599ed04533b099a96c706a2cd3ee51bbbb45fbd619773",
+  "tableVersion": "0.1.0"
+}

@@ -173,8 +173,9 @@ function render(v) {
     btns.append(el("button", { class: cls, onclick: () => act(b.action) }, b.label));
   }
   if (["done", "stopped", "crisis", "withdrawn"].includes(v.state)) {
-    btns.append(el("button", { class: "ghost", onclick: () => location.reload() }, "새 세션"));
+    btns.append(el("button", { class: "ghost", onclick: () => { location.search = ""; } }, "새 세션"));
   }
+  if (window.ifsStage) window.ifsStage.afterRender(v);   // 면담 뒤 단계(stage.js, 새 흐름에서만)
   refreshResearcher();
 }
 
@@ -185,6 +186,7 @@ async function refreshResearcher() {
     const r = await api("GET", `/api/sessions/${state.sid}/log`);
     state.log = r.log;
     renderProgress(r);
+    if (window.ifsStage) window.ifsStage.researcherNote($("#tab-progress"));
     renderTurns(r.log);
     renderExtract(r.log);
     $("#json-view").textContent = JSON.stringify(r.log, null, 2);
@@ -315,8 +317,23 @@ function switchTab(name) {
   for (const id of ["progress", "turns", "extract", "json"]) $(`#tab-${id}`).hidden = id !== name;
 }
 
+// 주소에 ?sid=<세션 ID>가 있으면 그 세션 화면을 다시 연다(연구자가 이어서 진행하거나 화면을 확인할 때).
+async function resumeFromUrl() {
+  const sid = new URLSearchParams(location.search).get("sid");
+  if (!sid) return;
+  try {
+    const v = await api("GET", `/api/sessions/${encodeURIComponent(sid)}`);
+    state.sid = v.sessionId;
+    $("#setup").hidden = true;
+    $("#chat").hidden = false;
+    render(v);
+  } catch (e) {
+    toast(`세션을 열지 못했습니다: ${e.message}`);
+  }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
-  loadHealth();
+  loadHealth().then(resumeFromUrl);
   $("#btn-create").addEventListener("click", createSession);
   $("#composer").addEventListener("submit", (e) => { e.preventDefault(); send($("#input").value); });
   $("#input").addEventListener("keydown", (e) => {

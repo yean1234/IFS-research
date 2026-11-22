@@ -1,0 +1,186 @@
+{
+  "meta": {
+    "specVersion": "2.1.0",
+    "participantId": null,
+    "sessionId": "SYN-SEL-S1",
+    "condition": "static",
+    "sourceTextHash": "sha256:408aaecd1928a8661ae1b514855c5eb44daecb16bbdb43ce41ea13a37d390052",
+    "pipeline": {
+      "builder": "scene-spec-builder-v2/2.0.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@1.0.0",
+        "layer1Base": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@1.0.0",
+        "vad": "vad-ko@0.1.0",
+        "sceneParamsV2": "scene-params-v2@2.0.0",
+        "nounStoplist": "noun-stoplist-v2@1.0.0"
+      }
+    },
+    "mapping": {
+      "requested": "v2",
+      "used": "v1",
+      "fallbackReason": null
+    }
+  },
+  "form": {
+    "type": "mist",
+    "posture": null
+  },
+  "material": {
+    "color": null,
+    "brightness": null,
+    "saturation": null,
+    "roughness": null,
+    "opacity": null,
+    "erosion": null
+  },
+  "layout": {
+    "size": 0.316,
+    "distance": null,
+    "verticalOffset": null
+  },
+  "motion": {
+    "type": null,
+    "speed": null
+  },
+  "body": {
+    "part": "chest",
+    "layer": "around_front"
+  },
+  "_provenance": {
+    "form.type": [
+      {
+        "source": "simile_marker",
+        "trigger": "연기 같",
+        "charSpan": [
+          6,
+          10
+        ],
+        "rule": "simile.같은>prototype.연기>form.type:mist"
+      }
+    ],
+    "layout.size": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "작아요",
+        "charSpan": [
+          19,
+          22
+        ],
+        "rule": "sizeLexicon.작>layout.size:logScale(0.6)"
+      }
+    ],
+    "body.part": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "가슴",
+        "charSpan": [
+          0,
+          2
+        ],
+        "rule": "bodyPartLexicon.가슴>body.part:chest"
+      }
+    ],
+    "body.layer": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "앞",
+        "charSpan": [
+          3,
+          4
+        ],
+        "rule": "bodyLayerLexicon.앞>body.layer:around_front"
+      }
+    ]
+  },
+  "_unmatched": [
+    {
+      "lemma": "것",
+      "tag": "EOJEOL",
+      "surface": "게",
+      "charSpan": [
+        12,
+        13
+      ]
+    },
+    {
+      "lemma": "있",
+      "tag": "EOJEOL",
+      "surface": "있어요",
+      "charSpan": [
+        14,
+        17
+      ]
+    }
+  ],
+  "_unmapped": [],
+  "_negated": [],
+  "_alternatives": [],
+  "_inferred": {
+    "layout.verticalOffset": {
+      "value": 0.72,
+      "_provenance": [
+        {
+          "source": "body_part_height",
+          "trigger": "가슴",
+          "charSpan": [
+            0,
+            2
+          ],
+          "rule": "bodyPartHeight.chest>layout.verticalOffset:0.72"
+        }
+      ]
+    }
+  },
+  "_context": [],
+  "_parts": [],
+  "_uncertain": [],
+  "_measurements": [],
+  "_direction": [],
+  "_needsConfirmation": [],
+  "_clauses": [
+    {
+      "charSpan": [
+        0,
+        17
+      ],
+      "text": "가슴 앞에 연기 같은 게 있어요",
+      "usedFor": [
+        "form.type",
+        "body.part",
+        "body.layer"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        17,
+        18
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        19,
+        22
+      ],
+      "text": "작아요",
+      "usedFor": [
+        "layout.size"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        22,
+        23
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    }
+  ]
+}

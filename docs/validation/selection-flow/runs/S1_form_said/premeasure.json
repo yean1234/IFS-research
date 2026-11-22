@@ -1,0 +1,138 @@
+{
+  "formatVersion": "ifs-premeasure/0.1",
+  "sessionId": "SYN-SEL-S1",
+  "timepoint": "pre",
+  "protocolId": "ifs-selection-flow",
+  "protocolVersion": "0.1.0",
+  "draftCount": 29,
+  "draftKeys": [
+    "phrases.figure_intro",
+    "phrases.candidates_intro",
+    "phrases.single_candidate_intro",
+    "phrases.choose_button",
+    "phrases.proceed_single_button",
+    "phrases.none_fit",
+    "phrases.adjust_intro",
+    "phrases.adjust_finish_button",
+    "phrases.premeasure_done",
+    "phrases.premeasure_submit_button",
+    "adjustItemLabels.form",
+    "adjustItemLabels.color",
+    "adjustItemLabels.brightness",
+    "adjustItemLabels.opacity",
+    "adjustItemLabels.size",
+    "adjustItemLabels.texture",
+    "adjustItemLabels.motion",
+    "premeasure.instruction",
+    "premeasure.scale",
+    "premeasure.skipLabel",
+    "premeasure.items.A1",
+    "premeasure.items.A2",
+    "premeasure.items.A3",
+    "premeasure.items.A4",
+    "premeasure.items.A5",
+    "premeasure.items.A6",
+    "premeasure.items.A7",
+    "premeasure.items.G13_appearance",
+    "premeasure.items.G13_representation"
+  ],
+  "instruction": "지금부터 몇 가지 문장을 보여 드리겠습니다. 문장 속 '이것'은 면담에서 말씀하신, 지금 마음에 걸려 있는 그것을 가리킵니다. 조금 전 본 물체는 그것을 말씀하신 대로 나타낸 것입니다. 평소가 아니라 바로 지금 이 순간을 기준으로, 각 문장이 지금의 나에게 얼마나 맞는지 골라 주세요. 맞거나 틀린 답은 없습니다.",
+  "scale": {
+    "min": 1,
+    "max": 7,
+    "anchors": {
+      "1": "전혀 그렇지 않다",
+      "2": "그렇지 않다",
+      "3": "약간 그렇지 않다",
+      "4": "반반이다",
+      "5": "약간 그렇다",
+      "6": "그렇다",
+      "7": "완전히 그렇다"
+    }
+  },
+  "selectionNone": false,
+  "operationalId": "c-bfd1cb77b6d3",
+  "finalOverrides": {
+    "layout.size": 0.4,
+    "material.brightness": 0.625,
+    "material.color.h": 0.5833,
+    "material.color.l": 0.5,
+    "material.color.s": 0.6,
+    "material.opacity": 0.4
+  },
+  "items": [
+    {
+      "id": "A1",
+      "text": "지금 이것 때문에 마음이 힘들다.",
+      "status": "draft",
+      "source": "docs/rq-v4-questionnaire-draft.md 3.3 A1(CFQ-7 1번 수정, ⚑)",
+      "value": 5,
+      "skipped": false
+    },
+    {
+      "id": "A2",
+      "text": "지금 나는 이것에 사로잡혀서 다른 데 마음을 두기 어렵다.",
+      "status": "draft",
+      "source": "docs/rq-v4-questionnaire-draft.md 3.3 A2(CFQ-7 2번 수정)",
+      "value": 4,
+      "skipped": false
+    },
+    {
+      "id": "A3",
+      "text": "지금 나는 도움이 안 될 만큼 이것을 이리저리 따지고 있다.",
+      "status": "draft",
+      "source": "docs/rq-v4-questionnaire-draft.md 3.3 A3(CFQ-7 3번 수정)",
+      "value": 3,
+      "skipped": false
+    },
+    {
+      "id": "A4",
+      "text": "지금 나는 이것과 씨름하고 있다.",
+      "status": "draft",
+      "source": "docs/rq-v4-questionnaire-draft.md 3.3 A4(CFQ-7 4번 수정)",
+      "value": 5,
+      "skipped": false
+    },
+    {
+      "id": "A5",
+      "text": "이것이 내 안에 있다는 것 때문에 지금 나 자신을 탓하게 된다.",
+      "status": "draft",
+      "source": "docs/rq-v4-questionnaire-draft.md 3.3 A5(CFQ-7 5번 수정, ⚑)",
+      "value": 2,
+      "skipped": false
+    },
+    {
+      "id": "A6",
+      "text": "지금 나는 이것과 깊이 얽혀 있다.",
+      "status": "draft",
+      "source": "docs/rq-v4-questionnaire-draft.md 3.3 A6(CFQ-7 6번 수정)",
+      "value": 4,
+      "skipped": false
+    },
+    {
+      "id": "A7",
+      "text": "그만두는 편이 낫다는 걸 알면서도, 지금은 이것에 매달리기를 그만두기 어렵다.",
+      "status": "draft",
+      "source": "docs/rq-v4-questionnaire-draft.md 3.3 A7(CFQ-7 7번 수정, ⚑)",
+      "value": 3,
+      "skipped": false
+    },
+    {
+      "id": "G13_appearance",
+      "text": "이 형상의 모습은 내가 떠올린 것과 비슷하다",
+      "status": "draft",
+      "source": "docs/decisions.md G13 모습 일치 문항 그대로",
+      "value": 5,
+      "skipped": false
+    },
+    {
+      "id": "G13_representation",
+      "text": "이 형상은 내가 떠올린 그것을 나타낸다",
+      "status": "draft",
+      "source": "docs/decisions.md G13 대표성 문항 그대로(하한 점검 기준 문항, 기준값은 정하지 않음)",
+      "value": 6,
+      "skipped": false
+    }
+  ],
+  "completedAt": "2026-11-23T03:48:52+09:00"
+}

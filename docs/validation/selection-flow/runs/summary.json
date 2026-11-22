@@ -1,0 +1,397 @@
+{
+  "results": [
+    {
+      "scenario": "S1_form_said",
+      "title": "형태를 말한 경우 — 연기(mist)와 크기를 말함, 빈 자리 투명도 × 밝기 2×2, 말한 크기를 조절로 고침",
+      "sessionId": "SYN-SEL-S1",
+      "confirmedText": "가슴 앞에 연기 같은 게 있어요. 작아요.",
+      "candidateCount": 4,
+      "axes": [
+        {
+          "slot": "material.opacity",
+          "reason": "empty",
+          "values": [
+            1.0,
+            0.4
+          ]
+        },
+        {
+          "slot": "material.brightness",
+          "reason": "empty",
+          "values": [
+            0.5,
+            0.75
+          ]
+        }
+      ],
+      "note": "빈 자리 4개 가운데 위 두 차원(material.opacity, material.brightness)으로 2×2. 색상(hue)은 벌리지 않음(G17).",
+      "displayOrder": [
+        "c-29dac2ece0b3",
+        "c-190b6e542c34",
+        "c-bfd1cb77b6d3",
+        "c-199e7f618602"
+      ],
+      "selection": {
+        "selectedIndex": 2,
+        "none": false,
+        "displayPosition": 2,
+        "operationalIndex": 2
+      },
+      "adjustCounts": {
+        "color": 1,
+        "size": 1,
+        "brightness": 1
+      },
+      "finalOverrides": {
+        "layout.size": 0.4,
+        "material.brightness": 0.625,
+        "material.color.h": 0.5833,
+        "material.color.l": 0.5,
+        "material.color.s": 0.6,
+        "material.opacity": 0.4
+      },
+      "sourceCounts": {
+        "said": 3,
+        "chosen": 1,
+        "edited": 4,
+        "default": 7
+      },
+      "sources": {
+        "form.type": "said",
+        "form.posture": "default",
+        "material.color": "edited",
+        "material.brightness": "edited",
+        "material.saturation": "edited",
+        "material.roughness": "default",
+        "material.opacity": "chosen",
+        "material.erosion": "default",
+        "layout.size": "edited",
+        "layout.distance": "default",
+        "layout.verticalOffset": "default",
+        "motion.type": "default",
+        "motion.speed": "default",
+        "body.part": "said",
+        "body.layer": "said"
+      },
+      "premeasure": {
+        "A1": 5,
+        "A2": 4,
+        "A3": 3,
+        "A4": 5,
+        "A5": 2,
+        "A6": 4,
+        "A7": 3,
+        "G13_appearance": 5,
+        "G13_representation": 6
+      },
+      "interviewLlmTurns": 0,
+      "previewMode": "image",
+      "expectFailures": []
+    },
+    {
+      "scenario": "S2_feeling_only",
+      "title": "느낌만 말한 경우 — 형상 속성이 전부 빈 자리, 형태 × 크기 2×2, 조절 없음",
+      "sessionId": "SYN-SEL-S2",
+      "confirmedText": "가슴 안쪽이 답답하고 무거운 느낌이에요.",
+      "candidateCount": 4,
+      "axes": [
+        {
+          "slot": "form.type",
+          "reason": "empty",
+          "values": [
+            "blob",
+            "mist"
+          ]
+        },
+        {
+          "slot": "layout.size",
+          "reason": "empty",
+          "values": [
+            0.5,
+            0.7
+          ]
+        }
+      ],
+      "note": "빈 자리 6개 가운데 위 두 차원(form.type, layout.size)으로 2×2. 색상(hue)은 벌리지 않음(G17).",
+      "displayOrder": [
+        "c-cf260af89ace",
+        "c-e040ced71c47",
+        "c-12f8350573f9",
+        "c-e0ad29e5e909"
+      ],
+      "selection": {
+        "selectedIndex": 3,
+        "none": false,
+        "displayPosition": 0,
+        "operationalIndex": 3
+      },
+      "adjustCounts": {},
+      "finalOverrides": {
+        "form.type": "mist",
+        "layout.size": 0.7
+      },
+      "sourceCounts": {
+        "said": 2,
+        "chosen": 2,
+        "edited": 0,
+        "default": 11
+      },
+      "sources": {
+        "form.type": "chosen",
+        "form.posture": "default",
+        "material.color": "default",
+        "material.brightness": "default",
+        "material.saturation": "default",
+        "material.roughness": "default",
+        "material.opacity": "default",
+        "material.erosion": "default",
+        "layout.size": "chosen",
+        "layout.distance": "default",
+        "layout.verticalOffset": "default",
+        "motion.type": "default",
+        "motion.speed": "default",
+        "body.part": "said",
+        "body.layer": "said"
+      },
+      "premeasure": {
+        "A1": 3,
+        "A2": 3,
+        "A3": 2,
+        "A4": 4,
+        "A5": null,
+        "A6": 3,
+        "A7": 2,
+        "G13_appearance": 3,
+        "G13_representation": 4
+      },
+      "interviewLlmTurns": 0,
+      "previewMode": "image",
+      "expectFailures": []
+    },
+    {
+      "scenario": "S3_all_said",
+      "title": "모든 것을 말한 경우 — 빈 자리 없음, 후보 1개('이 형상으로 진행'), 조절에서 움직임만 만졌다가 되돌림",
+      "sessionId": "SYN-SEL-S3",
+      "confirmedText": "까만 덩어리가 눈앞 가까이 있어요. 크고 무겁고 매끈해요. 안 움직여요. 불투명해요. 어두워요.",
+      "candidateCount": 1,
+      "axes": [],
+      "note": "빈 자리가 없어 후보 1개(이 형상으로 진행 / 맞는 것이 없다). 색상(hue)은 벌리지 않음(G17).",
+      "displayOrder": [
+        "c-f670bd7ef7ad"
+      ],
+      "selection": {
+        "selectedIndex": 0,
+        "none": false,
+        "displayPosition": 0,
+        "operationalIndex": 0
+      },
+      "adjustCounts": {
+        "motion": 2
+      },
+      "finalOverrides": {},
+      "sourceCounts": {
+        "said": 8,
+        "chosen": 0,
+        "edited": 0,
+        "default": 7
+      },
+      "sources": {
+        "form.type": "said",
+        "form.posture": "default",
+        "material.color": "said",
+        "material.brightness": "said",
+        "material.saturation": "default",
+        "material.roughness": "said",
+        "material.opacity": "said",
+        "material.erosion": "default",
+        "layout.size": "said",
+        "layout.distance": "said",
+        "layout.verticalOffset": "default",
+        "motion.type": "said",
+        "motion.speed": "default",
+        "body.part": "default",
+        "body.layer": "default"
+      },
+      "premeasure": {
+        "A1": 5,
+        "A2": 4,
+        "A3": 3,
+        "A4": 5,
+        "A5": 2,
+        "A6": 4,
+        "A7": 3,
+        "G13_appearance": 5,
+        "G13_representation": 6
+      },
+      "interviewLlmTurns": 0,
+      "previewMode": "image",
+      "expectFailures": []
+    },
+    {
+      "scenario": "S4_none_fit",
+      "title": "'맞는 것이 없다'를 고른 경우 — '구름' 낱말 해석 갈림 축 × 크기, none → 기준 후보 0번으로 조절",
+      "sessionId": "SYN-SEL-S4",
+      "confirmedText": "배 안쪽에 구름이 있어요. 하얀색이에요.",
+      "candidateCount": 4,
+      "axes": [
+        {
+          "slot": "form.type",
+          "reason": "ambiguous",
+          "values": [
+            "blob",
+            "mist"
+          ]
+        },
+        {
+          "slot": "layout.size",
+          "reason": "empty",
+          "values": [
+            0.5,
+            0.7
+          ]
+        }
+      ],
+      "note": "낱말 해석 갈림('구름' → form.type) × 빈 자리 layout.size로 2×2. 색상(hue)은 벌리지 않음(G17).",
+      "displayOrder": [
+        "c-89c28b14758c",
+        "c-077acdc92d13",
+        "c-b47d5a6c6169",
+        "c-cf7d4ea2ca81"
+      ],
+      "selection": {
+        "selectedIndex": null,
+        "none": true,
+        "displayPosition": null,
+        "operationalIndex": 0
+      },
+      "adjustCounts": {
+        "form": 1,
+        "size": 1,
+        "opacity": 1
+      },
+      "finalOverrides": {
+        "form.type": "mist",
+        "layout.size": 0.8,
+        "material.opacity": 0.6
+      },
+      "sourceCounts": {
+        "said": 3,
+        "chosen": 0,
+        "edited": 3,
+        "default": 9
+      },
+      "sources": {
+        "form.type": "edited",
+        "form.posture": "default",
+        "material.color": "said",
+        "material.brightness": "default",
+        "material.saturation": "default",
+        "material.roughness": "default",
+        "material.opacity": "edited",
+        "material.erosion": "default",
+        "layout.size": "edited",
+        "layout.distance": "default",
+        "layout.verticalOffset": "default",
+        "motion.type": "default",
+        "motion.speed": "default",
+        "body.part": "said",
+        "body.layer": "said"
+      },
+      "premeasure": {
+        "A1": 3,
+        "A2": 3,
+        "A3": 2,
+        "A4": 4,
+        "A5": null,
+        "A6": 3,
+        "A7": 2,
+        "G13_appearance": 3,
+        "G13_representation": 4
+      },
+      "interviewLlmTurns": 0,
+      "previewMode": "image",
+      "expectFailures": []
+    },
+    {
+      "scenario": "S5_one_open",
+      "title": "빈 자리가 한 차원(밝기)뿐인 경우 — 밝기 표 값 4개",
+      "sessionId": "SYN-SEL-S5",
+      "confirmedText": "까만 덩어리가 눈앞 가까이 있어요. 크고 무겁고 매끈해요. 안 움직여요. 불투명해요.",
+      "candidateCount": 4,
+      "axes": [
+        {
+          "slot": "material.brightness",
+          "reason": "empty",
+          "values": [
+            0.5,
+            0.25,
+            0.75,
+            1.0
+          ]
+        }
+      ],
+      "note": "빈 자리가 한 차원(material.brightness)뿐이라 그 차원의 표 값 4개. 색상(hue)은 벌리지 않음(G17).",
+      "displayOrder": [
+        "c-3ffb7d796f67",
+        "c-3c09d19933bb",
+        "c-a9983a9de7f6",
+        "c-2cc4f5c4ec45"
+      ],
+      "selection": {
+        "selectedIndex": 1,
+        "none": false,
+        "displayPosition": 2,
+        "operationalIndex": 1
+      },
+      "adjustCounts": {},
+      "finalOverrides": {
+        "material.brightness": 0.25
+      },
+      "sourceCounts": {
+        "said": 7,
+        "chosen": 1,
+        "edited": 0,
+        "default": 7
+      },
+      "sources": {
+        "form.type": "said",
+        "form.posture": "default",
+        "material.color": "said",
+        "material.brightness": "chosen",
+        "material.saturation": "default",
+        "material.roughness": "said",
+        "material.opacity": "said",
+        "material.erosion": "default",
+        "layout.size": "said",
+        "layout.distance": "said",
+        "layout.verticalOffset": "default",
+        "motion.type": "said",
+        "motion.speed": "default",
+        "body.part": "default",
+        "body.layer": "default"
+      },
+      "premeasure": {
+        "A1": 5,
+        "A2": 4,
+        "A3": 3,
+        "A4": 5,
+        "A5": 2,
+        "A6": 4,
+        "A7": 3,
+        "G13_appearance": 5,
+        "G13_representation": 6
+      },
+      "interviewLlmTurns": 0,
+      "previewMode": "image",
+      "expectFailures": []
+    }
+  ],
+  "previewMode": "image",
+  "sourceTotals": {
+    "said": 23,
+    "chosen": 4,
+    "edited": 7,
+    "default": 41
+  },
+  "expectFailures": 0
+}

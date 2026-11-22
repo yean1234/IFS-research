@@ -1,0 +1,196 @@
+{
+  "meta": {
+    "specVersion": "2.1.0",
+    "participantId": null,
+    "sessionId": "SYN-SEL-S4",
+    "condition": "static",
+    "sourceTextHash": "sha256:21de4db1a7174fb4447387767c66cebb51ded7d922ae69904c5a8c066e0843fa",
+    "pipeline": {
+      "builder": "scene-spec-builder-v2/2.0.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@1.0.0",
+        "layer1Base": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@1.0.0",
+        "vad": "vad-ko@0.1.0",
+        "sceneParamsV2": "scene-params-v2@2.0.0",
+        "nounStoplist": "noun-stoplist-v2@1.0.0"
+      }
+    },
+    "mapping": {
+      "requested": "v2",
+      "used": "v1",
+      "fallbackReason": null
+    }
+  },
+  "form": {
+    "type": null,
+    "posture": null
+  },
+  "material": {
+    "color": {
+      "h": 0.0,
+      "s": 0.0,
+      "l": 0.95
+    },
+    "brightness": null,
+    "saturation": null,
+    "roughness": null,
+    "opacity": null,
+    "erosion": null
+  },
+  "layout": {
+    "size": null,
+    "distance": null,
+    "verticalOffset": null
+  },
+  "motion": {
+    "type": null,
+    "speed": null
+  },
+  "body": {
+    "part": "belly",
+    "layer": "inner"
+  },
+  "_provenance": {
+    "material.color": [
+      {
+        "source": "phrase_rule",
+        "trigger": "하얀색이에요",
+        "charSpan": [
+          15,
+          21
+        ],
+        "rule": "colorTerm.하얀색>material.color:hsl"
+      }
+    ],
+    "body.part": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "배",
+        "charSpan": [
+          0,
+          1
+        ],
+        "rule": "bodyPartLexicon.배>body.part:belly"
+      }
+    ],
+    "body.layer": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "안쪽",
+        "charSpan": [
+          2,
+          4
+        ],
+        "rule": "bodyLayerLexicon.안쪽>body.layer:inner"
+      }
+    ]
+  },
+  "_unmatched": [
+    {
+      "lemma": "구름",
+      "tag": "EOJEOL",
+      "surface": "구름이",
+      "charSpan": [
+        6,
+        9
+      ]
+    },
+    {
+      "lemma": "있",
+      "tag": "EOJEOL",
+      "surface": "있어요",
+      "charSpan": [
+        10,
+        13
+      ]
+    }
+  ],
+  "_unmapped": [
+    {
+      "lemma": "구름",
+      "category": "object",
+      "value": {
+        "object": "cloud"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "구름",
+        "charSpan": [
+          6,
+          8
+        ],
+        "rule": "objectLexicon.구름"
+      }
+    }
+  ],
+  "_negated": [],
+  "_alternatives": [],
+  "_inferred": {
+    "layout.verticalOffset": {
+      "value": 0.6,
+      "_provenance": [
+        {
+          "source": "body_part_height",
+          "trigger": "배",
+          "charSpan": [
+            0,
+            1
+          ],
+          "rule": "bodyPartHeight.belly>layout.verticalOffset:0.6"
+        }
+      ]
+    }
+  },
+  "_context": [],
+  "_parts": [],
+  "_uncertain": [],
+  "_measurements": [],
+  "_direction": [],
+  "_needsConfirmation": [],
+  "_clauses": [
+    {
+      "charSpan": [
+        0,
+        13
+      ],
+      "text": "배 안쪽에 구름이 있어요",
+      "usedFor": [
+        "body.part",
+        "body.layer"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        13,
+        14
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        15,
+        21
+      ],
+      "text": "하얀색이에요",
+      "usedFor": [
+        "material.color"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        21,
+        22
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    }
+  ]
+}

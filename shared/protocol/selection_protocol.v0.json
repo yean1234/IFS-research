@@ -1,0 +1,99 @@
+{
+  "protocolId": "ifs-selection-flow",
+  "protocolVersion": "0.1.0",
+  "status": "draft",
+  "date": "2026-11-23",
+  "description": "면담 뒤 데스크톱 단계(4 후보 선택 · 5 조절 · 6 사전 측정)의 고정 문구. docs/prompts/prototype-v4-build.md 1절 흐름 표, 결정 G10·G13·G19·G23. 모든 문구는 초안(status draft)이며 IRB·연구팀 검토 전이다. 화면과 기록은 초안 문구를 쓰고 있다는 사실을 알린다(결정 X35 방식: 화면 맨 위 경고 줄, 기록의 draftCount·draftKeys). elicitation_protocol 파일은 바꾸지 않았다.",
+  "phraseStatusLegend": {
+    "spec": "설계 문서에 적힌 문구 그대로. IRB 승인 대상.",
+    "draft": "새로 쓴 초안. IRB 제출 전에 연구팀 검토 필요."
+  },
+  "sources": {
+    "build_prompt": "docs/prompts/prototype-v4-build.md (2026-11-22 클라우드 세션에서 연구 책임자와 정함)",
+    "decisions": "docs/decisions.md G7–G24",
+    "questionnaire": "docs/rq-v4-questionnaire-draft.md 3.1–3.3절(2026-11-22)"
+  },
+  "changes": [
+    {"version": "0.1.0", "date": "2026-11-23", "status": "draft",
+     "summary": "처음 만듦: 후보 화면·조절 화면·사전 측정 화면의 문구, 조절 항목 이름, 주 척도안 A 7문항과 G13 두 문항.",
+     "reason": "D5(후보·조절 화면)와 흐름 6단계(사전 측정 화면) 구현."}
+  ],
+
+  "phrases": {
+    "figure_intro": {
+      "text": "당신이 말한 것을 바탕으로 만든, 그것을 대신하는 형상입니다.",
+      "status": "draft",
+      "source": "docs/prompts/prototype-v4-build.md 6절 '형상을 소개하는 안내 문구' 초안 그대로(⚠ 사람이 정할 것)"
+    },
+    "candidates_intro": {
+      "text": "아래 형상 가운데 떠올린 그것과 가장 가까운 것을 하나 골라 주세요. 맞는 것이 없으면 [맞는 것이 없다]를 눌러 주세요.",
+      "status": "draft",
+      "source": "자작(2026-11-23, D5 구현). 결정 G19·G23",
+      "note": "형상의 속성 이름(색·크기 등)이나 묘사어를 쓰지 않는다. 후보는 그림으로만 구별한다(D5_claude.md 1절)."
+    },
+    "single_candidate_intro": {
+      "text": "이 형상으로 진행할지, 맞는 것이 없는지 골라 주세요.",
+      "status": "draft",
+      "source": "자작(2026-11-23). 결정 G19: 빈 자리가 없으면 후보 1개만 보여 주고 '이 형상으로 진행 / 맞는 것이 없다'만 묻는다"
+    },
+    "choose_button": {"text": "이것으로 고르기", "status": "draft", "source": "자작(2026-11-23)"},
+    "proceed_single_button": {"text": "이 형상으로 진행", "status": "draft", "source": "결정 G19 문구 그대로"},
+    "none_fit": {
+      "text": "맞는 것이 없다",
+      "status": "draft",
+      "source": "docs/prompts/prototype-v4-build.md 1절 흐름 표 4단계 문구 그대로. 결정 G23"
+    },
+    "adjust_intro": {
+      "text": "아래 항목으로 형상을 고칠 수 있습니다. 떠올린 그것에 맞게 고친 뒤 [다 고쳤어요]를 눌러 주세요. 고칠 것이 없으면 그대로 눌러도 됩니다.",
+      "status": "draft",
+      "source": "자작(2026-11-23). 결정 G10·G22",
+      "note": "어느 쪽으로 고치라는 방향을 말하지 않는다."
+    },
+    "adjust_finish_button": {"text": "다 고쳤어요", "status": "draft", "source": "자작(2026-11-23)"},
+    "premeasure_done": {
+      "text": "응답을 저장했습니다. 연구자에게 알려 주세요.",
+      "status": "draft",
+      "source": "자작(2026-11-23)"
+    },
+    "premeasure_submit_button": {"text": "제출", "status": "draft", "source": "자작(2026-11-23)"}
+  },
+
+  "adjustItemLabels": {
+    "_comment": "결정 G10의 일곱 항목 이름 그대로. 값에는 이름을 붙이지 않는다(형태 1–4, 색 견본, 단계 n/N) — 참여자가 쓰지 않은 묘사어를 화면에 내지 않기 위함.",
+    "form": {"text": "형태", "status": "draft", "source": "결정 G10 항목 이름"},
+    "color": {"text": "색", "status": "draft", "source": "결정 G10 항목 이름"},
+    "brightness": {"text": "밝기", "status": "draft", "source": "결정 G10 항목 이름"},
+    "opacity": {"text": "투명도", "status": "draft", "source": "결정 G10 항목 이름"},
+    "size": {"text": "크기", "status": "draft", "source": "결정 G10 항목 이름"},
+    "texture": {"text": "질감", "status": "draft", "source": "결정 G10 항목 이름"},
+    "motion": {"text": "움직임", "status": "draft", "source": "결정 G10 항목 이름"}
+  },
+
+  "premeasure": {
+    "instruction": {
+      "text": "지금부터 몇 가지 문장을 보여 드리겠습니다. 문장 속 '이것'은 면담에서 말씀하신, 지금 마음에 걸려 있는 그것을 가리킵니다. 조금 전 본 물체는 그것을 말씀하신 대로 나타낸 것입니다. 평소가 아니라 바로 지금 이 순간을 기준으로, 각 문장이 지금의 나에게 얼마나 맞는지 골라 주세요. 맞거나 틀린 답은 없습니다.",
+      "status": "draft",
+      "source": "docs/rq-v4-questionnaire-draft.md 3.1절 공통 지시문 그대로(굵은 글씨 표시만 뺌)",
+      "note": "⚠ '말씀하신 대로 나타낸 것'은 후보 선택·조절 단계가 들어오기 전 문안이다. 참여자가 고르고 고친 형상에는 맞지 않을 수 있다(사람이 정할 것)."
+    },
+    "scale": {
+      "min": 1, "max": 7,
+      "anchors": {"1": "전혀 그렇지 않다", "2": "그렇지 않다", "3": "약간 그렇지 않다", "4": "반반이다",
+                  "5": "약간 그렇다", "6": "그렇다", "7": "완전히 그렇다"},
+      "status": "draft",
+      "source": "docs/rq-v4-questionnaire-draft.md 3.2절 A용 7점 그대로. G13 두 문항에도 같은 척도를 씀(이 구현의 선택)"
+    },
+    "skipLabel": {"text": "답하지 않기", "status": "draft", "source": "자작(2026-11-23)"},
+    "items": [
+      {"id": "A1", "text": "지금 이것 때문에 마음이 힘들다.", "status": "draft", "source": "docs/rq-v4-questionnaire-draft.md 3.3 A1(CFQ-7 1번 수정, ⚑)"},
+      {"id": "A2", "text": "지금 나는 이것에 사로잡혀서 다른 데 마음을 두기 어렵다.", "status": "draft", "source": "docs/rq-v4-questionnaire-draft.md 3.3 A2(CFQ-7 2번 수정)"},
+      {"id": "A3", "text": "지금 나는 도움이 안 될 만큼 이것을 이리저리 따지고 있다.", "status": "draft", "source": "docs/rq-v4-questionnaire-draft.md 3.3 A3(CFQ-7 3번 수정)"},
+      {"id": "A4", "text": "지금 나는 이것과 씨름하고 있다.", "status": "draft", "source": "docs/rq-v4-questionnaire-draft.md 3.3 A4(CFQ-7 4번 수정)"},
+      {"id": "A5", "text": "이것이 내 안에 있다는 것 때문에 지금 나 자신을 탓하게 된다.", "status": "draft", "source": "docs/rq-v4-questionnaire-draft.md 3.3 A5(CFQ-7 5번 수정, ⚑)"},
+      {"id": "A6", "text": "지금 나는 이것과 깊이 얽혀 있다.", "status": "draft", "source": "docs/rq-v4-questionnaire-draft.md 3.3 A6(CFQ-7 6번 수정)"},
+      {"id": "A7", "text": "그만두는 편이 낫다는 걸 알면서도, 지금은 이것에 매달리기를 그만두기 어렵다.", "status": "draft", "source": "docs/rq-v4-questionnaire-draft.md 3.3 A7(CFQ-7 7번 수정, ⚑)"},
+      {"id": "G13_appearance", "text": "이 형상의 모습은 내가 떠올린 것과 비슷하다", "status": "draft", "source": "docs/decisions.md G13 모습 일치 문항 그대로"},
+      {"id": "G13_representation", "text": "이 형상은 내가 떠올린 그것을 나타낸다", "status": "draft", "source": "docs/decisions.md G13 대표성 문항 그대로(하한 점검 기준 문항, 기준값은 정하지 않음)"}
+    ]
+  }
+}

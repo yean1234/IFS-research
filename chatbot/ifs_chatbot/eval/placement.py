@@ -39,7 +39,7 @@ LLM 없음, 표준 라이브러리만, 결정론적(같은 기록 → 같은 출
 - VR 안 평정: ratings.csv의 (item, when)마다 마지막 행. 열 이름 rating_{item}_{when}. 열은 모든 세션에서 발견된 키의 합집합.
   범위 점검은 1–7, 단 구별 프로파일의 0–10 문항(profile_items.ITEM_SCALES의 M1p·M2·M3)은 0–10(2026-11-23 추가).
 - 빠진 파일 missing_file:<이름>, 0바이트 파일 empty_file:<이름>, JSON이 깨진 파일 unreadable_file:<이름>.
-  recordVersion이 "ifs-placement/0.1"이 아니면 version_mismatch. placement.json의 condition·controlMode가 manifest와
+  recordVersion이 KNOWN_VERSIONS("ifs-placement/0.1"·"0.2")가 아니면 version_mismatch. placement.json의 condition·controlMode가 manifest와
   다르면 condition_mismatch. events.csv의 warning 행이 있으면 runner_warning:<개수>.
 - summary.json이 없으면 미완료로 본다. completed=false 세션은 표에는 남기고 요약 통계에서 빼며 개수만 보고한다.
 - 조건 단계 완료(condition_complete): placement.json의 conditionCompleted(bool)를 쓴다. 필드가 없는 옛 기록은
@@ -70,7 +70,9 @@ from .ownership import _int, _num, _read_csv, _read_json, _rel, _r, _truthy, _wr
 from .profile_items import rating_range
 
 RECORD_PREFIX = "ifs-placement/"
-KNOWN_VERSIONS = ("ifs-placement/0.1",)
+# 0.2(2026-11-23): 러너가 selection.json(챗봇 후보·조절 단계, ifs-selection/0.1)을 읽어 manifest에 selection{…}·appliedOverrides를 더함.
+# 그 밖의 파일·필드는 0.1과 같다. 실제 예시: docs/validation/runner-selection/records/
+KNOWN_VERSIONS = ("ifs-placement/0.1", "ifs-placement/0.2")
 TRAJECTORY_PREFIX = "ifs-trajectory/"
 SUMMARY_VERSION = "placement-summary/0.1"
 DEFAULT_FACING_DEG = 15.0
@@ -97,6 +99,7 @@ EXPECTED_FILES = ("headpose.csv", "objpose.csv", "events.csv", "placement.json",
 SESSION_HEAD = [
     "participant", "session_id", "record_folder", "condition", "control_mode", "completed", "aborted_at",
     "condition_complete", "input_source", "head_source", "auto_mode", "draft_phrases", "object_radius_m",
+    "selection_none", "selected_candidate_id", "n_final_overrides",
     "final_distance_m", "final_azimuth_deg", "final_height_m", "grab_count", "first_grab_ms", "held_ms",
     "path_length_m", "confirmed",
     "show_rings", "nearest_ring_m", "ring_offset_m",
@@ -434,6 +437,7 @@ def load_session(cand: dict, facing_deg: float = DEFAULT_FACING_DEG) -> tuple[di
     if not cond_complete:
         flags.append("partial_condition")
     radius = _num(_dict(man.get("object")).get("boundingRadiusM"))
+    sel = _dict(man.get("selection"))
     srow = {
         "participant": participant, "session_id": sid, "record_folder": rel,
         "condition": condition, "control_mode": control,
@@ -443,6 +447,10 @@ def load_session(cand: dict, facing_deg: float = DEFAULT_FACING_DEG) -> tuple[di
         "auto_mode": _dict(man.get("flags")).get("autoMode") is True,
         "draft_phrases": _int(_dict(man.get("taskText")).get("draftCount")),
         "object_radius_m": _r(radius),
+        # ifs-placement/0.2 manifest selection{…}(챗봇 selection.json에서 온 것). 0.1이나 선택 파일 없이 돈 세션은 빈칸
+        "selection_none": sel.get("none") if isinstance(sel.get("none"), bool) else None,
+        "selected_candidate_id": sel.get("selectedCandidateId") if sel else None,
+        "n_final_overrides": len(sel["finalOverrides"]) if isinstance(sel.get("finalOverrides"), dict) else None,
         "final_distance_m": _r(final_d), "final_azimuth_deg": _r(final_az), "final_height_m": _r(final_h),
         "grab_count": _int(pl.get("grabCount")), "first_grab_ms": _num(pl.get("firstGrabMs")),
         "held_ms": _num(pl.get("heldMs")), "path_length_m": _r(path_len),

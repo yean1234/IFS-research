@@ -1,0 +1,69 @@
+{
+  "id": "S4_none_fit",
+  "title": "'맞는 것이 없다'를 고른 경우 — '구름' 낱말 해석 갈림 축 × 크기, none → 기준 후보 0번으로 조절",
+  "sessionId": "SYN-SEL-S4",
+  "condition": "static",
+  "replies": [
+    "배에 뭔가 있어요",
+    "배 안쪽이요",
+    "그대로예요",
+    "구름이 있어요",
+    "하얀색이에요",
+    "모르겠어요",
+    "없어요"
+  ],
+  "confirm": {
+    "edit": "배 안쪽에 구름이 있어요. 하얀색이에요."
+  },
+  "selection": "none",
+  "adjust": [
+    {
+      "item": "form",
+      "value": "mist"
+    },
+    {
+      "item": "size",
+      "value": 0.8
+    },
+    {
+      "item": "opacity",
+      "value": 0.6
+    }
+  ],
+  "premeasure": {
+    "A1": 3,
+    "A2": 3,
+    "A3": 2,
+    "A4": 4,
+    "A5": null,
+    "A6": 3,
+    "A7": 2,
+    "G13_appearance": 3,
+    "G13_representation": 4
+  },
+  "expect": {
+    "candidateCount": 4,
+    "axes": [
+      "form.type",
+      "layout.size"
+    ],
+    "axisReasons": [
+      "ambiguous",
+      "empty"
+    ],
+    "none": true,
+    "slotSources": {
+      "form.type": "edited",
+      "layout.size": "edited",
+      "material.opacity": "edited",
+      "material.color": "said"
+    },
+    "finalOverrides": {
+      "form.type": "mist",
+      "layout.size": 0.8,
+      "material.opacity": 0.6
+    }
+  },
+  "defaultReply": "없어요",
+  "note": "합성 대사. 실제 참여자 응답이 아니다(AGENTS.md 6). 정적 조건 1(LLM 없음)으로 면담하고 확정 때 한 문장으로 고쳐 [이대로 맞아요]."
+}

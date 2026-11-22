@@ -1,0 +1,375 @@
+{
+  "formatVersion": "ifs-selection/0.1",
+  "specSha256": "17e1ca6a6827909e8bbd7709a3bd23a1ad61e5c39f14af3372907e1ac4d4a443",
+  "sessionId": "SYN-SEL-S5",
+  "createdAt": "2026-11-23T03:48:57+09:00",
+  "updatedAt": "2026-11-23T03:48:57+09:00",
+  "stage": "done",
+  "spec": {
+    "path": "<log_dir>\\scenes\\SYN-SEL-S5.json",
+    "normalizedSha256": "197a47e72b450c17b7cb94f02f2ad77a8f8faf93d70d4a6d996004acd139dc22",
+    "sha256Basis": "file",
+    "builder": "scene-spec-builder-v2/2.0.0",
+    "specVersion": "2.1.0",
+    "mapping": {
+      "requested": "v2",
+      "used": "v1",
+      "fallbackReason": null
+    }
+  },
+  "generator": {
+    "generatorVersion": "ifs-candidates/0.1.0",
+    "tableVersion": "0.1.0",
+    "tableSha256": "2f6bcf51ecdf59a3812599ed04533b099a96c706a2cd3ee51bbbb45fbd619773"
+  },
+  "protocol": {
+    "protocolId": "ifs-selection-flow",
+    "protocolVersion": "0.1.0",
+    "draftCount": 29,
+    "draftKeys": [
+      "phrases.figure_intro",
+      "phrases.candidates_intro",
+      "phrases.single_candidate_intro",
+      "phrases.choose_button",
+      "phrases.proceed_single_button",
+      "phrases.none_fit",
+      "phrases.adjust_intro",
+      "phrases.adjust_finish_button",
+      "phrases.premeasure_done",
+      "phrases.premeasure_submit_button",
+      "adjustItemLabels.form",
+      "adjustItemLabels.color",
+      "adjustItemLabels.brightness",
+      "adjustItemLabels.opacity",
+      "adjustItemLabels.size",
+      "adjustItemLabels.texture",
+      "adjustItemLabels.motion",
+      "premeasure.instruction",
+      "premeasure.scale",
+      "premeasure.skipLabel",
+      "premeasure.items.A1",
+      "premeasure.items.A2",
+      "premeasure.items.A3",
+      "premeasure.items.A4",
+      "premeasure.items.A5",
+      "premeasure.items.A6",
+      "premeasure.items.A7",
+      "premeasure.items.G13_appearance",
+      "premeasure.items.G13_representation"
+    ]
+  },
+  "preview": {
+    "requested": "image",
+    "mode": "image",
+    "reason": null
+  },
+  "candidates": {
+    "generatorVersion": "ifs-candidates/0.1.0",
+    "tableVersion": "0.1.0",
+    "tableSha256": "2f6bcf51ecdf59a3812599ed04533b099a96c706a2cd3ee51bbbb45fbd619773",
+    "specSha256": "197a47e72b450c17b7cb94f02f2ad77a8f8faf93d70d4a6d996004acd139dc22",
+    "sessionId": "SYN-SEL-S5",
+    "axes": [
+      {
+        "slot": "material.brightness",
+        "reason": "empty",
+        "values": [
+          0.5,
+          0.25,
+          0.75,
+          1.0
+        ],
+        "key": "material.brightness"
+      }
+    ],
+    "candidates": [
+      {
+        "id": "c-3c09d19933bb",
+        "index": 0,
+        "overrides": {},
+        "axisValues": {
+          "material.brightness": 0.5
+        },
+        "sources": {
+          "form.type": "said",
+          "form.posture": "default",
+          "material.color": "said",
+          "material.brightness": "offered",
+          "material.saturation": "default",
+          "material.roughness": "said",
+          "material.opacity": "said",
+          "material.erosion": "default",
+          "layout.size": "said",
+          "layout.distance": "said",
+          "layout.verticalOffset": "default",
+          "motion.type": "said",
+          "motion.speed": "default",
+          "body.part": "default",
+          "body.layer": "default"
+        }
+      },
+      {
+        "id": "c-a9983a9de7f6",
+        "index": 1,
+        "overrides": {
+          "material.brightness": 0.25
+        },
+        "axisValues": {
+          "material.brightness": 0.25
+        },
+        "sources": {
+          "form.type": "said",
+          "form.posture": "default",
+          "material.color": "said",
+          "material.brightness": "offered",
+          "material.saturation": "default",
+          "material.roughness": "said",
+          "material.opacity": "said",
+          "material.erosion": "default",
+          "layout.size": "said",
+          "layout.distance": "said",
+          "layout.verticalOffset": "default",
+          "motion.type": "said",
+          "motion.speed": "default",
+          "body.part": "default",
+          "body.layer": "default"
+        }
+      },
+      {
+        "id": "c-2cc4f5c4ec45",
+        "index": 2,
+        "overrides": {
+          "material.brightness": 0.75
+        },
+        "axisValues": {
+          "material.brightness": 0.75
+        },
+        "sources": {
+          "form.type": "said",
+          "form.posture": "default",
+          "material.color": "said",
+          "material.brightness": "offered",
+          "material.saturation": "default",
+          "material.roughness": "said",
+          "material.opacity": "said",
+          "material.erosion": "default",
+          "layout.size": "said",
+          "layout.distance": "said",
+          "layout.verticalOffset": "default",
+          "motion.type": "said",
+          "motion.speed": "default",
+          "body.part": "default",
+          "body.layer": "default"
+        }
+      },
+      {
+        "id": "c-3ffb7d796f67",
+        "index": 3,
+        "overrides": {
+          "material.brightness": 1.0
+        },
+        "axisValues": {
+          "material.brightness": 1.0
+        },
+        "sources": {
+          "form.type": "said",
+          "form.posture": "default",
+          "material.color": "said",
+          "material.brightness": "offered",
+          "material.saturation": "default",
+          "material.roughness": "said",
+          "material.opacity": "said",
+          "material.erosion": "default",
+          "layout.size": "said",
+          "layout.distance": "said",
+          "layout.verticalOffset": "default",
+          "motion.type": "said",
+          "motion.speed": "default",
+          "body.part": "default",
+          "body.layer": "default"
+        }
+      }
+    ],
+    "displayOrder": [
+      "c-3ffb7d796f67",
+      "c-3c09d19933bb",
+      "c-a9983a9de7f6",
+      "c-2cc4f5c4ec45"
+    ],
+    "orderRule": "sha256(sessionId)[:8] mod 4 = 3 만큼 순환",
+    "splitSkipped": [],
+    "note": "빈 자리가 한 차원(material.brightness)뿐이라 그 차원의 표 값 4개. 색상(hue)은 벌리지 않음(G17)."
+  },
+  "candidatesShown": [
+    "c-3ffb7d796f67",
+    "c-3c09d19933bb",
+    "c-a9983a9de7f6",
+    "c-2cc4f5c4ec45"
+  ],
+  "candidatesShownAt": "2026-11-23T03:48:57+09:00",
+  "selection": {
+    "selectedCandidateId": "c-a9983a9de7f6",
+    "selectedIndex": 1,
+    "none": false,
+    "displayPosition": 2,
+    "operationalId": "c-a9983a9de7f6",
+    "operationalIndex": 1,
+    "at": "2026-11-23T03:48:57+09:00"
+  },
+  "adjustments": {
+    "events": [],
+    "items": {},
+    "finishedAt": "2026-11-23T03:48:57+09:00"
+  },
+  "finalOverrides": {
+    "material.brightness": 0.25
+  },
+  "sources": {
+    "form.type": "said",
+    "form.posture": "default",
+    "material.color": "said",
+    "material.brightness": "chosen",
+    "material.saturation": "default",
+    "material.roughness": "said",
+    "material.opacity": "said",
+    "material.erosion": "default",
+    "layout.size": "said",
+    "layout.distance": "said",
+    "layout.verticalOffset": "default",
+    "motion.type": "said",
+    "motion.speed": "default",
+    "body.part": "default",
+    "body.layer": "default"
+  },
+  "sourceDetails": {
+    "form.type": {
+      "source": "said",
+      "value": "blob",
+      "saidValue": "blob",
+      "chosenValue": null,
+      "defaultValue": "blob"
+    },
+    "form.posture": {
+      "source": "default",
+      "value": "none",
+      "saidValue": null,
+      "chosenValue": null,
+      "defaultValue": "none"
+    },
+    "material.color": {
+      "source": "said",
+      "value": {
+        "h": 0.0,
+        "s": 0.0,
+        "l": 0.06
+      },
+      "saidValue": {
+        "h": 0.0,
+        "s": 0.0,
+        "l": 0.06
+      },
+      "chosenValue": null,
+      "defaultValue": {
+        "h": 0.0,
+        "s": 0.0,
+        "l": 0.7
+      }
+    },
+    "material.brightness": {
+      "source": "chosen",
+      "value": 0.25,
+      "saidValue": null,
+      "chosenValue": 0.25,
+      "defaultValue": 0.5
+    },
+    "material.saturation": {
+      "source": "default",
+      "value": 0.0,
+      "saidValue": null,
+      "chosenValue": null,
+      "defaultValue": 0.0
+    },
+    "material.roughness": {
+      "source": "said",
+      "value": 0.1,
+      "saidValue": 0.1,
+      "chosenValue": null,
+      "defaultValue": 0.5
+    },
+    "material.opacity": {
+      "source": "said",
+      "value": 1.0,
+      "saidValue": 1.0,
+      "chosenValue": null,
+      "defaultValue": 1.0
+    },
+    "material.erosion": {
+      "source": "default",
+      "value": 0.0,
+      "saidValue": null,
+      "chosenValue": null,
+      "defaultValue": 0.0
+    },
+    "layout.size": {
+      "source": "said",
+      "value": 0.621,
+      "saidValue": 0.621,
+      "chosenValue": null,
+      "defaultValue": 0.5
+    },
+    "layout.distance": {
+      "source": "said",
+      "value": 0.25,
+      "saidValue": 0.25,
+      "chosenValue": null,
+      "defaultValue": 0.33
+    },
+    "layout.verticalOffset": {
+      "source": "default",
+      "value": 0.75,
+      "saidValue": null,
+      "chosenValue": null,
+      "defaultValue": 0.75
+    },
+    "motion.type": {
+      "source": "said",
+      "value": "still",
+      "saidValue": "still",
+      "chosenValue": null,
+      "defaultValue": "still"
+    },
+    "motion.speed": {
+      "source": "default",
+      "value": 0.5,
+      "saidValue": null,
+      "chosenValue": null,
+      "defaultValue": 0.5
+    },
+    "body.part": {
+      "source": "default",
+      "value": null,
+      "saidValue": null,
+      "chosenValue": null,
+      "defaultValue": null
+    },
+    "body.layer": {
+      "source": "default",
+      "value": null,
+      "saidValue": null,
+      "chosenValue": null,
+      "defaultValue": null
+    }
+  },
+  "sourceCounts": {
+    "said": 7,
+    "chosen": 1,
+    "edited": 0,
+    "default": 7
+  },
+  "premeasure": {
+    "path": "<log_dir>\\selection\\SYN-SEL-S5\\premeasure.json",
+    "completedAt": "2026-11-23T03:48:57+09:00",
+    "answered": 9,
+    "skipped": 0
+  }
+}

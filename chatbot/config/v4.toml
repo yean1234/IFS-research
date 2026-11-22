@@ -1,0 +1,71 @@
+# RQ V4 실험 프로토타입 흐름(데스크톱 1–6단계: 면담 → 확정 → 추출 → 후보 → 조절 → 사전 측정) 설정
+# 실행: python -m ifs_chatbot.server --config v4        (LLM 없이: --backend offline, 조건 1만: --condition static)
+# default.toml과 다른 곳: [mapping] mode = "v2", [selection] enabled = true, [preview] mode = "image".
+# 지시문: docs/prompts/prototype-v4-build.md, 결정 G14–G25(docs/decisions.md). 문구는 모두 초안(status draft).
+
+[interview]
+condition = "chatbot"
+protocol = "elicitation_protocol.v1.json"
+prompt_version = "1.0.0"
+
+[llm]
+backend = "ollama"
+model = "gemma4:e4b"
+host = "http://127.0.0.1:11434"
+timeout_s = 300
+temperature = 0.2
+top_p = 0.9
+seed = 7
+think = false
+num_ctx = 8192
+keep_alive = "30m"
+max_regenerations = 2
+retry_feedback = true
+
+[guard]
+keyword = true
+model_backend = "ollama"
+model = "hf.co/mradermacher/kanana-safeguard-8b-GGUF:Q4_K_M"
+format = "kanana"
+check_output = true
+required = false
+
+[validator]
+strict_novel_content = true
+l5_depth = "present_focus"
+max_anchor_eojeol = 3
+
+[session]
+log_dir = "logs"              # chatbot/logs/ (git에 올리지 않음). 후보·조절·측정 기록은 logs/selection/<sessionId>/
+scenes_dir = ""
+researcher_contact = "(연구자 연락처를 config에 입력하세요)"
+
+[mapping]
+mode = "v2"                   # 새 흐름은 매퍼 v2(D1 사전에 없는 명사 기록 · D2 형상이 사라지는 오류 수정, G24)
+save_both = true              # v0·v1·v2 비교 파일도 남김
+clarify_loop = false
+clarify_max = 2
+strict = false
+
+[drift]
+enabled = true
+recall_check = false
+self_report = false
+allow_draft_phrases = false
+
+[selection]
+enabled = true                                  # 확정 뒤 후보 선택 · 조절 · 사전 측정 단계를 연다
+protocol = "selection_protocol.v0.json"         # shared/protocol/ (모든 문구 status draft)
+table = "candidate_values.v0.json"              # shared/lexicon/ (후보·조절 값 표)
+require_spec_phrases = false                    # true면 초안 문구가 있을 때 후보 단계를 시작하지 않음(X35)
+
+[preview]
+mode = "image"                                  # webgl | image | none. WebGL 모듈 설치 실패로 지금은 image(G25)
+webgl_dir = "../../webgl-build/preview"         # 저장소 밖 WebGL 빌드(있을 때만 webgl 모드가 켜짐)
+image_player = "../../webgl-build/preview-win/IFSPreview.exe"   # 저장소 밖 Windows 미리보기 플레이어(PreviewBuild.BuildWindowsPreview)
+queue_dir = ""                                  # 비우면 logs/preview-queue
+start_on_launch = false                         # 첫 미리보기 요청 때 플레이어를 띄움
+width = 320
+height = 240
+start_timeout_s = 60
+request_timeout_s = 20

@@ -29,8 +29,10 @@ from .drift import DriftAssessor, participant_turns, summarize
 from .extract import Extractor, find_modality, parse_body_relation
 from .korean import Analyzer, normalize
 from .lexicon import Lexicon
+from .candidates import load_table as load_candidate_table
 from .llm import GenerationRequest, OfflineTemplateBackend, OllamaBackend
-from .paths import shared
+from .paths import CHATBOT_DIR, shared
+from .preview import PreviewService
 from .prompts import PromptContext, PromptSet, TranscriptLine
 from .protocol import Protocol, Step
 from .safety import Guard, GuardVerdict, OllamaGuardModel, SafetyLexicon
@@ -38,6 +40,7 @@ from .scene_builder import SceneSpecBuilder, normalize_confirmed, write_spec
 from .scene_builder_v1 import SceneSpecBuilderV1, fallback_spec
 from .scene_builder_v2 import SceneSpecBuilderV2
 from .scene_spec import check_principles
+from .selection import SelectionError, SelectionFlow, SelectionProtocol, delete_selection_dir
 from .session_log import SessionLog, now_iso
 from .validator import TurnContext, Validator, describe
 
@@ -163,6 +166,17 @@ class Runtime:
         self.persist_logs = persist_logs
         self.sessions: dict[str, "Session"] = {}
         self._lock = threading.Lock()
+        # 면담 뒤 데스크톱 단계(후보 선택·조절·사전 측정, selection.py). 면담 밖이라 LLM·검증기를 쓰지 않는다.
+        # 문구·값 표는 언제나 읽어 두고(가벼움), 단계를 여는지는 [selection] enabled가 정한다.
+        self.selection_protocol = SelectionProtocol(cfg.selection.protocol)
+        self.candidate_table = load_candidate_table(shared("lexicon", cfg.selection.table))
+        self.preview = PreviewService(cfg.preview, cfg.log_dir, CHATBOT_DIR, self.candidate_table["defaults"])
+        if cfg.selection.enabled:
+            n = self.selection_protocol.info()["draftCount"]
+            if n:
+                self.warnings.append(f"[selection] 후보·조절·사전 측정 문구 {n}개가 초안(status draft)입니다(X35: 화면·기록에 표시).")
+            if self.preview.reason:
+                self.warnings.append(f"[preview] {self.preview.reason}")
 
     def header(self, condition: str) -> dict:
         return {
@@ -201,6 +215,9 @@ class Runtime:
             "drift": {"enabled": self.drift is not None, "recallCheck": self.drift_recall,
                       "selfReport": self.drift_self_report, "allowDraftPhrases": self.cfg.drift.allow_draft_phrases,
                       **(self.drift.info() if self.drift else {})},
+            "selection": {"enabled": self.cfg.selection.enabled, **self.selection_protocol.info(),
+                          "tableVersion": self.candidate_table["tableVersion"]},
+            "preview": self.preview.info(),
             "warnings": self.warnings,
         }
 
@@ -250,6 +267,7 @@ class Session:
         self.confirm_draft: str | None = None
         self.clarify: dict | None = None           # 확인 질문 루프 상태(config [mapping] clarify_loop)
         self.recall_asked = False                  # 회상 확인(config [drift] recall_check)을 이미 물었는지
+        self.selection_flow: SelectionFlow | None = None   # 면담 뒤 후보·조절·사전 측정(config [selection])
         self.lock = threading.RLock()
         self.log = SessionLog(session_id, condition, rt.header(condition), self.cfg.log_dir, persist=rt.persist_logs)
         self._say_fixed("intro", stage=None, kind="info")
@@ -408,12 +426,30 @@ class Session:
             self.log.delete()
             self.log.persist = False
             self._delete_scene()
+            delete_selection_dir(self.cfg.log_dir, self.id)
+            if self.selection_flow is not None:
+                self.selection_flow.persist = False
+            self.selection_flow = None
             self.log.data.update(turns=[], alerts=[], capture={}, confirmedText=None, confirmation=None,
                                  extraction=None, events=[], endedBy="withdrawn", sceneSpec=None, drift=None)
             self.participant_texts, self.transcript, self.asked, self.confirm_draft = [], [], [], None
             self.messages = [{"speaker": "bot", "text": self.p.phrase("withdrawn"), "kind": "info", "source": "fixed:withdrawn"}]
             self.state, self.awaiting = "withdrawn", "none"
             return self.view()
+
+    def selection(self, create: bool = True) -> SelectionFlow | None:
+        """면담 뒤 단계(selection.py). 확정까지 마친 세션(endedBy = completed)에서만 연다."""
+        with self.lock:
+            if self.selection_flow is not None or not create:
+                return self.selection_flow
+            if not self.cfg.selection.enabled:
+                raise SelectionError("후보 단계가 꺼져 있습니다([selection] enabled = false). 새 흐름은 --config v4.")
+            if self.state != "done" or self.log.data.get("endedBy") != "completed":
+                raise SelectionError("면담을 끝내고 확정한 뒤에 후보 단계로 갑니다.")
+            if self.scene_spec is None:
+                raise SelectionError("장면 기술(SceneSpec)이 없어 후보를 만들 수 없습니다.")
+            self.selection_flow = SelectionFlow(self, self.rt)
+            return self.selection_flow
 
     def add_event(self, kind: str, payload: dict) -> dict:
         with self.lock:
@@ -910,7 +946,7 @@ class Session:
     def view(self) -> dict:
         stage = self.stage if self.state in ("interview", "soft_check") else None
         info = self.p.stage_info(stage)
-        return {
+        out = {
             "sessionId": self.id,
             "condition": {"id": self.condition, "label": self.p.condition(self.condition)["label"]},
             "state": self.state,
@@ -922,6 +958,12 @@ class Session:
             "confirmDraft": self.confirm_draft if self.awaiting == "confirm" else None,
             "progress": {"step": self.idx, "steps": len(self.steps), "llmTurns": self.llm_total},
         }
+        if self.cfg.selection.enabled:   # 새 흐름(v4)에서만 덧붙이는 키. 기본 설정의 화면 응답은 그대로
+            out["selection"] = {
+                "available": self.state == "done" and self.log.data.get("endedBy") == "completed"
+                and self.scene_spec is not None,
+                "stage": self.selection_flow.stage if self.selection_flow is not None else None}
+        return out
 
     def researcher_view(self) -> dict:
         return {"session": self.view(), "log": self.log.data, "runtimeWarnings": self.rt.warnings}

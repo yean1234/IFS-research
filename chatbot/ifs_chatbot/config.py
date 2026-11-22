@@ -77,6 +77,31 @@ class DriftConfig:
 
 
 @dataclass(frozen=True)
+class SelectionConfig:
+    """면담 뒤 데스크톱 단계(4 후보 선택 · 5 조절 · 6 사전 측정). 기본은 꺼 둔다(기존 데모·파일럿 동작 그대로).
+    새 흐름 프로필 config/v4.toml이 켠다."""
+    enabled: bool = False
+    protocol: str = "selection_protocol.v0.json"   # shared/protocol/ 아래
+    table: str = "candidate_values.v0.json"        # shared/lexicon/ 아래
+    # 문구가 status = draft면 후보 단계를 시작하지 않는다(X35의 requireSpecPhrases와 같은 뜻). 기본 false: 시작하되 화면·기록에 알림
+    require_spec_phrases: bool = False
+
+
+@dataclass(frozen=True)
+class PreviewConfig:
+    """형상 미리보기 어댑터(preview.py). webgl | image | none."""
+    mode: str = "none"
+    webgl_dir: str = ""            # Unity WebGL 빌드 폴더(index.html). 상대 경로는 chatbot/ 기준. 없으면 none
+    image_player: str = ""         # 상주 미리보기 플레이어(IFSPreview.exe, 저장소 밖). "fake" = 테스트용 가짜 렌더러. 없으면 none
+    queue_dir: str = ""            # 플레이어 요청 폴더. 비우면 <log_dir>/preview-queue (git 밖)
+    start_on_launch: bool = False  # true면 서버 시작 때 플레이어를 띄운다. false면 첫 요청 때
+    width: int = 320
+    height: int = 240
+    start_timeout_s: float = 60.0
+    request_timeout_s: float = 20.0
+
+
+@dataclass(frozen=True)
 class Config:
     interview: InterviewConfig = field(default_factory=InterviewConfig)
     llm: LLMConfig = field(default_factory=LLMConfig)
@@ -85,6 +110,8 @@ class Config:
     session: SessionConfig = field(default_factory=SessionConfig)
     mapping: MappingConfig = field(default_factory=MappingConfig)
     drift: DriftConfig = field(default_factory=DriftConfig)
+    selection: SelectionConfig = field(default_factory=SelectionConfig)
+    preview: PreviewConfig = field(default_factory=PreviewConfig)
     source: str = "defaults"
 
     @property
@@ -118,7 +145,7 @@ class Config:
 _SECTIONS = {
     "interview": InterviewConfig, "llm": LLMConfig, "guard": GuardConfig,
     "validator": ValidatorConfig, "session": SessionConfig, "mapping": MappingConfig,
-    "drift": DriftConfig,
+    "drift": DriftConfig, "selection": SelectionConfig, "preview": PreviewConfig,
 }
 
 

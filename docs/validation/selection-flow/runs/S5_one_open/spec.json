@@ -1,0 +1,312 @@
+{
+  "meta": {
+    "specVersion": "2.1.0",
+    "participantId": null,
+    "sessionId": "SYN-SEL-S5",
+    "condition": "static",
+    "sourceTextHash": "sha256:67f0d2239fb4f169b8a92969689ca1415b91a441bfeb4eddbee8840d93f82e99",
+    "pipeline": {
+      "builder": "scene-spec-builder-v2/2.0.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@1.0.0",
+        "layer1Base": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@1.0.0",
+        "vad": "vad-ko@0.1.0",
+        "sceneParamsV2": "scene-params-v2@2.0.0",
+        "nounStoplist": "noun-stoplist-v2@1.0.0"
+      }
+    },
+    "mapping": {
+      "requested": "v2",
+      "used": "v1",
+      "fallbackReason": null
+    }
+  },
+  "form": {
+    "type": "blob",
+    "posture": null
+  },
+  "material": {
+    "color": {
+      "h": 0.0,
+      "s": 0.0,
+      "l": 0.06
+    },
+    "brightness": null,
+    "saturation": null,
+    "roughness": 0.1,
+    "opacity": 1.0,
+    "erosion": null
+  },
+  "layout": {
+    "size": 0.621,
+    "distance": 0.25,
+    "verticalOffset": null
+  },
+  "motion": {
+    "type": "still",
+    "speed": null
+  },
+  "body": {
+    "part": null,
+    "layer": null
+  },
+  "_provenance": {
+    "form.type": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "덩어리",
+        "charSpan": [
+          3,
+          6
+        ],
+        "rule": "formLexicon.덩어리>form.type:blob"
+      }
+    ],
+    "material.color": [
+      {
+        "source": "phrase_rule",
+        "trigger": "까만",
+        "charSpan": [
+          0,
+          2
+        ],
+        "rule": "colorTerm.까만>material.color:hsl"
+      }
+    ],
+    "material.roughness": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "매끈해요",
+        "charSpan": [
+          27,
+          31
+        ],
+        "rule": "textureLexicon.매끈>material.roughness:smooth"
+      }
+    ],
+    "material.opacity": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "불",
+        "charSpan": [
+          41,
+          42
+        ],
+        "rule": "opacityLexicon.불투명>material.opacity:opaque"
+      }
+    ],
+    "layout.size": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "크고",
+        "charSpan": [
+          20,
+          22
+        ],
+        "rule": "sizeLexicon.크>layout.size:logScale(1.4)"
+      }
+    ],
+    "layout.distance": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "가까이",
+        "charSpan": [
+          11,
+          14
+        ],
+        "rule": "distanceLexicon.가까이>layout.distance:near"
+      }
+    ],
+    "motion.type": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "움직여요",
+        "charSpan": [
+          35,
+          39
+        ],
+        "rule": "motionLexicon.움직이>motion.type:still(negated)"
+      }
+    ]
+  },
+  "_unmatched": [
+    {
+      "lemma": "있",
+      "tag": "EOJEOL",
+      "surface": "있어요",
+      "charSpan": [
+        15,
+        18
+      ]
+    },
+    {
+      "lemma": "안",
+      "tag": "MAG",
+      "surface": "안",
+      "charSpan": [
+        33,
+        34
+      ]
+    },
+    {
+      "lemma": "투명",
+      "tag": "EOJEOL",
+      "surface": "불투명해요",
+      "charSpan": [
+        41,
+        46
+      ]
+    }
+  ],
+  "_unmapped": [
+    {
+      "lemma": "앞",
+      "category": "body_layer",
+      "value": {
+        "layer": "around_front"
+      },
+      "reason": "no_body_part_context",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "눈앞",
+        "charSpan": [
+          8,
+          10
+        ],
+        "rule": "bodyLayerLexicon.앞"
+      }
+    },
+    {
+      "lemma": "무겁",
+      "category": "weight",
+      "value": {
+        "weight": "heavy"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "무겁고",
+        "charSpan": [
+          23,
+          26
+        ],
+        "rule": "weightLexicon.무겁"
+      }
+    }
+  ],
+  "_negated": [],
+  "_alternatives": [],
+  "_inferred": {},
+  "_context": [],
+  "_parts": [],
+  "_uncertain": [],
+  "_measurements": [],
+  "_direction": [],
+  "_needsConfirmation": [],
+  "_clauses": [
+    {
+      "charSpan": [
+        0,
+        18
+      ],
+      "text": "까만 덩어리가 눈앞 가까이 있어요",
+      "usedFor": [
+        "form.type",
+        "material.color",
+        "layout.distance"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        18,
+        19
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        20,
+        22
+      ],
+      "text": "크고",
+      "usedFor": [
+        "layout.size"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        23,
+        26
+      ],
+      "text": "무겁고",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        27,
+        31
+      ],
+      "text": "매끈해요",
+      "usedFor": [
+        "material.roughness"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        31,
+        32
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        33,
+        39
+      ],
+      "text": "안 움직여요",
+      "usedFor": [
+        "motion.type"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        39,
+        40
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        41,
+        46
+      ],
+      "text": "불투명해요",
+      "usedFor": [
+        "material.opacity"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        46,
+        47
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    }
+  ]
+}
