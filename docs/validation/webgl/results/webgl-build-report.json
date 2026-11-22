@@ -1,0 +1,10 @@
+{
+  "target": "WebGL",
+  "outDir": "<repo>/..\\webgl-build\\preview",
+  "unity": "6000.0.85f2",
+  "scene": "Assets/IFS/Scenes/Preview.unity",
+  "time": "2026-11-23T03:08:39.9619943+09:00",
+  "ok": false,
+  "moduleMissing": true,
+  "reason": "이 에디터에 WebGL Build Support 모듈이 없습니다(Unity Hub ▸ Installs ▸ 6000.0.85f2 ▸ Add modules ▸ Web Build Support)."
+}

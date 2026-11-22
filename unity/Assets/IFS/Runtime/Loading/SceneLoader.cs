@@ -12,6 +12,7 @@
 // _inferred(3층 제안)는 useInferredSuggestions를 켜야만 쓴다(기본 꺼짐 — 말하지 않은 것을 추론하지 않는다).
 // 참여자 조정은 SetNumber/SetCategory로 → events.csv 한 줄씩, SaveFinal()로 finalScene.json.
 // 소유감 실험 변형본은 Load(path, SceneOverride): 해석값 덮어쓰기·모양 모형 강제, 기록(RecordChange) 없음. Load(path)는 그대로.
+// 파일을 읽을 수 없는 곳(WebGL 미리보기)은 LoadJson(json, 이름, 덮어쓰기): 파일 로드와 같은 파싱·해석·렌더 경로(LoadParsed)를 탄다.
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -218,21 +219,55 @@ namespace IFS.SceneSpec
         public bool Load(string path, SceneOverride variant)
         {
             string full = ResolvePath(path);
+#if UNITY_WEBGL && !UNITY_EDITOR
+            // WebGL 플레이어는 파일 시스템(StreamingAssets 포함)을 File.ReadAllText로 읽을 수 없다. JSON 문자열을 LoadJson으로 넘긴다.
+            Debug.LogError($"[SceneLoader] WebGL에서는 파일 경로로 읽지 않습니다(LoadJson 사용): {full}", this);
+            return false;
+#else
             string raw;
-            SceneSpecV2 spec;
             try
             {
                 raw = File.ReadAllText(full, Encoding.UTF8);
-                spec = SceneSpecJson.Parse(raw);
             }
             catch (Exception e)
             {
                 Debug.LogError($"[SceneLoader] SceneSpec을 읽지 못했습니다: {full}\n{e.Message}", this);
                 return false;
             }
+            return LoadParsed(raw, full, Path.GetFileName(full), variant);
+#endif
+        }
+
+        /// <summary>파일 대신 JSON 문자열로 로드한다(WebGL 미리보기 등 파일을 읽을 수 없는 곳). 파싱·검사·해석·렌더는 Load(path)와 같은 경로를 탄다.
+        /// sourceName은 기록·로그·notes에 파일 이름 자리로 쓰는 이름이다(파일 로드와 같은 notes를 내려면 같은 파일 이름을 준다).
+        /// 기록을 켜 두면 세션 id가 없을 때 sourceName(확장자 뺌)을 세션 id로 쓴다. SpecPath는 null이다.</summary>
+        public bool LoadJson(string json, string sourceName = "inline.json", SceneOverride variant = null)
+        {
+            if (string.IsNullOrEmpty(sourceName)) sourceName = "inline.json";
+            if (json == null)
+            {
+                Debug.LogError($"[SceneLoader] SceneSpec을 읽지 못했습니다: {sourceName}\nJSON 문자열이 null입니다.", this);
+                return false;
+            }
+            return LoadParsed(json, null, sourceName, variant);
+        }
+
+        // 파일·문자열 공통: 파싱 → 형식 검사 → 덮어쓰기 확인 → 해석 → 렌더 → (기록). full = 파일 전체 경로(문자열 로드면 null).
+        bool LoadParsed(string raw, string full, string fileName, SceneOverride variant)
+        {
+            SceneSpecV2 spec;
+            try
+            {
+                spec = SceneSpecJson.Parse(raw);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[SceneLoader] SceneSpec을 읽지 못했습니다: {full ?? fileName}\n{e.Message}", this);
+                return false;
+            }
             foreach (var problem in SceneSpecJson.Validate(spec))
-                Debug.LogWarning($"[SceneLoader] 형식 경고({Path.GetFileName(full)}): {problem}", this);
-            if (variant != null && !CheckVariant(spec, variant, Path.GetFileName(full))) return false;
+                Debug.LogWarning($"[SceneLoader] 형식 경고({fileName}): {problem}", this);
+            if (variant != null && !CheckVariant(spec, variant, fileName)) return false;
 
             Unload();
             Spec = spec;
@@ -251,7 +286,7 @@ namespace IFS.SceneSpec
                 Shape = ShapeMapping.Forced(Shape, variant.ShapeModel);
                 Note($"변형 덮어쓰기(기록 안 함): 모양 모형 강제 → {Shape.Model}", false);
             }
-            NoteShapeWords(Path.GetFileName(full), spec.Meta.SessionId);
+            NoteShapeWords(fileName, spec.Meta.SessionId);
 
             CaptureAnchor();
             BuildHierarchy();
@@ -260,12 +295,13 @@ namespace IFS.SceneSpec
 
             if (record)
             {
-                var sessionId = spec.Meta.SessionId ?? Path.GetFileNameWithoutExtension(full);
-                _recorder = new ExperimentRecorder(RecordRoot, sessionId, spec, full);
+                var sessionId = spec.Meta.SessionId ?? Path.GetFileNameWithoutExtension(fileName);
+                // 문자열 로드면 specPath 자리에 "(json) 이름"을 남긴다(파일 경로가 아님을 구분)
+                _recorder = new ExperimentRecorder(RecordRoot, sessionId, spec, full ?? "(json) " + fileName);
                 _recorder.WriteInitial(InitialParams, raw, _notes, Shape.ToJson());
                 Debug.Log($"[SceneLoader] 기록 폴더: {_recorder.Directory}", this);
             }
-            Debug.Log($"[SceneLoader] {Path.GetFileName(full)} 로드: form={CurrentParams.GetCategory("form.type")}, " +
+            Debug.Log($"[SceneLoader] {fileName} 로드: form={CurrentParams.GetCategory("form.type")}, " +
                       $"기본값 {InitialParams.DefaultsUsed.Count}개, shape={Shape.Status}" +
                       (Shape.Model != null ? $"({Shape.Applied} → {Shape.Model})" : ""), this);
             Loaded?.Invoke(this);
@@ -744,7 +780,13 @@ namespace IFS.SceneSpec
         static void DestroySafe(UnityEngine.Object o)
         {
             if (o == null) return;
-            if (Application.isPlaying) Destroy(o);
+            if (Application.isPlaying)
+            {
+                // Destroy는 프레임 끝까지 미뤄진다. 그 전에 같은 프레임에서 다시 로드·수동 렌더하면 이전 형상이 함께 찍히므로 먼저 숨긴다
+                // (2026-11-23 미리보기 플레이어 캡처에서 확인: 이전 spec의 형상이 겹쳐 찍힘)
+                if (o is GameObject go) go.SetActive(false);
+                Destroy(o);
+            }
             else DestroyImmediate(o);
         }
 

@@ -1,0 +1,1520 @@
+{
+  "tool": "PreviewCapture",
+  "platform": "editor",
+  "unity": "6000.0.85f2",
+  "graphicsDevice": "Direct3D 11.0 [level 11.1]",
+  "width": 800,
+  "height": 600,
+  "stageMs": 39.2,
+  "quality": "VR PC",
+  "antiAliasing": 4,
+  "colorSpace": "Linear",
+  "fieldOfView": 60.0,
+  "eyeHeight": 1.6,
+  "specs": [
+    {
+      "spec": "R01_mist_op100.json",
+      "loadMs": 83.45,
+      "loaded": true,
+      "renderPath": "mist",
+      "params": {
+        "form.posture": "none",
+        "form.type": "mist",
+        "layout.distance": 0.33,
+        "layout.size": 0.5,
+        "layout.verticalOffset": 0.75,
+        "material.brightness": 0.5,
+        "material.color.h": 0.6,
+        "material.color.l": 0.6,
+        "material.color.s": 0.45,
+        "material.erosion": 0.0,
+        "material.opacity": 1.0,
+        "material.roughness": 0.5,
+        "motion.speed": 0.5,
+        "motion.type": "still"
+      },
+      "notes": [
+        "form.posture: SceneSpec 값이 null → 기본값 none 사용",
+        "material.brightness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.roughness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.erosion: SceneSpec 값이 null → 기본값 0 사용",
+        "layout.size: SceneSpec 값이 null → 기본값 0.5 사용",
+        "layout.distance: SceneSpec 값이 null → 기본값 0.33 사용",
+        "layout.verticalOffset: SceneSpec 값이 null → 기본값 0.75 사용",
+        "motion.type: SceneSpec 값이 null → 기본값 still 사용",
+        "motion.speed: SceneSpec 값이 null → 기본값 0.5 사용",
+        "form.type=mist: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시",
+        "form.type=mist: 형상 프리셋 기본값 — 구 대리 메시 + 레이마칭 8걸음, 반지름 흔들림 0.3, 노이즈 크기 1.1, 밀도 0.5(중심 광선 알파의 목표 근사 ≈ opacity × 밀도). mist에서 material.roughness는 표면 반사(광택)가 아니라 밀도 노이즈 크기 배율(0.7–1.3)과 색 얼룩 세기를 정함"
+      ],
+      "camera": {
+        "position": [
+          0.0,
+          1.6,
+          0.0
+        ],
+        "euler": [
+          14.9470787,
+          0.0,
+          0.0
+        ]
+      },
+      "renders": {
+        "scene": {
+          "renderMs": 23.13,
+          "png": "R01_mist_op100_scene.png"
+        },
+        "black": {
+          "renderMs": 13.07,
+          "png": "R01_mist_op100_black.png"
+        },
+        "white": {
+          "renderMs": 13.67,
+          "png": "R01_mist_op100_white.png"
+        }
+      },
+      "totalMs": 144.59,
+      "errors": []
+    },
+    {
+      "spec": "R02_mist_op060.json",
+      "loadMs": 1.29,
+      "loaded": true,
+      "renderPath": "mist",
+      "params": {
+        "form.posture": "none",
+        "form.type": "mist",
+        "layout.distance": 0.33,
+        "layout.size": 0.5,
+        "layout.verticalOffset": 0.75,
+        "material.brightness": 0.5,
+        "material.color.h": 0.6,
+        "material.color.l": 0.6,
+        "material.color.s": 0.45,
+        "material.erosion": 0.0,
+        "material.opacity": 0.6,
+        "material.roughness": 0.5,
+        "motion.speed": 0.5,
+        "motion.type": "still"
+      },
+      "notes": [
+        "form.posture: SceneSpec 값이 null → 기본값 none 사용",
+        "material.brightness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.roughness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.erosion: SceneSpec 값이 null → 기본값 0 사용",
+        "layout.size: SceneSpec 값이 null → 기본값 0.5 사용",
+        "layout.distance: SceneSpec 값이 null → 기본값 0.33 사용",
+        "layout.verticalOffset: SceneSpec 값이 null → 기본값 0.75 사용",
+        "motion.type: SceneSpec 값이 null → 기본값 still 사용",
+        "motion.speed: SceneSpec 값이 null → 기본값 0.5 사용",
+        "form.type=mist: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시",
+        "form.type=mist: 형상 프리셋 기본값 — 구 대리 메시 + 레이마칭 8걸음, 반지름 흔들림 0.3, 노이즈 크기 1.1, 밀도 0.5(중심 광선 알파의 목표 근사 ≈ opacity × 밀도). mist에서 material.roughness는 표면 반사(광택)가 아니라 밀도 노이즈 크기 배율(0.7–1.3)과 색 얼룩 세기를 정함"
+      ],
+      "camera": {
+        "position": [
+          0.0,
+          1.6,
+          0.0
+        ],
+        "euler": [
+          14.9470787,
+          0.0,
+          0.0
+        ]
+      },
+      "renders": {
+        "scene": {
+          "renderMs": 13.18,
+          "png": "R02_mist_op060_scene.png"
+        },
+        "black": {
+          "renderMs": 12.68,
+          "png": "R02_mist_op060_black.png"
+        },
+        "white": {
+          "renderMs": 11.86,
+          "png": "R02_mist_op060_white.png"
+        }
+      },
+      "totalMs": 40.46,
+      "errors": []
+    },
+    {
+      "spec": "R03_mist_op015.json",
+      "loadMs": 1.27,
+      "loaded": true,
+      "renderPath": "mist",
+      "params": {
+        "form.posture": "none",
+        "form.type": "mist",
+        "layout.distance": 0.33,
+        "layout.size": 0.5,
+        "layout.verticalOffset": 0.75,
+        "material.brightness": 0.5,
+        "material.color.h": 0.6,
+        "material.color.l": 0.6,
+        "material.color.s": 0.45,
+        "material.erosion": 0.0,
+        "material.opacity": 0.15,
+        "material.roughness": 0.5,
+        "motion.speed": 0.5,
+        "motion.type": "still"
+      },
+      "notes": [
+        "form.posture: SceneSpec 값이 null → 기본값 none 사용",
+        "material.brightness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.roughness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.erosion: SceneSpec 값이 null → 기본값 0 사용",
+        "layout.size: SceneSpec 값이 null → 기본값 0.5 사용",
+        "layout.distance: SceneSpec 값이 null → 기본값 0.33 사용",
+        "layout.verticalOffset: SceneSpec 값이 null → 기본값 0.75 사용",
+        "motion.type: SceneSpec 값이 null → 기본값 still 사용",
+        "motion.speed: SceneSpec 값이 null → 기본값 0.5 사용",
+        "form.type=mist: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시",
+        "form.type=mist: 형상 프리셋 기본값 — 구 대리 메시 + 레이마칭 8걸음, 반지름 흔들림 0.3, 노이즈 크기 1.1, 밀도 0.5(중심 광선 알파의 목표 근사 ≈ opacity × 밀도). mist에서 material.roughness는 표면 반사(광택)가 아니라 밀도 노이즈 크기 배율(0.7–1.3)과 색 얼룩 세기를 정함"
+      ],
+      "camera": {
+        "position": [
+          0.0,
+          1.6,
+          0.0
+        ],
+        "euler": [
+          14.9470787,
+          0.0,
+          0.0
+        ]
+      },
+      "renders": {
+        "scene": {
+          "renderMs": 13.09,
+          "png": "R03_mist_op015_scene.png"
+        },
+        "black": {
+          "renderMs": 11.54,
+          "png": "R03_mist_op015_black.png"
+        },
+        "white": {
+          "renderMs": 13.35,
+          "png": "R03_mist_op015_white.png"
+        }
+      },
+      "totalMs": 40.79,
+      "errors": []
+    },
+    {
+      "spec": "R04_frag_small.json",
+      "loadMs": 5.1,
+      "loaded": true,
+      "renderPath": "fragments",
+      "params": {
+        "form.posture": "none",
+        "form.type": "fragments",
+        "layout.distance": 0.33,
+        "layout.size": 0.4,
+        "layout.verticalOffset": 0.75,
+        "material.brightness": 0.5,
+        "material.color.h": 0.0,
+        "material.color.l": 0.7,
+        "material.color.s": 0.0,
+        "material.erosion": 0.0,
+        "material.opacity": 1.0,
+        "material.roughness": 0.5,
+        "motion.speed": 0.5,
+        "motion.type": "still"
+      },
+      "notes": [
+        "form.posture: SceneSpec 값이 null → 기본값 none 사용",
+        "material.color.h: SceneSpec 값이 null → 기본값 0 사용",
+        "material.color.s: SceneSpec 값이 null → 기본값 0 사용",
+        "material.color.l: SceneSpec 값이 null → 기본값 0.7 사용",
+        "material.brightness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.roughness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.opacity: SceneSpec 값이 null → 기본값 1 사용",
+        "material.erosion: SceneSpec 값이 null → 기본값 0 사용",
+        "layout.distance: SceneSpec 값이 null → 기본값 0.33 사용",
+        "layout.verticalOffset: SceneSpec 값이 null → 기본값 0.75 사용",
+        "motion.type: SceneSpec 값이 null → 기본값 still 사용",
+        "motion.speed: SceneSpec 값이 null → 기본값 0.5 사용",
+        "form.type=fragments: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시",
+        "form.type=fragments: 형상 프리셋 기본값 — 각진 조각 5개를 합친 메시 하나(조각 규칙 angular5/1, seed 0, 배치 반경 비율 0.884, 조각 크기 비율 0.281–0.554, 평면 음영, 정점 변위 0, 노이즈 크기 2.4)"
+      ],
+      "camera": {
+        "position": [
+          0.0,
+          1.6,
+          0.0
+        ],
+        "euler": [
+          14.7659864,
+          0.615354061,
+          -2.06937329e-08
+        ]
+      },
+      "renders": {
+        "scene": {
+          "renderMs": 15.24,
+          "png": "R04_frag_small_scene.png"
+        },
+        "black": {
+          "renderMs": 11.32,
+          "png": "R04_frag_small_black.png"
+        },
+        "white": {
+          "renderMs": 10.65,
+          "png": "R04_frag_small_white.png"
+        }
+      },
+      "totalMs": 43.83,
+      "errors": []
+    },
+    {
+      "spec": "R05_frag_large.json",
+      "loadMs": 1.48,
+      "loaded": true,
+      "renderPath": "fragments",
+      "params": {
+        "form.posture": "none",
+        "form.type": "fragments",
+        "layout.distance": 0.33,
+        "layout.size": 0.7,
+        "layout.verticalOffset": 0.75,
+        "material.brightness": 0.5,
+        "material.color.h": 0.02,
+        "material.color.l": 0.45,
+        "material.color.s": 0.6,
+        "material.erosion": 0.3,
+        "material.opacity": 1.0,
+        "material.roughness": 0.8,
+        "motion.speed": 0.5,
+        "motion.type": "still"
+      },
+      "notes": [
+        "form.posture: SceneSpec 값이 null → 기본값 none 사용",
+        "material.brightness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.opacity: SceneSpec 값이 null → 기본값 1 사용",
+        "layout.distance: SceneSpec 값이 null → 기본값 0.33 사용",
+        "layout.verticalOffset: SceneSpec 값이 null → 기본값 0.75 사용",
+        "motion.type: SceneSpec 값이 null → 기본값 still 사용",
+        "motion.speed: SceneSpec 값이 null → 기본값 0.5 사용",
+        "form.type=fragments: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시",
+        "form.type=fragments: 형상 프리셋 기본값 — 각진 조각 5개를 합친 메시 하나(조각 규칙 angular5/1, seed 0, 배치 반경 비율 0.884, 조각 크기 비율 0.281–0.554, 평면 음영, 정점 변위 0, 노이즈 크기 2.4)"
+      ],
+      "camera": {
+        "position": [
+          0.0,
+          1.6,
+          0.0
+        ],
+        "euler": [
+          14.5214911,
+          1.43596911,
+          4.134134e-08
+        ]
+      },
+      "renders": {
+        "scene": {
+          "renderMs": 13.31,
+          "png": "R05_frag_large_scene.png"
+        },
+        "black": {
+          "renderMs": 12.12,
+          "png": "R05_frag_large_black.png"
+        },
+        "white": {
+          "renderMs": 11.8,
+          "png": "R05_frag_large_white.png"
+        }
+      },
+      "totalMs": 40.13,
+      "errors": []
+    },
+    {
+      "spec": "R06_shell.json",
+      "loadMs": 2.52,
+      "loaded": true,
+      "renderPath": "shell",
+      "params": {
+        "form.posture": "none",
+        "form.type": "shell",
+        "layout.distance": 0.33,
+        "layout.size": 0.5,
+        "layout.verticalOffset": 0.75,
+        "material.brightness": 0.5,
+        "material.color.h": 0.0,
+        "material.color.l": 0.7,
+        "material.color.s": 0.0,
+        "material.erosion": 0.0,
+        "material.opacity": 1.0,
+        "material.roughness": 0.5,
+        "motion.speed": 0.5,
+        "motion.type": "still"
+      },
+      "notes": [
+        "form.posture: SceneSpec 값이 null → 기본값 none 사용",
+        "material.color.h: SceneSpec 값이 null → 기본값 0 사용",
+        "material.color.s: SceneSpec 값이 null → 기본값 0 사용",
+        "material.color.l: SceneSpec 값이 null → 기본값 0.7 사용",
+        "material.brightness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.roughness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.opacity: SceneSpec 값이 null → 기본값 1 사용",
+        "material.erosion: SceneSpec 값이 null → 기본값 0 사용",
+        "layout.size: SceneSpec 값이 null → 기본값 0.5 사용",
+        "layout.distance: SceneSpec 값이 null → 기본값 0.33 사용",
+        "layout.verticalOffset: SceneSpec 값이 null → 기본값 0.75 사용",
+        "motion.type: SceneSpec 값이 null → 기본값 still 사용",
+        "motion.speed: SceneSpec 값이 null → 기본값 0.5 사용",
+        "form.type=shell: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시"
+      ],
+      "camera": {
+        "position": [
+          0.0,
+          1.6,
+          0.0
+        ],
+        "euler": [
+          14.9470787,
+          0.0,
+          0.0
+        ]
+      },
+      "renders": {
+        "scene": {
+          "renderMs": 13.47,
+          "png": "R06_shell_scene.png"
+        },
+        "black": {
+          "renderMs": 11.73,
+          "png": "R06_shell_black.png"
+        },
+        "white": {
+          "renderMs": 11.73,
+          "png": "R06_shell_white.png"
+        }
+      },
+      "totalMs": 40.96,
+      "errors": []
+    },
+    {
+      "spec": "R07_blob_default.json",
+      "loadMs": 1.29,
+      "loaded": true,
+      "renderPath": "blob",
+      "params": {
+        "form.posture": "none",
+        "form.type": "blob",
+        "layout.distance": 0.33,
+        "layout.size": 0.5,
+        "layout.verticalOffset": 0.75,
+        "material.brightness": 0.5,
+        "material.color.h": 0.0,
+        "material.color.l": 0.7,
+        "material.color.s": 0.0,
+        "material.erosion": 0.0,
+        "material.opacity": 1.0,
+        "material.roughness": 0.5,
+        "motion.speed": 0.5,
+        "motion.type": "still"
+      },
+      "notes": [
+        "form.posture: SceneSpec 값이 null → 기본값 none 사용",
+        "material.color.h: SceneSpec 값이 null → 기본값 0 사용",
+        "material.color.s: SceneSpec 값이 null → 기본값 0 사용",
+        "material.color.l: SceneSpec 값이 null → 기본값 0.7 사용",
+        "material.brightness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.roughness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.opacity: SceneSpec 값이 null → 기본값 1 사용",
+        "material.erosion: SceneSpec 값이 null → 기본값 0 사용",
+        "layout.size: SceneSpec 값이 null → 기본값 0.5 사용",
+        "layout.distance: SceneSpec 값이 null → 기본값 0.33 사용",
+        "layout.verticalOffset: SceneSpec 값이 null → 기본값 0.75 사용",
+        "motion.type: SceneSpec 값이 null → 기본값 still 사용",
+        "motion.speed: SceneSpec 값이 null → 기본값 0.5 사용",
+        "form.type=blob: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시"
+      ],
+      "camera": {
+        "position": [
+          0.0,
+          1.6,
+          0.0
+        ],
+        "euler": [
+          14.9470787,
+          0.0,
+          0.0
+        ]
+      },
+      "renders": {
+        "scene": {
+          "renderMs": 12.96,
+          "png": "R07_blob_default_scene.png"
+        },
+        "black": {
+          "renderMs": 11.76,
+          "png": "R07_blob_default_black.png"
+        },
+        "white": {
+          "renderMs": 11.79,
+          "png": "R07_blob_default_white.png"
+        }
+      },
+      "totalMs": 39.23,
+      "errors": []
+    },
+    {
+      "spec": "R08_blob_green_bright.json",
+      "loadMs": 1.2,
+      "loaded": true,
+      "renderPath": "blob",
+      "params": {
+        "form.posture": "none",
+        "form.type": "blob",
+        "layout.distance": 0.33,
+        "layout.size": 0.5,
+        "layout.verticalOffset": 0.75,
+        "material.brightness": 0.8,
+        "material.color.h": 0.33,
+        "material.color.l": 0.5,
+        "material.color.s": 0.5,
+        "material.erosion": 0.0,
+        "material.opacity": 1.0,
+        "material.roughness": 0.5,
+        "motion.speed": 0.5,
+        "motion.type": "still"
+      },
+      "notes": [
+        "form.posture: SceneSpec 값이 null → 기본값 none 사용",
+        "material.roughness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.opacity: SceneSpec 값이 null → 기본값 1 사용",
+        "material.erosion: SceneSpec 값이 null → 기본값 0 사용",
+        "layout.size: SceneSpec 값이 null → 기본값 0.5 사용",
+        "layout.distance: SceneSpec 값이 null → 기본값 0.33 사용",
+        "layout.verticalOffset: SceneSpec 값이 null → 기본값 0.75 사용",
+        "motion.type: SceneSpec 값이 null → 기본값 still 사용",
+        "motion.speed: SceneSpec 값이 null → 기본값 0.5 사용",
+        "form.type=blob: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시"
+      ],
+      "camera": {
+        "position": [
+          0.0,
+          1.6,
+          0.0
+        ],
+        "euler": [
+          14.9470787,
+          0.0,
+          0.0
+        ]
+      },
+      "renders": {
+        "scene": {
+          "renderMs": 14.97,
+          "png": "R08_blob_green_bright_scene.png"
+        },
+        "black": {
+          "renderMs": 11.59,
+          "png": "R08_blob_green_bright_black.png"
+        },
+        "white": {
+          "renderMs": 14.27,
+          "png": "R08_blob_green_bright_white.png"
+        }
+      },
+      "totalMs": 43.57,
+      "errors": []
+    },
+    {
+      "spec": "R09_form_null.json",
+      "loadMs": 1.33,
+      "loaded": true,
+      "renderPath": "blob",
+      "params": {
+        "form.posture": "none",
+        "form.type": "blob",
+        "layout.distance": 0.33,
+        "layout.size": 0.5,
+        "layout.verticalOffset": 0.75,
+        "material.brightness": 0.5,
+        "material.color.h": 0.1,
+        "material.color.l": 0.5,
+        "material.color.s": 0.3,
+        "material.erosion": 0.0,
+        "material.opacity": 1.0,
+        "material.roughness": 0.5,
+        "motion.speed": 0.5,
+        "motion.type": "still"
+      },
+      "notes": [
+        "form.type: SceneSpec 값이 null → 기본값 blob 사용",
+        "form.posture: SceneSpec 값이 null → 기본값 none 사용",
+        "material.brightness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.roughness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.opacity: SceneSpec 값이 null → 기본값 1 사용",
+        "material.erosion: SceneSpec 값이 null → 기본값 0 사용",
+        "layout.size: SceneSpec 값이 null → 기본값 0.5 사용",
+        "layout.distance: SceneSpec 값이 null → 기본값 0.33 사용",
+        "layout.verticalOffset: SceneSpec 값이 null → 기본값 0.75 사용",
+        "motion.type: SceneSpec 값이 null → 기본값 still 사용",
+        "motion.speed: SceneSpec 값이 null → 기본값 0.5 사용",
+        "form.type=blob: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시"
+      ],
+      "camera": {
+        "position": [
+          0.0,
+          1.6,
+          0.0
+        ],
+        "euler": [
+          14.9470787,
+          0.0,
+          0.0
+        ]
+      },
+      "renders": {
+        "scene": {
+          "renderMs": 14.55,
+          "png": "R09_form_null_scene.png"
+        },
+        "black": {
+          "renderMs": 19.67,
+          "png": "R09_form_null_black.png"
+        },
+        "white": {
+          "renderMs": 20.28,
+          "png": "R09_form_null_white.png"
+        }
+      },
+      "totalMs": 58.12,
+      "errors": []
+    },
+    {
+      "spec": "R10_shape_round.json",
+      "loadMs": 7.14,
+      "loaded": true,
+      "renderPath": "shapePrefab(Sphere)",
+      "params": {
+        "form.posture": "none",
+        "form.type": "blob",
+        "layout.distance": 0.33,
+        "layout.size": 0.5,
+        "layout.verticalOffset": 0.75,
+        "material.brightness": 0.3,
+        "material.color.h": 0.0,
+        "material.color.l": 0.7,
+        "material.color.s": 0.0,
+        "material.erosion": 0.0,
+        "material.opacity": 1.0,
+        "material.roughness": 0.5,
+        "motion.speed": 0.5,
+        "motion.type": "still"
+      },
+      "notes": [
+        "form.type: SceneSpec 값이 null → 기본값 blob 사용",
+        "form.posture: SceneSpec 값이 null → 기본값 none 사용",
+        "material.color.h: SceneSpec 값이 null → 기본값 0 사용",
+        "material.color.s: SceneSpec 값이 null → 기본값 0 사용",
+        "material.color.l: SceneSpec 값이 null → 기본값 0.7 사용",
+        "material.roughness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.opacity: SceneSpec 값이 null → 기본값 1 사용",
+        "material.erosion: SceneSpec 값이 null → 기본값 0 사용",
+        "layout.size: SceneSpec 값이 null → 기본값 0.5 사용",
+        "layout.distance: SceneSpec 값이 null → 기본값 0.33 사용",
+        "layout.verticalOffset: SceneSpec 값이 null → 기본값 0.75 사용",
+        "motion.type: SceneSpec 값이 null → 기본값 still 사용",
+        "motion.speed: SceneSpec 값이 null → 기본값 0.5 사용",
+        "shape=round → Sphere 모형으로 표시(form.type=blob, 트리거 '동그란', 프리팹)"
+      ],
+      "camera": {
+        "position": [
+          0.0,
+          1.6,
+          0.0
+        ],
+        "euler": [
+          14.9470787,
+          0.0,
+          0.0
+        ]
+      },
+      "renders": {
+        "scene": {
+          "renderMs": 13.63,
+          "png": "R10_shape_round_scene.png"
+        },
+        "black": {
+          "renderMs": 11.65,
+          "png": "R10_shape_round_black.png"
+        },
+        "white": {
+          "renderMs": 11.82,
+          "png": "R10_shape_round_white.png"
+        }
+      },
+      "totalMs": 45.71,
+      "errors": []
+    },
+    {
+      "spec": "R11_shape_square.json",
+      "loadMs": 1.36,
+      "loaded": true,
+      "renderPath": "shapePrefab(Cube)",
+      "params": {
+        "form.posture": "none",
+        "form.type": "blob",
+        "layout.distance": 0.33,
+        "layout.size": 0.5,
+        "layout.verticalOffset": 0.75,
+        "material.brightness": 0.5,
+        "material.color.h": 0.0,
+        "material.color.l": 0.7,
+        "material.color.s": 0.0,
+        "material.erosion": 0.0,
+        "material.opacity": 1.0,
+        "material.roughness": 0.5,
+        "motion.speed": 0.5,
+        "motion.type": "still"
+      },
+      "notes": [
+        "form.posture: SceneSpec 값이 null → 기본값 none 사용",
+        "material.color.h: SceneSpec 값이 null → 기본값 0 사용",
+        "material.color.s: SceneSpec 값이 null → 기본값 0 사용",
+        "material.color.l: SceneSpec 값이 null → 기본값 0.7 사용",
+        "material.brightness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.roughness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.opacity: SceneSpec 값이 null → 기본값 1 사용",
+        "material.erosion: SceneSpec 값이 null → 기본값 0 사용",
+        "layout.size: SceneSpec 값이 null → 기본값 0.5 사용",
+        "layout.distance: SceneSpec 값이 null → 기본값 0.33 사용",
+        "layout.verticalOffset: SceneSpec 값이 null → 기본값 0.75 사용",
+        "motion.type: SceneSpec 값이 null → 기본값 still 사용",
+        "motion.speed: SceneSpec 값이 null → 기본값 0.5 사용",
+        "shape=square → Cube 모형으로 표시(form.type=blob, 트리거 '네모난', 프리팹)"
+      ],
+      "camera": {
+        "position": [
+          0.0,
+          1.6,
+          0.0
+        ],
+        "euler": [
+          14.9470787,
+          0.0,
+          0.0
+        ]
+      },
+      "renders": {
+        "scene": {
+          "renderMs": 13.23,
+          "png": "R11_shape_square_scene.png"
+        },
+        "black": {
+          "renderMs": 10.67,
+          "png": "R11_shape_square_black.png"
+        },
+        "white": {
+          "renderMs": 11.09,
+          "png": "R11_shape_square_white.png"
+        }
+      },
+      "totalMs": 37.9,
+      "errors": []
+    },
+    {
+      "spec": "R12_shape_flat.json",
+      "loadMs": 1.33,
+      "loaded": true,
+      "renderPath": "shapePrefab(FlatCylinder)",
+      "params": {
+        "form.posture": "none",
+        "form.type": "blob",
+        "layout.distance": 0.33,
+        "layout.size": 0.5,
+        "layout.verticalOffset": 0.75,
+        "material.brightness": 0.5,
+        "material.color.h": 0.75,
+        "material.color.l": 0.5,
+        "material.color.s": 0.4,
+        "material.erosion": 0.0,
+        "material.opacity": 1.0,
+        "material.roughness": 0.5,
+        "motion.speed": 0.5,
+        "motion.type": "still"
+      },
+      "notes": [
+        "form.type: SceneSpec 값이 null → 기본값 blob 사용",
+        "form.posture: SceneSpec 값이 null → 기본값 none 사용",
+        "material.brightness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.roughness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.opacity: SceneSpec 값이 null → 기본값 1 사용",
+        "material.erosion: SceneSpec 값이 null → 기본값 0 사용",
+        "layout.size: SceneSpec 값이 null → 기본값 0.5 사용",
+        "layout.distance: SceneSpec 값이 null → 기본값 0.33 사용",
+        "layout.verticalOffset: SceneSpec 값이 null → 기본값 0.75 사용",
+        "motion.type: SceneSpec 값이 null → 기본값 still 사용",
+        "motion.speed: SceneSpec 값이 null → 기본값 0.5 사용",
+        "shape=flat → FlatCylinder 모형으로 표시(form.type=blob, 트리거 '납작한', 프리팹)"
+      ],
+      "camera": {
+        "position": [
+          0.0,
+          1.6,
+          0.0
+        ],
+        "euler": [
+          14.9470787,
+          -1.00359625e-06,
+          1.31677557e-14
+        ]
+      },
+      "renders": {
+        "scene": {
+          "renderMs": 12.06,
+          "png": "R12_shape_flat_scene.png"
+        },
+        "black": {
+          "renderMs": 14.03,
+          "png": "R12_shape_flat_black.png"
+        },
+        "white": {
+          "renderMs": 11.76,
+          "png": "R12_shape_flat_white.png"
+        }
+      },
+      "totalMs": 40.56,
+      "errors": []
+    },
+    {
+      "spec": "R13_shape_pointed.json",
+      "loadMs": 1.52,
+      "loaded": true,
+      "renderPath": "shapePrefab(Cone)",
+      "params": {
+        "form.posture": "none",
+        "form.type": "blob",
+        "layout.distance": 0.33,
+        "layout.size": 0.5,
+        "layout.verticalOffset": 0.75,
+        "material.brightness": 0.5,
+        "material.color.h": 0.0,
+        "material.color.l": 0.7,
+        "material.color.s": 0.0,
+        "material.erosion": 0.0,
+        "material.opacity": 1.0,
+        "material.roughness": 0.5,
+        "motion.speed": 0.5,
+        "motion.type": "still"
+      },
+      "notes": [
+        "form.type: SceneSpec 값이 null → 기본값 blob 사용",
+        "form.posture: SceneSpec 값이 null → 기본값 none 사용",
+        "material.color.h: SceneSpec 값이 null → 기본값 0 사용",
+        "material.color.s: SceneSpec 값이 null → 기본값 0 사용",
+        "material.color.l: SceneSpec 값이 null → 기본값 0.7 사용",
+        "material.brightness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.roughness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.opacity: SceneSpec 값이 null → 기본값 1 사용",
+        "material.erosion: SceneSpec 값이 null → 기본값 0 사용",
+        "layout.size: SceneSpec 값이 null → 기본값 0.5 사용",
+        "layout.distance: SceneSpec 값이 null → 기본값 0.33 사용",
+        "layout.verticalOffset: SceneSpec 값이 null → 기본값 0.75 사용",
+        "motion.type: SceneSpec 값이 null → 기본값 still 사용",
+        "motion.speed: SceneSpec 값이 null → 기본값 0.5 사용",
+        "shape=pointed → Cone 모형으로 표시(form.type=blob, 트리거 '뾰족한', 프리팹)"
+      ],
+      "camera": {
+        "position": [
+          0.0,
+          1.6,
+          0.0
+        ],
+        "euler": [
+          14.9470787,
+          0.0,
+          0.0
+        ]
+      },
+      "renders": {
+        "scene": {
+          "renderMs": 12.67,
+          "png": "R13_shape_pointed_scene.png"
+        },
+        "black": {
+          "renderMs": 12.79,
+          "png": "R13_shape_pointed_black.png"
+        },
+        "white": {
+          "renderMs": 11.7,
+          "png": "R13_shape_pointed_white.png"
+        }
+      },
+      "totalMs": 40.07,
+      "errors": []
+    },
+    {
+      "spec": "H01.v1.json",
+      "loadMs": 3.66,
+      "loaded": true,
+      "renderPath": "blob",
+      "params": {
+        "form.posture": "none",
+        "form.type": "blob",
+        "layout.distance": 0.33,
+        "layout.size": 0.316,
+        "layout.verticalOffset": 0.72,
+        "material.brightness": 0.5,
+        "material.color.h": 0.25,
+        "material.color.l": 0.55,
+        "material.color.s": 0.55,
+        "material.erosion": 0.0,
+        "material.opacity": 0.5,
+        "material.roughness": 0.0,
+        "motion.speed": 0.5,
+        "motion.type": "still"
+      },
+      "notes": [
+        "form.type: SceneSpec 값이 null → 기본값 blob 사용",
+        "form.posture: SceneSpec 값이 null → 기본값 none 사용",
+        "material.brightness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.erosion: SceneSpec 값이 null → 기본값 0 사용",
+        "layout.distance: SceneSpec 값이 null → 기본값 0.33 사용",
+        "motion.speed: SceneSpec 값이 null → 기본값 0.5 사용",
+        "form.type=blob: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시"
+      ],
+      "camera": {
+        "position": [
+          0.0,
+          1.6,
+          0.0
+        ],
+        "euler": [
+          17.22435,
+          0.0,
+          0.0
+        ]
+      },
+      "renders": {
+        "scene": {
+          "renderMs": 34.36,
+          "png": "H01.v1_scene.png"
+        },
+        "black": {
+          "renderMs": 11.33,
+          "png": "H01.v1_black.png"
+        },
+        "white": {
+          "renderMs": 12.83,
+          "png": "H01.v1_white.png"
+        }
+      },
+      "totalMs": 68.8,
+      "errors": []
+    },
+    {
+      "spec": "H02.v1.json",
+      "loadMs": 2.27,
+      "loaded": true,
+      "renderPath": "mist",
+      "params": {
+        "form.posture": "none",
+        "form.type": "mist",
+        "layout.distance": 0.33,
+        "layout.size": 0.621,
+        "layout.verticalOffset": 0.02,
+        "material.brightness": 0.5,
+        "material.color.h": 0.0,
+        "material.color.l": 0.55,
+        "material.color.s": 0.75,
+        "material.erosion": 0.0,
+        "material.opacity": 0.25,
+        "material.roughness": 0.5,
+        "motion.speed": 0.25,
+        "motion.type": "spreading"
+      },
+      "notes": [
+        "form.posture: SceneSpec 값이 null → 기본값 none 사용",
+        "material.brightness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.roughness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.erosion: SceneSpec 값이 null → 기본값 0 사용",
+        "layout.distance: SceneSpec 값이 null → 기본값 0.33 사용",
+        "form.type=mist: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시",
+        "form.type=mist: 형상 프리셋 기본값 — 구 대리 메시 + 레이마칭 8걸음, 반지름 흔들림 0.3, 노이즈 크기 1.1, 밀도 0.5(중심 광선 알파의 목표 근사 ≈ opacity × 밀도). mist에서 material.roughness는 표면 반사(광택)가 아니라 밀도 노이즈 크기 배율(0.7–1.3)과 색 얼룩 세기를 정함",
+        "form.type=mist: 안개 구(세계 높이 -0.333–0.401)가 바닥 높이 0 아래로 걸쳐 바닥 아래 밀도를 0으로 자름(잘린 높이 비율 0.453, 구 기준 상한. 화면 처리는 그대로)"
+      ],
+      "camera": {
+        "position": [
+          0.0,
+          1.6,
+          0.0
+        ],
+        "euler": [
+          52.74238,
+          0.0,
+          0.0
+        ]
+      },
+      "renders": {
+        "scene": {
+          "renderMs": 12.33,
+          "png": "H02.v1_scene.png"
+        },
+        "black": {
+          "renderMs": 11.16,
+          "png": "H02.v1_black.png"
+        },
+        "white": {
+          "renderMs": 10.27,
+          "png": "H02.v1_white.png"
+        }
+      },
+      "totalMs": 41.33,
+      "errors": []
+    },
+    {
+      "spec": "H03.v1.json",
+      "loadMs": 2.01,
+      "loaded": true,
+      "renderPath": "shapePrefab(Sphere)",
+      "params": {
+        "form.posture": "none",
+        "form.type": "blob",
+        "layout.distance": 0.33,
+        "layout.size": 0.5,
+        "layout.verticalOffset": 1.0,
+        "material.brightness": 0.5,
+        "material.color.h": 0.078,
+        "material.color.l": 0.55,
+        "material.color.s": 0.85,
+        "material.erosion": 0.0,
+        "material.opacity": 1.0,
+        "material.roughness": 0.5,
+        "motion.speed": 0.5,
+        "motion.type": "floating"
+      },
+      "notes": [
+        "form.type: SceneSpec 값이 null → 기본값 blob 사용",
+        "form.posture: SceneSpec 값이 null → 기본값 none 사용",
+        "material.brightness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.roughness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.opacity: SceneSpec 값이 null → 기본값 1 사용",
+        "material.erosion: SceneSpec 값이 null → 기본값 0 사용",
+        "layout.size: SceneSpec 값이 null → 기본값 0.5 사용",
+        "layout.distance: SceneSpec 값이 null → 기본값 0.33 사용",
+        "motion.speed: SceneSpec 값이 null → 기본값 0.5 사용",
+        "shape=round → Sphere 모형으로 표시(form.type=blob, 트리거 '동그랗고', 프리팹)"
+      ],
+      "camera": {
+        "position": [
+          0.0,
+          1.6,
+          0.0
+        ],
+        "euler": [
+          354.7517,
+          0.0,
+          0.0
+        ]
+      },
+      "renders": {
+        "scene": {
+          "renderMs": 12.98,
+          "png": "H03.v1_scene.png"
+        },
+        "black": {
+          "renderMs": 12.16,
+          "png": "H03.v1_black.png"
+        },
+        "white": {
+          "renderMs": 11.66,
+          "png": "H03.v1_white.png"
+        }
+      },
+      "totalMs": 43.81,
+      "errors": []
+    },
+    {
+      "spec": "H05.v1.json",
+      "loadMs": 1.33,
+      "loaded": true,
+      "renderPath": "shapePrefab(FlatCylinder)",
+      "params": {
+        "form.posture": "none",
+        "form.type": "blob",
+        "layout.distance": 0.33,
+        "layout.size": 0.333,
+        "layout.verticalOffset": 0.02,
+        "material.brightness": 0.5,
+        "material.color.h": 0.0,
+        "material.color.l": 0.08,
+        "material.color.s": 0.0,
+        "material.erosion": 0.0,
+        "material.opacity": 1.0,
+        "material.roughness": 0.85,
+        "motion.speed": 0.5,
+        "motion.type": "still"
+      },
+      "notes": [
+        "form.type: SceneSpec 값이 null → 기본값 blob 사용",
+        "form.posture: SceneSpec 값이 null → 기본값 none 사용",
+        "material.brightness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.opacity: SceneSpec 값이 null → 기본값 1 사용",
+        "material.erosion: SceneSpec 값이 null → 기본값 0 사용",
+        "layout.distance: SceneSpec 값이 null → 기본값 0.33 사용",
+        "motion.speed: SceneSpec 값이 null → 기본값 0.5 사용",
+        "shape=flat → FlatCylinder 모형으로 표시(form.type=blob, 트리거 '납작한', 프리팹)"
+      ],
+      "camera": {
+        "position": [
+          0.0,
+          1.6,
+          0.0
+        ],
+        "euler": [
+          52.74238,
+          -6.316419e-07,
+          4.20291345e-14
+        ]
+      },
+      "renders": {
+        "scene": {
+          "renderMs": 12.38,
+          "png": "H05.v1_scene.png"
+        },
+        "black": {
+          "renderMs": 10.96,
+          "png": "H05.v1_black.png"
+        },
+        "white": {
+          "renderMs": 11.24,
+          "png": "H05.v1_white.png"
+        }
+      },
+      "totalMs": 41.16,
+      "errors": []
+    },
+    {
+      "spec": "H08.v1.json",
+      "loadMs": 1.5,
+      "loaded": true,
+      "renderPath": "fragments",
+      "params": {
+        "form.posture": "none",
+        "form.type": "fragments",
+        "layout.distance": 0.85,
+        "layout.size": 0.0,
+        "layout.verticalOffset": 0.75,
+        "material.brightness": 0.5,
+        "material.color.h": 0.0,
+        "material.color.l": 0.95,
+        "material.color.s": 0.0,
+        "material.erosion": 0.6,
+        "material.opacity": 1.0,
+        "material.roughness": 0.5,
+        "motion.speed": 0.5,
+        "motion.type": "scattering"
+      },
+      "notes": [
+        "form.posture: SceneSpec 값이 null → 기본값 none 사용",
+        "material.brightness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.roughness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.opacity: SceneSpec 값이 null → 기본값 1 사용",
+        "layout.verticalOffset: SceneSpec 값이 null → 기본값 0.75 사용",
+        "motion.speed: SceneSpec 값이 null → 기본값 0.5 사용",
+        "H08.v1.json (session H08): shape=sharp, 트리거 '날카롭고' [60,64] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)",
+        "form.type=fragments: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시",
+        "form.type=fragments: 형상 프리셋 기본값 — 각진 조각 5개를 합친 메시 하나(조각 규칙 angular5/1, seed 0, 배치 반경 비율 0.884, 조각 크기 비율 0.281–0.554, 평면 음영, 정점 변위 0, 노이즈 크기 2.4)"
+      ],
+      "camera": {
+        "position": [
+          0.0,
+          1.6,
+          0.0
+        ],
+        "euler": [
+          6.942011,
+          0.09222313,
+          0.0
+        ]
+      },
+      "renders": {
+        "scene": {
+          "renderMs": 12.71,
+          "png": "H08.v1_scene.png"
+        },
+        "black": {
+          "renderMs": 10.87,
+          "png": "H08.v1_black.png"
+        },
+        "white": {
+          "renderMs": 10.88,
+          "png": "H08.v1_white.png"
+        }
+      },
+      "totalMs": 41.09,
+      "errors": []
+    },
+    {
+      "spec": "H10.v1.json",
+      "loadMs": 1.3,
+      "loaded": true,
+      "renderPath": "shapePrefab(Cube)",
+      "params": {
+        "form.posture": "none",
+        "form.type": "blob",
+        "layout.distance": 0.259,
+        "layout.size": 0.5,
+        "layout.verticalOffset": 0.05,
+        "material.brightness": 0.5,
+        "material.color.h": 0.069,
+        "material.color.l": 0.3,
+        "material.color.s": 0.45,
+        "material.erosion": 0.0,
+        "material.opacity": 1.0,
+        "material.roughness": 0.71,
+        "motion.speed": 0.5,
+        "motion.type": "still"
+      },
+      "notes": [
+        "form.type: SceneSpec 값이 null → 기본값 blob 사용",
+        "form.posture: SceneSpec 값이 null → 기본값 none 사용",
+        "material.brightness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.opacity: SceneSpec 값이 null → 기본값 1 사용",
+        "material.erosion: SceneSpec 값이 null → 기본값 0 사용",
+        "layout.size: SceneSpec 값이 null → 기본값 0.5 사용",
+        "motion.speed: SceneSpec 값이 null → 기본값 0.5 사용",
+        "shape=square → Cube 모형으로 표시(form.type=blob, 트리거 '네모', 프리팹)"
+      ],
+      "camera": {
+        "position": [
+          0.0,
+          1.6,
+          0.0
+        ],
+        "euler": [
+          56.5828247,
+          0.0,
+          0.0
+        ]
+      },
+      "renders": {
+        "scene": {
+          "renderMs": 11.63,
+          "png": "H10.v1_scene.png"
+        },
+        "black": {
+          "renderMs": 11.4,
+          "png": "H10.v1_black.png"
+        },
+        "white": {
+          "renderMs": 11.16,
+          "png": "H10.v1_white.png"
+        }
+      },
+      "totalMs": 40.43,
+      "errors": []
+    },
+    {
+      "spec": "H12.v1.json",
+      "loadMs": 2.07,
+      "loaded": true,
+      "renderPath": "shapePrefab(Cone)",
+      "params": {
+        "form.posture": "none",
+        "form.type": "blob",
+        "layout.distance": 0.33,
+        "layout.size": 0.475,
+        "layout.verticalOffset": 0.75,
+        "material.brightness": 0.85,
+        "material.color.h": 0.0,
+        "material.color.l": 0.7,
+        "material.color.s": 0.0,
+        "material.erosion": 0.0,
+        "material.opacity": 1.0,
+        "material.roughness": 0.5,
+        "motion.speed": 0.5,
+        "motion.type": "swaying"
+      },
+      "notes": [
+        "form.type: SceneSpec 값이 null → 기본값 blob 사용",
+        "form.posture: SceneSpec 값이 null → 기본값 none 사용",
+        "material.color.h: SceneSpec 값이 null → 기본값 0 사용",
+        "material.color.s: SceneSpec 값이 null → 기본값 0 사용",
+        "material.color.l: SceneSpec 값이 null → 기본값 0.7 사용",
+        "material.roughness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.opacity: SceneSpec 값이 null → 기본값 1 사용",
+        "material.erosion: SceneSpec 값이 null → 기본값 0 사용",
+        "layout.distance: SceneSpec 값이 null → 기본값 0.33 사용",
+        "layout.verticalOffset: SceneSpec 값이 null → 기본값 0.75 사용",
+        "motion.speed: SceneSpec 값이 null → 기본값 0.5 사용",
+        "shape=pointed → Cone 모형으로 표시(form.type=blob, 트리거 '뾰족해요', 프리팹)"
+      ],
+      "camera": {
+        "position": [
+          0.0,
+          1.6,
+          0.0
+        ],
+        "euler": [
+          14.9470787,
+          0.0,
+          0.0
+        ]
+      },
+      "renders": {
+        "scene": {
+          "renderMs": 14.69,
+          "png": "H12.v1_scene.png"
+        },
+        "black": {
+          "renderMs": 13.12,
+          "png": "H12.v1_black.png"
+        },
+        "white": {
+          "renderMs": 11.6,
+          "png": "H12.v1_white.png"
+        }
+      },
+      "totalMs": 46.75,
+      "errors": []
+    },
+    {
+      "spec": "H16.v1.json",
+      "loadMs": 1.93,
+      "loaded": true,
+      "renderPath": "shell",
+      "params": {
+        "form.posture": "none",
+        "form.type": "shell",
+        "layout.distance": 0.0,
+        "layout.size": 0.621,
+        "layout.verticalOffset": 0.75,
+        "material.brightness": 0.5,
+        "material.color.h": 0.556,
+        "material.color.l": 0.75,
+        "material.color.s": 0.7,
+        "material.erosion": 0.0,
+        "material.opacity": 0.5,
+        "material.roughness": 0.5,
+        "motion.speed": 0.5,
+        "motion.type": "still"
+      },
+      "notes": [
+        "form.posture: SceneSpec 값이 null → 기본값 none 사용",
+        "material.brightness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.roughness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.erosion: SceneSpec 값이 null → 기본값 0 사용",
+        "layout.verticalOffset: SceneSpec 값이 null → 기본값 0.75 사용",
+        "motion.speed: SceneSpec 값이 null → 기본값 0.5 사용",
+        "H16.v1.json (session H16): shape=hollow, 트리거 '비어' [45,47] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)",
+        "H16.v1.json (session H16): shape=thin, 트리거 '얇고' [66,68] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)",
+        "form.type=shell: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시"
+      ],
+      "camera": {
+        "position": [
+          0.0,
+          1.6,
+          0.0
+        ],
+        "euler": [
+          46.6637268,
+          0.0,
+          0.0
+        ]
+      },
+      "renders": {
+        "scene": {
+          "renderMs": 17.31,
+          "png": "H16.v1_scene.png"
+        },
+        "black": {
+          "renderMs": 12.44,
+          "png": "H16.v1_black.png"
+        },
+        "white": {
+          "renderMs": 11.85,
+          "png": "H16.v1_white.png"
+        }
+      },
+      "totalMs": 48.54,
+      "errors": []
+    },
+    {
+      "spec": "H18.v1.json",
+      "loadMs": 1.31,
+      "loaded": true,
+      "renderPath": "blob",
+      "params": {
+        "form.posture": "none",
+        "form.type": "blob",
+        "layout.distance": 0.33,
+        "layout.size": 0.5,
+        "layout.verticalOffset": 0.75,
+        "material.brightness": 0.8,
+        "material.color.h": 0.0,
+        "material.color.l": 0.45,
+        "material.color.s": 0.2,
+        "material.erosion": 0.0,
+        "material.opacity": 1.0,
+        "material.roughness": 0.5,
+        "motion.speed": 0.25,
+        "motion.type": "floating"
+      },
+      "notes": [
+        "form.posture: SceneSpec 값이 null → 기본값 none 사용",
+        "material.roughness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.opacity: SceneSpec 값이 null → 기본값 1 사용",
+        "material.erosion: SceneSpec 값이 null → 기본값 0 사용",
+        "layout.size: SceneSpec 값이 null → 기본값 0.5 사용",
+        "layout.distance: SceneSpec 값이 null → 기본값 0.33 사용",
+        "layout.verticalOffset: SceneSpec 값이 null → 기본값 0.75 사용",
+        "form.type=blob: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시"
+      ],
+      "camera": {
+        "position": [
+          0.0,
+          1.6,
+          0.0
+        ],
+        "euler": [
+          14.9470787,
+          0.0,
+          0.0
+        ]
+      },
+      "renders": {
+        "scene": {
+          "renderMs": 13.94,
+          "png": "H18.v1_scene.png"
+        },
+        "black": {
+          "renderMs": 11.66,
+          "png": "H18.v1_black.png"
+        },
+        "white": {
+          "renderMs": 11.6,
+          "png": "H18.v1_white.png"
+        }
+      },
+      "totalMs": 44.35,
+      "errors": []
+    },
+    {
+      "spec": "H20.v1.json",
+      "loadMs": 1.55,
+      "loaded": true,
+      "renderPath": "blob",
+      "params": {
+        "form.posture": "sagging",
+        "form.type": "blob",
+        "layout.distance": 0.33,
+        "layout.size": 0.5,
+        "layout.verticalOffset": 0.02,
+        "material.brightness": 0.5,
+        "material.color.h": 0.333,
+        "material.color.l": 0.4,
+        "material.color.s": 0.25,
+        "material.erosion": 0.0,
+        "material.opacity": 1.0,
+        "material.roughness": 0.15,
+        "motion.speed": 0.5,
+        "motion.type": "sinking"
+      },
+      "notes": [
+        "material.brightness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.opacity: SceneSpec 값이 null → 기본값 1 사용",
+        "material.erosion: SceneSpec 값이 null → 기본값 0 사용",
+        "layout.size: SceneSpec 값이 null → 기본값 0.5 사용",
+        "layout.distance: SceneSpec 값이 null → 기본값 0.33 사용",
+        "motion.speed: SceneSpec 값이 null → 기본값 0.5 사용",
+        "form.type=blob: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시"
+      ],
+      "camera": {
+        "position": [
+          0.0,
+          1.6,
+          0.0
+        ],
+        "euler": [
+          52.74238,
+          0.0,
+          0.0
+        ]
+      },
+      "renders": {
+        "scene": {
+          "renderMs": 10.43,
+          "png": "H20.v1_scene.png"
+        },
+        "black": {
+          "renderMs": 12.53,
+          "png": "H20.v1_black.png"
+        },
+        "white": {
+          "renderMs": 11.53,
+          "png": "H20.v1_white.png"
+        }
+      },
+      "totalMs": 41.21,
+      "errors": []
+    },
+    {
+      "spec": "H28.v1.json",
+      "loadMs": 2.02,
+      "loaded": true,
+      "renderPath": "mist",
+      "params": {
+        "form.posture": "none",
+        "form.type": "mist",
+        "layout.distance": 0.33,
+        "layout.size": 0.316,
+        "layout.verticalOffset": 1.0,
+        "material.brightness": 0.7,
+        "material.color.h": 0.556,
+        "material.color.l": 0.85,
+        "material.color.s": 0.49,
+        "material.erosion": 0.0,
+        "material.opacity": 1.0,
+        "material.roughness": 0.5,
+        "motion.speed": 0.5,
+        "motion.type": "spreading"
+      },
+      "notes": [
+        "form.posture: SceneSpec 값이 null → 기본값 none 사용",
+        "material.roughness: SceneSpec 값이 null → 기본값 0.5 사용",
+        "material.opacity: SceneSpec 값이 null → 기본값 1 사용",
+        "material.erosion: SceneSpec 값이 null → 기본값 0 사용",
+        "layout.distance: SceneSpec 값이 null → 기본값 0.33 사용",
+        "motion.speed: SceneSpec 값이 null → 기본값 0.5 사용",
+        "form.type=mist: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시",
+        "form.type=mist: 형상 프리셋 기본값 — 구 대리 메시 + 레이마칭 8걸음, 반지름 흔들림 0.3, 노이즈 크기 1.1, 밀도 0.5(중심 광선 알파의 목표 근사 ≈ opacity × 밀도). mist에서 material.roughness는 표면 반사(광택)가 아니라 밀도 노이즈 크기 배율(0.7–1.3)과 색 얼룩 세기를 정함"
+      ],
+      "camera": {
+        "position": [
+          0.0,
+          1.6,
+          0.0
+        ],
+        "euler": [
+          354.7517,
+          0.0,
+          0.0
+        ]
+      },
+      "renders": {
+        "scene": {
+          "renderMs": 16.57,
+          "png": "H28.v1_scene.png"
+        },
+        "black": {
+          "renderMs": 12.76,
+          "png": "H28.v1_black.png"
+        },
+        "white": {
+          "renderMs": 11.76,
+          "png": "H28.v1_white.png"
+        }
+      },
+      "totalMs": 48.06,
+      "errors": []
+    }
+  ],
+  "ok": true
+}

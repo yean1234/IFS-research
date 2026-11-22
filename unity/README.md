@@ -23,7 +23,9 @@ unity/
 │  │  ├─ Runtime/Rendering/              형상별 렌더 경로: FormRenderPlan(슬롯 값 → 렌더러 입력) · IFormRenderer(blob·mist·shell·fragments·shapeModel) · FragmentMesh
 │  │  ├─ Runtime/Resources/IFS/          셰이더(Built-in): SceneSpec Opaque · Fade · Mist(부피 레이마칭) + 공통 노이즈, Environment Floor · Sky
 │  │  ├─ Tests/Editor/                    EditMode 테스트(아래 「테스트」), UnityOnly/ = Unity에서만 도는 것
-│  │  └─ Scenes/                          SceneSpecExamples.unity(예시 2개 테스트 씬) · OwnershipExperiment.unity(소유감 실험)
+│  │  ├─ Runtime/Preview/                 형상 미리보기(D4): PreviewStage(무대) · PreviewBridge(JS 진입점) · PreviewQueue(상주 플레이어) · Plugins/WebGL/IFSPreview.jslib
+│  │  └─ Scenes/                          SceneSpecExamples.unity(예시 2개 테스트 씬) · OwnershipExperiment.unity(소유감 실험) · Preview.unity(미리보기)
+│  ├─ WebGLTemplates/IFSPreview/          WebGL 미리보기 페이지(외부 자원 없음, window.ifsPreview)
 │  ├─ Prefabs/Shapes/                     모양 모형 프리팹 4개(Sphere · Cube · FlatCylinder · Cone) + 원뿔 메시 + 머티리얼(메뉴가 만듦)
 │  └─ StreamingAssets/IFS/examples/       EX01.json · EX02.json (chatbot/tests/fixtures/scene_spec와 바이트까지 같음)
 │     StreamingAssets/IFS/ownership_task.v0.json  소유감 실험 참여자 문구(초안, IRB 대상)
@@ -518,6 +520,18 @@ Windows 빌드(선택): 메뉴 **IFS ▸ Experiment ▸ Build Placement Experime
 | 물체가 정면에 없음·'나' 자리가 어긋남 | 참여자를 원판 가운데에 세우고 R. 세션 중에 누르면 기록 좌표가 그 순간 바뀌므로(`events.csv`의 `recenter`) 가능하면 시작 전에 맞춥니다 |
 | 끊김·멀미 | Scene 창을 닫고 Game 창만, 또는 Windows 빌드로 실행. 72 Hz 유지는 미측정 |
 
+## 미리보기(WebGL)
+
+후보·조절 화면(D5)에서 형상을 Unity 렌더로 보여 주기 위한 것입니다(결정 G12). 결과·판정 제안·재현 명령은 `docs/validation/webgl/README.md`.
+
+- **JSON 문자열 로드**: `SceneLoader.LoadJson(json, 이름, 덮어쓰기)`. 파일 로드와 같은 내부 경로(파싱·검사·해석·렌더·기록)를 탑니다. 같은 파일 이름을 주면 notes·기록까지 `Load(path)`와 같습니다(EditMode 테스트가 golden 지문으로 확인). WebGL 플레이어에서는 파일을 못 읽으므로 이것만 씁니다. 덮어쓰기 목록 JSON은 `SceneOverrideJson.Parse`(manifest의 `overrides`와 같은 평평한 객체 + `shapeModel`).
+- **무대**: `PreviewStage` = 중립 환경 + 고정 카메라(눈높이 1.6 m에서 형상 경계 중심을 봄, 세로 시야 60°) + 기록을 끈 로더, 품질 단계 `VR PC`. WebGL·Windows 플레이어·에디터 캡처가 모두 이 코드를 씁니다.
+- **씬**: `Assets/IFS/Scenes/Preview.unity` — GameObject `IFS Preview`(`PreviewBridge`) 하나. 메뉴 **IFS ▸ Preview ▸ 미리보기 씬 다시 만들기**.
+- **브라우저 → Unity**: `unityInstance.SendMessage("IFS Preview", 메서드, 문자열)` — `LoadSpecJson(spec)`, `ApplyOverridesJson({"form.type":"mist",…})`(빈 문자열 = 덮어쓰기 지움), `SetAutoRotate("12")`, `SetFrozen("1")`, `Capture({"id","width","height","background":"scene|black|white"})`. 템플릿 페이지는 이것을 `window.ifsPreview.load()` 등 Promise로 감쌉니다. Unity → 브라우저 알림은 `.jslib`(`ready`·`loaded`·`error`·`capture`). 마우스 왼쪽 드래그 = 세로축 회전.
+- **빌드**: `PreviewBuild.BuildWebGLPreview`(압축 끔·템플릿·캐싱 끔을 빌드 동안만 바꾸고 되돌림, 출력은 저장소 밖 `../webgl-build/preview`). **2026-11-23 이 PC에는 WebGL 모듈이 없어 빌드하지 못했습니다**(설치에 관리자 확인 필요).
+- **대안 경로**: `PreviewBuild.BuildWindowsPreview` → `IFSPreview.exe -batchmode -ifsPreviewQueue <폴더>`. 폴더 요청마다 PNG를 씁니다(`PreviewQueue`). 에디터 캡처와 24개 spec에서 덮인 화소 수가 같고 평균 색 ΔE00 최대 0.045, 요청 왕복 중앙값 15.2 ms(800×600).
+- 에디터 캡처: `PreviewCapture.Run -specDir … -outDir … [-width 800 -height 600 -backgrounds scene,black,white]`.
+
 ## 테스트
 
 ```bash
@@ -525,7 +539,7 @@ Windows 빌드(선택): 메뉴 **IFS ▸ Experiment ▸ Build Placement Experime
   -runTests -testPlatform EditMode -testResults <결과.xml> -logFile <로그>
 ```
 
-EditMode 278개(2026-11-23 헤드셋 프로토타입 뒤 배치모드로 전부 통과. 그 전 257개, 배치 러너 CP7 반영 때 192개). 아래 표는 2026-11-22 기준이고, 그 뒤 더한 것은 표 아래에 적었습니다:
+EditMode 307개(2026-11-23 미리보기(D4) 뒤 배치모드로 전부 통과. 그 전 278개(헤드셋 프로토타입), 257개, 배치 러너 CP7 반영 때 192개). 아래 표는 2026-11-22 기준이고, 그 뒤 더한 것은 표 아래에 적었습니다:
 
 | 파일 | 개수 | 내용 |
 | --- | --- | --- |
@@ -549,6 +563,13 @@ EditMode 278개(2026-11-23 헤드셋 프로토타입 뒤 배치모드로 전부 
 | `MistShaderSourceTests.cs` | +1 | 안개·하늘 셰이더의 스테레오 인스턴싱 매크로(인스턴스 ID를 조각 단계까지) |
 | `UnityOnly/PlacementRunnerXrTests.cs` | 5 | 씬 구성(리그 아래 눈높이 카메라, XR 없으면 정면 재설정 안 함), 헤드셋 없으면 auto → desktop·강제 xr 거부, 헤드셋 있음(흉내) + 가짜 컨트롤러 → `inputSource: xr`·잡기·밀기가 세션과 그리기에 반영·`xr_status`, 참여자 판 자리(정면 2 m, 눈높이 아래)·평정 기준점 줄·평정 동안 숨김, scaleA 자동 시행 |
 
+2026-11-23 미리보기(D4)에서 더한 것(29개):
+
+| 파일 | 개수 | 내용 |
+| --- | --- | --- |
+| `SceneOverrideJsonTests.cs` | 24 | 덮어쓰기 목록 JSON: 숫자·문자열·`shapeModel` 나누기, 빈 입력 = 덮어쓰기 없음, 잘못된 JSON·객체 아님·뒤에 남은 내용·모르는 키·0–1 밖·모르는 형태·motion.type·null·bool·모르는 모형 거부(이유 포함), manifest `overrides` 왕복, 같은 글 → 같은 덮어쓰기, 배경 이름(scene·black·white) |
+| `UnityOnly/PreviewTests.cs` | 5 | `LoadJson` = `Load(path)`(golden 지문 spec 8개, 기록 파일 포함), 덮어쓰기를 얹어도 같음, 잘못된 JSON·null은 false이고 이전 형상 유지·`SpecPath` null, 무대: 같은 spec 두 번 찍으면 화소가 같음·검은 배경 모서리 = 검정(이전 렌더를 읽지 않음)·덮인 화소 있음·카메라가 형상을 봄·mist는 안개 셰이더 경로, 브리지: `loaded`·`error`·`capture` 알림 내용(JS 계약) |
+
 로그 확인: EditMode 로그에는 테스트 프레임워크의 스택 프레임 `UnityLogCheckDelegatingCommand:CaptureException`이 정상 실행에서도 찍힙니다(CP4 실행 36줄, 외부 리뷰 반영 실행은 로그 문구가 늘어 더 많음). 오류를 찾을 때는 `Select-String -Pattern 'error CS|Shader error|^\w*Exception:|\[Exception\]'`처럼 좁히거나 이 프레임을 빼고 셉니다(이번 실행 0건). 캡처 로그는 넓은 패턴(`Exception|error CS|Shader error`)으로도 0건입니다.
 
 ## 컴파일 확인 (dotnet)
@@ -559,7 +580,8 @@ Unity가 없는 곳(CI 등)에서는 `Tools/compile-check/`에서 dotnet으로 �
 cd unity/Tools/compile-check && dotnet build IFS.SceneSpec.CompileCheck.csproj && dotnet test Tests/IFS.SceneSpec.CompileCheck.Tests.csproj
 ```
 
-- Unity에 의존하지 않는 코드와 EditMode 테스트 파일은 실제 Newtonsoft·NUnit으로 컴파일·실행됩니다(234개, 2026-11-23 헤드셋 프로토타입 뒤. 그 전 218개, 배치 러너 CP7 반영 때 168개). `Tests/Editor/UnityOnly/`는 실제 렌더가 필요해 뺍니다.
+- 미리보기(D4)에서 `Stubs/UnityStubsPreview.cs`(`PlayerSettings.WebGL`·`EditorUserBuildSettings`·`WebGLCompressionFormat`·`SceneAsset`·`StereoTargetEyeMask`·`RuntimePlatform`)와 기존 스텁 몇 줄(`Camera.stereoTargetEye`, `Transform.eulerAngles`, `Application.platform`·`Quit`, `SystemInfo.graphicsDeviceVersion`, `Input.GetMouseButtonUp`, `BuildTarget.WebGL`·`BuildTargetGroup`·`IsBuildTargetSupported`, `BuildSummary` 시간·크기, `AssetDatabase.LoadAllAssetsAtPath`)을 더했습니다. `#if UNITY_WEBGL && !UNITY_EDITOR` 부분(.jslib 호출)은 dotnet에서 컴파일되지 않습니다.
+- Unity에 의존하지 않는 코드와 EditMode 테스트 파일은 실제 Newtonsoft·NUnit으로 컴파일·실행됩니다(258개, 2026-11-23 미리보기 뒤. 그 전 234개(헤드셋 프로토타입). 그 전 218개, 배치 러너 CP7 반영 때 168개). `Tests/Editor/UnityOnly/`는 실제 렌더가 필요해 뺍니다.
 - 헤드셋 경로(2026-11-23): 러너는 내장 XR 모듈 API만 쓰므로 `Stubs/UnityStubsXr.cs`(`XRSettings`·`XRInputSubsystem`·`SubsystemManager`·`Application.onBeforeRender`·Windows 빌드용 `BuildPipeline`)와 기존 스텁의 몇 줄(`InputDevice`의 bool·float·Vector2 값, `CommonUsages` 버튼들, `TextMesh.richText`, `Font.textureRebuilt`, `GUILayout.Toggle`, `KeyCode.R` 등)로 타입 검사합니다. XR 패키지 API를 쓰는 `Editor/XR/XrProjectSetup.cs`는 asmdef `versionDefines`(`IFS_HAS_OPENXR`·`IFS_HAS_XR_MANAGEMENT`)로 패키지가 있을 때만 컴파일되므로, compile-check에서는 빈 파일로 컴파일됩니다(그 파일의 타입 검사는 Unity에서만 — 2026-11-23 Unity 배치 실행으로 컴파일·실행 확인).
 - MonoBehaviour·Editor 스크립트는 UnityEngine/UnityEditor **스텁**(이름·시그니처만)으로 타입 검사만 합니다. 새 Unity API를 쓰면 `Stubs/UnityStubs.cs`(소유감 실험의 입력·글자·IMGUI·XR은 `Stubs/UnityStubsOwnership.cs`)에 같은 시그니처를 추가합니다. 배치 러너용으로 `Camera.ScreenPointToRay`, `Mathf.Max`, `Ray`, `Input.mousePosition`·`GetMouseButtonDown`, `KeyCode.E/F/Q`를 더했습니다.
 

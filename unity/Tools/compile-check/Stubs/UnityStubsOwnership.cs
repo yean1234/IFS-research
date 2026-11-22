@@ -19,6 +19,7 @@ namespace UnityEngine
         public static bool GetKey(KeyCode key) => false;
         public static bool GetMouseButton(int button) => false;
         public static bool GetMouseButtonDown(int button) => false;
+        public static bool GetMouseButtonUp(int button) => false;
         public static float GetAxis(string axisName) => 0f;
         public static Vector3 mousePosition => default;
     }

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>IFS WebGL 미리보기 비교 드라이버</title>
+<!-- D4 비교 드라이버(serve.py가 /harness/driver.html로 내보냄). 외부 스크립트 없음.
+     ⚠ 2026-11-23 기준 미실행: WebGL 모듈이 없어 빌드를 만들지 못했다.
+     같은 출처의 빌드 페이지(/index.html)를 iframe으로 띄우고 window.ifsPreview로 spec을 넣은 뒤,
+     spec마다 scene·black·white를 Unity 안에서 렌더해(PreviewStage.RenderPng — 에디터 PreviewCapture와 같은 코드) /save로 보낸다.
+     페이지 오류·콘솔 오류는 /log로, 시간은 /done으로 보낸다. -->
+</head>
+<body style="margin:0">
+<iframe id="f" src="/index.html" style="width:800px;height:600px;border:0"></iframe>
+<pre id="out"></pre>
+<script>
+(async function () {
+  'use strict';
+  const W = 800, H = 600;
+  const out = document.getElementById('out');
+  const log = (o) => { out.textContent += JSON.stringify(o) + '\n'; return fetch('/log', { method: 'POST', body: JSON.stringify(o) }); };
+  const t0 = performance.now();
+  const frame = document.getElementById('f');
+  await new Promise((r) => frame.addEventListener('load', r, { once: true }));
+  const w = frame.contentWindow;
+  const errors = [];
+  w.addEventListener('error', (e) => { errors.push(String(e.message)); log({ type: 'window.error', message: String(e.message) }); });
+  const origError = w.console.error.bind(w.console);
+  w.console.error = function () { const m = Array.from(arguments).map(String).join(' '); errors.push(m); log({ type: 'console.error', message: m }); origError.apply(null, arguments); };
+  const result = { specs: [], errors };
+  try {
+    await w.ifsPreview.ready;
+    result.instanceMs = w.ifsPreview.timings.instanceMs;
+    result.pageToReadyMs = performance.now() - t0;
+    await w.ifsPreview.setFrozen(true);
+    const specs = await (await fetch('/harness/specs.json')).json();
+    for (const s of specs) {
+      const text = await (await fetch(s.url)).text();
+      const e = { spec: s.name };
+      try {
+        const a = performance.now();
+        const loaded = await w.ifsPreview.load(text);
+        e.roundTripMs = performance.now() - a;
+        e.loadMs = loaded.loadMs; e.renderPath = loaded.renderPath; e.loaderErrors = loaded.errors;
+        e.renders = {};
+        for (const bg of ['scene', 'black', 'white']) {
+          const c = await w.ifsPreview.capture({ id: s.name + '_' + bg, width: W, height: H, background: bg });
+          e.renders[bg] = c.renderMs;
+          const bytes = Uint8Array.from(atob(c.png), (ch) => ch.charCodeAt(0));
+          await fetch('/save?name=' + encodeURIComponent(s.name + '_' + bg + '.png'), { method: 'POST', body: bytes });
+        }
+      } catch (err) {
+        e.error = err && err.message ? err.message : JSON.stringify(err);
+      }
+      result.specs.push(e);
+      log({ type: 'spec', spec: e.spec, ok: !e.error, renderPath: e.renderPath });
+    }
+    result.webgl = (() => {
+      const gl = w.document.getElementById('unity-canvas').getContext('webgl2');
+      if (!gl) return null;
+      const dbg = gl.getExtension('WEBGL_debug_renderer_info');
+      return { version: gl.getParameter(gl.VERSION), renderer: dbg ? gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER), maxSamples: gl.getParameter(gl.MAX_SAMPLES) };
+    })();
+  } catch (err) {
+    result.fatal = String(err && err.message ? err.message : JSON.stringify(err));
+  }
+  result.totalMs = performance.now() - t0;
+  await fetch('/done', { method: 'POST', body: JSON.stringify(result) });
+  out.textContent += 'done\n';
+})();
+</script>
+</body>
+</html>

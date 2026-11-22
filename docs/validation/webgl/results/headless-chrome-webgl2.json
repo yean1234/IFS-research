@@ -1,0 +1,9 @@
+{
+    "webgl2":  true,
+    "version":  "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+    "renderer":  "ANGLE (NVIDIA, NVIDIA GeForce RTX 5080 (0x00002C02) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "vendor":  "Google Inc. (NVIDIA)",
+    "maxSamples":  8,
+    "ua":  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36",
+    "note":  "2026-11-23 headless Chrome probe (--headless=new, no GPU flags, isolated profile). Not a Unity build: 64x64 canvas getContext(\u0027webgl2\u0027)."
+}

@@ -56,6 +56,7 @@ namespace UnityEngine
         public Vector3 localPosition { get; set; }
         public Quaternion localRotation { get; set; }
         public Vector3 localScale { get; set; }
+        public Vector3 eulerAngles { get; set; }
         public Vector3 forward => Vector3.forward;
         public Vector3 right => new Vector3(1, 0, 0);
         public void SetParent(Transform parent, bool worldPositionStays) { }
@@ -222,6 +223,7 @@ namespace UnityEngine
         public RenderTexture targetTexture { get; set; }
         public void Render() { }
         public bool RenderToCubemap(RenderTexture cubemap, int faceMask) => true;
+        public StereoTargetEyeMask stereoTargetEye { get; set; }
         public Ray ScreenPointToRay(Vector3 pos) => default;
     }
 
@@ -336,6 +338,7 @@ namespace UnityEngine
         public static string graphicsDeviceName => "";
         public static Rendering.GraphicsDeviceType graphicsDeviceType => default;
         public static string operatingSystem => "";
+        public static string graphicsDeviceVersion => "";
     }
 
     public enum LogType { Error, Assert, Warning, Log, Exception }
@@ -365,6 +368,8 @@ namespace UnityEngine
         public static bool isEditor => true;
         public static string dataPath => "";
         public static string unityVersion => "";
+        public static RuntimePlatform platform => RuntimePlatform.WindowsEditor;
+        public static void Quit() { }
         public delegate void LogCallback(string condition, string stackTrace, LogType type);
         public static event LogCallback logMessageReceived { add { } remove { } }
         public static event Events.UnityAction onBeforeRender { add { } remove { } }
@@ -470,6 +475,7 @@ namespace UnityEditor
     public static class AssetDatabase
     {
         public static T LoadAssetAtPath<T>(string assetPath) where T : UnityEngine.Object => null;
+        public static UnityEngine.Object[] LoadAllAssetsAtPath(string assetPath) => System.Array.Empty<UnityEngine.Object>();
         public static void CreateAsset(UnityEngine.Object asset, string path) { }
         public static string CreateFolder(string parentFolder, string newFolderName) => "";
         public static bool IsValidFolder(string path) => false;

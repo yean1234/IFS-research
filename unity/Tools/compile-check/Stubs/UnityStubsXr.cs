@@ -41,7 +41,9 @@ namespace UnityEngine.XR
 
 namespace UnityEditor
 {
-    public enum BuildTarget { StandaloneWindows64 = 19 }
+    public enum BuildTarget { StandaloneWindows64 = 19, WebGL = 20 }
+
+    public enum BuildTargetGroup { Standalone = 1, WebGL = 13 }
 
     [System.Flags]
     public enum BuildOptions { None = 0 }
@@ -57,6 +59,7 @@ namespace UnityEditor
     public static class BuildPipeline
     {
         public static Build.Reporting.BuildReport BuildPlayer(BuildPlayerOptions buildPlayerOptions) => new Build.Reporting.BuildReport();
+        public static bool IsBuildTargetSupported(BuildTargetGroup buildTargetGroup, BuildTarget target) => false;
     }
 }
 
@@ -68,6 +71,9 @@ namespace UnityEditor.Build.Reporting
     {
         public BuildResult result => BuildResult.Unknown;
         public int totalErrors => 0;
+        public int totalWarnings => 0;
+        public System.TimeSpan totalTime => default;
+        public ulong totalSize => 0;
     }
 
     public class BuildReport
