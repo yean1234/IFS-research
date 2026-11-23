@@ -1,0 +1,55 @@
+{
+  "id": "S9_membrane_split",
+  "title": "낱말 해석 갈림 '막'(D6) — 얇은 판(sheet, 기본 형상) | 껍질(shell) 갈림 축 × 크기, 껍질 후보를 고름",
+  "sessionId": "SYN-SEL-S9",
+  "condition": "static",
+  "replies": [
+    "가슴 앞에 뭔가 있어요",
+    "가슴 앞이요",
+    "그대로 있어요",
+    "막이요. 얇은 막",
+    "모르겠어요",
+    "모르겠어요",
+    "없어요"
+  ],
+  "confirm": {
+    "edit": "막이요. 얇은 막. 가슴 앞에 있어요."
+  },
+  "selection": "index:2",
+  "adjust": [],
+  "premeasure": {
+    "A1": 5,
+    "A2": 4,
+    "A3": 3,
+    "A4": 5,
+    "A5": 2,
+    "A6": 4,
+    "A7": 3,
+    "G13_appearance": 5,
+    "G13_representation": 6
+  },
+  "expect": {
+    "candidateCount": 4,
+    "axes": [
+      "form.type",
+      "layout.size"
+    ],
+    "axisReasons": [
+      "ambiguous",
+      "empty"
+    ],
+    "none": false,
+    "slotSources": {
+      "form.type": "chosen",
+      "form.base": "said",
+      "layout.size": "chosen"
+    },
+    "finalOverrides": {
+      "form.type": "shell"
+    },
+    "colorChanged": false,
+    "distanceFloor": null
+  },
+  "defaultReply": "없어요",
+  "note": "합성 대사. 실제 참여자 응답이 아니다(AGENTS.md 6). 껍질 후보를 고르면 form.type = shell이 되어 기본 형상(sheet)은 spec에 남지만 그려지지 않는다(not_applied_form)."
+}

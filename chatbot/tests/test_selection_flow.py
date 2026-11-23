@@ -998,6 +998,10 @@ def test_selection_scenarios_run_end_to_end(tmp_path):
     assert by["S6_unrendered_shape_chosen"]["sources"]["form.type"] == "said_unrendered_chosen"
     assert by["S7_unrendered_none_floor"]["sources"]["form.type"] == "said_unrendered_default"
     assert by["S7_unrendered_none_floor"]["distanceFloor"]["said"] == 0.0
+    # D6: 기본 형상을 말함 → 조절에서 다른 기본 형상으로 고침 / '막' 갈림에서 껍질을 고름
+    assert by["S8_base_said_edited"]["sources"]["form.base"] == "edited"
+    assert by["S8_base_said_edited"]["sources"]["form.type"] == "default"
+    assert by["S9_membrane_split"]["sources"]["form.type"] == "chosen" and by["S9_membrane_split"]["sources"]["form.base"] == "said"
     assert all(r["interviewLlmTurns"] == 0 for r in s["results"])
     for r in s["results"]:
         d = tmp_path / "out" / r["scenario"]

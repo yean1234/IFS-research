@@ -433,9 +433,10 @@ class SelectionFlow:
                     edited[slot] = {k: round(final[f"material.color.{k}"], 4) for k in ("h", "s", "l")}
                 elif slot == "material.saturation":
                     edited[slot] = round(final["material.color.s"], 4)
-                elif slot == "form.base":
-                    if final["form.base"] != start["form.base"]:      # D6: 기본 형상이 실제로 바뀐 경우만 '고침'
-                        edited[slot] = final["form.base"]
+                elif "valueOverrides" in items[item]:
+                    # D6 형태 항목: 값 하나가 form.type·form.base를 함께 정하므로 실제로 바뀐 슬롯만 '고침'
+                    if final[slot] != start[slot]:
+                        edited[slot] = final[slot]
                 else:
                     v = final[items[item]["key"]]
                     edited[slot] = round(v, 4) if isinstance(v, float) else v

@@ -1,0 +1,67 @@
+{
+  "id": "S8_base_said_edited",
+  "title": "기본 형상을 말한 경우(D6) — '엉킨 실'(line, tangle)은 형태 자리가 말한 자리라 후보는 크기 × 투명도 2×2, 조절에서 형태를 얇은 판(sheet)으로 고치고 색을 바꿈",
+  "sessionId": "SYN-SEL-S8",
+  "condition": "static",
+  "replies": [
+    "가슴 안쪽에 뭔가 있어요",
+    "가슴 안쪽이요",
+    "그대로 있어요",
+    "엉킨 실이 감겨 있어요",
+    "모르겠어요",
+    "모르겠어요",
+    "없어요"
+  ],
+  "confirm": {
+    "edit": "가슴 안쪽에 엉킨 실이 감겨 있어요."
+  },
+  "selection": "index:1",
+  "adjust": [
+    {
+      "item": "form",
+      "value": "sheet"
+    },
+    {
+      "item": "color",
+      "value": "h03"
+    }
+  ],
+  "premeasure": {
+    "A1": 5,
+    "A2": 4,
+    "A3": 3,
+    "A4": 5,
+    "A5": 2,
+    "A6": 4,
+    "A7": 3,
+    "G13_appearance": 5,
+    "G13_representation": 6
+  },
+  "expect": {
+    "candidateCount": 4,
+    "axes": [
+      "layout.size",
+      "material.opacity"
+    ],
+    "axisReasons": [
+      "empty",
+      "empty"
+    ],
+    "none": false,
+    "slotSources": {
+      "form.type": "default",
+      "form.base": "edited",
+      "layout.size": "chosen",
+      "material.opacity": "chosen",
+      "material.color": "edited"
+    },
+    "finalOverrides": {
+      "form.base": "sheet",
+      "material.opacity": 0.4
+    },
+    "colorChanged": true,
+    "distanceFloor": null
+  },
+  "defaultReply": "없어요",
+  "note": "합성 대사. 실제 참여자 응답이 아니다(AGENTS.md 6). 기본 형상은 후보 값으로 내밀지 않고(D6), 조절의 형태 항목에서만 고를 수 있다(G22)."
+}
