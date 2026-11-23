@@ -131,6 +131,7 @@ namespace IFS.SceneSpec.Tests
             var pinned = new Dictionary<string, ulong>
             {
                 { "container/1", 13257536307435825394UL },
+                { "line/1", 15146493612528602679UL },
             };
             foreach (var shape in BaseShapes.All.Where(BaseShapeMesh.Supports))
             {

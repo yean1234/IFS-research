@@ -139,6 +139,13 @@ WORDS = [
     ("배 안에 유리병이 있어요.", "container", {"opening": "narrow"}),
     ("까만 네모난 상자예요.", "container", {"opening": "wide", "profile": "square"}),
     ("네모난 그릇 같아요.", "container", {"opening": "wide", "profile": "square"}),    # 모양어 '네모'가 단면을 정함
+    ("실이 한 가닥 있어요.", "line", {"form": "curve", "gauge": "thin"}),
+    ("엉킨 실타래가 있어요.", "line", {"form": "tangle", "gauge": "thin"}),
+    ("매듭이요. 단단하게 묶여 있어요.", "line", {"form": "knot"}),
+    ("굵은 밧줄이 있어요.", "line", {"form": "curve", "gauge": "thick"}),
+    ("가느다란 검은 실이 엉켜 있어요.", "line", {"form": "tangle", "gauge": "thin"}),         # 같은 문장의 '엉키'가 tangle
+    ("굵은 실이 있어요.", "line", {"form": "curve", "gauge": "thick"}),                      # 말한 '굵'이 낱말 뜻(thin)을 덮음
+    ("선이요. 한 줄로 쭉.", "line", {"form": "curve"}),
 ]
 
 
@@ -277,3 +284,36 @@ def test_adjust_flow_pick_a_base_without_saying_one(rt4):
     assert f.data["finalOverrides"].get("form.base") == "container"
     assert f.data["sources"]["form.base"] == "edited"
     valid(f.data)
+
+
+# ── G32 동작 변경 고정(D6) ──────────────────────────────────────────────────
+T_THREAD = "가슴 안쪽에 실 같은 게 감겨 있어요."
+
+
+def test_thread_was_unrendered_shape_word_and_is_now_a_drawn_base(v2, an):
+    """builder 2.1.0까지 '실'은 모형 없는 모양어(_unmapped shape thread)라 G32 규칙으로 형태 후보(blob·mist)를 벌리고 출처를
+    said_unrendered_*로 적었다. D6부터 '실'은 form.base = line의 근거가 되어 _unmapped에서 빠지고, 형태 자리는 말한 자리다
+    (후보에서 벌리지 않음, 출처 form.base = said, form.type = default)."""
+    from ifs_chatbot.candidates import form_said_unrendered, unrendered_shape_words
+    v1 = SceneSpecBuilderV1(an)
+    old = v1.build(T_THREAD)
+    assert [u["value"]["shape"] for u in old["_unmapped"] if u["category"] == "shape"] == ["thread"]
+    spec = build(v2, T_THREAD)
+    assert spec["form"]["base"] == "line" and spec["_provenance"]["form.base"][0]["source"] == "simile_marker"
+    assert not unrendered_shape_words(spec, TABLE) and not form_said_unrendered(spec, TABLE)
+    out = generate(spec, "SYN-C", TABLE)
+    assert all(ax["slot"] != "form.type" and ax["reason"] != "said_unrendered" for ax in out["axes"])
+    assert all(c["sources"]["form.base"] == "said" and c["sources"]["form.type"] == "default" for c in out["candidates"])
+    # 같은 spec에서 form.base만 지우면(= builder 2.1.0의 판정) 다시 G32 경로
+    old_like = json.loads(json.dumps(spec))
+    old_like["form"]["base"], old_like["form"]["baseVariant"] = None, None
+    old_like["_unmapped"].append({"lemma": "실", "category": "shape", "value": {"shape": "thread"}, "reason": "no_scene_param",
+                                  "_provenance": spec["_provenance"]["form.base"][0]})
+    assert form_said_unrendered(old_like, TABLE)
+    assert generate(old_like, "SYN-C", TABLE)["axes"][0]["reason"] == "said_unrendered"
+
+
+def test_line_word_beside_another_noun_is_not_a_base(v2):
+    """'털실 뭉치처럼'의 직유 원천은 '뭉치'(blob)라 털실은 꾸밈말 — base가 아니다(사전에 있어도)."""
+    spec = build(v2, "털실 뭉치처럼 생겼어요.")
+    assert spec["form"]["base"] is None and spec["form"]["type"] == "blob"

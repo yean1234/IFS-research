@@ -1,0 +1,213 @@
+[
+ {
+  "id": "L1",
+  "text": "실이 한 가닥 있어요.",
+  "base": {
+   "requested": "line",
+   "status": "applied",
+   "shape": "line",
+   "rule": "line/1",
+   "variant": {
+    "form": "curve",
+    "gauge": "thin"
+   },
+   "variantDefaults": [],
+   "seed": 0,
+   "parameters": {
+    "samples": 96.0,
+    "tubeRadius": 0.02,
+    "tubeSegments": 8.0
+   }
+  },
+  "variant": {
+   "form": "curve",
+   "gauge": "thin"
+  },
+  "formType": null,
+  "renderPath": "base:line",
+  "visiblePixels": 947,
+  "silhouette": {
+   "circularity": 0.11,
+   "components": 1,
+   "edgeFalloffPx": 0.69,
+   "maskPixels": 848
+  },
+  "contrastDeltaL": 5.73,
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 1600,
+  "trianglesPerEyeEstimate": 6800,
+  "baseNotes": [
+   "form.base=line: 형상 프리셋 기본값 — 절차 메시(규칙 line/1, form=curve, gauge=thin, seed 0, samples 96, tubeRadius 0.02, tubeSegments 8). 윤곽만(색·무늬·발광·고유 움직임 없음), 정점 변위 0, 노이즈 크기 1.6(거칠기 얼룩·침식 무늬). 경계 상자 가장 긴 변 1 × 기본 크기"
+  ]
+ },
+ {
+  "id": "L2",
+  "text": "엉킨 실타래가 있어요.",
+  "base": {
+   "requested": "line",
+   "status": "applied",
+   "shape": "line",
+   "rule": "line/1",
+   "variant": {
+    "form": "tangle",
+    "gauge": "thin"
+   },
+   "variantDefaults": [],
+   "seed": 0,
+   "parameters": {
+    "samples": 310.0,
+    "tubeRadius": 0.02,
+    "tubeSegments": 8.0
+   }
+  },
+  "variant": {
+   "form": "tangle",
+   "gauge": "thin"
+  },
+  "formType": null,
+  "renderPath": "base:line",
+  "visiblePixels": 9695,
+  "silhouette": {
+   "circularity": 0.028,
+   "components": 1,
+   "edgeFalloffPx": 0.71,
+   "maskPixels": 9098
+  },
+  "contrastDeltaL": 6.63,
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 5024,
+  "trianglesPerEyeEstimate": 20496,
+  "baseNotes": [
+   "form.base=line: 형상 프리셋 기본값 — 절차 메시(규칙 line/1, form=tangle, gauge=thin, seed 0, samples 310, tubeRadius 0.02, tubeSegments 8). 윤곽만(색·무늬·발광·고유 움직임 없음), 정점 변위 0, 노이즈 크기 1.6(거칠기 얼룩·침식 무늬). 경계 상자 가장 긴 변 1 × 기본 크기"
+  ]
+ },
+ {
+  "id": "L3",
+  "text": "매듭이요. 단단하게 묶여 있어요.",
+  "base": {
+   "requested": "line",
+   "status": "applied",
+   "shape": "line",
+   "rule": "line/1",
+   "variant": {
+    "form": "knot",
+    "gauge": "normal"
+   },
+   "variantDefaults": [
+    "gauge"
+   ],
+   "seed": 0,
+   "parameters": {
+    "samples": 192.0,
+    "tubeRadius": 0.035,
+    "tubeSegments": 8.0
+   }
+  },
+  "variant": {
+   "form": "knot"
+  },
+  "formType": null,
+  "renderPath": "base:line",
+  "visiblePixels": 6103,
+  "silhouette": {
+   "circularity": 0.058,
+   "components": 1,
+   "edgeFalloffPx": 0.72,
+   "maskPixels": 5781
+  },
+  "contrastDeltaL": 4.38,
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 3072,
+  "trianglesPerEyeEstimate": 12688,
+  "baseNotes": [
+   "form.base=line: 형상 프리셋 기본값 — 절차 메시(규칙 line/1, form=knot, gauge=normal(기본값), seed 0, samples 192, tubeRadius 0.035, tubeSegments 8). 윤곽만(색·무늬·발광·고유 움직임 없음), 정점 변위 0, 노이즈 크기 1.6(거칠기 얼룩·침식 무늬). 경계 상자 가장 긴 변 1 × 기본 크기"
+  ]
+ },
+ {
+  "id": "L4",
+  "text": "굵은 밧줄이 있어요. 갈색이에요.",
+  "base": {
+   "requested": "line",
+   "status": "applied",
+   "shape": "line",
+   "rule": "line/1",
+   "variant": {
+    "form": "curve",
+    "gauge": "thick"
+   },
+   "variantDefaults": [],
+   "seed": 0,
+   "parameters": {
+    "samples": 96.0,
+    "tubeRadius": 0.06,
+    "tubeSegments": 8.0
+   }
+  },
+  "variant": {
+   "form": "curve",
+   "gauge": "thick"
+  },
+  "formType": null,
+  "renderPath": "base:line",
+  "visiblePixels": 2583,
+  "silhouette": {
+   "circularity": 0.302,
+   "components": 1,
+   "edgeFalloffPx": 0.69,
+   "maskPixels": 2515
+  },
+  "contrastDeltaL": -22.3,
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 1600,
+  "trianglesPerEyeEstimate": 6800,
+  "baseNotes": [
+   "form.base=line: 형상 프리셋 기본값 — 절차 메시(규칙 line/1, form=curve, gauge=thick, seed 0, samples 96, tubeRadius 0.06, tubeSegments 8). 윤곽만(색·무늬·발광·고유 움직임 없음), 정점 변위 0, 노이즈 크기 1.6(거칠기 얼룩·침식 무늬). 경계 상자 가장 긴 변 1 × 기본 크기"
+  ]
+ },
+ {
+  "id": "L5",
+  "text": "가느다란 검은 실이 엉켜 있어요.",
+  "base": {
+   "requested": "line",
+   "status": "applied",
+   "shape": "line",
+   "rule": "line/1",
+   "variant": {
+    "form": "tangle",
+    "gauge": "thin"
+   },
+   "variantDefaults": [],
+   "seed": 0,
+   "parameters": {
+    "samples": 310.0,
+    "tubeRadius": 0.02,
+    "tubeSegments": 8.0
+   }
+  },
+  "variant": {
+   "form": "tangle",
+   "gauge": "thin"
+  },
+  "formType": null,
+  "renderPath": "base:line",
+  "visiblePixels": 9695,
+  "silhouette": {
+   "circularity": 0.029,
+   "components": 1,
+   "edgeFalloffPx": 0.67,
+   "maskPixels": 9281
+  },
+  "contrastDeltaL": -35.01,
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 5024,
+  "trianglesPerEyeEstimate": 20496,
+  "baseNotes": [
+   "form.base=line: 형상 프리셋 기본값 — 절차 메시(규칙 line/1, form=tangle, gauge=thin, seed 0, samples 310, tubeRadius 0.02, tubeSegments 8). 윤곽만(색·무늬·발광·고유 움직임 없음), 정점 변위 0, 노이즈 크기 1.6(거칠기 얼룩·침식 무늬). 경계 상자 가장 긴 변 1 × 기본 크기"
+  ]
+ }
+]

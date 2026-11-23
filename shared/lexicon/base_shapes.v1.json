@@ -1,6 +1,6 @@
 {
   "lexiconId": "base-shapes-v1",
-  "lexiconVersion": "0.1.0",
+  "lexiconVersion": "0.2.0",
   "status": "draft",
   "date": "2026-11-23",
   "description": "낱말 → 범주 → 기본 형상(form.base, SceneSpec 2.2.0). 매핑 v2(chatbot/ifs_chatbot/scene_builder_v2.py)만 읽는다. 문헌을 참고해 연구팀이 정한 목록이며 IFS가 정한 범주가 아니다(docs/asset-plan.md, decisions G6·G21·G30). 모든 낱말은 사전 항목 초안이다 — 실제 참여자 발화로 확인하기 전에는 확정하지 않는다.",
@@ -47,13 +47,26 @@
     {"lemma": "꽃병", "base": "container", "variant": {"opening": "narrow"}, "source": "added"},
     {"lemma": "항아리", "base": "container", "variant": {"opening": "narrow"}, "source": "added"},
     {"lemma": "물병", "base": "container", "variant": {"opening": "narrow"}, "source": "added"},
-    {"lemma": "유리병", "base": "container", "variant": {"opening": "narrow"}, "source": "added"}
+    {"lemma": "유리병", "base": "container", "variant": {"opening": "narrow"}, "source": "added"},
+    {"lemma": "실", "base": "line", "variant": {"form": "curve", "gauge": "thin"}, "source": "tr:김도훈·최은실(초록만 확인)"},
+    {"lemma": "밧줄", "base": "line", "variant": {"form": "curve", "gauge": "thick"}, "source": "tr:Munday 2020"},
+    {"lemma": "매듭", "base": "line", "variant": {"form": "knot"}, "source": "tr:Munday 2020; Schwartz 2001"},
+    {"lemma": "끈", "base": "line", "variant": {"form": "curve"}, "source": "added"},
+    {"lemma": "선", "base": "line", "variant": {"form": "curve"}, "source": "added"},
+    {"lemma": "실타래", "base": "line", "variant": {"form": "tangle", "gauge": "thin"}, "source": "added"},
+    {"lemma": "실뭉치", "base": "line", "variant": {"form": "tangle", "gauge": "thin"}, "source": "added"},
+    {"lemma": "털실", "base": "line", "variant": {"form": "curve"}, "source": "added"},
+    {"lemma": "머리카락", "base": "line", "variant": {"form": "curve", "gauge": "thin"}, "source": "added"}
   ],
   "notIncluded": [
     {"lemma": "병", "reason": "질병·화병과 형태가 같다(docs/asset-plan.md 3-3절). 물병·유리병·꽃병처럼 합성어만 넣었다"},
     {"lemma": "우물", "reason": "땅에 뚫린 것 → 구멍(hole) 후보(다음 묶음)"},
     {"lemma": "자루·주머니", "reason": "부드러운 자루는 container 모형과 모양이 달라 다음에 판단(docs/asset-plan.md 5-4절)"},
-    {"lemma": "속·가슴", "reason": "몸을 그릇으로 쓰는 말(몸 위치). 형상 낱말이 아니다"}
+    {"lemma": "속·가슴", "reason": "몸을 그릇으로 쓰는 말(몸 위치). 형상 낱말이 아니다"},
+    {"lemma": "줄", "reason": "noun_stoplist.v2.json의 기능·수량 명사('한 줄로', '줄을 서다')와 같은 꼴이라 넣지 않음. '줄'은 선으로 그리지 않고 지금처럼 기록하지 않는다"},
+    {"lemma": "사슬", "reason": "고리 모형이 필요해 다음 묶음(docs/asset-plan.md 1-1절 line 행)"},
+    {"lemma": "덩굴", "reason": "식물과 갈림(3-2절). 다음 묶음에 식물만 넣기로 했으므로(G30) 그때 plant로 정한다. 그때까지 line으로 보내지 않고 _unmapped에 남김"},
+    {"lemma": "조이다·땅기다·팽팽하다·엉키다", "reason": "동사·형용사(형상 낱말 아님). '엉키다·꼬이다'는 line의 변형값(tangle) 단서로만 쓴다(variantCues)"}
   ],
   "excluded": {
     "_comment": "형상 낱말이지만 그리지 않는 말(docs/asset-plan.md 4절, 연구 책임자 승인 G30 — 6절 결정 4·5는 제안대로 진행). base 자리에 올 명사(주어·이름·직유 원천, 본 장면 문장)이면 _unmapped에 reason excluded_shape, value.excluded = 사유 코드로 남긴다(이미 다른 사유로 _unmapped에 있으면 그 항목의 reason·value를 바꾼다). 대신할 형상을 그리지 않는다. 사유 코드: human_figure(연구 범위: 추방자 내용과 가장 직접 닿음), attacking_being(치료 장면·안전), weapon(안전), death_trauma(치료 장면·안전), blood_noose(신체 손상·자해 연상, 연구자가 보탠 안전 항목).",
