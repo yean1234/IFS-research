@@ -11,7 +11,8 @@
 //               [-replayPath <trajectory.json>] [-participant 1] [-conditionSeconds 90] [-baselineSeconds 30] [-headSampleHz 20]
 //               [-stopItiSeconds 2] [-showRings true|false] [-hideObjectDuringItems true|false]
 //               [-taskTextFile IFS/placement_task.scaleA.v0.json] [-selectionPath <selection.json>]
-//               [-askOptionalItems true|false] [-disabledItems own,S4] [-dt 0.02] -logFile <로그>
+//               [-askOptionalItems true|false] [-disabledItems own,S4] [-dt 0.02]
+//               [-environment neutral|space|nature] [-placementAssist true|false] -logFile <로그>   (G52, 2026-11-24)
 //   Windows 빌드: Unity.exe -batchmode -projectPath <unity> -executeMethod IFS.SceneSpec.EditorTools.PlacementExperimentMenu.BuildWindowsBatch -logFile <로그>
 //   (둘 다 -quit 없이 — 끝나면 EditorApplication.Exit(0/1)로 닫는다)
 // 자동 시행은 검증용이다: 합성 입력(PlacementAutoScript)으로 intro → done을 한 바퀴 돌고 기록 폴더를 만든다.
@@ -138,6 +139,8 @@ namespace IFS.SceneSpec.EditorTools
             if ((v = Value(args, "-xrHand")) != null) cfg.xrHand = v;
             if ((v = Value(args, "-askOptionalItems")) != null) cfg.askOptionalItems = bool.Parse(v);
             if ((v = Value(args, "-disabledItems")) != null) cfg.disabledItems = v.Split(',').Select(k => k.Trim()).Where(k => k.Length > 0).ToArray();
+            if ((v = Value(args, "-environment")) != null) cfg.environment = v;
+            if ((v = Value(args, "-placementAssist")) != null) cfg.placementAssist = bool.Parse(v);
             return cfg;
         }
 

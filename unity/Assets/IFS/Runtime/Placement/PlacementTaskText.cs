@@ -13,6 +13,8 @@
 //   · optionalWhen(pre | post | check 또는 배열): 설정 askOptionalItems를 켰을 때만 그 단계에서도 묻는다
 //     (예: 두 평정 문항 G13은 when post, optionalWhen pre — 사전 측정은 데스크톱에서 하므로(G11) 헤드셋에서는 기본 사후만).
 //   · 설정 disabledItems(문항 키 목록)에 든 문항은 묻지 않는다(예: 기존 "내 것 같다" 문항을 끌 때). 문구 파일은 그대로 둔다.
+// 2026-11-24 G53 추가(문구 파일 0.3, 기존 파일은 그대로 유효): 놓기 도움 문구 practice(배치 연습 안내)·placement_range(범위 안내 문장).
+//   설정 placementAssist를 켰을 때만 보이고 그때만 필수다. 꺼져 있으면 draftKeys·초안 경고에서도 뺀다(DraftKeysFor).
 // UnityEngine에 의존하지 않는다.
 using System;
 using System.Collections.Generic;
@@ -105,6 +107,24 @@ namespace IFS.SceneSpec.Placement
         }
 
         public bool HasDraft => DraftKeys.Count > 0;
+
+        // ── 놓기 도움 문구(G53, 2026-11-24, 문구 파일 0.3) ─────────────────
+        /// <summary>배치 연습 안내(연습 단계에 보임).</summary>
+        public const string PracticeKey = "practice";
+        /// <summary>범위 안내 문장(직접 배치 지시문 뒤에 줄을 바꿔 붙임).</summary>
+        public const string PlacementRangeKey = "placement_range";
+        /// <summary>설정 placementAssist를 켰을 때만 보이는 문구 키. 꺼져 있으면 보일 일이 없어 manifest draftKeys·초안 경고에서 뺀다
+        /// (기본값 기록이 G52 전과 같게). 파일에 없어도 되지만, 도움을 켠 세션은 시작을 거부한다(AssistKeysMissing).</summary>
+        public static readonly string[] AssistKeys = { PracticeKey, PlacementRangeKey };
+
+        /// <summary>이 세션이 보일 수 있는 문구 가운데 draft인 키(이름순). assist가 꺼져 있으면 AssistKeys를 뺀다.</summary>
+        public List<string> DraftKeysFor(bool assist) => DraftKeys.Where(k => assist || !AssistKeys.Contains(k)).ToList();
+
+        /// <summary>이 세션이 보일 수 있는 문구 수. assist가 꺼져 있으면 AssistKeys를 뺀다.</summary>
+        public int CountFor(bool assist) => _text.Keys.Count(k => assist || !AssistKeys.Contains(k));
+
+        /// <summary>파일에 없는 놓기 도움 문구 키(도움을 켠 세션은 이것이 비어 있어야 시작한다).</summary>
+        public List<string> AssistKeysMissing() => AssistKeys.Where(k => !_text.ContainsKey(k)).ToList();
 
         /// <summary>평정 단계(when)의 지시문 키(파일에 있는 것만, 보일 순서). 없으면 빈 목록.</summary>
         public List<string> InstructionKeysFor(string when)
@@ -218,20 +238,22 @@ namespace IFS.SceneSpec.Placement
 
         public static PlacementTaskText Load(string path) => Parse(File.ReadAllText(path, Encoding.UTF8), Path.GetFileName(path));
 
-        /// <summary>draft 문구가 있으면 실험자 화면 맨 위·events.csv warning에 남길 한 줄(없으면 null).</summary>
-        public static string DraftNotice(PlacementTaskText text, bool requireSpec)
+        /// <summary>draft 문구가 있으면 실험자 화면 맨 위·events.csv warning에 남길 한 줄(없으면 null).
+        /// assist: 놓기 도움(G53)을 켠 세션이면 true — 꺼져 있으면 도움 문구(AssistKeys)는 보이지 않으니 세지 않는다.</summary>
+        public static string DraftNotice(PlacementTaskText text, bool requireSpec, bool assist = false)
         {
-            if (text == null || !text.HasDraft) return null;
-            var keys = text.DraftKeys;
-            return $"초안 문구 사용 중: {text.FileName ?? "문구 파일"}(version {text.Version})의 문구 {keys.Count}/{text.Count}개가 status draft" +
+            if (text == null) return null;
+            var keys = text.DraftKeysFor(assist);
+            if (keys.Count == 0) return null;
+            return $"초안 문구 사용 중: {text.FileName ?? "문구 파일"}(version {text.Version})의 문구 {keys.Count}/{text.CountFor(assist)}개가 status draft" +
                    $"(IRB 확인 전) — {string.Join(", ", keys)}. " +
                    (requireSpec ? "requireSpecPhrases가 켜져 있어 시작할 수 없습니다." : "본 실험 자료로 쓰기 전에 spec 문구로 바꾸세요(manifest에 기록됨).");
         }
 
         /// <summary>requireSpecPhrases가 켜져 있고 draft 문구가 있으면 시작 거부 이유, 아니면 null.</summary>
-        public static string SpecPhraseRefusal(PlacementTaskText text, bool requireSpec) =>
-            requireSpec && text != null && text.HasDraft
-                ? $"requireSpecPhrases가 켜져 있는데 draft 문구 {text.DraftKeys.Count}개({string.Join(", ", text.DraftKeys)})가 있어 세션을 시작하지 않습니다"
+        public static string SpecPhraseRefusal(PlacementTaskText text, bool requireSpec, bool assist = false) =>
+            requireSpec && text != null && text.DraftKeysFor(assist).Count > 0
+                ? $"requireSpecPhrases가 켜져 있는데 draft 문구 {text.DraftKeysFor(assist).Count}개({string.Join(", ", text.DraftKeysFor(assist))})가 있어 세션을 시작하지 않습니다"
                 : null;
     }
 }

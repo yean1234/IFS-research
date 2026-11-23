@@ -13,6 +13,8 @@
 //   · Setup: 넘치던 줄을 나누고 체크 글을 줄바꿈(horizontal-scroll).
 // Setup에서 조건·통제 방식·참여자 입력(auto | desktop | xr)·주 사용 손·문구 파일·평정 선택 기능·선택 파일(selection.json, 선택)을 고른다.
 // 참여자에게 보이는 글은 PlacementTextPanel(세계 고정 판)이 맡는다. F1 = 숨기기/보이기.
+// 2026-11-24(G52–G53): 머리말에 배경 공간(environment)·놓기 도움 상태(후보 B·E·F 이름), Setup에 고르기 단추, 진행 중 배치 연습 상태.
+//   설정 이름은 이 실험자 화면(OnGUI)에만 쓴다 — 참여자 판(PlacementTextPanel)에는 문구 파일의 글만 간다.
 using System.Linq;
 using UnityEngine;
 
@@ -103,6 +105,18 @@ namespace IFS.SceneSpec.Placement
             string participant = string.IsNullOrWhiteSpace(runner.ParticipantNumberText) ? "-" : runner.ParticipantNumberText.Trim();
             GUILayout.Label($"조건 <b>{cfg.condition} / {cfg.EffectiveControlMode}</b>   참여자 <b>{participant}</b>   " +
                             $"<color={ColMuted}>머리 {runner.HeadSource} · 입력 {runner.ActiveInputSource ?? "(확인 전)"}</color>", _wrap);
+            GUILayout.Label(SpaceLine(cfg, runner.AppliedEnvironment), _wrap);
+        }
+
+        /// <summary>배경 공간·놓기 도움 한 줄(G52). 후보 이름: 도움을 켠 neutral = B, space = E, nature = F.</summary>
+        public static string SpaceLine(PlacementConfig cfg, string applied)
+        {
+            string candidate = !cfg.placementAssist ? "기본(후보 아님)"
+                : cfg.environment == PlacementConfig.EnvironmentSpace ? "후보 E"
+                : cfg.environment == PlacementConfig.EnvironmentNature ? "후보 F" : "후보 B";
+            string drawn = applied == cfg.environment ? "" : $"  <color={ColError}>화면은 {applied}(그리지 못함 — 확인에서 오류)</color>";
+            string practice = cfg.placementAssist ? (cfg.IsPlace ? " · 배치 연습 있음" : " · 배치 연습 없음(보기만 조건)") : "";
+            return $"공간 <b>{cfg.environment}</b> · 놓기 도움 <b>{(cfg.placementAssist ? "켜짐" : "꺼짐")}</b>{practice}   <color={ColMuted}>{candidate}</color>{drawn}";
         }
 
         string StageHeadline()
@@ -182,6 +196,21 @@ namespace IFS.SceneSpec.Placement
                     cfg.replayPath = GUILayout.TextField(cfg.replayPath ?? "");
                 }
             }
+            GUILayout.Label("배경 공간(G52 — 후보 B = neutral + 놓기 도움, E = space + 놓기 도움, F = nature + 놓기 도움)", _wrap);
+            GUILayout.BeginHorizontal();
+            foreach (var env in PlacementConfig.Environments)
+                if (GUILayout.Button((cfg.environment == env ? "● " : "") + env, _button, GUILayout.Width(120), GUILayout.Height(30)) && cfg.environment != env)
+                {
+                    cfg.environment = env;
+                    runner.RefreshSpace();
+                }
+            GUILayout.EndHorizontal();
+            bool assist = GUILayout.Toggle(cfg.placementAssist, " 놓기 도움(G53): 배치 연습 1회, 든 동안 수직선·바닥 고리, 경계 띠 밝아짐, 범위 안내 문장(초안) — 직접 배치 조건", _toggle);
+            if (assist != cfg.placementAssist)
+            {
+                cfg.placementAssist = assist;
+                runner.RefreshSpace();
+            }
             GUILayout.Label("참여자 입력(auto = 헤드셋이 켜져 있으면 XR 컨트롤러, 없으면 데스크톱)", _wrap);
             GUILayout.BeginHorizontal();
             foreach (var m in PlacementConfig.InputModes)
@@ -257,6 +286,9 @@ namespace IFS.SceneSpec.Placement
                 string cursor = s.Config.participantRatesWithController ? $"   참여자 컨트롤러 고르는 중: <b>{(s.RatingCursor?.ToString() ?? "-")}</b>" : "";
                 GUILayout.Label($"입력: <b>{typed}</b>{cursor}", _stage);
             }
+            if (s.Phase == PlacementPhase.Practice)
+                GUILayout.Label($"<b>배치 연습</b>(본 결과 아님) — 상자 {(s.PracticeHeld ? "드는 중" : "놓임")}, 목표까지 {s.PracticeErrorM:0.00} m, 잡기 {s.PracticeGrabCount}회. " +
+                                "참여자가 확인을 누르면 끝, 실험자는 '다음'(Enter)으로 건너뛸 수 있다", _wrap);
             if (s.Phase == PlacementPhase.StopDistance)
             {
                 var t = s.CurrentStopTrial;
@@ -270,7 +302,7 @@ namespace IFS.SceneSpec.Placement
                 : "참여자 데스크톱 조작: 왼쪽 단추 누르고 있기 = 잡기, 휠 또는 E/Q = 밀기/당기기, F = 확인, Space = 멈춤 거리 버튼. 오른쪽 드래그·WASD = 둘러보기·이동";
             GUILayout.Label($"<color={ColMuted}>{help}</color>", _small);
 
-            bool waits = s.Phase == PlacementPhase.Intro || s.Phase == PlacementPhase.PreWait || s.Phase == PlacementPhase.PostWait
+            bool waits = s.Phase == PlacementPhase.Intro || s.Phase == PlacementPhase.Practice || s.Phase == PlacementPhase.PreWait || s.Phase == PlacementPhase.PostWait
                          || (s.Phase == PlacementPhase.StopDistance && !s.StopTrialsStarted) || s.ItemsInstructionActive;
             string ctx = AbortContext();
             if (_abortConfirm.ArmedFor != null && !_abortConfirm.IsArmed(ctx)) _abortConfirm.Cancel();   // 단계가 넘어가면 닫음

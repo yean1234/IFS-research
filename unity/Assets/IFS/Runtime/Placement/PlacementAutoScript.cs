@@ -1,5 +1,6 @@
 // 배치 실험 자동 시행(검증용, 합성 입력 — 참여자 자료 아님). 시뮬레이션 시계로 사람 없이 intro → done을 한 바퀴 돈다.
 //   참여자 입력(Participant): 잡기–옮기기–놓기 두 번(다시 잡기 포함), 확인, 가리켜 지정, 멈춤 거리 버튼 시점(한 시행은 일부러 누르지 않아 timed_out).
+//   놓기 도움(G53)을 켠 직접 배치면 그 앞 배치 연습: 회색 상자를 목표 자리로 옮기고 확인.
 //   실험자 입력(Experimenter): 안내·대기 넘기기, 평정 숫자(첫 평정은 잘못 누른 뒤 Backspace로 취소), Enter 확정.
 // 회기마다 새 인스턴스를 쓴다(내부 진행 상태가 있다). UnityEngine에 의존하지 않는다.
 using System;
@@ -37,6 +38,9 @@ namespace IFS.SceneSpec.Placement
         /// <summary>방향별 시행(연습 포함 순서)마다 버튼을 누를 거리(m). NaN = 누르지 않음(timed_out).</summary>
         public double[] ApproachStopM = { 1.40, 1.25, 1.30, double.NaN, 1.20 };
         public double[] RecedeStopM = { 1.60, 1.75, 1.70, 1.65, 1.80 };
+        /// <summary>배치 연습(G53, 놓기 도움): 연습 단계 시작부터 이 시각에 상자를 잡아 PracticeMoveSeconds 동안 목표 자리로 옮기고,
+        /// PracticeConfirmAtSeconds에 확인을 누른다. 음수면 누르지 않는다(실험자가 넘겨야 끝남).</summary>
+        public double PracticeGrabAtSeconds = 0.5, PracticeMoveSeconds = 2.0, PracticeConfirmAtSeconds = 3.0;
 
         // 진행 상태
         int _ratingCount;
@@ -45,6 +49,8 @@ namespace IFS.SceneSpec.Placement
         int _grabbedMove = -1;
         PVec3 _moveFrom;
         bool _confirmed, _pointed;
+        bool _practiceGrabbed, _practiceConfirmed;
+        PVec3 _practiceFrom;
 
         const double Rad = Math.PI / 180.0;
 
@@ -57,6 +63,7 @@ namespace IFS.SceneSpec.Placement
             var f = new PlacementInputFrame();
             if (s == null || s.Finished) return f;
             if (s.Phase == PlacementPhase.Condition) return s.Config.IsPlace ? PlaceFrame(s) : ViewFrame(s);
+            if (s.Phase == PlacementPhase.Practice) return PracticeFrame(s);
             if (s.Phase == PlacementPhase.StopDistance && s.StopTrialActive)
             {
                 var plan = s.CurrentStopTrial;
@@ -98,6 +105,42 @@ namespace IFS.SceneSpec.Placement
             if (!_confirmed && ConfirmAtSeconds >= 0 && t >= ConfirmAtSeconds)
             {
                 _confirmed = true;
+                f.ConfirmDown = true;
+            }
+            return f;
+        }
+
+        // 배치 연습: 상자를 한 번 잡아 목표 자리까지 곧게 옮기고 놓은 뒤 확인
+        PlacementInputFrame PracticeFrame(PlacementSession s)
+        {
+            double t = s.SecondsInPhase;
+            var f = new PlacementInputFrame { HasRay = true, RayOrigin = HandOrigin, RayDirection = (s.PracticePosition - HandOrigin).Normalized };
+            double end = PracticeGrabAtSeconds + PracticeMoveSeconds;
+            if (t >= PracticeGrabAtSeconds && t <= end + 0.1)
+            {
+                if (!s.PracticeHeld && !_practiceGrabbed)
+                {
+                    _practiceGrabbed = true;
+                    _practiceFrom = s.PracticePosition;
+                    f.GrabDown = true;
+                    f.GrabHeld = true;
+                    return f;
+                }
+                if (s.PracticeHeld)
+                {
+                    double u = Math.Min(1.0, Math.Max(0.0, (t - PracticeGrabAtSeconds) / PracticeMoveSeconds));
+                    var desired = _practiceFrom + (s.PracticeTarget - _practiceFrom) * u;
+                    var toDesired = desired - HandOrigin;
+                    f.RayDirection = toDesired.Normalized;
+                    f.GrabHeld = true;
+                    f.PushPullDeltaM = toDesired.Length - s.PracticeHoldDistanceM;
+                    return f;
+                }
+            }
+            f.GrabHeld = false;
+            if (!_practiceConfirmed && PracticeConfirmAtSeconds >= 0 && t >= PracticeConfirmAtSeconds)
+            {
+                _practiceConfirmed = true;
                 f.ConfirmDown = true;
             }
             return f;

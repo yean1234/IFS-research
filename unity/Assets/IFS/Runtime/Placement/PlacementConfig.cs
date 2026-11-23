@@ -117,6 +117,30 @@ namespace IFS.SceneSpec.Placement
         /// <summary>묻지 않을 평정 문항 키(예: 기존 "내 것 같다" 문항 own·S4를 끌 때). 문구 파일에 없는 키면 확인 단계에서 오류.</summary>
         public string[] disabledItems = new string[0];
 
+        // ── 배치 공간 후보(G52–G55, 2026-11-24) ────────────────────────
+        // 후보 B = neutral + 놓기 도움, E = space + 놓기 도움, F = nature + 놓기 도움. 어느 것을 본 설계로 쓸지는 정하지 않았다(⚠ 사람이 정할 것).
+        // 기본값(neutral, 도움 꺼짐)에서는 화면·기록이 G52 전과 바이트 단위로 같다 — 아래 키는 기본값이 아닐 때만 manifest에 남는다.
+        /// <summary>배경 공간: neutral(지금 회색 하늘, 기본) | space(별 하늘, G54) | nature(CC0 360° 사진 + 3D 땅, G55).</summary>
+        public string environment = EnvironmentNeutral;
+        /// <summary>놓기 도움(G53): 본 과제 앞 배치 연습 1회, 든 동안 수직선·바닥 고리, 경계 띠 밝아짐, 범위 안내 문장. 기본 꺼짐.</summary>
+        public bool placementAssist = false;
+        /// <summary>배치 연습의 목표 자리('나' 기준 수평 거리 m, 방위 도(오른쪽 +), 상자 중심 높이 m). 잠정값 — ⚠ 사람이 정할 것(G53).</summary>
+        public double practiceTargetDistanceM = 2.0;
+        public double practiceTargetAzimuthDeg = -45;
+        public double practiceTargetHeightM = 0.8;
+        /// <summary>연습 상자 한 변(m).</summary>
+        public double practiceCubeSizeM = 0.25;
+
+        public const string EnvironmentNeutral = "neutral";
+        public const string EnvironmentSpace = "space";
+        public const string EnvironmentNature = "nature";
+        public static readonly string[] Environments = { EnvironmentNeutral, EnvironmentSpace, EnvironmentNature };
+
+        /// <summary>공간 설정이 기본값이 아니다(manifest에 environment 블록과 config 키를 더한다).</summary>
+        public bool UsesSpaceOptions => environment != EnvironmentNeutral || placementAssist;
+        /// <summary>이 세션에 배치 연습이 있다: 놓기 도움을 켰고 직접 배치 조건일 때만(⚠ 보기만 조건에서는 연습하지 않음 — 사람이 정할 것).</summary>
+        public bool HasPractice => placementAssist && IsPlace;
+
         public const string InputModeAuto = "auto";
         public const string InputModeDesktop = "desktop";
         public const string InputModeXr = "xr";
@@ -188,10 +212,36 @@ namespace IFS.SceneSpec.Placement
             if (!Hands.Contains(xrHand)) e.Add($"xrHand {xrHand}: right | left 중 하나");
             foreach (var k in disabledItems ?? new string[0])
                 if (string.IsNullOrWhiteSpace(k)) e.Add("disabledItems: 빈 키");
+            if (!Environments.Contains(environment)) e.Add($"environment {environment}: neutral | space | nature 중 하나");
+            if (placementAssist)
+            {
+                if (!(Finite(practiceTargetDistanceM) && practiceTargetDistanceM >= 0 && practiceTargetDistanceM <= floorRadiusM))
+                    e.Add($"practiceTargetDistanceM {practiceTargetDistanceM}: [0, floorRadiusM] 밖");
+                if (!(Finite(practiceTargetAzimuthDeg) && practiceTargetAzimuthDeg > -180 && practiceTargetAzimuthDeg <= 180))
+                    e.Add($"practiceTargetAzimuthDeg {practiceTargetAzimuthDeg}: (−180, 180] 밖");
+                if (!(practiceTargetHeightM >= minHeightM && practiceTargetHeightM <= maxHeightM)) e.Add($"practiceTargetHeightM {practiceTargetHeightM}: [minHeightM, maxHeightM] 밖");
+                if (!(Finite(practiceCubeSizeM) && practiceCubeSizeM > 0 && practiceCubeSizeM <= 1)) e.Add($"practiceCubeSizeM {practiceCubeSizeM}: (0, 1] 밖");
+            }
             return e;
         }
 
-        public JObject ToJson() => new JObject
+        public JObject ToJson()
+        {
+            var j = BaseJson();
+            if (UsesSpaceOptions)
+            {
+                // 2026-11-24 추가(G52). 기본값이면 넣지 않는다(기존 기록과 바이트 단위로 같게).
+                j["environment"] = environment;
+                j["placementAssist"] = placementAssist;
+                j["practiceTargetDistanceM"] = practiceTargetDistanceM;
+                j["practiceTargetAzimuthDeg"] = practiceTargetAzimuthDeg;
+                j["practiceTargetHeightM"] = practiceTargetHeightM;
+                j["practiceCubeSizeM"] = practiceCubeSizeM;
+            }
+            return j;
+        }
+
+        JObject BaseJson() => new JObject
         {
             ["condition"] = condition,
             ["controlMode"] = controlMode,

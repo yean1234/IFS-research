@@ -1,5 +1,5 @@
 {
-  "version": "0.2",
+  "version": "0.3",
   "protocol": "placement-task",
   "texts": {
     "intro": {
@@ -41,6 +41,16 @@
       "text": "여기까지예요. 고맙습니다.",
       "status": "draft",
       "source": "배치 러너 진행 안내 초안(2026-11-22), IRB 검토 전"
+    },
+    "practice": {
+      "text": "먼저 연습을 한 번 해 볼게요. 회색 상자를 잡아서 테두리로 표시된 자리에 옮긴 다음, 확인을 눌러 주세요.",
+      "status": "draft",
+      "source": "docs/decisions.md G53(배치 공간 후보 B·E·F의 놓기 도움 (1) 배치 연습), 2026-11-24, IRB 검토 전. 설정 placementAssist를 켠 직접 배치 조건에서만 보임. 연습은 정해진 자리로 옮기는 과제(연습 자리가 본 과제의 기준점이 되지 않게)"
+    },
+    "placement_range": {
+      "text": "이 둥근 바닥 안이라면 어디든, 어떤 높이든 괜찮아요.",
+      "status": "draft",
+      "source": "docs/decisions.md G53(놓기 도움 (4) 범위 안내 문장), 2026-11-24, IRB 검토 전. 설정 placementAssist를 켠 직접 배치 조건에서 condition_place 뒤에 줄을 바꿔 붙임"
     },
     "own": {
       "text": "이것이 얼마나 '내 것' 같나요?",

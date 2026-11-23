@@ -1,9 +1,12 @@
 // 배치 실험(RQ V4) 한 회기의 단계 흐름과 기록(UnityEngine 없이 — dotnet 테스트에서도 끝까지 돈다).
-//   intro → baseline → pre_items → pre_wait → condition → post_items → post_wait → stop_distance → check_items → done
-//   (setup은 러너가 세션을 만들기 전 단계라 기록에 없다. *_items는 해당 when 문항이 없으면 건너뛴다.)
+//   intro → [practice] → baseline → pre_items → pre_wait → condition → post_items → post_wait → stop_distance → check_items → done
+//   (setup은 러너가 세션을 만들기 전 단계라 기록에 없다. *_items는 해당 when 문항이 없으면 건너뛴다.
+//    practice는 놓기 도움 placementAssist를 켠 직접 배치 조건에서만 있다(G53, 2026-11-24) — 뜻 없는 회색 상자를 표시된 자리로 옮기고 확인.
+//    연습은 events.csv(practice_*)와 practice.json에만 남고 placement.json·trajectory.json·objpose.csv에는 들어가지 않는다.)
 // 시계: Tick(dt)으로 받은 dt를 더한 시각(사람 실행은 Time.unscaledDeltaTime, 자동 시행은 고정 dt).
 // 물체 위치·보이기·참여자 글은 이 클래스가 정하고, Unity 러너(PlacementRunner)는 그대로 그린다.
-// 기록 형식: 계약 ifs-placement/0.2(PlacementRecordWriter — 0.1에 선택 파일·적용한 덮어쓰기 키만 더함).
+// 기록 형식: 계약 ifs-placement/0.2(PlacementRecordWriter — 0.1에 선택 파일·적용한 덮어쓰기 키만 더함. 2026-11-24 G52–G53: 공간 설정이
+//   기본값이 아닐 때만 manifest environment와 config 키, 연습이 있을 때만 practice.json과 events practice_*).
 // 평정: 문항마다 범위(문구 파일 min·max, 기본 1–7). 실험자 숫자 키는 범위가 한 자리(max ≤ 9)면 예전처럼 한 번 누르면 입력,
 //   두 자리 이상이면 숫자를 이어 붙인다(0–10에서 1 → 0 = 10, 범위를 넘는 숫자는 받지 않음, 0 뒤에는 붙이지 않음). Backspace 취소, Enter 확정.
 using System;
@@ -15,7 +18,7 @@ using Newtonsoft.Json.Linq;
 
 namespace IFS.SceneSpec.Placement
 {
-    public enum PlacementPhase { Setup, Intro, Baseline, PreItems, PreWait, Condition, PostItems, PostWait, StopDistance, CheckItems, Done }
+    public enum PlacementPhase { Setup, Intro, Practice, Baseline, PreItems, PreWait, Condition, PostItems, PostWait, StopDistance, CheckItems, Done }
 
     public sealed class PlacementSession : IDisposable
     {
@@ -78,6 +81,13 @@ namespace IFS.SceneSpec.Placement
         bool _instruction;   // 평정 지시문을 보이는 중(첫 문항 전)
         int? _cursor;        // 참여자 컨트롤러로 고르는 중인 값(participantRatesWithController)
 
+        // 배치 연습(G53). 본 과제의 잡기·경로·확인 값과 섞이지 않게 따로 둔다
+        PVec3 _pracPos, _pracTarget;
+        bool _pracHeld, _pracWritten;
+        double _pracHold, _pracStartTime, _pracGrabStart, _pracHeldSeconds;
+        PVec3 _pracGrabOffset;
+        int _pracGrabCount;
+
         // 멈춤 거리
         List<StopTrialPlan> _stopPlan;
         int _stopIndex = -1;
@@ -93,6 +103,8 @@ namespace IFS.SceneSpec.Placement
             if (errors.Count > 0) throw new ArgumentException("설정 오류: " + string.Join("; ", errors));
             _cfg = cfg.Clone();
             _text = text ?? throw new ArgumentNullException(nameof(text));
+            if (_cfg.placementAssist && _text.AssistKeysMissing().Count > 0)
+                throw new ArgumentException("놓기 도움(placementAssist)을 켰는데 문구 파일에 " + string.Join(", ", _text.AssistKeysMissing()) + " 문구가 없습니다(문구 파일 0.3 이상)");
             _info = info ?? new PlacementSessionInfo();
             if (_cfg.EffectiveControlMode == PlacementConfig.ModeReplay && (replay == null || replay.Samples.Count == 0))
                 throw new ArgumentException("controlMode replay에는 재생할 궤적이 필요합니다");
@@ -161,6 +173,20 @@ namespace IFS.SceneSpec.Placement
         /// <summary>지금 문항 번호(1부터)와 이 단계의 문항 수. 평정 단계가 아니면 (0, 0).</summary>
         public int ItemNumber => CurrentItem != null ? _itemIndex + 1 : 0;
         public int ItemCount => InItems && _items != null ? _items.Count : 0;
+        // ── 배치 연습(G53) ─────────────────────────────────────────────
+        /// <summary>배치 연습 단계다(놓기 도움을 켠 직접 배치 조건).</summary>
+        public bool PracticeActive => Phase == PlacementPhase.Practice;
+        /// <summary>연습 상자 중심 자리(연습 단계 밖에서는 마지막 값).</summary>
+        public PVec3 PracticePosition => _pracPos;
+        /// <summary>연습 목표 자리(설정 practiceTarget*).</summary>
+        public PVec3 PracticeTarget => _pracTarget;
+        public bool PracticeHeld => _pracHeld;
+        public double PracticeHoldDistanceM => _pracHold;
+        public int PracticeGrabCount => _pracGrabCount;
+        /// <summary>연습 상자 중심과 목표 자리 사이 거리(m).</summary>
+        public double PracticeErrorM => PVec3.Distance(_pracPos, _pracTarget);
+        /// <summary>연습 상자 잡기 판정 구 반지름(m): 상자 반대각선(한 변 × √3 / 2)과 grabRadiusMinM 중 큰 값.</summary>
+        public double PracticeGrabRadiusM => Math.Max(_cfg.grabRadiusMinM, _cfg.practiceCubeSizeM * Math.Sqrt(3) / 2);
         public bool StopTrialsStarted => _stopStarted;
         public bool StopTrialActive => _trialActive;
         public StopTrialPlan CurrentStopTrial => _stopIndex >= 0 && _stopIndex < _stopPlan.Count ? _stopPlan[_stopIndex] : null;
@@ -182,6 +208,7 @@ namespace IFS.SceneSpec.Placement
             {
                 case PlacementPhase.Setup: return "setup";
                 case PlacementPhase.Intro: return "intro";
+                case PlacementPhase.Practice: return "practice";
                 case PlacementPhase.Baseline: return "baseline";
                 case PlacementPhase.PreItems: return "pre_items";
                 case PlacementPhase.PreWait: return "pre_wait";
@@ -250,6 +277,10 @@ namespace IFS.SceneSpec.Placement
                     SetPhase(p);
                     _visible = false;
                     ShowText("intro");
+                    break;
+                case PlacementPhase.Practice:
+                    if (!_cfg.HasPractice) { GoTo(PlacementPhase.Baseline); return; }   // 기본값: 연습 없음(G52 전과 같은 흐름)
+                    EnterPractice();
                     break;
                 case PlacementPhase.Baseline:
                     SetPhase(p);
@@ -379,6 +410,12 @@ namespace IFS.SceneSpec.Placement
             _visible = true;
             _state = StateIdle;
             ShowText(_cfg.IsPlace ? "condition_place" : Mode == PlacementConfig.ModePointSelect ? "condition_point_select" : "condition_view");
+            if (_cfg.IsPlace && _cfg.placementAssist)
+            {
+                // 놓기 도움 (4) 범위 안내 문장(G53): 직접 배치 지시문 뒤에 줄을 바꿔 붙인다
+                ParticipantTextKey = "condition_place+" + PlacementTaskText.PlacementRangeKey;
+                ParticipantText = _text["condition_place"] + "\n" + _text[PlacementTaskText.PlacementRangeKey];
+            }
             _trajectory = new PlacementTrajectory
             {
                 SourceSessionId = _info.SessionId, SampleHz = _cfg.headSampleHz,
@@ -576,6 +613,99 @@ namespace IFS.SceneSpec.Placement
             };
         }
 
+        // ── 배치 연습(G53) ───────────────────────────────────────────────
+        // 뜻 없는 회색 상자를 시작 자리(본 물체와 같은 자리)에서 표시된 목표 자리로 옮기고 확인한다. 잡기·밀기/당기기는 직접 배치와 같은 규칙.
+        // 참여자 확인 = 연습 끝(목표와의 거리는 기록만 하고 다시 시키지 않음). 실험자 "다음"(Enter)으로 건너뛸 수 있다.
+        void EnterPractice()
+        {
+            SetPhase(PlacementPhase.Practice);
+            _visible = false;   // 본 물체는 숨긴다(연습 상자는 러너가 따로 그린다)
+            _state = StateIdle;
+            _pracPos = StartPosition;
+            _pracTarget = PlacementGeometry.FromPolar(_cfg.practiceTargetDistanceM, _cfg.practiceTargetAzimuthDeg, _cfg.practiceTargetHeightM);
+            _pracHeld = false;
+            _pracWritten = false;
+            _pracGrabCount = 0;
+            _pracHeldSeconds = 0;
+            _pracStartTime = _now;
+            ShowText(PlacementTaskText.PracticeKey);
+            Event("practice_start", $"target_{Where(_pracTarget).Replace(";", ";target_")};start_{Where(_pracPos).Replace(";", ";start_")};cube_m={F(_cfg.practiceCubeSizeM)}");
+        }
+
+        void StepPractice(double dt, PlacementInputFrame input)
+        {
+            if (!_pracHeld && input.GrabDown && input.HasRay)
+            {
+                var dir = input.RayDirection.Normalized;
+                if (PlacementGeometry.RaySphere(input.RayOrigin, dir, _pracPos, PracticeGrabRadiusM, out _))
+                {
+                    _pracHeld = true;
+                    _pracGrabCount++;
+                    _pracGrabStart = _now;
+                    double along = PlacementGeometry.AlongRay(input.RayOrigin, dir, _pracPos);
+                    _pracHold = Math.Min(_cfg.holdMaxM, Math.Max(_cfg.holdMinM, along));
+                    _pracGrabOffset = _pracPos - (input.RayOrigin + dir * _pracHold);
+                    Event("practice_grab", $"count={_pracGrabCount};{Where(_pracPos)}");
+                }
+            }
+            else if (_pracHeld && !input.GrabHeld) PracticeRelease("button");
+
+            if (_pracHeld && input.HasRay)
+            {
+                _pracHold += input.PushPullAxis * _cfg.pushPullSpeedMps * dt + input.PushPullDeltaM;
+                _pracHold = Math.Min(_cfg.holdMaxM, Math.Max(_cfg.holdMinM, _pracHold));
+                _pracPos = ClampSpace(input.RayOrigin + input.RayDirection.Normalized * _pracHold + _pracGrabOffset);
+            }
+            if (input.ConfirmDown) EndPractice("participant_confirm");
+        }
+
+        void PracticeRelease(string reason)
+        {
+            if (!_pracHeld) return;
+            _pracHeld = false;
+            _pracHeldSeconds += _now - _pracGrabStart;
+            Event("practice_release", $"count={_pracGrabCount};{Where(_pracPos)};held_ms={Ms(_now - _pracGrabStart)};reason={reason}");
+        }
+
+        /// <summary>연습을 끝내고 practice.json을 쓴다. by: participant_confirm | experimenter | abort. advance면 제시 단계로.</summary>
+        void EndPractice(string by, bool advance = true)
+        {
+            if (_pracWritten) return;
+            PracticeRelease("practice_end");
+            long dur = Ms(_now - _pracStartTime);
+            bool confirmed = by == "participant_confirm";
+            Event("practice_end", $"{Where(_pracPos)};error_m={F(PracticeErrorM)};confirmed={(confirmed ? 1 : 0)};by={by};duration_ms={dur}");
+            _writer.WriteJson(PlacementRecordWriter.PracticeFile, BuildPracticeJson(by, confirmed, dur));
+            _pracWritten = true;
+            if (advance) GoTo(PlacementPhase.Baseline);
+        }
+
+        JObject BuildPracticeJson(string by, bool confirmed, long durMs)
+        {
+            var p = _pracPos;
+            var t = _pracTarget;
+            return new JObject
+            {
+                ["note"] = "배치 연습(G53) — 뜻 없는 회색 상자. 본 배치 결과(placement.json)가 아니다",
+                ["cubeSizeM"] = _cfg.practiceCubeSizeM,
+                ["targetDistanceM"] = Math.Round(PlacementGeometry.HorizontalDistance(t), 4),
+                ["targetAzimuthDeg"] = Math.Round(PlacementGeometry.AzimuthDeg(t), 2),
+                ["targetHeightM"] = Math.Round(t.Y, 4),
+                ["finalX"] = Math.Round(p.X, 4),
+                ["finalY"] = Math.Round(p.Y, 4),
+                ["finalZ"] = Math.Round(p.Z, 4),
+                ["finalDistanceM"] = Math.Round(PlacementGeometry.HorizontalDistance(p), 4),
+                ["finalAzimuthDeg"] = Math.Round(PlacementGeometry.AzimuthDeg(p), 2),
+                ["finalHeightM"] = Math.Round(p.Y, 4),
+                ["errorM"] = Math.Round(PracticeErrorM, 4),
+                ["grabCount"] = _pracGrabCount,
+                ["heldMs"] = Ms(_pracHeldSeconds),
+                ["confirmed"] = confirmed,
+                ["endedBy"] = by,
+                ["durationMs"] = durMs,
+            };
+        }
+
         // ── 멈춤 거리 ────────────────────────────────────────────────────
         // 한 프레임의 순서(고정): ① 이번 프레임 이동을 먼저 반영 → ② 버튼 검사 → ③ 기록.
         //   기록 거리 = 이 프레임 이동을 반영한 위치, rt = 이 프레임 시각 − 시행 시작 → 거리 = 시작 거리 ∓ 속도 × rt가 늘 맞는다.
@@ -693,7 +823,10 @@ namespace IFS.SceneSpec.Placement
             switch (Phase)
             {
                 case PlacementPhase.Intro:
-                    GoTo(PlacementPhase.Baseline);
+                    GoTo(PlacementPhase.Practice);   // 연습이 없으면(기본값) 곧바로 baseline
+                    break;
+                case PlacementPhase.Practice:
+                    EndPractice("experimenter");   // 실험자가 연습을 건너뜀(또는 참여자가 말로 끝냄)
                     break;
                 case PlacementPhase.PreWait:
                 case PlacementPhase.PostWait:
@@ -741,6 +874,9 @@ namespace IFS.SceneSpec.Placement
             if (InItems) StepItems(input);
             switch (Phase)
             {
+                case PlacementPhase.Practice:
+                    StepPractice(dt, input);
+                    break;
                 case PlacementPhase.Baseline:
                     if (SecondsInPhase >= _cfg.baselineSeconds - Eps) GoTo(PlacementPhase.PreItems);
                     break;
@@ -776,6 +912,7 @@ namespace IFS.SceneSpec.Placement
         {
             if (Finished) return;
             if (Phase == PlacementPhase.Condition && !_conditionWritten) EndCondition(advance: false);   // 중단해도 조건 단계 자료는 남긴다
+            if (Phase == PlacementPhase.Practice && !_pracWritten) EndPractice("abort", advance: false);   // 연습 중 중단도 practice.json에 남긴다
             if (!completed) Event("abort", abortedAt);   // 확정 전 평정(_pending)은 ratings.csv에 쓰지 않는다
             Phase = PlacementPhase.Done;
             _phaseStart = _now;

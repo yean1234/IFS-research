@@ -5,6 +5,12 @@
 //   2026-11-23(G31·G34, 형식 버전은 0.2 유지 — selection 객체 안에 키만 더함): selection.skipped(선택 단계를 건너뜀)·
 //   selection.colorChanged(색을 바꿨는지, 0.1 선택 파일이면 null). 분석기는 없는 키를 빈칸으로 읽는다.
 //   2026-11-23(G50 (4), 형식 버전 0.2 유지): selection.safetyFlags — 선택 파일에 키가 있을 때만(넷째 제외 범주 표시, PlacementSelection).
+//   2026-11-24(G52–G55, 형식 버전 0.2 유지 — 추가만): 공간 설정이 기본값(neutral, 놓기 도움 꺼짐)이 아닐 때만 manifest 맨 끝에
+//   environment{name, placementAssist, sky{…, 자연이면 texture{assetId·author·source·license·sha256…}}, practice{target…}|null}과
+//   config의 environment·placementAssist·practice* 키. 연습이 있으면 practice.json(본 결과와 따로)과 events practice_start·practice_grab·
+//   practice_release·practice_end, headpose.csv phase practice(물체 칸 빈칸 — 본 물체는 숨김). objpose.csv·placement.json·trajectory.json에는 연습이 없다.
+//   taskText.draftKeys·draftCount는 이 세션이 보일 수 있는 문구만 센다(도움이 꺼져 있으면 도움 문구 practice·placement_range를 뺀다).
+//   기본값에서는 G52 전과 바이트 단위로 같다(문구 파일 version만 0.2 → 0.3 — 그 값은 파일에서 읽는다).
 //   {recordRoot}/placement/P{번호:000}/{sessionId}/{UTC yyyyMMdd-HHmmss}[-n]/
 //     manifest.json · headpose.csv · objpose.csv · events.csv · placement.json · stopdistance.csv · ratings.csv · trajectory.json · summary.json
 //   UTF-8(BOM 없음), 숫자는 InvariantCulture, 줄바꿈 \n. CSV는 줄마다 바로 쓰므로 중간에 꺼져도 그때까지 남는다.
@@ -14,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text;
 using IFS.SceneSpec.Ownership;
 using Newtonsoft.Json.Linq;
@@ -39,6 +46,8 @@ namespace IFS.SceneSpec.Placement
         public const string RatingsFile = "ratings.csv";
         public const string TrajectoryFile = "trajectory.json";
         public const string SummaryFile = "summary.json";
+        /// <summary>배치 연습(G53) 결과. 연습이 있는 세션에만 생긴다(AllFiles에 넣지 않음 — 늘 있는 파일 목록).</summary>
+        public const string PracticeFile = "practice.json";
 
         public static readonly string[] AllFiles =
         {
@@ -232,7 +241,76 @@ namespace IFS.SceneSpec.Placement
                    $"실험 설정 startDistanceM={(cfg?.startDistanceM ?? 0).ToString("0.###", inv)}, startHeightM={(cfg?.startHeightM ?? 0).ToString("0.###", inv)}을 씀(두 조건이 같은 자리에서 시작)";
         }
 
+        /// <summary>manifest environment(G52–G55): 공간 이름·놓기 도움·하늘(별 하늘 규칙 또는 자연 사진 출처·sha256)·연습 목표.
+        /// 공간 설정이 기본값이면 null(그때는 manifest에 키 자체를 넣지 않는다).</summary>
+        public static JObject EnvironmentJson(PlacementConfig cfg)
+        {
+            if (cfg == null || !cfg.UsesSpaceOptions) return null;
+            JObject sky;
+            if (cfg.environment == PlacementConfig.EnvironmentSpace)
+                sky = new JObject
+                {
+                    ["kind"] = "starfield",
+                    ["rule"] = EnvironmentStyleInfo.StarfieldRule,
+                    ["shader"] = EnvironmentStyleInfo.StarfieldShaderResource,
+                    ["seed"] = EnvironmentStyleInfo.StarfieldSeed,
+                };
+            else if (cfg.environment == PlacementConfig.EnvironmentNature)
+                sky = new JObject
+                {
+                    ["kind"] = "equirect_photo",
+                    ["shader"] = EnvironmentStyleInfo.PanoramaShaderResource,
+                    ["rotationDeg"] = NatureSkyAsset.RotationDeg,
+                    ["texture"] = new JObject
+                    {
+                        ["assetId"] = NatureSkyAsset.AssetId,
+                        ["title"] = NatureSkyAsset.Title,
+                        ["author"] = NatureSkyAsset.Author,
+                        ["source"] = NatureSkyAsset.SourcePage,
+                        ["license"] = NatureSkyAsset.License,
+                        ["downloadedOn"] = NatureSkyAsset.DownloadedOn,
+                        ["file"] = NatureSkyAsset.FileName,
+                        ["sha256"] = NatureSkyAsset.Sha256,
+                        ["originalSha256"] = NatureSkyAsset.OriginalSha256,
+                    },
+                    ["ground"] = new JObject
+                    {
+                        ["shader"] = EnvironmentStyleInfo.GroundShaderResource,
+                        ["radiusM"] = EnvironmentStyleInfo.GroundRadiusM,
+                        ["fadeStartM"] = EnvironmentStyleInfo.GroundFadeStartM,
+                        ["colorSrgb"] = new JArray(NatureSkyAsset.GroundSrgb.Cast<object>().ToArray()),
+                    },
+                };
+            else
+                sky = new JObject { ["kind"] = "gradient", ["shader"] = "IFS/EnvironmentSky" };
+            return new JObject
+            {
+                ["name"] = cfg.environment,
+                ["placementAssist"] = cfg.placementAssist,
+                ["sky"] = sky,
+                ["lighting"] = "neutral",   // 세 공간 모두 중립 환경의 방향광·앰비언트를 그대로 쓴다
+                ["practice"] = cfg.HasPractice
+                    ? new JObject
+                    {
+                        ["targetDistanceM"] = cfg.practiceTargetDistanceM,
+                        ["targetAzimuthDeg"] = cfg.practiceTargetAzimuthDeg,
+                        ["targetHeightM"] = cfg.practiceTargetHeightM,
+                        ["cubeSizeM"] = cfg.practiceCubeSizeM,
+                        ["targetSource"] = "experiment_config",   // 잠정값(G53 ⚠ 사람이 정할 것)
+                    }
+                    : null,
+            };
+        }
+
         public static JObject Build(PlacementConfig cfg, PlacementSessionInfo info)
+        {
+            var m = BuildBase(cfg, info);
+            var env = EnvironmentJson(cfg);
+            if (env != null) m["environment"] = env;   // 기본값이면 키를 넣지 않는다(G52 전과 같은 바이트)
+            return m;
+        }
+
+        static JObject BuildBase(PlacementConfig cfg, PlacementSessionInfo info)
         {
             if (cfg == null) throw new ArgumentNullException(nameof(cfg));
             info = info ?? new PlacementSessionInfo();

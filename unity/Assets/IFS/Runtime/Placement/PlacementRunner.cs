@@ -9,6 +9,8 @@
 //   XR 헤드셋이 켜져 있으면 XrPlacementInput(컨트롤러 광선), 없으면 DesktopPlacementInput(마우스·키보드).
 // 참여자 글: PlacementTextPanel(세계 고정 판, 헤드셋 안에서 읽힘)이 있으면 그것, 없으면 ParticipantTextDisplay(예전 씬).
 // 자동 시행(검증용): BeginAuto(스크립트, 설정) 뒤 Tick(dt)을 밖에서 부르면 사람 없이 끝까지 간다(시뮬레이션 시계).
+// 배치 공간 후보(G52–G55, 2026-11-24): 설정 environment(neutral | space | nature)로 중립 환경의 하늘을 바꾸고(EnvironmentStyle),
+//   placementAssist면 놓기 도움(연습 상자·목표 자리, 든 동안 수직선·바닥 고리, 경계 띠 밝아짐)을 그린다. 기본값에서는 아무것도 더하지 않는다.
 // 헤드셋 실기는 확인하지 않았다(2026-11-23 — docs/headset-checklist.md).
 using System;
 using System.Collections.Generic;
@@ -111,7 +113,9 @@ namespace IFS.SceneSpec.Placement
         public List<string> TaskTextFiles { get; } = new List<string>();
         public SceneLoader Loader => _loader;
         public PlacementSpaceHandle Space => _space;
-        public string DraftPhraseNotice => PlacementTaskText.DraftNotice(TaskText, config.requireSpecPhrases);
+        public string DraftPhraseNotice => PlacementTaskText.DraftNotice(TaskText, config.requireSpecPhrases, config.placementAssist);
+        /// <summary>지금 화면에 실제로 그려진 배경 공간(EnvironmentStyle.Apply 결과). 실험자 화면이 읽는다.</summary>
+        public string AppliedEnvironment { get; private set; } = PlacementConfig.EnvironmentNeutral;
         public List<SpecFileEntry> SpecFiles { get; } = new List<SpecFileEntry>();
 
         // ── 내부 ───────────────────────────────────────────────────────────
@@ -124,6 +128,8 @@ namespace IFS.SceneSpec.Placement
         GameObject _anchor;
         SceneLoader _loader;
         PlacementSpaceHandle _space;
+        EnvironmentHandle _ownEnvironment;   // 씬에 IFSEnvironment가 없을 때 non-neutral 공간을 위해 만든 환경
+        double _objectRadius;
         string _shownText;
         IPlacementInput _activeInput;
         string _activeSource;
@@ -156,6 +162,8 @@ namespace IFS.SceneSpec.Placement
             Cleanup();
             _space?.Dispose();
             _space = null;
+            _ownEnvironment?.Dispose();
+            _ownEnvironment = null;
         }
 
         void OnApplicationQuit()
@@ -265,6 +273,13 @@ namespace IFS.SceneSpec.Placement
             config = cfg.Clone();
         }
 
+        /// <summary>Setup에서 공간 설정(environment·placementAssist)을 바꾼 뒤 바로 다시 그린다(세션 중에는 무시).</summary>
+        public void RefreshSpace()
+        {
+            if (Session != null) return;
+            BuildSpace();
+        }
+
         /// <summary>자동 시행: 시뮬레이션 시계, 정해진 입력(합성), 정해진 머리 경로.</summary>
         public void BeginAuto(PlacementAutoScript script, PlacementConfig cfg)
         {
@@ -311,8 +326,12 @@ namespace IFS.SceneSpec.Placement
             if (TaskText != null)
                 foreach (var k in config.UnknownDisabledItems(TaskText))
                     Errors.Add($"disabledItems의 {k}: 문구 파일({TaskText.FileName})에 그 평정 문항이 없습니다");
+            if (TaskText != null && config.placementAssist && TaskText.AssistKeysMissing().Count > 0)
+                Errors.Add($"놓기 도움을 켰는데 문구 파일({TaskText.FileName})에 {string.Join(", ", TaskText.AssistKeysMissing())} 문구가 없습니다(문구 파일 0.3 이상)");
+            if (!BuildSpace())
+                Errors.Add($"공간 {config.environment}을(를) 그리지 못했습니다(셰이더·사진 확인 — 콘솔). 기록이 실제 화면과 달라지므로 시작하지 않습니다");
             CheckSelection();
-            string refusal = PlacementTaskText.SpecPhraseRefusal(TaskText, config.requireSpecPhrases);
+            string refusal = PlacementTaskText.SpecPhraseRefusal(TaskText, config.requireSpecPhrases, config.placementAssist);
             if (refusal != null) Errors.Add(refusal);
             if (config.EffectiveControlMode == PlacementConfig.ModeReplay) CheckReplay();
             Font font = null;
@@ -446,7 +465,11 @@ namespace IFS.SceneSpec.Placement
             }
 
             Cleanup();
-            BuildSpace();
+            if (!BuildSpace())
+            {
+                Errors.Add($"공간 {config.environment}을(를) 그리지 못했습니다(콘솔 확인)");
+                return false;
+            }
             _anchor = new GameObject("Placement Anchor ('나' 눈높이)");
             _anchor.transform.SetPositionAndRotation(new Vector3(0f, anchorEyeHeightM, 0f), Quaternion.identity);
             var go = new GameObject("Placement Object");
@@ -477,6 +500,7 @@ namespace IFS.SceneSpec.Placement
             }
 
             double objectRadius = ObjectRadius();   // 물체 렌더 경계(AABB 가장 큰 반폭). 없으면 0 → manifest null
+            _objectRadius = objectRadius;
             if (_auto != null && headProvider != null) headProvider.BeginScripted();
             else if (headProvider != null) headProvider.Step(0f);
             string sessionId = Spec.Meta.SessionId ?? Path.GetFileNameWithoutExtension(_specFullPath);
@@ -493,7 +517,7 @@ namespace IFS.SceneSpec.Placement
                 AutoMode = _auto != null,
                 TaskTextFile = TaskText.FileName,
                 TaskTextVersion = TaskText.Version,
-                TaskTextDraftKeys = TaskText.DraftKeys.ToArray(),
+                TaskTextDraftKeys = TaskText.DraftKeysFor(config.placementAssist).ToArray(),   // 이 세션이 보일 수 있는 draft 문구만(G53)
                 ReplayFile = _replay != null ? Path.GetFileName(_replayFullPath) : null,
                 ReplaySha256 = _replay != null ? _replaySha : null,
                 ReplaySourceSessionId = _replay?.SourceSessionId,
@@ -545,11 +569,39 @@ namespace IFS.SceneSpec.Placement
             return Math.Max(b.extents.x, Math.Max(b.extents.y, b.extents.z));
         }
 
-        void BuildSpace()
+        /// <summary>배치 공간(원형 바닥 등)을 다시 만들고 배경 공간(environment)을 맞춘다. 배경 공간을 그리지 못하면 false.</summary>
+        bool BuildSpace()
         {
             _space?.Dispose();
             _space = PlacementSpace.Build(config, transform);
             PlacementSpace.HideEnvironmentFloor();
+            return ApplyEnvironment();
+        }
+
+        /// <summary>씬의 중립 환경(IFSEnvironment)에 배경 공간을 얹는다(G52). neutral이고 얹은 적이 없으면 아무것도 하지 않는다.
+        /// 씬에 환경이 없는데 space·nature면 러너가 환경을 하나 만든다.</summary>
+        bool ApplyEnvironment()
+        {
+            string style = config.environment ?? PlacementConfig.EnvironmentNeutral;
+            bool ok = true, any = false;
+            foreach (var env in FindObjectsByType<IFSEnvironment>(FindObjectsSortMode.None))
+            {
+                if (env == null || env.Handle == null) continue;
+                any = true;
+                ok &= EnvironmentStyle.Apply(env.Handle, style);
+            }
+            if (!any && style != PlacementConfig.EnvironmentNeutral)
+            {
+                if (_ownEnvironment == null || _ownEnvironment.Root == null) _ownEnvironment = EnvironmentBuilder.Build(new EnvironmentSettings(), transform);
+                ok &= EnvironmentStyle.Apply(_ownEnvironment, style);
+                if (_ownEnvironment.Floor != null) _ownEnvironment.Floor.enabled = false;
+            }
+            else if (_ownEnvironment != null)
+            {
+                if (any || style == PlacementConfig.EnvironmentNeutral) { _ownEnvironment.Dispose(); _ownEnvironment = null; }
+            }
+            AppliedEnvironment = ok ? style : PlacementConfig.EnvironmentNeutral;
+            return ok;
         }
 
         void Cleanup()
@@ -640,6 +692,7 @@ namespace IFS.SceneSpec.Placement
                 else textDisplay.Show(_shownText, textAt, eye);
             }
             ApplyXrRay();
+            if (_space != null && Session.Config.placementAssist) ApplyAssistVisuals();
             if (_space != null)
             {
                 SetMarker(_space.PointerMarker, Session.Phase == PlacementPhase.Condition ? Session.PointerHit : null);
@@ -649,20 +702,34 @@ namespace IFS.SceneSpec.Placement
             }
         }
 
+        /// <summary>놓기 도움(G53): 연습 상자·목표 자리, 든 물체(연습 상자 또는 본 물체)의 수직선·바닥 고리, 경계 띠 밝기.</summary>
+        void ApplyAssistVisuals()
+        {
+            var s = Session;
+            bool practice = s.PracticeActive && !s.Finished;
+            PlacementSpace.SetPractice(_space, practice, s.PracticePosition, s.PracticeTarget);
+            bool held = practice ? s.PracticeHeld : (!s.Finished && s.Phase == PlacementPhase.Condition && s.Held);
+            var at = practice ? s.PracticePosition : s.ObjectPosition;
+            double ring = practice ? s.Config.practiceCubeSizeM * 0.6 : PlacementAssistVisuals.ContactRingRadius(_objectRadius);
+            PlacementSpace.SetAssist(_space, held, at, ring, s.Config.floorRadiusM);
+        }
+
         /// <summary>XR 광선: XR 입력을 쓰는 중이고 (rayOnlyWhenUsable이면) 광선이 쓰이는 단계에서만 보인다.</summary>
         void ApplyXrRay()
         {
             if (xrInput == null) return;
             bool xrActive = _auto == null && ReferenceEquals(_activeInput, xrInput);
             var s = Session;
-            bool usable = s != null && !s.Finished && s.Phase == PlacementPhase.Condition
-                          && (s.Config.IsPlace || s.Config.controlMode == PlacementConfig.ModePointSelect);
+            bool usable = s != null && !s.Finished && ((s.Phase == PlacementPhase.Condition
+                          && (s.Config.IsPlace || s.Config.controlMode == PlacementConfig.ModePointSelect)) || s.Phase == PlacementPhase.Practice);
             bool show = xrActive && s != null && !s.Finished && (usable || !rayOnlyWhenUsable);
             double end = 0;
             if (show)
             {
                 var smp = xrInput.LastSample;
-                end = XrRayVisual.EndDistance(smp.RayOrigin, smp.RayDirection, s.Held, s.ObjectPosition, s.ObjectVisible, s.GrabRadiusM, xrInput.RayMaxLengthM);
+                end = s.Phase == PlacementPhase.Practice
+                    ? XrRayVisual.EndDistance(smp.RayOrigin, smp.RayDirection, s.PracticeHeld, s.PracticePosition, true, s.PracticeGrabRadiusM, xrInput.RayMaxLengthM)
+                    : XrRayVisual.EndDistance(smp.RayOrigin, smp.RayDirection, s.Held, s.ObjectPosition, s.ObjectVisible, s.GrabRadiusM, xrInput.RayMaxLengthM);
             }
             xrInput.ShowRay(show, end);
         }
@@ -730,6 +797,11 @@ namespace IFS.SceneSpec.Placement
             if (Session != null && !Session.Finished) return;
             Session = null;
             Cleanup();
+            if (_space != null && config.placementAssist)
+            {
+                PlacementSpace.SetPractice(_space, false, default, default);
+                PlacementSpace.SetAssist(_space, false, default, 0, config.floorRadiusM);
+            }
             if (textDisplay != null) textDisplay.HideAll();
             if (panel != null) panel.Hide();
             if (xrInput != null) xrInput.ShowRay(false, 0);

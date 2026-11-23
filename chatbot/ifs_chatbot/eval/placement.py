@@ -79,6 +79,11 @@ RECORD_PREFIX = "ifs-placement/"
 # 있다(manifest selection.sha256으로 짝지음).
 # (G50 (4)) selection.safetyFlags(넷째 제외 범주 표시, 선택 파일에 있을 때만) — 열 safety_flag_categories(범주, ';'로 이음,
 # 표시가 없으면 빈 문자열)·safety_form_blocked(형태를 막은 표시가 있는지). 키가 없는 기록 = 빈칸.
+# (G52–G53, 2026-11-24) 배치 공간 후보 B·E·F: 공간 설정이 기본값이 아닐 때만 manifest environment{name, placementAssist, sky, practice}
+# — 열 environment(키가 없으면 "neutral": G52 전 러너는 중립 공간만 있었다)·placement_assist(없으면 false). 연습이 있으면
+# practice.json(본 결과와 따로) — 열 practice_error_m(연습 상자와 목표 자리 거리)·practice_ended_by(participant_confirm |
+# experimenter | abort, 연습이 없으면 빈칸). 연습은 placement.json·objpose.csv에 들어가지 않고, headpose.csv phase practice는 머리 행동에서
+# 빠진다(condition만 셈). 세션 사이 environment가 다르면 config_mismatch:environment.
 # 없는 키는 빈칸으로 읽는다(이전 기록 그대로 읽힘).
 KNOWN_VERSIONS = ("ifs-placement/0.1", "ifs-placement/0.2")
 TRAJECTORY_PREFIX = "ifs-trajectory/"
@@ -100,7 +105,8 @@ CONFIG_CHECK_KEYS = (("baselineSeconds", ("config", "baselineSeconds")),
                      ("conditionSeconds", ("config", "conditionSeconds")),
                      ("conditionEndsOnConfirm", ("config", "conditionEndsOnConfirm")),
                      ("space", ("space",)),
-                     ("stopDistance", ("stopDistance",)))
+                     ("stopDistance", ("stopDistance",)),
+                     ("environment", ("environment",)))
 EXPECTED_FILES = ("headpose.csv", "objpose.csv", "events.csv", "placement.json", "stopdistance.csv",
                   "ratings.csv", "trajectory.json", "summary.json")
 
@@ -110,6 +116,7 @@ SESSION_HEAD = [
     "selection_none", "selected_candidate_id", "n_final_overrides",
     "selection_skipped", "color_changed", "form_source", "form_base_source", "form_variant_source",
     "safety_flag_categories", "safety_form_blocked",
+    "environment", "placement_assist", "practice_error_m", "practice_ended_by",
     "final_distance_m", "final_azimuth_deg", "final_height_m", "grab_count", "first_grab_ms", "held_ms",
     "path_length_m", "confirmed",
     "show_rings", "nearest_ring_m", "ring_offset_m",
@@ -322,6 +329,7 @@ def load_session(cand: dict, facing_deg: float = DEFAULT_FACING_DEG) -> tuple[di
         flags.append("version_mismatch")
     summ = read_json("summary.json")
     pl = read_json("placement.json")
+    practice_rec = read_json("practice.json")   # 배치 연습(G53) — 있을 때만. 본 결과 지표에는 쓰지 않는다
     traj = read_json("trajectory.json")
     if traj and not str(traj.get("version", "")).startswith(TRAJECTORY_PREFIX):
         flags.append("trajectory_version_mismatch")
@@ -474,6 +482,11 @@ def load_session(cand: dict, facing_deg: float = DEFAULT_FACING_DEG) -> tuple[di
                                    if isinstance(sel.get("safetyFlags"), list) else None),
         "safety_form_blocked": (any(isinstance(f, dict) and f.get("formBlock") is True for f in sel["safetyFlags"])
                                 if isinstance(sel.get("safetyFlags"), list) else None),
+        # G52–G53: 공간·놓기 도움(키가 없는 기록 = 중립·도움 없음 — 그 러너에는 다른 공간이 없었다), 배치 연습(있을 때만)
+        "environment": str(_dict(man.get("environment")).get("name") or "neutral"),
+        "placement_assist": _dict(man.get("environment")).get("placementAssist") is True,
+        "practice_error_m": _r(_num(practice_rec.get("errorM"))),
+        "practice_ended_by": practice_rec.get("endedBy") if isinstance(practice_rec.get("endedBy"), str) else None,
         "final_distance_m": _r(final_d), "final_azimuth_deg": _r(final_az), "final_height_m": _r(final_h),
         "grab_count": _int(pl.get("grabCount")), "first_grab_ms": _num(pl.get("firstGrabMs")),
         "held_ms": _num(pl.get("heldMs")), "path_length_m": _r(path_len),

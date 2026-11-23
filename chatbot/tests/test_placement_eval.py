@@ -600,3 +600,46 @@ def test_form_base_and_variant_source_columns(tmp_path):
     assert (n["form_base_source"], n["form_variant_source"]) == ("edited", "edited")
     assert (o["form_base_source"], o["form_variant_source"]) == ("said", None)
     assert (x["form_base_source"], x["form_variant_source"]) == (None, None)
+
+
+# ---------------------------------------------------------------- G52–G53 배치 공간 후보(B·E·F)
+
+def _env_block(name, assist, practice=True):
+    return {"name": name, "placementAssist": assist, "sky": {"kind": "gradient"}, "lighting": "neutral",
+            "practice": ({"targetDistanceM": 2.0, "targetAzimuthDeg": -45, "targetHeightM": 0.8, "cubeSizeM": 0.25,
+                          "targetSource": "experiment_config"} if assist and practice else None)}
+
+
+def test_environment_and_practice_columns_and_old_records(tmp_path):
+    """공간·놓기 도움 열(G52), 연습 파일(G53). 옛 기록(environment 키 없음) = neutral·도움 없음, 연습 빈칸."""
+    make_placement_session(tmp_path, 1, "old")
+    f = make_placement_session(tmp_path, 2, "e", manifest_extra={"environment": _env_block("space", True)})
+    (f / "practice.json").write_text(json.dumps({"errorM": 0.0312, "endedBy": "participant_confirm", "confirmed": True,
+                                                 "finalDistanceM": 2.0}), encoding="utf-8")
+    make_placement_session(tmp_path, 3, "b-view", "view", manifest_extra={"environment": _env_block("neutral", True, practice=False)})
+    res = analyze(tmp_path, tmp_path / "out")
+    for c in ("environment", "placement_assist", "practice_error_m", "practice_ended_by"):
+        assert c in placement.SESSION_HEAD
+    o, e, b = row(res, "old"), row(res, "e"), row(res, "b-view")
+    assert (o["environment"], o["placement_assist"], o["practice_error_m"], o["practice_ended_by"]) == ("neutral", False, None, None)
+    assert (e["environment"], e["placement_assist"]) == ("space", True)
+    assert e["practice_error_m"] == pytest.approx(0.0312)
+    assert e["practice_ended_by"] == "participant_confirm"
+    assert (b["environment"], b["placement_assist"], b["practice_error_m"]) == ("neutral", True, None)
+    # 연습은 본 결과 지표에 들어가지 않는다(놓은 자리는 placement.json 값 그대로)
+    assert e["final_distance_m"] == o["final_distance_m"]
+    assert "missing_file:practice.json" not in o["flags"], "연습 파일은 필수가 아니다"
+    # 공간이 다른 세션을 한 요약에 넣으면 경고
+    assert "config_mismatch:environment" in res["summary"]["warnings"]
+    header = (tmp_path / "out" / "placement_sessions.csv").read_text(encoding="utf-8").splitlines()[0].split(",")
+    assert header.index("environment") == header.index("safety_form_blocked") + 1
+
+
+def test_same_environment_sessions_have_no_environment_mismatch(tmp_path):
+    make_placement_session(tmp_path, 1, "a")
+    make_placement_session(tmp_path, 2, "b", "view")
+    assert "config_mismatch:environment" not in analyze(tmp_path)["summary"]["warnings"], "옛 기록끼리는 키가 없어 같다"
+    other = tmp_path / "f"
+    for i, sid in enumerate(("a", "b"), 1):
+        make_placement_session(other, i, sid, manifest_extra={"environment": _env_block("nature", True)})
+    assert "config_mismatch:environment" not in analyze(other)["summary"]["warnings"]

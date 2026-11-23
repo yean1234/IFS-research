@@ -676,8 +676,8 @@ namespace IFS.SceneSpec.Tests
                     Assert.That(it.AnchorHigh, Is.Not.Empty);
                 }
             }
-            Assert.That(PlacementTests.LoadText().Version, Is.EqualTo("0.2"), "문항을 더해 문구 파일 버전을 올림");
-            Assert.That(PlacementTaskText.Load(ScaleAPath).Version, Is.EqualTo("0.2-scaleA"));
+            Assert.That(PlacementTests.LoadText().Version, Is.EqualTo("0.3"), "문항을 더해 0.2로, 놓기 도움 문구(G53)를 더해 0.3으로 올림");
+            Assert.That(PlacementTaskText.Load(ScaleAPath).Version, Is.EqualTo("0.3-scaleA"));
         }
 
         [Test]

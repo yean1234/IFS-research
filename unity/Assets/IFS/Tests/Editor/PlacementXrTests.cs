@@ -401,7 +401,7 @@ namespace IFS.SceneSpec.Tests
             Assert.That(ev.Any(l => l.Contains("items_instruction,when=post;keys=items_instruction+items_instruction_post")), Is.True);
             var m = JObject.Parse(File.ReadAllText(Path.Combine(dir, "manifest.json")));
             Assert.That((string)m["taskText"]["file"], Is.EqualTo("placement_task.scaleA.v0.json"));
-            Assert.That((string)m["taskText"]["version"], Is.EqualTo("0.2-scaleA"));
+            Assert.That((string)m["taskText"]["version"], Is.EqualTo("0.3-scaleA"), "G53 놓기 도움 문구를 더해 0.3");
             Assert.That((int)m["taskText"]["draftCount"], Is.EqualTo(t.Count));
         }
 
