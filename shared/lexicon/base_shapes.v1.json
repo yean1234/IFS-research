@@ -1,6 +1,6 @@
 {
   "lexiconId": "base-shapes-v1",
-  "lexiconVersion": "0.3.0",
+  "lexiconVersion": "0.4.0",
   "status": "draft",
   "date": "2026-11-23",
   "description": "낱말 → 범주 → 기본 형상(form.base, SceneSpec 2.2.0). 매핑 v2(chatbot/ifs_chatbot/scene_builder_v2.py)만 읽는다. 문헌을 참고해 연구팀이 정한 목록이며 IFS가 정한 범주가 아니다(docs/asset-plan.md, decisions G6·G21·G30). 모든 낱말은 사전 항목 초안이다 — 실제 참여자 발화로 확인하기 전에는 확정하지 않는다.",
@@ -63,7 +63,12 @@
     {"lemma": "천", "base": "sheet", "variant": {"drape": "cloth"}, "source": "added", "note": "수사 '천'(1000)은 Kiwi가 NR로 내므로 맞지 않는다(NNG만 맞춤)"},
     {"lemma": "막", "base": "sheet", "variant": {"drape": "cloth"}, "source": "added", "note": "껍질(shell) 읽기와 갈림 — 후보 표 candidate_values.v2.json interpretationSplits 'membrane'(form.type이 비었을 때 blob | shell)"},
     {"lemma": "보자기", "base": "sheet", "variant": {"drape": "cloth"}, "source": "added", "note": "싸는 것(container) 읽기는 갈림을 만들지 않음(docs/asset-plan.md 3-2절)"},
-    {"lemma": "장막", "base": "sheet", "variant": {"drape": "cloth"}, "source": "added"}
+    {"lemma": "장막", "base": "sheet", "variant": {"drape": "cloth"}, "source": "added"},
+    {"lemma": "불꽃", "base": "flame", "source": "added"},
+    {"lemma": "불길", "base": "flame", "source": "tr:De Nicola"},
+    {"lemma": "불씨", "base": "flame", "source": "added"},
+    {"lemma": "촛불", "base": "flame", "source": "added"},
+    {"lemma": "모닥불", "base": "flame", "source": "added", "note": "장작 없이 불꽃 모양만(docs/asset-plan.md 2-6절)"}
   ],
   "notIncluded": [
     {"lemma": "병", "reason": "질병·화병과 형태가 같다(docs/asset-plan.md 3-3절). 물병·유리병·꽃병처럼 합성어만 넣었다"},
@@ -74,6 +79,12 @@
     {"lemma": "사슬", "reason": "고리 모형이 필요해 다음 묶음(docs/asset-plan.md 1-1절 line 행)"},
     {"lemma": "껍질", "reason": "1층 사전이 form.type = shell로 넣는다(기존 경로). sheet와 갈리지만 말한 form.type을 후보에서 바꿀 수 없어(G9) 갈림을 만들지 않음"},
     {"lemma": "벽·옷·이불·담요", "reason": "벽은 가두는 것(다음 묶음) 후보, 옷·이불·담요는 일상 사물·위안 물건이라 보류(docs/asset-plan.md 1-1절 sheet 행)"},
+    {"lemma": "불", "reason": "넣지 않음(D6에서 정함). docs/asset-plan.md 3-2절은 flame | 빛 갈림으로 두었지만 빛 읽기는 glow 검토(다음 묶음)라 만들 수 없고, 맨 낱말 '불'은 '불이 난 것처럼 화끈거려요'처럼 몸 감각 관용 표현의 주어로 자주 나와(형태 조사 4-2절: 언어 자료와 심상 보고는 다름) 주어 규칙만으로는 형상을 말한 것인지 가릴 수 없다. 불꽃·불길·불씨·촛불·모닥불만 넣었다. '불'은 1층 사전 object(fire)로 _unmapped에 남는다 ⚠ 사람이 정할 것"},
+    {"lemma": "불덩어리", "reason": "'덩어리'가 form.type = blob(말한 슬롯)이고 flame 읽기를 후보로 보이려면 기본 형상을 후보 값으로 내야 한다(후보에 기본 형상을 넣지 않음). 넣지 않아 지금처럼 blob"},
+    {"lemma": "숯불·용암·화산", "reason": "덩어리·액체·풍경과 겹쳐 다음에 판단(docs/asset-plan.md 1-1절 flame 행)"},
+    {"lemma": "물·액체·꿀", "reason": "액체 일반어는 기록만(docs/asset-plan.md 6절 결정 9, 제안대로 진행). 물방울 모양은 액체 일반어의 뜻이 아님"},
+    {"lemma": "웅덩이·고인 물", "reason": "pool 후보(다음 묶음). _unmapped에 남음"},
+    {"lemma": "늪·바다·홍수·진흙", "reason": "풍경 규모(환경 영역)이거나 다음에 판단"},
     {"lemma": "덩굴", "reason": "식물과 갈림(3-2절). 다음 묶음에 식물만 넣기로 했으므로(G30) 그때 plant로 정한다. 그때까지 line으로 보내지 않고 _unmapped에 남김"},
     {"lemma": "조이다·땅기다·팽팽하다·엉키다", "reason": "동사·형용사(형상 낱말 아님). '엉키다·꼬이다'는 line의 변형값(tangle) 단서로만 쓴다(variantCues)"}
   ],

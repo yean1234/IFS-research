@@ -1,0 +1,119 @@
+[
+ {
+  "id": "F1",
+  "text": "불꽃이 있어요.",
+  "base": {
+   "requested": "flame",
+   "status": "applied",
+   "shape": "flame",
+   "rule": "flame/1",
+   "variant": {},
+   "variantDefaults": [],
+   "seed": 0,
+   "parameters": {
+    "lobeDepth": 0.35,
+    "lobes": 3.0,
+    "rows": 32.0,
+    "segments": 32.0,
+    "tipBend": 0.25,
+    "twist": 5.0
+   }
+  },
+  "variant": null,
+  "formType": null,
+  "renderPath": "base:flame",
+  "visiblePixels": 5827,
+  "silhouette": {
+   "circularity": 0.68,
+   "components": 1,
+   "edgeFalloffPx": 0.71,
+   "maskPixels": 5752
+  },
+  "contrastDeltaL": 5.61,
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 2048,
+  "trianglesPerEyeEstimate": 8592,
+  "baseNotes": [
+   "form.base=flame: 형상 프리셋 기본값 — 절차 메시(규칙 flame/1, 변형 없음, seed 0, lobeDepth 0.35, lobes 3, rows 32, segments 32, tipBend 0.25, twist 5). 윤곽만(색·무늬·발광·고유 움직임 없음), 정점 변위 0, 노이즈 크기 1.6(거칠기 얼룩·침식 무늬). 경계 상자 가장 긴 변 1 × 기본 크기"
+  ]
+ },
+ {
+  "id": "F2",
+  "text": "촛불 같은 게 있어요. 작아요.",
+  "base": {
+   "requested": "flame",
+   "status": "applied",
+   "shape": "flame",
+   "rule": "flame/1",
+   "variant": {},
+   "variantDefaults": [],
+   "seed": 0,
+   "parameters": {
+    "lobeDepth": 0.35,
+    "lobes": 3.0,
+    "rows": 32.0,
+    "segments": 32.0,
+    "tipBend": 0.25,
+    "twist": 5.0
+   }
+  },
+  "variant": null,
+  "formType": null,
+  "renderPath": "base:flame",
+  "visiblePixels": 2130,
+  "silhouette": {
+   "circularity": 0.685,
+   "components": 1,
+   "edgeFalloffPx": 0.68,
+   "maskPixels": 2078
+  },
+  "contrastDeltaL": 5.76,
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 2048,
+  "trianglesPerEyeEstimate": 8592,
+  "baseNotes": [
+   "form.base=flame: 형상 프리셋 기본값 — 절차 메시(규칙 flame/1, 변형 없음, seed 0, lobeDepth 0.35, lobes 3, rows 32, segments 32, tipBend 0.25, twist 5). 윤곽만(색·무늬·발광·고유 움직임 없음), 정점 변위 0, 노이즈 크기 1.6(거칠기 얼룩·침식 무늬). 경계 상자 가장 긴 변 1 × 기본 크기"
+  ]
+ },
+ {
+  "id": "F3",
+  "text": "빨간 불꽃이 있어요. 밝아요.",
+  "base": {
+   "requested": "flame",
+   "status": "applied",
+   "shape": "flame",
+   "rule": "flame/1",
+   "variant": {},
+   "variantDefaults": [],
+   "seed": 0,
+   "parameters": {
+    "lobeDepth": 0.35,
+    "lobes": 3.0,
+    "rows": 32.0,
+    "segments": 32.0,
+    "tipBend": 0.25,
+    "twist": 5.0
+   }
+  },
+  "variant": null,
+  "formType": null,
+  "renderPath": "base:flame",
+  "visiblePixels": 5827,
+  "silhouette": {
+   "circularity": 0.682,
+   "components": 1,
+   "edgeFalloffPx": 0.72,
+   "maskPixels": 5759
+  },
+  "contrastDeltaL": -4.59,
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 2048,
+  "trianglesPerEyeEstimate": 8592,
+  "baseNotes": [
+   "form.base=flame: 형상 프리셋 기본값 — 절차 메시(규칙 flame/1, 변형 없음, seed 0, lobeDepth 0.35, lobes 3, rows 32, segments 32, tipBend 0.25, twist 5). 윤곽만(색·무늬·발광·고유 움직임 없음), 정점 변위 0, 노이즈 크기 1.6(거칠기 얼룩·침식 무늬). 경계 상자 가장 긴 변 1 × 기본 크기"
+  ]
+ }
+]

@@ -50,12 +50,12 @@ def empty_spec():
 
 
 # ── 결정성(완료 기준) ─────────────────────────────────────────────────────────
-GOLDEN = {   # 생성기 0.3.0 · 표 2.0.0 · 매퍼 v2 builder 2.2.0 · 기본 형상 사전 0.3.0 (2026-11-23, D6)
-    T_FORM: "adbda9f30d53f139552d8557f64eb388afaa9b335d13c76430d88aee23af8705",
-    T_FEEL: "fc0b847b11a022a561b75c001745fa2a7641d894359b3ffc0d9436858a313b4d",
-    T_CLOUD: "394d29e41f2a50f75e3d763bbe6ffea3b133efb6a71ba2594036c9fc679e33a5",
-    T_LONG: "6ac7bbd9b76c8ff7f14969f7f0562beb483996b244b3344ccc489e5a0e112e52",
-    T_MOTION: "e6ad1d99a7b5bc2376310cfa34432d2aa14c3e38fcde57e3130936000905f7ac",
+GOLDEN = {   # 생성기 0.3.0 · 표 2.0.0 · 매퍼 v2 builder 2.2.0 · 기본 형상 사전 0.4.0 (2026-11-23, D6)
+    T_FORM: "fc9ddce3244cdd54a6dca7026495a5d60cb589f3c50c56b3cf87aab9fd5346fe",
+    T_FEEL: "cadaef0130f154a1bc369475f9646707de5a01f2696866867cb843605d4fc846",
+    T_CLOUD: "6c60822a7ca32116a2ab24e1d525f93dea94d162e24b995d4f0fa2910ee25b3a",
+    T_LONG: "5e732a51522ee8b95d3a8adf2378682ffcb205014348801271b2eae53204e594",
+    T_MOTION: "984a62ab6980a149a85c1959409518437aadb730b41b3b40374ef4cc0bc972da",
 }
 
 

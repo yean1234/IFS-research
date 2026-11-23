@@ -133,6 +133,7 @@ namespace IFS.SceneSpec.Tests
                 { "container/1", 13257536307435825394UL },
                 { "line/1", 15146493612528602679UL },
                 { "sheet/1", 17278733090269891799UL },
+                { "flame/1", 12136846245987838327UL },
             };
             foreach (var shape in BaseShapes.All.Where(BaseShapeMesh.Supports))
             {

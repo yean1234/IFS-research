@@ -150,6 +150,9 @@ WORDS = [
     ("얇은 천이 있어요. 보라색이에요.", "sheet", {"drape": "cloth"}),
     ("막이요. 얇은 막.", "sheet", {"drape": "cloth"}),
     ("보자기 같은 게 있어요.", "sheet", {"drape": "cloth"}),
+    ("불꽃이 있어요.", "flame", None),
+    ("촛불 같은 게 있어요. 작아요.", "flame", None),
+    ("모닥불이요.", "flame", None),
 ]
 
 
@@ -343,3 +346,16 @@ def test_membrane_split_offers_shell_reading(v2):
     told["form"]["type"] = "mist"
     told["_provenance"]["form.type"] = [dict(spec["_provenance"]["form.base"][0], rule="synthetic>form.type:mist")]
     assert all(a["reason"] != "ambiguous" for a in generate(told, "SYN-M", TABLE)["axes"])
+
+
+@pytest.mark.parametrize("text", ["불이 난 것처럼 화끈거려요.", "불빛이 있어요.", "불덩어리가 있어요.", "작은 빛이 있어요."])
+def test_fire_idiom_light_and_lump_are_not_flame(v2, text):
+    """맨 낱말 '불'(몸 감각 관용 표현과 같은 꼴)·'불빛'·'불덩어리'(덩어리 = blob)·'빛'은 flame이 아니다(사전 notIncluded)."""
+    assert build(v2, text)["form"]["base"] is None
+
+
+def test_flame_color_is_not_forced(v2):
+    """불꽃은 모양만(G30): 말하지 않은 색·밝기는 비어 있다(낱말이 주황·발광을 뜻한다고 보지 않음)."""
+    spec = build(v2, "불꽃이 있어요.")
+    assert spec["material"]["color"] is None and spec["material"]["brightness"] is None
+    assert "material.color" not in spec["_inferred"]

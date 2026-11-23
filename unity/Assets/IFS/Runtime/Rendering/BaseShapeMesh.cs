@@ -24,6 +24,7 @@ namespace IFS.SceneSpec
             { BaseShapes.Container, "container/1" },
             { BaseShapes.Line, "line/1" },
             { BaseShapes.Sheet, "sheet/1" },
+            { BaseShapes.Flame, "flame/1" },
         };
 
         /// <summary>형상의 생성 규칙 버전. 만들지 않은 형상이면 null(로더가 그리지 않고 기록한다).</summary>
@@ -47,6 +48,12 @@ namespace IFS.SceneSpec
                     break;
                 case BaseShapes.Sheet:
                     BuildSheet(m, V("drape", "paper"), seed);
+                    break;
+                case BaseShapes.Flame:
+                    BuildFlame(m, seed);
+                    break;
+                case BaseShapes.Drop:
+                    m.Revolve(DropRows, RevolveSegs, DropPoint);
                     break;
                 default:
                     throw new ArgumentException("만들 수 없는 기본 형상: " + shape);
@@ -80,6 +87,18 @@ namespace IFS.SceneSpec
                     p["thickness"] = SheetThickness;
                     p["waveAmplitude"] = V("drape", "paper") == "cloth" ? 0.06 : 0.03;
                     p["tiltDeg"] = SheetTiltDeg;
+                    break;
+                case BaseShapes.Flame:
+                    p["rows"] = FlameRows;
+                    p["segments"] = RevolveSegs;
+                    p["lobes"] = FlameLobes;
+                    p["lobeDepth"] = FlameLobeDepth;
+                    p["tipBend"] = FlameTipBend;
+                    p["twist"] = FlameTwist;
+                    break;
+                case BaseShapes.Drop:
+                    p["rows"] = DropRows;
+                    p["segments"] = RevolveSegs;
                     break;
             }
             return p;
@@ -242,6 +261,41 @@ namespace IFS.SceneSpec
             }
         }
 
+        // ── flame · drop ────────────────────────────────────────────────────
+        // 둘 다 위가 뾰족한 회전체라 회색일 때 같아 보일 수 있다 → 불꽃은 길쭉하고(높이:폭 약 2:1) 위쪽 절반에서 세 갈래 혀가 위로 갈수록
+        // 꼬이며(단면 반지름 × (1 + a·cos(3θ + φ(y)))) 꼭짓점이 한쪽으로 휜다. 물방울은 통통하고(약 1.3:1) 매끈한 하나의 끝이다.
+        // 불꽃은 모양만(G30): 입자·발광 깜박임·일렁임 애니메이션·불 색 강제 없음 — 색은 다른 형상과 같이 말한 색 또는 중립 기본색.
+        const int RevolveSegs = 32, FlameRows = 32, DropRows = 24, FlameLobes = 3;
+        const double FlameLobeDepth = 0.35, FlameTipBend = 0.25, FlameTwist = 5.0;
+
+        /// <summary>물방울: θ = π(1 − u), 반지름 sin θ · sin(θ/2), 높이 cos θ(아래는 구처럼 둥글고 위는 한 점으로 모임). 난수 없음.</summary>
+        static double[] DropPoint(double u, double ang)
+        {
+            double th = Math.PI * (1 - u);
+            double r = Math.Sin(th) * Math.Sin(th / 2);
+            return new[] { r * Math.Cos(ang), Math.Cos(th), r * Math.Sin(ang) };
+        }
+
+        static void BuildFlame(MeshData m, int seed)
+        {
+            var rng = new SplitMix64((ulong)(uint)seed * 0x9E3779B97F4A7C15UL + 0xF1A3EUL);
+            double ph = rng.NextDouble() * 2 * Math.PI, bendDir = rng.NextDouble() * 2 * Math.PI;
+            m.Revolve(FlameRows, RevolveSegs, (u, ang) =>
+            {
+                // 윤곽: 아래 35%는 반원(둥근 바닥), 위 65%는 오목하게 가늘어지는 혀 → 한 점. 높이 2 : 최대 폭 1
+                const double R = 0.5, split = 0.35;
+                double r, v = 0;
+                if (u <= split) { double w = (split - u) / split; r = R * Math.Sqrt(Math.Max(0, 1 - w * w)); }
+                else { v = (u - split) / (1 - split); r = R * Math.Pow(1 - Math.Pow(v, 1.3), 1.6); }   // 이음매에서 기울기 0(꺾임 없음)
+                double t = Math.Min(1, v / 0.5);
+                double a = FlameLobeDepth * t * t * (3 - 2 * t);                // 혀 쪽에서 세 갈래
+                r *= 1 + a * Math.Cos(FlameLobes * ang + ph + FlameTwist * v);  // 위로 갈수록 꼬임(윤곽이 물결침)
+                // 혀의 가운데 줄기가 한 번 S자로 흔들리고(정지한 모양) 꼭짓점이 한쪽으로 휜다
+                double sway = 0.16 * Math.Sin(Math.PI * 1.5 * v + ph) * v + FlameTipBend * v * v * v;
+                return new[] { r * Math.Cos(ang) + sway * Math.Cos(bendDir), 2 * u - 1, r * Math.Sin(ang) + sway * Math.Sin(bendDir) };
+            });
+        }
+
         /// <summary>SplitMix64 — 작은 결정적 난수(System.Random은 런타임마다 구현이 다를 수 있어 쓰지 않는다).</summary>
         sealed class SplitMix64
         {
@@ -401,6 +455,44 @@ namespace IFS.SceneSpec
                     int i1 = Add(r1 * Math.Cos(a1), y, r1 * Math.Sin(a1), 0, ny, 0);
                     Quad(o0, o1, i1, i0);
                 }
+            }
+
+            /// <summary>회전체 면: P(u, 각) — u = 0(아래 극점) … 1(위 극점), 고리 rows개(극점 제외), 둘레 segs. 법선은 P의 편미분으로
+            /// 구하고 고리 가운데에서 바깥쪽을 향하게 맞춘다. 극점은 아래 (0, −1, 0), 위는 마지막 고리 가운데 → 극점 방향.</summary>
+            public void Revolve(int rows, int segs, Func<double, double, double[]> P)
+            {
+                const double h = 1e-5;
+                var ringIds = new int[rows][];
+                for (int k = 0; k < rows; k++)
+                {
+                    double u = (k + 1.0) / (rows + 1);
+                    double cx = 0, cy = 0, cz = 0;
+                    for (int j = 0; j < segs; j++) { var q = P(u, 2 * Math.PI * j / segs); cx += q[0]; cy += q[1]; cz += q[2]; }
+                    cx /= segs; cy /= segs; cz /= segs;
+                    ringIds[k] = new int[segs];
+                    for (int j = 0; j < segs; j++)
+                    {
+                        double a = 2 * Math.PI * j / segs;
+                        var p0 = P(u, a);
+                        var du = Sub(P(u + h, a), P(u - h, a));
+                        var da = Sub(P(u, a + h), P(u, a - h));
+                        var n = Cross(du, da);
+                        if (Dot(n, new[] { p0[0] - cx, p0[1] - cy, p0[2] - cz }) < 0) n = new[] { -n[0], -n[1], -n[2] };
+                        ringIds[k][j] = Add(p0[0], p0[1], p0[2], n[0], n[1], n[2]);
+                    }
+                }
+                for (int k = 0; k + 1 < rows; k++)
+                    for (int j = 0; j < segs; j++)
+                        Quad(ringIds[k][j], ringIds[k][(j + 1) % segs], ringIds[k + 1][(j + 1) % segs], ringIds[k + 1][j]);
+                var b = P(0, 0);
+                int bottom = Add(b[0], b[1], b[2], 0, -1, 0);
+                for (int j = 0; j < segs; j++) Tri(bottom, ringIds[0][j], ringIds[0][(j + 1) % segs]);
+                var t = P(1, 0);
+                double lx = 0, ly = 0, lz = 0;
+                for (int j = 0; j < segs; j++) { var q = P((double)rows / (rows + 1), 2 * Math.PI * j / segs); lx += q[0]; ly += q[1]; lz += q[2]; }
+                lx /= segs; ly /= segs; lz /= segs;
+                int top = Add(t[0], t[1], t[2], t[0] - lx, t[1] - ly, t[2] - lz);
+                for (int j = 0; j < segs; j++) Tri(top, ringIds[rows - 1][j], ringIds[rows - 1][(j + 1) % segs]);
             }
 
             /// <summary>곡선(점 목록)을 따라가는 관. 둘레 sides조각, 평행 이동 틀(닫힌 곡선은 한 바퀴 돈 비틀림을 고르게 나눠 되돌림).
