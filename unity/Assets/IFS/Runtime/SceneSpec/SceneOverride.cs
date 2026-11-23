@@ -31,8 +31,10 @@ namespace IFS.SceneSpec
             }
             foreach (var kv in Categories)
             {
-                if (Array.IndexOf(SceneParams.CategoricalKeys, kv.Key) < 0) errors.Add("범주 키가 아님: " + kv.Key);
+                if (Array.IndexOf(SceneParams.CategoricalKeys, kv.Key) < 0 && kv.Key != SceneParams.BaseKey) errors.Add("범주 키가 아님: " + kv.Key);
                 else if (kv.Value == null) errors.Add(kv.Key + ": 값이 null");
+                else if (kv.Key == SceneParams.BaseKey && kv.Value != SceneParams.NoBase && !BaseShapes.IsBase(kv.Value))
+                    errors.Add($"모르는 기본 형상: {kv.Value}(가능: {string.Join(", ", BaseShapes.All)}, {SceneParams.NoBase})");
                 else if (kv.Key == "form.type" && Array.IndexOf(SceneParams.FormTypes, kv.Value) < 0) errors.Add("모르는 형태: " + kv.Value);
                 else if (kv.Key == "motion.type" && !MotionGroups.ByType.ContainsKey(kv.Value)) errors.Add("모르는 motion.type: " + kv.Value);
             }

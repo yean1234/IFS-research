@@ -27,6 +27,14 @@ namespace IFS.SceneSpec
         public const string RendererShell = "shell";
         public const string RendererFragments = "fragments";
         public const string RendererShapeModel = "shapeModel";
+        /// <summary>기본 형상 렌더러 이름의 앞머리("base:container" …, report.json renderPath).</summary>
+        public const string RendererBasePrefix = "base:";
+
+        /// <summary>기본 형상 판정(계획 JSON base.status).</summary>
+        public const string BaseApplied = "applied";
+        public const string BaseNotAppliedForm = "not_applied_form";
+        public const string BaseNotAppliedForced = "not_applied_forced";
+        public const string BaseNoMesh = "no_mesh";
 
         /// <summary>안개 레이마칭 걸음 수(형상 프리셋 기본값). 셰이더 SceneSpecMist의 IFS_MIST_STEPS와 같아야 한다(테스트가 확인).</summary>
         public const int MistSteps = 8;
@@ -82,6 +90,20 @@ namespace IFS.SceneSpec
         /// <summary>형상 프리셋 기본값을 적은 로더 메모(notes). 없으면 null.</summary>
         public string PresetNote { get; private set; }
 
+        /// <summary>(2.2) 지금 값의 기본 형상(form.base, none이면 null). 그리지 않아도 남는다.</summary>
+        public string BaseRequested { get; private set; }
+        /// <summary>(2.2) 그리는 기본 형상(BaseStatus = applied일 때만). 아니면 null.</summary>
+        public string BaseShape { get; private set; }
+        /// <summary>(2.2) applied | not_applied_form(form.type이 mist·shell·fragments) | not_applied_forced(변형본이 모양 모형 강제)
+        /// | no_mesh(이 빌드에 메시가 없는 기본 형상). 기본 형상이 없으면 null.</summary>
+        public string BaseStatus { get; private set; }
+        /// <summary>(2.2) 기본 형상 메시 규칙 버전(BaseShapeMesh.RuleFor). 그리지 않으면 null.</summary>
+        public string BaseRule { get; private set; }
+        /// <summary>(2.2) 그리는 기본 형상의 변형값 전체(정하지 않은 키는 형상 프리셋 기본값)와 기본값으로 채운 키.</summary>
+        public IReadOnlyDictionary<string, string> BaseVariant { get; private set; }
+        public IReadOnlyList<string> BaseVariantDefaults { get; private set; }
+        public int BaseSeed { get; private set; }
+
         FormRenderPlan() { }
 
         /// <summary>
@@ -92,6 +114,20 @@ namespace IFS.SceneSpec
         public static FormRenderPlan Build(SceneParams current, string initialFormType, ShapeResolution shape)
         {
             string form = current.GetCategory("form.type");
+            // (2.2) 기본 형상: form.type이 blob(말하지 않아 기본값인 경우 포함)일 때만 그린다(docs/asset-plan.md 2-5절).
+            // 변형본이 모양 모형을 강제하면 그 모형이 앞선다. 이 빌드에 메시가 없는 기본 형상이면 그리지 않고 기록만.
+            string baseReq = current.IsCategorical(SceneParams.BaseKey) ? current.GetCategory(SceneParams.BaseKey) : SceneParams.NoBase;
+            if (baseReq == SceneParams.NoBase || !BaseShapes.IsBase(baseReq)) baseReq = null;
+            string baseStatus = null;
+            if (baseReq != null)
+            {
+                if (!BaseShapes.FormAllowsBase(form)) baseStatus = BaseNotAppliedForm;
+                else if (shape?.Status == ShapeMapping.StatusForced) baseStatus = BaseNotAppliedForced;
+                else if (!BaseShapeMesh.Supports(baseReq)) baseStatus = BaseNoMesh;
+                else baseStatus = BaseApplied;
+            }
+            bool baseApplied = baseStatus == BaseApplied;
+            if (baseApplied) return BuildBase(current, form, baseReq);
             bool shapeModel = shape?.Model != null && form == initialFormType;
             RenderedColor.BaseSrgb(current.GetNumber("material.color.h"), current.GetNumber("material.color.s"),
                 current.GetNumber("material.color.l"), out double r, out double g, out double b);
@@ -105,6 +141,8 @@ namespace IFS.SceneSpec
             var inv = System.Globalization.CultureInfo.InvariantCulture;
             return new FormRenderPlan
             {
+                BaseRequested = baseReq,
+                BaseStatus = baseStatus,
                 Renderer = renderer,
                 FormType = form,
                 ShapeModel = shapeModel ? shape.Model : null,
@@ -134,6 +172,71 @@ namespace IFS.SceneSpec
                       "mist에서 material.roughness는 표면 반사(광택)가 아니라 밀도 노이즈 크기 배율(0.7–1.3)과 색 얼룩 세기를 정함"
                     : null,
             };
+        }
+
+        /// <summary>(2.2) 기본 형상 계획: 모양 모형과 같은 셰이더·프리셋(정점 변위 0, 굴곡 0 — 윤곽 유지, docs/asset-plan.md 2-4절).
+        /// 색·밝기·투명도·거칠기·침식 슬롯은 다른 형상과 같은 식으로 들어간다(G22).</summary>
+        static FormRenderPlan BuildBase(SceneParams current, string form, string shape)
+        {
+            RenderedColor.BaseSrgb(current.GetNumber("material.color.h"), current.GetNumber("material.color.s"),
+                current.GetNumber("material.color.l"), out double r, out double g, out double b);
+            float opacity = (float)current.GetNumber("material.opacity");
+            var defaultsUsed = new List<string>();
+            var variant = BaseShapes.Resolve(shape, current.CurrentBaseVariant, defaultsUsed, null);
+            string rule = BaseShapeMesh.RuleFor(shape);
+            var inv = System.Globalization.CultureInfo.InvariantCulture;
+            var pars = BaseShapeMesh.Parameters(shape, variant);
+            string vtext = variant.Count == 0 ? "변형 없음" : string.Join(", ", System.Linq.Enumerable.Select(variant, kv =>
+                kv.Key + "=" + kv.Value + (defaultsUsed.Contains(kv.Key) ? "(기본값)" : "")));
+            string ptext = string.Join(", ", System.Linq.Enumerable.Select(pars, kv => kv.Key + " " + kv.Value.ToString(inv)));
+            return new FormRenderPlan
+            {
+                BaseRequested = shape,
+                BaseStatus = BaseApplied,
+                BaseShape = shape,
+                BaseRule = rule,
+                BaseVariant = variant,
+                BaseVariantDefaults = defaultsUsed,
+                BaseSeed = BaseShapeMesh.DefaultSeed,
+                Renderer = RendererBasePrefix + shape,
+                FormType = form,
+                ColorR = (float)r, ColorG = (float)g, ColorB = (float)b,
+                Opacity = opacity,
+                Brightness = (float)current.GetNumber("material.brightness"),
+                Roughness = (float)current.GetNumber("material.roughness"),
+                Erosion = (float)current.GetNumber("material.erosion"),
+                Fade = RenderedColor.UsesFadeShader(form, opacity),
+                Preset = ShapePreset,
+                ZeroDisplacement = true,
+                PresetNote = $"form.base={shape}: 형상 프리셋 기본값 — 절차 메시(규칙 {rule}, {vtext}, seed {BaseShapeMesh.DefaultSeed}" +
+                             (ptext.Length > 0 ? ", " + ptext : "") + "). 윤곽만(색·무늬·발광·고유 움직임 없음), 정점 변위 0, " +
+                             $"노이즈 크기 {ShapePreset.NoiseScale.ToString(inv)}(거칠기 얼룩·침식 무늬). 경계 상자 가장 긴 변 1 × 기본 크기",
+            };
+        }
+
+        /// <summary>(2.2) 기본 형상 판정(계획 JSON의 base). 기본 형상이 없으면 null.</summary>
+        public JObject BaseJson()
+        {
+            if (BaseRequested == null) return null;
+            var o = new JObject
+            {
+                ["requested"] = BaseRequested,
+                ["status"] = BaseStatus,
+                ["shape"] = BaseShape,
+                ["rule"] = BaseRule,
+            };
+            if (BaseVariant != null)
+            {
+                var v = new JObject();
+                foreach (var kv in BaseVariant) v[kv.Key] = kv.Value;
+                o["variant"] = v;
+                o["variantDefaults"] = new JArray(System.Linq.Enumerable.ToArray(BaseVariantDefaults));
+                o["seed"] = BaseSeed;
+                var p = new JObject();
+                foreach (var kv in BaseShapeMesh.Parameters(BaseShape, BaseVariant)) p[kv.Key] = System.Math.Round(kv.Value, 5);
+                o["parameters"] = p;
+            }
+            return o;
         }
 
         /// <summary>form.type → 렌더러 이름. 모르는 값은 그 이름 그대로(로더가 프리셋 없음으로 그린다).</summary>
@@ -175,8 +278,17 @@ namespace IFS.SceneSpec
             return new JObject { ["version"] = MistRule, ["seed"] = MistSeed, ["lumps"] = lumps };
         }
 
-        /// <summary>계획 전체(비교·기록용). 키 순서가 고정이라 문자열 비교로 같은 계획인지 볼 수 있다.</summary>
-        public JObject ToJson() => new JObject
+        /// <summary>계획 전체(비교·기록용). 키 순서가 고정이라 문자열 비교로 같은 계획인지 볼 수 있다.
+        /// 기본 형상(2.2)이 있을 때만 끝에 "base"를 붙인다(2.0·2.1 spec의 계획 JSON은 그대로).</summary>
+        public JObject ToJson()
+        {
+            var o = CoreJson();
+            var b = BaseJson();
+            if (b != null) o["base"] = b;
+            return o;
+        }
+
+        JObject CoreJson() => new JObject
         {
             ["renderer"] = Renderer,
             ["formType"] = FormType,

@@ -1,4 +1,4 @@
-"""확정 텍스트 → SceneSpec v2.1 — 매핑 v2 (화이트박스. 학습·LLM·임베딩 없음).
+"""확정 텍스트 → SceneSpec v2.2 — 매핑 v2 (화이트박스. 학습·LLM·임베딩 없음).
 
 v1(scene_builder_v1.py)을 상속해 아래 차이만 더한다. v0·v1 코드·설정 파일은 바꾸지 않으므로 v0·v1 출력은 그대로다.
 같은 확정 텍스트(+ 같은 meta 인자)는 언제나 같은 dict, 같은 파일 바이트가 된다(시각·난수·빌드 사이 상태 없음).
@@ -22,7 +22,13 @@ D2  형상이 보이지 않게 되는 오류
         신체 부위 주어 '몸이 처져요')이면 form.posture에 넣지 않고 _context에 남긴다.
     (d) '가슴 앞을 덮고'의 '앞'은 덮음 크기 기준(시야 전체 1.7 m)이 아니라 위치다.
 
-스키마 2.1 한계(스키마는 바꾸지 않음): meta.mapping.used는 v0 | v1만 허용한다. v2는 requested = "v2",
+D6  기본 형상 경로(builder 2.2.0, 결정 G21·G30, docs/asset-plan.md 3절)
+    형상을 이름 붙이는 명사(shared/lexicon/base_shapes.v1.json)가 주어·이름·직유 원천이고 본 장면 문장이며 부정되지 않았으면
+    form.base(container·line·sheet·flame·drop)에 넣고, 낱말 뜻과 같은 문장의 참여자 말이 정한 변형값을 form.baseVariant에 넣는다.
+    그 명사의 다른 기록(_unmapped의 object·shape·unlisted_noun)은 지운다(이제 값의 근거). 안전 제외 낱말은 그리지 않고
+    _unmapped reason excluded_shape로 남긴다. 출력은 언제나 specVersion 2.2.0(form.base·baseVariant가 null이어도 적음).
+
+스키마 한계(스키마 2.2에서도 그대로): meta.mapping.used는 v0 | v1만 허용한다. v2는 requested = "v2",
 used = "v1"(가장 가까운 값: v2는 v1 위의 수정), pipeline.builder = scene-spec-builder-v2/…로 남긴다.
 대체 판정은 is_mapping_fallback()을 쓴다(v0·v1에서는 기존 판정 'used ≠ requested'와 같다).
 """
@@ -38,9 +44,12 @@ from .paths import shared
 from .scene_builder import normalize_confirmed
 from .scene_builder_v1 import (EOJEOL_TAG, NOUN_TAGS, PUNCT_TAGS, TOPIC_PARTICLES, Cand, Doc, SceneSpecBuilderV1,
                                fallback_spec)  # noqa: F401 (fallback_spec: 컨트롤러가 같은 대체 경로를 씀)
-from .scene_spec import MAPPING_USED_FOR, is_mapping_fallback  # noqa: F401 (v2 meta.mapping 규칙을 함께 내보냄)
+from .scene_spec import (MAPPING_USED_FOR, SPEC_VERSION_V22,  # noqa: F401 (v2 meta.mapping 규칙을 함께 내보냄)
+                         is_mapping_fallback)
 
-BUILDER_VERSION = "2.1.0"   # 2.1.0(2026-11-23, G33): 거리 하한 꼬리표에 말한 값(said=…)을 더함
+# 2.1.0(2026-11-23, G33): 거리 하한 꼬리표에 말한 값(said=…)을 더함
+# 2.2.0(2026-11-23, D6·G30): 기본 형상 경로 form.base·form.baseVariant(스키마 2.2.0), 안전 제외 낱말 excluded_shape
+BUILDER_VERSION = "2.2.0"
 BUILDER_ID = f"scene-spec-builder-v2/{BUILDER_VERSION}"
 MAPPER_ID = "v2"
 
@@ -68,7 +77,7 @@ class SceneSpecBuilderV2(SceneSpecBuilderV1):
 
     def __init__(self, analyzer: Analyzer, lexicon: Lexicon | None = None, params_path: str | Path | None = None,
                  vad_path: str | Path | None = None, v2_params_path: str | Path | None = None,
-                 stoplist_path: str | Path | None = None):
+                 stoplist_path: str | Path | None = None, base_shapes_path: str | Path | None = None):
         super().__init__(analyzer, lexicon, params_path, vad_path)
         self.p2 = json.loads(Path(v2_params_path or shared("lexicon", "scene_params.v2.json")).read_text(encoding="utf-8"))
         stop = json.loads(Path(stoplist_path or shared("lexicon", "noun_stoplist.v2.json")).read_text(encoding="utf-8"))
@@ -103,6 +112,16 @@ class SceneSpecBuilderV2(SceneSpecBuilderV1):
         self.recall_verbs = frozenset(un["unambiguousRecallVerbs"])
         # 1층 사전의 모든 표제어·이형(범주 무관): 여기 있는 낱말은 '사전에 있는 말'
         self.lex_forms = frozenset(f for e in self.lexicon.entries for f in (e.lemma, *e.alt))
+        # D6 기본 형상 사전
+        bs = json.loads(Path(base_shapes_path or shared("lexicon", "base_shapes.v1.json")).read_text(encoding="utf-8"))
+        self.bs = bs
+        self.bs_info = f"{bs['lexiconId']}@{bs['lexiconVersion']}"
+        self.bs_entries: dict[str, dict] = {e["lemma"]: e for e in bs["entries"]}
+        self.bs_excluded: dict[str, str] = {w: code for code, ws in bs["excluded"].items()
+                                            if not code.startswith("_") and code != "notListed" for w in ws}
+        self.bs_roles = frozenset(bs["rules"]["roles"])
+        self.bs_similes = bool(bs["rules"]["similes"])
+        self.bs_cues: dict[str, dict] = {k: v for k, v in bs["variantCues"].items() if not k.startswith("_")}
 
     # ── 외부 정보 ───────────────────────────────────────────────────────────────
     @classmethod
@@ -110,12 +129,12 @@ class SceneSpecBuilderV2(SceneSpecBuilderV1):
         return cls(rt.analyzer)
 
     def info(self) -> dict:
-        return {"builder": BUILDER_ID, "specVersion": "2.1.0", "lexicons": self._lexicons(), "mapper": MAPPER_ID}
+        return {"builder": BUILDER_ID, "specVersion": SPEC_VERSION_V22, "lexicons": self._lexicons(), "mapper": MAPPER_ID}
 
     def _lexicons(self) -> dict:
         return {**super()._lexicons(),
                 "sceneParamsV2": f"{self.p2['lexiconId']}@{self.p2['lexiconVersion']}",
-                "nounStoplist": self.stop_info}
+                "nounStoplist": self.stop_info, "baseShapes": self.bs_info}
 
     # ── 진입점 ─────────────────────────────────────────────────────────────────
     def build(self, text: str, *, session_id: str | None = None, participant_id: str | None = None,
@@ -138,7 +157,160 @@ class SceneSpecBuilderV2(SceneSpecBuilderV1):
             spec["_unmatched"] = tok_level
             spec["_unmatched"] = sorted(tok_level + self._unmatched_eojeols(doc, spec),
                                         key=lambda u: (u["charSpan"][0], u["charSpan"][1]))
+        # D6: 기본 형상(스키마 2.2.0). form 묶음의 키 순서는 type · posture · base · baseVariant
+        base, variant, changed = self._base_shapes(doc, spec)
+        spec["meta"]["specVersion"] = SPEC_VERSION_V22
+        spec["form"] = {"type": spec["form"]["type"], "posture": spec["form"]["posture"], "base": base,
+                        "baseVariant": variant}
+        if changed:
+            tok_level = [u for u in spec["_unmatched"] if u["tag"] != EOJEOL_TAG]
+            spec["_unmatched"] = sorted(tok_level + self._unmatched_eojeols(doc, spec),
+                                        key=lambda u: (u["charSpan"][0], u["charSpan"][1]))
         return spec
+
+    # ── D6: 기본 형상 ─────────────────────────────────────────────────────────
+    def _base_role(self, doc: Doc, j: int) -> str:
+        """base 판정용 문장 성분. '종이 한 장이'·'물방울 하나가'처럼 바로 뒤 어절이 수량 표현(관형사·수사·숫자 + 단위)이면
+        그 수량 표현의 성분을 쓴다."""
+        role = self._noun_role(doc, j)
+        if role != "other":
+            return role
+        toks = doc.toks
+        n = len(toks)
+        k = j + 1
+        while k < n and toks[k].base_tag == "XSN":
+            k += 1
+        if k >= n or doc.eoj[k] == doc.eoj[j] or toks[k].base_tag not in ("MM", "NR", "SN"):
+            return role
+        if toks[k].base_tag == "NR":
+            return self._noun_role(doc, k)                       # '하나가'
+        m = k + 1                                                # '한 장이' · '2 개가'
+        if m < n and toks[m].base_tag in ("NNB", "NNG") and doc.eoj[m] in (doc.eoj[k], doc.eoj[k] + 1):
+            return self._noun_role(doc, m)
+        return role
+
+    def _base_shapes(self, doc: Doc, spec: dict) -> tuple[str | None, dict | None, bool]:
+        """형상 낱말 → form.base. (base, baseVariant, spec 기록을 바꿨는지). spec의 기록 필드를 제자리에서 고친다."""
+        toks, text = doc.toks, doc.text
+        n = len(toks)
+        valued: set[int] = set()
+        _span_chars(spec.get("_provenance"), valued)
+        context_sents = self._context_sentences(doc) | self._situation_sentences(doc, valued)
+        regions = self._situation_regions(doc)
+        sim_src = {sm["srcIndex"]: sm for sm in self._similes(text, toks)} if self.bs_similes else {}
+        hits: list[dict] = []
+        i = 0
+        while i < n:
+            if toks[i].base_tag not in NOUN_TAGS:
+                i += 1
+                continue
+            j = i
+            while j + 1 < n and toks[j + 1].base_tag in NOUN_TAGS and toks[j + 1].start == toks[j].end \
+                    and doc.eoj[j + 1] == doc.eoj[i]:
+                j += 1
+            a, b = i, j
+            i = j + 1
+            s, e = toks[a].start, toks[b].end
+            lemma = text[s:e]
+            entry, code = self.bs_entries.get(lemma), self.bs_excluded.get(lemma)
+            if entry is None and code is None:
+                continue
+            if doc.sent[b] in context_sents or any(s0 <= a and b < k0 for s0, k0 in regions):
+                continue                                         # 회상·상황 문장의 명사
+            negated = Lexicon._negated(toks, b) or self._noun_negated(doc, b)
+            sim = sim_src.get(b)
+            if sim is None and self._base_role(doc, b) not in self.bs_roles:
+                continue                                         # 장소·목적어·꾸밈말
+            hits.append({"a": a, "b": b, "s": s, "e": e, "lemma": lemma, "entry": entry, "code": code,
+                         "negated": negated, "simile": sim})
+        changed = False
+        unmapped = spec["_unmapped"]
+
+        # 안전 제외 낱말: 그리지 않고 기록만(대신할 형상도 그리지 않음)
+        for h in hits:
+            if h["code"] is None or h["negated"]:
+                continue
+            changed = True
+            same_span = [u for u in unmapped if u["_provenance"]["charSpan"] == [h["s"], h["e"]]]
+            if same_span:
+                for u in same_span:
+                    u["reason"] = "excluded_shape"
+                    u["value"] = {**u["value"], "excluded": h["code"]}
+            else:
+                unmapped.append({"lemma": h["lemma"], "category": "excluded_noun",
+                                 "value": {"noun": h["lemma"], "excluded": h["code"]}, "reason": "excluded_shape",
+                                 "_provenance": self._prov("explicit_lexicon", text, h["s"], h["e"],
+                                                           f"baseShapes.excluded.{h['lemma']}")})
+        # 부정된 형상 낱말: _negated에 남긴다(이미 있으면 그대로)
+        for h in hits:
+            if h["entry"] is None or not h["negated"]:
+                continue
+            if not any(x["_provenance"]["charSpan"] == [h["s"], h["e"]] for x in spec["_negated"]):
+                changed = True
+                spec["_negated"].append({"lemma": h["lemma"], "category": "base_shape",
+                                         "_provenance": self._prov("explicit_lexicon", text, h["s"], h["e"],
+                                                                   f"baseShapes.{h['lemma']}")})
+        if changed:
+            spec["_negated"].sort(key=lambda x: (x["_provenance"]["charSpan"][0], x["lemma"], x["category"]))
+            unmapped.sort(key=lambda u: (u["_provenance"]["charSpan"][0], u["lemma"], u["category"]))
+
+        base_hits = sorted((h for h in hits if h["entry"] is not None and not h["negated"]), key=lambda h: h["s"])
+        if not base_hits:
+            return None, None, changed
+        changed = True
+
+        def prov(h: dict, rule: str) -> dict:
+            src = "simile_marker" if h["simile"] is not None else "explicit_lexicon"
+            tail = f"+simile({h['simile']['marker']})" if h["simile"] is not None else ""
+            return self._prov(src, text, h["s"], h["e"], rule + tail)
+
+        win = base_hits[0]
+        key = win["entry"]["base"]
+        same = [h for h in base_hits if h["entry"]["base"] == key]
+        spec["_provenance"]["form.base"] = [prov(h, f"baseShapes.{h['lemma']}>form.base:{key}") for h in same]
+        for h in base_hits:
+            # 이 명사의 다른 기록(사물·모양어·사전에 없는 명사, 직유 원형 대기 포함)은 이제 값의 근거이므로 지운다.
+            # 같은 낱말이고 구간이 겹치는 것만(직유 기록의 구간은 '상자 같'처럼 표지까지 덮는다)
+            unmapped[:] = [u for u in unmapped if not (u["lemma"] == h["lemma"]
+                                                       and u["category"] in ("object", "shape", "unlisted_noun")
+                                                       and u["_provenance"]["charSpan"][0] < h["e"]
+                                                       and h["s"] < u["_provenance"]["charSpan"][1])]
+            if h["entry"]["base"] != key:
+                spec["_alternatives"].append({"path": "form.base", "value": h["entry"]["base"], "reason": "later_mention",
+                                              "_provenance": [prov(h, f"baseShapes.{h['lemma']}>form.base:{h['entry']['base']}")]})
+        # 변형값: 낱말 뜻(이긴 명사의 사전 항목) → 같은 문장의 참여자 말이 덮어씀
+        variant: dict[str, str] = {}
+        vprov: dict[str, dict] = {}
+        for k, v in (win["entry"].get("variant") or {}).items():
+            variant[k] = v
+            vprov[k] = prov(win, f"baseShapes.{win['lemma']}>form.baseVariant:{k}={v}")
+        sents = {doc.sent[h["b"]] for h in same}
+        for k, vals in (self.bs_cues.get(key) or {}).items():
+            best = None                                          # (charSpan 시작, 값, provenance)
+            for v, cue in vals.items():
+                for x, t in enumerate(toks):
+                    if doc.sent[x] not in sents or t.form not in cue.get("lemmas", ()) \
+                            or t.base_tag not in ("VV", "VA", "XR") or Lexicon._negated(toks, x):
+                        continue
+                    if best is None or t.start < best[0]:
+                        best = (t.start, v, self._tok_prov(doc, x, f"baseVariantCue.{t.form}>form.baseVariant:{k}={v}"))
+                for u in unmapped:
+                    cs = u["_provenance"]["charSpan"]
+                    if u["category"] == "shape" and (u["value"] or {}).get("shape") in cue.get("shapeValues", ()) \
+                            and any(doc.sent[x] in sents for x in doc.toks_in(cs[0], cs[1])):
+                        if best is None or cs[0] < best[0]:
+                            best = (cs[0], v, dict(u["_provenance"],
+                                                   rule=f"baseVariantCue.{u['lemma']}>form.baseVariant:{k}={v}"))
+            if best is not None:
+                variant[k] = best[1]
+                vprov[k] = best[2]
+        if variant:
+            variant = {k: variant[k] for k in sorted(variant)}
+            spec["_provenance"]["form.baseVariant"] = [vprov[k] for k in sorted(vprov)]
+        spec["_provenance"] = _ordered_provenance(spec["_provenance"])
+        spec["_alternatives"].sort(key=lambda al: (_PATH_ORDER.get(al["path"], 99), al["_provenance"][0]["charSpan"][0],
+                                                   al["reason"]))
+        return key, (variant or None), changed
 
     # ── D1: 배경 사물이 형상인 경우 ───────────────────────────────────────────
     def _figure_background_tokens(self, doc: Doc, context_sents: set[int]) -> set[int]:
@@ -478,6 +650,18 @@ class SceneSpecBuilderV2(SceneSpecBuilderV1):
                 continue
             keep.append(c)
         return super()._merge(keep, uncertain_paths, records)
+
+
+# _provenance·_alternatives의 경로 순서(SceneSpec 슬롯 순서에 2.2 슬롯을 form.posture 뒤에 끼움)
+_PATH_ORDER = {p: k for k, p in enumerate((
+    "form.type", "form.posture", "form.base", "form.baseVariant",
+    "material.color", "material.brightness", "material.saturation", "material.roughness", "material.opacity",
+    "material.erosion", "layout.size", "layout.distance", "layout.verticalOffset", "motion.type", "motion.speed",
+    "body.part", "body.layer"))}
+
+
+def _ordered_provenance(prov: dict) -> dict:
+    return {k: prov[k] for k in sorted(prov, key=lambda k: (_PATH_ORDER.get(k, 99), k))}
 
 
 def _num_text(v) -> str:

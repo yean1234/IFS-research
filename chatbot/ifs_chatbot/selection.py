@@ -23,8 +23,8 @@ import shutil
 import threading
 from pathlib import Path
 
-from .candidates import (SLOTS, candidates_bytes, effective_params, form_said_unrendered, generate, rendered_shape_words,
-                         said_words, slot_value, spec_sha256, unrendered_shape_words)
+from .candidates import (SLOTS, base_drawn, candidates_bytes, effective_params, form_said_unrendered, generate,
+                         rendered_shape_words, said_words, slot_value, spec_sha256, unrendered_shape_words)
 from .paths import shared
 from .scene_builder_v2 import floor_record
 from .session_log import now_iso
@@ -177,6 +177,10 @@ class SelectionFlow:
 
     def _item_value(self, item: str, params: dict):
         it = self.table["adjustItems"]["items"][item]
+        if "valueOverrides" in it:
+            # D6 형태 항목: 기본 형상이 그려지면(form.base 있음 + form.type blob) 그 기본 형상, 아니면 form.type
+            base = params.get("form.base", "none")
+            return base if base != "none" and params["form.type"] == "blob" else params["form.type"]
         if it["kind"] == "swatch":
             hsl = {"h": round(params["material.color.h"], 4), "s": round(params["material.color.s"], 4),
                    "l": round(params["material.color.l"], 4)}
@@ -361,6 +365,10 @@ class SelectionFlow:
             allowed = self.item_values(item)          # 표의 값 + 표에 없던 말한 값(있으면)
             if not isinstance(value, str) or value not in allowed:
                 raise SelectionInvalid(f"{item}: 표에 없는 값입니다: {value!r} (가능: {allowed})")
+            vo = it.get("valueOverrides")
+            if vo is not None:
+                # D6: 값 하나가 form.type·form.base를 함께 정한다. 표에 없던 말한 form.type 값이면 기본 형상을 그리지 않음
+                return dict(vo[value]) if value in vo else {it["key"]: value, "form.base": "none"}
             return {it["key"]: value}
         if isinstance(value, bool) or not isinstance(value, (int, float)):
             raise SelectionInvalid(f"{item}: 숫자가 아닙니다: {value!r}")
@@ -408,12 +416,14 @@ class SelectionFlow:
         # 고른 후보의 축 값만 chosen이다. 맞는 것이 없다(none)·선택 단계 건너뜀(skipped)은 고른 것이 없다
         chosen = {} if sel["none"] or sel.get("skipped") else dict(self._cand(sel["selectedCandidateId"])["axisValues"])
         unrendered = form_said_unrendered(self.spec, self.table)        # G32: 모형이 없는 모양어만 말함
-        rendered = slot_value(self.spec, "form.type") is None and bool(rendered_shape_words(self.spec, self.table))
+        rendered = (slot_value(self.spec, "form.type") is None and bool(rendered_shape_words(self.spec, self.table))
+                    and not base_drawn(self.spec))
         words = said_words(unrendered_shape_words(self.spec, self.table) if unrendered
                            else rendered_shape_words(self.spec, self.table) if rendered else [])
         floor = self.data.get("distanceFloor")
         items = self.table["adjustItems"]["items"]
         final = effective_params(self.spec, self.defaults, self.current)
+        start = effective_params(self.spec, self.defaults)
         edited: dict[str, object] = {}
         for item, summ in self.data["adjustments"]["items"].items():
             if _same_value(summ["last"], summ["first"]):
@@ -423,6 +433,9 @@ class SelectionFlow:
                     edited[slot] = {k: round(final[f"material.color.{k}"], 4) for k in ("h", "s", "l")}
                 elif slot == "material.saturation":
                     edited[slot] = round(final["material.color.s"], 4)
+                elif slot == "form.base":
+                    if final["form.base"] != start["form.base"]:      # D6: 기본 형상이 실제로 바뀐 경우만 '고침'
+                        edited[slot] = final["form.base"]
                 else:
                     v = final[items[item]["key"]]
                     edited[slot] = round(v, 4) if isinstance(v, float) else v
@@ -568,7 +581,7 @@ class SelectionFlow:
     def summary(self, overrides: dict) -> list[str]:
         """preview none 모드에서 보이는 속성 요약(연구·시험용. 덮어쓰기 키 = 값)."""
         p = effective_params(self.spec, self.defaults, overrides)
-        keys = ["form.type", "layout.size", "material.opacity", "material.brightness", "material.roughness",
+        keys = ["form.type", "form.base", "layout.size", "material.opacity", "material.brightness", "material.roughness",
                 "motion.type", "material.color.h", "material.color.s", "material.color.l"]
         return [f"{k} = {round(p[k], 4) if isinstance(p[k], float) else p[k]}" + (" *" if k in overrides else "")
                 for k in keys]

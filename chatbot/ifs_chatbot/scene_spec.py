@@ -19,6 +19,11 @@ SPEC_VERSION = "2.0.0"
 SCHEMA_FILE = "scene-spec.v2.json"
 SPEC_VERSION_V21 = "2.1.0"                 # 개선 매핑 v1 출력(상위 호환 확장)
 SCHEMA_FILE_V21 = "scene-spec.v2.1.json"
+SPEC_VERSION_V22 = "2.2.0"                 # 기본 형상 경로(form.base·form.baseVariant, 결정 G21·G30). 매핑 v2만 쓴다
+SCHEMA_FILE_V22 = "scene-spec.v2.2.json"
+# 2.2.0에서 더한 슬롯. SLOT_PATHS(2.0 슬롯)에는 넣지 않는다 — 그 목록을 쓰는 v0·v1·평가 코드의 출력이 바뀌지 않게
+BASE_SLOT_PATHS: tuple[str, ...] = ("form.base", "form.baseVariant")
+BASE_SHAPES: tuple[str, ...] = ("container", "line", "sheet", "flame", "drop")
 V21_FIELDS: tuple[str, ...] = ("_context", "_parts", "_uncertain", "_measurements", "_direction",
                                "_needsConfirmation", "_clauses")
 SLOT_PATHS: tuple[str, ...] = (
@@ -52,21 +57,25 @@ def is_mapping_fallback(mp) -> bool:
     return mp.get("used") != MAPPING_USED_FOR.get(req, req) or bool(mp.get("fallbackReason"))
 
 
-@lru_cache(maxsize=2)
+_SCHEMA_FILES = {SPEC_VERSION_V21: SCHEMA_FILE_V21, SPEC_VERSION_V22: SCHEMA_FILE_V22}
+
+
+@lru_cache(maxsize=4)
 def schema(version: str = SPEC_VERSION) -> dict:
-    name = SCHEMA_FILE_V21 if version == SPEC_VERSION_V21 else SCHEMA_FILE
+    name = _SCHEMA_FILES.get(version, SCHEMA_FILE)
     return json.loads(shared("schemas", name).read_text(encoding="utf-8"))
 
 
-@lru_cache(maxsize=2)
+@lru_cache(maxsize=4)
 def _validator(version: str = SPEC_VERSION):
     from jsonschema import Draft202012Validator
     return Draft202012Validator(schema(version))
 
 
 def schema_errors(spec: dict) -> list[str]:
-    """스키마 위반 목록(없으면 빈 목록). meta.specVersion이 2.1.0이면 v2.1 스키마, 아니면 v2.0 스키마로 검사한다."""
-    version = SPEC_VERSION_V21 if (spec.get("meta") or {}).get("specVersion") == SPEC_VERSION_V21 else SPEC_VERSION
+    """스키마 위반 목록(없으면 빈 목록). meta.specVersion이 2.1.0이면 v2.1 스키마, 2.2.0이면 v2.2 스키마, 아니면 v2.0 스키마로 검사한다."""
+    sv = (spec.get("meta") or {}).get("specVersion")
+    version = sv if sv in _SCHEMA_FILES else SPEC_VERSION
     return [f"{'/'.join(map(str, e.absolute_path)) or '(root)'}: {e.message}"
             for e in sorted(_validator(version).iter_errors(spec), key=lambda e: list(map(str, e.absolute_path)))]
 
@@ -96,11 +105,13 @@ def check_principles(spec: dict, text: str) -> list[str]:
     problems = schema_errors(spec)
     if spec.get("meta", {}).get("sourceTextHash") != text_hash(text):
         problems.append("meta.sourceTextHash가 확정 텍스트의 해시와 다르다")
-    for path in SLOT_PATHS:  # 스키마와 같은 규칙을 코드로도 확인(스키마를 고칠 때 안전망)
+    for path in SLOT_PATHS + BASE_SLOT_PATHS:  # 스키마와 같은 규칙을 코드로도 확인(스키마를 고칠 때 안전망). 2.2 슬롯은 없으면 건너뜀
         try:
             value = get_slot(spec, path)
         except (KeyError, TypeError):
             continue
+        if path in BASE_SLOT_PATHS and (spec.get("meta") or {}).get("specVersion") != SPEC_VERSION_V22:
+            problems.append(f"{path}: specVersion {(spec.get('meta') or {}).get('specVersion')} 문서에는 없어야 한다(2.2.0 전용)")
         has_prov = path in spec.get("_provenance", {})
         if value is None and has_prov:
             problems.append(f"{path}: 값이 null인데 _provenance가 있다")

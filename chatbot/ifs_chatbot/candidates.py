@@ -11,6 +11,9 @@
   말한 자리로 고정한다. 모형이 없는 모양어만 말했으면 형태 자리를 벌린다(축 reason said_unrendered, 말한 낱말은 축에 남김).
 - 구별 규칙(G34, 표 distinctness): 덮어쓰기를 얹은 최종 값에서 화면에 보이지 않는 키(정지 미리보기의 움직임 등)를 뺀
   "보이는 값"이 같은 후보는 index가 작은 것 하나만 남긴다. 남은 후보가 하나면 selectionStep = "skip"(선택 단계 없이 조절로).
+- 기본 형상(D6, form.base): 후보 값으로 쓰지 않는다(말하지 않은 구체 사물을 내밀지 않음, docs/asset-plan.md 3-4절).
+  기본 형상이 그려지는 spec(form.base 있음, form.type 비었거나 blob)은 형태 자리가 말한 자리다(G9). 등록된 갈림('막')만
+  form.type 값으로 다른 읽기를 하나 더 보인다(표 interpretationSplits, match.in = form.base).
 - 화면 순서는 sessionId 해시로 순환시킨다(G20). 후보 내용은 sessionId와 무관하고 순서만 바뀐다.
 - LLM·난수·시각을 쓰지 않는다. 같은 spec(정규화 해시)·같은 sessionId → 바이트까지 같은 출력(원칙 1).
 """
@@ -24,13 +27,15 @@ from pathlib import Path
 
 from .paths import shared
 
-GENERATOR_VERSION = "ifs-candidates/0.2.0"   # 0.2.0(2026-11-23): G32 모형 없는 모양어, G34 밝기 제외·구별 규칙·선택 건너뜀
-TABLE_FILE = "candidate_values.v1.json"
+# 0.2.0(2026-11-23): G32 모형 없는 모양어, G34 밝기 제외·구별 규칙·선택 건너뜀
+# 0.3.0(2026-11-23, D6): form.base(출처 행·그려지는 형태 판정·갈림 match.in = form.base)
+GENERATOR_VERSION = "ifs-candidates/0.3.0"
+TABLE_FILE = "candidate_values.v2.json"
 MAX_CANDIDATES = 4          # 지시문 6절 임시값(⚠ 사람이 정할 것). G19에서 상한
 
 # spec 슬롯(경로) — 출처 표의 행 순서
 SLOTS = (
-    "form.type", "form.posture",
+    "form.type", "form.posture", "form.base",
     "material.color", "material.brightness", "material.saturation", "material.roughness",
     "material.opacity", "material.erosion",
     "layout.size", "layout.distance", "layout.verticalOffset",
@@ -110,10 +115,19 @@ def said_words(words: list[dict]) -> list[dict]:
     return sorted(out, key=lambda w: (w["charSpan"][:1] or [10 ** 9], w["lemma"] or ""))
 
 
+BASE_FORM_TYPES = (None, "blob")      # 기본 형상을 그리는 form.type(docs/asset-plan.md 2-5절, Unity FormRenderPlan과 같음)
+
+
+def base_drawn(spec: dict) -> bool:
+    """D6: 매퍼 v2가 form.base를 냈고 form.type이 비었거나 blob이라 기본 형상이 그려진다(말한 형태)."""
+    return slot_value(spec, "form.base") is not None and slot_value(spec, "form.type") in BASE_FORM_TYPES
+
+
 def form_said_unrendered(spec: dict, table: dict | None = None) -> bool:
-    """G32: form.type을 말하지 않았고, 모형이 없는 모양어만 말했다(모형이 있는 모양어는 없음)."""
+    """G32: form.type을 말하지 않았고, 모형이 없는 모양어만 말했다(모형이 있는 모양어는 없음).
+    기본 형상이 그려지면(D6) 말한 형태가 그려지므로 해당하지 않는다."""
     return (slot_value(spec, "form.type") is None and not rendered_shape_words(spec, table)
-            and bool(unrendered_shape_words(spec, table)))
+            and not base_drawn(spec) and bool(unrendered_shape_words(spec, table)))
 
 
 def slot_is_open(spec: dict, slot: str, table: dict | None = None) -> bool:
@@ -122,8 +136,10 @@ def slot_is_open(spec: dict, slot: str, table: dict | None = None) -> bool:
     모형이 없는 모양어만 말했으면 형태 자리는 열린다(G32, G29 대체)."""
     if slot_value(spec, slot) is not None:
         return False
-    if slot == "form.type" and rendered_shape_words(spec, table):
+    if slot == "form.type" and (rendered_shape_words(spec, table) or base_drawn(spec)):
         return False
+    if slot == "form.base":
+        return False                  # 기본 형상은 후보 값으로 쓰지 않는다(D6)
     return True
 
 
@@ -150,6 +166,7 @@ def effective_params(spec: dict, defaults: dict, overrides: dict | None = None) 
     p: dict = {}
     p["form.type"] = slot_value(spec, "form.type") or defaults["form.type"]
     p["form.posture"] = slot_value(spec, "form.posture") or defaults["form.posture"]
+    p["form.base"] = slot_value(spec, "form.base") or defaults.get("form.base", "none")
     c = slot_value(spec, "material.color") or {}
     sat = slot_value(spec, "material.saturation")
     p["material.color.h"] = clamp(c["h"] if c.get("h") is not None else defaults["material.color.h"])
@@ -171,6 +188,16 @@ def _split_axis(spec: dict, table: dict) -> tuple[dict | None, list[dict]]:
     found, skipped = [], []
     for entry in table["interpretationSplits"]["entries"]:
         m = entry["match"]
+        if m["in"] == "form.base":
+            # D6: 기본 형상의 근거 낱말. 형태(form.type)를 말하지 않았을 때만(G9)
+            if slot_value(spec, "form.type") is not None:
+                continue
+            for pv in (spec.get("_provenance") or {}).get("form.base") or []:
+                if pv.get("trigger") not in m["lemmas"]:
+                    continue
+                found.append({"id": entry["id"], "lemma": pv["trigger"], "charSpan": list(pv["charSpan"]), "entry": entry})
+                break
+            continue
         for item in spec.get(m["in"]) or []:
             if item.get("category") != m["category"]:
                 continue
@@ -230,7 +257,7 @@ def generate(spec: dict, session_id: str, table: dict | None = None) -> dict:
     base = effective_params(spec, defaults)
     unrendered = form_said_unrendered(spec, table)
     words = said_words(unrendered_shape_words(spec, table)) if unrendered else []
-    rendered = slot_value(spec, "form.type") is None and bool(rendered_shape_words(spec, table))
+    rendered = slot_value(spec, "form.type") is None and bool(rendered_shape_words(spec, table)) and not base_drawn(spec)
 
     split, split_skipped = _split_axis(spec, table)
     open_dims = [d for d in priority if slot_is_open(spec, dims[d]["slot"], table)]
@@ -278,6 +305,8 @@ def generate(spec: dict, session_id: str, table: dict | None = None) -> dict:
                 sources[slot] = "offered"
             elif slot_value(spec, slot) is not None:
                 sources[slot] = "said"
+            elif slot == "form.type" and base_drawn(spec):
+                sources[slot] = "default"              # 형태는 기본 형상(form.base, 말함)이 그림. form.type 자체는 말하지 않음
             elif slot == "form.type" and rendered:
                 sources[slot] = "said"                 # 모형이 있는 모양어: 형태 자리는 말한 자리(G32)
             elif slot == "form.type" and unrendered:
@@ -318,6 +347,8 @@ def generate(spec: dict, session_id: str, table: dict | None = None) -> dict:
         note = f"빈 자리가 한 차원({axes[0]['slot']})뿐이라 그 차원의 표 값 {len(grid)}개"
     else:
         note = "빈 자리가 없어 후보 1개"
+    if base_drawn(spec):
+        note += f". 말한 기본 형상({slot_value(spec, 'form.base')})이 그려져 형태 자리는 말한 자리(D6)"
     if unrendered:
         note += f". 모형이 없는 모양어({', '.join(w['lemma'] or '?' for w in words)})를 말해 형태 자리를 벌림(G32)"
     if removed:

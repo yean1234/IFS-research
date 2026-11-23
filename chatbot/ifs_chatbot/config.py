@@ -82,7 +82,7 @@ class SelectionConfig:
     새 흐름 프로필 config/v4.toml이 켠다."""
     enabled: bool = False
     protocol: str = "selection_protocol.v0.json"   # shared/protocol/ 아래
-    table: str = "candidate_values.v1.json"        # shared/lexicon/ 아래(1.0.0: G31·G32·G34. 0.1.0 표는 v0 파일)
+    table: str = "candidate_values.v2.json"        # shared/lexicon/ 아래(2.0.0: D6 기본 형상. 1.0.0·0.1.0 표는 v1·v0 파일)
     # 문구가 status = draft면 후보 단계를 시작하지 않는다(X35의 requireSpecPhrases와 같은 뜻). 기본 false: 시작하되 화면·기록에 알림
     require_spec_phrases: bool = False
 

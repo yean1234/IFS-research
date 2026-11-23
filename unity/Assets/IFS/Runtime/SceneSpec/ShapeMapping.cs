@@ -83,6 +83,8 @@ namespace IFS.SceneSpec
         public const string StatusUnmapped = "unmapped_shape";
         public const string StatusNotAppliedForm = "not_applied_form";
         public const string StatusConflict = "conflict";
+        /// <summary>(2.2) spec이 기본 형상(form.base)을 말해 기본 형상이 윤곽을 정함 — 모양 모형으로 바꾸지 않음.</summary>
+        public const string StatusNotAppliedBase = "not_applied_base";
         /// <summary>맨 위 상태 전용: 소유감 실험 변형본이 모양 모형을 강제함(SceneOverride.ShapeModel). spec 판정이 아니다.</summary>
         public const string StatusForced = "forced";
 
@@ -155,10 +157,13 @@ namespace IFS.SceneSpec
             return SortBySpan(words);
         }
 
-        public static ShapeResolution Resolve(SceneSpecV2 spec) => Resolve(ExtractWords(spec), spec?.Form?.Type);
+        public static ShapeResolution Resolve(SceneSpecV2 spec) => Resolve(ExtractWords(spec), spec?.Form?.Type, spec?.Form?.Base);
 
-        /// <summary>모양어 목록(순서 무관)과 spec이 말한 form.type → 판정. 입력 객체는 바꾸지 않는다.</summary>
-        public static ShapeResolution Resolve(IEnumerable<ShapeWord> words, string statedFormType)
+        /// <summary>모양어 목록(순서 무관)과 spec이 말한 form.type → 판정. 입력 객체는 바꾸지 않는다.
+        /// statedBase(2.2, form.base)가 승인된 기본 형상이고 form.type이 null·blob이면 기본 형상이 윤곽을 정하므로 표에 있는 모양어도
+        /// 모형으로 바꾸지 않고 not_applied_base로 기록한다(docs/asset-plan.md 2-5절. container 단면처럼 모양어가 변형값이 되는 경우는
+        /// 매퍼가 form.baseVariant에 이미 넣는다).</summary>
+        public static ShapeResolution Resolve(IEnumerable<ShapeWord> words, string statedFormType, string statedBase = null)
         {
             var sorted = SortBySpan((words ?? Enumerable.Empty<ShapeWord>()).Select(w => new ShapeWord
             {
@@ -166,10 +171,12 @@ namespace IFS.SceneSpec
             }));
             var r = new ShapeResolution { FormType = statedFormType, Words = sorted };
             bool formAllows = FormAllowsShape(statedFormType);
+            bool baseBlocks = formAllows && BaseShapes.IsBase(statedBase);
             foreach (var w in sorted)
             {
                 if (!IsMapped(w.Shape)) { w.Status = StatusUnmapped; continue; }
                 if (!formAllows) { w.Status = StatusNotAppliedForm; continue; }
+                if (baseBlocks) { w.Status = StatusNotAppliedBase; continue; }
                 if (r.Applied == null)
                 {
                     r.Applied = w.Shape;
@@ -183,6 +190,7 @@ namespace IFS.SceneSpec
             if (r.Applied != null) r.Status = StatusApplied;
             else if (sorted.Any(w => w.Status == StatusUnmapped)) r.Status = StatusUnmapped;
             else if (sorted.Any(w => w.Status == StatusNotAppliedForm)) r.Status = StatusNotAppliedForm;
+            else if (sorted.Any(w => w.Status == StatusNotAppliedBase)) r.Status = StatusNotAppliedBase;
             else r.Status = StatusNone;
             return r;
         }

@@ -1,0 +1,580 @@
+{
+  "tableId": "ifs-candidate-values",
+  "tableVersion": "2.0.0",
+  "status": "draft",
+  "date": "2026-11-23",
+  "description": "후보 생성기(chatbot/ifs_chatbot/candidates.py)와 조절 단계(chatbot/ifs_chatbot/selection.py)가 쓰는 고정 값 표. 결정 G16–G20·G22(docs/decisions.md)와 연구 책임자 결정 G31·G32·G34. 값은 연구팀이 정한 잠정값이며 문헌에서 나온 빈도가 아니다. 이 파일을 바꾸면 tableVersion을 올린다(후보 id·출력 해시가 바뀐다). 이전 표 candidate_values.v0.json(0.1.0)·v1.json(1.0.0)은 그 표로 만든 기록을 다시 읽을 수 있게 그대로 둔다.",
+  "changes": [
+    {
+      "version": "2.0.0",
+      "date": "2026-11-23",
+      "status": "draft",
+      "summary": "D6(G30): 기본 형상(form.base)을 조절 단계의 '형태' 항목에 넣음(값 9개: form.type 4개 + 승인된 기본 형상 5개, valueOverrides로 form.type·form.base를 함께 정함). 덮어쓰기 범주 키에 form.base(값 5개 + none). 후보 축에는 기본 형상을 넣지 않음(candidateAxes.dimensions.form.evidence). 낱말 해석 갈림에 '막'(얇은 판 sheet | 껍질 shell) 추가. 구별 비교 키에 form.base.",
+      "reason": "docs/decisions.md G21·G22·G30, docs/asset-plan.md 3-2·3-4절(6절 결정 8·10은 제안대로 진행)"
+    },
+    {
+      "version": "1.0.0",
+      "date": "2026-11-23",
+      "status": "draft",
+      "summary": "G34: 밝기를 후보 차원에서 뺌(우선순위 형태 > 크기 > 투명도 > 질감 > 움직임). 서로 구별되지 않는 후보를 내밀지 않는 규칙(distinctness, ifs-distinct/1.0.0). G32: 모형이 없는 모양어를 가리는 표(shapeModels). G31: 조절 항목 순서에서 색을 맨 앞에.",
+      "reason": "docs/decisions.md G31·G32·G34(연구 책임자 결정, 2026-11-23)"
+    },
+    {
+      "version": "0.1.0",
+      "date": "2026-11-23",
+      "status": "draft",
+      "summary": "처음 만듦(candidate_values.v0.json)."
+    }
+  ],
+  "sources": {
+    "decisions": "docs/decisions.md G14–G24, G31–G34 (2026-11-23)",
+    "claudePlan": "docs/codex-reviews/D5_claude.md 3절(후보 규칙·고정 값)·5절(조절 단계)",
+    "unityDefaults": "unity/Assets/IFS/Runtime/SceneSpec/SceneParams.cs SceneDefaults(2026-11-23 읽음)",
+    "unityOverride": "unity/Assets/IFS/Runtime/SceneSpec/SceneOverride.cs·SceneOverrideJson.cs — 평평한 객체, 수치 키 0–1, 범주 키는 form.type 4값·form.base 5값 + none·motion.type은 MotionGroups.ByType",
+    "shapeMapping": "unity/Assets/IFS/Runtime/SceneSpec/ShapeMapping.cs ModelByShape(2026-11-23 읽음)",
+    "previewFreeze": "unity/Assets/IFS/Runtime/Preview/PreviewQueue.cs(로드 뒤 stage.FreezeMotion()), PreviewStage.cs FreezeMotion(SpecMotion 끔·정지 자세), PreviewBridge.cs SetFrozen(WebGL capture)",
+    "baseShapes": "shared/lexicon/base_shapes.v1.json(기본 형상 사전), docs/asset-plan.md"
+  },
+  "defaults": {
+    "_comment": "Unity SceneParams.cs SceneDefaults를 그대로 옮겨 적은 것(출처 위 unityDefaults). 키는 SceneParams 키. 두 곳의 값이 어긋나지 않는지 보는 교차 테스트는 Unity 쪽 다음 단계에서 이 파일을 읽어 붙인다. form.base의 기본값 none = 기본 형상을 그리지 않음(Unity SceneParams.NoBase).",
+    "form.type": "blob",
+    "form.posture": "none",
+    "form.base": "none",
+    "material.color.h": 0.0,
+    "material.color.s": 0.0,
+    "material.color.l": 0.7,
+    "material.brightness": 0.5,
+    "material.roughness": 0.5,
+    "material.opacity": 1.0,
+    "material.erosion": 0.0,
+    "layout.size": 0.5,
+    "layout.distance": 0.33,
+    "layout.verticalOffset": 0.75,
+    "motion.type": "still",
+    "motion.speed": 0.5
+  },
+  "overrideKeys": {
+    "_comment": "후보·조절이 내는 덮어쓰기 키(Unity SceneParams.NumericKeys·CategoricalKeys 가운데 G10 항목에 해당하는 것만). 위치·거리(layout.distance·layout.verticalOffset)와 자세·침식·속도·모양 모형(shapeModel)은 내지 않는다(G10). form.base(2.0.0, D6): 조절의 '형태' 항목이 기본 형상을 고르면 form.type과 함께 낸다. 값은 기본 형상 5개 또는 none(그리지 않음). 후보 단계는 form.base를 벌리지 않는다.",
+    "numeric": [
+      "material.color.h",
+      "material.color.s",
+      "material.color.l",
+      "material.brightness",
+      "material.opacity",
+      "material.roughness",
+      "layout.size"
+    ],
+    "categorical": [
+      "form.type",
+      "form.base",
+      "motion.type"
+    ],
+    "forbidden": [
+      "layout.distance",
+      "layout.verticalOffset",
+      "form.posture",
+      "material.erosion",
+      "motion.speed",
+      "shapeModel"
+    ]
+  },
+  "shapeModels": {
+    "_comment": "G32: Unity ShapeMapping.ModelByShape의 모양 값(모형이 있는 것). 매퍼가 _unmapped(category shape, value.shape)에 남긴 모양어가 이 목록에 있으면 '모형이 있는 모양어'(말한 자리로 고정, 후보에서 벌리지 않음), 없으면 '모형이 없는 모양어'(형태 후보를 벌리고 출처를 said_unrendered_*로 적음). 두 곳이 어긋나지 않는지 pytest가 C# 원문을 읽어 대조한다(test_shape_models_match_unity_shape_mapping).",
+    "mapped": [
+      "round",
+      "square",
+      "flat",
+      "pointed"
+    ],
+    "models": {
+      "round": "Sphere",
+      "square": "Cube",
+      "flat": "FlatCylinder",
+      "pointed": "Cone"
+    }
+  },
+  "candidateAxes": {
+    "_comment": "후보 값은 모두 조절 단계(adjustItems) 위의 값이다 — 고른 후보에서 조절을 한 칸씩 이어 갈 수 있게. G16·G34: 빈 자리(값이 null인 슬롯) 가운데 priority 순서로 위 두 차원을 골라 2×2. levels[0]과 pair[0]은 반드시 기본값이다 — 그래서 격자의 0번(a0·b0)이 '후보 단계가 없었다면 그려졌을 형상'(덮어쓰기 없음)이 된다. G17·G31: 색상(hue)은 차원에 넣지 않는다. G34: 밝기도 넣지 않는다(조절 화면에서만 바꾼다). G32: 형태 자리는 모형이 있는 모양어(shapeModels.mapped)를 말했을 때만 말한 자리로 고정하고, 모형이 없는 모양어만 말했으면 벌린다(축 reason said_unrendered). D6: form.base가 그려지는 spec(form.base 있음, form.type 비었거나 blob)은 형태 자리가 말한 자리다.",
+    "priority": [
+      "form",
+      "size",
+      "opacity",
+      "texture",
+      "motion"
+    ],
+    "dimensions": {
+      "form": {
+        "slot": "form.type",
+        "key": "form.type",
+        "levels": [
+          "blob",
+          "mist",
+          "shell",
+          "fragments"
+        ],
+        "pair": [
+          "blob",
+          "mist"
+        ],
+        "evidence": "D5_claude.md 3절: 추상 형태 4종, 2단계 {blob, mist}. 말하지 않은 사물(담는 것·선·천)은 유도가 커서 넣지 않음. ⚠ mist는 배경과 거의 구분되지 않는다는 렌더 시트 관찰(decisions.md, M01·M02)이 있어 D7(구름 수정) 전에는 후보 차이가 작게 보일 수 있다 D6(2.0.0): 기본 형상(form.base)은 후보 값에 넣지 않는다 — 형상을 말하지 않은 참여자에게 시스템이 불꽃·그릇 같은 구체 사물을 내밀면 참여자가 쓰지 않은 사물을 보여 주는 셈이라 유도가 가장 크다(원칙 3과 같은 이유, G17과 같은 방향. docs/asset-plan.md 3-4절, 6절 결정 8 제안대로 진행). 기본 형상을 말했으면(form.base가 있고 form.type이 비었거나 blob) 형태 자리는 말한 자리로 고정한다(G9)."
+      },
+      "size": {
+        "slot": "layout.size",
+        "key": "layout.size",
+        "levels": [
+          0.5,
+          0.3,
+          0.7,
+          0.8
+        ],
+        "pair": [
+          0.5,
+          0.7
+        ],
+        "evidence": "D5_claude.md 3절 값({0.3,0.45,0.6,0.75}/{0.35,0.7})을 기본값 0.5가 0번이 되게 고침. 0.5 = ×1, 0.3 ≈ ×0.57, 0.7 ≈ ×1.74, 0.8 ≈ ×2.3(SceneParams.SizeToScale). 2단계의 다른 값을 큰 쪽(0.7)으로 둔 것은 작은 형상이 미리보기에서 덜 보이기 때문이며 근거가 약하다(⚠ 사람이 정할 것)"
+      },
+      "opacity": {
+        "slot": "material.opacity",
+        "key": "material.opacity",
+        "levels": [
+          1.0,
+          0.8,
+          0.6,
+          0.4
+        ],
+        "pair": [
+          1.0,
+          0.4
+        ],
+        "evidence": "D5_claude.md 3절 4단계 {1.0, 0.75, 0.5, 0.3}을 조절 단계(0.2 간격) 위의 값으로 옮김(기본값 1.0이 0번). 2단계는 {1.0, 0.45}에 가장 가까운 0.4. Unity lowVisibility 경고 기준 0.15보다 높게 둠"
+      },
+      "texture": {
+        "slot": "material.roughness",
+        "key": "material.roughness",
+        "levels": [
+          0.5,
+          0.1,
+          0.9
+        ],
+        "pair": [
+          0.5,
+          0.1
+        ],
+        "evidence": "D5_claude.md 3절 2단계 {0.1, 0.9}에서 기본값 0.5를 0번으로. 2단계의 다른 값은 반사가 보이는 매끈한 쪽(0.1). 4단계를 채울 근거가 없어 3개만 둠"
+      },
+      "motion": {
+        "slot": "motion.type",
+        "key": "motion.type",
+        "levels": [
+          "still",
+          "floating",
+          "trembling",
+          "swaying"
+        ],
+        "pair": [
+          "still",
+          "floating"
+        ],
+        "evidence": "D5_claude.md 3절 {still, floating, trembling, rotating}에서 rotating을 swaying으로 바꿈: 회전 대칭 형상(기본 blob)에서 회전은 보이지 않음(D5_claude.md 3절 '보이지 않는 차이 방지'). floating은 X22에서 보이는 쪽. 정지 이미지 미리보기(image 모드)에서는 움직임 차이가 보이지 않는다 ⚠ G34(ifs-distinct/1.0.0): 후보 미리보기는 움직임을 멈춘 정지 그림이라(distinctness.rules still_preview_motion) 움직임 값만 다른 후보는 구별되지 않는 것으로 보고 내밀지 않는다. 그래서 움직임이 축이 되어도 실제로 남는 후보는 다른 축의 값만큼이다"
+      }
+    },
+    "removed": [
+      {
+        "dimension": "brightness",
+        "slot": "material.brightness",
+        "decision": "G34",
+        "reason": "색과 같은 이유로 후보에서 뺌. 조절 화면에서만 바꾼다. 0.1.0 표의 levels [0.5, 0.25, 0.75, 1.0]·pair [0.5, 0.75]는 v0 파일에 남아 있다. 거의 검은 색(l 0.06)에서 밝기 후보 넷이 구별되지 않던 관찰(selection-flow S5)도 이 결정으로 후보 쪽에서는 사라진다"
+      }
+    ]
+  },
+  "distinctness": {
+    "_comment": "G34: 서로 구별되지 않는 후보는 내밀지 않는다. 렌더러 없이 파이썬에서 결정적으로 판정한다. 후보마다 덮어쓰기를 얹은 최종 값(compareKeys, effective_params)을 만들고, rules의 ignoreKey 규칙이 걸린 키를 뺀 '보이는 값'이 같은 후보는 index가 작은 것 하나만 남긴다(0번 기준 후보는 언제나 남는다). 남은 후보가 하나면 선택 단계를 건너뛰고 조절로 간다(G19의 '1개만 보여 주고 묻기'를 대체). 표에는 코드로 확인한 것만 넣었다. 확인하지 못한 조합은 unverified에 적고 규칙으로 쓰지 않는다.",
+    "ruleVersion": "ifs-distinct/1.0.0",
+    "status": "draft",
+    "compareKeys": [
+      "form.type",
+      "form.base",
+      "layout.size",
+      "material.opacity",
+      "material.roughness",
+      "motion.type",
+      "material.brightness",
+      "material.color.h",
+      "material.color.s",
+      "material.color.l"
+    ],
+    "rules": [
+      {
+        "id": "same_final_values",
+        "kind": "equal",
+        "description": "덮어쓰기를 얹은 최종 값(compareKeys)이 모두 같은 후보는 같은 그림이다",
+        "evidence": "FormRenderPlan.cs 머리말 '같은 입력이면 언제나 같은 계획이다'(form.type·색·투명도·밝기·거칠기만 입력), 크기는 SceneParams.SizeToScale, 움직임은 SpecMotion. 같은 입력 → 같은 렌더",
+        "status": "confirmed_code"
+      },
+      {
+        "id": "still_preview_motion",
+        "kind": "ignoreKey",
+        "key": "motion.type",
+        "when": null,
+        "description": "후보 화면의 미리보기는 정지 그림이고, 그릴 때 움직임을 멈추고 정지 자세로 둔다. 움직임 값만 다른 후보는 같은 그림이다",
+        "evidence": "PreviewQueue.cs: stage.Load 뒤 stage.FreezeMotion()을 부르고 RenderPng. PreviewStage.FreezeMotion: 모든 SpecMotion을 끄고 localPosition·localRotation·localScale을 0·단위로 되돌림. FormRenderPlan에는 motion.type이 들어가지 않음. web/stage.js: 후보 칸은 image 모드에서 PNG, webgl 모드에서도 capture()한 PNG(PreviewBridge SetFrozen). none 모드(글 요약)는 시험용이라 기준으로 삼지 않음",
+        "status": "confirmed_code"
+      }
+    ],
+    "unverified": [
+      {
+        "combo": "form.type = mist × material.roughness",
+        "why": "SceneSpecMist.shader에서 거칠기는 밀도 노이즈 크기 배율 lerp(0.7, 1.3, R)과 색 얼룩 세기로 쓰인다. 렌더 계획 값은 달라진다. 관찰 하나(규칙 근거로는 부족): 합성 시나리오 S1(작은 안개, 320×240 미리보기)에서 투명도 0.4일 때 질감 0.5·0.1 두 그림은 채널 차 8 넘는 화소가 11개(최대 11)로 거의 같았고, 투명도 1.0일 때는 187개(최대 26)였다(docs/validation/selection-flow/README.md). 크기·투명도·배경에 따라 달라 문턱값을 정하지 못해 규칙에 넣지 않았다"
+      },
+      {
+        "combo": "form.type = fragments × material.roughness",
+        "why": "조각 메시는 정점 변위 0(FormRenderPlan ZeroDisplacement)이지만 IFSSceneSpecCommon.cginc의 얼룩(mottle)·광택(Smoothness = 1 − R)은 그대로 쓰인다. 화면 차이는 재지 않았다"
+      },
+      {
+        "combo": "어두운 색(l ≤ 0.1) × material.opacity·material.roughness",
+        "why": "selection-flow S5에서 거의 검은 색의 밝기 차이가 거의 안 보였다는 관찰뿐이고, 투명도·질감은 보지 않았다"
+      },
+      {
+        "combo": "형태별로 보이지 않는 움직임(예: 회전 대칭 형상의 Sway)",
+        "why": "후보에서는 still_preview_motion으로 움직임 차이를 모두 빼므로 이 표에 필요 없다. 조절 단계의 움직임 반영 여부(G22, adjustItems.availability)는 이번에 다루지 않았다"
+      }
+    ]
+  },
+  "interpretationSplits": {
+    "_comment": "G18: 낱말 해석이 갈리는 자리의 닫힌 표. 등록된 것만, spec당 한 축(charSpan이 가장 앞선 것), 빈 차원보다 먼저 쓴다. readings[0]은 지금 매퍼 출력이 그려지는 값(대상 슬롯이 비어 있으면 기본값)이어야 한다. 이 구현은 대상 슬롯이 비어 있을 때만 갈림 축을 쓴다(말한 슬롯은 어떤 후보에서도 바꾸지 않음, G9). 근거가 약한 낱말은 넣지 않았다 — 처음에는 하나뿐이다. match.in = 'form.base'(2.0.0)는 매퍼 v2가 form.base의 근거로 쓴 낱말(_provenance['form.base']의 trigger)과 맞춘다. 이 갈림은 form.type이 비어 있을 때만 쓴다(기본 형상은 말한 형태이지만 낱말 자체가 두 읽기를 가지므로, 다른 읽기를 form.type 값으로 하나 더 보여 준다).",
+    "entries": [
+      {
+        "id": "cloud",
+        "lemma": "구름",
+        "match": {
+          "in": "_unmapped",
+          "category": "object",
+          "valueKey": "object",
+          "value": "cloud"
+        },
+        "slot": "form.type",
+        "readings": [
+          "blob",
+          "mist"
+        ],
+        "status": "draft",
+        "evidence": "docs/decisions.md 2026-11-23 렌더 시트 대조: M03 '구름이에요'가 형태로 잡히지 않아 기본 blob(흰 덩어리 공)으로 그려짐. '구름'은 뭉친 덩어리로도, 퍼진 안개(mist, 사전의 안개·연기와 같은 형태)로도 읽힌다. 매퍼 v2는 이 낱말을 _unmapped(category object, value.object cloud)에 남긴다"
+      },
+      {
+        "id": "membrane",
+        "lemma": "막",
+        "match": {
+          "in": "form.base",
+          "lemmas": [
+            "막"
+          ]
+        },
+        "slot": "form.type",
+        "readings": [
+          "blob",
+          "shell"
+        ],
+        "status": "draft",
+        "evidence": "docs/asset-plan.md 3-2절: '막'은 얇은 판(sheet, cloth)으로도 껍질(shell)로도 읽힌다. 두 읽기가 모두 첫 묶음 안에 있어 갈림으로 둔다. readings[0] blob = 지금 그려지는 것(form.type이 비었으므로 기본 blob → 기본 형상 sheet가 그려짐), readings[1] shell = form.type shell(기본 형상은 not_applied_form, 껍질이 그려짐). 목업 M09 '얇은 막'"
+      }
+    ],
+    "notIncluded": [
+      {
+        "lemma": "빛",
+        "reason": "D5_claude.md 예시(밝은 blob | 밝은 mist)는 매퍼가 밝기를 이미 말한 값으로 채우므로 대상 슬롯이 말한 슬롯이 됨. 근거도 약함"
+      },
+      {
+        "lemma": "_alternatives(participant_uncertain)",
+        "reason": "G18의 '닫힌 표'에 들지 않음. 참여자가 둘 사이에서 망설인 기록을 후보 축으로 쓸지는 정하지 않음"
+      },
+      {
+        "lemma": "껍질",
+        "reason": "1층 사전이 form.type = shell로 넣는다(말한 슬롯). 얇은 판(sheet) 읽기를 후보로 벌리려면 말한 form.type을 바꿔야 해서 G9와 부딪힌다. 기본 형상 사전에도 넣지 않았다(docs/asset-plan.md 1-1절 sheet 행)"
+      },
+      {
+        "lemma": "불덩어리",
+        "reason": "'덩어리'가 form.type = blob(말한 슬롯)이고, flame 읽기를 후보로 보이려면 form.base를 후보 값으로 내야 한다(후보에 기본 형상을 넣지 않음). 기본 형상 사전에 넣지 않아 지금처럼 blob으로 그려진다"
+      },
+      {
+        "lemma": "실뭉치·실타래",
+        "reason": "기본 형상 사전이 line(tangle)으로 보낸다. blob 읽기는 '뭉치'가 form.type = blob으로 말한 슬롯이 되는 경우 이미 같은 값이고, 기본 형상을 지우는 후보는 내지 않는다(form.base를 후보 값으로 쓰지 않음)"
+      },
+      {
+        "lemma": "불",
+        "reason": "docs/asset-plan.md 3-2절의 빛 읽기(밝은 blob·mist)는 glow 검토(다음 묶음)와 함께 정하고, 밝기는 후보에서 뺐다(G34). 한쪽 읽기가 첫 묶음 밖이므로 갈림을 만들지 않고 flame으로 간다(3-2절 규칙)"
+      }
+    ]
+  },
+  "adjustItems": {
+    "_comment": "G10·G22: 조절은 이 일곱 항목만. 값은 아래 목록 안에서만(범위 밖·목록 밖 값은 서버가 거부). 위치·거리 항목은 없다. G31: 색을 맨 앞에 둔다(order). availability(어떤 형태 상태에서 어떤 조작이 화면에 반영되지 않는지)는 Unity 렌더 계획 비교 테스트(G22)가 생기면 채운다 — 지금은 비어 있어 모든 항목이 켜져 있다. D6(2.0.0): 형태 항목에 기본 형상 5개(valueOverrides).",
+    "order": [
+      "color",
+      "form",
+      "brightness",
+      "opacity",
+      "size",
+      "texture",
+      "motion"
+    ],
+    "items": {
+      "form": {
+        "slots": [
+          "form.type",
+          "form.base"
+        ],
+        "kind": "category",
+        "key": "form.type",
+        "values": [
+          "blob",
+          "mist",
+          "shell",
+          "fragments",
+          "container",
+          "line",
+          "sheet",
+          "flame",
+          "drop"
+        ],
+        "valueOverrides": {
+          "blob": {
+            "form.type": "blob",
+            "form.base": "none"
+          },
+          "mist": {
+            "form.type": "mist",
+            "form.base": "none"
+          },
+          "shell": {
+            "form.type": "shell",
+            "form.base": "none"
+          },
+          "fragments": {
+            "form.type": "fragments",
+            "form.base": "none"
+          },
+          "container": {
+            "form.type": "blob",
+            "form.base": "container"
+          },
+          "line": {
+            "form.type": "blob",
+            "form.base": "line"
+          },
+          "sheet": {
+            "form.type": "blob",
+            "form.base": "sheet"
+          },
+          "flame": {
+            "form.type": "blob",
+            "form.base": "flame"
+          },
+          "drop": {
+            "form.type": "blob",
+            "form.base": "drop"
+          }
+        },
+        "evidence": "G22: 형태 → form.type과 승인된 form.base(G30, docs/asset-plan.md 3-4절 — 6절 결정 8 제안대로 진행). 값 하나가 두 키를 함께 정한다(valueOverrides): form.type 값을 고르면 기본 형상을 그리지 않고(form.base none), 기본 형상을 고르면 form.type은 blob(기본 형상은 form.type이 비었거나 blob일 때만 그려짐, 4번 항목). 지금 값은 기본 형상이 그려지면 그 기본 형상, 아니면 form.type. 참여자가 고르므로 출처는 '고침'(G15). 화면은 값 이름 없이 번호만 보인다(stage.js)"
+      },
+      "color": {
+        "slots": [
+          "material.color",
+          "material.saturation"
+        ],
+        "kind": "swatch",
+        "keys": [
+          "material.color.h",
+          "material.color.s",
+          "material.color.l"
+        ],
+        "evidence": "G22: 색상환이 아니라 정해진 견본 + 무채색. 무채색 5단(기본 회색 l 0.7 포함), 유채색은 색상 12칸(k/12) × 채도 0.6 × 명도 0.5 한 줄. 화면에는 이름 없이 견본만 보인다(참여자가 쓰지 않은 색 이름을 내보내지 않음). 견본을 고르면 h·s·l 세 키가 함께 바뀌므로 말한 채도(material.saturation)도 '고침'이 된다",
+        "swatches": [
+          {
+            "id": "n10",
+            "h": 0.0,
+            "s": 0.0,
+            "l": 0.1
+          },
+          {
+            "id": "n30",
+            "h": 0.0,
+            "s": 0.0,
+            "l": 0.3
+          },
+          {
+            "id": "n50",
+            "h": 0.0,
+            "s": 0.0,
+            "l": 0.5
+          },
+          {
+            "id": "n70",
+            "h": 0.0,
+            "s": 0.0,
+            "l": 0.7
+          },
+          {
+            "id": "n90",
+            "h": 0.0,
+            "s": 0.0,
+            "l": 0.9
+          },
+          {
+            "id": "h00",
+            "h": 0.0,
+            "s": 0.6,
+            "l": 0.5
+          },
+          {
+            "id": "h01",
+            "h": 0.0833,
+            "s": 0.6,
+            "l": 0.5
+          },
+          {
+            "id": "h02",
+            "h": 0.1667,
+            "s": 0.6,
+            "l": 0.5
+          },
+          {
+            "id": "h03",
+            "h": 0.25,
+            "s": 0.6,
+            "l": 0.5
+          },
+          {
+            "id": "h04",
+            "h": 0.3333,
+            "s": 0.6,
+            "l": 0.5
+          },
+          {
+            "id": "h05",
+            "h": 0.4167,
+            "s": 0.6,
+            "l": 0.5
+          },
+          {
+            "id": "h06",
+            "h": 0.5,
+            "s": 0.6,
+            "l": 0.5
+          },
+          {
+            "id": "h07",
+            "h": 0.5833,
+            "s": 0.6,
+            "l": 0.5
+          },
+          {
+            "id": "h08",
+            "h": 0.6667,
+            "s": 0.6,
+            "l": 0.5
+          },
+          {
+            "id": "h09",
+            "h": 0.75,
+            "s": 0.6,
+            "l": 0.5
+          },
+          {
+            "id": "h10",
+            "h": 0.8333,
+            "s": 0.6,
+            "l": 0.5
+          },
+          {
+            "id": "h11",
+            "h": 0.9167,
+            "s": 0.6,
+            "l": 0.5
+          }
+        ]
+      },
+      "brightness": {
+        "slots": [
+          "material.brightness"
+        ],
+        "kind": "step",
+        "key": "material.brightness",
+        "values": [
+          0.0,
+          0.125,
+          0.25,
+          0.375,
+          0.5,
+          0.625,
+          0.75,
+          0.875,
+          1.0
+        ],
+        "evidence": "D5_claude.md 5절: 9칸, 0.125 간격"
+      },
+      "opacity": {
+        "slots": [
+          "material.opacity"
+        ],
+        "kind": "step",
+        "key": "material.opacity",
+        "values": [
+          0.2,
+          0.4,
+          0.6,
+          0.8,
+          1.0
+        ],
+        "evidence": "D5_claude.md 5절. 바닥값 0.2는 조절 범위에만 두고 말한 값은 올리지 않는다(X70)"
+      },
+      "size": {
+        "slots": [
+          "layout.size"
+        ],
+        "kind": "step",
+        "key": "layout.size",
+        "values": [
+          0.2,
+          0.3,
+          0.4,
+          0.5,
+          0.6,
+          0.7,
+          0.8
+        ],
+        "evidence": "D5_claude.md 5절: 0.2–0.8 7칸"
+      },
+      "texture": {
+        "slots": [
+          "material.roughness"
+        ],
+        "kind": "step",
+        "key": "material.roughness",
+        "values": [
+          0.1,
+          0.3,
+          0.5,
+          0.7,
+          0.9
+        ],
+        "evidence": "D5_claude.md 5절: 5칸. erosion은 G10 목록 밖"
+      },
+      "motion": {
+        "slots": [
+          "motion.type"
+        ],
+        "kind": "category",
+        "key": "motion.type",
+        "values": [
+          "still",
+          "floating",
+          "swaying",
+          "trembling",
+          "pounding",
+          "sinking"
+        ],
+        "evidence": "D5_claude.md 5절 '묶음별 대표 6개'를 이 구현에서 고름: Still·Drift·Sway·Tremble·Pulse·Sink 묶음(MotionGroups.cs). Spin(회전 대칭 형상에서 안 보임)·Approach(다가옴 = 거리 변화, G10)·Expand(크기·퍼짐이 함께 바뀜)는 뺌. 속도(motion.speed)는 항목에 없다"
+      }
+    },
+    "availability": {}
+  }
+}

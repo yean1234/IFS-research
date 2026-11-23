@@ -34,8 +34,20 @@ namespace IFS.SceneSpec
         {
             var spec = JsonConvert.DeserializeObject<SceneSpecV2>(json, Strict);
             if (spec == null) throw new JsonSerializationException("빈 SceneSpec JSON");
+            spec.Form.BaseKeysPresent = HasBaseKeys(json);
             return spec;
         }
+
+        /// <summary>(2.2) 원문 form 객체에 base·baseVariant 키가 있는가(값이 null이어도). 역직렬화로는 '없음'과 'null'을 가를 수 없어 따로 본다.</summary>
+        static bool HasBaseKeys(string json)
+        {
+            using var reader = new JsonTextReader(new StringReader(json)) { DateParseHandling = DateParseHandling.None, FloatParseHandling = FloatParseHandling.Double };
+            var form = Newtonsoft.Json.Linq.JToken.ReadFrom(reader)["form"] as Newtonsoft.Json.Linq.JObject;
+            return form != null && (form.ContainsKey("base") || form.ContainsKey("baseVariant"));
+        }
+
+        /// <summary>(2.2) 기본 형상 슬롯 경로. SlotPaths(2.0 슬롯)와 따로 둔다.</summary>
+        public static readonly string[] BaseSlotPaths = { BaseShapes.Key, BaseShapes.VariantKey };
 
         public static SceneSpecV2 Load(string path) => Parse(File.ReadAllText(path, Encoding.UTF8));
 
@@ -61,6 +73,8 @@ namespace IFS.SceneSpec
                 case "motion.speed": return s.Motion.Speed;
                 case "body.part": return s.Body.Part;
                 case "body.layer": return s.Body.Layer;
+                case BaseShapes.Key: return s.Form.Base;
+                case BaseShapes.VariantKey: return s.Form.BaseVariant;
                 default: throw new ArgumentException("모르는 슬롯 경로: " + path);
             }
         }
@@ -85,8 +99,24 @@ namespace IFS.SceneSpec
                 if (value is HslColor c && (c.H < 0 || c.H > 1 || c.S < 0 || c.S > 1 || c.L < 0 || c.L > 1))
                     problems.Add(path + ": HSL이 0–1 밖");
             }
+            // (2.2) 기본 형상: 2.2.0 문서에만 키가 있고, 값 ⇔ _provenance 규칙은 다른 슬롯과 같다
+            bool v22 = s.Meta.SpecVersion == SceneSpecV2.SpecVersionV22;
+            if (v22 && !s.Form.BaseKeysPresent) problems.Add("specVersion 2.2.0 문서에 form.base·form.baseVariant가 없다");
+            if (!v22 && (s.Form.BaseKeysPresent || s.Form.Base != null || s.Form.BaseVariant != null))
+                problems.Add($"specVersion {s.Meta.SpecVersion} 문서에 2.2 전용 필드(form.base·form.baseVariant)가 있다");
+            foreach (var path in BaseSlotPaths)
+            {
+                var value = GetSlot(s, path);
+                bool hasProv = s.Provenance.TryGetValue(path, out var provs) && provs != null && provs.Count > 0;
+                if (value == null && hasProv) problems.Add(path + ": null인데 _provenance가 있다");
+                if (value != null && !hasProv) problems.Add(path + ": 값이 있는데 _provenance가 없다");
+            }
+            if (s.Form.Base != null && !BaseShapes.IsBase(s.Form.Base))
+                problems.Add($"form.base: 모르는 기본 형상 {s.Form.Base}(가능: {string.Join(", ", BaseShapes.All)}) — 그리지 않음");
+            if (s.Form.Base == null && s.Form.BaseVariant != null) problems.Add("form.baseVariant: form.base가 null인데 변형값이 있다");
+            if (BaseShapes.IsBase(s.Form.Base)) BaseShapes.Resolve(s.Form.Base, s.Form.BaseVariant, null, problems);
             foreach (var key in s.Provenance.Keys)
-                if (Array.IndexOf(SlotPaths, key) < 0) problems.Add("_provenance에 모르는 경로: " + key);
+                if (Array.IndexOf(SlotPaths, key) < 0 && Array.IndexOf(BaseSlotPaths, key) < 0) problems.Add("_provenance에 모르는 경로: " + key);
             return problems;
         }
     }

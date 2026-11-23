@@ -43,6 +43,12 @@ namespace IFS.SceneSpec
 
         public static readonly string[] FormTypes = { "blob", "mist", "shell", "fragments" };
 
+        /// <summary>(2.2) 기본 형상 키(form.base). 범주 값으로 들고 있지만 CategoricalKeys에는 넣지 않는다 — 기본 형상 슬롯이 없는
+        /// 2.0·2.1 spec의 기록(initialScene.json·golden 지문)이 그대로이도록, 2.2 spec이거나 덮어쓰기로 기본 형상을 정했을 때만
+        /// ToRecord·ChangedCategories에 나온다(HasBaseSlot).</summary>
+        public const string BaseKey = BaseShapes.Key;
+        public const string NoBase = BaseShapes.None;
+
         readonly Dictionary<string, double> _num = new Dictionary<string, double>();
         readonly Dictionary<string, string> _cat = new Dictionary<string, string>();
 
@@ -50,6 +56,15 @@ namespace IFS.SceneSpec
         public List<string> DefaultsUsed { get; } = new List<string>();
         /// <summary>_inferred(3층 제안)를 쓴 키. useInferred가 false면 비어 있다.</summary>
         public List<string> InferredUsed { get; } = new List<string>();
+
+        /// <summary>(2.2) 기본 형상 슬롯이 있는 값 집합인가(2.2 spec, 또는 form.base를 none이 아닌 값으로 정함).</summary>
+        public bool HasBaseSlot { get; private set; }
+        /// <summary>(2.2) spec이 말한 기본 형상(없으면 null)과 그 변형값. 변형값은 그리는 기본 형상이 spec의 것과 같을 때만 쓴다.</summary>
+        public string SpecBase { get; private set; }
+        public BaseVariantSpec SpecBaseVariant { get; private set; }
+
+        /// <summary>지금 기본 형상의 변형값(spec 기본 형상과 같으면 spec 변형값, 아니면 null = 형상 프리셋 기본값).</summary>
+        public BaseVariantSpec CurrentBaseVariant => _cat[BaseKey] == SpecBase ? SpecBaseVariant : null;
 
         SceneParams() { }
 
@@ -76,6 +91,12 @@ namespace IFS.SceneSpec
 
             Cat("form.type", s.Form.Type, d.formType);
             Cat("form.posture", s.Form.Posture, string.IsNullOrEmpty(d.posture) ? NoPosture : d.posture);
+            // (2.2) 기본 형상. 모르는 값은 그리지 않는다(SceneSpecJson.Validate가 경고). 2.0·2.1 spec은 슬롯이 없어 기본값 기록도 남기지 않음
+            p.HasBaseSlot = s.Form.BaseKeysPresent || s.Form.Base != null;
+            p.SpecBase = BaseShapes.IsBase(s.Form.Base) ? s.Form.Base : null;
+            p.SpecBaseVariant = p.SpecBase != null ? s.Form.BaseVariant?.Clone() : null;
+            p._cat[BaseKey] = p.SpecBase ?? NoBase;
+            if (p.HasBaseSlot && p.SpecBase == null) p.DefaultsUsed.Add(BaseKey);
             var c = s.Material.Color;
             Num("material.color.h", c?.H, null, d.colorH);
             Num("material.color.s", s.Material.Saturation ?? c?.S, null, d.colorS);   // 채도어가 있으면 그 값
@@ -111,6 +132,8 @@ namespace IFS.SceneSpec
         {
             if (!_cat.ContainsKey(key)) throw new ArgumentException("범주 파라미터가 아님: " + key);
             if (key == "form.type" && Array.IndexOf(FormTypes, value) < 0) throw new ArgumentException("모르는 형태: " + value);
+            if (key == BaseKey && value != NoBase && !BaseShapes.IsBase(value)) throw new ArgumentException("모르는 기본 형상: " + value);
+            if (key == BaseKey && value != NoBase) HasBaseSlot = true;
             if (_cat[key] == value) return false;
             _cat[key] = value;
             return true;
@@ -123,6 +146,9 @@ namespace IFS.SceneSpec
             foreach (var kv in _cat) p._cat[kv.Key] = kv.Value;
             p.DefaultsUsed.AddRange(DefaultsUsed);
             p.InferredUsed.AddRange(InferredUsed);
+            p.HasBaseSlot = HasBaseSlot;
+            p.SpecBase = SpecBase;
+            p.SpecBaseVariant = SpecBaseVariant?.Clone();
             return p;
         }
 
@@ -132,6 +158,7 @@ namespace IFS.SceneSpec
             var r = new SortedDictionary<string, object>(StringComparer.Ordinal);
             foreach (var k in NumericKeys) r[k] = Math.Round(_num[k], 4);
             foreach (var k in CategoricalKeys) r[k] = _cat[k];
+            if (HasBaseSlot) r[BaseKey] = _cat[BaseKey];
             return r;
         }
 
@@ -158,8 +185,12 @@ namespace IFS.SceneSpec
             return Math.Round(Math.Sqrt(d.Sum(x => x * x) / d.Length), 4);
         }
 
-        public static List<string> ChangedCategories(SceneParams initial, SceneParams final) =>
-            CategoricalKeys.Where(k => initial._cat[k] != final._cat[k]).ToList();
+        public static List<string> ChangedCategories(SceneParams initial, SceneParams final)
+        {
+            var r = CategoricalKeys.Where(k => initial._cat[k] != final._cat[k]).ToList();
+            if ((initial.HasBaseSlot || final.HasBaseSlot) && initial._cat[BaseKey] != final._cat[BaseKey]) r.Add(BaseKey);
+            return r;
+        }
 
         /// <summary>size(0–1, 로그 척도) → 배율. 0.5 = ×1, 0 = ×0.25, 1 = ×4.</summary>
         public static double SizeToScale(double size) => Math.Pow(2.0, (size - 0.5) * 4.0);

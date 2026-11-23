@@ -70,8 +70,8 @@ def same_slots(a, b):
 
 # ── D1 사전에 없는 명사 ─────────────────────────────────────────────────────
 @pytest.mark.parametrize("text,noun", [
-    ("가슴 앞에 작은 화분이 있어요. 초록색이에요.", "화분"),
-    ("배 안에 물병이 있어요.", "물병"),
+    ("가슴 앞에 작은 벽돌이 있어요. 초록색이에요.", "벽돌"),
+    ("배 안에 열쇠가 있어요.", "열쇠"),
     ("어깨에 작은 인형이 앉아 있어요.", "인형"),
 ])
 def test_unlisted_noun_is_recorded(v1, v2, text, noun):
@@ -84,15 +84,29 @@ def test_unlisted_noun_is_recorded(v1, v2, text, noun):
     assert t[s:e] == noun == u["_provenance"]["trigger"]
     assert u["reason"] == "no_scene_param" and u["_provenance"]["source"] == "phrase_rule"
     assert u["value"] == {"noun": noun, "role": "subject", "scope": "main"}
-    # 값은 만들지 않는다(원칙 2): 형태는 비어 있다
-    assert val(spec, "form.type") is None
+    # 값은 만들지 않는다(원칙 2): 형태는 비어 있다(기본 형상 사전에 없는 명사는 form.base도 null — 대신할 형상을 고르지 않음)
+    assert val(spec, "form.type") is None and spec["form"]["base"] is None
+
+
+@pytest.mark.parametrize("text,noun,base", [
+    ("가슴 앞에 작은 화분이 있어요. 초록색이에요.", "화분", "container"),
+    ("배 안에 물병이 있어요.", "물병", "container"),
+])
+def test_former_unlisted_noun_now_goes_to_form_base(v2, text, noun, base):
+    """D6(builder 2.2.0) 동작 변경 고정: builder 2.1.0까지 unlisted_noun으로 남던 '화분'·'물병'은 기본 형상 사전
+    (base_shapes.v1.json)에 있으므로 이제 form.base의 근거가 되고 _unmapped에서 빠진다. _unmatched 토큰 항목에도 없다."""
+    spec = build(v2, text)
+    assert spec["form"]["base"] == base
+    assert [p["trigger"] for p in spec["_provenance"]["form.base"]] == [noun]
+    assert noun not in unlisted(spec) and not any(u["lemma"] == noun for u in spec["_unmapped"])
+    assert not any(u["lemma"] == noun and u["tag"] != "EOJEOL" for u in spec["_unmatched"])
 
 
 def test_recorded_noun_leaves_token_level_unmatched(v2):
     """기록한 명사는 '읽지 못한 말'(_unmatched 토큰 항목)에서 빠지고, 어절 원문 항목은 그대로 남는다."""
-    spec = build(v2, "배 안에 물병이 있어요.")
-    assert not any(u["lemma"] == "물병" and u["tag"] != "EOJEOL" for u in spec["_unmatched"])
-    assert any(u["surface"] == "물병이" and u["tag"] == "EOJEOL" for u in spec["_unmatched"])
+    spec = build(v2, "배 안에 열쇠가 있어요.")
+    assert not any(u["lemma"] == "열쇠" and u["tag"] != "EOJEOL" for u in spec["_unmatched"])
+    assert any(u["surface"] == "열쇠가" and u["tag"] == "EOJEOL" for u in spec["_unmatched"])
 
 
 @pytest.mark.parametrize("text,stop", [
@@ -128,9 +142,9 @@ def test_context_clause_noun_is_marked_context(v2):
 
 def test_situation_answer_noun_is_marked_context(v2):
     """상황·시간 명사가 있고 값이 하나도 나오지 않은 문장('주말 아침 산책이요')의 명사는 context."""
-    spec = build(v2, "주말 아침 산책이요. 배 안에 물병이 있어요.")
+    spec = build(v2, "주말 아침 산책이요. 배 안에 열쇠가 있어요.")
     u = unlisted(spec)
-    assert u["산책"]["value"]["scope"] == "context" and u["물병"]["value"]["scope"] == "main"
+    assert u["산책"]["value"]["scope"] == "context" and u["열쇠"]["value"]["scope"] == "main"
 
 
 def test_small_pot_keeps_size(v1, v2):
@@ -366,13 +380,16 @@ def test_figure_posture_is_kept(v1, v2, text, posture):
 
 
 # ── 형식·meta·대체 판정 ──────────────────────────────────────────────────────
-def test_meta_records_v2_within_schema_21(v2):
+def test_meta_records_v2_within_schema_22(v2):
+    """builder 2.2.0(D6)부터 v2 출력은 언제나 specVersion 2.2.0(form.base·baseVariant가 null이어도 키가 있음)."""
     spec = build(v2, "웅크려진 작은 나")
-    assert spec["meta"]["specVersion"] == "2.1.0"
+    assert spec["meta"]["specVersion"] == "2.2.0"
+    assert spec["form"]["base"] is None and spec["form"]["baseVariant"] is None
     assert spec["meta"]["pipeline"]["builder"] == BUILDER_ID
     assert spec["meta"]["mapping"] == {"requested": "v2", "used": "v1", "fallbackReason": None}
     lex = spec["meta"]["pipeline"]["lexicons"]
     assert lex["sceneParamsV2"].startswith("scene-params-v2@") and lex["nounStoplist"].startswith("noun-stoplist-v2@")
+    assert lex["baseShapes"].startswith("base-shapes-v1@")
     assert not is_mapping_fallback(spec["meta"]["mapping"])
 
 
@@ -462,7 +479,7 @@ def test_controller_mode_v2_writes_v2_scene(offline_cfg, tmp_path):
     assert s.state == "done"
     main = json.loads(s.scene_path.read_text(encoding="utf-8"))
     assert main["meta"]["mapping"]["requested"] == "v2" and main["meta"]["pipeline"]["builder"] == BUILDER_ID
-    assert "화분" in unlisted(main)
+    assert main["form"]["base"] == "container" and main["meta"]["specVersion"] == "2.2.0"
     ref = s.log.data["sceneSpec"]
     assert ref["problems"] == [] and "fallback" not in ref
     assert set(k for k in ref["variants"] if not k.endswith("Error")) >= {"v0", "v1", "v2"}

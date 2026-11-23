@@ -1,0 +1,69 @@
+{
+  "lexiconId": "base-shapes-v1",
+  "lexiconVersion": "0.1.0",
+  "status": "draft",
+  "date": "2026-11-23",
+  "description": "낱말 → 범주 → 기본 형상(form.base, SceneSpec 2.2.0). 매핑 v2(chatbot/ifs_chatbot/scene_builder_v2.py)만 읽는다. 문헌을 참고해 연구팀이 정한 목록이며 IFS가 정한 범주가 아니다(docs/asset-plan.md, decisions G6·G21·G30). 모든 낱말은 사전 항목 초안이다 — 실제 참여자 발화로 확인하기 전에는 확정하지 않는다.",
+  "howToEdit": [
+    "형상을 이름 붙이는 명사만 적는다(Kiwi 명사 형태, 띄어쓰기 없이 붙은 명사 연속은 붙인 글자 그대로: '유리병'). 동사·형용사·몸을 그릇으로 쓰는 말(속·가슴)은 넣지 않는다.",
+    "낱말마다 출처 표기를 단다: lit = 원문을 확인한 한국어 문헌에 나온 낱말([문]), tr = 영문 문헌 표현을 연구자가 옮긴 것([번]), added = 연구자가 보탠 것([보]). 표기는 docs/asset-plan.md 1-1절 표를 그대로 옮겼다.",
+    "variant는 낱말 뜻이 정하는 닫힌 표 값이다(docs/asset-plan.md 2-6절). 정하지 않으면 적지 않는다(렌더러가 형상 프리셋 기본값으로 그림).",
+    "낱말을 넣거나 빼면 lexiconVersion을 올린다. 장면 파일 meta.pipeline.lexicons.baseShapes에 버전이 남는다.",
+    "참여자의 실제 응답 문장을 넣지 않는다(AGENTS.md 6)."
+  ],
+  "rules": {
+    "roles": ["subject", "named"],
+    "rolesNote": "형상 자체를 말한 명사만 base가 된다(docs/asset-plan.md 3-1절): 조사로 본 문장 성분이 주어(이/가/은/는/도)이거나 이름만 말한 것('막이요', '종이예요'). '종이 한 장이'·'물방울 하나가'처럼 수량 표현이 바로 뒤에 붙으면 그 수량 표현의 성분을 쓴다. 장소('화분 옆에')·목적어('종이를 들고')·꾸밈말('털실 뭉치')은 base가 아니다.",
+    "similes": true,
+    "similesNote": "직유('불꽃 같은 게 있어요', '촛불 불꽃처럼 생겼어요')의 원천 명사도 base 근거로 쓰고 _provenance.source를 simile_marker로 남긴다(docs/asset-plan.md 3-1절 제안, D6에서 그대로 정함). 원천 명사는 직유 표지 바로 앞 명사 연속(v1 _similes의 srcIndex)이다.",
+    "scope": "main",
+    "scopeNote": "회상·상황 문장(_unlisted_nouns의 value.scope = context와 같은 판정)의 명사는 base로 쓰지 않는다.",
+    "negation": "부정된 명사('불꽃은 아니에요', '실은 없어요')는 base로 쓰지 않고 _negated에 남긴다(1층 사전의 부정 판정과 같은 규칙).",
+    "multiple": "base가 되는 명사가 둘 이상이면 charSpan이 가장 앞선 것을 쓴다. 같은 형상이면 근거에 더하고, 다른 형상이면 _alternatives(reason later_mention)에 남긴다(docs/shape-mapping.md 규칙 1·2와 같은 방향).",
+    "match": "명사 연속 전체 글자가 표제어와 같을 때만 맞춘다(뒷부분만 맞추지 않음: '종이컵'은 '컵'이 아니다, '비눗방울'은 '방울'이 아니다)."
+  },
+  "bases": {
+    "container": {"rule": "container/1", "category": "담는 것(그릇·병·상자)", "variants": {"opening": ["wide", "narrow"], "profile": ["round", "square"]}},
+    "line": {"rule": "line/1", "category": "선·끈·매듭", "variants": {"form": ["curve", "tangle", "knot"], "gauge": ["thin", "thick"]}},
+    "sheet": {"rule": "sheet/1", "category": "얇은 판(종이·천·막)", "variants": {"drape": ["paper", "cloth"]}},
+    "flame": {"rule": "flame/1", "category": "불·불꽃", "variants": {}},
+    "drop": {"rule": "drop/1", "category": "액체·물(물방울)", "variants": {}}
+  },
+  "variantCues": {
+    "_comment": "같은 문장(base 근거 명사가 있는 문장)에서 참여자가 직접 한 말이 변형값을 정한다. 낱말 뜻의 변형값(entries.variant)보다 앞선다(말한 것이 덮어씀). Kiwi 형태(용언은 어간). shapeValues는 매퍼가 _unmapped(category shape)에 남긴 모양 값(docs/shape-mapping.md)이다 — container의 단면만 이것을 쓴다(docs/asset-plan.md 2-5절 '모양어와의 관계' 예외).",
+    "container": {"profile": {"square": {"shapeValues": ["square"]}}},
+    "line": {
+      "form": {"tangle": {"lemmas": ["엉키", "꼬이"]}, "knot": {"lemmas": ["묶이"]}},
+      "gauge": {"thin": {"lemmas": ["가늘", "가느다랗", "얇"]}, "thick": {"lemmas": ["굵", "두껍", "두툼하"]}}
+    }
+  },
+  "entries": [
+    {"lemma": "그릇", "base": "container", "variant": {"opening": "wide"}, "source": "lit:최은미 2013"},
+    {"lemma": "사발", "base": "container", "variant": {"opening": "wide"}, "source": "added"},
+    {"lemma": "컵", "base": "container", "variant": {"opening": "wide"}, "source": "added"},
+    {"lemma": "화분", "base": "container", "variant": {"opening": "wide"}, "source": "added", "note": "흙·식물 없이 담는 것으로만 그린다(docs/asset-plan.md 1-3절 식물 행). v1 backgroundNouns에도 있어 '화분 옆에'처럼 장소로 나오면 base가 아니다"},
+    {"lemma": "통", "base": "container", "variant": {"opening": "wide"}, "source": "added", "note": "수량 단위 '한 통'은 Kiwi가 의존 명사(NNB)로 내므로 맞지 않는다(NNG만 맞춤)"},
+    {"lemma": "상자", "base": "container", "variant": {"opening": "wide", "profile": "square"}, "source": "added", "note": "뚜껑·접힌 날개 없는 열린 네모 통(docs/asset-plan.md 2-6절). 가두는 것(enclosure, 작아지는 상자) 읽기는 다음 묶음이라 갈림을 만들지 않음(3-2절)"},
+    {"lemma": "꽃병", "base": "container", "variant": {"opening": "narrow"}, "source": "added"},
+    {"lemma": "항아리", "base": "container", "variant": {"opening": "narrow"}, "source": "added"},
+    {"lemma": "물병", "base": "container", "variant": {"opening": "narrow"}, "source": "added"},
+    {"lemma": "유리병", "base": "container", "variant": {"opening": "narrow"}, "source": "added"}
+  ],
+  "notIncluded": [
+    {"lemma": "병", "reason": "질병·화병과 형태가 같다(docs/asset-plan.md 3-3절). 물병·유리병·꽃병처럼 합성어만 넣었다"},
+    {"lemma": "우물", "reason": "땅에 뚫린 것 → 구멍(hole) 후보(다음 묶음)"},
+    {"lemma": "자루·주머니", "reason": "부드러운 자루는 container 모형과 모양이 달라 다음에 판단(docs/asset-plan.md 5-4절)"},
+    {"lemma": "속·가슴", "reason": "몸을 그릇으로 쓰는 말(몸 위치). 형상 낱말이 아니다"}
+  ],
+  "excluded": {
+    "_comment": "형상 낱말이지만 그리지 않는 말(docs/asset-plan.md 4절, 연구 책임자 승인 G30 — 6절 결정 4·5는 제안대로 진행). base 자리에 올 명사(주어·이름·직유 원천, 본 장면 문장)이면 _unmapped에 reason excluded_shape, value.excluded = 사유 코드로 남긴다(이미 다른 사유로 _unmapped에 있으면 그 항목의 reason·value를 바꾼다). 대신할 형상을 그리지 않는다. 사유 코드: human_figure(연구 범위: 추방자 내용과 가장 직접 닿음), attacking_being(치료 장면·안전), weapon(안전), death_trauma(치료 장면·안전), blood_noose(신체 손상·자해 연상, 연구자가 보탠 안전 항목).",
+    "human_figure": ["사람", "아이", "아기", "어린아이", "꼬마", "소년", "소녀", "어른", "인간"],
+    "attacking_being": ["괴물", "악마", "마귀", "거인", "뱀", "가해자", "적수", "발톱"],
+    "weapon": ["칼", "단검", "망치", "몽둥이", "총", "화살", "흉기", "무기"],
+    "death_trauma": ["죽음", "시체", "송장", "무덤", "지옥", "해골"],
+    "blood_noose": ["피", "올가미"],
+    "notListed": [
+      {"lemma": "창", "reason": "창(무기)과 창(창문)이 같은 꼴이라 넣지 않음. 넣어도 그리지 않는 것은 같고, 기록 사유만 틀리게 된다"}
+    ]
+  }
+}

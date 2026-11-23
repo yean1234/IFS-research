@@ -56,7 +56,7 @@ allow_draft_phrases = false
 [selection]
 enabled = true                                  # 확정 뒤 후보 선택 · 조절 · 사전 측정 단계를 연다
 protocol = "selection_protocol.v0.json"         # shared/protocol/ (모든 문구 status draft)
-table = "candidate_values.v1.json"              # shared/lexicon/ (후보·조절 값 표, 1.0.0 — G31·G32·G34)
+table = "candidate_values.v2.json"              # shared/lexicon/ (후보·조절 값 표, 2.0.0 — D6 기본 형상. 1.0.0 = v1 파일)
 require_spec_phrases = false                    # true면 초안 문구가 있을 때 후보 단계를 시작하지 않음(X35)
 
 [preview]

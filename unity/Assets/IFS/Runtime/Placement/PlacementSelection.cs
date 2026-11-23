@@ -40,10 +40,11 @@ namespace IFS.SceneSpec.Placement
         public static readonly string[] ForbiddenOverrideKeys = { "layout.distance", "layout.verticalOffset" };
         /// <summary>specSha256을 저장된 spec 파일 바이트로 쟀다는 표시(spec.sha256Basis). 러너는 이것만 받는다(G26).</summary>
         public const string FileBasis = "file";
-        /// <summary>sources의 슬롯 이름(shared/schemas/selection.v0.1.json $defs.slotName과 같게 — pytest가 대조한다).</summary>
+        /// <summary>sources의 슬롯 이름(shared/schemas/selection.v0.2.json $defs.slotName과 같게 — pytest가 대조한다).
+        /// form.base(D6, SceneSpec 2.2.0 기본 형상)는 0.2에 하위 호환으로 더한 키다(0.1 슬롯 + form.base).</summary>
         public static readonly string[] SlotNames =
         {
-            "form.type", "form.posture", "material.color", "material.brightness", "material.saturation",
+            "form.type", "form.posture", "form.base", "material.color", "material.brightness", "material.saturation",
             "material.roughness", "material.opacity", "material.erosion", "layout.size", "layout.distance",
             "layout.verticalOffset", "motion.type", "motion.speed", "body.part", "body.layer",
         };

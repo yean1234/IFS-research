@@ -401,7 +401,7 @@ namespace IFS.SceneSpec
             if (CurrentParams == null) return false;
             string from = CurrentParams.GetCategory(key);
             if (!CurrentParams.SetCategory(key, value)) return false;
-            if (key == "form.type") BuildHierarchy();
+            if (key == "form.type" || key == SceneParams.BaseKey) BuildHierarchy();
             ApplyAll();
             _recorder?.RecordChange(key, from, value, CurrentDistance());
             return true;
@@ -486,6 +486,11 @@ namespace IFS.SceneSpec
                 BuildShapeModel(form);
                 return;
             }
+            if (RenderPlan.BaseShape != null && BuildBaseShape()) return;
+            if (RenderPlan.BaseRequested != null && RenderPlan.BaseStatus != FormRenderPlan.BaseApplied)
+                Note($"form.base={RenderPlan.BaseRequested}: 그리지 않음({RenderPlan.BaseStatus}" +
+                     (RenderPlan.BaseStatus == FormRenderPlan.BaseNotAppliedForm ? $" — form.type={form}의 형태 모형을 지킴" :
+                      RenderPlan.BaseStatus == FormRenderPlan.BaseNoMesh ? " — 이 빌드에 메시가 없음" : "") + ")", true);
 
             var prefab = FindPrefab(form);
             if (prefab != null)
@@ -519,6 +524,29 @@ namespace IFS.SceneSpec
             }
             _model.name = "model (" + form + ")";
             _modelBaseScale = _model.transform.localScale;
+        }
+
+        // (2.2) 기본 형상: 프리팹을 쓰지 않고 절차 메시(BaseShapeMesh)로만 만든다(blob 프리팹이 연결돼 있어도 기본 형상이 앞선다).
+        // IFS 셰이더를 쓸 수 없으면 false → 형태(form.type) 경로로 그리고 그 사실을 남긴다.
+        bool BuildBaseShape()
+        {
+            if (!useProceduralModels || !FormRenderResources.LoadIfsShaders())
+            {
+                Note($"form.base={RenderPlan.BaseShape}: IFS 셰이더를 쓸 수 없어 기본 형상을 그리지 못함 — " +
+                     (useProceduralModels ? FormRenderResources.IfsShaderProblem() : "useProceduralModels가 꺼져 있음"), true);
+                return false;
+            }
+            var renderer = FormRenderers.For(RenderPlan);
+            _model = renderer.CreateModel(RenderPlan);
+            foreach (var r in _model.GetComponentsInChildren<Renderer>())
+                foreach (var m in r.sharedMaterials) if (m != null) _ownedMaterials.Add(m);
+            _model.transform.SetParent(_motion.transform, false);
+            _model.transform.localScale = Vector3.one * placement.primitiveBaseSize;
+            RenderPath = renderer.Name;
+            if (RenderPlan.PresetNote != null) Note(RenderPlan.PresetNote, false);
+            _model.name = "model (base " + RenderPlan.BaseShape + ")";
+            _modelBaseScale = _model.transform.localScale;
+            return true;
         }
 
         // 모양 모형: 연결된 프리팹이 있으면 그것, 없으면 메뉴와 같은 함수(ShapeModelFactory)로 같은 형상을 코드로 만든다.
@@ -600,6 +628,9 @@ namespace IFS.SceneSpec
                         break;
                     case ShapeMapping.StatusNotAppliedForm:
                         Note($"{who}: {at} — spec이 form.type={Shape.FormType}을 말해 그 형태 모형을 지킴(not_applied_form)", true);
+                        break;
+                    case ShapeMapping.StatusNotAppliedBase:
+                        Note($"{who}: {at} — spec이 기본 형상 form.base={Spec?.Form?.Base}를 말해 기본 형상이 윤곽을 정함(not_applied_base)", false);
                         break;
                     case ShapeMapping.StatusConflict:
                         Note($"{who}: {at} — 앞서 적용한 shape={Shape.Applied}와 다른 모양어라 적용하지 않음(conflict)", true);

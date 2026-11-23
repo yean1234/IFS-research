@@ -138,6 +138,32 @@ namespace IFS.SceneSpec
             return mesh;
         }
 
+        static readonly Dictionary<string, Mesh> _bases = new Dictionary<string, Mesh>();
+
+        /// <summary>(2.2) 기본 형상 메시(BaseShapeMesh). 같은 (형상, 변형값, seed)면 같은 메시라 한 번 만들어 재사용한다.</summary>
+        public static Mesh BaseMesh(FormRenderPlan plan)
+        {
+            var parts = new List<string> { plan.BaseShape, plan.BaseSeed.ToString(System.Globalization.CultureInfo.InvariantCulture) };
+            foreach (var kv in plan.BaseVariant) parts.Add(kv.Key + "=" + kv.Value);
+            string key = string.Join("|", parts);
+            if (_bases.TryGetValue(key, out var cached) && cached != null) return cached;
+            BaseShapeMesh.Build(plan.BaseShape, plan.BaseVariant, plan.BaseSeed, out float[] xyz, out float[] nrm, out int[] tris);
+            var verts = new Vector3[xyz.Length / 3];
+            var normals = new Vector3[verts.Length];
+            for (int i = 0; i < verts.Length; i++)
+            {
+                verts[i] = new Vector3(xyz[i * 3], xyz[i * 3 + 1], xyz[i * 3 + 2]);
+                normals[i] = new Vector3(nrm[i * 3], nrm[i * 3 + 1], nrm[i * 3 + 2]);
+            }
+            var mesh = new Mesh { name = "IFS Base " + plan.BaseRule };
+            mesh.vertices = verts;
+            mesh.normals = normals;
+            mesh.triangles = tris;
+            mesh.RecalculateBounds();
+            _bases[key] = mesh;
+            return mesh;
+        }
+
         public static Mesh ConeMesh()
         {
             if (_cone == null) _cone = ShapeModelFactory.BuildConeMesh();
@@ -270,6 +296,25 @@ namespace IFS.SceneSpec
         }
     }
 
+    /// <summary>(2.2) 기본 형상(container·line·sheet·flame·drop): BaseShapeMesh 메시 하나 + IFS 셰이더(모양 모형과 같은 프리셋, 정점 변위 0).
+    /// 재질 슬롯(색·밝기·채도·거칠기·불투명도·침식)과 움직임(SpecMotion, 피벗 전체)은 다른 형상과 같이 먹는다. 형상 고유 움직임은 없다.</summary>
+    public sealed class BaseShapeRenderer : IcoFormRenderer
+    {
+        public BaseShapeRenderer(string shape) : base(FormRenderPlan.RendererBasePrefix + shape) { }
+
+        public override GameObject CreateModel(FormRenderPlan plan)
+        {
+            var go = new GameObject("base " + plan.BaseShape);
+            var mesh = FormRenderResources.BaseMesh(plan);
+            go.AddComponent<MeshFilter>().sharedMesh = mesh;
+            var mat = new Material(FormRenderResources.Opaque) { name = "IFS base (" + plan.BaseRule + ")" };
+            mat.SetFloat("_Seed", plan.BaseSeed);
+            go.AddComponent<MeshRenderer>().sharedMaterial = mat;
+            go.AddComponent<MeshCollider>().sharedMesh = mesh;
+            return go;
+        }
+    }
+
     public static class FormRenderers
     {
         static readonly Dictionary<string, IFormRenderer> ByName = new Dictionary<string, IFormRenderer>
@@ -284,12 +329,18 @@ namespace IFS.SceneSpec
         /// <summary>안개 셰이더를 못 쓸 때의 안개(이전 경로: 구 + Fade 셰이더).</summary>
         public const string MistLegacyName = "mist(legacy)";
         static readonly IFormRenderer MistLegacy = new IcoFormRenderer(MistLegacyName);
+        static readonly Dictionary<string, IFormRenderer> Bases = new Dictionary<string, IFormRenderer>();
 
         /// <summary>계획의 렌더러. 표에 없는 form.type은 구 하나(프리셋 없음)로 — 이전 로더와 같은 동작.
         /// mist는 안개 셰이더를 쓸 수 있을 때만 부피 렌더러, 아니면 이전 경로.</summary>
         public static IFormRenderer For(FormRenderPlan plan)
         {
             if (plan.Renderer == FormRenderPlan.RendererMist && !FormRenderResources.LoadMistShader()) return MistLegacy;
+            if (plan.BaseShape != null)
+            {
+                if (!Bases.TryGetValue(plan.BaseShape, out var br)) Bases[plan.BaseShape] = br = new BaseShapeRenderer(plan.BaseShape);
+                return br;
+            }
             return plan.Renderer != null && ByName.TryGetValue(plan.Renderer, out var r) ? r : new IcoFormRenderer(plan.Renderer);
         }
     }

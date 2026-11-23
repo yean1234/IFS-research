@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "ifs-selection/0.2",
   "title": "후보 선택·조절 기록 (selection.json, ifs-selection/0.2)",
-  "description": "세션 폴더(<log_dir>/selection/<sessionId>/selection.json, git 밖)에 쓰는 데스크톱 4–5단계 기록. 0.1(selection.v0.1.json)에서 바뀐 것(2026-11-23, 연구 책임자 결정 G31–G34): ① selection.skipped(필수)·skipReason — 구별되는 후보가 하나만 남아 선택 단계를 건너뛰었으면 skipped = true, selectedCandidateId = null, none = false(G34). ② colorChanged(필수) — 조절 기록에서 색의 처음 값과 마지막 값이 다른지(G31). ③ 출처 값 두 개 추가: said_unrendered_chosen(모형이 없는 모양어를 말했고 형태 후보에서 고름), said_unrendered_default(모형이 없는 모양어를 말했지만 고르지 않음 — 맞는 것이 없다·선택 건너뜀 — 기본 형태로 그려짐). 조절로 형태를 고치면 다른 슬롯처럼 edited(G32). sourceDetails.form.type.saidWords에 원래 말한 모양어. ④ distanceFloor — 매퍼 v2가 거리 하한을 적용했으면 말한 값과 그려진 값(G33), 아니면 null. ⑤ candidatesShownAt null 허용(선택을 건너뛰면 보여 준 후보가 없음). candidates.selectionStep·distinct(구별 규칙 결과), 축 reason said_unrendered. 러너 계약(unity/Assets/IFS/Runtime/Placement/PlacementSelection.cs): 맨 위 formatVersion, specSha256(저장된 spec 파일 바이트의 sha256), finalOverrides(평평한 객체, 위치·거리 키 금지), selection{selectedCandidateId(null 가능), none, skipped}, sources(슬롯 → 여섯 값), colorChanged. 러너는 0.1과 0.2를 모두 읽는다(0.1 파일의 출처 값은 네 가지만 받는다). 그 밖의 G26 규칙(runnerReady·runnerBlockers·sha256Basis)은 0.1과 같다.",
+  "description": "세션 폴더(<log_dir>/selection/<sessionId>/selection.json, git 밖)에 쓰는 데스크톱 4–5단계 기록. 0.1(selection.v0.1.json)에서 바뀐 것(2026-11-23, 연구 책임자 결정 G31–G34): ① selection.skipped(필수)·skipReason — 구별되는 후보가 하나만 남아 선택 단계를 건너뛰었으면 skipped = true, selectedCandidateId = null, none = false(G34). ② colorChanged(필수) — 조절 기록에서 색의 처음 값과 마지막 값이 다른지(G31). ③ 출처 값 두 개 추가: said_unrendered_chosen(모형이 없는 모양어를 말했고 형태 후보에서 고름), said_unrendered_default(모형이 없는 모양어를 말했지만 고르지 않음 — 맞는 것이 없다·선택 건너뜀 — 기본 형태로 그려짐). 조절로 형태를 고치면 다른 슬롯처럼 edited(G32). sourceDetails.form.type.saidWords에 원래 말한 모양어. ④ distanceFloor — 매퍼 v2가 거리 하한을 적용했으면 말한 값과 그려진 값(G33), 아니면 null. ⑤ candidatesShownAt null 허용(선택을 건너뛰면 보여 준 후보가 없음). candidates.selectionStep·distinct(구별 규칙 결과), 축 reason said_unrendered. 러너 계약(unity/Assets/IFS/Runtime/Placement/PlacementSelection.cs): 맨 위 formatVersion, specSha256(저장된 spec 파일 바이트의 sha256), finalOverrides(평평한 객체, 위치·거리 키 금지), selection{selectedCandidateId(null 가능), none, skipped}, sources(슬롯 → 여섯 값), colorChanged. 러너는 0.1과 0.2를 모두 읽는다(0.1 파일의 출처 값은 네 가지만 받는다). 그 밖의 G26 규칙(runnerReady·runnerBlockers·sha256Basis)은 0.1과 같다. (2026-11-23, D6 — 하위 호환 추가, 형식 버전은 0.2 그대로) sources·sourceDetails·후보 sources의 슬롯 이름에 form.base(기본 형상, SceneSpec 2.2.0), finalOverrides·후보 overrides 키에 form.base(기본 형상 5개 또는 none)를 더함. 기존 0.2 파일은 그대로 유효하다. 러너(PlacementSelection.SlotNames, SceneOverride)도 같은 키를 받는다.",
   "type": "object",
   "required": [
     "formatVersion",
@@ -35,6 +35,7 @@
       "propertyNames": {
         "enum": [
           "form.type",
+          "form.base",
           "motion.type",
           "material.color.h",
           "material.color.s",
@@ -53,6 +54,7 @@
       "enum": [
         "form.type",
         "form.posture",
+        "form.base",
         "material.color",
         "material.brightness",
         "material.saturation",

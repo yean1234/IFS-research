@@ -1,0 +1,217 @@
+[
+ {
+  "id": "C1",
+  "text": "가슴 앞에 그릇이 있어요.",
+  "base": {
+   "requested": "container",
+   "status": "applied",
+   "shape": "container",
+   "rule": "container/1",
+   "variant": {
+    "opening": "wide",
+    "profile": "round"
+   },
+   "variantDefaults": [
+    "profile"
+   ],
+   "seed": 0,
+   "parameters": {
+    "rows": 22.0,
+    "segments": 32.0,
+    "wallThickness": 0.04
+   }
+  },
+  "variant": {
+   "opening": "wide"
+  },
+  "formType": null,
+  "renderPath": "base:container",
+  "visiblePixels": 18476,
+  "silhouette": {
+   "circularity": 0.876,
+   "components": 1,
+   "edgeFalloffPx": 0.72,
+   "maskPixels": 18310
+  },
+  "contrastDeltaL": 3.01,
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 2816,
+  "trianglesPerEyeEstimate": 11664,
+  "baseNotes": [
+   "form.base=container: 형상 프리셋 기본값 — 절차 메시(규칙 container/1, opening=wide, profile=round(기본값), seed 0, rows 22, segments 32, wallThickness 0.04). 윤곽만(색·무늬·발광·고유 움직임 없음), 정점 변위 0, 노이즈 크기 1.6(거칠기 얼룩·침식 무늬). 경계 상자 가장 긴 변 1 × 기본 크기"
+  ]
+ },
+ {
+  "id": "C2",
+  "text": "배 안에 유리병이 있어요.",
+  "base": {
+   "requested": "container",
+   "status": "applied",
+   "shape": "container",
+   "rule": "container/1",
+   "variant": {
+    "opening": "narrow",
+    "profile": "round"
+   },
+   "variantDefaults": [
+    "profile"
+   ],
+   "seed": 0,
+   "parameters": {
+    "rows": 22.0,
+    "segments": 32.0,
+    "wallThickness": 0.04
+   }
+  },
+  "variant": {
+   "opening": "narrow"
+  },
+  "formType": null,
+  "renderPath": "base:container",
+  "visiblePixels": 15879,
+  "silhouette": {
+   "circularity": 0.823,
+   "components": 1,
+   "edgeFalloffPx": 0.69,
+   "maskPixels": 15732
+  },
+  "contrastDeltaL": 7.97,
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 2816,
+  "trianglesPerEyeEstimate": 11664,
+  "baseNotes": [
+   "form.base=container: 형상 프리셋 기본값 — 절차 메시(규칙 container/1, opening=narrow, profile=round(기본값), seed 0, rows 22, segments 32, wallThickness 0.04). 윤곽만(색·무늬·발광·고유 움직임 없음), 정점 변위 0, 노이즈 크기 1.6(거칠기 얼룩·침식 무늬). 경계 상자 가장 긴 변 1 × 기본 크기"
+  ]
+ },
+ {
+  "id": "C3",
+  "text": "까만 네모난 상자예요.",
+  "base": {
+   "requested": "container",
+   "status": "applied",
+   "shape": "container",
+   "rule": "container/1",
+   "variant": {
+    "opening": "wide",
+    "profile": "square"
+   },
+   "variantDefaults": [],
+   "seed": 0,
+   "parameters": {
+    "rows": 22.0,
+    "segments": 4.0,
+    "wallThickness": 0.04
+   }
+  },
+  "variant": {
+   "opening": "wide",
+   "profile": "square"
+  },
+  "formType": null,
+  "renderPath": "base:container",
+  "visiblePixels": 21789,
+  "silhouette": {
+   "circularity": 0.828,
+   "components": 1,
+   "edgeFalloffPx": 0.76,
+   "maskPixels": 21437
+  },
+  "contrastDeltaL": -40.8,
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 32,
+  "trianglesPerEyeEstimate": 528,
+  "baseNotes": [
+   "C3.json (session SYN-BASE-C3): shape=square, 트리거 '네모난' [3,6] — spec이 기본 형상 form.base=container를 말해 기본 형상이 윤곽을 정함(not_applied_base)",
+   "form.base=container: 형상 프리셋 기본값 — 절차 메시(규칙 container/1, opening=wide, profile=square, seed 0, rows 22, segments 4, wallThickness 0.04). 윤곽만(색·무늬·발광·고유 움직임 없음), 정점 변위 0, 노이즈 크기 1.6(거칠기 얼룩·침식 무늬). 경계 상자 가장 긴 변 1 × 기본 크기"
+  ]
+ },
+ {
+  "id": "C4",
+  "text": "가슴 앞에 작은 화분이 있어요. 초록색이에요.",
+  "base": {
+   "requested": "container",
+   "status": "applied",
+   "shape": "container",
+   "rule": "container/1",
+   "variant": {
+    "opening": "wide",
+    "profile": "round"
+   },
+   "variantDefaults": [
+    "profile"
+   ],
+   "seed": 0,
+   "parameters": {
+    "rows": 22.0,
+    "segments": 32.0,
+    "wallThickness": 0.04
+   }
+  },
+  "variant": {
+   "opening": "wide"
+  },
+  "formType": null,
+  "renderPath": "base:container",
+  "visiblePixels": 6688,
+  "silhouette": {
+   "circularity": 0.886,
+   "components": 1,
+   "edgeFalloffPx": 0.75,
+   "maskPixels": 6601
+  },
+  "contrastDeltaL": -10.69,
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 2816,
+  "trianglesPerEyeEstimate": 11664,
+  "baseNotes": [
+   "form.base=container: 형상 프리셋 기본값 — 절차 메시(규칙 container/1, opening=wide, profile=round(기본값), seed 0, rows 22, segments 32, wallThickness 0.04). 윤곽만(색·무늬·발광·고유 움직임 없음), 정점 변위 0, 노이즈 크기 1.6(거칠기 얼룩·침식 무늬). 경계 상자 가장 긴 변 1 × 기본 크기"
+  ]
+ },
+ {
+  "id": "C5",
+  "text": "컵 같은 게 있어요. 반쯤 투명해요.",
+  "base": {
+   "requested": "container",
+   "status": "applied",
+   "shape": "container",
+   "rule": "container/1",
+   "variant": {
+    "opening": "wide",
+    "profile": "round"
+   },
+   "variantDefaults": [
+    "profile"
+   ],
+   "seed": 0,
+   "parameters": {
+    "rows": 22.0,
+    "segments": 32.0,
+    "wallThickness": 0.04
+   }
+  },
+  "variant": {
+   "opening": "wide"
+  },
+  "formType": null,
+  "renderPath": "base:container",
+  "visiblePixels": 18435,
+  "silhouette": {
+   "circularity": 0.866,
+   "components": 1,
+   "edgeFalloffPx": 7.39,
+   "maskPixels": 18108
+  },
+  "contrastDeltaL": 3.74,
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 2816,
+  "trianglesPerEyeEstimate": 3216,
+  "baseNotes": [
+   "form.base=container: 형상 프리셋 기본값 — 절차 메시(규칙 container/1, opening=wide, profile=round(기본값), seed 0, rows 22, segments 32, wallThickness 0.04). 윤곽만(색·무늬·발광·고유 움직임 없음), 정점 변위 0, 노이즈 크기 1.6(거칠기 얼룩·침식 무늬). 경계 상자 가장 긴 변 1 × 기본 크기"
+  ]
+ }
+]

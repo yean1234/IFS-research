@@ -15,7 +15,9 @@ namespace IFS.SceneSpec
         public const string SupportedSpecVersion = "2.0.0";
         /// <summary>v2.1 형식(개선 매핑 v1, v2.0 상위 호환).</summary>
         public const string SpecVersionV21 = "2.1.0";
-        public static readonly string[] SupportedSpecVersions = { SupportedSpecVersion, SpecVersionV21 };
+        /// <summary>v2.2 형식(매핑 v2 builder 2.2.0, 기본 형상 form.base·form.baseVariant — 결정 G21·G30).</summary>
+        public const string SpecVersionV22 = "2.2.0";
+        public static readonly string[] SupportedSpecVersions = { SupportedSpecVersion, SpecVersionV21, SpecVersionV22 };
 
         [JsonProperty("meta", Required = Required.Always)] public SpecMeta Meta;
         [JsonProperty("form", Required = Required.Always)] public FormSpec Form;
@@ -159,6 +161,40 @@ namespace IFS.SceneSpec
         /// <summary>blob | mist | shell | fragments | null</summary>
         [JsonProperty("type", Required = Required.AllowNull)] public string Type;
         [JsonProperty("posture", Required = Required.AllowNull)] public string Posture;
+        /// <summary>(2.2) 기본 형상: container | line | sheet | flame | drop | null. 2.0·2.1 문서에는 키가 없다.</summary>
+        [JsonProperty("base")] public string Base;
+        /// <summary>(2.2) 낱말 뜻이 정한 변형값(정한 키만). 정하지 않았으면 null. 모르는 키는 파싱 오류(엄격).</summary>
+        [JsonProperty("baseVariant")] public BaseVariantSpec BaseVariant;
+
+        /// <summary>원문 form 객체에 base·baseVariant 키가 있었는가(SceneSpecJson.Parse가 채운다). 2.2.0 문서는 둘 다 있어야 하고
+        /// 2.0·2.1 문서에는 없어야 한다. 다시 쓸 때도 키가 있던 문서만 두 키를 쓴다(2.0·2.1 왕복이 그대로).</summary>
+        [JsonIgnore] public bool BaseKeysPresent;
+
+        public bool ShouldSerializeBase() => BaseKeysPresent || Base != null;
+        public bool ShouldSerializeBaseVariant() => BaseKeysPresent || BaseVariant != null;
+    }
+
+    /// <summary>(2.2) 기본 형상 변형값. 키마다 null = 정하지 않음(렌더러가 형상 프리셋 기본값). 쓰는 키는 기본 형상마다 다르다
+    /// (container: opening·profile, line: form·gauge, sheet: drape — shared/schemas/scene-spec.v2.2.json $defs.baseVariant).</summary>
+    public sealed class BaseVariantSpec
+    {
+        [JsonProperty("opening", NullValueHandling = NullValueHandling.Ignore)] public string Opening;
+        [JsonProperty("profile", NullValueHandling = NullValueHandling.Ignore)] public string Profile;
+        [JsonProperty("form", NullValueHandling = NullValueHandling.Ignore)] public string Form;
+        [JsonProperty("gauge", NullValueHandling = NullValueHandling.Ignore)] public string Gauge;
+        [JsonProperty("drape", NullValueHandling = NullValueHandling.Ignore)] public string Drape;
+
+        public BaseVariantSpec Clone() => new BaseVariantSpec { Opening = Opening, Profile = Profile, Form = Form, Gauge = Gauge, Drape = Drape };
+
+        /// <summary>키 → 값(값이 있는 키만, 고정 순서).</summary>
+        public IEnumerable<KeyValuePair<string, string>> Pairs()
+        {
+            if (Opening != null) yield return new KeyValuePair<string, string>("opening", Opening);
+            if (Profile != null) yield return new KeyValuePair<string, string>("profile", Profile);
+            if (Form != null) yield return new KeyValuePair<string, string>("form", Form);
+            if (Gauge != null) yield return new KeyValuePair<string, string>("gauge", Gauge);
+            if (Drape != null) yield return new KeyValuePair<string, string>("drape", Drape);
+        }
     }
 
     public sealed class MaterialSpec
