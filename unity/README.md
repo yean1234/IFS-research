@@ -397,22 +397,23 @@ spec마다 참여자 번호를 하나씩 올립니다. 씬 만들기 배치: `-e
 
 헤드셋 표시값은 기록에 영향이 없어 `PlacementConfig`가 아니라 컴포넌트 Inspector에 있습니다: `PlacementRunner`의 판 자리 `textForwardM`(2.0)·`textHeightM`(0.6, 판 중심), `rayOnlyWhenUsable`(true), `PlacementTextPanel`의 글자 크기(`characterSize` 0.0085 ≈ 글자 높이 5 cm)·줄 길이(20자)·기준점 칸 너비(0.2 m), `XrPlacementInput`의 광선 굵기·길이와 썸스틱 데드존(0.2)·트리거 이력(0.55/0.35).
 
-### 선택 파일(`selection.json`, 2026-11-23 D8 — 결정 G15·G23)
+### 선택 파일(`selection.json`, 2026-11-23 D8 — 결정 G15·G23, G31–G34에서 형식 0.2)
 
 챗봇의 후보 선택·조절 단계(D5)가 세션 기록에 쓰는 선택 파일을 원본 spec과 함께 읽습니다(`PlacementSelection.cs`, UnityEngine 없음). Setup의 "선택 파일" 칸(절대 경로 또는 spec 목록 폴더 기준 이름), 자동 시행 `-selectionPath`. 비우면 예전처럼 spec만으로 진행합니다(기존 자동 시행·테스트 그대로, manifest `selection: null`).
 
 | 필드 | 러너가 하는 일 |
 | --- | --- |
-| `formatVersion` | 필수. 접두어가 `ifs-selection/`이 아니거나 `ifs-selection/0.1`이 아니면 **경고**(확인 화면, `events.csv` `warning`)만 하고 읽는 필드를 확인 |
+| `formatVersion` | 필수. 아는 버전은 `ifs-selection/0.1`·`ifs-selection/0.2`(둘 다 읽음). 접두어가 `ifs-selection/`이 아니거나 모르는 버전이면 **경고**(확인 화면, `events.csv` `warning`)만 하고 읽는 필드를 확인 |
 | `specSha256` | 필수(16진 64자, 대소문자 무관). 러너가 읽은 spec 파일 **바이트**의 sha256과 다르면 **시작 거부**(이유 표시). 챗봇은 spec 파일을 LF 바이트로 쓰고 그 파일의 해시를 적으므로, 챗봇이 저장한 spec 파일을 그대로 넘기면 같습니다. 손으로 만든 선택 파일은 실험 PC의 spec 파일 바이트로 계산해야 합니다(git autocrlf로 체크아웃한 예시 spec은 CRLF) |
 | `spec.sha256Basis` | 있으면 `file`이어야 함. 그 밖의 값(`none`, 예전 챗봇의 `serialized`)은 `specSha256`이 파일 바이트 해시가 아니라는 뜻이라 **시작 거부**(무엇이 문제인지 표시). 없으면 파일 기준으로 봄(러너 쪽 합성 파일) — G26 |
 | `runnerReady` · `runnerBlockers` | `runnerReady: false`면 챗봇이 적은 이유를 붙여 **시작 거부**(spec 파일이 저장되지 않은 실행 등). 없으면 확인하지 않음 — G26 |
 | `finalOverrides` | 필수 객체(`{}` = 덮어쓰기 없음). `SceneOverrideJson.Parse` 형식(평평한 키 → 값, `shapeModel`). 모르는 키·0–1 밖·잘못된 값, 위치·거리 키(`layout.distance`·`layout.verticalOffset` — 시작 자리는 실험 설정이라 G10), form.type이 blob이 아닌데 모양 모형 강제는 **시작 거부** |
-| `selection.selectedCandidateId` · `selection.none` | 그대로 기록. `none: true`인데 id가 있으면 거부, `none: false`인데 id가 null이면 경고 |
-| `sources` | 객체여야 하고, 키는 스키마의 슬롯 이름 15개, 값은 `said`·`chosen`·`edited`·`default` 중 하나 — 아니면 **시작 거부**(G27). 통과하면 해석하지 않고 manifest에 그대로(없거나 null이면 null) |
+| `selection.selectedCandidateId` · `selection.none` · `selection.skipped` | 그대로 기록. `none: true`인데 id가 있으면 거부. `skipped`(구별되는 후보가 하나뿐이라 선택 단계를 건너뜀, G34)는 0.2에서 필수이고, `skipped: true`인데 `none: true`이거나 id가 있으면 거부. `none`·`skipped`가 모두 false인데 id가 null이면 경고. 0.1 파일은 `skipped`가 없으면 false |
+| `colorChanged` | 조절에서 색을 바꿨는지(G31). 0.2에서 필수 불리언, 0.1은 없으면 null로 기록 |
+| `sources` | 객체여야 하고, 키는 스키마의 슬롯 이름 15개, 값은 0.2면 `said`·`chosen`·`edited`·`default`·`said_unrendered_chosen`·`said_unrendered_default`(뒤 둘은 모형이 없는 모양어를 말한 형태 자리, G32), 0.1이면 앞의 네 값 중 하나 — 아니면 **시작 거부**(G27). 통과하면 해석하지 않고 manifest에 그대로(없거나 null이면 null) |
 | 그 밖 | 읽지 않음(무시) |
 
-덮어쓰기는 형상을 만들 때 `SceneLoader.Load(spec, 덮어쓰기)`로 **한 번** 얹고(소유감 변형본과 같은 경로, 참여자 조정 기록을 타지 않음) 조건 단계 동안 바뀌지 않습니다(VR 안에서 속성을 고치는 입력은 없음 — G11). 로드한 뒤 덮어쓰기 키마다 그려지는 해석값(모양 모형은 그려지는 모형)이 덮어쓰기 값과 같은지 확인하고, 다른 키가 하나라도 있으면 시작을 거부합니다. 확인 뒤 시작 전에 선택 파일이 바뀌면 거부합니다(spec과 같은 규칙). 시작하면 `events.csv`에 `selection` 한 줄(`file=…;none=0|1;candidate=…;applied=<키 수>`, 경고가 아님)을 남깁니다. 합성 예시·자동 시행 결과: `docs/validation/runner-selection/`.
+덮어쓰기는 형상을 만들 때 `SceneLoader.Load(spec, 덮어쓰기)`로 **한 번** 얹고(소유감 변형본과 같은 경로, 참여자 조정 기록을 타지 않음) 조건 단계 동안 바뀌지 않습니다(VR 안에서 속성을 고치는 입력은 없음 — G11). 로드한 뒤 덮어쓰기 키마다 그려지는 해석값(모양 모형은 그려지는 모형)이 덮어쓰기 값과 같은지 확인하고, 다른 키가 하나라도 있으면 시작을 거부합니다. 확인 뒤 시작 전에 선택 파일이 바뀌면 거부합니다(spec과 같은 규칙). 시작하면 `events.csv`에 `selection` 한 줄(`file=…;none=0|1;candidate=…;skipped=0|1;colorChanged=0|1|(빈칸);applied=<키 수>`, 경고가 아님)을 남깁니다. manifest `selection`에는 `skipped`·`colorChanged`도 들어갑니다(기록 형식은 `ifs-placement/0.2` 그대로, 키만 더함). 합성 예시·자동 시행 결과: `docs/validation/runner-selection/`.
 
 물체 시작 자리는 spec의 `layout.distance`·`verticalOffset` 대신 `startDistanceM`·`startHeightM`을 씁니다(두 조건이 같은 자리에서 시작해야 하므로). 크기·모양·색·움직임은 spec 그대로입니다. 시작 자리는 참여자가 말한 속성이 아니라 실험 설정이라는 것을 manifest `space.startPlacementSource: "experiment_config"`로 남깁니다. spec의 `layout.distance`나 `verticalOffset`에 값이 있었는데 이렇게 무시하면, 확인 화면 경고와 `events.csv`의 `warning` 한 줄(detail이 `layout_ignored`로 시작)을 남기고 manifest `flags.layoutIgnored`를 true로 둡니다.
 
@@ -593,6 +594,8 @@ EditMode 335개(2026-11-23 구름 수정(D7)·러너 선택 파일(D8·D9) 뒤 �
 2026-11-23 구름 수정(D7)에서 더한 것: `MistLumpsTests.cs`(덩어리 배치 seed 결정성·다른 seed·규칙 버전에 묶인 기본 배치·대리 구 안·덩어리 겹침·계획 JSON `mistRule`·밀도 프리셋 0.5 그대로·밝기 대비 지표), `MistShaderSourceTests`(+1: 덩어리 수·가장자리 폭·`_Lump0…` 선언·opacity를 최종 알파에 그대로 곱함), `UnityOnly/MistRendererTests`(머티리얼 `_Lump0…`·`_Seed`, maxAlpha가 opacity의 0.9–1배·대비 지표 있음), golden은 GOLD-mist notes만 다시 씀. `Stubs/UnityStubsMist.cs`(`Vector4`, `Material.SetVector`·`GetVector`).
 
 2026-11-23 러너 선택 파일(D8·D9)에서 더한 것: `PlacementSelectionTests.cs`(13: 선택 파일 파싱·sha 불일치 거부·모르는 키·위치/거리 키 거부·모르는 formatVersion 경고·없을 때 기존 동작·manifest 0.2 키 `selection`·`appliedOverrides`·문항 범위 0–10 키보드 두 자리·컨트롤러·G13 두 문항 draft·사전/사후 설정·기존 문항 끄기), `PlacementTests`·`PlacementXrTests` 기대값 갱신(평정 순서·개수), `UnityOnly/PlacementRunnerSelectionTests.cs`(3: 덮어쓰기가 형상에 한 번 그려지고 manifest 0.2에 남음, sha 불일치·적용 못 한 덮어쓰기는 시작 거부, 선택 파일 없을 때 기존 동작과 "맞는 것이 없다" 기록).
+
+2026-11-23 연구 책임자 결정 G31–G34 반영에서 더한 것(3개, EditMode 342개·dotnet 290개 전부 통과): `PlacementSelectionTests.cs`(+3: 0.2의 `skipped`·`colorChanged`·새 출처 값 읽기, 0.2 필수 필드와 건너뜀 모순 거부, 0.1은 출처 네 값만·새 필드 선택). 기존 테스트의 manifest `selection` 키 목록과 `events.csv` 선택 줄 기대값을 고침.
 
 2026-11-23 CP9 반영(G26·G27)에서 더한 것(4개, EditMode 339개·dotnet 287개 전부 통과): `PlacementSelectionTests.cs`(+4: `spec.sha256Basis`가 file이 아니면 이유를 밝히고 거부, `runnerReady: false`면 챗봇이 적은 이유를 붙여 거부, `sources` 슬롯 이름·출처 값 검사, 챗봇이 쓴 spec 파일과 선택 파일의 바이트 대조(`docs/validation/selection-flow/runs`)). `UnityOnly/PlacementRunnerSelectionTests.cs`의 합성 `sources` 키를 덮어쓰기 키(`material.color.h`)에서 슬롯 이름(`material.color`)으로 고침.
 

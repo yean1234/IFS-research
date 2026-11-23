@@ -220,9 +220,9 @@ cd chatbot
 - ⚠ **크기 가정.** 말한 물리 크기 m(가장 긴 변)를 `size = 0.5 + log2(m / 0.2 m) / 6`로 옮깁니다. size 0.5 = 20 cm, 0 = 2.5 cm, 1 = 1.6 m입니다. 렌더 배율(×0.25–×4, 16배)에 사람이 말하는 크기 범위(손톱–사람 키, 약 64배)를 압축해 넣은 것이라, Unity에서 보이는 크기는 말한 크기와 1:1이 아닙니다(Unity 기본 크기 0.35 m 기준 30 cm → 약 0.46 m). 물리 크기를 그대로 쓰려면 `_measurements.meters`를 씁니다.
 - 거리는 v2 정의(0.3–3.0 m 선형) 그대로입니다.
 
-## 7. RQ V4 실험 프로토타입(2026-11-23): 매퍼 v2, 출처 네 가지, 기본 형상 경로(계획), 스키마 영향
+## 7. RQ V4 실험 프로토타입(2026-11-23): 매퍼 v2, 속성 출처, 기본 형상 경로(계획), 스키마 영향
 
-근거: `docs/prompts/prototype-v4-build.md` 단계 C·D, `docs/decisions.md` G14–G28. 구현 결과는 `docs/validation/mapper-v2/README.md`(D1·D2), `docs/validation/selection-flow/README.md`(D3·D5·D9), `docs/validation/runner-selection/README.md`(D8)에 있습니다.
+근거: `docs/prompts/prototype-v4-build.md` 단계 C·D, `docs/decisions.md` G14–G28과 연구 책임자 결정 G31–G34(구현 세부는 decisions.md 「G31–G34 구현 세부」). 구현 결과는 `docs/validation/mapper-v2/README.md`(D1·D2), `docs/validation/selection-flow/README.md`(D3·D5·D9), `docs/validation/runner-selection/README.md`(D8)에 있습니다.
 
 ### 7.1 매퍼 v2와 v0·v1의 관계 (G24)
 
@@ -230,6 +230,7 @@ cd chatbot
 - **v0·v1 출력은 바뀌지 않습니다.** v0·v1의 코드와 사전 파일은 고치지 않았습니다. v0 sha256 고정 테스트(`chatbot/tests/test_scene_builder_v1.py::test_v0_output_byte_identical_to_baseline_hashes`, 고정값 `fixtures/v0_output_sha256.json`), 목업 v1 spec 36개 바이트 비교(`test_scene_builder_v2.py::test_v1_mock_specs_unchanged`), Unity v1 예시 비교(`test_unity_v1_examples_are_current_v1_output`)가 그대로 통과합니다. held-out v1 수치(반영률 0.698 등)도 그대로 유효합니다.
 - **v2는 새 흐름 설정에서만 씁니다.** `chatbot/config/v4.toml`의 `[mapping] mode = "v2"`입니다. 기본 설정(`default.toml`·`pilot.toml`)과 `MappingConfig.mode` 기본값은 v1 그대로이고, v2 빌더는 v2를 요청할 때만 만듭니다(`test_default_mode_is_unchanged_and_v2_not_built`). v4 설정은 `save_both = true`라 같은 확정 텍스트로 `scenes/{sessionId}.v0.json`·`.v1.json`·`.v2.json` 비교 파일도 남깁니다.
 - v2는 dev 코퍼스와 목업 36개만 보고 고쳤습니다. 목업 v1 → v2는 반영률 0.765 → 0.775, 왜곡률 0.060 → 0.045입니다(개발 자료 수치). held-out은 열지 않았고, v2를 주 매핑으로 보고하려면 규칙을 보지 않은 사람이 쓴 새 평가 문장이 필요합니다(X13).
+- **거리 하한(G33, builder 2.1.0).** v2는 `layout.distance`가 하한 0.1보다 작으면 0.1로 올립니다(유지). 올릴 때 말한 값과 그려진 값을 둘 다 남깁니다: 슬롯 값 = 그려진 값(0.1), `_provenance.layout.distance[0].rule` 끝 꼬리표 `+floor(0.1;said=<말한 값>)` = 말한 값(하한 전, 0–1). 예: '얼굴 앞에 붙어 있어요' → `distanceLexicon.붙>layout.distance:attached+floor(0.1;said=0.0)`. 스키마 2.1에는 두 값을 구조로 담을 자리가 없어(`_measurements`는 수치 측정에만, `_alternatives`·`_context`·`_parts`의 `reason`은 닫힌 enum이라 뜻이 맞는 값이 없음) 자유 문자열인 `rule`에 적었습니다. `scene_builder_v2.floor_record(spec)`이 이 꼬리표를 읽고, 선택 기록 `selection.json`의 `distanceFloor`(말한 값·그려진 값·하한·rule·trigger·charSpan)와 `sourceDetails.layout.distance.saidValue`(말한 값)에 구조로 옮깁니다. builder 2.0.0 출력(`+floor(0.1)`, 말한 값 없음)은 `said = null`로 읽습니다. 배치 러너의 시작 자리는 spec 거리와 무관합니다(실험 설정 `startDistanceM`, G33 확인). v0·v1에는 하한이 없고 출력이 바뀌지 않습니다(`test_scene_builder_v2.py::test_v0_v1_outputs_unchanged_by_g33`, sha256 고정).
 - 스키마를 바꾸지 않았기 때문에 v2 출력은 `specVersion` 2.1.0입니다. `meta.mapping = {requested: "v2", used: "v1", fallbackReason: null}`(2.1 스키마의 `used`가 v0·v1만 받음)과 `meta.pipeline.builder = "scene-spec-builder-v2/…"`로 v2임을 남기고, 대체 판정은 `scene_spec.is_mapping_fallback()`이 합니다.
 
 ### 7.2 사전에 없는 명사 (`_unmapped`, category `unlisted_noun`)
@@ -251,7 +252,7 @@ v1까지는 사전에 없는 명사(화분, 물병, 인형)가 기록 없이 사
 - `reason`과 `_provenance.source`는 2.1 스키마 enum에 "사전에 없음"이 없어 가장 가까운 값(`no_scene_param`, `phrase_rule`)을 썼습니다. 2.2.0에서 값을 더할지는 정하지 않았습니다.
 - 사전에 없는 명사는 **기록만** 합니다. 대신할 형상을 고르지 않고 값도 만들지 않습니다(원칙 2). 화면에는 기본 모형이 그려지고, 후보 단계에서 형태 자리는 비어 있는 것으로 봅니다.
 
-### 7.3 속성 출처 네 가지는 spec이 아니라 `selection.json`에 (G15)
+### 7.3 속성 출처는 spec이 아니라 `selection.json`에 (G15, G32)
 
 | 출처 | 뜻 | 어디에 |
 | --- | --- | --- |
@@ -259,10 +260,13 @@ v1까지는 사전에 없는 명사(화분, 물병, 인형)가 기록 없이 사
 | 고름(`chosen`) | 고른 후보가 정한 값(후보의 축 슬롯) | `selection.json`에만 |
 | 고침(`edited`) | 조절에서 마지막 값이 처음 값과 다른 슬롯. 말한 값을 고치면 `edited`가 되고 `sourceDetails.saidValue`에 원래 값이 남음 | `selection.json`에만 |
 | 기본값(`default`) | 아무도 정하지 않아 기본값으로 그려지는 슬롯 | `selection.json`에만(Unity 기록의 `defaultsUsed`와 같은 뜻) |
+| 말했지만 모형 없음 → 고름(`said_unrendered_chosen`) | `form.type`만. 모형이 없는 모양어(Unity `ShapeMapping`에 모형이 없는 `_unmapped` category shape, 예: '길쭉'·'실')만 말해 형태 후보를 벌렸고, 참여자가 후보를 고름(0번 기준 후보를 골라도 같음) | `selection.json`에만. 말한 낱말은 `sourceDetails.form.type.saidWords` |
+| 말했지만 모형 없음 → 기본 형태(`said_unrendered_default`) | `form.type`만. 같은 경우에 고르지 않음([맞는 것이 없다], 또는 선택 단계를 건너뜀) — 기본 형태(blob)로 그려짐 | `selection.json`에만. `saidWords` 같음 |
 
+- **모양어와 형태 자리(G32, G29 대체).** 모형이 있는 모양어(round·square·flat·pointed → Sphere·Cube·FlatCylinder·Cone)를 말했으면 형태 자리는 말한 자리로 고정하고 후보에서 벌리지 않습니다. 출처는 `said`이고 `saidWords`에 모양어가 남습니다(G32 전에는 `form.type` 값이 null이라 `default`로 적혔습니다). 모형이 있는 모양어와 없는 모양어를 함께 말했으면 Unity가 모형을 그리므로 역시 `said`입니다. 모형이 없는 모양어만 말했으면 위 두 값 가운데 하나이고, 조절로 형태를 고치면 다른 슬롯처럼 `edited`입니다(말한 낱말은 그대로 남음). 모형 목록은 값 표 `candidate_values.v1.json`의 `shapeModels`이고 Unity 원문과 같은지 pytest가 대조합니다.
 - **`_provenance`는 "말함"만 뜻하게 그대로 둡니다.** `_provenance`에 고름·기본값을 넣으면 참여자가 말한 것처럼 보이기 때문입니다. 원본 spec은 후보·조절 단계에서 바뀌지 않습니다(G14).
-- `selection.json`(형식 `ifs-selection/0.1`, 스키마 `shared/schemas/selection.v0.1.json`)은 세션 기록 폴더(`<log_dir>/selection/<sessionId>/`, git 밖)에 생깁니다. 헤드셋 러너는 원본 spec과 이 파일을 함께 읽고, `specSha256`(원본 spec 파일 바이트의 sha256)이 다르면 시작을 거부합니다.
-- 헤드셋 러너는 지금 `sources`를 해석하지 않고 기록에 옮깁니다. 출처 값 검사(G27)와 `spec.sha256Basis`가 파일 기준이 아니면 거부하는 것(G26)은 판정만 됐고 구현 전입니다.
+- `selection.json`(형식 `ifs-selection/0.2`, 스키마 `shared/schemas/selection.v0.2.json`. 0.1 스키마는 이전 기록용으로 그대로)은 세션 기록 폴더(`<log_dir>/selection/<sessionId>/`, git 밖)에 생깁니다. 헤드셋 러너는 원본 spec과 이 파일을 함께 읽고, `specSha256`(원본 spec 파일 바이트의 sha256)이 다르면 시작을 거부합니다.
+- 헤드셋 러너는 `sources`를 해석하지 않고 기록에 옮기되, 슬롯 이름과 출처 값을 검사합니다(G27: 0.2는 여섯 값, 0.1은 네 값). `spec.sha256Basis`가 파일 기준이 아니거나 `runnerReady = false`면 거부합니다(G26). 0.2에서는 `selection.skipped`(선택 단계를 건너뜀, G34)와 `colorChanged`(색을 바꿨는지, G31)도 필수로 읽어 manifest에 옮깁니다.
 
 ### 7.4 덮어쓰기 키 형식
 
@@ -288,7 +292,7 @@ v1까지는 사전에 없는 명사(화분, 물병, 인형)가 기록 없이 사
 
 ### 7.6 스키마 영향
 
-**이번 작업에서 SceneSpec 스키마는 바뀌지 않았습니다.** `scene-spec.v2.json`(2.0.0)과 `scene-spec.v2.1.json`(2.1.0) 그대로이고, 매퍼 v2도 2.1.0 문서를 냅니다. **새 스키마는 `shared/schemas/selection.v0.1.json`(선택 기록) 하나뿐입니다.** 헤드셋 러너 기록 형식은 `ifs-placement/0.1` → `0.2`로 올렸지만 추가만 했습니다(`unity/README.md` 배치 러너 기록 절).
+**이번 작업에서 SceneSpec 스키마는 바뀌지 않았습니다.** `scene-spec.v2.json`(2.0.0)과 `scene-spec.v2.1.json`(2.1.0) 그대로이고, 매퍼 v2도 2.1.0 문서를 냅니다(G33의 말한 값도 2.1 안의 `rule` 문자열에 적음). **새 스키마는 선택 기록 `shared/schemas/selection.v0.1.json`과 그 뒤 판 `selection.v0.2.json`(G31–G34)뿐입니다.** 헤드셋 러너 기록 형식은 `ifs-placement/0.1` → `0.2`로 올렸지만 추가만 했습니다(`unity/README.md` 배치 러너 기록 절).
 
 `form.base`를 넣어 스키마를 2.2.0으로 올리면(계획) 영향은 아래와 같습니다. 코드를 읽어 확인한 것이고, 아직 아무것도 바꾸지 않았습니다.
 

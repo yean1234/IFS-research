@@ -6,7 +6,20 @@
 
 ## ★★ 실험 프로토타입 구현 (2026-11-23, 브랜치 `claude/prototype-v4-build`) — 가장 최근 작업은 이 절입니다
 
-> 갱신: 2026-11-23, 하위 에이전트(Claude)가 단계 C·D10 문서 작업 끝에 적음. 지시문은 `docs/prompts/prototype-v4-build.md`(2026-11-22 클라우드 세션에서 연구 책임자와 정함). 결정은 `docs/decisions.md`의 「형상 표현 범위와 생성 모델」 절(G1–G28)과 X79–X85. 아래 ★ 절부터는 이전 작업의 기록이고 그대로 뒀습니다.
+> 갱신: 2026-11-23, 하위 에이전트(Claude)가 단계 C·D10 문서 작업 끝에 적음. 같은 날 G31–G34 구현 뒤 바로 아래 소절을 더함. 지시문은 `docs/prompts/prototype-v4-build.md`(2026-11-22 클라우드 세션에서 연구 책임자와 정함). 결정은 `docs/decisions.md`의 「형상 표현 범위와 생성 모델」 절(G1–G28)과 X79–X85. 아래 ★ 절부터는 이전 작업의 기록이고 그대로 뒀습니다.
+
+### 연구 책임자 결정 G31–G34 구현 (2026-11-23, 하위 에이전트 Claude) — 이 절의 가장 최근 작업
+
+- 결정은 `docs/decisions.md` G30–G35, 구현 세부(새 출처 값, 구별 규칙 표, 형식 버전)는 바로 아래 소절 「G31–G34 구현 세부」. **G30(`form.base`, 스키마 2.2.0)은 하지 않았습니다**(다른 작업).
+- **G31**: 조절 항목 순서가 색 → 형태 → 밝기 → 투명도 → 크기 → 질감 → 움직임. `selection.json`에 `colorChanged`(처음 색 ≠ 마지막 색).
+- **G32**: 모형이 없는 모양어('길쭉'·'실')만 말했으면 형태 후보를 벌림(축 reason `said_unrendered`). 출처 `said_unrendered_chosen`(고름)·`said_unrendered_default`(맞는 것이 없다/건너뜀), 조절로 고치면 `edited`, 말한 낱말은 `sourceDetails.form.type.saidWords`. 모형이 있는 모양어는 말한 자리(출처 `said`).
+- **G33**: 매퍼 v2 builder 2.1.0 — 거리 하한 꼬리표 `+floor(0.1;said=<말한 값>)`, `selection.json` `distanceFloor`. 스키마 2.1 그대로, v0·v1 출력 불변(sha 고정).
+- **G34**: 값 표 `shared/lexicon/candidate_values.v1.json`(1.0.0, v0 파일은 그대로) — 밝기를 후보에서 뺌, 구별 규칙 `ifs-distinct/1.0.0`(최종 값이 같음 / 정지 미리보기의 움직임). 남은 후보가 하나면 선택 단계 없이 조절(`selection.skipped = true`). 생성기 `ifs-candidates/0.2.0`. 고정 문구 protocolVersion 0.2.0(후보 1개 화면 문구 2개 삭제, 27개 draft).
+- 선택 기록 형식 **`ifs-selection/0.2`**(스키마 `selection.v0.2.json`, 0.1 스키마 유지). 러너는 0.1·0.2를 모두 읽음. 분석기 열 `selection_skipped`·`color_changed`·`form_source`.
+- 합성 시나리오 S1–S7(S5를 "움직임만 빈 자리"로 바꾸고 S6·S7 추가)을 image 모드로 다시 돌림, 화면 캡처 다시 찍음(`1b`가 "후보 1개" → "건너뛰고 조절").
+- 커밋: `ebe41d9` G33 → `0feba5f` G31·G32·G34 코드·테스트 → `e75efca` 시나리오 결과 → 이 문서를 담은 문서 커밋.
+- 확인한 수치(직접 돌림): pytest 파일별(`-m "not live"`) 합계 750 통과·6 xfail·실패 0(live 14개 제외), dotnet 290/290, Unity EditMode 342/342(깨끗한 git worktree에서. 같은 때 다른 에이전트가 고친 커밋 안 된 `PreviewBuild.cs`가 dotnet 컴파일 검사 스텁에 없는 `PlayerSettings.SplashScreen`을 써서 이 저장소 작업 폴더에서는 dotnet 빌드가 실패함 — 그 변경은 이 작업 것이 아니라 건드리지 않음).
+- 남은 것: 구별 규칙의 미확인 조합(안개·조각의 질감 등, 값 표 `distinctness.unverified`), 조절 쪽 반영 검사(G22 `adjustItems.availability`, image 미리보기에서 움직임 조절이 안 보임), 모양어 범주의 부분 낱말('가장자리' 등)도 형태 후보를 여는 문제(`docs/morning-todo.md`).
 
 - **브랜치: `claude/prototype-v4-build`.** 로컬 `claude/gallant-galileo-u02gqf` 위에 만들고 `origin/claude/focused-lamport-auymxq`를 합쳤습니다(`acdfd28`). main은 건드리지 않았습니다.
 - 커밋: `acdfd28` 병합 → `1985e17` G7–G13 → `235c3e7` G14–G24 → `7383abd` 조사·매퍼 v2(D1·D2) → `e999dbf` 에셋 계획 → `6719582` 미리보기(D4) → `c9d1eb2` 구름(D7)·러너(D8)·기록 → `1051d48` 후보·조절·사전 측정(D3·D5·D9) → `5d8bb1a` Codex CP9 판정(G26–G28).
@@ -23,11 +36,11 @@
 | D1·D2 매퍼 v2 | 끝 | `chatbot/ifs_chatbot/scene_builder_v2.py`, `docs/validation/mapper-v2/`. v0·v1 출력 불변 |
 | D3 후보 생성기 | 끝 | `chatbot/ifs_chatbot/candidates.py`, `shared/lexicon/candidate_values.v0.json` |
 | D4 미리보기 | WebGL 못 함 → 대안(상주 Windows 플레이어 → PNG) 측정·채택(G25) | `docs/validation/webgl/` |
-| D5 후보·조절·사전 측정 화면과 API | 끝 | `selection.py`·`server.py`·`web/stage.js`·`preview.py`, `shared/protocol/selection_protocol.v0.json`(문구 29개 draft), `docs/validation/selection-flow/` |
+| D5 후보·조절·사전 측정 화면과 API | 끝 | `selection.py`·`server.py`·`web/stage.js`·`preview.py`, `shared/protocol/selection_protocol.v0.json`(문구 29개 draft → G34 뒤 27개, protocolVersion 0.2.0), `docs/validation/selection-flow/` |
 | D6 기본 형상 경로 | **하지 않음**(에셋 계획 승인 대기) | — |
 | D7 구름 | 끝(헤드셋 미확인) | `docs/validation/cloud/` |
 | D8 러너 연결 | 끝 | `unity/Assets/IFS/Runtime/Placement/PlacementSelection.cs`, 기록 `ifs-placement/0.2`, `docs/validation/runner-selection/` |
-| D9 기록 | 끝 | `selection.json`(`ifs-selection/0.1`, 스키마 `shared/schemas/selection.v0.1.json`), `premeasure.json`, 러너 manifest `selection`·`appliedOverrides` |
+| D9 기록 | 끝 | `selection.json`(`ifs-selection/0.1` → G31–G34 뒤 `0.2`, 스키마 `shared/schemas/selection.v0.1.json`·`selection.v0.2.json`), `premeasure.json`, 러너 manifest `selection`·`appliedOverrides` |
 | D10 내부 시행 준비 | 끝(문서) | `docs/internal-trial-guide.md`(실행 안내, 점검표, 중립 심상 예시 10개) |
 | 미리보기 플레이어 재빌드 | 끝 | 저장소 밖 `../webgl-build/preview-win/`(D7 반영). image 모드 캡처 다시 만듦 — 안개 후보가 덩어리 구름으로 나옴 |
 
@@ -35,7 +48,7 @@
 - **D6**(기본 형상 경로, `form.base`, 스키마 2.2.0): 에셋 계획 승인 대기. 2.2.0으로 올릴 때의 영향은 `docs/scene-spec-mapping.md` 7.6절.
 - **WebGL 빌드**: Web Build Support 모듈 설치가 관리자 확인(UAC) 때문에 두 번 실패. 사람이 Unity Hub ▸ Installs ▸ 6000.0.85f2 ▸ Add modules ▸ Web Build Support를 설치한 뒤 `docs/validation/webgl/README.md` 8절로 다시 판정.
 - **헤드셋 실기**: 사람이 헤드셋을 쓰고 확인한 항목 없음(`docs/headset-checklist.md`).
-- G26·G27(러너가 `sha256Basis`·출처 값을 검사)은 판정만 되고 구현 전. G22의 "조절 항목 × 렌더러 조합이 화면에 반영되는지" 검사 테스트와 Unity 쪽 후보 덮어쓰기 교차 테스트가 없음.
+- G26·G27(러너가 `sha256Basis`·출처 값을 검사)은 이후 구현됨(CP9 반영, 8686fb7). G22의 "조절 항목 × 렌더러 조합이 화면에 반영되는지" 검사 테스트와 Unity 쪽 후보 덮어쓰기 교차 테스트가 없음.
 - `docs/validation/selection-flow/runs/`의 후보 PNG는 D7 전 플레이어로 찍은 것(S1·S4의 안개 후보가 옛 모양). 다시 만들지 않았음.
 - 실제 브라우저로 화면을 눌러 보지는 않았음(헤드리스 캡처와 HTTP API로만 확인).
 

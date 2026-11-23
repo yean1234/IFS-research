@@ -58,10 +58,10 @@ try:
     s = session(scs["S2_feeling_only"], f"SHOT-{prefix}-1")
     s.selection().start()
     shot(s.id, f"{prefix}_1_candidates_2x2")
-    # 1b) 후보 1개
+    # 1b) 구별되는 후보가 하나뿐 → 선택 단계 없이 바로 조절 화면(G34. 이전의 '후보 1개' 화면은 없어짐)
     s = session(scs["S3_all_said"], f"SHOT-{prefix}-1b")
     s.selection().start()
-    shot(s.id, f"{prefix}_1b_single_candidate")
+    shot(s.id, f"{prefix}_1b_skipped_to_adjust")
     if mode == "none":
         # 2) 조절 화면
         s = session(scs["S1_form_said"], f"SHOT-{prefix}-2")

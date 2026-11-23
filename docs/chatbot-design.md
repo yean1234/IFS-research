@@ -114,12 +114,12 @@
 
 ## 7. 후보 선택·조절·사전 측정 단계 (면담 밖, 2026-11-23)
 
-RQ V4 실험 프로토타입(`docs/prompts/prototype-v4-build.md`, 결정 G7–G28)에서 확정 뒤에 데스크톱 단계 셋을 더했습니다. 새 흐름 설정(`chatbot/config/v4.toml`, `[selection] enabled = true`)에서만 열리고, 기본 설정(`default.toml`·`pilot.toml`)의 화면과 API는 그대로입니다. 구현과 합성 시나리오 결과는 `docs/validation/selection-flow/README.md`에 있습니다.
+RQ V4 실험 프로토타입(`docs/prompts/prototype-v4-build.md`, 결정 G7–G28, 연구 책임자 결정 G31–G34)에서 확정 뒤에 데스크톱 단계 셋을 더했습니다. 새 흐름 설정(`chatbot/config/v4.toml`, `[selection] enabled = true`)에서만 열리고, 기본 설정(`default.toml`·`pilot.toml`)의 화면과 API는 그대로입니다. 구현과 합성 시나리오 결과는 `docs/validation/selection-flow/README.md`에 있습니다.
 
 | 단계 | 하는 일 | 코드 |
 | --- | --- | --- |
-| 4 후보 선택 | 규칙이 만든 형상 후보(최대 4개)를 미리보기로 보여 주고, 하나를 고르거나 [맞는 것이 없다] | `candidates.py`, `selection.py`, `web/stage.js` |
-| 5 조절 | 정해 둔 일곱 항목(형태·색·밝기·투명도·크기·질감·움직임)을 표의 값으로만 고침. 위치·거리 항목은 없음 | `selection.py`, 값 표 `shared/lexicon/candidate_values.v0.json` |
+| 4 후보 선택 | 규칙이 만든 형상 후보(최대 4개)를 미리보기로 보여 주고, 하나를 고르거나 [맞는 것이 없다]. 서로 구별되는 후보가 하나뿐이면 이 단계를 건너뜀(G34) | `candidates.py`, `selection.py`, `web/stage.js` |
+| 5 조절 | 정해 둔 일곱 항목(색·형태·밝기·투명도·크기·질감·움직임, 색이 맨 앞 — G31)을 표의 값으로만 고침. 위치·거리 항목은 없음 | `selection.py`, 값 표 `shared/lexicon/candidate_values.v1.json`(1.0.0) |
 | 6 사전 측정 | 지시문, 주 척도안 A 7문항, 두 평정 문항(모습 일치·대표성, G13), 1–7 또는 답하지 않기 | `selection.py`, 문구 `shared/protocol/selection_protocol.v0.json` |
 
 ### 7.1 면담 밖이라는 것
@@ -144,9 +144,11 @@ RQ V4 실험 프로토타입(`docs/prompts/prototype-v4-build.md`, 결정 G7–G
 | 한 것 | 내용 | 근거 |
 | --- | --- | --- |
 | 말한 속성은 후보마다 같음 | 후보끼리 다른 것은 비어 있던 자리와 낱말 해석이 갈리는 자리뿐. 말한 슬롯은 덮지 않음(갈림 축도 대상 슬롯이 비어 있을 때만) | G9·G18, `test_said_slots_never_change`, `test_property_said_slots_unchanged_over_slot_combinations` |
-| 색상은 후보에서 벌리지 않음 | 색을 말하지 않았으면 모든 후보가 중립 회색. 색은 조절에서 참여자가 직접 고를 때만 바뀜. 유도가 가장 크고 두 값으로 대표할 수 없는 차원 | G17, `test_hue_never_spread_g17` |
+| 색상·밝기는 후보에서 벌리지 않음 | 색을 말하지 않았으면 모든 후보가 중립 회색. 색과 밝기는 조절에서 참여자가 직접 고를 때만 바뀜. 조절 화면에서 색을 맨 앞에 두고, 색을 바꿨는지(`colorChanged`)를 기록 | G17·G31·G34, `test_hue_and_brightness_never_spread_g17_g34`, `test_color_changed_compares_first_and_last` |
 | 후보는 규칙이 만들고 모두 기록됨 | 생성기 버전·값 표 버전·표 sha256·정규화 spec 해시·축·후보 전체·표시 순서를 `candidates.json`·`selection.json`에 남김. 무엇을 보여 줬는지 나중에 그대로 다시 만들 수 있음 | G8·G14·G20 |
-| [맞는 것이 없다] | 어느 화면에서나 고를 수 있음. 고르면 기준 후보(0번)로 조절에 들어가고 선택은 "없음"으로 적어 이후 측정값에 "고르지 않음" 표시. 후보가 1개뿐이어도 [이 형상으로 진행 / 맞는 것이 없다] | G19·G23 |
+| [맞는 것이 없다] | 후보 화면에서 언제나 고를 수 있음. 고르면 기준 후보(0번)로 조절에 들어가고 선택은 "없음"으로 적어 이후 측정값에 "고르지 않음" 표시 | G23 |
+| 구별되지 않는 후보는 내밀지 않음 | 덮어쓰기를 얹은 최종 값이 같거나, 화면에서 차이가 안 나는 것으로 코드에서 확인한 키(정지 미리보기의 움직임)만 다른 후보는 하나만 남김. 남은 후보가 하나면 선택 화면 없이 조절로 가고 `selection.skipped = true`로 기록(G19의 "1개만 보여 주고 묻기"를 대체). 똑같아 보이는 것 중에 고르게 하지 않음 | G34, 구별 규칙 `ifs-distinct/1.0.0`(값 표 `distinctness`), `test_motion_only_open_collapses_to_one_and_skips`, `test_single_distinct_candidate_skips_selection` |
+| 모형이 없는 모양어의 출처를 따로 적음 | '길쭉'·'실'처럼 모형이 없는 모양어만 말했으면 형태 후보를 보여 주되, 고르면 출처를 `said_unrendered_chosen`, 고르지 않으면 `said_unrendered_default`로 적고 말한 낱말을 `sourceDetails.form.type.saidWords`에 남김. "시스템이 내민 형태를 고름"과 "빈 자리를 고름"이 기록에서 섞이지 않게 | G32, `test_unrendered_shape_chosen_gets_new_source` |
 | 표시 순서 순환 | 화면 순서를 세션 ID 해시로 돌리고, 보여 준 순서와 고른 후보의 화면 위치를 기록. 첫 자리 효과를 고르게 하고 나중에 볼 수 있게 함 | G20, `test_display_order_rotates_by_session_hash` |
 | 조절 항목 고정 | 일곱 항목, 값은 표의 단계로만(표 밖 항목·값은 422). 자유 입력 없음 | G10·G22 |
 | 위치·거리 제외 | 조절에도 후보에도 위치·거리가 없음. 덮어쓰기에 위치·거리 키가 들어가면 선택 기록 스키마와 헤드셋 러너가 둘 다 거부 | G10, `test_schema_blocks_distance_override` |
@@ -156,14 +158,15 @@ RQ V4 실험 프로토타입(`docs/prompts/prototype-v4-build.md`, 결정 G7–G
 ### 7.5 남는 위험 (숨기지 않고 적음)
 
 - **원칙 3과의 긴장.** 원칙 3은 면담자가 참여자가 쓰지 않은 묘사어·차원어·비유·예시·선택지를 내보내지 않게 합니다. 후보 단계는 면담 밖이지만, 시스템이 참여자가 쓰지 않은 형태와 값을 **화면으로** 내밉니다. 후보 넷은 사실상 그림으로 된 선택지입니다. 위 장치는 그 폭을 줄일 뿐 없애지 않습니다. 조절 패널의 항목 이름(형태·색·밝기·투명도·크기·질감·움직임)도 차원어입니다.
-- **어느 빈 자리를 보여 줄지는 시스템이 고릅니다.** 2×2의 두 차원은 고정 우선순위(형태 > 크기 > 투명도 > 밝기 > 질감 > 움직임, G16)가 정하고, 나머지 빈 자리는 기본값으로 남습니다(출처 "기본값"으로 기록).
-- **후보가 화면에서 구별되지 않을 수 있습니다.** 거의 검은 색에서는 밝기 후보 넷이 거의 같아 보였습니다(합성 시나리오 S5). G22의 "모든 조작이 화면에 반영된다"를 조절 항목 × 렌더러 조합마다 검사하는 테스트는 아직 없고, 값 표의 `adjustItems.availability`도 비어 있습니다.
+- **어느 빈 자리를 보여 줄지는 시스템이 고릅니다.** 2×2의 두 차원은 고정 우선순위(형태 > 크기 > 투명도 > 질감 > 움직임, G16·G34)가 정하고, 나머지 빈 자리는 기본값으로 남습니다(출처 "기본값"으로 기록).
+- **모형이 없는 모양어를 말한 사람에게 말한 모양과 다른 형태를 내밉니다(G32).** '길쭉한 게 있어요'라고 말한 사람에게 덩어리·안개 후보를 보여 줍니다. 이전 규칙(G29)은 이 자리를 말한 자리로 두어 내밀지 않았습니다. 연구 책임자가 "그려지는 것과 맞게 고르게 한다"를 택했고, 대신 출처를 `said_unrendered_*`로 따로 적어 분석에서 떼어 볼 수 있게 했습니다. 사전의 모양어 범주에는 '가장자리'·'경계'·'구멍' 같은 부분·구조 낱말도 있어서, 이런 낱말만 말한 경우에도 형태 후보가 열립니다(낱말을 가리지 않음 — 기록의 `saidWords`로 구분).
+- **후보가 화면에서 구별되지 않을 수 있습니다(일부만 막음).** 구별 규칙(G34)은 코드로 확인한 두 경우(최종 값이 같음, 정지 미리보기의 움직임)만 뺍니다. 안개·조각 형상에서 질감 0.5와 0.1이 구별되는지, 어두운 색에서 투명도·질감 차이가 보이는지는 그림으로 재지 않아 규칙에 넣지 않았습니다(값 표 `distinctness.unverified`). 밝기는 후보에서 빠져 S5에서 본 "어두운 색의 밝기 후보" 문제는 후보 쪽에서는 없어졌습니다. 조절 쪽 반영 검사(G22, `adjustItems.availability`)는 여전히 없습니다. 특히 image 미리보기는 움직임을 멈추고 그리므로 조절 화면에서 움직임을 바꿔도 그림이 바뀌지 않습니다.
 - **평정의 대상이 흔들립니다.** 대표성·모습 일치는 후보를 보고 고친 뒤에 받습니다. 높게 나와도 원래 떠올린 것과 같다는 뜻이 아닙니다. 사전 측정 지시문의 "조금 전 본 물체는 그것을 말씀하신 대로 나타낸 것입니다"는 고르고 고친 형상에는 맞지 않을 수 있습니다(⚠ 사람이 정할 것, `docs/morning-todo.md`).
 - **사람에게 확인하지 않았습니다.** 이 단계가 심상을 실제로 얼마나 끌어가는지는 합성 시나리오로 알 수 없습니다. 연구팀 내부 시스템 점검(`docs/internal-trial-guide.md`)은 동작 확인이지 이 위험의 측정이 아닙니다(X80).
 
 ### 7.6 새 문구와 표시 방식
 
-- 화면 문구 29개(형상 안내, 후보 안내, 후보 1개 안내, 버튼, [맞는 것이 없다], 조절 안내, 항목 이름 일곱, 사전 측정 지시문·척도·문항 9개·"답하지 않기", 끝 안내)가 모두 `status: draft`이고 문구마다 `source`가 있습니다(`shared/protocol/selection_protocol.v0.json`, protocolVersion 0.1.0). 두 평정 문항은 지시문 G13의 문장을 글자 그대로 쓰고, A1–A7은 `docs/rq-v4-questionnaire-draft.md`와 글자 그대로 같습니다(`test_protocol_texts_match_sources_verbatim`). 치료·내담자·진단 표현은 없습니다(`test_protocol_has_no_therapy_terms`).
+- 화면 문구 27개(형상 안내, 후보 안내, 버튼, [맞는 것이 없다], 조절 안내, 항목 이름 일곱, 사전 측정 지시문·척도·문항 9개·"답하지 않기", 끝 안내)가 모두 `status: draft`이고 문구마다 `source`가 있습니다(`shared/protocol/selection_protocol.v0.json`, protocolVersion 0.2.0). 0.2.0에서 후보 1개 화면의 문구 두 개(`single_candidate_intro`·`proceed_single_button`)를 뺐습니다(G34로 그 화면이 없어짐, 0.1.0 원문은 커밋 `1051d48`). 남은 문구의 글은 바꾸지 않았습니다. 두 평정 문항은 지시문 G13의 문장을 글자 그대로 쓰고, A1–A7은 `docs/rq-v4-questionnaire-draft.md`와 글자 그대로 같습니다(`test_protocol_texts_match_sources_verbatim`). 치료·내담자·진단 표현은 없습니다(`test_protocol_has_no_therapy_terms`).
 - 형상 안내 문구는 지시문 6절의 초안 "당신이 말한 것을 바탕으로 만든, 그것을 대신하는 형상입니다"입니다(⚠ 사람이 정할 것).
-- 초안임을 알리는 방식은 러너의 기존 방식(X35)과 같습니다. 화면마다 맨 위에 "초안 문구 사용 중 — 이 화면의 문구 29개가 status draft(IRB·연구팀 검토 전)입니다" 줄, 서버 시작 로그와 `/api/health`·연구자 화면의 런타임 경고, 세션 로그의 `selection:candidates` 사건과 `selection.json`·`premeasure.json`의 `protocol.draftCount`·`draftKeys`. `[selection] require_spec_phrases = true`로 두면 초안 문구가 있을 때 후보 단계를 시작하지 않습니다(`test_require_spec_phrases_refuses_start`).
+- 초안임을 알리는 방식은 러너의 기존 방식(X35)과 같습니다. 화면마다 맨 위에 "초안 문구 사용 중 — 이 화면의 문구 27개가 status draft(IRB·연구팀 검토 전)입니다" 줄, 서버 시작 로그와 `/api/health`·연구자 화면의 런타임 경고, 세션 로그의 `selection:candidates` 사건과 `selection.json`·`premeasure.json`의 `protocol.draftCount`·`draftKeys`. `[selection] require_spec_phrases = true`로 두면 초안 문구가 있을 때 후보 단계를 시작하지 않습니다(`test_require_spec_phrases_refuses_start`).
 - 문구를 확정하면 `status`를 바꾸고 출처를 적은 뒤 프로토콜 버전을 올립니다(AGENTS.md 7).
