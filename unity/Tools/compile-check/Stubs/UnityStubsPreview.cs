@@ -21,6 +21,12 @@ namespace UnityEditor
             public static string template { get; set; }
             public static bool dataCaching { get; set; }
         }
+
+        public static class SplashScreen
+        {
+            public static bool show { get; set; }
+            public static bool showUnityLogo { get; set; }
+        }
     }
 
     public static class EditorUserBuildSettings
