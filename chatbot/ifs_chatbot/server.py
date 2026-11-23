@@ -63,6 +63,14 @@ class AdjustStep(BaseModel):
     value: Any = Field(..., description="표의 값(색은 견본 id, 형태·움직임은 이름, 나머지는 정해진 단계의 숫자)")
 
 
+class PreviewReport(BaseModel):
+    event: str = Field(..., max_length=16, description="shown(그 단계에서 실제로 그림) | fallback(그 방식으로 그리지 못함)")
+    mode: str = Field(..., max_length=8, description="webgl | image | none")
+    stage: str | None = Field(None, max_length=16, description="selecting | adjusting")
+    reason: str | None = Field(None, max_length=300)
+    webgl: dict | None = Field(None, description="renderer·vendor·graphicsDevice·version(문자열), readyMs·warmupMs(숫자)만 적는다")
+
+
 class PremeasureAnswers(BaseModel):
     responses: dict[str, Any] = Field(..., description="문항 id → 1–7 정수 또는 null(답하지 않음)")
 
@@ -230,13 +238,20 @@ def create_app(cfg: Config | None = None, runtime: Runtime | None = None, warmup
         """image 모드: 후보 id 또는 current(조절 중 지금 상태)의 미리보기 PNG. 플레이어가 실패하면 none으로 바뀌고 503."""
         f = flow(sid)
         overrides = sel_run(f.overrides_for, target)
-        if rt.preview.mode != "image":
-            raise HTTPException(409, f"미리보기 모드가 image가 아닙니다(지금 {rt.preview.mode}: {rt.preview.reason}).")
+        if f.preview_mode != "image":
+            raise HTTPException(409, f"이 세션의 미리보기 방식이 image가 아닙니다(지금 {f.preview_mode}: {f.preview_reason}).")
         data = rt.preview.render(f.spec, overrides)
         if data is None:
             f.note_preview_fallback()
             raise HTTPException(503, f"미리보기를 그리지 못해 글 요약으로 바꿉니다: {rt.preview.reason}")
         return Response(content=data, media_type="image/png", headers={"Cache-Control": "no-store"})
+
+    @app.post("/api/sessions/{sid}/preview/client")
+    def preview_client(sid: str, body: PreviewReport):
+        """브라우저(stage.js)가 실제로 쓴 미리보기 방식(shown)과 실패(fallback)를 알린다. fallback이면 이 세션만
+        webgl → image(예비 플레이어가 있으면) → none(글 요약)으로 내려가고 selection.json·세션 로그에 남는다."""
+        f = flow(sid)
+        return sel_run(f.client_preview, body.event, body.mode, body.stage, body.reason, body.webgl)
 
     @app.exception_handler(RuntimeError)
     def runtime_error(_request, exc: RuntimeError):
@@ -269,7 +284,7 @@ def main(argv: list[str] | None = None) -> None:
     ap = argparse.ArgumentParser(prog="python -m ifs_chatbot.server", description="IFS 심상화 면담 서버")
     ap.add_argument("--config", default=os.environ.get("IFS_CHATBOT_CONFIG"),
                     help="config 이름(default|pilot|v4) 또는 .toml 경로. v4 = 실험 프로토타입 흐름(매퍼 v2, 면담 뒤 "
-                         "후보 선택·조절·사전 측정 단계, 미리보기 image). 예: --config v4 --backend offline --condition static")
+                         "후보 선택·조절·사전 측정 단계, 미리보기 webgl → image → 글 요약). 예: --config v4 --backend offline --condition static")
     ap.add_argument("--backend", choices=["ollama", "offline"], help="LLM 백엔드 덮어쓰기")
     ap.add_argument("--model", help="Ollama 모델 덮어쓰기 (예: gemma4:31b)")
     ap.add_argument("--condition", choices=["chatbot", "static"], help="기본 조건")

@@ -1,12 +1,15 @@
-"""형상 미리보기 어댑터 (D5, 결정 G12 → 메인 세션 판정 G25: WebGL 모듈을 설치하지 못해 지금은 "image" 모드).
+"""형상 미리보기 어댑터 (D5, 결정 G12·G25). v4 설정은 "webgl"이고, 안 되면 "image"(G25 경로) → "none"(글 요약) 순으로 내려간다.
 
 모드(config [preview] mode):
 - "image": Unity Windows 미리보기 플레이어(IFSPreview.exe, PreviewQueue)를 상주시켜 spec JSON + 덮어쓰기 JSON을 넣고
            PNG를 받는다. 플레이어는 저장소 밖 빌드 폴더(설정값 image_player). 서버 시작 때(start_on_launch) 또는 첫 요청 때 띄운다.
            플레이어가 없거나, 뜨지 않거나, 요청 중에 죽으면 "none"으로 자동 대체하고 그 사실을 info()·세션 로그·화면에 남긴다.
            image_player = "fake"는 테스트용 가짜 렌더러(서버 안에서 그린 PNG — Unity 렌더가 아님)다.
-- "webgl": 로컬에서 내보낸 Unity WebGL 빌드(webgl_dir/index.html)를 웹 화면 iframe에 띄운다. 인터페이스만 있다
-           (브리지: window.ifsPreview.load(spec) · applyOverrides(obj) · capture(...)). 폴더가 없으면 "none".
+- "webgl": 로컬에서 내보낸 Unity WebGL 빌드(webgl_dir/index.html)를 웹 화면 iframe에 띄운다(web/stage.js 어댑터,
+           브리지: window.ifsPreview.load(spec) · applyOverrides(obj) · capture(...) · setFrozen(bool)).
+           image_player가 있으면 그것을 예비로 준비해 둔다(띄우지는 않음). 서버 쪽에서 빌드 폴더가 없으면 처음부터 image
+           (예비도 없으면 none). 브라우저 쪽에서 WebGL2가 없거나 Unity가 뜨지 않거나 요청이 실패하면 stage.js가 알리고
+           그 세션만 image(예비가 없거나 실패했으면 none)로 내려간다(selection.SelectionFlow.client_preview).
 - "none":  미리보기 없이 후보의 속성 요약 글만(테스트·시나리오용).
 외부로 나가는 요청이 없다(원칙 5). PNG와 요청 폴더는 참여자 자료에서 나온 것이라 git 밖(<log_dir>/preview-queue).
 """
@@ -230,7 +233,9 @@ class UnityQueueRenderer:
 
 # ── 서비스 ──────────────────────────────────────────────────────────────────
 class PreviewService:
-    """설정을 읽어 실제로 쓸 모드를 정하고, 렌더 실패 시 none으로 대체한다."""
+    """설정을 읽어 실제로 쓸 모드를 정하고, 렌더 실패 시 none으로 대체한다.
+    mode = 서버가 처음 내보내는 모드(세션마다 실제로 쓴 모드는 SelectionFlow가 따로 든다). image_ok = image 경로를
+    지금 쓸 수 있는가(webgl 모드에서는 예비 경로)."""
 
     def __init__(self, cfg, log_dir: Path, base_dir: Path, defaults: dict):
         self.cfg = cfg
@@ -241,6 +246,8 @@ class PreviewService:
         self.reason: str | None = None
         self.renderer = None
         self.webgl_dir: Path | None = None
+        self.image_failed = False
+        self.last_image_error: str | None = None
         self.events: list[dict] = []
         self._cache: OrderedDict[str, bytes] = OrderedDict()
         self._lock = threading.Lock()
@@ -249,41 +256,68 @@ class PreviewService:
             q = Path(p)
             return q if q.is_absolute() else (base_dir / q).resolve()
 
-        if cfg.mode == "webgl":
-            d = resolve(cfg.webgl_dir) if cfg.webgl_dir else None
-            if d is not None and (d / "index.html").exists():
-                self.mode, self.webgl_dir = "webgl", d
-            else:
-                self.reason = f"WebGL 빌드가 없음({d or '경로 미설정'}) → none"
-        elif cfg.mode == "image":
+        def image_renderer():
+            """(렌더러 | None, 없을 때 이유). 띄우지는 않는다."""
             player = cfg.image_player
             if player == "fake":
-                self.mode, self.renderer = "image", FakeRenderer(defaults)
-            elif player and resolve(player).exists():
+                return FakeRenderer(defaults), None
+            if player and resolve(player).exists():
                 exe = resolve(player)
                 cmd = [sys.executable, str(exe)] if exe.suffix == ".py" else [str(exe)]
                 qdir = resolve(cfg.queue_dir) if cfg.queue_dir else Path(log_dir) / "preview-queue"
-                self.mode = "image"
-                self.renderer = UnityQueueRenderer(cmd, qdir, cfg.width, cfg.height,
-                                                   cfg.start_timeout_s, cfg.request_timeout_s)
-                if cfg.start_on_launch:
-                    try:
-                        self.renderer.start()
-                    except PreviewError as exc:
-                        self._fail(str(exc))
+                return UnityQueueRenderer(cmd, qdir, cfg.width, cfg.height, cfg.start_timeout_s, cfg.request_timeout_s), None
+            return None, f"미리보기 플레이어가 없음({player or '경로 미설정'})"
+
+        if cfg.mode == "webgl":
+            d = resolve(cfg.webgl_dir) if cfg.webgl_dir else None
+            self.renderer, why_no_image = image_renderer()       # 예비(image) 경로. 없으면 브라우저 실패 때 none
+            if d is not None and (d / "index.html").exists():
+                self.mode, self.webgl_dir = "webgl", d
+                if self.renderer is None:
+                    self._event("no_image_fallback", f"{why_no_image} — WebGL이 안 되면 글 요약으로 내려감")
             else:
-                self.reason = f"미리보기 플레이어가 없음({player or '경로 미설정'}) → none"
-        if self.reason:
+                to = "image" if self.renderer is not None else "none"
+                self.mode = to
+                self.reason = (f"WebGL 빌드가 없음({cfg.webgl_dir or '경로 미설정'}/index.html) → {to}"
+                               + ("" if self.renderer is not None else f"; {why_no_image}"))
+        elif cfg.mode == "image":
+            self.renderer, why_no_image = image_renderer()
+            if self.renderer is not None:
+                self.mode = "image"
+            else:
+                self.reason = f"{why_no_image} → none"
+        if self.mode == "image" and cfg.start_on_launch and isinstance(self.renderer, UnityQueueRenderer):
+            try:
+                self.renderer.start()
+            except PreviewError as exc:
+                self._fail(str(exc))
+        if self.reason and not self.image_failed:
             self._event("fallback", self.reason)
+
+    @property
+    def image_ok(self) -> bool:
+        """image 경로(상주 플레이어 PNG)를 지금 쓸 수 있는가. 한 번 실패하면 이 서버 프로세스에서는 다시 쓰지 않는다."""
+        return self.renderer is not None and not self.image_failed
+
+    def fallback_target(self, current: str) -> str:
+        """세션이 current 모드에서 실패했을 때 내려갈 모드: webgl → image(쓸 수 있으면) → none."""
+        if current == "webgl" and self.image_ok:
+            return "image"
+        return "none"
 
     def _event(self, kind: str, detail: str) -> None:
         self.events.append({"at": time.strftime("%Y-%m-%dT%H:%M:%S"), "kind": kind, "detail": detail})
         log.warning("[preview] %s: %s", kind, detail)
 
     def _fail(self, detail: str) -> None:
-        self.mode = "none"
-        self.reason = f"미리보기 플레이어 오류 → none: {detail}"
-        self._event("fallback", self.reason)
+        self.image_failed = True
+        why = f"미리보기 플레이어 오류 → none: {detail}"
+        self.last_image_error = why
+        if self.mode == "image":           # webgl이 기본이면 기본은 그대로 두고 예비(image)만 닫힘
+            self.mode, self.reason = "none", why
+            self._event("fallback", why)
+        else:
+            self._event("image_fallback_lost", why)
         if self.renderer is not None:
             try:
                 self.renderer.close()
@@ -291,8 +325,8 @@ class PreviewService:
                 pass
 
     def render(self, spec: dict, overrides: dict) -> bytes | None:
-        """PNG 바이트. image 모드가 아니거나 실패하면 None(실패하면 이후 none으로 고정)."""
-        if self.mode != "image" or self.renderer is None:
+        """PNG 바이트. image 경로를 쓸 수 없거나 실패하면 None(실패하면 이후 image 경로는 닫힘)."""
+        if not self.image_ok:
             return None
         spec_json = json.dumps(spec, ensure_ascii=False)
         key = sha256_text(spec_json + "|" + canonical(overrides or {}))
@@ -314,7 +348,10 @@ class PreviewService:
     def info(self) -> dict:
         return {"requested": self.requested, "mode": self.mode, "reason": self.reason,
                 "webglUrl": "/preview/webgl/index.html" if self.mode == "webgl" else None,
-                "renderer": self.renderer.info() if self.renderer is not None and self.mode == "image" else None,
+                "fallback": self.fallback_target(self.mode) if self.mode == "webgl" else None,
+                "webglReadyTimeoutMs": int(self.cfg.webgl_ready_timeout_s * 1000),
+                "webglRequestTimeoutMs": int(self.cfg.webgl_request_timeout_s * 1000),
+                "renderer": self.renderer.info() if self.renderer is not None and self.image_ok else None,
                 "events": list(self.events[-10:])}
 
     def close(self) -> None:

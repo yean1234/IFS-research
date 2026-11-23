@@ -1,6 +1,6 @@
 {
   "protocolId": "ifs-selection-flow",
-  "protocolVersion": "0.2.0",
+  "protocolVersion": "0.3.0",
   "status": "draft",
   "date": "2026-11-23",
   "description": "면담 뒤 데스크톱 단계(4 후보 선택 · 5 조절 · 6 사전 측정)의 고정 문구. docs/prompts/prototype-v4-build.md 1절 흐름 표, 결정 G10·G13·G19·G23. 모든 문구는 초안(status draft)이며 IRB·연구팀 검토 전이다. 화면과 기록은 초안 문구를 쓰고 있다는 사실을 알린다(결정 X35 방식: 화면 맨 위 경고 줄, 기록의 draftCount·draftKeys). elicitation_protocol 파일은 바꾸지 않았다.",
@@ -14,6 +14,9 @@
     "questionnaire": "docs/rq-v4-questionnaire-draft.md 3.1–3.3절(2026-11-22)"
   },
   "changes": [
+    {"version": "0.3.0", "date": "2026-11-23", "status": "draft",
+     "summary": "조절 화면 문구 하나(adjust_item_unavailable)를 더함. 다른 문구의 글은 바꾸지 않음.",
+     "reason": "결정 G22('반영되지 않는 조합은 화면에서 그 항목을 끈다')와 G12 WebGL 연결: 미리보기가 정지 그림(image, G25 예비 경로)으로 내려가면 움직임을 바꿔도 그림이 같으므로 그 항목을 끄고, 꺼 둔 이유를 그 줄에 알린다. 어느 항목인지·어떤 값인지는 말하지 않는다(묘사어를 내지 않음)."},
     {"version": "0.2.0", "date": "2026-11-23", "status": "draft",
      "summary": "후보 1개 화면 문구 두 개(single_candidate_intro·proceed_single_button)를 뺌. 조절 항목 이름의 표시 순서는 값 표(candidate_values.v1.json adjustItems.order)를 따라 색이 맨 앞(G31). 남은 문구의 글은 바꾸지 않음.",
      "reason": "결정 G34: 구별되는 후보가 하나만 남으면 선택 단계 없이 조절로 넘어간다(G19의 '후보 1개만 보여 주고 묻기'를 대체). 그 화면이 없어져 두 문구를 쓰지 않는다. 0.1.0의 문구 원문은 git 기록(커밋 1051d48)에 있다."},
@@ -52,7 +55,13 @@
       "status": "draft",
       "source": "자작(2026-11-23)"
     },
-    "premeasure_submit_button": {"text": "제출", "status": "draft", "source": "자작(2026-11-23)"}
+    "premeasure_submit_button": {"text": "제출", "status": "draft", "source": "자작(2026-11-23)"},
+    "adjust_item_unavailable": {
+      "text": "이 화면에서는 바꿔도 보이지 않아 꺼 두었습니다.",
+      "status": "draft",
+      "source": "자작(2026-11-23, WebGL 연결). 결정 G22",
+      "note": "미리보기가 정지 그림일 때 움직임 줄 아래에 붙는다(selection.STILL_PREVIEW_UNAVAILABLE). 항목 이름·값 이름을 다시 쓰지 않는다."
+    }
   },
 
   "adjustItemLabels": {

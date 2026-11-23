@@ -98,6 +98,14 @@ def swatch_hex(sw: dict) -> str:
     return "#%02x%02x%02x" % tuple(int(round(c * 255)) for c in (r, g, b))
 
 
+# 미리보기 방식별로 화면에 반영되지 않는 조절 항목(G22: 반영되지 않는 조합은 화면에서 그 항목을 끈다).
+# image = 상주 플레이어의 정지 PNG(PreviewQueue가 그리기 전에 FreezeMotion) → 움직임 값을 바꿔도 그림이 같다.
+# webgl 조절 화면은 iframe 안에서 움직임이 재생되고, none(글 요약)은 요약 글에 motion.type이 바뀌어 나온다.
+STILL_PREVIEW_UNAVAILABLE = {"image": {"motion": "still_image_preview"}}
+PREVIEW_CLIENT_EVENTS = ("shown", "fallback")
+PREVIEW_STAGES = ("selecting", "adjusting")
+
+
 def _same_value(a, b) -> bool:
     """조절 항목 값 비교. 색은 h·s·l만 본다(견본 id 유무는 무시)."""
     if isinstance(a, dict) and isinstance(b, dict):
@@ -139,8 +147,23 @@ def ui_config(protocol: SelectionProtocol, table: dict, preview_info: dict, enab
         "premeasure": {"instruction": pm["instruction"]["text"], "scale": {k: pm["scale"][k] for k in ("min", "max", "anchors")},
                        "skipLabel": pm["skipLabel"]["text"], "items": [{"id": i["id"], "text": i["text"]} for i in pm["items"]]},
         "preview": preview_info,
+        "previewWarmup": preview_warmup(table),
         "table": {"tableVersion": table["tableVersion"]},
     }
+
+
+def preview_warmup(table: dict) -> list[dict]:
+    """WebGL 준비 단계에서 한 번씩 미리 그릴 덮어쓰기(형태 항목의 값마다, 불투명·반투명 한 번씩).
+    브라우저는 셰이더를 처음 쓰는 렌더에서 컴파일하느라 0.2–0.8초 멈추므로(webgl README 10.4) 후보를 보이기 전에 치른다.
+    화면에 보이지 않고 기록하지 않는다."""
+    it = table["adjustItems"]["items"]["form"]
+    vo = it.get("valueOverrides") or {}
+    out = []
+    for v in it["values"]:
+        base = dict(vo[v]) if v in vo else {it["key"]: v}
+        out.append(base)
+        out.append({**base, "material.opacity": 0.5})
+    return out
 
 
 # ── 흐름 ────────────────────────────────────────────────────────────────────
@@ -161,6 +184,9 @@ class SelectionFlow:
         self.current: dict = {}          # 지금 미리보기에 얹는 덮어쓰기(평평한 객체)
         self.premeasure: dict | None = None
         self._preview_alerted = False
+        # 이 세션이 지금 쓰는 미리보기 방식(서버 기본에서 시작해 브라우저·플레이어 실패 때 webgl → image → none으로 내려감)
+        self.preview_mode: str = rt.preview.mode
+        self.preview_reason: str | None = rt.preview.reason
         self._spec_blockers: list[str] = []
         self.extras: dict = self._said_value_extras()
 
@@ -284,7 +310,8 @@ class SelectionFlow:
                 "generator": {"generatorVersion": self.cands["generatorVersion"], "tableVersion": self.cands["tableVersion"],
                               "tableSha256": self.cands["tableSha256"]},
                 "protocol": {k: pinfo[k] for k in ("protocolId", "protocolVersion", "draftCount", "draftKeys")},
-                "preview": {k: self.rt.preview.info()[k] for k in ("requested", "mode", "reason")},
+                "preview": self._preview_record(),
+                "adjustUnavailable": self._unavailable_record(now),
                 "candidates": self.cands, "candidatesShown": list(self.cands["displayOrder"]), "candidatesShownAt": now,
                 "selection": None,
                 "adjustments": {"events": [], "items": {}, "finishedAt": None},
@@ -315,7 +342,7 @@ class SelectionFlow:
                 "tableVersion": self.cands["tableVersion"], "candidateCount": len(self.cands["candidates"]),
                 "axes": [{"slot": a["slot"], "reason": a["reason"]} for a in self.cands["axes"]],
                 "displayOrder": self.cands["displayOrder"], "draftCount": pinfo["draftCount"],
-                "draftKeys": pinfo["draftKeys"], "previewMode": self.data["preview"]["mode"],
+                "draftKeys": pinfo["draftKeys"], "previewMode": self.preview_mode,
                 "sha256Basis": basis, "adjustValueExtras": sorted(self.extras),
                 "selectionStep": self.cands["selectionStep"], "distinctRemoved": len(self.cands["distinct"]["removed"]),
                 "distanceFloor": self.data["distanceFloor"]})
@@ -380,6 +407,10 @@ class SelectionFlow:
     def adjust(self, item: str, value) -> dict:
         with self.lock:
             self._require("adjusting")
+            off = self.unavailable_items()
+            if item in off:
+                raise SelectionError(f"이 미리보기 방식({self.preview_mode})에서는 '{item}' 항목이 화면에 반영되지 않아 "
+                                     f"꺼 두었습니다({off[item]}, G22).")
             keys = self._validate(item, value)
             before = self._item_value(item, effective_params(self.spec, self.defaults, self.current))
             self.current.update(keys)
@@ -481,7 +512,9 @@ class SelectionFlow:
             self._save()
             self._log_event("selection:adjusted", {
                 "finalOverrides": self.data["finalOverrides"], "sourceCounts": self.data["sourceCounts"],
-                "adjustCounts": {k: v["count"] for k, v in self.data["adjustments"]["items"].items()}})
+                "adjustCounts": {k: v["count"] for k, v in self.data["adjustments"]["items"].items()},
+                "adjustUnavailable": sorted(self.data.get("adjustUnavailable") or {}),
+                "previewMode": self.preview_mode})
             return self.view()
 
     def final(self) -> dict:
@@ -567,16 +600,109 @@ class SelectionFlow:
                 raise SelectionInvalid(f"후보가 아닙니다: {target}")
             return dict(c["overrides"])
 
-    def note_preview_fallback(self) -> None:
-        """image 모드가 실패해 none으로 바뀌었을 때 한 번 세션 로그 알림으로 남긴다."""
-        if self._preview_alerted:
+    def unavailable_items(self) -> dict:
+        """지금 미리보기 방식에서 화면에 반영되지 않아 끈 조절 항목 {항목: 이유}(G22)."""
+        return dict(STILL_PREVIEW_UNAVAILABLE.get(self.preview_mode, {}))
+
+    def _unavailable_record(self, at: str) -> dict:
+        prev = (self.data or {}).get("adjustUnavailable") or {}
+        return {k: prev.get(k) if prev.get(k, {}).get("reason") == why else {"reason": why, "previewMode": self.preview_mode,
+                                                                                "since": at, "stage": self.stage or "selecting"}
+                for k, why in self.unavailable_items().items()}
+
+    def _preview_record(self) -> dict:
+        """selection.json의 preview: requested·mode·reason(0.1·0.2 스키마 필드) + 이 세션에서 실제로 쓴 방식."""
+        prev = (self.data or {}).get("preview") or {}
+        if not prev:
+            # 서버 쪽에서 이미 내려간 채로 시작(빌드 폴더·플레이어 없음 등): 그것도 fallbacks 첫 항목으로 남긴다
+            req, start = self.rt.preview.requested, self.rt.preview.mode
+            first = [] if req == start or req == "none" else [{"at": now_iso(), "from": req, "to": start,
+                                                                 "reason": (self.rt.preview.reason or "")[:300],
+                                                                 "source": "server", "stage": None}]
+            return {"requested": req, "mode": self.preview_mode, "reason": self.preview_reason, "serverMode": start,
+                    "shown": {}, "fallbacks": first, "webgl": None}
+        return {"requested": self.rt.preview.requested, "mode": self.preview_mode, "reason": self.preview_reason,
+                "serverMode": prev.get("serverMode", self.rt.preview.mode),
+                "shown": prev.get("shown", {}), "fallbacks": prev.get("fallbacks", []), "webgl": prev.get("webgl")}
+
+    def _downgrade(self, to: str, reason: str, source: str, stage: str | None) -> None:
+        """이 세션의 미리보기 방식을 내린다(webgl → image → none). 기록·세션 로그 알림을 남긴다. lock 안에서 부른다."""
+        frm = self.preview_mode
+        if to == frm:
             return
-        self._preview_alerted = True
-        self.s._alert("preview_fallback", (self.rt.preview.reason or "미리보기 대체")[:300], None)
+        at = now_iso()
+        self.preview_mode, self.preview_reason = to, f"{frm} → {to}: {reason}"[:300]
+        rec = {"at": at, "from": frm, "to": to, "reason": reason[:300], "source": source, "stage": stage or self.stage}
+        self.s._alert("preview_fallback", self.preview_reason, None)
         if self.data is not None:
-            self.data["preview"] = {k: self.rt.preview.info()[k] for k in ("requested", "mode", "reason")}
+            pv = self._preview_record()
+            pv["fallbacks"] = pv["fallbacks"] + [rec]
+            self.data["preview"] = pv
+            self.data["adjustUnavailable"] = self._unavailable_record(at)
             self._save()
+            self.s.log.add_event("selection:preview", {"event": "fallback", **rec,
+                                                       "adjustUnavailable": sorted(self.data["adjustUnavailable"])})
         self.s._save()
+
+    def note_preview_fallback(self) -> None:
+        """image 경로(상주 플레이어)가 실패했을 때: 이 세션을 none으로 내리고 세션 로그 알림으로 남긴다."""
+        with self.lock:
+            if self.preview_mode != "image":
+                return
+            self._downgrade("none", self.rt.preview.last_image_error or self.rt.preview.reason or "미리보기 플레이어 실패",
+                            "server", None)
+
+    def client_preview(self, event: str, mode: str, stage: str | None, reason: str | None = None,
+                       webgl: dict | None = None) -> dict:
+        """브라우저(stage.js)가 알린 미리보기 결과.
+        shown    = 그 단계에서 mode로 실제로 그렸음(webgl이면 렌더러 문자열 등 webgl 정보를 함께 받음).
+        fallback = mode(webgl·image)로 그리지 못함 → 이 세션을 다음 방식으로 내린다(webgl → image(쓸 수 있으면) → none).
+        기록하는 것은 방식·이유·브라우저 WebGL 렌더러 문자열(GPU 이름)·Unity 그래픽 장치 문자열·시간뿐이다(참여자 식별 정보 없음)."""
+        if event not in PREVIEW_CLIENT_EVENTS:
+            raise SelectionInvalid(f"모르는 미리보기 알림: {event!r} (가능: {', '.join(PREVIEW_CLIENT_EVENTS)})")
+        if mode not in ("webgl", "image", "none"):
+            raise SelectionInvalid(f"모르는 미리보기 방식: {mode!r}")
+        if stage is not None and stage not in PREVIEW_STAGES:
+            raise SelectionInvalid(f"모르는 단계: {stage!r}")
+        with self.lock:
+            if self.data is None:
+                raise SelectionError("후보가 아직 없습니다.")
+            if event == "fallback":
+                if mode == self.preview_mode and mode != "none":
+                    self._downgrade(self.rt.preview.fallback_target(mode) if mode == "webgl" else "none",
+                                    reason or "원인 미상", "client", stage)
+                return self.view()
+            # shown: 지금 세션 방식과 같을 때만 적는다(이미 내려간 뒤 늦게 온 알림은 버림)
+            if mode != self.preview_mode:
+                return self.view()
+            pv = self._preview_record()
+            changed = False
+            if stage is not None:
+                seen = list(pv["shown"].get(stage, []))
+                if mode not in seen:
+                    seen.append(mode)
+                    pv["shown"] = {**pv["shown"], stage: seen}
+                    changed = True
+            if mode == "webgl" and webgl and pv["webgl"] is None:
+                keep = {}
+                for k in ("renderer", "vendor", "graphicsDevice", "version"):
+                    v = webgl.get(k)
+                    if isinstance(v, str) and v:
+                        keep[k] = v[:200]
+                for k in ("readyMs", "warmupMs"):
+                    v = webgl.get(k)
+                    if isinstance(v, (int, float)) and not isinstance(v, bool):
+                        keep[k] = round(float(v), 1)
+                keep["at"] = now_iso()
+                pv["webgl"] = keep
+                changed = True
+            if changed:
+                self.data["preview"] = pv
+                self._save()
+                self.s.log.add_event("selection:preview", {"event": "shown", "mode": mode, "stage": stage,
+                                                           "webgl": pv["webgl"] if mode == "webgl" else None})
+                self.s._save()
+            return self.view()
 
     # ── 화면용 ──────────────────────────────────────────────────────────────
     def summary(self, overrides: dict) -> list[str]:
@@ -587,11 +713,23 @@ class SelectionFlow:
         return [f"{k} = {round(p[k], 4) if isinstance(p[k], float) else p[k]}" + (" *" if k in overrides else "")
                 for k in keys]
 
+    def preview_info(self) -> dict:
+        """화면용 미리보기 정보: 서버 설정(rt.preview.info) 위에 이 세션의 방식을 얹는다."""
+        info = self.rt.preview.info()
+        info["serverMode"] = info["mode"]
+        info["mode"] = self.preview_mode
+        info["reason"] = self.preview_reason
+        if self.preview_mode != "webgl":
+            info["webglUrl"] = None
+        info["fallback"] = self.rt.preview.fallback_target(self.preview_mode) if self.preview_mode == "webgl" else None
+        return info
+
     def view(self) -> dict:
         with self.lock:
             pinfo = self.protocol.info()
-            out = {"sessionId": self.s.id, "stage": self.stage, "preview": self.rt.preview.info(),
-                   "draftCount": pinfo["draftCount"], "draftKeys": pinfo["draftKeys"]}
+            out = {"sessionId": self.s.id, "stage": self.stage, "preview": self.preview_info(),
+                   "draftCount": pinfo["draftCount"], "draftKeys": pinfo["draftKeys"],
+                   "unavailableItems": self.unavailable_items()}
             if self.cands is None:
                 return out
             by_id = {c["id"]: c for c in self.cands["candidates"]}

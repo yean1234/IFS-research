@@ -4,11 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{{ PRODUCT_NAME }}}</title>
+  <link rel="icon" href="data:,">
   <!-- IFS 형상 미리보기(WebGL, D4·결정 G12). 외부 CDN·글꼴·분석 스크립트를 쓰지 않는다(AGENTS.md 원칙 5).
        같은 출처의 Build/ 파일만 읽는다. 챗봇 서버가 이 폴더를 그대로 내보내면 된다(압축 끔 → 별도 헤더 불필요).
        페이지 API: window.ifsPreview.load(spec) · applyOverrides(obj) · capture({id,width,height,background}) · setAutoRotate(deg) · setFrozen(bool)
        — 모두 Promise. 알림은 window 'ifs-preview' 이벤트(detail = {kind, payload}).
-       주소 인자: ?spec=<같은 출처 JSON 경로>(준비되면 그 spec을 로드), ?rotate=<°/초> -->
+       주소 인자: ?spec=<같은 출처 JSON 경로>(준비되면 그 spec을 로드), ?rotate=<°/초>
+       챗봇 연결(stage.js): Unity를 시작하지 못하면 ready가 거부된다(→ 챗봇이 image로 내려감). unityInfo = Unity 'ready' 알림
+       (graphicsDevice 등), contextLost = WebGL 컨텍스트를 잃음(그 뒤 요청은 모두 거부). -->
   <style>
     html, body { margin: 0; padding: 0; background: #bdbdbd; height: 100%; overflow: hidden; }
     #unity-canvas { display: block; width: 100%; height: 100%; background: #bdbdbd; }
@@ -26,14 +29,15 @@
     var t0 = performance.now();
     var instance = null;
     var pending = [];          // 응답을 기다리는 요청(순서대로 처리된다: SendMessage는 동기 호출)
-    var readyResolve;
-    var ready = new Promise(function (r) { readyResolve = r; });
+    var readyResolve, readyReject;
+    var ready = new Promise(function (r, j) { readyResolve = r; readyReject = j; });
+    var lost = null;           // WebGL 컨텍스트를 잃었을 때 이유(그 뒤 요청은 거부)
 
     function setStatus(s) { statusEl.textContent = s; }
 
     window.addEventListener('ifs-preview', function (ev) {
       var kind = ev.detail.kind, p = ev.detail.payload;
-      if (kind === 'ready') { setStatus(''); return; }
+      if (kind === 'ready') { setStatus(''); window.ifsPreview.unityInfo = p; return; }
       if (kind === 'loaded') setStatus('');
       if (kind === 'error') setStatus('오류: ' + p.message);
       // capture는 id로, loaded/error는 가장 오래된 load·overrides 요청에 맞춘다
@@ -54,11 +58,19 @@
     function request(type, id, method, arg) {
       return ready.then(function () {
         return new Promise(function (resolve, reject) {
+          if (lost) { reject({ kind: 'contextlost', message: lost }); return; }
           pending.push({ type: type, id: id, resolve: resolve, reject: reject });
-          send(method, arg);
+          try { send(method, arg); }
+          catch (e) { pending.pop(); reject({ kind: 'exception', message: String(e) }); }
         });
       });
     }
+    canvas.addEventListener('webglcontextlost', function () {
+      lost = 'WebGL 컨텍스트를 잃음';
+      window.ifsPreview.contextLost = true;
+      setStatus(lost);
+      pending.splice(0).forEach(function (q) { q.reject({ kind: 'contextlost', message: lost }); });
+    });
     var captureSeq = 0;
 
     window.ifsPreview = {
@@ -72,7 +84,9 @@
         return request('capture', opt.id, 'Capture', JSON.stringify(opt));
       },
       setAutoRotate: function (deg) { return ready.then(function () { send('SetAutoRotate', String(deg)); }); },
-      setFrozen: function (on) { return ready.then(function () { send('SetFrozen', on ? '1' : '0'); }); }
+      setFrozen: function (on) { return ready.then(function () { send('SetFrozen', on ? '1' : '0'); }); },
+      unityInfo: null,
+      contextLost: false
     };
 
     var buildUrl = 'Build';
@@ -119,9 +133,13 @@
       }).catch(function (e) {
         setStatus('Unity를 시작하지 못했습니다: ' + e);
         console.error('[IFSPreview] createUnityInstance 실패', e);
+        readyReject(new Error('Unity를 시작하지 못함: ' + e));
       });
     };
-    script.onerror = function () { setStatus('로더 스크립트를 읽지 못했습니다'); console.error('[IFSPreview] 로더 스크립트 실패'); };
+    script.onerror = function () {
+      setStatus('로더 스크립트를 읽지 못했습니다'); console.error('[IFSPreview] 로더 스크립트 실패');
+      readyReject(new Error('로더 스크립트를 읽지 못함'));
+    };
     document.body.appendChild(script);
   })();
   </script>

@@ -15,7 +15,7 @@ from ifs_chatbot.config import MappingConfig, SelectionConfig, load_config
 from ifs_chatbot.controller import Runtime
 from ifs_chatbot.paths import REPO_ROOT, shared
 from ifs_chatbot.preview import PreviewService, UnityQueueRenderer
-from ifs_chatbot.selection import SelectionError, SelectionInvalid, SelectionProtocol
+from ifs_chatbot.selection import SelectionError, SelectionInvalid, SelectionProtocol, ui_config
 from ifs_chatbot.server import create_app
 from ifs_chatbot.simulate import drive
 
@@ -650,7 +650,8 @@ def test_protocol_texts_match_sources_verbatim():
     assert p.text("none_fit") == "맞는 것이 없다"
     labels = [p.data["adjustItemLabels"][k]["text"] for k in TABLE["adjustItems"]["order"]]
     assert labels == ["색", "형태", "밝기", "투명도", "크기", "질감", "움직임"]          # G31: 색이 맨 앞
-    assert p.version == "0.2.0" and "single_candidate_intro" not in p.data["phrases"]  # G34: 후보 1개 화면 없음
+    assert p.version == "0.3.0" and "single_candidate_intro" not in p.data["phrases"]  # G34: 후보 1개 화면 없음
+    assert p.data["changes"][0]["version"] == p.version and p.data["phrases"]["adjust_item_unavailable"]["status"] == "draft"
     assert "proceed_single_button" not in p.data["phrases"]
 
 
@@ -840,6 +841,142 @@ def test_player_failure_falls_back_to_none_and_alerts(tmp_path, monkeypatch, mod
         assert c.get(f"/api/sessions/{s.id}/preview/current.png").status_code == 409
     finally:
         rt.preview.close()
+
+
+# ── WebGL 연결(G12): 세션별 방식, webgl → image → none, 기록, G22 움직임 끄기 ──────────────
+def webgl_rt(tmp_path, player="fake", build=True):
+    d = tmp_path / "webgl-build"
+    if build:
+        d.mkdir()
+        (d / "index.html").write_text("<!doctype html>", encoding="utf-8")
+    return Runtime(v4_cfg(tmp_path, **{"preview.mode": "webgl", "preview.webgl_dir": str(d), "preview.image_player": player}))
+
+
+def test_webgl_client_fallback_goes_to_image_and_turns_motion_off(tmp_path):
+    rt = webgl_rt(tmp_path)
+    c = TestClient(create_app(runtime=rt, warmup=False))
+    s = done_session(rt, "SYN-WGL", T_FEEL)
+    v = c.post(f"/api/sessions/{s.id}/candidates").json()
+    assert v["preview"]["mode"] == "webgl" and v["preview"]["fallback"] == "image" and v["preview"]["webglUrl"]
+    assert v["unavailableItems"] == {}
+    # webgl 모드에서는 image PNG를 주지 않는다(세션 방식 기준)
+    assert c.get(f"/api/sessions/{s.id}/preview/{v['candidates'][0]['id']}.png").status_code == 409
+    # 실제로 그렸다는 알림: 렌더러 문자열 등은 정해진 키만, 길이 제한
+    w = {"renderer": "ANGLE (synthetic)" + "x" * 400, "graphicsDevice": "OpenGL ES 3.0", "readyMs": 700.4,
+         "userAgent": "버려야 함", "warmupMs": True}
+    v = c.post(f"/api/sessions/{s.id}/preview/client", json={"event": "shown", "mode": "webgl", "stage": "selecting",
+                                                             "webgl": w}).json()
+    pv = s.selection_flow.data["preview"]
+    assert pv["shown"] == {"selecting": ["webgl"]} and pv["mode"] == "webgl"
+    assert set(pv["webgl"]) == {"renderer", "graphicsDevice", "readyMs", "at"} and len(pv["webgl"]["renderer"]) == 200
+    # 실패 알림 → 이 세션만 image로, 움직임 항목 꺼짐, 세션 로그 알림·이벤트
+    v = c.post(f"/api/sessions/{s.id}/preview/client", json={"event": "fallback", "mode": "webgl", "stage": "selecting",
+                                                             "reason": "Unity 준비: 30000 ms 안에 응답 없음"}).json()
+    assert v["preview"]["mode"] == "image" and v["preview"]["requested"] == "webgl" and v["preview"]["webglUrl"] is None
+    assert "webgl → image" in v["preview"]["reason"] and v["unavailableItems"] == {"motion": "still_image_preview"}
+    assert rt.preview.mode == "webgl"                      # 서버 기본은 그대로(다른 세션은 webgl)
+    data = json.loads((s.selection_flow.dir / "selection.json").read_text(encoding="utf-8"))
+    assert data["preview"]["mode"] == "image" and data["preview"]["fallbacks"][0]["from"] == "webgl"
+    assert data["preview"]["fallbacks"][0]["source"] == "client" and data["adjustUnavailable"]["motion"]["reason"] == "still_image_preview"
+    assert any(a["kind"] == "preview_fallback" for a in s.log.data["alerts"])
+    assert any(e["type"] == "selection:preview" and e["payload"]["event"] == "fallback" for e in s.log.data["events"])
+    valid(data)
+    r = c.get(f"/api/sessions/{s.id}/preview/{v['candidates'][0]['id']}.png")
+    assert r.status_code == 200 and r.content.startswith(b"\x89PNG")
+    # 같은 실패 알림을 다시 보내도 두 번 내려가지 않는다. 늦게 온 webgl shown은 버린다
+    c.post(f"/api/sessions/{s.id}/preview/client", json={"event": "fallback", "mode": "webgl", "reason": "x"})
+    c.post(f"/api/sessions/{s.id}/preview/client", json={"event": "shown", "mode": "webgl", "stage": "adjusting"})
+    assert len(s.selection_flow.data["preview"]["fallbacks"]) == 1 and s.selection_flow.preview_mode == "image"
+    assert "adjusting" not in s.selection_flow.data["preview"]["shown"]
+    # G22: 정지 그림에서는 움직임 조절을 받지 않는다(다른 항목은 받음)
+    c.post(f"/api/sessions/{s.id}/selection", json={"candidateId": v["candidates"][0]["id"]})
+    assert c.post(f"/api/sessions/{s.id}/adjust", json={"item": "motion", "value": "floating"}).status_code == 409
+    assert c.post(f"/api/sessions/{s.id}/adjust", json={"item": "size", "value": 0.7}).status_code == 200
+    fin = c.post(f"/api/sessions/{s.id}/adjust/finish").json()
+    ev = next(e for e in s.log.data["events"] if e["type"] == "selection:adjusted")
+    assert ev["payload"]["adjustUnavailable"] == ["motion"] and ev["payload"]["previewMode"] == "image"
+    assert fin["stage"] == "premeasure"
+    # 다른 세션은 webgl로 시작
+    s2 = done_session(rt, "SYN-WGL2", T_FEEL)
+    assert c.post(f"/api/sessions/{s2.id}/candidates").json()["preview"]["mode"] == "webgl"
+
+
+def test_webgl_motion_stays_on_and_none_without_image_fallback(tmp_path):
+    rt = webgl_rt(tmp_path, player="")
+    c = TestClient(create_app(runtime=rt, warmup=False))
+    assert any(e["kind"] == "no_image_fallback" for e in rt.preview.events)
+    s = done_session(rt, "SYN-WGL-N", T_FEEL)
+    v = c.post(f"/api/sessions/{s.id}/candidates").json()
+    assert v["preview"]["mode"] == "webgl" and v["preview"]["fallback"] == "none"
+    c.post(f"/api/sessions/{s.id}/selection", json={"candidateId": v["candidates"][0]["id"]})
+    assert c.post(f"/api/sessions/{s.id}/adjust", json={"item": "motion", "value": "floating"}).status_code == 200
+    v = c.post(f"/api/sessions/{s.id}/preview/client", json={"event": "fallback", "mode": "webgl", "stage": "adjusting",
+                                                             "reason": "이 브라우저에서 WebGL2를 쓸 수 없음"}).json()
+    assert v["preview"]["mode"] == "none" and v["unavailableItems"] == {}    # 글 요약에는 motion.type이 바뀌어 나옴
+    assert s.selection_flow.data["adjustUnavailable"] == {}
+    assert c.post(f"/api/sessions/{s.id}/preview/client", json={"event": "nope", "mode": "webgl"}).status_code == 422
+    assert c.post(f"/api/sessions/{s.id}/preview/client", json={"event": "shown", "mode": "vr"}).status_code == 422
+
+
+def test_webgl_build_missing_starts_in_image(tmp_path):
+    rt = webgl_rt(tmp_path, build=False)
+    assert rt.preview.mode == "image" and rt.preview.requested == "webgl" and "WebGL 빌드가 없음" in rt.preview.reason
+    s = done_session(rt, "SYN-WGL-M", T_FEEL)
+    f = s.selection()
+    v = f.start()
+    assert v["preview"]["mode"] == "image" and v["unavailableItems"] == {"motion": "still_image_preview"}
+    assert f.data["preview"]["requested"] == "webgl" and f.data["adjustUnavailable"]["motion"]["since"]
+    fb = f.data["preview"]["fallbacks"]
+    assert [(x["from"], x["to"], x["source"]) for x in fb] == [("webgl", "image", "server")] and "index.html" in fb[0]["reason"]
+    nob = webgl_rt(tmp_path / "b", player="", build=False)
+    assert nob.preview.mode == "none" and "미리보기 플레이어가 없음" in nob.preview.reason
+
+
+def test_image_fallback_failure_under_webgl_goes_to_none(tmp_path, monkeypatch):
+    monkeypatch.setenv("FAKE_PLAYER_MODE", "die_on_request")
+    rt = webgl_rt(tmp_path, player=str(FAKE_PLAYER))
+    c = TestClient(create_app(runtime=rt, warmup=False))
+    try:
+        s = done_session(rt, "SYN-WGL-D", T_FEEL)
+        v = c.post(f"/api/sessions/{s.id}/candidates").json()
+        v = c.post(f"/api/sessions/{s.id}/preview/client", json={"event": "fallback", "mode": "webgl", "reason": "x"}).json()
+        assert v["preview"]["mode"] == "image"
+        assert c.get(f"/api/sessions/{s.id}/preview/{v['candidates'][0]['id']}.png").status_code == 503
+        st = c.get(f"/api/sessions/{s.id}/selection").json()
+        assert st["preview"]["mode"] == "none" and st["unavailableItems"] == {}
+        fb = s.selection_flow.data["preview"]["fallbacks"]
+        assert [(x["from"], x["to"], x["source"]) for x in fb] == [("webgl", "image", "client"), ("image", "none", "server")]
+        assert rt.preview.mode == "webgl" and not rt.preview.image_ok      # 기본은 webgl, 예비는 닫힘
+        s2 = done_session(rt, "SYN-WGL-D2", T_FEEL)
+        assert c.post(f"/api/sessions/{s2.id}/candidates").json()["preview"]["fallback"] == "none"
+    finally:
+        rt.preview.close()
+
+
+def test_ui_config_has_webgl_warmup_for_every_form_value(rt4):
+    cfg = ui_config(rt4.selection_protocol, rt4.candidate_table, rt4.preview.info(), True)
+    form = next(i for i in cfg["adjustItems"] if i["id"] == "form")
+    warm = cfg["previewWarmup"]
+    assert len(warm) == 2 * len(form["values"])
+    vo = TABLE["adjustItems"]["items"]["form"].get("valueOverrides", {})
+    for v in form["values"]:
+        want = vo.get(v, {"form.type": v})
+        assert want in warm and {**want, "material.opacity": 0.5} in warm
+    assert cfg["phrases"]["adjust_item_unavailable"]
+
+
+def test_stage_js_webgl_adapter_contract():
+    """stage.js: iframe을 다시 그리는 영역 밖(body)에 고정, 큐 하나, 응답 대조, 후보 칸은 멈춘 뒤 캡처, 실패는 서버에 알림."""
+    web = (REPO_ROOT / "chatbot" / "ifs_chatbot" / "web" / "stage.js").read_text(encoding="utf-8")
+    assert "document.body.append(this.host)" in web and "holder.append(this.frame)" not in web
+    assert "enqueue(" in web and "r.id !== id" in web and "덮어쓰기 응답이 요청과 다름" in web
+    cand = web[web.index("candidateNode(target, overrides) {"):web.index("liveSlot(overrides) {")]
+    assert cand.index("setFrozen(true)") < cand.index("this.capture(target)")
+    live = web[web.index("liveSlot(overrides) {"):web.index("place() {")]
+    assert "setFrozen(false)" in live
+    assert "/preview/client" in web and '"fallback"' in web and "previewWarmup" in web
+    tpl = (REPO_ROOT / "unity" / "Assets" / "WebGLTemplates" / "IFSPreview" / "index.html").read_text(encoding="utf-8")
+    assert "readyReject(" in tpl and "unityInfo" in tpl and "webglcontextlost" in tpl
 
 
 # ── 러너 계약(unity/Assets/IFS/Runtime/Placement/PlacementSelection.cs) ─────────────

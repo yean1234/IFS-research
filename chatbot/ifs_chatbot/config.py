@@ -99,6 +99,9 @@ class PreviewConfig:
     height: int = 240
     start_timeout_s: float = 60.0
     request_timeout_s: float = 20.0
+    # webgl 모드에서 브라우저 쪽 기다림 한도(stage.js). 넘으면 그 세션은 image(없으면 글 요약)로 내려간다
+    webgl_ready_timeout_s: float = 30.0
+    webgl_request_timeout_s: float = 15.0
 
 
 @dataclass(frozen=True)
