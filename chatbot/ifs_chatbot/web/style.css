@@ -189,6 +189,11 @@ button.is-pending::after { content: ""; position: absolute; right: 14px; top: 50
 .alert { padding: 7px 10px; border-radius: var(--radius-sm); margin-bottom: 6px; border-left: 3px solid var(--warn-line); background: var(--warn-soft); }
 .alert.critical { border-color: var(--danger); background: var(--danger-soft); }
 .alert.info { border-color: var(--accent); background: var(--accent-soft); }
+/* G50 (4) 넷째 제외 범주 표시(연구자 패널 맨 위, 탭과 상관없이). .alert.critical·위기 띠와 같은 계열 */
+.safety-flags { margin: var(--space-3) var(--space-3) 0; padding: var(--space-2) var(--space-3); border: 2px solid var(--danger); border-left-width: 6px;
+  border-radius: var(--radius-sm); background: var(--danger-soft); font-size: var(--fs-small); }
+.safety-flags ul { margin: 4px 0; padding-left: 18px; }
+.safety-flags p { margin: 0; color: var(--ink-soft); }
 .turn { border: 1px solid var(--line); border-radius: 10px; padding: var(--space-2) 10px; margin-bottom: var(--space-2); }
 .turn .head { display: flex; justify-content: space-between; gap: var(--space-2); font-size: 12px; color: var(--ink-soft); font-family: var(--mono); }
 .turn .text { margin: var(--space-1) 0; }

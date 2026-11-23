@@ -255,6 +255,7 @@ async function refreshResearcher() {
   try {
     const r = await api("GET", `/api/sessions/${state.sid}/log`);
     state.log = r.log;
+    renderSafetyFlags(r.safetyFlags);
     renderProgress(r);
     if (window.ifsStage) window.ifsStage.researcherNote($("#tab-progress"));
     renderTurns(r.log);
@@ -263,6 +264,34 @@ async function refreshResearcher() {
   } catch (e) {
     /* 폐기된 세션 등 */
   }
+}
+
+// G50 (4): 넷째 제외 범주 표시(researcher_view().safetyFlags). refreshResearcher에서만 부른다 — 참여자 보기에서는 부르지 않고
+// 자리도 연구자 패널 안이다. 글은 연구자용 로그 문자열(고정 문구 아님). 진행은 막지 않는다(VR 진행 여부는 연구자가 정함, 초안).
+// 같은 내용이면 다시 그리지 않는다(role=alert가 매번 다시 읽히지 않게).
+function describeSafetyFlag(f) {
+  const parts = [];
+  if (Number.isInteger(f.sentence)) parts.push(`${f.sentence + 1}번째 문장`);
+  if (Array.isArray(f.charSpan) && f.charSpan.length === 2) parts.push(`글자 ${f.charSpan[0]}–${f.charSpan[1]}`);
+  if (f.position) parts.push(`자리 ${f.position}`);
+  if (f.scope && f.scope !== "main") parts.push(`범위 ${f.scope}${f.scope === "context" ? "(회상·상황 문장)" : ""}`);
+  parts.push(f.formBlock ? "형태 막음" : "형태 막지 않음(색)");
+  return `${f.lemma || "?"} — ${parts.join(", ")}`;
+}
+
+function renderSafetyFlags(flags) {
+  const box = $("#safety-flags");
+  const list = Array.isArray(flags) ? flags : [];
+  const sig = JSON.stringify(list);
+  if (box.dataset.sig === sig) return;
+  box.dataset.sig = sig;
+  box.hidden = list.length === 0;
+  if (!list.length) { box.replaceChildren(); return; }
+  const cats = [...new Set(list.map((f) => f.category).filter(Boolean))].join(", ");
+  box.replaceChildren(
+    el("strong", {}, `[안전 표시] 넷째 제외 범주(죽음·자해·외상) 낱말: ${list.length}곳${cats ? ` [${cats}]` : ""}`),
+    el("ul", {}, ...list.map((f) => el("li", {}, describeSafetyFlag(f)))),
+    el("p", {}, "진행은 막지 않음 — VR 진행 여부는 연구자가 정함"));
 }
 
 function kv(pairs) {

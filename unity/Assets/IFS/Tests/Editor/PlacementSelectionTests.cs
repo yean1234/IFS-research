@@ -316,6 +316,47 @@ namespace IFS.SceneSpec.Tests
             Assert.That(ParseErrors(bad).Single(), Does.Contain("safetyFlags"));
         }
 
+        // 병합 마무리(G50 (4) 화면 연결): 실험자 GUI 경고 자리의 알림 줄. 진행을 막지 않고, OnGUI(화면 좌표) 실험자 화면에서만 쓴다
+        [Test]
+        public void Safety_notice_lines_for_the_experimenter_gui_only()
+        {
+            Assert.That(PlacementSafetyNotice.Lines(null), Is.Empty, "선택 파일 없음");
+            Assert.That(PlacementSafetyNotice.Lines(ParseOk(Selection02())), Is.Empty, "키 없음");
+            var empty = Selection02();
+            empty["safetyFlags"] = new JArray();
+            Assert.That(PlacementSafetyNotice.Lines(ParseOk(empty)), Is.Empty, "빈 배열");
+
+            var o = Selection02();
+            o["safetyFlags"] = new JArray(
+                new JObject { ["category"] = "death_self_harm_trauma", ["lemma"] = "올가미", ["charSpan"] = new JArray(0, 3), ["sentence"] = 0,
+                              ["position"] = "simile_source", ["role"] = "other", ["scope"] = "main", ["formBlock"] = true },
+                new JObject { ["category"] = "death_self_harm_trauma", ["lemma"] = "피", ["charSpan"] = new JArray(12, 13), ["sentence"] = 1,
+                              ["position"] = "color_comparison", ["role"] = "other", ["scope"] = "context", ["formBlock"] = false });
+            var s = ParseOk(o);
+            var lines = PlacementSafetyNotice.Lines(s);
+            Assert.That(lines.Count, Is.EqualTo(3), "요약 한 줄 + 자리마다 한 줄");
+            Assert.That(lines[0], Does.StartWith(PlacementSafetyNotice.Heading));
+            Assert.That(lines[0], Does.Contain("2곳").And.Contain("death_self_harm_trauma").And.Contain(PlacementSafetyNotice.ProceedNote));
+            Assert.That(lines[1], Does.Contain("올가미").And.Contain("1번째 문장").And.Contain("글자 0–3").And.Contain("simile_source").And.Contain("형태 막음"));
+            Assert.That(lines[2], Does.Contain("피").And.Contain("2번째 문장").And.Contain("범위 context").And.Contain("형태 막지 않음"));
+            Assert.That(s.Warnings, Is.Empty, "경고·오류로 바꾸지 않음(시작을 막지 않음)");
+
+            // 화면 연결: 실험자 GUI(OnGUI)만 알림 줄을 쓴다. 참여자 판(세계 고정, 헤드셋에 보임)·러너는 쓰지 않는다
+            string runtime = Path.GetFullPath(Path.Combine(Application.streamingAssetsPath, "..", "IFS", "Runtime"));
+            if (!Directory.Exists(runtime)) Assert.Ignore("Runtime 폴더 없음: " + runtime);
+            var users = Directory.GetFiles(runtime, "*.cs", SearchOption.AllDirectories)
+                .Where(f => File.ReadAllText(f).Contains("PlacementSafetyNotice")).Select(Path.GetFileName).OrderBy(n => n, StringComparer.Ordinal).ToArray();
+            Assert.That(users, Is.EqualTo(new[] { "PlacementExperimenterGui.cs", "PlacementSafetyNotice.cs" }));
+            string gui = File.ReadAllText(Path.Combine(runtime, "Placement", "PlacementExperimenterGui.cs"));
+            string alerts = gui.Substring(gui.IndexOf("void DrawAlerts()", StringComparison.Ordinal));
+            alerts = alerts.Substring(0, alerts.IndexOf("void DrawXrStatus(", StringComparison.Ordinal));
+            Assert.That(alerts, Does.Contain("PlacementSafetyNotice.Lines(runner.Selection)").And.Contain("GUILayout.Label"));
+            Assert.That(alerts, Does.Not.Contain("PressAbort").And.Not.Contain("PressConfirm"), "진행을 막거나 멈추지 않음");
+            string code = string.Join("\n", gui.Split('\n').Where(l => !l.TrimStart().StartsWith("//", StringComparison.Ordinal)));
+            foreach (var worldSpace in new[] { "new GameObject", "Canvas", "RenderTexture", "TextMesh", "PlacementTextPanel" })
+                Assert.That(code, Does.Not.Contain(worldSpace), "실험자 화면은 OnGUI 화면 좌표만(헤드셋에 그리지 않음): " + worldSpace);
+        }
+
         [Test]
         public void Version_0_2_reads_skipped_color_changed_and_new_source_values()
         {

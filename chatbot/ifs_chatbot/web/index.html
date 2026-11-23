@@ -74,6 +74,8 @@
     </section>
 
     <aside class="panel researcher researcher-only" id="researcher" aria-label="연구자 화면">
+      <!-- G50 (4): 넷째 제외 범주(죽음·자해·외상) 표시. 연구자 보기에만(탭과 상관없이 맨 위). 진행은 막지 않는다 -->
+      <div id="safety-flags" class="safety-flags researcher-only" role="alert" hidden></div>
       <nav class="tabs" role="tablist">
         <button role="tab" data-tab="progress" class="active" aria-selected="true">진행·안전</button>
         <button role="tab" data-tab="turns" aria-selected="false">턴·검증</button>

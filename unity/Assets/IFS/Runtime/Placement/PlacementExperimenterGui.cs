@@ -5,6 +5,7 @@
 // 구성(2026-11-23 G44 화면 개선, ui-ux-pro-max 규칙 이름은 docs/validation/ui 기록):
 //   · 맨 위 머리말: 지금 단계를 크게(visual-hierarchy), 조건·통제·참여자·머리·입력 한 줄, F1 안내.
 //   · 바로 아래 알림: 오류 → 초안 문구 → 경고(error-placement — 단추 아래에 묻히지 않게). 초안 경고는 한 번만.
+//     그 뒤 선택 파일의 넷째 제외 범주 표시(G50 (4), PlacementSafetyNotice — 연구자용 로그 문자열, 진행은 막지 않음).
 //   · 불투명 짙은 바탕(color-contrast — 반투명 상자 위 주황·빨강 글이 장면 밝기에 따라 3:1 아래로 떨어지던 것).
 //   · 진행 중: 평정 입력 상태, 참여자 조작 안내(input-helper-text), 주 단추 "다음"은 왼쪽, "중단"은 오른쪽 끝에 떨어뜨리고
 //     빨간색 + 두 번 누르기(confirmation-dialogs·destructive-emphasis·touch-spacing). 버튼이 부르는 러너 함수는 그대로다.
@@ -130,6 +131,10 @@ namespace IFS.SceneSpec.Placement
             if (notice != null) GUILayout.Label($"<color={ColDraft}>[초안 문구] {notice}</color>", _alert);
             foreach (var w in runner.Warnings)
                 if (notice == null || w != notice) GUILayout.Label($"<color={ColWarn}>경고: {w}</color>", _wrap);
+            // G50 (4): 선택 파일의 넷째 제외 범주 표시(연구자용 로그 문자열, 고정 문구 아님). 진행은 막지 않는다 — 단추는 그대로
+            var safety = PlacementSafetyNotice.Lines(runner.Selection);
+            for (int i = 0; i < safety.Count; i++)
+                GUILayout.Label($"<color={ColWarn}>{(i == 0 ? "[안전 표시] " : "")}{safety[i]}</color>", i == 0 ? _alert : _wrap);
         }
 
         void DrawXrStatus(PlacementConfig cfg)
