@@ -1,0 +1,17 @@
+farmland_overcast_4k.jpg — 배치 공간 후보 F(자연, docs/decisions.md G55)의 360° 하늘 사진
+
+자산       Farmland Overcast (Poly Haven asset id: farmland_overcast)
+작가       Grzegorz Wronkowski
+자산 쪽    https://polyhaven.com/a/farmland_overcast
+내려받은 곳 https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/farmland_overcast.jpg
+           (Poly Haven API /files/farmland_overcast 의 "tonemapped" 항목, 8192 x 4096 JPG)
+라이선스   CC0 1.0 Universal (퍼블릭 도메인 헌정). 자산 쪽 표기 "CC0 1.0 Universal - public domain dedication,
+           no attribution required", https://polyhaven.com/license "Our assets are all licensed as CC0".
+내려받은 날 2026-11-24
+원본 SHA-256  47171b0f7572b10d42e6c508e9a2913a40ace47042ec5336a167e4fce912101a (39,661,214 바이트, API md5 3fc7ee674136c3922a6fba6652b637ae와 일치)
+이 파일    원본을 Pillow 10.4 Lanczos로 4096 x 2048로 줄이고 JPEG 품질 90으로 다시 저장(EXIF 없음). 색 보정·자르기 없음.
+이 파일 SHA-256  6cae5ca0bd967a67c542381710ff1d285656ce5234ee3a291f417f35533797c1 (2,044,708 바이트)
+
+고른 이유: 흐린 날, 탁 트인 평평한 밭, 가까운 나무·바위 없음(나무는 지평선의 먼 줄만), 채도 낮음(G55).
+땅 색: 지평선 바로 아래 띠(사진 높이의 50.5–53%)의 선형 평균 → sRGB (0.32, 0.34, 0.25). C# NatureSkyAsset.GroundSrgb.
+같은 정보: unity/README.md 「배치 공간 후보」, C# IFS.SceneSpec.NatureSkyAsset(기록 manifest environment.sky.texture).

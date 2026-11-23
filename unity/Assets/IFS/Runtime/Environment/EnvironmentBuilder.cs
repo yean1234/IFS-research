@@ -58,6 +58,9 @@ namespace IFS.SceneSpec
         public Material SkyMaterial;
         public RenderTexture ReflectionCube;
         public EnvironmentSettings Settings;
+        /// <summary>배경 공간(G52): neutral(Build 그대로) | space | nature. EnvironmentStyle.Apply가 바꾼다.</summary>
+        public string Style { get; internal set; } = EnvironmentStyleInfo.Neutral;
+        internal EnvironmentStyleState StyleState;
 
         // Build 직전의 전역 RenderSettings. Dispose에서 되돌린다(에디터에서 테스트를 돌려도 열린 씬 조명이 바뀌지 않게).
         internal RenderSettingsSnapshot Previous;
@@ -67,6 +70,7 @@ namespace IFS.SceneSpec
 
         public void Dispose()
         {
+            EnvironmentStyle.Clear(this);   // 얹은 배경 공간(별 하늘·자연 사진·땅)의 머티리얼·메시
             if (Previous != null)
             {
                 Previous.Restore();
