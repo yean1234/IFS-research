@@ -106,8 +106,12 @@ namespace IFS.SceneSpec.Tests
             };
             ((JArray)o["_unmapped"]).Add(Word("네모", "square", "excluded_shape", 0));
             var spec = SceneSpecJson.Parse(o.ToString());
-            Assert.That(ShapeMapping.ExtractWords(spec), Is.Empty, "excluded_shape 기록(예: '뱀 같은 끈'의 '끈')은 모형으로 그리지 않음");
+            Assert.That(ShapeMapping.ExtractWords(spec), Is.Empty, "excluded_shape 기록(예: '네모난 귀신'의 '네모')은 모형으로 그리지 않음");
             Assert.That(ShapeMapping.Resolve(spec).Model, Is.Null);
+            // G51: 동물이 중심 명사라 막힌 모양어(reason no_asset, 예: '네모난 뱀')도 모양어가 아님
+            ((JArray)o["_unmapped"]).Add(Word("네모", "square", "no_asset", 0));
+            spec = SceneSpecJson.Parse(o.ToString());
+            Assert.That(ShapeMapping.ExtractWords(spec), Is.Empty, "no_asset 기록은 모형으로 그리지 않음");
             ((JArray)o["_unmapped"]).Add(Word("네모", "square", "no_scene_param", 0));
             spec = SceneSpecJson.Parse(o.ToString());
             Assert.That(ShapeMapping.ExtractWords(spec).Single().Shape, Is.EqualTo("square"));

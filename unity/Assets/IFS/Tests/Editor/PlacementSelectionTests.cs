@@ -282,6 +282,40 @@ namespace IFS.SceneSpec.Tests
             return o;
         }
 
+        // ── G50 (4): 넷째 제외 범주 표시(safetyFlags, 하위 호환 추가) ───────────
+        [Test]
+        public void Safety_flags_are_kept_for_the_experimenter_and_copied_to_the_manifest()
+        {
+            var plain = ParseOk(Selection02());
+            Assert.That(plain.SafetyFlags, Is.Null);
+            Assert.That(plain.HasSafetyFlags, Is.False);
+            Assert.That(plain.ManifestJson().ContainsKey("safetyFlags"), Is.False, "키가 없는 파일 → manifest에도 없음(이전 기록 그대로)");
+
+            var o = Selection02();
+            o["safetyFlags"] = new JArray(new JObject
+            {
+                ["category"] = "death_self_harm_trauma", ["lemma"] = "올가미", ["charSpan"] = new JArray(0, 3), ["sentence"] = 0,
+                ["position"] = "simile_source", ["role"] = "other", ["scope"] = "main", ["formBlock"] = true,
+            });
+            var s = ParseOk(o);
+            Assert.That(s.HasSafetyFlags, Is.True, "시작은 막지 않음(VR 진행 여부는 연구자가 정함)");
+            Assert.That(s.SafetyFlagCategories, Is.EqualTo(new[] { "death_self_harm_trauma" }));
+            Assert.That(JToken.DeepEquals(s.ManifestJson()["safetyFlags"], o["safetyFlags"]), Is.True);
+            Assert.That(s.Warnings, Is.Empty);
+
+            var empty = Selection02();
+            empty["safetyFlags"] = new JArray();
+            var se = ParseOk(empty);
+            Assert.That(se.HasSafetyFlags, Is.False);
+            Assert.That(((JArray)se.ManifestJson()["safetyFlags"]).Count, Is.EqualTo(0));
+
+            var bad = Selection02();
+            bad["safetyFlags"] = new JObject();
+            Assert.That(ParseErrors(bad).Single(), Does.Contain("safetyFlags"));
+            bad["safetyFlags"] = new JArray("올가미");
+            Assert.That(ParseErrors(bad).Single(), Does.Contain("safetyFlags"));
+        }
+
         [Test]
         public void Version_0_2_reads_skipped_color_changed_and_new_source_values()
         {

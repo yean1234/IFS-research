@@ -30,6 +30,7 @@ from .extract import Extractor, find_modality, parse_body_relation
 from .korean import Analyzer, normalize
 from .lexicon import Lexicon
 from .candidates import load_table as load_candidate_table
+from .candidates import safety_flags
 from .llm import GenerationRequest, OfflineTemplateBackend, OllamaBackend
 from .paths import CHATBOT_DIR, shared
 from .preview import PreviewService
@@ -883,6 +884,14 @@ class Session:
                                           "mapping": mapping, "variants": variants}
             if mapping["fallbackReason"]:
                 self.log.data["sceneSpec"]["fallback"] = True
+            # G50 (4): 넷째 제외 범주(죽음·자해·외상) 낱말이 있으면 세션 기록에 남기고 연구자 알림으로 실험자 화면에 알린다.
+            # 진행은 막지 않는다(VR 진행 여부는 연구자가 정함 — 초안, ⚠ 교수님·IRB 확인 필요). 참여자 화면(view)에는 내지 않는다
+            flags = safety_flags(spec)
+            if flags:
+                self.log.data["sceneSpec"]["safetyFlags"] = flags
+                self.log.add_event("scene:safety_flag", {"count": len(flags), "flags": flags})
+                self._alert("scene_safety_flag", "넷째 제외 범주(죽음·자해·외상) 낱말: " + ", ".join(
+                    f"{f['lemma']}[{f['charSpan'][0]}:{f['charSpan'][1]}]" for f in flags)[:300], None)
             if problems:
                 self._alert("scene_spec_invalid", "; ".join(problems[:5]), None)
         except Exception as exc:  # noqa: BLE001 — 장면 생성 실패가 면담 종료를 막으면 안 된다
@@ -966,4 +975,6 @@ class Session:
         return out
 
     def researcher_view(self) -> dict:
-        return {"session": self.view(), "log": self.log.data, "runtimeWarnings": self.rt.warnings}
+        # safetyFlags(G50 (4)): 실험자 화면이 읽을 필드(연구자 응답에만. 참여자 화면 view에는 넣지 않음)
+        return {"session": self.view(), "log": self.log.data, "runtimeWarnings": self.rt.warnings,
+                "safetyFlags": list((self.log.data.get("sceneSpec") or {}).get("safetyFlags") or [])}

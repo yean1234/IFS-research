@@ -9,6 +9,8 @@
   색상(hue, G17·G31)과 밝기(G34)는 벌리지 않는다. 0번 후보는 언제나 "후보 단계가 없었다면 그려졌을 형상"(덮어쓰기 없음).
 - 모양어(G32, G29 대체): 모형이 있는 모양어(표 shapeModels.mapped — Unity ShapeMapping과 같음)를 말했으면 형태 자리는
   말한 자리로 고정한다. 모형이 없는 모양어만 말했으면 형태 자리를 벌린다(축 reason said_unrendered, 말한 낱말은 축에 남김).
+- 제외·동물(G45·G51): 형상 자체(중심 명사)가 제외 범주·동물 낱말이라 그리지 않았으면 G32와 같은 경로로 형태 자리를 벌린다.
+  이유는 saidWords[].unrenderedBy(no_model | excluded_shape | no_asset)로 가른다. 넷째 범주(G50)는 형태 자리를 벌리지 않는다.
 - 구별 규칙(G34, 표 distinctness): 덮어쓰기를 얹은 최종 값에서 화면에 보이지 않는 키(정지 미리보기의 움직임 등)를 뺀
   "보이는 값"이 같은 후보는 index가 작은 것 하나만 남긴다. 남은 후보가 하나면 selectionStep = "skip"(선택 단계 없이 조절로).
 - 기본 형상(D6, form.base): 후보 값으로 쓰지 않는다(말하지 않은 구체 사물을 내밀지 않음, docs/asset-plan.md 3-4절).
@@ -30,7 +32,9 @@ from .paths import shared
 # 0.2.0(2026-11-23): G32 모형 없는 모양어, G34 밝기 제외·구별 규칙·선택 건너뜀
 # 0.3.0(2026-11-23, D6): form.base(출처 행·그려지는 형태 판정·갈림 match.in = form.base)
 # 0.4.0(2026-11-23, CP10 G39·G37): 출처 행에 form.baseVariant, 안전 제외 기록(_unmapped reason excluded_shape)은 모양어로 세지 않음
-GENERATOR_VERSION = "ifs-candidates/0.4.0"
+# 0.5.0(2026-11-23, G45–G51): 형상 자체가 제외 범주·동물 낱말이면 형태 자리를 벌림(said_unrendered, saidWords.unrenderedBy),
+#       넷째 범주(G50)면 형태 자리를 벌리지 않음, reason no_asset 기록도 모양어로 세지 않음
+GENERATOR_VERSION = "ifs-candidates/0.5.0"
 TABLE_FILE = "candidate_values.v2.json"
 MAX_CANDIDATES = 4          # 지시문 6절 임시값(⚠ 사람이 정할 것). G19에서 상한
 
@@ -84,11 +88,43 @@ def slot_value(spec: dict, slot: str):
     return (spec.get(group) or {}).get(name)
 
 
+# G37·G45–G51: 그리지 않기로 한 기록의 사유(제외 범주 | 동물 등 에셋 없음). Unity ShapeMapping.UnrenderedReasons와 같다
+UNRENDERED_REASONS = ("excluded_shape", "no_asset")
+
+
 def shape_words(spec: dict) -> list[dict]:
     """매퍼가 _unmapped(category shape)에 남긴 모양어. Unity ShapeMapping이 읽는 것과 같은 목록.
-    G37: 안전 제외로 그리지 않기로 한 기록(reason excluded_shape, 예: '뱀 같은 끈'의 '끈')은 모양어로 세지 않는다
-    (세면 G32 규칙이 형태 후보를 벌려 그 말을 다른 형태로 그리게 됨). Unity ShapeMapping.ExtractWords도 같다."""
-    return [u for u in spec.get("_unmapped") or [] if u.get("category") == "shape" and u.get("reason") != "excluded_shape"]
+    G37·G45–G51: 그리지 않기로 한 기록(reason excluded_shape | no_asset, 예: '끈 같은 뱀'의 '끈', '네모난 귀신'의 '네모')은 모양어로
+    세지 않는다(세면 G32 규칙이 형태 후보를 벌리거나 Unity가 모형을 그림). Unity ShapeMapping.ExtractWords도 같다."""
+    return [u for u in spec.get("_unmapped") or [] if u.get("category") == "shape"
+            and u.get("reason") not in UNRENDERED_REASONS]
+
+
+def listed_heads(spec: dict) -> list[dict]:
+    """G45·G51: 형상 자체(명사구의 중심 명사, 형태 자리)가 제외 범주·동물 낱말이라 그리지 않은 기록(value.formSaid).
+    '끈 같은 귀신', '뱀처럼 생긴 것'. 형태 후보와 '맞는 것이 없다'로 넘어간다(G32와 같은 경로, 사유만 다름)."""
+    return [u for u in spec.get("_unmapped") or [] if u.get("reason") in UNRENDERED_REASONS
+            and (u.get("value") or {}).get("formSaid") is True]
+
+
+def form_blocks(spec: dict) -> list[dict]:
+    """G50 (1): 넷째 범주(죽음·자해·외상) 낱말이 (색 비교·색 표현 말고) 나온 기록(value.formBlock). 하나라도 있으면 형태 에셋
+    (form.base·모양 모형)과 형태 후보를 내지 않는다. 조절 화면에서 참여자가 형태를 바꾸는 것은 막지 않는다(결정에 없음)."""
+    return [u for u in spec.get("_unmapped") or [] if (u.get("value") or {}).get("formBlock") is True]
+
+
+def safety_flags(spec: dict) -> list[dict]:
+    """G50 (4): 넷째 범주 낱말이 나온 자리마다(형태를 막지 않는 색 비교도) 실험자에게 알릴 표시. 글자 위치 순서."""
+    out = []
+    for u in spec.get("_unmapped") or []:
+        v = u.get("value") or {}
+        if v.get("strict") is not True:
+            continue
+        out.append({"category": v.get("excluded"), "lemma": u.get("lemma"),
+                    "charSpan": list((u.get("_provenance") or {}).get("charSpan") or []),
+                    "sentence": v.get("sentence"), "position": v.get("position"), "role": v.get("role"),
+                    "scope": v.get("scope"), "formBlock": v.get("formBlock") is True})
+    return sorted(out, key=lambda f: (f["charSpan"][:1] or [10 ** 9], f["lemma"] or ""))
 
 
 def _mapped_shapes(table: dict | None) -> set[str] | None:
@@ -118,6 +154,20 @@ def said_words(words: list[dict]) -> list[dict]:
     return sorted(out, key=lambda w: (w["charSpan"][:1] or [10 ** 9], w["lemma"] or ""))
 
 
+def unrendered_said_words(spec: dict, table: dict | None = None) -> list[dict]:
+    """G32·G45·G51: 말했지만 그리지 않은 형태 낱말의 기록 요약. unrenderedBy로 이유를 가른다 —
+    no_model(모형이 없는 모양어, G32) | excluded_shape(제외 범주가 형상 자체, G45) | no_asset(동물 등 에셋 없음, G51).
+    제외·동물 낱말은 모양 값이 없으므로 shape = null, category = 범주 키."""
+    out = [dict(w, unrenderedBy="no_model") for w in said_words(unrendered_shape_words(spec, table))]
+    for u in listed_heads(spec):
+        v = u.get("value") or {}
+        p = u.get("_provenance") or {}
+        out.append({"lemma": u.get("lemma"), "shape": None, "trigger": p.get("trigger"),
+                    "charSpan": list(p.get("charSpan") or []), "unrenderedBy": u.get("reason"),
+                    "category": v.get("excluded") or v.get("noAsset")})
+    return sorted(out, key=lambda w: (w["charSpan"][:1] or [10 ** 9], w["lemma"] or ""))
+
+
 BASE_FORM_TYPES = (None, "blob")      # 기본 형상을 그리는 form.type(docs/asset-plan.md 2-5절, Unity FormRenderPlan과 같음)
 
 
@@ -128,9 +178,12 @@ def base_drawn(spec: dict) -> bool:
 
 def form_said_unrendered(spec: dict, table: dict | None = None) -> bool:
     """G32: form.type을 말하지 않았고, 모형이 없는 모양어만 말했다(모형이 있는 모양어는 없음).
-    기본 형상이 그려지면(D6) 말한 형태가 그려지므로 해당하지 않는다."""
+    G45·G51: 형상 자체가 제외 범주·동물 낱말이라 그리지 않은 경우도 같다(형태 후보와 '맞는 것이 없다'로 넘어감, 출처 값도 같고
+    이유는 saidWords.unrenderedBy). 기본 형상이 그려지면(D6) 말한 형태가 그려지므로 해당하지 않는다.
+    G50: 넷째 범주로 형태가 막혔으면 형태 자리를 벌리지 않으므로 해당하지 않는다."""
     return (slot_value(spec, "form.type") is None and not rendered_shape_words(spec, table)
-            and not base_drawn(spec) and bool(unrendered_shape_words(spec, table)))
+            and not base_drawn(spec) and not form_blocks(spec)
+            and bool(unrendered_shape_words(spec, table) or listed_heads(spec)))
 
 
 def slot_is_open(spec: dict, slot: str, table: dict | None = None) -> bool:
@@ -141,6 +194,8 @@ def slot_is_open(spec: dict, slot: str, table: dict | None = None) -> bool:
         return False
     if slot == "form.type" and (rendered_shape_words(spec, table) or base_drawn(spec)):
         return False
+    if slot == "form.type" and form_blocks(spec):
+        return False                  # G50 (1): 넷째 범주 — 형태 후보를 내지 않는다(다른 빈 차원은 그대로)
     if slot == "form.base":
         return False                  # 기본 형상은 후보 값으로 쓰지 않는다(D6)
     return True
@@ -268,7 +323,7 @@ def generate(spec: dict, session_id: str, table: dict | None = None) -> dict:
     priority = table["candidateAxes"]["priority"]
     base = effective_params(spec, defaults)
     unrendered = form_said_unrendered(spec, table)
-    words = said_words(unrendered_shape_words(spec, table)) if unrendered else []
+    words = unrendered_said_words(spec, table) if unrendered else []
     rendered = slot_value(spec, "form.type") is None and bool(rendered_shape_words(spec, table)) and not base_drawn(spec)
 
     split, split_skipped = _split_axis(spec, table)
@@ -362,7 +417,14 @@ def generate(spec: dict, session_id: str, table: dict | None = None) -> dict:
     if base_drawn(spec):
         note += f". 말한 기본 형상({slot_value(spec, 'form.base')})이 그려져 형태 자리는 말한 자리(D6)"
     if unrendered:
-        note += f". 모형이 없는 모양어({', '.join(w['lemma'] or '?' for w in words)})를 말해 형태 자리를 벌림(G32)"
+        nm = [w["lemma"] or "?" for w in words if w["unrenderedBy"] == "no_model"]
+        ls = [w["lemma"] or "?" for w in words if w["unrenderedBy"] != "no_model"]
+        if nm:
+            note += f". 모형이 없는 모양어({', '.join(nm)})를 말해 형태 자리를 벌림(G32)"
+        if ls:
+            note += f". 형상 자체가 그리지 않는 범주의 낱말({', '.join(ls)})이라 형태 자리를 벌림(G45·G51)"
+    if form_blocks(spec):
+        note += ". 넷째 범주(죽음·자해·외상) 낱말이 있어 형태 자리를 벌리지 않음(G50)"
     if removed:
         note += f". 구별되지 않는 후보 {len(removed)}개를 뺌({', '.join(sorted({r for x in removed for r in x['rules']}))})"
     if step == "skip":

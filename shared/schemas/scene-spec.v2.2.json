@@ -406,7 +406,7 @@
       }
     },
     "_unmapped": {
-      "description": "사전에는 있지만 v2 장면 파라미터로 옮길 곳이 없는 말(형태어 '가장자리', 자기지칭 '나' …) (2.2) reason excluded_shape = 형상 낱말이지만 연구 범위·안전 때문에 그리지 않는 말(사람·아이, 공격하는 존재, 무기, 죽음·외상, 피·올가미). value.excluded에 사유 코드",
+      "description": "사전에는 있지만 v2 장면 파라미터로 옮길 곳이 없는 말(형태어 '가장자리', 자기지칭 '나' …) (2.2) reason excluded_shape = 형상 낱말이지만 연구 범위·안전 때문에 그리지 않는 말(사람·아이, 공격하는 존재, 무기, 죽음·외상, 피·올가미). value.excluded에 사유 코드 (2026-11-23, G45–G51 — 2.2.0을 고침, 판 번호는 올리지 않음) reason excluded_shape의 범주는 person·threat·weapon·death_self_harm_trauma(value.excluded), reason no_asset = 에셋이 없어 그리지 않는 범주의 낱말(동물, value.noAsset). 매퍼 v2 builder 2.4.0은 목록 낱말이 나온 자리마다 value.position(head | modifier | simile_source | color_comparison | color_expression | unanalyzed)·role·scope·sentence·formSaid(형상 자체라 그리지 않음 → 형태 후보)·usedForShape(false)를, 넷째 범주면 strict·formBlock을, 목록 낱말 때문에 그리지 않은 형상 낱말·모양어면 value.blockedBy{lemma, charSpan, category, rule}를 남긴다(docs/decisions.md 'G45–G51 구현 세부').",
       "type": "array",
       "items": {
         "type": "object",
@@ -435,7 +435,8 @@
               "no_body_part_context",
               "simile_prototype_pending",
               "idiom",
-              "excluded_shape"
+              "excluded_shape",
+              "no_asset"
             ]
           },
           "_provenance": {

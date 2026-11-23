@@ -138,15 +138,18 @@ namespace IFS.SceneSpec
         public static bool FormAllowsShape(string statedFormType) => statedFormType == null || statedFormType == "blob";
 
         /// <summary>spec의 _unmapped에서 category = "shape"인 항목을 charSpan 순서로(같으면 원래 순서).
-        /// (2.2, CP10 G37) reason = excluded_shape(안전 제외로 그리지 않기로 한 말, 예: '뱀 같은 끈'의 '끈')는 모양어로 쓰지 않는다
-        /// (챗봇 candidates.shape_words와 같은 규칙). 2.0·2.1 문서에는 이 사유가 없어 결과가 같다.</summary>
+        /// (2.2, CP10 G37 · G45–G51) reason = excluded_shape(제외 범주 때문에 그리지 않기로 한 말 — 예: '끈 같은 귀신'의 '끈', '네모난 귀신'의
+        /// '네모', 넷째 범주가 나온 텍스트의 모양어) 또는 no_asset(동물이 중심 명사라 그리지 않기로 한 말 — 예: '끈 같은 뱀'의 '끈')은
+        /// 모양어로 쓰지 않는다(챗봇 candidates.shape_words와 같은 규칙, UnrenderedReasons). 2.0·2.1 문서에는 이 사유가 없어 결과가 같다.</summary>
+        public static readonly string[] UnrenderedReasons = { "excluded_shape", "no_asset" };
+
         public static List<ShapeWord> ExtractWords(SceneSpecV2 spec)
         {
             var words = new List<ShapeWord>();
             if (spec?.Unmapped == null) return words;
             foreach (var u in spec.Unmapped)
             {
-                if (u == null || u.Category != "shape" || u.Reason == "excluded_shape") continue;
+                if (u == null || u.Category != "shape" || Array.IndexOf(UnrenderedReasons, u.Reason) >= 0) continue;
                 var v = u.Value?["shape"];
                 words.Add(new ShapeWord
                 {

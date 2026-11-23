@@ -4,6 +4,7 @@
 //   CSV 헤더·다른 manifest 키·파일 목록은 그대로다.
 //   2026-11-23(G31·G34, 형식 버전은 0.2 유지 — selection 객체 안에 키만 더함): selection.skipped(선택 단계를 건너뜀)·
 //   selection.colorChanged(색을 바꿨는지, 0.1 선택 파일이면 null). 분석기는 없는 키를 빈칸으로 읽는다.
+//   2026-11-23(G50 (4), 형식 버전 0.2 유지): selection.safetyFlags — 선택 파일에 키가 있을 때만(넷째 제외 범주 표시, PlacementSelection).
 //   {recordRoot}/placement/P{번호:000}/{sessionId}/{UTC yyyyMMdd-HHmmss}[-n]/
 //     manifest.json · headpose.csv · objpose.csv · events.csv · placement.json · stopdistance.csv · ratings.csv · trajectory.json · summary.json
 //   UTF-8(BOM 없음), 숫자는 InvariantCulture, 줄바꿈 \n. CSV는 줄마다 바로 쓰므로 중간에 꺼져도 그때까지 남는다.

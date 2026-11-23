@@ -23,14 +23,16 @@ import shutil
 import threading
 from pathlib import Path
 
-from .candidates import (SLOTS, base_drawn, candidates_bytes, effective_params, form_said_unrendered, generate,
-                         rendered_shape_words, said_words, slot_value, spec_sha256, unrendered_shape_words)
+from .candidates import (SLOTS, base_drawn, candidates_bytes, effective_params, form_blocks, form_said_unrendered, generate,
+                         rendered_shape_words, safety_flags, said_words, slot_value, spec_sha256, unrendered_said_words)
 from .paths import shared
 from .scene_builder_v2 import floor_record
 from .session_log import now_iso
 
 # 0.2(2026-11-23, G31–G34): selection.skipped·skipReason, colorChanged, 출처 값 두 개 추가(said_unrendered_chosen·
 # said_unrendered_default), sourceDetails.saidWords, distanceFloor, candidatesShownAt null 허용. 러너는 0.1·0.2를 모두 읽는다.
+# (G45–G51, 하위 호환 추가 — 0.2 그대로) saidWords.unrenderedBy·category(말했지만 그리지 않은 이유), 맨 위 safetyFlags(G50 (4)),
+# sourceDetails.form.type.formBlocked(G50 (1) — 형태 후보를 내지 않음, 조절의 형태 바꾸기는 막지 않음)
 FORMAT_VERSION = "ifs-selection/0.2"
 PREMEASURE_VERSION = "ifs-premeasure/0.1"
 ITEMS = ("color", "form", "brightness", "opacity", "size", "texture", "motion")   # G31: 색이 맨 앞(표 adjustItems.order와 같음)
@@ -348,6 +350,7 @@ class SelectionFlow:
                 "finalOverrides": None, "sources": None, "sourceDetails": None, "sourceCounts": None, "premeasure": None,
                 "adjustValueExtras": copy.deepcopy(self.extras),
                 "distanceFloor": floor_record(self.spec),
+                "safetyFlags": safety_flags(self.spec),                # G50 (4): 넷째 범주 표시(실험자용, 진행은 막지 않음)
                 "runnerReady": False, "runnerBlockers": [],
             }
             skip = self.cands["selectionStep"] == "skip"
@@ -374,7 +377,7 @@ class SelectionFlow:
                 "draftKeys": pinfo["draftKeys"], "previewMode": self.preview_mode,
                 "sha256Basis": basis, "adjustValueExtras": sorted(self.extras),
                 "selectionStep": self.cands["selectionStep"], "distinctRemoved": len(self.cands["distinct"]["removed"]),
-                "distanceFloor": self.data["distanceFloor"]})
+                "distanceFloor": self.data["distanceFloor"], "safetyFlags": len(self.data["safetyFlags"])})
             if skip:
                 self._log_event("selection:skipped", {"reason": SKIP_REASON,
                                                       "operationalId": self.data["selection"]["operationalId"]})
@@ -489,8 +492,9 @@ class SelectionFlow:
         unrendered = form_said_unrendered(self.spec, self.table)        # G32: 모형이 없는 모양어만 말함
         rendered = (slot_value(self.spec, "form.type") is None and bool(rendered_shape_words(self.spec, self.table))
                     and not base_drawn(self.spec))
-        words = said_words(unrendered_shape_words(self.spec, self.table) if unrendered
-                           else rendered_shape_words(self.spec, self.table) if rendered else [])
+        words = (unrendered_said_words(self.spec, self.table) if unrendered
+                 else said_words(rendered_shape_words(self.spec, self.table)) if rendered else [])
+        blocks = form_blocks(self.spec)                                 # G50 (1): 넷째 범주 — 형태 후보를 내지 않았음
         floor = self.data.get("distanceFloor")
         items = self.table["adjustItems"]["items"]
         final = effective_params(self.spec, self.defaults, self.current)
@@ -545,7 +549,10 @@ class SelectionFlow:
             else:
                 rec = {"source": "default", "value": dv, **rec}
             if slot == "form.type" and (unrendered or rendered):
-                rec["saidWords"] = words                               # 원래 말한 모양어(G32)
+                rec["saidWords"] = words                               # 원래 말한 모양어(G32)·그리지 않은 범주 낱말(G45·G51)
+            if slot == "form.type" and blocks:
+                # 조절 화면에서 참여자가 형태를 바꾸는 것은 막지 않는다(결정 G50에 없음) — 그렇게 두었다는 것을 남긴다
+                rec["formBlocked"] = {"rule": "G50", "by": sorted({u["lemma"] for u in blocks}), "adjustFormAllowed": True}
             if slot == "form.baseVariant" and basis is not None:
                 rec["keyBasis"] = basis                                # G38: 키마다 낱말 뜻(lexicon_implied) | 참여자 말(said)
             if slot in FORM_SLOTS and form_item is not None:
