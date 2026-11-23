@@ -16,21 +16,25 @@
 | --- | --- |
 | PC | Windows, GPU(미리보기 플레이어가 Direct3D 11로 그림). 헤드셋 단계를 하려면 Quest 3 + Quest Link |
 | Python 환경 | 저장소 루트에서 `cd chatbot; python -m venv .venv; .venv\Scripts\python -m pip install -r requirements.txt` |
-| 설정 프로필 | `chatbot/config/v4.toml`(고치지 않고 그대로 씀). 매퍼 v2, 후보·조절·사전 측정 단계 켬, 미리보기 `image` |
+| 설정 프로필 | `chatbot/config/v4.toml`(고치지 않고 그대로 씀). 매퍼 v2, 후보·조절·사전 측정 단계 켬, 미리보기 `webgl`(안 되면 `image` → 글 요약) |
 | Ollama | **조건 1(정적)에 `--backend offline`이면 LLM이 필요 없습니다.** 안전 가드 모델(Kanana)은 Ollama가 켜져 있고 모델이 있으면 쓰고, 없으면 경고만 남기고 키워드 사전만으로 검사합니다(`v4.toml`의 `guard.required = false`). 가드 모델을 일부러 끄려면 `--no-guard-model` |
-| 미리보기 플레이어 | 저장소 **밖** `../webgl-build/preview-win/IFSPreview.exe`(저장소 루트의 상위 폴더). 설정 `[preview] image_player`가 이 경로를 가리킵니다. 없으면 미리보기가 글 요약(`none`)으로 자동 대체됩니다 |
+| WebGL 미리보기 빌드 | 저장소 **밖** `../webgl-build/preview/`(`index.html` + `Build/`, 약 47.6 MB). 설정 `[preview] webgl_dir`. 서버가 같은 출처 `/preview/webgl/`로 내보냅니다. Unity Hub에 Web Build Support 모듈이 있어야 빌드할 수 있습니다 |
+| 미리보기 플레이어(예비) | 저장소 **밖** `../webgl-build/preview-win/IFSPreview.exe`. 설정 `[preview] image_player`. WebGL 빌드 폴더가 없거나 브라우저가 WebGL2를 못 쓰거나 Unity가 뜨지 않으면 그 세션은 이 플레이어의 정지 그림(`image`)으로 내려가고, 이것도 없거나 실패하면 글 요약(`none`)으로 내려갑니다. 내려간 사실과 이유는 화면 경고 줄·`selection.json`의 `preview`·세션 로그에 남습니다 |
+| 브라우저 | Chrome(또는 Edge) 최신, 하드웨어 GPU. WebGL2가 되어야 합니다. GPU가 없으면 Chrome이 소프트웨어 렌더로 띄울 수 있지만 윤곽선이 하드웨어 렌더와 다릅니다(`docs/validation/webgl/README.md` 10.4) |
 
-미리보기 플레이어 빌드(처음 한 번, 그리고 Unity 렌더 코드가 바뀔 때마다):
+미리보기 빌드(처음 한 번, 그리고 Unity 렌더 코드가 바뀔 때마다). WebGL로 빌드 대상을 바꾸면 전체 재임포트가 일어나므로 **저장소의 `unity/`가 아니라 저장소 밖 복사본에서** 빌드합니다. WebGL과 예비 플레이어를 같은 복사본에서 차례로 빌드해 같은 소스를 쓰게 합니다.
 
 ```powershell
-# 저장소 루트에서. 다른 Unity 프로세스(에디터 포함)가 없어야 함
-& "C:\Program Files\Unity\Hub\Editor\6000.0.85f2\Editor\Unity.exe" -batchmode -projectPath unity -executeMethod IFS.SceneSpec.EditorTools.PreviewBuild.BuildWindowsPreview -logFile <로그 파일>
-# 결과: ../webgl-build/preview-win/IFSPreview.exe, 보고서 ../webgl-build/preview-win-build-report.json ("result": "Succeeded")
-git status --short   # Unity가 설정 파일(예: unity/Assets/XR/Settings/OpenXRPackageSettings.asset)을 줄바꿈만 바꿔 썼으면 git checkout -- <그 파일>
+# 저장소 루트에서. 다른 Unity 프로세스(에디터 포함)가 그 복사본을 열고 있지 않아야 함
+$U = "C:\Program Files\Unity\Hub\Editor\6000.0.85f2\Editor\Unity.exe"; $W = "..\webgl-build"
+robocopy unity "$W\proj" /MIR /XD Library Temp Logs obj UserSettings      # 종료 코드 0–7이면 정상(8 이상 = 실패). 복사본의 Library는 다시 씀
+& $U -batchmode -buildTarget WebGL -projectPath "$W\proj" -executeMethod IFS.SceneSpec.EditorTools.PreviewBuild.BuildWebGLPreview -outDir "$W\preview" -reportPath "$W\preview-build-report.json" -logFile <로그 파일>
+& $U -batchmode -projectPath "$W\proj" -executeMethod IFS.SceneSpec.EditorTools.PreviewBuild.BuildWindowsPreview -outDir "$W\preview-win" -logFile <로그 파일>
+# 결과: 두 보고서의 "result": "Succeeded". 빌드 산출물은 git에 넣지 않음
 ```
 
-- 2026-11-23 이 PC에서 위 명령 그대로(저장소 루트에서 `-projectPath unity`) 빌드해 결과 `Succeeded`, 오류 0을 확인했습니다(14.2초, 다시 빌드 4.6초). 두 번 모두 `OpenXRPackageSettings.asset`이 줄바꿈만 바뀌어 되돌렸습니다. 구름 렌더(D7)가 바뀐 뒤 다시 빌드한 것이고, 후보 화면의 안개 후보가 덩어리 구름 모양으로 나옵니다(`docs/validation/selection-flow/screens/image_1_candidates_2x2.png`).
-- WebGL 미리보기는 쓰지 않습니다(모듈 설치 필요, G25).
+- 2026-11-23(G12 연결) 이 PC에서 위 순서로 빌드했습니다. WebGL 73.5초(Library 재사용), Windows 플레이어 4.9초, 둘 다 오류 0. 저장소의 파일은 바뀌지 않았습니다. 예전처럼 저장소의 `unity/`에서 Windows 플레이어만 빌드하면 `OpenXRPackageSettings.asset`이 줄바꿈만 바뀔 수 있으니 `git checkout -- <그 파일>`로 되돌립니다.
+- 빌드하지 않으면: WebGL 빌드 폴더가 없으니 모든 세션이 처음부터 `image`(정지 그림)로 갑니다. 이때 조절의 움직임 줄은 꺼집니다(G22, 아래 7절).
 
 ## 2. 실행 (1–6단계)
 
@@ -39,7 +43,7 @@ cd chatbot
 .venv\Scripts\python.exe -m ifs_chatbot.server --config v4 --backend offline --condition static
 ```
 
-1. 서버 창에 `웹 데모: http://127.0.0.1:8000`, 오프라인 대역 경고, `[selection] … 문구 27개가 초안(status draft)` 경고가 나오면 준비된 것입니다. 서버는 127.0.0.1에만 열립니다.
+1. 서버 창에 `웹 데모: http://127.0.0.1:8000`, 오프라인 대역 경고, `[selection] … 문구 28개가 초안(status draft)` 경고가 나오면 준비된 것입니다. 서버는 127.0.0.1에만 열립니다.
 2. 브라우저에서 **http://127.0.0.1:8000** 을 엽니다. 맨 위 "조건 1 · 정적 프롬프트"가 골라져 있는지 보고, 가명 ID(예: `TRIAL-01`)를 적고 [세션 만들기] → [시작].
 3. **면담(1단계).** 고정 질문에 6절의 중립 심상으로 답합니다. 모르면 "없어요" 또는 [넘어가기].
 4. **확정(2단계).** [고칠게요]를 눌러 확정 텍스트를 6절의 예시 문장 그대로 바꾸고 [고친 내용으로 확정]. 예시 문장 그대로 확정하면 6절의 기대 흐름과 비교할 수 있습니다. 확정 뒤 [다음 단계로].
@@ -50,6 +54,8 @@ cd chatbot
 9. 끝나면 서버 창에서 **Ctrl+C**로 멈춥니다. 이때 상주 미리보기 플레이어도 함께 닫힙니다. 서버 창을 강제로 닫거나 프로세스를 죽이면 `IFSPreview.exe`가 남을 수 있으니 작업 관리자에서 끝냅니다(2026-11-23 확인).
 
 2026-11-23 이 명령 그대로 서버를 띄우고, 합성 확정 텍스트 3개로 HTTP API를 끝까지 몰아 확인했습니다. 세 세션 모두 후보 4개, 미리보기 `image`(후보 PNG 응답 200, 플레이어 시작 0.5초, 한 장 11–12 ms), 선택(후보 1개·"맞는 것이 없다" 1개·후보 1개 + 형태 조절), 조절, 사전 측정 제출까지 갔습니다. 브라우저 화면 자체는 이번에 손으로 눌러 보지 않았고, 같은 화면의 헤드리스 캡처가 `docs/validation/selection-flow/screens/`에 있습니다.
+
+2026-11-23(G12 연결) WebGL 미리보기로 같은 화면을 헤드리스 Chrome에서 버튼을 눌러 끝까지 확인했습니다(합성 시나리오 S1–S9 + 조절 일곱 항목의 모든 값). 후보 그림은 [다음 단계로]를 누른 뒤 처음 페이지에서 약 2.3초(Unity 시작 0.7초 + 미리 그리기 1.5초), 같은 브라우저로 다시 열면 약 0.4초에 나왔고, 조절은 누를 때마다 약 26 ms에 화면이 바뀌었습니다. 상세는 `docs/validation/webgl/README.md` 11절.
 
 ## 3. 끝난 뒤 파일이 생기는 곳 (모두 `chatbot/logs/` 아래, git 밖)
 
@@ -99,14 +105,14 @@ cd chatbot
 
 | # | 단계 | 확인할 것 | 기대 결과 | 적을 칸 |
 | --- | --- | --- | --- | --- |
-| 1 | 서버 시작 | 서버 창 경고, `/api/health`의 `mapping.mode`·`selection.enabled`·`preview.mode` | `v2` · `true` · `image`. 초안 문구 27개 경고 | |
+| 1 | 서버 시작 | 서버 창 경고, `/api/health`의 `mapping.mode`·`selection.enabled`·`preview.mode` | `v2` · `true` · `webgl`(빌드 폴더가 없으면 `image`, 이유가 경고로 나옴). 초안 문구 28개 경고 | |
 | 2 | 면담 | 고정 질문이 나오고 답할 수 있음. LLM 질문 0회(연구자 화면 "진행") | 조건 1 · 정적 프롬프트, LLM 질문 0회 | |
 | 3 | 확정 | 고친 텍스트로 확정되고 [다음 단계로]가 나옴 | 확정 텍스트 = 적은 문장 | |
 | 4 | 추출 | "확정·추출" 탭의 spec. 말한 속성만 값이 있고 나머지는 null | 6절의 "말한 속성"과 같음 | |
 | 5 | 후보 | 후보 수, 연구자 화면의 축(슬롯과 empty/ambiguous/said_unrendered) | 6절의 후보 수·축과 같음. 말한 속성은 모든 후보에서 같아 보임. 색을 말하지 않았으면 모든 후보가 회색. 밝기는 후보에서 벌리지 않음 | |
-| 6 | 후보 그림 | 후보마다 미리보기 그림이 나오고 서로 구별됨 | 그림 2–4장이 보이고 차이가 보임. 후보가 하나뿐이면 후보 화면 없이 조절로 감(연구자 화면 "선택" = 선택 단계 건너뜀) | |
+| 6 | 후보 그림 | 후보마다 미리보기 그림이 나오고 서로 구별됨. 연구자 화면 "미리보기"가 `webgl`이고 "WebGL 렌더러"에 GPU 이름이 나옴 | 그림 2–4장이 보이고 차이가 보임(후보 칸은 정지 그림). 후보가 하나뿐이면 후보 화면 없이 조절로 감(연구자 화면 "선택" = 선택 단계 건너뜀). `image`로 내려갔으면 화면 맨 위에 "미리보기를 정지 그림으로 보여 줍니다(이유)" 줄 | |
 | 7 | 맞는 것이 없다 | 버튼이 있고 누르면 조절로 넘어감 | 기준 후보(0번)로 조절 시작 | |
-| 8 | 조절 | 일곱 항목을 하나씩 바꿀 때 미리보기가 바뀜. "형태"는 9개(5–9번 = 기본 형상) | 바꿀 때마다 그림이 달라짐. 위치·거리 항목 없음 | |
+| 8 | 조절 | 일곱 항목을 하나씩 바꿀 때 미리보기가 바뀜. "형태"는 9개(5–9번 = 기본 형상). 움직임을 바꾸면 미리보기 안에서 형상이 움직임. 미리보기를 마우스로 끌면 돎 | 바꿀 때마다 그림이 달라짐. 위치·거리 항목 없음. `image`로 내려간 세션에서는 움직임 줄이 꺼지고 "이 화면에서는 바꿔도 보이지 않아 꺼 두었습니다."가 붙음 | |
 | 9 | 사전 측정 | 지시문, 9문항, 1–7과 [답하지 않기] | 9문항, 제출 뒤 끝 안내 | |
 | 10 | 기록 | 3절의 파일이 생김. `selection.json`의 `selection.none`, `finalOverrides`, `sources` | 고른 대로 적혀 있음. `finalOverrides`에 위치·거리 키 없음 | |
 | 11 | 끝내기 | Ctrl+C 뒤 `IFSPreview.exe`가 남지 않음 | 프로세스 없음 | |
@@ -152,7 +158,8 @@ cd chatbot
 - 후보를 보는 것 자체가 떠올린 심상을 바꿀 수 있습니다(`docs/chatbot-design.md` 7절). 이 점검은 그 크기를 재지 않습니다.
 - 형태는 덩어리·안개·껍질·조각 네 가지와 기본 형상 다섯 가지(담는 것·선·얇은 판·불꽃·물방울, D6)입니다. 기본 형상은 형상을 이름 붙이는 명사를 말했을 때만 그려지고, 후보에서는 내밀지 않으며, 조절 "형태" 항목의 5–9번(번호만 보임: 1–4 덩어리·안개·껍질·조각, 5–9 담는 것·선·판·불꽃·물방울)에서 고를 수 있습니다. 회색 불꽃·얇은 판의 옆모습·가는 선은 덜 읽힐 수 있습니다(`docs/validation/base-forms/README.md`). 동물·식물·사람·구멍·웅덩이 모양은 없습니다(사람·무기 등은 그리지 않기로 함).
 - 밝기는 후보에서 빠졌지만(G34), 어두운 색에서는 조절의 밝기 차이가 화면에서 거의 구별되지 않을 수 있습니다. 조절 항목이 화면에 반영되는지 검사하는 테스트(G22)는 아직 없습니다. 후보 쪽 구별 규칙은 코드로 확인한 두 경우(최종 값이 같음, 정지 미리보기의 움직임)만 빼므로, 작은 안개의 질감 차이처럼 거의 같아 보이는 후보가 남을 수 있습니다(합성 시나리오 S1, `docs/validation/selection-flow/README.md`).
-- 미리보기는 정지 화면 한 장입니다. 움직임 항목을 바꿔도 미리보기에서는 보이지 않습니다. 시야각(60°)이 헤드셋(약 96°)과 달라 형상이 더 크게 보입니다.
+- 미리보기는 WebGL(브라우저 안 Unity, OpenGL ES 3.0/ANGLE)로 그립니다. 헤드셋(Direct3D 11)과 같은 코드·셰이더지만 그래픽 API가 달라, 같은 spec을 Windows 플레이어로 그린 것과 평균 색 ΔE00 평균 약 0.1, 가는 윤곽선에서 최대 1.4 차이가 납니다(`docs/validation/webgl/README.md` 11절). 시야각(60°)이 헤드셋(약 96°)과 달라 형상이 더 크게 보입니다.
+- WebGL이 안 되어 `image`(정지 그림)로 내려가면 움직임은 보이지 않으므로 그 항목을 끕니다(G22). 이 경우 그 세션의 움직임은 후보·말한 값·기본값 그대로 남고, `selection.json`의 `adjustUnavailable.motion`에 꺼졌다는 기록이 남습니다.
 - 안개는 퍼진 안개가 아니라 작은 구름 덩이로 그려집니다. 헤드셋 안에서 구름 안으로 카메라가 들어가면 시야가 가려집니다.
 - 사전 측정 지시문("말씀하신 대로 나타낸")과 면담 첫 문구는 자기와 관련된 내용을 전제로 쓰였고, 모두 초안입니다.
 - 헤드셋 러너는 선택 기록의 출처 값과 해시 기준을 검사하고(G26·G27), `ifs-selection/0.1`·`0.2`를 모두 읽습니다. 매퍼 v2가 거리를 하한으로 올려도 헤드셋의 시작 자리는 실험 설정이라 말한 거리와 무관합니다(G33).

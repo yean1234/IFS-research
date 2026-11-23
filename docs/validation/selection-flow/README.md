@@ -1,7 +1,7 @@
 # 데스크톱 1–6단계 흐름: 후보 생성(D3) · 후보·조절 화면과 API(D5) · 기록(D9 데스크톱 쪽) · 사전 측정
 
 > **합성 데이터입니다.** 모든 대사와 응답은 AI가 쓴 합성 문장이고, 실제 참여자 자료가 아닙니다(AGENTS.md 6).
-> **문구는 모두 초안입니다.** 후보·조절·사전 측정 화면 문구 27개가 `status: draft`(IRB·연구팀 검토 전)입니다(protocolVersion 0.2.0).
+> **문구는 모두 초안입니다.** 후보·조절·사전 측정 화면 문구 28개가 `status: draft`(IRB·연구팀 검토 전)입니다(protocolVersion 0.3.0 — 0.3.0에서 G22용 문구 `adjust_item_unavailable` 하나를 더함).
 
 작업일 2026-11-23, 브랜치 `claude/prototype-v4-build`. 근거는 `docs/prompts/prototype-v4-build.md` 1절(흐름 표)·4절(D3·D5·D9)·6절(임시값)이고, 설계는 `docs/decisions.md` G14–G24를 따랐습니다. 미리보기는 메인 세션 판정 G25(WebGL을 쓸 수 없어 image 모드)를 따랐습니다. **같은 날 연구 책임자 결정 G31–G34를 반영했습니다**(색 맨 앞·색 변경 기록, 모형 없는 모양어의 형태 후보와 출처, 거리 하한의 두 값 기록, 밝기 제외·구별 규칙·선택 건너뜀). 세부는 `docs/decisions.md` 「G31–G34 구현 세부」.
 
@@ -104,11 +104,14 @@
 
 ## 5. 미리보기 어댑터(`chatbot/ifs_chatbot/preview.py`, `[preview] mode`)
 
-- **image**(새 흐름 기본값, G25): Unity Windows 미리보기 플레이어(`PreviewQueue`)를 띄워 두고, 폴더로 spec JSON과 덮어쓰기를 보내 PNG를 받습니다. 플레이어 경로는 설정값입니다(`image_player`, 저장소 밖 `../../webgl-build/preview-win/IFSPreview.exe`). 첫 요청 때 띄우며, `start_on_launch = true`로 두면 서버 시작 때 띄웁니다.
+- **webgl**(새 흐름 기본값, 2026-11-23 G12 연결): 같은 출처 `/preview/webgl/`(설정값 `webgl_dir`, 저장소 밖 `../../webgl-build/preview`)의 Unity WebGL 빌드를 iframe 하나로 띄웁니다(`web/stage.js`). iframe은 세션마다 한 번 만들어 `body` 아래에 고정하고(후보 화면에서는 화면 밖, 조절 화면에서는 미리보기 자리 위), Unity 호출은 큐 하나로 차례로 보내 응답(덮어쓰기 값·캡처 id)을 대조합니다. 후보 칸은 멈춘 상태로 캡처한 정지 그림, 조절 화면은 움직임이 재생되는 실시간 화면입니다. 준비 단계에서 형태 값마다 한 번씩 작게 그려 셰이더 컴파일 지연을 미리 치릅니다.
+  - **내려가는 조건**: 서버 시작 때 빌드 폴더(`index.html`)가 없으면 모든 세션이 image로 시작합니다. 브라우저에서 WebGL2를 못 쓰거나, Unity가 30초 안에 준비되지 않거나 시작에 실패하거나, 요청 하나가 15초를 넘기거나, 응답이 요청과 다르거나, WebGL 컨텍스트를 잃으면 화면이 서버에 알리고(`POST /api/sessions/{sid}/preview/client`) **그 세션만** image로(예비 플레이어가 없거나 이미 실패했으면 none으로) 내려갑니다. 실제로 쓴 방식(`preview.shown`), 내려간 기록(`preview.fallbacks`: 시각·from·to·이유·server/client), WebGL 렌더러 문자열(`preview.webgl`)이 `selection.json`에, 알림 `preview_fallback`과 이벤트 `selection:preview`가 세션 로그에 남습니다.
+  - image로 내려간 세션에서는 조절의 **움직임 줄을 끕니다**(G22, 문구 `adjust_item_unavailable`, 서버도 409, 기록 `adjustUnavailable.motion`). none(글 요약)은 요약 글에 `motion.type`이 바뀌어 나오므로 끄지 않습니다.
+  - 헤드리스 Chrome으로 S1–S9 + 조절 일곱 항목의 모든 값을 눌러 확인한 결과는 `docs/validation/webgl/README.md` 11절입니다.
+- **image**(예비, G25): Unity Windows 미리보기 플레이어(`PreviewQueue`)를 띄워 두고, 폴더로 spec JSON과 덮어쓰기를 보내 PNG를 받습니다. 플레이어 경로는 설정값입니다(`image_player`, 저장소 밖 `../../webgl-build/preview-win/IFSPreview.exe`). 첫 요청 때 띄우며, `start_on_launch = true`로 두면 서버 시작 때 띄웁니다.
   - 플레이어가 없거나, 뜨지 않거나, 요청 중에 죽거나, 오류를 돌려주면 none으로 자동 대체합니다. 대체 사실은 `/selection`·`/health`의 `preview.reason`, 세션 로그의 `preview_fallback`, 화면 경고 줄로 알립니다.
   - **이 PC에서 이미 빌드된 플레이어로 실제 연결을 확인했습니다.** 320×240에서 시작 0.71초(첫 장 461 ms), 이후 한 장 12–16 ms였습니다. 시나리오의 `candidate_*.png`·`final.png`와 `screens/image_*.png`가 그 결과입니다.
   - 테스트는 가짜 플레이어(`chatbot/tests/fixtures/fake_preview_player.py`)로 연결·정리·실패 대체(요청 중 종료, 준비 안 됨, 오류 응답)를 확인합니다.
-- **webgl**: 인터페이스만 있습니다. 같은 출처의 `/preview/webgl/`(설정값 `webgl_dir`)를 iframe으로 띄우고 `window.ifsPreview.load(spec)`·`applyOverrides(obj)`·`capture()`를 부릅니다. 빌드가 없으면 none으로 대체합니다. **실행해 보지 못했습니다.**
 - **none**: 후보의 속성 요약 글(`키 = 값`, 덮어쓴 키에 `*`)만 보여 줍니다(테스트·시나리오용).
 - 외부 CDN·글꼴·스크립트는 쓰지 않습니다. 테스트가 웹 파일에 `http(s)://`가 없는지 확인합니다.
 
@@ -163,6 +166,8 @@
 | `none_2_adjust.png` · `image_2_adjust.png` | 조절 화면(항목 패널 + 미리보기) |
 | `none_3_premeasure.png` | 사전 측정(지시문, 9문항, 1–7, 답하지 않기) |
 | `none_4_done.png` | 끝 |
+| `webgl_1_candidates_2x2.png` · `webgl_2_adjust.png` | WebGL 모드(2026-11-23 G12 연결, 헤드리스 Chrome, `docs/validation/webgl/tools/chatbot_e2e.py`): 후보 4개(정지 캡처)와 조절 화면(Unity 실시간 화면) — S2 |
+| `webgl_fallback_image_2_adjust_motion_off.png` | 브라우저에서 WebGL을 끈 경우: 맨 위 "정지 그림으로 보여 줍니다" 줄, 움직임 줄 꺼짐과 이유 문구(G22) — S1 |
 
 모든 화면 맨 위에 "초안 문구 사용 중" 경고 줄이 있습니다(X35 방식).
 
@@ -175,6 +180,7 @@ cd chatbot
 .venv\Scripts\python.exe -m ifs_chatbot.selection_sim --preview image --player <IFSPreview.exe> --out ..\docs\validation\selection-flow\runs
 .venv\Scripts\python.exe ..\docs\validation\selection-flow\capture_screens.py ..\docs\validation\selection-flow\screens none
 .venv\Scripts\python.exe -m ifs_chatbot.server --config v4 --backend offline --condition static   # 직접 해 보기(http://127.0.0.1:8000)
+# WebGL 모드로 화면 끝까지(헤드리스 Chrome, websockets·numpy·Pillow가 있는 python으로): docs/validation/webgl/README.md 11.8
 ```
 
 ## 9. 이 구현에서 정한 것(결정 문서에 없던 것)
@@ -190,9 +196,9 @@ cd chatbot
 
 ## 10. 하지 않은 것 · 확인하지 못한 것
 
-- WebGL 모드는 실행하지 않았습니다(빌드 없음).
+- `runs/`(image 모드, S1–S7)는 다시 만들지 않았습니다. WebGL 모드 결과는 `selection_sim`이 아니라 브라우저를 거쳐야 나오므로 `docs/validation/webgl/results/g12_chatbot_e2e_*.json`에 따로 두었습니다.
 - Unity 쪽 교차 테스트를 하지 않았습니다. 후보 덮어쓰기를 `SceneOverride.Validate`·`FormRenderPlan`에 넣는 테스트와, 조절 항목 × 형태별 반영 여부 표(G22)가 남아 있습니다. 모양 모형 목록(`shapeModels`)과 구별 규칙의 근거 코드(미리보기 움직임 멈춤)는 pytest가 C# 원문을 읽어 대조합니다.
 - 구별 규칙의 미확인 조합(안개·조각의 질감, 어두운 색의 투명도·질감)은 그림 차이를 체계적으로 재지 않았습니다.
-- image 미리보기는 움직임을 멈추고 그리므로 조절 화면에서 움직임을 바꿔도 그림이 바뀌지 않습니다(G22의 "모든 조작이 화면에 반영"에 어긋남. 이번 범위 밖).
+- image 미리보기는 움직임을 멈추고 그리므로 조절 화면에서 움직임을 바꿔도 그림이 바뀌지 않습니다. 2026-11-23 G12 연결에서 image로 내려간 세션은 움직임 줄을 끄도록 했습니다(위 5절). WebGL 조절 화면에서는 움직임이 재생됩니다.
 - `form.base`(G21)는 스키마에 없어 형태 값은 `form.type` 네 개뿐입니다.
 - `docs/chatbot-design.md`에 후보 단계의 유도 위험을 적는 일은 이번 범위(chatbot/·shared 새 파일·이 폴더) 밖이라 하지 않았습니다.

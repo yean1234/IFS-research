@@ -439,3 +439,19 @@ G30(첫 묶음 승인)과 G21·G22에 따라 기본 형상 경로를 구현하�
 | 조절 반영(G22) | 기본 형상마다 색(h·l)·밝기·투명도·질감 이웃 단계에서 렌더 계획 JSON이 달라짐, 크기·움직임은 해석값, 형태 항목은 렌더러가 바뀜(dotnet), 실제 재질·배율·셰이더는 Unity 테스트로 확인. 반영되지 않는 조합 없음 → `adjustItems.availability`는 그대로 비움 | 회전 대칭 형상의 회전(Spin)은 조절 움직임 값에 회전이 없어 끌 항목이 없음 |
 | stage.js | 고치지 않음 | 범주 항목을 서버가 준 값 목록대로 번호 버튼으로 그려 9값이 그대로 나옴(이름 없음 — 참여자가 쓰지 않은 사물 이름을 화면에 쓰지 않음). WebGL 어댑터 부분은 지시대로 손대지 않음 |
 | 검증 범위 | 합성 20문장 + 목업 14개(dev·목업만, held-out 열지 않음), 캡처 해상도 눈당 1032 × 1104. 그림 판정은 AI | 시간. 팀원 판정·헤드셋 확인은 하지 않음 |
+
+#### WebGL 연결 세부 (2026-11-23, 하위 에이전트가 정함 — 위 결정 행은 고치지 않음)
+G12(WebGL 미리보기)를 챗봇 웹 화면에 붙이면서 정한 것. G25 경로(상주 Windows 플레이어 PNG)는 예비로 남김. 측정·재현은 `docs/validation/webgl/README.md` 11절.
+
+| 항목 | 정한 것 | 이유 |
+| --- | --- | --- |
+| 모드 | `chatbot/config/v4.toml` `[preview] mode = "webgl"`. `default.toml`·`pilot.toml`은 그대로(미리보기 절이 없어 none) | 지시. 기존 프로필 동작을 바꾸지 않음 |
+| 내려가는 순서 | 세션마다 webgl → image(예비 플레이어가 있고 아직 실패하지 않았으면) → none(글 요약). 서버 시작 때 빌드 폴더(`webgl_dir/index.html`)가 없으면 그 서버의 모든 세션이 image로 시작. 브라우저 쪽 실패(WebGL2 없음, Unity 준비 30 s 초과·시작 실패, 요청 하나 15 s 초과, 덮어쓰기·캡처 응답 불일치, 컨텍스트 잃음)는 그 세션만 내림(`POST /api/sessions/{sid}/preview/client`). 한도 두 개는 설정값(`webgl_ready_timeout_s`·`webgl_request_timeout_s`) | 같은 서버에 다른 브라우저가 붙을 수 있어 브라우저 실패를 서버 전체로 넓히지 않음. 플레이어 실패는 프로세스 단위라 서버 전체에서 image를 닫음(전과 같음) |
+| 기록 | `selection.json` `preview`에 스키마 필드(requested·mode·reason) + `serverMode`, `shown`(단계별로 실제로 그린 방식), `fallbacks[]`(at·from·to·reason·source server/client·stage), `webgl`(renderer·vendor·graphicsDevice·version·readyMs·warmupMs). 세션 로그 알림 `preview_fallback`, 이벤트 `selection:preview`. 형식 버전은 0.2 그대로(preview는 추가 속성을 막지 않음) | 지시(쓴 방식·이유·렌더러). 렌더러 문자열은 GPU 이름·그래픽 API 문자열이라 참여자를 가리키지 않음. 사용자 에이전트·화면 크기 등은 적지 않음. 서버는 정해진 키만, 200자까지 받음 |
+| iframe | 세션마다 하나를 `document.body` 아래 host에 만들고 옮기지 않음. 후보 화면에서는 화면 밖(-10000 px, 320×240, 보이지 않지만 그려짐), 조절 화면에서는 자리(`.live-slot`) 위에 겹쳐 둠(ResizeObserver). 사전 측정으로 가면 닫음 | 재현: 이전 코드는 조절 버튼마다 iframe이 다시 로드됐고(load 3회), 후보 화면에서는 iframe이 문서에 없어 그림이 하나도 안 나왔음 |
+| 요청 | Unity 호출을 큐 하나로 차례로 보냄. 덮어쓰기는 Unity가 돌려준 `overrides`를 요청과 대조(키 정렬, 소수 6자리), 캡처는 요청 id(`q<번호>-<대상>`)를 대조. 어긋나면 실패로 보고 내림. 같은 후보·덮어쓰기 캡처는 페이지 안에서 다시 찍지 않음 | 템플릿이 load 응답을 가장 오래된 요청에 짝짓기 때문에 겹친 호출은 엇갈릴 수 있음. Unity C#은 바꾸지 않음 |
+| 미리 그리기 | Unity 준비 → spec 로드 → `setFrozen(true)` → 형태 값 9개 × (기본 불투명도, 0.5)를 64×48로 한 번씩 캡처(서버 `ui_config.previewWarmup`) → 그 뒤 후보 캡처. 화면에 보이지 않고 기록하지 않음(걸린 시간만 `webgl.warmupMs`) | 첫 mist·fragments·반투명 렌더의 셰이더 컴파일(측정 0.2–0.8 s)을 후보·조절 전에 치름. 기본 형상은 첫 렌더 지연이 없었지만(13 ms 안팎) 형태 값 목록을 그대로 쓰는 편이 단순함 |
+| 움직임 | 후보 칸은 `setFrozen(true)` 뒤 캡처(값 표 구별 규칙 `still_preview_motion`의 전제 유지). 조절 화면은 `setFrozen(false)`로 움직임 재생 | G22·G34 |
+| image의 움직임(G22) | 세션 방식이 image면 조절의 움직임 줄을 끄고(버튼 비활성) 새 초안 문구 `adjust_item_unavailable`("이 화면에서는 바꿔도 보이지 않아 꺼 두었습니다.")를 그 줄에 붙임. 서버도 그 세션의 움직임 조절을 409로 거부. 기록 `selection.json` `adjustUnavailable.motion` = {reason `still_image_preview`, previewMode, since, stage}, 세션 로그 `selection:adjusted`에 `adjustUnavailable`. none(글 요약)은 요약 글에 `motion.type`이 바뀌어 나오므로 끄지 않음. 고정 문구 protocolVersion 0.2.0 → 0.3.0 | G22 "반영되지 않는 조합은 그 항목을 끈다". 정지 그림에서 움직임만 바꾸게 두면 참여자가 효과를 볼 수 없는 값을 고르게 됨. 값 표 `adjustItems.availability`(형태 상태별)는 손대지 않고 미리보기 방식별 표(`selection.STILL_PREVIEW_UNAVAILABLE`)로 둠 |
+| WebGL 템플릿 | Unity 시작 실패·로더 실패 때 `ifsPreview.ready`를 거부, Unity `ready` 알림을 `ifsPreview.unityInfo`로 보관, `webglcontextlost`면 대기 요청을 모두 거부, 빈 아이콘(`data:,`)으로 favicon 404를 없앰. 챗봇 `index.html`도 같은 빈 아이콘 | 전에는 시작 실패 때 ready가 영원히 기다려 어댑터가 실패를 알 수 없었음 |
+| 예비 플레이어 | `v4.toml`의 `image_player`(`../../webgl-build/preview-win`)를 WebGL과 같은 복사본·같은 소스로 다시 빌드 | 그 전 플레이어는 D6 커밋보다 먼저 빌드된 것(빌드 시각 기준)이라 `form.base` 코드가 없었음. 옛 플레이어로 기본 형상을 그려 보지는 않았음 |

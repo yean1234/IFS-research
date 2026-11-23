@@ -1,6 +1,8 @@
 # WebGL 미리보기 시험 빌드 (D4, 결정 G12)
 
 > **2026-11-23 재시도(WebGL 모듈 설치 뒤)**: 빌드·브라우저 표시·플레이어 대비 차이를 실제로 확인했습니다. 결과는 맨 아래 [10절](#10-2026-11-23-재시도-webgl-모듈-설치-뒤)에 있습니다. 1–9절은 처음 시도(모듈 설치 실패) 기록이라 그대로 둡니다.
+>
+> **2026-11-23 챗봇 연결(G12)**: 기본 형상이 들어간 소스로 다시 빌드하고, 챗봇 웹 화면의 미리보기를 WebGL로 연결했습니다(그림 방식은 예비). 이전 어댑터 문제 재현, 고친 것, 헤드리스 Chrome으로 면담 뒤 단계 전체를 눌러 본 결과, 기본 형상을 넣어 다시 잰 플레이어 대비 차이는 [11절](#11-챗봇-연결-2026-11-23-g12)에 있습니다.
 
 2026-11-23. 챗봇 웹 화면 안에서 형상 후보를 Unity 렌더(같은 SceneLoader, 같은 셰이더)로 보여 줄 수 있는지 확인한 기록입니다. 쓴 spec은 합성 13개(`docs/validation/render/specs`)와 held-out v1 11개(`docs/validation/e2e/specs`에서 형태가 다른 것: H01·H02·H03·H05·H08·H10·H12·H16·H18·H20·H28)입니다. 코퍼스 원문은 열지 않았습니다.
 
@@ -303,3 +305,107 @@ python -I webgl/tools/cdp_shot.py <chrome> http://127.0.0.1:8766/index.html $W/r
 ```
 
 이번에 고치거나 더한 도구는 다음과 같습니다. `serve.py`·`driver.html`·`queue_client.py`는 덮어쓰기 사례(`--cases`, `override_cases.json`)를 받게 했고, 캔버스 스크린샷용 `cdp_shot.py`(DevTools 프로토콜, 외부 패키지 `websockets`)와 단계 파일 `cdp_steps.json`을 새로 넣었습니다. 결과 JSON에 있던 로컬 경로는 `<repo>`, `<repo 밖>`, `<임시 프로필>`로 바꿔 두었습니다.
+
+## 11. 챗봇 연결 (2026-11-23, G12)
+
+챗봇 웹 화면(`chatbot/ifs_chatbot/web/stage.js`)의 형상 미리보기를 WebGL로 연결했습니다. 새 흐름 설정(`chatbot/config/v4.toml`)의 `[preview] mode`가 `"webgl"`이고, 그림(image, 상주 Windows 플레이어 PNG, G25) 방식은 WebGL이 안 될 때의 예비로 남겼습니다. 기본 설정(`default.toml`·`pilot.toml`)은 바뀌지 않았습니다. 정한 세부는 `docs/decisions.md` 맨 끝 「WebGL 연결 세부」에 있습니다.
+
+### 11.1 요약
+
+| 항목 | 결과 |
+| --- | --- |
+| 다시 빌드 | 기본 형상 5개(`form.base`, 스키마 2.2.0)가 들어간 소스로 WebGL·Windows 플레이어를 같은 저장소 밖 복사본에서 다시 빌드. WebGL 73.5 s(Library 재사용), 오류 0·경고 0, 47.63 MB(`.wasm` 36.91, `.data` 10.26, `framework.js` 0.44). Windows 플레이어 4.9 s, 94.99 MB. 저장소 파일은 바뀌지 않음 |
+| 이전 어댑터 문제(재현) | 이전 `stage.js`(커밋 `0093366`)를 그대로 내보내 헤드리스 Chrome으로 눌러 봄. ① 후보 화면에서 iframe이 문서에 붙지 않아 15초 뒤에도 후보 그림 4칸이 모두 비어 있었고 오류·대체도 없었음 ② 조절 버튼을 누를 때마다 iframe이 다시 로드됨(load 1 → 2 → 3회, Unity가 매번 다시 시작) ③ 두 번 조절한 뒤 화면의 Unity에는 형상이 아예 없었음(`로드된 형상이 없습니다`). 캐시해 둔 `loaded`가 사라진 창을 가리켜 새 창에 spec이 들어가지 않은 것. 서버 쪽 현재 값은 바뀌어 있었음. 결과 `results/g12_repro_old_adapter.json` |
+| 고친 뒤 WebGL 끝에서 끝까지 | 합성 시나리오 S1–S9 + 조절 일곱 항목의 모든 값을 누르는 세션 1개, 헤드리스 Chrome 157(하드웨어 ANGLE D3D11, RTX 5080). 10개 세션 모두 webgl로 끝까지(후보 → 선택 → 조절 → 사전 측정 → `selection.json`·`premeasure.json` 저장, `runnerReady` true), 시나리오 기대값 실패 0, 면담 뒤 단계 LLM 호출 0, **콘솔 오류 0** |
+| iframe 재시작 | 0회(10개 세션 모두 처음 창에 심은 표시가 끝까지 같음, iframe load 추가 0) |
+| 후보 그림 섞임 | 없음. 후보가 있는 8개 세션 모두, 각 칸 그림을 같은 spec·덮어쓰기로 예비 플레이어가 그린 그림 4장과 비교한 화면 전체 평균 ΔE00 행렬에서 자기 후보가 행마다 가장 가까움(대각 0.14–0.19, 다른 후보 0.17–6.24). 칸의 `data-target`도 모두 일치 |
+| 조절 값마다 화면 | 바뀜. 모든 값 세션에서 54단계 모두 브라우저 화면이 바뀜. 가장 작은 변화는 기본 형상 물방울 + 불투명도 0.8에서 질감 0.7 → 0.9(최대 채널 차 7/255, 8/255 넘는 화소 0). 누름 → Unity에 얹힘 중앙값 26.3 ms, 최대 104 ms(n = 65) |
+| 움직임(조절 화면) | 재생됨. 움직임 값 5개(floating·swaying·trembling·pounding·sinking) 모두 0.7초 사이에 화면이 바뀜(8/255 넘는 화소 267–4416개), still로 돌리면 0. 후보 칸은 계속 정지 그림(캡처 전에 `setFrozen(true)`) |
+| 기본 형상 | 조절 "형태"의 9값(5개 기본 형상 포함)이 모두 WebGL에서 그려짐(시작 값 mist + 눌러 바꾼 8값). 눌러 바꾼 8값은 같은 덮어쓰기를 플레이어로 그린 320×240과 화면 전체 평균 ΔE00 0.156–0.163(같은 플레이어 대비 후보 대각과 같은 수준). 반투명 그릇(담는 것 + 투명도 0.4)도 그려짐. 그림 `results/g12_adjust_forms_webgl_vs_player.png`(위 WebGL, 아래 플레이어) |
+| 첫 후보까지 | 새 브라우저 프로필에서 [다음 단계로] → 후보 4칸이 다 참: 2.36 s(Unity 준비 0.73 s + 미리 그리기 1.53 s 포함). 같은 브라우저로 다시 열면 0.42–0.48 s(준비 0.17–0.21 s, 미리 그리기 0.18–0.19 s) |
+| WebGL을 막았을 때 | 빌드 폴더 이름을 바꾸고 서버를 띄우면 서버가 image로 시작(`WebGL 빌드가 없음(../../webgl-build/preview/index.html) → image`), 브라우저에서 WebGL을 끄면(`--disable-webgl`) 화면이 서버에 알려 그 세션이 image로 내려감. 두 경우 모두 4개 세션이 image로 끝까지 가고, `selection.json` `preview.fallbacks`에 from·to·이유·`server`/`client`, 세션 로그에 `preview_fallback` 알림, 화면 맨 위에 경고 줄, 움직임 줄 꺼짐(6값 모두 비활성, 기록 `adjustUnavailable.motion`). 콘솔 오류 0 |
+| WebGL ↔ Windows 플레이어 | spec 44개(합성 13 + held-out v1 11 + **기본 형상 합성 20**) + 덮어쓰기 14개. 평균 색 ΔE00 평균 0.112·최대 1.358(H08). 기본 형상 20개만: 평균 0.133·최대 0.763(L5 가는 엉킨 선), 덮인 화소 차 최대 4화소. 이전 24개의 값은 10.5절과 같음(평균 0.126·최대 1.358) |
+
+### 11.2 고친 것
+
+| 문제 | 고친 방법 |
+| --- | --- |
+| 다시 그릴 때 iframe이 옮겨져 다시 로드됨, 후보 화면에서는 문서에 없음 | iframe을 세션마다 한 번 만들어 `document.body` 아래 host에 두고 옮기지 않음. 후보 화면에서는 화면 밖(-10000 px, 320×240 — 보이지 않지만 그려짐), 조절 화면에서는 미리보기 자리(`.live-slot`, 4:3) 위에 겹쳐 둠(ResizeObserver로 따라감). 사전 측정으로 가면 닫음 |
+| 후보 캡처와 조절이 같은 인스턴스를 따로 부름 | 모든 Unity 호출을 큐 하나로. 덮어쓰기는 Unity가 돌려준 `overrides`를 요청과 대조, 캡처는 요청 id를 대조. 요청마다 15 s 한도 |
+| `.catch(() => {})`가 실패를 숨김 | 실패(WebGL2 없음, Unity 준비 30 s 초과·시작 실패, 요청 실패·시간 초과·응답 불일치, 컨텍스트 잃음)를 `POST /api/sessions/{sid}/preview/client`로 알림 → 서버가 그 세션을 image(예비 플레이어가 없거나 실패했으면 none)로 내리고 기록한 뷰를 돌려줌 → 다시 그림. image가 실패하면(PNG 오류) 전처럼 서버가 none으로 내림 |
+| 첫 그리기의 셰이더 컴파일 지연 | 준비 단계에서 형태 값 9개 × (기본 불투명도, 0.5)를 64×48로 한 번씩 캡처(서버 `previewWarmup`). 그 뒤 조절에서 처음 고르는 형태도 26 ms 안팎 |
+| 쓴 방식이 기록되지 않음 | `selection.json` `preview`에 `serverMode`·`shown`(단계별로 실제로 그린 방식)·`fallbacks`·`webgl`(렌더러·벤더·Unity 그래픽 장치·WebGL 버전·준비 ms·미리 그리기 ms). 렌더러 문자열 예: `ANGLE (NVIDIA, NVIDIA GeForce RTX 5080 (0x00002C02) Direct3D11 vs_5_0 ps_5_0, D3D11)` — GPU 이름이라 참여자를 가리키지 않음. 사용자 에이전트는 적지 않음 |
+| 템플릿: Unity 시작 실패 때 `ready`가 끝없이 기다림 | `ifsPreview.ready`를 거부, Unity `ready` 알림을 `ifsPreview.unityInfo`로 보관, `webglcontextlost`면 대기 요청을 거부, `favicon.ico` 404를 빈 아이콘으로 없앰(챗봇 `index.html`도) |
+| image에서 움직임이 안 보임(G22) | 세션 방식이 image면 움직임 줄을 끄고 초안 문구 `adjust_item_unavailable`을 붙임. 서버도 거부(409), 기록 `adjustUnavailable` |
+
+Unity C#(Placement·Rendering 포함)은 고치지 않았습니다. WebGL 템플릿(`unity/Assets/WebGLTemplates/IFSPreview/index.html`)만 바꿨습니다.
+
+### 11.3 image로 내려가는 조건
+
+| 언제 | 누가 알아채나 | 범위 | 기록 |
+| --- | --- | --- | --- |
+| 서버 시작 때 `webgl_dir/index.html`이 없음 | 서버 | 그 서버의 모든 세션 | `fallbacks[0].source = "server"`, `/api/health`·화면 경고 줄 |
+| 브라우저가 WebGL2 컨텍스트를 못 만듦 | 화면(`stage.js`) | 그 세션 | `source = "client"`, 이유 `이 브라우저에서 WebGL2를 쓸 수 없음` |
+| Unity가 `webgl_ready_timeout_s`(30 s) 안에 준비되지 않거나 시작 실패 | 화면 | 그 세션 | 이유에 단계(`준비: …`) |
+| 요청 하나가 `webgl_request_timeout_s`(15 s)를 넘김, 오류, 응답이 요청과 다름 | 화면 | 그 세션 | 이유에 요청 이름(예: `후보 캡처 c-…: …`) |
+| WebGL 컨텍스트를 잃음 | 템플릿 → 화면 | 그 세션 | 이유 `WebGL 컨텍스트를 잃음` |
+
+예비 플레이어(`image_player`)가 없거나 이 서버 프로세스에서 이미 한 번 실패했으면 image 대신 none(글 요약)으로 내려갑니다. 내려간 세션이 다시 webgl로 올라가지는 않습니다.
+
+### 11.4 WebGL ↔ Windows 플레이어 (기본 형상 포함, 다시 잼)
+
+10.5절과 같은 방법(`tools/compare.py`, 800×600, scene·black·white 세 장, Unity 안 렌더 텍스처)입니다. 기본 형상 spec 20개는 `docs/validation/base-forms/make_specs.py shapes`로 만들었고(저장소 밖), 덮어쓰기 사례에 기본 형상 8개(`tools/override_cases_base.json`: R07 → 다섯 형상, 반투명 그릇, 안개 → 불꽃, 그릇 → 없음)를 더했습니다.
+
+| 묶음 | n | 평균 색 ΔE00 평균 | 최대 | 화소 ΔE00(덮인 곳) 최대 | 최대 채널 차 |
+| --- | --- | --- | --- | --- | --- |
+| 이전 24개(합성 13 + held-out 11) | 24 | 0.126 | 1.358(H08) | 1.739 | 42 |
+| 기본 형상 합성 20개 | 20 | 0.133 | 0.763(L5) | 0.860 | 30 |
+| 덮어쓰기(이전 6) | 6 | 0.058 | 0.138 | 0.300 | 24 |
+| 덮어쓰기(기본 형상 8) | 8 | 0.058 | 0.130 | 0.267 | 30 |
+| 전체 | 58 | 0.112 | 1.358 | 1.739 | 42 |
+
+- spec별 표 `results/g12_cmp_player_vs_webgl.md`, 원자료 `results/g12_cmp_player_vs_webgl.json`, WebGL 쪽 드라이버 기록 `results/g12_webgl_driver.json`.
+- 기본 형상은 모두 `renderPath` = `base:<형상>`이었고(대체 경로 없음), 덮인 화소 수는 D3 하나만 4화소 다르고 나머지는 같았습니다. 가장 큰 차이(L5)는 가는 엉킨 선이라 윤곽선 화소의 비중이 큰 경우입니다(10.5절 H08과 같은 이유로 봄).
+- 첫 렌더 지연(이 빌드): 첫 mist 814 ms, 첫 fragments 469 ms, 첫 반투명 blob(H01) 218 ms. 기본 형상은 첫 렌더도 12–14 ms였습니다. 상주 플레이어 한 장 왕복은 중앙값 17.5 ms(n = 44).
+
+### 11.5 챗봇 끝에서 끝까지 확인 방법
+
+`tools/chatbot_e2e.py`가 챗봇 서버(`tools/chatbot_e2e_server.py`, `chatbot/.venv`의 python, 127.0.0.1)를 띄우고, 합성 시나리오의 면담을 서버 안에서 정적 조건으로 끝낸 뒤(LLM 없음), 헤드리스 Chrome을 DevTools 프로토콜로 몰아 [다음 단계로] → 후보 → 선택 → 조절 → 사전 측정 제출까지 화면의 버튼을 누릅니다. 단계마다 iframe 창이 같은지, 후보 칸 그림이 그 후보의 것인지(예비 플레이어로 따로 그린 그림과 대조), 조절 뒤 화면(스크린샷)이 바뀌는지, 움직임이 시간에 따라 바뀌는지, `selection.json`이 시나리오 기대값과 같은지(`selection_sim.check`), LLM 호출 수, 콘솔 오류를 모읍니다. 결과는 `results/g12_chatbot_e2e_webgl.json`·`_blocked-dir.json`·`_no-webgl2.json`(PNG는 저장소 밖). 화면 캡처 셋을 `docs/validation/selection-flow/screens/webgl_*.png`에 두었습니다.
+
+- 콘솔 경고(오류 아님): Unity 시작 때의 `WebGL: INVALID_ENUM: getInternalformatParameter`·`JS_FileSystem_Sync()` 사용 중단 예고(10.4와 같음), 시나리오 S6·S7·S9 spec의 SceneLoader 안내(모형 없는 모양어, `form.base=sheet` 그리지 않음 — 규칙대로), WebGL을 끈 실행에서 어댑터가 남긴 `[preview] webgl 실패 → 서버에 알림` 한 줄.
+
+### 11.6 확인하지 않은 것
+
+- **창이 있는(헤드리스가 아닌) 브라우저**, Edge, 다른 GPU·PC, 소프트웨어 렌더(SwiftShader)에서의 챗봇 화면. 이번에는 이 PC의 헤드리스 Chrome(하드웨어 GPU)만 봤습니다.
+- 마우스로 끌어 돌리기(조절 화면의 iframe 안 드래그). 코드는 그대로이고 눌러 보지 않았습니다.
+- Unity 시작이 30 s를 넘기거나 요청이 15 s를 넘기는 경우, WebGL 컨텍스트를 잃는 경우를 실제로 일으켜 보지 않았습니다(WebGL2 없음과 빌드 폴더 없음만 일부러 일으킴). 이 경로들은 같은 `fail()` → 서버 알림을 탑니다.
+- 오래 켜 두었을 때의 메모리, 여러 탭에서 같은 세션을 여는 경우.
+- 사람이 보는 첫 후보까지의 시간은 로컬 서버·이 PC 기준입니다. 첫 페이지마다 47.6 MB를 받습니다(데이터 캐싱 끔, 브라우저 HTTP 캐시는 씀 — 두 번째부터 빨라진 이유로 봄, 따로 확인하지 않음).
+- Unity EditMode·dotnet 테스트는 다시 돌리지 않았습니다(Unity C#을 바꾸지 않음, 템플릿 HTML만 바꿈).
+
+### 11.7 사람이 정할 것
+
+`docs/morning-todo.md` 「G12 WebGL 연결」에 모았습니다(움직임 끄기와 새 문구, WebGL과 헤드셋의 색 차이, 첫 후보까지 시간, 렌더러 문자열 기록, 실제 브라우저 확인, 거의 안 보이는 조절 조합).
+
+### 11.8 재현
+
+```bash
+U="C:\Program Files\Unity\Hub\Editor\6000.0.85f2\Editor\Unity.exe"; W=<repo 밖>/webgl-build
+# PowerShell에서: robocopy <repo>\unity $W\proj /MIR /XD Library Temp Logs obj UserSettings   (종료 코드 0–7 = 정상)
+"$U" -batchmode -buildTarget WebGL -projectPath $W/proj -executeMethod IFS.SceneSpec.EditorTools.PreviewBuild.BuildWebGLPreview \
+  -outDir $W/preview -reportPath $W/preview-build-report.json -logFile <로그>
+"$U" -batchmode -projectPath $W/proj -executeMethod IFS.SceneSpec.EditorTools.PreviewBuild.BuildWindowsPreview -outDir $W/preview-win -logFile <로그>
+"$U" -batchmode -projectPath $W/proj -executeMethod IFS.SceneSpec.EditorTools.PreviewBuild.BuildWindowsPreview -outDir $W/preview-win-cp -logFile <로그>
+# 기본 형상 spec(저장소 밖)
+chatbot/.venv/Scripts/python.exe docs/validation/base-forms/make_specs.py shapes $W/g12/specs-base
+# WebGL ↔ 플레이어: 10.8과 같고, spec에 $W/g12/specs-base/[CDFLS]*.json을, --cases에 override_cases.json과 override_cases_base.json을 합친 파일을 줌
+# 챗봇 끝에서 끝까지(websockets·numpy·Pillow가 있는 python. 서버는 chatbot/.venv의 python으로 이 스크립트가 띄움)
+cd docs/validation/webgl/tools
+python chatbot_e2e.py --out $W/g12/e2e-webgl --label webgl --sweep --ref-player $W/preview-win-cp/IFSPreview.exe
+#   빌드 폴더를 막은 경우: $W/preview 이름을 바꾸고 같은 명령(--label blocked-dir), 끝나면 이름을 되돌림
+python chatbot_e2e.py --out $W/g12/e2e-no-webgl2 --label no-webgl2 --sweep --ref-player $W/preview-win-cp/IFSPreview.exe \
+  --scenarios S1_form_said S3_all_said S8_base_said_edited --extra=--disable-webgl
+```
+
+- 이전 어댑터 재현은 `chatbot_e2e_server.py --web-dir <이전 커밋의 web 폴더를 꺼낸 곳>`으로 서버를 띄우고 [다음 단계로]·후보·조절 두 번을 누른 뒤 iframe 수·load 횟수·후보 그림 유무를 본 것입니다(스크립트는 저장소에 넣지 않음, 결과만 `results/g12_repro_old_adapter.json`).
+- 빌드 산출물·PNG·로그는 모두 `<repo 밖>/webgl-build/` 아래에 있고 git에 넣지 않았습니다. 결과 JSON의 로컬 경로는 `<repo>`, `<repo 밖>`으로 바꿨습니다.

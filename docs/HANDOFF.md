@@ -8,7 +8,18 @@
 
 > 갱신: 2026-11-23, 하위 에이전트(Claude)가 단계 C·D10 문서 작업 끝에 적음. 같은 날 G31–G34 구현, 이어서 D6(기본 형상) 구현 뒤 바로 아래 소절을 더함. 지시문은 `docs/prompts/prototype-v4-build.md`(2026-11-22 클라우드 세션에서 연구 책임자와 정함). 결정은 `docs/decisions.md`의 「형상 표현 범위와 생성 모델」 절(G1–G28)과 X79–X85. 아래 ★ 절부터는 이전 작업의 기록이고 그대로 뒀습니다.
 
-### 기본 형상 첫 묶음 D6 구현 (2026-11-23, 하위 에이전트 Claude) — 이 절의 가장 최근 작업
+### G12 WebGL 미리보기 챗봇 연결 (2026-11-23, 하위 에이전트 Claude) — 이 절의 가장 최근 작업
+
+챗봇 웹 화면의 형상 미리보기를 WebGL로 연결하고, 그림(image, G25) 방식은 예비로 남겼습니다. 상세 `docs/validation/webgl/README.md` 11절, 정한 세부 `docs/decisions.md` 맨 끝 「WebGL 연결 세부」(G25가 예비 경로가 된 것은 메인 세션이 G36으로 적을 예정).
+
+- **빌드**: 저장소 밖 복사본(`<repo 밖>/webgl-build/proj`, robocopy, Library 재사용)에서 WebGL(`preview/`, 47.63 MB, 73.5 s, 오류 0)과 Windows 플레이어(`preview-win/` = v4 예비, `preview-win-cp/` = 비교용)를 같은 소스로 다시 빌드. 이전 `preview-win`은 D6 전 빌드였음.
+- **설정**: `chatbot/config/v4.toml` `[preview] mode = "webgl"`(+ `webgl_ready_timeout_s` 30, `webgl_request_timeout_s` 15). 기본·pilot 프로필은 그대로.
+- **코드**: `web/stage.js` WebGL 어댑터 다시 씀(iframe 고정·큐·응답 대조·실패 알림·미리 그리기·조절 화면 움직임 재생), `preview.py`(webgl일 때 image 예비, 세션별로 내림), `selection.py`(세션별 미리보기 방식·기록 `preview.shown/fallbacks/webgl`, image에서 움직임 끄기 `adjustUnavailable`, `previewWarmup`), `server.py`(`POST …/preview/client`, image PNG는 세션 방식 기준), 고정 문구 `adjust_item_unavailable`(protocolVersion 0.3.0, draft), WebGL 템플릿(시작 실패 때 ready 거부 등). Unity C#은 고치지 않음.
+- **재현한 이전 문제**: 후보 화면에서 iframe이 문서에 없어 그림 0장(오류 없음), 조절 버튼마다 iframe 다시 로드, 두 번 조절 뒤 화면의 Unity에 형상이 없음.
+- **확인(직접 돌림)**: pytest 파일별 `-m "not live"` **829 통과·6 xfail·실패 0**(+6). 헤드리스 Chrome으로 S1–S9 + 조절 모든 값 세션: 모두 webgl로 끝까지, iframe 재시작 0, 후보 그림 섞임 없음, 조절 54단계 모두 화면 바뀜, 움직임 재생, 기본 형상 5개·반투명 그릇 그려짐, 콘솔 오류 0, 면담 뒤 LLM 호출 0. 빌드 폴더를 막거나 브라우저 WebGL을 끄면 image로 내려가고 기록됨. WebGL ↔ 플레이어 평균 색 ΔE00 평균 0.112·최대 1.358(기본 형상 20개 최대 0.763). dotnet·Unity EditMode는 C#을 안 바꿔서 다시 돌리지 않음.
+- 하지 않은 것: 창이 있는 브라우저·다른 PC, 끌어 돌리기, 시간 초과·컨텍스트 잃음 실제 발생, `selection-flow/runs/` 다시 만들기. 사람이 정할 것은 `docs/morning-todo.md` 「G12 WebGL 연결」.
+
+### 기본 형상 첫 묶음 D6 구현 (2026-11-23, 하위 에이전트 Claude)
 
 연구 책임자 결정 G30(첫 묶음 5개 승인)에 따라 단계 D6을 끝냈습니다. 정한 세부는 `docs/decisions.md` 맨 끝 「D6 구현 세부」, 그림과 판정은 `docs/validation/base-forms/README.md`.
 
