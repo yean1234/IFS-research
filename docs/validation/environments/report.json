@@ -1,0 +1,442 @@
+{
+  "tool": "PlacementEnvironmentCapture.Capture (G56)",
+  "unityVersion": "6000.0.85f2",
+  "date": "2026-11-24",
+  "imageSize": "1600x900",
+  "eye": "(0, 1.6, 0) — '나'의 자리, 눈높이",
+  "formDistanceM": 2.6,
+  "azimuthsDeg": [
+    -40.0,
+    -24.0,
+    -8.0,
+    8.0,
+    24.0,
+    40.0
+  ],
+  "contrastMethod": "형상 영역 = 모두 그린 장면과 그 형상만 보이지 않게 한 장면(렌더러를 ShadowsOnly로 — 제 그림자는 남아 형상 영역에 섞이지 않음)이 어느 채널이든 3/255 이상 다른 화소. ΔL* = 영역 평균 L*(형상) − 같은 영역 평균 L*(바로 뒤 배경). ΔE00 = 두 평균 Lab의 CIEDE2000. sRGB 8비트 렌더 화소 기준.",
+  "forms": [
+    {
+      "id": "M15",
+      "spec": "mock-forms/specs/v1/M15.v1.json",
+      "note": "어두운 형상(l 0.06, 불투명, 기본 형태)"
+    },
+    {
+      "id": "M02",
+      "spec": "mock-forms/specs/v1/M02.v1.json",
+      "note": "검은 연기(안개, l 0.08, opacity 0.7)"
+    },
+    {
+      "id": "M01",
+      "spec": "mock-forms/specs/v1/M01.v1.json",
+      "note": "잿빛 안개(l 0.55, s 0.03, opacity 0.5)"
+    },
+    {
+      "id": "C01",
+      "spec": "cloud/specs/C01_cloud_white.json",
+      "note": "흰 구름(안개, l 0.95)"
+    },
+    {
+      "id": "R08",
+      "spec": "render/specs/R08_blob_green_bright.json",
+      "note": "초록 덩어리(h 0.33, l 0.5)"
+    },
+    {
+      "id": "M05",
+      "spec": "mock-forms/specs/v1/M05.v1.json",
+      "note": "짙은 파랑 덩어리(h 0.639, l 0.25)"
+    }
+  ],
+  "nature": {
+    "assetId": "farmland_overcast",
+    "sha256": "6cae5ca0bd967a67c542381710ff1d285656ce5234ee3a291f417f35533797c1"
+  },
+  "candidates": [
+    {
+      "candidate": "B",
+      "environment": "neutral",
+      "placementAssist": true,
+      "applied": "neutral",
+      "shots": [
+        {
+          "file": "B_neutral_low.png",
+          "formHeightM": 1.2,
+          "cameraPitchDeg": 10.0,
+          "verticalFovDeg": 70.0,
+          "contrast": [
+            {
+              "form": "M15",
+              "pixels": 19694,
+              "formL": 14.7,
+              "backgroundL": 64.09,
+              "deltaL": -49.39,
+              "deltaE00": 43.08
+            },
+            {
+              "form": "M02",
+              "pixels": 5320,
+              "formL": 46.13,
+              "backgroundL": 65.62,
+              "deltaL": -19.49,
+              "deltaE00": 18.21
+            },
+            {
+              "form": "M01",
+              "pixels": 7994,
+              "formL": 58.58,
+              "backgroundL": 65.59,
+              "deltaL": -7.0,
+              "deltaE00": 6.04
+            },
+            {
+              "form": "C01",
+              "pixels": 4002,
+              "formL": 77.26,
+              "backgroundL": 65.81,
+              "deltaL": 11.45,
+              "deltaE00": 8.72
+            },
+            {
+              "form": "R08",
+              "pixels": 7443,
+              "formL": 79.45,
+              "backgroundL": 64.62,
+              "deltaL": 14.83,
+              "deltaE00": 31.91
+            },
+            {
+              "form": "M05",
+              "pixels": 4940,
+              "formL": 23.54,
+              "backgroundL": 64.91,
+              "deltaL": -41.37,
+              "deltaE00": 41.86
+            }
+          ]
+        },
+        {
+          "file": "B_neutral_high.png",
+          "formHeightM": 2.0,
+          "cameraPitchDeg": -10.0,
+          "verticalFovDeg": 70.0,
+          "contrast": [
+            {
+              "form": "M15",
+              "pixels": 19709,
+              "formL": 18.63,
+              "backgroundL": 73.13,
+              "deltaL": -54.5,
+              "deltaE00": 52.33
+            },
+            {
+              "form": "M02",
+              "pixels": 5096,
+              "formL": 51.95,
+              "backgroundL": 73.12,
+              "deltaL": -21.17,
+              "deltaE00": 17.99
+            },
+            {
+              "form": "M01",
+              "pixels": 7609,
+              "formL": 63.89,
+              "backgroundL": 73.13,
+              "deltaL": -9.24,
+              "deltaE00": 7.33
+            },
+            {
+              "form": "C01",
+              "pixels": 3998,
+              "formL": 75.59,
+              "backgroundL": 73.12,
+              "deltaL": 2.48,
+              "deltaE00": 2.3
+            },
+            {
+              "form": "R08",
+              "pixels": 7433,
+              "formL": 76.93,
+              "backgroundL": 73.19,
+              "deltaL": 3.73,
+              "deltaE00": 30.89
+            },
+            {
+              "form": "M05",
+              "pixels": 4924,
+              "formL": 22.26,
+              "backgroundL": 73.18,
+              "deltaL": -50.91,
+              "deltaE00": 52.0
+            }
+          ]
+        },
+        {
+          "file": "B_neutral_assist.png",
+          "note": "놓기 도움 표시 모의(실제 세션 단계가 아님): 연습 상자(시작 자리)·목표 자리 테두리, 경계에서 0.45 m 안쪽에 든 형상의 수직선·바닥 고리, 밝아진 경계 띠",
+          "boundaryGlow": 0.575
+        },
+        {
+          "file": "B_neutral_around.png",
+          "note": "오른쪽 60°, 25° 아래 — 원형 바닥 가장자리와 그 너머(형상 없음)"
+        }
+      ]
+    },
+    {
+      "candidate": "E",
+      "environment": "space",
+      "placementAssist": true,
+      "applied": "space",
+      "shots": [
+        {
+          "file": "E_space_low.png",
+          "formHeightM": 1.2,
+          "cameraPitchDeg": 10.0,
+          "verticalFovDeg": 70.0,
+          "contrast": [
+            {
+              "form": "M15",
+              "pixels": 19659,
+              "formL": 6.17,
+              "backgroundL": 5.16,
+              "deltaL": 1.01,
+              "deltaE00": 8.76
+            },
+            {
+              "form": "M02",
+              "pixels": 4879,
+              "formL": 5.17,
+              "backgroundL": 6.49,
+              "deltaL": -1.31,
+              "deltaE00": 5.4
+            },
+            {
+              "form": "M01",
+              "pixels": 8262,
+              "formL": 27.79,
+              "backgroundL": 6.02,
+              "deltaL": 21.76,
+              "deltaE00": 16.33
+            },
+            {
+              "form": "C01",
+              "pixels": 4330,
+              "formL": 67.26,
+              "backgroundL": 5.1,
+              "deltaL": 62.16,
+              "deltaE00": 52.68
+            },
+            {
+              "form": "R08",
+              "pixels": 7443,
+              "formL": 78.56,
+              "backgroundL": 5.21,
+              "deltaL": 73.36,
+              "deltaE00": 76.97
+            },
+            {
+              "form": "M05",
+              "pixels": 4935,
+              "formL": 20.58,
+              "backgroundL": 4.68,
+              "deltaL": 15.9,
+              "deltaE00": 13.27
+            }
+          ]
+        },
+        {
+          "file": "E_space_high.png",
+          "formHeightM": 2.0,
+          "cameraPitchDeg": -10.0,
+          "verticalFovDeg": 70.0,
+          "contrast": [
+            {
+              "form": "M15",
+              "pixels": 19682,
+              "formL": 6.19,
+              "backgroundL": 5.66,
+              "deltaL": 0.53,
+              "deltaE00": 9.27
+            },
+            {
+              "form": "M02",
+              "pixels": 4577,
+              "formL": 4.6,
+              "backgroundL": 5.6,
+              "deltaL": -1.01,
+              "deltaE00": 5.22
+            },
+            {
+              "form": "M01",
+              "pixels": 7872,
+              "formL": 26.06,
+              "backgroundL": 4.93,
+              "deltaL": 21.13,
+              "deltaE00": 15.46
+            },
+            {
+              "form": "C01",
+              "pixels": 4118,
+              "formL": 64.42,
+              "backgroundL": 4.8,
+              "deltaL": 59.62,
+              "deltaE00": 49.56
+            },
+            {
+              "form": "R08",
+              "pixels": 7433,
+              "formL": 75.74,
+              "backgroundL": 4.79,
+              "deltaL": 70.95,
+              "deltaE00": 73.58
+            },
+            {
+              "form": "M05",
+              "pixels": 4919,
+              "formL": 18.52,
+              "backgroundL": 4.68,
+              "deltaL": 13.84,
+              "deltaE00": 11.63
+            }
+          ]
+        },
+        {
+          "file": "E_space_assist.png",
+          "note": "놓기 도움 표시 모의(실제 세션 단계가 아님): 연습 상자(시작 자리)·목표 자리 테두리, 경계에서 0.45 m 안쪽에 든 형상의 수직선·바닥 고리, 밝아진 경계 띠",
+          "boundaryGlow": 0.575
+        },
+        {
+          "file": "E_space_around.png",
+          "note": "오른쪽 60°, 25° 아래 — 원형 바닥 가장자리와 그 너머(형상 없음)"
+        }
+      ]
+    },
+    {
+      "candidate": "F",
+      "environment": "nature",
+      "placementAssist": true,
+      "applied": "nature",
+      "shots": [
+        {
+          "file": "F_nature_low.png",
+          "formHeightM": 1.2,
+          "cameraPitchDeg": 10.0,
+          "verticalFovDeg": 70.0,
+          "contrast": [
+            {
+              "form": "M15",
+              "pixels": 19694,
+              "formL": 11.8,
+              "backgroundL": 35.98,
+              "deltaL": -24.18,
+              "deltaE00": 20.34
+            },
+            {
+              "form": "M02",
+              "pixels": 5180,
+              "formL": 23.89,
+              "backgroundL": 35.84,
+              "deltaL": -11.95,
+              "deltaE00": 9.66
+            },
+            {
+              "form": "M01",
+              "pixels": 7751,
+              "formL": 39.74,
+              "backgroundL": 35.57,
+              "deltaL": 4.17,
+              "deltaE00": 6.79
+            },
+            {
+              "form": "C01",
+              "pixels": 4296,
+              "formL": 70.79,
+              "backgroundL": 36.0,
+              "deltaL": 34.79,
+              "deltaE00": 35.19
+            },
+            {
+              "form": "R08",
+              "pixels": 7443,
+              "formL": 79.39,
+              "backgroundL": 35.84,
+              "deltaL": 43.56,
+              "deltaE00": 45.56
+            },
+            {
+              "form": "M05",
+              "pixels": 4940,
+              "formL": 24.15,
+              "backgroundL": 35.81,
+              "deltaL": -11.66,
+              "deltaE00": 30.37
+            }
+          ]
+        },
+        {
+          "file": "F_nature_high.png",
+          "formHeightM": 2.0,
+          "cameraPitchDeg": -10.0,
+          "verticalFovDeg": 70.0,
+          "contrast": [
+            {
+              "form": "M15",
+              "pixels": 19709,
+              "formL": 17.57,
+              "backgroundL": 75.3,
+              "deltaL": -57.73,
+              "deltaE00": 56.19
+            },
+            {
+              "form": "M02",
+              "pixels": 5104,
+              "formL": 54.95,
+              "backgroundL": 77.0,
+              "deltaL": -22.05,
+              "deltaE00": 17.97
+            },
+            {
+              "form": "M01",
+              "pixels": 7719,
+              "formL": 68.26,
+              "backgroundL": 78.84,
+              "deltaL": -10.57,
+              "deltaE00": 7.99
+            },
+            {
+              "form": "C01",
+              "pixels": 4000,
+              "formL": 77.62,
+              "backgroundL": 81.22,
+              "deltaL": -3.6,
+              "deltaE00": 4.55
+            },
+            {
+              "form": "R08",
+              "pixels": 7433,
+              "formL": 77.19,
+              "backgroundL": 73.67,
+              "deltaL": 3.52,
+              "deltaE00": 36.45
+            },
+            {
+              "form": "M05",
+              "pixels": 4924,
+              "formL": 23.57,
+              "backgroundL": 69.63,
+              "deltaL": -46.07,
+              "deltaE00": 45.47
+            }
+          ]
+        },
+        {
+          "file": "F_nature_assist.png",
+          "note": "놓기 도움 표시 모의(실제 세션 단계가 아님): 연습 상자(시작 자리)·목표 자리 테두리, 경계에서 0.45 m 안쪽에 든 형상의 수직선·바닥 고리, 밝아진 경계 띠",
+          "boundaryGlow": 0.575
+        },
+        {
+          "file": "F_nature_around.png",
+          "note": "오른쪽 60°, 25° 아래 — 원형 바닥 가장자리와 그 너머(형상 없음)"
+        }
+      ]
+    }
+  ]
+}

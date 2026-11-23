@@ -340,7 +340,7 @@ spec마다 참여자 번호를 하나씩 올립니다. 씬 만들기 배치: `-e
 
 ### 단계
 
-`intro → baseline → pre_items → pre_wait → condition → post_items → post_wait → stop_distance → check_items → done` (기록 형식 계약의 이름 그대로. `setup`은 세션을 만들기 전이라 기록에 없음)
+`intro → baseline → pre_items → pre_wait → condition → post_items → post_wait → stop_distance → check_items → done` (기록 형식 계약의 이름 그대로. `setup`은 세션을 만들기 전이라 기록에 없음). 놓기 도움(`placementAssist`)을 켠 직접 배치 조건에서만 `intro`와 `baseline` 사이에 배치 연습 `practice`가 끼어듭니다(아래 「배치 공간 후보 B·E·F」).
 
 | 단계 | 물체 | 넘어가는 때 |
 | --- | --- | --- |
@@ -397,8 +397,42 @@ spec마다 참여자 번호를 하나씩 올립니다. 씬 만들기 배치: `-e
 | 문구 | `requireSpecPhrases`(false. 켜면 draft 문구가 있을 때 시작 거부) |
 | 헤드셋(2026-11-23 추가) | `inputMode`(auto: 헤드셋이 켜져 있으면 XR, 없으면 데스크톱 · desktop · xr: 헤드셋이 없으면 시작 거부), `xrHand`(right · left), `participantRatesWithController`(false), `hideObjectDuringItems`(false — 설문 초안의 제안이지만 절차 변경이라 팀 결정 전) |
 | 평정 문항(2026-11-23 D8 추가) | `askOptionalItems`(false — 켜면 문항의 `optionalWhen` 단계에서도 묻는다. 두 평정 문항 G13을 헤드셋 사전에도 물을 때), `disabledItems`([] — 묻지 않을 문항 키. 예: 기존 "내 것 같다" `own`(기본 파일)·`S4`(scaleA). 문구 파일에 없는 키면 확인 단계 오류) |
+| 배치 공간 후보(2026-11-24 G52–G53 추가) | `environment`(neutral · space · nature), `placementAssist`(false), `practiceTargetDistanceM`(2.0)·`practiceTargetAzimuthDeg`(−45)·`practiceTargetHeightM`(0.8) — 연습 목표 자리 잠정값(⚠ 사람이 정할 것), `practiceCubeSizeM`(0.25). 기본값이면 manifest `config`에 이 키들을 넣지 않는다(아래 절) |
 
 헤드셋 표시값은 기록에 영향이 없어 `PlacementConfig`가 아니라 컴포넌트 Inspector에 있습니다: `PlacementRunner`의 판 자리 `textForwardM`(2.0)·`textHeightM`(0.6, 판 중심), `rayOnlyWhenUsable`(true), `PlacementTextPanel`의 글자 크기(본문 `characterSize` 0.0085, 평정 숫자 `numberCharacterSize` 0.010, 기준점 뜻 `labelCharacterSize` 0.0075 — 2026-11-23 전 0.0055)·줄 길이(20자)·본문 줄 간격(`bodyLineSpacing` 1.13 ≈ 1.5 em)·기준점 칸 너비(0.22 m, 전 0.2)·여백(0.08 m, 전 0.06)·고른 칸 색(`highlightColor` 짙은 파랑, `selectionFillColor` 옅은 파랑, 테두리 `selectionFrameM` 0.012 m)·판 위 가장자리 상한(`maxTopM` 0.85 m)·아래 가장자리 하한(`minBottomM` 0.05 m), `XrPlacementInput`의 광선 굵기·길이와 썸스틱 데드존(0.2)·트리거 이력(0.55/0.35). 씬 파일(`PlacementExperiment.unity`)의 값도 같은 값으로 고쳤습니다.
+
+### 배치 공간 후보 B·E·F (2026-11-24, 결정 G52–G56)
+
+빈 원형 바닥만으로는 "여기 놓을 수 있겠다"는 느낌이 약하다는 문제 제기로 세 후보를 설정만 바꿔 비교할 수 있게 했습니다. **어느 공간을 본 설계로 쓸지는 정하지 않았습니다**(⚠ 사람이 정할 것). 후보 B = `neutral` + 놓기 도움, E = `space` + 놓기 도움, F = `nature` + 놓기 도움. Setup 화면의 "배경 공간" 단추와 "놓기 도움" 체크, 자동 시행 `-environment`·`-placementAssist`. 실험자 화면 머리말에 `공간 … · 놓기 도움 … 후보 B/E/F`가 보입니다(설정 이름은 실험자 화면에만 — 참여자 판에는 문구 파일 글만).
+
+**기본값(`neutral`, 도움 꺼짐)은 G52 전과 같습니다**: 화면에 더하는 물체가 없고(`PlacementSpace` 물체 목록 그대로, 하늘 머티리얼 그대로 — Unity 테스트), 기록은 같은 입력이면 바이트 단위로 같습니다(dotnet 테스트가 G52 전 코드로 잰 sha256과 대조). 다른 점은 문구 파일 `version`이 0.2 → 0.3으로 올라 manifest `taskText.version`과 초안 경고 줄의 버전 글자가 바뀐 것뿐입니다(그 값은 파일에서 읽음).
+
+| | neutral(B) | space(E, G54) | nature(F, G55) |
+| --- | --- | --- | --- |
+| 하늘 | 지금 회색 그라디언트(`EnvironmentSky`) | 직접 쓴 별 하늘 셰이더 `Resources/IFS/EnvironmentStarfield.shader`(규칙 `starfield/1`): 짙은 남색 바탕(sRGB 0.045, 0.055, 0.12 — 완전한 검정 아님), 3차원 격자 칸마다 해시로 정한 별 두 층(시간·난수 텍스처 없음 → 결정적, 화소보다 작은 별은 넓히고 어둡게), 기울어진 띠에만 옅은 성운 | CC0 360° 사진 한 장 + 직접 쓴 등장방형 셰이더 `EnvironmentPanorama.shader`(정 뒤 밉맵 이음매를 도함수로 고침) |
+| 발밑 | 원형 배치 바닥(지름 8 m) | 같은 원형 바닥이 우주에 뜬 발판(아래도 별) | 같은 원형 바닥 + **실제 3D 땅 원판**(반지름 60 m, `EnvironmentGround.shader`: 사진 지평선 아래 땅 띠의 평균 색 sRGB 0.32, 0.34, 0.25에 해시 잡음 밝기 ±8 %, 20 m부터 60 m까지 알파로 사진 속 땅에 녹아듦, 빛을 다시 받지 않음) |
+| 조명 | 중립 환경 그대로(방향광 1, 삼색 앰비언트, 그림자) | **같음** | **같음** — 세 공간에서 형상이 같은 빛을 받게(색 지각 비교). 하늘이 바뀌면 반사 큐브맵만 한 번 다시 찍음 |
+
+중립 환경의 200 m 격자 바닥은 세 공간 모두 숨깁니다(배치 러너는 원래 숨김). 셰이더 세 개는 모두 `Resources/IFS/`에 있어 빌드에 늘 들어가고 `Shader.Find`를 쓰지 않으며, 단일 패스 인스턴싱 매크로가 있습니다(`EnvironmentSky.shader`와 같은 방식). 그리지 못하면(셰이더·사진 없음) 확인 단계에서 시작을 거부합니다(기록이 실제 화면과 달라지지 않게). 구현: `Runtime/Environment/EnvironmentStyle.cs`(`EnvironmentStyle.Apply`, `NatureSkyAsset`, `EnvironmentStyleInfo`).
+
+**자연 사진(F)**: Poly Haven `farmland_overcast`("Farmland Overcast", 작가 Grzegorz Wronkowski, https://polyhaven.com/a/farmland_overcast), 라이선스 **CC0 1.0**(자산 쪽 표기와 https://polyhaven.com/license 확인), 2026-11-24에 API `/files/farmland_overcast`의 tonemapped JPG(8192 × 4096, sha256 `47171b0f…e912101a`)를 내려받아 4096 × 2048로 줄여 JPEG 품질 90으로 저장 — `Assets/IFS/Runtime/Resources/IFS/Nature/farmland_overcast_4k.jpg`(2.0 MB, sha256 `6cae5ca0bd967a67c542381710ff1d285656ce5234ee3a291f417f35533797c1`). 출처·해시 전문은 같은 폴더 `LICENSE.txt`. 흐린 날, 탁 트인 평평한 밭, 가까운 나무·바위 없음(지평선의 먼 나무 줄만), 채도 낮음. 가져오기 설정(`Editor/NatureTextureImport.cs`가 강제, 테스트가 확인): sRGB, 밉맵, 가로 반복·세로 고정, 삼선형, 최대 4096, 압축(Android ASTC 6×6 · Windows DXT1), 읽기 끔.
+
+**놓기 도움(G53, `placementAssist`)** — 직접 배치 조건에서:
+
+1. **배치 연습 1회**(`intro` 다음 새 단계 `practice`): 본 물체는 숨기고 뜻 없는 회색 상자(한 변 0.25 m)를 본 물체와 같은 시작 자리에 둡니다. 목표 자리는 바닥 고리 + 같은 크기의 파란 테두리 상자(설정 `practiceTarget*`, 잠정 2.0 m·−45°·높이 0.8 m). 잡기·밀기/당기기는 본 과제와 같고, 참여자가 확인을 누르면 끝(목표와의 거리는 기록만, 다시 시키지 않음), 실험자는 "다음"(Enter)으로 건너뛸 수 있습니다. 안내 글은 문구 `practice`. **보기만(view) 조건에는 연습이 없습니다**(⚠ 사람이 정할 것).
+2. 든 동안 물체 중심에서 바닥까지 수직선(굵기 8 mm)과 바로 아래 바닥 고리(반지름 = 물체 경계 반지름, 최소 0.12 m).
+3. 든 물체의 수평 거리가 바닥 가장자리 1 m 안으로 들어오면 경계 띠가 회색(0.36)에서 밝은 회색(0.94)으로 smoothstep으로 밝아짐(`PlacementAssistVisuals.BoundaryGlow`).
+4. 직접 배치 지시문 뒤에 줄을 바꿔 범위 안내 문장(`placement_range`, draft) "이 둥근 바닥 안이라면 어디든, 어떤 높이든 괜찮아요."
+
+기록(형식 `ifs-placement/0.2` 그대로, 추가만): 공간 설정이 기본값이 아닐 때만 manifest 맨 끝에 `environment`{`name`, `placementAssist`, `sky`(`kind` gradient · starfield(`rule`, `seed`) · equirect_photo(`texture`{assetId·title·author·source·license·downloadedOn·file·sha256·originalSha256}, `ground`{radiusM·fadeStartM·colorSrgb})), `lighting: "neutral"`, `practice`(연습이 있으면 target·cubeSize, 없으면 null)}와 `config`의 여섯 키. 연습이 있으면 `practice.json`(목표·마지막 자리, `errorM`, `grabCount`, `heldMs`, `confirmed`, `endedBy` participant_confirm · experimenter · abort, `durationMs`)과 `events.csv`의 `practice_start`·`practice_grab`·`practice_release`·`practice_end`, `headpose.csv`의 phase `practice`(물체 칸 빈칸). **연습은 `placement.json`·`trajectory.json`·`objpose.csv`에 들어가지 않습니다**(본 과제의 잡기 수는 1부터 셈 — 테스트). `taskText.draftKeys`·`draftCount`와 초안 경고는 그 세션이 보일 수 있는 문구만 셉니다(도움이 꺼져 있으면 `practice`·`placement_range`를 뺌). 분석기 열 `environment`(키가 없는 옛 기록은 neutral)·`placement_assist`·`practice_error_m`·`practice_ended_by`, 세션 사이 공간이 다르면 `config_mismatch:environment`.
+
+검증 캡처(G56): `docs/validation/environments/`(B·E·F를 눈높이에서 찍은 그림과 형상별 밝기 대비). 다시 찍기:
+
+```bash
+"C:\Program Files\Unity\Hub\Editor\6000.0.85f2\Editor\Unity.exe" -batchmode -projectPath <unity 폴더> \
+  -executeMethod IFS.SceneSpec.EditorTools.PlacementEnvironmentCapture.CaptureBatch \
+  -outDir <저장소>/docs/validation/environments -specRoot <저장소>/docs/validation -logFile <로그>
+```
 
 ### 선택 파일(`selection.json`, 2026-11-23 D8 — 결정 G15·G23, G31–G34에서 형식 0.2)
 
@@ -427,7 +461,7 @@ spec마다 참여자 번호를 하나씩 올립니다. 씬 만들기 배치: `-e
 
 ### 문구 파일
 
-`StreamingAssets/IFS/placement_task.v0.json` — `ownership_task.v0.json`과 같은 구조(`version`, `protocol`, `texts.{key}.text · status · source`)에 평정 문항 필드 `when`(pre | post | check 또는 배열), `anchors.low/high`(1과 7의 뜻)를 더했습니다. **14개 모두 `status: draft`**(IRB 검토 전, `source`에 출처. 2026-11-23 D8에서 두 평정 문항을 더해 version 0.1 → 0.2). 배치 지시문은 방향을 암시하는 말("멀리", "치우다")을 쓰지 않습니다. draft 문구가 있으면 확인 화면 맨 위 경고, `events.csv`의 `warning`, manifest `taskText.draftCount`·`draftKeys`에 남습니다(소유감 러너와 같은 방식).
+`StreamingAssets/IFS/placement_task.v0.json` — `ownership_task.v0.json`과 같은 구조(`version`, `protocol`, `texts.{key}.text · status · source`)에 평정 문항 필드 `when`(pre | post | check 또는 배열), `anchors.low/high`(1과 7의 뜻)를 더했습니다. **16개 모두 `status: draft`**(IRB 검토 전, `source`에 출처. 2026-11-23 D8에서 두 평정 문항을 더해 version 0.1 → 0.2, 2026-11-24 G53에서 놓기 도움 문구 `practice`·`placement_range`를 더해 0.2 → 0.3 — 두 문구는 `placementAssist`를 켰을 때만 보이고 그때만 필수, scaleA 파일도 같은 두 문구를 더해 0.3-scaleA). 배치 지시문은 방향을 암시하는 말("멀리", "치우다")을 쓰지 않습니다. draft 문구가 있으면 확인 화면 맨 위 경고, `events.csv`의 `warning`, manifest `taskText.draftCount`·`draftKeys`에 남습니다(소유감 러너와 같은 방식).
 
 2026-11-23 형식 추가(선택 필드, 기존 파일은 그대로 유효 — 테스트가 확인):
 
@@ -609,7 +643,7 @@ Windows 빌드(선택): 메뉴 **IFS ▸ Experiment ▸ Build Placement Experime
   -runTests -testPlatform EditMode -testResults <결과.xml> -logFile <로그>
 ```
 
-EditMode **459개**(2026-11-23 G44와 G45–G51 병합 마무리 뒤 배치모드로 전부 통과, dotnet 399개 — 더한 것: G45–G51의 `PlacementSelectionTests` safetyFlags 1개(`LegacyFilesTests`는 no_asset 단언만 보탬), 병합 마무리의 `PlacementSelectionTests.Safety_notice_lines_for_the_experimenter_gui_only` 1개(알림 줄, 진행·중단 단추를 부르지 않음, 실험자 GUI만 씀 — dotnet·Unity 둘 다)). 그 전 457개(2026-11-23 화면 개선 G44 뒤 배치모드로 전부 통과, dotnet 397개 — 더한 것: `PlacementPanelMetricsTests.cs` 8개(시야각 식, 기본 글자 크기가 2.24 m에서 잉크 1° 이상, WCAG 대비비, 기본 색 쌍 4.5:1 이상, 칸 너비·뜻 줄바꿈, scaleA 7점 뜻이 이웃 칸과 붙지 않음, 고른 칸, 중단 두 번 누르기 — dotnet·Unity 둘 다), `UnityOnly/PlacementTextPanelTests.cs` 2개(고른 칸 테두리·굵기·색과 고르기 전 표시 없음, 선형 색 변환, 키가 큰 판의 위 가장자리 ≤ 0.85 m)). 그 전 447개·dotnet 389개. 그 전 440개(2026-11-23 기본 형상 D6 뒤 배치모드로 전부 통과, dotnet 383개). 그 전 335개(2026-11-23 구름 수정(D7)·러너 선택 파일(D8·D9) 뒤 배치모드로 전부 통과. 그 전 307개(미리보기 D4). 그 전 278개(헤드셋 프로토타입), 257개, 배치 러너 CP7 반영 때 192개). 아래 표는 2026-11-22 기준이고, 그 뒤 더한 것은 표 아래에 적었습니다:
+EditMode **480개**(2026-11-24 배치 공간 후보 G52–G56 뒤 배치모드로 전부 통과, dotnet 413개 — 더한 것: `PlacementEnvironmentTests.cs` 14개(기본값 기록이 G52 전 코드로 잰 sha256과 같음 — Unity(Mono)에서는 headpose.csv만 빼고, 설정 기본값·검증·키, 배치 연습 기록·본 결과와 섞이지 않음·건너뛰기·중단, 보기만 조건에는 연습 없음, 범위 문장은 도움을 켠 직접 배치에서만, 도움 문구가 없으면 시작 거부, manifest environment·사진 sha, draftKeys에서 도움 문구 빼기, 두 문구 파일의 도움 문구(draft·G53 출처·금지어·버전 0.3), 경계 띠 밝기, 새 셰이더 세 개가 Resources에 있고 단일 패스 매크로, 별 하늘 원문에 시간·난수·텍스처 없음, 자연 사진 sha·LICENSE·4096 × 2048 — dotnet·Unity 둘 다), `UnityOnly/PlacementEnvironmentRenderTests.cs` 7개(셰이더 Resources 로드·컴파일, 사진 가져오기 설정(밉맵·압축·ASTC), 배경 공간 바꾸기·되돌리기와 neutral 무변화, 별 하늘 렌더가 다시 만들어도 같은 화소·남색·별, 기본값 공간 물체 목록 그대로·도움 물체, 러너 자동 시행(놓기 도움 + 자연), 러너가 씬 환경에 공간을 얹고 되돌림)). 그 전 459개(2026-11-23 G44와 G45–G51 병합 마무리 뒤 배치모드로 전부 통과, dotnet 399개 — 더한 것: G45–G51의 `PlacementSelectionTests` safetyFlags 1개(`LegacyFilesTests`는 no_asset 단언만 보탬), 병합 마무리의 `PlacementSelectionTests.Safety_notice_lines_for_the_experimenter_gui_only` 1개(알림 줄, 진행·중단 단추를 부르지 않음, 실험자 GUI만 씀 — dotnet·Unity 둘 다)). 그 전 457개(2026-11-23 화면 개선 G44 뒤 배치모드로 전부 통과, dotnet 397개 — 더한 것: `PlacementPanelMetricsTests.cs` 8개(시야각 식, 기본 글자 크기가 2.24 m에서 잉크 1° 이상, WCAG 대비비, 기본 색 쌍 4.5:1 이상, 칸 너비·뜻 줄바꿈, scaleA 7점 뜻이 이웃 칸과 붙지 않음, 고른 칸, 중단 두 번 누르기 — dotnet·Unity 둘 다), `UnityOnly/PlacementTextPanelTests.cs` 2개(고른 칸 테두리·굵기·색과 고르기 전 표시 없음, 선형 색 변환, 키가 큰 판의 위 가장자리 ≤ 0.85 m)). 그 전 447개·dotnet 389개. 그 전 440개(2026-11-23 기본 형상 D6 뒤 배치모드로 전부 통과, dotnet 383개). 그 전 335개(2026-11-23 구름 수정(D7)·러너 선택 파일(D8·D9) 뒤 배치모드로 전부 통과. 그 전 307개(미리보기 D4). 그 전 278개(헤드셋 프로토타입), 257개, 배치 러너 CP7 반영 때 192개). 아래 표는 2026-11-22 기준이고, 그 뒤 더한 것은 표 아래에 적었습니다:
 
 | 파일 | 개수 | 내용 |
 | --- | --- | --- |
