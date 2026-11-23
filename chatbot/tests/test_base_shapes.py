@@ -253,12 +253,16 @@ def test_base_is_never_a_candidate_value_and_closes_form_slot(v2):
 
 def test_base_with_mist_is_kept_in_spec_but_not_drawn(v2):
     """form.type이 mist이면 기본 형상은 spec에 남지만 그려지지 않는다(Unity not_applied_form, docs/asset-plan.md 2-5절).
-    형태는 말한 자리(mist)라 후보에서 벌리지 않는다."""
+    두 말이 모두 참여자 말이라 등록된 갈림(form_type_with_base)으로 '말한 형태 | 기본 형상(blob)' 두 읽기를 보인다(결정 10)."""
     spec = build(v2, "안개가 있어요. 그릇처럼 생겼어요.")
     assert spec["form"]["type"] == "mist" and spec["form"]["base"] == "container"
     assert not base_drawn(spec) and not slot_is_open(spec, "form.type", TABLE)
     out = generate(spec, "SYN-C", TABLE)
-    assert all(c["sources"]["form.type"] == "said" and c["sources"]["form.base"] == "said" for c in out["candidates"])
+    ax = out["axes"][0]
+    assert ax["slot"] == "form.type" and ax["reason"] == "ambiguous" and ax["values"] == ["mist", "blob"]
+    assert ax["split"]["id"] == "form_type_with_base"
+    assert out["candidates"][0]["overrides"] == {} and any(c["overrides"].get("form.type") == "blob" for c in out["candidates"])
+    assert all(c["sources"]["form.base"] == "said" for c in out["candidates"])
 
 
 def test_adjust_form_item_lists_approved_bases():
@@ -351,11 +355,12 @@ def test_membrane_split_offers_shell_reading(v2):
     assert ax["split"]["id"] == "membrane" and ax["split"]["lemma"] == "막"
     shell = [c for c in out["candidates"] if c["axisValues"].get("form.type") == "shell"]
     assert shell and all(c["overrides"]["form.type"] == "shell" and "form.base" not in c["overrides"] for c in shell)
-    # 형태를 말했으면(form.type 있음) 갈림을 쓰지 않는다
+    # 형태를 말했으면(form.type 있음) '막' 갈림은 쓰지 않고, 형태어 + 기본 형상 갈림(form_type_with_base)이 대신한다
     told = json.loads(json.dumps(spec))
     told["form"]["type"] = "mist"
     told["_provenance"]["form.type"] = [dict(spec["_provenance"]["form.base"][0], rule="synthetic>form.type:mist")]
-    assert all(a["reason"] != "ambiguous" for a in generate(told, "SYN-M", TABLE)["axes"])
+    axes = generate(told, "SYN-M", TABLE)["axes"]
+    assert axes[0]["split"]["id"] == "form_type_with_base" and axes[0]["values"] == ["mist", "blob"]
 
 
 @pytest.mark.parametrize("text", ["불이 난 것처럼 화끈거려요.", "불빛이 있어요.", "불덩어리가 있어요.", "작은 빛이 있어요."])

@@ -6,9 +6,22 @@
 
 ## ★★ 실험 프로토타입 구현 (2026-11-23, 브랜치 `claude/prototype-v4-build`) — 가장 최근 작업은 이 절입니다
 
-> 갱신: 2026-11-23, 하위 에이전트(Claude)가 단계 C·D10 문서 작업 끝에 적음. 같은 날 G31–G34 구현 뒤 바로 아래 소절을 더함. 지시문은 `docs/prompts/prototype-v4-build.md`(2026-11-22 클라우드 세션에서 연구 책임자와 정함). 결정은 `docs/decisions.md`의 「형상 표현 범위와 생성 모델」 절(G1–G28)과 X79–X85. 아래 ★ 절부터는 이전 작업의 기록이고 그대로 뒀습니다.
+> 갱신: 2026-11-23, 하위 에이전트(Claude)가 단계 C·D10 문서 작업 끝에 적음. 같은 날 G31–G34 구현, 이어서 D6(기본 형상) 구현 뒤 바로 아래 소절을 더함. 지시문은 `docs/prompts/prototype-v4-build.md`(2026-11-22 클라우드 세션에서 연구 책임자와 정함). 결정은 `docs/decisions.md`의 「형상 표현 범위와 생성 모델」 절(G1–G28)과 X79–X85. 아래 ★ 절부터는 이전 작업의 기록이고 그대로 뒀습니다.
 
-### 연구 책임자 결정 G31–G34 구현 (2026-11-23, 하위 에이전트 Claude) — 이 절의 가장 최근 작업
+### 기본 형상 첫 묶음 D6 구현 (2026-11-23, 하위 에이전트 Claude) — 이 절의 가장 최근 작업
+
+연구 책임자 결정 G30(첫 묶음 5개 승인)에 따라 단계 D6을 끝냈습니다. 정한 세부는 `docs/decisions.md` 맨 끝 「D6 구현 세부」, 그림과 판정은 `docs/validation/base-forms/README.md`.
+
+- 커밋(이 브랜치, 차례대로): `34ba7e2` compile-check 스텁 수리(`PlayerSettings.SplashScreen`) → `55e646d` 공통 경로 + 담는 것 → `8fead67` 선·끈 → `9711cc0` 얇은 판 → `792e411` 불꽃 → `cc8efb4` 물방울 → `2e05e4f` 로더·러너 통합 테스트, 시나리오 S8·S9 → `5065efa` 검증 자료 → 문서 커밋.
+- **스키마 2.2.0**(`shared/schemas/scene-spec.v2.2.json`): `form.base`(container·line·sheet·flame·drop·null)·`form.baseVariant`, `_unmapped.reason` `excluded_shape`. 2.0·2.1 문서는 그대로 유효. Python `schema_errors()`·`check_principles()`, Unity `SceneSpecJson`·`SceneParams`(2.2 spec에만 기록에 `form.base`)·`SceneOverride`·`PlacementSelection` 갱신. **v0·v1 출력 sha 불변**(D6 전 HEAD에서 잰 5문장 고정).
+- **매퍼 v2 builder 2.2.0**(언제나 specVersion 2.2.0) + 사전 `shared/lexicon/base_shapes.v1.json`(0.5.0, 명사 34개, 안전 제외 33개). 주어·이름·직유 원천, 본 장면, 부정 아님, 수량 단위·크기 비교 기준 아님. 같은 문장의 '엉키·가늘·굵·네모'가 변형값을 덮어씀.
+- **Unity** `Runtime/Rendering/BaseShapeMesh.cs`(규칙 `container/1`·`line/1`·`sheet/1`·`flame/1`·`drop/1`), `FormRenderPlan`의 base 판정(blob·미지정만 그림), `BaseShapeRenderer`(렌더 경로 `base:<형상>`), 계획 JSON `base`.
+- **후보·조절**: 후보 값 표 `candidate_values.v2.json`(2.0.0, v1·v0 파일은 그대로), 생성기 `ifs-candidates/0.3.0`. 기본 형상은 후보 값이 아님, 조절 "형태" 항목 9값(`valueOverrides`). 갈림 '막'과 `form_type_with_base`. `selection.v0.2.json`에 `form.base`를 하위 호환으로 더함. `web/stage.js`는 고치지 않음(범주 항목을 서버가 준 값 목록대로 번호 버튼으로 그려 9값이 그대로 나옴. WebGL 어댑터 부분은 손대지 않음).
+- 확인한 수치(직접 돌림): pytest 파일별 `-m "not live"` 합계 **823 통과·6 xfail·실패 0**(기준선 750에서 +73), dotnet **383/383**, Unity EditMode **440/440**. 배치 캡처: 합성 20문장(형상 5개) + 목업 14개 전후, 콘솔 오류 0.
+- 하지 않은 것: 헤드셋 확인, WebGL 빌드에서 돌려 보기(G35 대기), 팀원 그림 판정, held-out, Codex 검토, 채점기의 `form.base` 정답 기준. `docs/validation/selection-flow/runs/`(S1–S7 image 모드 결과)는 다시 돌리지 않음(S8·S9는 pytest로만 돌림).
+- 사람이 정할 것은 `docs/morning-todo.md` 「D6」 항목.
+
+### 연구 책임자 결정 G31–G34 구현 (2026-11-23, 하위 에이전트 Claude)
 
 - 결정은 `docs/decisions.md` G30–G35, 구현 세부(새 출처 값, 구별 규칙 표, 형식 버전)는 바로 아래 소절 「G31–G34 구현 세부」. **G30(`form.base`, 스키마 2.2.0)은 하지 않았습니다**(다른 작업).
 - **G31**: 조절 항목 순서가 색 → 형태 → 밝기 → 투명도 → 크기 → 질감 → 움직임. `selection.json`에 `colorChanged`(처음 색 ≠ 마지막 색).

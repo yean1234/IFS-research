@@ -9,7 +9,7 @@
       "version": "2.0.0",
       "date": "2026-11-23",
       "status": "draft",
-      "summary": "D6(G30): 기본 형상(form.base)을 조절 단계의 '형태' 항목에 넣음(값 9개: form.type 4개 + 승인된 기본 형상 5개, valueOverrides로 form.type·form.base를 함께 정함). 덮어쓰기 범주 키에 form.base(값 5개 + none). 후보 축에는 기본 형상을 넣지 않음(candidateAxes.dimensions.form.evidence). 낱말 해석 갈림에 '막'(얇은 판 sheet | 껍질 shell) 추가. 구별 비교 키에 form.base.",
+      "summary": "D6(G30): 기본 형상(form.base)을 조절 단계의 '형태' 항목에 넣음(값 9개: form.type 4개 + 승인된 기본 형상 5개, valueOverrides로 form.type·form.base를 함께 정함). 덮어쓰기 범주 키에 form.base(값 5개 + none). 후보 축에는 기본 형상을 넣지 않음(candidateAxes.dimensions.form.evidence). 낱말 해석 갈림에 '막'(얇은 판 sheet | 껍질 shell) 추가. 구별 비교 키에 form.base. 갈림 'form_type_with_base'(form.type mist·shell·fragments + 기본 형상을 둘 다 말함 → 말한 형태 | 기본 형상).",
       "reason": "docs/decisions.md G21·G22·G30, docs/asset-plan.md 3-2·3-4절(6절 결정 8·10은 제안대로 진행)"
     },
     {
@@ -276,6 +276,23 @@
         ],
         "status": "draft",
         "evidence": "docs/asset-plan.md 3-2절: '막'은 얇은 판(sheet, cloth)으로도 껍질(shell)로도 읽힌다. 두 읽기가 모두 첫 묶음 안에 있어 갈림으로 둔다. readings[0] blob = 지금 그려지는 것(form.type이 비었으므로 기본 blob → 기본 형상 sheet가 그려짐), readings[1] shell = form.type shell(기본 형상은 not_applied_form, 껍질이 그려짐). 목업 M09 '얇은 막'"
+      },
+      {
+        "id": "form_type_with_base",
+        "lemma": "(형태어 + 기본 형상 낱말)",
+        "match": {
+          "in": "form.type+form.base",
+          "formTypes": [
+            "mist",
+            "shell",
+            "fragments"
+          ]
+        },
+        "slot": "form.type",
+        "readings": null,
+        "status": "draft",
+        "evidence": "docs/asset-plan.md 2-5절·6절 결정 10(제안대로 진행): form.type(mist·shell·fragments)과 form.base를 둘 다 말하면 렌더러는 form.type의 기존 화면을 그리고 기본 형상은 not_applied_form. 두 말이 모두 참여자 말이므로 해석 갈림 한 축으로 둘 다 보인다 — readings[0] = 말한 form.type(지금 그려지는 것), readings[1] = blob(form.type을 blob으로 두면 기본 형상이 그려짐). 말한 form.type을 후보에서 바꾸는 유일한 경우이며(G9 예외), 두 읽기가 모두 말한 낱말에서 나온다는 이유. 목업 M09 '비눗방울 막처럼'(shell) + '막'(sheet)",
+        "readingsRule": "[spec의 form.type(mist | shell | fragments), blob] — 첫 값이 지금 그려지는 것(말한 형태), 둘째가 기본 형상"
       }
     ],
     "notIncluded": [

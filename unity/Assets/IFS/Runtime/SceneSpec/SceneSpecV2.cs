@@ -1,4 +1,5 @@
-// SceneSpec v2 데이터 클래스 — shared/schemas/scene-spec.v2.json(2.0.0)·scene-spec.v2.1.json(2.1.0)과 1:1.
+// SceneSpec v2 데이터 클래스 — shared/schemas/scene-spec.v2.json(2.0.0)·scene-spec.v2.1.json(2.1.0)·scene-spec.v2.2.json(2.2.0)과 1:1.
+// 2.2.0(매핑 v2 builder 2.2.0, D6)은 form.base·form.baseVariant(기본 형상)를 더한다. 2.0·2.1 문서에는 키가 없다.
 // UnityEngine에 의존하지 않는다(유닛 테스트·dotnet 컴파일 검사에서 그대로 쓴다). 파싱은 Newtonsoft JSON.
 // null = 참여자가 말하지 않은 값. 기본값을 채우는 일은 SceneParams가 하고, 무엇을 채웠는지 기록한다.
 // 2.1.0(개선 매핑 v1)은 보존 필드(_context … _clauses)와 meta.mapping을 더한다. 2.0.0 문서에는 없으므로

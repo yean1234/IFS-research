@@ -188,6 +188,15 @@ def _split_axis(spec: dict, table: dict) -> tuple[dict | None, list[dict]]:
     found, skipped = [], []
     for entry in table["interpretationSplits"]["entries"]:
         m = entry["match"]
+        if m["in"] == "form.type+form.base":
+            # D6(docs/asset-plan.md 2-5절·결정 10): form.type(mist·shell·fragments)과 기본 형상을 둘 다 말함 → 형태 모형과
+            # 기본 형상 두 읽기. 두 말이 모두 참여자 말이라 갈림으로 둘 다 보인다(readings = [말한 form.type, blob(= 기본 형상)])
+            ft, base_provs = slot_value(spec, "form.type"), (spec.get("_provenance") or {}).get("form.base") or []
+            if ft in m["formTypes"] and slot_value(spec, "form.base") is not None and base_provs:
+                spans = [pv["charSpan"] for pv in base_provs + ((spec.get("_provenance") or {}).get("form.type") or [])]
+                found.append({"id": entry["id"], "lemma": base_provs[0]["trigger"], "charSpan": list(min(spans)),
+                              "entry": entry, "readings": [ft, "blob"]})
+            continue
         if m["in"] == "form.base":
             # D6: 기본 형상의 근거 낱말. 형태(form.type)를 말하지 않았을 때만(G9)
             if slot_value(spec, "form.type") is not None:
@@ -215,7 +224,7 @@ def _split_axis(spec: dict, table: dict) -> tuple[dict | None, list[dict]]:
     found.sort(key=lambda h: (h["charSpan"][0], h["id"]))
     hit = found[0]
     entry = hit["entry"]
-    return ({"slot": entry["slot"], "key": entry["slot"], "reason": "ambiguous", "values": list(entry["readings"]),
+    return ({"slot": entry["slot"], "key": entry["slot"], "reason": "ambiguous", "values": list(hit.get("readings") or entry["readings"]),
              "split": {"id": entry["id"], "lemma": hit["lemma"], "charSpan": hit["charSpan"]}}, skipped)
 
 

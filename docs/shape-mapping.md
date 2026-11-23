@@ -31,6 +31,7 @@
 6. **프리팹이 없을 때.** 모양에 맞는 프리팹이 SceneLoader에 연결되지 않았으면, 메뉴가 프리팹을 만들 때 쓰는 같은 함수(`ShapeModelFactory.Create`)로 같은 형상을 코드로 만들고 경고(「모양 프리팹이 연결되지 않아 같은 형상을 코드로 만듦」)를 남깁니다. 구로 대신하지 않습니다. 기록에는 `viaPrefab: false`로 남습니다.
 7. **참여자 조정 중.** 참여자가 `form.type`을 처음 값에서 바꾸면(`SetCategory`) 그 형태 모형을 보여 줍니다. 처음 값으로 돌아오면 모양 모형도 돌아옵니다. 모양 자체를 조정하는 입력은 없습니다.
 8. **수치 값은 바뀌지 않습니다.** 모양어는 모형만 고릅니다. `params`·`defaultsUsed`(적용값)는 모양어가 있든 없든 같습니다.
+9. **기본 형상(D6, spec 2.2.0)이 있을 때.** spec의 `form.base`가 승인된 기본 형상이고 `form.type`이 null·blob이면 모양 모형으로 바꾸지 않고 모든 모양어를 `not_applied_base`로 기록합니다(경고 아님 — 표에 없는 모양어도). 맨 위 상태는 형태·표 없음보다 뒤 순위의 `not_applied_base`. 기본 형상 경로는 아래 「기본 형상 경로·후보 단계와의 관계」.
 
 ## 재질
 
@@ -110,26 +111,29 @@ IFS 셰이더는 정점을 노이즈로 밀어 덩어리 굴곡과 잔요철을 
 
 RQ V4 실험 프로토타입(`docs/prompts/prototype-v4-build.md`)에서 두 가지가 더해졌습니다. 상세는 `docs/scene-spec-mapping.md` 7절입니다.
 
-### 형상 명사 → 범주 → 기본 형상 (`form.base`) — 계획, 구현하지 않음
+### 형상 명사 → 범주 → 기본 형상 (`form.base`) — 구현(D6, 2026-11-23, G30)
 
-이 문서의 **모양어 → 모양 모형** 경로와 다른 경로입니다. 아직 코드·스키마·사전에 없고, 에셋 계획(`docs/asset-plan.md`, 승인 전) 승인 뒤 단계 D6에서 합니다.
+이 문서의 **모양어 → 모양 모형** 경로와 다른 경로입니다. 매퍼 v2(builder 2.2.0)와 스키마 2.2.0에서만 나옵니다(v0·v1 출력 불변).
 
-| | 모양어 → 모양 모형 (지금) | 형상 명사 → 범주 → 기본 형상 (계획) |
+| | 모양어 → 모양 모형 | 형상 명사 → 범주 → 기본 형상 |
 | --- | --- | --- |
-| 입력 낱말 | 모양 형용사·명사(둥글·네모·납작·뾰족) | 형상을 이름 붙이는 명사(그릇·실타래·종이·불꽃·물방울 …, 사전 초안) |
-| spec에서 | 슬롯 없음. `_unmapped`(category `shape`)를 Unity가 읽음 | 새 슬롯 `form.base`(스키마 2.2.0, G21). 매퍼 v2가 `_provenance`와 함께 냄 |
-| 모형 | Sphere·Cube·FlatCylinder·Cone | `container`·`line`·`sheet`·`flame`·`drop`(절차 모형, 키 이름은 승인 대상) |
-| `form.type`과 | 비었거나 blob일 때만(규칙 4) | 비었거나 blob일 때만 그림(제안, 에셋 계획 결정 10) |
-| 둘이 함께 나오면 | — | base가 모양 모형보다 앞서고 모양어는 `not_applied_base`로 기록(제안, 에셋 계획 2-5절). 낱말 뜻이 base의 변형을 정하면 모양어를 변형값 근거로 씀 |
+| 입력 낱말 | 모양 형용사·명사(둥글·네모·납작·뾰족) | 형상을 이름 붙이는 명사 34개(그릇·유리병·상자·실·실타래·매듭·종이·천·막·불꽃·촛불·물방울 …, `shared/lexicon/base_shapes.v1.json`, 초안) |
+| spec에서 | 슬롯 없음. `_unmapped`(category `shape`)를 Unity가 읽음 | 슬롯 `form.base` + `form.baseVariant`, `_provenance`와 함께 |
+| 모형 | Sphere·Cube·FlatCylinder·Cone | 절차 메시 `container/1`·`line/1`·`sheet/1`·`flame/1`·`drop/1`(`Runtime/Rendering/BaseShapeMesh.cs`) |
+| `form.type`과 | 비었거나 blob일 때만(규칙 3) | 비었거나 blob일 때만 그림. mist·shell·fragments면 그 형태를 그리고 base는 `not_applied_form` |
+| 둘이 함께 나오면 | 모양어는 **`not_applied_base`**(새 상태, 경고 아님) — 모형이 있든 없든 기본 형상이 윤곽을 정함 | 기본 형상이 앞섬. 예외: '네모난 상자·그릇'의 '네모'는 매퍼가 `form.baseVariant.profile = square`로 넣음 |
+| 변형본 | 소유감 변형본이 모양 모형을 강제하면(`shapeModel`) | 그 모형이 앞서고 base는 `not_applied_forced` |
 
 - 기본 형상 목록은 "IFS가 정한 범주"가 아니라 "문헌을 참고해 연구팀이 정한 목록"입니다(G6).
-- **사전에 없는 명사**는 매퍼 v2부터 `_unmapped`에 category `unlisted_noun`으로 남습니다(`value.role`·`value.scope` 포함). 모양어 항목(category `shape`)과 따로이고, 모형을 고르지 않으며 대신할 형상도 그리지 않습니다. v0·v1 출력에는 이 항목이 없습니다(v0·v1 출력 불변, G24).
+- **사전에 없는 명사**는 지금처럼 `_unmapped`에 category `unlisted_noun`으로 남고 `form.base`는 null입니다(대신할 형상을 고르지 않음). 그리지 않기로 한 낱말(사람·아이, 공격하는 존재, 무기, 죽음·외상, 피·올가미)은 reason `excluded_shape`로 남습니다.
+- 조절에서 기본 형상을 지우면(`form.base` = none) 그 spec의 모양어가 모형이 되지는 않습니다(로드 때 `not_applied_base`로 판정해 모형을 정하지 않았기 때문). blob으로 그려집니다.
 
 ### 후보 선택·조절 단계에서
 
+- **기본 형상(D6)을 말했으면 형태 자리는 '말함'입니다.** 기본 형상은 후보 값으로 내밀지 않습니다. 조절의 "형태" 항목은 form.type 4값 + 기본 형상 5값입니다(`candidate_values.v2.json`). 아래 G32 규칙은 기본 형상이 그려지지 않는 spec에만 걸립니다 — builder 2.1.0까지 모형 없는 모양어였던 '실'·'선'·'끈'·'매듭'·'판'은 이제 기본 형상의 근거라 G32 경로를 타지 않습니다.
 - **모양어를 말했으면 형태 자리를 '말함'으로 봅니다.** 후보 생성기는 `_unmapped`에 category `shape` 항목이 있으면 `form.type`이 null이어도 형태 축을 벌리지 않습니다(`chatbot/tests/test_candidates.py::test_shape_word_counts_as_said_form`). 형태 후보로 mist 등을 내밀면 규칙 4 때문에 말한 모양 모형이 그려지지 않게 되기 때문입니다.
 - 이 규칙은 **표에 없는 모양어**(실·선·판·점 …)에도 똑같이 걸립니다. 그런 말은 모형이 없어 기본 모형으로 그려지는데, 형태 후보도 나오지 않습니다(예: 합성 문장 "가는 실 같은 게 손목에 감겨 있어요" → 후보 축은 크기·투명도). 참여자는 조절 단계의 "형태"에서만 형태를 바꿀 수 있습니다. 내부 시스템 점검에서 볼 항목입니다(`docs/internal-trial-guide.md`).
-- 조절의 "형태" 항목은 `form.type` 네 값뿐입니다. 모양 모형을 직접 고르는 항목은 없고, 챗봇은 덮어쓰기에 `shapeModel` 키를 쓰지 않습니다. 형태 덮어쓰기와 모양 모형 규칙이 Unity에서 어떻게 겹치는지 보는 교차 테스트는 아직 없습니다(`docs/validation/selection-flow/README.md` 10절).
+- (D6 전) 조절의 "형태" 항목은 `form.type` 네 값뿐이었습니다. 모양 모형을 직접 고르는 항목은 지금도 없고, 챗봇은 덮어쓰기에 `shapeModel` 키를 쓰지 않습니다. 형태 덮어쓰기와 모양 모형 규칙이 Unity에서 어떻게 겹치는지 보는 교차 테스트는 아직 없습니다(`docs/validation/selection-flow/README.md` 10절).
 - 속성 출처 네 가지(말함/고름/고침/기본값)는 spec이 아니라 선택 기록 `selection.json`에 적습니다(G15). 모양 모형은 지금 출처 칸이 없고 Unity 기록의 `shape`에만 남습니다.
 
 ## 한계

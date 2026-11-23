@@ -44,7 +44,7 @@
 | 항목 | 전(builder 2.1.0) | 뒤(builder 2.2.0) | 판정 |
 | --- | --- | --- | --- |
 | M06 엉킨 실 뭉치 | 빨간 구(모양어 '동그랗' → Sphere) | `base:line` tangle(빨간 실 공). '뭉치' = blob이라 form.type blob, 모양어는 not_applied_base | 실 뭉치로 읽힘 |
-| M09 얇은 막 | 껍질(shell) | 그대로 shell — 직유 '비눗방울 막처럼'이 form.type = shell을 주어 기본 형상 sheet는 `not_applied_form`(규칙 2-5절) | 바뀌지 않음(규칙대로). 후보 단계의 '막' 갈림은 form.type이 말한 자리라 쓰이지 않음 |
+| M09 얇은 막 | 껍질(shell) | 그대로 shell — 직유 '비눗방울 막처럼'이 form.type = shell을 주어 기본 형상 sheet는 `not_applied_form`(규칙 2-5절) | spec 그대로 그리면 바뀌지 않음(규칙대로). 후보 단계에서는 등록된 갈림 `form_type_with_base`가 껍질(shell) \| 얇은 판(blob → sheet) 두 읽기를 보임(`candidate_values.v2.json`) |
 | M15 네모난 상자 | 큐브 | `base:container` square(뚜껑 없는 검은 상자) | 상자로 읽힘(정면에서는 큐브와 비슷) |
 | M18 엉킨 검은 실 | 검은 덩어리 | `base:line` curve thin(검은 실 한 가닥). '엉켜서'가 다음 문장이라 tangle이 되지 않음(같은 문장 규칙) | 실로 읽히나 엉킨 모양은 아님 |
 | M19 가는 선 | 금색 덩어리 | `base:line` curve thin(금색 선) | 선으로 읽힘 |

@@ -20,7 +20,7 @@ unity/
 │  │  │  ├─ SceneSpec/SceneOverride.cs · MotionGroups.cs  변형본 덮어쓰기, motion.type → 움직임 묶음 표
 │  │  │  └─ Ownership/                     소유감 실험: 변형본 생성기 · 러너 · 머리 자세 · 기록 (아래 「소유감 실험」)
 │  │  ├─ Editor/                          메뉴: 예시 테스트 씬 다시 만들기 · Create Shape Prefabs · BatchCapture(배치 캡처·성능 측정) · Ownership 실험 씬·자동 시행
-│  │  ├─ Runtime/Rendering/              형상별 렌더 경로: FormRenderPlan(슬롯 값 → 렌더러 입력) · IFormRenderer(blob·mist·shell·fragments·shapeModel) · FragmentMesh
+│  │  ├─ Runtime/Rendering/              형상별 렌더 경로: FormRenderPlan(슬롯 값 → 렌더러 입력) · IFormRenderer(blob·mist·shell·fragments·shapeModel·base:*) · FragmentMesh · BaseShapeMesh(기본 형상 5개, D6)
 │  │  ├─ Runtime/Resources/IFS/          셰이더(Built-in): SceneSpec Opaque · Fade · Mist(부피 레이마칭) + 공통 노이즈, Environment Floor · Sky
 │  │  ├─ Tests/Editor/                    EditMode 테스트(아래 「테스트」), UnityOnly/ = Unity에서만 도는 것
 │  │  ├─ Runtime/Preview/                 형상 미리보기(D4): PreviewStage(무대) · PreviewBridge(JS 진입점) · PreviewQueue(상주 플레이어) · Plugins/WebGL/IFSPreview.jslib
@@ -139,6 +139,7 @@ UnityEngine에 의존하지 않는 부분(데이터 클래스·파싱·파라미
 | `mist` | 대리 구(icosphere 3단계, 반지름 0.75, 삼각형 1,280, 바운즈 1.6 상자) | `SceneSpecMist`: 한 패스, 물체 좌표 레이마칭 8걸음(`IFS_MIST_STEPS` = `FormRenderPlan.MistSteps`) | 5 · 1,680 | **밀도장(D7, 2026-11-23) = 둥근 덩어리 5개의 합집합 + 중간 주파수 노이즈 × 침식 결손.** 덩어리 중심·반지름은 `MistLumps.Build(seed)`(배치 규칙 `lumps5/1`, seed 0 — 형상 프리셋 기본값)가 정해 `_Lump0…_Lump4`에 넣고 notes·계획 JSON `mistRule`에 남김. 최종 알파 = opacity × 쌓인 알파(덩어리 속 ≈ opacity, opacity보다 커지지 않음 — X70). 형태 밀도 0.5(숫자 그대로)는 셰이더에서 광학 두께 배율(σ = 0.5 × 16). 덩어리마다 감싼 확산 + 빛 쪽 두께만큼의 자기 그림자 + 주변광(위가 밝고 아래가 어두움). 걸음 구간은 덩어리 전체를 감싼 구와 겹치는 부분만(밖은 버림). 걸음마다 구간 가운데에서 표본(중점 샘플링, 화소별 지터 없음). 이전(X66) 밀도장은 흔든 반지름 감쇠 × 덩이 노이즈였고 중심 광선 알파 목표가 opacity × 0.5였다 — 전후 비교 `docs/validation/cloud/README.md`. **mist에서 roughness의 뜻**: 표면 반사(광택)가 아니라 밀도 노이즈 크기 배율 lerp(0.7, 1.3, R)(0.5에서 1)과 색 얼룩 세기. 이전 Fade 경로에서는 잔요철 정점 변위·색 얼룩·PBR 광택(스무드니스 = 1 − R)이었고 색 얼룩 식만 같다. 그림자 없음. 카메라가 구 밖이면 앞면, 안이면 안쪽 면만 남김. 배치 설정 바닥 높이(`_FloorY`) 아래는 밀도 0 — 구가 바닥에 걸치면 notes와 report.json `mistFloor`(`floorClipped`, 잘린 높이 비율)에 기록(화면은 그대로). 배치 캡처의 색 측정은 `color.measuredWith = mistVolume`(부피 셰이딩의 화면 색, 알베도 기준 목표와 비교). 셰이더를 못 쓰면 `mist(legacy)`(구 + Fade) |
 | `fragments` | 각진 조각 5개를 합친 메시 하나(`FragmentMesh`, 삼각형 100, 평면 음영, seed 0) | Opaque/Fade, 정점 변위 0 | 8 · 800 | 이전: 구 5개(24 · 102,800). 조각 생성 규칙 버전 `angular5/1`(배치 반경 비율 0.884, 조각 크기 비율 0.281–0.554)을 notes와 계획 JSON `fragmentRule`에 남김. 규칙을 바꾸면 버전을 올린다(같은 seed라도 메시가 달라지므로) |
 | `shapeModel` / `shapePrefab(모형)` | 모양 모형 4종 | Opaque, 정점 변위 0 | 8 · 448–3,472 | 이전과 같음 |
+| `base:container` · `base:line` · `base:sheet` · `base:flame` · `base:drop` (D6, spec 2.2.0) | `BaseShapeMesh`(UnityEngine 없음): 절차 메시 하나, 규칙 `container/1`·`line/1`·`sheet/1`·`flame/1`·`drop/1`, 경계 상자 가장 긴 변 1·가운데 원점, 닫힌 메시, seed 0(형상 프리셋 기본값). 같은 (형상, 변형값)은 한 번 만들어 재사용 | 모양 모형과 같은 IFS Opaque/Fade, 프리셋 `ShapePreset`, 정점 변위 0. 지오메트리 셰이더·컴퓨트 없음(WebGL2에서도 같은 코드) | 메시 삼각형 32(네모 상자)–5,024(엉킨 실), 눈당 추정 드로콜 8 | **`form.base`가 있고 해석된 `form.type`이 blob일 때만**(말하지 않아 기본 blob인 경우 포함). mist·shell·fragments면 그 렌더러로 그리고 계획 JSON `base.status = not_applied_form`, 변형본이 모양 모형을 강제하면 `not_applied_forced`. 프리팹을 쓰지 않음(blob 프리팹이 연결돼 있어도 기본 형상이 앞섬). 모양어는 `not_applied_base`. 변형값(`form.baseVariant`)은 그리는 기본 형상이 spec의 것과 같을 때만 쓰고 정하지 않은 키는 기본값(계획 JSON `base.variant`·`variantDefaults`·`parameters`, notes에도). 색·밝기·채도·투명도·거칠기·침식·크기·움직임은 다른 형상과 같은 식(G22, `BaseShapeTests.Adjust_items_change_the_plan_for_base_shapes`, `UnityOnly/BaseShapeLoaderTests`). 형상 고유 움직임 없음, 불꽃 발광·색 강제 없음(G30). 조절 중 `form.base`를 바꾸면(`SetCategory`) 형상을 다시 만듦. 그림: `docs/validation/base-forms/README.md` |
 | `prefab(형태)` · `primitive(형태)` · `shapeModelPrimitive(모형)` | 연결한 프리팹 / IFS 셰이더를 못 쓸 때 | — | — | 대체 경로(그대로) |
 
 한계: 카메라가 안개 덩어리 안에 들어가면 시야가 opacity만큼 가려집니다(D7 뒤: 덩어리 속 알파 ≈ opacity. 헤드셋에서 직접 배치로 구름을 끌어올 때 확인 필요). 카메라가 안개 구 안에 있고 구 뒤쪽이 바닥 아래면 바닥을 내려다보는 화소의 안개가 빠집니다. 바닥에 걸친 안개는 바닥 높이에서 잘린 경계가 옅게 보일 수 있습니다. 헤드셋(Quest 모바일 GPU)의 레이마칭 채움 비용은 재지 않았습니다.
@@ -567,7 +568,7 @@ Windows 빌드(선택): 메뉴 **IFS ▸ Experiment ▸ Build Placement Experime
   -runTests -testPlatform EditMode -testResults <결과.xml> -logFile <로그>
 ```
 
-EditMode 335개(2026-11-23 구름 수정(D7)·러너 선택 파일(D8·D9) 뒤 배치모드로 전부 통과. 그 전 307개(미리보기 D4). 그 전 278개(헤드셋 프로토타입), 257개, 배치 러너 CP7 반영 때 192개). 아래 표는 2026-11-22 기준이고, 그 뒤 더한 것은 표 아래에 적었습니다:
+EditMode **440개**(2026-11-23 기본 형상 D6 뒤 배치모드로 전부 통과, dotnet 383개). 그 전 335개(2026-11-23 구름 수정(D7)·러너 선택 파일(D8·D9) 뒤 배치모드로 전부 통과. 그 전 307개(미리보기 D4). 그 전 278개(헤드셋 프로토타입), 257개, 배치 러너 CP7 반영 때 192개). 아래 표는 2026-11-22 기준이고, 그 뒤 더한 것은 표 아래에 적었습니다:
 
 | 파일 | 개수 | 내용 |
 | --- | --- | --- |
@@ -594,6 +595,8 @@ EditMode 335개(2026-11-23 구름 수정(D7)·러너 선택 파일(D8·D9) 뒤 �
 2026-11-23 구름 수정(D7)에서 더한 것: `MistLumpsTests.cs`(덩어리 배치 seed 결정성·다른 seed·규칙 버전에 묶인 기본 배치·대리 구 안·덩어리 겹침·계획 JSON `mistRule`·밀도 프리셋 0.5 그대로·밝기 대비 지표), `MistShaderSourceTests`(+1: 덩어리 수·가장자리 폭·`_Lump0…` 선언·opacity를 최종 알파에 그대로 곱함), `UnityOnly/MistRendererTests`(머티리얼 `_Lump0…`·`_Seed`, maxAlpha가 opacity의 0.9–1배·대비 지표 있음), golden은 GOLD-mist notes만 다시 씀. `Stubs/UnityStubsMist.cs`(`Vector4`, `Material.SetVector`·`GetVector`).
 
 2026-11-23 러너 선택 파일(D8·D9)에서 더한 것: `PlacementSelectionTests.cs`(13: 선택 파일 파싱·sha 불일치 거부·모르는 키·위치/거리 키 거부·모르는 formatVersion 경고·없을 때 기존 동작·manifest 0.2 키 `selection`·`appliedOverrides`·문항 범위 0–10 키보드 두 자리·컨트롤러·G13 두 문항 draft·사전/사후 설정·기존 문항 끄기), `PlacementTests`·`PlacementXrTests` 기대값 갱신(평정 순서·개수), `UnityOnly/PlacementRunnerSelectionTests.cs`(3: 덮어쓰기가 형상에 한 번 그려지고 manifest 0.2에 남음, sha 불일치·적용 못 한 덮어쓰기는 시작 거부, 선택 파일 없을 때 기존 동작과 "맞는 것이 없다" 기록).
+
+2026-11-23 기본 형상 D6에서 더한 것(EditMode 342 → 440, dotnet 290 → 383): `BaseShapeTests.cs`(+93: 형상·변형값 조합마다 메시 결정성·삼각형 상한 5,120·경계 상자·면 방향과 법선·넓이 0 없음·닫힌 메시, 규칙 버전별 기본 메시 해시 고정, 변형값이 메시를 바꿈, 2.2.0 파싱·왕복·검사(버전·근거·모르는 기본 형상·다른 형상의 변형 키·모르는 변형 키는 파싱 오류), `SceneParams` 기록(2.2 spec에만 `form.base`), 렌더 계획(blob·미지정만 base, mist·shell·fragments는 not_applied_form, 모양어 not_applied_base, 모양 모형 강제가 앞섬, 변형값은 같은 기본 형상일 때만), 조절 항목 × 기본 형상(G22), 덮어쓰기·선택 파일의 `form.base`, 소유감 변형이 `form.base`를 건드리지 않음(G21)), `UnityOnly/BaseShapeLoaderTests.cs`(+5: 형상마다 렌더 경로·메시·IFS 셰이더·정점 변위 0, 재질 슬롯·크기·Fade, 조절 중 전환과 머티리얼 정리, 2.1 spec에 덮어쓰기, 배치 러너가 선택 파일의 `form.base`를 그리고 manifest에 남김). compile-check 스텁에 `PlayerSettings.SplashScreen`(커밋 a40c295의 `PreviewBuild.cs`가 씀)을 더함.
 
 2026-11-23 연구 책임자 결정 G31–G34 반영에서 더한 것(3개, EditMode 342개·dotnet 290개 전부 통과): `PlacementSelectionTests.cs`(+3: 0.2의 `skipped`·`colorChanged`·새 출처 값 읽기, 0.2 필수 필드와 건너뜀 모순 거부, 0.1은 출처 네 값만·새 필드 선택). 기존 테스트의 manifest `selection` 키 목록과 `events.csv` 선택 줄 기대값을 고침.
 

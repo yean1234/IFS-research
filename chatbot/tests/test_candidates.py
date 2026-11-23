@@ -51,11 +51,11 @@ def empty_spec():
 
 # ── 결정성(완료 기준) ─────────────────────────────────────────────────────────
 GOLDEN = {   # 생성기 0.3.0 · 표 2.0.0 · 매퍼 v2 builder 2.2.0 · 기본 형상 사전 0.5.0 (2026-11-23, D6)
-    T_FORM: "6b413d48e9775c051dbd0fedd9cb29d2a797ae403fa27a2708f6f883df5d8016",
-    T_FEEL: "235932fe1022bdc2c6c73b58b38a21550cf099c5c76374b37af2fd5d45b4a9cb",
-    T_CLOUD: "c67a45f100b1ff3aa3f116cdf11b58f434346b04a756a80b279299f8ace1ff2f",
-    T_LONG: "fa131dd8a3e196c58e96804c14d7ae4e437c2a45856c825601e69f68642cf8f4",
-    T_MOTION: "8d9f174bf913f121c0d08b69dae33add6ec995d0aec4f5739c6918a107075c38",
+    T_FORM: "28b14b75b679e3e33df6a61681c59329702863c46072a0208d8ea217e5a67f7b",
+    T_FEEL: "e36b27aedabe9d87820c7c956f0e23d966e4cbb10b72f3e8354b07f112e29fc9",
+    T_CLOUD: "7ccbbf70e863a547d2271d9ece4c4f686e65d060d605fce16c95acf55a2f49ba",
+    T_LONG: "f3dbaf6abb4fac97cff3865945e8da1274578f8a2d6b784e1abc5e1141aa822c",
+    T_MOTION: "27457fc3fb11666270f117ea5bbeb817f00ed82b86b3ecef45ca756e5024deca",
 }
 
 
@@ -242,7 +242,8 @@ def test_candidate_values_lie_on_adjust_grid():
         for v in d["levels"] + d["pair"]:
             assert any(v == x for x in by_key[d["key"]]), (d["key"], v)
     for e in TABLE["interpretationSplits"]["entries"]:
-        assert all(r in by_key[e["slot"]] for r in e["readings"])
+        readings = e["readings"] if e["readings"] is not None else ["mist", "shell", "fragments", "blob"]   # D6 동적 갈림
+        assert all(r in by_key[e["slot"]] for r in readings)
 
 
 def test_priority_order_follows_g34():
@@ -411,6 +412,9 @@ def test_split_skipped_when_target_slot_said():
 
 def test_split_table_is_closed_and_readings_start_at_default():
     for e in TABLE["interpretationSplits"]["entries"]:
+        if e["readings"] is None:              # D6 form_type_with_base: 첫 읽기 = 말한 form.type(지금 그려지는 것), 규칙은 readingsRule
+            assert e["readingsRule"] and e["status"] == "draft" and e["evidence"]
+            continue
         assert e["readings"][0] == DEFAULTS[e["slot"]] and e["status"] == "draft" and e["evidence"]
 
 

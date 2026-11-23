@@ -412,3 +412,30 @@ G30(`form.base`, 스키마 2.2.0)은 다른 작업이라 건드리지 않았다.
 | G34 선택 건너뜀 | 남은 후보가 1개면 `selectionStep = "skip"`. 서버가 후보 화면 없이 0번으로 `adjusting`에 들어감. 기록: `selection = {selectedCandidateId: null, selectedIndex: null, none: false, skipped: true, skipReason: "single_distinct_candidate", displayPosition: null, operationalId: 0번, operationalIndex: 0}`, `candidatesShown = []`, `candidatesShownAt = null`, 세션 로그 `selection:skipped`. 선택이 없으니 축 슬롯은 `chosen`이 아님(`default`/`said`/`said_unrendered_default`). `/selection` POST는 409. 고정 문구에서 후보 1개 화면 문구 두 개를 빼고 protocolVersion 0.1.0 → 0.2.0(남은 27개 모두 draft) | "고른 것"과 "보여 줄 것이 하나뿐이라 고르지 않은 것"을 기록에서 가름. G20의 "보여 준 순서"는 보여 준 것이 없으므로 빈 배열(후보 출력의 `displayOrder`는 그대로 남음) |
 | 결정성 | G8·G28 유지: 구별 규칙과 건너뜀은 spec과 표만 보므로 같은 확정 텍스트 → 같은 후보·같은 `distinct`·같은 `selectionStep`(세션 ID와 무관). 표시 순서는 남은 후보 수로 순환 | `test_g28a_…`에 `distinct`·`selectionStep` 비교를 더함. 후보 출력 sha256 고정값 5개(새로 2개) |
 | 형식 버전 | `ifs-selection/0.1` → **`0.2`**, 스키마 `shared/schemas/selection.v0.2.json`(0.1 스키마는 그대로). 0.2에서 필수: `selection.skipped`, `colorChanged`, `sourceCounts`의 여섯 키, `candidates.selectionStep`·`distinct`. 러너는 **0.1·0.2를 모두 읽음**: 0.1은 출처 네 값만 받고 `skipped`·`colorChanged`가 없어도 됨(manifest에 false·null), 0.2는 두 필드 필수·출처 여섯 값, 모르는 버전은 경고하고 새 필드는 있으면 읽음. `skipped = true`인데 `none = true`이거나 id가 있으면 거부. 배치 기록 형식은 `ifs-placement/0.2` 유지(manifest `selection` 안에 `skipped`·`colorChanged` 키만 더함), 분석기 열 `selection_skipped`·`color_changed`·`form_source` | 필수 필드가 늘고 출처 값이 바뀌어 0.1 파일과 뜻이 달라지므로 올림. 러너 쪽 합성 입력(`docs/validation/runner-selection/inputs`, 0.1)과 이전 기록을 버리지 않으려고 0.1도 계속 읽음 |
+
+#### D6 구현 세부 (2026-11-23, 하위 에이전트가 정함 — 위 결정 행은 고치지 않음)
+G30(첫 묶음 승인)과 G21·G22에 따라 기본 형상 경로를 구현하면서 정한 것. 형상별 그림·판정은 `docs/validation/base-forms/README.md`, 계획과 달라진 점은 `docs/asset-plan.md` 8절.
+
+| 항목 | 정한 것 | 이유 |
+| --- | --- | --- |
+| 뺀 형상 | 없음. 다섯 개 모두 메시·테스트·캡처를 마치고 만든 순서대로 커밋 | — |
+| spec 버전 | 매퍼 v2(builder 2.2.0)는 기본 형상을 말하지 않았어도 언제나 2.2.0으로 적고 `form.base`·`form.baseVariant`를 null로 둠. v0·v1은 2.0.0·2.1.0 그대로 | 같은 매퍼가 문서마다 다른 버전을 내지 않게, '평가했지만 말하지 않음'(null)과 '이 판에는 슬롯 없음'(2.1)을 가르기 위해(원칙 2). 2.2 스키마는 2.0·2.1 문서도 받음 |
+| 변형값 표현 | 별도 슬롯 `form.baseVariant`(정한 키만, 없으면 null), 근거는 `_provenance["form.baseVariant"]` | 렌더러가 읽어야 하는 값이라 rule 문자열에 숨기지 않음. 값 ⇔ 근거 규칙을 다른 슬롯과 같게 |
+| 안전 제외 기록 | `_unmapped.reason` = `excluded_shape`(2.2 enum 추가), `value.excluded` = 사유 코드 5개. 이미 다른 사유로 기록된 낱말은 그 항목을 바꾸고, 불용 명사('피')라 기록이 없던 낱말은 category `excluded_noun`으로 새로 남김. base 자리에 올 명사(주어·이름·직유, 본 장면, 부정 아님)일 때만 | '사전에 없음'과 구별(에셋 계획 3-3절). 회상 문장의 '사람' 같은 말까지 표시하면 기록이 흐려짐 |
+| base가 되는 명사 | 명사 연속 전체 글자 일치, 주어·이름(수량 표현 뒤 성분 포함)·직유 원천, 본 장면 문장, 부정 아님. 수량 단위(앞 어절이 수사·숫자·수 관형사)·크기 비교 꼴('N만 하다', 'N 만큼·정도·크기')·다른 슬롯(form.type 제외)·`_measurements`·`_parts`·`_context`의 근거는 제외 | 에셋 계획 3-1절 + 목업에서 본 오류(M24 '한 컵쯤' → 그릇, M15 '신발 상자만 해요'). 목적어('컵을 들고')는 참여자의 행동일 수 있어 제외 |
+| 직유 | 형상 근거로 씀(`source` = `simile_marker`, rule 끝 `+simile(표지)`) | 에셋 계획 3-1절 제안. 목업 M26 '불꽃 같은'·'촛불 불꽃처럼'이 모두 직유 |
+| 변형값 단서 | 같은 형상 근거가 있는 문장의 '엉키·꼬이'(tangle)·'묶이'(knot)·'가늘·가느다랗·얇'(thin)·'굵·두껍·두툼하'(thick)·모양어 square(단면). 낱말 뜻보다 앞섬. 같은 문장만 | 말한 것이 덮어씀(원칙 2). 문장 밖으로 넓히면 다른 대상의 말을 끌어올 수 있음(M18은 그래서 tangle이 안 됨 — 사람이 정할 것) |
+| 사전에서 뺀 낱말 | 맨 '불'·'눈물'(몸 반응·관용 표현과 같은 꼴), '줄'(불용 수량 명사), '덩굴'(G30 식물), '불덩어리'(form.type blob), '창'(무기 목록, 창문과 같은 꼴) | 주어 규칙으로 형상인지 가를 수 없는 낱말은 그리지 않는 쪽(대신할 형상을 고르지 않는 G1·D4 주장 3과 같은 방향) |
+| 다른 기록 정리 | base 근거가 된 명사는 `_unmapped`의 같은 낱말·겹치는 구간 기록(object·shape·unlisted_noun, 직유 원형 대기)에서 뺌 | 값의 근거가 된 말을 '반영하지 못한 말'로 두면 G32 후보 규칙(모형 없는 모양어)이 잘못 걸림 |
+| 후보 | 기본 형상은 후보 값이 아님. 기본 형상이 그려지면 형태 자리는 말한 자리(G32 경로 안 탐). 출처 행에 `form.base` 추가(said/default/offered 없음) | 에셋 계획 결정 8(제안대로). '실'·'화분' 등의 동작 변경은 테스트로 고정 |
+| 갈림 | '막'(form.type이 비었을 때 blob = sheet \| shell)과 `form_type_with_base`(form.type mist·shell·fragments + 기본 형상을 둘 다 말함 → 말한 형태 \| blob). 앞의 것은 다른 갈림처럼 빈 슬롯만, 뒤의 것은 말한 form.type을 후보에서 바꾸는 유일한 경우 | 에셋 계획 2-5절·결정 10(제안대로). 두 읽기 모두 참여자 말이라는 이유. ⚠ G9와의 관계 확인 필요(`docs/morning-todo.md`) |
+| 조절 "형태" | 값 9개 = form.type 4 + 기본 형상 5, 값 하나가 `form.type`·`form.base`를 함께 정함(`valueOverrides`: 형태 값 → base none, 기본 형상 → form.type blob). 지금 값 = 그려지는 기본 형상 또는 form.type. 실제로 바뀐 슬롯만 '고침' | G22 "form.type과 승인된 form.base". 한 항목에서 하나를 고르게 해 'mist인데 base가 남아 있음' 같은 보이지 않는 조합을 만들지 않음 |
+| 값 표·생성기 버전 | 새 파일 `candidate_values.v2.json`(2.0.0), 생성기 `ifs-candidates/0.3.0`. v1·v0 파일은 그대로 | 기존 기록의 `tableSha256`이 가리키는 파일을 지우지 않음(G34 때와 같은 이유) |
+| 선택 기록 | `selection.v0.2.json`의 `slotName`·`flatOverrides`에 `form.base`를 하위 호환으로 더하고 형식 버전은 0.2 그대로. 러너 `SlotNames`도 같게 | 필수 필드·출처 값 변화가 없어 0.2 파일의 뜻이 바뀌지 않음 |
+| Unity 기록 | `SceneParams`는 `form.base`를 범주 값으로 들지만 `CategoricalKeys`에 넣지 않고, 2.2 spec이거나 덮어쓰기로 정했을 때만 `ToRecord`·`ChangedCategories`·`DefaultsUsed`에 나옴. 계획 JSON의 `base`도 기본 형상이 있을 때만 | 2.0·2.1 spec의 기록·golden 지문을 바이트 그대로 유지(X68) |
+| 렌더 순서 | base(그려질 때) > 모양 모형. 변형본의 모양 모형 강제(`shapeModel`)는 base보다 앞섬(`not_applied_forced`). base 경로는 프리팹을 쓰지 않음. 기본 형상이 그려지면 모양어는 모형 유무와 상관없이 `not_applied_base`(경고 아님) | 에셋 계획 2-5절. 변형본 강제는 실험자가 정한 것이라 앞세움. 조절에서 base를 none으로 바꿔도 모양 모형은 돌아오지 않음(로드 때 판정) |
+| 메시 수치 | 선 굵기 thin 0.02·보통 0.035·thick 0.06(계획 0.015·0.03·0.06), tangle = 공 위 7바퀴 곡선(계획: 무작위 걸음), 불꽃 = 반원 + 오목한 혀(2:1)·세 갈래 꼬임·S자 흔들림, 상자 = 곧은 벽 열린 통(높이 0.7), 판 = 24 × 18칸·두께 0.01·뒤로 15° | 시트를 직접 보고 고침(그림 판정과 함께 base-forms README). 모두 형상 프리셋 기본값이고 seed 0 |
+| 메시 검사 | 규칙 버전별 기본 변형값 메시의 정점 해시 고정, 형상·변형값 조합마다 결정성·삼각형 ≤ 5,120·경계 상자·면 방향 = 법선·넓이 0 없음·닫힌 메시(모든 모서리를 삼각형 둘이 나눔) | 계획 5-3절 공통 검증 1. 닫힌 메시라 얇은 판·관도 양면이 보임 |
+| 조절 반영(G22) | 기본 형상마다 색(h·l)·밝기·투명도·질감 이웃 단계에서 렌더 계획 JSON이 달라짐, 크기·움직임은 해석값, 형태 항목은 렌더러가 바뀜(dotnet), 실제 재질·배율·셰이더는 Unity 테스트로 확인. 반영되지 않는 조합 없음 → `adjustItems.availability`는 그대로 비움 | 회전 대칭 형상의 회전(Spin)은 조절 움직임 값에 회전이 없어 끌 항목이 없음 |
+| stage.js | 고치지 않음 | 범주 항목을 서버가 준 값 목록대로 번호 버튼으로 그려 9값이 그대로 나옴(이름 없음 — 참여자가 쓰지 않은 사물 이름을 화면에 쓰지 않음). WebGL 어댑터 부분은 지시대로 손대지 않음 |
+| 검증 범위 | 합성 20문장 + 목업 14개(dev·목업만, held-out 열지 않음), 캡처 해상도 눈당 1032 × 1104. 그림 판정은 AI | 시간. 팀원 판정·헤드셋 확인은 하지 않음 |

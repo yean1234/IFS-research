@@ -220,7 +220,7 @@ cd chatbot
 - ⚠ **크기 가정.** 말한 물리 크기 m(가장 긴 변)를 `size = 0.5 + log2(m / 0.2 m) / 6`로 옮깁니다. size 0.5 = 20 cm, 0 = 2.5 cm, 1 = 1.6 m입니다. 렌더 배율(×0.25–×4, 16배)에 사람이 말하는 크기 범위(손톱–사람 키, 약 64배)를 압축해 넣은 것이라, Unity에서 보이는 크기는 말한 크기와 1:1이 아닙니다(Unity 기본 크기 0.35 m 기준 30 cm → 약 0.46 m). 물리 크기를 그대로 쓰려면 `_measurements.meters`를 씁니다.
 - 거리는 v2 정의(0.3–3.0 m 선형) 그대로입니다.
 
-## 7. RQ V4 실험 프로토타입(2026-11-23): 매퍼 v2, 속성 출처, 기본 형상 경로(계획), 스키마 영향
+## 7. RQ V4 실험 프로토타입(2026-11-23): 매퍼 v2, 속성 출처, 기본 형상 경로(D6), 스키마 영향
 
 근거: `docs/prompts/prototype-v4-build.md` 단계 C·D, `docs/decisions.md` G14–G28과 연구 책임자 결정 G31–G34(구현 세부는 decisions.md 「G31–G34 구현 세부」). 구현 결과는 `docs/validation/mapper-v2/README.md`(D1·D2), `docs/validation/selection-flow/README.md`(D3·D5·D9), `docs/validation/runner-selection/README.md`(D8)에 있습니다.
 
@@ -280,29 +280,30 @@ v1까지는 사전에 없는 명사(화분, 물병, 인형)가 기록 없이 사
 - 위치·거리 키(`layout.distance`·`layout.verticalOffset`)는 들어갈 수 없습니다(G10). 선택 기록 스키마와 헤드셋 러너가 둘 다 거부합니다.
 - Unity `SceneOverrideJson`은 모양 모형을 강제하는 `shapeModel` 키도 받지만, 챗봇은 이 키를 쓰지 않습니다.
 
-### 7.5 낱말 → 범주 → 기본 형상(`form.base`) 경로 — 계획, 아직 구현하지 않음
+### 7.5 낱말 → 범주 → 기본 형상(`form.base`) 경로 — 구현(D6, 2026-11-23, 결정 G21·G30)
 
-**이 절은 계획입니다.** 기본 형상 경로(단계 D6)는 에셋 계획(`docs/asset-plan.md`, `status: draft`)을 연구 책임자가 승인한 뒤에 합니다. 지금 코드·스키마·사전에는 `form.base`가 없고, 형태 값은 `form.type` 네 개(blob·mist·shell·fragments)뿐입니다.
+첫 묶음 5개(`container`·`line`·`sheet`·`flame`·`drop`)를 연구 책임자가 승인했고(G30) 매퍼 v2 builder 2.2.0과 스키마 2.2.0으로 구현했습니다. 형상별 그림과 판정은 `docs/validation/base-forms/README.md`, 정한 세부는 `docs/decisions.md` 「D6 구현 세부」입니다.
 
-- **표현(G21):** 기본 형상은 새 슬롯 `form.base`로 둡니다. `form.type`은 표면·밀도 방식(덩어리·안개·껍질·조각)으로 그대로 둡니다. `form.type`에 섞으면 렌더 경로 선택과 소유감 러너의 형태 변형 규칙(X22·X23)이 흔들리기 때문입니다. `_unmapped`는 반영하지 못한 말의 기록이지 렌더 값이 아니므로 그 경로를 넓히지 않습니다.
-- **경로(에셋 계획 3절 제안):** 새 사전 `shared/lexicon/base_shapes.v1.json`의 명사 → 범주(담는 것·선·끈·얇은 판·불꽃·물방울) → `form.base` 키(`container`·`line`·`sheet`·`flame`·`drop`, 이름은 승인 대상). 기본 형상 목록은 "IFS가 정한 범주"가 아니라 "문헌을 참고해 연구팀이 정한 목록"입니다(G6).
-- **어떤 명사가 base가 되는가(제안):** 7.2의 `role`이 형상 자체(subject·named)이고 `scope`가 `main`일 때만입니다. 부정·회상·맥락 문장의 명사는 쓰지 않습니다. 사전에 없는 명사는 지금처럼 `_unmapped`(`unlisted_noun`)에 남고 `form.base`는 null입니다.
-- **출처:** `form.base`를 말했으면 `_provenance`에 근거가 생기고 `selection.json`에서 `said`입니다. 말하지 않았으면 후보에서 기본 형상을 내밀지 않을 것을 제안합니다(에셋 계획 결정 8). 조절의 "형태" 항목에 승인된 기본 형상을 둘지도 같은 결정에 걸려 있습니다.
-- **`form.type`과 함께 있을 때(제안, 결정 10):** 첫 묶음에서는 `form.type`이 비었거나 blob일 때만 base를 그립니다.
+- **표현(G21):** `form.base`(5값 + null)와 `form.baseVariant`(낱말 뜻·같은 문장의 말이 정한 변형값, 정한 키만. 없으면 null). `form.type`(blob·mist·shell·fragments)은 표면·밀도 방식으로 그대로입니다. 두 슬롯의 `_provenance` 규칙은 다른 슬롯과 같습니다(값 ⇔ 근거, `_inferred` 없음).
+- **사전:** `shared/lexicon/base_shapes.v1.json`(초안, `lexiconVersion` 0.5.0). 형상을 이름 붙이는 명사 34개(담는 것 10·선 9·판 7·불꽃 5·물방울 3), 낱말마다 출처 표기(`lit:`[문] / `tr:`[번] / `added`[보]). 넣지 않은 낱말과 이유는 `notIncluded`, 그리지 않는 안전 제외 낱말은 `excluded`(사유 코드 human_figure·attacking_being·weapon·death_trauma·blood_noose).
+- **어떤 명사가 base가 되는가:** 명사 연속 전체 글자가 표제어와 같고(뒷부분만 맞추지 않음: '종이컵'·'비눗방울'), 본 장면 문장이며(회상·상황 문장 = 7.2의 `scope` context 판정), 부정되지 않았고, 문장 성분이 주어·이름이거나(‘종이 한 장이’처럼 수량 표현 뒤의 성분 포함) 직유 원천('불꽃 같은', 근거 `source` = `simile_marker`)일 때. 수량 단위('한 컵쯤'), 크기 비교 기준('신발 상자만 해요'·'컵 정도'), 다른 슬롯 값(form.type 제외)·`_measurements`·`_parts`·`_context`의 근거로 쓴 말은 base가 아닙니다.
+- **여럿이면:** charSpan이 가장 앞선 명사의 형상을 쓰고, 같은 형상의 다른 명사는 근거에 더하며, 다른 형상은 `_alternatives`(reason `later_mention`)에 남깁니다. 변형값은 이긴 명사의 사전 값에서 시작해 같은 형상 근거가 있는 문장의 참여자 말('엉키·꼬이' → tangle, '가늘·굵' → 굵기, 모양어 '네모' → 단면 square)이 덮어씁니다.
+- **다른 기록과의 관계:** base의 근거가 된 명사는 `_unmapped`의 같은 낱말 기록(object·shape·unlisted_noun, 직유 원형 대기 포함)에서 빠집니다. 그래서 builder 2.1.0까지 모형 없는 모양어(G32)였던 '실'·'선'·'끈'·'매듭'·'판'과 unlisted_noun이던 '화분'·'물병' 등은 이제 말한 형태입니다(후보에서 형태 자리를 벌리지 않음. `chatbot/tests/test_base_shapes.py`가 고정). 안전 제외 낱말은 `_unmapped`에 reason `excluded_shape`, `value.excluded`로 남기고 대신할 형상을 그리지 않습니다.
+- **렌더(Unity):** `form.type`이 비었거나 blob일 때만 기본 형상을 그리고, mist·shell·fragments면 그 형태를 그리며 base는 `not_applied_form`으로 기록합니다. base가 모양 모형(Sphere 등)보다 앞서고 모양어는 `not_applied_base`. 자세한 것은 `docs/shape-mapping.md`, `unity/README.md` 「형상별 렌더 경로」.
+- **후보·조절:** 기본 형상은 후보 값으로 내밀지 않습니다(말하지 않은 구체 사물을 보이지 않음, 에셋 계획 결정 8 제안대로). 말했으면 형태 자리는 말한 자리. 등록된 갈림 두 가지만 예외로 다른 읽기를 하나 더 보입니다: '막'(form.type이 비었을 때 blob = 얇은 판 | shell), 형태어 mist·shell·fragments와 기본 형상을 둘 다 말한 경우(`form_type_with_base`: 말한 형태 | blob = 기본 형상 — 두 읽기 모두 참여자 말이라 말한 form.type을 후보에서 바꾸는 유일한 경우). 조절의 "형태" 항목은 form.type 4값 + 기본 형상 5값이고 값 하나가 `form.type`·`form.base`를 함께 정합니다(후보 값 표 `candidate_values.v2.json`의 `valueOverrides`). 출처는 `selection.json`의 `sources["form.base"]`(said/chosen/edited/default).
 
 ### 7.6 스키마 영향
 
-**이번 작업에서 SceneSpec 스키마는 바뀌지 않았습니다.** `scene-spec.v2.json`(2.0.0)과 `scene-spec.v2.1.json`(2.1.0) 그대로이고, 매퍼 v2도 2.1.0 문서를 냅니다(G33의 말한 값도 2.1 안의 `rule` 문자열에 적음). **새 스키마는 선택 기록 `shared/schemas/selection.v0.1.json`과 그 뒤 판 `selection.v0.2.json`(G31–G34)뿐입니다.** 헤드셋 러너 기록 형식은 `ifs-placement/0.1` → `0.2`로 올렸지만 추가만 했습니다(`unity/README.md` 배치 러너 기록 절).
+`shared/schemas/scene-spec.v2.2.json`(2.2.0, D6)을 새로 만들었습니다. 2.0·2.1 문서는 그 스키마로 계속 검사합니다(파이썬 `schema_errors()`가 specVersion에 맞는 파일을 고름). 2.2 스키마도 2.0·2.1 문서를 받습니다(상위 호환). 2.2.0 문서는 `form.base`·`form.baseVariant`를 반드시 가집니다(값이 null이어도 — 매퍼 v2는 기본 형상을 말하지 않았어도 2.2.0으로 적음. 같은 매퍼가 문서마다 다른 버전을 내지 않게 하고, '평가했지만 말하지 않음'(null)과 '이 판에는 슬롯 없음'(2.1)을 가르기 위해).
 
-`form.base`를 넣어 스키마를 2.2.0으로 올리면(계획) 영향은 아래와 같습니다. 코드를 읽어 확인한 것이고, 아직 아무것도 바꾸지 않았습니다.
-
-| 어디 | 지금 | 2.2.0에서 해야 할 일 / 영향 |
-| --- | --- | --- |
-| v0 출력과 고정 해시 | v0 빌더는 2.0.0 문서를 냄 | **영향 없음.** v0 코드·사전을 건드리지 않으면 `v0_output_sha256.json` 고정 테스트와 golden 파일 비교가 그대로 통과 |
-| v1 출력과 기존 평가 | v1은 2.1.0 문서를 냄 | **영향 없음.** 목업 v1 36개 바이트 비교, Unity v1 예시, held-out v1 수치가 그대로. 채점기의 정답 라벨에 `form.base`가 없으므로 v1 채점 결과도 같음 |
-| v2 출력 | 2.1.0 | `form.base`를 내는 것은 v2뿐(G21). v2 출력 바이트가 바뀌므로 후보 출력 고정 해시(`test_candidates.py::test_output_sha256_is_pinned`)와 후보 id(정규화 spec 해시에서 만듦)가 바뀌고, `docs/validation/mapper-v2/specs/`·`docs/validation/selection-flow/runs/`의 spec은 다시 만들어야 함. v2를 채점하려면 `form.base` 정답 기준을 새로 정해야 함 |
-| Python 스키마 검사 | `scene_spec.validate()`는 specVersion이 2.1.0이면 v2.1 스키마, **그 밖은 v2.0 스키마**로 검사 | `scene-spec.v2.2.json`을 만들고 분기를 더해야 함. 그대로 두면 2.2.0 문서는 v2.0 스키마로 검사돼 실패(specVersion enum, `form`의 `additionalProperties: false`, `_provenance` 키 enum) |
-| Unity 파서 | `SceneSpecJson.Strict`가 `MissingMemberHandling.Error`라 모르는 필드가 있으면 파싱 실패. `FormSpec`에는 `type`·`posture`뿐. `SupportedSpecVersions` = 2.0.0·2.1.0 | **Unity 파서가 2.2를 받도록 바꿔야 함.** 바꾸지 않으면 `form.base`가 든 문서는 로드 자체가 실패해 형상이 그려지지 않음. `FormSpec.Base`, 지원 버전, `SlotPaths`(`_provenance` 경로 검사), 2.0·2.1 문서에 `form.base`가 있으면 경고하는 검사, `FormRenderPlan`의 base 판정을 더함. 2.0·2.1 문서의 왕복 직렬화와 golden 지문은 바뀌지 않아야 함 |
-| 덮어쓰기·선택 기록 | `SceneParams.CategoricalKeys` = form.type·form.posture·motion.type. 선택 기록 스키마의 `flatOverrides`·`slotName`에 `form.base` 없음 | 조절에서 기본 형상을 고르게 하면 `form.base` 범주 키를 Unity 덮어쓰기, 선택 기록 스키마(→ 0.2), 러너 검사, 후보 값 표에 함께 더해야 함 |
-| 소유감 러너 | 형태 변형은 `form.type`만 바꿈 | 형태 변형이 `form.base`를 건드리지 않게 둠(G21) |
-| 사전 버전 | 없음 | 새 사전 `base_shapes.v1.json`의 버전이 `meta.pipeline.lexicons`에 남게 함 |
+| 어디 | 영향 |
+| --- | --- |
+| v0·v1 출력 | **바뀌지 않음.** 기본 형상 낱말이 든 합성 5문장의 v0·v1 출력 sha256을 D6 전 커밋의 깨끗한 작업 폴더에서 재 고정(`test_base_shapes.py::test_v0_v1_outputs_unchanged_by_d6`). G33 때의 3문장 고정도 그대로 통과 |
+| v2 출력 | builder 2.1.0 → 2.2.0, specVersion 2.2.0. 후보 출력 고정 해시 5개와 후보 id가 바뀜(생성기 `ifs-candidates/0.3.0`, 표 2.0.0) |
+| Python 검사 | `scene_spec.SPEC_VERSION_V22`, `BASE_SLOT_PATHS`. `SLOT_PATHS`(2.0 슬롯)는 그대로 — 그 목록을 쓰는 v0·v1·평가 코드의 출력이 바뀌지 않게. `check_principles()`가 두 슬롯의 값 ⇔ 근거와 2.0·2.1 문서에 2.2 키가 있는지도 봄 |
+| Unity 파서 | `SupportedSpecVersions`에 2.2.0, `FormSpec.Base`·`BaseVariant`(모르는 변형 키는 파싱 오류), 원문에 키가 있었는지(`BaseKeysPresent`)를 따로 봐 2.0·2.1 왕복 직렬화와 golden 지문이 그대로. `Validate()`가 버전·근거·모르는 기본 형상·다른 형상의 변형 키를 경고 |
+| 해석값·기록 | `SceneParams`가 `form.base`를 범주 값으로 들지만 `CategoricalKeys`에는 넣지 않음 — 2.2 spec이거나 덮어쓰기로 기본 형상을 정했을 때만 `initialScene.json`·`ToRecord`에 나옴 |
+| 덮어쓰기·선택 기록 | `SceneOverride`가 `form.base`(5값 + none)를 받음. `selection.v0.2.json`의 `slotName`·`flatOverrides`에 `form.base`를 하위 호환으로 더함(형식 버전 0.2 그대로), 러너 `PlacementSelection.SlotNames`도 같음 |
+| 소유감 러너 | 형태 변형은 `form.base`를 건드리지 않음(G21, `BaseShapeTests.Ownership_variants_do_not_touch_form_base`) |
+| 사전 버전 | `meta.pipeline.lexicons.baseShapes` = `base-shapes-v1@0.5.0` |
+| 남은 것 | `meta.mapping.used`는 여전히 v0 | v1(v2는 v1으로 적음, 2.2 스키마에서도 그대로). 채점기(`eval/fidelity.py`)에는 `form.base` 정답 기준이 없어 v2의 기본 형상 반영은 채점하지 않음 |
