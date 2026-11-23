@@ -1,12 +1,12 @@
 {
   "meta": {
-    "specVersion": "2.1.0",
+    "specVersion": "2.2.0",
     "participantId": null,
     "sessionId": "M21",
     "condition": "static",
     "sourceTextHash": "sha256:191bda94e2e5f4fd1f2a59e3dde28eae04219e3222bf20b34122e9db7283a1e4",
     "pipeline": {
-      "builder": "scene-spec-builder-v2/2.0.0",
+      "builder": "scene-spec-builder-v2/2.4.0",
       "analyzer": "kiwi",
       "lexicons": {
         "layer1": "layer1-attribute-lexicon@1.0.0",
@@ -14,7 +14,8 @@
         "sceneParams": "scene-params@1.0.0",
         "vad": "vad-ko@0.1.0",
         "sceneParamsV2": "scene-params-v2@2.0.0",
-        "nounStoplist": "noun-stoplist-v2@1.0.0"
+        "nounStoplist": "noun-stoplist-v2@1.0.0",
+        "baseShapes": "base-shapes-v1@0.7.0"
       }
     },
     "mapping": {
@@ -25,7 +26,11 @@
   },
   "form": {
     "type": null,
-    "posture": null
+    "posture": null,
+    "base": "sheet",
+    "baseVariant": {
+      "drape": "cloth"
+    }
   },
   "material": {
     "color": {
@@ -53,6 +58,37 @@
     "layer": "surface"
   },
   "_provenance": {
+    "form.base": [
+      {
+        "source": "simile_marker",
+        "trigger": "천",
+        "charSpan": [
+          49,
+          50
+        ],
+        "rule": "baseShapes.천>form.base:sheet+simile(같은)"
+      },
+      {
+        "source": "explicit_lexicon",
+        "trigger": "천",
+        "charSpan": [
+          59,
+          60
+        ],
+        "rule": "baseShapes.천>form.base:sheet"
+      }
+    ],
+    "form.baseVariant": [
+      {
+        "source": "lexicon_implied",
+        "trigger": "천",
+        "charSpan": [
+          49,
+          50
+        ],
+        "rule": "baseShapes.천>form.baseVariant:drape=cloth+simile(같은)"
+      }
+    ],
     "material.color": [
       {
         "source": "phrase_rule",
@@ -118,48 +154,12 @@
   },
   "_unmatched": [
     {
-      "lemma": "엄마",
-      "tag": "EOJEOL",
-      "surface": "엄마랑",
-      "charSpan": [
-        0,
-        3
-      ]
-    },
-    {
       "lemma": "통화",
       "tag": "NNG",
       "surface": "통화",
       "charSpan": [
         4,
         6
-      ]
-    },
-    {
-      "lemma": "통화",
-      "tag": "EOJEOL",
-      "surface": "통화하고",
-      "charSpan": [
-        4,
-        8
-      ]
-    },
-    {
-      "lemma": "나",
-      "tag": "EOJEOL",
-      "surface": "나서요",
-      "charSpan": [
-        9,
-        12
-      ]
-    },
-    {
-      "lemma": "어깨",
-      "tag": "EOJEOL",
-      "surface": "어깨가",
-      "charSpan": [
-        14,
-        17
       ]
     },
     {
@@ -172,66 +172,12 @@
       ]
     },
     {
-      "lemma": "느낌",
-      "tag": "EOJEOL",
-      "surface": "느낌이에요",
-      "charSpan": [
-        21,
-        26
-      ]
-    },
-    {
-      "lemma": "등",
-      "tag": "EOJEOL",
-      "surface": "등을",
-      "charSpan": [
-        38,
-        40
-      ]
-    },
-    {
       "lemma": "덮",
       "tag": "VV",
       "surface": "덮",
       "charSpan": [
         41,
         42
-      ]
-    },
-    {
-      "lemma": "덮",
-      "tag": "EOJEOL",
-      "surface": "덮고",
-      "charSpan": [
-        41,
-        43
-      ]
-    },
-    {
-      "lemma": "있",
-      "tag": "EOJEOL",
-      "surface": "있어요",
-      "charSpan": [
-        44,
-        47
-      ]
-    },
-    {
-      "lemma": "같",
-      "tag": "EOJEOL",
-      "surface": "같아요",
-      "charSpan": [
-        51,
-        54
-      ]
-    },
-    {
-      "lemma": "천",
-      "tag": "EOJEOL",
-      "surface": "천이",
-      "charSpan": [
-        59,
-        61
       ]
     },
     {
@@ -244,39 +190,12 @@
       ]
     },
     {
-      "lemma": "걸치",
-      "tag": "EOJEOL",
-      "surface": "걸쳐서",
-      "charSpan": [
-        66,
-        69
-      ]
-    },
-    {
-      "lemma": "아래",
-      "tag": "EOJEOL",
-      "surface": "아래로",
-      "charSpan": [
-        70,
-        73
-      ]
-    },
-    {
       "lemma": "흘러내리",
       "tag": "VV",
       "surface": "흘러내려",
       "charSpan": [
         74,
         78
-      ]
-    },
-    {
-      "lemma": "흘러내리",
-      "tag": "EOJEOL",
-      "surface": "흘러내려요",
-      "charSpan": [
-        74,
-        79
       ]
     },
     {
@@ -289,24 +208,6 @@
       ]
     },
     {
-      "lemma": "있",
-      "tag": "EOJEOL",
-      "surface": "있고",
-      "charSpan": [
-        94,
-        96
-      ]
-    },
-    {
-      "lemma": "손",
-      "tag": "EOJEOL",
-      "surface": "손으로",
-      "charSpan": [
-        104,
-        107
-      ]
-    },
-    {
       "lemma": "만지",
       "tag": "VV",
       "surface": "만지",
@@ -316,57 +217,12 @@
       ]
     },
     {
-      "lemma": "만지",
-      "tag": "EOJEOL",
-      "surface": "만지면",
-      "charSpan": [
-        108,
-        111
-      ]
-    },
-    {
-      "lemma": "것",
-      "tag": "EOJEOL",
-      "surface": "것",
-      "charSpan": [
-        117,
-        118
-      ]
-    },
-    {
-      "lemma": "같",
-      "tag": "EOJEOL",
-      "surface": "같아요",
-      "charSpan": [
-        119,
-        122
-      ]
-    },
-    {
-      "lemma": "저",
-      "tag": "EOJEOL",
-      "surface": "제",
-      "charSpan": [
-        124,
-        125
-      ]
-    },
-    {
       "lemma": "상체",
       "tag": "NNG",
       "surface": "상체",
       "charSpan": [
         126,
         128
-      ]
-    },
-    {
-      "lemma": "상체",
-      "tag": "EOJEOL",
-      "surface": "상체를",
-      "charSpan": [
-        126,
-        129
       ]
     },
     {
@@ -386,24 +242,6 @@
         132,
         133
       ]
-    },
-    {
-      "lemma": "덮",
-      "tag": "EOJEOL",
-      "surface": "덮을",
-      "charSpan": [
-        132,
-        134
-      ]
-    },
-    {
-      "lemma": "정도",
-      "tag": "EOJEOL",
-      "surface": "정도요",
-      "charSpan": [
-        135,
-        138
-      ]
     }
   ],
   "_unmapped": [
@@ -411,11 +249,17 @@
       "lemma": "엄마",
       "category": "unlisted_noun",
       "value": {
+        "priorReason": "no_scene_param",
         "noun": "엄마",
+        "excluded": "person",
+        "position": "head",
         "role": "other",
-        "scope": "main"
+        "scope": "main",
+        "sentence": 0,
+        "formSaid": false,
+        "usedForShape": false
       },
-      "reason": "no_scene_param",
+      "reason": "excluded_shape",
       "_provenance": {
         "source": "phrase_rule",
         "trigger": "엄마",
@@ -424,25 +268,6 @@
           2
         ],
         "rule": "unlistedNoun.엄마"
-      }
-    },
-    {
-      "lemma": "천",
-      "category": "unlisted_noun",
-      "value": {
-        "noun": "천",
-        "role": "other",
-        "scope": "main"
-      },
-      "reason": "no_scene_param",
-      "_provenance": {
-        "source": "phrase_rule",
-        "trigger": "천",
-        "charSpan": [
-          49,
-          50
-        ],
-        "rule": "unlistedNoun.천"
       }
     },
     {
@@ -460,25 +285,6 @@
           58
         ],
         "rule": "shapeLexicon.얇"
-      }
-    },
-    {
-      "lemma": "천",
-      "category": "unlisted_noun",
-      "value": {
-        "noun": "천",
-        "role": "subject",
-        "scope": "main"
-      },
-      "reason": "no_scene_param",
-      "_provenance": {
-        "source": "phrase_rule",
-        "trigger": "천",
-        "charSpan": [
-          59,
-          60
-        ],
-        "rule": "unlistedNoun.천"
       }
     },
     {

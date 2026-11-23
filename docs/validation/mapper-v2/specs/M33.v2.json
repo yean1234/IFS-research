@@ -1,12 +1,12 @@
 {
   "meta": {
-    "specVersion": "2.1.0",
+    "specVersion": "2.2.0",
     "participantId": null,
     "sessionId": "M33",
     "condition": "static",
     "sourceTextHash": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "pipeline": {
-      "builder": "scene-spec-builder-v2/2.0.0",
+      "builder": "scene-spec-builder-v2/2.4.0",
       "analyzer": "kiwi",
       "lexicons": {
         "layer1": "layer1-attribute-lexicon@1.0.0",
@@ -14,7 +14,8 @@
         "sceneParams": "scene-params@1.0.0",
         "vad": "vad-ko@0.1.0",
         "sceneParamsV2": "scene-params-v2@2.0.0",
-        "nounStoplist": "noun-stoplist-v2@1.0.0"
+        "nounStoplist": "noun-stoplist-v2@1.0.0",
+        "baseShapes": "base-shapes-v1@0.7.0"
       }
     },
     "mapping": {
@@ -25,7 +26,9 @@
   },
   "form": {
     "type": null,
-    "posture": null
+    "posture": null,
+    "base": null,
+    "baseVariant": null
   },
   "material": {
     "color": null,

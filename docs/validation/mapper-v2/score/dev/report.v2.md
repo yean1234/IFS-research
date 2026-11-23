@@ -1,6 +1,6 @@
 # 일치도 채점 — imagery-dev · 매핑 v2
 
-채점기 fidelity/0.3.0, 코퍼스 imagery-dev@1.0.0, 빌더 scene-spec-builder-v2/2.0.0
+채점기 fidelity/0.3.0, 코퍼스 imagery-dev@1.0.0, 빌더 scene-spec-builder-v2/2.4.0
 
 ## 전체
 
@@ -12,14 +12,14 @@
 | distortRate | 0.000 |
 | lostRate | 0.000 |
 | droppedRate | 0.063 |
-| preserveRate | 0.942 |
-| unreflectedVerbatimRate | 1.000 |
+| preserveRate | 0.917 |
+| unreflectedVerbatimRate | 0.781 |
 | unreflectedVerbatimRateWithClauseIndex | 1.000 |
-| lostClauseIndexOnly | 0 |
+| lostClauseIndexOnly | 6 |
 | negated | 8 |
 | negationErrors | 0 |
-| contamination | 0 |
-| contaminationDecisive | 0 |
+| contamination | 2 |
+| contaminationDecisive | 2 |
 | spuriousValues | 29 |
 | unsupportedValues | 45 |
 | fuzzyValues | 0 |
@@ -42,8 +42,8 @@
 | distortRate | 0.000 | [0.000, 0.000] |
 | lostRate | 0.000 | [0.000, 0.000] |
 | droppedRate | 0.063 | [0.020, 0.112] |
-| preserveRate | 0.942 | [0.896, 0.979] |
-| unreflectedVerbatimRate | 1.000 | [1.000, 1.000] |
+| preserveRate | 0.917 | [0.867, 0.958] |
+| unreflectedVerbatimRate | 0.781 | [0.571, 0.931] |
 | unreflectedVerbatimRateWithClauseIndex | 1.000 | [1.000, 1.000] |
 | spuriousRate | 0.128 | [0.084, 0.172] |
 | unsupportedRate | 0.199 | [0.150, 0.247] |
@@ -78,7 +78,7 @@ layout.size 정답 구간 폭을 v1 크기 척도(1단위 = 6.000옥타브)로 �
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | body_layer | 22 | 22 | 22 | 0 | 0 | 0 | 0 | 0 | 1.000 |
 | body_part | 19 | 19 | 19 | 0 | 0 | 0 | 0 | 0 | 1.000 |
-| brightness | 12 | 10 | 7 | 0 | 1 | 0 | 4 | 0 | 0.700 |
+| brightness | 12 | 10 | 7 | 0 | 0 | 1 | 4 | 0 | 0.700 |
 | color | 30 | 29 | 28 | 0 | 1 | 0 | 1 | 0 | 0.966 |
 | distance | 6 | 6 | 6 | 0 | 0 | 0 | 0 | 0 | 1.000 |
 | erosion | 2 | 2 | 2 | 0 | 0 | 0 | 0 | 0 | 1.000 |
@@ -90,10 +90,10 @@ layout.size 정답 구간 폭을 v1 크기 척도(1단위 = 6.000옥타브)로 �
 | other | 7 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | – |
 | posture | 3 | 3 | 3 | 0 | 0 | 0 | 0 | 0 | 1.000 |
 | saturation | 3 | 3 | 2 | 0 | 0 | 0 | 1 | 0 | 0.667 |
-| shape | 10 | 0 | 0 | 0 | 10 | 0 | 0 | 0 | – |
+| shape | 10 | 0 | 0 | 0 | 6 | 4 | 0 | 0 | – |
 | size | 29 | 28 | 23 | 0 | 1 | 0 | 5 | 0 | 0.821 |
 | smell | 1 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | – |
-| sound | 2 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | – |
+| sound | 2 | 0 | 0 | 0 | 1 | 1 | 0 | 0 | – |
 | temperature | 5 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | – |
 | texture_roughness | 14 | 14 | 14 | 0 | 0 | 0 | 0 | 0 | 1.000 |
 | weight | 3 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | – |
@@ -113,7 +113,7 @@ layout.size 정답 구간 폭을 v1 크기 척도(1단위 = 6.000옥타브)로 �
 | D09 | 6 | 1.000 | 0.000 | 1.000 | 0 | 0 | 0 | 1 |
 | D10 | 8 | 1.000 | 0.000 | 1.000 | 0 | 0 | 1 | 1 |
 | D11 | 8 | 1.000 | 0.000 | 1.000 | 0 | 0 | 0 | 1 |
-| D12 | 7 | 1.000 | 0.000 | 1.000 | 0 | 0 | 1 | 1 |
+| D12 | 7 | 1.000 | 0.000 | 0.875 | 0 | 0 | 1 | 1 |
 | D13 | 8 | 0.875 | 0.000 | 0.875 | 0 | 0 | 0 | 1 |
 | D14 | 3 | 1.000 | 0.000 | 1.000 | 0 | 0 | 2 | 3 |
 | D15 | 7 | 1.000 | 0.000 | 1.000 | 0 | 0 | 0 | 0 |
@@ -121,17 +121,17 @@ layout.size 정답 구간 폭을 v1 크기 척도(1단위 = 6.000옥타브)로 �
 | D17 | 7 | 1.000 | 0.000 | 1.000 | 0 | 0 | 1 | 1 |
 | D18 | 8 | 0.750 | 0.000 | 0.750 | 0 | 0 | 2 | 3 |
 | D19 | 6 | 1.000 | 0.000 | 1.000 | 0 | 0 | 0 | 0 |
-| D20 | 7 | 1.000 | 0.000 | 1.000 | 0 | 0 | 0 | 1 |
+| D20 | 7 | 1.000 | 0.000 | 0.875 | 0 | 0 | 0 | 1 |
 | D21 | 7 | 1.000 | 0.000 | 1.000 | 0 | 0 | 3 | 3 |
 | D22 | 7 | 0.857 | 0.000 | 0.875 | 0 | 0 | 0 | 1 |
-| D23 | 7 | 1.000 | 0.000 | 1.000 | 0 | 0 | 2 | 3 |
+| D23 | 7 | 1.000 | 0.000 | 0.875 | 2 | 0 | 2 | 3 |
 | D24 | 8 | 1.000 | 0.000 | 1.000 | 0 | 0 | 0 | 1 |
 | D25 | 7 | 0.857 | 0.000 | 0.750 | 0 | 0 | 1 | 1 |
 | D26 | 6 | 1.000 | 0.000 | 1.000 | 0 | 0 | 2 | 2 |
-| D27 | 6 | 1.000 | 0.000 | 1.000 | 0 | 0 | 0 | 0 |
+| D27 | 6 | 1.000 | 0.000 | 0.750 | 0 | 0 | 0 | 0 |
 | D28 | 6 | 1.000 | 0.000 | 1.000 | 0 | 0 | 3 | 3 |
 | D29 | 5 | 1.000 | 0.000 | 1.000 | 0 | 0 | 0 | 0 |
-| D30 | 6 | 0.667 | 0.000 | 0.750 | 0 | 0 | 2 | 3 |
+| D30 | 6 | 0.667 | 0.000 | 0.625 | 0 | 0 | 2 | 3 |
 
 ## 실패 사례
 
@@ -179,6 +179,9 @@ layout.size 정답 구간 폭을 v1 크기 척도(1단위 = 6.000옥타브)로 �
 | D21 | spurious | body.layer |  | – | around | ["주변"] |
 | D22 | dropped_by_controller | size | 크기는 잘 모르겠어요 | {"equals": null} | – | – |
 | D22 | unsupported/outside_gold_span | body.layer |  | – | around | ["주변"] |
+| D23 | lost | shape | 꽃 한 송이 | – | – | – |
+| D23 | contamination | form.base | 주변 화분들은 갈색이에요 | – | container | 화분 |
+| D23 | contamination | form.baseVariant | 주변 화분들은 갈색이에요 | – | {"opening": "wide"} | 화분 |
 | D23 | spurious | material.brightness |  | – | 0.700 | ["빛"] |
 | D23 | spurious | body.part |  | – | body | ["몸"] |
 | D23 | unsupported/outside_gold_span | body.layer |  | – | around | ["주변"] |
@@ -187,9 +190,12 @@ layout.size 정답 구간 폭을 v1 크기 척도(1단위 = 6.000옥타브)로 �
 | D25 | spurious | body.layer |  | – | surface | ["표면"] |
 | D26 | spurious | form.type |  | – | blob | ["공"] |
 | D26 | spurious | body.layer |  | – | surface | ["표면"] |
+| D27 | lost | shape | 리본 같은 띠 | – | – | – |
+| D27 | lost | shape | 폭은 손가락 두 개 정도고 길어요 | – | – | – |
 | D28 | spurious | material.roughness |  | – | 0.250 | ["촉촉하고"] |
 | D28 | spurious | body.part |  | – | body | ["몸"] |
 | D28 | spurious | body.layer |  | – | around | ["주변"] |
+| D30 | lost | shape | 육각형 판 | – | – | – |
 | D30 | dropped_by_controller | brightness | 은은한 정도 | {"range": [0.3, 0.65]} | – | – |
 | D30 | dropped_by_controller | motion_type | 움직이는지는 잘 모르겠어요 | {"equals": null} | – | – |
 | D30 | spurious | body.part |  | – | body | ["몸"] |

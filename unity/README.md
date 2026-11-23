@@ -414,7 +414,10 @@ spec마다 참여자 번호를 하나씩 올립니다. 씬 만들기 배치: `-e
 | `selection.selectedCandidateId` · `selection.none` · `selection.skipped` | 그대로 기록. `none: true`인데 id가 있으면 거부. `skipped`(구별되는 후보가 하나뿐이라 선택 단계를 건너뜀, G34)는 0.2에서 필수이고, `skipped: true`인데 `none: true`이거나 id가 있으면 거부. `none`·`skipped`가 모두 false인데 id가 null이면 경고. 0.1 파일은 `skipped`가 없으면 false |
 | `colorChanged` | 조절에서 색을 바꿨는지(G31). 0.2에서 필수 불리언, 0.1은 없으면 null로 기록 |
 | `sources` | 객체여야 하고, 키는 스키마의 슬롯 이름 15개, 값은 0.2면 `said`·`chosen`·`edited`·`default`·`said_unrendered_chosen`·`said_unrendered_default`(뒤 둘은 모형이 없는 모양어를 말한 형태 자리, G32), 0.1이면 앞의 네 값 중 하나 — 아니면 **시작 거부**(G27). 통과하면 해석하지 않고 manifest에 그대로(없거나 null이면 null) |
+| `safetyFlags` | (있으면, G50 (4) — 하위 호환 추가) 넷째 제외 범주(죽음·자해·외상) 낱말이 확정 텍스트에 나온 자리의 목록. 배열이 아니거나 항목이 객체가 아니면 거부. **시작을 막지 않습니다**(VR 진행 여부는 연구자가 정함 — 초안). `PlacementSelection.SafetyFlags`·`HasSafetyFlags`·`SafetyFlagCategories`로 들고, manifest `selection.safetyFlags`에 그대로 옮깁니다(키가 없는 파일이면 manifest에도 없음). 실험자 GUI의 경고 자리(오류·초안·경고 바로 뒤)에 범주·낱말·문장 위치·글자 위치·자리·형태 막음을 한 줄씩 보입니다(`PlacementSafetyNotice`, OnGUI 화면 좌표만 — 헤드셋 판에는 나오지 않음). 글은 연구자용 로그 문자열이고 고정 문구가 아닙니다 |
 | 그 밖 | 읽지 않음(무시) |
+
+모양어 판정(`ShapeMapping.ExtractWords`)은 `_unmapped` 기록 가운데 reason `excluded_shape`(제외 네 범주)와 `no_asset`(동물, G51)을 모양어에서 뺍니다(`ShapeMapping.UnrenderedReasons`, 챗봇 `candidates.UNRENDERED_REASONS`와 같음 — pytest가 C# 원문 대조). 그리지 않기로 한 낱말이 막은 모양어가 모양 모형을 끌어오지 않게 하는 것입니다.
 
 덮어쓰기는 형상을 만들 때 `SceneLoader.Load(spec, 덮어쓰기)`로 **한 번** 얹고(소유감 변형본과 같은 경로, 참여자 조정 기록을 타지 않음) 조건 단계 동안 바뀌지 않습니다(VR 안에서 속성을 고치는 입력은 없음 — G11). 로드한 뒤 덮어쓰기 키마다 그려지는 해석값(모양 모형은 그려지는 모형)이 덮어쓰기 값과 같은지 확인하고, 다른 키가 하나라도 있으면 시작을 거부합니다. 확인 뒤 시작 전에 선택 파일이 바뀌면 거부합니다(spec과 같은 규칙). 시작하면 `events.csv`에 `selection` 한 줄(`file=…;none=0|1;candidate=…;skipped=0|1;colorChanged=0|1|(빈칸);applied=<키 수>`, 경고가 아님)을 남깁니다. manifest `selection`에는 `skipped`·`colorChanged`도 들어갑니다(기록 형식은 `ifs-placement/0.2` 그대로, 키만 더함). 합성 예시·자동 시행 결과: `docs/validation/runner-selection/`.
 
@@ -606,7 +609,7 @@ Windows 빌드(선택): 메뉴 **IFS ▸ Experiment ▸ Build Placement Experime
   -runTests -testPlatform EditMode -testResults <결과.xml> -logFile <로그>
 ```
 
-EditMode **457개**(2026-11-23 화면 개선 G44 뒤 배치모드로 전부 통과, dotnet 397개 — 더한 것: `PlacementPanelMetricsTests.cs` 8개(시야각 식, 기본 글자 크기가 2.24 m에서 잉크 1° 이상, WCAG 대비비, 기본 색 쌍 4.5:1 이상, 칸 너비·뜻 줄바꿈, scaleA 7점 뜻이 이웃 칸과 붙지 않음, 고른 칸, 중단 두 번 누르기 — dotnet·Unity 둘 다), `UnityOnly/PlacementTextPanelTests.cs` 2개(고른 칸 테두리·굵기·색과 고르기 전 표시 없음, 선형 색 변환, 키가 큰 판의 위 가장자리 ≤ 0.85 m)). 그 전 447개·dotnet 389개. 그 전 440개(2026-11-23 기본 형상 D6 뒤 배치모드로 전부 통과, dotnet 383개). 그 전 335개(2026-11-23 구름 수정(D7)·러너 선택 파일(D8·D9) 뒤 배치모드로 전부 통과. 그 전 307개(미리보기 D4). 그 전 278개(헤드셋 프로토타입), 257개, 배치 러너 CP7 반영 때 192개). 아래 표는 2026-11-22 기준이고, 그 뒤 더한 것은 표 아래에 적었습니다:
+EditMode **459개**(2026-11-23 G44와 G45–G51 병합 마무리 뒤 배치모드로 전부 통과, dotnet 399개 — 더한 것: G45–G51의 `PlacementSelectionTests` safetyFlags 1개(`LegacyFilesTests`는 no_asset 단언만 보탬), 병합 마무리의 `PlacementSelectionTests.Safety_notice_lines_for_the_experimenter_gui_only` 1개(알림 줄, 진행·중단 단추를 부르지 않음, 실험자 GUI만 씀 — dotnet·Unity 둘 다)). 그 전 457개(2026-11-23 화면 개선 G44 뒤 배치모드로 전부 통과, dotnet 397개 — 더한 것: `PlacementPanelMetricsTests.cs` 8개(시야각 식, 기본 글자 크기가 2.24 m에서 잉크 1° 이상, WCAG 대비비, 기본 색 쌍 4.5:1 이상, 칸 너비·뜻 줄바꿈, scaleA 7점 뜻이 이웃 칸과 붙지 않음, 고른 칸, 중단 두 번 누르기 — dotnet·Unity 둘 다), `UnityOnly/PlacementTextPanelTests.cs` 2개(고른 칸 테두리·굵기·색과 고르기 전 표시 없음, 선형 색 변환, 키가 큰 판의 위 가장자리 ≤ 0.85 m)). 그 전 447개·dotnet 389개. 그 전 440개(2026-11-23 기본 형상 D6 뒤 배치모드로 전부 통과, dotnet 383개). 그 전 335개(2026-11-23 구름 수정(D7)·러너 선택 파일(D8·D9) 뒤 배치모드로 전부 통과. 그 전 307개(미리보기 D4). 그 전 278개(헤드셋 프로토타입), 257개, 배치 러너 CP7 반영 때 192개). 아래 표는 2026-11-22 기준이고, 그 뒤 더한 것은 표 아래에 적었습니다:
 
 | 파일 | 개수 | 내용 |
 | --- | --- | --- |

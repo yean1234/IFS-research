@@ -130,6 +130,26 @@ v0·v1의 코드와 설정 파일(`scene_builder.py`·`scene_builder_v1.py`·`*.
 - Unity 예시 `unity/Assets/StreamingAssets/IFS/examples/v1/`는 v1 출력 고정입니다(`test_unity_v1_examples_are_current_v1_output`). v2 예시가 필요하면 따로 만들어야 합니다.
 - held-out 수치(반영률 0.698 등)는 v1 기준입니다. v2를 주 매핑으로 쓰려면 규칙을 보지 않은 사람이 쓴 새 평가 문장이 필요합니다(X13).
 
+## 7. builder 2.4.0으로 다시 만든 결과 (2026-11-23, G45–G51 병합 마무리)
+
+`specs/`와 `score/`를 지금 매퍼(builder **2.0.0 → 2.4.0**: D6 기본 형상 2.2.0, CP10 2.3.0, G45–G51 2.4.0)로 다시 만들었습니다. 위 1–6절의 수치·표는 2.0.0 때 것이라 그대로 두었습니다. 명령은 아래 「재현」과 같고, 출력 파일 이름이 바뀌어 `report.md` → `report.v1.md`, `compare/report.md` → `report.v2.md`로 옮겼습니다. held-out은 열지 않았습니다.
+
+- **v1 출력은 그대로입니다.** `score/*/report.v1.md`는 바이트까지 같습니다.
+- **슬롯 판정은 항목마다 같습니다.** 반영률(dev 0.937, mock 0.775)·왜곡률(0.000, 0.045)·근거 없는 값 비율(dev 0.199, mock 0.230)과 항목별 반영·왜곡·근거 없음 수가 2.0.0과 같습니다.
+- **바뀐 수치는 보존률 쪽입니다.** dev 보존률 0.942 → 0.917, 미반영 원문 보존률 1.000 → 0.781(절 색인으로만 남은 손실 0 → 6). mock 보존률 0.884 → 0.810, 미반영 원문 보존률 0.774 → 0.536(절 색인으로만 남은 손실 6 → 25), 손실률 0.010 → 0.040. 절 색인까지 치면 두 코퍼스 모두 1.000 그대로입니다. 원인은 기록 위치가 바뀐 것입니다. D6 뒤로 '종이'·'실'·'물방울'·'불꽃'·'상자' 같은 낱말은 `_unmapped`의 object 기록 대신 `_provenance["form.base"]`(trigger·charSpan)에 남고, G45 뒤로 '사람'은 reason `excluded_shape` 기록이 됩니다. 채점기 fidelity/0.3.0(D6 전)은 이 두 자리를 속성 단위 보존으로 세지 않습니다. 말이 spec에서 사라진 것은 아닙니다(G40에서 확인한 것과 같음). 채점기를 고칠지는 정하지 않았습니다.
+- **dev D23에 배경 오염 2건이 새로 생겼습니다(D6에서 온 것).** '주변 화분들은 갈색이에요'(정답 라벨상 배경)의 '화분'이 `form.base` container(변형값 opening wide)로 들어갑니다. 주어 '…은/는 + 색'이라 D6의 형상 판정 규칙에 걸렸습니다. G45–G51과는 관계없고, 고치지 않았습니다(⚠ `docs/morning-todo.md`).
+- **목업 spec(`specs/`, 36개)에서 슬롯 값이 바뀐 항목은 9개입니다.** 모두 D6 기본 형상입니다: M06·M18·M19 line(엉킨·곡선 가는 실), M09·M21 sheet(천), M20 sheet(종이), M15 container(입구 넓은 네모 상자), M22 drop, M26 flame. 나머지 슬롯은 2.0.0과 같습니다. e2e: 스키마 유효 36/36, 원칙 검사 문제 0, 대체 0, LLM·네트워크 호출 0.
+- **제외 범주 낱말(G45–G51) 기록은 dev 1곳, mock 4곳입니다.** 그리지 않은 것은 M30 하나입니다.
+
+| 항목 | 낱말(범주) | 자리 | 결과 |
+| --- | --- | --- | --- |
+| M30 | 사람(person) × 2 — '작은 사람 모양이 쪼그려 앉아', '웅크린 작은 사람이에요' | 중심 명사(`formSaid` true. '모양'은 가벼운 중심이라 앞 명사가 중심) | 2.0.0에서도 형상이 없었습니다(object 기록, base 없음). 이제 reason `excluded_shape`이고 후보 단계에서 형태 축이 `said_unrendered`로 열립니다. 자세 crouched·색·크기·움직임은 그대로 |
+| M21 | 엄마(person) — '엄마랑 통화하고 나서요' | 중심 명사이지만 형상 자리가 아님(`formSaid` false) | 기록만. 같은 텍스트의 '천'이 sheet로 그려집니다 |
+| M16 | 할머니(person) — '할머니 댁 마당이 떠올라요' | 꾸미는 말 | 기록만(scope main — 상황을 이름으로 말한 첫 답은 main, 5절의 scope 한계와 같음) |
+| dev D17 | 사람(person) — '크기는 사람 머리만하고' | 꾸미는 말 | 기록만. 크기 비교 표현이라 형상과 관계없음 |
+
+넷째 범주(죽음·자해·외상) 낱말과 동물 낱말은 두 코퍼스에 없습니다(dev의 '피곤', mock의 '피어올라요'는 걸리지 않음 — G50 (3)).
+
 ## 재현
 
 ```powershell
@@ -138,5 +158,6 @@ cd chatbot
 .venv\Scripts\python.exe -m ifs_chatbot.eval.fidelity --corpus ..\docs\validation\mock-forms\mock_corpus.json --mapper v1 --compare v2 --out <임시>\mock
 .venv\Scripts\python.exe -m ifs_chatbot.eval.e2e --corpus ..\docs\validation\mock-forms\mock_corpus.json --out <임시>\e2e --no-network --mappers v1,v2
 #   → <임시>\e2e\specs\*.v2.json을 specs\로 복사
+#   (2026-11-23부터 fidelity 출력: <임시>\dev\report.md → score\dev\report.v1.md, <임시>\dev\compare\report.md → report.v2.md, paired.* 그대로. mock도 같음)
 .venv\Scripts\python.exe -m pytest -q tests\test_scene_builder_v2.py
 ```

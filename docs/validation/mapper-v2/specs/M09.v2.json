@@ -1,12 +1,12 @@
 {
   "meta": {
-    "specVersion": "2.1.0",
+    "specVersion": "2.2.0",
     "participantId": null,
     "sessionId": "M09",
     "condition": "static",
     "sourceTextHash": "sha256:b7e81ab66213be2b25ce7fab7f2d41e0ff116ecdb167ab4e33243099f06fabb2",
     "pipeline": {
-      "builder": "scene-spec-builder-v2/2.0.0",
+      "builder": "scene-spec-builder-v2/2.4.0",
       "analyzer": "kiwi",
       "lexicons": {
         "layer1": "layer1-attribute-lexicon@1.0.0",
@@ -14,7 +14,8 @@
         "sceneParams": "scene-params@1.0.0",
         "vad": "vad-ko@0.1.0",
         "sceneParamsV2": "scene-params-v2@2.0.0",
-        "nounStoplist": "noun-stoplist-v2@1.0.0"
+        "nounStoplist": "noun-stoplist-v2@1.0.0",
+        "baseShapes": "base-shapes-v1@0.7.0"
       }
     },
     "mapping": {
@@ -25,7 +26,11 @@
   },
   "form": {
     "type": "shell",
-    "posture": null
+    "posture": null,
+    "base": "sheet",
+    "baseVariant": {
+      "drape": "cloth"
+    }
   },
   "material": {
     "color": {
@@ -62,6 +67,37 @@
           82
         ],
         "rule": "simile.처럼>prototype.막>form.type:shell"
+      }
+    ],
+    "form.base": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "막",
+        "charSpan": [
+          71,
+          72
+        ],
+        "rule": "baseShapes.막>form.base:sheet"
+      },
+      {
+        "source": "simile_marker",
+        "trigger": "막",
+        "charSpan": [
+          79,
+          80
+        ],
+        "rule": "baseShapes.막>form.base:sheet+simile(처럼)"
+      }
+    ],
+    "form.baseVariant": [
+      {
+        "source": "lexicon_implied",
+        "trigger": "막",
+        "charSpan": [
+          71,
+          72
+        ],
+        "rule": "baseShapes.막>form.baseVariant:drape=cloth"
       }
     ],
     "material.color": [
@@ -151,24 +187,6 @@
   },
   "_unmatched": [
     {
-      "lemma": "새",
-      "tag": "EOJEOL",
-      "surface": "새",
-      "charSpan": [
-        0,
-        1
-      ]
-    },
-    {
-      "lemma": "동네",
-      "tag": "EOJEOL",
-      "surface": "동네로",
-      "charSpan": [
-        2,
-        5
-      ]
-    },
-    {
       "lemma": "오",
       "tag": "VV",
       "surface": "온",
@@ -187,15 +205,6 @@
       ]
     },
     {
-      "lemma": "첫날",
-      "tag": "EOJEOL",
-      "surface": "첫날이",
-      "charSpan": [
-        11,
-        14
-      ]
-    },
-    {
       "lemma": "생각나",
       "tag": "VV",
       "surface": "생각나",
@@ -205,75 +214,12 @@
       ]
     },
     {
-      "lemma": "생각나",
-      "tag": "EOJEOL",
-      "surface": "생각나요",
-      "charSpan": [
-        15,
-        19
-      ]
-    },
-    {
-      "lemma": "뭐",
-      "tag": "EOJEOL",
-      "surface": "뭔가",
-      "charSpan": [
-        27,
-        29
-      ]
-    },
-    {
-      "lemma": "것",
-      "tag": "EOJEOL",
-      "surface": "게",
-      "charSpan": [
-        33,
-        34
-      ]
-    },
-    {
-      "lemma": "있",
-      "tag": "EOJEOL",
-      "surface": "있어요",
-      "charSpan": [
-        35,
-        38
-      ]
-    },
-    {
-      "lemma": "저",
-      "tag": "EOJEOL",
-      "surface": "저를",
-      "charSpan": [
-        48,
-        50
-      ]
-    },
-    {
       "lemma": "빙",
       "tag": "MAG",
       "surface": "빙",
       "charSpan": [
         51,
         52
-      ]
-    },
-    {
-      "lemma": "있",
-      "tag": "EOJEOL",
-      "surface": "있어요",
-      "charSpan": [
-        58,
-        61
-      ]
-    },
-    {
-      "lemma": "막",
-      "tag": "EOJEOL",
-      "surface": "막이요",
-      "charSpan": [
-        63,
-        66
       ]
     },
     {
@@ -295,57 +241,12 @@
       ]
     },
     {
-      "lemma": "바깥",
-      "tag": "EOJEOL",
-      "surface": "바깥이",
-      "charSpan": [
-        110,
-        113
-      ]
-    },
-    {
-      "lemma": "보이",
-      "tag": "EOJEOL",
-      "surface": "보여요",
-      "charSpan": [
-        118,
-        121
-      ]
-    },
-    {
-      "lemma": "저",
-      "tag": "EOJEOL",
-      "surface": "저를",
-      "charSpan": [
-        123,
-        125
-      ]
-    },
-    {
       "lemma": "통째",
       "tag": "NNG",
       "surface": "통째",
       "charSpan": [
         126,
         128
-      ]
-    },
-    {
-      "lemma": "통째",
-      "tag": "EOJEOL",
-      "surface": "통째로",
-      "charSpan": [
-        126,
-        129
-      ]
-    },
-    {
-      "lemma": "만큼",
-      "tag": "EOJEOL",
-      "surface": "만큼",
-      "charSpan": [
-        133,
-        135
       ]
     }
   ],
@@ -437,23 +338,6 @@
           70
         ],
         "rule": "shapeLexicon.얇"
-      }
-    },
-    {
-      "lemma": "막",
-      "category": "object",
-      "value": {
-        "object": "membrane"
-      },
-      "reason": "no_scene_param",
-      "_provenance": {
-        "source": "explicit_lexicon",
-        "trigger": "막",
-        "charSpan": [
-          71,
-          72
-        ],
-        "rule": "objectLexicon.막"
       }
     },
     {

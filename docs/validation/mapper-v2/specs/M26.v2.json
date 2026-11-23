@@ -1,12 +1,12 @@
 {
   "meta": {
-    "specVersion": "2.1.0",
+    "specVersion": "2.2.0",
     "participantId": null,
     "sessionId": "M26",
     "condition": "static",
     "sourceTextHash": "sha256:a71d3d81a863a6eda64297e50b79967cb5cfd00ce109573e05f1a7d2dc5217d3",
     "pipeline": {
-      "builder": "scene-spec-builder-v2/2.0.0",
+      "builder": "scene-spec-builder-v2/2.4.0",
       "analyzer": "kiwi",
       "lexicons": {
         "layer1": "layer1-attribute-lexicon@1.0.0",
@@ -14,7 +14,8 @@
         "sceneParams": "scene-params@1.0.0",
         "vad": "vad-ko@0.1.0",
         "sceneParamsV2": "scene-params-v2@2.0.0",
-        "nounStoplist": "noun-stoplist-v2@1.0.0"
+        "nounStoplist": "noun-stoplist-v2@1.0.0",
+        "baseShapes": "base-shapes-v1@0.7.0"
       }
     },
     "mapping": {
@@ -25,7 +26,9 @@
   },
   "form": {
     "type": null,
-    "posture": null
+    "posture": null,
+    "base": "flame",
+    "baseVariant": null
   },
   "material": {
     "color": {
@@ -53,6 +56,26 @@
     "layer": "inner"
   },
   "_provenance": {
+    "form.base": [
+      {
+        "source": "simile_marker",
+        "trigger": "불꽃",
+        "charSpan": [
+          47,
+          49
+        ],
+        "rule": "baseShapes.불꽃>form.base:flame+simile(같은)"
+      },
+      {
+        "source": "simile_marker",
+        "trigger": "불꽃",
+        "charSpan": [
+          63,
+          65
+        ],
+        "rule": "baseShapes.불꽃>form.base:flame+simile(처럼)"
+      }
+    ],
     "material.color": [
       {
         "source": "phrase_rule",
@@ -127,30 +150,12 @@
   },
   "_unmatched": [
     {
-      "lemma": "음",
-      "tag": "EOJEOL",
-      "surface": "음",
-      "charSpan": [
-        0,
-        1
-      ]
-    },
-    {
       "lemma": "오랜만",
       "tag": "NNG",
       "surface": "오랜만",
       "charSpan": [
         3,
         6
-      ]
-    },
-    {
-      "lemma": "오랜만",
-      "tag": "EOJEOL",
-      "surface": "오랜만에",
-      "charSpan": [
-        3,
-        7
       ]
     },
     {
@@ -163,48 +168,12 @@
       ]
     },
     {
-      "lemma": "그리",
-      "tag": "EOJEOL",
-      "surface": "그리던",
-      "charSpan": [
-        11,
-        14
-      ]
-    },
-    {
-      "lemma": "때",
-      "tag": "EOJEOL",
-      "surface": "때요",
-      "charSpan": [
-        15,
-        17
-      ]
-    },
-    {
       "lemma": "안",
       "tag": "MAG",
       "surface": "안",
       "charSpan": [
         33,
         34
-      ]
-    },
-    {
-      "lemma": "안",
-      "tag": "EOJEOL",
-      "surface": "안이요",
-      "charSpan": [
-        33,
-        36
-      ]
-    },
-    {
-      "lemma": "가운데",
-      "tag": "EOJEOL",
-      "surface": "한가운데요",
-      "charSpan": [
-        40,
-        45
       ]
     },
     {
@@ -217,75 +186,12 @@
       ]
     },
     {
-      "lemma": "같",
-      "tag": "EOJEOL",
-      "surface": "같은",
-      "charSpan": [
-        50,
-        52
-      ]
-    },
-    {
-      "lemma": "것",
-      "tag": "EOJEOL",
-      "surface": "게",
-      "charSpan": [
-        53,
-        54
-      ]
-    },
-    {
-      "lemma": "있",
-      "tag": "EOJEOL",
-      "surface": "있어요",
-      "charSpan": [
-        55,
-        58
-      ]
-    },
-    {
-      "lemma": "불꽃",
-      "tag": "EOJEOL",
-      "surface": "불꽃처럼",
-      "charSpan": [
-        63,
-        67
-      ]
-    },
-    {
       "lemma": "생기",
       "tag": "VV",
       "surface": "생겼",
       "charSpan": [
         68,
         70
-      ]
-    },
-    {
-      "lemma": "생기",
-      "tag": "EOJEOL",
-      "surface": "생겼어요",
-      "charSpan": [
-        68,
-        72
-      ]
-    },
-    {
-      "lemma": "아래",
-      "tag": "EOJEOL",
-      "surface": "아래는",
-      "charSpan": [
-        74,
-        77
-      ]
-    },
-    {
-      "lemma": "위",
-      "tag": "EOJEOL",
-      "surface": "위로",
-      "charSpan": [
-        82,
-        84
       ]
     },
     {
@@ -298,48 +204,12 @@
       ]
     },
     {
-      "lemma": "가",
-      "tag": "EOJEOL",
-      "surface": "갈수록",
-      "charSpan": [
-        85,
-        88
-      ]
-    },
-    {
-      "lemma": "한",
-      "tag": "EOJEOL",
-      "surface": "한",
-      "charSpan": [
-        112,
-        113
-      ]
-    },
-    {
       "lemma": "마디",
       "tag": "NNG",
       "surface": "마디",
       "charSpan": [
         114,
         116
-      ]
-    },
-    {
-      "lemma": "마디",
-      "tag": "EOJEOL",
-      "surface": "마디만",
-      "charSpan": [
-        114,
-        117
-      ]
-    },
-    {
-      "lemma": "하",
-      "tag": "EOJEOL",
-      "surface": "해요",
-      "charSpan": [
-        118,
-        120
       ]
     }
   ],
@@ -381,25 +251,6 @@
       }
     },
     {
-      "lemma": "불꽃",
-      "category": "unlisted_noun",
-      "value": {
-        "noun": "불꽃",
-        "role": "other",
-        "scope": "main"
-      },
-      "reason": "no_scene_param",
-      "_provenance": {
-        "source": "phrase_rule",
-        "trigger": "불꽃",
-        "charSpan": [
-          47,
-          49
-        ],
-        "rule": "unlistedNoun.불꽃"
-      }
-    },
-    {
       "lemma": "촛불",
       "category": "unlisted_noun",
       "value": {
@@ -416,25 +267,6 @@
           62
         ],
         "rule": "unlistedNoun.촛불"
-      }
-    },
-    {
-      "lemma": "불꽃",
-      "category": "unlisted_noun",
-      "value": {
-        "noun": "불꽃",
-        "role": "other",
-        "scope": "main"
-      },
-      "reason": "no_scene_param",
-      "_provenance": {
-        "source": "phrase_rule",
-        "trigger": "불꽃",
-        "charSpan": [
-          63,
-          65
-        ],
-        "rule": "unlistedNoun.불꽃"
       }
     },
     {

@@ -1,12 +1,12 @@
 {
   "meta": {
-    "specVersion": "2.1.0",
+    "specVersion": "2.2.0",
     "participantId": null,
     "sessionId": "M06",
     "condition": "static",
     "sourceTextHash": "sha256:c6813a2e53334945206c937f8361f85a759bb446e5b0e9909a4681e09e7d69b8",
     "pipeline": {
-      "builder": "scene-spec-builder-v2/2.0.0",
+      "builder": "scene-spec-builder-v2/2.4.0",
       "analyzer": "kiwi",
       "lexicons": {
         "layer1": "layer1-attribute-lexicon@1.0.0",
@@ -14,7 +14,8 @@
         "sceneParams": "scene-params@1.0.0",
         "vad": "vad-ko@0.1.0",
         "sceneParamsV2": "scene-params-v2@2.0.0",
-        "nounStoplist": "noun-stoplist-v2@1.0.0"
+        "nounStoplist": "noun-stoplist-v2@1.0.0",
+        "baseShapes": "base-shapes-v1@0.7.0"
       }
     },
     "mapping": {
@@ -25,7 +26,12 @@
   },
   "form": {
     "type": "blob",
-    "posture": null
+    "posture": null,
+    "base": "line",
+    "baseVariant": {
+      "form": "tangle",
+      "gauge": "thin"
+    }
   },
   "material": {
     "color": {
@@ -62,6 +68,64 @@
           65
         ],
         "rule": "simile.처럼>formLexicon.뭉치>form.type:blob"
+      }
+    ],
+    "form.base": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "실",
+        "charSpan": [
+          44,
+          45
+        ],
+        "rule": "baseShapes.실>form.base:line"
+      },
+      {
+        "source": "explicit_lexicon",
+        "trigger": "실",
+        "charSpan": [
+          68,
+          69
+        ],
+        "rule": "baseShapes.실>form.base:line"
+      },
+      {
+        "source": "explicit_lexicon",
+        "trigger": "실",
+        "charSpan": [
+          94,
+          95
+        ],
+        "rule": "baseShapes.실>form.base:line"
+      },
+      {
+        "source": "explicit_lexicon",
+        "trigger": "실",
+        "charSpan": [
+          101,
+          102
+        ],
+        "rule": "baseShapes.실>form.base:line"
+      }
+    ],
+    "form.baseVariant": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "엉켜",
+        "charSpan": [
+          47,
+          49
+        ],
+        "rule": "baseVariantCue.엉키>form.baseVariant:form=tangle"
+      },
+      {
+        "source": "lexicon_implied",
+        "trigger": "실",
+        "charSpan": [
+          44,
+          45
+        ],
+        "rule": "baseShapes.실>form.baseVariant:gauge=thin"
       }
     ],
     "material.color": [
@@ -131,39 +195,12 @@
   },
   "_unmatched": [
     {
-      "lemma": "하",
-      "tag": "EOJEOL",
-      "surface": "해야",
-      "charSpan": [
-        0,
-        2
-      ]
-    },
-    {
-      "lemma": "하",
-      "tag": "EOJEOL",
-      "surface": "할",
-      "charSpan": [
-        3,
-        4
-      ]
-    },
-    {
       "lemma": "일",
       "tag": "NNG",
       "surface": "일",
       "charSpan": [
         5,
         6
-      ]
-    },
-    {
-      "lemma": "일",
-      "tag": "EOJEOL",
-      "surface": "일이",
-      "charSpan": [
-        5,
-        7
       ]
     },
     {
@@ -185,30 +222,12 @@
       ]
     },
     {
-      "lemma": "쌓이",
-      "tag": "EOJEOL",
-      "surface": "쌓였던",
-      "charSpan": [
-        11,
-        14
-      ]
-    },
-    {
       "lemma": "주",
       "tag": "NNG",
       "surface": "주",
       "charSpan": [
         15,
         16
-      ]
-    },
-    {
-      "lemma": "주",
-      "tag": "EOJEOL",
-      "surface": "주요",
-      "charSpan": [
-        15,
-        17
       ]
     },
     {
@@ -221,75 +240,12 @@
       ]
     },
     {
-      "lemma": "머릿속",
-      "tag": "EOJEOL",
-      "surface": "머릿속이",
-      "charSpan": [
-        19,
-        23
-      ]
-    },
-    {
       "lemma": "복잡",
       "tag": "XR",
       "surface": "복잡",
       "charSpan": [
         24,
         26
-      ]
-    },
-    {
-      "lemma": "복잡",
-      "tag": "EOJEOL",
-      "surface": "복잡해요",
-      "charSpan": [
-        24,
-        28
-      ]
-    },
-    {
-      "lemma": "실",
-      "tag": "EOJEOL",
-      "surface": "실이",
-      "charSpan": [
-        44,
-        46
-      ]
-    },
-    {
-      "lemma": "있",
-      "tag": "EOJEOL",
-      "surface": "있는",
-      "charSpan": [
-        50,
-        52
-      ]
-    },
-    {
-      "lemma": "것",
-      "tag": "EOJEOL",
-      "surface": "것",
-      "charSpan": [
-        53,
-        54
-      ]
-    },
-    {
-      "lemma": "같",
-      "tag": "EOJEOL",
-      "surface": "같아요",
-      "charSpan": [
-        55,
-        58
-      ]
-    },
-    {
-      "lemma": "실",
-      "tag": "EOJEOL",
-      "surface": "실이",
-      "charSpan": [
-        68,
-        70
       ]
     },
     {
@@ -311,48 +267,12 @@
       ]
     },
     {
-      "lemma": "있",
-      "tag": "EOJEOL",
-      "surface": "있어요",
-      "charSpan": [
-        86,
-        89
-      ]
-    },
-    {
-      "lemma": "실",
-      "tag": "EOJEOL",
-      "surface": "실이랑",
-      "charSpan": [
-        94,
-        97
-      ]
-    },
-    {
-      "lemma": "실",
-      "tag": "EOJEOL",
-      "surface": "실이",
-      "charSpan": [
-        101,
-        103
-      ]
-    },
-    {
       "lemma": "섞이",
       "tag": "VV",
       "surface": "섞여",
       "charSpan": [
         104,
         106
-      ]
-    },
-    {
-      "lemma": "있",
-      "tag": "EOJEOL",
-      "surface": "있어요",
-      "charSpan": [
-        107,
-        110
       ]
     },
     {
@@ -366,23 +286,6 @@
     }
   ],
   "_unmapped": [
-    {
-      "lemma": "실",
-      "category": "shape",
-      "value": {
-        "shape": "thread"
-      },
-      "reason": "no_scene_param",
-      "_provenance": {
-        "source": "explicit_lexicon",
-        "trigger": "실",
-        "charSpan": [
-          44,
-          45
-        ],
-        "rule": "shapeLexicon.실"
-      }
-    },
     {
       "lemma": "엉키",
       "category": "texture",
@@ -420,23 +323,6 @@
       }
     },
     {
-      "lemma": "실",
-      "category": "shape",
-      "value": {
-        "shape": "thread"
-      },
-      "reason": "no_scene_param",
-      "_provenance": {
-        "source": "explicit_lexicon",
-        "trigger": "실",
-        "charSpan": [
-          68,
-          69
-        ],
-        "rule": "shapeLexicon.실"
-      }
-    },
-    {
       "lemma": "엉키",
       "category": "texture",
       "value": {
@@ -468,40 +354,6 @@
           82
         ],
         "rule": "shapeLexicon.동그랗"
-      }
-    },
-    {
-      "lemma": "실",
-      "category": "shape",
-      "value": {
-        "shape": "thread"
-      },
-      "reason": "no_scene_param",
-      "_provenance": {
-        "source": "explicit_lexicon",
-        "trigger": "실",
-        "charSpan": [
-          94,
-          95
-        ],
-        "rule": "shapeLexicon.실"
-      }
-    },
-    {
-      "lemma": "실",
-      "category": "shape",
-      "value": {
-        "shape": "thread"
-      },
-      "reason": "no_scene_param",
-      "_provenance": {
-        "source": "explicit_lexicon",
-        "trigger": "실",
-        "charSpan": [
-          101,
-          102
-        ],
-        "rule": "shapeLexicon.실"
       }
     }
   ],

@@ -1,12 +1,12 @@
 {
   "meta": {
-    "specVersion": "2.1.0",
+    "specVersion": "2.2.0",
     "participantId": null,
     "sessionId": "M19",
     "condition": "static",
     "sourceTextHash": "sha256:4801e1b11f0e7eddb88b968ecc2baa785f59a456fca6f71758f3a595402fe740",
     "pipeline": {
-      "builder": "scene-spec-builder-v2/2.0.0",
+      "builder": "scene-spec-builder-v2/2.4.0",
       "analyzer": "kiwi",
       "lexicons": {
         "layer1": "layer1-attribute-lexicon@1.0.0",
@@ -14,7 +14,8 @@
         "sceneParams": "scene-params@1.0.0",
         "vad": "vad-ko@0.1.0",
         "sceneParamsV2": "scene-params-v2@2.0.0",
-        "nounStoplist": "noun-stoplist-v2@1.0.0"
+        "nounStoplist": "noun-stoplist-v2@1.0.0",
+        "baseShapes": "base-shapes-v1@0.7.0"
       }
     },
     "mapping": {
@@ -25,7 +26,12 @@
   },
   "form": {
     "type": null,
-    "posture": null
+    "posture": null,
+    "base": "line",
+    "baseVariant": {
+      "form": "curve",
+      "gauge": "thin"
+    }
   },
   "material": {
     "color": {
@@ -53,6 +59,46 @@
     "layer": "inner"
   },
   "_provenance": {
+    "form.base": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "선",
+        "charSpan": [
+          44,
+          45
+        ],
+        "rule": "baseShapes.선>form.base:line"
+      },
+      {
+        "source": "explicit_lexicon",
+        "trigger": "선",
+        "charSpan": [
+          62,
+          63
+        ],
+        "rule": "baseShapes.선>form.base:line"
+      }
+    ],
+    "form.baseVariant": [
+      {
+        "source": "lexicon_implied",
+        "trigger": "선",
+        "charSpan": [
+          44,
+          45
+        ],
+        "rule": "baseShapes.선>form.baseVariant:form=curve"
+      },
+      {
+        "source": "explicit_lexicon",
+        "trigger": "가느다란",
+        "charSpan": [
+          57,
+          61
+        ],
+        "rule": "baseVariantCue.가느다랗>form.baseVariant:gauge=thin"
+      }
+    ],
     "material.color": [
       {
         "source": "phrase_rule",
@@ -131,48 +177,12 @@
       ]
     },
     {
-      "lemma": "새벽",
-      "tag": "EOJEOL",
-      "surface": "새벽에",
-      "charSpan": [
-        0,
-        3
-      ]
-    },
-    {
       "lemma": "깨",
       "tag": "VV",
       "surface": "깼",
       "charSpan": [
         4,
         5
-      ]
-    },
-    {
-      "lemma": "깨",
-      "tag": "EOJEOL",
-      "surface": "깼을",
-      "charSpan": [
-        4,
-        6
-      ]
-    },
-    {
-      "lemma": "때",
-      "tag": "EOJEOL",
-      "surface": "때요",
-      "charSpan": [
-        7,
-        9
-      ]
-    },
-    {
-      "lemma": "등",
-      "tag": "EOJEOL",
-      "surface": "등을",
-      "charSpan": [
-        11,
-        13
       ]
     },
     {
@@ -185,39 +195,12 @@
       ]
     },
     {
-      "lemma": "따르",
-      "tag": "EOJEOL",
-      "surface": "따라서",
-      "charSpan": [
-        14,
-        17
-      ]
-    },
-    {
-      "lemma": "뭐",
-      "tag": "EOJEOL",
-      "surface": "뭔가",
-      "charSpan": [
-        18,
-        20
-      ]
-    },
-    {
       "lemma": "지나가",
       "tag": "VV",
       "surface": "지나가",
       "charSpan": [
         21,
         24
-      ]
-    },
-    {
-      "lemma": "지나가",
-      "tag": "EOJEOL",
-      "surface": "지나가요",
-      "charSpan": [
-        21,
-        25
       ]
     },
     {
@@ -230,30 +213,12 @@
       ]
     },
     {
-      "lemma": "안",
-      "tag": "EOJEOL",
-      "surface": "안이요",
-      "charSpan": [
-        29,
-        32
-      ]
-    },
-    {
       "lemma": "척추",
       "tag": "NNG",
       "surface": "척추",
       "charSpan": [
         34,
         36
-      ]
-    },
-    {
-      "lemma": "척추",
-      "tag": "EOJEOL",
-      "surface": "척추를",
-      "charSpan": [
-        34,
-        37
       ]
     },
     {
@@ -266,48 +231,12 @@
       ]
     },
     {
-      "lemma": "따르",
-      "tag": "EOJEOL",
-      "surface": "따라서요",
-      "charSpan": [
-        38,
-        42
-      ]
-    },
-    {
-      "lemma": "선",
-      "tag": "EOJEOL",
-      "surface": "선이요",
-      "charSpan": [
-        44,
-        47
-      ]
-    },
-    {
-      "lemma": "한",
-      "tag": "EOJEOL",
-      "surface": "한",
-      "charSpan": [
-        49,
-        50
-      ]
-    },
-    {
       "lemma": "줄",
       "tag": "NNG",
       "surface": "줄",
       "charSpan": [
         51,
         52
-      ]
-    },
-    {
-      "lemma": "줄",
-      "tag": "EOJEOL",
-      "surface": "줄로",
-      "charSpan": [
-        51,
-        53
       ]
     },
     {
@@ -329,84 +258,12 @@
       ]
     },
     {
-      "lemma": "하나",
-      "tag": "EOJEOL",
-      "surface": "하나가",
-      "charSpan": [
-        64,
-        67
-      ]
-    },
-    {
-      "lemma": "위",
-      "tag": "EOJEOL",
-      "surface": "위에서",
-      "charSpan": [
-        68,
-        71
-      ]
-    },
-    {
-      "lemma": "아래",
-      "tag": "EOJEOL",
-      "surface": "아래로",
-      "charSpan": [
-        72,
-        75
-      ]
-    },
-    {
       "lemma": "이어지",
       "tag": "VV",
       "surface": "이어져",
       "charSpan": [
         79,
         82
-      ]
-    },
-    {
-      "lemma": "있",
-      "tag": "EOJEOL",
-      "surface": "있어요",
-      "charSpan": [
-        83,
-        86
-      ]
-    },
-    {
-      "lemma": "길이",
-      "tag": "EOJEOL",
-      "surface": "길이는",
-      "charSpan": [
-        103,
-        106
-      ]
-    },
-    {
-      "lemma": "40+센티",
-      "tag": "EOJEOL",
-      "surface": "40센티쯤이요",
-      "charSpan": [
-        107,
-        114
-      ]
-    },
-    {
-      "lemma": "빛",
-      "tag": "EOJEOL",
-      "surface": "빛이",
-      "charSpan": [
-        116,
-        118
-      ]
-    },
-    {
-      "lemma": "아래",
-      "tag": "EOJEOL",
-      "surface": "아래로",
-      "charSpan": [
-        119,
-        122
       ]
     },
     {
@@ -417,52 +274,9 @@
         127,
         131
       ]
-    },
-    {
-      "lemma": "흘러내리",
-      "tag": "EOJEOL",
-      "surface": "흘러내려요",
-      "charSpan": [
-        127,
-        132
-      ]
     }
   ],
   "_unmapped": [
-    {
-      "lemma": "선",
-      "category": "shape",
-      "value": {
-        "shape": "line"
-      },
-      "reason": "no_scene_param",
-      "_provenance": {
-        "source": "explicit_lexicon",
-        "trigger": "선",
-        "charSpan": [
-          44,
-          45
-        ],
-        "rule": "shapeLexicon.선"
-      }
-    },
-    {
-      "lemma": "선",
-      "category": "shape",
-      "value": {
-        "shape": "line"
-      },
-      "reason": "no_scene_param",
-      "_provenance": {
-        "source": "explicit_lexicon",
-        "trigger": "선",
-        "charSpan": [
-          62,
-          63
-        ],
-        "rule": "shapeLexicon.선"
-      }
-    },
     {
       "lemma": "길",
       "category": "shape",

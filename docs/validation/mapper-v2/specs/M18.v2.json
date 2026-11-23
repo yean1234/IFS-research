@@ -1,12 +1,12 @@
 {
   "meta": {
-    "specVersion": "2.1.0",
+    "specVersion": "2.2.0",
     "participantId": null,
     "sessionId": "M18",
     "condition": "static",
     "sourceTextHash": "sha256:cfaa57c03869be9f61bd507da0efac73f049e6918551731d4ac7b37276a2f4b3",
     "pipeline": {
-      "builder": "scene-spec-builder-v2/2.0.0",
+      "builder": "scene-spec-builder-v2/2.4.0",
       "analyzer": "kiwi",
       "lexicons": {
         "layer1": "layer1-attribute-lexicon@1.0.0",
@@ -14,7 +14,8 @@
         "sceneParams": "scene-params@1.0.0",
         "vad": "vad-ko@0.1.0",
         "sceneParamsV2": "scene-params-v2@2.0.0",
-        "nounStoplist": "noun-stoplist-v2@1.0.0"
+        "nounStoplist": "noun-stoplist-v2@1.0.0",
+        "baseShapes": "base-shapes-v1@0.7.0"
       }
     },
     "mapping": {
@@ -25,7 +26,12 @@
   },
   "form": {
     "type": null,
-    "posture": null
+    "posture": null,
+    "base": "line",
+    "baseVariant": {
+      "form": "curve",
+      "gauge": "thin"
+    }
   },
   "material": {
     "color": {
@@ -53,6 +59,46 @@
     "layer": "surface"
   },
   "_provenance": {
+    "form.base": [
+      {
+        "source": "simile_marker",
+        "trigger": "실",
+        "charSpan": [
+          43,
+          44
+        ],
+        "rule": "baseShapes.실>form.base:line+simile(같은)"
+      },
+      {
+        "source": "explicit_lexicon",
+        "trigger": "실",
+        "charSpan": [
+          66,
+          67
+        ],
+        "rule": "baseShapes.실>form.base:line"
+      }
+    ],
+    "form.baseVariant": [
+      {
+        "source": "lexicon_implied",
+        "trigger": "실",
+        "charSpan": [
+          43,
+          44
+        ],
+        "rule": "baseShapes.실>form.baseVariant:form=curve+simile(같은)"
+      },
+      {
+        "source": "explicit_lexicon",
+        "trigger": "가느다란",
+        "charSpan": [
+          58,
+          62
+        ],
+        "rule": "baseVariantCue.가느다랗>form.baseVariant:gauge=thin"
+      }
+    ],
     "material.color": [
       {
         "source": "phrase_rule",
@@ -107,42 +153,6 @@
   },
   "_unmatched": [
     {
-      "lemma": "음",
-      "tag": "EOJEOL",
-      "surface": "음",
-      "charSpan": [
-        0,
-        1
-      ]
-    },
-    {
-      "lemma": "뭐",
-      "tag": "EOJEOL",
-      "surface": "뭐라고",
-      "charSpan": [
-        3,
-        6
-      ]
-    },
-    {
-      "lemma": "하",
-      "tag": "EOJEOL",
-      "surface": "해야",
-      "charSpan": [
-        7,
-        9
-      ]
-    },
-    {
-      "lemma": "하",
-      "tag": "EOJEOL",
-      "surface": "할지",
-      "charSpan": [
-        10,
-        12
-      ]
-    },
-    {
       "lemma": "어제",
       "tag": "NNG",
       "surface": "어제",
@@ -161,57 +171,12 @@
       ]
     },
     {
-      "lemma": "일",
-      "tag": "EOJEOL",
-      "surface": "일이요",
-      "charSpan": [
-        17,
-        20
-      ]
-    },
-    {
-      "lemma": "손끝",
-      "tag": "EOJEOL",
-      "surface": "손끝이",
-      "charSpan": [
-        22,
-        25
-      ]
-    },
-    {
       "lemma": "저릿",
       "tag": "XR",
       "surface": "저릿",
       "charSpan": [
         26,
         28
-      ]
-    },
-    {
-      "lemma": "저릿",
-      "tag": "EOJEOL",
-      "surface": "저릿해요",
-      "charSpan": [
-        26,
-        30
-      ]
-    },
-    {
-      "lemma": "같",
-      "tag": "EOJEOL",
-      "surface": "같은",
-      "charSpan": [
-        45,
-        47
-      ]
-    },
-    {
-      "lemma": "것",
-      "tag": "EOJEOL",
-      "surface": "게",
-      "charSpan": [
-        48,
-        49
       ]
     },
     {
@@ -224,48 +189,12 @@
       ]
     },
     {
-      "lemma": "있",
-      "tag": "EOJEOL",
-      "surface": "있어요",
-      "charSpan": [
-        53,
-        56
-      ]
-    },
-    {
       "lemma": "가느다랗",
       "tag": "VA-I",
       "surface": "가느다란",
       "charSpan": [
         58,
         62
-      ]
-    },
-    {
-      "lemma": "실",
-      "tag": "EOJEOL",
-      "surface": "실이",
-      "charSpan": [
-        66,
-        68
-      ]
-    },
-    {
-      "lemma": "여러",
-      "tag": "EOJEOL",
-      "surface": "여러",
-      "charSpan": [
-        74,
-        76
-      ]
-    },
-    {
-      "lemma": "번",
-      "tag": "EOJEOL",
-      "surface": "번",
-      "charSpan": [
-        77,
-        78
       ]
     },
     {
@@ -284,15 +213,6 @@
       "charSpan": [
         82,
         84
-      ]
-    },
-    {
-      "lemma": "있",
-      "tag": "EOJEOL",
-      "surface": "있어요",
-      "charSpan": [
-        85,
-        88
       ]
     },
     {
@@ -323,15 +243,6 @@
       ]
     },
     {
-      "lemma": "머리카락",
-      "tag": "EOJEOL",
-      "surface": "머리카락만큼",
-      "charSpan": [
-        112,
-        118
-      ]
-    },
-    {
       "lemma": "가늘",
       "tag": "VA",
       "surface": "가늘",
@@ -339,70 +250,9 @@
         119,
         121
       ]
-    },
-    {
-      "lemma": "가늘",
-      "tag": "EOJEOL",
-      "surface": "가늘어요",
-      "charSpan": [
-        119,
-        123
-      ]
-    },
-    {
-      "lemma": "조금",
-      "tag": "EOJEOL",
-      "surface": "조금씩",
-      "charSpan": [
-        125,
-        128
-      ]
-    },
-    {
-      "lemma": "오",
-      "tag": "EOJEOL",
-      "surface": "와요",
-      "charSpan": [
-        132,
-        134
-      ]
     }
   ],
   "_unmapped": [
-    {
-      "lemma": "실",
-      "category": "shape",
-      "value": {
-        "shape": "thread"
-      },
-      "reason": "no_scene_param",
-      "_provenance": {
-        "source": "simile_marker",
-        "trigger": "실",
-        "charSpan": [
-          43,
-          44
-        ],
-        "rule": "simile.같은>shapeLexicon.실"
-      }
-    },
-    {
-      "lemma": "실",
-      "category": "shape",
-      "value": {
-        "shape": "thread"
-      },
-      "reason": "no_scene_param",
-      "_provenance": {
-        "source": "explicit_lexicon",
-        "trigger": "실",
-        "charSpan": [
-          66,
-          67
-        ],
-        "rule": "shapeLexicon.실"
-      }
-    },
     {
       "lemma": "엉키",
       "category": "texture",

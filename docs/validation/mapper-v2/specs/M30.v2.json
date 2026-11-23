@@ -1,12 +1,12 @@
 {
   "meta": {
-    "specVersion": "2.1.0",
+    "specVersion": "2.2.0",
     "participantId": null,
     "sessionId": "M30",
     "condition": "static",
     "sourceTextHash": "sha256:e1156339d3f37eec444fa793e1a28773d30ecd919bc3d3be2a3d177ad824036a",
     "pipeline": {
-      "builder": "scene-spec-builder-v2/2.0.0",
+      "builder": "scene-spec-builder-v2/2.4.0",
       "analyzer": "kiwi",
       "lexicons": {
         "layer1": "layer1-attribute-lexicon@1.0.0",
@@ -14,7 +14,8 @@
         "sceneParams": "scene-params@1.0.0",
         "vad": "vad-ko@0.1.0",
         "sceneParamsV2": "scene-params-v2@2.0.0",
-        "nounStoplist": "noun-stoplist-v2@1.0.0"
+        "nounStoplist": "noun-stoplist-v2@1.0.0",
+        "baseShapes": "base-shapes-v1@0.7.0"
       }
     },
     "mapping": {
@@ -25,7 +26,9 @@
   },
   "form": {
     "type": null,
-    "posture": "crouched"
+    "posture": "crouched",
+    "base": null,
+    "baseVariant": null
   },
   "material": {
     "color": {
@@ -149,30 +152,12 @@
       ]
     },
     {
-      "lemma": "자리",
-      "tag": "EOJEOL",
-      "surface": "자리에서",
-      "charSpan": [
-        3,
-        7
-      ]
-    },
-    {
       "lemma": "말",
       "tag": "NNG",
       "surface": "말",
       "charSpan": [
         8,
         9
-      ]
-    },
-    {
-      "lemma": "말",
-      "tag": "EOJEOL",
-      "surface": "말을",
-      "charSpan": [
-        8,
-        10
       ]
     },
     {
@@ -185,129 +170,12 @@
       ]
     },
     {
-      "lemma": "하",
-      "tag": "EOJEOL",
-      "surface": "했던",
-      "charSpan": [
-        13,
-        15
-      ]
-    },
-    {
-      "lemma": "거",
-      "tag": "EOJEOL",
-      "surface": "거요",
-      "charSpan": [
-        16,
-        18
-      ]
-    },
-    {
-      "lemma": "옆",
-      "tag": "EOJEOL",
-      "surface": "옆에",
-      "charSpan": [
-        20,
-        22
-      ]
-    },
-    {
-      "lemma": "누구",
-      "tag": "EOJEOL",
-      "surface": "누가",
-      "charSpan": [
-        23,
-        25
-      ]
-    },
-    {
-      "lemma": "있",
-      "tag": "EOJEOL",
-      "surface": "있는",
-      "charSpan": [
-        26,
-        28
-      ]
-    },
-    {
-      "lemma": "것",
-      "tag": "EOJEOL",
-      "surface": "것",
-      "charSpan": [
-        29,
-        30
-      ]
-    },
-    {
-      "lemma": "같",
-      "tag": "EOJEOL",
-      "surface": "같아요",
-      "charSpan": [
-        31,
-        34
-      ]
-    },
-    {
-      "lemma": "옆",
-      "tag": "EOJEOL",
-      "surface": "옆이요",
-      "charSpan": [
-        47,
-        50
-      ]
-    },
-    {
-      "lemma": "모양",
-      "tag": "EOJEOL",
-      "surface": "모양이",
-      "charSpan": [
-        58,
-        61
-      ]
-    },
-    {
-      "lemma": "있",
-      "tag": "EOJEOL",
-      "surface": "있어요",
-      "charSpan": [
-        69,
-        72
-      ]
-    },
-    {
       "lemma": "끌어안",
       "tag": "VV",
       "surface": "끌어안",
       "charSpan": [
         78,
         81
-      ]
-    },
-    {
-      "lemma": "끌어안",
-      "tag": "EOJEOL",
-      "surface": "끌어안고",
-      "charSpan": [
-        78,
-        82
-      ]
-    },
-    {
-      "lemma": "사람",
-      "tag": "EOJEOL",
-      "surface": "사람이에요",
-      "charSpan": [
-        90,
-        95
-      ]
-    },
-    {
-      "lemma": "얼굴",
-      "tag": "EOJEOL",
-      "surface": "얼굴은",
-      "charSpan": [
-        102,
-        105
       ]
     },
     {
@@ -320,42 +188,6 @@
       ]
     },
     {
-      "lemma": "보이",
-      "tag": "EOJEOL",
-      "surface": "보여요",
-      "charSpan": [
-        108,
-        111
-      ]
-    },
-    {
-      "lemma": "저",
-      "tag": "EOJEOL",
-      "surface": "제",
-      "charSpan": [
-        113,
-        114
-      ]
-    },
-    {
-      "lemma": "정도",
-      "tag": "EOJEOL",
-      "surface": "정도로",
-      "charSpan": [
-        121,
-        124
-      ]
-    },
-    {
-      "lemma": "아주",
-      "tag": "EOJEOL",
-      "surface": "아주",
-      "charSpan": [
-        130,
-        132
-      ]
-    },
-    {
       "lemma": "살짝",
       "tag": "MAG",
       "surface": "살짝",
@@ -365,30 +197,12 @@
       ]
     },
     {
-      "lemma": "몸",
-      "tag": "EOJEOL",
-      "surface": "몸을",
-      "charSpan": [
-        136,
-        138
-      ]
-    },
-    {
       "lemma": "흔들",
       "tag": "VV",
       "surface": "흔들",
       "charSpan": [
         139,
         141
-      ]
-    },
-    {
-      "lemma": "흔들",
-      "tag": "EOJEOL",
-      "surface": "흔들어요",
-      "charSpan": [
-        139,
-        143
       ]
     }
   ],
@@ -416,9 +230,18 @@
       "lemma": "사람",
       "category": "object",
       "value": {
-        "object": "person_figure"
+        "object": "person_figure",
+        "priorReason": "no_scene_param",
+        "noun": "사람",
+        "excluded": "person",
+        "position": "head",
+        "role": "subject",
+        "scope": "main",
+        "sentence": 4,
+        "formSaid": true,
+        "usedForShape": false
       },
-      "reason": "no_scene_param",
+      "reason": "excluded_shape",
       "_provenance": {
         "source": "explicit_lexicon",
         "trigger": "사람",
@@ -433,9 +256,18 @@
       "lemma": "사람",
       "category": "object",
       "value": {
-        "object": "person_figure"
+        "object": "person_figure",
+        "priorReason": "no_scene_param",
+        "noun": "사람",
+        "excluded": "person",
+        "position": "head",
+        "role": "named",
+        "scope": "main",
+        "sentence": 5,
+        "formSaid": true,
+        "usedForShape": false
       },
-      "reason": "no_scene_param",
+      "reason": "excluded_shape",
       "_provenance": {
         "source": "explicit_lexicon",
         "trigger": "사람",

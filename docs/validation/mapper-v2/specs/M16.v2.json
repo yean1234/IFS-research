@@ -1,12 +1,12 @@
 {
   "meta": {
-    "specVersion": "2.1.0",
+    "specVersion": "2.2.0",
     "participantId": null,
     "sessionId": "M16",
     "condition": "static",
     "sourceTextHash": "sha256:1af31d19191806c83de35efa3aeca7206babf5de4eb1e32a5c2ca5a99d5c3033",
     "pipeline": {
-      "builder": "scene-spec-builder-v2/2.0.0",
+      "builder": "scene-spec-builder-v2/2.4.0",
       "analyzer": "kiwi",
       "lexicons": {
         "layer1": "layer1-attribute-lexicon@1.0.0",
@@ -14,7 +14,8 @@
         "sceneParams": "scene-params@1.0.0",
         "vad": "vad-ko@0.1.0",
         "sceneParamsV2": "scene-params-v2@2.0.0",
-        "nounStoplist": "noun-stoplist-v2@1.0.0"
+        "nounStoplist": "noun-stoplist-v2@1.0.0",
+        "baseShapes": "base-shapes-v1@0.7.0"
       }
     },
     "mapping": {
@@ -25,7 +26,9 @@
   },
   "form": {
     "type": "blob",
-    "posture": null
+    "posture": null,
+    "base": null,
+    "baseVariant": null
   },
   "material": {
     "color": {
@@ -111,57 +114,12 @@
   },
   "_unmatched": [
     {
-      "lemma": "마당",
-      "tag": "EOJEOL",
-      "surface": "마당이",
-      "charSpan": [
-        6,
-        9
-      ]
-    },
-    {
       "lemma": "떠오르",
       "tag": "VV",
       "surface": "떠올",
       "charSpan": [
         10,
         12
-      ]
-    },
-    {
-      "lemma": "떠오르",
-      "tag": "EOJEOL",
-      "surface": "떠올라요",
-      "charSpan": [
-        10,
-        14
-      ]
-    },
-    {
-      "lemma": "쪽",
-      "tag": "EOJEOL",
-      "surface": "쪽이",
-      "charSpan": [
-        19,
-        21
-      ]
-    },
-    {
-      "lemma": "강가",
-      "tag": "EOJEOL",
-      "surface": "강가에",
-      "charSpan": [
-        27,
-        30
-      ]
-    },
-    {
-      "lemma": "있",
-      "tag": "EOJEOL",
-      "surface": "있는",
-      "charSpan": [
-        31,
-        33
       ]
     },
     {
@@ -174,39 +132,12 @@
       ]
     },
     {
-      "lemma": "것",
-      "tag": "EOJEOL",
-      "surface": "게",
-      "charSpan": [
-        45,
-        46
-      ]
-    },
-    {
       "lemma": "놓이",
       "tag": "VV",
       "surface": "놓여",
       "charSpan": [
         47,
         49
-      ]
-    },
-    {
-      "lemma": "있",
-      "tag": "EOJEOL",
-      "surface": "있는데",
-      "charSpan": [
-        50,
-        53
-      ]
-    },
-    {
-      "lemma": "cm+쯤",
-      "tag": "EOJEOL",
-      "surface": "cm쯤이고",
-      "charSpan": [
-        57,
-        62
       ]
     },
     {
@@ -219,15 +150,6 @@
       ]
     },
     {
-      "lemma": "줄무늬",
-      "tag": "EOJEOL",
-      "surface": "줄무늬가",
-      "charSpan": [
-        70,
-        74
-      ]
-    },
-    {
       "lemma": "섞이",
       "tag": "VV",
       "surface": "섞여",
@@ -237,30 +159,12 @@
       ]
     },
     {
-      "lemma": "있",
-      "tag": "EOJEOL",
-      "surface": "있어요",
-      "charSpan": [
-        78,
-        81
-      ]
-    },
-    {
       "lemma": "안",
       "tag": "MAG",
       "surface": "안",
       "charSpan": [
         96,
         97
-      ]
-    },
-    {
-      "lemma": "안",
-      "tag": "EOJEOL",
-      "surface": "안이요",
-      "charSpan": [
-        96,
-        99
       ]
     },
     {
@@ -282,48 +186,12 @@
       ]
     },
     {
-      "lemma": "있",
-      "tag": "EOJEOL",
-      "surface": "있어요",
-      "charSpan": [
-        108,
-        111
-      ]
-    },
-    {
-      "lemma": "그거",
-      "tag": "EOJEOL",
-      "surface": "그거",
-      "charSpan": [
-        113,
-        115
-      ]
-    },
-    {
       "lemma": "말",
       "tag": "VV",
       "surface": "말",
       "charSpan": [
         116,
         117
-      ]
-    },
-    {
-      "lemma": "말",
-      "tag": "EOJEOL",
-      "surface": "말고는",
-      "charSpan": [
-        116,
-        119
-      ]
-    },
-    {
-      "lemma": "없",
-      "tag": "EOJEOL",
-      "surface": "없어요",
-      "charSpan": [
-        120,
-        123
       ]
     }
   ],
@@ -332,11 +200,24 @@
       "lemma": "할머니",
       "category": "unlisted_noun",
       "value": {
+        "priorReason": "no_scene_param",
         "noun": "할머니",
+        "excluded": "person",
+        "position": "modifier",
         "role": "modifier",
-        "scope": "main"
+        "scope": "main",
+        "sentence": 0,
+        "formSaid": false,
+        "usedForShape": false,
+        "head": {
+          "lemma": "마당",
+          "charSpan": [
+            6,
+            8
+          ]
+        }
       },
-      "reason": "no_scene_param",
+      "reason": "excluded_shape",
       "_provenance": {
         "source": "phrase_rule",
         "trigger": "할머니",

@@ -8,6 +8,18 @@
 
 > 갱신: 2026-11-23, 하위 에이전트(Claude)가 단계 C·D10 문서 작업 끝에 적음. 같은 날 G31–G34 구현, 이어서 D6(기본 형상) 구현 뒤 바로 아래 소절을 더함. 지시문은 `docs/prompts/prototype-v4-build.md`(2026-11-22 클라우드 세션에서 연구 책임자와 정함). 결정은 `docs/decisions.md`의 「형상 표현 범위와 생성 모델」 절(G1–G28)과 X79–X85. 아래 ★ 절부터는 이전 작업의 기록이고 그대로 뒀습니다.
 
+### G45–G51 제외 낱말과 G44 병합 마무리 (2026-11-23, 하위 에이전트 Claude)
+
+G44(화면 개선, `8f4898b`·`300cfa1`)와 G45–G51(제외 낱말, `7b7b44b`)을 따로 검증한 뒤 합쳤고(`559792c`), 합친 상태를 마무리했습니다. 정한 세부는 `docs/decisions.md` 맨 끝 「G45–G51 구현 세부」·「병합 마무리 세부」.
+
+- **G45–G51(7b7b44b)**: 제외는 명사구의 중심 명사일 때만(꾸미는 말·빗댄 낱말이면 중심 명사를 그림), 범주 person·threat·weapon·death_self_harm_trauma + 동물(no_asset). 중심 명사가 목록 낱말이면 형태 후보와 [맞는 것이 없다](G32 경로, `saidWords[].unrenderedBy`). 넷째 범주는 어디 나와도 형태 후보 없음(색 비교 예외)과 세션 기록·`selection.json` `safetyFlags`. 매퍼 v2 builder **2.4.0**, 사전 `base-shapes-v1` **0.7.0**, 후보 생성기 `ifs-candidates/`**0.5.0**. specVersion 2.2.0·`ifs-selection/0.2`·`ifs-placement/0.2`·v0·v1 출력 그대로. 문형 표 `docs/validation/mapper-v2/head-noun-patterns.md`.
+- **알림 연결(G50 (4))**: 챗봇 연구자 보기 맨 위(탭 밖)에 [안전 표시](범주·낱말·n번째 문장·글자 위치·자리·형태 막음), 참여자 보기에는 없음. Unity `PlacementExperimenterGui` 경고 자리(오류·초안·경고 뒤)에 같은 내용(새 순수 클래스 `PlacementSafetyNotice`, OnGUI만 — 헤드셋 판에는 없음). 진행·중단은 막지 않음. 문구는 연구자용 로그 문자열(고정 문구 아님).
+- **넷째 범주의 형태 견본**: 견본 API는 조절과 같은 값을 내고(막지 않음) 기록하지 않음. 조절로 형태를 바꾸면 `formBlocked`(adjustFormAllowed true)가 남음 — 테스트로 고정.
+- **빌드 재생성**: 저장소 밖 `webgl-build`의 WebGL(`preview/`, 81 s·오류 0·경고 0)과 예비 플레이어(`preview-win/`·`preview-win-cp/`, 오류 0)를 11.8절 방법으로 다시 빌드. e2e(헤드리스 Chrome): webgl S1–S11 + 조절 모든 값 12세션, no-webgl2 S1·S3·S8·S10·S11 + 모든 값 6세션 — 모두 끝까지, 기대값 불일치 0, iframe 재시작 0, LLM 0, 콘솔 오류 0. 새 합성 시나리오 S10(넷째 범주: 형태 후보 없음, 연구자 보기 알림, 참여자 보기 없음, `safetyFlags` [올가미])·S11(동물 중심 명사: 형태 후보 있음, `saidWords` 뱀 no_asset). 상세 `docs/validation/webgl/README.md` 11.9.
+- **mapper-v2 검증 자료**: `docs/validation/mapper-v2/specs`·`score`를 builder 2.4.0으로 다시 만듦(held-out 열지 않음). v1 출력 바이트 그대로, v2 슬롯 판정 항목마다 같음, 보존률만 내려감(기록 자리 변화를 채점기가 세지 않음), 슬롯 바뀐 목업 9개(모두 D6 기본 형상), 제외 범주 기록 dev 1·mock 4곳(그리지 않은 것은 M30 '작은 사람 모양' 하나). dev D23 '주변 화분들'이 container로 그려지는 배경 오염 2건 발견(D6, 고치지 않음). 상세 `docs/validation/mapper-v2/README.md` 7절.
+- **확인(직접 돌림)**: 합친 직후 pytest 파일별 `-m "not live"` **982 통과·6 xfail·실패 0**(918 + 64), dotnet **398/398**, Unity EditMode **458/458**. 마무리 뒤 pytest **986 통과·6 xfail·실패 0(+4 test_merge_g44_g50, 시나리오 테스트는 S10·S11까지 돌림)**, dotnet **399/399**, Unity EditMode **459/459**. 고친 실패 없음(합친 상태에서 실패가 없었음). `docs/decisions.md`의 병합 충돌 자리는 「G45–G51 구현 세부」 제목 앞 빈 줄만 더함(두 절 온전, 표 깨짐 없음).
+- 하지 않은 것: 헤드셋·창 있는 브라우저 확인, 채점기 수정, D23 규칙 수정, 콘솔 `log` 줄이 늘어난 원인 확인. 사람이 정할 것은 `docs/morning-todo.md` 「G45–G51 제외 낱말과 병합 마무리」.
+
 ### G44 화면 사용성 개선 (2026-11-23, 하위 에이전트 Claude)
 
 챗봇 웹 화면과 Unity 배치 실험 화면의 배치·크기·대비·초점·반응을 고쳤습니다(G44, `ui-ux-pro-max` 규칙). 문구 글자·문항 순서·평정 방식·단계 순서·후보 표시 순서·기록 형식은 그대로, 새 참여자용 문구 없음. 상세·전후 캡처·수치 `docs/validation/ui/README.md`, 정한 세부 `docs/decisions.md` 맨 끝 「G44 구현 세부」.

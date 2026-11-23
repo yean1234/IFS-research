@@ -8,8 +8,8 @@
 | distortRate | 0.000 | 0.000 | 0.000 | [0.000, 0.000] |
 | lostRate | 0.000 | 0.000 | 0.000 | [0.000, 0.000] |
 | droppedRate | 0.063 | 0.063 | 0.000 | [0.000, 0.000] |
-| preserveRate | 0.942 | 0.942 | 0.000 | [0.000, 0.000] |
-| unreflectedVerbatimRate | 1.000 | 1.000 | 0.000 | [0.000, 0.000] |
+| preserveRate | 0.942 | 0.917 | -0.025 | [-0.050, -0.008] |
+| unreflectedVerbatimRate | 1.000 | 0.781 | -0.219 | [-0.429, -0.069] |
 | unreflectedVerbatimRateWithClauseIndex | 1.000 | 1.000 | 0.000 | [0.000, 0.000] |
 | spuriousRate | 0.132 | 0.128 | -0.004 | [-0.012, 0.000] |
 | unsupportedRate | 0.203 | 0.199 | -0.004 | [-0.011, 0.000] |

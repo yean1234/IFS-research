@@ -581,3 +581,18 @@ G45–G49 끝의 메인 메모 두 건(세 범주에 없는 항목, 뱀과 구�
 **옮긴 것(G50·G51):** 0.6.0의 death_trauma(죽음·시체·송장·무덤·지옥·해골, 합성어 무덤가)와 blood_noose(피·올가미, 합성어 핏자국·핏물·핏덩이·핏줄·피눈물·핏방울·핏빛)를 death_self_harm_trauma로 합침. attacking_being의 뱀은 animal로, 나머지(괴물·악마·마귀·거인·가해자·적수·발톱)는 threat. human_figure → person.
 
 ⚠ 사람이 정할 것: ① 넷째 범주가 회상 문장·관용 표현('피가 끓는 것 같아요')에 나와도 텍스트 전체의 형태를 막는 범위(문장 단위로 좁힐지) ② '피 같은 붉은 끈'처럼 색 비교인지 형상 비교인지 못 가르는 문형을 엄격하게 둔 것 ③ 추가 낱말 목록(특히 엄마·아빠 등 가족 호칭, 늑대·거미 등을 동물로 둔 것, 낫) ④ 동물이 중심 명사일 때 G32 경로(said_unrendered)로 보내는 것 — 다른 미등록 명사('공이 있어요')는 빈 자리(empty)로 남음 ⑤ 실험자 화면에 띄울 문구(지금은 연구자 알림 문자열 "넷째 제외 범주(죽음·자해·외상) 낱말: …", 고정 문구 아님) ⑥ '상자에 칼이 꽂혀 있어요'처럼 처소 명사가 형상일 수도 있는 문형.
+
+#### 병합 마무리 세부 (2026-11-23, 하위 에이전트가 정함 — G44와 G45–G51을 합친 뒤. 위 결정 행은 고치지 않음)
+합친 상태에서 테스트가 모두 통과했고(고친 실패 없음), G50 (4)의 화면 연결과 미리보기 재빌드를 했다. 수치는 `docs/HANDOFF.md` 맨 위 절.
+
+| 항목 | 정한 것 | 이유 |
+| --- | --- | --- |
+| 챗봇 연구자 보기 | `researcher_view().safetyFlags`를 연구자 패널 **맨 위, 탭 밖**(`#safety-flags`, 탭을 바꿔도 보임)에 그린다. 빨간 테두리(`.alert.critical`·위기 띠와 같은 계열), 머리 줄 "[안전 표시] 넷째 제외 범주(죽음·자해·외상) 낱말: n곳 [범주]", 자리마다 낱말 — n번째 문장·글자 위치·자리(position)·범위(context면)·형태 막음 여부, 끝 줄 "진행은 막지 않음 — VR 진행 여부는 연구자가 정함". `role=alert`이고 내용이 같으면 다시 그리지 않음. 기존 알림 목록의 `scene_safety_flag` 줄도 그대로 | "진행·안전" 탭의 알림 목록만으로는 후보·조절 단계에서 다른 탭을 보고 있으면 지나칠 수 있음. 다시 그릴 때마다 낭독기가 읽지 않게 |
+| 참여자 보기 | 알림 칸은 `researcher-only` 연구자 패널 안에만 있고, 그리는 함수는 `refreshResearcher()`(참여자 보기에서는 바로 돌아감)에서만 부른다. `stage.js`는 safetyFlags를 읽지 않는다. 테스트: 참여자 화면이 받는 응답(`GET /api/sessions/{sid}`, 후보·선택 상태, 형태 견본)에 표시·알림 문자열이 없음, 웹 정적 계약, e2e에서 참여자 보기 화면 글에 없음 | G50 (4)·지시 |
+| 문장 위치 표기 | 기록의 `sentence`(0부터)는 그대로 두고 화면에서만 "n번째 문장"(1부터)으로 적는다. 글자 위치는 기록 값 그대로 | 사람이 읽는 화면. 기록 형식은 바꾸지 않음 |
+| Unity 실험자 GUI | 새 순수 클래스 `PlacementSafetyNotice`(UnityEngine 무의존)가 `PlacementSelection.SafetyFlags`를 줄로 바꾸고, `PlacementExperimenterGui.DrawAlerts()` 끝(오류 → 초안 → 경고 → 안전 표시)에 주황(`ColWarn`) 글로 그린다(첫 줄 굵게, "[안전 표시]"). Checked·Running·Done 단계에서 선택 파일이 있으면 보임. 진행·중단 단추와 러너 함수는 건드리지 않음. OnGUI 화면 좌표만(참여자 판·세계 공간 물체에 넣지 않음) | G44에서 단계 바로 아래로 옮긴 경고 자리. 빨강(`ColError`)은 "오류를 고쳐야 시작" 뜻과 섞여서 쓰지 않음 |
+| 문구 | 챗봇·Unity 모두 연구자용 로그 문자열(챗봇 알림과 같은 머리말 "넷째 제외 범주(죽음·자해·외상) 낱말"). `shared/protocol/`에 넣지 않음 | 고정 문구로 둘지는 사람이 정할 것(「G45–G51 구현 세부」 ⑤) |
+| 넷째 범주에서 형태 견본 | 견본 API(`GET …/adjust/samples/form`)는 넷째 범주 세션에서도 조절과 같은 값 목록·덮어쓰기를 낸다(막지 않음). 견본은 기록하지 않고, 조절로 형태를 바꾸면 `sourceDetails.form.type.formBlocked`{rule G50, by, adjustFormAllowed true}가 남는다(테스트로 고정). 고치지 않음 | G50 구현 세부("조절 화면의 형태 바꾸기는 막지 않음")와 같은 동작. 견본만 막으면 번호 단추와 그림이 어긋남 |
+| 합성 시나리오 | `chatbot/scenarios/selection/S10_strict_category_flag.json`(넷째 범주, 형태 후보 없음 + 형태 조절), `S11_animal_head_noun.json`(동물 중심 명사, 형태 후보 있음). `selection_sim.check`에 선택 기대 키 `unrenderedBy`·`safetyFlags`·`formBlocked`를 더함. 넷째 범주·동물 낱말은 확정 때 고친 문장에만 넣음(면담 대사에는 넣지 않음) | 기존 시나리오 테스트(`test_selection_scenarios_run_end_to_end`)와 e2e가 같은 파일을 씀 |
+| e2e 도구 | `chatbot_e2e.py`가 세션 끝에 같은 세션을 연구자 보기·참여자 보기로 다시 열어 알림 칸(`safetyViews`)과 `selection.json` `safetyFlags`를 적음. 저장소에 넣는 결과(`results/merge_chatbot_e2e_*.json`)는 콘솔 줄을 종류별·첫 줄별 개수로 줄임 | 콘솔 `log` 줄이 2만 개를 넘어 결과가 3.5 MB가 됨 |
+| 매퍼 v2 검증 자료 | `docs/validation/mapper-v2/specs`·`score`를 builder 2.4.0으로 다시 만듦. fidelity 출력 이름이 바뀌어 `report.md` → `report.v1.md`, `compare/report.md` → `report.v2.md`. README 1–6절(2.0.0 수치)은 그대로 두고 7절을 더함 | 옛 수치를 지우면 D1·D2 판단 근거가 사라짐 |

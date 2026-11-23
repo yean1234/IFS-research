@@ -1,6 +1,6 @@
 # 일치도 채점 — imagery-mock-forms · 매핑 v2
 
-채점기 fidelity/0.3.0, 코퍼스 imagery-mock-forms@0.1.0, 빌더 scene-spec-builder-v2/2.0.0
+채점기 fidelity/0.3.0, 코퍼스 imagery-mock-forms@0.1.0, 빌더 scene-spec-builder-v2/2.4.0
 
 ## 전체
 
@@ -10,12 +10,12 @@
 | slotAttributes | 200 |
 | reflectRate | 0.775 |
 | distortRate | 0.045 |
-| lostRate | 0.010 |
+| lostRate | 0.040 |
 | droppedRate | 0.070 |
-| preserveRate | 0.884 |
-| unreflectedVerbatimRate | 0.774 |
+| preserveRate | 0.810 |
+| unreflectedVerbatimRate | 0.536 |
 | unreflectedVerbatimRateWithClauseIndex | 1.000 |
-| lostClauseIndexOnly | 6 |
+| lostClauseIndexOnly | 25 |
 | negated | 1 |
 | negationErrors | 0 |
 | contamination | 0 |
@@ -29,7 +29,7 @@
 
 미반영 원문 보존률(unreflectedVerbatimRate)은 속성 단위 보존 필드만 인정한 값이다. 절 색인(_clauses)까지 인정한 값은 unreflectedVerbatimRateWithClauseIndex, 절 색인으로만 남은 손실은 lostClauseIndexOnly. fuzzyValues는 자모 퍼지 일치 근거로 슬롯에 들어간 값의 수(0이어야 한다).
 
-슬롯 속성 상태: reflected 155, distorted 9, preserved 20, lost 2, dropped_by_controller 14
+슬롯 속성 상태: reflected 155, distorted 9, preserved 14, lost 8, dropped_by_controller 14
 근거 없는 값(근거 기준) 사유: no_evidence 0, no_gold_span 27, outside_gold_span 16 · 그중 값은 정답 expect를 만족 14
 
 ## 신뢰구간(항목 단위 군집 부트스트랩, B = 10000, 시드 20261116, 항목 36개)
@@ -40,10 +40,10 @@
 | --- | --- | --- |
 | reflectRate | 0.775 | [0.724, 0.824] |
 | distortRate | 0.045 | [0.021, 0.071] |
-| lostRate | 0.010 | [0.000, 0.025] |
+| lostRate | 0.040 | [0.017, 0.066] |
 | droppedRate | 0.070 | [0.030, 0.117] |
-| preserveRate | 0.884 | [0.831, 0.930] |
-| unreflectedVerbatimRate | 0.774 | [0.672, 0.866] |
+| preserveRate | 0.810 | [0.746, 0.869] |
+| unreflectedVerbatimRate | 0.536 | [0.402, 0.675] |
 | unreflectedVerbatimRateWithClauseIndex | 1.000 | [1.000, 1.000] |
 | spuriousRate | 0.118 | [0.072, 0.162] |
 | unsupportedRate | 0.230 | [0.169, 0.290] |
@@ -80,34 +80,34 @@ layout.size 정답 구간 폭을 v1 크기 척도(1단위 = 6.000옥타브)로 �
 | body_part | 26 | 26 | 25 | 1 | 0 | 0 | 0 | 0 | 0.962 |
 | brightness | 7 | 6 | 4 | 1 | 0 | 1 | 0 | 1 | 0.667 |
 | color | 33 | 33 | 30 | 1 | 0 | 0 | 2 | 0 | 0.909 |
-| color2 | 5 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | – |
+| color2 | 5 | 0 | 0 | 0 | 4 | 1 | 0 | 0 | – |
 | distance | 2 | 2 | 0 | 1 | 1 | 0 | 0 | 0 | 0.000 |
 | erosion | 1 | 1 | 0 | 0 | 1 | 0 | 0 | 0 | 0.000 |
 | feeling | 4 | 0 | 0 | 0 | 3 | 0 | 1 | 0 | – |
-| figure | 3 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | – |
+| figure | 3 | 0 | 0 | 0 | 2 | 1 | 0 | 0 | – |
 | form | 13 | 13 | 12 | 0 | 1 | 0 | 0 | 0 | 0.923 |
-| hardness | 2 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | – |
+| hardness | 2 | 0 | 0 | 0 | 1 | 1 | 0 | 0 | – |
 | height | 3 | 3 | 3 | 0 | 0 | 0 | 0 | 0 | 1.000 |
 | hole | 2 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | – |
 | hollow | 1 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | – |
-| light | 3 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | – |
-| lines | 3 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | – |
-| liquid | 3 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | – |
+| light | 3 | 0 | 0 | 0 | 2 | 1 | 0 | 0 | – |
+| lines | 3 | 0 | 0 | 0 | 1 | 2 | 0 | 0 | – |
+| liquid | 3 | 0 | 0 | 0 | 2 | 1 | 0 | 0 | – |
 | motion_speed | 5 | 5 | 3 | 0 | 0 | 0 | 2 | 0 | 0.600 |
-| motion_type | 36 | 27 | 13 | 1 | 10 | 4 | 8 | 0 | 0.481 |
+| motion_type | 36 | 27 | 13 | 1 | 6 | 8 | 8 | 0 | 0.481 |
 | opacity | 10 | 7 | 6 | 0 | 1 | 0 | 0 | 3 | 0.857 |
 | other | 1 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | – |
 | posture | 2 | 2 | 1 | 0 | 1 | 0 | 0 | 0 | 0.500 |
 | shape | 6 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | – |
-| sheet | 2 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | – |
-| size | 35 | 35 | 18 | 4 | 10 | 1 | 2 | 0 | 0.514 |
-| softness | 3 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | – |
+| sheet | 2 | 0 | 0 | 0 | 1 | 1 | 0 | 0 | – |
+| size | 35 | 35 | 18 | 4 | 6 | 5 | 2 | 0 | 0.514 |
+| softness | 3 | 0 | 0 | 0 | 2 | 1 | 0 | 0 | – |
 | stickiness | 1 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | – |
 | temperature | 3 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | – |
 | texture_roughness | 5 | 5 | 5 | 0 | 0 | 0 | 0 | 0 | 1.000 |
 | weight | 1 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | – |
-| width | 1 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | – |
-| wrinkle | 1 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | – |
+| width | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | – |
+| wrinkle | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | – |
 
 ## 항목별
 
@@ -118,7 +118,7 @@ layout.size 정답 구간 폭을 v1 크기 척도(1단위 = 6.000옥타브)로 �
 | M03 | 5 | 0.800 | 0.000 | 1.000 | 0 | 0 | 0 | 0 |
 | M04 | 7 | 0.857 | 0.143 | 0.875 | 0 | 0 | 0 | 0 |
 | M05 | 7 | 1.000 | 0.000 | 1.000 | 0 | 0 | 0 | 1 |
-| M06 | 6 | 1.000 | 0.000 | 1.000 | 0 | 0 | 0 | 1 |
+| M06 | 6 | 1.000 | 0.000 | 0.875 | 0 | 0 | 0 | 1 |
 | M07 | 5 | 0.800 | 0.000 | 0.857 | 0 | 0 | 0 | 2 |
 | M08 | 7 | 1.000 | 0.000 | 1.000 | 0 | 0 | 0 | 0 |
 | M09 | 6 | 0.667 | 0.167 | 0.667 | 0 | 0 | 2 | 3 |
@@ -127,22 +127,22 @@ layout.size 정답 구간 폭을 v1 크기 척도(1단위 = 6.000옥타브)로 �
 | M12 | 7 | 0.714 | 0.143 | 0.714 | 0 | 0 | 2 | 3 |
 | M13 | 6 | 0.667 | 0.167 | 0.833 | 0 | 0 | 1 | 2 |
 | M14 | 7 | 0.857 | 0.000 | 1.000 | 0 | 0 | 3 | 3 |
-| M15 | 5 | 0.800 | 0.000 | 1.000 | 0 | 0 | 0 | 0 |
-| M16 | 6 | 0.667 | 0.000 | 1.000 | 0 | 0 | 1 | 1 |
+| M15 | 5 | 0.800 | 0.000 | 0.714 | 0 | 0 | 0 | 0 |
+| M16 | 6 | 0.667 | 0.000 | 0.889 | 0 | 0 | 1 | 1 |
 | M17 | 5 | 1.000 | 0.000 | 1.000 | 0 | 0 | 0 | 1 |
-| M18 | 3 | 1.000 | 0.000 | 1.000 | 0 | 0 | 0 | 0 |
-| M19 | 6 | 0.833 | 0.167 | 0.750 | 0 | 0 | 0 | 1 |
-| M20 | 5 | 0.600 | 0.000 | 0.857 | 0 | 0 | 0 | 1 |
-| M21 | 5 | 0.800 | 0.000 | 1.000 | 0 | 0 | 0 | 0 |
-| M22 | 4 | 0.500 | 0.250 | 0.571 | 0 | 0 | 2 | 4 |
+| M18 | 3 | 1.000 | 0.000 | 0.667 | 0 | 0 | 0 | 0 |
+| M19 | 6 | 0.833 | 0.167 | 0.625 | 0 | 0 | 0 | 1 |
+| M20 | 5 | 0.600 | 0.000 | 0.429 | 0 | 0 | 0 | 1 |
+| M21 | 5 | 0.800 | 0.000 | 0.667 | 0 | 0 | 0 | 0 |
+| M22 | 4 | 0.500 | 0.250 | 0.429 | 0 | 0 | 2 | 4 |
 | M23 | 6 | 0.833 | 0.000 | 1.000 | 0 | 0 | 2 | 2 |
 | M24 | 6 | 0.833 | 0.000 | 0.889 | 0 | 0 | 1 | 3 |
 | M25 | 5 | 0.800 | 0.000 | 1.000 | 0 | 0 | 0 | 0 |
-| M26 | 5 | 0.600 | 0.200 | 0.875 | 0 | 0 | 0 | 1 |
+| M26 | 5 | 0.600 | 0.200 | 0.500 | 0 | 0 | 0 | 1 |
 | M27 | 7 | 0.714 | 0.000 | 0.889 | 0 | 0 | 1 | 1 |
 | M28 | 5 | 0.600 | 0.000 | 1.000 | 0 | 0 | 0 | 0 |
 | M29 | 4 | 1.000 | 0.000 | 0.833 | 0 | 0 | 0 | 0 |
-| M30 | 5 | 0.800 | 0.000 | 1.000 | 0 | 0 | 2 | 3 |
+| M30 | 5 | 0.800 | 0.000 | 0.667 | 0 | 0 | 2 | 3 |
 | M31 | 5 | 0.600 | 0.000 | 1.000 | 0 | 0 | 0 | 0 |
 | M32 | 4 | 0.750 | 0.250 | 0.857 | 0 | 0 | 1 | 2 |
 | M33 | 3 | 0.000 | 0.000 | 0.000 | 0 | 0 | 0 | 0 |
@@ -163,6 +163,7 @@ layout.size 정답 구간 폭을 v1 크기 척도(1단위 = 6.000옥타브)로 �
 | M03 | preserved | form | 구름이에요 | {"in": ["mist"]} | – | [] |
 | M04 | distorted/wrong_value | size | 손바닥 두 개 정도요 | {"range": [0.25, 0.6]} | 0.641 | ["손바닥 두 개 정도요"] |
 | M05 | unsupported/outside_gold_span | body.part |  | – | belly | ["배"] |
+| M06 | lost | lines | 실이 마구 엉켜서 | – | – | – |
 | M06 | unsupported/outside_gold_span | form.type |  | – | blob | ["뭉치"] |
 | M07 | dropped_by_controller | size | 귤 하나 정도요 | {"range": [0.05, 0.45]} | – | – |
 | M07 | unsupported/outside_gold_span | form.type |  | – | blob | ["뭉치"] |
@@ -192,18 +193,27 @@ layout.size 정답 구간 폭을 v1 크기 척도(1단위 = 6.000옥타브)로 �
 | M14 | spurious | form.type |  | – | blob | ["공"] |
 | M14 | spurious | motion.speed |  | – | 0.250 | ["천천히"] |
 | M14 | spurious | body.part |  | – | belly | ["배"] |
-| M15 | preserved | size | 신발 상자만 해요 | {"range": [0.25, 0.65]} | – | [] |
+| M15 | lost | hardness | 모서리가 각지고 딱딱해요 | – | – | – |
+| M15 | lost | size | 신발 상자만 해요 | {"range": [0.25, 0.65]} | – | [] |
 | M16 | preserved | size | 9 cm쯤 | {"range": [0.03, 0.4]} | – | [] |
-| M16 | preserved | motion_type | 그대로 놓여 있어요 | {"in": ["still"]} | – | [] |
+| M16 | lost | motion_type | 그대로 놓여 있어요 | {"in": ["still"]} | – | [] |
 | M16 | spurious | form.type |  | – | blob | ["돌처럼"] |
 | M17 | unsupported/outside_gold_span | body.part |  | – | throat_neck | ["목"] |
+| M18 | lost | width | 머리카락만큼 가늘어요 | – | – | – |
+| M18 | lost | motion_type | 조금씩 조여 와요 | – | – | – |
+| M19 | lost | lines | 가느다란 선 하나 | – | – | – |
 | M19 | distorted/wrong_value | brightness | 희미하게 빛나요 | {"range": [0.4, 0.75]} | 0.250 | ["희미하게"] |
 | M19 | lost | motion_type | 아래로 천천히 흘러내려요 | – | – | – |
 | M19 | unsupported/outside_gold_span | body.part |  | – | back | ["등"] |
-| M20 | preserved | size | A4 종이 한 장 | {"range": [0.25, 0.65]} | – | [] |
+| M20 | lost | sheet | 종이 한 장 | – | – | – |
+| M20 | lost | size | A4 종이 한 장 | {"range": [0.25, 0.65]} | – | [] |
+| M20 | lost | wrinkle | 가장자리가 살짝 구겨져 있어요 | – | – | – |
 | M20 | dropped_by_controller | motion_type | 팔랑거려요 | {"in": ["swaying", "rippling", "floating"]} | – | – |
 | M20 | unsupported/no_gold_span | motion.type |  | – | floating | ["떠"] |
-| M21 | preserved | size | 상체를 다 덮을 정도요 | {"range": [0.5, 0.85]} | – | [] |
+| M21 | lost | softness | 부드러울 것 같아요 | – | – | – |
+| M21 | lost | motion_type | 아래로 흘러내려요 | – | – | – |
+| M21 | lost | size | 상체를 다 덮을 정도요 | {"range": [0.5, 0.85]} | – | [] |
+| M22 | lost | liquid | 물방울 하나가 맺혀 | – | – | – |
 | M22 | dropped_by_controller | color | 색은 딱히 없어요 | {"equals": null} | – | – |
 | M22 | lost | motion_type | 떨어질 듯 말 듯 매달려 있어요 | – | – | – |
 | M22 | distorted/wrong_value | body_part | 눈 뒤쪽 | {"in": ["head", "face"]} | body | ["몸"] |
@@ -220,8 +230,10 @@ layout.size 정답 구간 폭을 v1 크기 척도(1단위 = 6.000옥타브)로 �
 | M24 | unsupported/outside_gold_span | material.roughness |  | – | 0.300 | ["끈적끈적해요"] |
 | M24 | unsupported/outside_gold_span | motion.type |  | – | sinking | ["내려가요", "내려가고"] |
 | M25 | preserved | motion_type | 콩닥콩닥 뛰듯이 | {"in": ["pounding"]} | – | [] |
+| M26 | lost | light | 불꽃 같은 게 | – | – | – |
 | M26 | distorted/wrong_value | color | 주황색이에요 | {"hue_deg": [15, 45], "s": [0.5, 1.0], "l": [0.35, 0.7]} | {"hue_deg": 214.9, "s": 0.7, "l": 0.5} | ["파랗고"] |
-| M26 | preserved | size | 손가락 한 마디만 해요 | {"range": [0.0, 0.25]} | – | [] |
+| M26 | lost | color2 | 아래는 파랗고 | – | – | – |
+| M26 | lost | size | 손가락 한 마디만 해요 | {"range": [0.0, 0.25]} | – | [] |
 | M26 | unsupported/outside_gold_span | material.color |  | – | {"hue_deg": 214.9, "s": 0.7, "l": 0.5} | ["파랗고"] |
 | M27 | lost | brightness | 눈이 부실 만큼 밝은 | {"range": [0.8, 1.0]} | – | [] |
 | M27 | preserved | size | 냄비 뚜껑만 하고 | {"range": [0.3, 0.65]} | – | [] |
@@ -229,7 +241,8 @@ layout.size 정답 구간 폭을 v1 크기 척도(1단위 = 6.000옥타브)로 �
 | M28 | preserved | size | 도넛 하나 크기요 | {"range": [0.05, 0.45]} | – | [] |
 | M28 | preserved | motion_type | 그대로예요 | {"in": ["still"]} | – | [] |
 | M29 | lost | motion_type | 넓어졌다 좁아졌다 해요 | – | – | – |
-| M30 | preserved | motion_type | 살짝 몸을 흔들어요 | {"in": ["swaying"]} | – | [] |
+| M30 | lost | figure | 작은 사람 모양 | – | – | – |
+| M30 | lost | motion_type | 살짝 몸을 흔들어요 | {"in": ["swaying"]} | – | [] |
 | M30 | spurious | layout.verticalOffset |  | – | 0.280 | ["무릎 높이"] |
 | M30 | spurious | body.part |  | – | leg | ["무릎"] |
 | M30 | unsupported/outside_gold_span | form.posture |  | – | crouched | ["쪼그려"] |

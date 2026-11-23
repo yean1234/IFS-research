@@ -1,12 +1,12 @@
 {
   "meta": {
-    "specVersion": "2.1.0",
+    "specVersion": "2.2.0",
     "participantId": null,
     "sessionId": "M22",
     "condition": "static",
     "sourceTextHash": "sha256:5abdae42b0d85e4b26ea75dc72b9835ec9e3e6e2bfd3dff6e9ee1f989c7ce6f5",
     "pipeline": {
-      "builder": "scene-spec-builder-v2/2.0.0",
+      "builder": "scene-spec-builder-v2/2.4.0",
       "analyzer": "kiwi",
       "lexicons": {
         "layer1": "layer1-attribute-lexicon@1.0.0",
@@ -14,7 +14,8 @@
         "sceneParams": "scene-params@1.0.0",
         "vad": "vad-ko@0.1.0",
         "sceneParamsV2": "scene-params-v2@2.0.0",
-        "nounStoplist": "noun-stoplist-v2@1.0.0"
+        "nounStoplist": "noun-stoplist-v2@1.0.0",
+        "baseShapes": "base-shapes-v1@0.7.0"
       }
     },
     "mapping": {
@@ -25,7 +26,9 @@
   },
   "form": {
     "type": null,
-    "posture": "hanging"
+    "posture": "hanging",
+    "base": "drop",
+    "baseVariant": null
   },
   "material": {
     "color": null,
@@ -58,6 +61,26 @@
           115
         ],
         "rule": "postureLexicon.매달리>form.posture:hanging"
+      }
+    ],
+    "form.base": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "물방울",
+        "charSpan": [
+          32,
+          35
+        ],
+        "rule": "baseShapes.물방울>form.base:drop"
+      },
+      {
+        "source": "explicit_lexicon",
+        "trigger": "물방울",
+        "charSpan": [
+          52,
+          55
+        ],
+        "rule": "baseShapes.물방울>form.base:drop"
       }
     ],
     "material.opacity": [
@@ -136,30 +159,12 @@
       ]
     },
     {
-      "lemma": "오",
-      "tag": "EOJEOL",
-      "surface": "오는",
-      "charSpan": [
-        2,
-        4
-      ]
-    },
-    {
       "lemma": "날",
       "tag": "NNG",
       "surface": "날",
       "charSpan": [
         5,
         6
-      ]
-    },
-    {
-      "lemma": "정류장",
-      "tag": "EOJEOL",
-      "surface": "정류장이요",
-      "charSpan": [
-        10,
-        15
       ]
     },
     {
@@ -172,39 +177,12 @@
       ]
     },
     {
-      "lemma": "안",
-      "tag": "EOJEOL",
-      "surface": "안이요",
-      "charSpan": [
-        19,
-        22
-      ]
-    },
-    {
       "lemma": "눈",
       "tag": "NNG",
       "surface": "눈",
       "charSpan": [
         24,
         25
-      ]
-    },
-    {
-      "lemma": "뒤쪽",
-      "tag": "EOJEOL",
-      "surface": "뒤쪽이요",
-      "charSpan": [
-        26,
-        30
-      ]
-    },
-    {
-      "lemma": "하나",
-      "tag": "EOJEOL",
-      "surface": "하나가",
-      "charSpan": [
-        36,
-        39
       ]
     },
     {
@@ -217,39 +195,12 @@
       ]
     },
     {
-      "lemma": "있",
-      "tag": "EOJEOL",
-      "surface": "있어요",
-      "charSpan": [
-        43,
-        46
-      ]
-    },
-    {
-      "lemma": "물방울",
-      "tag": "EOJEOL",
-      "surface": "물방울이에요",
-      "charSpan": [
-        52,
-        58
-      ]
-    },
-    {
       "lemma": "가운데",
       "tag": "NNG",
       "surface": "가운데",
       "charSpan": [
         60,
         63
-      ]
-    },
-    {
-      "lemma": "가운데",
-      "tag": "EOJEOL",
-      "surface": "가운데는",
-      "charSpan": [
-        60,
-        64
       ]
     },
     {
@@ -262,51 +213,6 @@
       ]
     },
     {
-      "lemma": "맑",
-      "tag": "EOJEOL",
-      "surface": "맑게",
-      "charSpan": [
-        65,
-        67
-      ]
-    },
-    {
-      "lemma": "가장자리",
-      "tag": "EOJEOL",
-      "surface": "가장자리만",
-      "charSpan": [
-        73,
-        78
-      ]
-    },
-    {
-      "lemma": "콩알",
-      "tag": "EOJEOL",
-      "surface": "콩알만",
-      "charSpan": [
-        84,
-        87
-      ]
-    },
-    {
-      "lemma": "하",
-      "tag": "EOJEOL",
-      "surface": "해요",
-      "charSpan": [
-        88,
-        90
-      ]
-    },
-    {
-      "lemma": "1+센티",
-      "tag": "EOJEOL",
-      "surface": "1센티쯤이요",
-      "charSpan": [
-        92,
-        98
-      ]
-    },
-    {
       "lemma": "톡",
       "tag": "MAG",
       "surface": "톡",
@@ -316,39 +222,12 @@
       ]
     },
     {
-      "lemma": "듯",
-      "tag": "EOJEOL",
-      "surface": "듯",
-      "charSpan": [
-        106,
-        107
-      ]
-    },
-    {
       "lemma": "말",
       "tag": "VV",
       "surface": "말",
       "charSpan": [
         108,
         109
-      ]
-    },
-    {
-      "lemma": "듯",
-      "tag": "EOJEOL",
-      "surface": "듯",
-      "charSpan": [
-        110,
-        111
-      ]
-    },
-    {
-      "lemma": "있",
-      "tag": "EOJEOL",
-      "surface": "있어요",
-      "charSpan": [
-        116,
-        119
       ]
     }
   ],
@@ -392,23 +271,6 @@
       }
     },
     {
-      "lemma": "물방울",
-      "category": "object",
-      "value": {
-        "object": "droplet"
-      },
-      "reason": "no_scene_param",
-      "_provenance": {
-        "source": "explicit_lexicon",
-        "trigger": "물방울",
-        "charSpan": [
-          32,
-          35
-        ],
-        "rule": "objectLexicon.물방울"
-      }
-    },
-    {
       "lemma": "동그랗",
       "category": "shape",
       "value": {
@@ -423,23 +285,6 @@
           51
         ],
         "rule": "shapeLexicon.동그랗"
-      }
-    },
-    {
-      "lemma": "물방울",
-      "category": "object",
-      "value": {
-        "object": "droplet"
-      },
-      "reason": "no_scene_param",
-      "_provenance": {
-        "source": "explicit_lexicon",
-        "trigger": "물방울",
-        "charSpan": [
-          52,
-          55
-        ],
-        "rule": "objectLexicon.물방울"
       }
     },
     {
