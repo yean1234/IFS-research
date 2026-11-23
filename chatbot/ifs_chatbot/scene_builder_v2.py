@@ -15,6 +15,8 @@ D2  형상이 보이지 않게 되는 오류
     (a) '거의 투명' · '투명에 가까운' → opacity 0이 아니라 nearlyTransparent(0.15). '완전히 투명'은 말한 대로 0.
         '반쯤 투명' → 0.5. 그 밖의 강한 정도 부사로 0이 되면 하한 0.05. 부분 한정('끝은 거의 투명')은 _parts로.
     (b) layout.distance 하한 0.1('코앞'과 같은 값). 신체 부위에 '붙어'는 거리가 아니라 몸 위치 → _unmapped.
+        G33(builder 2.1.0): 하한을 적용하면 provenance rule 끝에 '+floor(0.1;said=<말한 값>)'를 붙여 말한 값과 그려진 값
+        (슬롯 값)을 둘 다 남긴다. floor_record()가 이 기록을 읽는다(selection.json distanceFloor).
         '머리 위 한 뼘쯤 높이'처럼 높이 말 옆의 수치는 거리로 쓰지 않음(_measurements dimension unknown).
     (c) 자세어가 참여자 자신의 상태를 말한 절(상황절 '누웠을 때'·'서 있으면', 1인칭 주어 '제가 서 있는',
         신체 부위 주어 '몸이 처져요')이면 form.posture에 넣지 않고 _context에 남긴다.
@@ -27,6 +29,7 @@ used = "v1"(가장 가까운 값: v2는 v1 위의 수정), pipeline.builder = sc
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 from .korean import Analyzer
@@ -37,7 +40,7 @@ from .scene_builder_v1 import (EOJEOL_TAG, NOUN_TAGS, PUNCT_TAGS, TOPIC_PARTICLE
                                fallback_spec)  # noqa: F401 (fallback_spec: 컨트롤러가 같은 대체 경로를 씀)
 from .scene_spec import MAPPING_USED_FOR, is_mapping_fallback  # noqa: F401 (v2 meta.mapping 규칙을 함께 내보냄)
 
-BUILDER_VERSION = "2.0.0"
+BUILDER_VERSION = "2.1.0"   # 2.1.0(2026-11-23, G33): 거리 하한 꼬리표에 말한 값(said=…)을 더함
 BUILDER_ID = f"scene-spec-builder-v2/{BUILDER_VERSION}"
 MAPPER_ID = "v2"
 
@@ -457,8 +460,12 @@ class SceneSpecBuilderV2(SceneSpecBuilderV1):
         floor = self.dist_floor
         for c in cands:
             if c.path == "layout.distance" and isinstance(c.value, (int, float)) and c.value < floor:
+                # G33: 하한은 유지하고 말한 값과 그려진 값을 둘 다 남긴다. 그려진 값 = 슬롯 값(하한), 말한 값 = rule 꼬리표의
+                # said=…(스키마 2.1에는 이 둘을 구조로 담을 자리가 없어 provenance rule 문자열에 적는다. floor_record()가 읽는다)
+                said = c.value
                 c.value = floor
-                c.provs = [dict(c.provs[0], rule=f"{c.provs[0]['rule']}+floor({floor})"), *c.provs[1:]]
+                c.provs = [dict(c.provs[0], rule=f"{c.provs[0]['rule']}+floor({floor};said={_num_text(said)})"),
+                           *c.provs[1:]]
             # 부분만 말한 투명도는 전체 값으로 올리지 않는다. 단 '속이 비쳐요'(안쪽 + 비치다)는 속이 들여다보인다는 말,
             # 곧 형상 전체가 비친다는 뜻이므로 v1처럼 전체 값으로 둔다(dev D02·D16)
             if c.path == "material.opacity" and c.status == "ok" and c.kind != "fuzzy" and (
@@ -471,6 +478,31 @@ class SceneSpecBuilderV2(SceneSpecBuilderV1):
                 continue
             keep.append(c)
         return super()._merge(keep, uncertain_paths, records)
+
+
+def _num_text(v) -> str:
+    """말한 값의 표기(소수 넷째 자리까지, 같은 값이면 언제나 같은 글)."""
+    return repr(round(float(v), 4))
+
+
+_FLOOR_TAG = re.compile(r"\+floor\(([0-9.]+)(?:;said=(-?[0-9.]+(?:[eE][-+]?[0-9]+)?))?\)$")
+
+
+def floor_record(spec: dict) -> dict | None:
+    """G33: 매퍼 v2가 거리 하한을 적용한 spec이면 {slot, said, drawn, floor, rule, trigger, charSpan}, 아니면 None.
+    said = 참여자가 말한 값(하한 전, 매퍼 단위 0–1), drawn = 슬롯 값(하한, 미리보기에 그려지는 값).
+    builder 2.0.0이 만든 spec(꼬리표 '+floor(0.1)', 말한 값 없음)은 said = None.
+    배치 러너는 spec의 거리를 쓰지 않는다(시작 자리는 실험 설정, decisions.md G33)."""
+    provs = (spec.get("_provenance") or {}).get("layout.distance") or []
+    if not provs:
+        return None
+    m = _FLOOR_TAG.search(provs[0].get("rule") or "")
+    if not m:
+        return None
+    drawn = (spec.get("layout") or {}).get("distance")
+    return {"slot": "layout.distance", "said": float(m.group(2)) if m.group(2) is not None else None,
+            "drawn": drawn, "floor": float(m.group(1)), "rule": provs[0]["rule"],
+            "trigger": provs[0].get("trigger"), "charSpan": list(provs[0].get("charSpan") or [])}
 
 
 def factory(rt) -> SceneSpecBuilderV2:

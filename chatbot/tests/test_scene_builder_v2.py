@@ -14,7 +14,7 @@ from ifs_chatbot.korean import Analyzer
 from ifs_chatbot.paths import REPO_ROOT
 from ifs_chatbot.scene_builder import dumps, normalize_confirmed
 from ifs_chatbot.scene_builder_v1 import SceneSpecBuilderV1
-from ifs_chatbot.scene_builder_v2 import BUILDER_ID, SceneSpecBuilderV2
+from ifs_chatbot.scene_builder_v2 import BUILDER_ID, SceneSpecBuilderV2, floor_record
 from ifs_chatbot.scene_spec import check_principles, is_mapping_fallback
 
 TESTS = Path(__file__).parent
@@ -245,7 +245,7 @@ def test_attached_later_mention_follows_body_location(v2):
 def test_attached_in_front_of_face_gets_floor(v2):
     """'얼굴 앞에 붙어' — 다른 처소어가 있으면 그 자리에 가깝게 붙은 것: 거리 값 + 하한 0.1."""
     spec = build(v2, "얼굴 앞에 붙어 있어요.")
-    assert val(spec, "layout.distance") == 0.1 and rule(spec, "layout.distance").endswith("+floor(0.1)")
+    assert val(spec, "layout.distance") == 0.1 and rule(spec, "layout.distance").endswith("+floor(0.1;said=0.0)")
 
 
 def test_small_measured_distance_gets_floor(v1, v2):
@@ -254,8 +254,56 @@ def test_small_measured_distance_gets_floor(v1, v2):
     assert val(v1.build(text), "layout.distance") == 0.0
     spec = build(v2, text)
     assert val(spec, "layout.distance") == 0.1
-    assert rule(spec, "layout.distance") == "measure.뼘>layout.distance:0.2m+floor(0.1)"
+    assert rule(spec, "layout.distance") == "measure.뼘>layout.distance:0.2m+floor(0.1;said=0.0)"
     assert spec["_measurements"][0]["meters"] == 0.2
+
+
+# ── G33: 거리 하한은 유지하고 말한 값과 그려진 값을 둘 다 기록 ─────────────────────
+@pytest.mark.parametrize("text,said", [("얼굴 앞에 붙어 있어요.", 0.0), ("한 뼘 앞에 있어요.", 0.0)])
+def test_floor_records_said_and_drawn_values(v2, text, said):
+    """하한을 적용하면 슬롯 값(그려진 값) = 하한, rule 꼬리표 said=… = 말한 값(하한 전). 스키마 2.1 안에서(rule은 자유 문자열)."""
+    spec = build(v2, text)
+    rec = floor_record(spec)
+    assert rec == {"slot": "layout.distance", "said": said, "drawn": 0.1, "floor": 0.1,
+                   "rule": rule(spec, "layout.distance"), "trigger": spec["_provenance"]["layout.distance"][0]["trigger"],
+                   "charSpan": spec["_provenance"]["layout.distance"][0]["charSpan"]}
+    assert rec["said"] < rec["drawn"] == val(spec, "layout.distance")
+
+
+@pytest.mark.parametrize("text", ["멀리 떨어져 있어요.", "코앞에 있어요.", "가슴 안쪽이 답답해요."])
+def test_no_floor_record_when_floor_not_applied(v2, text):
+    assert floor_record(build(v2, text)) is None
+
+
+def test_floor_record_reads_builder_200_tag_without_said():
+    """builder 2.0.0이 만든 spec('+floor(0.1)', 말한 값 없음)도 읽되 said는 None(지어내지 않음)."""
+    spec = {"layout": {"distance": 0.1}, "_provenance": {"layout.distance": [
+        {"source": "explicit_lexicon", "trigger": "붙어", "charSpan": [0, 2], "rule": "distanceLexicon.붙>layout.distance:attached+floor(0.1)"}]}}
+    assert floor_record(spec)["said"] is None and floor_record(spec)["drawn"] == 0.1
+
+
+# v0·v1은 하한을 모른다: 하한이 걸리는 문장의 v0·v1 출력 바이트를 sha256으로 고정(G33 변경 전 값, 2026-11-23).
+V0_V1_PINNED = {
+    "얼굴 앞에 붙어 있어요.": ("b46966ce149c8226bbbb6a9cd6ea38738f5aa19590c96529b788ebcbd0efc3c1",
+                           "de65c6963991054d81c1fddede8d3ae1ca288fa7b6794977f90d8a3957fa8be3"),
+    "한 뼘 앞에 있어요.": ("d700d2dcb95616fa045bfe7b839bb2dd96a3dbd45a2c12c277bdc82779c3cf51",
+                       "069b3861f97c4d252f48ec2fb6641e458920ca87c35ca944f93aaed5bd081112"),
+    "얼굴 앞에 길쭉한 게 붙어 있어요.": ("a9cfb3d4fdfd1d0f245ef20b3b2c8ba57dbff82ecebba9b18c55aaa4d7f53255",
+                                 "aa13bce9a69c94a31b161cfb423b7f4036e52d323dd1d2069c9f4e4c6ffd9dbc"),
+}
+
+
+@pytest.mark.parametrize("text", list(V0_V1_PINNED))
+def test_v0_v1_outputs_unchanged_by_g33(analyzer, v1, text):
+    import hashlib
+    from ifs_chatbot.lexicon import Lexicon
+    from ifs_chatbot.paths import shared
+    from ifs_chatbot.scene_builder import SceneSpecBuilder
+    v0 = SceneSpecBuilder(Lexicon(shared("lexicon", "layer1_lexicon.v0.json"), analyzer), analyzer)
+    h0, h1 = V0_V1_PINNED[text]
+    assert hashlib.sha256(dumps(v0.build(text, session_id="SYN-PIN")).encode()).hexdigest() == h0
+    assert hashlib.sha256(dumps(v1.build(text, session_id="SYN-PIN")).encode()).hexdigest() == h1
+    assert "floor(" not in dumps(v1.build(text, session_id="SYN-PIN"))
 
 
 def test_height_measure_is_not_distance(v1, v2):

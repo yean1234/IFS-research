@@ -29,7 +29,7 @@
   },
   "distance": {
     "floor": 0.1,
-    "floorNote": "D2(b). layout.distance 하한. 0은 머리에서 0.3 m라 형상이 시야를 덮는다(목업 M15 '등에 붙어', M27 '한 뼘' → visiblePixels 약 130만). 0.1(약 0.57 m)은 1층 사전의 '코앞'(very_near)과 같은 값으로, v1이 이미 '가장 가깝다고 말한 거리'로 쓰는 값이다. 말한 값은 provenance rule에 '+floor(0.1)'로 남는다. Unity에서 확인하지 않았다.",
+    "floorNote": "D2(b). layout.distance 하한. 0은 머리에서 0.3 m라 형상이 시야를 덮는다(목업 M15 '등에 붙어', M27 '한 뼘' → visiblePixels 약 130만). 0.1(약 0.57 m)은 1층 사전의 '코앞'(very_near)과 같은 값으로, v1이 이미 '가장 가깝다고 말한 거리'로 쓰는 값이다. 말한 값(하한 전)과 그려진 값(슬롯 값 = 하한)을 둘 다 남긴다: provenance rule 끝 '+floor(0.1;said=<말한 값>)'(builder 2.1.0부터, 결정 G33. 2.0.0은 '+floor(0.1)'만 남겨 말한 값이 없었다). Unity에서 확인하지 않았다.",
     "bodyAttachLemmas": ["붙", "붙이"],
     "bodyAttachNote": "'등에 붙어 있어요'처럼 신체 부위(또는 '저한테')에 붙었다는 말은 참여자 머리와의 거리가 아니라 몸 위치다(위치는 body.part가 맡음). v2는 이 말로 distance를 채우지 않고 _unmapped(category distance, reason no_scene_param)에 남긴다. 판정: ① 같은 절 앞에 신체 부위(+쪽) + 처소 조사 → 몸 ② 같은 절 앞에 다른 처소어('눈앞에'·'얼굴 앞에') → 거리(하한 적용) ③ 처소어가 없으면 텍스트에 신체 부위를 말했을 때 몸('옆구리 쪽에 … 붙어 있어요. … 가만히 붙어 있어요'). Kiwi 어간.",
     "attachParticles": ["에", "에다", "에게", "한테", "께"],

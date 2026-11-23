@@ -47,9 +47,9 @@ def empty_spec():
 
 # ── 결정성(완료 기준) ─────────────────────────────────────────────────────────
 GOLDEN = {
-    T_FORM: "1f1919128a636cdb3a494f0e5306947743e08ebc086eddeab9b43ebcea33b3f7",
-    T_FEEL: "25a2b34390c9757214428f68ae179c21ca2929e2b27c70fc29a090ff13c6da54",
-    T_CLOUD: "05bfce1470346df37435633dbb85d649d296298cfdaeb1b720716d9d6be09f7e",
+    T_FORM: "b75a9f74e79b1e5a5887fdb1315a0d7a310242215da0bd9e16dc3e891808e4e4",
+    T_FEEL: "74bef8f65e5fafcff489e5db2c1fbf07de5e33e356493551e54100e1af54fb20",
+    T_CLOUD: "3f11ecba3b97710d308db023f013e9bc61a65d94132d9957d16e0cbe0007ebaf",
 }
 
 
