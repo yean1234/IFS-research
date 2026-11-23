@@ -1,15 +1,15 @@
 {
-  "formatVersion": "ifs-selection/0.1",
-  "specSha256": "32d641f03767c6edd4727d2e9739277429f02979ec90423b07f3174218d23b94",
+  "formatVersion": "ifs-selection/0.2",
+  "specSha256": "8d61e0567af1072efa49bd4cbe71aa546949397e71952615b68632af05dc9866",
   "sessionId": "SYN-SEL-S4",
-  "createdAt": "2026-11-23T04:28:41+09:00",
-  "updatedAt": "2026-11-23T04:28:41+09:00",
+  "createdAt": "2026-11-23T09:27:42+09:00",
+  "updatedAt": "2026-11-23T09:27:42+09:00",
   "stage": "done",
   "spec": {
     "path": "<log_dir>\\scenes\\SYN-SEL-S4.json",
-    "normalizedSha256": "eef1698881eae4a4660f2ec7e78c724cca31d30eacde3d878654470584130a29",
+    "normalizedSha256": "f523a18032ecc980e8c15f3c5c190d9c9327ffb168d92af0c2767dede4a214de",
     "sha256Basis": "file",
-    "builder": "scene-spec-builder-v2/2.0.0",
+    "builder": "scene-spec-builder-v2/2.1.0",
     "specVersion": "2.1.0",
     "mapping": {
       "requested": "v2",
@@ -18,20 +18,18 @@
     }
   },
   "generator": {
-    "generatorVersion": "ifs-candidates/0.1.0",
-    "tableVersion": "0.1.0",
-    "tableSha256": "2f6bcf51ecdf59a3812599ed04533b099a96c706a2cd3ee51bbbb45fbd619773"
+    "generatorVersion": "ifs-candidates/0.2.0",
+    "tableVersion": "1.0.0",
+    "tableSha256": "140c8cc2c33bd125b2cb5bd6f40dc2b898e78a516f683ee0c86dac8cd14479e6"
   },
   "protocol": {
     "protocolId": "ifs-selection-flow",
-    "protocolVersion": "0.1.0",
-    "draftCount": 29,
+    "protocolVersion": "0.2.0",
+    "draftCount": 27,
     "draftKeys": [
       "phrases.figure_intro",
       "phrases.candidates_intro",
-      "phrases.single_candidate_intro",
       "phrases.choose_button",
-      "phrases.proceed_single_button",
       "phrases.none_fit",
       "phrases.adjust_intro",
       "phrases.adjust_finish_button",
@@ -64,10 +62,10 @@
     "reason": null
   },
   "candidates": {
-    "generatorVersion": "ifs-candidates/0.1.0",
-    "tableVersion": "0.1.0",
-    "tableSha256": "2f6bcf51ecdf59a3812599ed04533b099a96c706a2cd3ee51bbbb45fbd619773",
-    "specSha256": "eef1698881eae4a4660f2ec7e78c724cca31d30eacde3d878654470584130a29",
+    "generatorVersion": "ifs-candidates/0.2.0",
+    "tableVersion": "1.0.0",
+    "tableSha256": "140c8cc2c33bd125b2cb5bd6f40dc2b898e78a516f683ee0c86dac8cd14479e6",
+    "specSha256": "f523a18032ecc980e8c15f3c5c190d9c9327ffb168d92af0c2767dede4a214de",
     "sessionId": "SYN-SEL-S4",
     "axes": [
       {
@@ -99,7 +97,7 @@
     ],
     "candidates": [
       {
-        "id": "c-077acdc92d13",
+        "id": "c-299a2e148f9d",
         "index": 0,
         "overrides": {},
         "axisValues": {
@@ -125,7 +123,7 @@
         }
       },
       {
-        "id": "c-b47d5a6c6169",
+        "id": "c-56de9944bdf5",
         "index": 1,
         "overrides": {
           "layout.size": 0.7
@@ -153,7 +151,7 @@
         }
       },
       {
-        "id": "c-cf7d4ea2ca81",
+        "id": "c-7c13d87a4a21",
         "index": 2,
         "overrides": {
           "form.type": "mist"
@@ -181,7 +179,7 @@
         }
       },
       {
-        "id": "c-89c28b14758c",
+        "id": "c-842c761845a7",
         "index": 3,
         "overrides": {
           "form.type": "mist",
@@ -211,30 +209,39 @@
       }
     ],
     "displayOrder": [
-      "c-89c28b14758c",
-      "c-077acdc92d13",
-      "c-b47d5a6c6169",
-      "c-cf7d4ea2ca81"
+      "c-842c761845a7",
+      "c-299a2e148f9d",
+      "c-56de9944bdf5",
+      "c-7c13d87a4a21"
     ],
     "orderRule": "sha256(sessionId)[:8] mod 4 = 3 만큼 순환",
     "splitSkipped": [],
-    "note": "낱말 해석 갈림('구름' → form.type) × 빈 자리 layout.size로 2×2. 색상(hue)은 벌리지 않음(G17)."
+    "distinct": {
+      "ruleVersion": "ifs-distinct/1.0.0",
+      "gridCount": 4,
+      "kept": 4,
+      "removed": [],
+      "collapsedAxes": []
+    },
+    "selectionStep": "choose",
+    "note": "낱말 해석 갈림('구름' → form.type) × 빈 자리 layout.size로 2×2. 색상(hue)·밝기는 벌리지 않음(G17·G31·G34)."
   },
   "candidatesShown": [
-    "c-89c28b14758c",
-    "c-077acdc92d13",
-    "c-b47d5a6c6169",
-    "c-cf7d4ea2ca81"
+    "c-842c761845a7",
+    "c-299a2e148f9d",
+    "c-56de9944bdf5",
+    "c-7c13d87a4a21"
   ],
-  "candidatesShownAt": "2026-11-23T04:28:41+09:00",
+  "candidatesShownAt": "2026-11-23T09:27:42+09:00",
   "selection": {
     "selectedCandidateId": null,
     "selectedIndex": null,
     "none": true,
+    "skipped": false,
     "displayPosition": null,
-    "operationalId": "c-077acdc92d13",
+    "operationalId": "c-299a2e148f9d",
     "operationalIndex": 0,
-    "at": "2026-11-23T04:28:41+09:00"
+    "at": "2026-11-23T09:27:42+09:00"
   },
   "adjustments": {
     "events": [
@@ -243,21 +250,21 @@
         "item": "form",
         "value": "mist",
         "previous": "blob",
-        "at": "2026-11-23T04:28:41+09:00"
+        "at": "2026-11-23T09:27:42+09:00"
       },
       {
         "i": 1,
         "item": "size",
         "value": 0.8,
         "previous": 0.5,
-        "at": "2026-11-23T04:28:41+09:00"
+        "at": "2026-11-23T09:27:42+09:00"
       },
       {
         "i": 2,
         "item": "opacity",
         "value": 0.6,
         "previous": 1.0,
-        "at": "2026-11-23T04:28:41+09:00"
+        "at": "2026-11-23T09:27:42+09:00"
       }
     ],
     "items": {
@@ -265,26 +272,27 @@
         "count": 1,
         "first": "blob",
         "last": "mist",
-        "firstAt": "2026-11-23T04:28:41+09:00",
-        "lastAt": "2026-11-23T04:28:41+09:00"
+        "firstAt": "2026-11-23T09:27:42+09:00",
+        "lastAt": "2026-11-23T09:27:42+09:00"
       },
       "size": {
         "count": 1,
         "first": 0.5,
         "last": 0.8,
-        "firstAt": "2026-11-23T04:28:41+09:00",
-        "lastAt": "2026-11-23T04:28:41+09:00"
+        "firstAt": "2026-11-23T09:27:42+09:00",
+        "lastAt": "2026-11-23T09:27:42+09:00"
       },
       "opacity": {
         "count": 1,
         "first": 1.0,
         "last": 0.6,
-        "firstAt": "2026-11-23T04:28:41+09:00",
-        "lastAt": "2026-11-23T04:28:41+09:00"
+        "firstAt": "2026-11-23T09:27:42+09:00",
+        "lastAt": "2026-11-23T09:27:42+09:00"
       }
     },
-    "finishedAt": "2026-11-23T04:28:41+09:00"
+    "finishedAt": "2026-11-23T09:27:42+09:00"
   },
+  "colorChanged": false,
   "finalOverrides": {
     "form.type": "mist",
     "layout.size": 0.8,
@@ -430,15 +438,18 @@
     "said": 3,
     "chosen": 0,
     "edited": 3,
-    "default": 9
+    "default": 9,
+    "said_unrendered_chosen": 0,
+    "said_unrendered_default": 0
   },
   "premeasure": {
     "path": "<log_dir>\\selection\\SYN-SEL-S4\\premeasure.json",
-    "completedAt": "2026-11-23T04:28:41+09:00",
+    "completedAt": "2026-11-23T09:27:42+09:00",
     "answered": 8,
     "skipped": 1
   },
   "adjustValueExtras": {},
+  "distanceFloor": null,
   "runnerReady": true,
   "runnerBlockers": []
 }

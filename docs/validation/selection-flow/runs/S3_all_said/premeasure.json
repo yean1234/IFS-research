@@ -3,14 +3,12 @@
   "sessionId": "SYN-SEL-S3",
   "timepoint": "pre",
   "protocolId": "ifs-selection-flow",
-  "protocolVersion": "0.1.0",
-  "draftCount": 29,
+  "protocolVersion": "0.2.0",
+  "draftCount": 27,
   "draftKeys": [
     "phrases.figure_intro",
     "phrases.candidates_intro",
-    "phrases.single_candidate_intro",
     "phrases.choose_button",
-    "phrases.proceed_single_button",
     "phrases.none_fit",
     "phrases.adjust_intro",
     "phrases.adjust_finish_button",
@@ -51,7 +49,7 @@
     }
   },
   "selectionNone": false,
-  "operationalId": "c-f670bd7ef7ad",
+  "operationalId": "c-fb6bb9f1c45b",
   "finalOverrides": {},
   "items": [
     {
@@ -127,5 +125,5 @@
       "skipped": false
     }
   ],
-  "completedAt": "2026-11-23T04:28:41+09:00"
+  "completedAt": "2026-11-23T09:27:42+09:00"
 }

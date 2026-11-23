@@ -1,0 +1,428 @@
+{
+  "formatVersion": "ifs-selection/0.2",
+  "specSha256": "0c5dc482a69e913ee687bd133a6849c7a39ffd07be20aa9d1502292270e7573a",
+  "sessionId": "SYN-SEL-S7",
+  "createdAt": "2026-11-23T09:27:43+09:00",
+  "updatedAt": "2026-11-23T09:27:43+09:00",
+  "stage": "done",
+  "spec": {
+    "path": "<log_dir>\\scenes\\SYN-SEL-S7.json",
+    "normalizedSha256": "8e4781acf2c823bc3a3d5c96a2e42100fc98777f12e3bd9d231efda673db741e",
+    "sha256Basis": "file",
+    "builder": "scene-spec-builder-v2/2.1.0",
+    "specVersion": "2.1.0",
+    "mapping": {
+      "requested": "v2",
+      "used": "v1",
+      "fallbackReason": null
+    }
+  },
+  "generator": {
+    "generatorVersion": "ifs-candidates/0.2.0",
+    "tableVersion": "1.0.0",
+    "tableSha256": "140c8cc2c33bd125b2cb5bd6f40dc2b898e78a516f683ee0c86dac8cd14479e6"
+  },
+  "protocol": {
+    "protocolId": "ifs-selection-flow",
+    "protocolVersion": "0.2.0",
+    "draftCount": 27,
+    "draftKeys": [
+      "phrases.figure_intro",
+      "phrases.candidates_intro",
+      "phrases.choose_button",
+      "phrases.none_fit",
+      "phrases.adjust_intro",
+      "phrases.adjust_finish_button",
+      "phrases.premeasure_done",
+      "phrases.premeasure_submit_button",
+      "adjustItemLabels.form",
+      "adjustItemLabels.color",
+      "adjustItemLabels.brightness",
+      "adjustItemLabels.opacity",
+      "adjustItemLabels.size",
+      "adjustItemLabels.texture",
+      "adjustItemLabels.motion",
+      "premeasure.instruction",
+      "premeasure.scale",
+      "premeasure.skipLabel",
+      "premeasure.items.A1",
+      "premeasure.items.A2",
+      "premeasure.items.A3",
+      "premeasure.items.A4",
+      "premeasure.items.A5",
+      "premeasure.items.A6",
+      "premeasure.items.A7",
+      "premeasure.items.G13_appearance",
+      "premeasure.items.G13_representation"
+    ]
+  },
+  "preview": {
+    "requested": "image",
+    "mode": "image",
+    "reason": null
+  },
+  "candidates": {
+    "generatorVersion": "ifs-candidates/0.2.0",
+    "tableVersion": "1.0.0",
+    "tableSha256": "140c8cc2c33bd125b2cb5bd6f40dc2b898e78a516f683ee0c86dac8cd14479e6",
+    "specSha256": "8e4781acf2c823bc3a3d5c96a2e42100fc98777f12e3bd9d231efda673db741e",
+    "sessionId": "SYN-SEL-S7",
+    "axes": [
+      {
+        "slot": "form.type",
+        "reason": "said_unrendered",
+        "values": [
+          "blob",
+          "mist"
+        ],
+        "saidWords": [
+          {
+            "lemma": "길쭉",
+            "shape": "elongated",
+            "trigger": "길쭉한",
+            "charSpan": [
+              6,
+              9
+            ]
+          }
+        ],
+        "key": "form.type"
+      },
+      {
+        "slot": "layout.size",
+        "reason": "empty",
+        "values": [
+          0.5,
+          0.7
+        ],
+        "key": "layout.size"
+      }
+    ],
+    "candidates": [
+      {
+        "id": "c-204b6f3c0975",
+        "index": 0,
+        "overrides": {},
+        "axisValues": {
+          "form.type": "blob",
+          "layout.size": 0.5
+        },
+        "sources": {
+          "form.type": "offered",
+          "form.posture": "default",
+          "material.color": "default",
+          "material.brightness": "default",
+          "material.saturation": "default",
+          "material.roughness": "default",
+          "material.opacity": "default",
+          "material.erosion": "default",
+          "layout.size": "offered",
+          "layout.distance": "said",
+          "layout.verticalOffset": "default",
+          "motion.type": "default",
+          "motion.speed": "default",
+          "body.part": "said",
+          "body.layer": "said"
+        }
+      },
+      {
+        "id": "c-7086b172b428",
+        "index": 1,
+        "overrides": {
+          "layout.size": 0.7
+        },
+        "axisValues": {
+          "form.type": "blob",
+          "layout.size": 0.7
+        },
+        "sources": {
+          "form.type": "offered",
+          "form.posture": "default",
+          "material.color": "default",
+          "material.brightness": "default",
+          "material.saturation": "default",
+          "material.roughness": "default",
+          "material.opacity": "default",
+          "material.erosion": "default",
+          "layout.size": "offered",
+          "layout.distance": "said",
+          "layout.verticalOffset": "default",
+          "motion.type": "default",
+          "motion.speed": "default",
+          "body.part": "said",
+          "body.layer": "said"
+        }
+      },
+      {
+        "id": "c-e31dc32ce926",
+        "index": 2,
+        "overrides": {
+          "form.type": "mist"
+        },
+        "axisValues": {
+          "form.type": "mist",
+          "layout.size": 0.5
+        },
+        "sources": {
+          "form.type": "offered",
+          "form.posture": "default",
+          "material.color": "default",
+          "material.brightness": "default",
+          "material.saturation": "default",
+          "material.roughness": "default",
+          "material.opacity": "default",
+          "material.erosion": "default",
+          "layout.size": "offered",
+          "layout.distance": "said",
+          "layout.verticalOffset": "default",
+          "motion.type": "default",
+          "motion.speed": "default",
+          "body.part": "said",
+          "body.layer": "said"
+        }
+      },
+      {
+        "id": "c-eb46b41e20d4",
+        "index": 3,
+        "overrides": {
+          "form.type": "mist",
+          "layout.size": 0.7
+        },
+        "axisValues": {
+          "form.type": "mist",
+          "layout.size": 0.7
+        },
+        "sources": {
+          "form.type": "offered",
+          "form.posture": "default",
+          "material.color": "default",
+          "material.brightness": "default",
+          "material.saturation": "default",
+          "material.roughness": "default",
+          "material.opacity": "default",
+          "material.erosion": "default",
+          "layout.size": "offered",
+          "layout.distance": "said",
+          "layout.verticalOffset": "default",
+          "motion.type": "default",
+          "motion.speed": "default",
+          "body.part": "said",
+          "body.layer": "said"
+        }
+      }
+    ],
+    "displayOrder": [
+      "c-eb46b41e20d4",
+      "c-204b6f3c0975",
+      "c-7086b172b428",
+      "c-e31dc32ce926"
+    ],
+    "orderRule": "sha256(sessionId)[:8] mod 4 = 3 만큼 순환",
+    "splitSkipped": [],
+    "distinct": {
+      "ruleVersion": "ifs-distinct/1.0.0",
+      "gridCount": 4,
+      "kept": 4,
+      "removed": [],
+      "collapsedAxes": []
+    },
+    "selectionStep": "choose",
+    "note": "빈 자리 5개 가운데 위 두 차원(form.type, layout.size)으로 2×2. 모형이 없는 모양어(길쭉)를 말해 형태 자리를 벌림(G32). 색상(hue)·밝기는 벌리지 않음(G17·G31·G34)."
+  },
+  "candidatesShown": [
+    "c-eb46b41e20d4",
+    "c-204b6f3c0975",
+    "c-7086b172b428",
+    "c-e31dc32ce926"
+  ],
+  "candidatesShownAt": "2026-11-23T09:27:43+09:00",
+  "selection": {
+    "selectedCandidateId": null,
+    "selectedIndex": null,
+    "none": true,
+    "skipped": false,
+    "displayPosition": null,
+    "operationalId": "c-204b6f3c0975",
+    "operationalIndex": 0,
+    "at": "2026-11-23T09:27:43+09:00"
+  },
+  "adjustments": {
+    "events": [],
+    "items": {},
+    "finishedAt": "2026-11-23T09:27:43+09:00"
+  },
+  "colorChanged": false,
+  "finalOverrides": {},
+  "sources": {
+    "form.type": "said_unrendered_default",
+    "form.posture": "default",
+    "material.color": "default",
+    "material.brightness": "default",
+    "material.saturation": "default",
+    "material.roughness": "default",
+    "material.opacity": "default",
+    "material.erosion": "default",
+    "layout.size": "default",
+    "layout.distance": "said",
+    "layout.verticalOffset": "default",
+    "motion.type": "default",
+    "motion.speed": "default",
+    "body.part": "said",
+    "body.layer": "said"
+  },
+  "sourceDetails": {
+    "form.type": {
+      "source": "said_unrendered_default",
+      "value": "blob",
+      "saidValue": null,
+      "chosenValue": null,
+      "defaultValue": "blob",
+      "saidWords": [
+        {
+          "lemma": "길쭉",
+          "shape": "elongated",
+          "trigger": "길쭉한",
+          "charSpan": [
+            6,
+            9
+          ]
+        }
+      ]
+    },
+    "form.posture": {
+      "source": "default",
+      "value": "none",
+      "saidValue": null,
+      "chosenValue": null,
+      "defaultValue": "none"
+    },
+    "material.color": {
+      "source": "default",
+      "value": {
+        "h": 0.0,
+        "s": 0.0,
+        "l": 0.7
+      },
+      "saidValue": null,
+      "chosenValue": null,
+      "defaultValue": {
+        "h": 0.0,
+        "s": 0.0,
+        "l": 0.7
+      }
+    },
+    "material.brightness": {
+      "source": "default",
+      "value": 0.5,
+      "saidValue": null,
+      "chosenValue": null,
+      "defaultValue": 0.5
+    },
+    "material.saturation": {
+      "source": "default",
+      "value": 0.0,
+      "saidValue": null,
+      "chosenValue": null,
+      "defaultValue": 0.0
+    },
+    "material.roughness": {
+      "source": "default",
+      "value": 0.5,
+      "saidValue": null,
+      "chosenValue": null,
+      "defaultValue": 0.5
+    },
+    "material.opacity": {
+      "source": "default",
+      "value": 1.0,
+      "saidValue": null,
+      "chosenValue": null,
+      "defaultValue": 1.0
+    },
+    "material.erosion": {
+      "source": "default",
+      "value": 0.0,
+      "saidValue": null,
+      "chosenValue": null,
+      "defaultValue": 0.0
+    },
+    "layout.size": {
+      "source": "default",
+      "value": 0.5,
+      "saidValue": null,
+      "chosenValue": null,
+      "defaultValue": 0.5
+    },
+    "layout.distance": {
+      "source": "said",
+      "value": 0.1,
+      "saidValue": 0.0,
+      "chosenValue": null,
+      "defaultValue": 0.33
+    },
+    "layout.verticalOffset": {
+      "source": "default",
+      "value": 0.75,
+      "saidValue": null,
+      "chosenValue": null,
+      "defaultValue": 0.75
+    },
+    "motion.type": {
+      "source": "default",
+      "value": "still",
+      "saidValue": null,
+      "chosenValue": null,
+      "defaultValue": "still"
+    },
+    "motion.speed": {
+      "source": "default",
+      "value": 0.5,
+      "saidValue": null,
+      "chosenValue": null,
+      "defaultValue": 0.5
+    },
+    "body.part": {
+      "source": "said",
+      "value": "face",
+      "saidValue": "face",
+      "chosenValue": null,
+      "defaultValue": null
+    },
+    "body.layer": {
+      "source": "said",
+      "value": "around_front",
+      "saidValue": "around_front",
+      "chosenValue": null,
+      "defaultValue": null
+    }
+  },
+  "sourceCounts": {
+    "said": 3,
+    "chosen": 0,
+    "edited": 0,
+    "default": 11,
+    "said_unrendered_chosen": 0,
+    "said_unrendered_default": 1
+  },
+  "premeasure": {
+    "path": "<log_dir>\\selection\\SYN-SEL-S7\\premeasure.json",
+    "completedAt": "2026-11-23T09:27:43+09:00",
+    "answered": 8,
+    "skipped": 1
+  },
+  "adjustValueExtras": {},
+  "distanceFloor": {
+    "slot": "layout.distance",
+    "said": 0.0,
+    "drawn": 0.1,
+    "floor": 0.1,
+    "rule": "distanceLexicon.붙>layout.distance:attached+floor(0.1;said=0.0)",
+    "trigger": "붙어",
+    "charSpan": [
+      12,
+      14
+    ]
+  },
+  "runnerReady": true,
+  "runnerBlockers": []
+}

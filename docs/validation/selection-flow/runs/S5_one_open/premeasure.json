@@ -3,14 +3,12 @@
   "sessionId": "SYN-SEL-S5",
   "timepoint": "pre",
   "protocolId": "ifs-selection-flow",
-  "protocolVersion": "0.1.0",
-  "draftCount": 29,
+  "protocolVersion": "0.2.0",
+  "draftCount": 27,
   "draftKeys": [
     "phrases.figure_intro",
     "phrases.candidates_intro",
-    "phrases.single_candidate_intro",
     "phrases.choose_button",
-    "phrases.proceed_single_button",
     "phrases.none_fit",
     "phrases.adjust_intro",
     "phrases.adjust_finish_button",
@@ -51,10 +49,8 @@
     }
   },
   "selectionNone": false,
-  "operationalId": "c-a9983a9de7f6",
-  "finalOverrides": {
-    "material.brightness": 0.25
-  },
+  "operationalId": "c-f6a97dff422c",
+  "finalOverrides": {},
   "items": [
     {
       "id": "A1",
@@ -129,5 +125,5 @@
       "skipped": false
     }
   ],
-  "completedAt": "2026-11-23T04:28:41+09:00"
+  "completedAt": "2026-11-23T09:27:43+09:00"
 }

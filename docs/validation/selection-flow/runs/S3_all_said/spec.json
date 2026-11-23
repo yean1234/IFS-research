@@ -6,7 +6,7 @@
     "condition": "static",
     "sourceTextHash": "sha256:59df8f0cc989b8be9f0cc4f41dd1147e4133e055447d509634c9463571985b43",
     "pipeline": {
-      "builder": "scene-spec-builder-v2/2.0.0",
+      "builder": "scene-spec-builder-v2/2.1.0",
       "analyzer": "kiwi",
       "lexicons": {
         "layer1": "layer1-attribute-lexicon@1.0.0",

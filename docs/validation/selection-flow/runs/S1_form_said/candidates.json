@@ -10,22 +10,22 @@
       ]
     },
     {
-      "key": "material.brightness",
+      "key": "material.roughness",
       "reason": "empty",
-      "slot": "material.brightness",
+      "slot": "material.roughness",
       "values": [
         0.5,
-        0.75
+        0.1
       ]
     }
   ],
   "candidates": [
     {
       "axisValues": {
-        "material.brightness": 0.5,
-        "material.opacity": 1.0
+        "material.opacity": 1.0,
+        "material.roughness": 0.5
       },
-      "id": "c-29dac2ece0b3",
+      "id": "c-d7a93bdd3b7d",
       "index": 0,
       "overrides": {},
       "sources": {
@@ -36,11 +36,11 @@
         "layout.distance": "default",
         "layout.size": "said",
         "layout.verticalOffset": "default",
-        "material.brightness": "offered",
+        "material.brightness": "default",
         "material.color": "default",
         "material.erosion": "default",
         "material.opacity": "offered",
-        "material.roughness": "default",
+        "material.roughness": "offered",
         "material.saturation": "default",
         "motion.speed": "default",
         "motion.type": "default"
@@ -48,13 +48,13 @@
     },
     {
       "axisValues": {
-        "material.brightness": 0.75,
-        "material.opacity": 1.0
+        "material.opacity": 1.0,
+        "material.roughness": 0.1
       },
-      "id": "c-190b6e542c34",
+      "id": "c-0fab64ba877e",
       "index": 1,
       "overrides": {
-        "material.brightness": 0.75
+        "material.roughness": 0.1
       },
       "sources": {
         "body.layer": "said",
@@ -64,11 +64,11 @@
         "layout.distance": "default",
         "layout.size": "said",
         "layout.verticalOffset": "default",
-        "material.brightness": "offered",
+        "material.brightness": "default",
         "material.color": "default",
         "material.erosion": "default",
         "material.opacity": "offered",
-        "material.roughness": "default",
+        "material.roughness": "offered",
         "material.saturation": "default",
         "motion.speed": "default",
         "motion.type": "default"
@@ -76,10 +76,10 @@
     },
     {
       "axisValues": {
-        "material.brightness": 0.5,
-        "material.opacity": 0.4
+        "material.opacity": 0.4,
+        "material.roughness": 0.5
       },
-      "id": "c-bfd1cb77b6d3",
+      "id": "c-be471968869c",
       "index": 2,
       "overrides": {
         "material.opacity": 0.4
@@ -92,11 +92,11 @@
         "layout.distance": "default",
         "layout.size": "said",
         "layout.verticalOffset": "default",
-        "material.brightness": "offered",
+        "material.brightness": "default",
         "material.color": "default",
         "material.erosion": "default",
         "material.opacity": "offered",
-        "material.roughness": "default",
+        "material.roughness": "offered",
         "material.saturation": "default",
         "motion.speed": "default",
         "motion.type": "default"
@@ -104,14 +104,14 @@
     },
     {
       "axisValues": {
-        "material.brightness": 0.75,
-        "material.opacity": 0.4
+        "material.opacity": 0.4,
+        "material.roughness": 0.1
       },
-      "id": "c-199e7f618602",
+      "id": "c-6a9f0dcde5f1",
       "index": 3,
       "overrides": {
-        "material.brightness": 0.75,
-        "material.opacity": 0.4
+        "material.opacity": 0.4,
+        "material.roughness": 0.1
       },
       "sources": {
         "body.layer": "said",
@@ -121,11 +121,11 @@
         "layout.distance": "default",
         "layout.size": "said",
         "layout.verticalOffset": "default",
-        "material.brightness": "offered",
+        "material.brightness": "default",
         "material.color": "default",
         "material.erosion": "default",
         "material.opacity": "offered",
-        "material.roughness": "default",
+        "material.roughness": "offered",
         "material.saturation": "default",
         "motion.speed": "default",
         "motion.type": "default"
@@ -133,17 +133,25 @@
     }
   ],
   "displayOrder": [
-    "c-29dac2ece0b3",
-    "c-190b6e542c34",
-    "c-bfd1cb77b6d3",
-    "c-199e7f618602"
+    "c-d7a93bdd3b7d",
+    "c-0fab64ba877e",
+    "c-be471968869c",
+    "c-6a9f0dcde5f1"
   ],
-  "generatorVersion": "ifs-candidates/0.1.0",
-  "note": "빈 자리 4개 가운데 위 두 차원(material.opacity, material.brightness)으로 2×2. 색상(hue)은 벌리지 않음(G17).",
+  "distinct": {
+    "collapsedAxes": [],
+    "gridCount": 4,
+    "kept": 4,
+    "removed": [],
+    "ruleVersion": "ifs-distinct/1.0.0"
+  },
+  "generatorVersion": "ifs-candidates/0.2.0",
+  "note": "빈 자리 3개 가운데 위 두 차원(material.opacity, material.roughness)으로 2×2. 색상(hue)·밝기는 벌리지 않음(G17·G31·G34).",
   "orderRule": "sha256(sessionId)[:8] mod 4 = 0 만큼 순환",
+  "selectionStep": "choose",
   "sessionId": "SYN-SEL-S1",
-  "specSha256": "700f8da0fc248d764064ef095a0cff123b9ad36af4a972f882765e3d1f07f6ca",
+  "specSha256": "29783e60bf2128a21352fe35f24a68afbb5ab6863d8c39bd1292b0e2bdf7a972",
   "splitSkipped": [],
-  "tableSha256": "2f6bcf51ecdf59a3812599ed04533b099a96c706a2cd3ee51bbbb45fbd619773",
-  "tableVersion": "0.1.0"
+  "tableSha256": "140c8cc2c33bd125b2cb5bd6f40dc2b898e78a516f683ee0c86dac8cd14479e6",
+  "tableVersion": "1.0.0"
 }

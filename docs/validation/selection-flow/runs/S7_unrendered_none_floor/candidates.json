@@ -1,0 +1,168 @@
+{
+  "axes": [
+    {
+      "key": "form.type",
+      "reason": "said_unrendered",
+      "saidWords": [
+        {
+          "charSpan": [
+            6,
+            9
+          ],
+          "lemma": "길쭉",
+          "shape": "elongated",
+          "trigger": "길쭉한"
+        }
+      ],
+      "slot": "form.type",
+      "values": [
+        "blob",
+        "mist"
+      ]
+    },
+    {
+      "key": "layout.size",
+      "reason": "empty",
+      "slot": "layout.size",
+      "values": [
+        0.5,
+        0.7
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "axisValues": {
+        "form.type": "blob",
+        "layout.size": 0.5
+      },
+      "id": "c-204b6f3c0975",
+      "index": 0,
+      "overrides": {},
+      "sources": {
+        "body.layer": "said",
+        "body.part": "said",
+        "form.posture": "default",
+        "form.type": "offered",
+        "layout.distance": "said",
+        "layout.size": "offered",
+        "layout.verticalOffset": "default",
+        "material.brightness": "default",
+        "material.color": "default",
+        "material.erosion": "default",
+        "material.opacity": "default",
+        "material.roughness": "default",
+        "material.saturation": "default",
+        "motion.speed": "default",
+        "motion.type": "default"
+      }
+    },
+    {
+      "axisValues": {
+        "form.type": "blob",
+        "layout.size": 0.7
+      },
+      "id": "c-7086b172b428",
+      "index": 1,
+      "overrides": {
+        "layout.size": 0.7
+      },
+      "sources": {
+        "body.layer": "said",
+        "body.part": "said",
+        "form.posture": "default",
+        "form.type": "offered",
+        "layout.distance": "said",
+        "layout.size": "offered",
+        "layout.verticalOffset": "default",
+        "material.brightness": "default",
+        "material.color": "default",
+        "material.erosion": "default",
+        "material.opacity": "default",
+        "material.roughness": "default",
+        "material.saturation": "default",
+        "motion.speed": "default",
+        "motion.type": "default"
+      }
+    },
+    {
+      "axisValues": {
+        "form.type": "mist",
+        "layout.size": 0.5
+      },
+      "id": "c-e31dc32ce926",
+      "index": 2,
+      "overrides": {
+        "form.type": "mist"
+      },
+      "sources": {
+        "body.layer": "said",
+        "body.part": "said",
+        "form.posture": "default",
+        "form.type": "offered",
+        "layout.distance": "said",
+        "layout.size": "offered",
+        "layout.verticalOffset": "default",
+        "material.brightness": "default",
+        "material.color": "default",
+        "material.erosion": "default",
+        "material.opacity": "default",
+        "material.roughness": "default",
+        "material.saturation": "default",
+        "motion.speed": "default",
+        "motion.type": "default"
+      }
+    },
+    {
+      "axisValues": {
+        "form.type": "mist",
+        "layout.size": 0.7
+      },
+      "id": "c-eb46b41e20d4",
+      "index": 3,
+      "overrides": {
+        "form.type": "mist",
+        "layout.size": 0.7
+      },
+      "sources": {
+        "body.layer": "said",
+        "body.part": "said",
+        "form.posture": "default",
+        "form.type": "offered",
+        "layout.distance": "said",
+        "layout.size": "offered",
+        "layout.verticalOffset": "default",
+        "material.brightness": "default",
+        "material.color": "default",
+        "material.erosion": "default",
+        "material.opacity": "default",
+        "material.roughness": "default",
+        "material.saturation": "default",
+        "motion.speed": "default",
+        "motion.type": "default"
+      }
+    }
+  ],
+  "displayOrder": [
+    "c-eb46b41e20d4",
+    "c-204b6f3c0975",
+    "c-7086b172b428",
+    "c-e31dc32ce926"
+  ],
+  "distinct": {
+    "collapsedAxes": [],
+    "gridCount": 4,
+    "kept": 4,
+    "removed": [],
+    "ruleVersion": "ifs-distinct/1.0.0"
+  },
+  "generatorVersion": "ifs-candidates/0.2.0",
+  "note": "빈 자리 5개 가운데 위 두 차원(form.type, layout.size)으로 2×2. 모형이 없는 모양어(길쭉)를 말해 형태 자리를 벌림(G32). 색상(hue)·밝기는 벌리지 않음(G17·G31·G34).",
+  "orderRule": "sha256(sessionId)[:8] mod 4 = 3 만큼 순환",
+  "selectionStep": "choose",
+  "sessionId": "SYN-SEL-S7",
+  "specSha256": "8e4781acf2c823bc3a3d5c96a2e42100fc98777f12e3bd9d231efda673db741e",
+  "splitSkipped": [],
+  "tableSha256": "140c8cc2c33bd125b2cb5bd6f40dc2b898e78a516f683ee0c86dac8cd14479e6",
+  "tableVersion": "1.0.0"
+}

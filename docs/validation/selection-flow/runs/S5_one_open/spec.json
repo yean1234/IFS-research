@@ -4,9 +4,9 @@
     "participantId": null,
     "sessionId": "SYN-SEL-S5",
     "condition": "static",
-    "sourceTextHash": "sha256:67f0d2239fb4f169b8a92969689ca1415b91a441bfeb4eddbee8840d93f82e99",
+    "sourceTextHash": "sha256:4536bd39125771f47b59c4bd50235a9eb6b43c2268d4c3d3f7b9cdbbdfe15747",
     "pipeline": {
-      "builder": "scene-spec-builder-v2/2.0.0",
+      "builder": "scene-spec-builder-v2/2.1.0",
       "analyzer": "kiwi",
       "lexicons": {
         "layer1": "layer1-attribute-lexicon@1.0.0",
@@ -33,7 +33,7 @@
       "s": 0.0,
       "l": 0.06
     },
-    "brightness": null,
+    "brightness": 0.15,
     "saturation": null,
     "roughness": 0.1,
     "opacity": 1.0,
@@ -45,7 +45,7 @@
     "verticalOffset": null
   },
   "motion": {
-    "type": "still",
+    "type": null,
     "speed": null
   },
   "body": {
@@ -75,6 +75,17 @@
         "rule": "colorTerm.까만>material.color:hsl"
       }
     ],
+    "material.brightness": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "어두워요",
+        "charSpan": [
+          40,
+          44
+        ],
+        "rule": "brightnessLexicon.어둡>material.brightness:dark"
+      }
+    ],
     "material.roughness": [
       {
         "source": "explicit_lexicon",
@@ -91,8 +102,8 @@
         "source": "explicit_lexicon",
         "trigger": "불",
         "charSpan": [
-          41,
-          42
+          33,
+          34
         ],
         "rule": "opacityLexicon.불투명>material.opacity:opaque"
       }
@@ -118,17 +129,6 @@
         ],
         "rule": "distanceLexicon.가까이>layout.distance:near"
       }
-    ],
-    "motion.type": [
-      {
-        "source": "explicit_lexicon",
-        "trigger": "움직여요",
-        "charSpan": [
-          35,
-          39
-        ],
-        "rule": "motionLexicon.움직이>motion.type:still(negated)"
-      }
     ]
   },
   "_unmatched": [
@@ -142,21 +142,12 @@
       ]
     },
     {
-      "lemma": "안",
-      "tag": "MAG",
-      "surface": "안",
-      "charSpan": [
-        33,
-        34
-      ]
-    },
-    {
       "lemma": "투명",
       "tag": "EOJEOL",
       "surface": "불투명해요",
       "charSpan": [
-        41,
-        46
+        33,
+        38
       ]
     }
   ],
@@ -271,27 +262,7 @@
     {
       "charSpan": [
         33,
-        39
-      ],
-      "text": "안 움직여요",
-      "usedFor": [
-        "motion.type"
-      ],
-      "status": "partly_used"
-    },
-    {
-      "charSpan": [
-        39,
-        40
-      ],
-      "text": ".",
-      "usedFor": [],
-      "status": "unused"
-    },
-    {
-      "charSpan": [
-        41,
-        46
+        38
       ],
       "text": "불투명해요",
       "usedFor": [
@@ -301,8 +272,28 @@
     },
     {
       "charSpan": [
-        46,
-        47
+        38,
+        39
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        40,
+        44
+      ],
+      "text": "어두워요",
+      "usedFor": [
+        "material.brightness"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        44,
+        45
       ],
       "text": ".",
       "usedFor": [],

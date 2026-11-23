@@ -1,15 +1,15 @@
 {
-  "formatVersion": "ifs-selection/0.1",
-  "specSha256": "5e695b1e31d2d8976fb3812d0f81f15cac9623d5a8b2dcb459bed3db47529c29",
+  "formatVersion": "ifs-selection/0.2",
+  "specSha256": "7a85356b7644fc05f553580487a07251e9b9a57d76e567e2157d578ec810b937",
   "sessionId": "SYN-SEL-S1",
-  "createdAt": "2026-11-23T04:28:39+09:00",
-  "updatedAt": "2026-11-23T04:28:39+09:00",
+  "createdAt": "2026-11-23T09:27:42+09:00",
+  "updatedAt": "2026-11-23T09:27:42+09:00",
   "stage": "done",
   "spec": {
     "path": "<log_dir>\\scenes\\SYN-SEL-S1.json",
-    "normalizedSha256": "700f8da0fc248d764064ef095a0cff123b9ad36af4a972f882765e3d1f07f6ca",
+    "normalizedSha256": "29783e60bf2128a21352fe35f24a68afbb5ab6863d8c39bd1292b0e2bdf7a972",
     "sha256Basis": "file",
-    "builder": "scene-spec-builder-v2/2.0.0",
+    "builder": "scene-spec-builder-v2/2.1.0",
     "specVersion": "2.1.0",
     "mapping": {
       "requested": "v2",
@@ -18,20 +18,18 @@
     }
   },
   "generator": {
-    "generatorVersion": "ifs-candidates/0.1.0",
-    "tableVersion": "0.1.0",
-    "tableSha256": "2f6bcf51ecdf59a3812599ed04533b099a96c706a2cd3ee51bbbb45fbd619773"
+    "generatorVersion": "ifs-candidates/0.2.0",
+    "tableVersion": "1.0.0",
+    "tableSha256": "140c8cc2c33bd125b2cb5bd6f40dc2b898e78a516f683ee0c86dac8cd14479e6"
   },
   "protocol": {
     "protocolId": "ifs-selection-flow",
-    "protocolVersion": "0.1.0",
-    "draftCount": 29,
+    "protocolVersion": "0.2.0",
+    "draftCount": 27,
     "draftKeys": [
       "phrases.figure_intro",
       "phrases.candidates_intro",
-      "phrases.single_candidate_intro",
       "phrases.choose_button",
-      "phrases.proceed_single_button",
       "phrases.none_fit",
       "phrases.adjust_intro",
       "phrases.adjust_finish_button",
@@ -64,10 +62,10 @@
     "reason": null
   },
   "candidates": {
-    "generatorVersion": "ifs-candidates/0.1.0",
-    "tableVersion": "0.1.0",
-    "tableSha256": "2f6bcf51ecdf59a3812599ed04533b099a96c706a2cd3ee51bbbb45fbd619773",
-    "specSha256": "700f8da0fc248d764064ef095a0cff123b9ad36af4a972f882765e3d1f07f6ca",
+    "generatorVersion": "ifs-candidates/0.2.0",
+    "tableVersion": "1.0.0",
+    "tableSha256": "140c8cc2c33bd125b2cb5bd6f40dc2b898e78a516f683ee0c86dac8cd14479e6",
+    "specSha256": "29783e60bf2128a21352fe35f24a68afbb5ab6863d8c39bd1292b0e2bdf7a972",
     "sessionId": "SYN-SEL-S1",
     "axes": [
       {
@@ -80,31 +78,31 @@
         "key": "material.opacity"
       },
       {
-        "slot": "material.brightness",
+        "slot": "material.roughness",
         "reason": "empty",
         "values": [
           0.5,
-          0.75
+          0.1
         ],
-        "key": "material.brightness"
+        "key": "material.roughness"
       }
     ],
     "candidates": [
       {
-        "id": "c-29dac2ece0b3",
+        "id": "c-d7a93bdd3b7d",
         "index": 0,
         "overrides": {},
         "axisValues": {
           "material.opacity": 1.0,
-          "material.brightness": 0.5
+          "material.roughness": 0.5
         },
         "sources": {
           "form.type": "said",
           "form.posture": "default",
           "material.color": "default",
-          "material.brightness": "offered",
+          "material.brightness": "default",
           "material.saturation": "default",
-          "material.roughness": "default",
+          "material.roughness": "offered",
           "material.opacity": "offered",
           "material.erosion": "default",
           "layout.size": "said",
@@ -117,22 +115,22 @@
         }
       },
       {
-        "id": "c-190b6e542c34",
+        "id": "c-0fab64ba877e",
         "index": 1,
         "overrides": {
-          "material.brightness": 0.75
+          "material.roughness": 0.1
         },
         "axisValues": {
           "material.opacity": 1.0,
-          "material.brightness": 0.75
+          "material.roughness": 0.1
         },
         "sources": {
           "form.type": "said",
           "form.posture": "default",
           "material.color": "default",
-          "material.brightness": "offered",
+          "material.brightness": "default",
           "material.saturation": "default",
-          "material.roughness": "default",
+          "material.roughness": "offered",
           "material.opacity": "offered",
           "material.erosion": "default",
           "layout.size": "said",
@@ -145,22 +143,22 @@
         }
       },
       {
-        "id": "c-bfd1cb77b6d3",
+        "id": "c-be471968869c",
         "index": 2,
         "overrides": {
           "material.opacity": 0.4
         },
         "axisValues": {
           "material.opacity": 0.4,
-          "material.brightness": 0.5
+          "material.roughness": 0.5
         },
         "sources": {
           "form.type": "said",
           "form.posture": "default",
           "material.color": "default",
-          "material.brightness": "offered",
+          "material.brightness": "default",
           "material.saturation": "default",
-          "material.roughness": "default",
+          "material.roughness": "offered",
           "material.opacity": "offered",
           "material.erosion": "default",
           "layout.size": "said",
@@ -173,23 +171,23 @@
         }
       },
       {
-        "id": "c-199e7f618602",
+        "id": "c-6a9f0dcde5f1",
         "index": 3,
         "overrides": {
-          "material.brightness": 0.75,
-          "material.opacity": 0.4
+          "material.opacity": 0.4,
+          "material.roughness": 0.1
         },
         "axisValues": {
           "material.opacity": 0.4,
-          "material.brightness": 0.75
+          "material.roughness": 0.1
         },
         "sources": {
           "form.type": "said",
           "form.posture": "default",
           "material.color": "default",
-          "material.brightness": "offered",
+          "material.brightness": "default",
           "material.saturation": "default",
-          "material.roughness": "default",
+          "material.roughness": "offered",
           "material.opacity": "offered",
           "material.erosion": "default",
           "layout.size": "said",
@@ -203,30 +201,39 @@
       }
     ],
     "displayOrder": [
-      "c-29dac2ece0b3",
-      "c-190b6e542c34",
-      "c-bfd1cb77b6d3",
-      "c-199e7f618602"
+      "c-d7a93bdd3b7d",
+      "c-0fab64ba877e",
+      "c-be471968869c",
+      "c-6a9f0dcde5f1"
     ],
     "orderRule": "sha256(sessionId)[:8] mod 4 = 0 만큼 순환",
     "splitSkipped": [],
-    "note": "빈 자리 4개 가운데 위 두 차원(material.opacity, material.brightness)으로 2×2. 색상(hue)은 벌리지 않음(G17)."
+    "distinct": {
+      "ruleVersion": "ifs-distinct/1.0.0",
+      "gridCount": 4,
+      "kept": 4,
+      "removed": [],
+      "collapsedAxes": []
+    },
+    "selectionStep": "choose",
+    "note": "빈 자리 3개 가운데 위 두 차원(material.opacity, material.roughness)으로 2×2. 색상(hue)·밝기는 벌리지 않음(G17·G31·G34)."
   },
   "candidatesShown": [
-    "c-29dac2ece0b3",
-    "c-190b6e542c34",
-    "c-bfd1cb77b6d3",
-    "c-199e7f618602"
+    "c-d7a93bdd3b7d",
+    "c-0fab64ba877e",
+    "c-be471968869c",
+    "c-6a9f0dcde5f1"
   ],
-  "candidatesShownAt": "2026-11-23T04:28:39+09:00",
+  "candidatesShownAt": "2026-11-23T09:27:42+09:00",
   "selection": {
-    "selectedCandidateId": "c-bfd1cb77b6d3",
+    "selectedCandidateId": "c-be471968869c",
     "selectedIndex": 2,
     "none": false,
+    "skipped": false,
     "displayPosition": 2,
-    "operationalId": "c-bfd1cb77b6d3",
+    "operationalId": "c-be471968869c",
     "operationalIndex": 2,
-    "at": "2026-11-23T04:28:39+09:00"
+    "at": "2026-11-23T09:27:42+09:00"
   },
   "adjustments": {
     "events": [
@@ -245,21 +252,21 @@
           "s": 0.0,
           "l": 0.7
         },
-        "at": "2026-11-23T04:28:39+09:00"
+        "at": "2026-11-23T09:27:42+09:00"
       },
       {
         "i": 1,
         "item": "size",
         "value": 0.4,
         "previous": 0.316,
-        "at": "2026-11-23T04:28:39+09:00"
+        "at": "2026-11-23T09:27:42+09:00"
       },
       {
         "i": 2,
         "item": "brightness",
         "value": 0.625,
         "previous": 0.5,
-        "at": "2026-11-23T04:28:39+09:00"
+        "at": "2026-11-23T09:27:42+09:00"
       }
     ],
     "items": {
@@ -277,26 +284,27 @@
           "s": 0.6,
           "l": 0.5
         },
-        "firstAt": "2026-11-23T04:28:39+09:00",
-        "lastAt": "2026-11-23T04:28:39+09:00"
+        "firstAt": "2026-11-23T09:27:42+09:00",
+        "lastAt": "2026-11-23T09:27:42+09:00"
       },
       "size": {
         "count": 1,
         "first": 0.316,
         "last": 0.4,
-        "firstAt": "2026-11-23T04:28:39+09:00",
-        "lastAt": "2026-11-23T04:28:39+09:00"
+        "firstAt": "2026-11-23T09:27:42+09:00",
+        "lastAt": "2026-11-23T09:27:42+09:00"
       },
       "brightness": {
         "count": 1,
         "first": 0.5,
         "last": 0.625,
-        "firstAt": "2026-11-23T04:28:39+09:00",
-        "lastAt": "2026-11-23T04:28:39+09:00"
+        "firstAt": "2026-11-23T09:27:42+09:00",
+        "lastAt": "2026-11-23T09:27:42+09:00"
       }
     },
-    "finishedAt": "2026-11-23T04:28:39+09:00"
+    "finishedAt": "2026-11-23T09:27:42+09:00"
   },
+  "colorChanged": true,
   "finalOverrides": {
     "layout.size": 0.4,
     "material.brightness": 0.625,
@@ -311,7 +319,7 @@
     "material.color": "edited",
     "material.brightness": "edited",
     "material.saturation": "edited",
-    "material.roughness": "default",
+    "material.roughness": "chosen",
     "material.opacity": "chosen",
     "material.erosion": "default",
     "layout.size": "edited",
@@ -356,7 +364,7 @@
       "source": "edited",
       "value": 0.625,
       "saidValue": null,
-      "chosenValue": 0.5,
+      "chosenValue": null,
       "defaultValue": 0.5
     },
     "material.saturation": {
@@ -367,10 +375,10 @@
       "defaultValue": 0.0
     },
     "material.roughness": {
-      "source": "default",
+      "source": "chosen",
       "value": 0.5,
       "saidValue": null,
-      "chosenValue": null,
+      "chosenValue": 0.5,
       "defaultValue": 0.5
     },
     "material.opacity": {
@@ -439,17 +447,20 @@
   },
   "sourceCounts": {
     "said": 3,
-    "chosen": 1,
+    "chosen": 2,
     "edited": 4,
-    "default": 7
+    "default": 6,
+    "said_unrendered_chosen": 0,
+    "said_unrendered_default": 0
   },
   "premeasure": {
     "path": "<log_dir>\\selection\\SYN-SEL-S1\\premeasure.json",
-    "completedAt": "2026-11-23T04:28:39+09:00",
+    "completedAt": "2026-11-23T09:27:42+09:00",
     "answered": 9,
     "skipped": 0
   },
   "adjustValueExtras": {},
+  "distanceFloor": null,
   "runnerReady": true,
   "runnerBlockers": []
 }

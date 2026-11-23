@@ -1,15 +1,15 @@
 {
-  "formatVersion": "ifs-selection/0.1",
-  "specSha256": "8370cfaa532a1e1dc8c2fe31b835823f94ec4f699211251901f779e45b1bf22e",
+  "formatVersion": "ifs-selection/0.2",
+  "specSha256": "aacda06e4335098dfaaa2c23686d46316949628f043f3d3e1acc49fb9a80e8f5",
   "sessionId": "SYN-SEL-S2",
-  "createdAt": "2026-11-23T04:28:41+09:00",
-  "updatedAt": "2026-11-23T04:28:41+09:00",
+  "createdAt": "2026-11-23T09:27:42+09:00",
+  "updatedAt": "2026-11-23T09:27:42+09:00",
   "stage": "done",
   "spec": {
     "path": "<log_dir>\\scenes\\SYN-SEL-S2.json",
-    "normalizedSha256": "4c9ecd0f21fd28dd1624aa46f59f284c02d4d7ee0dd183f6c746e74391ca0a73",
+    "normalizedSha256": "bb712a9f10c884f9e16dd4d59a4577f83894087528d5f66388abb52ce249c806",
     "sha256Basis": "file",
-    "builder": "scene-spec-builder-v2/2.0.0",
+    "builder": "scene-spec-builder-v2/2.1.0",
     "specVersion": "2.1.0",
     "mapping": {
       "requested": "v2",
@@ -18,20 +18,18 @@
     }
   },
   "generator": {
-    "generatorVersion": "ifs-candidates/0.1.0",
-    "tableVersion": "0.1.0",
-    "tableSha256": "2f6bcf51ecdf59a3812599ed04533b099a96c706a2cd3ee51bbbb45fbd619773"
+    "generatorVersion": "ifs-candidates/0.2.0",
+    "tableVersion": "1.0.0",
+    "tableSha256": "140c8cc2c33bd125b2cb5bd6f40dc2b898e78a516f683ee0c86dac8cd14479e6"
   },
   "protocol": {
     "protocolId": "ifs-selection-flow",
-    "protocolVersion": "0.1.0",
-    "draftCount": 29,
+    "protocolVersion": "0.2.0",
+    "draftCount": 27,
     "draftKeys": [
       "phrases.figure_intro",
       "phrases.candidates_intro",
-      "phrases.single_candidate_intro",
       "phrases.choose_button",
-      "phrases.proceed_single_button",
       "phrases.none_fit",
       "phrases.adjust_intro",
       "phrases.adjust_finish_button",
@@ -64,10 +62,10 @@
     "reason": null
   },
   "candidates": {
-    "generatorVersion": "ifs-candidates/0.1.0",
-    "tableVersion": "0.1.0",
-    "tableSha256": "2f6bcf51ecdf59a3812599ed04533b099a96c706a2cd3ee51bbbb45fbd619773",
-    "specSha256": "4c9ecd0f21fd28dd1624aa46f59f284c02d4d7ee0dd183f6c746e74391ca0a73",
+    "generatorVersion": "ifs-candidates/0.2.0",
+    "tableVersion": "1.0.0",
+    "tableSha256": "140c8cc2c33bd125b2cb5bd6f40dc2b898e78a516f683ee0c86dac8cd14479e6",
+    "specSha256": "bb712a9f10c884f9e16dd4d59a4577f83894087528d5f66388abb52ce249c806",
     "sessionId": "SYN-SEL-S2",
     "axes": [
       {
@@ -91,7 +89,7 @@
     ],
     "candidates": [
       {
-        "id": "c-e040ced71c47",
+        "id": "c-162d52e12503",
         "index": 0,
         "overrides": {},
         "axisValues": {
@@ -117,7 +115,7 @@
         }
       },
       {
-        "id": "c-12f8350573f9",
+        "id": "c-2d453d6d7964",
         "index": 1,
         "overrides": {
           "layout.size": 0.7
@@ -145,7 +143,7 @@
         }
       },
       {
-        "id": "c-e0ad29e5e909",
+        "id": "c-f03911555a00",
         "index": 2,
         "overrides": {
           "form.type": "mist"
@@ -173,7 +171,7 @@
         }
       },
       {
-        "id": "c-cf260af89ace",
+        "id": "c-805c3871637d",
         "index": 3,
         "overrides": {
           "form.type": "mist",
@@ -203,36 +201,46 @@
       }
     ],
     "displayOrder": [
-      "c-cf260af89ace",
-      "c-e040ced71c47",
-      "c-12f8350573f9",
-      "c-e0ad29e5e909"
+      "c-805c3871637d",
+      "c-162d52e12503",
+      "c-2d453d6d7964",
+      "c-f03911555a00"
     ],
     "orderRule": "sha256(sessionId)[:8] mod 4 = 3 만큼 순환",
     "splitSkipped": [],
-    "note": "빈 자리 6개 가운데 위 두 차원(form.type, layout.size)으로 2×2. 색상(hue)은 벌리지 않음(G17)."
+    "distinct": {
+      "ruleVersion": "ifs-distinct/1.0.0",
+      "gridCount": 4,
+      "kept": 4,
+      "removed": [],
+      "collapsedAxes": []
+    },
+    "selectionStep": "choose",
+    "note": "빈 자리 5개 가운데 위 두 차원(form.type, layout.size)으로 2×2. 색상(hue)·밝기는 벌리지 않음(G17·G31·G34)."
   },
   "candidatesShown": [
-    "c-cf260af89ace",
-    "c-e040ced71c47",
-    "c-12f8350573f9",
-    "c-e0ad29e5e909"
+    "c-805c3871637d",
+    "c-162d52e12503",
+    "c-2d453d6d7964",
+    "c-f03911555a00"
   ],
-  "candidatesShownAt": "2026-11-23T04:28:41+09:00",
+  "candidatesShownAt": "2026-11-23T09:27:42+09:00",
   "selection": {
-    "selectedCandidateId": "c-cf260af89ace",
+    "selectedCandidateId": "c-805c3871637d",
     "selectedIndex": 3,
     "none": false,
+    "skipped": false,
     "displayPosition": 0,
-    "operationalId": "c-cf260af89ace",
+    "operationalId": "c-805c3871637d",
     "operationalIndex": 3,
-    "at": "2026-11-23T04:28:41+09:00"
+    "at": "2026-11-23T09:27:42+09:00"
   },
   "adjustments": {
     "events": [],
     "items": {},
-    "finishedAt": "2026-11-23T04:28:41+09:00"
+    "finishedAt": "2026-11-23T09:27:42+09:00"
   },
+  "colorChanged": false,
   "finalOverrides": {
     "form.type": "mist",
     "layout.size": 0.7
@@ -373,15 +381,18 @@
     "said": 2,
     "chosen": 2,
     "edited": 0,
-    "default": 11
+    "default": 11,
+    "said_unrendered_chosen": 0,
+    "said_unrendered_default": 0
   },
   "premeasure": {
     "path": "<log_dir>\\selection\\SYN-SEL-S2\\premeasure.json",
-    "completedAt": "2026-11-23T04:28:41+09:00",
+    "completedAt": "2026-11-23T09:27:42+09:00",
     "answered": 8,
     "skipped": 1
   },
   "adjustValueExtras": {},
+  "distanceFloor": null,
   "runnerReady": true,
   "runnerBlockers": []
 }
