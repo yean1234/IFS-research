@@ -86,3 +86,15 @@ CP9 지적을 반영해 러너가 더 확인하는 것(G26·G27):
 
 이 폴더의 합성 파일 3개에는 `spec` 객체와 `runnerReady`가 없어 예전과 같이 읽힌다(파일 기준으로 봄). 챗봇이 만든 spec과 선택 파일로 자동 시행까지 끝까지 돈 것은 `docs/validation/selection-flow/README.md`에 있다.
 
+## 저장된 이전 판 파일 고정 테스트 (2026-11-23, CP10 G41)
+
+이 폴더의 합성 파일 3개는 `specSha256`이 이 PC에서 체크아웃된 `EX02.json` 바이트 기준이라 형식만 확인했고, 러너 테스트는 테스트 안에서 0.1 JSON을 만들어 썼다. 저장된 이전 판 파일을 실제 러너에 넣는 고정 테스트를 위해 `docs/validation/legacy-files/`(`.gitattributes`로 LF 고정, 모두 합성)를 더했다.
+
+| 파일 | 내용 |
+| --- | --- |
+| `spec_2.0.0.json` · `spec_2.1.0.json` | 매퍼 v0 예시 EX02 · 매퍼 v1 예시 EX03.v1의 바이트(LF) |
+| `spec_2.2.0_builder-2.2.0.json` | CP10 반영 전 매퍼 v2 builder 2.2.0의 출력('가슴 앞에 작은 그릇이 있어요. 초록색이에요.', 변형값 근거 source `explicit_lexicon`) |
+| `sel_0.1_spec-2.0.0.json` · `sel_0.1_spec-2.1.0.json` | `ifs-selection/0.1`(고른 후보 + 색·밝기 고침 / 맞는 것이 없다 + 투명도 고침) |
+| `sel_0.2_d6_spec-2.2.0.json` | D6 직후 `ifs-selection/0.2`(sources에 form.base만, form.baseVariant 없음, 선택 건너뜀, 형태를 line으로) |
+
+선택 파일의 `specSha256`은 짝 spec 파일 바이트의 sha256이다. 테스트: `LegacyFilesTests.cs`(dotnet·Unity: 엄격 파서 왕복, 러너 선택 검사·sha·`CheckApplicable`), `UnityOnly/LegacyFilesRunnerTests.cs`(Unity: 세 쌍을 배치 러너 자동 시행으로 끝까지 — manifest `selection`·`appliedOverrides`), `chatbot/tests/test_cp10.py`(버전별 스키마, 0.1 스키마, 러너 계약). 같은 때 러너 슬롯 이름에 `form.baseVariant`를 더했고, `sources`에 `form.baseVariant`가 있는데 `form.base`가 없으면 거부한다.

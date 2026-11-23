@@ -200,5 +200,5 @@ cd chatbot
 - Unity 쪽 교차 테스트를 하지 않았습니다. 후보 덮어쓰기를 `SceneOverride.Validate`·`FormRenderPlan`에 넣는 테스트와, 조절 항목 × 형태별 반영 여부 표(G22)가 남아 있습니다. 모양 모형 목록(`shapeModels`)과 구별 규칙의 근거 코드(미리보기 움직임 멈춤)는 pytest가 C# 원문을 읽어 대조합니다.
 - 구별 규칙의 미확인 조합(안개·조각의 질감, 어두운 색의 투명도·질감)은 그림 차이를 체계적으로 재지 않았습니다.
 - image 미리보기는 움직임을 멈추고 그리므로 조절 화면에서 움직임을 바꿔도 그림이 바뀌지 않습니다. 2026-11-23 G12 연결에서 image로 내려간 세션은 움직임 줄을 끄도록 했습니다(위 5절). WebGL 조절 화면에서는 움직임이 재생됩니다.
-- `form.base`(G21)는 스키마에 없어 형태 값은 `form.type` 네 개뿐입니다.
+- `form.base`(G21)는 스키마에 없어 형태 값은 `form.type` 네 개뿐입니다. (2026-11-23 D6 뒤로는 조절 형태 항목이 9값이고, CP10 G39 뒤로 출처 슬롯에 `form.base`·`form.baseVariant`가 있습니다 — 출처 행 17개. 형태 조작은 `adjustments.events[].formSlots`, 세 슬롯의 `sourceDetails.formItem`, 변형값 키별 근거는 `sourceDetails["form.baseVariant"].keyBasis`. `runs/`는 그 전 기록이라 이 필드가 없습니다. 세부 `docs/decisions.md` 「CP10 반영 세부」.)
 - `docs/chatbot-design.md`에 후보 단계의 유도 위험을 적는 일은 이번 범위(chatbot/·shared 새 파일·이 폴더) 밖이라 하지 않았습니다.

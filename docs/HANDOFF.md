@@ -8,7 +8,20 @@
 
 > 갱신: 2026-11-23, 하위 에이전트(Claude)가 단계 C·D10 문서 작업 끝에 적음. 같은 날 G31–G34 구현, 이어서 D6(기본 형상) 구현 뒤 바로 아래 소절을 더함. 지시문은 `docs/prompts/prototype-v4-build.md`(2026-11-22 클라우드 세션에서 연구 책임자와 정함). 결정은 `docs/decisions.md`의 「형상 표현 범위와 생성 모델」 절(G1–G28)과 X79–X85. 아래 ★ 절부터는 이전 작업의 기록이고 그대로 뒀습니다.
 
-### G12 WebGL 미리보기 챗봇 연결 (2026-11-23, 하위 에이전트 Claude) — 이 절의 가장 최근 작업
+### CP10 반영 G37–G41 (2026-11-23, 하위 에이전트 Claude) — 이 절의 가장 최근 작업
+
+Codex CP10 지적 가운데 메인이 수용한 G37–G41을 합성 입력으로 재현한 뒤 고쳤습니다. 재현 결과·정한 것·이유는 `docs/decisions.md` 맨 끝 「CP10 반영 세부」.
+
+- **G37 안전 제외(재현됨)**: '해골 그릇'·'아이 장난감 상자'·'뱀 같은 끈'·'괴물 같은 불꽃'이 그려졌고 '칼날'·'칼집'·'피 웅덩이'·부정은 기록이 없었음. 제외를 형태소 단위(넓힌 명사 연속 + 합성어 목록 `excludedCompounds` 23개)로, 부정·직유도 기록, 제외 낱말이 직유 원천이면 같은 문장의 형상도 그리지 않음. excluded_shape 기록은 모양어로 세지 않음(챗봇·Unity `ShapeMapping`). 사전 0.6.0, 매퍼 v2 builder 2.3.0(specVersion 2.2.0 그대로).
+- **G38(재현됨)**: 낱말 뜻에서 온 변형값의 provenance source `lexicon_implied`(스키마 2.2.0 enum에 더함, 판 번호 유지).
+- **G39(재현됨)**: 출처 슬롯에 `form.baseVariant`(챗봇·스키마·러너·분석기), 낱말 뜻/말함은 `sourceDetails.keyBasis`(새 출처 값 없음), base를 바꾸면 변형값 edited·null, 형태 조작 기록 `formSlots`·`formItem`. `ifs-selection/0.2` 그대로, 생성기 `ifs-candidates/0.4.0`, 분석기 열 `form_base_source`·`form_variant_source`.
+- **G40(재현 안 됨)**: 빠진 기록의 낱말·위치는 모두 `_provenance`/`_alternatives`에 남음. 1층 사전 범주·값은 빠지지만 낱말 + 사전 버전으로 다시 만들 수 있음(보고만).
+- **G41(부분)**: 저장된 이전 판 파일을 실제 러너로 끝까지 돌리는 테스트가 없었음 → `docs/validation/legacy-files/` + dotnet·Unity·pytest 테스트.
+- **빌드**: Unity C#을 고쳐 저장소 밖 `webgl-build`의 WebGL(`preview/`)·예비 플레이어(`preview-win/`·`preview-win-cp/`)를 11.8절 방법으로 다시 빌드(WebGL 66 s·오류 0·경고 0, 새 코드 문자열이 빌드 산출물에 있음을 확인). 새 빌드로 챗봇 끝에서 끝까지(헤드리스 Chrome)는 다시 돌리지 않음.
+- **확인(직접 돌림)**: pytest 파일별 `-m "not live"` **910 통과·6 xfail·실패 0**(+81: test_cp10 80, 분석기 열 1), dotnet **389/389**(+6), Unity EditMode **447/447**(+7). v0·v1 sha 고정 테스트 그대로 통과. 후보 출력 sha 고정값 5개는 생성기 0.4.0으로 다시 잼.
+- 사람이 정할 것은 `docs/morning-todo.md` 「CP10 반영」.
+
+### G12 WebGL 미리보기 챗봇 연결 (2026-11-23, 하위 에이전트 Claude)
 
 챗봇 웹 화면의 형상 미리보기를 WebGL로 연결하고, 그림(image, G25) 방식은 예비로 남겼습니다. 상세 `docs/validation/webgl/README.md` 11절, 정한 세부 `docs/decisions.md` 맨 끝 「WebGL 연결 세부」(G25가 예비 경로가 된 것은 메인 세션이 G36으로 적을 예정).
 
