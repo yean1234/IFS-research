@@ -1,5 +1,7 @@
 # WebGL 미리보기 시험 빌드 (D4, 결정 G12)
 
+> **2026-11-23 재시도(WebGL 모듈 설치 뒤)**: 빌드·브라우저 표시·플레이어 대비 차이를 실제로 확인했습니다. 결과는 맨 아래 [10절](#10-2026-11-23-재시도-webgl-모듈-설치-뒤)에 있습니다. 1–9절은 처음 시도(모듈 설치 실패) 기록이라 그대로 둡니다.
+
 2026-11-23. 챗봇 웹 화면 안에서 형상 후보를 Unity 렌더(같은 SceneLoader, 같은 셰이더)로 보여 줄 수 있는지 확인한 기록입니다. 쓴 spec은 합성 13개(`docs/validation/render/specs`)와 held-out v1 11개(`docs/validation/e2e/specs`에서 형태가 다른 것: H01·H02·H03·H05·H08·H10·H12·H16·H18·H20·H28)입니다. 코퍼스 원문은 열지 않았습니다.
 
 ## 요약
@@ -176,3 +178,128 @@ python -I docs/validation/webgl/tools/compare.py <에디터 결과> <WebGL 결�
 - OpenXR·glTFast·Burst·Input System 패키지가 WebGL 빌드를 막는지.
 - 캔버스 화면(브라우저 합성) 스크린샷 비교.
 - 챗봇 웹 화면 연결(D5). `chatbot/`은 건드리지 않았습니다.
+
+## 10. 2026-11-23 재시도 (WebGL 모듈 설치 뒤)
+
+사람이 Unity Hub에서 Web Build Support를 설치한 뒤 다시 했습니다. 같은 저장소에서 다른 작업이 Unity를 열 수 있어서 **저장소의 `unity/`는 열지 않고** 저장소 밖 복사본에서 빌드했습니다. `robocopy`로 `unity/`를 `<repo 밖>/webgl-build/proj`에 복사하면서 `Library`·`Temp`·`Logs`·`obj`·`UserSettings`는 빼고 Library를 새로 만들었습니다. 빌드 산출물과 캡처는 모두 `<repo 밖>/webgl-build/` 아래에 있고 git에 넣지 않았습니다. spec은 1–9절과 같은 24개(합성 13 + held-out v1 11)에 덮어쓰기 사례 6개(`tools/override_cases.json`)를 더했습니다.
+
+### 10.1 요약
+
+| 항목 | 결과 |
+| --- | --- |
+| WebGL 빌드 | **성공**. 빌드 보고 기준 오류 0, 경고 0. 첫 빌드 104.5 s(Library를 새로 만든 시간까지 합친 Unity 프로세스 142 s), 고친 뒤 다시 빌드 72.6 s(프로세스 84 s) |
+| 크기(최종 빌드, 압축 끔) | 47.51 MB(`.wasm` 36.80, `.data` 10.24, `framework.js` 0.44, 로더와 `index.html` 0.02). 같은 파일을 여기서 압축해 보면 gzip-9 12.90 MB, brotli-11 9.17 MB(빌드 자체는 압축하지 않음) |
+| 패키지 | OpenXR 1.16.1·Input System 1.20.0·glTFast 6.21.0·Burst 1.8.30 모두 WebGL로 컴파일돼 들어갔고 오류·경고 없음. WebGL용 XR 로더 없음 |
+| 색 공간·API | Linear, WebGL 2.0(OpenGL ES 3.0 Chromium), GLSL ES 3.00 |
+| mist 셰이더 | 빌드 로그상 `IFS/SceneSpec Mist` gles3 변형 1개 컴파일(1.34 s), 오류 없음. 브라우저에서 `renderPath`가 `mist`(대체 경로 `mist(legacy)`가 아님)였고 덩어리 구름이 캔버스에 보임 |
+| 브라우저 표시 | 헤드리스 Chrome 157(하드웨어 ANGLE D3D11, RTX 5080)에서 blob·mist·fragments·shell과 모양 모형 4종이 모두 보이고, 덮어쓰기를 넣으면 형상이 바뀜. 페이지를 연 뒤 Unity 준비까지 0.66–0.74 s(3회) |
+| 첫 빌드에서 고친 것 | ① WebGL에서 `Capture`가 전부 RGBA 0을 돌려줌 → `PreviewStage`의 MSAA 해상을 WebGL에서만 `Graphics.Blit`으로 바꿈. ② "Made with Unity" 시작 화면이 준비 뒤 몇 초 동안 캔버스를 가림 → 빌드 스크립트가 빌드 동안만 끔 |
+| WebGL ↔ Windows 플레이어(24 spec) | 덮인 화소 수 차 최대 0.03%(3화소). 평균 색 ΔE00 평균 0.126, 최대 1.36(H08.v1, 덮인 화소 112개짜리 작은 조각). H08을 빼면 최대 0.28. 8/255 넘게 다른 화소 1306개 중 1305개가 윤곽선 위 |
+| 캔버스 화면 ↔ Unity 안 캡처 | 확인한 5개 spec 모두 **화소 단위로 같음**(800×600, 배율 1). 화면에도 MSAA 4× 결과가 그대로 나옴 |
+| 소프트웨어 렌더(SwiftShader) | 뜸. 하드웨어 화면과 윤곽선에서 최대 채널 차 13–107/255 |
+
+### 10.2 빌드
+
+명령은 8절과 같습니다. 다만 `-projectPath`로 복사본을 주고, `-outDir <repo 밖>/webgl-build/preview -reportPath <repo 밖>/webgl-build/preview-build-report.json`을 붙였습니다.
+
+- 최종 빌드 보고는 `results/retry_webgl-build-report.json`입니다. `Succeeded`, `errors` 0, `warnings` 0이고, 임시 설정(압축 끔, 템플릿, 캐싱 끔, 시작 화면 끔)은 빌드가 끝난 뒤 되돌아갔습니다. 활성 빌드 대상도 StandaloneWindows64로 돌아왔습니다. 복사본의 `ProjectSettings.asset`에 `m_ShowUnitySplashScreen: 1`이 그대로 남아 있는 것을 확인했습니다.
+- 빌드 로그에서 오류처럼 보이는 줄은 Unity 라이선스 클라이언트 연결(`[Licensing::Client] Error: HandshakeResponse …`), 종료 때의 `Curl error 42`와 `[usbmuxd] Error`뿐입니다. 빌드 결과에는 영향이 없었고 `error CS`는 한 줄도 없었습니다.
+- gles3로 컴파일된 셰이더는 `IFS/SceneSpec Mist`(1 변형), `IFS/SceneSpec Opaque`, `IFS/SceneSpec Fade`, `IFS/Environment Floor`, `IFS/Environment Sky`, `Skybox/Procedural`, `Legacy Shaders/Transparent/*`입니다. 오류는 없었습니다.
+- 시작 화면을 꺼도 빌드 자산 목록에는 시작 화면 로고 텍스처(2.7 MB)가 들어 있습니다. `StreamingAssets/IFS/`의 예시·과제 JSON(43 KB)도 들어갑니다. 미리보기에는 쓰이지 않지만 해가 없어 그대로 두었습니다.
+- 성능 테스트 패키지(`com.unity.test-framework.performance`)의 빌드 전처리가 `Assets/Resources/PerformanceTestRunInfo.json`과 `PerformanceTestRunSettings.json`을 만들어 빌드에 넣습니다(이번에는 복사본에 생김). 저장소에서 빌드하면 같은 파일이 생기니 커밋하지 않도록 주의해야 합니다.
+- 프로젝트 설정은 복사본에서도 손대지 않았습니다. 바뀐 것은 빌드 스크립트의 임시 변경뿐입니다.
+- 비교용 Windows 미리보기 플레이어도 **같은 복사본**에서 다시 빌드했습니다(`<repo 밖>/webgl-build/preview-win-cp`, 23.8 s, 94.96 MB, `results/retry_windows-build-report.json`). 기존 `preview-win`은 건드리지 않았습니다.
+
+### 10.3 첫 빌드에서 드러난 결함 두 가지와 고친 것
+
+1. **WebGL에서 `Capture`가 빈 그림을 돌려줌.** 첫 빌드에서는 30개(24 spec + 덮어쓰기 6) × 3장이 모두 RGBA (0,0,0,0)이었습니다. 검정·흰 배경 캡처까지 0이었으니 렌더 텍스처에서 읽은 값 자체가 비어 있었던 것입니다. `PreviewStage.Render`는 MSAA 4× 렌더 텍스처를 `ResolveAntiAliasedSurface`로 해상하는데, WebGL2에서는 이 호출이 대상에 아무것도 쓰지 않았습니다. 그래서 `#if UNITY_WEBGL && !UNITY_EDITOR`일 때만 `Graphics.Blit(rt, resolved)`로 해상하게 고쳤고, 다시 빌드하자 10.5의 값이 나왔습니다. 데스크톱·에디터에서 컴파일되는 코드는 바뀌지 않았습니다. 이 WebGL 분기는 EditMode 테스트가 검사하지 못하므로 빌드할 때마다 `driver.html`로 확인해야 합니다.
+2. **시작 화면이 캔버스를 가림.** 프로젝트 설정에서 "Made with Unity" 시작 화면이 켜져 있어서, 준비 알림 직후 1–2초 안에 찍은 화면이 모두 로고였습니다. `PreviewBuild.BuildWebGL`이 빌드하는 동안만 `PlayerSettings.SplashScreen.show = false`로 두고 끝나면 되돌리게 했습니다(Unity 6은 Personal에서도 끌 수 있음). Build Settings 창 같은 다른 경로로 빌드하면 시작 화면이 다시 나옵니다.
+
+### 10.4 브라우저 표시(헤드리스 Chrome)
+
+로컬 서버(`tools/serve.py`, 127.0.0.1)로 빌드를 내보내고 Chrome 157 `--headless=new`로 열었습니다. GPU 관련 플래그는 주지 않았고, 실행할 때마다 새 임시 프로필을 썼습니다. 외부로 나가는 요청은 없습니다.
+
+- WebGL 컨텍스트는 `WebGL 2.0 (OpenGL ES 3.0 Chromium)`, `ANGLE (NVIDIA, NVIDIA GeForce RTX 5080 … Direct3D11)`, `MAX_SAMPLES` 8이었습니다. 컨텍스트의 `antialias`는 false입니다. 그래도 Unity가 자기 MSAA 버퍼에 그린 뒤 캔버스로 옮기기 때문에 화면에도 MSAA가 적용됩니다. 캔버스 스크린샷(`tools/cdp_shot.py`, DevTools `Page.captureScreenshot`)과 Unity 안 렌더 텍스처 캡처를 비교했더니 R01·R04·R07·R11·OV_R07_to_shell이 화소 단위로 같았습니다. 4절에서 "화면에는 계단이 보일 수 있음"이라고 했던 예상은 이 환경에서는 맞지 않았습니다.
+- **첫 로딩**(127.0.0.1, 압축 없음, 데이터 캐싱 끔, 새 프로필): 페이지를 연 뒤 `ifsPreview.ready`까지 0.705·0.657·0.737 s였습니다. `driver.html` 안의 iframe으로 열면 `instanceMs`가 1.80 s였고, 챗봇 서버와 같은 Starlette `StaticFiles(html=True)` 마운트로 내보내면 0.707 s였습니다.
+- **spec 로드**(JS → Unity → JS 왕복, 24개): 중앙값 1.5 ms, 최대 33.5 ms(첫 spec). **덮어쓰기 적용** 왕복(8회): 중앙값 0.7 ms, 최대 2.3 ms. **800×600 한 장 렌더**: 중앙값 12.4 ms. 다만 셰이더를 처음 쓰는 렌더에서는 브라우저가 셰이더를 컴파일하느라 0.2–0.8 s가 걸렸습니다(최종 빌드에서 첫 mist 0.80 s, 첫 fragments 0.47 s). 원자료는 `results/retry_webgl_driver.json`입니다.
+- **형상별 표시**: blob, mist(덩어리 구름), fragments, shell, 모양 모형(Sphere·Cube·FlatCylinder·Cone)이 모두 오류 없이 로드되고 캔버스에 나타났습니다. 그림은 `results/retry_player_vs_canvas.png`입니다. 위 줄이 Windows 플레이어 PNG, 아래 줄이 WebGL 캔버스이고, 왼쪽부터 R01 mist, R04 fragments, R06 shell, R07 blob입니다(가운데 400×300을 잘라 절반 크기로 줄임).
+- **덮어쓰기**(`applyOverrides`): R07 blob → mist·fragments·shell, R01 mist → blob, mist + 불투명도 0.6 + 색상 0.3에서 모두 `renderPath`와 `form.type`이 덮어쓴 값으로 바뀌었습니다. shell → mist → `{}`를 차례로 넣으면 R07을 처음 로드했을 때와 세 장 모두 화소 단위로 같았습니다. 이전 형상이 남지 않는다는 뜻입니다. R07 → shell도 R06 shell과 화소 단위로 같았습니다. 모르는 값(`{"form.type":"cube"}`)을 넣으면 Promise가 거부되고 `모르는 형태: cube`가 돌아왔습니다. 그림은 `results/retry_overrides_player_vs_canvas.png`이고, 왼쪽부터 R07 그대로, → mist, → fragments, → shell입니다.
+- **천천히 돌기**: `setFrozen(false)` + `setAutoRotate(90)` 뒤 1 s와 1.7 s에 찍은 화면이 서로 달랐습니다(8/255 넘게 다른 화소가 각각 4030개, 27345개). `setFrozen(true)`로 되돌리면 처음 화면과 같아졌습니다.
+- **콘솔**: 오류는 `favicon.ico` 404 하나입니다(템플릿에 아이콘이 없음). 경고는 Unity가 시작할 때 형식을 조회하며 내는 `WebGL: INVALID_ENUM: getInternalformatParameter` 6개, `JS_FileSystem_Sync()` 사용 중단 예고 1개, 일부러 넣은 잘못된 덮어쓰기에 대한 경고뿐입니다. 셰이더 컴파일 오류나 예외는 없었습니다. 원자료는 `results/retry_canvas_shots_hw.json`입니다(Unity 메모리 설정 줄은 뺌).
+- **SwiftShader**(`--use-angle=swiftshader --enable-unsafe-swiftshader`, CPU 렌더, `MAX_SAMPLES` 4): 모든 단계가 오류 없이 돌았습니다. 하드웨어 캔버스와 견주면 최대 채널 차가 mist 13, fragments 54, blob 49, shell 107이었고, 8/255 넘게 다른 화소 43–541개는 거의 윤곽선에 있었습니다. GPU가 없는 PC에서도 뜨기는 하지만 하드웨어와 같은 화면이라고 볼 수는 없습니다. 원자료는 `results/retry_canvas_shots_swiftshader.json`입니다.
+
+### 10.5 WebGL ↔ Windows 플레이어
+
+같은 복사본에서 만든 두 빌드를 같은 spec·덮어쓰기로 찍고 `tools/compare.py`(4절과 같은 지표, ΔE00)로 비교했습니다. WebGL 쪽은 `driver.html`이 Unity 안에서 렌더 텍스처로 찍은 PNG(하드웨어 ANGLE D3D11)로, 10.4에서 본 것처럼 화면 캔버스와 같습니다. 플레이어 쪽은 `queue_client.py --cases`(Direct3D 11)로 찍었습니다. 두 빌드의 코드 차이는 10.3 ①의 MSAA 해상 방식 하나뿐입니다.
+
+| 지표 | 24 spec 평균 | 24 spec 최대 | 덮어쓰기 6개 포함 30개 최대 |
+| --- | --- | --- | --- |
+| 덮인 화소 수 차(비율) | 0.00003 | 0.0003 | 0.0003 |
+| 평균 색 ΔE00 | 0.126 | 1.358(H08.v1) | 1.358 |
+| 화소 ΔE00 평균(덮인 곳) | 0.241 | 1.739(H08.v1) | 1.739 |
+| 화소 ΔE00 평균(화면 전체) | 0.146 | 0.165 | 0.165 |
+| RGB 평균 절대 차(0–255) | 0.071 | 0.093 | 0.093 |
+| 화소 최대 채널 차(0–255) | 16.0 | 42 | 42 |
+
+- spec별 표는 `results/retry_cmp_player_vs_webgl.md`, 원자료는 `results/retry_cmp_player_vs_webgl.json`입니다.
+- H08.v1은 덮인 화소가 112개뿐인 작은 조각이어서 윤곽선 화소의 비중이 크고, 그만큼 값이 커졌습니다. H08을 빼면 평균 색 ΔE00 최대는 0.281(H05.v1)입니다.
+- 30장을 통틀어 8/255 넘게 다른 화소는 1306개이고, 그중 1305개가 플레이어 그림의 윤곽선(밝기 기울기 > 6, 1화소 넓힘) 위에 있습니다. D3D11 하드웨어 해상과 WebGL의 Blit 해상(ANGLE)이 윤곽선 화소를 다르게 섞는 것으로 보입니다. 원인을 따로 확인하지는 않았습니다. 이것과 별개로 화면 전체에 0.07/255 정도의 고른 차이가 있습니다.
+- 비교 기준으로 4절의 에디터 ↔ Windows 플레이어(둘 다 D3D11)를 보면 평균 색 ΔE00이 평균 0.020, 최대 0.045였습니다. WebGL은 평균이 그 6배쯤이지만, H08 하나를 빼면 0.3 아래입니다.
+- 캔버스 스크린샷 ↔ 플레이어 PNG(10장)는 평균 색 ΔE00 평균 0.065, 최대 0.174였습니다(`results/retry_cmp_player_vs_canvas.json`). 캔버스가 Unity 안 캡처와 같으므로 위 표의 해당 행과 값이 같습니다.
+- 같은 복사본으로 빌드한 플레이어의 상주 지연도 다시 쟀습니다. 시작부터 준비까지 3.90 s, scene 한 장 왕복 중앙값 17.4 ms였습니다(n = 24, `results/retry_player_latency.json`).
+- 에디터 기준 캡처는 저장소의 `unity/`를 열지 않으려고 다시 찍지 않았습니다. 그래서 이번 비교는 WebGL ↔ 플레이어이고, 에디터 ↔ 플레이어는 4절 값(그때 코드 기준)입니다.
+
+### 10.6 챗봇 웹 화면에 넣으려면(구현하지 않음)
+
+이미 준비된 것이 있습니다. `chatbot/config/v4.toml`의 `[preview] webgl_dir = "../../webgl-build/preview"`가 이번 빌드 위치와 같고, `server.py`는 `mode = "webgl"`이면서 폴더가 있으면 `/preview/webgl`에 `StaticFiles(html=True)`로 빌드를 내보냅니다. `stage.js`에는 iframe 어댑터(`WebGL.api`, `WebGL.node`)가 있습니다. 이번에 같은 Starlette(1.3.1) `StaticFiles` 마운트로 빌드를 내보내 보니 `.wasm`은 `application/wasm`, `.data`는 `application/octet-stream`으로 나갔고 페이지는 0.71 s 만에 준비됐습니다. 챗봇 서버 자체를 띄워 본 것은 아닙니다.
+
+필요한 변경:
+
+1. 빌드를 `<repo 밖>/webgl-build/preview`에 둡니다(`PreviewBuild.BuildWebGLPreview`). 빌드 대상이 바뀌면 전체 재임포트가 일어나므로, 다른 Unity 작업과 겹치지 않게 복사본에서 빌드하는 편이 안전합니다.
+2. 설정을 `[preview] mode = "webgl"`로 바꿉니다(지금은 `image`, G25). 바꿀지 말지는 결정할 사항입니다.
+3. `stage.js` WebGL 어댑터를 손봅니다. 아래는 코드를 읽고 찾은 위험이고, 실행해 보지는 않았습니다.
+   - **다시 그릴 때마다 iframe이 다시 로드될 수 있습니다.** `draw()`는 `box.replaceChildren(...)`으로 화면을 새로 만드는데, 이때 같은 iframe 요소가 문서에서 빠졌다가 다시 들어갑니다. 브라우저는 다시 들어온 iframe을 새로 로드하므로 Unity가 처음부터 다시 시작되고(0.7–1.8 s), 캐시해 둔 `this.loaded`는 이미 사라진 창의 `ifsPreview`를 가리키게 됩니다. iframe을 다시 그리는 영역 밖에 고정하거나, iframe의 `load` 때 `loaded`를 새로 만들어야 합니다.
+   - **호출이 한 줄로 처리되지 않습니다.** 후보 캡처 사슬(`this.chain`)과 조절 화면의 `applyOverrides`가 같은 인스턴스를 따로따로 부릅니다. 템플릿은 `loaded`와 id 없는 `error`를 가장 오래된 load 요청에 짝짓기 때문에, 두 호출이 겹치면 응답이 엇갈리거나 다른 후보의 덮어쓰기가 적용된 채로 캡처될 수 있습니다. 모든 호출을 큐 하나로 보내야 합니다.
+   - **실패가 드러나지 않습니다.** `.catch(() => {})` 때문에 로드나 덮어쓰기가 실패해도 빈 그림이나 이전 형상이 그대로 남습니다. image 모드처럼 none(속성 요약)으로 바꾸고 세션 로그에 남겨야 합니다.
+   - **첫 캡처가 늦습니다.** 셰이더를 처음 쓰는 렌더는 0.2–0.8 s 걸립니다. 후보를 보여 주기 전에 형태별로 한 번씩 미리 그려 두면 줄일 수 있습니다.
+4. 기록을 남깁니다. 미리보기를 WebGL(ANGLE/GLES3)로 그렸다는 사실과 브라우저 렌더러 문자열(`ready` 알림의 `graphicsDevice`)을 세션 로그에 적어야 합니다. 헤드셋(D3D11) 화면과는 위 표만큼 다릅니다.
+
+예상 위험:
+
+- 참여자 화면을 띄우는 PC에 WebGL2를 돌릴 GPU가 있어야 합니다. GPU가 없으면 Chrome이 SwiftShader로 넘어가는데, 화면은 뜨지만 윤곽선이 하드웨어 렌더와 최대 107/255까지 다릅니다(10.4). 속도는 재지 않았습니다.
+- 페이지를 열 때마다 47.5 MB를 받습니다(데이터 캐싱 끔). 이번 측정은 로컬 서버라서 1초 안에 끝났습니다. 압축을 켜면 `Content-Encoding` 헤더나 압축 해제 대체가 필요합니다.
+- `PreviewStage`의 WebGL 전용 분기(10.3 ①)에는 EditMode 테스트가 닿지 않습니다. 빌드할 때마다 `driver.html` 비교를 다시 돌려야 합니다.
+- 시작 화면은 빌드 스크립트로 빌드할 때만 꺼집니다.
+- 미리보기 시야각(60°)과 헤드셋 시야각(96°)의 차이는 여전히 남아 있습니다(7절).
+- 마우스로 끌어 돌리기는 확인하지 않았습니다(10.7).
+
+### 10.7 확인하지 않은 것
+
+- 마우스로 끌어 돌리기(`Input.GetMouseButton*`, 입력 처리 설정은 Both), `motion.type` 움직임이 있는 spec의 재생, 창이 있는(헤드리스가 아닌) Chrome, Edge, 다른 GPU와 운영체제.
+- 에디터 기준 캡처 재촬영(10.5), 압축 빌드를 실제로 내보내는 경우, 챗봇 서버(`chatbot/`)에 붙여 보기, 오래 켜 두었을 때의 메모리.
+- SwiftShader의 속도와 플레이어 대비 ΔE00(하드웨어 캔버스와의 채널 차만 잼).
+- 윤곽선 차이의 원인(해상 방식 차이로 추정만 함).
+- 이 문서에서는 G12/G25 판정을 바꾸지 않았습니다. 판정은 메인 세션이 `docs/decisions.md`에 적습니다.
+
+### 10.8 재현
+
+```bash
+U="C:\Program Files\Unity\Hub\Editor\6000.0.85f2\Editor\Unity.exe"; W=<repo 밖>/webgl-build
+robocopy <repo>/unity $W/proj /MIR /XD Library Temp Logs obj UserSettings
+"$U" -batchmode -buildTarget WebGL -projectPath $W/proj -executeMethod IFS.SceneSpec.EditorTools.PreviewBuild.BuildWebGLPreview \
+  -outDir $W/preview -reportPath $W/preview-build-report.json -logFile <로그>
+"$U" -batchmode -projectPath $W/proj -executeMethod IFS.SceneSpec.EditorTools.PreviewBuild.BuildWindowsPreview -outDir $W/preview-win-cp -logFile <로그>
+cd <repo>/docs/validation
+SPECS="render/specs/R*.json e2e/specs/{H01,H02,H03,H05,H08,H10,H12,H16,H18,H20,H28}.v1.json"
+# WebGL: 서버 + 헤드리스 Chrome 드라이버(서버는 /done을 받으면 끝남. Chrome은 그 프로필로 띄운 프로세스만 골라 닫음)
+python -I webgl/tools/serve.py $W/preview $W/results/webgl $SPECS --cases webgl/tools/override_cases.json --port 8765
+"C:\Program Files\Google\Chrome\Application\chrome.exe" --headless=new --user-data-dir=<임시 프로필> --window-size=1000,800 http://127.0.0.1:8765/harness/driver.html
+# 플레이어
+python -I webgl/tools/queue_client.py $W/preview-win-cp/IFSPreview.exe $W/results/queue $W/results/player $SPECS --cases webgl/tools/override_cases.json
+python -I webgl/tools/compare.py $W/results/player $W/results/webgl <결과.json> --label-a player --label-b webgl
+# 캔버스 화면(serve.py를 띄워 둔 채로. /harness/spec/<i> 순서 = $SPECS 순서)
+python -I webgl/tools/cdp_shot.py "C:\Program Files\Google\Chrome\Application\chrome.exe" http://127.0.0.1:8766/index.html $W/results/cdp webgl/tools/cdp_steps.json
+python -I webgl/tools/cdp_shot.py <chrome> http://127.0.0.1:8766/index.html $W/results/cdp-sw webgl/tools/cdp_steps.json --extra=--use-angle=swiftshader --extra=--enable-unsafe-swiftshader
+```
+
+이번에 고치거나 더한 도구는 다음과 같습니다. `serve.py`·`driver.html`·`queue_client.py`는 덮어쓰기 사례(`--cases`, `override_cases.json`)를 받게 했고, 캔버스 스크린샷용 `cdp_shot.py`(DevTools 프로토콜, 외부 패키지 `websockets`)와 단계 파일 `cdp_steps.json`을 새로 넣었습니다. 결과 JSON에 있던 로컬 경로는 `<repo>`, `<repo 밖>`, `<임시 프로필>`로 바꿔 두었습니다.

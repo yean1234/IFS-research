@@ -1,0 +1,62 @@
+[
+ {
+  "name": "web_00_empty",
+  "js": "new Promise(r=>setTimeout(()=>{const c=document.getElementById('unity-canvas');r({canvas:[c.width,c.height]})},1500))",
+  "settleFrames": 5
+ },
+ {
+  "name": "web_R01_mist",
+  "js": "(async()=>{await ifsPreview.setFrozen(true);const t=await (await fetch('/harness/spec/0')).text();let r=await ifsPreview.load(t);return {renderPath:r.renderPath,formType:r.params['form.type'],loadMs:r.loadMs,errors:r.errors};})()",
+  "settleFrames": 5
+ },
+ {
+  "name": "web_R03_mist_op015",
+  "js": "(async()=>{await ifsPreview.setFrozen(true);const t=await (await fetch('/harness/spec/2')).text();let r=await ifsPreview.load(t);return {renderPath:r.renderPath,formType:r.params['form.type'],loadMs:r.loadMs,errors:r.errors};})()",
+  "settleFrames": 5
+ },
+ {
+  "name": "web_R04_fragments",
+  "js": "(async()=>{await ifsPreview.setFrozen(true);const t=await (await fetch('/harness/spec/3')).text();let r=await ifsPreview.load(t);return {renderPath:r.renderPath,formType:r.params['form.type'],loadMs:r.loadMs,errors:r.errors};})()",
+  "settleFrames": 5
+ },
+ {
+  "name": "web_R06_shell",
+  "js": "(async()=>{await ifsPreview.setFrozen(true);const t=await (await fetch('/harness/spec/5')).text();let r=await ifsPreview.load(t);return {renderPath:r.renderPath,formType:r.params['form.type'],loadMs:r.loadMs,errors:r.errors};})()",
+  "settleFrames": 5
+ },
+ {
+  "name": "web_R07_blob",
+  "js": "(async()=>{await ifsPreview.setFrozen(true);const t=await (await fetch('/harness/spec/6')).text();let r=await ifsPreview.load(t);return {renderPath:r.renderPath,formType:r.params['form.type'],loadMs:r.loadMs,errors:r.errors};})()",
+  "settleFrames": 5
+ },
+ {
+  "name": "web_R11_shape_square",
+  "js": "(async()=>{await ifsPreview.setFrozen(true);const t=await (await fetch('/harness/spec/10')).text();let r=await ifsPreview.load(t);return {renderPath:r.renderPath,formType:r.params['form.type'],loadMs:r.loadMs,errors:r.errors};})()",
+  "settleFrames": 5
+ },
+ {
+  "name": "web_OV_R07_to_mist",
+  "js": "(async()=>{await ifsPreview.setFrozen(true);const t=await (await fetch('/harness/spec/6')).text();let r=await ifsPreview.load(t);r=await ifsPreview.applyOverrides({\"form.type\": \"mist\"});return {renderPath:r.renderPath,formType:r.params['form.type'],loadMs:r.loadMs,errors:r.errors};})()",
+  "settleFrames": 5
+ },
+ {
+  "name": "web_OV_R07_to_fragments",
+  "js": "(async()=>{await ifsPreview.setFrozen(true);const t=await (await fetch('/harness/spec/6')).text();let r=await ifsPreview.load(t);r=await ifsPreview.applyOverrides({\"form.type\": \"fragments\"});return {renderPath:r.renderPath,formType:r.params['form.type'],loadMs:r.loadMs,errors:r.errors};})()",
+  "settleFrames": 5
+ },
+ {
+  "name": "web_OV_R07_to_shell",
+  "js": "(async()=>{await ifsPreview.setFrozen(true);const t=await (await fetch('/harness/spec/6')).text();let r=await ifsPreview.load(t);r=await ifsPreview.applyOverrides({\"form.type\": \"shell\"});return {renderPath:r.renderPath,formType:r.params['form.type'],loadMs:r.loadMs,errors:r.errors};})()",
+  "settleFrames": 5
+ },
+ {
+  "name": "web_OV_R01_to_blob",
+  "js": "(async()=>{await ifsPreview.setFrozen(true);const t=await (await fetch('/harness/spec/0')).text();let r=await ifsPreview.load(t);r=await ifsPreview.applyOverrides({\"form.type\": \"blob\"});return {renderPath:r.renderPath,formType:r.params['form.type'],loadMs:r.loadMs,errors:r.errors};})()",
+  "settleFrames": 5
+ },
+ {
+  "name": "web_bad_override",
+  "js": "ifsPreview.applyOverrides({'form.type':'cube'}).then(r=>({unexpected:r}),e=>({rejected:e}))",
+  "settleFrames": 2
+ }
+]

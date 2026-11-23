@@ -1,0 +1,481 @@
+{
+  "specs": [
+    {
+      "spec": "R01_mist_op100",
+      "roundTripMs": 33.5,
+      "loadMs": 31.2,
+      "renderPath": "mist",
+      "loaderErrors": [],
+      "renders": {
+        "scene": 795.7,
+        "black": 13.6,
+        "white": 11.1
+      }
+    },
+    {
+      "spec": "R02_mist_op060",
+      "roundTripMs": 1.100000023841858,
+      "loadMs": 0.9,
+      "renderPath": "mist",
+      "loaderErrors": [],
+      "renders": {
+        "scene": 12.1,
+        "black": 11.4,
+        "white": 10.5
+      }
+    },
+    {
+      "spec": "R03_mist_op015",
+      "roundTripMs": 1,
+      "loadMs": 0.8,
+      "renderPath": "mist",
+      "loaderErrors": [],
+      "renders": {
+        "scene": 11.8,
+        "black": 10.8,
+        "white": 10.3
+      }
+    },
+    {
+      "spec": "R04_frag_small",
+      "roundTripMs": 1.7000000178813934,
+      "loadMs": 1.5,
+      "renderPath": "fragments",
+      "loaderErrors": [],
+      "renders": {
+        "scene": 465.7,
+        "black": 10.8,
+        "white": 10.2
+      }
+    },
+    {
+      "spec": "R05_frag_large",
+      "roundTripMs": 1.100000023841858,
+      "loadMs": 0.8,
+      "renderPath": "fragments",
+      "loaderErrors": [],
+      "renders": {
+        "scene": 12.6,
+        "black": 10.8,
+        "white": 10.6
+      }
+    },
+    {
+      "spec": "R06_shell",
+      "roundTripMs": 2.7000000178813934,
+      "loadMs": 2.5,
+      "renderPath": "shell",
+      "loaderErrors": [],
+      "renders": {
+        "scene": 12.4,
+        "black": 11.4,
+        "white": 10.5
+      }
+    },
+    {
+      "spec": "R07_blob_default",
+      "roundTripMs": 1,
+      "loadMs": 0.7,
+      "renderPath": "blob",
+      "loaderErrors": [],
+      "renders": {
+        "scene": 12.3,
+        "black": 10.8,
+        "white": 10.6
+      }
+    },
+    {
+      "spec": "R08_blob_green_bright",
+      "roundTripMs": 0.9000000059604645,
+      "loadMs": 0.6,
+      "renderPath": "blob",
+      "loaderErrors": [],
+      "renders": {
+        "scene": 12.3,
+        "black": 11,
+        "white": 10.6
+      }
+    },
+    {
+      "spec": "R09_form_null",
+      "roundTripMs": 0.800000011920929,
+      "loadMs": 0.7,
+      "renderPath": "blob",
+      "loaderErrors": [],
+      "renders": {
+        "scene": 12.3,
+        "black": 10.9,
+        "white": 10.9
+      }
+    },
+    {
+      "spec": "R10_shape_round",
+      "roundTripMs": 2.9000000059604645,
+      "loadMs": 2.7,
+      "renderPath": "shapePrefab(Sphere)",
+      "loaderErrors": [],
+      "renders": {
+        "scene": 12.5,
+        "black": 10.7,
+        "white": 10.5
+      }
+    },
+    {
+      "spec": "R11_shape_square",
+      "roundTripMs": 1.2999999821186066,
+      "loadMs": 1,
+      "renderPath": "shapePrefab(Cube)",
+      "loaderErrors": [],
+      "renders": {
+        "scene": 12.3,
+        "black": 11.4,
+        "white": 10.7
+      }
+    },
+    {
+      "spec": "R12_shape_flat",
+      "roundTripMs": 1.100000023841858,
+      "loadMs": 0.8,
+      "renderPath": "shapePrefab(FlatCylinder)",
+      "loaderErrors": [],
+      "renders": {
+        "scene": 12.1,
+        "black": 11.6,
+        "white": 10.5
+      }
+    },
+    {
+      "spec": "R13_shape_pointed",
+      "roundTripMs": 1,
+      "loadMs": 0.8,
+      "renderPath": "shapePrefab(Cone)",
+      "loaderErrors": [],
+      "renders": {
+        "scene": 12.4,
+        "black": 11.2,
+        "white": 10.8
+      }
+    },
+    {
+      "spec": "H01.v1",
+      "roundTripMs": 3.100000023841858,
+      "loadMs": 2.8,
+      "renderPath": "blob",
+      "loaderErrors": [],
+      "renders": {
+        "scene": 217.8,
+        "black": 11.2,
+        "white": 11.1
+      }
+    },
+    {
+      "spec": "H02.v1",
+      "roundTripMs": 1.7000000178813934,
+      "loadMs": 1.4,
+      "renderPath": "mist",
+      "loaderErrors": [],
+      "renders": {
+        "scene": 12.6,
+        "black": 10.7,
+        "white": 10.7
+      }
+    },
+    {
+      "spec": "H03.v1",
+      "roundTripMs": 1.5,
+      "loadMs": 1.2,
+      "renderPath": "shapePrefab(Sphere)",
+      "loaderErrors": [],
+      "renders": {
+        "scene": 12.5,
+        "black": 11.8,
+        "white": 10.8
+      }
+    },
+    {
+      "spec": "H05.v1",
+      "roundTripMs": 1.5,
+      "loadMs": 1.3,
+      "renderPath": "shapePrefab(FlatCylinder)",
+      "loaderErrors": [],
+      "renders": {
+        "scene": 11.1,
+        "black": 10.7,
+        "white": 10
+      }
+    },
+    {
+      "spec": "H08.v1",
+      "roundTripMs": 1.5999999940395355,
+      "loadMs": 1.3,
+      "renderPath": "fragments",
+      "loaderErrors": [],
+      "renders": {
+        "scene": 12.1,
+        "black": 10.6,
+        "white": 10.7
+      }
+    },
+    {
+      "spec": "H10.v1",
+      "roundTripMs": 2.300000011920929,
+      "loadMs": 2,
+      "renderPath": "shapePrefab(Cube)",
+      "loaderErrors": [],
+      "renders": {
+        "scene": 11.8,
+        "black": 11.7,
+        "white": 11.2
+      }
+    },
+    {
+      "spec": "H12.v1",
+      "roundTripMs": 1.5,
+      "loadMs": 1.3,
+      "renderPath": "shapePrefab(Cone)",
+      "loaderErrors": [],
+      "renders": {
+        "scene": 12.8,
+        "black": 11.3,
+        "white": 10.7
+      }
+    },
+    {
+      "spec": "H16.v1",
+      "roundTripMs": 1.600000023841858,
+      "loadMs": 1.2,
+      "renderPath": "shell",
+      "loaderErrors": [],
+      "renders": {
+        "scene": 12.8,
+        "black": 11.6,
+        "white": 10.7
+      }
+    },
+    {
+      "spec": "H18.v1",
+      "roundTripMs": 1.5,
+      "loadMs": 1.2,
+      "renderPath": "blob",
+      "loaderErrors": [],
+      "renders": {
+        "scene": 12.5,
+        "black": 11,
+        "white": 10.7
+      }
+    },
+    {
+      "spec": "H20.v1",
+      "roundTripMs": 1.300000011920929,
+      "loadMs": 1.1,
+      "renderPath": "blob",
+      "loaderErrors": [],
+      "renders": {
+        "scene": 11.6,
+        "black": 10.5,
+        "white": 10.6
+      }
+    },
+    {
+      "spec": "H28.v1",
+      "roundTripMs": 1.4000000059604645,
+      "loadMs": 1.1,
+      "renderPath": "mist",
+      "loaderErrors": [],
+      "renders": {
+        "scene": 11.7,
+        "black": 10.9,
+        "white": 10.6
+      }
+    }
+  ],
+  "errors": [],
+  "instanceMs": 1798.7000000178814,
+  "pageToReadyMs": 1809.699999988079,
+  "cases": [
+    {
+      "case": "OV_R07_to_mist",
+      "steps": [
+        {
+          "step": "load",
+          "renderPath": "blob",
+          "formType": "blob"
+        },
+        {
+          "step": "overrides",
+          "overrides": {
+            "form.type": "mist"
+          },
+          "roundTripMs": 2.300000011920929,
+          "loadMs": 0.6,
+          "renderPath": "mist",
+          "formType": "mist",
+          "loaderErrors": []
+        }
+      ],
+      "renders": {
+        "scene": 12.5,
+        "black": 10.9,
+        "white": 10.6
+      }
+    },
+    {
+      "case": "OV_R07_to_fragments",
+      "steps": [
+        {
+          "step": "load",
+          "renderPath": "blob",
+          "formType": "blob"
+        },
+        {
+          "step": "overrides",
+          "overrides": {
+            "form.type": "fragments"
+          },
+          "roundTripMs": 0.800000011920929,
+          "loadMs": 0.4,
+          "renderPath": "fragments",
+          "formType": "fragments",
+          "loaderErrors": []
+        }
+      ],
+      "renders": {
+        "scene": 12.9,
+        "black": 10.4,
+        "white": 10.3
+      }
+    },
+    {
+      "case": "OV_R07_to_shell",
+      "steps": [
+        {
+          "step": "load",
+          "renderPath": "blob",
+          "formType": "blob"
+        },
+        {
+          "step": "overrides",
+          "overrides": {
+            "form.type": "shell"
+          },
+          "roundTripMs": 0.5999999940395355,
+          "loadMs": 0.4,
+          "renderPath": "shell",
+          "formType": "shell",
+          "loaderErrors": []
+        }
+      ],
+      "renders": {
+        "scene": 12.1,
+        "black": 10.7,
+        "white": 10.6
+      }
+    },
+    {
+      "case": "OV_R01_to_blob",
+      "steps": [
+        {
+          "step": "load",
+          "renderPath": "mist",
+          "formType": "mist"
+        },
+        {
+          "step": "overrides",
+          "overrides": {
+            "form.type": "blob"
+          },
+          "roundTripMs": 0.7000000178813934,
+          "loadMs": 0.4,
+          "renderPath": "blob",
+          "formType": "blob",
+          "loaderErrors": []
+        }
+      ],
+      "renders": {
+        "scene": 13.1,
+        "black": 11,
+        "white": 10.7
+      }
+    },
+    {
+      "case": "OV_R07_mist_color",
+      "steps": [
+        {
+          "step": "load",
+          "renderPath": "blob",
+          "formType": "blob"
+        },
+        {
+          "step": "overrides",
+          "overrides": {
+            "form.type": "mist",
+            "material.opacity": 0.6,
+            "material.color.h": 0.3
+          },
+          "roundTripMs": 1.300000011920929,
+          "loadMs": 0.8,
+          "renderPath": "mist",
+          "formType": "mist",
+          "loaderErrors": []
+        }
+      ],
+      "renders": {
+        "scene": 11.9,
+        "black": 10.9,
+        "white": 10.5
+      }
+    },
+    {
+      "case": "OV_R07_chain_cleared",
+      "steps": [
+        {
+          "step": "load",
+          "renderPath": "blob",
+          "formType": "blob"
+        },
+        {
+          "step": "overrides",
+          "overrides": {
+            "form.type": "shell"
+          },
+          "roundTripMs": 0.5999999940395355,
+          "loadMs": 0.4,
+          "renderPath": "shell",
+          "formType": "shell",
+          "loaderErrors": []
+        },
+        {
+          "step": "overrides",
+          "overrides": {
+            "form.type": "mist"
+          },
+          "roundTripMs": 0.7000000178813934,
+          "loadMs": 0.5,
+          "renderPath": "mist",
+          "formType": "mist",
+          "loaderErrors": []
+        },
+        {
+          "step": "overrides",
+          "overrides": {},
+          "roundTripMs": 0.5999999940395355,
+          "loadMs": 0.4,
+          "renderPath": "blob",
+          "formType": "blob",
+          "loaderErrors": []
+        }
+      ],
+      "renders": {
+        "scene": 12.5,
+        "black": 11.2,
+        "white": 10.9
+      }
+    }
+  ],
+  "webgl": {
+    "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+    "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5080 (0x00002C02) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "maxSamples": 8
+  },
+  "totalMs": 4947.899999976158
+}

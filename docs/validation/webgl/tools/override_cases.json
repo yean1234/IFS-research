@@ -1,0 +1,8 @@
+[
+  {"name": "OV_R07_to_mist", "spec": "../../render/specs/R07_blob_default.json", "overridesSeq": [{"form.type": "mist"}]},
+  {"name": "OV_R07_to_fragments", "spec": "../../render/specs/R07_blob_default.json", "overridesSeq": [{"form.type": "fragments"}]},
+  {"name": "OV_R07_to_shell", "spec": "../../render/specs/R07_blob_default.json", "overridesSeq": [{"form.type": "shell"}]},
+  {"name": "OV_R01_to_blob", "spec": "../../render/specs/R01_mist_op100.json", "overridesSeq": [{"form.type": "blob"}]},
+  {"name": "OV_R07_mist_color", "spec": "../../render/specs/R07_blob_default.json", "overridesSeq": [{"form.type": "mist", "material.opacity": 0.6, "material.color.h": 0.3}]},
+  {"name": "OV_R07_chain_cleared", "spec": "../../render/specs/R07_blob_default.json", "overridesSeq": [{"form.type": "shell"}, {"form.type": "mist"}, {}]}
+]

@@ -1,0 +1,591 @@
+{
+  "exe": "IFSPreview.exe",
+  "width": 800,
+  "height": 600,
+  "startupSeconds": 3.897,
+  "cases": [
+    {
+      "case": "OV_R07_to_mist",
+      "rttMs": 39.9,
+      "ok": true,
+      "renderPath": "mist",
+      "error": null
+    },
+    {
+      "case": "OV_R07_to_fragments",
+      "rttMs": 34.55,
+      "ok": true,
+      "renderPath": "fragments",
+      "error": null
+    },
+    {
+      "case": "OV_R07_to_shell",
+      "rttMs": 36.7,
+      "ok": true,
+      "renderPath": "shell",
+      "error": null
+    },
+    {
+      "case": "OV_R01_to_blob",
+      "rttMs": 40.21,
+      "ok": true,
+      "renderPath": "blob",
+      "error": null
+    },
+    {
+      "case": "OV_R07_mist_color",
+      "rttMs": 37.41,
+      "ok": true,
+      "renderPath": "mist",
+      "error": null
+    },
+    {
+      "case": "OV_R07_chain_cleared",
+      "rttMs": 37.45,
+      "ok": true,
+      "renderPath": "blob",
+      "error": null
+    }
+  ],
+  "full": [
+    {
+      "spec": "R01_mist_op100",
+      "rttMs": 314.57,
+      "ok": true,
+      "loadMs": 247.36,
+      "renderPath": "mist",
+      "error": null,
+      "renderMs": {
+        "scene": 20.45,
+        "black": 10.68,
+        "white": 10.5
+      }
+    },
+    {
+      "spec": "R02_mist_op060",
+      "rttMs": 37.67,
+      "ok": true,
+      "loadMs": 0.42,
+      "renderPath": "mist",
+      "error": null,
+      "renderMs": {
+        "scene": 11.35,
+        "black": 9.59,
+        "white": 9.19
+      }
+    },
+    {
+      "spec": "R03_mist_op015",
+      "rttMs": 37.01,
+      "ok": true,
+      "loadMs": 0.42,
+      "renderPath": "mist",
+      "error": null,
+      "renderMs": {
+        "scene": 11.84,
+        "black": 9.59,
+        "white": 9.08
+      }
+    },
+    {
+      "spec": "R04_frag_small",
+      "rttMs": 39.35,
+      "ok": true,
+      "loadMs": 3.26,
+      "renderPath": "fragments",
+      "error": null,
+      "renderMs": {
+        "scene": 13.33,
+        "black": 9.39,
+        "white": 8.56
+      }
+    },
+    {
+      "spec": "R05_frag_large",
+      "rttMs": 37.14,
+      "ok": true,
+      "loadMs": 0.75,
+      "renderPath": "fragments",
+      "error": null,
+      "renderMs": {
+        "scene": 12.71,
+        "black": 9.09,
+        "white": 9.36
+      }
+    },
+    {
+      "spec": "R06_shell",
+      "rttMs": 37.57,
+      "ok": true,
+      "loadMs": 2.06,
+      "renderPath": "shell",
+      "error": null,
+      "renderMs": {
+        "scene": 11.82,
+        "black": 9.29,
+        "white": 9.08
+      }
+    },
+    {
+      "spec": "R07_blob_default",
+      "rttMs": 35.26,
+      "ok": true,
+      "loadMs": 0.36,
+      "renderPath": "blob",
+      "error": null,
+      "renderMs": {
+        "scene": 11.76,
+        "black": 8.97,
+        "white": 9.51
+      }
+    },
+    {
+      "spec": "R08_blob_green_bright",
+      "rttMs": 35.02,
+      "ok": true,
+      "loadMs": 0.38,
+      "renderPath": "blob",
+      "error": null,
+      "renderMs": {
+        "scene": 11.24,
+        "black": 9.54,
+        "white": 8.99
+      }
+    },
+    {
+      "spec": "R09_form_null",
+      "rttMs": 37.5,
+      "ok": true,
+      "loadMs": 0.58,
+      "renderPath": "blob",
+      "error": null,
+      "renderMs": {
+        "scene": 12.31,
+        "black": 9.16,
+        "white": 9.47
+      }
+    },
+    {
+      "spec": "R10_shape_round",
+      "rttMs": 40.4,
+      "ok": true,
+      "loadMs": 4.94,
+      "renderPath": "shapePrefab(Sphere)",
+      "error": null,
+      "renderMs": {
+        "scene": 11.62,
+        "black": 9.42,
+        "white": 8.86
+      }
+    },
+    {
+      "spec": "R11_shape_square",
+      "rttMs": 37.68,
+      "ok": true,
+      "loadMs": 0.38,
+      "renderPath": "shapePrefab(Cube)",
+      "error": null,
+      "renderMs": {
+        "scene": 12.18,
+        "black": 9.39,
+        "white": 9.34
+      }
+    },
+    {
+      "spec": "R12_shape_flat",
+      "rttMs": 37.2,
+      "ok": true,
+      "loadMs": 0.37,
+      "renderPath": "shapePrefab(FlatCylinder)",
+      "error": null,
+      "renderMs": {
+        "scene": 11.48,
+        "black": 10.01,
+        "white": 9.5
+      }
+    },
+    {
+      "spec": "R13_shape_pointed",
+      "rttMs": 35.27,
+      "ok": true,
+      "loadMs": 0.39,
+      "renderPath": "shapePrefab(Cone)",
+      "error": null,
+      "renderMs": {
+        "scene": 11.7,
+        "black": 9.21,
+        "white": 9.25
+      }
+    },
+    {
+      "spec": "H01.v1",
+      "rttMs": 37.02,
+      "ok": true,
+      "loadMs": 1.92,
+      "renderPath": "blob",
+      "error": null,
+      "renderMs": {
+        "scene": 11.49,
+        "black": 9.15,
+        "white": 8.42
+      }
+    },
+    {
+      "spec": "H02.v1",
+      "rttMs": 35.36,
+      "ok": true,
+      "loadMs": 0.93,
+      "renderPath": "mist",
+      "error": null,
+      "renderMs": {
+        "scene": 10.95,
+        "black": 8.73,
+        "white": 9.13
+      }
+    },
+    {
+      "spec": "H03.v1",
+      "rttMs": 37.39,
+      "ok": true,
+      "loadMs": 0.72,
+      "renderPath": "shapePrefab(Sphere)",
+      "error": null,
+      "renderMs": {
+        "scene": 11.58,
+        "black": 9.9,
+        "white": 9.0
+      }
+    },
+    {
+      "spec": "H05.v1",
+      "rttMs": 35.26,
+      "ok": true,
+      "loadMs": 0.59,
+      "renderPath": "shapePrefab(FlatCylinder)",
+      "error": null,
+      "renderMs": {
+        "scene": 10.97,
+        "black": 8.38,
+        "white": 9.09
+      }
+    },
+    {
+      "spec": "H08.v1",
+      "rttMs": 35.15,
+      "ok": true,
+      "loadMs": 0.69,
+      "renderPath": "fragments",
+      "error": null,
+      "renderMs": {
+        "scene": 11.32,
+        "black": 9.22,
+        "white": 8.42
+      }
+    },
+    {
+      "spec": "H10.v1",
+      "rttMs": 35.22,
+      "ok": true,
+      "loadMs": 0.61,
+      "renderPath": "shapePrefab(Cube)",
+      "error": null,
+      "renderMs": {
+        "scene": 10.93,
+        "black": 8.76,
+        "white": 9.22
+      }
+    },
+    {
+      "spec": "H12.v1",
+      "rttMs": 35.21,
+      "ok": true,
+      "loadMs": 0.78,
+      "renderPath": "shapePrefab(Cone)",
+      "error": null,
+      "renderMs": {
+        "scene": 11.45,
+        "black": 9.42,
+        "white": 8.95
+      }
+    },
+    {
+      "spec": "H16.v1",
+      "rttMs": 37.68,
+      "ok": true,
+      "loadMs": 1.06,
+      "renderPath": "shell",
+      "error": null,
+      "renderMs": {
+        "scene": 11.67,
+        "black": 9.47,
+        "white": 9.24
+      }
+    },
+    {
+      "spec": "H18.v1",
+      "rttMs": 37.67,
+      "ok": true,
+      "loadMs": 0.65,
+      "renderPath": "blob",
+      "error": null,
+      "renderMs": {
+        "scene": 11.51,
+        "black": 9.59,
+        "white": 9.02
+      }
+    },
+    {
+      "spec": "H20.v1",
+      "rttMs": 35.21,
+      "ok": true,
+      "loadMs": 0.92,
+      "renderPath": "blob",
+      "error": null,
+      "renderMs": {
+        "scene": 10.95,
+        "black": 8.67,
+        "white": 9.1
+      }
+    },
+    {
+      "spec": "H28.v1",
+      "rttMs": 35.97,
+      "ok": true,
+      "loadMs": 0.78,
+      "renderPath": "mist",
+      "error": null,
+      "renderMs": {
+        "scene": 10.79,
+        "black": 9.53,
+        "white": 9.2
+      }
+    }
+  ],
+  "sceneOnly": [
+    {
+      "spec": "R01_mist_op100",
+      "rttMs": 17.08,
+      "ok": true,
+      "loadMs": 0.37,
+      "renderMs": 12.07,
+      "writeMs": 0.22,
+      "playerTotalMs": 15.63
+    },
+    {
+      "spec": "R02_mist_op060",
+      "rttMs": 17.78,
+      "ok": true,
+      "loadMs": 0.35,
+      "renderMs": 10.98,
+      "writeMs": 0.21,
+      "playerTotalMs": 14.79
+    },
+    {
+      "spec": "R03_mist_op015",
+      "rttMs": 16.95,
+      "ok": true,
+      "loadMs": 0.34,
+      "renderMs": 11.14,
+      "writeMs": 0.21,
+      "playerTotalMs": 14.84
+    },
+    {
+      "spec": "R04_frag_small",
+      "rttMs": 17.36,
+      "ok": true,
+      "loadMs": 0.35,
+      "renderMs": 11.17,
+      "writeMs": 0.22,
+      "playerTotalMs": 14.8
+    },
+    {
+      "spec": "R05_frag_large",
+      "rttMs": 17.95,
+      "ok": true,
+      "loadMs": 0.38,
+      "renderMs": 11.87,
+      "writeMs": 0.23,
+      "playerTotalMs": 15.41
+    },
+    {
+      "spec": "R06_shell",
+      "rttMs": 15.27,
+      "ok": true,
+      "loadMs": 0.33,
+      "renderMs": 10.99,
+      "writeMs": 0.21,
+      "playerTotalMs": 14.77
+    },
+    {
+      "spec": "R07_blob_default",
+      "rttMs": 17.23,
+      "ok": true,
+      "loadMs": 0.33,
+      "renderMs": 11.98,
+      "writeMs": 0.22,
+      "playerTotalMs": 15.79
+    },
+    {
+      "spec": "R08_blob_green_bright",
+      "rttMs": 17.68,
+      "ok": true,
+      "loadMs": 0.5,
+      "renderMs": 11.53,
+      "writeMs": 0.49,
+      "playerTotalMs": 15.56
+    },
+    {
+      "spec": "R09_form_null",
+      "rttMs": 17.43,
+      "ok": true,
+      "loadMs": 0.34,
+      "renderMs": 12.11,
+      "writeMs": 0.22,
+      "playerTotalMs": 15.95
+    },
+    {
+      "spec": "R10_shape_round",
+      "rttMs": 17.33,
+      "ok": true,
+      "loadMs": 0.36,
+      "renderMs": 11.38,
+      "writeMs": 0.22,
+      "playerTotalMs": 14.95
+    },
+    {
+      "spec": "R11_shape_square",
+      "rttMs": 17.77,
+      "ok": true,
+      "loadMs": 0.36,
+      "renderMs": 12.05,
+      "writeMs": 0.21,
+      "playerTotalMs": 15.32
+    },
+    {
+      "spec": "R12_shape_flat",
+      "rttMs": 17.5,
+      "ok": true,
+      "loadMs": 0.53,
+      "renderMs": 11.54,
+      "writeMs": 0.21,
+      "playerTotalMs": 16.68
+    },
+    {
+      "spec": "R13_shape_pointed",
+      "rttMs": 17.62,
+      "ok": true,
+      "loadMs": 0.36,
+      "renderMs": 12.07,
+      "writeMs": 0.28,
+      "playerTotalMs": 15.79
+    },
+    {
+      "spec": "H01.v1",
+      "rttMs": 17.5,
+      "ok": true,
+      "loadMs": 0.56,
+      "renderMs": 11.13,
+      "writeMs": 0.22,
+      "playerTotalMs": 14.93
+    },
+    {
+      "spec": "H02.v1",
+      "rttMs": 17.34,
+      "ok": true,
+      "loadMs": 0.63,
+      "renderMs": 11.28,
+      "writeMs": 0.22,
+      "playerTotalMs": 15.11
+    },
+    {
+      "spec": "H03.v1",
+      "rttMs": 17.03,
+      "ok": true,
+      "loadMs": 0.53,
+      "renderMs": 11.28,
+      "writeMs": 0.2,
+      "playerTotalMs": 15.76
+    },
+    {
+      "spec": "H05.v1",
+      "rttMs": 17.77,
+      "ok": true,
+      "loadMs": 0.77,
+      "renderMs": 11.3,
+      "writeMs": 0.24,
+      "playerTotalMs": 15.49
+    },
+    {
+      "spec": "H08.v1",
+      "rttMs": 17.32,
+      "ok": true,
+      "loadMs": 0.66,
+      "renderMs": 11.4,
+      "writeMs": 0.25,
+      "playerTotalMs": 15.29
+    },
+    {
+      "spec": "H10.v1",
+      "rttMs": 17.45,
+      "ok": true,
+      "loadMs": 0.59,
+      "renderMs": 10.73,
+      "writeMs": 0.21,
+      "playerTotalMs": 14.81
+    },
+    {
+      "spec": "H12.v1",
+      "rttMs": 17.27,
+      "ok": true,
+      "loadMs": 0.56,
+      "renderMs": 11.05,
+      "writeMs": 0.21,
+      "playerTotalMs": 14.6
+    },
+    {
+      "spec": "H16.v1",
+      "rttMs": 17.73,
+      "ok": true,
+      "loadMs": 0.57,
+      "renderMs": 11.84,
+      "writeMs": 0.23,
+      "playerTotalMs": 15.53
+    },
+    {
+      "spec": "H18.v1",
+      "rttMs": 17.72,
+      "ok": true,
+      "loadMs": 0.7,
+      "renderMs": 11.81,
+      "writeMs": 0.21,
+      "playerTotalMs": 16.04
+    },
+    {
+      "spec": "H20.v1",
+      "rttMs": 17.74,
+      "ok": true,
+      "loadMs": 0.55,
+      "renderMs": 10.96,
+      "writeMs": 0.2,
+      "playerTotalMs": 14.96
+    },
+    {
+      "spec": "H28.v1",
+      "rttMs": 15.14,
+      "ok": true,
+      "loadMs": 0.57,
+      "renderMs": 10.61,
+      "writeMs": 0.2,
+      "playerTotalMs": 14.11
+    }
+  ],
+  "sceneOnlySummary": {
+    "n": 24,
+    "meanMs": 17.29,
+    "medianMs": 17.44,
+    "maxMs": 17.95,
+    "minMs": 15.14
+  },
+  "exitCode": 0,
+  "wallSeconds": 5.92
+}

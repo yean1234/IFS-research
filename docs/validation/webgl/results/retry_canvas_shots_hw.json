@@ -1,0 +1,1352 @@
+{
+  "chromeArgs": [
+    "--headless=new",
+    "--remote-debugging-port=9333",
+    "--user-data-dir=<임시 프로필>",
+    "--window-size=800,600",
+    "--no-first-run",
+    "--no-default-browser-check",
+    "--disable-extensions",
+    "--disable-background-networking",
+    "--disable-component-update",
+    "--disable-sync",
+    "about:blank"
+  ],
+  "url": "http://127.0.0.1:8766/index.html",
+  "size": [
+    800,
+    600
+  ],
+  "console": [
+    {
+      "type": "log.error",
+      "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+      "url": "http://127.0.0.1:8766/favicon.ico",
+      "t": 0.061
+    },
+    {
+      "type": "log",
+      "text": "[UnityMemory] Configuration Parameters - Can be set up in boot.config\n",
+      "t": 0.315
+    },
+    {
+      "type": "log",
+      "text": "Input System module state changed to: Initialized.\n",
+      "t": 0.335
+    },
+    {
+      "type": "log",
+      "text": "[Physics::Module] Initialized fallback backend.\n",
+      "t": 0.336
+    },
+    {
+      "type": "log",
+      "text": "[Physics::Module] Id: 0xdecafbad\n",
+      "t": 0.336
+    },
+    {
+      "type": "log",
+      "text": "Loading player data from data.unity3d\n",
+      "t": 0.336
+    },
+    {
+      "type": "log",
+      "text": "Initialize engine version: 6000.0.85f2 (b028303d8e7d)\n",
+      "t": 0.34
+    },
+    {
+      "type": "log",
+      "text": "[Subsystems] Discovering subsystems at path UnitySubsystems\n",
+      "t": 0.34
+    },
+    {
+      "type": "log",
+      "text": "Creating WebGL 2.0 context.",
+      "t": 0.341
+    },
+    {
+      "type": "log",
+      "text": "Renderer: WebKit WebGL\n",
+      "t": 0.351
+    },
+    {
+      "type": "log",
+      "text": "Vendor:   WebKit\n",
+      "t": 0.351
+    },
+    {
+      "type": "log",
+      "text": "Version:  OpenGL ES 3.0 (WebGL 2.0 (OpenGL ES 3.0 Chromium))\n",
+      "t": 0.351
+    },
+    {
+      "type": "log",
+      "text": "GLES:     3\n",
+      "t": 0.351
+    },
+    {
+      "type": "log.warning",
+      "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+      "url": "http://127.0.0.1:8766/Build/preview.framework.js",
+      "t": 0.353
+    },
+    {
+      "type": "log.warning",
+      "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+      "url": "http://127.0.0.1:8766/Build/preview.framework.js",
+      "t": 0.353
+    },
+    {
+      "type": "log.warning",
+      "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+      "url": "http://127.0.0.1:8766/Build/preview.framework.js",
+      "t": 0.353
+    },
+    {
+      "type": "log.warning",
+      "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+      "url": "http://127.0.0.1:8766/Build/preview.framework.js",
+      "t": 0.353
+    },
+    {
+      "type": "log.warning",
+      "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+      "url": "http://127.0.0.1:8766/Build/preview.framework.js",
+      "t": 0.353
+    },
+    {
+      "type": "log.warning",
+      "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+      "url": "http://127.0.0.1:8766/Build/preview.framework.js",
+      "t": 0.353
+    },
+    {
+      "type": "log",
+      "text": "OPENGL LOG: Creating OpenGL ES 3.0 graphics device ; Context level  <OpenGL ES 3.0> ; Context handle 1\n",
+      "t": 0.357
+    },
+    {
+      "type": "log",
+      "text": "[Physics::Module] Selected backend.\n",
+      "t": 0.379
+    },
+    {
+      "type": "log",
+      "text": "[Physics::Module] Name: PhysX\n",
+      "t": 0.379
+    },
+    {
+      "type": "log",
+      "text": "[Physics::Module] Id: 0xf2b8ea05\n",
+      "t": 0.379
+    },
+    {
+      "type": "log",
+      "text": "[Physics::Module] SDK Version: 4.1.2\n",
+      "t": 0.379
+    },
+    {
+      "type": "log",
+      "text": "[Physics::Module] Integration Version: 1.0.0\n",
+      "t": 0.379
+    },
+    {
+      "type": "log",
+      "text": "[Physics::Module] Threading Mode: Single-Threaded\n",
+      "t": 0.379
+    },
+    {
+      "type": "log",
+      "text": "Input Manager initialize...\n",
+      "t": 0.396
+    },
+    {
+      "type": "log",
+      "text": "Input System initialize...\n",
+      "t": 0.396
+    },
+    {
+      "type": "log",
+      "text": "UnloadTime: 0.199999 ms\n",
+      "t": 0.613
+    },
+    {
+      "type": "warning",
+      "text": "Manual synchronization of Unity Application.persistentDataPath via JS_FileSystem_Sync() is deprecated and will be later removed in a future Unity version. The persistent data directory will be automatically synchronized instead on file modification. Pass config.autoSyncPersistentDataPath = true; to configuration in createUnityInstance() to opt in to the new behavior.",
+      "t": 0.614
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] form.posture: SceneSpec 값이 null → 기본값 none 사용\n",
+      "t": 2.361
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.brightness: SceneSpec 값이 null → 기본값 0.5 사용\n",
+      "t": 2.361
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.roughness: SceneSpec 값이 null → 기본값 0.5 사용\n",
+      "t": 2.361
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.erosion: SceneSpec 값이 null → 기본값 0 사용\n",
+      "t": 2.361
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] layout.size: SceneSpec 값이 null → 기본값 0.5 사용\n",
+      "t": 2.361
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] layout.distance: SceneSpec 값이 null → 기본값 0.33 사용\n",
+      "t": 2.361
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] layout.verticalOffset: SceneSpec 값이 null → 기본값 0.75 사용\n",
+      "t": 2.361
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] motion.type: SceneSpec 값이 null → 기본값 still 사용\n",
+      "t": 2.361
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] motion.speed: SceneSpec 값이 null → 기본값 0.5 사용\n",
+      "t": 2.361
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] form.type=mist: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시\n",
+      "t": 2.366
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] form.type=mist: 형상 프리셋 기본값 — 구 대리 메시 + 레이마칭 8걸음, 둥근 덩어리 5개(배치 규칙 lumps5/1, seed 0) + 중간 주파수 노이즈(겉면 흔들림 0.3, 노이즈 크기 1.1), 밀도 0.5(광학 두께 배율. 덩어리 속 알파는 opacity 가까이까지 차고 opacity를 넘지 않음). mist에서 material.roughness는 표면 반사(광택)가 아니라 밀도 노이즈 크기 배율(0.7–1.3)과 색 얼룩 세기를 정함\n",
+      "t": 2.366
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] preview.json 로드: form=mist, 기본값 9개, shape=none\n",
+      "t": 2.366
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] form.posture: SceneSpec 값이 null → 기본값 none 사용\n",
+      "t": 3.245
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.brightness: SceneSpec 값이 null → 기본값 0.5 사용\n",
+      "t": 3.245
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.roughness: SceneSpec 값이 null → 기본값 0.5 사용\n",
+      "t": 3.245
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.erosion: SceneSpec 값이 null → 기본값 0 사용\n",
+      "t": 3.245
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] layout.size: SceneSpec 값이 null → 기본값 0.5 사용\n",
+      "t": 3.245
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] layout.distance: SceneSpec 값이 null → 기본값 0.33 사용\n",
+      "t": 3.245
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] layout.verticalOffset: SceneSpec 값이 null → 기본값 0.75 사용\n",
+      "t": 3.245
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] motion.type: SceneSpec 값이 null → 기본값 still 사용\n",
+      "t": 3.245
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] motion.speed: SceneSpec 값이 null → 기본값 0.5 사용\n",
+      "t": 3.245
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] form.type=mist: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시\n",
+      "t": 3.246
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] form.type=mist: 형상 프리셋 기본값 — 구 대리 메시 + 레이마칭 8걸음, 둥근 덩어리 5개(배치 규칙 lumps5/1, seed 0) + 중간 주파수 노이즈(겉면 흔들림 0.3, 노이즈 크기 1.1), 밀도 0.5(광학 두께 배율. 덩어리 속 알파는 opacity 가까이까지 차고 opacity를 넘지 않음). mist에서 material.roughness는 표면 반사(광택)가 아니라 밀도 노이즈 크기 배율(0.7–1.3)과 색 얼룩 세기를 정함\n",
+      "t": 3.246
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] preview.json 로드: form=mist, 기본값 9개, shape=none\n",
+      "t": 3.246
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] form.posture: SceneSpec 값이 null → 기본값 none 사용\n",
+      "t": 3.348
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.color.h: SceneSpec 값이 null → 기본값 0 사용\n",
+      "t": 3.348
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.color.s: SceneSpec 값이 null → 기본값 0 사용\n",
+      "t": 3.348
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.color.l: SceneSpec 값이 null → 기본값 0.7 사용\n",
+      "t": 3.348
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.brightness: SceneSpec 값이 null → 기본값 0.5 사용\n",
+      "t": 3.348
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.roughness: SceneSpec 값이 null → 기본값 0.5 사용\n",
+      "t": 3.348
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.opacity: SceneSpec 값이 null → 기본값 1 사용\n",
+      "t": 3.348
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.erosion: SceneSpec 값이 null → 기본값 0 사용\n",
+      "t": 3.348
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] layout.distance: SceneSpec 값이 null → 기본값 0.33 사용\n",
+      "t": 3.348
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] layout.verticalOffset: SceneSpec 값이 null → 기본값 0.75 사용\n",
+      "t": 3.348
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] motion.type: SceneSpec 값이 null → 기본값 still 사용\n",
+      "t": 3.349
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] motion.speed: SceneSpec 값이 null → 기본값 0.5 사용\n",
+      "t": 3.349
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] form.type=fragments: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시\n",
+      "t": 3.349
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] form.type=fragments: 형상 프리셋 기본값 — 각진 조각 5개를 합친 메시 하나(조각 규칙 angular5/1, seed 0, 배치 반경 비율 0.884, 조각 크기 비율 0.281–0.554, 평면 음영, 정점 변위 0, 노이즈 크기 2.4)\n",
+      "t": 3.349
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] preview.json 로드: form=fragments, 기본값 12개, shape=none\n",
+      "t": 3.349
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] form.posture: SceneSpec 값이 null → 기본값 none 사용\n",
+      "t": 3.924
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.color.h: SceneSpec 값이 null → 기본값 0 사용\n",
+      "t": 3.924
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.color.s: SceneSpec 값이 null → 기본값 0 사용\n",
+      "t": 3.924
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.color.l: SceneSpec 값이 null → 기본값 0.7 사용\n",
+      "t": 3.924
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.brightness: SceneSpec 값이 null → 기본값 0.5 사용\n",
+      "t": 3.924
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.roughness: SceneSpec 값이 null → 기본값 0.5 사용\n",
+      "t": 3.924
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.opacity: SceneSpec 값이 null → 기본값 1 사용\n",
+      "t": 3.924
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.erosion: SceneSpec 값이 null → 기본값 0 사용\n",
+      "t": 3.924
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] layout.size: SceneSpec 값이 null → 기본값 0.5 사용\n",
+      "t": 3.924
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] layout.distance: SceneSpec 값이 null → 기본값 0.33 사용\n",
+      "t": 3.924
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] layout.verticalOffset: SceneSpec 값이 null → 기본값 0.75 사용\n",
+      "t": 3.924
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] motion.type: SceneSpec 값이 null → 기본값 still 사용\n",
+      "t": 3.924
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] motion.speed: SceneSpec 값이 null → 기본값 0.5 사용\n",
+      "t": 3.924
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] form.type=shell: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시\n",
+      "t": 3.926
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] preview.json 로드: form=shell, 기본값 13개, shape=none\n",
+      "t": 3.926
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] form.posture: SceneSpec 값이 null → 기본값 none 사용\n",
+      "t": 4.036
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.color.h: SceneSpec 값이 null → 기본값 0 사용\n",
+      "t": 4.036
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.color.s: SceneSpec 값이 null → 기본값 0 사용\n",
+      "t": 4.036
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.color.l: SceneSpec 값이 null → 기본값 0.7 사용\n",
+      "t": 4.036
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.brightness: SceneSpec 값이 null → 기본값 0.5 사용\n",
+      "t": 4.036
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.roughness: SceneSpec 값이 null → 기본값 0.5 사용\n",
+      "t": 4.036
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.opacity: SceneSpec 값이 null → 기본값 1 사용\n",
+      "t": 4.036
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.erosion: SceneSpec 값이 null → 기본값 0 사용\n",
+      "t": 4.036
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] layout.size: SceneSpec 값이 null → 기본값 0.5 사용\n",
+      "t": 4.036
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] layout.distance: SceneSpec 값이 null → 기본값 0.33 사용\n",
+      "t": 4.036
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] layout.verticalOffset: SceneSpec 값이 null → 기본값 0.75 사용\n",
+      "t": 4.036
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] motion.type: SceneSpec 값이 null → 기본값 still 사용\n",
+      "t": 4.036
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] motion.speed: SceneSpec 값이 null → 기본값 0.5 사용\n",
+      "t": 4.036
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] form.type=blob: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시\n",
+      "t": 4.036
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] preview.json 로드: form=blob, 기본값 13개, shape=none\n",
+      "t": 4.036
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] form.posture: SceneSpec 값이 null → 기본값 none 사용\n",
+      "t": 4.99
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.color.h: SceneSpec 값이 null → 기본값 0 사용\n",
+      "t": 4.99
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.color.s: SceneSpec 값이 null → 기본값 0 사용\n",
+      "t": 4.99
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.color.l: SceneSpec 값이 null → 기본값 0.7 사용\n",
+      "t": 4.99
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.brightness: SceneSpec 값이 null → 기본값 0.5 사용\n",
+      "t": 4.99
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.roughness: SceneSpec 값이 null → 기본값 0.5 사용\n",
+      "t": 4.99
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.opacity: SceneSpec 값이 null → 기본값 1 사용\n",
+      "t": 4.99
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.erosion: SceneSpec 값이 null → 기본값 0 사용\n",
+      "t": 4.99
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] layout.size: SceneSpec 값이 null → 기본값 0.5 사용\n",
+      "t": 4.99
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] layout.distance: SceneSpec 값이 null → 기본값 0.33 사용\n",
+      "t": 4.99
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] layout.verticalOffset: SceneSpec 값이 null → 기본값 0.75 사용\n",
+      "t": 4.99
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] motion.type: SceneSpec 값이 null → 기본값 still 사용\n",
+      "t": 4.99
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] motion.speed: SceneSpec 값이 null → 기본값 0.5 사용\n",
+      "t": 4.99
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] shape=square → Cube 모형으로 표시(form.type=blob, 트리거 '네모난', 프리팹)\n",
+      "t": 4.991
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] preview.json 로드: form=blob, 기본값 13개, shape=applied(square → Cube)\n",
+      "t": 4.992
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] form.posture: SceneSpec 값이 null → 기본값 none 사용\n",
+      "t": 5.103
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.color.h: SceneSpec 값이 null → 기본값 0 사용\n",
+      "t": 5.103
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.color.s: SceneSpec 값이 null → 기본값 0 사용\n",
+      "t": 5.103
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.color.l: SceneSpec 값이 null → 기본값 0.7 사용\n",
+      "t": 5.104
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.brightness: SceneSpec 값이 null → 기본값 0.5 사용\n",
+      "t": 5.104
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.roughness: SceneSpec 값이 null → 기본값 0.5 사용\n",
+      "t": 5.104
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.opacity: SceneSpec 값이 null → 기본값 1 사용\n",
+      "t": 5.104
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.erosion: SceneSpec 값이 null → 기본값 0 사용\n",
+      "t": 5.104
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] layout.size: SceneSpec 값이 null → 기본값 0.5 사용\n",
+      "t": 5.104
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] layout.distance: SceneSpec 값이 null → 기본값 0.33 사용\n",
+      "t": 5.104
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] layout.verticalOffset: SceneSpec 값이 null → 기본값 0.75 사용\n",
+      "t": 5.104
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] motion.type: SceneSpec 값이 null → 기본값 still 사용\n",
+      "t": 5.104
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] motion.speed: SceneSpec 값이 null → 기본값 0.5 사용\n",
+      "t": 5.104
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] form.type=blob: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시\n",
+      "t": 5.104
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] preview.json 로드: form=blob, 기본값 13개, shape=none\n",
+      "t": 5.104
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] form.posture: SceneSpec 값이 null → 기본값 none 사용\n",
+      "t": 5.106
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.color.h: SceneSpec 값이 null → 기본값 0 사용\n",
+      "t": 5.106
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.color.s: SceneSpec 값이 null → 기본값 0 사용\n",
+      "t": 5.106
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.color.l: SceneSpec 값이 null → 기본값 0.7 사용\n",
+      "t": 5.106
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.brightness: SceneSpec 값이 null → 기본값 0.5 사용\n",
+      "t": 5.106
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.roughness: SceneSpec 값이 null → 기본값 0.5 사용\n",
+      "t": 5.106
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.opacity: SceneSpec 값이 null → 기본값 1 사용\n",
+      "t": 5.106
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.erosion: SceneSpec 값이 null → 기본값 0 사용\n",
+      "t": 5.106
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] layout.size: SceneSpec 값이 null → 기본값 0.5 사용\n",
+      "t": 5.106
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] layout.distance: SceneSpec 값이 null → 기본값 0.33 사용\n",
+      "t": 5.106
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] layout.verticalOffset: SceneSpec 값이 null → 기본값 0.75 사용\n",
+      "t": 5.106
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] motion.type: SceneSpec 값이 null → 기본값 still 사용\n",
+      "t": 5.106
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] motion.speed: SceneSpec 값이 null → 기본값 0.5 사용\n",
+      "t": 5.106
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): form.type blob → mist\n",
+      "t": 5.106
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] form.type=mist: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시\n",
+      "t": 5.107
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] form.type=mist: 형상 프리셋 기본값 — 구 대리 메시 + 레이마칭 8걸음, 둥근 덩어리 5개(배치 규칙 lumps5/1, seed 0) + 중간 주파수 노이즈(겉면 흔들림 0.3, 노이즈 크기 1.1), 밀도 0.5(광학 두께 배율. 덩어리 속 알파는 opacity 가까이까지 차고 opacity를 넘지 않음). mist에서 material.roughness는 표면 반사(광택)가 아니라 밀도 노이즈 크기 배율(0.7–1.3)과 색 얼룩 세기를 정함\n",
+      "t": 5.107
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] preview.json 로드: form=mist, 기본값 13개, shape=none\n",
+      "t": 5.107
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] form.posture: SceneSpec 값이 null → 기본값 none 사용\n",
+      "t": 5.211
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.color.h: SceneSpec 값이 null → 기본값 0 사용\n",
+      "t": 5.211
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.color.s: SceneSpec 값이 null → 기본값 0 사용\n",
+      "t": 5.211
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.color.l: SceneSpec 값이 null → 기본값 0.7 사용\n",
+      "t": 5.211
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.brightness: SceneSpec 값이 null → 기본값 0.5 사용\n",
+      "t": 5.211
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.roughness: SceneSpec 값이 null → 기본값 0.5 사용\n",
+      "t": 5.211
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.opacity: SceneSpec 값이 null → 기본값 1 사용\n",
+      "t": 5.211
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.erosion: SceneSpec 값이 null → 기본값 0 사용\n",
+      "t": 5.211
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] layout.size: SceneSpec 값이 null → 기본값 0.5 사용\n",
+      "t": 5.211
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] layout.distance: SceneSpec 값이 null → 기본값 0.33 사용\n",
+      "t": 5.211
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] layout.verticalOffset: SceneSpec 값이 null → 기본값 0.75 사용\n",
+      "t": 5.211
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] motion.type: SceneSpec 값이 null → 기본값 still 사용\n",
+      "t": 5.211
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] motion.speed: SceneSpec 값이 null → 기본값 0.5 사용\n",
+      "t": 5.211
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] form.type=blob: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시\n",
+      "t": 5.212
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] preview.json 로드: form=blob, 기본값 13개, shape=none\n",
+      "t": 5.212
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] form.posture: SceneSpec 값이 null → 기본값 none 사용\n",
+      "t": 5.212
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.color.h: SceneSpec 값이 null → 기본값 0 사용\n",
+      "t": 5.212
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.color.s: SceneSpec 값이 null → 기본값 0 사용\n",
+      "t": 5.212
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.color.l: SceneSpec 값이 null → 기본값 0.7 사용\n",
+      "t": 5.212
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.brightness: SceneSpec 값이 null → 기본값 0.5 사용\n",
+      "t": 5.212
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.roughness: SceneSpec 값이 null → 기본값 0.5 사용\n",
+      "t": 5.212
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.opacity: SceneSpec 값이 null → 기본값 1 사용\n",
+      "t": 5.212
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.erosion: SceneSpec 값이 null → 기본값 0 사용\n",
+      "t": 5.213
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] layout.size: SceneSpec 값이 null → 기본값 0.5 사용\n",
+      "t": 5.213
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] layout.distance: SceneSpec 값이 null → 기본값 0.33 사용\n",
+      "t": 5.213
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] layout.verticalOffset: SceneSpec 값이 null → 기본값 0.75 사용\n",
+      "t": 5.213
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] motion.type: SceneSpec 값이 null → 기본값 still 사용\n",
+      "t": 5.213
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] motion.speed: SceneSpec 값이 null → 기본값 0.5 사용\n",
+      "t": 5.213
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): form.type blob → fragments\n",
+      "t": 5.213
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] form.type=fragments: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시\n",
+      "t": 5.213
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] form.type=fragments: 형상 프리셋 기본값 — 각진 조각 5개를 합친 메시 하나(조각 규칙 angular5/1, seed 0, 배치 반경 비율 0.884, 조각 크기 비율 0.281–0.554, 평면 음영, 정점 변위 0, 노이즈 크기 2.4)\n",
+      "t": 5.213
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] preview.json 로드: form=fragments, 기본값 13개, shape=none\n",
+      "t": 5.213
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] form.posture: SceneSpec 값이 null → 기본값 none 사용\n",
+      "t": 5.319
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.color.h: SceneSpec 값이 null → 기본값 0 사용\n",
+      "t": 5.319
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.color.s: SceneSpec 값이 null → 기본값 0 사용\n",
+      "t": 5.319
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.color.l: SceneSpec 값이 null → 기본값 0.7 사용\n",
+      "t": 5.319
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.brightness: SceneSpec 값이 null → 기본값 0.5 사용\n",
+      "t": 5.319
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.roughness: SceneSpec 값이 null → 기본값 0.5 사용\n",
+      "t": 5.319
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.opacity: SceneSpec 값이 null → 기본값 1 사용\n",
+      "t": 5.319
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.erosion: SceneSpec 값이 null → 기본값 0 사용\n",
+      "t": 5.32
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] layout.size: SceneSpec 값이 null → 기본값 0.5 사용\n",
+      "t": 5.32
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] layout.distance: SceneSpec 값이 null → 기본값 0.33 사용\n",
+      "t": 5.32
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] layout.verticalOffset: SceneSpec 값이 null → 기본값 0.75 사용\n",
+      "t": 5.32
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] motion.type: SceneSpec 값이 null → 기본값 still 사용\n",
+      "t": 5.32
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] motion.speed: SceneSpec 값이 null → 기본값 0.5 사용\n",
+      "t": 5.32
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] form.type=blob: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시\n",
+      "t": 5.32
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] preview.json 로드: form=blob, 기본값 13개, shape=none\n",
+      "t": 5.32
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] form.posture: SceneSpec 값이 null → 기본값 none 사용\n",
+      "t": 5.32
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.color.h: SceneSpec 값이 null → 기본값 0 사용\n",
+      "t": 5.321
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.color.s: SceneSpec 값이 null → 기본값 0 사용\n",
+      "t": 5.321
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.color.l: SceneSpec 값이 null → 기본값 0.7 사용\n",
+      "t": 5.321
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.brightness: SceneSpec 값이 null → 기본값 0.5 사용\n",
+      "t": 5.321
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.roughness: SceneSpec 값이 null → 기본값 0.5 사용\n",
+      "t": 5.321
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.opacity: SceneSpec 값이 null → 기본값 1 사용\n",
+      "t": 5.321
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.erosion: SceneSpec 값이 null → 기본값 0 사용\n",
+      "t": 5.321
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] layout.size: SceneSpec 값이 null → 기본값 0.5 사용\n",
+      "t": 5.321
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] layout.distance: SceneSpec 값이 null → 기본값 0.33 사용\n",
+      "t": 5.321
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] layout.verticalOffset: SceneSpec 값이 null → 기본값 0.75 사용\n",
+      "t": 5.321
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] motion.type: SceneSpec 값이 null → 기본값 still 사용\n",
+      "t": 5.321
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] motion.speed: SceneSpec 값이 null → 기본값 0.5 사용\n",
+      "t": 5.321
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): form.type blob → shell\n",
+      "t": 5.321
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] form.type=shell: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시\n",
+      "t": 5.321
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] preview.json 로드: form=shell, 기본값 13개, shape=none\n",
+      "t": 5.321
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] form.posture: SceneSpec 값이 null → 기본값 none 사용\n",
+      "t": 5.428
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.brightness: SceneSpec 값이 null → 기본값 0.5 사용\n",
+      "t": 5.429
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.roughness: SceneSpec 값이 null → 기본값 0.5 사용\n",
+      "t": 5.429
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.erosion: SceneSpec 값이 null → 기본값 0 사용\n",
+      "t": 5.429
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] layout.size: SceneSpec 값이 null → 기본값 0.5 사용\n",
+      "t": 5.429
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] layout.distance: SceneSpec 값이 null → 기본값 0.33 사용\n",
+      "t": 5.429
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] layout.verticalOffset: SceneSpec 값이 null → 기본값 0.75 사용\n",
+      "t": 5.429
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] motion.type: SceneSpec 값이 null → 기본값 still 사용\n",
+      "t": 5.429
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] motion.speed: SceneSpec 값이 null → 기본값 0.5 사용\n",
+      "t": 5.429
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] form.type=mist: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시\n",
+      "t": 5.429
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] form.type=mist: 형상 프리셋 기본값 — 구 대리 메시 + 레이마칭 8걸음, 둥근 덩어리 5개(배치 규칙 lumps5/1, seed 0) + 중간 주파수 노이즈(겉면 흔들림 0.3, 노이즈 크기 1.1), 밀도 0.5(광학 두께 배율. 덩어리 속 알파는 opacity 가까이까지 차고 opacity를 넘지 않음). mist에서 material.roughness는 표면 반사(광택)가 아니라 밀도 노이즈 크기 배율(0.7–1.3)과 색 얼룩 세기를 정함\n",
+      "t": 5.429
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] preview.json 로드: form=mist, 기본값 9개, shape=none\n",
+      "t": 5.429
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] form.posture: SceneSpec 값이 null → 기본값 none 사용\n",
+      "t": 5.429
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.brightness: SceneSpec 값이 null → 기본값 0.5 사용\n",
+      "t": 5.429
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.roughness: SceneSpec 값이 null → 기본값 0.5 사용\n",
+      "t": 5.43
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] material.erosion: SceneSpec 값이 null → 기본값 0 사용\n",
+      "t": 5.43
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] layout.size: SceneSpec 값이 null → 기본값 0.5 사용\n",
+      "t": 5.43
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] layout.distance: SceneSpec 값이 null → 기본값 0.33 사용\n",
+      "t": 5.43
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] layout.verticalOffset: SceneSpec 값이 null → 기본값 0.75 사용\n",
+      "t": 5.43
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] motion.type: SceneSpec 값이 null → 기본값 still 사용\n",
+      "t": 5.43
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] motion.speed: SceneSpec 값이 null → 기본값 0.5 사용\n",
+      "t": 5.43
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): form.type mist → blob\n",
+      "t": 5.43
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] form.type=blob: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시\n",
+      "t": 5.43
+    },
+    {
+      "type": "log",
+      "text": "[SceneLoader] preview.json 로드: form=blob, 기본값 9개, shape=none\n",
+      "t": 5.43
+    },
+    {
+      "type": "warning",
+      "text": "[Preview] overrides: 덮어쓰기를 읽지 못했습니다 — 모르는 형태: cube\n",
+      "t": 5.535
+    }
+  ],
+  "shots": [
+    {
+      "name": "web_00_empty",
+      "value": {
+        "canvas": [
+          800,
+          600
+        ]
+      },
+      "jsSeconds": 1.522,
+      "png": "web_00_empty.png"
+    },
+    {
+      "name": "web_R01_mist",
+      "value": {
+        "renderPath": "mist",
+        "formType": "mist",
+        "loadMs": 32.7,
+        "errors": []
+      },
+      "jsSeconds": 0.038,
+      "png": "web_R01_mist.png"
+    },
+    {
+      "name": "web_R03_mist_op015",
+      "value": {
+        "renderPath": "mist",
+        "formType": "mist",
+        "loadMs": 1.4,
+        "errors": []
+      },
+      "jsSeconds": 0.004,
+      "png": "web_R03_mist_op015.png"
+    },
+    {
+      "name": "web_R04_fragments",
+      "value": {
+        "renderPath": "fragments",
+        "formType": "fragments",
+        "loadMs": 2,
+        "errors": []
+      },
+      "jsSeconds": 0.004,
+      "png": "web_R04_fragments.png"
+    },
+    {
+      "name": "web_R06_shell",
+      "value": {
+        "renderPath": "shell",
+        "formType": "shell",
+        "loadMs": 3,
+        "errors": []
+      },
+      "jsSeconds": 0.006,
+      "png": "web_R06_shell.png"
+    },
+    {
+      "name": "web_R07_blob",
+      "value": {
+        "renderPath": "blob",
+        "formType": "blob",
+        "loadMs": 1.2,
+        "errors": []
+      },
+      "jsSeconds": 0.004,
+      "png": "web_R07_blob.png"
+    },
+    {
+      "name": "web_R11_shape_square",
+      "value": {
+        "renderPath": "shapePrefab(Cube)",
+        "formType": "blob",
+        "loadMs": 3.6,
+        "errors": []
+      },
+      "jsSeconds": 0.006,
+      "png": "web_R11_shape_square.png"
+    },
+    {
+      "name": "web_OV_R07_to_mist",
+      "value": {
+        "renderPath": "mist",
+        "formType": "mist",
+        "loadMs": 1.3,
+        "errors": []
+      },
+      "jsSeconds": 0.007,
+      "png": "web_OV_R07_to_mist.png"
+    },
+    {
+      "name": "web_OV_R07_to_fragments",
+      "value": {
+        "renderPath": "fragments",
+        "formType": "fragments",
+        "loadMs": 1.2,
+        "errors": []
+      },
+      "jsSeconds": 0.006,
+      "png": "web_OV_R07_to_fragments.png"
+    },
+    {
+      "name": "web_OV_R07_to_shell",
+      "value": {
+        "renderPath": "shell",
+        "formType": "shell",
+        "loadMs": 1.1,
+        "errors": []
+      },
+      "jsSeconds": 0.005,
+      "png": "web_OV_R07_to_shell.png"
+    },
+    {
+      "name": "web_OV_R01_to_blob",
+      "value": {
+        "renderPath": "blob",
+        "formType": "blob",
+        "loadMs": 1,
+        "errors": []
+      },
+      "jsSeconds": 0.005,
+      "png": "web_OV_R01_to_blob.png"
+    },
+    {
+      "name": "web_bad_override",
+      "value": {
+        "rejected": {
+          "kind": "overrides",
+          "id": null,
+          "message": "덮어쓰기를 읽지 못했습니다",
+          "details": [
+            "모르는 형태: cube"
+          ]
+        }
+      },
+      "jsSeconds": 0.001,
+      "png": "web_bad_override.png"
+    }
+  ],
+  "navigateToReadySeconds": 0.705,
+  "pageTimings": {
+    "instanceMs": 696.5
+  },
+  "webgl": {
+    "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+    "shading": "WebGL GLSL ES 3.00 (OpenGL ES GLSL ES 3.0 Chromium)",
+    "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5080 (0x00002C02) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "maxSamples": 8,
+    "contextAntialias": false,
+    "canvas": [
+      300,
+      150
+    ]
+  }
+}

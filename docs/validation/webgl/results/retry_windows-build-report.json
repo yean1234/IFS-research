@@ -1,0 +1,14 @@
+{
+  "target": "StandaloneWindows64",
+  "outDir": "<repo 밖>/webgl-build/preview-win-cp",
+  "unity": "6000.0.85f2",
+  "time": "2026-11-23T09:25:39.9883728+09:00",
+  "xrInitOnStartDuringBuild": "false(빌드 뒤 True로 되돌림)",
+  "wallSeconds": 23.8,
+  "result": "Succeeded",
+  "errors": 0,
+  "buildSeconds": 23.4,
+  "reportedSizeBytes": 94960310,
+  "ok": true,
+  "totalBytesOnDisk": 95142808
+}

@@ -6,7 +6,8 @@
 //   기본 출력: <저장소 밖> ../../webgl-build/preview (= unity 폴더의 두 단계 위). 산출물은 git에 넣지 않는다.
 //   빌드 동안만 바꾸고 끝나면 되돌리는 플레이어 설정(ProjectSettings 파일에 남기지 않음):
 //     압축 끔(로컬 서버가 Content-Encoding 헤더 없이 내보낼 수 있게), 압축 해제 대체 끔(압축이 없으므로 불필요),
-//     템플릿 PROJECT:IFSPreview(외부 CDN 없는 최소 페이지 + window.ifsPreview API), 데이터 캐싱 끔(IndexedDB에 남기지 않음).
+//     템플릿 PROJECT:IFSPreview(외부 CDN 없는 최소 페이지 + window.ifsPreview API), 데이터 캐싱 끔(IndexedDB에 남기지 않음),
+//     시작 화면(Made with Unity) 끔(2026-11-23 시험: 켜 두면 페이지가 준비된 뒤 몇 초 동안 캔버스를 가렸다. Unity 6은 Personal에서도 끌 수 있음).
 //   색 공간은 프로젝트 값(Linear)을 그대로 쓴다(WebGL2 필요). XR 로더는 Standalone에만 설정되어 있어 WebGL에는 없다(빌드 전 확인해 보고서에 적음).
 //   끝나면 활성 빌드 대상을 Standalone(Win64)으로 되돌린다.
 //   WebGL 모듈이 없으면 빌드하지 않고 보고서에 이유를 적고 종료 코드 2.
@@ -83,9 +84,11 @@ namespace IFS.SceneSpec.EditorTools
                     PlayerSettings.WebGL.decompressionFallback = false;
                     PlayerSettings.WebGL.template = TemplateName;
                     PlayerSettings.WebGL.dataCaching = false;
+                    PlayerSettings.SplashScreen.show = false;
                     report["temporarySettings"] = new JObject
                     {
                         ["compressionFormat"] = "Disabled", ["decompressionFallback"] = false, ["template"] = TemplateName, ["dataCaching"] = false,
+                        ["splashScreen"] = false,
                         ["restoredAfterBuild"] = true,
                     };
                     var opts = new BuildPlayerOptions
@@ -221,6 +224,7 @@ namespace IFS.SceneSpec.EditorTools
             readonly bool _fallback = PlayerSettings.WebGL.decompressionFallback;
             readonly string _template = PlayerSettings.WebGL.template;
             readonly bool _caching = PlayerSettings.WebGL.dataCaching;
+            readonly bool _splash = PlayerSettings.SplashScreen.show;
 
             public void Restore()
             {
@@ -228,6 +232,7 @@ namespace IFS.SceneSpec.EditorTools
                 PlayerSettings.WebGL.decompressionFallback = _fallback;
                 PlayerSettings.WebGL.template = _template;
                 PlayerSettings.WebGL.dataCaching = _caching;
+                PlayerSettings.SplashScreen.show = _splash;
                 AssetDatabase.SaveAssets();
             }
         }

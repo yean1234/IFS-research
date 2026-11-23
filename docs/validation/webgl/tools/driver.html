@@ -4,9 +4,10 @@
 <meta charset="utf-8">
 <title>IFS WebGL 미리보기 비교 드라이버</title>
 <!-- D4 비교 드라이버(serve.py가 /harness/driver.html로 내보냄). 외부 스크립트 없음.
-     ⚠ 2026-11-23 기준 미실행: WebGL 모듈이 없어 빌드를 만들지 못했다.
+     2026-11-23 재시도에서 실행함(README "2026-11-23 재시도" 절).
      같은 출처의 빌드 페이지(/index.html)를 iframe으로 띄우고 window.ifsPreview로 spec을 넣은 뒤,
      spec마다 scene·black·white를 Unity 안에서 렌더해(PreviewStage.RenderPng — 에디터 PreviewCapture와 같은 코드) /save로 보낸다.
+     그다음 /harness/cases.json의 덮어쓰기 사례마다 spec을 로드하고 overridesSeq를 차례로 applyOverrides 한 뒤(마지막 상태) 세 장을 찍는다.
      페이지 오류·콘솔 오류는 /log로, 시간은 /done으로 보낸다. -->
 </head>
 <body style="margin:0">
@@ -53,6 +54,33 @@
       }
       result.specs.push(e);
       log({ type: 'spec', spec: e.spec, ok: !e.error, renderPath: e.renderPath });
+    }
+    const cases = await (await fetch('/harness/cases.json')).json();
+    result.cases = [];
+    for (const c of cases) {
+      const e = { case: c.name, steps: [] };
+      try {
+        const text = await (await fetch(c.specUrl)).text();
+        const base = await w.ifsPreview.load(text);
+        e.steps.push({ step: 'load', renderPath: base.renderPath, formType: base.params && base.params['form.type'] });
+        for (const ov of c.overridesSeq) {
+          const a = performance.now();
+          const r = await w.ifsPreview.applyOverrides(ov);
+          e.steps.push({ step: 'overrides', overrides: ov, roundTripMs: performance.now() - a, loadMs: r.loadMs, renderPath: r.renderPath,
+                         formType: r.params && r.params['form.type'], loaderErrors: r.errors });
+        }
+        e.renders = {};
+        for (const bg of ['scene', 'black', 'white']) {
+          const cap = await w.ifsPreview.capture({ id: c.name + '_' + bg, width: W, height: H, background: bg });
+          e.renders[bg] = cap.renderMs;
+          const bytes = Uint8Array.from(atob(cap.png), (ch) => ch.charCodeAt(0));
+          await fetch('/save?name=' + encodeURIComponent(c.name + '_' + bg + '.png'), { method: 'POST', body: bytes });
+        }
+      } catch (err) {
+        e.error = err && err.message ? err.message : JSON.stringify(err);
+      }
+      result.cases.push(e);
+      log({ type: 'case', case: e.case, ok: !e.error });
     }
     result.webgl = (() => {
       const gl = w.document.getElementById('unity-canvas').getContext('webgl2');

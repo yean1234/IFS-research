@@ -181,7 +181,13 @@ namespace IFS.SceneSpec
                     // GetTemporary로 받은 텍스처를 Create하지 않고 해상하면 첫 읽기가 실제 렌더와 달랐다
                     // (2026-11-23 EditMode 진단: 160×120 전 화소, 채널 차 최대 196. 둘 다 Create한 뒤 0)
                     resolved.Create();
+#if UNITY_WEBGL && !UNITY_EDITOR
+                    // WebGL2에서는 ResolveAntiAliasedSurface가 아무것도 쓰지 않았다(2026-11-23 WebGL 시험: 모든 캡처가 RGBA 0).
+                    // MSAA 텍스처를 원본으로 Blit하면 Unity가 해상한 뒤 복사한다. 데스크톱·에디터 경로는 그대로 둔다.
+                    Graphics.Blit(rt, resolved);
+#else
                     rt.ResolveAntiAliasedSurface(resolved);
+#endif
                     src = resolved;
                 }
                 RenderTexture.active = src;

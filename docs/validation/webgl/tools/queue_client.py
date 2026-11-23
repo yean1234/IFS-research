@@ -1,6 +1,8 @@
 """대안 경로(G12) 측정: Windows 미리보기 플레이어를 상주 프로세스로 띄우고 폴더 요청(PreviewQueue)으로 spec마다 PNG를 받는다.
 
-  python -I queue_client.py <IFSPreview.exe> <요청 폴더> <출력 폴더> <spec.json ...> [--width 800 --height 600]
+  python -I queue_client.py <IFSPreview.exe> <요청 폴더> <출력 폴더> <spec.json ...> [--width 800 --height 600] [--cases <cases.json>]
+  --cases: serve.py와 같은 덮어쓰기 사례 파일. 사례마다 overridesSeq의 마지막 덮어쓰기만 넣어 세 장을 받는다
+           (덮어쓰기는 누적되지 않고 원래 spec 위에 새로 얹히므로 마지막 상태가 같다).
 1) 플레이어를 -batchmode로 띄우고 ready.json이 생길 때까지의 시간(시작 지연)을 잰다.
 2) spec마다 scene·black·white 세 장을 요청해(비교용) <출력>/<spec>_<배경>.png로 받는다.
 3) spec마다 scene 한 장만 다시 요청해 요청 파일을 쓴 순간부터 응답 파일이 생길 때까지(왕복 지연)를 잰다.
@@ -53,6 +55,7 @@ def main():
     ap.add_argument("--width", type=int, default=800)
     ap.add_argument("--height", type=int, default=600)
     ap.add_argument("--log", default=None)
+    ap.add_argument("--cases", default=None)
     a = ap.parse_args()
     qdir, out = os.path.abspath(a.qdir), os.path.abspath(a.out)
     os.makedirs(qdir, exist_ok=True)
@@ -74,6 +77,20 @@ def main():
             full.append({"spec": name, "rttMs": round(rtt * 1000, 2), "ok": d.get("ok"), "loadMs": d.get("loadMs"),
                          "renderPath": d.get("renderPath"), "error": d.get("error"),
                          "renderMs": {k: v["renderMs"] for k, v in (d.get("renders") or {}).items()}})
+        # 1b) 덮어쓰기 사례(선택)
+        if a.cases:
+            with open(a.cases, encoding="utf-8") as f:
+                cases = json.load(f)
+            base = os.path.dirname(os.path.abspath(a.cases))
+            result["cases"] = []
+            for c in cases:
+                body = {"spec": os.path.abspath(os.path.join(base, c["spec"])), "width": a.width, "height": a.height,
+                        "backgrounds": ["scene", "black", "white"], "out": os.path.join(out, c["name"])}
+                if c["overridesSeq"] and c["overridesSeq"][-1]:
+                    body["overrides"] = c["overridesSeq"][-1]
+                rtt, d = request(qdir, "case_" + c["name"], body)
+                result["cases"].append({"case": c["name"], "rttMs": round(rtt * 1000, 2), "ok": d.get("ok"), "renderPath": d.get("renderPath"),
+                                        "error": d.get("error")})
         # 2) 지연: scene 한 장만
         lat = []
         for spec in a.specs:
