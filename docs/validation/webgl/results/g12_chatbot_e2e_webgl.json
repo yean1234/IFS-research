@@ -1,0 +1,2440 @@
+{
+ "label": "webgl",
+ "chromeExtra": [],
+ "runs": [
+  {
+   "scenario": "S1_form_said",
+   "sessionId": "SYN-SEL-S1",
+   "steps": [
+    {
+     "i": 1,
+     "item": "color",
+     "value": "h07",
+     "mode": "webgl",
+     "ms": 25.6,
+     "diffPxVsPrev": 533,
+     "maxChannelDiffVsPrev": 45,
+     "changed": true
+    },
+    {
+     "i": 2,
+     "item": "size",
+     "value": 0.4,
+     "mode": "webgl",
+     "ms": 26,
+     "diffPxVsPrev": 524,
+     "maxChannelDiffVsPrev": 29,
+     "changed": true
+    },
+    {
+     "i": 3,
+     "item": "brightness",
+     "value": 0.625,
+     "mode": "webgl",
+     "ms": 26.6,
+     "diffPxVsPrev": 822,
+     "maxChannelDiffVsPrev": 18,
+     "changed": true
+    }
+   ],
+   "modeAtStart": "webgl",
+   "candidatesMs": 2357.5,
+   "modeAtCandidates": "webgl",
+   "webglInfo": {
+    "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5080 (0x00002C02) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "vendor": "Google Inc. (NVIDIA)",
+    "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+    "readyMs": 732,
+    "graphicsDevice": "OpenGL ES 3.0 (WebGL 2.0 (OpenGL ES 3.0 Chromium))",
+    "warmupMs": 1525
+   },
+   "candidates": [
+    {
+     "id": "c-967711998ca9",
+     "imgTarget": "c-967711998ca9",
+     "imgMode": "webgl",
+     "overrides": "[]",
+     "captureSeq": "19"
+    },
+    {
+     "id": "c-e1853be20df2",
+     "imgTarget": "c-e1853be20df2",
+     "imgMode": "webgl",
+     "overrides": "[[\"material.roughness\",0.1]]",
+     "captureSeq": "20"
+    },
+    {
+     "id": "c-4326b469c876",
+     "imgTarget": "c-4326b469c876",
+     "imgMode": "webgl",
+     "overrides": "[[\"material.opacity\",0.4]]",
+     "captureSeq": "21"
+    },
+    {
+     "id": "c-ee132eef4bb0",
+     "imgTarget": "c-ee132eef4bb0",
+     "imgMode": "webgl",
+     "overrides": "[[\"material.opacity\",0.4],[\"material.roughness\",0.1]]",
+     "captureSeq": "22"
+    }
+   ],
+   "candidateDeltaE": [
+    [
+     0.157,
+     0.176,
+     0.193,
+     0.196
+    ],
+    [
+     0.176,
+     0.156,
+     0.194,
+     0.193
+    ],
+    [
+     0.193,
+     0.194,
+     0.157,
+     0.166
+    ],
+    [
+     0.196,
+     0.193,
+     0.166,
+     0.157
+    ]
+   ],
+   "candidateMatch": true,
+   "candidateTargetsMatch": true,
+   "selected": "c-4326b469c876",
+   "modeAtAdjust": "webgl",
+   "unavailableAtAdjust": {},
+   "adjustRect": {
+    "x": 33,
+    "y": 289.609375,
+    "w": 302.84375,
+    "h": 227.125
+   },
+   "adjustChanged": "3/3",
+   "hostLeftAfterDone": false,
+   "preview": {
+    "requested": "webgl",
+    "mode": "webgl",
+    "reason": null,
+    "serverMode": "webgl",
+    "shown": {
+     "selecting": [
+      "webgl"
+     ],
+     "adjusting": [
+      "webgl"
+     ]
+    },
+    "fallbacks": [],
+    "webgl": {
+     "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5080 (0x00002C02) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "vendor": "Google Inc. (NVIDIA)",
+     "graphicsDevice": "OpenGL ES 3.0 (WebGL 2.0 (OpenGL ES 3.0 Chromium))",
+     "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+     "readyMs": 732.0,
+     "warmupMs": 1525.0,
+     "at": "2026-11-23T11:26:42+09:00"
+    }
+   },
+   "adjustUnavailable": {},
+   "modeFinal": "webgl",
+   "fallbacks": [],
+   "premeasureSaved": true,
+   "runnerReady": true,
+   "checkFails": [],
+   "frameMarks": 1,
+   "frameRestarts": 0,
+   "frameAlwaysInBody": true,
+   "contextLost": false
+  },
+  {
+   "scenario": "S2_feeling_only",
+   "sessionId": "SYN-SEL-S2",
+   "steps": [],
+   "modeAtStart": "webgl",
+   "candidatesMs": 478.5,
+   "modeAtCandidates": "webgl",
+   "webglInfo": {
+    "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5080 (0x00002C02) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "vendor": "Google Inc. (NVIDIA)",
+    "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+    "readyMs": 214,
+    "graphicsDevice": "OpenGL ES 3.0 (WebGL 2.0 (OpenGL ES 3.0 Chromium))",
+    "warmupMs": 191
+   },
+   "candidates": [
+    {
+     "id": "c-85dea7085918",
+     "imgTarget": "c-85dea7085918",
+     "imgMode": "webgl",
+     "overrides": "[[\"form.type\",\"mist\"],[\"layout.size\",0.7]]",
+     "captureSeq": "19"
+    },
+    {
+     "id": "c-618910d26c51",
+     "imgTarget": "c-618910d26c51",
+     "imgMode": "webgl",
+     "overrides": "[]",
+     "captureSeq": "20"
+    },
+    {
+     "id": "c-8163ea0caf3b",
+     "imgTarget": "c-8163ea0caf3b",
+     "imgMode": "webgl",
+     "overrides": "[[\"layout.size\",0.7]]",
+     "captureSeq": "21"
+    },
+    {
+     "id": "c-6f7abf1e002c",
+     "imgTarget": "c-6f7abf1e002c",
+     "imgMode": "webgl",
+     "overrides": "[[\"form.type\",\"mist\"]]",
+     "captureSeq": "22"
+    }
+   ],
+   "candidateDeltaE": [
+    [
+     0.143,
+     0.643,
+     1.237,
+     0.564
+    ],
+    [
+     0.641,
+     0.159,
+     1.263,
+     0.527
+    ],
+    [
+     1.238,
+     1.266,
+     0.155,
+     1.433
+    ],
+    [
+     0.563,
+     0.527,
+     1.431,
+     0.153
+    ]
+   ],
+   "candidateMatch": true,
+   "candidateTargetsMatch": true,
+   "selected": "c-85dea7085918",
+   "modeAtAdjust": "webgl",
+   "unavailableAtAdjust": {},
+   "adjustRect": {
+    "x": 33,
+    "y": 289.609375,
+    "w": 302.84375,
+    "h": 227.125
+   },
+   "adjustChanged": "0/0",
+   "hostLeftAfterDone": false,
+   "preview": {
+    "requested": "webgl",
+    "mode": "webgl",
+    "reason": null,
+    "serverMode": "webgl",
+    "shown": {
+     "selecting": [
+      "webgl"
+     ],
+     "adjusting": [
+      "webgl"
+     ]
+    },
+    "fallbacks": [],
+    "webgl": {
+     "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5080 (0x00002C02) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "vendor": "Google Inc. (NVIDIA)",
+     "graphicsDevice": "OpenGL ES 3.0 (WebGL 2.0 (OpenGL ES 3.0 Chromium))",
+     "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+     "readyMs": 214.0,
+     "warmupMs": 191.0,
+     "at": "2026-11-23T11:26:45+09:00"
+    }
+   },
+   "adjustUnavailable": {},
+   "modeFinal": "webgl",
+   "fallbacks": [],
+   "premeasureSaved": true,
+   "runnerReady": true,
+   "checkFails": [],
+   "frameMarks": 1,
+   "frameRestarts": 0,
+   "frameAlwaysInBody": true,
+   "contextLost": false
+  },
+  {
+   "scenario": "S3_all_said",
+   "sessionId": "SYN-SEL-S3",
+   "steps": [
+    {
+     "i": 1,
+     "item": "motion",
+     "value": "trembling",
+     "mode": "webgl",
+     "ms": 26.1,
+     "diffPxVsPrev": 59043,
+     "maxChannelDiffVsPrev": 166,
+     "changed": true,
+     "diffPxAfter0p7s": 401,
+     "maxChannelDiffAfter0p7s": 58
+    },
+    {
+     "i": 2,
+     "item": "motion",
+     "value": "still",
+     "mode": "webgl",
+     "ms": 25.5,
+     "diffPxVsPrev": 448,
+     "maxChannelDiffVsPrev": 58,
+     "changed": true,
+     "diffPxAfter0p7s": 0,
+     "maxChannelDiffAfter0p7s": 0
+    }
+   ],
+   "modeAtStart": "webgl",
+   "modeAtAdjust": "webgl",
+   "unavailableAtAdjust": {},
+   "adjustRect": {
+    "x": 33,
+    "y": 289.609375,
+    "w": 302.84375,
+    "h": 227.125
+   },
+   "adjustChanged": "2/2",
+   "hostLeftAfterDone": false,
+   "preview": {
+    "requested": "webgl",
+    "mode": "webgl",
+    "reason": null,
+    "serverMode": "webgl",
+    "shown": {
+     "adjusting": [
+      "webgl"
+     ]
+    },
+    "fallbacks": [],
+    "webgl": {
+     "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5080 (0x00002C02) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "vendor": "Google Inc. (NVIDIA)",
+     "graphicsDevice": "OpenGL ES 3.0 (WebGL 2.0 (OpenGL ES 3.0 Chromium))",
+     "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+     "readyMs": 190.0,
+     "warmupMs": 187.0,
+     "at": "2026-11-23T11:26:47+09:00"
+    }
+   },
+   "adjustUnavailable": {},
+   "modeFinal": "webgl",
+   "fallbacks": [],
+   "premeasureSaved": true,
+   "runnerReady": true,
+   "checkFails": [],
+   "frameMarks": 1,
+   "frameRestarts": 0,
+   "frameAlwaysInBody": true,
+   "contextLost": false
+  },
+  {
+   "scenario": "S4_none_fit",
+   "sessionId": "SYN-SEL-S4",
+   "steps": [
+    {
+     "i": 1,
+     "item": "form",
+     "value": "mist",
+     "mode": "webgl",
+     "ms": 25.8,
+     "diffPxVsPrev": 2695,
+     "maxChannelDiffVsPrev": 118,
+     "changed": true
+    },
+    {
+     "i": 2,
+     "item": "size",
+     "value": 0.8,
+     "mode": "webgl",
+     "ms": 77.8,
+     "diffPxVsPrev": 8436,
+     "maxChannelDiffVsPrev": 112,
+     "changed": true
+    },
+    {
+     "i": 3,
+     "item": "opacity",
+     "value": 0.6,
+     "mode": "webgl",
+     "ms": 52.9,
+     "diffPxVsPrev": 7619,
+     "maxChannelDiffVsPrev": 35,
+     "changed": true
+    }
+   ],
+   "modeAtStart": "webgl",
+   "candidatesMs": 437.9,
+   "modeAtCandidates": "webgl",
+   "webglInfo": {
+    "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5080 (0x00002C02) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "vendor": "Google Inc. (NVIDIA)",
+    "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+    "readyMs": 187,
+    "graphicsDevice": "OpenGL ES 3.0 (WebGL 2.0 (OpenGL ES 3.0 Chromium))",
+    "warmupMs": 183
+   },
+   "candidates": [
+    {
+     "id": "c-e1741c1ea384",
+     "imgTarget": "c-e1741c1ea384",
+     "imgMode": "webgl",
+     "overrides": "[[\"form.type\",\"mist\"],[\"layout.size\",0.7]]",
+     "captureSeq": "19"
+    },
+    {
+     "id": "c-9a261cb6209a",
+     "imgTarget": "c-9a261cb6209a",
+     "imgMode": "webgl",
+     "overrides": "[]",
+     "captureSeq": "20"
+    },
+    {
+     "id": "c-7e02f3eefee1",
+     "imgTarget": "c-7e02f3eefee1",
+     "imgMode": "webgl",
+     "overrides": "[[\"layout.size\",0.7]]",
+     "captureSeq": "21"
+    },
+    {
+     "id": "c-919775176a1e",
+     "imgTarget": "c-919775176a1e",
+     "imgMode": "webgl",
+     "overrides": "[[\"form.type\",\"mist\"]]",
+     "captureSeq": "22"
+    }
+   ],
+   "candidateDeltaE": [
+    [
+     0.143,
+     0.937,
+     1.575,
+     1.035
+    ],
+    [
+     0.932,
+     0.158,
+     1.986,
+     0.611
+    ],
+    [
+     1.579,
+     1.996,
+     0.152,
+     2.346
+    ],
+    [
+     1.033,
+     0.609,
+     2.338,
+     0.153
+    ]
+   ],
+   "candidateMatch": true,
+   "candidateTargetsMatch": true,
+   "selected": "none",
+   "modeAtAdjust": "webgl",
+   "unavailableAtAdjust": {},
+   "adjustRect": {
+    "x": 33,
+    "y": 289.609375,
+    "w": 302.84375,
+    "h": 227.125
+   },
+   "adjustChanged": "3/3",
+   "hostLeftAfterDone": false,
+   "preview": {
+    "requested": "webgl",
+    "mode": "webgl",
+    "reason": null,
+    "serverMode": "webgl",
+    "shown": {
+     "selecting": [
+      "webgl"
+     ],
+     "adjusting": [
+      "webgl"
+     ]
+    },
+    "fallbacks": [],
+    "webgl": {
+     "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5080 (0x00002C02) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "vendor": "Google Inc. (NVIDIA)",
+     "graphicsDevice": "OpenGL ES 3.0 (WebGL 2.0 (OpenGL ES 3.0 Chromium))",
+     "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+     "readyMs": 187.0,
+     "warmupMs": 183.0,
+     "at": "2026-11-23T11:26:50+09:00"
+    }
+   },
+   "adjustUnavailable": {},
+   "modeFinal": "webgl",
+   "fallbacks": [],
+   "premeasureSaved": true,
+   "runnerReady": true,
+   "checkFails": [],
+   "frameMarks": 1,
+   "frameRestarts": 0,
+   "frameAlwaysInBody": true,
+   "contextLost": false
+  },
+  {
+   "scenario": "S5_one_open",
+   "sessionId": "SYN-SEL-S5",
+   "steps": [],
+   "modeAtStart": "webgl",
+   "modeAtAdjust": "webgl",
+   "unavailableAtAdjust": {},
+   "adjustRect": {
+    "x": 33,
+    "y": 289.609375,
+    "w": 302.84375,
+    "h": 227.125
+   },
+   "adjustChanged": "0/0",
+   "hostLeftAfterDone": false,
+   "preview": {
+    "requested": "webgl",
+    "mode": "webgl",
+    "reason": null,
+    "serverMode": "webgl",
+    "shown": {
+     "adjusting": [
+      "webgl"
+     ]
+    },
+    "fallbacks": [],
+    "webgl": {
+     "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5080 (0x00002C02) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "vendor": "Google Inc. (NVIDIA)",
+     "graphicsDevice": "OpenGL ES 3.0 (WebGL 2.0 (OpenGL ES 3.0 Chromium))",
+     "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+     "readyMs": 189.0,
+     "warmupMs": 195.0,
+     "at": "2026-11-23T11:26:52+09:00"
+    }
+   },
+   "adjustUnavailable": {},
+   "modeFinal": "webgl",
+   "fallbacks": [],
+   "premeasureSaved": true,
+   "runnerReady": true,
+   "checkFails": [],
+   "frameMarks": 1,
+   "frameRestarts": 0,
+   "frameAlwaysInBody": true,
+   "contextLost": false
+  },
+  {
+   "scenario": "S6_unrendered_shape_chosen",
+   "sessionId": "SYN-SEL-S6",
+   "steps": [
+    {
+     "i": 1,
+     "item": "color",
+     "value": "h08",
+     "mode": "webgl",
+     "ms": 27.7,
+     "diffPxVsPrev": 1673,
+     "maxChannelDiffVsPrev": 128,
+     "changed": true
+    }
+   ],
+   "modeAtStart": "webgl",
+   "candidatesMs": 430,
+   "modeAtCandidates": "webgl",
+   "webglInfo": {
+    "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5080 (0x00002C02) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "vendor": "Google Inc. (NVIDIA)",
+    "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+    "readyMs": 175,
+    "graphicsDevice": "OpenGL ES 3.0 (WebGL 2.0 (OpenGL ES 3.0 Chromium))",
+    "warmupMs": 186
+   },
+   "candidates": [
+    {
+     "id": "c-03dd2a65aa8b",
+     "imgTarget": "c-03dd2a65aa8b",
+     "imgMode": "webgl",
+     "overrides": "[[\"form.type\",\"mist\"],[\"layout.size\",0.7]]",
+     "captureSeq": "19"
+    },
+    {
+     "id": "c-128ef9dc2ab1",
+     "imgTarget": "c-128ef9dc2ab1",
+     "imgMode": "webgl",
+     "overrides": "[]",
+     "captureSeq": "20"
+    },
+    {
+     "id": "c-ed9da2806340",
+     "imgTarget": "c-ed9da2806340",
+     "imgMode": "webgl",
+     "overrides": "[[\"layout.size\",0.7]]",
+     "captureSeq": "21"
+    },
+    {
+     "id": "c-2141916466b2",
+     "imgTarget": "c-2141916466b2",
+     "imgMode": "webgl",
+     "overrides": "[[\"form.type\",\"mist\"]]",
+     "captureSeq": "22"
+    }
+   ],
+   "candidateDeltaE": [
+    [
+     0.143,
+     0.643,
+     1.237,
+     0.564
+    ],
+    [
+     0.641,
+     0.159,
+     1.263,
+     0.527
+    ],
+    [
+     1.238,
+     1.266,
+     0.155,
+     1.433
+    ],
+    [
+     0.563,
+     0.527,
+     1.431,
+     0.153
+    ]
+   ],
+   "candidateMatch": true,
+   "candidateTargetsMatch": true,
+   "selected": "c-2141916466b2",
+   "modeAtAdjust": "webgl",
+   "unavailableAtAdjust": {},
+   "adjustRect": {
+    "x": 33,
+    "y": 289.609375,
+    "w": 302.84375,
+    "h": 227.125
+   },
+   "adjustChanged": "1/1",
+   "hostLeftAfterDone": false,
+   "preview": {
+    "requested": "webgl",
+    "mode": "webgl",
+    "reason": null,
+    "serverMode": "webgl",
+    "shown": {
+     "selecting": [
+      "webgl"
+     ],
+     "adjusting": [
+      "webgl"
+     ]
+    },
+    "fallbacks": [],
+    "webgl": {
+     "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5080 (0x00002C02) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "vendor": "Google Inc. (NVIDIA)",
+     "graphicsDevice": "OpenGL ES 3.0 (WebGL 2.0 (OpenGL ES 3.0 Chromium))",
+     "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+     "readyMs": 175.0,
+     "warmupMs": 186.0,
+     "at": "2026-11-23T11:26:53+09:00"
+    }
+   },
+   "adjustUnavailable": {},
+   "modeFinal": "webgl",
+   "fallbacks": [],
+   "premeasureSaved": true,
+   "runnerReady": true,
+   "checkFails": [],
+   "frameMarks": 1,
+   "frameRestarts": 0,
+   "frameAlwaysInBody": true,
+   "contextLost": false
+  },
+  {
+   "scenario": "S7_unrendered_none_floor",
+   "sessionId": "SYN-SEL-S7",
+   "steps": [],
+   "modeAtStart": "webgl",
+   "candidatesMs": 441.4,
+   "modeAtCandidates": "webgl",
+   "webglInfo": {
+    "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5080 (0x00002C02) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "vendor": "Google Inc. (NVIDIA)",
+    "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+    "readyMs": 182,
+    "graphicsDevice": "OpenGL ES 3.0 (WebGL 2.0 (OpenGL ES 3.0 Chromium))",
+    "warmupMs": 181
+   },
+   "candidates": [
+    {
+     "id": "c-fdda5c701045",
+     "imgTarget": "c-fdda5c701045",
+     "imgMode": "webgl",
+     "overrides": "[[\"form.type\",\"mist\"],[\"layout.size\",0.7]]",
+     "captureSeq": "19"
+    },
+    {
+     "id": "c-79b8ecfe904c",
+     "imgTarget": "c-79b8ecfe904c",
+     "imgMode": "webgl",
+     "overrides": "[]",
+     "captureSeq": "20"
+    },
+    {
+     "id": "c-0e5df71a591a",
+     "imgTarget": "c-0e5df71a591a",
+     "imgMode": "webgl",
+     "overrides": "[[\"layout.size\",0.7]]",
+     "captureSeq": "21"
+    },
+    {
+     "id": "c-c87361eaa739",
+     "imgTarget": "c-c87361eaa739",
+     "imgMode": "webgl",
+     "overrides": "[[\"form.type\",\"mist\"]]",
+     "captureSeq": "22"
+    }
+   ],
+   "candidateDeltaE": [
+    [
+     0.143,
+     2.184,
+     4.357,
+     2.261
+    ],
+    [
+     2.175,
+     0.193,
+     5.396,
+     1.498
+    ],
+    [
+     4.378,
+     5.429,
+     0.17,
+     6.239
+    ],
+    [
+     2.25,
+     1.494,
+     6.21,
+     0.179
+    ]
+   ],
+   "candidateMatch": true,
+   "candidateTargetsMatch": true,
+   "selected": "none",
+   "modeAtAdjust": "webgl",
+   "unavailableAtAdjust": {},
+   "adjustRect": {
+    "x": 33,
+    "y": 289.609375,
+    "w": 302.84375,
+    "h": 227.125
+   },
+   "adjustChanged": "0/0",
+   "hostLeftAfterDone": false,
+   "preview": {
+    "requested": "webgl",
+    "mode": "webgl",
+    "reason": null,
+    "serverMode": "webgl",
+    "shown": {
+     "selecting": [
+      "webgl"
+     ],
+     "adjusting": [
+      "webgl"
+     ]
+    },
+    "fallbacks": [],
+    "webgl": {
+     "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5080 (0x00002C02) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "vendor": "Google Inc. (NVIDIA)",
+     "graphicsDevice": "OpenGL ES 3.0 (WebGL 2.0 (OpenGL ES 3.0 Chromium))",
+     "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+     "readyMs": 182.0,
+     "warmupMs": 181.0,
+     "at": "2026-11-23T11:26:55+09:00"
+    }
+   },
+   "adjustUnavailable": {},
+   "modeFinal": "webgl",
+   "fallbacks": [],
+   "premeasureSaved": true,
+   "runnerReady": true,
+   "checkFails": [],
+   "frameMarks": 1,
+   "frameRestarts": 0,
+   "frameAlwaysInBody": true,
+   "contextLost": false
+  },
+  {
+   "scenario": "S8_base_said_edited",
+   "sessionId": "SYN-SEL-S8",
+   "steps": [
+    {
+     "i": 1,
+     "item": "form",
+     "value": "sheet",
+     "mode": "webgl",
+     "ms": 25.9,
+     "diffPxVsPrev": 2001,
+     "maxChannelDiffVsPrev": 41,
+     "changed": true
+    },
+    {
+     "i": 2,
+     "item": "color",
+     "value": "h03",
+     "mode": "webgl",
+     "ms": 25.6,
+     "diffPxVsPrev": 2439,
+     "maxChannelDiffVsPrev": 45,
+     "changed": true
+    }
+   ],
+   "modeAtStart": "webgl",
+   "candidatesMs": 434.4,
+   "modeAtCandidates": "webgl",
+   "webglInfo": {
+    "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5080 (0x00002C02) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "vendor": "Google Inc. (NVIDIA)",
+    "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+    "readyMs": 182,
+    "graphicsDevice": "OpenGL ES 3.0 (WebGL 2.0 (OpenGL ES 3.0 Chromium))",
+    "warmupMs": 178
+   },
+   "candidates": [
+    {
+     "id": "c-9da4f4e70b5e",
+     "imgTarget": "c-9da4f4e70b5e",
+     "imgMode": "webgl",
+     "overrides": "[[\"material.opacity\",0.4]]",
+     "captureSeq": "19"
+    },
+    {
+     "id": "c-66c538442cb2",
+     "imgTarget": "c-66c538442cb2",
+     "imgMode": "webgl",
+     "overrides": "[[\"layout.size\",0.7]]",
+     "captureSeq": "20"
+    },
+    {
+     "id": "c-c0f500eb479a",
+     "imgTarget": "c-c0f500eb479a",
+     "imgMode": "webgl",
+     "overrides": "[[\"layout.size\",0.7],[\"material.opacity\",0.4]]",
+     "captureSeq": "21"
+    },
+    {
+     "id": "c-5ac43310ea39",
+     "imgTarget": "c-5ac43310ea39",
+     "imgMode": "webgl",
+     "overrides": "[]",
+     "captureSeq": "22"
+    }
+   ],
+   "candidateDeltaE": [
+    [
+     0.162,
+     1.033,
+     0.586,
+     0.345
+    ],
+    [
+     1.032,
+     0.179,
+     0.65,
+     1.138
+    ],
+    [
+     0.588,
+     0.655,
+     0.164,
+     0.75
+    ],
+    [
+     0.342,
+     1.135,
+     0.744,
+     0.17
+    ]
+   ],
+   "candidateMatch": true,
+   "candidateTargetsMatch": true,
+   "selected": "c-9da4f4e70b5e",
+   "modeAtAdjust": "webgl",
+   "unavailableAtAdjust": {},
+   "adjustRect": {
+    "x": 33,
+    "y": 289.609375,
+    "w": 302.84375,
+    "h": 227.125
+   },
+   "adjustChanged": "2/2",
+   "hostLeftAfterDone": false,
+   "preview": {
+    "requested": "webgl",
+    "mode": "webgl",
+    "reason": null,
+    "serverMode": "webgl",
+    "shown": {
+     "selecting": [
+      "webgl"
+     ],
+     "adjusting": [
+      "webgl"
+     ]
+    },
+    "fallbacks": [],
+    "webgl": {
+     "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5080 (0x00002C02) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "vendor": "Google Inc. (NVIDIA)",
+     "graphicsDevice": "OpenGL ES 3.0 (WebGL 2.0 (OpenGL ES 3.0 Chromium))",
+     "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+     "readyMs": 182.0,
+     "warmupMs": 178.0,
+     "at": "2026-11-23T11:26:57+09:00"
+    }
+   },
+   "adjustUnavailable": {},
+   "modeFinal": "webgl",
+   "fallbacks": [],
+   "premeasureSaved": true,
+   "runnerReady": true,
+   "checkFails": [],
+   "frameMarks": 1,
+   "frameRestarts": 0,
+   "frameAlwaysInBody": true,
+   "contextLost": false
+  },
+  {
+   "scenario": "S9_membrane_split",
+   "sessionId": "SYN-SEL-S9",
+   "steps": [],
+   "modeAtStart": "webgl",
+   "candidatesMs": 429,
+   "modeAtCandidates": "webgl",
+   "webglInfo": {
+    "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5080 (0x00002C02) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "vendor": "Google Inc. (NVIDIA)",
+    "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+    "readyMs": 180,
+    "graphicsDevice": "OpenGL ES 3.0 (WebGL 2.0 (OpenGL ES 3.0 Chromium))",
+    "warmupMs": 181
+   },
+   "candidates": [
+    {
+     "id": "c-317266a7fc72",
+     "imgTarget": "c-317266a7fc72",
+     "imgMode": "webgl",
+     "overrides": "[[\"form.type\",\"shell\"],[\"layout.size\",0.7]]",
+     "captureSeq": "19"
+    },
+    {
+     "id": "c-c280c332195f",
+     "imgTarget": "c-c280c332195f",
+     "imgMode": "webgl",
+     "overrides": "[]",
+     "captureSeq": "20"
+    },
+    {
+     "id": "c-7be96fd30cc5",
+     "imgTarget": "c-7be96fd30cc5",
+     "imgMode": "webgl",
+     "overrides": "[[\"layout.size\",0.7]]",
+     "captureSeq": "21"
+    },
+    {
+     "id": "c-c2e9c47c94e8",
+     "imgTarget": "c-c2e9c47c94e8",
+     "imgMode": "webgl",
+     "overrides": "[[\"form.type\",\"shell\"]]",
+     "captureSeq": "22"
+    }
+   ],
+   "candidateDeltaE": [
+    [
+     0.161,
+     1.534,
+     2.091,
+     1.26
+    ],
+    [
+     1.538,
+     0.155,
+     1.113,
+     0.862
+    ],
+    [
+     2.1,
+     1.118,
+     0.151,
+     1.701
+    ],
+    [
+     1.26,
+     0.857,
+     1.693,
+     0.161
+    ]
+   ],
+   "candidateMatch": true,
+   "candidateTargetsMatch": true,
+   "selected": "c-c2e9c47c94e8",
+   "modeAtAdjust": "webgl",
+   "unavailableAtAdjust": {},
+   "adjustRect": {
+    "x": 33,
+    "y": 289.609375,
+    "w": 302.84375,
+    "h": 227.125
+   },
+   "adjustChanged": "0/0",
+   "hostLeftAfterDone": false,
+   "preview": {
+    "requested": "webgl",
+    "mode": "webgl",
+    "reason": null,
+    "serverMode": "webgl",
+    "shown": {
+     "selecting": [
+      "webgl"
+     ],
+     "adjusting": [
+      "webgl"
+     ]
+    },
+    "fallbacks": [],
+    "webgl": {
+     "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5080 (0x00002C02) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "vendor": "Google Inc. (NVIDIA)",
+     "graphicsDevice": "OpenGL ES 3.0 (WebGL 2.0 (OpenGL ES 3.0 Chromium))",
+     "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+     "readyMs": 180.0,
+     "warmupMs": 181.0,
+     "at": "2026-11-23T11:26:59+09:00"
+    }
+   },
+   "adjustUnavailable": {},
+   "modeFinal": "webgl",
+   "fallbacks": [],
+   "premeasureSaved": true,
+   "runnerReady": true,
+   "checkFails": [],
+   "frameMarks": 1,
+   "frameRestarts": 0,
+   "frameAlwaysInBody": true,
+   "contextLost": false
+  },
+  {
+   "scenario": "SWEEP_all_items",
+   "sessionId": "SYN-E2E-SWEEP",
+   "steps": [
+    {
+     "i": 1,
+     "item": "color",
+     "value": "n10",
+     "mode": "webgl",
+     "ms": 25.6,
+     "diffPxVsPrev": 1683,
+     "maxChannelDiffVsPrev": 154,
+     "changed": true
+    },
+    {
+     "i": 2,
+     "item": "color",
+     "value": "n30",
+     "mode": "webgl",
+     "ms": 26.3,
+     "diffPxVsPrev": 1331,
+     "maxChannelDiffVsPrev": 50,
+     "changed": true
+    },
+    {
+     "i": 3,
+     "item": "color",
+     "value": "n50",
+     "mode": "webgl",
+     "ms": 27.3,
+     "diffPxVsPrev": 1510,
+     "maxChannelDiffVsPrev": 52,
+     "changed": true
+    },
+    {
+     "i": 4,
+     "item": "color",
+     "value": "n90",
+     "mode": "webgl",
+     "ms": 25.7,
+     "diffPxVsPrev": 1704,
+     "maxChannelDiffVsPrev": 104,
+     "changed": true
+    },
+    {
+     "i": 5,
+     "item": "color",
+     "value": "h00",
+     "mode": "webgl",
+     "ms": 26.7,
+     "diffPxVsPrev": 1734,
+     "maxChannelDiffVsPrev": 180,
+     "changed": true
+    },
+    {
+     "i": 6,
+     "item": "color",
+     "value": "h01",
+     "mode": "webgl",
+     "ms": 26.3,
+     "diffPxVsPrev": 1552,
+     "maxChannelDiffVsPrev": 76,
+     "changed": true
+    },
+    {
+     "i": 7,
+     "item": "color",
+     "value": "h02",
+     "mode": "webgl",
+     "ms": 25.9,
+     "diffPxVsPrev": 1662,
+     "maxChannelDiffVsPrev": 78,
+     "changed": true
+    },
+    {
+     "i": 8,
+     "item": "color",
+     "value": "h03",
+     "mode": "webgl",
+     "ms": 26,
+     "diffPxVsPrev": 1663,
+     "maxChannelDiffVsPrev": 77,
+     "changed": true
+    },
+    {
+     "i": 9,
+     "item": "color",
+     "value": "h04",
+     "mode": "webgl",
+     "ms": 26.3,
+     "diffPxVsPrev": 1550,
+     "maxChannelDiffVsPrev": 76,
+     "changed": true
+    },
+    {
+     "i": 10,
+     "item": "color",
+     "value": "h05",
+     "mode": "webgl",
+     "ms": 26.2,
+     "diffPxVsPrev": 1552,
+     "maxChannelDiffVsPrev": 77,
+     "changed": true
+    },
+    {
+     "i": 11,
+     "item": "color",
+     "value": "h06",
+     "mode": "webgl",
+     "ms": 25.9,
+     "diffPxVsPrev": 1664,
+     "maxChannelDiffVsPrev": 78,
+     "changed": true
+    },
+    {
+     "i": 12,
+     "item": "color",
+     "value": "h07",
+     "mode": "webgl",
+     "ms": 25.4,
+     "diffPxVsPrev": 1662,
+     "maxChannelDiffVsPrev": 78,
+     "changed": true
+    },
+    {
+     "i": 13,
+     "item": "color",
+     "value": "h08",
+     "mode": "webgl",
+     "ms": 25.4,
+     "diffPxVsPrev": 1552,
+     "maxChannelDiffVsPrev": 77,
+     "changed": true
+    },
+    {
+     "i": 14,
+     "item": "color",
+     "value": "h09",
+     "mode": "webgl",
+     "ms": 27.2,
+     "diffPxVsPrev": 1550,
+     "maxChannelDiffVsPrev": 76,
+     "changed": true
+    },
+    {
+     "i": 15,
+     "item": "color",
+     "value": "h10",
+     "mode": "webgl",
+     "ms": 26.3,
+     "diffPxVsPrev": 1663,
+     "maxChannelDiffVsPrev": 77,
+     "changed": true
+    },
+    {
+     "i": 16,
+     "item": "color",
+     "value": "h11",
+     "mode": "webgl",
+     "ms": 26.1,
+     "diffPxVsPrev": 1664,
+     "maxChannelDiffVsPrev": 78,
+     "changed": true
+    },
+    {
+     "i": 17,
+     "item": "form",
+     "value": "blob",
+     "mode": "webgl",
+     "ms": 26.5,
+     "diffPxVsPrev": 3023,
+     "maxChannelDiffVsPrev": 97,
+     "changed": true,
+     "meanDeltaEVsPlayer": 0.158
+    },
+    {
+     "i": 18,
+     "item": "form",
+     "value": "shell",
+     "mode": "webgl",
+     "ms": 26.9,
+     "diffPxVsPrev": 2233,
+     "maxChannelDiffVsPrev": 184,
+     "changed": true,
+     "meanDeltaEVsPlayer": 0.16
+    },
+    {
+     "i": 19,
+     "item": "form",
+     "value": "fragments",
+     "mode": "webgl",
+     "ms": 26.2,
+     "diffPxVsPrev": 3261,
+     "maxChannelDiffVsPrev": 168,
+     "changed": true,
+     "meanDeltaEVsPlayer": 0.163
+    },
+    {
+     "i": 20,
+     "item": "form",
+     "value": "container",
+     "mode": "webgl",
+     "ms": 25.7,
+     "diffPxVsPrev": 4341,
+     "maxChannelDiffVsPrev": 113,
+     "changed": true,
+     "meanDeltaEVsPlayer": 0.158
+    },
+    {
+     "i": 21,
+     "item": "form",
+     "value": "line",
+     "mode": "webgl",
+     "ms": 25.8,
+     "diffPxVsPrev": 3552,
+     "maxChannelDiffVsPrev": 112,
+     "changed": true,
+     "meanDeltaEVsPlayer": 0.162
+    },
+    {
+     "i": 22,
+     "item": "form",
+     "value": "sheet",
+     "mode": "webgl",
+     "ms": 26,
+     "diffPxVsPrev": 2817,
+     "maxChannelDiffVsPrev": 106,
+     "changed": true,
+     "meanDeltaEVsPlayer": 0.156
+    },
+    {
+     "i": 23,
+     "item": "form",
+     "value": "flame",
+     "mode": "webgl",
+     "ms": 26.3,
+     "diffPxVsPrev": 2690,
+     "maxChannelDiffVsPrev": 113,
+     "changed": true,
+     "meanDeltaEVsPlayer": 0.16
+    },
+    {
+     "i": 24,
+     "item": "form",
+     "value": "drop",
+     "mode": "webgl",
+     "ms": 26,
+     "diffPxVsPrev": 1776,
+     "maxChannelDiffVsPrev": 97,
+     "changed": true,
+     "meanDeltaEVsPlayer": 0.158
+    },
+    {
+     "i": 25,
+     "item": "brightness",
+     "value": 0,
+     "mode": "webgl",
+     "ms": 104.4,
+     "diffPxVsPrev": 1695,
+     "maxChannelDiffVsPrev": 71,
+     "changed": true
+    },
+    {
+     "i": 26,
+     "item": "brightness",
+     "value": 0.125,
+     "mode": "webgl",
+     "ms": 26.4,
+     "diffPxVsPrev": 1584,
+     "maxChannelDiffVsPrev": 22,
+     "changed": true
+    },
+    {
+     "i": 27,
+     "item": "brightness",
+     "value": 0.25,
+     "mode": "webgl",
+     "ms": 25.4,
+     "diffPxVsPrev": 1529,
+     "maxChannelDiffVsPrev": 19,
+     "changed": true
+    },
+    {
+     "i": 28,
+     "item": "brightness",
+     "value": 0.375,
+     "mode": "webgl",
+     "ms": 26.6,
+     "diffPxVsPrev": 1508,
+     "maxChannelDiffVsPrev": 17,
+     "changed": true
+    },
+    {
+     "i": 29,
+     "item": "brightness",
+     "value": 0.625,
+     "mode": "webgl",
+     "ms": 52.2,
+     "diffPxVsPrev": 1710,
+     "maxChannelDiffVsPrev": 60,
+     "changed": true
+    },
+    {
+     "i": 30,
+     "item": "brightness",
+     "value": 0.75,
+     "mode": "webgl",
+     "ms": 26.5,
+     "diffPxVsPrev": 1698,
+     "maxChannelDiffVsPrev": 36,
+     "changed": true
+    },
+    {
+     "i": 31,
+     "item": "brightness",
+     "value": 0.875,
+     "mode": "webgl",
+     "ms": 26.9,
+     "diffPxVsPrev": 1684,
+     "maxChannelDiffVsPrev": 29,
+     "changed": true
+    },
+    {
+     "i": 32,
+     "item": "brightness",
+     "value": 1,
+     "mode": "webgl",
+     "ms": 25.3,
+     "diffPxVsPrev": 1674,
+     "maxChannelDiffVsPrev": 25,
+     "changed": true
+    },
+    {
+     "i": 33,
+     "item": "opacity",
+     "value": 0.2,
+     "mode": "webgl",
+     "ms": 103.8,
+     "diffPxVsPrev": 2009,
+     "maxChannelDiffVsPrev": 95,
+     "changed": true
+    },
+    {
+     "i": 34,
+     "item": "opacity",
+     "value": 0.4,
+     "mode": "webgl",
+     "ms": 26.6,
+     "diffPxVsPrev": 1668,
+     "maxChannelDiffVsPrev": 30,
+     "changed": true
+    },
+    {
+     "i": 35,
+     "item": "opacity",
+     "value": 0.6,
+     "mode": "webgl",
+     "ms": 25.2,
+     "diffPxVsPrev": 1667,
+     "maxChannelDiffVsPrev": 25,
+     "changed": true
+    },
+    {
+     "i": 36,
+     "item": "opacity",
+     "value": 0.8,
+     "mode": "webgl",
+     "ms": 26.5,
+     "diffPxVsPrev": 1666,
+     "maxChannelDiffVsPrev": 21,
+     "changed": true
+    },
+    {
+     "i": 37,
+     "item": "size",
+     "value": 0.2,
+     "mode": "webgl",
+     "ms": 77.2,
+     "diffPxVsPrev": 1560,
+     "maxChannelDiffVsPrev": 115,
+     "changed": true
+    },
+    {
+     "i": 38,
+     "item": "size",
+     "value": 0.3,
+     "mode": "webgl",
+     "ms": 26.8,
+     "diffPxVsPrev": 334,
+     "maxChannelDiffVsPrev": 108,
+     "changed": true
+    },
+    {
+     "i": 39,
+     "item": "size",
+     "value": 0.4,
+     "mode": "webgl",
+     "ms": 26.3,
+     "diffPxVsPrev": 588,
+     "maxChannelDiffVsPrev": 108,
+     "changed": true
+    },
+    {
+     "i": 40,
+     "item": "size",
+     "value": 0.6,
+     "mode": "webgl",
+     "ms": 52.5,
+     "diffPxVsPrev": 2416,
+     "maxChannelDiffVsPrev": 117,
+     "changed": true
+    },
+    {
+     "i": 41,
+     "item": "size",
+     "value": 0.7,
+     "mode": "webgl",
+     "ms": 26,
+     "diffPxVsPrev": 3033,
+     "maxChannelDiffVsPrev": 120,
+     "changed": true
+    },
+    {
+     "i": 42,
+     "item": "size",
+     "value": 0.8,
+     "mode": "webgl",
+     "ms": 25.8,
+     "diffPxVsPrev": 5340,
+     "maxChannelDiffVsPrev": 122,
+     "changed": true
+    },
+    {
+     "i": 43,
+     "item": "texture",
+     "value": 0.1,
+     "mode": "webgl",
+     "ms": 52.3,
+     "diffPxVsPrev": 597,
+     "maxChannelDiffVsPrev": 120,
+     "changed": true
+    },
+    {
+     "i": 44,
+     "item": "texture",
+     "value": 0.3,
+     "mode": "webgl",
+     "ms": 26.7,
+     "diffPxVsPrev": 495,
+     "maxChannelDiffVsPrev": 86,
+     "changed": true
+    },
+    {
+     "i": 45,
+     "item": "texture",
+     "value": 0.7,
+     "mode": "webgl",
+     "ms": 52.3,
+     "diffPxVsPrev": 1134,
+     "maxChannelDiffVsPrev": 53,
+     "changed": true
+    },
+    {
+     "i": 46,
+     "item": "texture",
+     "value": 0.9,
+     "mode": "webgl",
+     "ms": 26.3,
+     "diffPxVsPrev": 0,
+     "maxChannelDiffVsPrev": 7,
+     "changed": true
+    },
+    {
+     "i": 47,
+     "item": "motion",
+     "value": "floating",
+     "mode": "webgl",
+     "ms": 26.6,
+     "diffPxVsPrev": 2432,
+     "maxChannelDiffVsPrev": 121,
+     "changed": true,
+     "diffPxAfter0p7s": 4416,
+     "maxChannelDiffAfter0p7s": 124
+    },
+    {
+     "i": 48,
+     "item": "motion",
+     "value": "swaying",
+     "mode": "webgl",
+     "ms": 25.4,
+     "diffPxVsPrev": 2817,
+     "maxChannelDiffVsPrev": 121,
+     "changed": true,
+     "diffPxAfter0p7s": 2511,
+     "maxChannelDiffAfter0p7s": 116
+    },
+    {
+     "i": 49,
+     "item": "motion",
+     "value": "trembling",
+     "mode": "webgl",
+     "ms": 25.9,
+     "diffPxVsPrev": 1356,
+     "maxChannelDiffVsPrev": 116,
+     "changed": true,
+     "diffPxAfter0p7s": 267,
+     "maxChannelDiffAfter0p7s": 88
+    },
+    {
+     "i": 50,
+     "item": "motion",
+     "value": "pounding",
+     "mode": "webgl",
+     "ms": 26.3,
+     "diffPxVsPrev": 2317,
+     "maxChannelDiffVsPrev": 116,
+     "changed": true,
+     "diffPxAfter0p7s": 3943,
+     "maxChannelDiffAfter0p7s": 123
+    },
+    {
+     "i": 51,
+     "item": "motion",
+     "value": "sinking",
+     "mode": "webgl",
+     "ms": 26,
+     "diffPxVsPrev": 2315,
+     "maxChannelDiffVsPrev": 123,
+     "changed": true,
+     "diffPxAfter0p7s": 358,
+     "maxChannelDiffAfter0p7s": 113
+    },
+    {
+     "i": 52,
+     "item": "motion",
+     "value": "still",
+     "mode": "webgl",
+     "ms": 26.5,
+     "diffPxVsPrev": 1587,
+     "maxChannelDiffVsPrev": 117,
+     "changed": true,
+     "diffPxAfter0p7s": 0,
+     "maxChannelDiffAfter0p7s": 0
+    },
+    {
+     "i": 53,
+     "item": "form",
+     "value": "container",
+     "mode": "webgl",
+     "ms": 27.6,
+     "diffPxVsPrev": 16695,
+     "maxChannelDiffVsPrev": 141,
+     "changed": true,
+     "meanDeltaEVsPlayer": 0.127
+    },
+    {
+     "i": 54,
+     "item": "opacity",
+     "value": 0.4,
+     "mode": "webgl",
+     "ms": 52.8,
+     "diffPxVsPrev": 16719,
+     "maxChannelDiffVsPrev": 56,
+     "changed": true
+    }
+   ],
+   "modeAtStart": "webgl",
+   "candidatesMs": 419.4,
+   "modeAtCandidates": "webgl",
+   "webglInfo": {
+    "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5080 (0x00002C02) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "vendor": "Google Inc. (NVIDIA)",
+    "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+    "readyMs": 174,
+    "graphicsDevice": "OpenGL ES 3.0 (WebGL 2.0 (OpenGL ES 3.0 Chromium))",
+    "warmupMs": 179
+   },
+   "candidates": [
+    {
+     "id": "c-6f7abf1e002c",
+     "imgTarget": "c-6f7abf1e002c",
+     "imgMode": "webgl",
+     "overrides": "[[\"form.type\",\"mist\"]]",
+     "captureSeq": "19"
+    },
+    {
+     "id": "c-85dea7085918",
+     "imgTarget": "c-85dea7085918",
+     "imgMode": "webgl",
+     "overrides": "[[\"form.type\",\"mist\"],[\"layout.size\",0.7]]",
+     "captureSeq": "20"
+    },
+    {
+     "id": "c-618910d26c51",
+     "imgTarget": "c-618910d26c51",
+     "imgMode": "webgl",
+     "overrides": "[]",
+     "captureSeq": "21"
+    },
+    {
+     "id": "c-8163ea0caf3b",
+     "imgTarget": "c-8163ea0caf3b",
+     "imgMode": "webgl",
+     "overrides": "[[\"layout.size\",0.7]]",
+     "captureSeq": "22"
+    }
+   ],
+   "candidateDeltaE": [
+    [
+     0.153,
+     0.563,
+     0.527,
+     1.431
+    ],
+    [
+     0.564,
+     0.143,
+     0.643,
+     1.237
+    ],
+    [
+     0.527,
+     0.641,
+     0.159,
+     1.263
+    ],
+    [
+     1.433,
+     1.238,
+     1.266,
+     0.155
+    ]
+   ],
+   "candidateMatch": true,
+   "candidateTargetsMatch": true,
+   "selected": "c-6f7abf1e002c",
+   "modeAtAdjust": "webgl",
+   "unavailableAtAdjust": {},
+   "adjustRect": {
+    "x": 33,
+    "y": 289.609375,
+    "w": 302.84375,
+    "h": 227.125
+   },
+   "adjustChanged": "54/54",
+   "hostLeftAfterDone": false,
+   "preview": {
+    "requested": "webgl",
+    "mode": "webgl",
+    "reason": null,
+    "serverMode": "webgl",
+    "shown": {
+     "selecting": [
+      "webgl"
+     ],
+     "adjusting": [
+      "webgl"
+     ]
+    },
+    "fallbacks": [],
+    "webgl": {
+     "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5080 (0x00002C02) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "vendor": "Google Inc. (NVIDIA)",
+     "graphicsDevice": "OpenGL ES 3.0 (WebGL 2.0 (OpenGL ES 3.0 Chromium))",
+     "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+     "readyMs": 174.0,
+     "warmupMs": 179.0,
+     "at": "2026-11-23T11:27:01+09:00"
+    }
+   },
+   "adjustUnavailable": {},
+   "modeFinal": "webgl",
+   "fallbacks": [],
+   "premeasureSaved": true,
+   "runnerReady": true,
+   "checkFails": [],
+   "frameMarks": 1,
+   "frameRestarts": 0,
+   "frameAlwaysInBody": true,
+   "contextLost": false
+  }
+ ],
+ "console": [
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 0.72
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 0.72
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 0.72
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 0.72
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 0.72
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 0.72
+  },
+  {
+   "type": "warning",
+   "text": "Manual synchronization of Unity Application.persistentDataPath via JS_FileSystem_Sync() is deprecated and will be later removed in a future Unity version. The persistent data directory will be automatically synchronized instead on file modification. Pass config.autoSyncPersistentDataPath = true; to configuration in createUnityInstance() to opt in to the new behavior.",
+   "t": 0.99
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 5.56
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 5.56
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 5.56
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 5.56
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 5.56
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 5.56
+  },
+  {
+   "type": "warning",
+   "text": "Manual synchronization of Unity Application.persistentDataPath via JS_FileSystem_Sync() is deprecated and will be later removed in a future Unity version. The persistent data directory will be automatically synchronized instead on file modification. Pass config.autoSyncPersistentDataPath = true; to configuration in createUnityInstance() to opt in to the new behavior.",
+   "t": 5.61
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 7.34
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 7.34
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 7.34
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 7.34
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 7.34
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 7.34
+  },
+  {
+   "type": "warning",
+   "text": "Manual synchronization of Unity Application.persistentDataPath via JS_FileSystem_Sync() is deprecated and will be later removed in a future Unity version. The persistent data directory will be automatically synchronized instead on file modification. Pass config.autoSyncPersistentDataPath = true; to configuration in createUnityInstance() to opt in to the new behavior.",
+   "t": 7.39
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 10.46
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 10.46
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 10.46
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 10.46
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 10.46
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 10.46
+  },
+  {
+   "type": "warning",
+   "text": "Manual synchronization of Unity Application.persistentDataPath via JS_FileSystem_Sync() is deprecated and will be later removed in a future Unity version. The persistent data directory will be automatically synchronized instead on file modification. Pass config.autoSyncPersistentDataPath = true; to configuration in createUnityInstance() to opt in to the new behavior.",
+   "t": 10.5
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 13.11
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 13.11
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 13.11
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 13.11
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 13.11
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 13.11
+  },
+  {
+   "type": "warning",
+   "text": "Manual synchronization of Unity Application.persistentDataPath via JS_FileSystem_Sync() is deprecated and will be later removed in a future Unity version. The persistent data directory will be automatically synchronized instead on file modification. Pass config.autoSyncPersistentDataPath = true; to configuration in createUnityInstance() to opt in to the new behavior.",
+   "t": 13.15
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 14.16
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 14.16
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 14.16
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 14.16
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 14.16
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 14.16
+  },
+  {
+   "type": "warning",
+   "text": "Manual synchronization of Unity Application.persistentDataPath via JS_FileSystem_Sync() is deprecated and will be later removed in a future Unity version. The persistent data directory will be automatically synchronized instead on file modification. Pass config.autoSyncPersistentDataPath = true; to configuration in createUnityInstance() to opt in to the new behavior.",
+   "t": 14.21
+  },
+  {
+   "type": "warning",
+   "text": "[SceneLoader] preview.json (session SYN-SEL-S6): shape=elongated, 트리거 '길쭉한' [7,10] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)\n",
+   "t": 14.26
+  },
+  {
+   "type": "warning",
+   "text": "[SceneLoader] preview.json (session SYN-SEL-S6): shape=elongated, 트리거 '길쭉한' [7,10] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)\n",
+   "t": 14.26
+  },
+  {
+   "type": "warning",
+   "text": "[SceneLoader] preview.json (session SYN-SEL-S6): shape=elongated, 트리거 '길쭉한' [7,10] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)\n",
+   "t": 14.31
+  },
+  {
+   "type": "warning",
+   "text": "[SceneLoader] preview.json (session SYN-SEL-S6): shape=elongated, 트리거 '길쭉한' [7,10] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)\n",
+   "t": 14.33
+  },
+  {
+   "type": "warning",
+   "text": "[SceneLoader] preview.json (session SYN-SEL-S6): shape=elongated, 트리거 '길쭉한' [7,10] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)\n",
+   "t": 14.4
+  },
+  {
+   "type": "warning",
+   "text": "[SceneLoader] preview.json (session SYN-SEL-S6): shape=elongated, 트리거 '길쭉한' [7,10] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)\n",
+   "t": 14.4
+  },
+  {
+   "type": "warning",
+   "text": "[SceneLoader] preview.json (session SYN-SEL-S6): shape=elongated, 트리거 '길쭉한' [7,10] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)\n",
+   "t": 14.4
+  },
+  {
+   "type": "warning",
+   "text": "[SceneLoader] preview.json (session SYN-SEL-S6): shape=elongated, 트리거 '길쭉한' [7,10] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)\n",
+   "t": 14.41
+  },
+  {
+   "type": "warning",
+   "text": "[SceneLoader] preview.json (session SYN-SEL-S6): shape=elongated, 트리거 '길쭉한' [7,10] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)\n",
+   "t": 14.41
+  },
+  {
+   "type": "warning",
+   "text": "[SceneLoader] preview.json (session SYN-SEL-S6): shape=elongated, 트리거 '길쭉한' [7,10] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)\n",
+   "t": 14.41
+  },
+  {
+   "type": "warning",
+   "text": "[SceneLoader] preview.json (session SYN-SEL-S6): shape=elongated, 트리거 '길쭉한' [7,10] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)\n",
+   "t": 14.42
+  },
+  {
+   "type": "warning",
+   "text": "[SceneLoader] preview.json (session SYN-SEL-S6): shape=elongated, 트리거 '길쭉한' [7,10] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)\n",
+   "t": 14.42
+  },
+  {
+   "type": "warning",
+   "text": "[SceneLoader] preview.json (session SYN-SEL-S6): shape=elongated, 트리거 '길쭉한' [7,10] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)\n",
+   "t": 14.42
+  },
+  {
+   "type": "warning",
+   "text": "[SceneLoader] preview.json (session SYN-SEL-S6): shape=elongated, 트리거 '길쭉한' [7,10] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)\n",
+   "t": 14.43
+  },
+  {
+   "type": "warning",
+   "text": "[SceneLoader] preview.json (session SYN-SEL-S6): shape=elongated, 트리거 '길쭉한' [7,10] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)\n",
+   "t": 14.43
+  },
+  {
+   "type": "warning",
+   "text": "[SceneLoader] preview.json (session SYN-SEL-S6): shape=elongated, 트리거 '길쭉한' [7,10] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)\n",
+   "t": 14.43
+  },
+  {
+   "type": "warning",
+   "text": "[SceneLoader] preview.json (session SYN-SEL-S6): shape=elongated, 트리거 '길쭉한' [7,10] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)\n",
+   "t": 14.44
+  },
+  {
+   "type": "warning",
+   "text": "[SceneLoader] preview.json (session SYN-SEL-S6): shape=elongated, 트리거 '길쭉한' [7,10] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)\n",
+   "t": 14.44
+  },
+  {
+   "type": "warning",
+   "text": "[SceneLoader] preview.json (session SYN-SEL-S6): shape=elongated, 트리거 '길쭉한' [7,10] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)\n",
+   "t": 14.44
+  },
+  {
+   "type": "warning",
+   "text": "[SceneLoader] preview.json (session SYN-SEL-S6): shape=elongated, 트리거 '길쭉한' [7,10] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)\n",
+   "t": 14.45
+  },
+  {
+   "type": "warning",
+   "text": "[SceneLoader] preview.json (session SYN-SEL-S6): shape=elongated, 트리거 '길쭉한' [7,10] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)\n",
+   "t": 14.46
+  },
+  {
+   "type": "warning",
+   "text": "[SceneLoader] preview.json (session SYN-SEL-S6): shape=elongated, 트리거 '길쭉한' [7,10] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)\n",
+   "t": 14.47
+  },
+  {
+   "type": "warning",
+   "text": "[SceneLoader] preview.json (session SYN-SEL-S6): shape=elongated, 트리거 '길쭉한' [7,10] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)\n",
+   "t": 14.47
+  },
+  {
+   "type": "warning",
+   "text": "[SceneLoader] preview.json (session SYN-SEL-S6): shape=elongated, 트리거 '길쭉한' [7,10] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)\n",
+   "t": 15.08
+  },
+  {
+   "type": "warning",
+   "text": "[SceneLoader] preview.json (session SYN-SEL-S6): shape=elongated, 트리거 '길쭉한' [7,10] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)\n",
+   "t": 15.42
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 16.17
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 16.17
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 16.17
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 16.17
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 16.17
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 16.17
+  },
+  {
+   "type": "warning",
+   "text": "Manual synchronization of Unity Application.persistentDataPath via JS_FileSystem_Sync() is deprecated and will be later removed in a future Unity version. The persistent data directory will be automatically synchronized instead on file modification. Pass config.autoSyncPersistentDataPath = true; to configuration in createUnityInstance() to opt in to the new behavior.",
+   "t": 16.21
+  },
+  {
+   "type": "warning",
+   "text": "[SceneLoader] preview.json (session SYN-SEL-S7): shape=elongated, 트리거 '길쭉한' [6,9] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)\n",
+   "t": 16.27
+  },
+  {
+   "type": "warning",
+   "text": "[SceneLoader] preview.json (session SYN-SEL-S7): shape=elongated, 트리거 '길쭉한' [6,9] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)\n",
+   "t": 16.27
+  },
+  {
+   "type": "warning",
+   "text": "[SceneLoader] preview.json (session SYN-SEL-S7): shape=elongated, 트리거 '길쭉한' [6,9] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)\n",
+   "t": 16.32
+  },
+  {
+   "type": "warning",
+   "text": "[SceneLoader] preview.json (session SYN-SEL-S7): shape=elongated, 트리거 '길쭉한' [6,9] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)\n",
+   "t": 16.34
+  },
+  {
+   "type": "warning",
+   "text": "[SceneLoader] preview.json (session SYN-SEL-S7): shape=elongated, 트리거 '길쭉한' [6,9] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)\n",
+   "t": 16.4
+  },
+  {
+   "type": "warning",
+   "text": "[SceneLoader] preview.json (session SYN-SEL-S7): shape=elongated, 트리거 '길쭉한' [6,9] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)\n",
+   "t": 16.41
+  },
+  {
+   "type": "warning",
+   "text": "[SceneLoader] preview.json (session SYN-SEL-S7): shape=elongated, 트리거 '길쭉한' [6,9] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)\n",
+   "t": 16.41
+  },
+  {
+   "type": "warning",
+   "text": "[SceneLoader] preview.json (session SYN-SEL-S7): shape=elongated, 트리거 '길쭉한' [6,9] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)\n",
+   "t": 16.41
+  },
+  {
+   "type": "warning",
+   "text": "[SceneLoader] preview.json (session SYN-SEL-S7): shape=elongated, 트리거 '길쭉한' [6,9] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)\n",
+   "t": 16.41
+  },
+  {
+   "type": "warning",
+   "text": "[SceneLoader] preview.json (session SYN-SEL-S7): shape=elongated, 트리거 '길쭉한' [6,9] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)\n",
+   "t": 16.42
+  },
+  {
+   "type": "warning",
+   "text": "[SceneLoader] preview.json (session SYN-SEL-S7): shape=elongated, 트리거 '길쭉한' [6,9] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)\n",
+   "t": 16.42
+  },
+  {
+   "type": "warning",
+   "text": "[SceneLoader] preview.json (session SYN-SEL-S7): shape=elongated, 트리거 '길쭉한' [6,9] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)\n",
+   "t": 16.43
+  },
+  {
+   "type": "warning",
+   "text": "[SceneLoader] preview.json (session SYN-SEL-S7): shape=elongated, 트리거 '길쭉한' [6,9] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)\n",
+   "t": 16.43
+  },
+  {
+   "type": "warning",
+   "text": "[SceneLoader] preview.json (session SYN-SEL-S7): shape=elongated, 트리거 '길쭉한' [6,9] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)\n",
+   "t": 16.43
+  },
+  {
+   "type": "warning",
+   "text": "[SceneLoader] preview.json (session SYN-SEL-S7): shape=elongated, 트리거 '길쭉한' [6,9] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)\n",
+   "t": 16.44
+  },
+  {
+   "type": "warning",
+   "text": "[SceneLoader] preview.json (session SYN-SEL-S7): shape=elongated, 트리거 '길쭉한' [6,9] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)\n",
+   "t": 16.44
+  },
+  {
+   "type": "warning",
+   "text": "[SceneLoader] preview.json (session SYN-SEL-S7): shape=elongated, 트리거 '길쭉한' [6,9] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)\n",
+   "t": 16.44
+  },
+  {
+   "type": "warning",
+   "text": "[SceneLoader] preview.json (session SYN-SEL-S7): shape=elongated, 트리거 '길쭉한' [6,9] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)\n",
+   "t": 16.45
+  },
+  {
+   "type": "warning",
+   "text": "[SceneLoader] preview.json (session SYN-SEL-S7): shape=elongated, 트리거 '길쭉한' [6,9] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)\n",
+   "t": 16.45
+  },
+  {
+   "type": "warning",
+   "text": "[SceneLoader] preview.json (session SYN-SEL-S7): shape=elongated, 트리거 '길쭉한' [6,9] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)\n",
+   "t": 16.45
+  },
+  {
+   "type": "warning",
+   "text": "[SceneLoader] preview.json (session SYN-SEL-S7): shape=elongated, 트리거 '길쭉한' [6,9] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)\n",
+   "t": 16.46
+  },
+  {
+   "type": "warning",
+   "text": "[SceneLoader] preview.json (session SYN-SEL-S7): shape=elongated, 트리거 '길쭉한' [6,9] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)\n",
+   "t": 16.47
+  },
+  {
+   "type": "warning",
+   "text": "[SceneLoader] preview.json (session SYN-SEL-S7): shape=elongated, 트리거 '길쭉한' [6,9] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)\n",
+   "t": 16.48
+  },
+  {
+   "type": "warning",
+   "text": "[SceneLoader] preview.json (session SYN-SEL-S7): shape=elongated, 트리거 '길쭉한' [6,9] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)\n",
+   "t": 17.1
+  },
+  {
+   "type": "warning",
+   "text": "[SceneLoader] preview.json (session SYN-SEL-S7): shape=elongated, 트리거 '길쭉한' [6,9] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)\n",
+   "t": 17.1
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 17.91
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 17.91
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 17.91
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 17.91
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 17.91
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 17.91
+  },
+  {
+   "type": "warning",
+   "text": "Manual synchronization of Unity Application.persistentDataPath via JS_FileSystem_Sync() is deprecated and will be later removed in a future Unity version. The persistent data directory will be automatically synchronized instead on file modification. Pass config.autoSyncPersistentDataPath = true; to configuration in createUnityInstance() to opt in to the new behavior.",
+   "t": 17.96
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 20.17
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 20.17
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 20.17
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 20.17
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 20.17
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 20.17
+  },
+  {
+   "type": "warning",
+   "text": "Manual synchronization of Unity Application.persistentDataPath via JS_FileSystem_Sync() is deprecated and will be later removed in a future Unity version. The persistent data directory will be automatically synchronized instead on file modification. Pass config.autoSyncPersistentDataPath = true; to configuration in createUnityInstance() to opt in to the new behavior.",
+   "t": 20.22
+  },
+  {
+   "type": "warning",
+   "text": "[SceneLoader] form.base=sheet: 그리지 않음(not_applied_form — form.type=shell의 형태 모형을 지킴)\n",
+   "t": 20.45
+  },
+  {
+   "type": "warning",
+   "text": "[SceneLoader] form.base=sheet: 그리지 않음(not_applied_form — form.type=shell의 형태 모형을 지킴)\n",
+   "t": 20.47
+  },
+  {
+   "type": "warning",
+   "text": "[SceneLoader] form.base=sheet: 그리지 않음(not_applied_form — form.type=shell의 형태 모형을 지킴)\n",
+   "t": 21.04
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 21.85
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 21.85
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 21.85
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 21.85
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 21.85
+  },
+  {
+   "type": "log.warning",
+   "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+   "url": "http://127.0.0.1:8790/preview/webgl/Build/preview.framework.js",
+   "t": 21.85
+  },
+  {
+   "type": "warning",
+   "text": "Manual synchronization of Unity Application.persistentDataPath via JS_FileSystem_Sync() is deprecated and will be later removed in a future Unity version. The persistent data directory will be automatically synchronized instead on file modification. Pass config.autoSyncPersistentDataPath = true; to configuration in createUnityInstance() to opt in to the new behavior.",
+   "t": 21.9
+  }
+ ],
+ "server": {
+  "preview": {
+   "requested": "webgl",
+   "mode": "webgl",
+   "reason": null,
+   "webglUrl": "/preview/webgl/index.html",
+   "fallback": "image",
+   "webglReadyTimeoutMs": 30000,
+   "webglRequestTimeoutMs": 15000,
+   "renderer": {
+    "renderer": "unity-queue",
+    "command": [
+     "IFSPreview.exe"
+    ],
+    "queueDir": "<repo 밖>/webgl-build\\g12\\e2e-webgl\\queue",
+    "running": false,
+    "pid": null,
+    "startupSeconds": null,
+    "renders": 0,
+    "lastRttMs": null,
+    "size": [
+     320,
+     240
+    ]
+   },
+   "events": []
+  }
+ },
+ "consoleErrors": [],
+ "llmCalls": 0
+}

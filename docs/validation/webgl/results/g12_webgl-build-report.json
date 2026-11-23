@@ -1,0 +1,75 @@
+{
+  "target": "WebGL",
+  "outDir": "<repo 밖>/webgl-build\\preview",
+  "unity": "6000.0.85f2",
+  "scene": "Assets/IFS/Scenes/Preview.unity",
+  "time": "2026-11-23T10:57:37.9177467+09:00",
+  "colorSpace": "Linear",
+  "xrLoaderForWebGL": "WebGL 항목 없음(Standalone만) → WebGL 빌드에 XR 로더 없음",
+  "temporarySettings": {
+    "compressionFormat": "Disabled",
+    "decompressionFallback": false,
+    "template": "PROJECT:IFSPreview",
+    "dataCaching": false,
+    "splashScreen": false,
+    "restoredAfterBuild": true
+  },
+  "wallSeconds": 73.8,
+  "result": "Succeeded",
+  "errors": 0,
+  "warnings": 0,
+  "buildSeconds": 73.5,
+  "reportedSizeBytes": 74878212,
+  "ok": true,
+  "files": [
+    {
+      "path": "Build/preview.data",
+      "bytes": 10257214
+    },
+    {
+      "path": "Build/preview.framework.js",
+      "bytes": 440600
+    },
+    {
+      "path": "Build/preview.loader.js",
+      "bytes": 18903
+    },
+    {
+      "path": "Build/preview.wasm",
+      "bytes": 36913746
+    },
+    {
+      "path": "StreamingAssets/IFS/examples/EX01.json",
+      "bytes": 3662
+    },
+    {
+      "path": "StreamingAssets/IFS/examples/EX02.json",
+      "bytes": 1825
+    },
+    {
+      "path": "StreamingAssets/IFS/examples/v1/EX01.v1.json",
+      "bytes": 5253
+    },
+    {
+      "path": "StreamingAssets/IFS/examples/v1/EX03.v1.json",
+      "bytes": 13416
+    },
+    {
+      "path": "StreamingAssets/IFS/ownership_task.v0.json",
+      "bytes": 1551
+    },
+    {
+      "path": "StreamingAssets/IFS/placement_task.scaleA.v0.json",
+      "bytes": 12925
+    },
+    {
+      "path": "StreamingAssets/IFS/placement_task.v0.json",
+      "bytes": 4845
+    },
+    {
+      "path": "index.html",
+      "bytes": 6728
+    }
+  ],
+  "restoredBuildTarget": "StandaloneWindows64"
+}

@@ -1,0 +1,76 @@
+{
+ "candidates_after_15s": {
+  "stage": "selecting",
+  "iframesInDom": 0,
+  "frameLoads": 0,
+  "candImgs": [
+   false,
+   false,
+   false,
+   false
+  ],
+  "unityReadyInFrame": []
+ },
+ "adjust_after_6s": {
+  "stage": "adjusting",
+  "iframesInDom": 1,
+  "frameLoads": 1,
+  "candImgs": [],
+  "unityReadyInFrame": [
+   true
+  ]
+ },
+ "after_adjust1_6s": {
+  "stage": "adjusting",
+  "iframesInDom": 1,
+  "frameLoads": 2,
+  "candImgs": [],
+  "unityReadyInFrame": [
+   true
+  ]
+ },
+ "after_adjust2_6s": {
+  "stage": "adjusting",
+  "iframesInDom": 1,
+  "frameLoads": 3,
+  "candImgs": [],
+  "unityReadyInFrame": [
+   true
+  ]
+ },
+ "server_current_overrides": {
+  "layout.size": 0.4,
+  "material.color.h": 0.0,
+  "material.color.s": 0.0,
+  "material.color.l": 0.7
+ },
+ "frame_applied_now": "Unity 오류: 로드된 형상이 없습니다",
+ "console": [
+  {
+   "type": "log.error",
+   "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "url": "http://127.0.0.1:8791/favicon.ico",
+   "t": 0.07
+  },
+  {
+   "type": "warning",
+   "text": "Manual synchronization of Unity Application.persistentDataPath via JS_FileSystem_Sync() is deprecated and will be later removed in a future Unity version. The persistent data directory will be automatically synchronized instead on file modification. Pass config.autoSyncPersistentDataPath = true; to configuration in createUnityInstance() to opt in to the new behavior.",
+   "t": 17.19
+  },
+  {
+   "type": "warning",
+   "text": "Manual synchronization of Unity Application.persistentDataPath via JS_FileSystem_Sync() is deprecated and will be later removed in a future Unity version. The persistent data directory will be automatically synchronized instead on file modification. Pass config.autoSyncPersistentDataPath = true; to configuration in createUnityInstance() to opt in to the new behavior.",
+   "t": 22.71
+  },
+  {
+   "type": "warning",
+   "text": "Manual synchronization of Unity Application.persistentDataPath via JS_FileSystem_Sync() is deprecated and will be later removed in a future Unity version. The persistent data directory will be automatically synchronized instead on file modification. Pass config.autoSyncPersistentDataPath = true; to configuration in createUnityInstance() to opt in to the new behavior.",
+   "t": 28.73
+  },
+  {
+   "type": "warning",
+   "text": "[Preview] capture: 로드된 형상이 없습니다\n",
+   "t": 34.61
+  }
+ ]
+}

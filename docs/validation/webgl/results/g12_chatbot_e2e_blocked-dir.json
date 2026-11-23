@@ -1,0 +1,1052 @@
+{
+ "label": "blocked-dir",
+ "chromeExtra": [],
+ "runs": [
+  {
+   "scenario": "S1_form_said",
+   "sessionId": "SYN-SEL-S1",
+   "steps": [
+    {
+     "i": 1,
+     "item": "color",
+     "value": "h07",
+     "mode": "image",
+     "ms": 26.6,
+     "diffPxVsPrev": 536,
+     "maxChannelDiffVsPrev": 44,
+     "changed": true
+    },
+    {
+     "i": 2,
+     "item": "size",
+     "value": 0.4,
+     "mode": "image",
+     "ms": 26.2,
+     "diffPxVsPrev": 517,
+     "maxChannelDiffVsPrev": 29,
+     "changed": true
+    },
+    {
+     "i": 3,
+     "item": "brightness",
+     "value": 0.625,
+     "mode": "image",
+     "ms": 25.5,
+     "diffPxVsPrev": 824,
+     "maxChannelDiffVsPrev": 19,
+     "changed": true
+    }
+   ],
+   "modeAtStart": "image",
+   "candidatesMs": 698.5,
+   "modeAtCandidates": "image",
+   "webglInfo": null,
+   "candidates": [
+    {
+     "id": "c-967711998ca9",
+     "imgTarget": "c-967711998ca9",
+     "imgMode": "image"
+    },
+    {
+     "id": "c-e1853be20df2",
+     "imgTarget": "c-e1853be20df2",
+     "imgMode": "image"
+    },
+    {
+     "id": "c-4326b469c876",
+     "imgTarget": "c-4326b469c876",
+     "imgMode": "image"
+    },
+    {
+     "id": "c-ee132eef4bb0",
+     "imgTarget": "c-ee132eef4bb0",
+     "imgMode": "image"
+    }
+   ],
+   "candidateDeltaE": [
+    [
+     0.0,
+     0.02,
+     0.037,
+     0.04
+    ],
+    [
+     0.02,
+     0.0,
+     0.038,
+     0.037
+    ],
+    [
+     0.037,
+     0.038,
+     0.0,
+     0.01
+    ],
+    [
+     0.04,
+     0.037,
+     0.01,
+     0.0
+    ]
+   ],
+   "candidateMatch": true,
+   "candidateTargetsMatch": true,
+   "selected": "c-4326b469c876",
+   "modeAtAdjust": "image",
+   "unavailableAtAdjust": {
+    "motion": "still_image_preview"
+   },
+   "adjustRect": {
+    "x": 33,
+    "y": 363.75,
+    "w": 302.84375,
+    "h": 227.125
+   },
+   "adjustChanged": "3/3",
+   "hostLeftAfterDone": false,
+   "preview": {
+    "requested": "webgl",
+    "mode": "image",
+    "reason": "WebGL 빌드가 없음(../../webgl-build/preview/index.html) → image",
+    "serverMode": "image",
+    "shown": {
+     "selecting": [
+      "image"
+     ],
+     "adjusting": [
+      "image"
+     ]
+    },
+    "fallbacks": [
+     {
+      "at": "2026-11-23T11:27:54+09:00",
+      "from": "webgl",
+      "to": "image",
+      "reason": "WebGL 빌드가 없음(../../webgl-build/preview/index.html) → image",
+      "source": "server",
+      "stage": null
+     }
+    ],
+    "webgl": null
+   },
+   "adjustUnavailable": {
+    "motion": {
+     "reason": "still_image_preview",
+     "previewMode": "image",
+     "since": "2026-11-23T11:27:54+09:00",
+     "stage": "selecting"
+    }
+   },
+   "modeFinal": "image",
+   "fallbacks": [
+    [
+     "webgl",
+     "image",
+     "server",
+     "WebGL 빌드가 없음(../../webgl-build/preview/index.html) → image"
+    ]
+   ],
+   "premeasureSaved": true,
+   "runnerReady": true,
+   "checkFails": [],
+   "frameMarks": 0,
+   "frameRestarts": 0,
+   "frameAlwaysInBody": null,
+   "contextLost": false
+  },
+  {
+   "scenario": "S3_all_said",
+   "sessionId": "SYN-SEL-S3",
+   "steps": [
+    {
+     "i": 1,
+     "item": "motion",
+     "value": "trembling",
+     "disabled": true
+    },
+    {
+     "i": 2,
+     "item": "motion",
+     "value": "still",
+     "disabled": true
+    }
+   ],
+   "modeAtStart": "image",
+   "modeAtAdjust": "image",
+   "unavailableAtAdjust": {
+    "motion": "still_image_preview"
+   },
+   "adjustRect": {
+    "x": 33,
+    "y": 363.75,
+    "w": 302.84375,
+    "h": 227.125
+   },
+   "adjustChanged": "0/0",
+   "hostLeftAfterDone": false,
+   "preview": {
+    "requested": "webgl",
+    "mode": "image",
+    "reason": "WebGL 빌드가 없음(../../webgl-build/preview/index.html) → image",
+    "serverMode": "image",
+    "shown": {
+     "adjusting": [
+      "image"
+     ]
+    },
+    "fallbacks": [
+     {
+      "at": "2026-11-23T11:27:58+09:00",
+      "from": "webgl",
+      "to": "image",
+      "reason": "WebGL 빌드가 없음(../../webgl-build/preview/index.html) → image",
+      "source": "server",
+      "stage": null
+     }
+    ],
+    "webgl": null
+   },
+   "adjustUnavailable": {
+    "motion": {
+     "reason": "still_image_preview",
+     "previewMode": "image",
+     "since": "2026-11-23T11:27:58+09:00",
+     "stage": "selecting"
+    }
+   },
+   "modeFinal": "image",
+   "fallbacks": [
+    [
+     "webgl",
+     "image",
+     "server",
+     "WebGL 빌드가 없음(../../webgl-build/preview/index.html) → image"
+    ]
+   ],
+   "premeasureSaved": true,
+   "runnerReady": true,
+   "checkFails": [],
+   "frameMarks": 0,
+   "frameRestarts": 0,
+   "frameAlwaysInBody": null,
+   "contextLost": false
+  },
+  {
+   "scenario": "S8_base_said_edited",
+   "sessionId": "SYN-SEL-S8",
+   "steps": [
+    {
+     "i": 1,
+     "item": "form",
+     "value": "sheet",
+     "mode": "image",
+     "ms": 26.3,
+     "diffPxVsPrev": 1859,
+     "maxChannelDiffVsPrev": 38,
+     "changed": true
+    },
+    {
+     "i": 2,
+     "item": "color",
+     "value": "h03",
+     "mode": "image",
+     "ms": 26.3,
+     "diffPxVsPrev": 2438,
+     "maxChannelDiffVsPrev": 45,
+     "changed": true
+    }
+   ],
+   "modeAtStart": "image",
+   "candidatesMs": 72.4,
+   "modeAtCandidates": "image",
+   "webglInfo": null,
+   "candidates": [
+    {
+     "id": "c-9da4f4e70b5e",
+     "imgTarget": "c-9da4f4e70b5e",
+     "imgMode": "image"
+    },
+    {
+     "id": "c-66c538442cb2",
+     "imgTarget": "c-66c538442cb2",
+     "imgMode": "image"
+    },
+    {
+     "id": "c-c0f500eb479a",
+     "imgTarget": "c-c0f500eb479a",
+     "imgMode": "image"
+    },
+    {
+     "id": "c-5ac43310ea39",
+     "imgTarget": "c-5ac43310ea39",
+     "imgMode": "image"
+    }
+   ],
+   "candidateDeltaE": [
+    [
+     0.0,
+     0.901,
+     0.448,
+     0.194
+    ],
+    [
+     0.901,
+     0.0,
+     0.52,
+     1.007
+    ],
+    [
+     0.448,
+     0.52,
+     0.0,
+     0.611
+    ],
+    [
+     0.194,
+     1.007,
+     0.611,
+     0.0
+    ]
+   ],
+   "candidateMatch": true,
+   "candidateTargetsMatch": true,
+   "selected": "c-9da4f4e70b5e",
+   "modeAtAdjust": "image",
+   "unavailableAtAdjust": {
+    "motion": "still_image_preview"
+   },
+   "adjustRect": {
+    "x": 33,
+    "y": 363.75,
+    "w": 302.84375,
+    "h": 227.125
+   },
+   "adjustChanged": "2/2",
+   "hostLeftAfterDone": false,
+   "preview": {
+    "requested": "webgl",
+    "mode": "image",
+    "reason": "WebGL 빌드가 없음(../../webgl-build/preview/index.html) → image",
+    "serverMode": "image",
+    "shown": {
+     "selecting": [
+      "image"
+     ],
+     "adjusting": [
+      "image"
+     ]
+    },
+    "fallbacks": [
+     {
+      "at": "2026-11-23T11:27:58+09:00",
+      "from": "webgl",
+      "to": "image",
+      "reason": "WebGL 빌드가 없음(../../webgl-build/preview/index.html) → image",
+      "source": "server",
+      "stage": null
+     }
+    ],
+    "webgl": null
+   },
+   "adjustUnavailable": {
+    "motion": {
+     "reason": "still_image_preview",
+     "previewMode": "image",
+     "since": "2026-11-23T11:27:58+09:00",
+     "stage": "selecting"
+    }
+   },
+   "modeFinal": "image",
+   "fallbacks": [
+    [
+     "webgl",
+     "image",
+     "server",
+     "WebGL 빌드가 없음(../../webgl-build/preview/index.html) → image"
+    ]
+   ],
+   "premeasureSaved": true,
+   "runnerReady": true,
+   "checkFails": [],
+   "frameMarks": 0,
+   "frameRestarts": 0,
+   "frameAlwaysInBody": null,
+   "contextLost": false
+  },
+  {
+   "scenario": "SWEEP_all_items",
+   "sessionId": "SYN-E2E-SWEEP",
+   "steps": [
+    {
+     "i": 1,
+     "item": "color",
+     "value": "n10",
+     "mode": "image",
+     "ms": 26.4,
+     "diffPxVsPrev": 1689,
+     "maxChannelDiffVsPrev": 153,
+     "changed": true
+    },
+    {
+     "i": 2,
+     "item": "color",
+     "value": "n30",
+     "mode": "image",
+     "ms": 25.5,
+     "diffPxVsPrev": 1344,
+     "maxChannelDiffVsPrev": 50,
+     "changed": true
+    },
+    {
+     "i": 3,
+     "item": "color",
+     "value": "n50",
+     "mode": "image",
+     "ms": 25.4,
+     "diffPxVsPrev": 1509,
+     "maxChannelDiffVsPrev": 52,
+     "changed": true
+    },
+    {
+     "i": 4,
+     "item": "color",
+     "value": "n90",
+     "mode": "image",
+     "ms": 25.7,
+     "diffPxVsPrev": 1717,
+     "maxChannelDiffVsPrev": 103,
+     "changed": true
+    },
+    {
+     "i": 5,
+     "item": "color",
+     "value": "h00",
+     "mode": "image",
+     "ms": 25.4,
+     "diffPxVsPrev": 1747,
+     "maxChannelDiffVsPrev": 180,
+     "changed": true
+    },
+    {
+     "i": 6,
+     "item": "color",
+     "value": "h01",
+     "mode": "image",
+     "ms": 26.5,
+     "diffPxVsPrev": 1557,
+     "maxChannelDiffVsPrev": 76,
+     "changed": true
+    },
+    {
+     "i": 7,
+     "item": "color",
+     "value": "h02",
+     "mode": "image",
+     "ms": 25.8,
+     "diffPxVsPrev": 1669,
+     "maxChannelDiffVsPrev": 78,
+     "changed": true
+    },
+    {
+     "i": 8,
+     "item": "color",
+     "value": "h03",
+     "mode": "image",
+     "ms": 25.5,
+     "diffPxVsPrev": 1666,
+     "maxChannelDiffVsPrev": 77,
+     "changed": true
+    },
+    {
+     "i": 9,
+     "item": "color",
+     "value": "h04",
+     "mode": "image",
+     "ms": 26,
+     "diffPxVsPrev": 1557,
+     "maxChannelDiffVsPrev": 76,
+     "changed": true
+    },
+    {
+     "i": 10,
+     "item": "color",
+     "value": "h05",
+     "mode": "image",
+     "ms": 25.5,
+     "diffPxVsPrev": 1554,
+     "maxChannelDiffVsPrev": 77,
+     "changed": true
+    },
+    {
+     "i": 11,
+     "item": "color",
+     "value": "h06",
+     "mode": "image",
+     "ms": 25.6,
+     "diffPxVsPrev": 1668,
+     "maxChannelDiffVsPrev": 77,
+     "changed": true
+    },
+    {
+     "i": 12,
+     "item": "color",
+     "value": "h07",
+     "mode": "image",
+     "ms": 26.2,
+     "diffPxVsPrev": 1669,
+     "maxChannelDiffVsPrev": 77,
+     "changed": true
+    },
+    {
+     "i": 13,
+     "item": "color",
+     "value": "h08",
+     "mode": "image",
+     "ms": 26.7,
+     "diffPxVsPrev": 1557,
+     "maxChannelDiffVsPrev": 77,
+     "changed": true
+    },
+    {
+     "i": 14,
+     "item": "color",
+     "value": "h09",
+     "mode": "image",
+     "ms": 27,
+     "diffPxVsPrev": 1557,
+     "maxChannelDiffVsPrev": 76,
+     "changed": true
+    },
+    {
+     "i": 15,
+     "item": "color",
+     "value": "h10",
+     "mode": "image",
+     "ms": 26.4,
+     "diffPxVsPrev": 1666,
+     "maxChannelDiffVsPrev": 77,
+     "changed": true
+    },
+    {
+     "i": 16,
+     "item": "color",
+     "value": "h11",
+     "mode": "image",
+     "ms": 26.5,
+     "diffPxVsPrev": 1668,
+     "maxChannelDiffVsPrev": 78,
+     "changed": true
+    },
+    {
+     "i": 17,
+     "item": "form",
+     "value": "blob",
+     "mode": "image",
+     "ms": 26.1,
+     "diffPxVsPrev": 3039,
+     "maxChannelDiffVsPrev": 97,
+     "changed": true
+    },
+    {
+     "i": 18,
+     "item": "form",
+     "value": "shell",
+     "mode": "image",
+     "ms": 26,
+     "diffPxVsPrev": 2196,
+     "maxChannelDiffVsPrev": 169,
+     "changed": true
+    },
+    {
+     "i": 19,
+     "item": "form",
+     "value": "fragments",
+     "mode": "image",
+     "ms": 26.4,
+     "diffPxVsPrev": 3130,
+     "maxChannelDiffVsPrev": 162,
+     "changed": true
+    },
+    {
+     "i": 20,
+     "item": "form",
+     "value": "container",
+     "mode": "image",
+     "ms": 25.4,
+     "diffPxVsPrev": 4237,
+     "maxChannelDiffVsPrev": 113,
+     "changed": true
+    },
+    {
+     "i": 21,
+     "item": "form",
+     "value": "line",
+     "mode": "image",
+     "ms": 26,
+     "diffPxVsPrev": 3591,
+     "maxChannelDiffVsPrev": 113,
+     "changed": true
+    },
+    {
+     "i": 22,
+     "item": "form",
+     "value": "sheet",
+     "mode": "image",
+     "ms": 25.3,
+     "diffPxVsPrev": 2824,
+     "maxChannelDiffVsPrev": 94,
+     "changed": true
+    },
+    {
+     "i": 23,
+     "item": "form",
+     "value": "flame",
+     "mode": "image",
+     "ms": 26,
+     "diffPxVsPrev": 2694,
+     "maxChannelDiffVsPrev": 115,
+     "changed": true
+    },
+    {
+     "i": 24,
+     "item": "form",
+     "value": "drop",
+     "mode": "image",
+     "ms": 26.2,
+     "diffPxVsPrev": 1831,
+     "maxChannelDiffVsPrev": 101,
+     "changed": true
+    },
+    {
+     "i": 25,
+     "item": "brightness",
+     "value": 0,
+     "mode": "image",
+     "ms": 103.9,
+     "diffPxVsPrev": 1724,
+     "maxChannelDiffVsPrev": 71,
+     "changed": true
+    },
+    {
+     "i": 26,
+     "item": "brightness",
+     "value": 0.125,
+     "mode": "image",
+     "ms": 26.4,
+     "diffPxVsPrev": 1580,
+     "maxChannelDiffVsPrev": 21,
+     "changed": true
+    },
+    {
+     "i": 27,
+     "item": "brightness",
+     "value": 0.25,
+     "mode": "image",
+     "ms": 25.4,
+     "diffPxVsPrev": 1523,
+     "maxChannelDiffVsPrev": 19,
+     "changed": true
+    },
+    {
+     "i": 28,
+     "item": "brightness",
+     "value": 0.375,
+     "mode": "image",
+     "ms": 25.5,
+     "diffPxVsPrev": 1483,
+     "maxChannelDiffVsPrev": 17,
+     "changed": true
+    },
+    {
+     "i": 29,
+     "item": "brightness",
+     "value": 0.625,
+     "mode": "image",
+     "ms": 52.8,
+     "diffPxVsPrev": 1725,
+     "maxChannelDiffVsPrev": 60,
+     "changed": true
+    },
+    {
+     "i": 30,
+     "item": "brightness",
+     "value": 0.75,
+     "mode": "image",
+     "ms": 25.8,
+     "diffPxVsPrev": 1690,
+     "maxChannelDiffVsPrev": 36,
+     "changed": true
+    },
+    {
+     "i": 31,
+     "item": "brightness",
+     "value": 0.875,
+     "mode": "image",
+     "ms": 25.8,
+     "diffPxVsPrev": 1663,
+     "maxChannelDiffVsPrev": 29,
+     "changed": true
+    },
+    {
+     "i": 32,
+     "item": "brightness",
+     "value": 1,
+     "mode": "image",
+     "ms": 26.5,
+     "diffPxVsPrev": 1641,
+     "maxChannelDiffVsPrev": 24,
+     "changed": true
+    },
+    {
+     "i": 33,
+     "item": "opacity",
+     "value": 0.2,
+     "mode": "image",
+     "ms": 106.8,
+     "diffPxVsPrev": 2058,
+     "maxChannelDiffVsPrev": 95,
+     "changed": true
+    },
+    {
+     "i": 34,
+     "item": "opacity",
+     "value": 0.4,
+     "mode": "image",
+     "ms": 25.5,
+     "diffPxVsPrev": 1679,
+     "maxChannelDiffVsPrev": 30,
+     "changed": true
+    },
+    {
+     "i": 35,
+     "item": "opacity",
+     "value": 0.6,
+     "mode": "image",
+     "ms": 25.7,
+     "diffPxVsPrev": 1666,
+     "maxChannelDiffVsPrev": 25,
+     "changed": true
+    },
+    {
+     "i": 36,
+     "item": "opacity",
+     "value": 0.8,
+     "mode": "image",
+     "ms": 25.6,
+     "diffPxVsPrev": 1653,
+     "maxChannelDiffVsPrev": 21,
+     "changed": true
+    },
+    {
+     "i": 37,
+     "item": "size",
+     "value": 0.2,
+     "mode": "image",
+     "ms": 79,
+     "diffPxVsPrev": 1608,
+     "maxChannelDiffVsPrev": 115,
+     "changed": true
+    },
+    {
+     "i": 38,
+     "item": "size",
+     "value": 0.3,
+     "mode": "image",
+     "ms": 25.5,
+     "diffPxVsPrev": 369,
+     "maxChannelDiffVsPrev": 108,
+     "changed": true
+    },
+    {
+     "i": 39,
+     "item": "size",
+     "value": 0.4,
+     "mode": "image",
+     "ms": 25.9,
+     "diffPxVsPrev": 632,
+     "maxChannelDiffVsPrev": 108,
+     "changed": true
+    },
+    {
+     "i": 40,
+     "item": "size",
+     "value": 0.6,
+     "mode": "image",
+     "ms": 52.7,
+     "diffPxVsPrev": 2501,
+     "maxChannelDiffVsPrev": 117,
+     "changed": true
+    },
+    {
+     "i": 41,
+     "item": "size",
+     "value": 0.7,
+     "mode": "image",
+     "ms": 26.2,
+     "diffPxVsPrev": 3160,
+     "maxChannelDiffVsPrev": 120,
+     "changed": true
+    },
+    {
+     "i": 42,
+     "item": "size",
+     "value": 0.8,
+     "mode": "image",
+     "ms": 26,
+     "diffPxVsPrev": 5496,
+     "maxChannelDiffVsPrev": 123,
+     "changed": true
+    },
+    {
+     "i": 43,
+     "item": "texture",
+     "value": 0.1,
+     "mode": "image",
+     "ms": 51.7,
+     "diffPxVsPrev": 532,
+     "maxChannelDiffVsPrev": 120,
+     "changed": true
+    },
+    {
+     "i": 44,
+     "item": "texture",
+     "value": 0.3,
+     "mode": "image",
+     "ms": 25.5,
+     "diffPxVsPrev": 451,
+     "maxChannelDiffVsPrev": 85,
+     "changed": true
+    },
+    {
+     "i": 45,
+     "item": "texture",
+     "value": 0.7,
+     "mode": "image",
+     "ms": 50.7,
+     "diffPxVsPrev": 1084,
+     "maxChannelDiffVsPrev": 54,
+     "changed": true
+    },
+    {
+     "i": 46,
+     "item": "texture",
+     "value": 0.9,
+     "mode": "image",
+     "ms": 25.9,
+     "diffPxVsPrev": 0,
+     "maxChannelDiffVsPrev": 7,
+     "changed": true
+    },
+    {
+     "i": 47,
+     "item": "motion",
+     "value": "floating",
+     "disabled": true
+    },
+    {
+     "i": 48,
+     "item": "motion",
+     "value": "swaying",
+     "disabled": true
+    },
+    {
+     "i": 49,
+     "item": "motion",
+     "value": "trembling",
+     "disabled": true
+    },
+    {
+     "i": 50,
+     "item": "motion",
+     "value": "pounding",
+     "disabled": true
+    },
+    {
+     "i": 51,
+     "item": "motion",
+     "value": "sinking",
+     "disabled": true
+    },
+    {
+     "i": 52,
+     "item": "motion",
+     "value": "still",
+     "disabled": true
+    },
+    {
+     "i": 53,
+     "item": "form",
+     "value": "container",
+     "mode": "image",
+     "ms": 26.1,
+     "diffPxVsPrev": 16869,
+     "maxChannelDiffVsPrev": 142,
+     "changed": true
+    },
+    {
+     "i": 54,
+     "item": "opacity",
+     "value": 0.4,
+     "mode": "image",
+     "ms": 51.8,
+     "diffPxVsPrev": 16764,
+     "maxChannelDiffVsPrev": 56,
+     "changed": true
+    }
+   ],
+   "modeAtStart": "image",
+   "candidatesMs": 78.8,
+   "modeAtCandidates": "image",
+   "webglInfo": null,
+   "candidates": [
+    {
+     "id": "c-6f7abf1e002c",
+     "imgTarget": "c-6f7abf1e002c",
+     "imgMode": "image"
+    },
+    {
+     "id": "c-85dea7085918",
+     "imgTarget": "c-85dea7085918",
+     "imgMode": "image"
+    },
+    {
+     "id": "c-618910d26c51",
+     "imgTarget": "c-618910d26c51",
+     "imgMode": "image"
+    },
+    {
+     "id": "c-8163ea0caf3b",
+     "imgTarget": "c-8163ea0caf3b",
+     "imgMode": "image"
+    }
+   ],
+   "candidateDeltaE": [
+    [
+     0.0,
+     0.426,
+     0.38,
+     1.308
+    ],
+    [
+     0.426,
+     0.0,
+     0.506,
+     1.114
+    ],
+    [
+     0.38,
+     0.506,
+     0.0,
+     1.142
+    ],
+    [
+     1.308,
+     1.114,
+     1.142,
+     0.0
+    ]
+   ],
+   "candidateMatch": true,
+   "candidateTargetsMatch": true,
+   "selected": "c-6f7abf1e002c",
+   "modeAtAdjust": "image",
+   "unavailableAtAdjust": {
+    "motion": "still_image_preview"
+   },
+   "adjustRect": {
+    "x": 33,
+    "y": 363.75,
+    "w": 302.84375,
+    "h": 227.125
+   },
+   "adjustChanged": "48/48",
+   "hostLeftAfterDone": false,
+   "preview": {
+    "requested": "webgl",
+    "mode": "image",
+    "reason": "WebGL 빌드가 없음(../../webgl-build/preview/index.html) → image",
+    "serverMode": "image",
+    "shown": {
+     "selecting": [
+      "image"
+     ],
+     "adjusting": [
+      "image"
+     ]
+    },
+    "fallbacks": [
+     {
+      "at": "2026-11-23T11:28:00+09:00",
+      "from": "webgl",
+      "to": "image",
+      "reason": "WebGL 빌드가 없음(../../webgl-build/preview/index.html) → image",
+      "source": "server",
+      "stage": null
+     }
+    ],
+    "webgl": null
+   },
+   "adjustUnavailable": {
+    "motion": {
+     "reason": "still_image_preview",
+     "previewMode": "image",
+     "since": "2026-11-23T11:28:00+09:00",
+     "stage": "selecting"
+    }
+   },
+   "modeFinal": "image",
+   "fallbacks": [
+    [
+     "webgl",
+     "image",
+     "server",
+     "WebGL 빌드가 없음(../../webgl-build/preview/index.html) → image"
+    ]
+   ],
+   "premeasureSaved": true,
+   "runnerReady": true,
+   "checkFails": [],
+   "frameMarks": 0,
+   "frameRestarts": 0,
+   "frameAlwaysInBody": null,
+   "contextLost": false
+  }
+ ],
+ "console": [],
+ "server": {
+  "preview": {
+   "requested": "webgl",
+   "mode": "image",
+   "reason": "WebGL 빌드가 없음(../../webgl-build/preview/index.html) → image",
+   "webglUrl": null,
+   "fallback": null,
+   "webglReadyTimeoutMs": 30000,
+   "webglRequestTimeoutMs": 15000,
+   "renderer": {
+    "renderer": "unity-queue",
+    "command": [
+     "IFSPreview.exe"
+    ],
+    "queueDir": "<repo 밖>/webgl-build\\g12\\e2e-blocked-dir\\queue",
+    "running": false,
+    "pid": null,
+    "startupSeconds": null,
+    "renders": 0,
+    "lastRttMs": null,
+    "size": [
+     320,
+     240
+    ]
+   },
+   "events": [
+    {
+     "at": "2026-11-23T11:27:52",
+     "kind": "fallback",
+     "detail": "WebGL 빌드가 없음(../../webgl-build/preview/index.html) → image"
+    }
+   ]
+  }
+ },
+ "consoleErrors": [],
+ "llmCalls": 0
+}

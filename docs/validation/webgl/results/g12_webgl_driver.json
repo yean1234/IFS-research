@@ -1,0 +1,950 @@
+{
+ "specs": [
+  {
+   "spec": "R01_mist_op100",
+   "roundTripMs": 35.29999998211861,
+   "loadMs": 33.1,
+   "renderPath": "mist",
+   "loaderErrors": [],
+   "renders": {
+    "scene": 814.1,
+    "black": 12.5,
+    "white": 10.6
+   }
+  },
+  {
+   "spec": "R02_mist_op060",
+   "roundTripMs": 1.300000011920929,
+   "loadMs": 0.9,
+   "renderPath": "mist",
+   "loaderErrors": [],
+   "renders": {
+    "scene": 12.5,
+    "black": 10.7,
+    "white": 10.7
+   }
+  },
+  {
+   "spec": "R03_mist_op015",
+   "roundTripMs": 1.199999988079071,
+   "loadMs": 1,
+   "renderPath": "mist",
+   "loaderErrors": [],
+   "renders": {
+    "scene": 12,
+    "black": 10.5,
+    "white": 10.4
+   }
+  },
+  {
+   "spec": "R04_frag_small",
+   "roundTripMs": 1.9000000059604645,
+   "loadMs": 1.6,
+   "renderPath": "fragments",
+   "loaderErrors": [],
+   "renders": {
+    "scene": 468.7,
+    "black": 10.9,
+    "white": 10.3
+   }
+  },
+  {
+   "spec": "R05_frag_large",
+   "roundTripMs": 1.0999999940395355,
+   "loadMs": 1,
+   "renderPath": "fragments",
+   "loaderErrors": [],
+   "renders": {
+    "scene": 12.7,
+    "black": 10.6,
+    "white": 12
+   }
+  },
+  {
+   "spec": "R06_shell",
+   "roundTripMs": 3,
+   "loadMs": 2.8,
+   "renderPath": "shell",
+   "loaderErrors": [],
+   "renders": {
+    "scene": 13.3,
+    "black": 12.3,
+    "white": 11.7
+   }
+  },
+  {
+   "spec": "R07_blob_default",
+   "roundTripMs": 1.100000023841858,
+   "loadMs": 0.8,
+   "renderPath": "blob",
+   "loaderErrors": [],
+   "renders": {
+    "scene": 12.9,
+    "black": 11.7,
+    "white": 12.5
+   }
+  },
+  {
+   "spec": "R08_blob_green_bright",
+   "roundTripMs": 1,
+   "loadMs": 0.8,
+   "renderPath": "blob",
+   "loaderErrors": [],
+   "renders": {
+    "scene": 12.9,
+    "black": 11.6,
+    "white": 11.5
+   }
+  },
+  {
+   "spec": "R09_form_null",
+   "roundTripMs": 1.100000023841858,
+   "loadMs": 0.8,
+   "renderPath": "blob",
+   "loaderErrors": [],
+   "renders": {
+    "scene": 13.1,
+    "black": 12,
+    "white": 12.3
+   }
+  },
+  {
+   "spec": "R10_shape_round",
+   "roundTripMs": 3,
+   "loadMs": 2.8,
+   "renderPath": "shapePrefab(Sphere)",
+   "loaderErrors": [],
+   "renders": {
+    "scene": 13.3,
+    "black": 11.1,
+    "white": 11.6
+   }
+  },
+  {
+   "spec": "R11_shape_square",
+   "roundTripMs": 1.2999999821186066,
+   "loadMs": 1,
+   "renderPath": "shapePrefab(Cube)",
+   "loaderErrors": [],
+   "renders": {
+    "scene": 13.4,
+    "black": 11.5,
+    "white": 11.5
+   }
+  },
+  {
+   "spec": "R12_shape_flat",
+   "roundTripMs": 1.2000000178813934,
+   "loadMs": 0.9,
+   "renderPath": "shapePrefab(FlatCylinder)",
+   "loaderErrors": [],
+   "renders": {
+    "scene": 12.9,
+    "black": 11.2,
+    "white": 11.5
+   }
+  },
+  {
+   "spec": "R13_shape_pointed",
+   "roundTripMs": 1.0999999940395355,
+   "loadMs": 0.9,
+   "renderPath": "shapePrefab(Cone)",
+   "loaderErrors": [],
+   "renders": {
+    "scene": 12.7,
+    "black": 11.4,
+    "white": 10.8
+   }
+  },
+  {
+   "spec": "H01.v1",
+   "roundTripMs": 3.2000000178813934,
+   "loadMs": 2.9,
+   "renderPath": "blob",
+   "loaderErrors": [],
+   "renders": {
+    "scene": 218.5,
+    "black": 11.2,
+    "white": 10.4
+   }
+  },
+  {
+   "spec": "H02.v1",
+   "roundTripMs": 1.800000011920929,
+   "loadMs": 1.6,
+   "renderPath": "mist",
+   "loaderErrors": [],
+   "renders": {
+    "scene": 11.8,
+    "black": 11,
+    "white": 10.8
+   }
+  },
+  {
+   "spec": "H03.v1",
+   "roundTripMs": 1.5999999940395355,
+   "loadMs": 1.3,
+   "renderPath": "shapePrefab(Sphere)",
+   "loaderErrors": [],
+   "renders": {
+    "scene": 12.8,
+    "black": 11.5,
+    "white": 11.3
+   }
+  },
+  {
+   "spec": "H05.v1",
+   "roundTripMs": 1.7000000178813934,
+   "loadMs": 1.4,
+   "renderPath": "shapePrefab(FlatCylinder)",
+   "loaderErrors": [],
+   "renders": {
+    "scene": 11.9,
+    "black": 11.4,
+    "white": 11.5
+   }
+  },
+  {
+   "spec": "H08.v1",
+   "roundTripMs": 1.7000000178813934,
+   "loadMs": 1.3,
+   "renderPath": "fragments",
+   "loaderErrors": [],
+   "renders": {
+    "scene": 12.7,
+    "black": 12.1,
+    "white": 11.5
+   }
+  },
+  {
+   "spec": "H10.v1",
+   "roundTripMs": 2.5,
+   "loadMs": 2.2,
+   "renderPath": "shapePrefab(Cube)",
+   "loaderErrors": [],
+   "renders": {
+    "scene": 12.1,
+    "black": 11.1,
+    "white": 11.8
+   }
+  },
+  {
+   "spec": "H12.v1",
+   "roundTripMs": 1.7000000178813934,
+   "loadMs": 1.3,
+   "renderPath": "shapePrefab(Cone)",
+   "loaderErrors": [],
+   "renders": {
+    "scene": 12.8,
+    "black": 11.1,
+    "white": 11
+   }
+  },
+  {
+   "spec": "H16.v1",
+   "roundTripMs": 1.800000011920929,
+   "loadMs": 1.4,
+   "renderPath": "shell",
+   "loaderErrors": [],
+   "renders": {
+    "scene": 12.7,
+    "black": 11.6,
+    "white": 11.3
+   }
+  },
+  {
+   "spec": "H18.v1",
+   "roundTripMs": 1.800000011920929,
+   "loadMs": 1.5,
+   "renderPath": "blob",
+   "loaderErrors": [],
+   "renders": {
+    "scene": 13,
+    "black": 12,
+    "white": 11.6
+   }
+  },
+  {
+   "spec": "H20.v1",
+   "roundTripMs": 1.5999999940395355,
+   "loadMs": 1.2,
+   "renderPath": "blob",
+   "loaderErrors": [],
+   "renders": {
+    "scene": 11.8,
+    "black": 11.2,
+    "white": 11.1
+   }
+  },
+  {
+   "spec": "H28.v1",
+   "roundTripMs": 1.5999999940395355,
+   "loadMs": 1.2,
+   "renderPath": "mist",
+   "loaderErrors": [],
+   "renders": {
+    "scene": 12.1,
+    "black": 11.5,
+    "white": 10.8
+   }
+  },
+  {
+   "spec": "C1",
+   "roundTripMs": 4.9000000059604645,
+   "loadMs": 4.7,
+   "renderPath": "base:container",
+   "loaderErrors": [],
+   "renders": {
+    "scene": 13.7,
+    "black": 12.2,
+    "white": 11.8
+   }
+  },
+  {
+   "spec": "C2",
+   "roundTripMs": 2.5,
+   "loadMs": 2.3,
+   "renderPath": "base:container",
+   "loaderErrors": [],
+   "renders": {
+    "scene": 13.5,
+    "black": 12.3,
+    "white": 11.5
+   }
+  },
+  {
+   "spec": "C3",
+   "roundTripMs": 1.300000011920929,
+   "loadMs": 1,
+   "renderPath": "base:container",
+   "loaderErrors": [],
+   "renders": {
+    "scene": 12.5,
+    "black": 12.1,
+    "white": 11.6
+   }
+  },
+  {
+   "spec": "C4",
+   "roundTripMs": 1.199999988079071,
+   "loadMs": 0.9,
+   "renderPath": "base:container",
+   "loaderErrors": [],
+   "renders": {
+    "scene": 12.7,
+    "black": 11.8,
+    "white": 11.6
+   }
+  },
+  {
+   "spec": "C5",
+   "roundTripMs": 1.2000000178813934,
+   "loadMs": 0.9,
+   "renderPath": "base:container",
+   "loaderErrors": [],
+   "renders": {
+    "scene": 13,
+    "black": 12.3,
+    "white": 11.3
+   }
+  },
+  {
+   "spec": "D1",
+   "roundTripMs": 2.2000000178813934,
+   "loadMs": 2,
+   "renderPath": "base:drop",
+   "loaderErrors": [],
+   "renders": {
+    "scene": 14.4,
+    "black": 12.5,
+    "white": 11.7
+   }
+  },
+  {
+   "spec": "D2",
+   "roundTripMs": 1.0999999940395355,
+   "loadMs": 0.8,
+   "renderPath": "base:drop",
+   "loaderErrors": [],
+   "renders": {
+    "scene": 13.1,
+    "black": 12,
+    "white": 12
+   }
+  },
+  {
+   "spec": "D3",
+   "roundTripMs": 1,
+   "loadMs": 0.9,
+   "renderPath": "base:drop",
+   "loaderErrors": [],
+   "renders": {
+    "scene": 12.3,
+    "black": 11.4,
+    "white": 10.2
+   }
+  },
+  {
+   "spec": "F1",
+   "roundTripMs": 2.800000011920929,
+   "loadMs": 2.6,
+   "renderPath": "base:flame",
+   "loaderErrors": [],
+   "renders": {
+    "scene": 13.9,
+    "black": 11.4,
+    "white": 11.6
+   }
+  },
+  {
+   "spec": "F2",
+   "roundTripMs": 1.0999999940395355,
+   "loadMs": 0.9,
+   "renderPath": "base:flame",
+   "loaderErrors": [],
+   "renders": {
+    "scene": 12.6,
+    "black": 12.1,
+    "white": 11.8
+   }
+  },
+  {
+   "spec": "F3",
+   "roundTripMs": 1,
+   "loadMs": 0.8,
+   "renderPath": "base:flame",
+   "loaderErrors": [],
+   "renders": {
+    "scene": 12.7,
+    "black": 12,
+    "white": 10.8
+   }
+  },
+  {
+   "spec": "L1",
+   "roundTripMs": 1.9000000059604645,
+   "loadMs": 1.7,
+   "renderPath": "base:line",
+   "loaderErrors": [],
+   "renders": {
+    "scene": 14.2,
+    "black": 13.3,
+    "white": 12.9
+   }
+  },
+  {
+   "spec": "L2",
+   "roundTripMs": 3,
+   "loadMs": 2.8,
+   "renderPath": "base:line",
+   "loaderErrors": [],
+   "renders": {
+    "scene": 13.7,
+    "black": 12.2,
+    "white": 12.2
+   }
+  },
+  {
+   "spec": "L3",
+   "roundTripMs": 2.4000000059604645,
+   "loadMs": 2.1,
+   "renderPath": "base:line",
+   "loaderErrors": [],
+   "renders": {
+    "scene": 13.1,
+    "black": 12.3,
+    "white": 11.4
+   }
+  },
+  {
+   "spec": "L4",
+   "roundTripMs": 1.7999999821186066,
+   "loadMs": 1.4,
+   "renderPath": "base:line",
+   "loaderErrors": [],
+   "renders": {
+    "scene": 13.9,
+    "black": 14.1,
+    "white": 11.5
+   }
+  },
+  {
+   "spec": "L5",
+   "roundTripMs": 1.199999988079071,
+   "loadMs": 0.9,
+   "renderPath": "base:line",
+   "loaderErrors": [],
+   "renders": {
+    "scene": 12.7,
+    "black": 11.7,
+    "white": 12.5
+   }
+  },
+  {
+   "spec": "S1",
+   "roundTripMs": 2.4000000059604645,
+   "loadMs": 2,
+   "renderPath": "base:sheet",
+   "loaderErrors": [],
+   "renders": {
+    "scene": 13.1,
+    "black": 11.8,
+    "white": 11.5
+   }
+  },
+  {
+   "spec": "S2",
+   "roundTripMs": 1.7999999821186066,
+   "loadMs": 1.6,
+   "renderPath": "base:sheet",
+   "loaderErrors": [],
+   "renders": {
+    "scene": 13.6,
+    "black": 12.2,
+    "white": 12.6
+   }
+  },
+  {
+   "spec": "S3",
+   "roundTripMs": 1.5999999940395355,
+   "loadMs": 1,
+   "renderPath": "base:sheet",
+   "loaderErrors": [],
+   "renders": {
+    "scene": 12.8,
+    "black": 11.9,
+    "white": 12.3
+   }
+  },
+  {
+   "spec": "S4",
+   "roundTripMs": 1.0999999940395355,
+   "loadMs": 0.8,
+   "renderPath": "base:sheet",
+   "loaderErrors": [],
+   "renders": {
+    "scene": 12.8,
+    "black": 11.3,
+    "white": 10.8
+   }
+  }
+ ],
+ "errors": [],
+ "instanceMs": 2474.800000011921,
+ "pageToReadyMs": 2493.5999999940395,
+ "cases": [
+  {
+   "case": "OV_R07_to_mist",
+   "steps": [
+    {
+     "step": "load",
+     "renderPath": "blob",
+     "formType": "blob"
+    },
+    {
+     "step": "overrides",
+     "overrides": {
+      "form.type": "mist"
+     },
+     "roundTripMs": 1.7999999821186066,
+     "loadMs": 0.7,
+     "renderPath": "mist",
+     "formType": "mist",
+     "loaderErrors": []
+    }
+   ],
+   "renders": {
+    "scene": 12.9,
+    "black": 11.1,
+    "white": 12
+   }
+  },
+  {
+   "case": "OV_R07_to_fragments",
+   "steps": [
+    {
+     "step": "load",
+     "renderPath": "blob",
+     "formType": "blob"
+    },
+    {
+     "step": "overrides",
+     "overrides": {
+      "form.type": "fragments"
+     },
+     "roundTripMs": 0.7999999821186066,
+     "loadMs": 0.6,
+     "renderPath": "fragments",
+     "formType": "fragments",
+     "loaderErrors": []
+    }
+   ],
+   "renders": {
+    "scene": 12.7,
+    "black": 14.2,
+    "white": 11.4
+   }
+  },
+  {
+   "case": "OV_R07_to_shell",
+   "steps": [
+    {
+     "step": "load",
+     "renderPath": "blob",
+     "formType": "blob"
+    },
+    {
+     "step": "overrides",
+     "overrides": {
+      "form.type": "shell"
+     },
+     "roundTripMs": 0.5999999940395355,
+     "loadMs": 0.5,
+     "renderPath": "shell",
+     "formType": "shell",
+     "loaderErrors": []
+    }
+   ],
+   "renders": {
+    "scene": 13.2,
+    "black": 12.5,
+    "white": 12.1
+   }
+  },
+  {
+   "case": "OV_R01_to_blob",
+   "steps": [
+    {
+     "step": "load",
+     "renderPath": "mist",
+     "formType": "mist"
+    },
+    {
+     "step": "overrides",
+     "overrides": {
+      "form.type": "blob"
+     },
+     "roundTripMs": 0.5999999940395355,
+     "loadMs": 0.5,
+     "renderPath": "blob",
+     "formType": "blob",
+     "loaderErrors": []
+    }
+   ],
+   "renders": {
+    "scene": 13.8,
+    "black": 12.4,
+    "white": 12.2
+   }
+  },
+  {
+   "case": "OV_R07_mist_color",
+   "steps": [
+    {
+     "step": "load",
+     "renderPath": "blob",
+     "formType": "blob"
+    },
+    {
+     "step": "overrides",
+     "overrides": {
+      "form.type": "mist",
+      "material.opacity": 0.6,
+      "material.color.h": 0.3
+     },
+     "roundTripMs": 1,
+     "loadMs": 0.6,
+     "renderPath": "mist",
+     "formType": "mist",
+     "loaderErrors": []
+    }
+   ],
+   "renders": {
+    "scene": 13,
+    "black": 11.5,
+    "white": 10.8
+   }
+  },
+  {
+   "case": "OV_R07_chain_cleared",
+   "steps": [
+    {
+     "step": "load",
+     "renderPath": "blob",
+     "formType": "blob"
+    },
+    {
+     "step": "overrides",
+     "overrides": {
+      "form.type": "shell"
+     },
+     "roundTripMs": 0.699999988079071,
+     "loadMs": 0.4,
+     "renderPath": "shell",
+     "formType": "shell",
+     "loaderErrors": []
+    },
+    {
+     "step": "overrides",
+     "overrides": {
+      "form.type": "mist"
+     },
+     "roundTripMs": 0.699999988079071,
+     "loadMs": 0.5,
+     "renderPath": "mist",
+     "formType": "mist",
+     "loaderErrors": []
+    },
+    {
+     "step": "overrides",
+     "overrides": {},
+     "roundTripMs": 0.5,
+     "loadMs": 0.4,
+     "renderPath": "blob",
+     "formType": "blob",
+     "loaderErrors": []
+    }
+   ],
+   "renders": {
+    "scene": 13.2,
+    "black": 13.1,
+    "white": 11.3
+   }
+  },
+  {
+   "case": "OVB_R07_to_container",
+   "steps": [
+    {
+     "step": "load",
+     "renderPath": "blob",
+     "formType": "blob"
+    },
+    {
+     "step": "overrides",
+     "overrides": {
+      "form.type": "blob",
+      "form.base": "container"
+     },
+     "roundTripMs": 0.7000000178813934,
+     "loadMs": 0.4,
+     "renderPath": "base:container",
+     "formType": "blob",
+     "loaderErrors": []
+    }
+   ],
+   "renders": {
+    "scene": 13.4,
+    "black": 12.5,
+    "white": 13.3
+   }
+  },
+  {
+   "case": "OVB_R07_to_line",
+   "steps": [
+    {
+     "step": "load",
+     "renderPath": "blob",
+     "formType": "blob"
+    },
+    {
+     "step": "overrides",
+     "overrides": {
+      "form.type": "blob",
+      "form.base": "line"
+     },
+     "roundTripMs": 1.2999999821186066,
+     "loadMs": 1.2,
+     "renderPath": "base:line",
+     "formType": "blob",
+     "loaderErrors": []
+    }
+   ],
+   "renders": {
+    "scene": 12.8,
+    "black": 11.2,
+    "white": 11.5
+   }
+  },
+  {
+   "case": "OVB_R07_to_sheet",
+   "steps": [
+    {
+     "step": "load",
+     "renderPath": "blob",
+     "formType": "blob"
+    },
+    {
+     "step": "overrides",
+     "overrides": {
+      "form.type": "blob",
+      "form.base": "sheet"
+     },
+     "roundTripMs": 0.5999999940395355,
+     "loadMs": 0.5,
+     "renderPath": "base:sheet",
+     "formType": "blob",
+     "loaderErrors": []
+    }
+   ],
+   "renders": {
+    "scene": 12.6,
+    "black": 14.7,
+    "white": 12.1
+   }
+  },
+  {
+   "case": "OVB_R07_to_flame",
+   "steps": [
+    {
+     "step": "load",
+     "renderPath": "blob",
+     "formType": "blob"
+    },
+    {
+     "step": "overrides",
+     "overrides": {
+      "form.type": "blob",
+      "form.base": "flame"
+     },
+     "roundTripMs": 1.0999999940395355,
+     "loadMs": 0.6,
+     "renderPath": "base:flame",
+     "formType": "blob",
+     "loaderErrors": []
+    }
+   ],
+   "renders": {
+    "scene": 13,
+    "black": 11.8,
+    "white": 11.6
+   }
+  },
+  {
+   "case": "OVB_R07_to_drop",
+   "steps": [
+    {
+     "step": "load",
+     "renderPath": "blob",
+     "formType": "blob"
+    },
+    {
+     "step": "overrides",
+     "overrides": {
+      "form.type": "blob",
+      "form.base": "drop"
+     },
+     "roundTripMs": 0.699999988079071,
+     "loadMs": 0.5,
+     "renderPath": "base:drop",
+     "formType": "blob",
+     "loaderErrors": []
+    }
+   ],
+   "renders": {
+    "scene": 13.4,
+    "black": 11.3,
+    "white": 12.8
+   }
+  },
+  {
+   "case": "OVB_R07_container_op50",
+   "steps": [
+    {
+     "step": "load",
+     "renderPath": "blob",
+     "formType": "blob"
+    },
+    {
+     "step": "overrides",
+     "overrides": {
+      "form.type": "blob",
+      "form.base": "container",
+      "material.opacity": 0.5
+     },
+     "roundTripMs": 0.9000000059604645,
+     "loadMs": 0.6,
+     "renderPath": "base:container",
+     "formType": "blob",
+     "loaderErrors": []
+    }
+   ],
+   "renders": {
+    "scene": 13.8,
+    "black": 12.8,
+    "white": 12.4
+   }
+  },
+  {
+   "case": "OVB_R01_mist_to_flame",
+   "steps": [
+    {
+     "step": "load",
+     "renderPath": "mist",
+     "formType": "mist"
+    },
+    {
+     "step": "overrides",
+     "overrides": {
+      "form.type": "blob",
+      "form.base": "flame"
+     },
+     "roundTripMs": 0.699999988079071,
+     "loadMs": 0.6,
+     "renderPath": "base:flame",
+     "formType": "blob",
+     "loaderErrors": []
+    }
+   ],
+   "renders": {
+    "scene": 14.6,
+    "black": 14.4,
+    "white": 13.8
+   }
+  },
+  {
+   "case": "OVB_R07_container_back_to_none",
+   "steps": [
+    {
+     "step": "load",
+     "renderPath": "blob",
+     "formType": "blob"
+    },
+    {
+     "step": "overrides",
+     "overrides": {
+      "form.type": "blob",
+      "form.base": "container"
+     },
+     "roundTripMs": 0.5999999940395355,
+     "loadMs": 0.5,
+     "renderPath": "base:container",
+     "formType": "blob",
+     "loaderErrors": []
+    },
+    {
+     "step": "overrides",
+     "overrides": {
+      "form.type": "blob",
+      "form.base": "none"
+     },
+     "roundTripMs": 0.7000000178813934,
+     "loadMs": 0.5,
+     "renderPath": "blob",
+     "formType": "blob",
+     "loaderErrors": []
+    }
+   ],
+   "renders": {
+    "scene": 13.8,
+    "black": 14.3,
+    "white": 15
+   }
+  }
+ ],
+ "webgl": {
+  "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+  "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5080 (0x00002C02) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+  "maxSamples": 8
+ },
+ "totalMs": 7463.800000011921
+}

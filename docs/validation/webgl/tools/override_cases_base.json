@@ -1,0 +1,10 @@
+[
+  {"name": "OVB_R07_to_container", "spec": "../../render/specs/R07_blob_default.json", "overridesSeq": [{"form.type": "blob", "form.base": "container"}]},
+  {"name": "OVB_R07_to_line", "spec": "../../render/specs/R07_blob_default.json", "overridesSeq": [{"form.type": "blob", "form.base": "line"}]},
+  {"name": "OVB_R07_to_sheet", "spec": "../../render/specs/R07_blob_default.json", "overridesSeq": [{"form.type": "blob", "form.base": "sheet"}]},
+  {"name": "OVB_R07_to_flame", "spec": "../../render/specs/R07_blob_default.json", "overridesSeq": [{"form.type": "blob", "form.base": "flame"}]},
+  {"name": "OVB_R07_to_drop", "spec": "../../render/specs/R07_blob_default.json", "overridesSeq": [{"form.type": "blob", "form.base": "drop"}]},
+  {"name": "OVB_R07_container_op50", "spec": "../../render/specs/R07_blob_default.json", "overridesSeq": [{"form.type": "blob", "form.base": "container", "material.opacity": 0.5}]},
+  {"name": "OVB_R01_mist_to_flame", "spec": "../../render/specs/R01_mist_op100.json", "overridesSeq": [{"form.type": "blob", "form.base": "flame"}]},
+  {"name": "OVB_R07_container_back_to_none", "spec": "../../render/specs/R07_blob_default.json", "overridesSeq": [{"form.type": "blob", "form.base": "container"}, {"form.type": "blob", "form.base": "none"}]}
+]
