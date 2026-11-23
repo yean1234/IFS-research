@@ -1,0 +1,499 @@
+[
+ {
+  "id": "M06.after",
+  "builder": "scene-spec-builder-v2/2.2.0",
+  "base": {
+   "requested": "line",
+   "status": "applied",
+   "shape": "line",
+   "rule": "line/1",
+   "variant": {
+    "form": "tangle",
+    "gauge": "thin"
+   },
+   "variantDefaults": [],
+   "seed": 0,
+   "parameters": {
+    "samples": 310.0,
+    "tubeRadius": 0.02,
+    "tubeSegments": 8.0
+   }
+  },
+  "variant": {
+   "form": "tangle",
+   "gauge": "thin"
+  },
+  "formType": "blob",
+  "excluded": [],
+  "renderPath": "base:line",
+  "visiblePixels": 2375,
+  "silhouette": {
+   "circularity": 0.033,
+   "components": 1,
+   "edgeFalloffPx": 0.76,
+   "maskPixels": 2193
+  },
+  "contrastDeltaL": -14.25,
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 5024,
+  "trianglesPerEyeEstimate": 20496,
+  "baseNotes": [
+   "M06.json (session M06): shape=round, 트리거 '동그랗게' [78,82] — spec이 기본 형상 form.base=line를 말해 기본 형상이 윤곽을 정함(not_applied_base)",
+   "M06.json (session M06): shape=thread, 트리거 '실' [94,95] — spec이 기본 형상 form.base=line를 말해 기본 형상이 윤곽을 정함(not_applied_base)",
+   "form.base=line: 형상 프리셋 기본값 — 절차 메시(규칙 line/1, form=tangle, gauge=thin, seed 0, samples 310, tubeRadius 0.02, tubeSegments 8). 윤곽만(색·무늬·발광·고유 움직임 없음), 정점 변위 0, 노이즈 크기 1.6(거칠기 얼룩·침식 무늬). 경계 상자 가장 긴 변 1 × 기본 크기"
+  ]
+ },
+ {
+  "id": "M09.after",
+  "builder": "scene-spec-builder-v2/2.2.0",
+  "base": {
+   "requested": "sheet",
+   "status": "not_applied_form",
+   "shape": null,
+   "rule": null
+  },
+  "variant": {
+   "drape": "cloth"
+  },
+  "formType": "shell",
+  "excluded": [],
+  "renderPath": "shell",
+  "visiblePixels": 18098,
+  "silhouette": {
+   "circularity": 0.534,
+   "components": 1,
+   "edgeFalloffPx": 27.9,
+   "maskPixels": 17874
+  },
+  "contrastDeltaL": 8.52,
+  "consoleErrors": 0,
+  "consoleWarnings": 4,
+  "modelTriangles": 5120,
+  "trianglesPerEyeEstimate": 5520,
+  "baseNotes": [
+   "form.base=sheet: 그리지 않음(not_applied_form — form.type=shell의 형태 모형을 지킴)"
+  ]
+ },
+ {
+  "id": "M15.after",
+  "builder": "scene-spec-builder-v2/2.2.0",
+  "base": {
+   "requested": "container",
+   "status": "applied",
+   "shape": "container",
+   "rule": "container/1",
+   "variant": {
+    "opening": "wide",
+    "profile": "square"
+   },
+   "variantDefaults": [],
+   "seed": 0,
+   "parameters": {
+    "rows": 22.0,
+    "segments": 4.0,
+    "wallThickness": 0.04
+   }
+  },
+  "variant": {
+   "opening": "wide",
+   "profile": "square"
+  },
+  "formType": null,
+  "excluded": [],
+  "renderPath": "base:container",
+  "visiblePixels": 21789,
+  "silhouette": {
+   "circularity": 0.828,
+   "components": 1,
+   "edgeFalloffPx": 0.76,
+   "maskPixels": 21437
+  },
+  "contrastDeltaL": -40.8,
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 32,
+  "trianglesPerEyeEstimate": 528,
+  "baseNotes": [
+   "M15.json (session M15): shape=square, 트리거 '네모난' [40,43] — spec이 기본 형상 form.base=container를 말해 기본 형상이 윤곽을 정함(not_applied_base)",
+   "M15.json (session M15): shape=square, 트리거 '네모난' [55,58] — spec이 기본 형상 form.base=container를 말해 기본 형상이 윤곽을 정함(not_applied_base)",
+   "form.base=container: 형상 프리셋 기본값 — 절차 메시(규칙 container/1, opening=wide, profile=square, seed 0, rows 22, segments 4, wallThickness 0.04). 윤곽만(색·무늬·발광·고유 움직임 없음), 정점 변위 0, 노이즈 크기 1.6(거칠기 얼룩·침식 무늬). 경계 상자 가장 긴 변 1 × 기본 크기"
+  ]
+ },
+ {
+  "id": "M18.after",
+  "builder": "scene-spec-builder-v2/2.2.0",
+  "base": {
+   "requested": "line",
+   "status": "applied",
+   "shape": "line",
+   "rule": "line/1",
+   "variant": {
+    "form": "curve",
+    "gauge": "thin"
+   },
+   "variantDefaults": [],
+   "seed": 0,
+   "parameters": {
+    "samples": 96.0,
+    "tubeRadius": 0.02,
+    "tubeSegments": 8.0
+   }
+  },
+  "variant": {
+   "form": "curve",
+   "gauge": "thin"
+  },
+  "formType": null,
+  "excluded": [],
+  "renderPath": "base:line",
+  "visiblePixels": 947,
+  "silhouette": {
+   "circularity": 0.114,
+   "components": 1,
+   "edgeFalloffPx": 0.65,
+   "maskPixels": 887
+  },
+  "contrastDeltaL": -34.12,
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 1600,
+  "trianglesPerEyeEstimate": 6800,
+  "baseNotes": [
+   "form.base=line: 형상 프리셋 기본값 — 절차 메시(규칙 line/1, form=curve, gauge=thin, seed 0, samples 96, tubeRadius 0.02, tubeSegments 8). 윤곽만(색·무늬·발광·고유 움직임 없음), 정점 변위 0, 노이즈 크기 1.6(거칠기 얼룩·침식 무늬). 경계 상자 가장 긴 변 1 × 기본 크기"
+  ]
+ },
+ {
+  "id": "M19.after",
+  "builder": "scene-spec-builder-v2/2.2.0",
+  "base": {
+   "requested": "line",
+   "status": "applied",
+   "shape": "line",
+   "rule": "line/1",
+   "variant": {
+    "form": "curve",
+    "gauge": "thin"
+   },
+   "variantDefaults": [],
+   "seed": 0,
+   "parameters": {
+    "samples": 96.0,
+    "tubeRadius": 0.02,
+    "tubeSegments": 8.0
+   }
+  },
+  "variant": {
+   "form": "curve",
+   "gauge": "thin"
+  },
+  "formType": null,
+  "excluded": [],
+  "renderPath": "base:line",
+  "visiblePixels": 2294,
+  "silhouette": {
+   "circularity": 0.112,
+   "components": 1,
+   "edgeFalloffPx": 0.69,
+   "maskPixels": 2165
+  },
+  "contrastDeltaL": -1.43,
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 1600,
+  "trianglesPerEyeEstimate": 6800,
+  "baseNotes": [
+   "M19.json (session M19): shape=long, 트리거 '길게' [76,78] — spec이 기본 형상 form.base=line를 말해 기본 형상이 윤곽을 정함(not_applied_base)",
+   "form.base=line: 형상 프리셋 기본값 — 절차 메시(규칙 line/1, form=curve, gauge=thin, seed 0, samples 96, tubeRadius 0.02, tubeSegments 8). 윤곽만(색·무늬·발광·고유 움직임 없음), 정점 변위 0, 노이즈 크기 1.6(거칠기 얼룩·침식 무늬). 경계 상자 가장 긴 변 1 × 기본 크기"
+  ]
+ },
+ {
+  "id": "M20.after",
+  "builder": "scene-spec-builder-v2/2.2.0",
+  "base": {
+   "requested": "sheet",
+   "status": "applied",
+   "shape": "sheet",
+   "rule": "sheet/1",
+   "variant": {
+    "drape": "paper"
+   },
+   "variantDefaults": [],
+   "seed": 0,
+   "parameters": {
+    "gridX": 24.0,
+    "gridY": 18.0,
+    "thickness": 0.01,
+    "tiltDeg": 15.0,
+    "waveAmplitude": 0.03
+   }
+  },
+  "variant": {
+   "drape": "paper"
+  },
+  "formType": null,
+  "excluded": [],
+  "renderPath": "base:sheet",
+  "visiblePixels": 15870,
+  "silhouette": {
+   "circularity": 0.79,
+   "components": 1,
+   "edgeFalloffPx": 0.75,
+   "maskPixels": 15606
+  },
+  "contrastDeltaL": 24.87,
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 1896,
+  "trianglesPerEyeEstimate": 7984,
+  "baseNotes": [
+   "M20.json (session M20): shape=thin, 트리거 '얇고' [61,63] — spec이 기본 형상 form.base=sheet를 말해 기본 형상이 윤곽을 정함(not_applied_base)",
+   "M20.json (session M20): shape=edge, 트리거 '가장자리' [69,73] — spec이 기본 형상 form.base=sheet를 말해 기본 형상이 윤곽을 정함(not_applied_base)",
+   "form.base=sheet: 형상 프리셋 기본값 — 절차 메시(규칙 sheet/1, drape=paper, seed 0, gridX 24, gridY 18, thickness 0.01, tiltDeg 15, waveAmplitude 0.03). 윤곽만(색·무늬·발광·고유 움직임 없음), 정점 변위 0, 노이즈 크기 1.6(거칠기 얼룩·침식 무늬). 경계 상자 가장 긴 변 1 × 기본 크기"
+  ]
+ },
+ {
+  "id": "M21.after",
+  "builder": "scene-spec-builder-v2/2.2.0",
+  "base": {
+   "requested": "sheet",
+   "status": "applied",
+   "shape": "sheet",
+   "rule": "sheet/1",
+   "variant": {
+    "drape": "cloth"
+   },
+   "variantDefaults": [],
+   "seed": 0,
+   "parameters": {
+    "gridX": 24.0,
+    "gridY": 18.0,
+    "thickness": 0.01,
+    "tiltDeg": 15.0,
+    "waveAmplitude": 0.06
+   }
+  },
+  "variant": {
+   "drape": "cloth"
+  },
+  "formType": null,
+  "excluded": [],
+  "renderPath": "base:sheet",
+  "visiblePixels": 15123,
+  "silhouette": {
+   "circularity": 0.787,
+   "components": 1,
+   "edgeFalloffPx": 0.76,
+   "maskPixels": 14872
+  },
+  "contrastDeltaL": -7.18,
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 1896,
+  "trianglesPerEyeEstimate": 2296,
+  "baseNotes": [
+   "M21.json (session M21): shape=thin, 트리거 '얇은' [56,58] — spec이 기본 형상 form.base=sheet를 말해 기본 형상이 윤곽을 정함(not_applied_base)",
+   "form.base=sheet: 형상 프리셋 기본값 — 절차 메시(규칙 sheet/1, drape=cloth, seed 0, gridX 24, gridY 18, thickness 0.01, tiltDeg 15, waveAmplitude 0.06). 윤곽만(색·무늬·발광·고유 움직임 없음), 정점 변위 0, 노이즈 크기 1.6(거칠기 얼룩·침식 무늬). 경계 상자 가장 긴 변 1 × 기본 크기"
+  ]
+ },
+ {
+  "id": "M22.after",
+  "builder": "scene-spec-builder-v2/2.2.0",
+  "base": {
+   "requested": "drop",
+   "status": "applied",
+   "shape": "drop",
+   "rule": "drop/1",
+   "variant": {},
+   "variantDefaults": [],
+   "seed": 0,
+   "parameters": {
+    "rows": 24.0,
+    "segments": 32.0
+   }
+  },
+  "variant": null,
+  "formType": null,
+  "excluded": [],
+  "renderPath": "base:drop",
+  "visiblePixels": 311,
+  "silhouette": {
+   "circularity": 0.803,
+   "components": 1,
+   "edgeFalloffPx": 0.59,
+   "maskPixels": 289
+  },
+  "contrastDeltaL": 2.43,
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 1536,
+  "trianglesPerEyeEstimate": 1936,
+  "baseNotes": [
+   "M22.json (session M22): shape=round, 트리거 '동그란' [48,51] — spec이 기본 형상 form.base=drop를 말해 기본 형상이 윤곽을 정함(not_applied_base)",
+   "M22.json (session M22): shape=edge, 트리거 '가장자리' [73,77] — spec이 기본 형상 form.base=drop를 말해 기본 형상이 윤곽을 정함(not_applied_base)",
+   "form.base=drop: 형상 프리셋 기본값 — 절차 메시(규칙 drop/1, 변형 없음, seed 0, rows 24, segments 32). 윤곽만(색·무늬·발광·고유 움직임 없음), 정점 변위 0, 노이즈 크기 1.6(거칠기 얼룩·침식 무늬). 경계 상자 가장 긴 변 1 × 기본 크기"
+  ]
+ },
+ {
+  "id": "M23.after",
+  "builder": "scene-spec-builder-v2/2.2.0",
+  "base": null,
+  "variant": null,
+  "formType": null,
+  "excluded": [],
+  "renderPath": "blob",
+  "visiblePixels": 8879,
+  "silhouette": {
+   "circularity": 0.962,
+   "components": 1,
+   "edgeFalloffPx": 0.71,
+   "maskPixels": 8803
+  },
+  "contrastDeltaL": -2.42,
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 5120,
+  "trianglesPerEyeEstimate": 20880,
+  "baseNotes": [
+   "form.base: SceneSpec 값이 null → 기본값 none 사용"
+  ]
+ },
+ {
+  "id": "M24.after",
+  "builder": "scene-spec-builder-v2/2.2.0",
+  "base": null,
+  "variant": null,
+  "formType": null,
+  "excluded": [],
+  "renderPath": "blob",
+  "visiblePixels": 15678,
+  "silhouette": {
+   "circularity": 0.961,
+   "components": 1,
+   "edgeFalloffPx": 0.69,
+   "maskPixels": 15465
+  },
+  "contrastDeltaL": 33.68,
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 5120,
+  "trianglesPerEyeEstimate": 20880,
+  "baseNotes": [
+   "form.base: SceneSpec 값이 null → 기본값 none 사용"
+  ]
+ },
+ {
+  "id": "M25.after",
+  "builder": "scene-spec-builder-v2/2.2.0",
+  "base": null,
+  "variant": null,
+  "formType": null,
+  "excluded": [],
+  "renderPath": "blob",
+  "visiblePixels": 992,
+  "silhouette": {
+   "circularity": 0.96,
+   "components": 1,
+   "edgeFalloffPx": 0.6,
+   "maskPixels": 941
+  },
+  "contrastDeltaL": 42.87,
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 5120,
+  "trianglesPerEyeEstimate": 20880,
+  "baseNotes": [
+   "form.base: SceneSpec 값이 null → 기본값 none 사용"
+  ]
+ },
+ {
+  "id": "M26.after",
+  "builder": "scene-spec-builder-v2/2.2.0",
+  "base": {
+   "requested": "flame",
+   "status": "applied",
+   "shape": "flame",
+   "rule": "flame/1",
+   "variant": {},
+   "variantDefaults": [],
+   "seed": 0,
+   "parameters": {
+    "lobeDepth": 0.35,
+    "lobes": 3.0,
+    "rows": 32.0,
+    "segments": 32.0,
+    "tipBend": 0.25,
+    "twist": 5.0
+   }
+  },
+  "variant": null,
+  "formType": null,
+  "excluded": [],
+  "renderPath": "base:flame",
+  "visiblePixels": 5827,
+  "silhouette": {
+   "circularity": 0.678,
+   "components": 1,
+   "edgeFalloffPx": 0.71,
+   "maskPixels": 5759
+  },
+  "contrastDeltaL": -13.41,
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 2048,
+  "trianglesPerEyeEstimate": 8592,
+  "baseNotes": [
+   "form.base=flame: 형상 프리셋 기본값 — 절차 메시(규칙 flame/1, 변형 없음, seed 0, lobeDepth 0.35, lobes 3, rows 32, segments 32, tipBend 0.25, twist 5). 윤곽만(색·무늬·발광·고유 움직임 없음), 정점 변위 0, 노이즈 크기 1.6(거칠기 얼룩·침식 무늬). 경계 상자 가장 긴 변 1 × 기본 크기"
+  ]
+ },
+ {
+  "id": "M27.after",
+  "builder": "scene-spec-builder-v2/2.2.0",
+  "base": null,
+  "variant": null,
+  "formType": null,
+  "excluded": [],
+  "renderPath": "blob",
+  "visiblePixels": 16647,
+  "silhouette": {
+   "circularity": 0.948,
+   "components": 1,
+   "edgeFalloffPx": 35.54,
+   "maskPixels": 16460
+  },
+  "contrastDeltaL": 2.9,
+  "consoleErrors": 0,
+  "consoleWarnings": 1,
+  "modelTriangles": 5120,
+  "trianglesPerEyeEstimate": 5520,
+  "baseNotes": [
+   "form.base: SceneSpec 값이 null → 기본값 none 사용"
+  ]
+ },
+ {
+  "id": "M30.after",
+  "builder": "scene-spec-builder-v2/2.2.0",
+  "base": null,
+  "variant": null,
+  "formType": null,
+  "excluded": [
+   "사람"
+  ],
+  "renderPath": "blob",
+  "visiblePixels": 3485,
+  "silhouette": {
+   "circularity": 0.95,
+   "components": 1,
+   "edgeFalloffPx": 0.66,
+   "maskPixels": 3453
+  },
+  "contrastDeltaL": 7.69,
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 5120,
+  "trianglesPerEyeEstimate": 20880,
+  "baseNotes": [
+   "form.base: SceneSpec 값이 null → 기본값 none 사용"
+  ]
+ }
+]

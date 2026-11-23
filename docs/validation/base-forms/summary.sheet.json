@@ -76,10 +76,11 @@
   },
   "contrastDeltaL": -15.86,
   "consoleErrors": 0,
-  "consoleWarnings": 1,
+  "consoleWarnings": 0,
   "modelTriangles": 1896,
   "trianglesPerEyeEstimate": 7984,
   "baseNotes": [
+   "S2.json (session SYN-BASE-S2): shape=thin, 트리거 '얇은' [0,2] — spec이 기본 형상 form.base=sheet를 말해 기본 형상이 윤곽을 정함(not_applied_base)",
    "form.base=sheet: 형상 프리셋 기본값 — 절차 메시(규칙 sheet/1, drape=cloth, seed 0, gridX 24, gridY 18, thickness 0.01, tiltDeg 15, waveAmplitude 0.06). 윤곽만(색·무늬·발광·고유 움직임 없음), 정점 변위 0, 노이즈 크기 1.6(거칠기 얼룩·침식 무늬). 경계 상자 가장 긴 변 1 × 기본 크기"
   ]
  },
@@ -118,10 +119,11 @@
   },
   "contrastDeltaL": 12.7,
   "consoleErrors": 0,
-  "consoleWarnings": 1,
+  "consoleWarnings": 0,
   "modelTriangles": 1896,
   "trianglesPerEyeEstimate": 7984,
   "baseNotes": [
+   "S3.json (session SYN-BASE-S3): shape=thin, 트리거 '얇은' [5,7] — spec이 기본 형상 form.base=sheet를 말해 기본 형상이 윤곽을 정함(not_applied_base)",
    "form.base=sheet: 형상 프리셋 기본값 — 절차 메시(규칙 sheet/1, drape=cloth, seed 0, gridX 24, gridY 18, thickness 0.01, tiltDeg 15, waveAmplitude 0.06). 윤곽만(색·무늬·발광·고유 움직임 없음), 정점 변위 0, 노이즈 크기 1.6(거칠기 얼룩·침식 무늬). 경계 상자 가장 긴 변 1 × 기본 크기"
   ]
  },
