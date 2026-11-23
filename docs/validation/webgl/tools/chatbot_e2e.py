@@ -1,6 +1,6 @@
 """챗봇 웹 화면 + WebGL 미리보기 끝에서 끝까지(G12 연결 확인). 헤드리스 Chrome을 DevTools 프로토콜로 눌러 본다.
 
-합성 시나리오(chatbot/scenarios/selection/S1–S9)만 쓴다. 면담은 서버 안에서 정적 조건(LLM 없음)으로 끝내고(simulate.drive),
+합성 시나리오(chatbot/scenarios/selection/S1–S11)만 쓴다. 면담은 서버 안에서 정적 조건(LLM 없음)으로 끝내고(simulate.drive),
 그 뒤 단계(후보 → 선택 → 조절 → 사전 측정 → selection.json)는 브라우저 화면의 버튼을 눌러서 진행한다.
 서버는 127.0.0.1에만 열고, 외부로 나가는 요청이 없다. 출력(PNG·로그·selection.json)은 --out(저장소 밖)에 둔다.
 
@@ -15,6 +15,7 @@
   - 후보 칸 그림이 그 후보의 것인가(같은 spec·덮어쓰기를 예비 플레이어로 그린 PNG와 평균 ΔE00 행렬, 대각선이 행마다 최소인가)
   - 조절 값마다 화면(브라우저 스크린샷)이 바뀌는가, 움직임 값에서 시간에 따라 화면이 바뀌는가
   - 시나리오 기대값(selection_sim.check), 선택 단계 LLM 호출 0, 콘솔 오류
+  - 넷째 범주 알림(G50 (4)): selection.json safetyFlags, 연구자 보기 알림 칸에 보이고 참여자 보기에는 없는가
 외부 패키지: websockets, numpy, Pillow.
 """
 import argparse
@@ -329,7 +330,8 @@ def summary(r):
     s = {"label": r["label"], "llmCalls": r["llmCalls"], "consoleErrors": len(r["consoleErrors"]), "runs": []}
     for x in r["runs"]:
         s["runs"].append({k: x.get(k) for k in ("scenario", "modeAtCandidates", "modeAtAdjust", "modeFinal", "candidatesMs",
-                                                  "frameRestarts", "candidateMatch", "adjustChanged", "checkFails", "fallbacks", "error")})
+                                                  "frameRestarts", "candidateMatch", "adjustChanged", "checkFails", "fallbacks",
+                                                  "selectionSafetyFlags", "safetyViews", "error")})
     return s
 
 
@@ -452,6 +454,9 @@ async def one(c, sc, ses, a, out, log_dir, base, ref):
         run["fallbacks"] = [(x["from"], x["to"], x["source"], x["reason"][:160]) for x in data["preview"]["fallbacks"]]
         run["premeasureSaved"] = (log_dir / "selection" / sid / "premeasure.json").exists()
         run["runnerReady"] = data["runnerReady"]
+        # G50 (4) 화면 연결(병합 마무리): selection.json safetyFlags, 연구자 보기의 알림 칸, 참여자 보기에는 없음
+        run["selectionSafetyFlags"] = [x.get("lemma") for x in data.get("safetyFlags") or []]
+        run["safetyViews"] = await safety_views(c, base, sid)
         run["checkFails"] = [] if sweep else check(sc, SimpleNamespace(cands=data["candidates"], data=data))
         mk = {m["mark"] for m in marks if m.get("mark")}
         run["frameMarks"] = len(mk)
@@ -465,6 +470,30 @@ async def one(c, sc, ses, a, out, log_dir, base, ref):
         except Exception:  # noqa: BLE001
             pass
     return run
+
+
+SAFETY_JS = """(() => {
+  const b = document.querySelector('#safety-flags');
+  const vis = !!b && !b.hidden && b.getClientRects().length > 0;
+  const t = document.body.innerText;
+  return {visible: vis, text: vis ? b.innerText : '',
+          bodyHasMark: ['넷째 제외 범주', 'scene_safety_flag', 'death_self_harm_trauma'].some((m) => t.includes(m))};
+})()"""
+
+
+async def safety_views(c, base, sid):
+    """세션이 끝난 뒤 같은 세션을 연구자 보기·참여자 보기로 다시 열어 넷째 범주 알림 칸이 어디에 보이는지 본다."""
+    out = {}
+    for view in ("researcher", "participant"):
+        await c.call("Page.navigate", {"url": f"{base}/?sid={sid}&view={view}"})
+        await asyncio.sleep(0.3)
+        for _ in range(200):
+            if await c.js("document.readyState === 'complete' && !!window.ifsStage"):
+                break
+            await asyncio.sleep(0.05)
+        await asyncio.sleep(1.5)                      # 연구자 화면은 /log를 받아 그린다
+        out[view] = await c.js(SAFETY_JS)
+    return out
 
 
 def main():

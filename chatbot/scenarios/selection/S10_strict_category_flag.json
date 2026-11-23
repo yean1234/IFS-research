@@ -1,0 +1,64 @@
+{
+  "id": "S10_strict_category_flag",
+  "title": "넷째 제외 범주(G50) — '올가미 같은 끈'은 빗댄 낱말이 넷째 범주라 끈을 그리지 않고 형태 후보를 내지 않음(투명도 × 거칠기 2×2). 조절에서 형태를 바꾸는 것은 막지 않고 formBlocked로 남김. 연구자 화면에만 알림, selection.json safetyFlags",
+  "sessionId": "SYN-SEL-S10",
+  "condition": "static",
+  "replies": [
+    "가슴 앞에 뭔가 있어요",
+    "가슴 앞이요",
+    "그대로 있어요",
+    "작아요",
+    "모르겠어요",
+    "모르겠어요",
+    "없어요"
+  ],
+  "confirm": {
+    "edit": "올가미 같은 끈이 가슴 앞에 있어요. 작아요."
+  },
+  "selection": "index:2",
+  "adjust": [
+    {
+      "item": "form",
+      "value": "line"
+    }
+  ],
+  "premeasure": {
+    "A1": 3,
+    "A2": 3,
+    "A3": 4,
+    "A4": 3,
+    "A5": 3,
+    "A6": 2,
+    "A7": 4,
+    "G13_appearance": 3,
+    "G13_representation": 4
+  },
+  "expect": {
+    "candidateCount": 4,
+    "axes": [
+      "material.opacity",
+      "material.roughness"
+    ],
+    "axisReasons": [
+      "empty",
+      "empty"
+    ],
+    "none": false,
+    "safetyFlags": [
+      "올가미"
+    ],
+    "formBlocked": true,
+    "slotSources": {
+      "form.base": "edited",
+      "material.opacity": "chosen",
+      "material.roughness": "chosen"
+    },
+    "finalOverrides": {
+      "form.base": "line",
+      "material.opacity": 0.4
+    },
+    "colorChanged": false
+  },
+  "defaultReply": "없어요",
+  "note": "합성 대사. 실제 참여자 응답이 아니다(AGENTS.md 6). 넷째 범주 낱말은 확정 때 고친 한 문장에만 넣었다(면담 대사에는 넣지 않음)."
+}

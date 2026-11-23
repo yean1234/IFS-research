@@ -1,0 +1,1405 @@
+{
+ "label": "no-webgl2",
+ "chromeExtra": [
+  "--disable-webgl"
+ ],
+ "runs": [
+  {
+   "scenario": "S1_form_said",
+   "sessionId": "SYN-SEL-S1",
+   "steps": [
+    {
+     "i": 1,
+     "item": "color",
+     "value": "h07",
+     "mode": "image",
+     "ms": 26.3,
+     "diffPxVsPrev": 536,
+     "maxChannelDiffVsPrev": 45,
+     "changed": true
+    },
+    {
+     "i": 2,
+     "item": "size",
+     "value": 0.4,
+     "mode": "image",
+     "ms": 26,
+     "diffPxVsPrev": 523,
+     "maxChannelDiffVsPrev": 27,
+     "changed": true
+    },
+    {
+     "i": 3,
+     "item": "brightness",
+     "value": 0.625,
+     "mode": "image",
+     "ms": 26.3,
+     "diffPxVsPrev": 835,
+     "maxChannelDiffVsPrev": 18,
+     "changed": true
+    }
+   ],
+   "modeAtStart": "image",
+   "candidatesMs": 1033.3,
+   "modeAtCandidates": "image",
+   "webglInfo": null,
+   "candidates": [
+    {
+     "id": "c-b4ff82667e0c",
+     "imgTarget": "c-b4ff82667e0c",
+     "imgMode": "image"
+    },
+    {
+     "id": "c-a4f9833ddb5d",
+     "imgTarget": "c-a4f9833ddb5d",
+     "imgMode": "image"
+    },
+    {
+     "id": "c-ecdc461255cf",
+     "imgTarget": "c-ecdc461255cf",
+     "imgMode": "image"
+    },
+    {
+     "id": "c-64a9a48c218f",
+     "imgTarget": "c-64a9a48c218f",
+     "imgMode": "image"
+    }
+   ],
+   "candidateDeltaE": [
+    [
+     0.0,
+     0.02,
+     0.037,
+     0.04
+    ],
+    [
+     0.02,
+     0.0,
+     0.038,
+     0.037
+    ],
+    [
+     0.037,
+     0.038,
+     0.0,
+     0.01
+    ],
+    [
+     0.04,
+     0.037,
+     0.01,
+     0.0
+    ]
+   ],
+   "candidateMatch": true,
+   "candidateTargetsMatch": true,
+   "selected": "c-ecdc461255cf",
+   "modeAtAdjust": "image",
+   "unavailableAtAdjust": {
+    "motion": "still_image_preview"
+   },
+   "adjustRect": {
+    "x": 41,
+    "y": 375.265625,
+    "w": 300.390625,
+    "h": 225.28125
+   },
+   "adjustChanged": "3/3",
+   "hostLeftAfterDone": false,
+   "preview": {
+    "requested": "webgl",
+    "mode": "image",
+    "reason": "webgl → image: 이 브라우저에서 WebGL2를 쓸 수 없음",
+    "serverMode": "webgl",
+    "shown": {
+     "selecting": [
+      "image"
+     ],
+     "adjusting": [
+      "image"
+     ]
+    },
+    "fallbacks": [
+     {
+      "at": "2026-11-23T13:12:15+09:00",
+      "from": "webgl",
+      "to": "image",
+      "reason": "이 브라우저에서 WebGL2를 쓸 수 없음",
+      "source": "client",
+      "stage": "selecting"
+     }
+    ],
+    "webgl": null
+   },
+   "adjustUnavailable": {
+    "motion": {
+     "reason": "still_image_preview",
+     "previewMode": "image",
+     "since": "2026-11-23T13:12:15+09:00",
+     "stage": "selecting"
+    }
+   },
+   "modeFinal": "image",
+   "fallbacks": [
+    [
+     "webgl",
+     "image",
+     "client",
+     "이 브라우저에서 WebGL2를 쓸 수 없음"
+    ]
+   ],
+   "premeasureSaved": true,
+   "runnerReady": true,
+   "selectionSafetyFlags": [],
+   "safetyViews": {
+    "researcher": {
+     "visible": false,
+     "text": "",
+     "bodyHasMark": false
+    },
+    "participant": {
+     "visible": false,
+     "text": "",
+     "bodyHasMark": false
+    }
+   },
+   "checkFails": [],
+   "frameMarks": 0,
+   "frameRestarts": 0,
+   "frameAlwaysInBody": null,
+   "contextLost": false
+  },
+  {
+   "scenario": "S3_all_said",
+   "sessionId": "SYN-SEL-S3",
+   "steps": [
+    {
+     "i": 1,
+     "item": "motion",
+     "value": "trembling",
+     "disabled": true
+    },
+    {
+     "i": 2,
+     "item": "motion",
+     "value": "still",
+     "disabled": true
+    }
+   ],
+   "modeAtStart": "image",
+   "modeAtAdjust": "image",
+   "unavailableAtAdjust": {
+    "motion": "still_image_preview"
+   },
+   "adjustRect": {
+    "x": 41,
+    "y": 375.265625,
+    "w": 300.390625,
+    "h": 225.28125
+   },
+   "adjustChanged": "0/0",
+   "hostLeftAfterDone": false,
+   "preview": {
+    "requested": "webgl",
+    "mode": "image",
+    "reason": "webgl → image: 이 브라우저에서 WebGL2를 쓸 수 없음",
+    "serverMode": "webgl",
+    "shown": {
+     "adjusting": [
+      "image"
+     ]
+    },
+    "fallbacks": [
+     {
+      "at": "2026-11-23T13:12:22+09:00",
+      "from": "webgl",
+      "to": "image",
+      "reason": "이 브라우저에서 WebGL2를 쓸 수 없음",
+      "source": "client",
+      "stage": "adjusting"
+     }
+    ],
+    "webgl": null
+   },
+   "adjustUnavailable": {
+    "motion": {
+     "reason": "still_image_preview",
+     "previewMode": "image",
+     "since": "2026-11-23T13:12:22+09:00",
+     "stage": "adjusting"
+    }
+   },
+   "modeFinal": "image",
+   "fallbacks": [
+    [
+     "webgl",
+     "image",
+     "client",
+     "이 브라우저에서 WebGL2를 쓸 수 없음"
+    ]
+   ],
+   "premeasureSaved": true,
+   "runnerReady": true,
+   "selectionSafetyFlags": [],
+   "safetyViews": {
+    "researcher": {
+     "visible": false,
+     "text": "",
+     "bodyHasMark": false
+    },
+    "participant": {
+     "visible": false,
+     "text": "",
+     "bodyHasMark": false
+    }
+   },
+   "checkFails": [],
+   "frameMarks": 0,
+   "frameRestarts": 0,
+   "frameAlwaysInBody": null,
+   "contextLost": false
+  },
+  {
+   "scenario": "S8_base_said_edited",
+   "sessionId": "SYN-SEL-S8",
+   "steps": [
+    {
+     "i": 1,
+     "item": "form",
+     "value": "sheet",
+     "mode": "image",
+     "ms": 25.9,
+     "diffPxVsPrev": 1872,
+     "maxChannelDiffVsPrev": 35,
+     "changed": true
+    },
+    {
+     "i": 2,
+     "item": "color",
+     "value": "h03",
+     "mode": "image",
+     "ms": 51.4,
+     "diffPxVsPrev": 2434,
+     "maxChannelDiffVsPrev": 45,
+     "changed": true
+    }
+   ],
+   "modeAtStart": "image",
+   "candidatesMs": 78.5,
+   "modeAtCandidates": "image",
+   "webglInfo": null,
+   "candidates": [
+    {
+     "id": "c-6d6cbf4b806c",
+     "imgTarget": "c-6d6cbf4b806c",
+     "imgMode": "image"
+    },
+    {
+     "id": "c-7c307ccf9bc8",
+     "imgTarget": "c-7c307ccf9bc8",
+     "imgMode": "image"
+    },
+    {
+     "id": "c-81255c9db271",
+     "imgTarget": "c-81255c9db271",
+     "imgMode": "image"
+    },
+    {
+     "id": "c-70e94678592d",
+     "imgTarget": "c-70e94678592d",
+     "imgMode": "image"
+    }
+   ],
+   "candidateDeltaE": [
+    [
+     0.0,
+     0.901,
+     0.448,
+     0.194
+    ],
+    [
+     0.901,
+     0.0,
+     0.52,
+     1.007
+    ],
+    [
+     0.448,
+     0.52,
+     0.0,
+     0.611
+    ],
+    [
+     0.194,
+     1.007,
+     0.611,
+     0.0
+    ]
+   ],
+   "candidateMatch": true,
+   "candidateTargetsMatch": true,
+   "selected": "c-6d6cbf4b806c",
+   "modeAtAdjust": "image",
+   "unavailableAtAdjust": {
+    "motion": "still_image_preview"
+   },
+   "adjustRect": {
+    "x": 41,
+    "y": 375.265625,
+    "w": 300.390625,
+    "h": 225.28125
+   },
+   "adjustChanged": "2/2",
+   "hostLeftAfterDone": false,
+   "preview": {
+    "requested": "webgl",
+    "mode": "image",
+    "reason": "webgl → image: 이 브라우저에서 WebGL2를 쓸 수 없음",
+    "serverMode": "webgl",
+    "shown": {
+     "selecting": [
+      "image"
+     ],
+     "adjusting": [
+      "image"
+     ]
+    },
+    "fallbacks": [
+     {
+      "at": "2026-11-23T13:12:26+09:00",
+      "from": "webgl",
+      "to": "image",
+      "reason": "이 브라우저에서 WebGL2를 쓸 수 없음",
+      "source": "client",
+      "stage": "selecting"
+     }
+    ],
+    "webgl": null
+   },
+   "adjustUnavailable": {
+    "motion": {
+     "reason": "still_image_preview",
+     "previewMode": "image",
+     "since": "2026-11-23T13:12:26+09:00",
+     "stage": "selecting"
+    }
+   },
+   "modeFinal": "image",
+   "fallbacks": [
+    [
+     "webgl",
+     "image",
+     "client",
+     "이 브라우저에서 WebGL2를 쓸 수 없음"
+    ]
+   ],
+   "premeasureSaved": true,
+   "runnerReady": true,
+   "selectionSafetyFlags": [],
+   "safetyViews": {
+    "researcher": {
+     "visible": false,
+     "text": "",
+     "bodyHasMark": false
+    },
+    "participant": {
+     "visible": false,
+     "text": "",
+     "bodyHasMark": false
+    }
+   },
+   "checkFails": [],
+   "frameMarks": 0,
+   "frameRestarts": 0,
+   "frameAlwaysInBody": null,
+   "contextLost": false
+  },
+  {
+   "scenario": "S10_strict_category_flag",
+   "sessionId": "SYN-SEL-S10",
+   "steps": [
+    {
+     "i": 1,
+     "item": "form",
+     "value": "line",
+     "mode": "image",
+     "ms": 26.1,
+     "diffPxVsPrev": 594,
+     "maxChannelDiffVsPrev": 29,
+     "changed": true
+    }
+   ],
+   "modeAtStart": "image",
+   "candidatesMs": 80.3,
+   "modeAtCandidates": "image",
+   "webglInfo": null,
+   "candidates": [
+    {
+     "id": "c-0e52f4bdb97a",
+     "imgTarget": "c-0e52f4bdb97a",
+     "imgMode": "image"
+    },
+    {
+     "id": "c-64731d5d854e",
+     "imgTarget": "c-64731d5d854e",
+     "imgMode": "image"
+    },
+    {
+     "id": "c-17852beca543",
+     "imgTarget": "c-17852beca543",
+     "imgMode": "image"
+    },
+    {
+     "id": "c-3736484996c9",
+     "imgTarget": "c-3736484996c9",
+     "imgMode": "image"
+    }
+   ],
+   "candidateDeltaE": [
+    [
+     0.0,
+     0.024,
+     0.106,
+     0.107
+    ],
+    [
+     0.024,
+     0.0,
+     0.107,
+     0.105
+    ],
+    [
+     0.106,
+     0.107,
+     0.0,
+     0.012
+    ],
+    [
+     0.107,
+     0.105,
+     0.012,
+     0.0
+    ]
+   ],
+   "candidateMatch": true,
+   "candidateTargetsMatch": true,
+   "selected": "c-17852beca543",
+   "modeAtAdjust": "image",
+   "unavailableAtAdjust": {
+    "motion": "still_image_preview"
+   },
+   "adjustRect": {
+    "x": 41,
+    "y": 375.265625,
+    "w": 300.390625,
+    "h": 225.28125
+   },
+   "adjustChanged": "1/1",
+   "hostLeftAfterDone": false,
+   "preview": {
+    "requested": "webgl",
+    "mode": "image",
+    "reason": "webgl → image: 이 브라우저에서 WebGL2를 쓸 수 없음",
+    "serverMode": "webgl",
+    "shown": {
+     "selecting": [
+      "image"
+     ],
+     "adjusting": [
+      "image"
+     ]
+    },
+    "fallbacks": [
+     {
+      "at": "2026-11-23T13:12:32+09:00",
+      "from": "webgl",
+      "to": "image",
+      "reason": "이 브라우저에서 WebGL2를 쓸 수 없음",
+      "source": "client",
+      "stage": "selecting"
+     }
+    ],
+    "webgl": null
+   },
+   "adjustUnavailable": {
+    "motion": {
+     "reason": "still_image_preview",
+     "previewMode": "image",
+     "since": "2026-11-23T13:12:32+09:00",
+     "stage": "selecting"
+    }
+   },
+   "modeFinal": "image",
+   "fallbacks": [
+    [
+     "webgl",
+     "image",
+     "client",
+     "이 브라우저에서 WebGL2를 쓸 수 없음"
+    ]
+   ],
+   "premeasureSaved": true,
+   "runnerReady": true,
+   "selectionSafetyFlags": [
+    "올가미"
+   ],
+   "safetyViews": {
+    "researcher": {
+     "visible": true,
+     "text": "[안전 표시] 넷째 제외 범주(죽음·자해·외상) 낱말: 1곳 [death_self_harm_trauma]\n올가미 — 1번째 문장, 글자 0–3, 자리 simile_source, 형태 막음\n\n진행은 막지 않음 — VR 진행 여부는 연구자가 정함",
+     "bodyHasMark": true
+    },
+    "participant": {
+     "visible": false,
+     "text": "",
+     "bodyHasMark": false
+    }
+   },
+   "checkFails": [],
+   "frameMarks": 0,
+   "frameRestarts": 0,
+   "frameAlwaysInBody": null,
+   "contextLost": false
+  },
+  {
+   "scenario": "S11_animal_head_noun",
+   "sessionId": "SYN-SEL-S11",
+   "steps": [
+    {
+     "i": 1,
+     "item": "color",
+     "value": "h05",
+     "mode": "image",
+     "ms": 25.6,
+     "diffPxVsPrev": 1701,
+     "maxChannelDiffVsPrev": 128,
+     "changed": true
+    }
+   ],
+   "modeAtStart": "image",
+   "candidatesMs": 80.4,
+   "modeAtCandidates": "image",
+   "webglInfo": null,
+   "candidates": [
+    {
+     "id": "c-7ee6e71d5597",
+     "imgTarget": "c-7ee6e71d5597",
+     "imgMode": "image"
+    },
+    {
+     "id": "c-e10b61693521",
+     "imgTarget": "c-e10b61693521",
+     "imgMode": "image"
+    },
+    {
+     "id": "c-b017fd0828c8",
+     "imgTarget": "c-b017fd0828c8",
+     "imgMode": "image"
+    },
+    {
+     "id": "c-c5edf69de167",
+     "imgTarget": "c-c5edf69de167",
+     "imgMode": "image"
+    }
+   ],
+   "candidateDeltaE": [
+    [
+     0.0,
+     1.142,
+     0.38,
+     0.506
+    ],
+    [
+     1.142,
+     0.0,
+     1.308,
+     1.114
+    ],
+    [
+     0.38,
+     1.308,
+     0.0,
+     0.426
+    ],
+    [
+     0.506,
+     1.114,
+     0.426,
+     0.0
+    ]
+   ],
+   "candidateMatch": true,
+   "candidateTargetsMatch": true,
+   "selected": "c-b017fd0828c8",
+   "modeAtAdjust": "image",
+   "unavailableAtAdjust": {
+    "motion": "still_image_preview"
+   },
+   "adjustRect": {
+    "x": 41,
+    "y": 375.265625,
+    "w": 300.390625,
+    "h": 225.28125
+   },
+   "adjustChanged": "1/1",
+   "hostLeftAfterDone": false,
+   "preview": {
+    "requested": "webgl",
+    "mode": "image",
+    "reason": "webgl → image: 이 브라우저에서 WebGL2를 쓸 수 없음",
+    "serverMode": "webgl",
+    "shown": {
+     "selecting": [
+      "image"
+     ],
+     "adjusting": [
+      "image"
+     ]
+    },
+    "fallbacks": [
+     {
+      "at": "2026-11-23T13:12:37+09:00",
+      "from": "webgl",
+      "to": "image",
+      "reason": "이 브라우저에서 WebGL2를 쓸 수 없음",
+      "source": "client",
+      "stage": "selecting"
+     }
+    ],
+    "webgl": null
+   },
+   "adjustUnavailable": {
+    "motion": {
+     "reason": "still_image_preview",
+     "previewMode": "image",
+     "since": "2026-11-23T13:12:37+09:00",
+     "stage": "selecting"
+    }
+   },
+   "modeFinal": "image",
+   "fallbacks": [
+    [
+     "webgl",
+     "image",
+     "client",
+     "이 브라우저에서 WebGL2를 쓸 수 없음"
+    ]
+   ],
+   "premeasureSaved": true,
+   "runnerReady": true,
+   "selectionSafetyFlags": [],
+   "safetyViews": {
+    "researcher": {
+     "visible": false,
+     "text": "",
+     "bodyHasMark": false
+    },
+    "participant": {
+     "visible": false,
+     "text": "",
+     "bodyHasMark": false
+    }
+   },
+   "checkFails": [],
+   "frameMarks": 0,
+   "frameRestarts": 0,
+   "frameAlwaysInBody": null,
+   "contextLost": false
+  },
+  {
+   "scenario": "SWEEP_all_items",
+   "sessionId": "SYN-E2E-SWEEP",
+   "steps": [
+    {
+     "i": 1,
+     "item": "color",
+     "value": "n10",
+     "mode": "image",
+     "ms": 26.8,
+     "diffPxVsPrev": 1711,
+     "maxChannelDiffVsPrev": 153,
+     "changed": true
+    },
+    {
+     "i": 2,
+     "item": "color",
+     "value": "n30",
+     "mode": "image",
+     "ms": 51.8,
+     "diffPxVsPrev": 1353,
+     "maxChannelDiffVsPrev": 50,
+     "changed": true
+    },
+    {
+     "i": 3,
+     "item": "color",
+     "value": "n50",
+     "mode": "image",
+     "ms": 25.6,
+     "diffPxVsPrev": 1516,
+     "maxChannelDiffVsPrev": 52,
+     "changed": true
+    },
+    {
+     "i": 4,
+     "item": "color",
+     "value": "n90",
+     "mode": "image",
+     "ms": 52,
+     "diffPxVsPrev": 1737,
+     "maxChannelDiffVsPrev": 104,
+     "changed": true
+    },
+    {
+     "i": 5,
+     "item": "color",
+     "value": "h00",
+     "mode": "image",
+     "ms": 51.1,
+     "diffPxVsPrev": 1756,
+     "maxChannelDiffVsPrev": 180,
+     "changed": true
+    },
+    {
+     "i": 6,
+     "item": "color",
+     "value": "h01",
+     "mode": "image",
+     "ms": 52.8,
+     "diffPxVsPrev": 1570,
+     "maxChannelDiffVsPrev": 76,
+     "changed": true
+    },
+    {
+     "i": 7,
+     "item": "color",
+     "value": "h02",
+     "mode": "image",
+     "ms": 50.7,
+     "diffPxVsPrev": 1685,
+     "maxChannelDiffVsPrev": 78,
+     "changed": true
+    },
+    {
+     "i": 8,
+     "item": "color",
+     "value": "h03",
+     "mode": "image",
+     "ms": 51.8,
+     "diffPxVsPrev": 1684,
+     "maxChannelDiffVsPrev": 77,
+     "changed": true
+    },
+    {
+     "i": 9,
+     "item": "color",
+     "value": "h04",
+     "mode": "image",
+     "ms": 52.1,
+     "diffPxVsPrev": 1571,
+     "maxChannelDiffVsPrev": 76,
+     "changed": true
+    },
+    {
+     "i": 10,
+     "item": "color",
+     "value": "h05",
+     "mode": "image",
+     "ms": 51.1,
+     "diffPxVsPrev": 1570,
+     "maxChannelDiffVsPrev": 77,
+     "changed": true
+    },
+    {
+     "i": 11,
+     "item": "color",
+     "value": "h06",
+     "mode": "image",
+     "ms": 50.9,
+     "diffPxVsPrev": 1682,
+     "maxChannelDiffVsPrev": 77,
+     "changed": true
+    },
+    {
+     "i": 12,
+     "item": "color",
+     "value": "h07",
+     "mode": "image",
+     "ms": 27.7,
+     "diffPxVsPrev": 1685,
+     "maxChannelDiffVsPrev": 77,
+     "changed": true
+    },
+    {
+     "i": 13,
+     "item": "color",
+     "value": "h08",
+     "mode": "image",
+     "ms": 52.3,
+     "diffPxVsPrev": 1571,
+     "maxChannelDiffVsPrev": 77,
+     "changed": true
+    },
+    {
+     "i": 14,
+     "item": "color",
+     "value": "h09",
+     "mode": "image",
+     "ms": 52,
+     "diffPxVsPrev": 1571,
+     "maxChannelDiffVsPrev": 76,
+     "changed": true
+    },
+    {
+     "i": 15,
+     "item": "color",
+     "value": "h10",
+     "mode": "image",
+     "ms": 26.7,
+     "diffPxVsPrev": 1684,
+     "maxChannelDiffVsPrev": 77,
+     "changed": true
+    },
+    {
+     "i": 16,
+     "item": "color",
+     "value": "h11",
+     "mode": "image",
+     "ms": 50.8,
+     "diffPxVsPrev": 1682,
+     "maxChannelDiffVsPrev": 78,
+     "changed": true
+    },
+    {
+     "i": 17,
+     "item": "form",
+     "value": "blob",
+     "mode": "image",
+     "ms": 26,
+     "diffPxVsPrev": 3080,
+     "maxChannelDiffVsPrev": 98,
+     "changed": true
+    },
+    {
+     "i": 18,
+     "item": "form",
+     "value": "shell",
+     "mode": "image",
+     "ms": 26.3,
+     "diffPxVsPrev": 2254,
+     "maxChannelDiffVsPrev": 175,
+     "changed": true
+    },
+    {
+     "i": 19,
+     "item": "form",
+     "value": "fragments",
+     "mode": "image",
+     "ms": 26.5,
+     "diffPxVsPrev": 3207,
+     "maxChannelDiffVsPrev": 161,
+     "changed": true
+    },
+    {
+     "i": 20,
+     "item": "form",
+     "value": "container",
+     "mode": "image",
+     "ms": 26.8,
+     "diffPxVsPrev": 4279,
+     "maxChannelDiffVsPrev": 113,
+     "changed": true
+    },
+    {
+     "i": 21,
+     "item": "form",
+     "value": "line",
+     "mode": "image",
+     "ms": 26.4,
+     "diffPxVsPrev": 3640,
+     "maxChannelDiffVsPrev": 113,
+     "changed": true
+    },
+    {
+     "i": 22,
+     "item": "form",
+     "value": "sheet",
+     "mode": "image",
+     "ms": 25.6,
+     "diffPxVsPrev": 2870,
+     "maxChannelDiffVsPrev": 106,
+     "changed": true
+    },
+    {
+     "i": 23,
+     "item": "form",
+     "value": "flame",
+     "mode": "image",
+     "ms": 26.1,
+     "diffPxVsPrev": 2770,
+     "maxChannelDiffVsPrev": 114,
+     "changed": true
+    },
+    {
+     "i": 24,
+     "item": "form",
+     "value": "drop",
+     "mode": "image",
+     "ms": 25.9,
+     "diffPxVsPrev": 1847,
+     "maxChannelDiffVsPrev": 97,
+     "changed": true
+    },
+    {
+     "i": 25,
+     "item": "brightness",
+     "value": 0,
+     "mode": "image",
+     "ms": 155.3,
+     "diffPxVsPrev": 1725,
+     "maxChannelDiffVsPrev": 70,
+     "changed": true
+    },
+    {
+     "i": 26,
+     "item": "brightness",
+     "value": 0.125,
+     "mode": "image",
+     "ms": 26,
+     "diffPxVsPrev": 1596,
+     "maxChannelDiffVsPrev": 21,
+     "changed": true
+    },
+    {
+     "i": 27,
+     "item": "brightness",
+     "value": 0.25,
+     "mode": "image",
+     "ms": 25.7,
+     "diffPxVsPrev": 1545,
+     "maxChannelDiffVsPrev": 19,
+     "changed": true
+    },
+    {
+     "i": 28,
+     "item": "brightness",
+     "value": 0.375,
+     "mode": "image",
+     "ms": 26.3,
+     "diffPxVsPrev": 1505,
+     "maxChannelDiffVsPrev": 16,
+     "changed": true
+    },
+    {
+     "i": 29,
+     "item": "brightness",
+     "value": 0.625,
+     "mode": "image",
+     "ms": 77.4,
+     "diffPxVsPrev": 1739,
+     "maxChannelDiffVsPrev": 60,
+     "changed": true
+    },
+    {
+     "i": 30,
+     "item": "brightness",
+     "value": 0.75,
+     "mode": "image",
+     "ms": 51.6,
+     "diffPxVsPrev": 1706,
+     "maxChannelDiffVsPrev": 36,
+     "changed": true
+    },
+    {
+     "i": 31,
+     "item": "brightness",
+     "value": 0.875,
+     "mode": "image",
+     "ms": 52.5,
+     "diffPxVsPrev": 1683,
+     "maxChannelDiffVsPrev": 29,
+     "changed": true
+    },
+    {
+     "i": 32,
+     "item": "brightness",
+     "value": 1,
+     "mode": "image",
+     "ms": 52,
+     "diffPxVsPrev": 1664,
+     "maxChannelDiffVsPrev": 24,
+     "changed": true
+    },
+    {
+     "i": 33,
+     "item": "opacity",
+     "value": 0.2,
+     "mode": "image",
+     "ms": 128.7,
+     "diffPxVsPrev": 2070,
+     "maxChannelDiffVsPrev": 95,
+     "changed": true
+    },
+    {
+     "i": 34,
+     "item": "opacity",
+     "value": 0.4,
+     "mode": "image",
+     "ms": 25.7,
+     "diffPxVsPrev": 1696,
+     "maxChannelDiffVsPrev": 30,
+     "changed": true
+    },
+    {
+     "i": 35,
+     "item": "opacity",
+     "value": 0.6,
+     "mode": "image",
+     "ms": 26,
+     "diffPxVsPrev": 1692,
+     "maxChannelDiffVsPrev": 25,
+     "changed": true
+    },
+    {
+     "i": 36,
+     "item": "opacity",
+     "value": 0.8,
+     "mode": "image",
+     "ms": 26.2,
+     "diffPxVsPrev": 1675,
+     "maxChannelDiffVsPrev": 21,
+     "changed": true
+    },
+    {
+     "i": 37,
+     "item": "size",
+     "value": 0.2,
+     "mode": "image",
+     "ms": 103.8,
+     "diffPxVsPrev": 1609,
+     "maxChannelDiffVsPrev": 115,
+     "changed": true
+    },
+    {
+     "i": 38,
+     "item": "size",
+     "value": 0.3,
+     "mode": "image",
+     "ms": 25.6,
+     "diffPxVsPrev": 400,
+     "maxChannelDiffVsPrev": 109,
+     "changed": true
+    },
+    {
+     "i": 39,
+     "item": "size",
+     "value": 0.4,
+     "mode": "image",
+     "ms": 26.3,
+     "diffPxVsPrev": 650,
+     "maxChannelDiffVsPrev": 109,
+     "changed": true
+    },
+    {
+     "i": 40,
+     "item": "size",
+     "value": 0.6,
+     "mode": "image",
+     "ms": 52,
+     "diffPxVsPrev": 2516,
+     "maxChannelDiffVsPrev": 117,
+     "changed": true
+    },
+    {
+     "i": 41,
+     "item": "size",
+     "value": 0.7,
+     "mode": "image",
+     "ms": 51.8,
+     "diffPxVsPrev": 3192,
+     "maxChannelDiffVsPrev": 120,
+     "changed": true
+    },
+    {
+     "i": 42,
+     "item": "size",
+     "value": 0.8,
+     "mode": "image",
+     "ms": 50.8,
+     "diffPxVsPrev": 5547,
+     "maxChannelDiffVsPrev": 123,
+     "changed": true
+    },
+    {
+     "i": 43,
+     "item": "texture",
+     "value": 0.1,
+     "mode": "image",
+     "ms": 76.9,
+     "diffPxVsPrev": 539,
+     "maxChannelDiffVsPrev": 120,
+     "changed": true
+    },
+    {
+     "i": 44,
+     "item": "texture",
+     "value": 0.3,
+     "mode": "image",
+     "ms": 26.7,
+     "diffPxVsPrev": 468,
+     "maxChannelDiffVsPrev": 85,
+     "changed": true
+    },
+    {
+     "i": 45,
+     "item": "texture",
+     "value": 0.7,
+     "mode": "image",
+     "ms": 53,
+     "diffPxVsPrev": 1079,
+     "maxChannelDiffVsPrev": 54,
+     "changed": true
+    },
+    {
+     "i": 46,
+     "item": "texture",
+     "value": 0.9,
+     "mode": "image",
+     "ms": 51.3,
+     "diffPxVsPrev": 0,
+     "maxChannelDiffVsPrev": 7,
+     "changed": true
+    },
+    {
+     "i": 47,
+     "item": "motion",
+     "value": "floating",
+     "disabled": true
+    },
+    {
+     "i": 48,
+     "item": "motion",
+     "value": "swaying",
+     "disabled": true
+    },
+    {
+     "i": 49,
+     "item": "motion",
+     "value": "trembling",
+     "disabled": true
+    },
+    {
+     "i": 50,
+     "item": "motion",
+     "value": "pounding",
+     "disabled": true
+    },
+    {
+     "i": 51,
+     "item": "motion",
+     "value": "sinking",
+     "disabled": true
+    },
+    {
+     "i": 52,
+     "item": "motion",
+     "value": "still",
+     "disabled": true
+    },
+    {
+     "i": 53,
+     "item": "form",
+     "value": "container",
+     "mode": "image",
+     "ms": 25.5,
+     "diffPxVsPrev": 16992,
+     "maxChannelDiffVsPrev": 142,
+     "changed": true
+    },
+    {
+     "i": 54,
+     "item": "opacity",
+     "value": 0.4,
+     "mode": "image",
+     "ms": 77.7,
+     "diffPxVsPrev": 16889,
+     "maxChannelDiffVsPrev": 56,
+     "changed": true
+    }
+   ],
+   "modeAtStart": "webgl",
+   "candidatesMs": 104.7,
+   "modeAtCandidates": "image",
+   "webglInfo": null,
+   "candidates": [
+    {
+     "id": "c-c1bb1274cffd",
+     "imgTarget": "c-c1bb1274cffd",
+     "imgMode": "image"
+    },
+    {
+     "id": "c-c2a6eb8d6d31",
+     "imgTarget": "c-c2a6eb8d6d31",
+     "imgMode": "image"
+    },
+    {
+     "id": "c-2f0f34c6a343",
+     "imgTarget": "c-2f0f34c6a343",
+     "imgMode": "image"
+    },
+    {
+     "id": "c-8348cd9ca63d",
+     "imgTarget": "c-8348cd9ca63d",
+     "imgMode": "image"
+    }
+   ],
+   "candidateDeltaE": [
+    [
+     0.0,
+     0.426,
+     0.38,
+     1.308
+    ],
+    [
+     0.426,
+     0.0,
+     0.506,
+     1.114
+    ],
+    [
+     0.38,
+     0.506,
+     0.0,
+     1.142
+    ],
+    [
+     1.308,
+     1.114,
+     1.142,
+     0.0
+    ]
+   ],
+   "candidateMatch": true,
+   "candidateTargetsMatch": true,
+   "selected": "c-c1bb1274cffd",
+   "modeAtAdjust": "image",
+   "unavailableAtAdjust": {
+    "motion": "still_image_preview"
+   },
+   "adjustRect": {
+    "x": 41,
+    "y": 375.265625,
+    "w": 300.390625,
+    "h": 225.28125
+   },
+   "adjustChanged": "48/48",
+   "hostLeftAfterDone": false,
+   "preview": {
+    "requested": "webgl",
+    "mode": "image",
+    "reason": "webgl → image: 이 브라우저에서 WebGL2를 쓸 수 없음",
+    "serverMode": "webgl",
+    "shown": {
+     "selecting": [
+      "image"
+     ],
+     "adjusting": [
+      "image"
+     ]
+    },
+    "fallbacks": [
+     {
+      "at": "2026-11-23T13:12:42+09:00",
+      "from": "webgl",
+      "to": "image",
+      "reason": "이 브라우저에서 WebGL2를 쓸 수 없음",
+      "source": "client",
+      "stage": "selecting"
+     }
+    ],
+    "webgl": null
+   },
+   "adjustUnavailable": {
+    "motion": {
+     "reason": "still_image_preview",
+     "previewMode": "image",
+     "since": "2026-11-23T13:12:42+09:00",
+     "stage": "selecting"
+    }
+   },
+   "modeFinal": "image",
+   "fallbacks": [
+    [
+     "webgl",
+     "image",
+     "client",
+     "이 브라우저에서 WebGL2를 쓸 수 없음"
+    ]
+   ],
+   "premeasureSaved": true,
+   "runnerReady": true,
+   "selectionSafetyFlags": [],
+   "safetyViews": {
+    "researcher": {
+     "visible": false,
+     "text": "",
+     "bodyHasMark": false
+    },
+    "participant": {
+     "visible": false,
+     "text": "",
+     "bodyHasMark": false
+    }
+   },
+   "checkFails": [],
+   "frameMarks": 0,
+   "frameRestarts": 0,
+   "frameAlwaysInBody": null,
+   "contextLost": false
+  }
+ ],
+ "console": {
+  "_note": "콘솔 줄이 많아(대부분 SceneLoader 기본값 안내, G44 형태 견본 그리기로 로드가 늘어남) 종류별 개수와 같은 첫 줄별 개수로 줄였다",
+  "total": 6,
+  "byType": {
+   "warning": 6
+  },
+  "distinct": [
+   {
+    "type": "warning",
+    "text": "[preview] webgl 실패 → 서버에 알림: 이 브라우저에서 WebGL2를 쓸 수 없음",
+    "count": 6
+   }
+  ]
+ },
+ "server": {
+  "preview": {
+   "requested": "webgl",
+   "mode": "webgl",
+   "reason": null,
+   "webglUrl": "/preview/webgl/index.html",
+   "fallback": "image",
+   "webglReadyTimeoutMs": 30000,
+   "webglRequestTimeoutMs": 15000,
+   "renderer": {
+    "renderer": "unity-queue",
+    "command": [
+     "IFSPreview.exe"
+    ],
+    "queueDir": "<repo 밖>\\webgl-build\\g12\\e2e-no-webgl2\\queue",
+    "running": false,
+    "pid": null,
+    "startupSeconds": null,
+    "renders": 0,
+    "lastRttMs": null,
+    "size": [
+     320,
+     240
+    ]
+   },
+   "events": []
+  }
+ },
+ "consoleErrors": [],
+ "llmCalls": 0
+}

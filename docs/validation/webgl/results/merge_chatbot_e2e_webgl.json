@@ -1,0 +1,3137 @@
+{
+ "label": "webgl",
+ "chromeExtra": [],
+ "runs": [
+  {
+   "scenario": "S10_strict_category_flag",
+   "sessionId": "SYN-SEL-S10",
+   "steps": [
+    {
+     "i": 1,
+     "item": "form",
+     "value": "line",
+     "mode": "webgl",
+     "ms": 26.3,
+     "diffPxVsPrev": 606,
+     "maxChannelDiffVsPrev": 32,
+     "changed": true
+    }
+   ],
+   "modeAtStart": "webgl",
+   "candidatesMs": 2333.5,
+   "modeAtCandidates": "webgl",
+   "webglInfo": {
+    "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5080 (0x00002C02) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "vendor": "Google Inc. (NVIDIA)",
+    "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+    "readyMs": 699,
+    "graphicsDevice": "OpenGL ES 3.0 (WebGL 2.0 (OpenGL ES 3.0 Chromium))",
+    "warmupMs": 1531
+   },
+   "candidates": [
+    {
+     "id": "c-0e52f4bdb97a",
+     "imgTarget": "c-0e52f4bdb97a",
+     "imgMode": "webgl",
+     "overrides": "[]",
+     "captureSeq": "19"
+    },
+    {
+     "id": "c-64731d5d854e",
+     "imgTarget": "c-64731d5d854e",
+     "imgMode": "webgl",
+     "overrides": "[[\"material.roughness\",0.1]]",
+     "captureSeq": "20"
+    },
+    {
+     "id": "c-17852beca543",
+     "imgTarget": "c-17852beca543",
+     "imgMode": "webgl",
+     "overrides": "[[\"material.opacity\",0.4]]",
+     "captureSeq": "21"
+    },
+    {
+     "id": "c-3736484996c9",
+     "imgTarget": "c-3736484996c9",
+     "imgMode": "webgl",
+     "overrides": "[[\"material.opacity\",0.4],[\"material.roughness\",0.1]]",
+     "captureSeq": "22"
+    }
+   ],
+   "candidateDeltaE": [
+    [
+     0.159,
+     0.178,
+     0.26,
+     0.261
+    ],
+    [
+     0.178,
+     0.159,
+     0.261,
+     0.259
+    ],
+    [
+     0.26,
+     0.261,
+     0.158,
+     0.167
+    ],
+    [
+     0.261,
+     0.259,
+     0.167,
+     0.158
+    ]
+   ],
+   "candidateMatch": true,
+   "candidateTargetsMatch": true,
+   "selected": "c-17852beca543",
+   "modeAtAdjust": "webgl",
+   "unavailableAtAdjust": {},
+   "adjustRect": {
+    "x": 41,
+    "y": 320.875,
+    "w": 300.390625,
+    "h": 225.28125
+   },
+   "adjustChanged": "1/1",
+   "hostLeftAfterDone": false,
+   "preview": {
+    "requested": "webgl",
+    "mode": "webgl",
+    "reason": null,
+    "serverMode": "webgl",
+    "shown": {
+     "selecting": [
+      "webgl"
+     ],
+     "adjusting": [
+      "webgl"
+     ]
+    },
+    "fallbacks": [],
+    "webgl": {
+     "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5080 (0x00002C02) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "vendor": "Google Inc. (NVIDIA)",
+     "graphicsDevice": "OpenGL ES 3.0 (WebGL 2.0 (OpenGL ES 3.0 Chromium))",
+     "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+     "readyMs": 699.0,
+     "warmupMs": 1531.0,
+     "at": "2026-11-23T13:10:17+09:00"
+    }
+   },
+   "adjustUnavailable": {},
+   "modeFinal": "webgl",
+   "fallbacks": [],
+   "premeasureSaved": true,
+   "runnerReady": true,
+   "selectionSafetyFlags": [
+    "올가미"
+   ],
+   "safetyViews": {
+    "researcher": {
+     "visible": true,
+     "text": "[안전 표시] 넷째 제외 범주(죽음·자해·외상) 낱말: 1곳 [death_self_harm_trauma]\n올가미 — 1번째 문장, 글자 0–3, 자리 simile_source, 형태 막음\n\n진행은 막지 않음 — VR 진행 여부는 연구자가 정함",
+     "bodyHasMark": true
+    },
+    "participant": {
+     "visible": false,
+     "text": "",
+     "bodyHasMark": false
+    }
+   },
+   "checkFails": [],
+   "frameMarks": 1,
+   "frameRestarts": 0,
+   "frameAlwaysInBody": true,
+   "contextLost": false
+  },
+  {
+   "scenario": "S11_animal_head_noun",
+   "sessionId": "SYN-SEL-S11",
+   "steps": [
+    {
+     "i": 1,
+     "item": "color",
+     "value": "h05",
+     "mode": "webgl",
+     "ms": 51.2,
+     "diffPxVsPrev": 1693,
+     "maxChannelDiffVsPrev": 128,
+     "changed": true
+    }
+   ],
+   "modeAtStart": "webgl",
+   "candidatesMs": 457.7,
+   "modeAtCandidates": "webgl",
+   "webglInfo": {
+    "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5080 (0x00002C02) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "vendor": "Google Inc. (NVIDIA)",
+    "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+    "readyMs": 203,
+    "graphicsDevice": "OpenGL ES 3.0 (WebGL 2.0 (OpenGL ES 3.0 Chromium))",
+    "warmupMs": 184
+   },
+   "candidates": [
+    {
+     "id": "c-7ee6e71d5597",
+     "imgTarget": "c-7ee6e71d5597",
+     "imgMode": "webgl",
+     "overrides": "[]",
+     "captureSeq": "19"
+    },
+    {
+     "id": "c-e10b61693521",
+     "imgTarget": "c-e10b61693521",
+     "imgMode": "webgl",
+     "overrides": "[[\"layout.size\",0.7]]",
+     "captureSeq": "20"
+    },
+    {
+     "id": "c-b017fd0828c8",
+     "imgTarget": "c-b017fd0828c8",
+     "imgMode": "webgl",
+     "overrides": "[[\"form.type\",\"mist\"]]",
+     "captureSeq": "21"
+    },
+    {
+     "id": "c-c5edf69de167",
+     "imgTarget": "c-c5edf69de167",
+     "imgMode": "webgl",
+     "overrides": "[[\"form.type\",\"mist\"],[\"layout.size\",0.7]]",
+     "captureSeq": "22"
+    }
+   ],
+   "candidateDeltaE": [
+    [
+     0.159,
+     1.263,
+     0.527,
+     0.641
+    ],
+    [
+     1.266,
+     0.155,
+     1.433,
+     1.238
+    ],
+    [
+     0.527,
+     1.431,
+     0.153,
+     0.563
+    ],
+    [
+     0.643,
+     1.237,
+     0.564,
+     0.143
+    ]
+   ],
+   "candidateMatch": true,
+   "candidateTargetsMatch": true,
+   "selected": "c-b017fd0828c8",
+   "modeAtAdjust": "webgl",
+   "unavailableAtAdjust": {},
+   "adjustRect": {
+    "x": 41,
+    "y": 320.875,
+    "w": 300.390625,
+    "h": 225.28125
+   },
+   "adjustChanged": "1/1",
+   "hostLeftAfterDone": false,
+   "preview": {
+    "requested": "webgl",
+    "mode": "webgl",
+    "reason": null,
+    "serverMode": "webgl",
+    "shown": {
+     "selecting": [
+      "webgl"
+     ],
+     "adjusting": [
+      "webgl"
+     ]
+    },
+    "fallbacks": [],
+    "webgl": {
+     "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5080 (0x00002C02) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "vendor": "Google Inc. (NVIDIA)",
+     "graphicsDevice": "OpenGL ES 3.0 (WebGL 2.0 (OpenGL ES 3.0 Chromium))",
+     "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+     "readyMs": 203.0,
+     "warmupMs": 184.0,
+     "at": "2026-11-23T13:10:25+09:00"
+    }
+   },
+   "adjustUnavailable": {},
+   "modeFinal": "webgl",
+   "fallbacks": [],
+   "premeasureSaved": true,
+   "runnerReady": true,
+   "selectionSafetyFlags": [],
+   "safetyViews": {
+    "researcher": {
+     "visible": false,
+     "text": "",
+     "bodyHasMark": false
+    },
+    "participant": {
+     "visible": false,
+     "text": "",
+     "bodyHasMark": false
+    }
+   },
+   "checkFails": [],
+   "frameMarks": 1,
+   "frameRestarts": 0,
+   "frameAlwaysInBody": true,
+   "contextLost": false
+  },
+  {
+   "scenario": "S1_form_said",
+   "sessionId": "SYN-SEL-S1",
+   "steps": [
+    {
+     "i": 1,
+     "item": "color",
+     "value": "h07",
+     "mode": "webgl",
+     "ms": 44.3,
+     "diffPxVsPrev": 539,
+     "maxChannelDiffVsPrev": 45,
+     "changed": true
+    },
+    {
+     "i": 2,
+     "item": "size",
+     "value": 0.4,
+     "mode": "webgl",
+     "ms": 47.7,
+     "diffPxVsPrev": 527,
+     "maxChannelDiffVsPrev": 28,
+     "changed": true
+    },
+    {
+     "i": 3,
+     "item": "brightness",
+     "value": 0.625,
+     "mode": "webgl",
+     "ms": 49.6,
+     "diffPxVsPrev": 835,
+     "maxChannelDiffVsPrev": 19,
+     "changed": true
+    }
+   ],
+   "modeAtStart": "webgl",
+   "candidatesMs": 430.2,
+   "modeAtCandidates": "webgl",
+   "webglInfo": {
+    "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5080 (0x00002C02) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "vendor": "Google Inc. (NVIDIA)",
+    "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+    "readyMs": 184,
+    "graphicsDevice": "OpenGL ES 3.0 (WebGL 2.0 (OpenGL ES 3.0 Chromium))",
+    "warmupMs": 181
+   },
+   "candidates": [
+    {
+     "id": "c-b4ff82667e0c",
+     "imgTarget": "c-b4ff82667e0c",
+     "imgMode": "webgl",
+     "overrides": "[]",
+     "captureSeq": "19"
+    },
+    {
+     "id": "c-a4f9833ddb5d",
+     "imgTarget": "c-a4f9833ddb5d",
+     "imgMode": "webgl",
+     "overrides": "[[\"material.roughness\",0.1]]",
+     "captureSeq": "20"
+    },
+    {
+     "id": "c-ecdc461255cf",
+     "imgTarget": "c-ecdc461255cf",
+     "imgMode": "webgl",
+     "overrides": "[[\"material.opacity\",0.4]]",
+     "captureSeq": "21"
+    },
+    {
+     "id": "c-64a9a48c218f",
+     "imgTarget": "c-64a9a48c218f",
+     "imgMode": "webgl",
+     "overrides": "[[\"material.opacity\",0.4],[\"material.roughness\",0.1]]",
+     "captureSeq": "22"
+    }
+   ],
+   "candidateDeltaE": [
+    [
+     0.157,
+     0.176,
+     0.193,
+     0.196
+    ],
+    [
+     0.176,
+     0.156,
+     0.194,
+     0.193
+    ],
+    [
+     0.193,
+     0.194,
+     0.157,
+     0.166
+    ],
+    [
+     0.196,
+     0.193,
+     0.166,
+     0.157
+    ]
+   ],
+   "candidateMatch": true,
+   "candidateTargetsMatch": true,
+   "selected": "c-ecdc461255cf",
+   "modeAtAdjust": "webgl",
+   "unavailableAtAdjust": {},
+   "adjustRect": {
+    "x": 41,
+    "y": 320.875,
+    "w": 300.390625,
+    "h": 225.28125
+   },
+   "adjustChanged": "3/3",
+   "hostLeftAfterDone": false,
+   "preview": {
+    "requested": "webgl",
+    "mode": "webgl",
+    "reason": null,
+    "serverMode": "webgl",
+    "shown": {
+     "selecting": [
+      "webgl"
+     ],
+     "adjusting": [
+      "webgl"
+     ]
+    },
+    "fallbacks": [],
+    "webgl": {
+     "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5080 (0x00002C02) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "vendor": "Google Inc. (NVIDIA)",
+     "graphicsDevice": "OpenGL ES 3.0 (WebGL 2.0 (OpenGL ES 3.0 Chromium))",
+     "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+     "readyMs": 184.0,
+     "warmupMs": 181.0,
+     "at": "2026-11-23T13:10:30+09:00"
+    }
+   },
+   "adjustUnavailable": {},
+   "modeFinal": "webgl",
+   "fallbacks": [],
+   "premeasureSaved": true,
+   "runnerReady": true,
+   "selectionSafetyFlags": [],
+   "safetyViews": {
+    "researcher": {
+     "visible": false,
+     "text": "",
+     "bodyHasMark": false
+    },
+    "participant": {
+     "visible": false,
+     "text": "",
+     "bodyHasMark": false
+    }
+   },
+   "checkFails": [],
+   "frameMarks": 1,
+   "frameRestarts": 0,
+   "frameAlwaysInBody": true,
+   "contextLost": false
+  },
+  {
+   "scenario": "S2_feeling_only",
+   "sessionId": "SYN-SEL-S2",
+   "steps": [],
+   "modeAtStart": "webgl",
+   "candidatesMs": 540.8,
+   "modeAtCandidates": "webgl",
+   "webglInfo": {
+    "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5080 (0x00002C02) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "vendor": "Google Inc. (NVIDIA)",
+    "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+    "readyMs": 265,
+    "graphicsDevice": "OpenGL ES 3.0 (WebGL 2.0 (OpenGL ES 3.0 Chromium))",
+    "warmupMs": 190
+   },
+   "candidates": [
+    {
+     "id": "c-c2a6eb8d6d31",
+     "imgTarget": "c-c2a6eb8d6d31",
+     "imgMode": "webgl",
+     "overrides": "[[\"form.type\",\"mist\"],[\"layout.size\",0.7]]",
+     "captureSeq": "19"
+    },
+    {
+     "id": "c-2f0f34c6a343",
+     "imgTarget": "c-2f0f34c6a343",
+     "imgMode": "webgl",
+     "overrides": "[]",
+     "captureSeq": "20"
+    },
+    {
+     "id": "c-8348cd9ca63d",
+     "imgTarget": "c-8348cd9ca63d",
+     "imgMode": "webgl",
+     "overrides": "[[\"layout.size\",0.7]]",
+     "captureSeq": "21"
+    },
+    {
+     "id": "c-c1bb1274cffd",
+     "imgTarget": "c-c1bb1274cffd",
+     "imgMode": "webgl",
+     "overrides": "[[\"form.type\",\"mist\"]]",
+     "captureSeq": "22"
+    }
+   ],
+   "candidateDeltaE": [
+    [
+     0.143,
+     0.643,
+     1.237,
+     0.564
+    ],
+    [
+     0.641,
+     0.159,
+     1.263,
+     0.527
+    ],
+    [
+     1.238,
+     1.266,
+     0.155,
+     1.433
+    ],
+    [
+     0.563,
+     0.527,
+     1.431,
+     0.153
+    ]
+   ],
+   "candidateMatch": true,
+   "candidateTargetsMatch": true,
+   "selected": "c-c2a6eb8d6d31",
+   "modeAtAdjust": "webgl",
+   "unavailableAtAdjust": {},
+   "adjustRect": {
+    "x": 41,
+    "y": 320.875,
+    "w": 300.390625,
+    "h": 225.28125
+   },
+   "adjustChanged": "0/0",
+   "hostLeftAfterDone": false,
+   "preview": {
+    "requested": "webgl",
+    "mode": "webgl",
+    "reason": null,
+    "serverMode": "webgl",
+    "shown": {
+     "selecting": [
+      "webgl"
+     ],
+     "adjusting": [
+      "webgl"
+     ]
+    },
+    "fallbacks": [],
+    "webgl": {
+     "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5080 (0x00002C02) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "vendor": "Google Inc. (NVIDIA)",
+     "graphicsDevice": "OpenGL ES 3.0 (WebGL 2.0 (OpenGL ES 3.0 Chromium))",
+     "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+     "readyMs": 265.0,
+     "warmupMs": 190.0,
+     "at": "2026-11-23T13:10:37+09:00"
+    }
+   },
+   "adjustUnavailable": {},
+   "modeFinal": "webgl",
+   "fallbacks": [],
+   "premeasureSaved": true,
+   "runnerReady": true,
+   "selectionSafetyFlags": [],
+   "safetyViews": {
+    "researcher": {
+     "visible": false,
+     "text": "",
+     "bodyHasMark": false
+    },
+    "participant": {
+     "visible": false,
+     "text": "",
+     "bodyHasMark": false
+    }
+   },
+   "checkFails": [],
+   "frameMarks": 1,
+   "frameRestarts": 0,
+   "frameAlwaysInBody": true,
+   "contextLost": false
+  },
+  {
+   "scenario": "S3_all_said",
+   "sessionId": "SYN-SEL-S3",
+   "steps": [
+    {
+     "i": 1,
+     "item": "motion",
+     "value": "trembling",
+     "mode": "webgl",
+     "ms": 47.8,
+     "diffPxVsPrev": 382,
+     "maxChannelDiffVsPrev": 53,
+     "changed": true,
+     "diffPxAfter0p7s": 229,
+     "maxChannelDiffAfter0p7s": 46
+    },
+    {
+     "i": 2,
+     "item": "motion",
+     "value": "still",
+     "mode": "webgl",
+     "ms": 53,
+     "diffPxVsPrev": 351,
+     "maxChannelDiffVsPrev": 54,
+     "changed": true,
+     "diffPxAfter0p7s": 0,
+     "maxChannelDiffAfter0p7s": 0
+    }
+   ],
+   "modeAtStart": "webgl",
+   "modeAtAdjust": "webgl",
+   "unavailableAtAdjust": {},
+   "adjustRect": {
+    "x": 41,
+    "y": 320.875,
+    "w": 300.390625,
+    "h": 225.28125
+   },
+   "adjustChanged": "2/2",
+   "hostLeftAfterDone": false,
+   "preview": {
+    "requested": "webgl",
+    "mode": "webgl",
+    "reason": null,
+    "serverMode": "webgl",
+    "shown": {
+     "adjusting": [
+      "webgl"
+     ]
+    },
+    "fallbacks": [],
+    "webgl": {
+     "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5080 (0x00002C02) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "vendor": "Google Inc. (NVIDIA)",
+     "graphicsDevice": "OpenGL ES 3.0 (WebGL 2.0 (OpenGL ES 3.0 Chromium))",
+     "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+     "readyMs": 174.0,
+     "warmupMs": 172.0,
+     "at": "2026-11-23T13:10:42+09:00"
+    }
+   },
+   "adjustUnavailable": {},
+   "modeFinal": "webgl",
+   "fallbacks": [],
+   "premeasureSaved": true,
+   "runnerReady": true,
+   "selectionSafetyFlags": [],
+   "safetyViews": {
+    "researcher": {
+     "visible": false,
+     "text": "",
+     "bodyHasMark": false
+    },
+    "participant": {
+     "visible": false,
+     "text": "",
+     "bodyHasMark": false
+    }
+   },
+   "checkFails": [],
+   "frameMarks": 1,
+   "frameRestarts": 0,
+   "frameAlwaysInBody": true,
+   "contextLost": false
+  },
+  {
+   "scenario": "S4_none_fit",
+   "sessionId": "SYN-SEL-S4",
+   "steps": [
+    {
+     "i": 1,
+     "item": "form",
+     "value": "mist",
+     "mode": "webgl",
+     "ms": 25.4,
+     "diffPxVsPrev": 2703,
+     "maxChannelDiffVsPrev": 118,
+     "changed": true
+    },
+    {
+     "i": 2,
+     "item": "size",
+     "value": 0.8,
+     "mode": "webgl",
+     "ms": 124.9,
+     "diffPxVsPrev": 8510,
+     "maxChannelDiffVsPrev": 112,
+     "changed": true
+    },
+    {
+     "i": 3,
+     "item": "opacity",
+     "value": 0.6,
+     "mode": "webgl",
+     "ms": 87.7,
+     "diffPxVsPrev": 7690,
+     "maxChannelDiffVsPrev": 36,
+     "changed": true
+    }
+   ],
+   "modeAtStart": "webgl",
+   "candidatesMs": 416.3,
+   "modeAtCandidates": "webgl",
+   "webglInfo": {
+    "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5080 (0x00002C02) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "vendor": "Google Inc. (NVIDIA)",
+    "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+    "readyMs": 179,
+    "graphicsDevice": "OpenGL ES 3.0 (WebGL 2.0 (OpenGL ES 3.0 Chromium))",
+    "warmupMs": 171
+   },
+   "candidates": [
+    {
+     "id": "c-c22369bcafe2",
+     "imgTarget": "c-c22369bcafe2",
+     "imgMode": "webgl",
+     "overrides": "[[\"form.type\",\"mist\"],[\"layout.size\",0.7]]",
+     "captureSeq": "19"
+    },
+    {
+     "id": "c-04f60f6d51e8",
+     "imgTarget": "c-04f60f6d51e8",
+     "imgMode": "webgl",
+     "overrides": "[]",
+     "captureSeq": "20"
+    },
+    {
+     "id": "c-780c03c931ef",
+     "imgTarget": "c-780c03c931ef",
+     "imgMode": "webgl",
+     "overrides": "[[\"layout.size\",0.7]]",
+     "captureSeq": "21"
+    },
+    {
+     "id": "c-90e38680cea6",
+     "imgTarget": "c-90e38680cea6",
+     "imgMode": "webgl",
+     "overrides": "[[\"form.type\",\"mist\"]]",
+     "captureSeq": "22"
+    }
+   ],
+   "candidateDeltaE": [
+    [
+     0.143,
+     0.937,
+     1.575,
+     1.035
+    ],
+    [
+     0.932,
+     0.158,
+     1.986,
+     0.611
+    ],
+    [
+     1.579,
+     1.996,
+     0.152,
+     2.346
+    ],
+    [
+     1.033,
+     0.609,
+     2.338,
+     0.153
+    ]
+   ],
+   "candidateMatch": true,
+   "candidateTargetsMatch": true,
+   "selected": "none",
+   "modeAtAdjust": "webgl",
+   "unavailableAtAdjust": {},
+   "adjustRect": {
+    "x": 41,
+    "y": 320.875,
+    "w": 300.390625,
+    "h": 225.28125
+   },
+   "adjustChanged": "3/3",
+   "hostLeftAfterDone": false,
+   "preview": {
+    "requested": "webgl",
+    "mode": "webgl",
+    "reason": null,
+    "serverMode": "webgl",
+    "shown": {
+     "selecting": [
+      "webgl"
+     ],
+     "adjusting": [
+      "webgl"
+     ]
+    },
+    "fallbacks": [],
+    "webgl": {
+     "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5080 (0x00002C02) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "vendor": "Google Inc. (NVIDIA)",
+     "graphicsDevice": "OpenGL ES 3.0 (WebGL 2.0 (OpenGL ES 3.0 Chromium))",
+     "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+     "readyMs": 179.0,
+     "warmupMs": 171.0,
+     "at": "2026-11-23T13:10:49+09:00"
+    }
+   },
+   "adjustUnavailable": {},
+   "modeFinal": "webgl",
+   "fallbacks": [],
+   "premeasureSaved": true,
+   "runnerReady": true,
+   "selectionSafetyFlags": [],
+   "safetyViews": {
+    "researcher": {
+     "visible": false,
+     "text": "",
+     "bodyHasMark": false
+    },
+    "participant": {
+     "visible": false,
+     "text": "",
+     "bodyHasMark": false
+    }
+   },
+   "checkFails": [],
+   "frameMarks": 1,
+   "frameRestarts": 0,
+   "frameAlwaysInBody": true,
+   "contextLost": false
+  },
+  {
+   "scenario": "S5_one_open",
+   "sessionId": "SYN-SEL-S5",
+   "steps": [],
+   "modeAtStart": "webgl",
+   "modeAtAdjust": "webgl",
+   "unavailableAtAdjust": {},
+   "adjustRect": {
+    "x": 41,
+    "y": 320.875,
+    "w": 300.390625,
+    "h": 225.28125
+   },
+   "adjustChanged": "0/0",
+   "hostLeftAfterDone": false,
+   "preview": {
+    "requested": "webgl",
+    "mode": "webgl",
+    "reason": null,
+    "serverMode": "webgl",
+    "shown": {
+     "adjusting": [
+      "webgl"
+     ]
+    },
+    "fallbacks": [],
+    "webgl": {
+     "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5080 (0x00002C02) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "vendor": "Google Inc. (NVIDIA)",
+     "graphicsDevice": "OpenGL ES 3.0 (WebGL 2.0 (OpenGL ES 3.0 Chromium))",
+     "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+     "readyMs": 259.0,
+     "warmupMs": 197.0,
+     "at": "2026-11-23T13:10:56+09:00"
+    }
+   },
+   "adjustUnavailable": {},
+   "modeFinal": "webgl",
+   "fallbacks": [],
+   "premeasureSaved": true,
+   "runnerReady": true,
+   "selectionSafetyFlags": [],
+   "safetyViews": {
+    "researcher": {
+     "visible": false,
+     "text": "",
+     "bodyHasMark": false
+    },
+    "participant": {
+     "visible": false,
+     "text": "",
+     "bodyHasMark": false
+    }
+   },
+   "checkFails": [],
+   "frameMarks": 1,
+   "frameRestarts": 0,
+   "frameAlwaysInBody": true,
+   "contextLost": false
+  },
+  {
+   "scenario": "S6_unrendered_shape_chosen",
+   "sessionId": "SYN-SEL-S6",
+   "steps": [
+    {
+     "i": 1,
+     "item": "color",
+     "value": "h08",
+     "mode": "webgl",
+     "ms": 50.9,
+     "diffPxVsPrev": 1693,
+     "maxChannelDiffVsPrev": 128,
+     "changed": true
+    }
+   ],
+   "modeAtStart": "webgl",
+   "candidatesMs": 412.6,
+   "modeAtCandidates": "webgl",
+   "webglInfo": {
+    "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5080 (0x00002C02) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "vendor": "Google Inc. (NVIDIA)",
+    "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+    "readyMs": 173,
+    "graphicsDevice": "OpenGL ES 3.0 (WebGL 2.0 (OpenGL ES 3.0 Chromium))",
+    "warmupMs": 173
+   },
+   "candidates": [
+    {
+     "id": "c-a0dbe74389e2",
+     "imgTarget": "c-a0dbe74389e2",
+     "imgMode": "webgl",
+     "overrides": "[[\"form.type\",\"mist\"],[\"layout.size\",0.7]]",
+     "captureSeq": "19"
+    },
+    {
+     "id": "c-09139c8e4b4a",
+     "imgTarget": "c-09139c8e4b4a",
+     "imgMode": "webgl",
+     "overrides": "[]",
+     "captureSeq": "20"
+    },
+    {
+     "id": "c-8792f699cdb7",
+     "imgTarget": "c-8792f699cdb7",
+     "imgMode": "webgl",
+     "overrides": "[[\"layout.size\",0.7]]",
+     "captureSeq": "21"
+    },
+    {
+     "id": "c-3e87c3c63c18",
+     "imgTarget": "c-3e87c3c63c18",
+     "imgMode": "webgl",
+     "overrides": "[[\"form.type\",\"mist\"]]",
+     "captureSeq": "22"
+    }
+   ],
+   "candidateDeltaE": [
+    [
+     0.143,
+     0.643,
+     1.237,
+     0.564
+    ],
+    [
+     0.641,
+     0.159,
+     1.263,
+     0.527
+    ],
+    [
+     1.238,
+     1.266,
+     0.155,
+     1.433
+    ],
+    [
+     0.563,
+     0.527,
+     1.431,
+     0.153
+    ]
+   ],
+   "candidateMatch": true,
+   "candidateTargetsMatch": true,
+   "selected": "c-3e87c3c63c18",
+   "modeAtAdjust": "webgl",
+   "unavailableAtAdjust": {},
+   "adjustRect": {
+    "x": 41,
+    "y": 320.875,
+    "w": 300.390625,
+    "h": 225.28125
+   },
+   "adjustChanged": "1/1",
+   "hostLeftAfterDone": false,
+   "preview": {
+    "requested": "webgl",
+    "mode": "webgl",
+    "reason": null,
+    "serverMode": "webgl",
+    "shown": {
+     "selecting": [
+      "webgl"
+     ],
+     "adjusting": [
+      "webgl"
+     ]
+    },
+    "fallbacks": [],
+    "webgl": {
+     "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5080 (0x00002C02) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "vendor": "Google Inc. (NVIDIA)",
+     "graphicsDevice": "OpenGL ES 3.0 (WebGL 2.0 (OpenGL ES 3.0 Chromium))",
+     "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+     "readyMs": 173.0,
+     "warmupMs": 173.0,
+     "at": "2026-11-23T13:11:01+09:00"
+    }
+   },
+   "adjustUnavailable": {},
+   "modeFinal": "webgl",
+   "fallbacks": [],
+   "premeasureSaved": true,
+   "runnerReady": true,
+   "selectionSafetyFlags": [],
+   "safetyViews": {
+    "researcher": {
+     "visible": false,
+     "text": "",
+     "bodyHasMark": false
+    },
+    "participant": {
+     "visible": false,
+     "text": "",
+     "bodyHasMark": false
+    }
+   },
+   "checkFails": [],
+   "frameMarks": 1,
+   "frameRestarts": 0,
+   "frameAlwaysInBody": true,
+   "contextLost": false
+  },
+  {
+   "scenario": "S7_unrendered_none_floor",
+   "sessionId": "SYN-SEL-S7",
+   "steps": [],
+   "modeAtStart": "webgl",
+   "candidatesMs": 419.9,
+   "modeAtCandidates": "webgl",
+   "webglInfo": {
+    "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5080 (0x00002C02) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "vendor": "Google Inc. (NVIDIA)",
+    "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+    "readyMs": 169,
+    "graphicsDevice": "OpenGL ES 3.0 (WebGL 2.0 (OpenGL ES 3.0 Chromium))",
+    "warmupMs": 178
+   },
+   "candidates": [
+    {
+     "id": "c-ab64fd8f38de",
+     "imgTarget": "c-ab64fd8f38de",
+     "imgMode": "webgl",
+     "overrides": "[[\"form.type\",\"mist\"],[\"layout.size\",0.7]]",
+     "captureSeq": "19"
+    },
+    {
+     "id": "c-7196d9c5fc2e",
+     "imgTarget": "c-7196d9c5fc2e",
+     "imgMode": "webgl",
+     "overrides": "[]",
+     "captureSeq": "20"
+    },
+    {
+     "id": "c-8bfad693ca4e",
+     "imgTarget": "c-8bfad693ca4e",
+     "imgMode": "webgl",
+     "overrides": "[[\"layout.size\",0.7]]",
+     "captureSeq": "21"
+    },
+    {
+     "id": "c-e5687fb76a08",
+     "imgTarget": "c-e5687fb76a08",
+     "imgMode": "webgl",
+     "overrides": "[[\"form.type\",\"mist\"]]",
+     "captureSeq": "22"
+    }
+   ],
+   "candidateDeltaE": [
+    [
+     0.143,
+     2.184,
+     4.357,
+     2.261
+    ],
+    [
+     2.175,
+     0.193,
+     5.396,
+     1.498
+    ],
+    [
+     4.378,
+     5.429,
+     0.17,
+     6.239
+    ],
+    [
+     2.25,
+     1.494,
+     6.21,
+     0.179
+    ]
+   ],
+   "candidateMatch": true,
+   "candidateTargetsMatch": true,
+   "selected": "none",
+   "modeAtAdjust": "webgl",
+   "unavailableAtAdjust": {},
+   "adjustRect": {
+    "x": 41,
+    "y": 320.875,
+    "w": 300.390625,
+    "h": 225.28125
+   },
+   "adjustChanged": "0/0",
+   "hostLeftAfterDone": false,
+   "preview": {
+    "requested": "webgl",
+    "mode": "webgl",
+    "reason": null,
+    "serverMode": "webgl",
+    "shown": {
+     "selecting": [
+      "webgl"
+     ],
+     "adjusting": [
+      "webgl"
+     ]
+    },
+    "fallbacks": [],
+    "webgl": {
+     "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5080 (0x00002C02) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "vendor": "Google Inc. (NVIDIA)",
+     "graphicsDevice": "OpenGL ES 3.0 (WebGL 2.0 (OpenGL ES 3.0 Chromium))",
+     "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+     "readyMs": 169.0,
+     "warmupMs": 178.0,
+     "at": "2026-11-23T13:11:07+09:00"
+    }
+   },
+   "adjustUnavailable": {},
+   "modeFinal": "webgl",
+   "fallbacks": [],
+   "premeasureSaved": true,
+   "runnerReady": true,
+   "selectionSafetyFlags": [],
+   "safetyViews": {
+    "researcher": {
+     "visible": false,
+     "text": "",
+     "bodyHasMark": false
+    },
+    "participant": {
+     "visible": false,
+     "text": "",
+     "bodyHasMark": false
+    }
+   },
+   "checkFails": [],
+   "frameMarks": 1,
+   "frameRestarts": 0,
+   "frameAlwaysInBody": true,
+   "contextLost": false
+  },
+  {
+   "scenario": "S8_base_said_edited",
+   "sessionId": "SYN-SEL-S8",
+   "steps": [
+    {
+     "i": 1,
+     "item": "form",
+     "value": "sheet",
+     "mode": "webgl",
+     "ms": 27.2,
+     "diffPxVsPrev": 2008,
+     "maxChannelDiffVsPrev": 40,
+     "changed": true
+    },
+    {
+     "i": 2,
+     "item": "color",
+     "value": "h03",
+     "mode": "webgl",
+     "ms": 49.8,
+     "diffPxVsPrev": 2406,
+     "maxChannelDiffVsPrev": 45,
+     "changed": true
+    }
+   ],
+   "modeAtStart": "webgl",
+   "candidatesMs": 405.7,
+   "modeAtCandidates": "webgl",
+   "webglInfo": {
+    "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5080 (0x00002C02) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "vendor": "Google Inc. (NVIDIA)",
+    "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+    "readyMs": 169,
+    "graphicsDevice": "OpenGL ES 3.0 (WebGL 2.0 (OpenGL ES 3.0 Chromium))",
+    "warmupMs": 168
+   },
+   "candidates": [
+    {
+     "id": "c-6d6cbf4b806c",
+     "imgTarget": "c-6d6cbf4b806c",
+     "imgMode": "webgl",
+     "overrides": "[[\"material.opacity\",0.4]]",
+     "captureSeq": "19"
+    },
+    {
+     "id": "c-7c307ccf9bc8",
+     "imgTarget": "c-7c307ccf9bc8",
+     "imgMode": "webgl",
+     "overrides": "[[\"layout.size\",0.7]]",
+     "captureSeq": "20"
+    },
+    {
+     "id": "c-81255c9db271",
+     "imgTarget": "c-81255c9db271",
+     "imgMode": "webgl",
+     "overrides": "[[\"layout.size\",0.7],[\"material.opacity\",0.4]]",
+     "captureSeq": "21"
+    },
+    {
+     "id": "c-70e94678592d",
+     "imgTarget": "c-70e94678592d",
+     "imgMode": "webgl",
+     "overrides": "[]",
+     "captureSeq": "22"
+    }
+   ],
+   "candidateDeltaE": [
+    [
+     0.162,
+     1.033,
+     0.586,
+     0.345
+    ],
+    [
+     1.032,
+     0.179,
+     0.65,
+     1.138
+    ],
+    [
+     0.588,
+     0.655,
+     0.164,
+     0.75
+    ],
+    [
+     0.342,
+     1.135,
+     0.744,
+     0.17
+    ]
+   ],
+   "candidateMatch": true,
+   "candidateTargetsMatch": true,
+   "selected": "c-6d6cbf4b806c",
+   "modeAtAdjust": "webgl",
+   "unavailableAtAdjust": {},
+   "adjustRect": {
+    "x": 41,
+    "y": 320.875,
+    "w": 300.390625,
+    "h": 225.28125
+   },
+   "adjustChanged": "2/2",
+   "hostLeftAfterDone": false,
+   "preview": {
+    "requested": "webgl",
+    "mode": "webgl",
+    "reason": null,
+    "serverMode": "webgl",
+    "shown": {
+     "selecting": [
+      "webgl"
+     ],
+     "adjusting": [
+      "webgl"
+     ]
+    },
+    "fallbacks": [],
+    "webgl": {
+     "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5080 (0x00002C02) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "vendor": "Google Inc. (NVIDIA)",
+     "graphicsDevice": "OpenGL ES 3.0 (WebGL 2.0 (OpenGL ES 3.0 Chromium))",
+     "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+     "readyMs": 169.0,
+     "warmupMs": 168.0,
+     "at": "2026-11-23T13:11:12+09:00"
+    }
+   },
+   "adjustUnavailable": {},
+   "modeFinal": "webgl",
+   "fallbacks": [],
+   "premeasureSaved": true,
+   "runnerReady": true,
+   "selectionSafetyFlags": [],
+   "safetyViews": {
+    "researcher": {
+     "visible": false,
+     "text": "",
+     "bodyHasMark": false
+    },
+    "participant": {
+     "visible": false,
+     "text": "",
+     "bodyHasMark": false
+    }
+   },
+   "checkFails": [],
+   "frameMarks": 1,
+   "frameRestarts": 0,
+   "frameAlwaysInBody": true,
+   "contextLost": false
+  },
+  {
+   "scenario": "S9_membrane_split",
+   "sessionId": "SYN-SEL-S9",
+   "steps": [],
+   "modeAtStart": "webgl",
+   "candidatesMs": 394.6,
+   "modeAtCandidates": "webgl",
+   "webglInfo": {
+    "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5080 (0x00002C02) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "vendor": "Google Inc. (NVIDIA)",
+    "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+    "readyMs": 160,
+    "graphicsDevice": "OpenGL ES 3.0 (WebGL 2.0 (OpenGL ES 3.0 Chromium))",
+    "warmupMs": 170
+   },
+   "candidates": [
+    {
+     "id": "c-329ad4873f6c",
+     "imgTarget": "c-329ad4873f6c",
+     "imgMode": "webgl",
+     "overrides": "[[\"form.type\",\"shell\"],[\"layout.size\",0.7]]",
+     "captureSeq": "19"
+    },
+    {
+     "id": "c-ee6219a45173",
+     "imgTarget": "c-ee6219a45173",
+     "imgMode": "webgl",
+     "overrides": "[]",
+     "captureSeq": "20"
+    },
+    {
+     "id": "c-01d2be5daf82",
+     "imgTarget": "c-01d2be5daf82",
+     "imgMode": "webgl",
+     "overrides": "[[\"layout.size\",0.7]]",
+     "captureSeq": "21"
+    },
+    {
+     "id": "c-d84c0f5379d9",
+     "imgTarget": "c-d84c0f5379d9",
+     "imgMode": "webgl",
+     "overrides": "[[\"form.type\",\"shell\"]]",
+     "captureSeq": "22"
+    }
+   ],
+   "candidateDeltaE": [
+    [
+     0.161,
+     1.534,
+     2.091,
+     1.26
+    ],
+    [
+     1.538,
+     0.155,
+     1.113,
+     0.862
+    ],
+    [
+     2.1,
+     1.118,
+     0.151,
+     1.701
+    ],
+    [
+     1.26,
+     0.857,
+     1.693,
+     0.161
+    ]
+   ],
+   "candidateMatch": true,
+   "candidateTargetsMatch": true,
+   "selected": "c-d84c0f5379d9",
+   "modeAtAdjust": "webgl",
+   "unavailableAtAdjust": {},
+   "adjustRect": {
+    "x": 41,
+    "y": 320.875,
+    "w": 300.390625,
+    "h": 225.28125
+   },
+   "adjustChanged": "0/0",
+   "hostLeftAfterDone": false,
+   "preview": {
+    "requested": "webgl",
+    "mode": "webgl",
+    "reason": null,
+    "serverMode": "webgl",
+    "shown": {
+     "selecting": [
+      "webgl"
+     ],
+     "adjusting": [
+      "webgl"
+     ]
+    },
+    "fallbacks": [],
+    "webgl": {
+     "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5080 (0x00002C02) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "vendor": "Google Inc. (NVIDIA)",
+     "graphicsDevice": "OpenGL ES 3.0 (WebGL 2.0 (OpenGL ES 3.0 Chromium))",
+     "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+     "readyMs": 160.0,
+     "warmupMs": 170.0,
+     "at": "2026-11-23T13:11:19+09:00"
+    }
+   },
+   "adjustUnavailable": {},
+   "modeFinal": "webgl",
+   "fallbacks": [],
+   "premeasureSaved": true,
+   "runnerReady": true,
+   "selectionSafetyFlags": [],
+   "safetyViews": {
+    "researcher": {
+     "visible": false,
+     "text": "",
+     "bodyHasMark": false
+    },
+    "participant": {
+     "visible": false,
+     "text": "",
+     "bodyHasMark": false
+    }
+   },
+   "checkFails": [],
+   "frameMarks": 1,
+   "frameRestarts": 0,
+   "frameAlwaysInBody": true,
+   "contextLost": false
+  },
+  {
+   "scenario": "SWEEP_all_items",
+   "sessionId": "SYN-E2E-SWEEP",
+   "steps": [
+    {
+     "i": 1,
+     "item": "color",
+     "value": "n10",
+     "mode": "webgl",
+     "ms": 47.2,
+     "diffPxVsPrev": 1698,
+     "maxChannelDiffVsPrev": 153,
+     "changed": true
+    },
+    {
+     "i": 2,
+     "item": "color",
+     "value": "n30",
+     "mode": "webgl",
+     "ms": 48,
+     "diffPxVsPrev": 1350,
+     "maxChannelDiffVsPrev": 50,
+     "changed": true
+    },
+    {
+     "i": 3,
+     "item": "color",
+     "value": "n50",
+     "mode": "webgl",
+     "ms": 49.3,
+     "diffPxVsPrev": 1517,
+     "maxChannelDiffVsPrev": 52,
+     "changed": true
+    },
+    {
+     "i": 4,
+     "item": "color",
+     "value": "n90",
+     "mode": "webgl",
+     "ms": 47.4,
+     "diffPxVsPrev": 1726,
+     "maxChannelDiffVsPrev": 104,
+     "changed": true
+    },
+    {
+     "i": 5,
+     "item": "color",
+     "value": "h00",
+     "mode": "webgl",
+     "ms": 48.6,
+     "diffPxVsPrev": 1748,
+     "maxChannelDiffVsPrev": 180,
+     "changed": true
+    },
+    {
+     "i": 6,
+     "item": "color",
+     "value": "h01",
+     "mode": "webgl",
+     "ms": 47.3,
+     "diffPxVsPrev": 1569,
+     "maxChannelDiffVsPrev": 76,
+     "changed": true
+    },
+    {
+     "i": 7,
+     "item": "color",
+     "value": "h02",
+     "mode": "webgl",
+     "ms": 47.4,
+     "diffPxVsPrev": 1679,
+     "maxChannelDiffVsPrev": 77,
+     "changed": true
+    },
+    {
+     "i": 8,
+     "item": "color",
+     "value": "h03",
+     "mode": "webgl",
+     "ms": 47.6,
+     "diffPxVsPrev": 1680,
+     "maxChannelDiffVsPrev": 77,
+     "changed": true
+    },
+    {
+     "i": 9,
+     "item": "color",
+     "value": "h04",
+     "mode": "webgl",
+     "ms": 51.4,
+     "diffPxVsPrev": 1568,
+     "maxChannelDiffVsPrev": 76,
+     "changed": true
+    },
+    {
+     "i": 10,
+     "item": "color",
+     "value": "h05",
+     "mode": "webgl",
+     "ms": 47.2,
+     "diffPxVsPrev": 1567,
+     "maxChannelDiffVsPrev": 76,
+     "changed": true
+    },
+    {
+     "i": 11,
+     "item": "color",
+     "value": "h06",
+     "mode": "webgl",
+     "ms": 48.4,
+     "diffPxVsPrev": 1676,
+     "maxChannelDiffVsPrev": 78,
+     "changed": true
+    },
+    {
+     "i": 12,
+     "item": "color",
+     "value": "h07",
+     "mode": "webgl",
+     "ms": 49.1,
+     "diffPxVsPrev": 1679,
+     "maxChannelDiffVsPrev": 77,
+     "changed": true
+    },
+    {
+     "i": 13,
+     "item": "color",
+     "value": "h08",
+     "mode": "webgl",
+     "ms": 47.2,
+     "diffPxVsPrev": 1569,
+     "maxChannelDiffVsPrev": 76,
+     "changed": true
+    },
+    {
+     "i": 14,
+     "item": "color",
+     "value": "h09",
+     "mode": "webgl",
+     "ms": 47.5,
+     "diffPxVsPrev": 1568,
+     "maxChannelDiffVsPrev": 76,
+     "changed": true
+    },
+    {
+     "i": 15,
+     "item": "color",
+     "value": "h10",
+     "mode": "webgl",
+     "ms": 48.5,
+     "diffPxVsPrev": 1680,
+     "maxChannelDiffVsPrev": 77,
+     "changed": true
+    },
+    {
+     "i": 16,
+     "item": "color",
+     "value": "h11",
+     "mode": "webgl",
+     "ms": 48.6,
+     "diffPxVsPrev": 1676,
+     "maxChannelDiffVsPrev": 78,
+     "changed": true
+    },
+    {
+     "i": 17,
+     "item": "form",
+     "value": "blob",
+     "mode": "webgl",
+     "ms": 25.8,
+     "diffPxVsPrev": 3038,
+     "maxChannelDiffVsPrev": 98,
+     "changed": true,
+     "meanDeltaEVsPlayer": 0.158
+    },
+    {
+     "i": 18,
+     "item": "form",
+     "value": "shell",
+     "mode": "webgl",
+     "ms": 25.9,
+     "diffPxVsPrev": 2250,
+     "maxChannelDiffVsPrev": 180,
+     "changed": true,
+     "meanDeltaEVsPlayer": 0.16
+    },
+    {
+     "i": 19,
+     "item": "form",
+     "value": "fragments",
+     "mode": "webgl",
+     "ms": 26.6,
+     "diffPxVsPrev": 3277,
+     "maxChannelDiffVsPrev": 166,
+     "changed": true,
+     "meanDeltaEVsPlayer": 0.163
+    },
+    {
+     "i": 20,
+     "item": "form",
+     "value": "container",
+     "mode": "webgl",
+     "ms": 26.2,
+     "diffPxVsPrev": 4383,
+     "maxChannelDiffVsPrev": 115,
+     "changed": true,
+     "meanDeltaEVsPlayer": 0.158
+    },
+    {
+     "i": 21,
+     "item": "form",
+     "value": "line",
+     "mode": "webgl",
+     "ms": 25.6,
+     "diffPxVsPrev": 3596,
+     "maxChannelDiffVsPrev": 112,
+     "changed": true,
+     "meanDeltaEVsPlayer": 0.162
+    },
+    {
+     "i": 22,
+     "item": "form",
+     "value": "sheet",
+     "mode": "webgl",
+     "ms": 25.7,
+     "diffPxVsPrev": 2813,
+     "maxChannelDiffVsPrev": 108,
+     "changed": true,
+     "meanDeltaEVsPlayer": 0.156
+    },
+    {
+     "i": 23,
+     "item": "form",
+     "value": "flame",
+     "mode": "webgl",
+     "ms": 25.8,
+     "diffPxVsPrev": 2704,
+     "maxChannelDiffVsPrev": 114,
+     "changed": true,
+     "meanDeltaEVsPlayer": 0.16
+    },
+    {
+     "i": 24,
+     "item": "form",
+     "value": "drop",
+     "mode": "webgl",
+     "ms": 25.5,
+     "diffPxVsPrev": 1796,
+     "maxChannelDiffVsPrev": 102,
+     "changed": true,
+     "meanDeltaEVsPlayer": 0.158
+    },
+    {
+     "i": 25,
+     "item": "brightness",
+     "value": 0,
+     "mode": "webgl",
+     "ms": 170.8,
+     "diffPxVsPrev": 1705,
+     "maxChannelDiffVsPrev": 70,
+     "changed": true
+    },
+    {
+     "i": 26,
+     "item": "brightness",
+     "value": 0.125,
+     "mode": "webgl",
+     "ms": 25.6,
+     "diffPxVsPrev": 1603,
+     "maxChannelDiffVsPrev": 22,
+     "changed": true
+    },
+    {
+     "i": 27,
+     "item": "brightness",
+     "value": 0.25,
+     "mode": "webgl",
+     "ms": 27,
+     "diffPxVsPrev": 1539,
+     "maxChannelDiffVsPrev": 19,
+     "changed": true
+    },
+    {
+     "i": 28,
+     "item": "brightness",
+     "value": 0.375,
+     "mode": "webgl",
+     "ms": 27.3,
+     "diffPxVsPrev": 1511,
+     "maxChannelDiffVsPrev": 17,
+     "changed": true
+    },
+    {
+     "i": 29,
+     "item": "brightness",
+     "value": 0.625,
+     "mode": "webgl",
+     "ms": 87.5,
+     "diffPxVsPrev": 1729,
+     "maxChannelDiffVsPrev": 60,
+     "changed": true
+    },
+    {
+     "i": 30,
+     "item": "brightness",
+     "value": 0.75,
+     "mode": "webgl",
+     "ms": 46.1,
+     "diffPxVsPrev": 1713,
+     "maxChannelDiffVsPrev": 36,
+     "changed": true
+    },
+    {
+     "i": 31,
+     "item": "brightness",
+     "value": 0.875,
+     "mode": "webgl",
+     "ms": 47.2,
+     "diffPxVsPrev": 1700,
+     "maxChannelDiffVsPrev": 29,
+     "changed": true
+    },
+    {
+     "i": 32,
+     "item": "brightness",
+     "value": 1,
+     "mode": "webgl",
+     "ms": 47.6,
+     "diffPxVsPrev": 1684,
+     "maxChannelDiffVsPrev": 25,
+     "changed": true
+    },
+    {
+     "i": 33,
+     "item": "opacity",
+     "value": 0.2,
+     "mode": "webgl",
+     "ms": 164.6,
+     "diffPxVsPrev": 2031,
+     "maxChannelDiffVsPrev": 94,
+     "changed": true
+    },
+    {
+     "i": 34,
+     "item": "opacity",
+     "value": 0.4,
+     "mode": "webgl",
+     "ms": 25.5,
+     "diffPxVsPrev": 1686,
+     "maxChannelDiffVsPrev": 29,
+     "changed": true
+    },
+    {
+     "i": 35,
+     "item": "opacity",
+     "value": 0.6,
+     "mode": "webgl",
+     "ms": 25.9,
+     "diffPxVsPrev": 1680,
+     "maxChannelDiffVsPrev": 25,
+     "changed": true
+    },
+    {
+     "i": 36,
+     "item": "opacity",
+     "value": 0.8,
+     "mode": "webgl",
+     "ms": 25.7,
+     "diffPxVsPrev": 1679,
+     "maxChannelDiffVsPrev": 21,
+     "changed": true
+    },
+    {
+     "i": 37,
+     "item": "size",
+     "value": 0.2,
+     "mode": "webgl",
+     "ms": 125.3,
+     "diffPxVsPrev": 1563,
+     "maxChannelDiffVsPrev": 114,
+     "changed": true
+    },
+    {
+     "i": 38,
+     "item": "size",
+     "value": 0.3,
+     "mode": "webgl",
+     "ms": 26.4,
+     "diffPxVsPrev": 343,
+     "maxChannelDiffVsPrev": 110,
+     "changed": true
+    },
+    {
+     "i": 39,
+     "item": "size",
+     "value": 0.4,
+     "mode": "webgl",
+     "ms": 25.8,
+     "diffPxVsPrev": 579,
+     "maxChannelDiffVsPrev": 113,
+     "changed": true
+    },
+    {
+     "i": 40,
+     "item": "size",
+     "value": 0.6,
+     "mode": "webgl",
+     "ms": 87.1,
+     "diffPxVsPrev": 2421,
+     "maxChannelDiffVsPrev": 117,
+     "changed": true
+    },
+    {
+     "i": 41,
+     "item": "size",
+     "value": 0.7,
+     "mode": "webgl",
+     "ms": 49.3,
+     "diffPxVsPrev": 3059,
+     "maxChannelDiffVsPrev": 119,
+     "changed": true
+    },
+    {
+     "i": 42,
+     "item": "size",
+     "value": 0.8,
+     "mode": "webgl",
+     "ms": 47.7,
+     "diffPxVsPrev": 5388,
+     "maxChannelDiffVsPrev": 122,
+     "changed": true
+    },
+    {
+     "i": 43,
+     "item": "texture",
+     "value": 0.1,
+     "mode": "webgl",
+     "ms": 88.8,
+     "diffPxVsPrev": 597,
+     "maxChannelDiffVsPrev": 120,
+     "changed": true
+    },
+    {
+     "i": 44,
+     "item": "texture",
+     "value": 0.3,
+     "mode": "webgl",
+     "ms": 25.5,
+     "diffPxVsPrev": 488,
+     "maxChannelDiffVsPrev": 86,
+     "changed": true
+    },
+    {
+     "i": 45,
+     "item": "texture",
+     "value": 0.7,
+     "mode": "webgl",
+     "ms": 87.2,
+     "diffPxVsPrev": 1140,
+     "maxChannelDiffVsPrev": 53,
+     "changed": true
+    },
+    {
+     "i": 46,
+     "item": "texture",
+     "value": 0.9,
+     "mode": "webgl",
+     "ms": 48.3,
+     "diffPxVsPrev": 0,
+     "maxChannelDiffVsPrev": 8,
+     "changed": true
+    },
+    {
+     "i": 47,
+     "item": "motion",
+     "value": "floating",
+     "mode": "webgl",
+     "ms": 50.3,
+     "diffPxVsPrev": 2471,
+     "maxChannelDiffVsPrev": 116,
+     "changed": true,
+     "diffPxAfter0p7s": 4431,
+     "maxChannelDiffAfter0p7s": 124
+    },
+    {
+     "i": 48,
+     "item": "motion",
+     "value": "swaying",
+     "mode": "webgl",
+     "ms": 49,
+     "diffPxVsPrev": 2812,
+     "maxChannelDiffVsPrev": 119,
+     "changed": true,
+     "diffPxAfter0p7s": 2511,
+     "maxChannelDiffAfter0p7s": 116
+    },
+    {
+     "i": 49,
+     "item": "motion",
+     "value": "trembling",
+     "mode": "webgl",
+     "ms": 48.9,
+     "diffPxVsPrev": 1335,
+     "maxChannelDiffVsPrev": 116,
+     "changed": true,
+     "diffPxAfter0p7s": 346,
+     "maxChannelDiffAfter0p7s": 112
+    },
+    {
+     "i": 50,
+     "item": "motion",
+     "value": "pounding",
+     "mode": "webgl",
+     "ms": 48.3,
+     "diffPxVsPrev": 2334,
+     "maxChannelDiffVsPrev": 116,
+     "changed": true,
+     "diffPxAfter0p7s": 4009,
+     "maxChannelDiffAfter0p7s": 123
+    },
+    {
+     "i": 51,
+     "item": "motion",
+     "value": "sinking",
+     "mode": "webgl",
+     "ms": 47.1,
+     "diffPxVsPrev": 2410,
+     "maxChannelDiffVsPrev": 123,
+     "changed": true,
+     "diffPxAfter0p7s": 382,
+     "maxChannelDiffAfter0p7s": 112
+    },
+    {
+     "i": 52,
+     "item": "motion",
+     "value": "still",
+     "mode": "webgl",
+     "ms": 45.8,
+     "diffPxVsPrev": 1672,
+     "maxChannelDiffVsPrev": 116,
+     "changed": true,
+     "diffPxAfter0p7s": 0,
+     "maxChannelDiffAfter0p7s": 0
+    },
+    {
+     "i": 53,
+     "item": "form",
+     "value": "container",
+     "mode": "webgl",
+     "ms": 26.1,
+     "diffPxVsPrev": 16835,
+     "maxChannelDiffVsPrev": 141,
+     "changed": true,
+     "meanDeltaEVsPlayer": 0.127
+    },
+    {
+     "i": 54,
+     "item": "opacity",
+     "value": 0.4,
+     "mode": "webgl",
+     "ms": 93.7,
+     "diffPxVsPrev": 16856,
+     "maxChannelDiffVsPrev": 56,
+     "changed": true
+    }
+   ],
+   "modeAtStart": "webgl",
+   "candidatesMs": 398.7,
+   "modeAtCandidates": "webgl",
+   "webglInfo": {
+    "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5080 (0x00002C02) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "vendor": "Google Inc. (NVIDIA)",
+    "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+    "readyMs": 166,
+    "graphicsDevice": "OpenGL ES 3.0 (WebGL 2.0 (OpenGL ES 3.0 Chromium))",
+    "warmupMs": 167
+   },
+   "candidates": [
+    {
+     "id": "c-c1bb1274cffd",
+     "imgTarget": "c-c1bb1274cffd",
+     "imgMode": "webgl",
+     "overrides": "[[\"form.type\",\"mist\"]]",
+     "captureSeq": "19"
+    },
+    {
+     "id": "c-c2a6eb8d6d31",
+     "imgTarget": "c-c2a6eb8d6d31",
+     "imgMode": "webgl",
+     "overrides": "[[\"form.type\",\"mist\"],[\"layout.size\",0.7]]",
+     "captureSeq": "20"
+    },
+    {
+     "id": "c-2f0f34c6a343",
+     "imgTarget": "c-2f0f34c6a343",
+     "imgMode": "webgl",
+     "overrides": "[]",
+     "captureSeq": "21"
+    },
+    {
+     "id": "c-8348cd9ca63d",
+     "imgTarget": "c-8348cd9ca63d",
+     "imgMode": "webgl",
+     "overrides": "[[\"layout.size\",0.7]]",
+     "captureSeq": "22"
+    }
+   ],
+   "candidateDeltaE": [
+    [
+     0.153,
+     0.563,
+     0.527,
+     1.431
+    ],
+    [
+     0.564,
+     0.143,
+     0.643,
+     1.237
+    ],
+    [
+     0.527,
+     0.641,
+     0.159,
+     1.263
+    ],
+    [
+     1.433,
+     1.238,
+     1.266,
+     0.155
+    ]
+   ],
+   "candidateMatch": true,
+   "candidateTargetsMatch": true,
+   "selected": "c-c1bb1274cffd",
+   "modeAtAdjust": "webgl",
+   "unavailableAtAdjust": {},
+   "adjustRect": {
+    "x": 41,
+    "y": 320.875,
+    "w": 300.390625,
+    "h": 225.28125
+   },
+   "adjustChanged": "54/54",
+   "hostLeftAfterDone": false,
+   "preview": {
+    "requested": "webgl",
+    "mode": "webgl",
+    "reason": null,
+    "serverMode": "webgl",
+    "shown": {
+     "selecting": [
+      "webgl"
+     ],
+     "adjusting": [
+      "webgl"
+     ]
+    },
+    "fallbacks": [],
+    "webgl": {
+     "renderer": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5080 (0x00002C02) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+     "vendor": "Google Inc. (NVIDIA)",
+     "graphicsDevice": "OpenGL ES 3.0 (WebGL 2.0 (OpenGL ES 3.0 Chromium))",
+     "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+     "readyMs": 166.0,
+     "warmupMs": 167.0,
+     "at": "2026-11-23T13:11:24+09:00"
+    }
+   },
+   "adjustUnavailable": {},
+   "modeFinal": "webgl",
+   "fallbacks": [],
+   "premeasureSaved": true,
+   "runnerReady": true,
+   "selectionSafetyFlags": [],
+   "safetyViews": {
+    "researcher": {
+     "visible": false,
+     "text": "",
+     "bodyHasMark": false
+    },
+    "participant": {
+     "visible": false,
+     "text": "",
+     "bodyHasMark": false
+    }
+   },
+   "checkFails": [],
+   "frameMarks": 1,
+   "frameRestarts": 0,
+   "frameAlwaysInBody": true,
+   "contextLost": false
+  }
+ ],
+ "console": {
+  "_note": "콘솔 줄이 많아(대부분 SceneLoader 기본값 안내, G44 형태 견본 그리기로 로드가 늘어남) 종류별 개수와 같은 첫 줄별 개수로 줄였다",
+  "total": 23598,
+  "byType": {
+   "log": 23426,
+   "log.warning": 72,
+   "warning": 100
+  },
+  "distinct": [
+   {
+    "type": "log",
+    "text": "[SceneLoader] form.posture: SceneSpec 값이 null → 기본값 none 사용",
+    "count": 1156
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] material.erosion: SceneSpec 값이 null → 기본값 0 사용",
+    "count": 1156
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] layout.verticalOffset: SceneSpec 값이 null → 기본값 0.75 사용",
+    "count": 1156
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] motion.speed: SceneSpec 값이 null → 기본값 0.5 사용",
+    "count": 1156
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] motion.type: SceneSpec 값이 null → 기본값 still 사용",
+    "count": 1100
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] form.base: SceneSpec 값이 null → 기본값 none 사용",
+    "count": 1072
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] material.brightness: SceneSpec 값이 null → 기본값 0.5 사용",
+    "count": 1068
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] material.roughness: SceneSpec 값이 null → 기본값 0.5 사용",
+    "count": 1068
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] material.opacity: SceneSpec 값이 null → 기본값 1 사용",
+    "count": 1068
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] layout.distance: SceneSpec 값이 null → 기본값 0.33 사용",
+    "count": 1032
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] form.type: SceneSpec 값이 null → 기본값 blob 사용",
+    "count": 996
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] material.color.h: SceneSpec 값이 null → 기본값 0 사용",
+    "count": 971
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] material.color.s: SceneSpec 값이 null → 기본값 0 사용",
+    "count": 971
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] material.color.l: SceneSpec 값이 null → 기본값 0.7 사용",
+    "count": 971
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] layout.size: SceneSpec 값이 null → 기본값 0.5 사용",
+    "count": 959
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): material.color.l 0.7 → 0.5",
+    "count": 611
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): material.color.s 0 → 0.6",
+    "count": 599
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] preview.json 로드: form=blob, 기본값 15개, shape=none",
+    "count": 448
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): material.color.h 0 → 0.9167",
+    "count": 395
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): material.brightness 0.5 → 1",
+    "count": 284
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): material.opacity 1 → 0.8",
+    "count": 226
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] form.type=mist: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시",
+    "count": 214
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] form.type=mist: 형상 프리셋 기본값 — 구 대리 메시 + 레이마칭 8걸음, 둥근 덩어리 5개(배치 규칙 lumps5/1, seed 0) + 중간 주파수 노이즈(겉면 흔들림 0.3, 노이즈 크기 1.1), 밀도 0.5(광학 두께 배율. 덩어리 속 알파",
+    "count": 214
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): layout.size 0.5 → 0.8",
+    "count": 194
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): form.type blob → mist",
+    "count": 190
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] form.base=drop: 형상 프리셋 기본값 — 절차 메시(규칙 drop/1, 변형 없음, seed 0, rows 24, segments 32). 윤곽만(색·무늬·발광·고유 움직임 없음), 정점 변위 0, 노이즈 크기 1.6(거칠기 얼룩·침식 무늬). 경계 ",
+    "count": 172
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): form.base none → drop",
+    "count": 165
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] form.type=blob: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시",
+    "count": 147
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] preview.json 로드: form=mist, 기본값 15개, shape=none",
+    "count": 127
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): material.opacity 1 → 0.4",
+    "count": 118
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): material.opacity 1 → 0.5",
+    "count": 110
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] form.base=container: 형상 프리셋 기본값 — 절차 메시(규칙 container/1, opening=wide(기본값), profile=round(기본값), seed 0, rows 22, segments 32, wallThickness 0.04). ",
+    "count": 106
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] form.type=shell: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시",
+    "count": 104
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): material.roughness 0.5 → 0.9",
+    "count": 102
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] form.base=sheet: 형상 프리셋 기본값 — 절차 메시(규칙 sheet/1, drape=paper(기본값), seed 0, gridX 24, gridY 18, thickness 0.01, tiltDeg 15, waveAmplitude 0.03). 윤곽만",
+    "count": 100
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] form.type=fragments: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시",
+    "count": 99
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] form.type=fragments: 형상 프리셋 기본값 — 각진 조각 5개를 합친 메시 하나(조각 규칙 angular5/1, seed 0, 배치 반경 비율 0.884, 조각 크기 비율 0.281–0.554, 평면 음영, 정점 변위 0, 노이즈 크기 2.4)",
+    "count": 99
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): form.base none → container",
+    "count": 99
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] form.base=flame: 형상 프리셋 기본값 — 절차 메시(규칙 flame/1, 변형 없음, seed 0, lobeDepth 0.35, lobes 3, rows 32, segments 32, tipBend 0.25, twist 5). 윤곽만(색·무늬·발광·",
+    "count": 99
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): form.type blob → shell",
+    "count": 98
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] form.base=line: 형상 프리셋 기본값 — 절차 메시(규칙 line/1, form=curve(기본값), gauge=normal(기본값), seed 0, samples 96, tubeRadius 0.035, tubeSegments 8). 윤곽만(색·무늬·",
+    "count": 96
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): form.type blob → fragments",
+    "count": 93
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): form.base none → line",
+    "count": 93
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): form.base none → sheet",
+    "count": 92
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): form.base none → flame",
+    "count": 92
+   },
+   {
+    "type": "log.warning",
+    "text": "WebGL: INVALID_ENUM: getInternalformatParameter: invalid internalformat",
+    "count": 72
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] preview.json 로드: form=blob, 기본값 14개, shape=none",
+    "count": 65
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] preview.json 로드: form=shell, 기본값 15개, shape=none",
+    "count": 60
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] preview.json 로드: form=fragments, 기본값 15개, shape=none",
+    "count": 60
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] preview.json 로드: form=blob, 기본값 12개, shape=none",
+    "count": 54
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): layout.size 0.5 → 0.7",
+    "count": 53
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): material.color.h 0 → 0.5833",
+    "count": 48
+   },
+   {
+    "type": "warning",
+    "text": "[SceneLoader] preview.json (session SYN-SEL-S6): shape=elongated, 트리거 '길쭉한' [7,10] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)",
+    "count": 47
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] preview.json 로드: form=blob, 기본값 5개, shape=none",
+    "count": 41
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): form.type mist → blob",
+    "count": 36
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] preview.json 로드: form=blob, 기본값 13개, shape=none",
+    "count": 36
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): material.opacity 1 → 0.6",
+    "count": 36
+   },
+   {
+    "type": "warning",
+    "text": "[SceneLoader] preview.json (session SYN-SEL-S7): shape=elongated, 트리거 '길쭉한' [6,9] — 모양 모형 표에 없는 모양어 → 모양 정보 없이 만든 모형을 그대로 씀(unmapped_shape)",
+    "count": 36
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] preview.json (session SYN-SEL-S9): shape=thin, 트리거 '얇은' [5,7] — spec이 기본 형상 form.base=sheet를 말해 기본 형상이 윤곽을 정함(not_applied_base)",
+    "count": 35
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] preview.json 로드: form=mist, 기본값 12개, shape=none",
+    "count": 27
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] preview.json 로드: form=blob, 기본값 15개, shape=unmapped_shape",
+    "count": 27
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): material.color.h 0 → 0.4167",
+    "count": 24
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] preview.json 로드: form=mist, 기본값 13개, shape=none",
+    "count": 24
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): layout.size 0.316 → 0.4",
+    "count": 24
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): material.color.h 0 → 0.6667",
+    "count": 24
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] preview.json 로드: form=blob, 기본값 14개, shape=unmapped_shape",
+    "count": 24
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): material.color.h 0 → 0.25",
+    "count": 24
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): material.brightness 0.5 → 0.625",
+    "count": 23
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): motion.type still → trembling",
+    "count": 23
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): layout.size 0.5 → 0.6",
+    "count": 23
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] preview.json 로드: form=blob, 기본값 6개, shape=none",
+    "count": 23
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] preview.json 로드: form=blob, 기본값 14개, shape=not_applied_base",
+    "count": 21
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): material.roughness 0.5 → 0.1",
+    "count": 17
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): form.base line → none",
+    "count": 16
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] form.base=line: 형상 프리셋 기본값 — 절차 메시(규칙 line/1, form=tangle, gauge=thin, seed 0, samples 310, tubeRadius 0.02, tubeSegments 8). 윤곽만(색·무늬·발광·고유 움직임 없",
+    "count": 13
+   },
+   {
+    "type": "log",
+    "text": "[UnityMemory] Configuration Parameters - Can be set up in boot.config",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "    \"memorysetup-allocator-temp-initial-block-size-main=262144\"",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "    \"memorysetup-allocator-temp-initial-block-size-worker=262144\"",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "    \"memorysetup-temp-allocator-size-cloud-worker=32768\"",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "    \"memorysetup-remapper-allocator-initial-capacity=32768\"",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "    \"memorysetup-temp-allocator-size-background-worker=32768\"",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "    \"memorysetup-bucket-allocator-granularity=16\"",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "    \"memorysetup-bucket-allocator-bucket-count=8\"",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "    \"memorysetup-bucket-allocator-block-size=4194304\"",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "    \"memorysetup-bucket-allocator-block-count=1\"",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "    \"memorysetup-main-allocator-block-size=16777216\"",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "    \"memorysetup-thread-allocator-block-size=16777216\"",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "    \"memorysetup-gfx-main-allocator-block-size=16777216\"",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "    \"memorysetup-gfx-thread-allocator-block-size=16777216\"",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "    \"memorysetup-cache-allocator-block-size=4194304\"",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "    \"memorysetup-typetree-allocator-block-size=2097152\"",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "    \"memorysetup-profiler-bucket-allocator-granularity=16\"",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "    \"memorysetup-profiler-bucket-allocator-bucket-count=8\"",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "    \"memorysetup-profiler-bucket-allocator-block-size=4194304\"",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "    \"memorysetup-profiler-bucket-allocator-block-count=1\"",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "    \"memorysetup-profiler-allocator-block-size=16777216\"",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "    \"memorysetup-profiler-editor-allocator-block-size=1048576\"",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "    \"memorysetup-temp-allocator-size-main=4194304\"",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "    \"memorysetup-job-temp-allocator-block-size=2097152\"",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "    \"memorysetup-job-temp-allocator-block-size-background=1048576\"",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "    \"memorysetup-job-temp-allocator-reduction-small-platforms=262144\"",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "Input System module state changed to: Initialized.",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "[Physics::Module] Initialized fallback backend.",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "[Physics::Module] Id: 0xdecafbad",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "Loading player data from data.unity3d",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "Initialize engine version: 6000.0.85f2 (b028303d8e7d)",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "[Subsystems] Discovering subsystems at path UnitySubsystems",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "Creating WebGL 2.0 context.",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "Renderer: WebKit WebGL",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "Vendor:   WebKit",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "Version:  OpenGL ES 3.0 (WebGL 2.0 (OpenGL ES 3.0 Chromium))",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "GLES:     3",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": " EXT_clip_control EXT_color_buffer_float EXT_color_buffer_half_float EXT_conservative_depth EXT_depth_clamp EXT_disjoint_timer_query_webgl2 EXT_float_blend EXT_",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "texture_compression_bptc GL_EXT_texture_compression_rgtc GL_EXT_texture_filter_anisotropic GL_EXT_texture_mirror_clamp_to_edge GL_EXT_texture_norm16 GL_KHR_para",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "OPENGL LOG: Creating OpenGL ES 3.0 graphics device ; Context level  <OpenGL ES 3.0> ; Context handle 1",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "[Physics::Module] Selected backend.",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "[Physics::Module] Name: PhysX",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "[Physics::Module] Id: 0xf2b8ea05",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "[Physics::Module] SDK Version: 4.1.2",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "[Physics::Module] Integration Version: 1.0.0",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "[Physics::Module] Threading Mode: Single-Threaded",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "Input Manager initialize...",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "Input System initialize...",
+    "count": 12
+   },
+   {
+    "type": "warning",
+    "text": "Manual synchronization of Unity Application.persistentDataPath via JS_FileSystem_Sync() is deprecated and will be later removed in a future Unity version. The p",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] preview.json 로드: form=mist, 기본값 15개, shape=unmapped_shape",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): form.base sheet → none",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): material.color.l 0.7 → 0.1",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): material.color.l 0.7 → 0.3",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): material.color.l 0.7 → 0.9",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): material.color.h 0 → 0.0833",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): material.color.h 0 → 0.1667",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): material.color.h 0 → 0.3333",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): material.color.h 0 → 0.5",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): material.color.h 0 → 0.75",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): material.color.h 0 → 0.8333",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): material.brightness 0.5 → 0.375",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): material.brightness 0.5 → 0.25",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): material.brightness 0.5 → 0.125",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): layout.size 0.5 → 0.4",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): layout.size 0.5 → 0.3",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): material.roughness 0.5 → 0.3",
+    "count": 12
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): material.brightness 0.5 → 0",
+    "count": 11
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): material.brightness 0.5 → 0.75",
+    "count": 11
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): material.brightness 0.5 → 0.875",
+    "count": 11
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): material.opacity 1 → 0.2",
+    "count": 11
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): layout.size 0.5 → 0.2",
+    "count": 11
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): material.roughness 0.5 → 0.7",
+    "count": 11
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): motion.type still → floating",
+    "count": 11
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): motion.type still → swaying",
+    "count": 11
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): motion.type still → pounding",
+    "count": 11
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): motion.type still → sinking",
+    "count": 11
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] preview.json 로드: form=shell, 기본값 12개, shape=none",
+    "count": 8
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] preview.json 로드: form=fragments, 기본값 12개, shape=none",
+    "count": 8
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): form.base line → sheet",
+    "count": 8
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] preview.json 로드: form=shell, 기본값 14개, shape=not_applied_base",
+    "count": 8
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] preview.json 로드: form=mist, 기본값 14개, shape=none",
+    "count": 7
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] preview.json 로드: form=shell, 기본값 14개, shape=none",
+    "count": 7
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] preview.json 로드: form=fragments, 기본값 14개, shape=none",
+    "count": 7
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): form.type mist → shell",
+    "count": 6
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] preview.json 로드: form=shell, 기본값 13개, shape=none",
+    "count": 6
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): form.type mist → fragments",
+    "count": 6
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] preview.json 로드: form=fragments, 기본값 13개, shape=none",
+    "count": 6
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] preview.json 로드: form=mist, 기본값 14개, shape=unmapped_shape",
+    "count": 6
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] form.base=sheet: 형상 프리셋 기본값 — 절차 메시(규칙 sheet/1, drape=cloth, seed 0, gridX 24, gridY 18, thickness 0.01, tiltDeg 15, waveAmplitude 0.06). 윤곽만(색·무늬",
+    "count": 6
+   },
+   {
+    "type": "log",
+    "text": "UnloadTime: 0.000000 ms",
+    "count": 5
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] preview.json 로드: form=mist, 기본값 5개, shape=none",
+    "count": 5
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] preview.json 로드: form=shell, 기본값 5개, shape=none",
+    "count": 5
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] preview.json 로드: form=fragments, 기본값 5개, shape=none",
+    "count": 5
+   },
+   {
+    "type": "warning",
+    "text": "[SceneLoader] form.base=sheet: 그리지 않음(not_applied_form — form.type=shell의 형태 모형을 지킴)",
+    "count": 5
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] preview.json 로드: form=shell, 기본값 15개, shape=unmapped_shape",
+    "count": 4
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] preview.json 로드: form=fragments, 기본값 15개, shape=unmapped_shape",
+    "count": 4
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): form.base line → container",
+    "count": 4
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): form.base line → flame",
+    "count": 4
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): form.base line → drop",
+    "count": 4
+   },
+   {
+    "type": "log",
+    "text": "UnloadTime: 0.100000 ms",
+    "count": 3
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] preview.json 로드: form=mist, 기본값 6개, shape=none",
+    "count": 3
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] preview.json 로드: form=shell, 기본값 6개, shape=none",
+    "count": 3
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] preview.json 로드: form=fragments, 기본값 6개, shape=none",
+    "count": 3
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] preview.json 로드: form=shell, 기본값 14개, shape=unmapped_shape",
+    "count": 3
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] preview.json 로드: form=fragments, 기본값 14개, shape=unmapped_shape",
+    "count": 3
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] preview.json 로드: form=mist, 기본값 14개, shape=not_applied_base",
+    "count": 3
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] preview.json 로드: form=fragments, 기본값 14개, shape=not_applied_base",
+    "count": 3
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): form.base sheet → container",
+    "count": 3
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): form.base sheet → line",
+    "count": 3
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): form.base sheet → flame",
+    "count": 3
+   },
+   {
+    "type": "log",
+    "text": "[SceneLoader] 변형 덮어쓰기(기록 안 함): form.base sheet → drop",
+    "count": 3
+   },
+   {
+    "type": "log",
+    "text": "UnloadTime: 0.300000 ms",
+    "count": 2
+   },
+   {
+    "type": "log",
+    "text": "UnloadTime: 0.400000 ms",
+    "count": 1
+   },
+   {
+    "type": "log",
+    "text": "UnloadTime: 0.200001 ms",
+    "count": 1
+   }
+  ]
+ },
+ "server": {
+  "preview": {
+   "requested": "webgl",
+   "mode": "webgl",
+   "reason": null,
+   "webglUrl": "/preview/webgl/index.html",
+   "fallback": "image",
+   "webglReadyTimeoutMs": 30000,
+   "webglRequestTimeoutMs": 15000,
+   "renderer": {
+    "renderer": "unity-queue",
+    "command": [
+     "IFSPreview.exe"
+    ],
+    "queueDir": "<repo 밖>\\webgl-build\\g12\\e2e-webgl\\queue",
+    "running": false,
+    "pid": null,
+    "startupSeconds": null,
+    "renders": 0,
+    "lastRttMs": null,
+    "size": [
+     320,
+     240
+    ]
+   },
+   "events": []
+  }
+ },
+ "consoleErrors": [],
+ "llmCalls": 0
+}

@@ -1,0 +1,67 @@
+{
+  "id": "S11_animal_head_noun",
+  "title": "동물이 중심 명사(G45·G51) — '뱀이 있어요'는 동물 에셋이 없어 그리지 않고 형태 자리를 벌림(형태 × 크기 2×2, said_unrendered). mist 후보를 고름 → 형태 출처 said_unrendered_chosen, saidWords 뱀(no_asset). safetyFlags 없음",
+  "sessionId": "SYN-SEL-S11",
+  "condition": "static",
+  "replies": [
+    "가슴 앞에 뭔가 있어요",
+    "가슴 앞이요",
+    "그대로 있어요",
+    "모르겠어요",
+    "모르겠어요",
+    "모르겠어요",
+    "없어요"
+  ],
+  "confirm": {
+    "edit": "가슴 앞에 뱀이 있어요."
+  },
+  "selection": "index:2",
+  "adjust": [
+    {
+      "item": "color",
+      "value": "h05"
+    }
+  ],
+  "premeasure": {
+    "A1": 4,
+    "A2": 2,
+    "A3": 3,
+    "A4": 4,
+    "A5": 3,
+    "A6": 3,
+    "A7": 2,
+    "G13_appearance": 4,
+    "G13_representation": 3
+  },
+  "expect": {
+    "candidateCount": 4,
+    "axes": [
+      "form.type",
+      "layout.size"
+    ],
+    "axisReasons": [
+      "said_unrendered",
+      "empty"
+    ],
+    "none": false,
+    "colorChanged": true,
+    "saidWords": [
+      "뱀"
+    ],
+    "unrenderedBy": [
+      "no_asset"
+    ],
+    "safetyFlags": [],
+    "formBlocked": false,
+    "slotSources": {
+      "form.type": "said_unrendered_chosen",
+      "layout.size": "chosen",
+      "material.color": "edited"
+    },
+    "finalOverrides": {
+      "form.type": "mist"
+    }
+  },
+  "defaultReply": "없어요",
+  "note": "합성 대사. 실제 참여자 응답이 아니다(AGENTS.md 6). 동물 낱말은 확정 때 고친 한 문장에만 넣었다."
+}

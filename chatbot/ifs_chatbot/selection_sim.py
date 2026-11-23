@@ -105,6 +105,18 @@ def check(sc: dict, f) -> list[str]:
         got = [w["lemma"] for w in f.data["sourceDetails"]["form.type"].get("saidWords", [])]
         if got != exp["saidWords"]:
             fails.append(f"form.type saidWords {got} != {exp['saidWords']}")
+    if "unrenderedBy" in exp:   # G45·G51: 말했지만 그리지 않은 이유(saidWords[].unrenderedBy)
+        got = [w.get("unrenderedBy") for w in f.data["sourceDetails"]["form.type"].get("saidWords", [])]
+        if got != exp["unrenderedBy"]:
+            fails.append(f"form.type saidWords.unrenderedBy {got} != {exp['unrenderedBy']}")
+    if "safetyFlags" in exp:    # G50 (4): selection.json 맨 위 safetyFlags의 낱말(글자 위치 순)
+        got = [x.get("lemma") for x in f.data.get("safetyFlags") or []]
+        if got != exp["safetyFlags"]:
+            fails.append(f"safetyFlags {got} != {exp['safetyFlags']}")
+    if "formBlocked" in exp:    # G50 (1): 형태 후보를 내지 않았고 조절의 형태 바꾸기는 허용했다는 기록
+        got = "formBlocked" in f.data["sourceDetails"]["form.type"]
+        if got != exp["formBlocked"]:
+            fails.append(f"form.type formBlocked {got} != {exp['formBlocked']}")
     for slot, src in (exp.get("slotSources") or {}).items():
         got = f.data["sources"][slot]
         if got != src:

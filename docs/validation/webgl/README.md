@@ -409,3 +409,15 @@ python chatbot_e2e.py --out $W/g12/e2e-no-webgl2 --label no-webgl2 --sweep --ref
 
 - 이전 어댑터 재현은 `chatbot_e2e_server.py --web-dir <이전 커밋의 web 폴더를 꺼낸 곳>`으로 서버를 띄우고 [다음 단계로]·후보·조절 두 번을 누른 뒤 iframe 수·load 횟수·후보 그림 유무를 본 것입니다(스크립트는 저장소에 넣지 않음, 결과만 `results/g12_repro_old_adapter.json`).
 - 빌드 산출물·PNG·로그는 모두 `<repo 밖>/webgl-build/` 아래에 있고 git에 넣지 않았습니다. 결과 JSON의 로컬 경로는 `<repo>`, `<repo 밖>`으로 바꿨습니다.
+
+### 11.9 G44 + G45–G51 병합 뒤 다시 빌드 (2026-11-23)
+
+G45–G51에서 `ShapeMapping.cs`(reason `no_asset`도 모양어에서 뺌)가 바뀌어 11.8절 방법 그대로(robocopy로 복사본 동기화 → 빌드) 세 빌드를 다시 만들었습니다. 저장소의 `unity/`는 WebGL 타깃으로 열지 않았습니다.
+
+- WebGL `preview/`: 성공, 81.0 s, 오류 0·경고 0, 보고 크기 74,992,004 B(이전 74,878,212 B). 예비 플레이어 `preview-win/`(10.4 s)·비교용 `preview-win-cp/`(1.6 s): 성공, 오류 0. 두 플레이어의 `IFS.SceneSpec.dll`에 새 문자열(`no_asset`, `PlacementSafetyNotice`)이 들어 있음을 확인했습니다.
+- 챗봇 끝에서 끝까지(`tools/chatbot_e2e.py`)를 새 빌드로 다시 돌렸습니다. 시나리오 둘을 더했습니다: `S10_strict_category_flag`(넷째 범주 '올가미 같은 끈' — 형태 후보 없음, 투명도 × 거칠기 2×2, 조절에서 형태를 선으로 바꿈 → `formBlocked`)와 `S11_animal_head_noun`('뱀이 있어요' — 형태 × 크기 2×2, `said_unrendered_chosen`, `saidWords` 뱀 `no_asset`). 스크립트는 세션이 끝난 뒤 같은 세션을 연구자 보기·참여자 보기로 다시 열어 넷째 범주 알림 칸을 보고, `selection.json`의 `safetyFlags`를 적습니다.
+- **webgl**(S1–S11 + 조절 일곱 항목 모든 값): 12개 세션 모두 webgl로 끝까지, 기대값 불일치 0, iframe 재시작 0, 후보 그림 대조 모두 맞음, 조절 54/54 화면 바뀜, LLM 호출 0, 콘솔 오류 0. 형태 값을 바꾼 9단계(지금 값 mist 뺀 8개 + 마지막 그릇)의 WebGL ↔ 플레이어 평균 ΔE00 0.127–0.163. S1–S9·모든 값의 결과는 G12 때(`results/g12_chatbot_e2e_webgl.json`)와 같습니다.
+- **no-webgl2**(`--extra=--disable-webgl`, S1·S3·S8·S10·S11 + 모든 값): 모두 image로 내려가 끝까지(`fallbacks` webgl → image, client), 움직임 조절 꺼짐 기록, 기대값 불일치 0, 콘솔 오류 0. S1·S3·S8·모든 값은 G12 때와 같습니다.
+- **넷째 범주 알림**: S10은 두 방식 모두 `selection.json` `safetyFlags` = [올가미], 연구자 보기 맨 위에 "[안전 표시] 넷째 제외 범주(죽음·자해·외상) 낱말: 1곳 [death_self_harm_trauma] / 올가미 — 1번째 문장, 글자 0–3, 자리 simile_source, 형태 막음"이 보이고, 참여자 보기에서는 알림 칸이 보이지 않으며 화면 글에 '넷째 제외 범주'·`scene_safety_flag`·`death_self_harm_trauma`가 없었습니다. 다른 세션은 연구자 보기에도 알림 칸이 없습니다.
+- 결과: `results/merge_chatbot_e2e_webgl.json`·`merge_chatbot_e2e_no-webgl2.json`(로컬 경로는 `<repo>`·`<repo 밖>`·`<임시>`로 바꿈). 콘솔 줄은 종류별·첫 줄별 개수로 줄였습니다.
+- 확인하지 못한 것: webgl 실행의 콘솔에 `log` 줄이 23,426개 있습니다(거의 모두 SceneLoader의 "값이 null → 기본값" 안내). G12 때 결과에는 `log` 줄이 하나도 없었습니다. 오류는 아니고 모든 확인이 통과했지만, 왜 이번에는 찍히는지(G44 형태 견본 그리기로 로드가 늘어난 것인지, 빌드 설정 차이인지)는 확인하지 않았습니다.
