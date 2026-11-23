@@ -65,7 +65,9 @@ def test_every_entry_points_at_an_approved_base_and_has_a_source():
             assert k in LEX["bases"][e["base"]]["variants"] and v in LEX["bases"][e["base"]]["variants"][k], e
     lemmas = [e["lemma"] for e in LEX["entries"]]
     assert len(lemmas) == len(set(lemmas))
-    excluded = {w for k, ws in LEX["excluded"].items() if not k.startswith("_") and k != "notListed" for w in ws}
+    excluded = {w for d in LEX["excluded"]["categories"].values()
+                for w in [*d["words"], *d["added"]["words"], *d["compounds"]]}
+    excluded |= {w for k, d in LEX["noAsset"].items() if not k.startswith("_") for w in [*d["words"], *d["added"]["words"]]}
     assert not excluded & set(lemmas)
     assert "병" not in lemmas      # 동음이의(질병·화병) — 합성어만
 
@@ -210,12 +212,12 @@ def test_two_different_bases_first_wins_and_rest_is_alternative(v2):
 
 
 @pytest.mark.parametrize("text,word,code", [
-    ("작은 사람이 웅크리고 있어요.", "사람", "human_figure"),
-    ("괴물 같은 게 있어요.", "괴물", "attacking_being"),
+    ("작은 사람이 웅크리고 있어요.", "사람", "person"),          # 범주 키는 0.7.0(G46·G50)
+    ("괴물 같은 게 있어요.", "괴물", "threat"),
     ("칼이 꽂혀 있어요.", "칼", "weapon"),
-    ("무덤이 보여요.", "무덤", "death_trauma"),
-    ("피가 고여 있어요.", "피", "blood_noose"),
-    ("올가미가 걸려 있어요.", "올가미", "blood_noose"),
+    ("무덤이 보여요.", "무덤", "death_self_harm_trauma"),
+    ("피가 고여 있어요.", "피", "death_self_harm_trauma"),
+    ("올가미가 걸려 있어요.", "올가미", "death_self_harm_trauma"),
 ])
 def test_excluded_words_are_recorded_not_drawn(v2, text, word, code):
     spec = build(v2, text)

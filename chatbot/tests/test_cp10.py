@@ -6,7 +6,7 @@ import json
 
 import pytest
 
-from ifs_chatbot.candidates import generate, load_table, shape_words, unrendered_shape_words
+from ifs_chatbot.candidates import load_table
 from ifs_chatbot.korean import Analyzer
 from ifs_chatbot.paths import REPO_ROOT, shared
 from ifs_chatbot.scene_builder import normalize_confirmed
@@ -44,84 +44,22 @@ def build(v2, text):
 
 
 def excluded(spec):
-    return [u for u in spec["_unmapped"] if u["reason"] == "excluded_shape"]
+    return [u for u in spec["_unmapped"] if u["reason"] in ("excluded_shape", "no_asset")]
 
 
 def test_builder_and_lexicon_versions():
-    assert BUILDER_ID == "scene-spec-builder-v2/2.3.0"
-    assert LEX["lexiconVersion"] == "0.6.0" and LEX["status"] == "draft"
+    # G45–G51에서 올림(builder 2.3.0 → 2.4.0, 사전 0.6.0 → 0.7.0). G37 판정 테스트는 tests/test_g45_exclusion.py로 옮겨 새 결정에 맞게 고침
+    assert BUILDER_ID == "scene-spec-builder-v2/2.4.0"
+    assert LEX["lexiconVersion"] == "0.7.0" and LEX["status"] == "draft"
 
 
-# ── G37 안전 제외: 합성어·수식·부정·직유 ───────────────────────────────────
-# (문장, 제외 기록에 있어야 할 낱말, 사유 코드). 고치기 전(builder 2.2.0)에는 '해골 그릇'·'아이 장난감 상자'가 container로 그려졌고
-# '칼날'·'칼집'·'사람 형상'·'피 웅덩이'·'피그릇'·부정·'-처럼 생긴 거예요'는 제외 기록이 없었다(docs/decisions.md 'CP10 반영 세부')
-@pytest.mark.parametrize("text,lemma,code", [
-    ("칼날 같은 게 있어요.", "칼날", "weapon"),                 # Kiwi 한 토큰 → 합성어 목록
-    ("칼집이 있어요.", "칼집", "weapon"),
-    ("작은 아이가 있어요.", "아이", "human_figure"),
-    ("사람 형상이에요.", "사람", "human_figure"),              # 띄어 쓴 명사 + 명사
-    ("아이 장난감 상자예요.", "상자", "human_figure"),         # 넓힌 명사 연속 전체를 그리지 않음
-    ("해골 그릇이 있어요.", "그릇", "death_trauma"),
-    ("피 웅덩이가 있어요.", "피 웅덩이", "blood_noose"),       # 기록이 없던 말 → 넓힌 연속으로 새 기록
-    ("피그릇이 있어요.", "피그릇", "blood_noose"),             # Kiwi가 피 + 그릇으로 자름
-    ("사람이 아니에요.", "사람", "human_figure"),              # 부정도 기록
-    ("핏방울 같은 게 있어요.", "핏방울", "blood_noose"),
-])
-def test_g37_excluded_morpheme_anywhere_in_noun_run_is_recorded_not_drawn(v2, text, lemma, code):
-    spec = build(v2, text)
-    assert spec["form"]["base"] is None and "form.base" not in spec["_provenance"]
-    hits = [u for u in excluded(spec) if u["lemma"] == lemma]
-    assert hits and all(u["value"]["excluded"] == code for u in hits), excluded(spec)
-    assert all(f["excluded"] for u in hits for f in u["value"]["excludedForms"])
+def _listed_words(kind="excluded"):
+    if kind == "excluded":
+        return {w for d in LEX["excluded"]["categories"].values() for w in [*d["words"], *d["added"]["words"], *d["compounds"]]}
+    return {w for k, d in LEX["noAsset"].items() if not k.startswith("_") for w in [*d["words"], *d["added"]["words"]]}
 
 
-def test_g37_negated_and_simile_excluded_words_are_both_recorded(v2):
-    spec = build(v2, "칼은 아니고 칼처럼 생긴 거예요.")
-    recs = sorted(excluded(spec), key=lambda u: u["_provenance"]["charSpan"][0])
-    assert [u["lemma"] for u in recs] == ["칼", "칼"]
-    assert recs[0]["value"].get("negated") is True and recs[1]["value"].get("simile") == "처럼"
-    assert all(u["value"]["excluded"] == "weapon" for u in recs)
-
-
-def test_g37_converted_records_keep_their_prior_reason(v2):
-    """G40과 같은 방향: 기록을 excluded_shape로 바꿀 때 원래 사유를 value.priorReason에 남긴다."""
-    spec = build(v2, "해골 그릇이 있어요.")
-    by = {u["lemma"]: u for u in excluded(spec)}
-    assert by["그릇"]["category"] == "object" and by["그릇"]["value"]["priorReason"] == "no_scene_param"
-    assert by["그릇"]["value"]["excludedPhrase"] == "해골 그릇"
-
-
-@pytest.mark.parametrize("text,blocked", [
-    ("뱀 같은 끈이 있어요.", "끈"),
-    ("뱀처럼 생긴 끈이에요.", "끈"),
-    ("끈이 있는데 뱀 같아요.", "끈"),                         # 직유가 뒤에 와도 같은 문장
-    ("괴물 같은 불꽃이 있어요.", "불꽃"),
-    ("칼날 같은 불꽃이 있어요.", "불꽃"),
-    ("아이 같은 불꽃이 있어요.", "불꽃"),
-    ("올가미 같은 밧줄이 있어요.", "밧줄"),
-    ("피 같은 물방울이 있어요.", "물방울"),
-    ("사람 그림자 같은 실이 있어요.", "실"),
-    ("칼 같은 건 아니고 끈이에요.", "끈"),                    # 부정된 직유도 막음(⚠ 사람이 정할 것)
-])
-def test_g37_excluded_simile_source_blocks_bases_in_the_same_sentence(v2, text, blocked):
-    """제외 낱말이 직유 원천이면 같은 문장의 형상 낱말을 그리지 않는다(공격하는 존재 등의 모양을 본뜬 것으로 그리지 않음).
-    막힌 낱말의 기록에 excludedBy, 그 기록은 모양어로 세지 않아 형태 후보를 벌리지 않는다(G32 경로 안 탐)."""
-    spec = build(v2, text)
-    assert spec["form"]["base"] is None and spec["form"]["baseVariant"] is None
-    b = [u for u in excluded(spec) if u["lemma"] == blocked]
-    assert len(b) == 1 and b[0]["value"]["excludedBy"]["rule"] == "simile_source"
-    assert not unrendered_shape_words(spec, TABLE) and not shape_words(spec)
-    out = generate(spec, "SYN-C", TABLE)
-    assert all(ax["reason"] != "said_unrendered" for ax in out["axes"])
-
-
-def test_g37_excluded_subject_in_another_clause_does_not_block(v2):
-    """직유가 아닌 다른 주어('뱀이 있고')는 같은 문장의 다른 형상 낱말을 막지 않는다(참여자가 말한 다른 형상)."""
-    spec = build(v2, "뱀이 있고 끈도 있어요.")
-    assert spec["form"]["base"] == "line"
-    assert [u["lemma"] for u in excluded(spec)] == ["뱀"]
-
-
+# ── G37(CP10) 가운데 G45–G51 뒤에도 그대로인 것 ─────────────────────────────
 @pytest.mark.parametrize("text,base", [
     ("아이스크림 그릇이 있어요.", "container"),
     ("칼슘 그릇이 있어요.", "container"),
@@ -136,52 +74,40 @@ def test_g37_lookalike_words_are_not_excluded(v2, text, base):
     assert spec["form"]["base"] == base and not excluded(spec)
 
 
-@pytest.mark.parametrize("word", ["아이스크림", "칼슘", "칼국수", "피부", "커피", "피아노", "총각", "아이디어", "뱀장어", "화살표"])
+@pytest.mark.parametrize("word", ["아이스크림", "칼슘", "칼국수", "피부", "커피", "피아노", "총각", "아이디어", "뱀장어", "화살표",
+                                  "피곤", "피로"])
 def test_g37_lookalikes_are_single_tokens_and_not_listed(an, word):
     toks = [t for t in an.tokens(f"{word} 같아요.") if t.base_tag in ("NNG", "NNP")]
     assert [t.form for t in toks] == [word]
-    listed = {w for k, ws in LEX["excluded"].items() if not k.startswith("_") and k != "notListed" for w in ws}
-    listed |= {w for k, ws in LEX["excludedCompounds"].items() if not k.startswith("_") for w in ws}
-    assert word not in listed
+    assert word not in _listed_words() and word not in _listed_words("no_asset")
 
 
 def test_g37_compounds_are_single_kiwi_tokens(an):
-    """excludedCompounds는 Kiwi가 한 명사 토큰으로 내는 것만(둘로 자르면 형태소 판정이 이미 잡으므로 목록에 둘 필요가 없음)."""
-    for code, ws in LEX["excludedCompounds"].items():
-        if code.startswith("_"):
-            continue
-        assert code in LEX["excluded"]
-        for w in ws:
+    """compounds는 Kiwi가 한 명사 토큰으로 내는 것만(둘로 자르면 중심 명사 규칙이 형태소 단위로 봄)."""
+    for cat, d in LEX["excluded"]["categories"].items():
+        for w in d["compounds"]:
             toks = [t for t in an.tokens(f"{w} 같아요.") if t.base_tag in ("NNG", "NNP")]
-            assert [t.form for t in toks] == [w], (w, [t.form for t in toks])
+            assert [t.form for t in toks] == [w], (cat, w, [t.form for t in toks])
 
 
 def test_g37_homonym_left_out_stays_out(v2):
     """동음이의로 뺀 '창'(무기 | 창문)은 계속 목록 밖 — 기록 사유가 틀리지 않게."""
-    assert "창" not in {w for k, ws in LEX["excluded"].items() if k != "notListed" and not k.startswith("_") for w in ws}
-    assert "창" not in {w for k, ws in LEX["excludedCompounds"].items() if not k.startswith("_") for w in ws}
+    assert "창" not in _listed_words()
     spec = build(v2, "창이 있어요.")
     assert not excluded(spec)
 
 
-@pytest.mark.parametrize("text", ["아이 장난감 상자예요.", "꼬마전구가 있어요."])
-def test_g37_known_conservative_over_exclusion(v2, text):
-    """안전 쪽으로 넓게 잡아 사람을 그리지 않는 말도 그리지 않는다(⚠ 사람이 정할 것). 동작을 고정해 둔다."""
-    spec = build(v2, text)
-    assert spec["form"]["base"] is None
-    assert any(u["value"]["excluded"] == "human_figure" for u in excluded(spec))
-
-
 def test_g37_recall_sentence_is_still_not_marked(v2):
+    """제외 세 범주(넷째 범주 빼고)는 회상 문장에서 기록하지 않는다(G48 이후에도 그대로)."""
     spec = build(v2, "어제 사람이 많았던 장면이 생각나요.")
     assert not excluded(spec)
 
 
 @pytest.mark.parametrize("text", ["칼날 같은 게 있어요.", "뱀 같은 끈이 있어요.", "해골 그릇이 있어요.", "그릇이 있어요."])
 def test_g37_v1_output_unchanged_by_v2_lexicon(an, text):
-    """v1 매퍼는 기본 형상 사전을 읽지 않는다 — 같은 문장의 v1 출력에 excluded_shape·form.base가 없다."""
+    """v1 매퍼는 기본 형상 사전을 읽지 않는다 — 같은 문장의 v1 출력에 excluded_shape·no_asset·form.base가 없다."""
     spec = SceneSpecBuilderV1(an).build(text)
-    assert not any(u["reason"] == "excluded_shape" for u in spec["_unmapped"])
+    assert not any(u["reason"] in ("excluded_shape", "no_asset") for u in spec["_unmapped"])
     assert "base" not in spec["form"]
 
 

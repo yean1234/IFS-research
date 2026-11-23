@@ -18,6 +18,10 @@
 //                      said_unrendered_chosen|said_unrendered_default — 뒤 둘은 모형이 없는 모양어를 말한 형태 자리, G32),
 //                      0.1이면 SourceValues01 네 가지 중 하나여야 한다 — 아니면 시작 거부(G27). 통과하면 manifest에 그대로 옮긴다(없거나 null이면 null).
 //                      form.baseVariant(기본 형상 변형값, CP10 G39)는 form.base와 함께만 온다 — form.base 없이 있으면 거부(어느 형상의 변형값인지 모름).
+//   safetyFlags        (있으면, G50 (4) — 하위 호환 추가) 넷째 제외 범주(죽음·자해·외상) 낱말이 확정 텍스트에 나온 자리의 목록
+//                      [{category, lemma, charSpan, sentence, position, role, scope, formBlock}]. 배열이 아니거나 항목이 객체가 아니면 거부.
+//                      시작은 막지 않는다(VR 진행 여부는 연구자가 정함). 공개 속성 SafetyFlags·HasSafetyFlags로 실험자 화면이 읽을 수 있게 두고
+//                      manifest selection.safetyFlags에 그대로 옮긴다(파일에 키가 없으면 manifest에도 넣지 않음 — 이전 기록 바이트 그대로).
 // 덮어쓰기는 형상을 만들 때 한 번 적용하고 조건 단계 동안 바뀌지 않는다(VR 안에서 속성을 고치는 입력은 없음 — G11).
 // UnityEngine에 의존하지 않는다.
 using System;
@@ -74,6 +78,15 @@ namespace IFS.SceneSpec.Placement
         public SceneOverride Overrides { get; private set; }
         /// <summary>sources 원문(해석하지 않음). 없으면 null.</summary>
         public JToken Sources { get; private set; }
+        /// <summary>G50 (4): 넷째 제외 범주(죽음·자해·외상) 표시 원문(챗봇 selection.json safetyFlags). 파일에 키가 없으면 null.
+        /// 실험자 화면이 읽어 알릴 수 있게 둔 공개 속성(러너는 시작을 막지 않음 — VR 진행 여부는 연구자가 정함).</summary>
+        public JArray SafetyFlags { get; private set; }
+        /// <summary>safetyFlags에 항목이 하나라도 있으면 true.</summary>
+        public bool HasSafetyFlags => SafetyFlags != null && SafetyFlags.Count > 0;
+        /// <summary>표시된 범주(중복 없이, 나온 순서). 표시가 없으면 빈 목록.</summary>
+        public IReadOnlyList<string> SafetyFlagCategories =>
+            (SafetyFlags ?? new JArray()).OfType<JObject>().Select(f => f["category"]?.Type == JTokenType.String ? (string)f["category"] : null)
+                .Where(c => c != null).Distinct().ToList();
         /// <summary>시작은 하되 남겨 둘 경고(확인 화면, events.csv warning).</summary>
         public List<string> Warnings { get; } = new List<string>();
 
@@ -222,6 +235,15 @@ namespace IFS.SceneSpec.Placement
                 if (errors.Count == before) s.Sources = srcObj.DeepClone();
             }
 
+            // safetyFlags(G50 (4), 있으면): 형식만 검사하고 값은 해석하지 않고 옮긴다. 시작은 막지 않는다
+            var sf = o["safetyFlags"];
+            if (sf != null && sf.Type != JTokenType.Null)
+            {
+                if (!(sf is JArray sfArr)) errors.Add("safetyFlags는 배열이어야 함(G50), 지금 " + sf.Type);
+                else if (sfArr.Any(x => !(x is JObject))) errors.Add("safetyFlags의 항목은 객체여야 함(G50)");
+                else s.SafetyFlags = (JArray)sfArr.DeepClone();
+            }
+
             return errors.Count == 0 ? s : null;
         }
 
@@ -301,18 +323,23 @@ namespace IFS.SceneSpec.Placement
 
         static JToken Str(string v) => v != null ? new JValue(v) : JValue.CreateNull();
 
-        /// <summary>manifest의 selection 객체.</summary>
-        public JObject ManifestJson() => new JObject
+        /// <summary>manifest의 selection 객체. safetyFlags는 선택 파일에 키가 있을 때만(G50 — 이전 기록의 manifest 바이트 그대로).</summary>
+        public JObject ManifestJson()
         {
-            ["file"] = Str(FileName),
-            ["sha256"] = Str(Sha256),
-            ["formatVersion"] = Str(FormatVersion),
-            ["none"] = None,
-            ["selectedCandidateId"] = Str(SelectedCandidateId),
-            ["finalOverrides"] = FinalOverridesJson?.DeepClone() ?? new JObject(),
-            ["sources"] = Sources?.DeepClone(),
-            ["skipped"] = Skipped,
-            ["colorChanged"] = ColorChanged.HasValue ? new JValue(ColorChanged.Value) : JValue.CreateNull(),
-        };
+            var o = new JObject
+            {
+                ["file"] = Str(FileName),
+                ["sha256"] = Str(Sha256),
+                ["formatVersion"] = Str(FormatVersion),
+                ["none"] = None,
+                ["selectedCandidateId"] = Str(SelectedCandidateId),
+                ["finalOverrides"] = FinalOverridesJson?.DeepClone() ?? new JObject(),
+                ["sources"] = Sources?.DeepClone(),
+                ["skipped"] = Skipped,
+                ["colorChanged"] = ColorChanged.HasValue ? new JValue(ColorChanged.Value) : JValue.CreateNull(),
+            };
+            if (SafetyFlags != null) o["safetyFlags"] = SafetyFlags.DeepClone();
+            return o;
+        }
     }
 }

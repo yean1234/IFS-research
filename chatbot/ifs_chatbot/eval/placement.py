@@ -77,6 +77,8 @@ RECORD_PREFIX = "ifs-placement/"
 # (CP10 G39) sources에 form.base·form.baseVariant(기본 형상과 그 변형값) — 열 form_base_source·form_variant_source.
 # 변형값 키마다 낱말 뜻(lexicon_implied)·참여자 말(said)의 구분은 manifest에 없고 selection.json sourceDetails.form.baseVariant.keyBasis에
 # 있다(manifest selection.sha256으로 짝지음).
+# (G50 (4)) selection.safetyFlags(넷째 제외 범주 표시, 선택 파일에 있을 때만) — 열 safety_flag_categories(범주, ';'로 이음,
+# 표시가 없으면 빈 문자열)·safety_form_blocked(형태를 막은 표시가 있는지). 키가 없는 기록 = 빈칸.
 # 없는 키는 빈칸으로 읽는다(이전 기록 그대로 읽힘).
 KNOWN_VERSIONS = ("ifs-placement/0.1", "ifs-placement/0.2")
 TRAJECTORY_PREFIX = "ifs-trajectory/"
@@ -107,6 +109,7 @@ SESSION_HEAD = [
     "condition_complete", "input_source", "head_source", "auto_mode", "draft_phrases", "object_radius_m",
     "selection_none", "selected_candidate_id", "n_final_overrides",
     "selection_skipped", "color_changed", "form_source", "form_base_source", "form_variant_source",
+    "safety_flag_categories", "safety_form_blocked",
     "final_distance_m", "final_azimuth_deg", "final_height_m", "grab_count", "first_grab_ms", "held_ms",
     "path_length_m", "confirmed",
     "show_rings", "nearest_ring_m", "ring_offset_m",
@@ -466,6 +469,11 @@ def load_session(cand: dict, facing_deg: float = DEFAULT_FACING_DEG) -> tuple[di
         "form_base_source": (sel.get("sources") or {}).get("form.base") if isinstance(sel.get("sources"), dict) else None,
         "form_variant_source": ((sel.get("sources") or {}).get("form.baseVariant")
                                 if isinstance(sel.get("sources"), dict) else None),
+        # G50 (4): 넷째 제외 범주 표시(키가 없는 기록 = 빈칸)
+        "safety_flag_categories": (";".join(sorted({str(f.get("category")) for f in sel["safetyFlags"] if isinstance(f, dict)}))
+                                   if isinstance(sel.get("safetyFlags"), list) else None),
+        "safety_form_blocked": (any(isinstance(f, dict) and f.get("formBlock") is True for f in sel["safetyFlags"])
+                                if isinstance(sel.get("safetyFlags"), list) else None),
         "final_distance_m": _r(final_d), "final_azimuth_deg": _r(final_az), "final_height_m": _r(final_h),
         "grab_count": _int(pl.get("grabCount")), "first_grab_ms": _num(pl.get("firstGrabMs")),
         "held_ms": _num(pl.get("heldMs")), "path_length_m": _r(path_len),

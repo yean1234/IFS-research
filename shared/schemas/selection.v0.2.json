@@ -191,6 +191,82 @@
           "items": {
             "type": "integer"
           }
+        },
+        "unrenderedBy": {
+          "enum": [
+            "no_model",
+            "excluded_shape",
+            "no_asset"
+          ],
+          "description": "(G45·G51, 하위 호환 추가) 말했지만 그리지 않은 이유: no_model = 모형이 없는 모양어(G32), excluded_shape = 형상 자체가 제외 범주 낱말(G45), no_asset = 동물 등 에셋 없음(G51). 없으면(이전 파일·모형이 있는 모양어) 구분 없음"
+        },
+        "category": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "(G45·G51) unrenderedBy가 excluded_shape | no_asset이면 범주 키(person·threat·weapon | animal)"
+        }
+      }
+    },
+    "safetyFlag": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "category",
+        "lemma",
+        "charSpan",
+        "sentence",
+        "position",
+        "role",
+        "scope",
+        "formBlock"
+      ],
+      "properties": {
+        "category": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "lemma": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "charSpan": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "sentence": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "position": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "role": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "scope": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "formBlock": {
+          "type": "boolean"
         }
       }
     }
@@ -1037,6 +1113,30 @@
                   }
                 },
                 "description": "form.type·form.base·form.baseVariant에만(CP10 G39): 형태 조절(9값 중 하나)이 처음 값과 다른 값으로 끝났을 때 그 조작 기록. 세 슬롯이 한 조작으로 정해졌음을 남긴다"
+              },
+              "formBlocked": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "rule",
+                  "by",
+                  "adjustFormAllowed"
+                ],
+                "properties": {
+                  "rule": {
+                    "const": "G50"
+                  },
+                  "by": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "adjustFormAllowed": {
+                    "type": "boolean"
+                  }
+                },
+                "description": "form.type에만(G50 (1), 하위 호환 추가): 넷째 제외 범주 때문에 형태 후보를 내지 않았음. by = 막은 낱말, adjustFormAllowed = 조절 화면의 형태 바꾸기를 막지 않았음(결정에 없어 막지 않음 — true)"
               }
             }
           }
@@ -1171,6 +1271,13 @@
         }
       ],
       "description": "G33: 매퍼 v2가 거리 하한을 적용했으면 said = 말한 값(하한 전, 0–1), drawn = 슬롯 값(하한, 미리보기에 그려지는 값). spec의 provenance rule '+floor(<하한>;said=<말한 값>)'을 읽은 것. 배치 러너는 spec의 거리를 쓰지 않는다(시작 자리는 실험 설정). 하한이 없으면 null"
+    },
+    "safetyFlags": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/safetyFlag"
+      },
+      "description": "(2026-11-23, G50 (4) — 하위 호환 추가, 형식 버전은 0.2 그대로) 넷째 제외 범주(죽음·자해·외상) 낱말이 확정 텍스트에 나온 자리마다 하나(spec _unmapped value.strict 기록에서 옴): 범주·낱말·글자 위치·문장 번호·명사구 안 자리·문장 성분·범위·형태를 막았는지. 실험자에게 알리기 위한 표시이고 진행을 막지 않는다(VR 진행 여부는 연구자가 정함 — 초안, ⚠ 교수님·IRB 확인 필요). 러너는 있으면 manifest selection.safetyFlags에 옮긴다. 없는 이전 파일은 그대로 유효"
     }
   }
 }
