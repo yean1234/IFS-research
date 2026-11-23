@@ -1,6 +1,6 @@
 {
   "lexiconId": "base-shapes-v1",
-  "lexiconVersion": "0.2.0",
+  "lexiconVersion": "0.3.0",
   "status": "draft",
   "date": "2026-11-23",
   "description": "낱말 → 범주 → 기본 형상(form.base, SceneSpec 2.2.0). 매핑 v2(chatbot/ifs_chatbot/scene_builder_v2.py)만 읽는다. 문헌을 참고해 연구팀이 정한 목록이며 IFS가 정한 범주가 아니다(docs/asset-plan.md, decisions G6·G21·G30). 모든 낱말은 사전 항목 초안이다 — 실제 참여자 발화로 확인하기 전에는 확정하지 않는다.",
@@ -56,7 +56,14 @@
     {"lemma": "실타래", "base": "line", "variant": {"form": "tangle", "gauge": "thin"}, "source": "added"},
     {"lemma": "실뭉치", "base": "line", "variant": {"form": "tangle", "gauge": "thin"}, "source": "added"},
     {"lemma": "털실", "base": "line", "variant": {"form": "curve"}, "source": "added"},
-    {"lemma": "머리카락", "base": "line", "variant": {"form": "curve", "gauge": "thin"}, "source": "added"}
+    {"lemma": "머리카락", "base": "line", "variant": {"form": "curve", "gauge": "thin"}, "source": "added"},
+    {"lemma": "종이", "base": "sheet", "variant": {"drape": "paper"}, "source": "added"},
+    {"lemma": "판", "base": "sheet", "variant": {"drape": "paper"}, "source": "added"},
+    {"lemma": "비닐", "base": "sheet", "variant": {"drape": "paper"}, "source": "added"},
+    {"lemma": "천", "base": "sheet", "variant": {"drape": "cloth"}, "source": "added", "note": "수사 '천'(1000)은 Kiwi가 NR로 내므로 맞지 않는다(NNG만 맞춤)"},
+    {"lemma": "막", "base": "sheet", "variant": {"drape": "cloth"}, "source": "added", "note": "껍질(shell) 읽기와 갈림 — 후보 표 candidate_values.v2.json interpretationSplits 'membrane'(form.type이 비었을 때 blob | shell)"},
+    {"lemma": "보자기", "base": "sheet", "variant": {"drape": "cloth"}, "source": "added", "note": "싸는 것(container) 읽기는 갈림을 만들지 않음(docs/asset-plan.md 3-2절)"},
+    {"lemma": "장막", "base": "sheet", "variant": {"drape": "cloth"}, "source": "added"}
   ],
   "notIncluded": [
     {"lemma": "병", "reason": "질병·화병과 형태가 같다(docs/asset-plan.md 3-3절). 물병·유리병·꽃병처럼 합성어만 넣었다"},
@@ -65,6 +72,8 @@
     {"lemma": "속·가슴", "reason": "몸을 그릇으로 쓰는 말(몸 위치). 형상 낱말이 아니다"},
     {"lemma": "줄", "reason": "noun_stoplist.v2.json의 기능·수량 명사('한 줄로', '줄을 서다')와 같은 꼴이라 넣지 않음. '줄'은 선으로 그리지 않고 지금처럼 기록하지 않는다"},
     {"lemma": "사슬", "reason": "고리 모형이 필요해 다음 묶음(docs/asset-plan.md 1-1절 line 행)"},
+    {"lemma": "껍질", "reason": "1층 사전이 form.type = shell로 넣는다(기존 경로). sheet와 갈리지만 말한 form.type을 후보에서 바꿀 수 없어(G9) 갈림을 만들지 않음"},
+    {"lemma": "벽·옷·이불·담요", "reason": "벽은 가두는 것(다음 묶음) 후보, 옷·이불·담요는 일상 사물·위안 물건이라 보류(docs/asset-plan.md 1-1절 sheet 행)"},
     {"lemma": "덩굴", "reason": "식물과 갈림(3-2절). 다음 묶음에 식물만 넣기로 했으므로(G30) 그때 plant로 정한다. 그때까지 line으로 보내지 않고 _unmapped에 남김"},
     {"lemma": "조이다·땅기다·팽팽하다·엉키다", "reason": "동사·형용사(형상 낱말 아님). '엉키다·꼬이다'는 line의 변형값(tangle) 단서로만 쓴다(variantCues)"}
   ],

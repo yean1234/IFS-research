@@ -23,6 +23,7 @@ namespace IFS.SceneSpec
         {
             { BaseShapes.Container, "container/1" },
             { BaseShapes.Line, "line/1" },
+            { BaseShapes.Sheet, "sheet/1" },
         };
 
         /// <summary>형상의 생성 규칙 버전. 만들지 않은 형상이면 null(로더가 그리지 않고 기록한다).</summary>
@@ -43,6 +44,9 @@ namespace IFS.SceneSpec
                     break;
                 case BaseShapes.Line:
                     BuildLine(m, V("form", "curve"), V("gauge", "normal"), seed);
+                    break;
+                case BaseShapes.Sheet:
+                    BuildSheet(m, V("drape", "paper"), seed);
                     break;
                 default:
                     throw new ArgumentException("만들 수 없는 기본 형상: " + shape);
@@ -69,6 +73,13 @@ namespace IFS.SceneSpec
                     p["tubeRadius"] = LineRadius(V("gauge", "normal"));
                     p["tubeSegments"] = LineSides;
                     p["samples"] = LineSamples(form);
+                    break;
+                case BaseShapes.Sheet:
+                    p["gridX"] = SheetNx;
+                    p["gridY"] = SheetNy;
+                    p["thickness"] = SheetThickness;
+                    p["waveAmplitude"] = V("drape", "paper") == "cloth" ? 0.06 : 0.03;
+                    p["tiltDeg"] = SheetTiltDeg;
                     break;
             }
             return p;
@@ -142,6 +153,93 @@ namespace IFS.SceneSpec
             double s = (1 - 2 * r) / size;
             foreach (var p in pts) for (int a = 0; a < 3; a++) p[a] = (p[a] - (lo[a] + hi[a]) / 2) * s;
             m.Tube(pts, r, LineSides, closed, LineCapRings);
+        }
+
+        // ── sheet ───────────────────────────────────────────────────────────
+        // 가로 1 × 세로 0.75, 모서리를 둥글린(반지름 0.05) 직사각형 격자(24 × 18칸)를 두께 0.01의 판으로 닫는다(앞면·뒷면·가장자리 띠).
+        // 저주파 물결로 판 전체를 한두 번 완만하게 휘게 한다(휘지 않으면 납작 원기둥·큐브와 구별되지 않고 판자로 읽힘). 물결은 판 전체에
+        // 고르게 두어 판 아래에 다른 형체를 암시하지 않는다(가운데가 솟은 '덮은 천' 모양 없음). 구겨짐·접힘·글자·술은 없다.
+        // 방향: 넓은 면이 참여자 쪽(모형 +z, 로더가 머리 쪽으로 돌림)을 향하고 위쪽이 뒤로 15° 기운다(수평으로 누이면 눈높이에서
+        // 옆면만 보여 거의 사라짐). paper 물결 0.03, cloth 0.06 + 아래쪽이 조금 더 늘어짐. 물결 위상만 seed가 정한다.
+        const int SheetNx = 24, SheetNy = 18;
+        const double SheetThickness = 0.01, SheetTiltDeg = 15.0, SheetW = 1.0, SheetH = 0.75, SheetCorner = 0.05;
+
+        static void BuildSheet(MeshData m, string drape, int seed)
+        {
+            bool cloth = drape == "cloth";
+            double amp = cloth ? 0.06 : 0.03;
+            var rng = new SplitMix64((ulong)(uint)seed * 0x9E3779B97F4A7C15UL + 0x5EE7UL);
+            double ph1 = rng.NextDouble() * 2 * Math.PI, ph2 = rng.NextDouble() * 2 * Math.PI, ph3 = rng.NextDouble() * 2 * Math.PI;
+            double Wave(double x, double y)
+            {
+                double w = 0.6 * Math.Sin(Math.PI * 1.6 * x + ph1) + 0.4 * Math.Sin(Math.PI * 1.2 * y / SheetH + ph2)
+                           + 0.25 * Math.Sin(Math.PI * (1.1 * x + 0.9 * y) + ph3);
+                if (cloth) w *= 1 + 0.8 * (0.5 - y / SheetH);                        // 아래쪽이 조금 더 늘어짐
+                return amp * w;
+            }
+            double tilt = -SheetTiltDeg * Math.PI / 180;
+            double ct = Math.Cos(tilt), st = Math.Sin(tilt);
+            // 격자 점(x, y) → 둥근 모서리 안으로, 물결 높이 z
+            var X = new double[SheetNx + 1, SheetNy + 1];
+            var Y = new double[SheetNx + 1, SheetNy + 1];
+            for (int i = 0; i <= SheetNx; i++)
+                for (int j = 0; j <= SheetNy; j++)
+                {
+                    double x = SheetW * ((double)i / SheetNx - 0.5), y = SheetH * ((double)j / SheetNy - 0.5);
+                    double cx = SheetW / 2 - SheetCorner, cy = SheetH / 2 - SheetCorner;
+                    if (Math.Abs(x) > cx && Math.Abs(y) > cy)
+                    {
+                        double ox = Math.Sign(x) * cx, oy = Math.Sign(y) * cy, dx = x - ox, dy = y - oy;
+                        double len = Math.Sqrt(dx * dx + dy * dy);
+                        if (len > SheetCorner) { x = ox + dx * SheetCorner / len; y = oy + dy * SheetCorner / len; }
+                    }
+                    X[i, j] = x; Y[i, j] = y;
+                }
+            // 앞(+z)·뒤 면. 법선 = (−∂z/∂x, −∂z/∂y, 1)을 기울기만큼 돌림
+            int[,] front = new int[SheetNx + 1, SheetNy + 1], back = new int[SheetNx + 1, SheetNy + 1];
+            const double h = 1e-4;
+            for (int i = 0; i <= SheetNx; i++)
+                for (int j = 0; j <= SheetNy; j++)
+                {
+                    double x = X[i, j], y = Y[i, j], z = Wave(x, y);
+                    double gx = (Wave(x + h, y) - Wave(x - h, y)) / (2 * h), gy = (Wave(x, y + h) - Wave(x, y - h)) / (2 * h);
+                    for (int side = 0; side < 2; side++)
+                    {
+                        double sg = side == 0 ? 1 : -1;
+                        double pz = z + sg * SheetThickness / 2;
+                        double nx = -gx * sg, ny = -gy * sg, nz = sg;
+                        // x축으로 tilt만큼 돌림: (y, z) → (y cos − z sin, y sin + z cos)
+                        int v = m.Add(x, y * ct - pz * st, y * st + pz * ct, nx, ny * ct - nz * st, ny * st + nz * ct);
+                        if (side == 0) front[i, j] = v; else back[i, j] = v;
+                    }
+                }
+            for (int i = 0; i < SheetNx; i++)
+                for (int j = 0; j < SheetNy; j++)
+                {
+                    m.Quad(front[i, j], front[i + 1, j], front[i + 1, j + 1], front[i, j + 1]);
+                    m.Quad(back[i, j], back[i, j + 1], back[i + 1, j + 1], back[i + 1, j]);
+                }
+            // 가장자리 띠: 둘레를 따라 앞·뒤 경계를 잇는다(법선 = 판 바깥쪽, 경계에서 가운데를 뺀 방향)
+            var ring = new List<(int i, int j)>();
+            for (int i = 0; i < SheetNx; i++) ring.Add((i, 0));
+            for (int j = 0; j < SheetNy; j++) ring.Add((SheetNx, j));
+            for (int i = SheetNx; i > 0; i--) ring.Add((i, SheetNy));
+            for (int j = SheetNy; j > 0; j--) ring.Add((0, j));
+            for (int k = 0; k < ring.Count; k++)
+            {
+                var (i0, j0) = ring[k];
+                var (i1, j1) = ring[(k + 1) % ring.Count];
+                int[] E(int i, int j)
+                {
+                    double x = X[i, j], y = Y[i, j], z = Wave(x, y);
+                    double ox = x, oy = y;                                             // 바깥 방향(가운데에서 멀어지는 쪽)
+                    int Pt(double pz) => m.Add(x, y * ct - pz * st, y * st + pz * ct, ox, oy * ct, oy * st);
+                    return new[] { Pt(z + SheetThickness / 2), Pt(z - SheetThickness / 2) };
+                }
+                var a = E(i0, j0);
+                var c = E(i1, j1);
+                m.Quad(a[0], c[0], c[1], a[1]);
+            }
         }
 
         /// <summary>SplitMix64 — 작은 결정적 난수(System.Random은 런타임마다 구현이 다를 수 있어 쓰지 않는다).</summary>

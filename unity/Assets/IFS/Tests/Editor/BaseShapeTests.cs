@@ -132,6 +132,7 @@ namespace IFS.SceneSpec.Tests
             {
                 { "container/1", 13257536307435825394UL },
                 { "line/1", 15146493612528602679UL },
+                { "sheet/1", 17278733090269891799UL },
             };
             foreach (var shape in BaseShapes.All.Where(BaseShapeMesh.Supports))
             {
@@ -319,12 +320,12 @@ namespace IFS.SceneSpec.Tests
         [Test]
         public void Shape_words_are_not_applied_when_a_base_is_said()
         {
-            var words = new[] { new ShapeWord("square", "네모난", 0, 3) };
+            var words = new[] { new ShapeWord("square", "네모난", 0, 3), new ShapeWord("thin", "얇은", 5, 7) };
             var r = ShapeMapping.Resolve(words, null, "container");
             Assert.That(r.Model, Is.Null);
             Assert.That(r.Status, Is.EqualTo("not_applied_base"));
-            Assert.That(r.Words[0].Status, Is.EqualTo("not_applied_base"));
-            Assert.That(ShapeMapping.Resolve(words, "mist", "container").Status, Is.EqualTo("not_applied_form"));
+            Assert.That(r.Words.Select(w => w.Status), Is.All.EqualTo("not_applied_base"));   // 모형 없는 모양어도(경고 아님)
+            Assert.That(ShapeMapping.Resolve(words, "mist", "container").Words[0].Status, Is.EqualTo("not_applied_form"));
             Assert.That(ShapeMapping.Resolve(words, null, null).Model, Is.EqualTo("Cube"));
             var plan = Plan(null, "container", null, null, r);
             Assert.That(plan.Renderer, Is.EqualTo("base:container"));

@@ -146,6 +146,10 @@ WORDS = [
     ("가느다란 검은 실이 엉켜 있어요.", "line", {"form": "tangle", "gauge": "thin"}),         # 같은 문장의 '엉키'가 tangle
     ("굵은 실이 있어요.", "line", {"form": "curve", "gauge": "thick"}),                      # 말한 '굵'이 낱말 뜻(thin)을 덮음
     ("선이요. 한 줄로 쭉.", "line", {"form": "curve"}),
+    ("종이 한 장이 있어요.", "sheet", {"drape": "paper"}),                                   # 수량 표현 뒤의 주어
+    ("얇은 천이 있어요. 보라색이에요.", "sheet", {"drape": "cloth"}),
+    ("막이요. 얇은 막.", "sheet", {"drape": "cloth"}),
+    ("보자기 같은 게 있어요.", "sheet", {"drape": "cloth"}),
 ]
 
 
@@ -317,3 +321,25 @@ def test_line_word_beside_another_noun_is_not_a_base(v2):
     """'털실 뭉치처럼'의 직유 원천은 '뭉치'(blob)라 털실은 꾸밈말 — base가 아니다(사전에 있어도)."""
     spec = build(v2, "털실 뭉치처럼 생겼어요.")
     assert spec["form"]["base"] is None and spec["form"]["type"] == "blob"
+
+
+def test_numeral_cheon_is_not_cloth(v2):
+    spec = build(v2, "천천히 움직여요. 천 원짜리 같아요.")
+    assert spec["form"]["base"] is None
+
+
+def test_membrane_split_offers_shell_reading(v2):
+    """'막'은 얇은 판(sheet)과 껍질(shell) 두 읽기 — 후보 표의 갈림(membrane): blob(= 기본 형상 sheet가 그려짐) | shell.
+    갈림 축이 빈 자리 축보다 먼저이고, 말한 다른 슬롯은 모든 후보에서 같다(G9·G18)."""
+    spec = build(v2, "막이요. 얇은 막.")
+    out = generate(spec, "SYN-M", TABLE)
+    ax = out["axes"][0]
+    assert ax["slot"] == "form.type" and ax["reason"] == "ambiguous" and ax["values"] == ["blob", "shell"]
+    assert ax["split"]["id"] == "membrane" and ax["split"]["lemma"] == "막"
+    shell = [c for c in out["candidates"] if c["axisValues"].get("form.type") == "shell"]
+    assert shell and all(c["overrides"]["form.type"] == "shell" and "form.base" not in c["overrides"] for c in shell)
+    # 형태를 말했으면(form.type 있음) 갈림을 쓰지 않는다
+    told = json.loads(json.dumps(spec))
+    told["form"]["type"] = "mist"
+    told["_provenance"]["form.type"] = [dict(spec["_provenance"]["form.base"][0], rule="synthetic>form.type:mist")]
+    assert all(a["reason"] != "ambiguous" for a in generate(told, "SYN-M", TABLE)["axes"])

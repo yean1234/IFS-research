@@ -1,0 +1,170 @@
+[
+ {
+  "id": "S1",
+  "text": "종이 한 장이 있어요.",
+  "base": {
+   "requested": "sheet",
+   "status": "applied",
+   "shape": "sheet",
+   "rule": "sheet/1",
+   "variant": {
+    "drape": "paper"
+   },
+   "variantDefaults": [],
+   "seed": 0,
+   "parameters": {
+    "gridX": 24.0,
+    "gridY": 18.0,
+    "thickness": 0.01,
+    "tiltDeg": 15.0,
+    "waveAmplitude": 0.03
+   }
+  },
+  "variant": {
+   "drape": "paper"
+  },
+  "formType": null,
+  "renderPath": "base:sheet",
+  "visiblePixels": 15086,
+  "silhouette": {
+   "circularity": 0.799,
+   "components": 1,
+   "edgeFalloffPx": 0.64,
+   "maskPixels": 14994
+  },
+  "contrastDeltaL": 14.74,
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 1896,
+  "trianglesPerEyeEstimate": 7984,
+  "baseNotes": [
+   "form.base=sheet: 형상 프리셋 기본값 — 절차 메시(규칙 sheet/1, drape=paper, seed 0, gridX 24, gridY 18, thickness 0.01, tiltDeg 15, waveAmplitude 0.03). 윤곽만(색·무늬·발광·고유 움직임 없음), 정점 변위 0, 노이즈 크기 1.6(거칠기 얼룩·침식 무늬). 경계 상자 가장 긴 변 1 × 기본 크기"
+  ]
+ },
+ {
+  "id": "S2",
+  "text": "얇은 천이 있어요. 보라색이에요.",
+  "base": {
+   "requested": "sheet",
+   "status": "applied",
+   "shape": "sheet",
+   "rule": "sheet/1",
+   "variant": {
+    "drape": "cloth"
+   },
+   "variantDefaults": [],
+   "seed": 0,
+   "parameters": {
+    "gridX": 24.0,
+    "gridY": 18.0,
+    "thickness": 0.01,
+    "tiltDeg": 15.0,
+    "waveAmplitude": 0.06
+   }
+  },
+  "variant": {
+   "drape": "cloth"
+  },
+  "formType": null,
+  "renderPath": "base:sheet",
+  "visiblePixels": 15123,
+  "silhouette": {
+   "circularity": 0.791,
+   "components": 1,
+   "edgeFalloffPx": 0.76,
+   "maskPixels": 15003
+  },
+  "contrastDeltaL": -15.86,
+  "consoleErrors": 0,
+  "consoleWarnings": 1,
+  "modelTriangles": 1896,
+  "trianglesPerEyeEstimate": 7984,
+  "baseNotes": [
+   "form.base=sheet: 형상 프리셋 기본값 — 절차 메시(규칙 sheet/1, drape=cloth, seed 0, gridX 24, gridY 18, thickness 0.01, tiltDeg 15, waveAmplitude 0.06). 윤곽만(색·무늬·발광·고유 움직임 없음), 정점 변위 0, 노이즈 크기 1.6(거칠기 얼룩·침식 무늬). 경계 상자 가장 긴 변 1 × 기본 크기"
+  ]
+ },
+ {
+  "id": "S3",
+  "text": "막이요. 얇은 막.",
+  "base": {
+   "requested": "sheet",
+   "status": "applied",
+   "shape": "sheet",
+   "rule": "sheet/1",
+   "variant": {
+    "drape": "cloth"
+   },
+   "variantDefaults": [],
+   "seed": 0,
+   "parameters": {
+    "gridX": 24.0,
+    "gridY": 18.0,
+    "thickness": 0.01,
+    "tiltDeg": 15.0,
+    "waveAmplitude": 0.06
+   }
+  },
+  "variant": {
+   "drape": "cloth"
+  },
+  "formType": null,
+  "renderPath": "base:sheet",
+  "visiblePixels": 15123,
+  "silhouette": {
+   "circularity": 0.787,
+   "components": 1,
+   "edgeFalloffPx": 0.76,
+   "maskPixels": 14929
+  },
+  "contrastDeltaL": 12.7,
+  "consoleErrors": 0,
+  "consoleWarnings": 1,
+  "modelTriangles": 1896,
+  "trianglesPerEyeEstimate": 7984,
+  "baseNotes": [
+   "form.base=sheet: 형상 프리셋 기본값 — 절차 메시(규칙 sheet/1, drape=cloth, seed 0, gridX 24, gridY 18, thickness 0.01, tiltDeg 15, waveAmplitude 0.06). 윤곽만(색·무늬·발광·고유 움직임 없음), 정점 변위 0, 노이즈 크기 1.6(거칠기 얼룩·침식 무늬). 경계 상자 가장 긴 변 1 × 기본 크기"
+  ]
+ },
+ {
+  "id": "S4",
+  "text": "보자기 같은 게 있어요. 반투명해요.",
+  "base": {
+   "requested": "sheet",
+   "status": "applied",
+   "shape": "sheet",
+   "rule": "sheet/1",
+   "variant": {
+    "drape": "cloth"
+   },
+   "variantDefaults": [],
+   "seed": 0,
+   "parameters": {
+    "gridX": 24.0,
+    "gridY": 18.0,
+    "thickness": 0.01,
+    "tiltDeg": 15.0,
+    "waveAmplitude": 0.06
+   }
+  },
+  "variant": {
+   "drape": "cloth"
+  },
+  "formType": null,
+  "renderPath": "base:sheet",
+  "visiblePixels": 15123,
+  "silhouette": {
+   "circularity": 0.788,
+   "components": 1,
+   "edgeFalloffPx": 0.76,
+   "maskPixels": 14872
+  },
+  "contrastDeltaL": 6.7,
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 1896,
+  "trianglesPerEyeEstimate": 2296,
+  "baseNotes": [
+   "form.base=sheet: 형상 프리셋 기본값 — 절차 메시(규칙 sheet/1, drape=cloth, seed 0, gridX 24, gridY 18, thickness 0.01, tiltDeg 15, waveAmplitude 0.06). 윤곽만(색·무늬·발광·고유 움직임 없음), 정점 변위 0, 노이즈 크기 1.6(거칠기 얼룩·침식 무늬). 경계 상자 가장 긴 변 1 × 기본 크기"
+  ]
+ }
+]

@@ -174,9 +174,9 @@ namespace IFS.SceneSpec
             bool baseBlocks = formAllows && BaseShapes.IsBase(statedBase);
             foreach (var w in sorted)
             {
+                if (baseBlocks) { w.Status = StatusNotAppliedBase; continue; }   // 기본 형상이 그려짐: 모형 유무와 상관없이 윤곽은 기본 형상
                 if (!IsMapped(w.Shape)) { w.Status = StatusUnmapped; continue; }
                 if (!formAllows) { w.Status = StatusNotAppliedForm; continue; }
-                if (baseBlocks) { w.Status = StatusNotAppliedBase; continue; }
                 if (r.Applied == null)
                 {
                     r.Applied = w.Shape;
