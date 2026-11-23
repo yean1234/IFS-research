@@ -3,7 +3,7 @@
 // 단계 흐름·기록은 PlacementSession(UnityEngine 없음)이 맡고, 이 컴포넌트는 그것을 그린다:
 //   물체(SceneLoader — 장면 속성은 기존 로더 경로 그대로), 공간(PlacementSpace), 참여자 글(ParticipantTextDisplay), 입력(IPlacementInput).
 // 실험자 키: 숫자 0–9 평정(문항 범위 안, 두 자리 범위는 이어 침), Backspace 직전 입력 취소, Enter 확정·다음, Esc 중단, R 정면 재설정(XR).
-// 선택 파일(선택, D8): 챗봇의 selection.json(ifs-selection/0.1 — PlacementSelection). 있으면 원본 spec + finalOverrides로 형상을 한 번 만들고
+// 선택 파일(선택, D8): 챗봇의 selection.json(ifs-selection/0.1·0.2 — PlacementSelection). 있으면 원본 spec + finalOverrides로 형상을 한 번 만들고
 //   (조건 단계 동안 바뀌지 않음), sha 불일치·모르는 키·적용하지 못한 키는 시작 거부. 없으면 예전처럼 spec만.
 // 참여자 입력: 설정 inputMode(auto | desktop | xr)에 따라 Check 때 고른다(PlacementInputSelection) —
 //   XR 헤드셋이 켜져 있으면 XrPlacementInput(컨트롤러 광선), 없으면 DesktopPlacementInput(마우스·키보드).
@@ -516,6 +516,7 @@ namespace IFS.SceneSpec.Placement
             Session.GrabRadiusM = Math.Max(config.grabRadiusMinM, objectRadius);
             if (Selection != null)   // events.csv에 선택 파일 한 줄(경고가 아님 — manifest selection·appliedOverrides가 정본)
                 Session.Note("selection", $"file={Clean(Selection.FileName)};none={(Selection.None ? 1 : 0)};candidate={Clean(Selection.SelectedCandidateId)};" +
+                                          $"skipped={(Selection.Skipped ? 1 : 0)};colorChanged={(Selection.ColorChanged.HasValue ? (Selection.ColorChanged.Value ? "1" : "0") : "")};" +
                                           $"applied={AppliedOverrides?.Count ?? 0}");
             if (_auto == null && XrHeadActive)
                 Session.Note("xr_status", $"device={Clean(PlacementXrRig.LoadedDeviceName)};head={Clean(PlacementXrRig.HeadDeviceName)};" +

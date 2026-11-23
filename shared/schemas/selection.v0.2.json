@@ -1,0 +1,1113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ifs-selection/0.2",
+  "title": "후보 선택·조절 기록 (selection.json, ifs-selection/0.2)",
+  "description": "세션 폴더(<log_dir>/selection/<sessionId>/selection.json, git 밖)에 쓰는 데스크톱 4–5단계 기록. 0.1(selection.v0.1.json)에서 바뀐 것(2026-11-23, 연구 책임자 결정 G31–G34): ① selection.skipped(필수)·skipReason — 구별되는 후보가 하나만 남아 선택 단계를 건너뛰었으면 skipped = true, selectedCandidateId = null, none = false(G34). ② colorChanged(필수) — 조절 기록에서 색의 처음 값과 마지막 값이 다른지(G31). ③ 출처 값 두 개 추가: said_unrendered_chosen(모형이 없는 모양어를 말했고 형태 후보에서 고름), said_unrendered_default(모형이 없는 모양어를 말했지만 고르지 않음 — 맞는 것이 없다·선택 건너뜀 — 기본 형태로 그려짐). 조절로 형태를 고치면 다른 슬롯처럼 edited(G32). sourceDetails.form.type.saidWords에 원래 말한 모양어. ④ distanceFloor — 매퍼 v2가 거리 하한을 적용했으면 말한 값과 그려진 값(G33), 아니면 null. ⑤ candidatesShownAt null 허용(선택을 건너뛰면 보여 준 후보가 없음). candidates.selectionStep·distinct(구별 규칙 결과), 축 reason said_unrendered. 러너 계약(unity/Assets/IFS/Runtime/Placement/PlacementSelection.cs): 맨 위 formatVersion, specSha256(저장된 spec 파일 바이트의 sha256), finalOverrides(평평한 객체, 위치·거리 키 금지), selection{selectedCandidateId(null 가능), none, skipped}, sources(슬롯 → 여섯 값), colorChanged. 러너는 0.1과 0.2를 모두 읽는다(0.1 파일의 출처 값은 네 가지만 받는다). 그 밖의 G26 규칙(runnerReady·runnerBlockers·sha256Basis)은 0.1과 같다.",
+  "type": "object",
+  "required": [
+    "formatVersion",
+    "specSha256"
+  ],
+  "$defs": {
+    "isoTime": {
+      "type": "string",
+      "minLength": 10
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "overrideValue": {
+      "oneOf": [
+        {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "flatOverrides": {
+      "type": "object",
+      "description": "SceneOverrideJson 형식: 수치 키는 0–1, 범주 키는 문자열. 위치·거리 키(layout.distance·layout.verticalOffset)는 들어갈 수 없다(G10, 러너도 거부).",
+      "propertyNames": {
+        "enum": [
+          "form.type",
+          "motion.type",
+          "material.color.h",
+          "material.color.s",
+          "material.color.l",
+          "material.brightness",
+          "material.opacity",
+          "material.roughness",
+          "layout.size"
+        ]
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/overrideValue"
+      }
+    },
+    "slotName": {
+      "enum": [
+        "form.type",
+        "form.posture",
+        "material.color",
+        "material.brightness",
+        "material.saturation",
+        "material.roughness",
+        "material.opacity",
+        "material.erosion",
+        "layout.size",
+        "layout.distance",
+        "layout.verticalOffset",
+        "motion.type",
+        "motion.speed",
+        "body.part",
+        "body.layer"
+      ]
+    },
+    "source": {
+      "enum": [
+        "said",
+        "chosen",
+        "edited",
+        "default",
+        "said_unrendered_chosen",
+        "said_unrendered_default"
+      ]
+    },
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "index",
+        "overrides",
+        "axisValues",
+        "sources"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^c-[0-9a-f]{12}$"
+        },
+        "index": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3
+        },
+        "overrides": {
+          "$ref": "#/$defs/flatOverrides"
+        },
+        "axisValues": {
+          "type": "object"
+        },
+        "sources": {
+          "type": "object",
+          "propertyNames": {
+            "$ref": "#/$defs/slotName"
+          },
+          "additionalProperties": {
+            "enum": [
+              "said",
+              "default",
+              "offered",
+              "said_unrendered"
+            ]
+          }
+        }
+      }
+    },
+    "itemValue": {
+      "oneOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "string"
+        },
+        {
+          "type": "object",
+          "required": [
+            "h",
+            "s",
+            "l"
+          ],
+          "properties": {
+            "swatch": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "h": {
+              "type": "number"
+            },
+            "s": {
+              "type": "number"
+            },
+            "l": {
+              "type": "number"
+            }
+          }
+        }
+      ]
+    },
+    "saidWord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "lemma",
+        "shape",
+        "trigger",
+        "charSpan"
+      ],
+      "properties": {
+        "lemma": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "shape": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "trigger": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "charSpan": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "anyOf": [
+          {
+            "not": {
+              "required": [
+                "stage"
+              ]
+            }
+          },
+          {
+            "required": [
+              "stage"
+            ],
+            "properties": {
+              "stage": {
+                "enum": [
+                  "premeasure",
+                  "done"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "then": {
+        "required": [
+          "selection",
+          "finalOverrides",
+          "sources",
+          "colorChanged"
+        ],
+        "properties": {
+          "selection": {
+            "type": "object"
+          },
+          "finalOverrides": {
+            "type": "object"
+          },
+          "sources": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    {
+      "description": "stage가 없는 파일(러너 쪽 합성 파일)은 러너에 넘기는 파일이므로 specSha256이 해시여야 한다",
+      "if": {
+        "not": {
+          "required": [
+            "stage"
+          ]
+        }
+      },
+      "then": {
+        "properties": {
+          "specSha256": {
+            "$ref": "#/$defs/sha256"
+          }
+        }
+      }
+    },
+    {
+      "description": "runnerReady = true면 specSha256은 저장된 spec 파일 바이트의 해시이고 막는 이유가 없다",
+      "if": {
+        "required": [
+          "runnerReady"
+        ],
+        "properties": {
+          "runnerReady": {
+            "const": true
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "specSha256": {
+            "$ref": "#/$defs/sha256"
+          },
+          "spec": {
+            "properties": {
+              "sha256Basis": {
+                "const": "file"
+              }
+            }
+          },
+          "runnerBlockers": {
+            "maxItems": 0
+          }
+        }
+      }
+    },
+    {
+      "description": "runnerReady = false면 이유가 하나 이상 있다",
+      "if": {
+        "required": [
+          "runnerReady"
+        ],
+        "properties": {
+          "runnerReady": {
+            "const": false
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "runnerBlockers"
+        ],
+        "properties": {
+          "runnerBlockers": {
+            "minItems": 1
+          }
+        }
+      }
+    }
+  ],
+  "properties": {
+    "formatVersion": {
+      "const": "ifs-selection/0.2"
+    },
+    "specSha256": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/sha256"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "저장된 spec 파일 바이트의 sha256(러너가 읽는 파일과 같아야 함). spec 파일이 없는 실행에서는 null(이때 runnerReady = false). 직렬화한 글의 해시는 적지 않는다(G26)"
+    },
+    "runnerReady": {
+      "type": "boolean",
+      "description": "이 파일을 저장된 spec 파일과 함께 배치 러너에 넘길 수 있는지(G26). false면 러너도 시작을 거부한다"
+    },
+    "runnerBlockers": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "description": "러너에 넘길 수 없는 이유(spec 파일 없음, spec 파일이 바뀜, 조절을 마치지 않음)"
+    },
+    "adjustValueExtras": {
+      "type": "object",
+      "description": "범주형 조절 항목에서 참여자가 말한 값이 표의 값 목록에 없어 이 세션의 목록에 더한 것(현재 값을 패널에 보이게 함). 더하는 것은 말한 값 하나뿐",
+      "propertyNames": {
+        "enum": [
+          "form",
+          "motion"
+        ]
+      },
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "slot",
+          "value",
+          "reason"
+        ],
+        "properties": {
+          "slot": {
+            "$ref": "#/$defs/slotName"
+          },
+          "value": {
+            "type": "string",
+            "minLength": 1
+          },
+          "reason": {
+            "const": "said_value_not_in_table"
+          }
+        }
+      }
+    },
+    "sessionId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,40}$"
+    },
+    "createdAt": {
+      "$ref": "#/$defs/isoTime"
+    },
+    "updatedAt": {
+      "$ref": "#/$defs/isoTime"
+    },
+    "stage": {
+      "enum": [
+        "selecting",
+        "adjusting",
+        "premeasure",
+        "done"
+      ]
+    },
+    "spec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "normalizedSha256",
+        "sha256Basis",
+        "builder",
+        "specVersion",
+        "mapping"
+      ],
+      "properties": {
+        "path": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "normalizedSha256": {
+          "$ref": "#/$defs/sha256",
+          "description": "후보 생성기가 쓰는 정규화 해시(sessionId·participantId·condition을 뺀 spec). candidates.specSha256과 같다"
+        },
+        "sha256Basis": {
+          "enum": [
+            "file",
+            "none",
+            "serialized"
+          ],
+          "description": "맨 위 specSha256을 무엇으로 쟀는지. file = 저장된 spec 파일 바이트. none = spec 파일이 없거나 바뀌어 해시를 적지 않음(specSha256 null). serialized = 2026-11-23 CP9 반영 전 구현이 파일 없는 실행에서 쓰던 값(직렬화한 글의 해시) — 이제 쓰지 않고, 러너는 file이 아닌 값을 모두 거부한다(G26)"
+        },
+        "builder": {
+          "type": "string"
+        },
+        "specVersion": {
+          "type": "string"
+        },
+        "mapping": {
+          "type": [
+            "object",
+            "null"
+          ]
+        }
+      }
+    },
+    "generator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "generatorVersion",
+        "tableVersion",
+        "tableSha256"
+      ],
+      "properties": {
+        "generatorVersion": {
+          "type": "string"
+        },
+        "tableVersion": {
+          "type": "string"
+        },
+        "tableSha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "protocol": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "protocolId",
+        "protocolVersion",
+        "draftCount",
+        "draftKeys"
+      ],
+      "properties": {
+        "protocolId": {
+          "type": "string"
+        },
+        "protocolVersion": {
+          "type": "string"
+        },
+        "draftCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "draftKeys": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "preview": {
+      "type": "object",
+      "required": [
+        "requested",
+        "mode"
+      ],
+      "properties": {
+        "requested": {
+          "enum": [
+            "webgl",
+            "image",
+            "none"
+          ]
+        },
+        "mode": {
+          "enum": [
+            "webgl",
+            "image",
+            "none"
+          ]
+        },
+        "reason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "candidates": {
+      "type": "object",
+      "required": [
+        "generatorVersion",
+        "tableVersion",
+        "specSha256",
+        "sessionId",
+        "axes",
+        "candidates",
+        "displayOrder",
+        "note",
+        "selectionStep",
+        "distinct"
+      ],
+      "properties": {
+        "axes": {
+          "type": "array",
+          "maxItems": 2,
+          "items": {
+            "type": "object",
+            "required": [
+              "slot",
+              "reason",
+              "values"
+            ],
+            "properties": {
+              "slot": {
+                "$ref": "#/$defs/slotName"
+              },
+              "reason": {
+                "enum": [
+                  "empty",
+                  "ambiguous",
+                  "said_unrendered"
+                ]
+              },
+              "values": {
+                "type": "array",
+                "minItems": 2,
+                "maxItems": 4
+              },
+              "saidWords": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/saidWord"
+                }
+              }
+            }
+          }
+        },
+        "candidates": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 4,
+          "items": {
+            "$ref": "#/$defs/candidate"
+          }
+        },
+        "displayOrder": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 4,
+          "items": {
+            "type": "string"
+          }
+        },
+        "selectionStep": {
+          "enum": [
+            "choose",
+            "skip"
+          ],
+          "description": "skip = 구별되는 후보가 하나뿐(G34)"
+        },
+        "distinct": {
+          "type": "object",
+          "required": [
+            "ruleVersion",
+            "gridCount",
+            "kept",
+            "removed",
+            "collapsedAxes"
+          ],
+          "properties": {
+            "ruleVersion": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "gridCount": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 4
+            },
+            "kept": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 4
+            },
+            "removed": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "id",
+                  "index",
+                  "sameAs",
+                  "rules"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "index": {
+                    "type": "integer"
+                  },
+                  "sameAs": {
+                    "type": "integer"
+                  },
+                  "rules": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "collapsedAxes": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/slotName"
+              }
+            }
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "selectionStep": {
+                "const": "skip"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "candidates": {
+                "maxItems": 1
+              },
+              "displayOrder": {
+                "maxItems": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "selectionStep": {
+                "const": "choose"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "candidates": {
+                "minItems": 2
+              }
+            }
+          }
+        }
+      ]
+    },
+    "candidatesShown": {
+      "type": "array",
+      "maxItems": 4,
+      "items": {
+        "type": "string"
+      },
+      "description": "보여 준 순서대로 후보 id. 선택 단계를 건너뛰었으면(G34) 빈 배열"
+    },
+    "candidatesShownAt": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/isoTime"
+        }
+      ],
+      "description": "후보를 보여 준 시각. 선택 단계를 건너뛰었으면(G34) null"
+    },
+    "selection": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "required": [
+            "selectedCandidateId",
+            "none",
+            "skipped"
+          ],
+          "properties": {
+            "selectedCandidateId": {
+              "oneOf": [
+                {
+                  "type": "string",
+                  "minLength": 1
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "none": {
+              "type": "boolean",
+              "description": "G23: '맞는 것이 없다'. true면 selectedCandidateId는 null이고 기준 후보(0번)로 진행"
+            },
+            "selectedIndex": {
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "displayPosition": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "description": "고른 후보가 화면 몇 번째 자리였는지(0부터)"
+            },
+            "operationalId": {
+              "type": "string"
+            },
+            "operationalIndex": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "at": {
+              "$ref": "#/$defs/isoTime"
+            },
+            "skipped": {
+              "type": "boolean",
+              "description": "G34: 구별되는 후보가 하나뿐이라 선택 단계를 건너뜀. true면 selectedCandidateId = null, none = false, 기준 후보(0번)로 진행"
+            },
+            "skipReason": {
+              "const": "single_distinct_candidate"
+            }
+          },
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "none": {
+                    "const": true
+                  }
+                },
+                "required": [
+                  "none"
+                ]
+              },
+              "then": {
+                "properties": {
+                  "selectedCandidateId": {
+                    "type": "null"
+                  },
+                  "skipped": {
+                    "const": false
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "skipped": {
+                    "const": true
+                  }
+                },
+                "required": [
+                  "skipped"
+                ]
+              },
+              "then": {
+                "required": [
+                  "skipReason"
+                ],
+                "properties": {
+                  "selectedCandidateId": {
+                    "type": "null"
+                  },
+                  "none": {
+                    "const": false
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "adjustments": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "events",
+        "items",
+        "finishedAt"
+      ],
+      "properties": {
+        "events": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "i",
+              "item",
+              "value",
+              "previous",
+              "at"
+            ],
+            "properties": {
+              "i": {
+                "type": "integer"
+              },
+              "item": {
+                "enum": [
+                  "form",
+                  "color",
+                  "brightness",
+                  "opacity",
+                  "size",
+                  "texture",
+                  "motion"
+                ]
+              },
+              "value": {
+                "$ref": "#/$defs/itemValue"
+              },
+              "previous": {
+                "$ref": "#/$defs/itemValue"
+              },
+              "at": {
+                "$ref": "#/$defs/isoTime"
+              }
+            }
+          }
+        },
+        "items": {
+          "type": "object",
+          "propertyNames": {
+            "enum": [
+              "form",
+              "color",
+              "brightness",
+              "opacity",
+              "size",
+              "texture",
+              "motion"
+            ]
+          },
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "count",
+              "first",
+              "last",
+              "firstAt",
+              "lastAt"
+            ],
+            "properties": {
+              "count": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "first": {
+                "$ref": "#/$defs/itemValue"
+              },
+              "last": {
+                "$ref": "#/$defs/itemValue"
+              },
+              "firstAt": {
+                "$ref": "#/$defs/isoTime"
+              },
+              "lastAt": {
+                "$ref": "#/$defs/isoTime"
+              }
+            }
+          }
+        },
+        "finishedAt": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/isoTime"
+            }
+          ]
+        }
+      }
+    },
+    "finalOverrides": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/flatOverrides"
+        }
+      ]
+    },
+    "sources": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "propertyNames": {
+            "$ref": "#/$defs/slotName"
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/source"
+          }
+        }
+      ]
+    },
+    "sourceDetails": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "propertyNames": {
+            "$ref": "#/$defs/slotName"
+          },
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "source",
+              "value",
+              "saidValue",
+              "chosenValue",
+              "defaultValue"
+            ],
+            "properties": {
+              "source": {
+                "$ref": "#/$defs/source"
+              },
+              "value": {},
+              "saidValue": {},
+              "chosenValue": {},
+              "defaultValue": {},
+              "saidWords": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/saidWord"
+                },
+                "description": "form.type에만: 원래 말한 모양어(모형이 없는 것 G32, 또는 모형이 있는 것)"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "sourceCounts": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "said",
+            "chosen",
+            "edited",
+            "default",
+            "said_unrendered_chosen",
+            "said_unrendered_default"
+          ],
+          "properties": {
+            "said": {
+              "type": "integer"
+            },
+            "chosen": {
+              "type": "integer"
+            },
+            "edited": {
+              "type": "integer"
+            },
+            "default": {
+              "type": "integer"
+            },
+            "said_unrendered_chosen": {
+              "type": "integer"
+            },
+            "said_unrendered_default": {
+              "type": "integer"
+            }
+          }
+        }
+      ]
+    },
+    "premeasure": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "required": [
+            "path",
+            "completedAt",
+            "answered",
+            "skipped"
+          ],
+          "properties": {
+            "path": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "completedAt": {
+              "$ref": "#/$defs/isoTime"
+            },
+            "answered": {
+              "type": "integer"
+            },
+            "skipped": {
+              "type": "integer"
+            }
+          }
+        }
+      ]
+    },
+    "colorChanged": {
+      "type": "boolean",
+      "description": "G31: 조절 기록(adjustments.items.color)에서 색의 처음 값과 마지막 값이 다르면 true. 만지지 않았거나 처음 값으로 되돌렸으면 false"
+    },
+    "distanceFloor": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "slot",
+            "said",
+            "drawn",
+            "floor",
+            "rule",
+            "trigger",
+            "charSpan"
+          ],
+          "properties": {
+            "slot": {
+              "const": "layout.distance"
+            },
+            "said": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "drawn": {
+              "type": "number"
+            },
+            "floor": {
+              "type": "number"
+            },
+            "rule": {
+              "type": "string"
+            },
+            "trigger": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "charSpan": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            }
+          }
+        }
+      ],
+      "description": "G33: 매퍼 v2가 거리 하한을 적용했으면 said = 말한 값(하한 전, 0–1), drawn = 슬롯 값(하한, 미리보기에 그려지는 값). spec의 provenance rule '+floor(<하한>;said=<말한 값>)'을 읽은 것. 배치 러너는 spec의 거리를 쓰지 않는다(시작 자리는 실험 설정). 하한이 없으면 null"
+    }
+  }
+}

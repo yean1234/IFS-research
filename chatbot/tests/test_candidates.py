@@ -1,5 +1,5 @@
-"""후보 생성기(candidates.py, D3·결정 G14–G20) — 결정성, 말한 슬롯 불변, 2×2 구성과 우선순위, 한 차원·빈 자리 없음, 갈림, 순서 순환.
-모든 문장은 합성 대사다."""
+"""후보 생성기(candidates.py, D3·결정 G14–G20, G31·G32·G34) — 결정성, 말한 슬롯 불변, 2×2 구성과 우선순위, 한 차원·빈 자리 없음,
+갈림, 순서 순환, 모형 없는 모양어(G32), 밝기 제외·구별 규칙·선택 건너뜀(G34). 모든 문장은 합성 대사다."""
 import copy
 import hashlib
 import itertools
@@ -8,7 +8,7 @@ import json
 import pytest
 
 from ifs_chatbot.candidates import (GENERATOR_VERSION, SLOTS, candidates_bytes, effective_params, generate,
-                                    load_table, slot_is_open, spec_sha256)
+                                    load_table, slot_is_open, spec_sha256, unrendered_shape_words)
 from ifs_chatbot.korean import Analyzer
 from ifs_chatbot.paths import shared
 from ifs_chatbot.scene_builder_v2 import SceneSpecBuilderV2
@@ -22,7 +22,10 @@ T_FEEL = "가슴 안쪽이 답답하고 무거운 느낌이에요."
 T_ALL = "까만 덩어리가 눈앞 가까이 있어요. 크고 무겁고 매끈해요. 안 움직여요. 불투명해요. 어두워요."
 T_ONE = "까만 덩어리가 눈앞 가까이 있어요. 크고 무겁고 매끈해요. 안 움직여요. 불투명해요."
 T_CLOUD = "배 안쪽에 구름이 있어요. 하얀색이에요."
-T_SHAPE = "목에 네모난 게 걸려 있어요."
+T_SHAPE = "목에 네모난 게 걸려 있어요."            # 모형이 있는 모양어(square → Cube)
+T_LONG = "가슴 안쪽에 길쭉한 게 있어요."            # 모형이 없는 모양어(elongated)
+T_MIXED = "가슴에 길쭉하고 둥근 게 있어요."          # 모형 없음(길쭉) + 모형 있음(둥근 → Sphere)
+T_MOTION = "까만 덩어리가 눈앞 가까이 있어요. 크고 무겁고 매끈해요. 불투명해요. 어두워요."   # 빈 자리 = 움직임 하나
 
 
 @pytest.fixture(scope="module")
@@ -32,7 +35,8 @@ def v2():
 
 @pytest.fixture(scope="module")
 def specs(v2):
-    return {t: v2.build(t, session_id="SYN-GOLD") for t in (T_FORM, T_FEEL, T_ALL, T_ONE, T_CLOUD, T_SHAPE)}
+    return {t: v2.build(t, session_id="SYN-GOLD") for t in (T_FORM, T_FEEL, T_ALL, T_ONE, T_CLOUD, T_SHAPE, T_LONG, T_MIXED,
+                                                              T_MOTION)}
 
 
 def empty_spec():
@@ -46,10 +50,12 @@ def empty_spec():
 
 
 # ── 결정성(완료 기준) ─────────────────────────────────────────────────────────
-GOLDEN = {
-    T_FORM: "b75a9f74e79b1e5a5887fdb1315a0d7a310242215da0bd9e16dc3e891808e4e4",
-    T_FEEL: "74bef8f65e5fafcff489e5db2c1fbf07de5e33e356493551e54100e1af54fb20",
-    T_CLOUD: "3f11ecba3b97710d308db023f013e9bc61a65d94132d9957d16e0cbe0007ebaf",
+GOLDEN = {   # 생성기 0.2.0 · 표 1.0.0 · 매퍼 v2 builder 2.1.0 (2026-11-23, G31–G34)
+    T_FORM: "a16b2b24c7c71234c7059dc208827375cd29e651fbcf47558d74245acd8c3a4b",
+    T_FEEL: "ac727f29ee84f7a16910790f6caa9908acd2c785063b07226277ac256d3de3e6",
+    T_CLOUD: "c354124d67ebb4b33f26af8abaddebdd0166217a92f8c5882465fa26ba56b0f6",
+    T_LONG: "9ba0f3cd3adbbec0aa7fbcaa631efc18eca4813fca4ce88faafa8e8f985a07d4",
+    T_MOTION: "52ea093de1511b234e59196bf9d6f37d7c26a26201a88a062ce7150bbc4227bb",
 }
 
 
@@ -71,7 +77,7 @@ def test_same_text_twice_same_spec_and_candidates(v2, text):
     assert candidates_bytes(generate(a, "SYN-A")) == candidates_bytes(generate(b, "SYN-A"))
 
 
-@pytest.mark.parametrize("text", [T_FORM, T_FEEL, T_ALL, T_ONE, T_CLOUD, T_SHAPE])
+@pytest.mark.parametrize("text", [T_FORM, T_FEEL, T_ALL, T_ONE, T_CLOUD, T_SHAPE, T_LONG, T_MOTION])
 def test_g28a_same_text_gives_same_spec_ids_and_overrides_across_sessions(v2, text):
     """(a) 세션 ID가 달라도 spec(세션을 가리키는 meta를 뺀 것)·후보 id·덮어쓰기·축 값이 같다."""
     sids = ["SYN-A", "SYN-B", "SYN-C", "P07"]
@@ -81,6 +87,7 @@ def test_g28a_same_text_gives_same_spec_ids_and_overrides_across_sessions(v2, te
     content = [[(c["id"], c["index"], c["overrides"], c["axisValues"], c["sources"]) for c in o["candidates"]] for o in outs]
     assert all(x == content[0] for x in content)
     assert all(o["axes"] == outs[0]["axes"] for o in outs)
+    assert all(o["distinct"] == outs[0]["distinct"] and o["selectionStep"] == outs[0]["selectionStep"] for o in outs)
     assert all(sorted(o["displayOrder"]) == sorted(outs[0]["displayOrder"]) for o in outs)
 
 
@@ -119,7 +126,7 @@ def test_input_spec_not_mutated(specs):
 
 
 # ── 말한 슬롯 불변(G9) ────────────────────────────────────────────────────────
-@pytest.mark.parametrize("text", [T_FORM, T_FEEL, T_ALL, T_ONE, T_CLOUD, T_SHAPE])
+@pytest.mark.parametrize("text", [T_FORM, T_FEEL, T_ALL, T_ONE, T_CLOUD, T_SHAPE, T_LONG, T_MIXED, T_MOTION])
 def test_said_slots_never_change(specs, text):
     spec = specs[text]
     base = effective_params(spec, DEFAULTS)
@@ -134,10 +141,13 @@ def test_said_slots_never_change(specs, text):
 
 
 def test_property_said_slots_unchanged_over_slot_combinations():
-    """빈 spec에 여섯 차원 슬롯을 하나씩 채운 모든 조합(64가지)에서 말한 슬롯은 덮어쓰기에 없다."""
+    """빈 spec에 다섯 차원 슬롯과 밝기를 하나씩 채운 모든 조합(64가지)에서 말한 슬롯은 덮어쓰기에 없고, 밝기는 어디서도 벌리지 않으며,
+    후보 수는 구별 규칙(G34)을 적용한 값이다: 움직임 축은 정지 미리보기에서 구별되지 않아 접힌다."""
     fills = {"form.type": "shell", "layout.size": 0.6, "material.opacity": 0.8, "material.brightness": 0.3,
              "material.roughness": 0.7, "motion.type": "sinking"}
     keys = list(fills)
+    dims = TABLE["candidateAxes"]["dimensions"]
+    prio = TABLE["candidateAxes"]["priority"]
     for mask in itertools.product([0, 1], repeat=len(keys)):
         spec = empty_spec()
         said = [k for k, m in zip(keys, mask) if m]
@@ -147,19 +157,56 @@ def test_property_said_slots_unchanged_over_slot_combinations():
         out = generate(spec, "S")
         for c in out["candidates"]:
             assert not (set(c["overrides"]) & set(said)), (said, c["overrides"])
-        n_open = len(keys) - len(said)
-        assert len(out["candidates"]) == (4 if n_open >= 2 else (len(TABLE["candidateAxes"]["dimensions"][
-            next(d for d, v in TABLE["candidateAxes"]["dimensions"].items() if v["slot"] not in said)]["levels"]) if n_open == 1 else 1))
+            assert "material.brightness" not in c["overrides"]
+        open_dims = [d for d in prio if dims[d]["slot"] not in said]
+        top = open_dims[:2]
+        if len(top) == 2:
+            expect = 2 if "motion" in top else 4
+        elif len(top) == 1:
+            expect = 1 if top[0] == "motion" else len(dims[top[0]]["levels"])
+        else:
+            expect = 1
+        assert len(out["candidates"]) == expect, (said, out["note"])
+        assert out["selectionStep"] == ("skip" if expect == 1 else "choose")
+        assert out["distinct"]["gridCount"] - len(out["distinct"]["removed"]) == expect
 
 
-def test_shape_word_counts_as_said_form(specs):
-    """모양어('네모난')를 말했으면 form.type이 비어 있어도 형태는 벌리지 않는다(말한 모양이 그려지지 않게 되므로)."""
-    spec = specs[T_SHAPE]
+@pytest.mark.parametrize("text", [T_SHAPE, T_MIXED])
+def test_rendered_shape_word_counts_as_said_form(specs, text):
+    """모형이 있는 모양어('네모난' → Cube, '둥근' → Sphere)를 말했으면 form.type이 비어 있어도 형태는 벌리지 않는다(G32: 지금처럼 말한
+    자리로 고정). 모형이 없는 모양어가 함께 있어도 같다(Unity가 모형을 그리므로)."""
+    spec = specs[text]
     assert spec["form"]["type"] is None and any(u["category"] == "shape" for u in spec["_unmapped"])
     assert not slot_is_open(spec, "form.type")
     out = generate(spec, "S")
     assert "form.type" not in [a["slot"] for a in out["axes"]]
     assert all("form.type" not in c["overrides"] for c in out["candidates"])
+    assert all(c["sources"]["form.type"] == "said" for c in out["candidates"])
+
+
+# ── 모형이 없는 모양어(G32, G29 대체) ──────────────────────────────────────────
+def test_unrendered_shape_word_opens_form_candidates(specs):
+    """모형이 없는 모양어('길쭉')만 말했으면 형태 자리를 벌린다: 첫 축이 form.type(reason said_unrendered), 말한 낱말이 축에 남는다."""
+    spec = specs[T_LONG]
+    assert [u["lemma"] for u in unrendered_shape_words(spec)] == ["길쭉"]
+    assert slot_is_open(spec, "form.type")
+    out = generate(spec, "S")
+    ax = out["axes"][0]
+    assert ax["slot"] == "form.type" and ax["reason"] == "said_unrendered" and ax["values"] == ["blob", "mist"]
+    assert [w["lemma"] for w in ax["saidWords"]] == ["길쭉"] and ax["saidWords"][0]["shape"] == "elongated"
+    assert out["selectionStep"] == "choose" and len(out["candidates"]) == 4
+    assert {c["axisValues"]["form.type"] for c in out["candidates"]} == {"blob", "mist"}
+    assert "G32" in out["note"]
+
+
+def test_shape_models_match_unity_shape_mapping():
+    """표 shapeModels(모형이 있는 모양 값)가 Unity ShapeMapping.ModelByShape 원문과 같다(읽기만 하는 교차 테스트)."""
+    import re
+    src = shared("..", "unity", "Assets", "IFS", "Runtime", "SceneSpec", "ShapeMapping.cs").read_text(encoding="utf-8")
+    block = re.search(r"ModelByShape\s*=\s*new Dictionary<string, string>\([^)]*\)\s*\{(.*?)\};", src, re.S).group(1)
+    pairs = dict(re.findall(r'\{\s*"([a-z]+)",\s*Model(\w+)\s*\}', block))
+    assert pairs == TABLE["shapeModels"]["models"]
+    assert set(TABLE["shapeModels"]["mapped"]) == set(pairs)
 
 
 # ── 2×2 구성과 우선순위(G16) ──────────────────────────────────────────────────
@@ -198,26 +245,36 @@ def test_candidate_values_lie_on_adjust_grid():
         assert all(r in by_key[e["slot"]] for r in e["readings"])
 
 
-def test_priority_order_follows_g16():
-    assert TABLE["candidateAxes"]["priority"] == ["form", "size", "opacity", "brightness", "texture", "motion"]
+def test_priority_order_follows_g34():
+    """G34: 우선순위는 형태 > 크기 > 투명도 > 질감 > 움직임(밝기 없음)."""
+    assert TABLE["candidateAxes"]["priority"] == ["form", "size", "opacity", "texture", "motion"]
     spec = empty_spec()
     spec["form"]["type"] = "blob"
     spec["layout"]["size"] = 0.4
     out = generate(spec, "S")
-    assert [a["slot"] for a in out["axes"]] == ["material.opacity", "material.brightness"]
+    assert [a["slot"] for a in out["axes"]] == ["material.opacity", "material.roughness"]
 
 
 def test_form_said_uses_next_two_dimensions(specs):
     out = generate(specs[T_FORM], "S")
-    assert [a["slot"] for a in out["axes"]] == ["material.opacity", "material.brightness"]
+    assert [a["slot"] for a in out["axes"]] == ["material.opacity", "material.roughness"]
     assert len(out["candidates"]) == 4
 
 
-def test_hue_never_spread_g17():
-    out = generate(empty_spec(), "S")
-    for c in out["candidates"]:
-        assert not any(k.startswith("material.color") for k in c["overrides"])
-    assert "color" not in TABLE["candidateAxes"]["priority"]
+def test_hue_and_brightness_never_spread_g17_g34():
+    """색상(G17·G31)과 밝기(G34)는 후보에서 벌리지 않는다. 밝기만 빈 자리여도 후보 차원이 되지 않는다."""
+    for spec in (empty_spec(),):
+        for c in generate(spec, "S")["candidates"]:
+            assert not any(k.startswith("material.color") or k == "material.brightness" for k in c["overrides"])
+    assert "color" not in TABLE["candidateAxes"]["priority"] and "brightness" not in TABLE["candidateAxes"]["priority"]
+    assert "brightness" not in TABLE["candidateAxes"]["dimensions"]
+    only_brightness = empty_spec()
+    for slot, v in (("form.type", "blob"), ("layout.size", 0.5), ("material.opacity", 1.0), ("material.roughness", 0.5),
+                    ("motion.type", "still")):
+        g, n = slot.split(".")
+        only_brightness[g][n] = v
+    out = generate(only_brightness, "S")
+    assert out["axes"] == [] and len(out["candidates"]) == 1 and out["selectionStep"] == "skip"
 
 
 def test_overrides_use_unity_keys_and_ranges():
@@ -246,17 +303,22 @@ def test_overrides_use_unity_keys_and_ranges():
 
 
 # ── 한 차원·빈 자리 없음(G19) ──────────────────────────────────────────────────
-def test_no_empty_slot_gives_single_candidate(specs):
-    out = generate(specs[T_ALL], "S")
+@pytest.mark.parametrize("text", [T_ALL, T_ONE])
+def test_no_empty_slot_gives_single_candidate_and_skips_selection(specs, text):
+    """빈 자리가 없으면 후보 1개 → 선택 단계를 건너뛴다(G34가 G19의 '1개만 보여 주고 묻기'를 대체). T_ONE은 밝기만 비었던 문장."""
+    out = generate(specs[text], "S")
     assert len(out["candidates"]) == 1 and out["axes"] == [] and out["candidates"][0]["overrides"] == {}
-    assert out["displayOrder"] == [out["candidates"][0]["id"]]
+    assert out["displayOrder"] == [out["candidates"][0]["id"]] and out["selectionStep"] == "skip"
 
 
-def test_single_open_dimension_uses_table_levels(specs):
-    out = generate(specs[T_ONE], "S")
-    assert [a["slot"] for a in out["axes"]] == ["material.brightness"]
-    assert [c["axisValues"]["material.brightness"] for c in out["candidates"]] == \
-        TABLE["candidateAxes"]["dimensions"]["brightness"]["levels"]
+def test_single_open_dimension_uses_table_levels():
+    spec = empty_spec()
+    for slot, v in (("form.type", "blob"), ("material.opacity", 1.0), ("material.roughness", 0.5), ("motion.type", "still")):
+        g, n = slot.split(".")
+        spec[g][n] = v
+    out = generate(spec, "S")
+    assert [a["slot"] for a in out["axes"]] == ["layout.size"]
+    assert [c["axisValues"]["layout.size"] for c in out["candidates"]] == TABLE["candidateAxes"]["dimensions"]["size"]["levels"]
 
 
 def test_single_open_texture_has_three_levels():
@@ -272,6 +334,58 @@ def test_single_open_texture_has_three_levels():
 def test_candidates_never_exceed_four(specs):
     for spec in list(specs.values()) + [empty_spec()]:
         assert 1 <= len(generate(spec, "S")["candidates"]) <= 4
+
+
+# ── 구별되지 않는 후보(G34) ─────────────────────────────────────────────────────
+def test_motion_only_open_collapses_to_one_and_skips(specs):
+    """빈 자리가 움직임뿐이면 표 값 4개를 만들지만, 후보 미리보기는 움직임을 멈춘 정지 그림이라 넷이 같은 그림 → 0번만 남고 건너뜀."""
+    out = generate(specs[T_MOTION], "S")
+    assert [a["slot"] for a in out["axes"]] == ["motion.type"]
+    assert out["distinct"]["gridCount"] == 4 and len(out["candidates"]) == 1 and out["candidates"][0]["index"] == 0
+    assert [(r["index"], r["sameAs"], r["rules"]) for r in out["distinct"]["removed"]] == \
+        [(1, 0, ["still_preview_motion"]), (2, 0, ["still_preview_motion"]), (3, 0, ["still_preview_motion"])]
+    assert out["distinct"]["collapsedAxes"] == ["motion.type"] and out["selectionStep"] == "skip"
+    assert out["distinct"]["ruleVersion"] == TABLE["distinctness"]["ruleVersion"]
+
+
+def test_texture_by_motion_keeps_only_texture_pair():
+    """질감 × 움직임 2×2 → 움직임만 다른 후보가 접혀 2개(0번·2번)가 남고 선택 단계는 그대로."""
+    spec = empty_spec()
+    for slot, v in (("form.type", "blob"), ("layout.size", 0.5), ("material.opacity", 1.0)):
+        g, n = slot.split(".")
+        spec[g][n] = v
+    out = generate(spec, "S")
+    assert [a["slot"] for a in out["axes"]] == ["material.roughness", "motion.type"]
+    assert [c["index"] for c in out["candidates"]] == [0, 2] and out["selectionStep"] == "choose"
+    assert {c["axisValues"]["material.roughness"] for c in out["candidates"]} == {0.5, 0.1}
+    assert out["distinct"]["collapsedAxes"] == ["motion.type"]
+    assert sorted(out["displayOrder"]) == sorted(c["id"] for c in out["candidates"])
+
+
+def test_equal_final_values_are_removed_by_rule():
+    """덮어쓰기를 얹은 최종 값이 같은 후보는 하나만 남는다(same_final_values). 표 값이 겹치도록 고친 표로 확인(합성)."""
+    import copy as _copy
+    t = _copy.deepcopy(TABLE)
+    t["candidateAxes"]["dimensions"]["size"]["pair"] = [0.5, 0.5]
+    out = generate(empty_spec(), "S", t)
+    assert [c["index"] for c in out["candidates"]] == [0, 2]
+    assert {r["index"]: r["rules"] for r in out["distinct"]["removed"]} == {1: ["same_final_values"], 3: ["same_final_values"]}
+
+
+def test_distinct_rules_are_code_confirmed_and_versioned():
+    """표에는 코드로 확인한 규칙만(status confirmed_code), 확인 못 한 조합은 unverified에만. 움직임 규칙의 근거 코드가 그대로 있는지
+    다시 본다(미리보기 플레이어가 그리기 전에 움직임을 멈추지 않게 바뀌면 이 규칙도 바뀌어야 한다)."""
+    d = TABLE["distinctness"]
+    assert d["ruleVersion"].startswith("ifs-distinct/") and d["status"] == "draft"
+    assert {r["id"] for r in d["rules"]} == {"same_final_values", "still_preview_motion"}
+    assert all(r["status"] == "confirmed_code" and r["evidence"] for r in d["rules"])
+    assert d["unverified"] and all(u["combo"] and u["why"] for u in d["unverified"])
+    queue = shared("..", "unity", "Assets", "IFS", "Runtime", "Preview", "PreviewQueue.cs").read_text(encoding="utf-8")
+    stage = shared("..", "unity", "Assets", "IFS", "Runtime", "Preview", "PreviewStage.cs").read_text(encoding="utf-8")
+    assert queue.index("stage.Load(") < queue.index("stage.FreezeMotion();") < queue.index("stage.RenderPng(")
+    assert "m.enabled = false;" in stage and "m.transform.localRotation = Quaternion.identity;" in stage
+    plan = shared("..", "unity", "Assets", "IFS", "Runtime", "Rendering", "FormRenderPlan.cs").read_text(encoding="utf-8")
+    assert "motion" not in plan.split("public static FormRenderPlan Build", 1)[1].split("public static string RendererFor", 1)[0]
 
 
 # ── 낱말 해석 갈림(G18) ────────────────────────────────────────────────────────

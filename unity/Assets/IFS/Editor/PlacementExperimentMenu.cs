@@ -143,7 +143,7 @@ namespace IFS.SceneSpec.EditorTools
 
         /// <summary>새 빈 씬에서 spec 하나로 intro → done을 사람 없이 돈다. 기록 폴더 경로를 돌려준다(실패하면 예외).
         /// taskTextFile: StreamingAssets 기준 문구 파일(예: IFS/placement_task.scaleA.v0.json). null이면 기본 파일.
-        /// selectionPath: 선택 파일(selection.json, ifs-selection/0.1). null이면 spec만(예전과 같음).</summary>
+        /// selectionPath: 선택 파일(selection.json, ifs-selection/0.1·0.2). null이면 spec만(예전과 같음).</summary>
         public static string RunAutoTrial(string specPath, string recordRoot, int participant, PlacementConfig cfg, double dt, PlacementAutoScript script,
             string taskTextFile = null, string selectionPath = null)
         {

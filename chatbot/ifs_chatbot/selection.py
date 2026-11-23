@@ -1,13 +1,14 @@
-"""면담 뒤 데스크톱 단계: 4 후보 선택 · 5 조절 · 6 사전 측정 (D5·D9 데스크톱 쪽, 결정 G10·G11·G13·G15·G19·G22·G23).
+"""면담 뒤 데스크톱 단계: 4 후보 선택 · 5 조절 · 6 사전 측정 (D5·D9 데스크톱 쪽, 결정 G10·G11·G13·G15·G22·G23, G31–G34).
 
 후보 단계는 면담 밖이다. 이 모듈은 LLM·면담 검증기(V1–V9)를 부르지 않는다(원칙 1·3). 입력은 확정 텍스트로 만든
 SceneSpec 하나뿐이고(원칙 2), 원본 spec과 그 _provenance는 바꾸지 않는다(G15).
 
 기록(참여자 자료, git 밖): <log_dir>/selection/<sessionId>/
   candidates.json  후보 생성기 출력 그대로(바이트 고정)
-  selection.json   ifs-selection/0.1 (shared/schemas/selection.v0.1.json): 원본 spec 해시, 보여 준 후보와 순서, 고른 후보,
-                   "맞는 것이 없다" 여부, 조절 이력, finalOverrides(Unity SceneOverrideJson 형식), 슬롯별 출처 네 가지,
-                   runnerReady·runnerBlockers(배치 러너에 넘길 수 있는지와 그 이유, G26)
+  selection.json   ifs-selection/0.2 (shared/schemas/selection.v0.2.json): 원본 spec 해시, 보여 준 후보와 순서, 고른 후보,
+                   "맞는 것이 없다" 여부, 선택 단계를 건너뛰었는지(selection.skipped, G34), 조절 이력, 색을 바꿨는지
+                   (colorChanged, G31), finalOverrides(Unity SceneOverrideJson 형식), 슬롯별 출처(네 가지 + 모형 없는 모양어
+                   두 가지, G32), 거리 하한 기록(distanceFloor, G33), runnerReady·runnerBlockers(G26)
   premeasure.json  ifs-premeasure/0.1: 사전 측정 응답
 세션 로그(elicit-log/0.1)에는 기존 events 배열에 요약만 더한다(형식 불변).
 """
@@ -22,14 +23,21 @@ import shutil
 import threading
 from pathlib import Path
 
-from .candidates import SLOTS, candidates_bytes, effective_params, generate, slot_value, spec_sha256
+from .candidates import (SLOTS, candidates_bytes, effective_params, form_said_unrendered, generate, rendered_shape_words,
+                         said_words, slot_value, spec_sha256, unrendered_shape_words)
 from .paths import shared
+from .scene_builder_v2 import floor_record
 from .session_log import now_iso
 
-FORMAT_VERSION = "ifs-selection/0.1"
+# 0.2(2026-11-23, G31–G34): selection.skipped·skipReason, colorChanged, 출처 값 두 개 추가(said_unrendered_chosen·
+# said_unrendered_default), sourceDetails.saidWords, distanceFloor, candidatesShownAt null 허용. 러너는 0.1·0.2를 모두 읽는다.
+FORMAT_VERSION = "ifs-selection/0.2"
 PREMEASURE_VERSION = "ifs-premeasure/0.1"
-ITEMS = ("form", "color", "brightness", "opacity", "size", "texture", "motion")
+ITEMS = ("color", "form", "brightness", "opacity", "size", "texture", "motion")   # G31: 색이 맨 앞(표 adjustItems.order와 같음)
 NONE_CHOICE = "none"
+SKIP_REASON = "single_distinct_candidate"      # G34: 구별되는 후보가 하나뿐이라 선택 단계를 건너뜀
+# 슬롯 출처(G15 네 가지 + G32 두 가지). 러너(PlacementSelection.cs SourceValues)와 스키마 $defs.source가 같은 목록이다.
+SOURCES = ("said", "chosen", "edited", "default", "said_unrendered_chosen", "said_unrendered_default")
 SAID_NOT_IN_TABLE = "said_value_not_in_table"
 
 # 러너에 넘길 수 없는 이유(runnerBlockers). 러너(PlacementSelection.cs)도 runnerReady = false면 이 글을 붙여 시작을 거부한다.
@@ -276,10 +284,23 @@ class SelectionFlow:
                 "candidates": self.cands, "candidatesShown": list(self.cands["displayOrder"]), "candidatesShownAt": now,
                 "selection": None,
                 "adjustments": {"events": [], "items": {}, "finishedAt": None},
+                "colorChanged": False,
                 "finalOverrides": None, "sources": None, "sourceDetails": None, "sourceCounts": None, "premeasure": None,
                 "adjustValueExtras": copy.deepcopy(self.extras),
+                "distanceFloor": floor_record(self.spec),
                 "runnerReady": False, "runnerBlockers": [],
             }
+            skip = self.cands["selectionStep"] == "skip"
+            if skip:
+                # G34: 구별되는 후보가 하나뿐 → 선택 화면을 보이지 않고 그 후보(언제나 0번)로 조절에 들어간다.
+                # 고른 것이 아니므로 selectedCandidateId = null, none = false, skipped = true. 보여 준 후보는 없다.
+                op = self.cands["candidates"][0]
+                self.data["candidatesShown"], self.data["candidatesShownAt"] = [], None
+                self.data["selection"] = {"selectedCandidateId": None, "selectedIndex": None, "none": False,
+                                          "skipped": True, "skipReason": SKIP_REASON, "displayPosition": None,
+                                          "operationalId": op["id"], "operationalIndex": op["index"], "at": now}
+                self.data["stage"] = "adjusting"
+                self.current = dict(op["overrides"])
             if self.persist:
                 self.dir.mkdir(parents=True, exist_ok=True)
                 (self.dir / "candidates.json").write_bytes(candidates_bytes(self.cands))
@@ -291,7 +312,12 @@ class SelectionFlow:
                 "axes": [{"slot": a["slot"], "reason": a["reason"]} for a in self.cands["axes"]],
                 "displayOrder": self.cands["displayOrder"], "draftCount": pinfo["draftCount"],
                 "draftKeys": pinfo["draftKeys"], "previewMode": self.data["preview"]["mode"],
-                "sha256Basis": basis, "adjustValueExtras": sorted(self.extras)})
+                "sha256Basis": basis, "adjustValueExtras": sorted(self.extras),
+                "selectionStep": self.cands["selectionStep"], "distinctRemoved": len(self.cands["distinct"]["removed"]),
+                "distanceFloor": self.data["distanceFloor"]})
+            if skip:
+                self._log_event("selection:skipped", {"reason": SKIP_REASON,
+                                                      "operationalId": self.data["selection"]["operationalId"]})
             return self.view()
 
     def select(self, choice: str) -> dict:
@@ -301,13 +327,14 @@ class SelectionFlow:
             order = self.cands["displayOrder"]
             if choice == NONE_CHOICE:
                 op = self.cands["candidates"][0]
-                sel = {"selectedCandidateId": None, "selectedIndex": None, "none": True, "displayPosition": None}
+                sel = {"selectedCandidateId": None, "selectedIndex": None, "none": True, "skipped": False,
+                       "displayPosition": None}
             else:
                 c = self._cand(choice)
                 if c is None:
                     raise SelectionInvalid(f"보여 준 후보가 아닙니다: {choice}")
                 op = c
-                sel = {"selectedCandidateId": c["id"], "selectedIndex": c["index"], "none": False,
+                sel = {"selectedCandidateId": c["id"], "selectedIndex": c["index"], "none": False, "skipped": False,
                        "displayPosition": order.index(c["id"])}
             sel.update(operationalId=op["id"], operationalIndex=op["index"], at=now_iso())
             self.data["selection"] = sel
@@ -356,8 +383,14 @@ class SelectionFlow:
                                                                        "firstAt": at, "lastAt": at})
             summ["count"] += 1
             summ["last"], summ["lastAt"] = after, at
+            self.data["colorChanged"] = self._color_changed()
             self._save()
             return self.view()
+
+    def _color_changed(self) -> bool:
+        """G31: 조절 기록에서 색의 처음 값과 마지막 값이 다른가(만졌다가 되돌리면 false, 횟수는 adjustments.items.color)."""
+        c = self.data["adjustments"]["items"].get("color")
+        return bool(c) and not _same_value(c["last"], c["first"])
 
     def _final_overrides(self) -> dict:
         base = self._base()
@@ -372,7 +405,13 @@ class SelectionFlow:
 
     def _slot_sources(self) -> tuple[dict, dict]:
         sel = self.data["selection"]
-        chosen = {} if sel["none"] else dict(self._cand(sel["selectedCandidateId"])["axisValues"])
+        # 고른 후보의 축 값만 chosen이다. 맞는 것이 없다(none)·선택 단계 건너뜀(skipped)은 고른 것이 없다
+        chosen = {} if sel["none"] or sel.get("skipped") else dict(self._cand(sel["selectedCandidateId"])["axisValues"])
+        unrendered = form_said_unrendered(self.spec, self.table)        # G32: 모형이 없는 모양어만 말함
+        rendered = slot_value(self.spec, "form.type") is None and bool(rendered_shape_words(self.spec, self.table))
+        words = said_words(unrendered_shape_words(self.spec, self.table) if unrendered
+                           else rendered_shape_words(self.spec, self.table) if rendered else [])
+        floor = self.data.get("distanceFloor")
         items = self.table["adjustItems"]["items"]
         final = effective_params(self.spec, self.defaults, self.current)
         edited: dict[str, object] = {}
@@ -390,19 +429,29 @@ class SelectionFlow:
         d = self.defaults
         default_of = {"material.color": {"h": d["material.color.h"], "s": d["material.color.s"], "l": d["material.color.l"]},
                       "material.saturation": d["material.color.s"]}
-        out, counts = {}, {"said": 0, "chosen": 0, "edited": 0, "default": 0}
+        out, counts = {}, {k: 0 for k in SOURCES}
         for slot in SLOTS:
-            said = slot_value(self.spec, slot)
+            slot_val = slot_value(self.spec, slot)
+            said = slot_val
+            if slot == "layout.distance" and floor and floor.get("said") is not None:
+                said = floor["said"]            # G33: 원래 말한 값(하한 전). 그려진 값은 value(= 슬롯 값 = 하한)
             dv = default_of.get(slot, d.get(slot))
             rec = {"saidValue": said, "chosenValue": chosen.get(slot), "defaultValue": dv}
             if slot in edited:
                 rec = {"source": "edited", "value": edited[slot], **rec}
             elif slot in chosen:
-                rec = {"source": "chosen", "value": chosen[slot], **rec}
-            elif said is not None:
-                rec = {"source": "said", "value": said, **rec}
+                rec = {"source": "said_unrendered_chosen" if slot == "form.type" and unrendered else "chosen",
+                       "value": chosen[slot], **rec}
+            elif slot_val is not None:
+                rec = {"source": "said", "value": slot_val, **rec}
+            elif slot == "form.type" and rendered:
+                rec = {"source": "said", "value": dv, **rec}           # 모형이 있는 모양어: 말한 자리(모형은 saidWords)
+            elif slot == "form.type" and unrendered:
+                rec = {"source": "said_unrendered_default", "value": dv, **rec}
             else:
                 rec = {"source": "default", "value": dv, **rec}
+            if slot == "form.type" and (unrendered or rendered):
+                rec["saidWords"] = words                               # 원래 말한 모양어(G32)
             counts[rec["source"]] += 1
             out[slot] = rec
         return out, counts
@@ -535,7 +584,7 @@ class SelectionFlow:
             out["candidates"] = [{"id": cid, "position": i, "index": by_id[cid]["index"],
                                   "overrides": by_id[cid]["overrides"], "summary": self.summary(by_id[cid]["overrides"])}
                                  for i, cid in enumerate(self.cands["displayOrder"])]
-            out["single"] = len(self.cands["candidates"]) == 1
+            out["skipped"] = bool(self.data["selection"] and self.data["selection"].get("skipped"))
             out["axes"] = self.cands["axes"]
             out["note"] = self.cands["note"]
             out["selection"] = self.data["selection"]
@@ -546,6 +595,7 @@ class SelectionFlow:
                 out["current"] = {"overrides": dict(self.current), "summary": self.summary(self.current),
                                   "items": {i: self._item_value(i, params) for i in ITEMS}}
                 out["adjustCounts"] = {k: v["count"] for k, v in self.data["adjustments"]["items"].items()}
+                out["colorChanged"] = self.data["colorChanged"]
             if self.stage in ("premeasure", "done"):
                 out["finalOverrides"] = self.data["finalOverrides"]
                 out["sourceCounts"] = self.data["sourceCounts"]

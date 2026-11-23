@@ -1,6 +1,7 @@
-// 배치 러너가 읽는 선택 파일(selection.json, 형식 ifs-selection/0.1 — 챗봇 쪽 후보 선택·조절 단계가 쓴다. 결정 G15·G23, D8).
+// 배치 러너가 읽는 선택 파일(selection.json, 형식 ifs-selection/0.1·0.2 — 챗봇 쪽 후보 선택·조절 단계가 쓴다. 결정 G15·G23, D8, G31–G34).
 // 러너가 읽는 필드는 다음으로 고정한다. 그 밖의 필드는 읽지 않는다(무시).
-//   formatVersion      "ifs-selection/0.1". 접두어 "ifs-selection/"이 아니거나 모르는 버전이면 경고(시작은 함).
+//   formatVersion      "ifs-selection/0.1" 또는 "ifs-selection/0.2"(KnownFormatVersions). 접두어 "ifs-selection/"이 아니거나 모르는 버전이면
+//                      경고(시작은 함). 모르는 버전은 0.2 규칙으로 읽는다.
 //   specSha256         저장된 spec 파일 바이트의 sha256(16진 64자). 러너가 읽은 spec 파일 바이트의 sha256과 다르면 시작 거부.
 //   spec.sha256Basis   (있으면) specSha256을 무엇으로 쟀는지. "file"이 아니면(예: 예전 챗봇이 파일 없는 실행에서 쓰던 "serialized",
 //                      지금 챗봇의 "none") 파일 바이트 해시가 아니므로 이유를 밝히고 시작 거부(G26, CP9 지적 1).
@@ -8,10 +9,14 @@
 //   runnerReady        (있으면) false면 챗봇이 러너에 넘길 수 없다고 적은 파일 — runnerBlockers(이유)를 붙여 시작 거부.
 //   finalOverrides     평평한 덮어쓰기 객체(SceneOverrideJson.Parse가 받는 형식, {} = 덮어쓰기 없음). 모르는 키·0–1 밖·잘못된 값이면 시작 거부.
 //                      위치·거리(layout.distance, layout.verticalOffset)는 실험 조건이라(G10, 시작 자리는 실험 설정) 넣을 수 없다 — 거부.
-//   selection          { selectedCandidateId: 문자열 | null, none: bool }. none = "맞는 것이 없다"(G23).
-//                      none이 true인데 selectedCandidateId가 있으면 거부(어느 쪽인지 모름), none이 false인데 id가 null이면 경고.
-//   sources            슬롯별 출처(말함/고름/고침/기본값). 객체여야 하고, 키는 SlotNames, 값은 SourceValues(said|chosen|edited|default)
-//                      중 하나여야 한다 — 아니면 시작 거부(G27, CP9 지적 2). 검사를 통과하면 manifest에 그대로 옮긴다(없거나 null이면 null).
+//   selection          { selectedCandidateId: 문자열 | null, none: bool, skipped: bool }. none = "맞는 것이 없다"(G23).
+//                      skipped = 구별되는 후보가 하나뿐이라 선택 단계를 건너뜀(G34, 0.2에서 필수. 0.1 파일은 없으면 false).
+//                      none이 true인데 selectedCandidateId가 있으면 거부(어느 쪽인지 모름). skipped가 true인데 none이 true이거나 id가 있으면 거부.
+//                      none·skipped가 모두 false인데 id가 null이면 경고.
+//   colorChanged       (0.2에서 필수) 조절에서 색을 바꿨는지(처음 값 ≠ 마지막 값, G31). 0.1 파일은 없으면 null로 기록.
+//   sources            슬롯별 출처. 객체여야 하고, 키는 SlotNames, 값은 0.2면 SourceValues 여섯 가지(said|chosen|edited|default|
+//                      said_unrendered_chosen|said_unrendered_default — 뒤 둘은 모형이 없는 모양어를 말한 형태 자리, G32),
+//                      0.1이면 SourceValues01 네 가지 중 하나여야 한다 — 아니면 시작 거부(G27). 통과하면 manifest에 그대로 옮긴다(없거나 null이면 null).
 // 덮어쓰기는 형상을 만들 때 한 번 적용하고 조건 단계 동안 바뀌지 않는다(VR 안에서 속성을 고치는 입력은 없음 — G11).
 // UnityEngine에 의존하지 않는다.
 using System;
@@ -27,7 +32,10 @@ namespace IFS.SceneSpec.Placement
     public sealed class PlacementSelection
     {
         public const string FormatPrefix = "ifs-selection/";
-        public const string KnownFormatVersion = "ifs-selection/0.1";
+        public const string FormatVersion01 = "ifs-selection/0.1";
+        public const string FormatVersion02 = "ifs-selection/0.2";
+        /// <summary>러너가 아는 선택 파일 버전(0.1: G27까지, 0.2: G31–G34). 둘 다 읽는다.</summary>
+        public static readonly string[] KnownFormatVersions = { "ifs-selection/0.1", "ifs-selection/0.2" };
         /// <summary>선택 파일 덮어쓰기에 넣을 수 없는 키(위치·거리는 실험 조건 — G10). 러너가 시작 자리를 실험 설정으로 정한다.</summary>
         public static readonly string[] ForbiddenOverrideKeys = { "layout.distance", "layout.verticalOffset" };
         /// <summary>specSha256을 저장된 spec 파일 바이트로 쟀다는 표시(spec.sha256Basis). 러너는 이것만 받는다(G26).</summary>
@@ -39,8 +47,11 @@ namespace IFS.SceneSpec.Placement
             "material.roughness", "material.opacity", "material.erosion", "layout.size", "layout.distance",
             "layout.verticalOffset", "motion.type", "motion.speed", "body.part", "body.layer",
         };
-        /// <summary>sources의 출처 값 네 가지: 말함 / 고름 / 고침 / 기본값(G15, 스키마 $defs.source).</summary>
-        public static readonly string[] SourceValues = { "said", "chosen", "edited", "default" };
+        /// <summary>0.2 sources의 출처 값 여섯 가지(스키마 selection.v0.2.json $defs.source): 말함 / 고름 / 고침 / 기본값(G15)
+        /// + 모형이 없는 모양어를 말하고 형태 후보에서 고름 / 모형이 없는 모양어를 말했지만 고르지 않아 기본 형태(G32).</summary>
+        public static readonly string[] SourceValues = { "said", "chosen", "edited", "default", "said_unrendered_chosen", "said_unrendered_default" };
+        /// <summary>0.1 sources의 출처 값 네 가지(selection.v0.1.json). 0.1 파일에 새 값이 있으면 거부한다.</summary>
+        public static readonly string[] SourceValues01 = { "said", "chosen", "edited", "default" };
 
         /// <summary>파일 이름만(경로는 기록에 남기지 않는다).</summary>
         public string FileName { get; private set; }
@@ -50,6 +61,10 @@ namespace IFS.SceneSpec.Placement
         public string SpecSha256 { get; private set; }
         public string SelectedCandidateId { get; private set; }
         public bool None { get; private set; }
+        /// <summary>선택 단계를 건너뜀(G34). 0.1 파일은 false.</summary>
+        public bool Skipped { get; private set; }
+        /// <summary>조절에서 색을 바꿨는지(G31). 0.1 파일·값 없음이면 null.</summary>
+        public bool? ColorChanged { get; private set; }
         /// <summary>finalOverrides 원문(키 순서 그대로).</summary>
         public JObject FinalOverridesJson { get; private set; }
         /// <summary>finalOverrides를 SceneOverrideJson.Parse로 읽은 것(빈 객체면 IsEmpty).</summary>
@@ -97,9 +112,13 @@ namespace IFS.SceneSpec.Placement
                 s.FormatVersion = (string)fv;
                 if (!s.FormatVersion.StartsWith(FormatPrefix, StringComparison.Ordinal))
                     s.Warnings.Add($"선택 파일 formatVersion {s.FormatVersion}: 접두어가 {FormatPrefix}가 아님 — 다른 형식일 수 있음(읽는 필드만 확인함)");
-                else if (s.FormatVersion != KnownFormatVersion)
-                    s.Warnings.Add($"선택 파일 formatVersion {s.FormatVersion}: 이 러너가 아는 버전은 {KnownFormatVersion} — 읽는 필드만 확인함");
+                else if (Array.IndexOf(KnownFormatVersions, s.FormatVersion) < 0)
+                    s.Warnings.Add($"선택 파일 formatVersion {s.FormatVersion}: 이 러너가 아는 버전은 {string.Join(", ", KnownFormatVersions)} — 읽는 필드만 확인함");
             }
+            // 0.1: 옛 규칙(skipped·colorChanged 없음, 출처 네 가지). 0.2: skipped·colorChanged 필수, 출처 여섯 가지.
+            // 모르는 버전: 경고만 하고 새 필드는 있으면 읽음(없어도 거부하지 않음), 출처는 여섯 가지까지 받음.
+            bool v01 = s.FormatVersion == FormatVersion01;
+            bool v02 = s.FormatVersion == FormatVersion02;
 
             // specSha256의 기준(spec.sha256Basis)과 챗봇이 적은 runnerReady(G26). 기준이 파일이 아니면 해시를 비교하지 않고 거부한다.
             if (o["spec"] is JObject specInfo && specInfo.TryGetValue("sha256Basis", out var basis))
@@ -157,29 +176,43 @@ namespace IFS.SceneSpec.Placement
                 if (id == null || id.Type == JTokenType.Null) s.SelectedCandidateId = null;
                 else if (id.Type == JTokenType.String && !string.IsNullOrWhiteSpace((string)id)) s.SelectedCandidateId = (string)id;
                 else errors.Add("selection.selectedCandidateId는 비어 있지 않은 문자열 또는 null");
+                var skipped = sel["skipped"];
+                if (skipped != null && skipped.Type == JTokenType.Boolean) s.Skipped = (bool)skipped;
+                else if (skipped != null && skipped.Type != JTokenType.Null) errors.Add("selection.skipped는 true | false여야 함");
+                else if (v02) errors.Add("selection.skipped가 없음(ifs-selection/0.2에서 필수, true | false — G34)");
                 if (none != null && none.Type == JTokenType.Boolean)
                 {
                     if (s.None && s.SelectedCandidateId != null)
                         errors.Add($"selection.none이 true인데 selectedCandidateId({s.SelectedCandidateId})가 있음 — 고른 것인지 '맞는 것이 없다'인지 알 수 없음");
-                    else if (!s.None && s.SelectedCandidateId == null)
+                    else if (s.Skipped && (s.None || s.SelectedCandidateId != null))
+                        errors.Add("selection.skipped가 true인데 none이 true이거나 selectedCandidateId가 있음 — 선택 단계를 건너뛴 것인지 알 수 없음(G34)");
+                    else if (!s.None && !s.Skipped && s.SelectedCandidateId == null)
                         s.Warnings.Add("선택 파일 selection.none이 false인데 selectedCandidateId가 null — 고른 후보를 알 수 없음(기록에는 그대로 남김)");
                 }
             }
 
+            // colorChanged(G31): 0.2에서 필수, 0.1은 없으면 null
+            var cc = o["colorChanged"];
+            if (cc != null && cc.Type == JTokenType.Boolean) s.ColorChanged = (bool)cc;
+            else if (cc != null && cc.Type != JTokenType.Null) errors.Add("colorChanged는 true | false여야 함");
+            else if (v02) errors.Add("colorChanged가 없음(ifs-selection/0.2에서 필수, true | false — G31)");
+
             // sources: 슬롯 이름과 출처 값만 검사하고(G27) 값은 해석하지 않고 옮긴다. 없거나 null이면 null.
             var src = o["sources"];
             if (src == null || src.Type == JTokenType.Null) s.Sources = null;
-            else if (!(src is JObject srcObj)) errors.Add("sources는 객체여야 함(슬롯 → said | chosen | edited | default), 지금 " + src.Type);
+            else if (!(src is JObject srcObj)) errors.Add("sources는 객체여야 함(슬롯 → 출처 값), 지금 " + src.Type);
             else
             {
                 int before = errors.Count;
+                var allowed = v01 ? SourceValues01 : SourceValues;
                 foreach (var p in srcObj.Properties())
                 {
                     if (Array.IndexOf(SlotNames, p.Name) < 0)
                         errors.Add($"sources: 모르는 슬롯 {p.Name}(가능: {string.Join(", ", SlotNames)})");
                     string v = p.Value.Type == JTokenType.String ? (string)p.Value : null;
-                    if (v == null || Array.IndexOf(SourceValues, v) < 0)
-                        errors.Add($"sources.{p.Name}: 출처 값 {p.Value.ToString(Formatting.None)}이 said | chosen | edited | default 중 하나가 아님");
+                    if (v == null || Array.IndexOf(allowed, v) < 0)
+                        errors.Add($"sources.{p.Name}: 출처 값 {p.Value.ToString(Formatting.None)}이 {string.Join(" | ", allowed)} 중 하나가 아님" +
+                                   (v01 ? $"({FormatVersion01})" : ""));
                 }
                 if (errors.Count == before) s.Sources = srcObj.DeepClone();
             }
@@ -273,6 +306,8 @@ namespace IFS.SceneSpec.Placement
             ["selectedCandidateId"] = Str(SelectedCandidateId),
             ["finalOverrides"] = FinalOverridesJson?.DeepClone() ?? new JObject(),
             ["sources"] = Sources?.DeepClone(),
+            ["skipped"] = Skipped,
+            ["colorChanged"] = ColorChanged.HasValue ? new JValue(ColorChanged.Value) : JValue.CreateNull(),
         };
     }
 }

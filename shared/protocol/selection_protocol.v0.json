@@ -1,6 +1,6 @@
 {
   "protocolId": "ifs-selection-flow",
-  "protocolVersion": "0.1.0",
+  "protocolVersion": "0.2.0",
   "status": "draft",
   "date": "2026-11-23",
   "description": "면담 뒤 데스크톱 단계(4 후보 선택 · 5 조절 · 6 사전 측정)의 고정 문구. docs/prompts/prototype-v4-build.md 1절 흐름 표, 결정 G10·G13·G19·G23. 모든 문구는 초안(status draft)이며 IRB·연구팀 검토 전이다. 화면과 기록은 초안 문구를 쓰고 있다는 사실을 알린다(결정 X35 방식: 화면 맨 위 경고 줄, 기록의 draftCount·draftKeys). elicitation_protocol 파일은 바꾸지 않았다.",
@@ -10,10 +10,13 @@
   },
   "sources": {
     "build_prompt": "docs/prompts/prototype-v4-build.md (2026-11-22 클라우드 세션에서 연구 책임자와 정함)",
-    "decisions": "docs/decisions.md G7–G24",
+    "decisions": "docs/decisions.md G7–G24, G31–G34",
     "questionnaire": "docs/rq-v4-questionnaire-draft.md 3.1–3.3절(2026-11-22)"
   },
   "changes": [
+    {"version": "0.2.0", "date": "2026-11-23", "status": "draft",
+     "summary": "후보 1개 화면 문구 두 개(single_candidate_intro·proceed_single_button)를 뺌. 조절 항목 이름의 표시 순서는 값 표(candidate_values.v1.json adjustItems.order)를 따라 색이 맨 앞(G31). 남은 문구의 글은 바꾸지 않음.",
+     "reason": "결정 G34: 구별되는 후보가 하나만 남으면 선택 단계 없이 조절로 넘어간다(G19의 '후보 1개만 보여 주고 묻기'를 대체). 그 화면이 없어져 두 문구를 쓰지 않는다. 0.1.0의 문구 원문은 git 기록(커밋 1051d48)에 있다."},
     {"version": "0.1.0", "date": "2026-11-23", "status": "draft",
      "summary": "처음 만듦: 후보 화면·조절 화면·사전 측정 화면의 문구, 조절 항목 이름, 주 척도안 A 7문항과 G13 두 문항.",
      "reason": "D5(후보·조절 화면)와 흐름 6단계(사전 측정 화면) 구현."}
@@ -31,13 +34,7 @@
       "source": "자작(2026-11-23, D5 구현). 결정 G19·G23",
       "note": "형상의 속성 이름(색·크기 등)이나 묘사어를 쓰지 않는다. 후보는 그림으로만 구별한다(D5_claude.md 1절)."
     },
-    "single_candidate_intro": {
-      "text": "이 형상으로 진행할지, 맞는 것이 없는지 골라 주세요.",
-      "status": "draft",
-      "source": "자작(2026-11-23). 결정 G19: 빈 자리가 없으면 후보 1개만 보여 주고 '이 형상으로 진행 / 맞는 것이 없다'만 묻는다"
-    },
     "choose_button": {"text": "이것으로 고르기", "status": "draft", "source": "자작(2026-11-23)"},
-    "proceed_single_button": {"text": "이 형상으로 진행", "status": "draft", "source": "결정 G19 문구 그대로"},
     "none_fit": {
       "text": "맞는 것이 없다",
       "status": "draft",
@@ -59,7 +56,7 @@
   },
 
   "adjustItemLabels": {
-    "_comment": "결정 G10의 일곱 항목 이름 그대로. 값에는 이름을 붙이지 않는다(형태 1–4, 색 견본, 단계 n/N) — 참여자가 쓰지 않은 묘사어를 화면에 내지 않기 위함.",
+    "_comment": "결정 G10의 일곱 항목 이름 그대로. 값에는 이름을 붙이지 않는다(형태 1–4, 색 견본, 단계 n/N) — 참여자가 쓰지 않은 묘사어를 화면에 내지 않기 위함. 화면의 항목 순서는 값 표 adjustItems.order를 따른다(0.2.0부터 색이 맨 앞, G31). 이 객체의 키 순서는 순서를 정하지 않는다.",
     "form": {"text": "형태", "status": "draft", "source": "결정 G10 항목 이름"},
     "color": {"text": "색", "status": "draft", "source": "결정 G10 항목 이름"},
     "brightness": {"text": "밝기", "status": "draft", "source": "결정 G10 항목 이름"},

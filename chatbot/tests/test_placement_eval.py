@@ -558,3 +558,24 @@ def test_real_unity_records_follow_the_contract():
         assert s["completed"] is True and s["condition_complete"] is True and s["auto_mode"] is True
         assert s["final_distance_m"] is not None and s["stop_n_valid"] > 0
     assert res["summary"]["records"]["included"] == 5
+
+
+def test_selection_skip_color_and_form_source_columns(tmp_path):
+    """manifest selection의 skipped·colorChanged(G31·G34, ifs-selection/0.2에서 옴)와 sources.form.type(G32 said_unrendered_*)을 열로 읽는다.
+    키가 없는 이전 기록(0.1 선택 파일)은 빈칸."""
+    new = {"file": "selection.json", "sha256": "ab", "formatVersion": "ifs-selection/0.2", "none": False,
+           "selectedCandidateId": None, "finalOverrides": {}, "sources": {"form.type": "said_unrendered_default"},
+           "skipped": True, "colorChanged": True}
+    old = {"file": "selection.json", "sha256": "cd", "formatVersion": "ifs-selection/0.1", "none": False,
+           "selectedCandidateId": "c-000000000001", "finalOverrides": {"layout.size": 0.6}, "sources": {"form.type": "chosen"}}
+    make_placement_session(tmp_path, 1, "new", version="ifs-placement/0.2", manifest_extra={"selection": new})
+    make_placement_session(tmp_path, 2, "old", version="ifs-placement/0.2", manifest_extra={"selection": old})
+    make_placement_session(tmp_path, 3, "nosel")
+    res = analyze(tmp_path)
+    cols = res["columns"]
+    assert cols.index("selection_skipped") == cols.index("n_final_overrides") + 1
+    assert {"selection_skipped", "color_changed", "form_source"} <= set(cols)
+    n, o, x = row(res, "new"), row(res, "old"), row(res, "nosel")
+    assert (n["selection_skipped"], n["color_changed"], n["form_source"]) == (True, True, "said_unrendered_default")
+    assert (o["selection_skipped"], o["color_changed"], o["form_source"]) == (None, None, "chosen")
+    assert (x["selection_skipped"], x["color_changed"], x["form_source"]) == (None, None, None)

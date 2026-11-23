@@ -3,6 +3,8 @@
 //     적용 확인(appliedOverrides / 적용하지 못한 키), manifest 0.2의 selection·appliedOverrides 키.
 //   · CP9 반영(G26·G27): sha256Basis가 file이 아니거나 runnerReady false면 이유를 밝히고 거부, sources 슬롯·출처 값 검사,
 //     챗봇이 쓴 spec 파일과 선택 파일의 바이트 대조(docs/validation/selection-flow/runs).
+//   · G31–G34(ifs-selection/0.2): selection.skipped·colorChanged(0.2에서 필수, 0.1은 없어도 됨), 출처 값 여섯 가지(0.1은 네 가지),
+//     manifest selection에 skipped·colorChanged.
 //   · 문항별 평정 범위(min·max): 0–10 문항의 키보드 두 자리 입력(10)·컨트롤러 가운데 값(5), 기존 1–7 동작 그대로, 범위 검증.
 //   · 두 평정 문항(G13 모습 일치·대표성): 두 문구 파일에 draft·출처, 헤드셋 기본 사후만, askOptionalItems로 사전에도, disabledItems로 기존 문항 끄기.
 // 합성 값만 쓴다(참여자 자료 아님).
@@ -85,7 +87,9 @@ namespace IFS.SceneSpec.Tests
             Assert.That(s.Overrides.Categories["form.type"], Is.EqualTo("fragments"));
             Assert.That(s.Overrides.Numbers["material.brightness"], Is.EqualTo(0.35));
             var m = s.ManifestJson();
-            Assert.That(m.Properties().Select(p => p.Name), Is.EqualTo(new[] { "file", "sha256", "formatVersion", "none", "selectedCandidateId", "finalOverrides", "sources" }));
+            Assert.That(m.Properties().Select(p => p.Name), Is.EqualTo(new[] { "file", "sha256", "formatVersion", "none", "selectedCandidateId", "finalOverrides", "sources", "skipped", "colorChanged" }));
+            Assert.That((bool)m["skipped"], Is.False, "0.1 파일: skipped 없음 → false");
+            Assert.That(m["colorChanged"].Type, Is.EqualTo(JTokenType.Null), "0.1 파일: colorChanged 없음 → null");
             Assert.That(JToken.DeepEquals(m["sources"], Selection()["sources"]), Is.True, "sources는 해석하지 않고 그대로");
             Assert.That(JToken.DeepEquals(m["finalOverrides"], Selection()["finalOverrides"]), Is.True);
             Assert.That(m.ToString(), Does.Not.Contain("someone"), "로컬 경로 없음");
@@ -173,10 +177,11 @@ namespace IFS.SceneSpec.Tests
             var all = Selection();
             var src = new JObject();
             for (int i = 0; i < PlacementSelection.SlotNames.Length; i++)
-                src[PlacementSelection.SlotNames[i]] = PlacementSelection.SourceValues[i % PlacementSelection.SourceValues.Length];
+                src[PlacementSelection.SlotNames[i]] = PlacementSelection.SourceValues01[i % PlacementSelection.SourceValues01.Length];
             all["sources"] = src;
             Assert.That(JToken.DeepEquals(ParseOk(all).ManifestJson()["sources"], src), Is.True, "15개 슬롯 × 네 값은 그대로 옮김");
-            Assert.That(PlacementSelection.SourceValues, Is.EqualTo(new[] { "said", "chosen", "edited", "default" }));
+            Assert.That(PlacementSelection.SourceValues01, Is.EqualTo(new[] { "said", "chosen", "edited", "default" }));
+            Assert.That(PlacementSelection.SourceValues, Is.EqualTo(new[] { "said", "chosen", "edited", "default", "said_unrendered_chosen", "said_unrendered_default" }));
 
             var typo = Selection();
             typo["sources"]["layout.size"] = "chosne";
@@ -262,7 +267,74 @@ namespace IFS.SceneSpec.Tests
             Assert.That(other.Warnings.Single(), Does.Contain("접두어"));
             var newer = ParseOk(Selection(format: "ifs-selection/0.9"));
             Assert.That(newer.Warnings.Single(), Does.Contain("ifs-selection/0.1"));
+            Assert.That(newer.Warnings.Single(), Does.Contain("ifs-selection/0.2"));
             Assert.That(ParseOk(Selection()).Warnings, Is.Empty);
+            Assert.That(ParseOk(Selection02()).Warnings, Is.Empty, "0.2는 아는 버전");
+        }
+
+        // ── G31–G34: ifs-selection/0.2 ───────────────────────────────────
+        static JObject Selection02(bool skipped = false, bool none = false, string candidate = "c2", bool? colorChanged = true)
+        {
+            var o = Selection(candidate: candidate, none: none, format: "ifs-selection/0.2");
+            o["selection"]["skipped"] = skipped;
+            if (colorChanged.HasValue) o["colorChanged"] = colorChanged.Value;
+            o["sources"]["form.type"] = "said_unrendered_chosen";
+            return o;
+        }
+
+        [Test]
+        public void Version_0_2_reads_skipped_color_changed_and_new_source_values()
+        {
+            var s = ParseOk(Selection02());
+            Assert.That(s.Skipped, Is.False);
+            Assert.That(s.ColorChanged, Is.True);
+            Assert.That((string)s.Sources["form.type"], Is.EqualTo("said_unrendered_chosen"));
+            var m = s.ManifestJson();
+            Assert.That((bool)m["skipped"], Is.False);
+            Assert.That((bool)m["colorChanged"], Is.True);
+
+            var skip = ParseOk(Selection02(skipped: true, candidate: null, colorChanged: false));
+            Assert.That(skip.Skipped, Is.True);
+            Assert.That(skip.SelectedCandidateId, Is.Null);
+            Assert.That(skip.Warnings, Is.Empty, "건너뛴 경우 id가 없어도 경고하지 않음");
+            Assert.That(skip.ColorChanged, Is.False);
+
+            var def = Selection02();
+            def["sources"]["form.type"] = "said_unrendered_default";
+            Assert.That((string)ParseOk(def).Sources["form.type"], Is.EqualTo("said_unrendered_default"));
+        }
+
+        [Test]
+        public void Version_0_2_requires_skipped_and_color_changed_and_rejects_inconsistent_skip()
+        {
+            var noSkipped = Selection02();
+            ((JObject)noSkipped["selection"]).Remove("skipped");
+            Assert.That(ParseErrors(noSkipped).Single(), Does.Contain("selection.skipped가 없음"));
+            Assert.That(ParseErrors(Selection02(colorChanged: null)).Single(), Does.Contain("colorChanged가 없음"));
+            var badColor = Selection02();
+            badColor["colorChanged"] = "yes";
+            Assert.That(ParseErrors(badColor).Single(), Does.Contain("colorChanged"));
+            Assert.That(ParseErrors(Selection02(skipped: true)).Single(), Does.Contain("skipped가 true인데"), "건너뛰었다면서 id 있음");
+            Assert.That(ParseErrors(Selection02(skipped: true, none: true, candidate: null)).Single(), Does.Contain("skipped가 true인데"));
+            var typo = Selection02();
+            typo["sources"]["form.type"] = "said_unrendered";
+            Assert.That(ParseErrors(typo).Single(), Does.Contain("said_unrendered_chosen"), "후보 쪽 값(said_unrendered)은 선택 파일 출처가 아님");
+        }
+
+        [Test]
+        public void Version_0_1_keeps_four_source_values_and_optional_new_fields()
+        {
+            var old = Selection();
+            old["sources"]["form.type"] = "said_unrendered_chosen";
+            string e = ParseErrors(old).Single();
+            Assert.That(e, Does.Contain("said | chosen | edited | default"));
+            Assert.That(e, Does.Contain("ifs-selection/0.1"));
+            var s = ParseOk(Selection());
+            Assert.That(s.Skipped, Is.False);
+            Assert.That(s.ColorChanged, Is.Null);
+            var withSkip = Selection(candidate: null);
+            withSkip["selection"]["skipped"] = true;
+            Assert.That(ParseOk(withSkip).Skipped, Is.True, "0.1 파일에 skipped가 있으면 읽음");
         }
 
         [Test]
@@ -370,7 +442,7 @@ namespace IFS.SceneSpec.Tests
             Assert.That((string)m["recordVersion"], Is.EqualTo("ifs-placement/0.2"));
             Assert.That((string)m["recordVersion"], Does.StartWith("ifs-placement/"), "분석기는 접두어로 읽는다");
             Assert.That(((JObject)m["selection"]).Properties().Select(p => p.Name),
-                Is.EqualTo(new[] { "file", "sha256", "formatVersion", "none", "selectedCandidateId", "finalOverrides", "sources" }));
+                Is.EqualTo(new[] { "file", "sha256", "formatVersion", "none", "selectedCandidateId", "finalOverrides", "sources", "skipped", "colorChanged" }));
             Assert.That((string)m["selection"]["file"], Is.EqualTo("selection.json"));
             Assert.That((string)m["selection"]["formatVersion"], Is.EqualTo("ifs-selection/0.3"));
             Assert.That((string)m["selection"]["sources"]["material.brightness"], Is.EqualTo("edited"));

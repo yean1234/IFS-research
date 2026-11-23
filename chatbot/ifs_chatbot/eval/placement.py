@@ -72,6 +72,9 @@ from .profile_items import rating_range
 RECORD_PREFIX = "ifs-placement/"
 # 0.2(2026-11-23): 러너가 selection.json(챗봇 후보·조절 단계, ifs-selection/0.1)을 읽어 manifest에 selection{…}·appliedOverrides를 더함.
 # 그 밖의 파일·필드는 0.1과 같다. 실제 예시: docs/validation/runner-selection/records/
+# 같은 0.2 안에서 더한 키(2026-11-23, G31·G32·G34 — ifs-selection/0.2): selection.skipped(선택 단계를 건너뜀), selection.colorChanged
+# (색을 바꿨는지, 0.1 선택 파일이면 null). 출처 sources.form.type에 said_unrendered_chosen·said_unrendered_default가 올 수 있다.
+# 없는 키는 빈칸으로 읽는다(이전 기록 그대로 읽힘).
 KNOWN_VERSIONS = ("ifs-placement/0.1", "ifs-placement/0.2")
 TRAJECTORY_PREFIX = "ifs-trajectory/"
 SUMMARY_VERSION = "placement-summary/0.1"
@@ -100,6 +103,7 @@ SESSION_HEAD = [
     "participant", "session_id", "record_folder", "condition", "control_mode", "completed", "aborted_at",
     "condition_complete", "input_source", "head_source", "auto_mode", "draft_phrases", "object_radius_m",
     "selection_none", "selected_candidate_id", "n_final_overrides",
+    "selection_skipped", "color_changed", "form_source",
     "final_distance_m", "final_azimuth_deg", "final_height_m", "grab_count", "first_grab_ms", "held_ms",
     "path_length_m", "confirmed",
     "show_rings", "nearest_ring_m", "ring_offset_m",
@@ -451,6 +455,10 @@ def load_session(cand: dict, facing_deg: float = DEFAULT_FACING_DEG) -> tuple[di
         "selection_none": sel.get("none") if isinstance(sel.get("none"), bool) else None,
         "selected_candidate_id": sel.get("selectedCandidateId") if sel else None,
         "n_final_overrides": len(sel["finalOverrides"]) if isinstance(sel.get("finalOverrides"), dict) else None,
+        # G34: 선택 단계 건너뜀(skipped 키가 없는 기록 = 빈칸), G31: 색을 바꿨는지, G32: 형태 자리 출처(said_unrendered_* 구분)
+        "selection_skipped": sel.get("skipped") if isinstance(sel.get("skipped"), bool) else None,
+        "color_changed": sel.get("colorChanged") if isinstance(sel.get("colorChanged"), bool) else None,
+        "form_source": (sel.get("sources") or {}).get("form.type") if isinstance(sel.get("sources"), dict) else None,
         "final_distance_m": _r(final_d), "final_azimuth_deg": _r(final_az), "final_height_m": _r(final_h),
         "grab_count": _int(pl.get("grabCount")), "first_grab_ms": _num(pl.get("firstGrabMs")),
         "held_ms": _num(pl.get("heldMs")), "path_length_m": _r(path_len),

@@ -49,7 +49,8 @@ def make_runtime(log_dir: Path, preview: str = "none", player: str = "", backend
 
 
 def choose(view: dict, how: str) -> str:
-    """시나리오의 selection: "none" | "display:<n>"(화면 n번째, 0부터) | "index:<n>"(격자 n번)."""
+    """시나리오의 selection: "none" | "display:<n>"(화면 n번째, 0부터) | "index:<n>"(격자 n번).
+    "skip"은 구별되는 후보가 하나뿐이라 선택 단계가 없을 때(G34) — run_one이 고르지 않는다."""
     if how == "none":
         return "none"
     kind, n = how.split(":")
@@ -67,7 +68,8 @@ def run_one(rt: Runtime, sc: dict) -> dict:
     drive(s, sc)
     f = s.selection()
     view = f.start()
-    view = f.select(choose(view, sc.get("selection", "display:0")))
+    if view["stage"] == "selecting":
+        view = f.select(choose(view, sc.get("selection", "display:0")))
     for step in sc.get("adjust", []):
         f.adjust(step["item"], step["value"])
     f.finish()
@@ -88,6 +90,21 @@ def check(sc: dict, f) -> list[str]:
         fails.append(f"축 이유 {[a['reason'] for a in c['axes']]} != {exp['axisReasons']}")
     if "none" in exp and f.data["selection"]["none"] != exp["none"]:
         fails.append(f"none {f.data['selection']['none']} != {exp['none']}")
+    if f.data["selection"]["skipped"] != exp.get("skipped", False):
+        fails.append(f"skipped {f.data['selection']['skipped']} != {exp.get('skipped', False)}")
+    if "candidateCountBeforeDistinct" in exp and c["distinct"]["gridCount"] != exp["candidateCountBeforeDistinct"]:
+        fails.append(f"구별 규칙 전 후보 {c['distinct']['gridCount']}개 != {exp['candidateCountBeforeDistinct']}")
+    if "colorChanged" in exp and f.data["colorChanged"] != exp["colorChanged"]:
+        fails.append(f"colorChanged {f.data['colorChanged']} != {exp['colorChanged']}")
+    if "distanceFloor" in exp:
+        got = f.data["distanceFloor"]
+        want = exp["distanceFloor"]
+        if (got is None) != (want is None) or (want and any(got.get(k) != v for k, v in want.items())):
+            fails.append(f"distanceFloor {got} != {want}")
+    if "saidWords" in exp:
+        got = [w["lemma"] for w in f.data["sourceDetails"]["form.type"].get("saidWords", [])]
+        if got != exp["saidWords"]:
+            fails.append(f"form.type saidWords {got} != {exp['saidWords']}")
     for slot, src in (exp.get("slotSources") or {}).items():
         got = f.data["sources"][slot]
         if got != src:
@@ -140,10 +157,15 @@ def run(scenarios: list[dict], out: Path, preview: str = "none", player: str = "
                 "scenario": sc["id"], "title": sc.get("title"), "sessionId": s.id,
                 "confirmedText": s.log.data["confirmedText"],
                 "candidateCount": len(f.cands["candidates"]),
+                "candidateCountBeforeDistinct": f.cands["distinct"]["gridCount"],
+                "distinctRemoved": [{k: x[k] for k in ("index", "sameAs", "rules")} for x in f.cands["distinct"]["removed"]],
+                "selectionStep": f.cands["selectionStep"],
                 "axes": [{"slot": a["slot"], "reason": a["reason"], "values": a["values"]} for a in f.cands["axes"]],
                 "note": f.cands["note"], "displayOrder": f.cands["displayOrder"],
-                "selection": {k: f.data["selection"][k] for k in ("selectedIndex", "none", "displayPosition", "operationalIndex")},
+                "selection": {k: f.data["selection"][k] for k in ("selectedIndex", "none", "skipped", "displayPosition",
+                                                                   "operationalIndex")},
                 "adjustCounts": {k: v["count"] for k, v in f.data["adjustments"]["items"].items()},
+                "colorChanged": f.data["colorChanged"], "distanceFloor": f.data["distanceFloor"],
                 "finalOverrides": f.data["finalOverrides"], "sourceCounts": f.data["sourceCounts"],
                 "sources": dict(f.data["sources"]),
                 "premeasure": {i["id"]: i["value"] for i in f.premeasure["items"]},
@@ -171,15 +193,19 @@ def run(scenarios: list[dict], out: Path, preview: str = "none", player: str = "
 
 def to_markdown(summary: dict) -> str:
     lines = ["# 1–6단계 합성 시나리오 결과", "", "> 합성 대사(AI가 쓴 문장)입니다. 실제 참여자 자료가 아닙니다.", "",
-             "| 시나리오 | 후보 수 | 축(이유) | 선택 | 조절 | 출처 분포(said/chosen/edited/default) | 기대 불일치 |",
-             "| --- | --- | --- | --- | --- | --- | --- |"]
+             "| 시나리오 | 후보 수(구별 규칙 전) | 축(이유) | 선택 | 조절 | 색 바꿈 | 출처 분포(said/chosen/edited/default/"
+             "said_unrendered_chosen/said_unrendered_default) | 기대 불일치 |",
+             "| --- | --- | --- | --- | --- | --- | --- | --- |"]
     for r in summary["results"]:
         axes = ", ".join(f"{a['slot']}({a['reason']})" for a in r["axes"]) or "없음"
-        sel = "맞는 것이 없다 → 0번" if r["selection"]["none"] else f"{r['selection']['selectedIndex']}번(화면 {r['selection']['displayPosition'] + 1}번째)"
+        sel = ("건너뜀(구별되는 후보 1개)" if r["selection"]["skipped"] else "맞는 것이 없다 → 0번" if r["selection"]["none"]
+               else f"{r['selection']['selectedIndex']}번(화면 {r['selection']['displayPosition'] + 1}번째)")
         sc = r["sourceCounts"]
         adj = ", ".join(f"{k}×{v}" for k, v in r["adjustCounts"].items()) or "없음"
-        lines.append(f"| {r['scenario']} | {r['candidateCount']} | {axes} | {sel} | {adj} | "
-                     f"{sc['said']}/{sc['chosen']}/{sc['edited']}/{sc['default']} | {len(r['expectFailures'])} |")
+        counts = "/".join(str(sc[k]) for k in ("said", "chosen", "edited", "default", "said_unrendered_chosen",
+                                               "said_unrendered_default"))
+        lines.append(f"| {r['scenario']} | {r['candidateCount']}({r['candidateCountBeforeDistinct']}) | {axes} | {sel} | {adj} | "
+                     f"{'예' if r['colorChanged'] else '아니오'} | {counts} | {len(r['expectFailures'])} |")
     lines += ["", f"미리보기 모드: {summary['previewMode']}", ""]
     return "\n".join(lines)
 

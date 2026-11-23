@@ -1,0 +1,60 @@
+{
+  "id": "S7_unrendered_none_floor",
+  "title": "모형이 없는 모양어 + '맞는 것이 없다' + 거리 하한 — '길쭉'으로 형태 후보를 보였지만 맞는 것이 없다 → 형태 출처 said_unrendered_default(G32). '얼굴 앞에 붙어'는 거리 0을 하한 0.1로 올리고 말한 값·그려진 값을 둘 다 기록(G33)",
+  "sessionId": "SYN-SEL-S7",
+  "condition": "static",
+  "replies": [
+    "얼굴 앞에 뭔가 있어요",
+    "얼굴 앞이요",
+    "그대로예요",
+    "길쭉한 게 붙어 있어요",
+    "모르겠어요",
+    "모르겠어요",
+    "없어요"
+  ],
+  "confirm": {
+    "edit": "얼굴 앞에 길쭉한 게 붙어 있어요."
+  },
+  "selection": "none",
+  "adjust": [],
+  "premeasure": {
+    "A1": 3,
+    "A2": 3,
+    "A3": 2,
+    "A4": 3,
+    "A5": null,
+    "A6": 3,
+    "A7": 2,
+    "G13_appearance": 2,
+    "G13_representation": 3
+  },
+  "expect": {
+    "candidateCount": 4,
+    "axes": [
+      "form.type",
+      "layout.size"
+    ],
+    "axisReasons": [
+      "said_unrendered",
+      "empty"
+    ],
+    "none": true,
+    "colorChanged": false,
+    "saidWords": [
+      "길쭉"
+    ],
+    "distanceFloor": {
+      "said": 0.0,
+      "drawn": 0.1,
+      "floor": 0.1
+    },
+    "slotSources": {
+      "form.type": "said_unrendered_default",
+      "layout.size": "default",
+      "layout.distance": "said"
+    },
+    "finalOverrides": {}
+  },
+  "defaultReply": "없어요",
+  "note": "합성 대사. 실제 참여자 응답이 아니다(AGENTS.md 6). 정적 조건 1(LLM 없음)으로 면담하고 확정 때 한 문장으로 고쳐 [이대로 맞아요]."
+}

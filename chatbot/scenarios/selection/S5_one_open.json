@@ -1,6 +1,6 @@
 {
   "id": "S5_one_open",
-  "title": "빈 자리가 한 차원(밝기)뿐인 경우 — 밝기 표 값 4개",
+  "title": "빈 자리가 한 차원(움직임)뿐인 경우 — 움직임 표 값 4개가 정지 미리보기에서 구별되지 않아(구별 규칙 still_preview_motion) 하나만 남고 선택 단계 없이 조절로(G34). 조절 없음",
   "sessionId": "SYN-SEL-S5",
   "condition": "static",
   "replies": [
@@ -8,14 +8,14 @@
     "눈앞이요",
     "그대로예요",
     "크고 무겁고 매끈해요",
-    "안 움직여요",
-    "불투명해요",
+    "모르겠어요",
+    "불투명하고 어두워요",
     "없어요"
   ],
   "confirm": {
-    "edit": "까만 덩어리가 눈앞 가까이 있어요. 크고 무겁고 매끈해요. 안 움직여요. 불투명해요."
+    "edit": "까만 덩어리가 눈앞 가까이 있어요. 크고 무겁고 매끈해요. 불투명해요. 어두워요."
   },
-  "selection": "index:1",
+  "selection": "skip",
   "adjust": [],
   "premeasure": {
     "A1": 5,
@@ -29,21 +29,23 @@
     "G13_representation": 6
   },
   "expect": {
-    "candidateCount": 4,
+    "candidateCount": 1,
+    "candidateCountBeforeDistinct": 4,
     "axes": [
-      "material.brightness"
+      "motion.type"
     ],
     "axisReasons": [
       "empty"
     ],
     "none": false,
+    "skipped": true,
+    "colorChanged": false,
     "slotSources": {
-      "material.brightness": "chosen",
-      "form.type": "said"
+      "motion.type": "default",
+      "form.type": "said",
+      "material.brightness": "said"
     },
-    "finalOverrides": {
-      "material.brightness": 0.25
-    }
+    "finalOverrides": {}
   },
   "defaultReply": "없어요",
   "note": "합성 대사. 실제 참여자 응답이 아니다(AGENTS.md 6). 정적 조건 1(LLM 없음)으로 면담하고 확정 때 한 문장으로 고쳐 [이대로 맞아요]."

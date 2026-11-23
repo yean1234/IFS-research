@@ -96,7 +96,7 @@ namespace IFS.SceneSpec.Tests
                 Assert.That((string)m["appliedOverrides"]["form.type"], Is.EqualTo("fragments"));
                 Assert.That(File.ReadAllText(Path.Combine(runner.LastRecordDirectory, "manifest.json")), Does.Not.Contain(_tmp.Replace("\\", "\\\\")), "절대 경로 없음");
                 var ev = File.ReadAllLines(Path.Combine(runner.LastRecordDirectory, "events.csv"));
-                Assert.That(ev.Any(l => l.Contains(",selection,file=selection.json;none=0;candidate=c2;applied=4")), Is.True);
+                Assert.That(ev.Any(l => l.Contains(",selection,file=selection.json;none=0;candidate=c2;skipped=0;colorChanged=;applied=4")), Is.True);
             }
             finally
             {

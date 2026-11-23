@@ -1,4 +1,6 @@
-// 면담 뒤 데스크톱 단계 — 4 후보 선택 · 5 조절 · 6 사전 측정 (D5, 결정 G10·G13·G19·G22·G23).
+// 면담 뒤 데스크톱 단계 — 4 후보 선택 · 5 조절 · 6 사전 측정 (D5, 결정 G10·G13·G22·G23, G31·G34).
+// G34: 구별되는 후보가 하나뿐이면 서버가 선택 단계를 건너뛰고 바로 adjusting으로 준다(후보 1개 화면은 없음).
+// G31: 조절 항목은 서버가 준 순서(값 표 adjustItems.order, 색이 맨 앞) 그대로 그린다.
 // 외부 라이브러리·CDN·글꼴 없음(원칙 5). 문구는 서버가 shared/protocol/selection_protocol.v0.json에서 준 것만 쓴다(모두 초안).
 // 미리보기 어댑터: preview.mode = image(서버가 Unity 미리보기 플레이어로 그린 PNG) | webgl(같은 출처 Unity WebGL 빌드, 인터페이스만) | none(속성 요약 글).
 "use strict";
@@ -135,13 +137,13 @@
 
   function drawSelecting(v) {
     const parts = [el("p", { class: "msg bot" }, phrase("figure_intro")),
-                   el("p", { class: "msg bot" }, v.single ? phrase("single_candidate_intro") : phrase("candidates_intro"))];
+                   el("p", { class: "msg bot" }, phrase("candidates_intro"))];
     const grid = el("div", { class: `cand-grid n${v.candidates.length}` });
     for (const c of v.candidates) {
       grid.append(el("div", { class: "cand", "data-id": c.id },
         Preview.node(c.id, c.summary),
         el("button", { class: "primary", onclick: () => call("POST", `/api/sessions/${S.sid}/selection`, { candidateId: c.id }) },
-          v.single ? phrase("proceed_single_button") : phrase("choose_button"))));
+          phrase("choose_button"))));
     }
     parts.push(grid);
     parts.push(el("div", { class: "buttons" },
@@ -246,8 +248,11 @@
     tab.append(el("h3", {}, "후보·조절 단계(연구자용)"),
       kv([["단계", v.stage], ["후보 규칙", v.note], ["축", (v.axes || []).map((a) => `${a.slot}(${a.reason})`).join(", ")],
           ["미리보기", `${v.preview.mode}${v.preview.requested !== v.preview.mode ? ` (요청 ${v.preview.requested})` : ""}`],
-          ["선택", v.selection ? (v.selection.none ? "맞는 것이 없다 → 0번으로 진행" : `${v.selection.selectedCandidateId} (화면 ${v.selection.displayPosition + 1}번째)`) : null],
+          ["선택", v.selection ? (v.selection.skipped ? "구별되는 후보가 하나뿐 → 선택 단계 건너뜀(G34)"
+                                 : v.selection.none ? "맞는 것이 없다 → 0번으로 진행"
+                                 : `${v.selection.selectedCandidateId} (화면 ${v.selection.displayPosition + 1}번째)`) : null],
           ["조절 횟수", v.adjustCounts ? JSON.stringify(v.adjustCounts) : null],
+          ["색 바꿈", v.colorChanged === undefined ? null : (v.colorChanged ? "예" : "아니오")],
           ["finalOverrides", v.finalOverrides ? JSON.stringify(v.finalOverrides) : null],
           ["출처 분포", v.sourceCounts ? JSON.stringify(v.sourceCounts) : null]]));
   }

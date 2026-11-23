@@ -1,6 +1,6 @@
-"""면담 뒤 데스크톱 단계(selection.py·server.py·preview.py) — 선택·none, 조절 범위·거부, 출처 네 가지, selection.json 스키마,
-초안 표시, LLM·검증기 호출 0, 기존 엔드포인트 불변, 미리보기 어댑터(가짜 렌더러·가짜 플레이어), 합성 시나리오 1–6단계.
-모든 대사는 합성이다."""
+"""면담 뒤 데스크톱 단계(selection.py·server.py·preview.py) — 선택·none·건너뜀(G34), 조절 범위·거부, 색 변경 기록(G31),
+출처 여섯 가지(G15·G32), 거리 하한 기록(G33), selection.json 스키마(ifs-selection/0.2), 초안 표시, LLM·검증기 호출 0,
+기존 엔드포인트 불변, 미리보기 어댑터(가짜 렌더러·가짜 플레이어), 합성 시나리오 1–6단계. 모든 대사는 합성이다."""
 import json
 import re
 import sys
@@ -19,14 +19,21 @@ from ifs_chatbot.selection import SelectionError, SelectionInvalid, SelectionPro
 from ifs_chatbot.server import create_app
 from ifs_chatbot.simulate import drive
 
-SCHEMA = json.loads(shared("schemas", "selection.v0.1.json").read_text(encoding="utf-8"))
+SCHEMA = json.loads(shared("schemas", "selection.v0.2.json").read_text(encoding="utf-8"))
 VALIDATOR = Draft202012Validator(SCHEMA)
+SCHEMA01 = json.loads(shared("schemas", "selection.v0.1.json").read_text(encoding="utf-8"))   # 이전 기록·러너 쪽 합성 입력
+VALIDATOR01 = Draft202012Validator(SCHEMA01)
+SIX_SOURCES = {"said", "chosen", "edited", "default", "said_unrendered_chosen", "said_unrendered_default"}
 TABLE = load_table()
 FAKE_PLAYER = Path(__file__).parent / "fixtures" / "fake_preview_player.py"
 
 T_FORM = "가슴 앞에 연기 같은 게 있어요. 작아요."
 T_FEEL = "가슴 안쪽이 답답하고 무거운 느낌이에요."
 T_ALL = "까만 덩어리가 눈앞 가까이 있어요. 크고 무겁고 매끈해요. 안 움직여요. 불투명해요. 어두워요."
+T_MOTION = "까만 덩어리가 눈앞 가까이 있어요. 크고 무겁고 매끈해요. 불투명해요. 어두워요."   # 빈 자리 = 움직임 하나
+T_LONG = "가슴 안쪽에 길쭉한 게 있어요."                 # 모형이 없는 모양어
+T_SQUARE = "목에 네모난 게 걸려 있어요."                  # 모형이 있는 모양어
+T_FLOOR = "얼굴 앞에 붙어 있어요."                        # 거리 하한(G33)
 
 
 def v4_cfg(tmp_path, **over):
@@ -48,8 +55,8 @@ def done_session(rt, sid, text, condition="static"):
     return s
 
 
-def valid(data):
-    errs = [e.message for e in VALIDATOR.iter_errors(json.loads(json.dumps(data, ensure_ascii=False)))]
+def valid(data, validator=None):
+    errs = [e.message for e in (validator or VALIDATOR).iter_errors(json.loads(json.dumps(data, ensure_ascii=False)))]
     assert not errs, errs[:3]
 
 
@@ -89,7 +96,7 @@ def test_start_writes_candidates_and_valid_selection_json(rt4):
     assert v["stage"] == "selecting" and len(v["candidates"]) == 4
     assert (f.dir / "candidates.json").read_bytes() == candidates_bytes(f.cands)
     data = json.loads((f.dir / "selection.json").read_text(encoding="utf-8"))
-    assert data["formatVersion"] == "ifs-selection/0.1"
+    assert data["formatVersion"] == "ifs-selection/0.2"
     assert data["candidates"]["displayOrder"] == [c["id"] for c in v["candidates"]]
     valid(data)
 
@@ -170,15 +177,43 @@ def test_none_proceeds_with_baseline_candidate(rt4):
     valid(f.data)
 
 
-def test_single_candidate_flow(rt4):
-    s = done_session(rt4, "SYN-ONE", T_ALL)
+@pytest.mark.parametrize("text", [T_ALL, T_MOTION])
+def test_single_distinct_candidate_skips_selection(rt4, text):
+    """G34: 구별되는 후보가 하나뿐이면(빈 자리 없음 / 움직임만 비어 정지 미리보기에서 구별 안 됨) 선택 단계 없이 조절로 간다.
+    selection = {selectedCandidateId: null, none: false, skipped: true}, 보여 준 후보 없음, 고른 것이 없으니 chosen 0."""
+    s = done_session(rt4, f"SYN-SKIP-{len(text)}", text)
     f = s.selection()
     v = f.start()
-    assert v["single"] is True and len(v["candidates"]) == 1
-    f.select(v["candidates"][0]["id"])
+    assert v["stage"] == "adjusting" and v["skipped"] is True and len(v["candidates"]) == 1
+    sel = f.data["selection"]
+    assert sel["selectedCandidateId"] is None and sel["none"] is False and sel["skipped"] is True
+    assert sel["skipReason"] == "single_distinct_candidate" and sel["operationalIndex"] == 0
+    assert f.data["candidatesShown"] == [] and f.data["candidatesShownAt"] is None
+    assert f.cands["selectionStep"] == "skip"
+    with pytest.raises(SelectionError):
+        f.select(v["candidates"][0]["id"])                  # 선택 단계가 없다
+    with pytest.raises(SelectionError):
+        f.select("none")
+    valid(f.data)
     f.finish()
-    assert f.data["finalOverrides"] == {}
-    assert f.data["sourceCounts"]["chosen"] == 0
+    assert f.data["finalOverrides"] == {} and f.data["sourceCounts"]["chosen"] == 0
+    types = [e["type"] for e in s.log.data["events"]]
+    assert types == ["selection:candidates", "selection:skipped", "selection:adjusted"]
+    saved = json.loads((f.dir / "selection.json").read_text(encoding="utf-8"))
+    valid(saved)
+    assert runner_contract_errors(saved) == []
+
+
+def test_motion_only_skip_records_removed_candidates(rt4):
+    s = done_session(rt4, "SYN-SKIP-MOT", T_MOTION)
+    f = s.selection()
+    f.start()
+    assert f.cands["distinct"]["gridCount"] == 4 and len(f.cands["distinct"]["removed"]) == 3
+    assert all(r["rules"] == ["still_preview_motion"] for r in f.cands["distinct"]["removed"])
+    ev = next(e for e in s.log.data["events"] if e["type"] == "selection:candidates")
+    assert ev["payload"]["selectionStep"] == "skip" and ev["payload"]["distinctRemoved"] == 3
+    f.finish()
+    assert f.data["sources"]["motion.type"] == "default"
 
 
 # ── 조절(G10·G22) ─────────────────────────────────────────────────────────────
@@ -186,7 +221,8 @@ def started(rt, sid, text=T_FEEL, pick=0):
     s = done_session(rt, sid, text)
     f = s.selection()
     v = f.start()
-    f.select(next(c["id"] for c in v["candidates"] if c["index"] == pick))
+    if v["stage"] == "selecting":                     # 구별되는 후보가 하나면 이미 조절 단계(G34)
+        f.select(next(c["id"] for c in v["candidates"] if c["index"] == pick))
     return s, f
 
 
@@ -290,7 +326,104 @@ def test_adjust_out_of_order(rt4):
         f.finish()
 
 
-# ── 출처 네 가지(G15) ─────────────────────────────────────────────────────────
+# ── 색 변경 기록(G31) ─────────────────────────────────────────────────────────
+def test_adjust_items_put_color_first():
+    """G31: 조절 화면에서 색이 맨 앞. 값 표·서버 상수·화면 설정이 같은 순서."""
+    from ifs_chatbot.selection import ITEMS
+    assert TABLE["adjustItems"]["order"][0] == "color" and list(ITEMS) == TABLE["adjustItems"]["order"]
+
+
+@pytest.mark.parametrize("steps,expect", [([], False), ([("color", "h03")], True), ([("color", "h03"), ("color", "n70")], False),
+                                          ([("color", "h03"), ("color", "h05")], True), ([("size", 0.3)], False)])
+def test_color_changed_compares_first_and_last(rt4, steps, expect):
+    """colorChanged = 조절 기록에서 색의 처음 값과 마지막 값이 다름. 기본 회색(n70)으로 되돌리면 false(횟수는 남음)."""
+    _, f = started(rt4, f"SYN-CC-{len(steps)}-{abs(hash(str(steps))) % 10000}", T_FEEL)
+    for item, value in steps:
+        f.adjust(item, value)
+    assert f.view()["colorChanged"] is expect
+    f.finish()
+    assert f.data["colorChanged"] is expect
+    saved = json.loads((f.dir / "selection.json").read_text(encoding="utf-8"))
+    assert saved["colorChanged"] is expect
+    if any(i == "color" for i, _ in steps):
+        assert saved["adjustments"]["items"]["color"]["count"] == sum(1 for i, _ in steps if i == "color")
+    valid(saved)
+
+
+# ── 모형이 없는 모양어(G32) ───────────────────────────────────────────────────
+def test_unrendered_shape_chosen_gets_new_source(rt4):
+    """'길쭉'(모형 없음) → 형태 후보가 벌어지고, 후보를 고르면 형태 출처는 chosen이 아니라 said_unrendered_chosen. 말한 낱말은 기록에 남는다."""
+    s, f = started(rt4, "SYN-UNR-C", T_LONG, pick=2)
+    assert f.cands["axes"][0]["slot"] == "form.type" and f.cands["axes"][0]["reason"] == "said_unrendered"
+    f.finish()
+    rec = f.data["sourceDetails"]["form.type"]
+    assert rec["source"] == "said_unrendered_chosen" and rec["value"] == "mist" and rec["chosenValue"] == "mist"
+    assert [w["lemma"] for w in rec["saidWords"]] == ["길쭉"] and rec["saidWords"][0]["shape"] == "elongated"
+    assert f.data["sources"]["layout.size"] == "chosen"            # 다른 축은 그대로 chosen
+    assert f.data["sourceCounts"]["said_unrendered_chosen"] == 1 and sum(f.data["sourceCounts"].values()) == 15
+    valid(f.data)
+    assert runner_contract_errors(json.loads((f.dir / "selection.json").read_text(encoding="utf-8"))) == []
+
+
+def test_unrendered_shape_baseline_pick_is_also_said_unrendered_chosen(rt4):
+    _, f = started(rt4, "SYN-UNR-C0", T_LONG, pick=0)
+    f.finish()
+    assert f.data["sources"]["form.type"] == "said_unrendered_chosen" and f.data["sourceDetails"]["form.type"]["value"] == "blob"
+
+
+def test_unrendered_shape_none_gets_default_variant(rt4):
+    """맞는 것이 없다 → 고른 것이 없으니 기본 형태로 그려지고 출처는 said_unrendered_default(말한 낱말은 남음)."""
+    s = done_session(rt4, "SYN-UNR-N", T_LONG)
+    f = s.selection()
+    f.start()
+    f.select("none")
+    f.finish()
+    rec = f.data["sourceDetails"]["form.type"]
+    assert rec["source"] == "said_unrendered_default" and rec["value"] == "blob" and rec["saidWords"][0]["lemma"] == "길쭉"
+    valid(f.data)
+
+
+def test_unrendered_shape_edited_form_is_edited(rt4):
+    """조절로 형태를 고치면 다른 슬롯처럼 edited(말한 낱말은 saidWords에 그대로)."""
+    _, f = started(rt4, "SYN-UNR-E", T_LONG, pick=0)
+    f.adjust("form", "shell")
+    f.finish()
+    rec = f.data["sourceDetails"]["form.type"]
+    assert rec["source"] == "edited" and rec["value"] == "shell" and rec["saidWords"][0]["lemma"] == "길쭉"
+
+
+def test_rendered_shape_keeps_form_as_said(rt4):
+    """모형이 있는 모양어('네모난' → Cube)는 형태 자리를 벌리지 않고 말한 자리로 둔다(출처 said, 모양어는 saidWords)."""
+    _, f = started(rt4, "SYN-SQ", T_SQUARE)
+    assert "form.type" not in [a["slot"] for a in f.cands["axes"]]
+    f.finish()
+    rec = f.data["sourceDetails"]["form.type"]
+    assert rec["source"] == "said" and rec["saidWords"][0]["shape"] == "square"
+    valid(f.data)
+
+
+# ── 거리 하한(G33) ─────────────────────────────────────────────────────────────
+def test_distance_floor_records_said_and_drawn(rt4):
+    """매퍼 v2가 거리를 하한으로 올리면 selection.json에 말한 값과 그려진 값을 둘 다 적는다(spec은 그대로)."""
+    s, f = started(rt4, "SYN-FLOOR", T_FLOOR)
+    assert s.scene_spec["layout"]["distance"] == 0.1
+    fl = f.data["distanceFloor"]
+    assert fl["said"] == 0.0 and fl["drawn"] == 0.1 and fl["floor"] == 0.1 and fl["rule"].endswith("+floor(0.1;said=0.0)")
+    f.finish()
+    rec = f.data["sourceDetails"]["layout.distance"]
+    assert rec["source"] == "said" and rec["value"] == 0.1 and rec["saidValue"] == 0.0
+    assert "layout.distance" not in f.data["finalOverrides"]
+    ev = next(e for e in s.log.data["events"] if e["type"] == "selection:candidates")
+    assert ev["payload"]["distanceFloor"]["said"] == 0.0
+    valid(f.data)
+
+
+def test_no_distance_floor_record_without_floor(rt4):
+    _, f = started(rt4, "SYN-NOFLOOR", T_FEEL)
+    assert f.data["distanceFloor"] is None
+
+
+# ── 출처(G15 네 가지 + G32 두 가지) ─────────────────────────────────────────────
 def test_said_then_edited_keeps_said_value(rt4):
     """말한 크기를 조절로 바꾸면 edited이고, 원래 말한 값도 기록에 남는다."""
     s, f = started(rt4, "SYN-EDIT", T_FORM)
@@ -516,7 +649,9 @@ def test_protocol_texts_match_sources_verbatim():
     assert p.text("figure_intro") == "당신이 말한 것을 바탕으로 만든, 그것을 대신하는 형상입니다."
     assert p.text("none_fit") == "맞는 것이 없다"
     labels = [p.data["adjustItemLabels"][k]["text"] for k in TABLE["adjustItems"]["order"]]
-    assert labels == ["형태", "색", "밝기", "투명도", "크기", "질감", "움직임"]
+    assert labels == ["색", "형태", "밝기", "투명도", "크기", "질감", "움직임"]          # G31: 색이 맨 앞
+    assert p.version == "0.2.0" and "single_candidate_intro" not in p.data["phrases"]  # G34: 후보 1개 화면 없음
+    assert "proceed_single_button" not in p.data["phrases"]
 
 
 def test_protocol_has_no_therapy_terms():
@@ -722,16 +857,24 @@ def runner_contract_errors(data: dict) -> list[str]:
     fo = data.get("finalOverrides")
     if not isinstance(fo, dict) or {"layout.distance", "layout.verticalOffset"} & set(fo):
         errs.append("finalOverrides")
+    v02 = data.get("formatVersion") == "ifs-selection/0.2"
     sel = data.get("selection")
     if not isinstance(sel, dict) or not isinstance(sel.get("none"), bool) or "selectedCandidateId" not in sel:
         errs.append("selection")
     elif sel["none"] and sel["selectedCandidateId"] is not None:
         errs.append("selection.none+id")
+    elif v02 and not isinstance(sel.get("skipped"), bool):
+        errs.append("selection.skipped")                    # 0.2: 필수(G34)
+    elif sel.get("skipped") and (sel["none"] or sel["selectedCandidateId"] is not None):
+        errs.append("selection.skipped+none/id")
+    if v02 and not isinstance(data.get("colorChanged"), bool):
+        errs.append("colorChanged")                         # 0.2: 필수(G31)
     src = data.get("sources")
+    allowed = RUNNER_SOURCES if v02 else RUNNER_SOURCES_01
     if not isinstance(src, dict):
         errs.append("sources")
-    elif any(k not in RUNNER_SLOTS or v not in RUNNER_SOURCES for k, v in src.items()):
-        errs.append("sources.values")                       # G27
+    elif any(k not in RUNNER_SLOTS or v not in allowed for k, v in src.items()):
+        errs.append("sources.values")                       # G27(0.1은 네 값, 0.2는 여섯 값)
     spec = data.get("spec")
     if isinstance(spec, dict) and "sha256Basis" in spec and spec["sha256Basis"] != "file":
         errs.append("sha256Basis")                          # G26
@@ -742,21 +885,30 @@ def runner_contract_errors(data: dict) -> list[str]:
 
 RUNNER_SLOTS = set(SCHEMA["$defs"]["slotName"]["enum"])
 RUNNER_SOURCES = set(SCHEMA["$defs"]["source"]["enum"])
+RUNNER_SOURCES_01 = set(SCHEMA01["$defs"]["source"]["enum"])
 
 
 def test_runner_slot_and_source_lists_match_csharp():
-    """러너(PlacementSelection.cs)의 슬롯 이름·출처 값 목록이 스키마와 같다(G27)."""
+    """러너(PlacementSelection.cs)의 슬롯 이름·출처 값 목록이 스키마와 같다(G27). 0.2는 여섯 값(G32), 0.1은 네 값."""
     src = (REPO_ROOT / "unity" / "Assets" / "IFS" / "Runtime" / "Placement" / "PlacementSelection.cs").read_text(encoding="utf-8")
     slots = re.search(r"SlotNames\s*=\s*\{([^}]*)\}", src).group(1)
     sources = re.search(r"SourceValues\s*=\s*\{([^}]*)\}", src).group(1)
-    assert set(re.findall(r'"([^"]+)"', slots)) == RUNNER_SLOTS
-    assert set(re.findall(r'"([^"]+)"', sources)) == RUNNER_SOURCES == {"said", "chosen", "edited", "default"}
+    sources01 = re.search(r"SourceValues01\s*=\s*\{([^}]*)\}", src).group(1)
+    assert set(re.findall(r'"([^"]+)"', slots)) == RUNNER_SLOTS == set(SCHEMA01["$defs"]["slotName"]["enum"])
+    assert set(re.findall(r'"([^"]+)"', sources)) == RUNNER_SOURCES == SIX_SOURCES
+    assert set(re.findall(r'"([^"]+)"', sources01)) == RUNNER_SOURCES_01 == {"said", "chosen", "edited", "default"}
+    from ifs_chatbot.selection import SOURCES
+    assert set(SOURCES) == SIX_SOURCES
+    known = re.search(r"KnownFormatVersions\s*=\s*\{([^}]*)\}", src).group(1)
+    assert set(re.findall(r'"([^"]+)"', known)) == {"ifs-selection/0.1", "ifs-selection/0.2"}
 
 
 @pytest.mark.parametrize("name", ["sel_chosen_adjusted.json", "sel_none_of_these.json", "sel_no_overrides.json"])
 def test_runner_synthetic_selection_files_pass_schema(name):
+    """러너 쪽 손으로 만든 합성 입력은 0.1 형식이다(러너가 0.1도 계속 읽음). 0.1 스키마로 확인한다."""
     data = json.loads((RUNNER_INPUTS / name).read_text(encoding="utf-8"))
-    valid(data)
+    assert data["formatVersion"] == "ifs-selection/0.1"
+    valid(data, VALIDATOR01)
     assert runner_contract_errors(data) == []
 
 
@@ -766,8 +918,26 @@ def test_schema_rejects_runner_contract_violations():
                    lambda d: d["finalOverrides"].update({"layout.distance": 0.1}),
                    lambda d: d["finalOverrides"].update({"layout.verticalOffset": 0.5}),
                    lambda d: d["selection"].update(none=True), lambda d: d.pop("sources"),
-                   lambda d: d["sources"].update({"form.type": "inferred"}), lambda d: d.pop("finalOverrides")):
+                   lambda d: d["sources"].update({"form.type": "inferred"}), lambda d: d.pop("finalOverrides"),
+                   lambda d: d["sources"].update({"form.type": "said_unrendered_chosen"})):    # 0.1에는 없는 값
         d = json.loads(json.dumps(base))
+        mutate(d)
+        assert list(VALIDATOR01.iter_errors(d)), d
+
+
+def test_schema_02_rejects_inconsistent_skip_and_missing_new_fields(rt4):
+    _, f = started(rt4, "SYN-SCH02", T_FEEL)
+    f.finish()
+    ok = json.loads(json.dumps(f.data))
+    valid(ok)
+    for mutate in (lambda d: d.pop("colorChanged"),                                          # 0.2 필수
+                   lambda d: d["selection"].pop("skipped"),                                  # 0.2 필수
+                   lambda d: d["selection"].update(skipped=True),                            # 건너뛰었다면서 id 있음
+                   lambda d: d["selection"].update(none=True, selectedCandidateId=None, skipped=True),
+                   lambda d: d["sources"].update({"form.type": "offered"}),
+                   lambda d: d["sourceCounts"].pop("said_unrendered_default"),
+                   lambda d: d.update(formatVersion="ifs-selection/0.1")):
+        d = json.loads(json.dumps(ok))
         mutate(d)
         assert list(VALIDATOR.iter_errors(d)), d
 
@@ -787,8 +957,9 @@ def test_chatbot_selection_files_satisfy_runner_contract(tmp_path):
         valid(data)
         spec_bytes = Path(s.log.data["sceneSpec"]["path"]).read_bytes()
         assert data["specSha256"] == hashlib.sha256(spec_bytes).hexdigest()
-        assert set(data["sources"].values()) <= {"said", "chosen", "edited", "default"}
+        assert set(data["sources"].values()) <= SIX_SOURCES
         assert data["selection"]["none"] == (sc["selection"] == "none")
+        assert data["selection"]["skipped"] == (sc["selection"] == "skip")
 
 
 def test_placement_analyzer_reads_v02_records_with_selection():
@@ -821,6 +992,11 @@ def test_selection_scenarios_run_end_to_end(tmp_path):
     assert s["expectFailures"] == 0, [r["expectFailures"] for r in s["results"]]
     by = {r["scenario"]: r for r in s["results"]}
     assert by["S3_all_said"]["candidateCount"] == 1 and by["S4_none_fit"]["selection"]["none"] is True
+    assert by["S3_all_said"]["selection"]["skipped"] is True and by["S5_one_open"]["selection"]["skipped"] is True
+    assert by["S5_one_open"]["candidateCountBeforeDistinct"] == 4
+    assert by["S6_unrendered_shape_chosen"]["sources"]["form.type"] == "said_unrendered_chosen"
+    assert by["S7_unrendered_none_floor"]["sources"]["form.type"] == "said_unrendered_default"
+    assert by["S7_unrendered_none_floor"]["distanceFloor"]["said"] == 0.0
     assert all(r["interviewLlmTurns"] == 0 for r in s["results"])
     for r in s["results"]:
         d = tmp_path / "out" / r["scenario"]
