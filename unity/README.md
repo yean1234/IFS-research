@@ -381,6 +381,8 @@ spec마다 참여자 번호를 하나씩 올립니다. 씬 만들기 배치: `-e
 
 실험자 화면(IMGUI, PC 모니터에만): Setup(참여자 번호, spec, **선택 파일 selection.json(선택)**, 조건·통제 방식, 재생 원본 경로, 참여자 입력 auto/desktop/xr, 주 사용 손, 평정 선택 기능 두 개, 선택 단계 문항 묻기·끌 문항 키, 문구 파일) → 확인(선택 파일 요약: 고른 후보 또는 "맞는 것이 없다", 덮어쓰기) → 시작. 진행 중에는 단계, 남은 시간, 조건, 물체 거리·방위·높이, draft 경고, 대기 단계의 "다음" 단추, XR 상태(헤드셋·컨트롤러·추적 원점)와 정면 재설정 단추.
 
+2026-11-23 화면 개선(결정 G44, 아래 「화면 사용성 점검」): 맨 위에 지금 단계를 크게(예: "진행 중 · 단계 pre_items", 끝나면 "끝 — 완료/중단(단계)"), 그 아래 조건·참여자·머리·입력 한 줄, 바로 이어서 오류 → 초안 문구 → 경고(예전에는 단추 아래에 있었고 초안 경고가 두 번 나왔음). 바탕은 불투명한 짙은 회색이고 내용 높이만큼만 그려 아래쪽 참여자 시점(미러)을 가리지 않습니다. 진행 중 평정이면 "입력: 5 · 참여자 컨트롤러 고르는 중: 6"을 크게 보입니다. **"중단"은 "다음"과 떨어진 오른쪽 끝의 빨간 "중단…" 단추이고, 누르면 확인 줄("세션을 중단할까요? …")과 "계속 진행(취소)"·"중단 확정"이 나옵니다**(확정이 부르는 함수는 예전과 같은 `PressAbort`). 단계가 바뀌면 열린 확인 줄은 닫힙니다(`PlacementConfirmStep`). **키보드 Esc는 예전처럼 확인 없이 바로 중단합니다**(러너가 직접 읽는 키라 바꾸지 않음 — 화면 아래에 그렇게 적혀 있음). 확인 화면의 "돌아가기"는 "설정으로 돌아가기 (Esc)"로 이름만 바꿨습니다(세션을 만들기 전이라 기록 없음).
+
 ### 설정값(`PlacementConfig`, 잠정값 — 팀 결정 전)
 
 | 묶음 | 필드(기본값) |
@@ -396,7 +398,7 @@ spec마다 참여자 번호를 하나씩 올립니다. 씬 만들기 배치: `-e
 | 헤드셋(2026-11-23 추가) | `inputMode`(auto: 헤드셋이 켜져 있으면 XR, 없으면 데스크톱 · desktop · xr: 헤드셋이 없으면 시작 거부), `xrHand`(right · left), `participantRatesWithController`(false), `hideObjectDuringItems`(false — 설문 초안의 제안이지만 절차 변경이라 팀 결정 전) |
 | 평정 문항(2026-11-23 D8 추가) | `askOptionalItems`(false — 켜면 문항의 `optionalWhen` 단계에서도 묻는다. 두 평정 문항 G13을 헤드셋 사전에도 물을 때), `disabledItems`([] — 묻지 않을 문항 키. 예: 기존 "내 것 같다" `own`(기본 파일)·`S4`(scaleA). 문구 파일에 없는 키면 확인 단계 오류) |
 
-헤드셋 표시값은 기록에 영향이 없어 `PlacementConfig`가 아니라 컴포넌트 Inspector에 있습니다: `PlacementRunner`의 판 자리 `textForwardM`(2.0)·`textHeightM`(0.6, 판 중심), `rayOnlyWhenUsable`(true), `PlacementTextPanel`의 글자 크기(`characterSize` 0.0085 ≈ 글자 높이 5 cm)·줄 길이(20자)·기준점 칸 너비(0.2 m), `XrPlacementInput`의 광선 굵기·길이와 썸스틱 데드존(0.2)·트리거 이력(0.55/0.35).
+헤드셋 표시값은 기록에 영향이 없어 `PlacementConfig`가 아니라 컴포넌트 Inspector에 있습니다: `PlacementRunner`의 판 자리 `textForwardM`(2.0)·`textHeightM`(0.6, 판 중심), `rayOnlyWhenUsable`(true), `PlacementTextPanel`의 글자 크기(본문 `characterSize` 0.0085, 평정 숫자 `numberCharacterSize` 0.010, 기준점 뜻 `labelCharacterSize` 0.0075 — 2026-11-23 전 0.0055)·줄 길이(20자)·본문 줄 간격(`bodyLineSpacing` 1.13 ≈ 1.5 em)·기준점 칸 너비(0.22 m, 전 0.2)·여백(0.08 m, 전 0.06)·고른 칸 색(`highlightColor` 짙은 파랑, `selectionFillColor` 옅은 파랑, 테두리 `selectionFrameM` 0.012 m)·판 위 가장자리 상한(`maxTopM` 0.85 m)·아래 가장자리 하한(`minBottomM` 0.05 m), `XrPlacementInput`의 광선 굵기·길이와 썸스틱 데드존(0.2)·트리거 이력(0.55/0.35). 씬 파일(`PlacementExperiment.unity`)의 값도 같은 값으로 고쳤습니다.
 
 ### 선택 파일(`selection.json`, 2026-11-23 D8 — 결정 G15·G23, G31–G34에서 형식 0.2)
 
@@ -478,10 +480,46 @@ spec마다 참여자 번호를 하나씩 올립니다. 씬 만들기 배치: `-e
 
 2026-11-22 확인: 합성 예시 `EX02.json`으로 기본 설정(제시 30 s, 조건 90 s) 자동 시행 5개(place, view의 static·replay(place의 궤적)·system_move·point_select)가 모두 완료됐고, 기록은 `docs/validation/placement/records/`(합성), 분석기 출력은 `docs/validation/placement/analysis/`에 있습니다. 분석기 플래그는 세션마다 `runner_warning:1`(draft 문구 경고, 의도한 것)뿐이었습니다. 외부 검토 CP7 반영 뒤 같은 설정으로 다시 만들었습니다(`conditionCompleted` true 5개, `object.boundingRadiusM` 0.1933, `layoutIgnored` false, 플래그는 그대로 `runner_warning:1`뿐, `config_mismatch` 없음). 2026-11-23 헤드셋 프로토타입(XR 패키지 추가) 뒤 같은 5개를 저장소 밖 임시 폴더에 다시 돌려 모두 완료, 분석기 플래그는 세션마다 `runner_warning:1`뿐이었습니다(`docs/validation/placement/`은 갱신하지 않음).
 
+### 화면 사용성 점검(2026-11-23, 결정 G44)
+
+참여자 판과 실험자 화면을 `ui-ux-pro-max` 스킬의 규칙(§1 접근성, §2 상호작용, §5 배치, §6 글자·색, §8 폼·피드백)으로 고쳤습니다. 문구 글자·문항 순서·평정 방식(점 수·앵커·확정 방식)·단계 순서·측정과 기록은 바꾸지 않았고 화면 표현만 바꿨습니다. 전후 캡처와 실측값: `docs/validation/ui/before/unity_*`, `docs/validation/ui/after/unity_*`(`unity_metrics.json`에 글자 높이·대비비).
+
+| 항목 | 전 | 후 | 규칙 |
+| --- | --- | --- | --- |
+| 기준점 뜻 글자(한글 잉크 높이, 눈–판 중심 2.24 m) | 3.32 cm = 0.85° | 4.55 cm = 1.17° | readable-font-size(VR에서 약 1° 이상) |
+| 평정 숫자("7" 잉크 높이) | 3.90 cm = 1.00°(본문 크기) | 4.60 cm = 1.18° | readable-font-size |
+| 본문(한글 잉크 높이) | 5.13 cm = 1.31° | 그대로 | — |
+| 본문 줄 간격 | 1.33 em | 1.50 em | line-height |
+| 이웃 기준점 뜻 | 7점 모두 이름이면 붙어 읽힘 | 칸 너비(0.22 m)에 맞춰 줄바꿈, 이웃 사이 빈틈 5 cm 이상 | line-length-control, whitespace-balance |
+| 본문 대비(렌더 화소) | #4F4F5A 대 #FFFFFF = 8.1:1 | #16161C 대 #FFFFFF = 18.0:1 | color-contrast |
+| 고른 값 | 색(옅은 파랑 #5AA0ED, 흰 판에서 2.7:1)·숫자만 굵게 | 짙은 파랑 #0D389E 숫자·뜻 굵게 + 테두리 + 옅은 파랑 바탕(#D1E3FF), 7.8:1 | color-not-only, color-accessible-pairs |
+| 긴 지시문 판 | 위로 자라 위 가장자리 0.98 m | 위 가장자리 ≤ 0.85 m(아래로 내림) | visual-hierarchy(형상 가리지 않기) |
+| 실험자 화면 바탕 | 반투명 — 장면에 따라 주황 2.3–4.6:1, 노랑 3.0–6.0:1, 빨강 1.7–3.3:1 | 불투명 짙은 회색 #1F2023 — 흰 16.3, 주황 7.7, 노랑 10.1, 빨강 6.1:1 | color-contrast, contrast-feedback |
+| 실험자 화면 단계·경고 | 단계는 제목 줄 끝 작은 글, 경고는 단추 아래, 초안 경고 두 번 | 단계를 맨 위 크게, 오류·초안·경고를 그 바로 아래, 초안 경고 한 번 | visual-hierarchy, error-placement |
+| 중단 단추 | "다음"과 같은 크기로 바로 옆, 한 번에 중단 | 오른쪽 끝 빨간 "중단…" → 확인 줄 → "중단 확정"(단계가 바뀌면 닫힘). Esc 키는 그대로 | confirmation-dialogs, destructive-emphasis, touch-spacing |
+| Setup 가로 넘침 | 손 선택·체크 글이 오른쪽에서 잘리고 가로 스크롤 | 줄을 나누고 체크 글 줄바꿈 | horizontal-scroll |
+
+시야각 = 2·atan(높이 / (2 × 2.236 m)), 2.236 m = √(2.0² + (1.6 − 0.6)²)(눈높이 1.6 m, 판 중심 정면 2.0 m·높이 0.6 m 가정). 잉크 높이는 같은 글꼴·크기의 한 글자를 흰 바탕에 찍어 어두운 화소 행으로 잰 값입니다(`PlacementPanelMetrics.HangulInkPerEm` 0.94, `DigitInkPerEm` 0.72). 대비비는 렌더 화소(sRGB)의 WCAG 2.x 식(`PlacementPanelMetrics.ContrastRatio`). 판 캡처의 눈 시점은 세로 시야 28.8°(720 px, 약 25 px/°)로 Quest 3 화소 밀도를 흉내 낸 근사이고, 렌즈·화면을 거친 실제 가독성은 기기에서만 확인됩니다.
+
+캡처 도구 `Editor/PlacementUiCapture.cs`(합성 spec EX02와 문구 파일만, 기록은 저장소 밖 임시 폴더):
+
+```bash
+# 참여자 판(배치모드): unity_panel_*.png, unity_scene_item.png, unity_metrics.json
+"C:\Program Files\Unity\Hub\Editor\6000.0.85f2\Editor\Unity.exe" -batchmode -projectPath <unity 폴더> \
+  -executeMethod IFS.SceneSpec.EditorTools.PlacementUiCapture.CapturePanelsBatch -outDir <폴더> -logFile <로그>
+# 실험자 화면(IMGUI는 Play의 Game 창에서만 그려져 배치모드가 아니라 에디터 창으로 실행, 끝나면 스스로 닫힘): unity_gui_*.png
+"C:\Program Files\Unity\Hub\Editor\6000.0.85f2\Editor\Unity.exe" -projectPath <unity 폴더> \
+  -executeMethod IFS.SceneSpec.EditorTools.PlacementUiCapture.CaptureGuiInteractive -outDir <폴더> -logFile <로그>
+```
+
+두 번째 명령은 Play를 하므로 Unity가 `ProjectSettings/QualitySettings.asset`·`Assets/XR/Settings/OpenXRPackageSettings.asset`을 다시 쓸 수 있습니다(`git checkout -- <파일>`로 되돌림). 화면에 로컬 절대 경로가 찍히지 않게 spec 목록 폴더는 프로젝트 기준 상대 경로, 기록 폴더 표시는 자리표시로 바꿔 찍습니다(캡처 때만). 문서용 PNG는 폭 1280 이하·256색으로 줄였습니다.
+
+참여자 판에 입력 방법 안내(예: "썸스틱 좌우로 고르고 트리거로 확정")는 없습니다. 참여자에게 보이는 새 문구가 되므로 만들지 않았습니다(⚠ 사람이 정할 것 — 넣는다면 문구 파일에 `status: draft`로).
+
 ### 한계와 사람이 할 일
 
 - 헤드셋 경로는 사람이 헤드셋을 쓰고 확인하지 않았습니다(`docs/headset-checklist.md`로 확인할 것).
-- 참여자 판은 정면 2.0 m·중심 높이 0.6 m(눈높이 1.6 m에서 약 27° 아래)에 고정입니다. 시작 자리(1.5 m, 높이 1.2 m)의 물체가 반지름 약 0.3 m까지면 판과 겹쳐 보이지 않게 잡은 값이고, 판 글은 깊이 검사를 해서 물체가 앞에 오면 물체가 글을 가립니다(글이 물체를 덮지 않음). 직접 배치에서 참여자가 물체를 판 앞으로 가져오면 글이 가려질 수 있습니다. 읽히는 크기·자리는 기기에서 봐야 합니다.
+- 참여자 판은 정면 2.0 m·중심 높이 0.6 m(눈높이 1.6 m에서 약 27° 아래)에 고정입니다. 판 글은 깊이 검사를 해서 물체가 앞에 오면 물체가 글을 가립니다(글이 물체를 덮지 않음). 판은 물체(1.5 m)보다 뒤(2.0 m)에 있어 시작 자리의 물체를 가리지 않고, 겹쳐 보이면 물체가 판 위쪽을 가립니다. 2026-11-23부터 판 위 가장자리가 0.85 m(`maxTopM`)를 넘으면(긴 평정 지시문처럼 키가 큰 판) 판을 아래로 내려, 위로 자라 물체 뒤로 들어가지 않게 했습니다(EX02 캡처에서 판 위 가장자리가 물체 아래쪽보다 아래). 반지름 0.3 m 물체를 시작 자리에 두면 판 위쪽 몇 cm는 여전히 물체 뒤에 보일 수 있습니다(여백 0.08 m 안). 직접 배치에서 참여자가 물체를 판 앞으로 가져오면 글이 가려질 수 있습니다. 읽히는 크기·자리는 기기에서 봐야 합니다.
 - 데스크톱 모의 조작에서는 광선이 보이지 않습니다(마우스 커서가 대신함). 잡힌 물체 강조는 없습니다(XR 광선 끝이 물체 중심에 붙는 것으로만 보임).
 - 재생은 원본의 물체 위치만 따릅니다(원본 참여자의 머리 움직임은 재생하지 않음).
 - 눈 추적은 없습니다(Quest 3에는 눈 추적 장치가 없고, `headpose.csv`의 시선 각은 머리 방향 기준).
@@ -522,15 +560,15 @@ Windows 빌드(선택): 메뉴 **IFS ▸ Experiment ▸ Build Placement Experime
 | 썸스틱 앞 / 뒤 | 잡은 물체 밀기 / 당기기(`pushPullSpeedMps` 1 m/s, 광선 원점에서 0.3–8 m, 바닥 원판 밖으로는 못 나감) |
 | A(오른손) · X(왼손) | 확인("여기에 둔다" / 가리킨 바닥 점 확정) |
 | 트리거 | 멈춤 거리 버튼. 누르는 순간만 셉니다(시행 전부터 누르고 있었으면 떼었다 다시) |
-| 썸스틱 좌·우 + 트리거 | 평정 고르기·확정 — `participantRatesWithController`를 켰을 때만(기본 꺼짐: 참여자는 말로 답하고 실험자가 숫자 키). 처음 젖히면 가운데 값(4)에서 시작, 판에서 고른 숫자가 파랗게 보임 |
+| 썸스틱 좌·우 + 트리거 | 평정 고르기·확정 — `participantRatesWithController`를 켰을 때만(기본 꺼짐: 참여자는 말로 답하고 실험자가 숫자 키). 처음 젖히면 가운데 값(4)에서 시작, 판에서 고른 칸이 짙은 파랑 테두리·옅은 파랑 바탕·굵은 짙은 파랑 숫자와 뜻으로 보임(색만으로 구별하지 않음) |
 | 실험자 R | 정면 재설정(지금 머리 자리 = '나'의 자리, 보는 방향 = 정면). 세션 중이면 `events.csv`에 `recenter` |
 
 보기만 조건(static·system_move·replay)은 기존 규칙대로 잡기·밀기 입력을 받지 않습니다(테스트로 확인). 트리거 아날로그 값은 이력(0.55에서 눌림, 0.35에서 뗌)으로 떨림에 여러 번 눌리지 않게 했고, 썸스틱 데드존은 0.2입니다. 컨트롤러 추적이 끊기면 그 프레임은 입력이 없는 것으로 보고(잡은 물체는 놓임), 다시 잡혔을 때 계속 누르고 있던 버튼은 새 '눌림'으로 세지 않습니다.
 
 ### 헤드셋 안 표시와 렌더
 
-- **참여자 판**(`PlacementTextPanel`): 정면 2.0 m, 판 중심 높이 0.6 m(눈높이 1.6 m에서 약 27° 아래), 판이 눈을 보게 기울어 있습니다. 글자 높이 약 5 cm(2 m에서 약 1.4°), 한 줄 20자, 옅은 회색 판 위 짙은 글. 한글은 기존 방식 그대로 OS 동적 폰트(맑은 고딕 등, `ParticipantTextDisplay.EnsureFont`)와 `TextMesh`입니다(uGUI·TextMeshPro 없음). 평정 단계에서는 문항 아래 1–7 숫자와 기준점 뜻을 칸마다 보입니다. TextMesh 기본 재질은 깊이 검사 없이 모든 것 위에 그리므로, 판 글 재질은 `unity_GUIZTestMode = LessEqual`로 바꿔 물체가 판 앞에 오면 물체가 글을 가리게 했습니다(글이 물체를 덮지 않음).
-- **실험자 화면**(IMGUI)은 PC 모니터의 Game 창에만 그려지고 헤드셋에는 나오지 않습니다.
+- **참여자 판**(`PlacementTextPanel`): 정면 2.0 m, 판 중심 높이 0.6 m(눈높이 1.6 m에서 약 27° 아래, 키가 큰 판은 위 가장자리 0.85 m 이하로 내려감), 판이 눈을 보게 기울어 있습니다. 눈–판 중심 2.24 m에서 한글 잉크 높이 본문 1.31°·기준점 뜻 1.17°·평정 숫자 1.18°(아래 「화면 사용성 점검」), 한 줄 20자, 줄 간격 약 1.5 em. 판 배경은 재질 색이 옅은 회색(#E6E6E8)이지만 방출 + 조명으로 흰색(#FFFFFF)으로 렌더됩니다(그대로 둠, 짙은 글 대비 18:1). 한글은 기존 방식 그대로 OS 동적 폰트(맑은 고딕 등, `ParticipantTextDisplay.EnsureFont`)와 `TextMesh`입니다(uGUI·TextMeshPro 없음). 평정 단계에서는 문항 아래 숫자와 기준점 뜻을 칸마다 보이고, 뜻은 칸 너비에 맞춰 줄을 바꿉니다(예전에는 7점 모두 이름이 있으면 이웃 칸 뜻이 붙어 "전혀 그렇지 그렇지 않다 약간 그렇지"처럼 읽혔음). TextMesh 기본 재질은 깊이 검사 없이 모든 것 위에 그리므로, 판 글 재질은 `unity_GUIZTestMode = LessEqual`로 바꿔 물체가 판 앞에 오면 물체가 글을 가리게 했습니다(글이 물체를 덮지 않음). TextMesh 정점 색은 선형 색공간에서 변환되지 않으므로 Inspector 색(sRGB)을 `Color.linear`로 넘깁니다(2026-11-23 전에는 짙은 글 #141419가 #4F4F5A로, 고른 숫자가 #5AA0ED로 보여 흰 판에서 2.7:1이었음).
+- **실험자 화면**(IMGUI)은 PC 모니터의 Game 창에만 그려지고 헤드셋에는 나오지 않습니다. 코드 근거: `PlacementExperimenterGui`는 `OnGUI`의 화면 좌표(`GUILayout.BeginArea(new Rect(…))`)로만 그리고 세계 공간 물체·Canvas·RenderTexture를 만들지 않습니다. IMGUI는 카메라 렌더가 끝난 뒤 주 디스플레이 백버퍼에 그려지고, XR 눈 영상은 카메라가 XR 디스플레이 텍스처로 렌더한 것이라 IMGUI가 들어가지 않습니다(Game 창에서는 왼눈 미러 위에 겹쳐 보임). 기기에서는 확인하지 못했습니다(`docs/headset-checklist.md` 1.3).
 - **스테레오**: OpenXR 단일 패스 인스턴싱. 커스텀 셰이더 점검: `SceneSpecMist.shader`(정점/조각)는 스테레오 매크로를 갖추고 있었고, 조각 단계에서 물체 행렬을 읽으므로 인스턴스 ID를 조각 단계까지 넘기도록(`UNITY_TRANSFER_INSTANCE_ID`·조각의 `UNITY_SETUP_INSTANCE_ID`) 보탰습니다. `EnvironmentSky.shader`는 이미 갖춤(조각 단계에서 눈별 값을 쓰지 않음). `SceneSpecOpaque`·`SceneSpecFade`·`EnvironmentFloor`는 표면 셰이더라 Unity가 스테레오 코드를 만듭니다. 판·광선은 내장 셰이더(GUI/Text, Standard)입니다. 스테레오 인스턴싱 변형의 실제 컴파일·두 눈 일치는 헤드셋 Play에서만 확인됩니다(미검증). 문제가 있으면 `Assets/XR/Settings/OpenXRPackageSettings.asset`(Project Settings ▸ XR Plug-in Management ▸ OpenXR ▸ Render Mode)을 Multi Pass로 바꿔 비교합니다.
 - **카메라 리그**: `XR Rig ('나' 자리)`(원점 = '나'의 자리) 아래에 카메라. XR이 켜지면 추적 원점을 바닥(Floor)으로 요청하고, 카메라 로컬 자세 = 헤드셋 자세(`HeadPoseProvider`, 렌더 직전에 한 번 더). 기록 좌표계는 그대로입니다('나' = 원점, 바닥 y = 0, 정면 +z).
 
@@ -568,7 +606,7 @@ Windows 빌드(선택): 메뉴 **IFS ▸ Experiment ▸ Build Placement Experime
   -runTests -testPlatform EditMode -testResults <결과.xml> -logFile <로그>
 ```
 
-EditMode **440개**(2026-11-23 기본 형상 D6 뒤 배치모드로 전부 통과, dotnet 383개). 그 전 335개(2026-11-23 구름 수정(D7)·러너 선택 파일(D8·D9) 뒤 배치모드로 전부 통과. 그 전 307개(미리보기 D4). 그 전 278개(헤드셋 프로토타입), 257개, 배치 러너 CP7 반영 때 192개). 아래 표는 2026-11-22 기준이고, 그 뒤 더한 것은 표 아래에 적었습니다:
+EditMode **457개**(2026-11-23 화면 개선 G44 뒤 배치모드로 전부 통과, dotnet 397개 — 더한 것: `PlacementPanelMetricsTests.cs` 8개(시야각 식, 기본 글자 크기가 2.24 m에서 잉크 1° 이상, WCAG 대비비, 기본 색 쌍 4.5:1 이상, 칸 너비·뜻 줄바꿈, scaleA 7점 뜻이 이웃 칸과 붙지 않음, 고른 칸, 중단 두 번 누르기 — dotnet·Unity 둘 다), `UnityOnly/PlacementTextPanelTests.cs` 2개(고른 칸 테두리·굵기·색과 고르기 전 표시 없음, 선형 색 변환, 키가 큰 판의 위 가장자리 ≤ 0.85 m)). 그 전 447개·dotnet 389개. 그 전 440개(2026-11-23 기본 형상 D6 뒤 배치모드로 전부 통과, dotnet 383개). 그 전 335개(2026-11-23 구름 수정(D7)·러너 선택 파일(D8·D9) 뒤 배치모드로 전부 통과. 그 전 307개(미리보기 D4). 그 전 278개(헤드셋 프로토타입), 257개, 배치 러너 CP7 반영 때 192개). 아래 표는 2026-11-22 기준이고, 그 뒤 더한 것은 표 아래에 적었습니다:
 
 | 파일 | 개수 | 내용 |
 | --- | --- | --- |
@@ -622,6 +660,7 @@ cd unity/Tools/compile-check && dotnet build IFS.SceneSpec.CompileCheck.csproj &
 - 미리보기(D4)에서 `Stubs/UnityStubsPreview.cs`(`PlayerSettings.WebGL`·`EditorUserBuildSettings`·`WebGLCompressionFormat`·`SceneAsset`·`StereoTargetEyeMask`·`RuntimePlatform`)와 기존 스텁 몇 줄(`Camera.stereoTargetEye`, `Transform.eulerAngles`, `Application.platform`·`Quit`, `SystemInfo.graphicsDeviceVersion`, `Input.GetMouseButtonUp`, `BuildTarget.WebGL`·`BuildTargetGroup`·`IsBuildTargetSupported`, `BuildSummary` 시간·크기, `AssetDatabase.LoadAllAssetsAtPath`)을 더했습니다. `#if UNITY_WEBGL && !UNITY_EDITOR` 부분(.jslib 호출)은 dotnet에서 컴파일되지 않습니다.
 - Unity에 의존하지 않는 코드와 EditMode 테스트 파일은 실제 Newtonsoft·NUnit으로 컴파일·실행됩니다(283개, 2026-11-23 D7·D8 뒤. 그 전 258개(미리보기 뒤). 그 전 234개(헤드셋 프로토타입). 그 전 218개, 배치 러너 CP7 반영 때 168개). `Tests/Editor/UnityOnly/`는 실제 렌더가 필요해 뺍니다.
 - 헤드셋 경로(2026-11-23): 러너는 내장 XR 모듈 API만 쓰므로 `Stubs/UnityStubsXr.cs`(`XRSettings`·`XRInputSubsystem`·`SubsystemManager`·`Application.onBeforeRender`·Windows 빌드용 `BuildPipeline`)와 기존 스텁의 몇 줄(`InputDevice`의 bool·float·Vector2 값, `CommonUsages` 버튼들, `TextMesh.richText`, `Font.textureRebuilt`, `GUILayout.Toggle`, `KeyCode.R` 등)로 타입 검사합니다. XR 패키지 API를 쓰는 `Editor/XR/XrProjectSetup.cs`는 asmdef `versionDefines`(`IFS_HAS_OPENXR`·`IFS_HAS_XR_MANAGEMENT`)로 패키지가 있을 때만 컴파일되므로, compile-check에서는 빈 파일로 컴파일됩니다(그 파일의 타입 검사는 Unity에서만 — 2026-11-23 Unity 배치 실행으로 컴파일·실행 확인).
+- 화면 개선(2026-11-23 G44)에서 스텁에 `Color.linear`, `TextMesh.lineSpacing`, `Mathf.Abs`·`Min(int, int)`, `Texture2D(int, int)`·`SetPixel`·`Apply()`, IMGUI의 `FontStyle`·`GUIStyleState`·`GUIStyle.fontSize/fontStyle/normal`·`GUISkin.button/toggle`·`GUI.backgroundColor`·`GUILayout.BeginArea(Rect)`·`BeginVertical`·`Space`·`FlexibleSpace`·스타일을 받는 `Button`·`Toggle`을 더했습니다. 캡처 도구 `Editor/PlacementUiCapture.cs`는 `#if UNITY_EDITOR`로 감싸 compile-check에서는 빈 파일입니다(Unity에서만 컴파일·실행 — 2026-11-23 배치·에디터 실행으로 확인).
 - MonoBehaviour·Editor 스크립트는 UnityEngine/UnityEditor **스텁**(이름·시그니처만)으로 타입 검사만 합니다. 새 Unity API를 쓰면 `Stubs/UnityStubs.cs`(소유감 실험의 입력·글자·IMGUI·XR은 `Stubs/UnityStubsOwnership.cs`)에 같은 시그니처를 추가합니다. 배치 러너용으로 `Camera.ScreenPointToRay`, `Mathf.Max`, `Ray`, `Input.mousePosition`·`GetMouseButtonDown`, `KeyCode.E/F/Q`를 더했습니다.
 
 ## 한계

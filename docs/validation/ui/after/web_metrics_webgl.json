@@ -1,0 +1,1833 @@
+{
+ "label": "after",
+ "mode": "webgl",
+ "keyboard": {
+  "steps": [
+   {
+    "step": "가명 ID 입력",
+    "tabs": 3,
+    "focus": "input#session-id ''",
+    "ring": true,
+    "inView": true,
+    "noRing": [],
+    "orderViolations": 0
+   },
+   {
+    "step": "조건 고르기",
+    "tabs": 8,
+    "focus": "input 'chatbot'",
+    "ring": true,
+    "inView": true,
+    "noRing": [],
+    "orderViolations": 1
+   },
+   {
+    "step": "세션 만들기",
+    "tabs": 2,
+    "focus": "button#btn-create.primary '세션 만들기'",
+    "ring": true,
+    "inView": true,
+    "noRing": [],
+    "orderViolations": 0
+   },
+   {
+    "step": "시작",
+    "tabs": 1,
+    "focus": "button.primary '시작'",
+    "ring": true,
+    "inView": true,
+    "noRing": [],
+    "orderViolations": 0
+   },
+   {
+    "step": "답 0",
+    "tabs": 0,
+    "focus": "textarea#input",
+    "ring": true
+   },
+   {
+    "step": "답 1",
+    "tabs": 0,
+    "focus": "textarea#input",
+    "ring": true
+   },
+   {
+    "step": "답 2",
+    "tabs": 0,
+    "focus": "textarea#input",
+    "ring": true
+   },
+   {
+    "step": "답 3",
+    "tabs": 0,
+    "focus": "textarea#input",
+    "ring": true
+   },
+   {
+    "step": "답 4",
+    "tabs": 0,
+    "focus": "textarea#input",
+    "ring": true
+   },
+   {
+    "step": "답 5",
+    "tabs": 0,
+    "focus": "textarea#input",
+    "ring": true
+   },
+   {
+    "step": "답 6",
+    "tabs": 0,
+    "focus": "textarea#input",
+    "ring": true
+   },
+   {
+    "step": "확정",
+    "tabs": 1,
+    "focus": "button.primary '이대로 맞아요'",
+    "ring": true,
+    "inView": true,
+    "noRing": [],
+    "orderViolations": 0
+   },
+   {
+    "step": "다음 단계로",
+    "tabs": 1,
+    "focus": "button.primary[next] '다음 단계로'",
+    "ring": true,
+    "inView": true,
+    "noRing": [],
+    "orderViolations": 0
+   },
+   {
+    "step": "후보 고르기(두 번째)",
+    "tabs": 2,
+    "focus": "button.pick[cand:c-05c1672ca45d] '이것으로 고르기 2'",
+    "ring": true,
+    "inView": true,
+    "noRing": [],
+    "orderViolations": 0
+   },
+   {
+    "step": "색 견본 묶음",
+    "tabs": 1,
+    "focus": "button.chip.active[sw:n70] '색 4'",
+    "ring": true,
+    "inView": true,
+    "noRing": [],
+    "orderViolations": 0
+   },
+   {
+    "step": "밝기 +",
+    "tabs": 3,
+    "focus": "button.step-btn[step:brightness:+] '밝기 +'",
+    "ring": true,
+    "inView": true,
+    "noRing": [],
+    "orderViolations": 0
+   },
+   {
+    "step": "형태 견본 묶음",
+    "tabs": 15,
+    "focus": "button.opt.active.has-thumb[cat:form:1] '형태 2'",
+    "ring": true,
+    "inView": true,
+    "noRing": [],
+    "orderViolations": 2
+   },
+   {
+    "step": "다 고쳤어요",
+    "tabs": 9,
+    "focus": "button.primary[finish] '다 고쳤어요'",
+    "ring": true,
+    "inView": true,
+    "noRing": [],
+    "orderViolations": 0
+   },
+   {
+    "step": "문항 A1",
+    "tabs": 1,
+    "focus": "input#pm-A1-skip ''",
+    "ring": true,
+    "chosen": "skip",
+    "noRing": [],
+    "orderViolations": 0
+   },
+   {
+    "step": "문항 A2",
+    "tabs": 1,
+    "focus": "input#pm-A2-skip ''",
+    "ring": true,
+    "chosen": "skip",
+    "noRing": [],
+    "orderViolations": 0
+   },
+   {
+    "step": "문항 A3",
+    "tabs": 1,
+    "focus": "input#pm-A3-skip ''",
+    "ring": true,
+    "chosen": "skip",
+    "noRing": [],
+    "orderViolations": 0
+   },
+   {
+    "step": "문항 A4",
+    "tabs": 1,
+    "focus": "input#pm-A4-skip ''",
+    "ring": true,
+    "chosen": "skip",
+    "noRing": [],
+    "orderViolations": 0
+   },
+   {
+    "step": "문항 A5",
+    "tabs": 1,
+    "focus": "input#pm-A5-skip ''",
+    "ring": true,
+    "chosen": "skip",
+    "noRing": [],
+    "orderViolations": 0
+   },
+   {
+    "step": "문항 A6",
+    "tabs": 1,
+    "focus": "input#pm-A6-skip ''",
+    "ring": true,
+    "chosen": "skip",
+    "noRing": [],
+    "orderViolations": 0
+   },
+   {
+    "step": "문항 A7",
+    "tabs": 1,
+    "focus": "input#pm-A7-skip ''",
+    "ring": true,
+    "chosen": "skip",
+    "noRing": [],
+    "orderViolations": 0
+   },
+   {
+    "step": "문항 G13_appearance",
+    "tabs": 1,
+    "focus": "input#pm-G13_appearance-4 '4'",
+    "ring": true,
+    "chosen": "4",
+    "noRing": [],
+    "orderViolations": 0
+   },
+   {
+    "step": "문항 G13_representation",
+    "tabs": 1,
+    "focus": "input#pm-G13_representation-4 '4'",
+    "ring": true,
+    "chosen": "4",
+    "noRing": [],
+    "orderViolations": 0
+   },
+   {
+    "step": "제출",
+    "tabs": 1,
+    "focus": "button.primary[pm-submit] '제출'",
+    "ring": true,
+    "inView": true,
+    "noRing": [],
+    "orderViolations": 0
+   }
+  ],
+  "mode": "webgl",
+  "focusAfterStage": {
+   "el": "p.msg.bot.stage-top '당신이 말한 것을 바탕으로 만든, 그'",
+   "ring": false,
+   "x": 41,
+   "y": 164,
+   "visible": true
+  },
+  "focusAfterAdjust": {
+   "el": "p.msg.bot.stage-top '당신이 말한 것을 바탕으로 만든, 그'",
+   "ring": false,
+   "x": 41,
+   "y": 164,
+   "visible": true
+  },
+  "arrowMovedInSwatches": true,
+  "focusAfterSwatch": {
+   "el": "button.chip.active[sw:n90] '색 5'",
+   "ring": true,
+   "x": 827,
+   "y": 295,
+   "visible": true
+  },
+  "focusKeptAfterRedraw": true,
+  "brightness": [
+   0.5,
+   0.75
+  ],
+  "formThirdFocused": true,
+  "formAfter": "shell",
+  "final": "done",
+  "sessionId": "SYN-UI-KB-WEBGL"
+ },
+ "metrics": [
+  {
+   "view": "participant",
+   "width": 1440,
+   "screen": "interview",
+   "hScroll": false,
+   "researcherVisible": false,
+   "thumbJobs": [],
+   "thumbs": [],
+   "targets": {
+    "n": 4,
+    "minH": 44,
+    "minW": 66,
+    "under44": 0,
+    "under24": 0
+   },
+   "text": {
+    "n": 11,
+    "minSize": 14,
+    "minRatio": 4.92,
+    "under16": 2,
+    "under13": 0,
+    "lowContrast": []
+   }
+  },
+  {
+   "view": "participant",
+   "width": 1440,
+   "screen": "confirm",
+   "hScroll": false,
+   "researcherVisible": false,
+   "thumbJobs": [],
+   "thumbs": [],
+   "targets": {
+    "n": 3,
+    "minH": 44,
+    "minW": 93,
+    "under44": 0,
+    "under24": 0
+   },
+   "text": {
+    "n": 20,
+    "minSize": 14,
+    "minRatio": 4.92,
+    "under16": 2,
+    "under13": 0,
+    "lowContrast": []
+   }
+  },
+  {
+   "view": "participant",
+   "width": 1440,
+   "screen": "crisis",
+   "hScroll": false,
+   "researcherVisible": false,
+   "thumbJobs": [],
+   "thumbs": [],
+   "targets": {
+    "n": 0,
+    "minH": null,
+    "minW": null,
+    "under44": 0,
+    "under24": 0
+   },
+   "text": {
+    "n": 6,
+    "minSize": 16,
+    "minRatio": 4.92,
+    "under16": 0,
+    "under13": 0,
+    "lowContrast": []
+   }
+  },
+  {
+   "view": "participant",
+   "width": 1440,
+   "screen": "next",
+   "hScroll": false,
+   "researcherVisible": false,
+   "thumbJobs": [],
+   "thumbs": [],
+   "targets": {
+    "n": 2,
+    "minH": 44,
+    "minW": 97,
+    "under44": 0,
+    "under24": 0
+   },
+   "text": {
+    "n": 20,
+    "minSize": 15,
+    "minRatio": 4.92,
+    "under16": 1,
+    "under13": 0,
+    "lowContrast": []
+   }
+  },
+  {
+   "view": "participant",
+   "width": 1440,
+   "screen": "candidates",
+   "hScroll": false,
+   "researcherVisible": false,
+   "thumbJobs": [],
+   "thumbs": [],
+   "targets": {
+    "n": 5,
+    "minH": 48,
+    "minW": 381,
+    "under44": 0,
+    "under24": 0
+   },
+   "text": {
+    "n": 9,
+    "minSize": 14,
+    "minRatio": 5.57,
+    "under16": 2,
+    "under13": 0,
+    "lowContrast": []
+   }
+  },
+  {
+   "view": "participant",
+   "width": 1440,
+   "screen": "adjust",
+   "hScroll": false,
+   "researcherVisible": false,
+   "thumbJobs": [
+    {
+     "n": 9,
+     "ms": 48,
+     "framesBetween": 0
+    }
+   ],
+   "thumbs": [
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "num",
+    "num",
+    "num",
+    "num",
+    "num",
+    "num"
+   ],
+   "targets": {
+    "n": 41,
+    "minH": 44,
+    "minW": 44,
+    "under44": 0,
+    "under24": 0
+   },
+   "text": {
+    "n": 26,
+    "minSize": 14,
+    "minRatio": 4.92,
+    "under16": 2,
+    "under13": 0,
+    "lowContrast": []
+   }
+  },
+  {
+   "view": "participant",
+   "width": 1440,
+   "screen": "adjust_skipped",
+   "hScroll": false,
+   "researcherVisible": false,
+   "thumbJobs": [
+    {
+     "n": 9,
+     "ms": 33,
+     "framesBetween": 0
+    }
+   ],
+   "thumbs": [
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "num",
+    "num",
+    "num",
+    "num",
+    "num",
+    "num"
+   ],
+   "targets": {
+    "n": 41,
+    "minH": 44,
+    "minW": 44,
+    "under44": 0,
+    "under24": 0
+   },
+   "text": {
+    "n": 26,
+    "minSize": 14,
+    "minRatio": 4.92,
+    "under16": 2,
+    "under13": 0,
+    "lowContrast": []
+   }
+  },
+  {
+   "view": "participant",
+   "width": 1440,
+   "screen": "premeasure",
+   "hScroll": false,
+   "researcherVisible": false,
+   "thumbJobs": [],
+   "thumbs": [],
+   "targets": {
+    "n": 73,
+    "minH": 44,
+    "minW": 88,
+    "under44": 0,
+    "under24": 0
+   },
+   "text": {
+    "n": 148,
+    "minSize": 14,
+    "minRatio": 4.92,
+    "under16": 74,
+    "under13": 0,
+    "lowContrast": []
+   }
+  },
+  {
+   "view": "participant",
+   "width": 1440,
+   "screen": "done",
+   "hScroll": false,
+   "researcherVisible": false,
+   "thumbJobs": [],
+   "thumbs": [],
+   "targets": {
+    "n": 0,
+    "minH": null,
+    "minW": null,
+    "under44": 0,
+    "under24": 0
+   },
+   "text": {
+    "n": 3,
+    "minSize": 14,
+    "minRatio": 5.57,
+    "under16": 2,
+    "under13": 0,
+    "lowContrast": []
+   }
+  },
+  {
+   "view": "participant",
+   "width": 1024,
+   "screen": "interview",
+   "hScroll": false,
+   "researcherVisible": false,
+   "thumbJobs": [],
+   "thumbs": [],
+   "targets": {
+    "n": 4,
+    "minH": 44,
+    "minW": 66,
+    "under44": 0,
+    "under24": 0
+   },
+   "text": {
+    "n": 11,
+    "minSize": 14,
+    "minRatio": 4.92,
+    "under16": 2,
+    "under13": 0,
+    "lowContrast": []
+   }
+  },
+  {
+   "view": "participant",
+   "width": 1024,
+   "screen": "confirm",
+   "hScroll": false,
+   "researcherVisible": false,
+   "thumbJobs": [],
+   "thumbs": [],
+   "targets": {
+    "n": 3,
+    "minH": 44,
+    "minW": 93,
+    "under44": 0,
+    "under24": 0
+   },
+   "text": {
+    "n": 20,
+    "minSize": 14,
+    "minRatio": 4.92,
+    "under16": 2,
+    "under13": 0,
+    "lowContrast": []
+   }
+  },
+  {
+   "view": "participant",
+   "width": 1024,
+   "screen": "crisis",
+   "hScroll": false,
+   "researcherVisible": false,
+   "thumbJobs": [],
+   "thumbs": [],
+   "targets": {
+    "n": 0,
+    "minH": null,
+    "minW": null,
+    "under44": 0,
+    "under24": 0
+   },
+   "text": {
+    "n": 6,
+    "minSize": 16,
+    "minRatio": 4.92,
+    "under16": 0,
+    "under13": 0,
+    "lowContrast": []
+   }
+  },
+  {
+   "view": "participant",
+   "width": 1024,
+   "screen": "next",
+   "hScroll": false,
+   "researcherVisible": false,
+   "thumbJobs": [],
+   "thumbs": [],
+   "targets": {
+    "n": 2,
+    "minH": 44,
+    "minW": 97,
+    "under44": 0,
+    "under24": 0
+   },
+   "text": {
+    "n": 20,
+    "minSize": 15,
+    "minRatio": 4.92,
+    "under16": 1,
+    "under13": 0,
+    "lowContrast": []
+   }
+  },
+  {
+   "view": "participant",
+   "width": 1024,
+   "screen": "candidates",
+   "hScroll": false,
+   "researcherVisible": false,
+   "thumbJobs": [],
+   "thumbs": [],
+   "targets": {
+    "n": 5,
+    "minH": 48,
+    "minW": 381,
+    "under44": 0,
+    "under24": 0
+   },
+   "text": {
+    "n": 9,
+    "minSize": 14,
+    "minRatio": 5.57,
+    "under16": 2,
+    "under13": 0,
+    "lowContrast": []
+   }
+  },
+  {
+   "view": "participant",
+   "width": 1024,
+   "screen": "adjust",
+   "hScroll": false,
+   "researcherVisible": false,
+   "thumbJobs": [
+    {
+     "n": 9,
+     "ms": 47,
+     "framesBetween": 0
+    }
+   ],
+   "thumbs": [
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "num",
+    "num",
+    "num",
+    "num",
+    "num",
+    "num"
+   ],
+   "targets": {
+    "n": 41,
+    "minH": 44,
+    "minW": 44,
+    "under44": 0,
+    "under24": 0
+   },
+   "text": {
+    "n": 26,
+    "minSize": 14,
+    "minRatio": 4.92,
+    "under16": 2,
+    "under13": 0,
+    "lowContrast": []
+   }
+  },
+  {
+   "view": "participant",
+   "width": 1024,
+   "screen": "adjust_skipped",
+   "hScroll": false,
+   "researcherVisible": false,
+   "thumbJobs": [
+    {
+     "n": 9,
+     "ms": 33,
+     "framesBetween": 0
+    }
+   ],
+   "thumbs": [
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "num",
+    "num",
+    "num",
+    "num",
+    "num",
+    "num"
+   ],
+   "targets": {
+    "n": 41,
+    "minH": 44,
+    "minW": 44,
+    "under44": 0,
+    "under24": 0
+   },
+   "text": {
+    "n": 26,
+    "minSize": 14,
+    "minRatio": 4.92,
+    "under16": 2,
+    "under13": 0,
+    "lowContrast": []
+   }
+  },
+  {
+   "view": "participant",
+   "width": 1024,
+   "screen": "premeasure",
+   "hScroll": false,
+   "researcherVisible": false,
+   "thumbJobs": [],
+   "thumbs": [],
+   "targets": {
+    "n": 73,
+    "minH": 44,
+    "minW": 88,
+    "under44": 0,
+    "under24": 0
+   },
+   "text": {
+    "n": 148,
+    "minSize": 14,
+    "minRatio": 4.92,
+    "under16": 74,
+    "under13": 0,
+    "lowContrast": []
+   }
+  },
+  {
+   "view": "participant",
+   "width": 1024,
+   "screen": "done",
+   "hScroll": false,
+   "researcherVisible": false,
+   "thumbJobs": [],
+   "thumbs": [],
+   "targets": {
+    "n": 0,
+    "minH": null,
+    "minW": null,
+    "under44": 0,
+    "under24": 0
+   },
+   "text": {
+    "n": 3,
+    "minSize": 14,
+    "minRatio": 5.57,
+    "under16": 2,
+    "under13": 0,
+    "lowContrast": []
+   }
+  },
+  {
+   "view": "participant",
+   "width": 768,
+   "screen": "interview",
+   "hScroll": false,
+   "researcherVisible": false,
+   "thumbJobs": [],
+   "thumbs": [],
+   "targets": {
+    "n": 4,
+    "minH": 44,
+    "minW": 66,
+    "under44": 0,
+    "under24": 0
+   },
+   "text": {
+    "n": 11,
+    "minSize": 14,
+    "minRatio": 4.92,
+    "under16": 2,
+    "under13": 0,
+    "lowContrast": []
+   }
+  },
+  {
+   "view": "participant",
+   "width": 768,
+   "screen": "confirm",
+   "hScroll": false,
+   "researcherVisible": false,
+   "thumbJobs": [],
+   "thumbs": [],
+   "targets": {
+    "n": 3,
+    "minH": 44,
+    "minW": 93,
+    "under44": 0,
+    "under24": 0
+   },
+   "text": {
+    "n": 20,
+    "minSize": 14,
+    "minRatio": 4.92,
+    "under16": 2,
+    "under13": 0,
+    "lowContrast": []
+   }
+  },
+  {
+   "view": "participant",
+   "width": 768,
+   "screen": "crisis",
+   "hScroll": false,
+   "researcherVisible": false,
+   "thumbJobs": [],
+   "thumbs": [],
+   "targets": {
+    "n": 0,
+    "minH": null,
+    "minW": null,
+    "under44": 0,
+    "under24": 0
+   },
+   "text": {
+    "n": 6,
+    "minSize": 16,
+    "minRatio": 4.92,
+    "under16": 0,
+    "under13": 0,
+    "lowContrast": []
+   }
+  },
+  {
+   "view": "participant",
+   "width": 768,
+   "screen": "next",
+   "hScroll": false,
+   "researcherVisible": false,
+   "thumbJobs": [],
+   "thumbs": [],
+   "targets": {
+    "n": 2,
+    "minH": 44,
+    "minW": 97,
+    "under44": 0,
+    "under24": 0
+   },
+   "text": {
+    "n": 20,
+    "minSize": 15,
+    "minRatio": 4.92,
+    "under16": 1,
+    "under13": 0,
+    "lowContrast": []
+   }
+  },
+  {
+   "view": "participant",
+   "width": 768,
+   "screen": "candidates",
+   "hScroll": false,
+   "researcherVisible": false,
+   "thumbJobs": [],
+   "thumbs": [],
+   "targets": {
+    "n": 5,
+    "minH": 48,
+    "minW": 321,
+    "under44": 0,
+    "under24": 0
+   },
+   "text": {
+    "n": 9,
+    "minSize": 14,
+    "minRatio": 5.57,
+    "under16": 2,
+    "under13": 0,
+    "lowContrast": []
+   }
+  },
+  {
+   "view": "participant",
+   "width": 768,
+   "screen": "adjust",
+   "hScroll": false,
+   "researcherVisible": false,
+   "thumbJobs": [
+    {
+     "n": 9,
+     "ms": 46,
+     "framesBetween": 0
+    }
+   ],
+   "thumbs": [
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "num",
+    "num",
+    "num",
+    "num",
+    "num",
+    "num"
+   ],
+   "targets": {
+    "n": 41,
+    "minH": 44,
+    "minW": 44,
+    "under44": 0,
+    "under24": 0
+   },
+   "text": {
+    "n": 26,
+    "minSize": 14,
+    "minRatio": 4.92,
+    "under16": 2,
+    "under13": 0,
+    "lowContrast": []
+   }
+  },
+  {
+   "view": "participant",
+   "width": 768,
+   "screen": "adjust_skipped",
+   "hScroll": false,
+   "researcherVisible": false,
+   "thumbJobs": [
+    {
+     "n": 9,
+     "ms": 33,
+     "framesBetween": 0
+    }
+   ],
+   "thumbs": [
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "num",
+    "num",
+    "num",
+    "num",
+    "num",
+    "num"
+   ],
+   "targets": {
+    "n": 41,
+    "minH": 44,
+    "minW": 44,
+    "under44": 0,
+    "under24": 0
+   },
+   "text": {
+    "n": 26,
+    "minSize": 14,
+    "minRatio": 4.92,
+    "under16": 2,
+    "under13": 0,
+    "lowContrast": []
+   }
+  },
+  {
+   "view": "participant",
+   "width": 768,
+   "screen": "premeasure",
+   "hScroll": false,
+   "researcherVisible": false,
+   "thumbJobs": [],
+   "thumbs": [],
+   "targets": {
+    "n": 73,
+    "minH": 44,
+    "minW": 73,
+    "under44": 0,
+    "under24": 0
+   },
+   "text": {
+    "n": 148,
+    "minSize": 14,
+    "minRatio": 4.92,
+    "under16": 74,
+    "under13": 0,
+    "lowContrast": []
+   }
+  },
+  {
+   "view": "participant",
+   "width": 768,
+   "screen": "done",
+   "hScroll": false,
+   "researcherVisible": false,
+   "thumbJobs": [],
+   "thumbs": [],
+   "targets": {
+    "n": 0,
+    "minH": null,
+    "minW": null,
+    "under44": 0,
+    "under24": 0
+   },
+   "text": {
+    "n": 3,
+    "minSize": 14,
+    "minRatio": 5.57,
+    "under16": 2,
+    "under13": 0,
+    "lowContrast": []
+   }
+  },
+  {
+   "view": "researcher",
+   "width": 1440,
+   "screen": "interview",
+   "hScroll": false,
+   "researcherVisible": true,
+   "thumbJobs": [],
+   "thumbs": [],
+   "targets": {
+    "n": 5,
+    "minH": 44,
+    "minW": 66,
+    "under44": 0,
+    "under24": 0
+   },
+   "text": {
+    "n": 21,
+    "minSize": 12,
+    "minRatio": 4.92,
+    "under16": 11,
+    "under13": 4,
+    "lowContrast": []
+   }
+  },
+  {
+   "view": "researcher",
+   "width": 1440,
+   "screen": "confirm",
+   "hScroll": false,
+   "researcherVisible": true,
+   "thumbJobs": [],
+   "thumbs": [],
+   "targets": {
+    "n": 4,
+    "minH": 44,
+    "minW": 93,
+    "under44": 0,
+    "under24": 0
+   },
+   "text": {
+    "n": 34,
+    "minSize": 12,
+    "minRatio": 4.79,
+    "under16": 15,
+    "under13": 9,
+    "lowContrast": []
+   }
+  },
+  {
+   "view": "researcher",
+   "width": 1440,
+   "screen": "crisis",
+   "hScroll": false,
+   "researcherVisible": true,
+   "thumbJobs": [],
+   "thumbs": [],
+   "targets": {
+    "n": 2,
+    "minH": 44,
+    "minW": 84,
+    "under44": 0,
+    "under24": 0
+   },
+   "text": {
+    "n": 16,
+    "minSize": 12,
+    "minRatio": 4.53,
+    "under16": 8,
+    "under13": 4,
+    "lowContrast": []
+   }
+  },
+  {
+   "view": "researcher",
+   "width": 1440,
+   "screen": "next",
+   "hScroll": false,
+   "researcherVisible": true,
+   "thumbJobs": [],
+   "thumbs": [],
+   "targets": {
+    "n": 4,
+    "minH": 44,
+    "minW": 84,
+    "under44": 0,
+    "under24": 0
+   },
+   "text": {
+    "n": 36,
+    "minSize": 12,
+    "minRatio": 4.79,
+    "under16": 15,
+    "under13": 10,
+    "lowContrast": []
+   }
+  },
+  {
+   "view": "researcher",
+   "width": 1440,
+   "screen": "candidates",
+   "hScroll": false,
+   "researcherVisible": true,
+   "thumbJobs": [],
+   "thumbs": [],
+   "targets": {
+    "n": 6,
+    "minH": 44,
+    "minW": 95,
+    "under44": 0,
+    "under24": 0
+   },
+   "text": {
+    "n": 14,
+    "minSize": 13,
+    "minRatio": 5.57,
+    "under16": 6,
+    "under13": 0,
+    "lowContrast": []
+   }
+  },
+  {
+   "view": "researcher",
+   "width": 1440,
+   "screen": "adjust",
+   "hScroll": false,
+   "researcherVisible": true,
+   "thumbJobs": [
+    {
+     "n": 9,
+     "ms": 47,
+     "framesBetween": 0
+    }
+   ],
+   "thumbs": [
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "num",
+    "num",
+    "num",
+    "num",
+    "num",
+    "num"
+   ],
+   "targets": {
+    "n": 42,
+    "minH": 44,
+    "minW": 44,
+    "under44": 0,
+    "under24": 0
+   },
+   "text": {
+    "n": 31,
+    "minSize": 13,
+    "minRatio": 4.92,
+    "under16": 6,
+    "under13": 0,
+    "lowContrast": []
+   }
+  },
+  {
+   "view": "researcher",
+   "width": 1440,
+   "screen": "adjust_skipped",
+   "hScroll": false,
+   "researcherVisible": true,
+   "thumbJobs": [
+    {
+     "n": 9,
+     "ms": 38,
+     "framesBetween": 0
+    }
+   ],
+   "thumbs": [
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "num",
+    "num",
+    "num",
+    "num",
+    "num",
+    "num"
+   ],
+   "targets": {
+    "n": 42,
+    "minH": 44,
+    "minW": 44,
+    "under44": 0,
+    "under24": 0
+   },
+   "text": {
+    "n": 31,
+    "minSize": 13,
+    "minRatio": 4.92,
+    "under16": 6,
+    "under13": 0,
+    "lowContrast": []
+   }
+  },
+  {
+   "view": "researcher",
+   "width": 1440,
+   "screen": "premeasure",
+   "hScroll": false,
+   "researcherVisible": true,
+   "thumbJobs": [],
+   "thumbs": [],
+   "targets": {
+    "n": 74,
+    "minH": 44,
+    "minW": 65,
+    "under44": 0,
+    "under24": 0
+   },
+   "text": {
+    "n": 153,
+    "minSize": 13,
+    "minRatio": 4.92,
+    "under16": 78,
+    "under13": 0,
+    "lowContrast": []
+   }
+  },
+  {
+   "view": "researcher",
+   "width": 1440,
+   "screen": "done",
+   "hScroll": false,
+   "researcherVisible": true,
+   "thumbJobs": [],
+   "thumbs": [],
+   "targets": {
+    "n": 1,
+    "minH": 44,
+    "minW": 95,
+    "under44": 0,
+    "under24": 0
+   },
+   "text": {
+    "n": 8,
+    "minSize": 13,
+    "minRatio": 5.57,
+    "under16": 6,
+    "under13": 0,
+    "lowContrast": []
+   }
+  },
+  {
+   "view": "researcher",
+   "width": 1024,
+   "screen": "interview",
+   "hScroll": false,
+   "researcherVisible": true,
+   "thumbJobs": [],
+   "thumbs": [],
+   "targets": {
+    "n": 5,
+    "minH": 44,
+    "minW": 66,
+    "under44": 0,
+    "under24": 0
+   },
+   "text": {
+    "n": 21,
+    "minSize": 12,
+    "minRatio": 4.92,
+    "under16": 11,
+    "under13": 4,
+    "lowContrast": []
+   }
+  },
+  {
+   "view": "researcher",
+   "width": 1024,
+   "screen": "confirm",
+   "hScroll": false,
+   "researcherVisible": true,
+   "thumbJobs": [],
+   "thumbs": [],
+   "targets": {
+    "n": 4,
+    "minH": 44,
+    "minW": 93,
+    "under44": 0,
+    "under24": 0
+   },
+   "text": {
+    "n": 34,
+    "minSize": 12,
+    "minRatio": 4.79,
+    "under16": 15,
+    "under13": 9,
+    "lowContrast": []
+   }
+  },
+  {
+   "view": "researcher",
+   "width": 1024,
+   "screen": "crisis",
+   "hScroll": false,
+   "researcherVisible": true,
+   "thumbJobs": [],
+   "thumbs": [],
+   "targets": {
+    "n": 2,
+    "minH": 44,
+    "minW": 84,
+    "under44": 0,
+    "under24": 0
+   },
+   "text": {
+    "n": 16,
+    "minSize": 12,
+    "minRatio": 4.53,
+    "under16": 8,
+    "under13": 4,
+    "lowContrast": []
+   }
+  },
+  {
+   "view": "researcher",
+   "width": 1024,
+   "screen": "next",
+   "hScroll": false,
+   "researcherVisible": true,
+   "thumbJobs": [],
+   "thumbs": [],
+   "targets": {
+    "n": 4,
+    "minH": 44,
+    "minW": 84,
+    "under44": 0,
+    "under24": 0
+   },
+   "text": {
+    "n": 36,
+    "minSize": 12,
+    "minRatio": 4.79,
+    "under16": 15,
+    "under13": 10,
+    "lowContrast": []
+   }
+  },
+  {
+   "view": "researcher",
+   "width": 1024,
+   "screen": "candidates",
+   "hScroll": false,
+   "researcherVisible": true,
+   "thumbJobs": [],
+   "thumbs": [],
+   "targets": {
+    "n": 6,
+    "minH": 44,
+    "minW": 95,
+    "under44": 0,
+    "under24": 0
+   },
+   "text": {
+    "n": 14,
+    "minSize": 13,
+    "minRatio": 5.57,
+    "under16": 6,
+    "under13": 0,
+    "lowContrast": []
+   }
+  },
+  {
+   "view": "researcher",
+   "width": 1024,
+   "screen": "adjust",
+   "hScroll": false,
+   "researcherVisible": true,
+   "thumbJobs": [
+    {
+     "n": 9,
+     "ms": 53,
+     "framesBetween": 0
+    }
+   ],
+   "thumbs": [
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "num",
+    "num",
+    "num",
+    "num",
+    "num",
+    "num"
+   ],
+   "targets": {
+    "n": 42,
+    "minH": 44,
+    "minW": 44,
+    "under44": 0,
+    "under24": 0
+   },
+   "text": {
+    "n": 31,
+    "minSize": 13,
+    "minRatio": 4.92,
+    "under16": 6,
+    "under13": 0,
+    "lowContrast": []
+   }
+  },
+  {
+   "view": "researcher",
+   "width": 1024,
+   "screen": "adjust_skipped",
+   "hScroll": false,
+   "researcherVisible": true,
+   "thumbJobs": [
+    {
+     "n": 9,
+     "ms": 35,
+     "framesBetween": 0
+    }
+   ],
+   "thumbs": [
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "num",
+    "num",
+    "num",
+    "num",
+    "num",
+    "num"
+   ],
+   "targets": {
+    "n": 42,
+    "minH": 44,
+    "minW": 44,
+    "under44": 0,
+    "under24": 0
+   },
+   "text": {
+    "n": 31,
+    "minSize": 13,
+    "minRatio": 4.92,
+    "under16": 6,
+    "under13": 0,
+    "lowContrast": []
+   }
+  },
+  {
+   "view": "researcher",
+   "width": 1024,
+   "screen": "premeasure",
+   "hScroll": false,
+   "researcherVisible": true,
+   "thumbJobs": [],
+   "thumbs": [],
+   "targets": {
+    "n": 74,
+    "minH": 44,
+    "minW": 95,
+    "under44": 0,
+    "under24": 0
+   },
+   "text": {
+    "n": 153,
+    "minSize": 13,
+    "minRatio": 4.92,
+    "under16": 78,
+    "under13": 0,
+    "lowContrast": []
+   }
+  },
+  {
+   "view": "researcher",
+   "width": 1024,
+   "screen": "done",
+   "hScroll": false,
+   "researcherVisible": true,
+   "thumbJobs": [],
+   "thumbs": [],
+   "targets": {
+    "n": 1,
+    "minH": 44,
+    "minW": 95,
+    "under44": 0,
+    "under24": 0
+   },
+   "text": {
+    "n": 8,
+    "minSize": 13,
+    "minRatio": 5.57,
+    "under16": 6,
+    "under13": 0,
+    "lowContrast": []
+   }
+  },
+  {
+   "view": "researcher",
+   "width": 768,
+   "screen": "interview",
+   "hScroll": false,
+   "researcherVisible": true,
+   "thumbJobs": [],
+   "thumbs": [],
+   "targets": {
+    "n": 5,
+    "minH": 44,
+    "minW": 66,
+    "under44": 0,
+    "under24": 0
+   },
+   "text": {
+    "n": 21,
+    "minSize": 12,
+    "minRatio": 4.92,
+    "under16": 11,
+    "under13": 4,
+    "lowContrast": []
+   }
+  },
+  {
+   "view": "researcher",
+   "width": 768,
+   "screen": "confirm",
+   "hScroll": false,
+   "researcherVisible": true,
+   "thumbJobs": [],
+   "thumbs": [],
+   "targets": {
+    "n": 4,
+    "minH": 44,
+    "minW": 93,
+    "under44": 0,
+    "under24": 0
+   },
+   "text": {
+    "n": 34,
+    "minSize": 12,
+    "minRatio": 4.79,
+    "under16": 15,
+    "under13": 9,
+    "lowContrast": []
+   }
+  },
+  {
+   "view": "researcher",
+   "width": 768,
+   "screen": "crisis",
+   "hScroll": false,
+   "researcherVisible": true,
+   "thumbJobs": [],
+   "thumbs": [],
+   "targets": {
+    "n": 2,
+    "minH": 44,
+    "minW": 84,
+    "under44": 0,
+    "under24": 0
+   },
+   "text": {
+    "n": 16,
+    "minSize": 12,
+    "minRatio": 4.53,
+    "under16": 8,
+    "under13": 4,
+    "lowContrast": []
+   }
+  },
+  {
+   "view": "researcher",
+   "width": 768,
+   "screen": "next",
+   "hScroll": false,
+   "researcherVisible": true,
+   "thumbJobs": [],
+   "thumbs": [],
+   "targets": {
+    "n": 4,
+    "minH": 44,
+    "minW": 84,
+    "under44": 0,
+    "under24": 0
+   },
+   "text": {
+    "n": 36,
+    "minSize": 12,
+    "minRatio": 4.79,
+    "under16": 15,
+    "under13": 10,
+    "lowContrast": []
+   }
+  },
+  {
+   "view": "researcher",
+   "width": 768,
+   "screen": "candidates",
+   "hScroll": false,
+   "researcherVisible": true,
+   "thumbJobs": [],
+   "thumbs": [],
+   "targets": {
+    "n": 6,
+    "minH": 44,
+    "minW": 95,
+    "under44": 0,
+    "under24": 0
+   },
+   "text": {
+    "n": 14,
+    "minSize": 13,
+    "minRatio": 5.57,
+    "under16": 6,
+    "under13": 0,
+    "lowContrast": []
+   }
+  },
+  {
+   "view": "researcher",
+   "width": 768,
+   "screen": "adjust",
+   "hScroll": false,
+   "researcherVisible": true,
+   "thumbJobs": [
+    {
+     "n": 9,
+     "ms": 53,
+     "framesBetween": 0
+    }
+   ],
+   "thumbs": [
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "num",
+    "num",
+    "num",
+    "num",
+    "num",
+    "num"
+   ],
+   "targets": {
+    "n": 42,
+    "minH": 44,
+    "minW": 44,
+    "under44": 0,
+    "under24": 0
+   },
+   "text": {
+    "n": 31,
+    "minSize": 13,
+    "minRatio": 4.92,
+    "under16": 6,
+    "under13": 0,
+    "lowContrast": []
+   }
+  },
+  {
+   "view": "researcher",
+   "width": 768,
+   "screen": "adjust_skipped",
+   "hScroll": false,
+   "researcherVisible": true,
+   "thumbJobs": [
+    {
+     "n": 9,
+     "ms": 43,
+     "framesBetween": 0
+    }
+   ],
+   "thumbs": [
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "img",
+    "num",
+    "num",
+    "num",
+    "num",
+    "num",
+    "num"
+   ],
+   "targets": {
+    "n": 42,
+    "minH": 44,
+    "minW": 44,
+    "under44": 0,
+    "under24": 0
+   },
+   "text": {
+    "n": 31,
+    "minSize": 13,
+    "minRatio": 4.92,
+    "under16": 6,
+    "under13": 0,
+    "lowContrast": []
+   }
+  },
+  {
+   "view": "researcher",
+   "width": 768,
+   "screen": "premeasure",
+   "hScroll": false,
+   "researcherVisible": true,
+   "thumbJobs": [],
+   "thumbs": [],
+   "targets": {
+    "n": 74,
+    "minH": 44,
+    "minW": 73,
+    "under44": 0,
+    "under24": 0
+   },
+   "text": {
+    "n": 153,
+    "minSize": 13,
+    "minRatio": 4.92,
+    "under16": 78,
+    "under13": 0,
+    "lowContrast": []
+   }
+  },
+  {
+   "view": "researcher",
+   "width": 768,
+   "screen": "done",
+   "hScroll": false,
+   "researcherVisible": true,
+   "thumbJobs": [],
+   "thumbs": [],
+   "targets": {
+    "n": 1,
+    "minH": 44,
+    "minW": 95,
+    "under44": 0,
+    "under24": 0
+   },
+   "text": {
+    "n": 8,
+    "minSize": 13,
+    "minRatio": 5.57,
+    "under16": 6,
+    "under13": 0,
+    "lowContrast": []
+   }
+  }
+ ]
+}

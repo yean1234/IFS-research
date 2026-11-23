@@ -1,0 +1,1777 @@
+{
+ "label": "before",
+ "mode": "webgl",
+ "keyboard": null,
+ "metrics": [
+  {
+   "view": "participant",
+   "width": 1440,
+   "screen": "interview",
+   "hScroll": false,
+   "researcherVisible": false,
+   "thumbJobs": null,
+   "thumbs": [],
+   "targets": {
+    "n": 5,
+    "minH": 20,
+    "minW": 56,
+    "under44": 4,
+    "under24": 1
+   },
+   "text": {
+    "n": 15,
+    "minSize": 12.5,
+    "minRatio": 4.18,
+    "under16": 14,
+    "under13": 4,
+    "lowContrast": [
+     {
+      "el": "span#badge-condition.badge",
+      "ratio": 4.18,
+      "need": 4.5
+     }
+    ]
+   }
+  },
+  {
+   "view": "participant",
+   "width": 1440,
+   "screen": "confirm",
+   "hScroll": false,
+   "researcherVisible": false,
+   "thumbJobs": null,
+   "thumbs": [],
+   "targets": {
+    "n": 4,
+    "minH": 20,
+    "minW": 82,
+    "under44": 3,
+    "under24": 1
+   },
+   "text": {
+    "n": 24,
+    "minSize": 12.5,
+    "minRatio": 4.18,
+    "under16": 23,
+    "under13": 3,
+    "lowContrast": [
+     {
+      "el": "span#badge-condition.badge",
+      "ratio": 4.18,
+      "need": 4.5
+     }
+    ]
+   }
+  },
+  {
+   "view": "participant",
+   "width": 1440,
+   "screen": "crisis",
+   "hScroll": false,
+   "researcherVisible": false,
+   "thumbJobs": null,
+   "thumbs": [],
+   "targets": {
+    "n": 2,
+    "minH": 20,
+    "minW": 73,
+    "under44": 2,
+    "under24": 1
+   },
+   "text": {
+    "n": 12,
+    "minSize": 12.5,
+    "minRatio": 4.18,
+    "under16": 11,
+    "under13": 3,
+    "lowContrast": [
+     {
+      "el": "span#badge-condition.badge",
+      "ratio": 4.18,
+      "need": 4.5
+     }
+    ]
+   }
+  },
+  {
+   "view": "participant",
+   "width": 1440,
+   "screen": "next",
+   "hScroll": false,
+   "researcherVisible": false,
+   "thumbJobs": null,
+   "thumbs": [],
+   "targets": {
+    "n": 4,
+    "minH": 20,
+    "minW": 73,
+    "under44": 4,
+    "under24": 1
+   },
+   "text": {
+    "n": 25,
+    "minSize": 12.5,
+    "minRatio": 4.18,
+    "under16": 24,
+    "under13": 3,
+    "lowContrast": [
+     {
+      "el": "span#badge-condition.badge",
+      "ratio": 4.18,
+      "need": 4.5
+     }
+    ]
+   }
+  },
+  {
+   "view": "participant",
+   "width": 1440,
+   "screen": "candidates",
+   "hScroll": false,
+   "researcherVisible": false,
+   "thumbJobs": null,
+   "thumbs": [],
+   "targets": {
+    "n": 6,
+    "minH": 20,
+    "minW": 85,
+    "under44": 6,
+    "under24": 1
+   },
+   "text": {
+    "n": 13,
+    "minSize": 12.5,
+    "minRatio": 4.18,
+    "under16": 12,
+    "under13": 3,
+    "lowContrast": [
+     {
+      "el": "p.warning.draft-banner",
+      "ratio": 4.21,
+      "need": 4.5
+     },
+     {
+      "el": "span#badge-condition.badge",
+      "ratio": 4.18,
+      "need": 4.5
+     }
+    ]
+   }
+  },
+  {
+   "view": "participant",
+   "width": 1440,
+   "screen": "adjust",
+   "hScroll": false,
+   "researcherVisible": false,
+   "thumbJobs": null,
+   "thumbs": [],
+   "targets": {
+    "n": 42,
+    "minH": 20,
+    "minW": 24,
+    "under44": 42,
+    "under24": 1
+   },
+   "text": {
+    "n": 43,
+    "minSize": 12.5,
+    "minRatio": 4.18,
+    "under16": 42,
+    "under13": 7,
+    "lowContrast": [
+     {
+      "el": "p.warning.draft-banner",
+      "ratio": 4.21,
+      "need": 4.5
+     },
+     {
+      "el": "span#badge-condition.badge",
+      "ratio": 4.18,
+      "need": 4.5
+     }
+    ]
+   }
+  },
+  {
+   "view": "participant",
+   "width": 1440,
+   "screen": "adjust_skipped",
+   "hScroll": false,
+   "researcherVisible": false,
+   "thumbJobs": null,
+   "thumbs": [],
+   "targets": {
+    "n": 42,
+    "minH": 20,
+    "minW": 24,
+    "under44": 42,
+    "under24": 1
+   },
+   "text": {
+    "n": 43,
+    "minSize": 12.5,
+    "minRatio": 4.18,
+    "under16": 42,
+    "under13": 7,
+    "lowContrast": [
+     {
+      "el": "p.warning.draft-banner",
+      "ratio": 4.21,
+      "need": 4.5
+     },
+     {
+      "el": "span#badge-condition.badge",
+      "ratio": 4.18,
+      "need": 4.5
+     }
+    ]
+   }
+  },
+  {
+   "view": "participant",
+   "width": 1440,
+   "screen": "premeasure",
+   "hScroll": false,
+   "researcherVisible": false,
+   "thumbJobs": null,
+   "thumbs": [],
+   "targets": {
+    "n": 74,
+    "minH": 20,
+    "minW": 48,
+    "under44": 2,
+    "under24": 1
+   },
+   "text": {
+    "n": 152,
+    "minSize": 10.5,
+    "minRatio": 4.18,
+    "under16": 151,
+    "under13": 75,
+    "lowContrast": [
+     {
+      "el": "p.warning.draft-banner",
+      "ratio": 4.21,
+      "need": 4.5
+     },
+     {
+      "el": "span#badge-condition.badge",
+      "ratio": 4.18,
+      "need": 4.5
+     }
+    ]
+   }
+  },
+  {
+   "view": "participant",
+   "width": 1440,
+   "screen": "done",
+   "hScroll": false,
+   "researcherVisible": false,
+   "thumbJobs": null,
+   "thumbs": [],
+   "targets": {
+    "n": 1,
+    "minH": 20,
+    "minW": 85,
+    "under44": 1,
+    "under24": 1
+   },
+   "text": {
+    "n": 7,
+    "minSize": 12.5,
+    "minRatio": 4.18,
+    "under16": 6,
+    "under13": 3,
+    "lowContrast": [
+     {
+      "el": "p.warning.draft-banner",
+      "ratio": 4.21,
+      "need": 4.5
+     },
+     {
+      "el": "span#badge-condition.badge",
+      "ratio": 4.18,
+      "need": 4.5
+     }
+    ]
+   }
+  },
+  {
+   "view": "participant",
+   "width": 1024,
+   "screen": "interview",
+   "hScroll": false,
+   "researcherVisible": false,
+   "thumbJobs": null,
+   "thumbs": [],
+   "targets": {
+    "n": 5,
+    "minH": 20,
+    "minW": 56,
+    "under44": 4,
+    "under24": 1
+   },
+   "text": {
+    "n": 15,
+    "minSize": 12.5,
+    "minRatio": 4.18,
+    "under16": 14,
+    "under13": 4,
+    "lowContrast": [
+     {
+      "el": "span#badge-condition.badge",
+      "ratio": 4.18,
+      "need": 4.5
+     }
+    ]
+   }
+  },
+  {
+   "view": "participant",
+   "width": 1024,
+   "screen": "confirm",
+   "hScroll": false,
+   "researcherVisible": false,
+   "thumbJobs": null,
+   "thumbs": [],
+   "targets": {
+    "n": 4,
+    "minH": 20,
+    "minW": 82,
+    "under44": 3,
+    "under24": 1
+   },
+   "text": {
+    "n": 24,
+    "minSize": 12.5,
+    "minRatio": 4.18,
+    "under16": 23,
+    "under13": 3,
+    "lowContrast": [
+     {
+      "el": "span#badge-condition.badge",
+      "ratio": 4.18,
+      "need": 4.5
+     }
+    ]
+   }
+  },
+  {
+   "view": "participant",
+   "width": 1024,
+   "screen": "crisis",
+   "hScroll": false,
+   "researcherVisible": false,
+   "thumbJobs": null,
+   "thumbs": [],
+   "targets": {
+    "n": 2,
+    "minH": 20,
+    "minW": 73,
+    "under44": 2,
+    "under24": 1
+   },
+   "text": {
+    "n": 12,
+    "minSize": 12.5,
+    "minRatio": 4.18,
+    "under16": 11,
+    "under13": 3,
+    "lowContrast": [
+     {
+      "el": "span#badge-condition.badge",
+      "ratio": 4.18,
+      "need": 4.5
+     }
+    ]
+   }
+  },
+  {
+   "view": "participant",
+   "width": 1024,
+   "screen": "next",
+   "hScroll": false,
+   "researcherVisible": false,
+   "thumbJobs": null,
+   "thumbs": [],
+   "targets": {
+    "n": 4,
+    "minH": 20,
+    "minW": 73,
+    "under44": 4,
+    "under24": 1
+   },
+   "text": {
+    "n": 25,
+    "minSize": 12.5,
+    "minRatio": 4.18,
+    "under16": 24,
+    "under13": 3,
+    "lowContrast": [
+     {
+      "el": "span#badge-condition.badge",
+      "ratio": 4.18,
+      "need": 4.5
+     }
+    ]
+   }
+  },
+  {
+   "view": "participant",
+   "width": 1024,
+   "screen": "candidates",
+   "hScroll": false,
+   "researcherVisible": false,
+   "thumbJobs": null,
+   "thumbs": [],
+   "targets": {
+    "n": 6,
+    "minH": 20,
+    "minW": 85,
+    "under44": 6,
+    "under24": 1
+   },
+   "text": {
+    "n": 13,
+    "minSize": 12.5,
+    "minRatio": 4.18,
+    "under16": 12,
+    "under13": 3,
+    "lowContrast": [
+     {
+      "el": "p.warning.draft-banner",
+      "ratio": 4.21,
+      "need": 4.5
+     },
+     {
+      "el": "span#badge-condition.badge",
+      "ratio": 4.18,
+      "need": 4.5
+     }
+    ]
+   }
+  },
+  {
+   "view": "participant",
+   "width": 1024,
+   "screen": "adjust",
+   "hScroll": false,
+   "researcherVisible": false,
+   "thumbJobs": null,
+   "thumbs": [],
+   "targets": {
+    "n": 42,
+    "minH": 20,
+    "minW": 24,
+    "under44": 42,
+    "under24": 1
+   },
+   "text": {
+    "n": 43,
+    "minSize": 12.5,
+    "minRatio": 4.18,
+    "under16": 42,
+    "under13": 7,
+    "lowContrast": [
+     {
+      "el": "p.warning.draft-banner",
+      "ratio": 4.21,
+      "need": 4.5
+     },
+     {
+      "el": "span#badge-condition.badge",
+      "ratio": 4.18,
+      "need": 4.5
+     }
+    ]
+   }
+  },
+  {
+   "view": "participant",
+   "width": 1024,
+   "screen": "adjust_skipped",
+   "hScroll": false,
+   "researcherVisible": false,
+   "thumbJobs": null,
+   "thumbs": [],
+   "targets": {
+    "n": 42,
+    "minH": 20,
+    "minW": 24,
+    "under44": 42,
+    "under24": 1
+   },
+   "text": {
+    "n": 43,
+    "minSize": 12.5,
+    "minRatio": 4.18,
+    "under16": 42,
+    "under13": 7,
+    "lowContrast": [
+     {
+      "el": "p.warning.draft-banner",
+      "ratio": 4.21,
+      "need": 4.5
+     },
+     {
+      "el": "span#badge-condition.badge",
+      "ratio": 4.18,
+      "need": 4.5
+     }
+    ]
+   }
+  },
+  {
+   "view": "participant",
+   "width": 1024,
+   "screen": "premeasure",
+   "hScroll": false,
+   "researcherVisible": false,
+   "thumbJobs": null,
+   "thumbs": [],
+   "targets": {
+    "n": 74,
+    "minH": 20,
+    "minW": 48,
+    "under44": 2,
+    "under24": 1
+   },
+   "text": {
+    "n": 152,
+    "minSize": 10.5,
+    "minRatio": 4.18,
+    "under16": 151,
+    "under13": 75,
+    "lowContrast": [
+     {
+      "el": "p.warning.draft-banner",
+      "ratio": 4.21,
+      "need": 4.5
+     },
+     {
+      "el": "span#badge-condition.badge",
+      "ratio": 4.18,
+      "need": 4.5
+     }
+    ]
+   }
+  },
+  {
+   "view": "participant",
+   "width": 1024,
+   "screen": "done",
+   "hScroll": false,
+   "researcherVisible": false,
+   "thumbJobs": null,
+   "thumbs": [],
+   "targets": {
+    "n": 1,
+    "minH": 20,
+    "minW": 85,
+    "under44": 1,
+    "under24": 1
+   },
+   "text": {
+    "n": 7,
+    "minSize": 12.5,
+    "minRatio": 4.18,
+    "under16": 6,
+    "under13": 3,
+    "lowContrast": [
+     {
+      "el": "p.warning.draft-banner",
+      "ratio": 4.21,
+      "need": 4.5
+     },
+     {
+      "el": "span#badge-condition.badge",
+      "ratio": 4.18,
+      "need": 4.5
+     }
+    ]
+   }
+  },
+  {
+   "view": "participant",
+   "width": 768,
+   "screen": "interview",
+   "hScroll": false,
+   "researcherVisible": false,
+   "thumbJobs": null,
+   "thumbs": [],
+   "targets": {
+    "n": 5,
+    "minH": 20,
+    "minW": 56,
+    "under44": 4,
+    "under24": 1
+   },
+   "text": {
+    "n": 15,
+    "minSize": 12.5,
+    "minRatio": 4.18,
+    "under16": 14,
+    "under13": 4,
+    "lowContrast": [
+     {
+      "el": "span#badge-condition.badge",
+      "ratio": 4.18,
+      "need": 4.5
+     }
+    ]
+   }
+  },
+  {
+   "view": "participant",
+   "width": 768,
+   "screen": "confirm",
+   "hScroll": false,
+   "researcherVisible": false,
+   "thumbJobs": null,
+   "thumbs": [],
+   "targets": {
+    "n": 4,
+    "minH": 20,
+    "minW": 82,
+    "under44": 3,
+    "under24": 1
+   },
+   "text": {
+    "n": 24,
+    "minSize": 12.5,
+    "minRatio": 4.18,
+    "under16": 23,
+    "under13": 3,
+    "lowContrast": [
+     {
+      "el": "span#badge-condition.badge",
+      "ratio": 4.18,
+      "need": 4.5
+     }
+    ]
+   }
+  },
+  {
+   "view": "participant",
+   "width": 768,
+   "screen": "crisis",
+   "hScroll": false,
+   "researcherVisible": false,
+   "thumbJobs": null,
+   "thumbs": [],
+   "targets": {
+    "n": 2,
+    "minH": 20,
+    "minW": 73,
+    "under44": 2,
+    "under24": 1
+   },
+   "text": {
+    "n": 12,
+    "minSize": 12.5,
+    "minRatio": 4.18,
+    "under16": 11,
+    "under13": 3,
+    "lowContrast": [
+     {
+      "el": "span#badge-condition.badge",
+      "ratio": 4.18,
+      "need": 4.5
+     }
+    ]
+   }
+  },
+  {
+   "view": "participant",
+   "width": 768,
+   "screen": "next",
+   "hScroll": false,
+   "researcherVisible": false,
+   "thumbJobs": null,
+   "thumbs": [],
+   "targets": {
+    "n": 4,
+    "minH": 20,
+    "minW": 73,
+    "under44": 4,
+    "under24": 1
+   },
+   "text": {
+    "n": 25,
+    "minSize": 12.5,
+    "minRatio": 4.18,
+    "under16": 24,
+    "under13": 3,
+    "lowContrast": [
+     {
+      "el": "span#badge-condition.badge",
+      "ratio": 4.18,
+      "need": 4.5
+     }
+    ]
+   }
+  },
+  {
+   "view": "participant",
+   "width": 768,
+   "screen": "candidates",
+   "hScroll": false,
+   "researcherVisible": false,
+   "thumbJobs": null,
+   "thumbs": [],
+   "targets": {
+    "n": 6,
+    "minH": 20,
+    "minW": 85,
+    "under44": 6,
+    "under24": 1
+   },
+   "text": {
+    "n": 13,
+    "minSize": 12.5,
+    "minRatio": 4.18,
+    "under16": 12,
+    "under13": 3,
+    "lowContrast": [
+     {
+      "el": "p.warning.draft-banner",
+      "ratio": 4.21,
+      "need": 4.5
+     },
+     {
+      "el": "span#badge-condition.badge",
+      "ratio": 4.18,
+      "need": 4.5
+     }
+    ]
+   }
+  },
+  {
+   "view": "participant",
+   "width": 768,
+   "screen": "adjust",
+   "hScroll": false,
+   "researcherVisible": false,
+   "thumbJobs": null,
+   "thumbs": [],
+   "targets": {
+    "n": 42,
+    "minH": 20,
+    "minW": 24,
+    "under44": 42,
+    "under24": 1
+   },
+   "text": {
+    "n": 43,
+    "minSize": 12.5,
+    "minRatio": 4.18,
+    "under16": 42,
+    "under13": 7,
+    "lowContrast": [
+     {
+      "el": "p.warning.draft-banner",
+      "ratio": 4.21,
+      "need": 4.5
+     },
+     {
+      "el": "span#badge-condition.badge",
+      "ratio": 4.18,
+      "need": 4.5
+     }
+    ]
+   }
+  },
+  {
+   "view": "participant",
+   "width": 768,
+   "screen": "adjust_skipped",
+   "hScroll": false,
+   "researcherVisible": false,
+   "thumbJobs": null,
+   "thumbs": [],
+   "targets": {
+    "n": 42,
+    "minH": 20,
+    "minW": 24,
+    "under44": 42,
+    "under24": 1
+   },
+   "text": {
+    "n": 43,
+    "minSize": 12.5,
+    "minRatio": 4.18,
+    "under16": 42,
+    "under13": 7,
+    "lowContrast": [
+     {
+      "el": "p.warning.draft-banner",
+      "ratio": 4.21,
+      "need": 4.5
+     },
+     {
+      "el": "span#badge-condition.badge",
+      "ratio": 4.18,
+      "need": 4.5
+     }
+    ]
+   }
+  },
+  {
+   "view": "participant",
+   "width": 768,
+   "screen": "premeasure",
+   "hScroll": false,
+   "researcherVisible": false,
+   "thumbJobs": null,
+   "thumbs": [],
+   "targets": {
+    "n": 74,
+    "minH": 20,
+    "minW": 48,
+    "under44": 2,
+    "under24": 1
+   },
+   "text": {
+    "n": 152,
+    "minSize": 10.5,
+    "minRatio": 4.18,
+    "under16": 151,
+    "under13": 75,
+    "lowContrast": [
+     {
+      "el": "p.warning.draft-banner",
+      "ratio": 4.21,
+      "need": 4.5
+     },
+     {
+      "el": "span#badge-condition.badge",
+      "ratio": 4.18,
+      "need": 4.5
+     }
+    ]
+   }
+  },
+  {
+   "view": "participant",
+   "width": 768,
+   "screen": "done",
+   "hScroll": false,
+   "researcherVisible": false,
+   "thumbJobs": null,
+   "thumbs": [],
+   "targets": {
+    "n": 1,
+    "minH": 20,
+    "minW": 85,
+    "under44": 1,
+    "under24": 1
+   },
+   "text": {
+    "n": 7,
+    "minSize": 12.5,
+    "minRatio": 4.18,
+    "under16": 6,
+    "under13": 3,
+    "lowContrast": [
+     {
+      "el": "p.warning.draft-banner",
+      "ratio": 4.21,
+      "need": 4.5
+     },
+     {
+      "el": "span#badge-condition.badge",
+      "ratio": 4.18,
+      "need": 4.5
+     }
+    ]
+   }
+  },
+  {
+   "view": "researcher",
+   "width": 1440,
+   "screen": "interview",
+   "hScroll": false,
+   "researcherVisible": true,
+   "thumbJobs": null,
+   "thumbs": [],
+   "targets": {
+    "n": 5,
+    "minH": 20,
+    "minW": 56,
+    "under44": 4,
+    "under24": 1
+   },
+   "text": {
+    "n": 19,
+    "minSize": 11,
+    "minRatio": 4.18,
+    "under16": 18,
+    "under13": 8,
+    "lowContrast": [
+     {
+      "el": "span#badge-condition.badge",
+      "ratio": 4.18,
+      "need": 4.5
+     }
+    ]
+   }
+  },
+  {
+   "view": "researcher",
+   "width": 1440,
+   "screen": "confirm",
+   "hScroll": false,
+   "researcherVisible": true,
+   "thumbJobs": null,
+   "thumbs": [],
+   "targets": {
+    "n": 4,
+    "minH": 20,
+    "minW": 82,
+    "under44": 3,
+    "under24": 1
+   },
+   "text": {
+    "n": 33,
+    "minSize": 11,
+    "minRatio": 4.18,
+    "under16": 32,
+    "under13": 12,
+    "lowContrast": [
+     {
+      "el": "span#badge-condition.badge",
+      "ratio": 4.18,
+      "need": 4.5
+     }
+    ]
+   }
+  },
+  {
+   "view": "researcher",
+   "width": 1440,
+   "screen": "crisis",
+   "hScroll": false,
+   "researcherVisible": true,
+   "thumbJobs": null,
+   "thumbs": [],
+   "targets": {
+    "n": 2,
+    "minH": 20,
+    "minW": 73,
+    "under44": 2,
+    "under24": 1
+   },
+   "text": {
+    "n": 16,
+    "minSize": 11,
+    "minRatio": 4.18,
+    "under16": 15,
+    "under13": 7,
+    "lowContrast": [
+     {
+      "el": "span#badge-condition.badge",
+      "ratio": 4.18,
+      "need": 4.5
+     }
+    ]
+   }
+  },
+  {
+   "view": "researcher",
+   "width": 1440,
+   "screen": "next",
+   "hScroll": false,
+   "researcherVisible": true,
+   "thumbJobs": null,
+   "thumbs": [],
+   "targets": {
+    "n": 4,
+    "minH": 20,
+    "minW": 73,
+    "under44": 4,
+    "under24": 1
+   },
+   "text": {
+    "n": 35,
+    "minSize": 11,
+    "minRatio": 4.18,
+    "under16": 34,
+    "under13": 13,
+    "lowContrast": [
+     {
+      "el": "span#badge-condition.badge",
+      "ratio": 4.18,
+      "need": 4.5
+     }
+    ]
+   }
+  },
+  {
+   "view": "researcher",
+   "width": 1440,
+   "screen": "candidates",
+   "hScroll": false,
+   "researcherVisible": true,
+   "thumbJobs": null,
+   "thumbs": [],
+   "targets": {
+    "n": 6,
+    "minH": 20,
+    "minW": 85,
+    "under44": 6,
+    "under24": 1
+   },
+   "text": {
+    "n": 13,
+    "minSize": 12.5,
+    "minRatio": 4.18,
+    "under16": 12,
+    "under13": 3,
+    "lowContrast": [
+     {
+      "el": "p.warning.draft-banner",
+      "ratio": 4.21,
+      "need": 4.5
+     },
+     {
+      "el": "span#badge-condition.badge",
+      "ratio": 4.18,
+      "need": 4.5
+     }
+    ]
+   }
+  },
+  {
+   "view": "researcher",
+   "width": 1440,
+   "screen": "adjust",
+   "hScroll": false,
+   "researcherVisible": true,
+   "thumbJobs": null,
+   "thumbs": [],
+   "targets": {
+    "n": 42,
+    "minH": 20,
+    "minW": 24,
+    "under44": 42,
+    "under24": 1
+   },
+   "text": {
+    "n": 43,
+    "minSize": 12.5,
+    "minRatio": 4.18,
+    "under16": 42,
+    "under13": 7,
+    "lowContrast": [
+     {
+      "el": "p.warning.draft-banner",
+      "ratio": 4.21,
+      "need": 4.5
+     },
+     {
+      "el": "span#badge-condition.badge",
+      "ratio": 4.18,
+      "need": 4.5
+     }
+    ]
+   }
+  },
+  {
+   "view": "researcher",
+   "width": 1440,
+   "screen": "adjust_skipped",
+   "hScroll": false,
+   "researcherVisible": true,
+   "thumbJobs": null,
+   "thumbs": [],
+   "targets": {
+    "n": 42,
+    "minH": 20,
+    "minW": 24,
+    "under44": 42,
+    "under24": 1
+   },
+   "text": {
+    "n": 43,
+    "minSize": 12.5,
+    "minRatio": 4.18,
+    "under16": 42,
+    "under13": 7,
+    "lowContrast": [
+     {
+      "el": "p.warning.draft-banner",
+      "ratio": 4.21,
+      "need": 4.5
+     },
+     {
+      "el": "span#badge-condition.badge",
+      "ratio": 4.18,
+      "need": 4.5
+     }
+    ]
+   }
+  },
+  {
+   "view": "researcher",
+   "width": 1440,
+   "screen": "premeasure",
+   "hScroll": false,
+   "researcherVisible": true,
+   "thumbJobs": null,
+   "thumbs": [],
+   "targets": {
+    "n": 74,
+    "minH": 20,
+    "minW": 48,
+    "under44": 2,
+    "under24": 1
+   },
+   "text": {
+    "n": 152,
+    "minSize": 10.5,
+    "minRatio": 4.18,
+    "under16": 151,
+    "under13": 75,
+    "lowContrast": [
+     {
+      "el": "p.warning.draft-banner",
+      "ratio": 4.21,
+      "need": 4.5
+     },
+     {
+      "el": "span#badge-condition.badge",
+      "ratio": 4.18,
+      "need": 4.5
+     }
+    ]
+   }
+  },
+  {
+   "view": "researcher",
+   "width": 1440,
+   "screen": "done",
+   "hScroll": false,
+   "researcherVisible": true,
+   "thumbJobs": null,
+   "thumbs": [],
+   "targets": {
+    "n": 1,
+    "minH": 20,
+    "minW": 85,
+    "under44": 1,
+    "under24": 1
+   },
+   "text": {
+    "n": 7,
+    "minSize": 12.5,
+    "minRatio": 4.18,
+    "under16": 6,
+    "under13": 3,
+    "lowContrast": [
+     {
+      "el": "p.warning.draft-banner",
+      "ratio": 4.21,
+      "need": 4.5
+     },
+     {
+      "el": "span#badge-condition.badge",
+      "ratio": 4.18,
+      "need": 4.5
+     }
+    ]
+   }
+  },
+  {
+   "view": "researcher",
+   "width": 1024,
+   "screen": "interview",
+   "hScroll": false,
+   "researcherVisible": true,
+   "thumbJobs": null,
+   "thumbs": [],
+   "targets": {
+    "n": 5,
+    "minH": 20,
+    "minW": 56,
+    "under44": 4,
+    "under24": 1
+   },
+   "text": {
+    "n": 19,
+    "minSize": 11,
+    "minRatio": 4.18,
+    "under16": 18,
+    "under13": 8,
+    "lowContrast": [
+     {
+      "el": "span#badge-condition.badge",
+      "ratio": 4.18,
+      "need": 4.5
+     }
+    ]
+   }
+  },
+  {
+   "view": "researcher",
+   "width": 1024,
+   "screen": "confirm",
+   "hScroll": false,
+   "researcherVisible": true,
+   "thumbJobs": null,
+   "thumbs": [],
+   "targets": {
+    "n": 4,
+    "minH": 20,
+    "minW": 82,
+    "under44": 3,
+    "under24": 1
+   },
+   "text": {
+    "n": 33,
+    "minSize": 11,
+    "minRatio": 4.18,
+    "under16": 32,
+    "under13": 12,
+    "lowContrast": [
+     {
+      "el": "span#badge-condition.badge",
+      "ratio": 4.18,
+      "need": 4.5
+     }
+    ]
+   }
+  },
+  {
+   "view": "researcher",
+   "width": 1024,
+   "screen": "crisis",
+   "hScroll": false,
+   "researcherVisible": true,
+   "thumbJobs": null,
+   "thumbs": [],
+   "targets": {
+    "n": 2,
+    "minH": 20,
+    "minW": 73,
+    "under44": 2,
+    "under24": 1
+   },
+   "text": {
+    "n": 16,
+    "minSize": 11,
+    "minRatio": 4.18,
+    "under16": 15,
+    "under13": 7,
+    "lowContrast": [
+     {
+      "el": "span#badge-condition.badge",
+      "ratio": 4.18,
+      "need": 4.5
+     }
+    ]
+   }
+  },
+  {
+   "view": "researcher",
+   "width": 1024,
+   "screen": "next",
+   "hScroll": false,
+   "researcherVisible": true,
+   "thumbJobs": null,
+   "thumbs": [],
+   "targets": {
+    "n": 4,
+    "minH": 20,
+    "minW": 73,
+    "under44": 4,
+    "under24": 1
+   },
+   "text": {
+    "n": 35,
+    "minSize": 11,
+    "minRatio": 4.18,
+    "under16": 34,
+    "under13": 13,
+    "lowContrast": [
+     {
+      "el": "span#badge-condition.badge",
+      "ratio": 4.18,
+      "need": 4.5
+     }
+    ]
+   }
+  },
+  {
+   "view": "researcher",
+   "width": 1024,
+   "screen": "candidates",
+   "hScroll": false,
+   "researcherVisible": true,
+   "thumbJobs": null,
+   "thumbs": [],
+   "targets": {
+    "n": 6,
+    "minH": 20,
+    "minW": 85,
+    "under44": 6,
+    "under24": 1
+   },
+   "text": {
+    "n": 13,
+    "minSize": 12.5,
+    "minRatio": 4.18,
+    "under16": 12,
+    "under13": 3,
+    "lowContrast": [
+     {
+      "el": "p.warning.draft-banner",
+      "ratio": 4.21,
+      "need": 4.5
+     },
+     {
+      "el": "span#badge-condition.badge",
+      "ratio": 4.18,
+      "need": 4.5
+     }
+    ]
+   }
+  },
+  {
+   "view": "researcher",
+   "width": 1024,
+   "screen": "adjust",
+   "hScroll": false,
+   "researcherVisible": true,
+   "thumbJobs": null,
+   "thumbs": [],
+   "targets": {
+    "n": 42,
+    "minH": 20,
+    "minW": 24,
+    "under44": 42,
+    "under24": 1
+   },
+   "text": {
+    "n": 43,
+    "minSize": 12.5,
+    "minRatio": 4.18,
+    "under16": 42,
+    "under13": 7,
+    "lowContrast": [
+     {
+      "el": "p.warning.draft-banner",
+      "ratio": 4.21,
+      "need": 4.5
+     },
+     {
+      "el": "span#badge-condition.badge",
+      "ratio": 4.18,
+      "need": 4.5
+     }
+    ]
+   }
+  },
+  {
+   "view": "researcher",
+   "width": 1024,
+   "screen": "adjust_skipped",
+   "hScroll": false,
+   "researcherVisible": true,
+   "thumbJobs": null,
+   "thumbs": [],
+   "targets": {
+    "n": 42,
+    "minH": 20,
+    "minW": 24,
+    "under44": 42,
+    "under24": 1
+   },
+   "text": {
+    "n": 43,
+    "minSize": 12.5,
+    "minRatio": 4.18,
+    "under16": 42,
+    "under13": 7,
+    "lowContrast": [
+     {
+      "el": "p.warning.draft-banner",
+      "ratio": 4.21,
+      "need": 4.5
+     },
+     {
+      "el": "span#badge-condition.badge",
+      "ratio": 4.18,
+      "need": 4.5
+     }
+    ]
+   }
+  },
+  {
+   "view": "researcher",
+   "width": 1024,
+   "screen": "premeasure",
+   "hScroll": false,
+   "researcherVisible": true,
+   "thumbJobs": null,
+   "thumbs": [],
+   "targets": {
+    "n": 74,
+    "minH": 20,
+    "minW": 48,
+    "under44": 2,
+    "under24": 1
+   },
+   "text": {
+    "n": 152,
+    "minSize": 10.5,
+    "minRatio": 4.18,
+    "under16": 151,
+    "under13": 75,
+    "lowContrast": [
+     {
+      "el": "p.warning.draft-banner",
+      "ratio": 4.21,
+      "need": 4.5
+     },
+     {
+      "el": "span#badge-condition.badge",
+      "ratio": 4.18,
+      "need": 4.5
+     }
+    ]
+   }
+  },
+  {
+   "view": "researcher",
+   "width": 1024,
+   "screen": "done",
+   "hScroll": false,
+   "researcherVisible": true,
+   "thumbJobs": null,
+   "thumbs": [],
+   "targets": {
+    "n": 1,
+    "minH": 20,
+    "minW": 85,
+    "under44": 1,
+    "under24": 1
+   },
+   "text": {
+    "n": 7,
+    "minSize": 12.5,
+    "minRatio": 4.18,
+    "under16": 6,
+    "under13": 3,
+    "lowContrast": [
+     {
+      "el": "p.warning.draft-banner",
+      "ratio": 4.21,
+      "need": 4.5
+     },
+     {
+      "el": "span#badge-condition.badge",
+      "ratio": 4.18,
+      "need": 4.5
+     }
+    ]
+   }
+  },
+  {
+   "view": "researcher",
+   "width": 768,
+   "screen": "interview",
+   "hScroll": false,
+   "researcherVisible": true,
+   "thumbJobs": null,
+   "thumbs": [],
+   "targets": {
+    "n": 5,
+    "minH": 20,
+    "minW": 56,
+    "under44": 4,
+    "under24": 1
+   },
+   "text": {
+    "n": 19,
+    "minSize": 11,
+    "minRatio": 4.18,
+    "under16": 18,
+    "under13": 8,
+    "lowContrast": [
+     {
+      "el": "span#badge-condition.badge",
+      "ratio": 4.18,
+      "need": 4.5
+     }
+    ]
+   }
+  },
+  {
+   "view": "researcher",
+   "width": 768,
+   "screen": "confirm",
+   "hScroll": false,
+   "researcherVisible": true,
+   "thumbJobs": null,
+   "thumbs": [],
+   "targets": {
+    "n": 4,
+    "minH": 20,
+    "minW": 82,
+    "under44": 3,
+    "under24": 1
+   },
+   "text": {
+    "n": 33,
+    "minSize": 11,
+    "minRatio": 4.18,
+    "under16": 32,
+    "under13": 12,
+    "lowContrast": [
+     {
+      "el": "span#badge-condition.badge",
+      "ratio": 4.18,
+      "need": 4.5
+     }
+    ]
+   }
+  },
+  {
+   "view": "researcher",
+   "width": 768,
+   "screen": "crisis",
+   "hScroll": false,
+   "researcherVisible": true,
+   "thumbJobs": null,
+   "thumbs": [],
+   "targets": {
+    "n": 2,
+    "minH": 20,
+    "minW": 73,
+    "under44": 2,
+    "under24": 1
+   },
+   "text": {
+    "n": 16,
+    "minSize": 11,
+    "minRatio": 4.18,
+    "under16": 15,
+    "under13": 7,
+    "lowContrast": [
+     {
+      "el": "span#badge-condition.badge",
+      "ratio": 4.18,
+      "need": 4.5
+     }
+    ]
+   }
+  },
+  {
+   "view": "researcher",
+   "width": 768,
+   "screen": "next",
+   "hScroll": false,
+   "researcherVisible": true,
+   "thumbJobs": null,
+   "thumbs": [],
+   "targets": {
+    "n": 4,
+    "minH": 20,
+    "minW": 73,
+    "under44": 4,
+    "under24": 1
+   },
+   "text": {
+    "n": 35,
+    "minSize": 11,
+    "minRatio": 4.18,
+    "under16": 34,
+    "under13": 13,
+    "lowContrast": [
+     {
+      "el": "span#badge-condition.badge",
+      "ratio": 4.18,
+      "need": 4.5
+     }
+    ]
+   }
+  },
+  {
+   "view": "researcher",
+   "width": 768,
+   "screen": "candidates",
+   "hScroll": false,
+   "researcherVisible": true,
+   "thumbJobs": null,
+   "thumbs": [],
+   "targets": {
+    "n": 6,
+    "minH": 20,
+    "minW": 85,
+    "under44": 6,
+    "under24": 1
+   },
+   "text": {
+    "n": 13,
+    "minSize": 12.5,
+    "minRatio": 4.18,
+    "under16": 12,
+    "under13": 3,
+    "lowContrast": [
+     {
+      "el": "p.warning.draft-banner",
+      "ratio": 4.21,
+      "need": 4.5
+     },
+     {
+      "el": "span#badge-condition.badge",
+      "ratio": 4.18,
+      "need": 4.5
+     }
+    ]
+   }
+  },
+  {
+   "view": "researcher",
+   "width": 768,
+   "screen": "adjust",
+   "hScroll": false,
+   "researcherVisible": true,
+   "thumbJobs": null,
+   "thumbs": [],
+   "targets": {
+    "n": 42,
+    "minH": 20,
+    "minW": 24,
+    "under44": 42,
+    "under24": 1
+   },
+   "text": {
+    "n": 43,
+    "minSize": 12.5,
+    "minRatio": 4.18,
+    "under16": 42,
+    "under13": 7,
+    "lowContrast": [
+     {
+      "el": "p.warning.draft-banner",
+      "ratio": 4.21,
+      "need": 4.5
+     },
+     {
+      "el": "span#badge-condition.badge",
+      "ratio": 4.18,
+      "need": 4.5
+     }
+    ]
+   }
+  },
+  {
+   "view": "researcher",
+   "width": 768,
+   "screen": "adjust_skipped",
+   "hScroll": false,
+   "researcherVisible": true,
+   "thumbJobs": null,
+   "thumbs": [],
+   "targets": {
+    "n": 42,
+    "minH": 20,
+    "minW": 24,
+    "under44": 42,
+    "under24": 1
+   },
+   "text": {
+    "n": 43,
+    "minSize": 12.5,
+    "minRatio": 4.18,
+    "under16": 42,
+    "under13": 7,
+    "lowContrast": [
+     {
+      "el": "p.warning.draft-banner",
+      "ratio": 4.21,
+      "need": 4.5
+     },
+     {
+      "el": "span#badge-condition.badge",
+      "ratio": 4.18,
+      "need": 4.5
+     }
+    ]
+   }
+  },
+  {
+   "view": "researcher",
+   "width": 768,
+   "screen": "premeasure",
+   "hScroll": false,
+   "researcherVisible": true,
+   "thumbJobs": null,
+   "thumbs": [],
+   "targets": {
+    "n": 74,
+    "minH": 20,
+    "minW": 48,
+    "under44": 2,
+    "under24": 1
+   },
+   "text": {
+    "n": 152,
+    "minSize": 10.5,
+    "minRatio": 4.18,
+    "under16": 151,
+    "under13": 75,
+    "lowContrast": [
+     {
+      "el": "p.warning.draft-banner",
+      "ratio": 4.21,
+      "need": 4.5
+     },
+     {
+      "el": "span#badge-condition.badge",
+      "ratio": 4.18,
+      "need": 4.5
+     }
+    ]
+   }
+  },
+  {
+   "view": "researcher",
+   "width": 768,
+   "screen": "done",
+   "hScroll": false,
+   "researcherVisible": true,
+   "thumbJobs": null,
+   "thumbs": [],
+   "targets": {
+    "n": 1,
+    "minH": 20,
+    "minW": 85,
+    "under44": 1,
+    "under24": 1
+   },
+   "text": {
+    "n": 7,
+    "minSize": 12.5,
+    "minRatio": 4.18,
+    "under16": 6,
+    "under13": 3,
+    "lowContrast": [
+     {
+      "el": "p.warning.draft-banner",
+      "ratio": 4.21,
+      "need": 4.5
+     },
+     {
+      "el": "span#badge-condition.badge",
+      "ratio": 4.18,
+      "need": 4.5
+     }
+    ]
+   }
+  }
+ ]
+}
