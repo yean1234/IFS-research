@@ -1,0 +1,107 @@
+[
+ {
+  "id": "D1",
+  "text": "물방울이 있어요.",
+  "base": {
+   "requested": "drop",
+   "status": "applied",
+   "shape": "drop",
+   "rule": "drop/1",
+   "variant": {},
+   "variantDefaults": [],
+   "seed": 0,
+   "parameters": {
+    "rows": 24.0,
+    "segments": 32.0
+   }
+  },
+  "variant": null,
+  "formType": null,
+  "renderPath": "base:drop",
+  "visiblePixels": 10723,
+  "silhouette": {
+   "circularity": 0.89,
+   "components": 1,
+   "edgeFalloffPx": 0.68,
+   "maskPixels": 10607
+  },
+  "contrastDeltaL": 8.99,
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 1536,
+  "trianglesPerEyeEstimate": 6544,
+  "baseNotes": [
+   "form.base=drop: 형상 프리셋 기본값 — 절차 메시(규칙 drop/1, 변형 없음, seed 0, rows 24, segments 32). 윤곽만(색·무늬·발광·고유 움직임 없음), 정점 변위 0, 노이즈 크기 1.6(거칠기 얼룩·침식 무늬). 경계 상자 가장 긴 변 1 × 기본 크기"
+  ]
+ },
+ {
+  "id": "D2",
+  "text": "방울 같은 게 맺혀 있어요. 파란색이에요.",
+  "base": {
+   "requested": "drop",
+   "status": "applied",
+   "shape": "drop",
+   "rule": "drop/1",
+   "variant": {},
+   "variantDefaults": [],
+   "seed": 0,
+   "parameters": {
+    "rows": 24.0,
+    "segments": 32.0
+   }
+  },
+  "variant": null,
+  "formType": "blob",
+  "renderPath": "base:drop",
+  "visiblePixels": 10723,
+  "silhouette": {
+   "circularity": 0.891,
+   "components": 1,
+   "edgeFalloffPx": 0.68,
+   "maskPixels": 10631
+  },
+  "contrastDeltaL": -10.75,
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 1536,
+  "trianglesPerEyeEstimate": 6544,
+  "baseNotes": [
+   "form.base=drop: 형상 프리셋 기본값 — 절차 메시(규칙 drop/1, 변형 없음, seed 0, rows 24, segments 32). 윤곽만(색·무늬·발광·고유 움직임 없음), 정점 변위 0, 노이즈 크기 1.6(거칠기 얼룩·침식 무늬). 경계 상자 가장 긴 변 1 × 기본 크기"
+  ]
+ },
+ {
+  "id": "D3",
+  "text": "커다란 물방울이 있어요. 투명해요.",
+  "base": {
+   "requested": "drop",
+   "status": "applied",
+   "shape": "drop",
+   "rule": "drop/1",
+   "variant": {},
+   "variantDefaults": [],
+   "seed": 0,
+   "parameters": {
+    "rows": 24.0,
+    "segments": 32.0
+   }
+  },
+  "variant": null,
+  "formType": null,
+  "renderPath": "base:drop",
+  "visiblePixels": 24209,
+  "silhouette": {
+   "circularity": 0.875,
+   "components": 1,
+   "edgeFalloffPx": 0.49,
+   "maskPixels": 24034
+  },
+  "contrastDeltaL": -3.27,
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 1536,
+  "trianglesPerEyeEstimate": 1936,
+  "baseNotes": [
+   "form.base=drop: 형상 프리셋 기본값 — 절차 메시(규칙 drop/1, 변형 없음, seed 0, rows 24, segments 32). 윤곽만(색·무늬·발광·고유 움직임 없음), 정점 변위 0, 노이즈 크기 1.6(거칠기 얼룩·침식 무늬). 경계 상자 가장 긴 변 1 × 기본 크기"
+  ]
+ }
+]

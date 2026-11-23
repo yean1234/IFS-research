@@ -121,6 +121,7 @@ class SceneSpecBuilderV2(SceneSpecBuilderV1):
                                             if not code.startswith("_") and code != "notListed" for w in ws}
         self.bs_roles = frozenset(bs["rules"]["roles"])
         self.bs_similes = bool(bs["rules"]["similes"])
+        self.bs_numerals = frozenset(bs["rules"]["numeralDeterminers"])
         self.bs_cues: dict[str, dict] = {k: v for k, v in bs["variantCues"].items() if not k.startswith("_")}
 
     # ── 외부 정보 ───────────────────────────────────────────────────────────────
@@ -198,6 +199,12 @@ class SceneSpecBuilderV2(SceneSpecBuilderV1):
         context_sents = self._context_sentences(doc) | self._situation_sentences(doc, valued)
         regions = self._situation_regions(doc)
         sim_src = {sm["srcIndex"]: sm for sm in self._similes(text, toks)} if self.bs_similes else {}
+        # 이미 다른 값의 근거로 쓴 말('컵만 해요'·'신발 상자만 해요'의 크기 비교 기준, 부분·맥락 기록)은 형상 이름이 아니다.
+        # form.type 근거는 빼고 본다('방울' = blob이면서 물방울 모양)
+        used: set[int] = set()
+        _span_chars({k: v for k, v in (spec.get("_provenance") or {}).items() if k != "form.type"}, used)
+        for key in ("_measurements", "_parts", "_context"):
+            _span_chars(spec.get(key), used)
         hits: list[dict] = []
         i = 0
         while i < n:
@@ -217,6 +224,17 @@ class SceneSpecBuilderV2(SceneSpecBuilderV1):
                 continue
             if doc.sent[b] in context_sents or any(s0 <= a and b < k0 for s0, k0 in regions):
                 continue                                         # 회상·상황 문장의 명사
+            if any(c in used for c in range(s, e)):
+                continue                                         # 크기 비교 기준 등 다른 값의 근거
+            if a > 0 and doc.eoj[a - 1] != doc.eoj[a] and (toks[a - 1].base_tag in ("NR", "SN") or (
+                    toks[a - 1].base_tag == "MM" and toks[a - 1].form in self.bs_numerals)):
+                continue                                         # '한 컵'·'두 그릇' — 수량 단위
+            k = b + 1
+            while k < n and toks[k].base_tag == "XSN":
+                k += 1
+            if k < n and ((toks[k].form == "만" and toks[k].base_tag == "JX" and k + 1 < n and toks[k + 1].form == "하")
+                          or (toks[k].form in ("만큼", "정도", "크기") and doc.eoj[k] in (doc.eoj[b], doc.eoj[b] + 1))):
+                continue                                         # '신발 상자만 해요'·'컵 정도' — 크기 비교 기준
             negated = Lexicon._negated(toks, b) or self._noun_negated(doc, b)
             sim = sim_src.get(b)
             if sim is None and self._base_role(doc, b) not in self.bs_roles:

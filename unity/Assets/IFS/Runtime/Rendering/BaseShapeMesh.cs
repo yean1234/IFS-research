@@ -25,6 +25,7 @@ namespace IFS.SceneSpec
             { BaseShapes.Line, "line/1" },
             { BaseShapes.Sheet, "sheet/1" },
             { BaseShapes.Flame, "flame/1" },
+            { BaseShapes.Drop, "drop/1" },
         };
 
         /// <summary>형상의 생성 규칙 버전. 만들지 않은 형상이면 null(로더가 그리지 않고 기록한다).</summary>

@@ -1,6 +1,6 @@
 {
   "lexiconId": "base-shapes-v1",
-  "lexiconVersion": "0.4.0",
+  "lexiconVersion": "0.5.0",
   "status": "draft",
   "date": "2026-11-23",
   "description": "낱말 → 범주 → 기본 형상(form.base, SceneSpec 2.2.0). 매핑 v2(chatbot/ifs_chatbot/scene_builder_v2.py)만 읽는다. 문헌을 참고해 연구팀이 정한 목록이며 IFS가 정한 범주가 아니다(docs/asset-plan.md, decisions G6·G21·G30). 모든 낱말은 사전 항목 초안이다 — 실제 참여자 발화로 확인하기 전에는 확정하지 않는다.",
@@ -20,6 +20,9 @@
     "scopeNote": "회상·상황 문장(_unlisted_nouns의 value.scope = context와 같은 판정)의 명사는 base로 쓰지 않는다.",
     "negation": "부정된 명사('불꽃은 아니에요', '실은 없어요')는 base로 쓰지 않고 _negated에 남긴다(1층 사전의 부정 판정과 같은 규칙).",
     "multiple": "base가 되는 명사가 둘 이상이면 charSpan이 가장 앞선 것을 쓴다. 같은 형상이면 근거에 더하고, 다른 형상이면 _alternatives(reason later_mention)에 남긴다(docs/shape-mapping.md 규칙 1·2와 같은 방향).",
+    "notUsedElsewhere": "다른 슬롯 값(form.type 제외)·_measurements·_parts·_context의 근거로 이미 쓴 말, 그리고 크기 비교 꼴(명사 + '만 하다', 명사 + 만큼·정도·크기)의 명사는 base로 쓰지 않는다('컵만 해요'·'신발 상자만 해요'·'컵 정도'는 크기 비교 기준이지 형상 이름이 아님).",
+    "numeralDeterminers": ["한", "두", "세", "네", "다섯", "여섯", "일곱", "여덟", "아홉", "열", "몇", "여러", "한두", "두세", "서너", "반"],
+    "numeralNote": "바로 앞 어절이 수사(NR)·숫자(SN)·수 관형사(위 목록, Kiwi MM)이면 수량 단위('한 컵쯤', '두 그릇')라 base가 아니다. 지시 관형사('그 컵이')는 막지 않는다.",
     "match": "명사 연속 전체 글자가 표제어와 같을 때만 맞춘다(뒷부분만 맞추지 않음: '종이컵'은 '컵'이 아니다, '비눗방울'은 '방울'이 아니다)."
   },
   "bases": {
@@ -68,7 +71,10 @@
     {"lemma": "불길", "base": "flame", "source": "tr:De Nicola"},
     {"lemma": "불씨", "base": "flame", "source": "added"},
     {"lemma": "촛불", "base": "flame", "source": "added"},
-    {"lemma": "모닥불", "base": "flame", "source": "added", "note": "장작 없이 불꽃 모양만(docs/asset-plan.md 2-6절)"}
+    {"lemma": "모닥불", "base": "flame", "source": "added", "note": "장작 없이 불꽃 모양만(docs/asset-plan.md 2-6절)"},
+    {"lemma": "물방울", "base": "drop", "source": "added"},
+    {"lemma": "방울", "base": "drop", "source": "added", "note": "1층 사전이 form.type = blob으로도 넣는다 — blob은 기본 형상을 그리므로 물방울 모양이 그려짐. '비눗방울'처럼 붙은 낱말은 맞지 않음. 방울(종) 뜻과 같은 꼴"},
+    {"lemma": "이슬", "base": "drop", "source": "added"}
   ],
   "notIncluded": [
     {"lemma": "병", "reason": "질병·화병과 형태가 같다(docs/asset-plan.md 3-3절). 물병·유리병·꽃병처럼 합성어만 넣었다"},
@@ -82,6 +88,7 @@
     {"lemma": "불", "reason": "넣지 않음(D6에서 정함). docs/asset-plan.md 3-2절은 flame | 빛 갈림으로 두었지만 빛 읽기는 glow 검토(다음 묶음)라 만들 수 없고, 맨 낱말 '불'은 '불이 난 것처럼 화끈거려요'처럼 몸 감각 관용 표현의 주어로 자주 나와(형태 조사 4-2절: 언어 자료와 심상 보고는 다름) 주어 규칙만으로는 형상을 말한 것인지 가릴 수 없다. 불꽃·불길·불씨·촛불·모닥불만 넣었다. '불'은 1층 사전 object(fire)로 _unmapped에 남는다 ⚠ 사람이 정할 것"},
     {"lemma": "불덩어리", "reason": "'덩어리'가 form.type = blob(말한 슬롯)이고 flame 읽기를 후보로 보이려면 기본 형상을 후보 값으로 내야 한다(후보에 기본 형상을 넣지 않음). 넣지 않아 지금처럼 blob"},
     {"lemma": "숯불·용암·화산", "reason": "덩어리·액체·풍경과 겹쳐 다음에 판단(docs/asset-plan.md 1-1절 flame 행)"},
+    {"lemma": "눈물", "reason": "넣지 않음(D6에서 정함). '눈물이 나요'처럼 참여자 자신의 눈물(몸 반응)을 말하는 꼴과 형상을 말한 꼴('눈물 같은 게 맺혀 있어요')을 주어 규칙으로 가를 수 없다. 1층 사전 object(tear)로 _unmapped에 남는다 ⚠ 사람이 정할 것"},
     {"lemma": "물·액체·꿀", "reason": "액체 일반어는 기록만(docs/asset-plan.md 6절 결정 9, 제안대로 진행). 물방울 모양은 액체 일반어의 뜻이 아님"},
     {"lemma": "웅덩이·고인 물", "reason": "pool 후보(다음 묶음). _unmapped에 남음"},
     {"lemma": "늪·바다·홍수·진흙", "reason": "풍경 규모(환경 영역)이거나 다음에 판단"},

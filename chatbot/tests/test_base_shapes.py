@@ -153,6 +153,10 @@ WORDS = [
     ("불꽃이 있어요.", "flame", None),
     ("촛불 같은 게 있어요. 작아요.", "flame", None),
     ("모닥불이요.", "flame", None),
+    ("물방울이 있어요.", "drop", None),
+    ("방울이 맺혀 있어요.", "drop", None),            # 1층 사전의 form.type blob과 함께(blob은 기본 형상을 그림)
+    ("이슬 같은 게 있어요.", "drop", None),
+    ("그 컵이 있어요.", "container", {"opening": "wide"}),   # 지시 관형사는 막지 않음
 ]
 
 
@@ -179,6 +183,12 @@ def test_simile_is_recorded_as_simile(v2):
     "어제 컵을 깨뜨렸던 게 생각나요.",              # 회상 문장
     "병이 있어요.",                             # 동음이의 맨 낱말
     "종이컵이 있어요.",                          # 뒷부분만 맞추지 않음
+    "양은 한 컵쯤이요.",                          # 수량 단위
+    "컵만 해요.",                               # 크기 비교 기준
+    "신발 상자 정도 크기예요.",
+    "눈물이 나요.",                              # 참여자 자신의 눈물(사전에 넣지 않음)
+    "물이 차올라요.",                            # 액체 일반어는 기록만(결정 9)
+    "웅덩이가 있어요.",                           # pool은 다음 묶음
 ])
 def test_no_base_without_a_said_shape_noun(v2, text):
     spec = build(v2, text)
