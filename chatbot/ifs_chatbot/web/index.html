@@ -7,16 +7,23 @@
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="/static/style.css">
 </head>
-<body>
+<!-- 보기 두 가지(G44): data-view="researcher"(기본, 내부 시행 안내와 같음) | "participant"(가운데 한 단, 연구자 정보 없음).
+     주소 ?view=participant|researcher 또는 머리글의 [연구자 화면] 체크로 바꾼다. 참여자 보기에서 돌아오기: Ctrl+Alt+R 또는 주소. -->
+<body data-view="researcher">
   <header class="topbar">
-    <div class="brand">
+    <div class="brand researcher-only">
       <span class="dot" aria-hidden="true"></span>
       <div>
         <h1>IFS 심상화 면담 데모</h1>
         <p class="sub">Find · Focus · Flesh out — 참여자 말만 되돌려 묻는 유도 면담</p>
       </div>
     </div>
-    <div class="badges">
+    <!-- 진행 표시: 글 없이 "n / N"과 칸 막대만(새 문구 없음). app.js updateProgress -->
+    <div id="progress" class="progress" hidden>
+      <span class="progress-count" id="progress-count"></span>
+      <span class="progress-bar" id="progress-bar" aria-hidden="true"></span>
+    </div>
+    <div class="badges researcher-only">
       <span id="badge-condition" class="badge" hidden></span>
       <span id="badge-stage" class="badge stage" hidden></span>
       <span id="badge-model" class="badge muted"></span>
@@ -45,7 +52,7 @@
         <p id="setup-warning" class="warning" hidden></p>
       </div>
 
-      <div id="chat" class="chat" aria-live="polite" hidden></div>
+      <div id="chat" class="chat" role="log" aria-live="polite" hidden></div>
 
       <div id="confirm-box" class="confirm" hidden>
         <label for="draft">확정 텍스트 — 참여자가 쓴 말을 그대로 모은 것</label>
@@ -53,22 +60,25 @@
       </div>
 
       <form id="composer" class="composer" hidden>
-        <textarea id="input" rows="2" placeholder="떠오르는 대로 적어 주세요. (Enter 보내기 · Shift+Enter 줄바꿈)"></textarea>
-        <button type="submit" class="primary">보내기</button>
+        <div class="composer-field">
+          <textarea id="input" rows="2" aria-label="떠오르는 대로 적어 주세요." aria-describedby="input-hint" placeholder="떠오르는 대로 적어 주세요."></textarea>
+          <p id="input-hint" class="input-hint">Enter 보내기 · Shift+Enter 줄바꿈</p>
+        </div>
+        <button type="submit" class="primary" id="btn-send">보내기</button>
       </form>
       <div id="buttons" class="buttons"></div>
-      <p id="busy" class="busy" hidden>질문을 만들고 검사하는 중…</p>
+      <p id="busy" class="busy" role="status" hidden>질문을 만들고 검사하는 중…</p>
 
       <!-- 면담 뒤 데스크톱 단계(4 후보 선택 · 5 조절 · 6 사전 측정). 설정 [selection] enabled일 때만 열린다. -->
       <div id="stage" class="stage" hidden></div>
     </section>
 
-    <aside class="panel researcher" id="researcher" aria-label="연구자 화면">
+    <aside class="panel researcher researcher-only" id="researcher" aria-label="연구자 화면">
       <nav class="tabs" role="tablist">
-        <button role="tab" data-tab="progress" class="active">진행·안전</button>
-        <button role="tab" data-tab="turns">턴·검증</button>
-        <button role="tab" data-tab="extract">확정·추출</button>
-        <button role="tab" data-tab="json">로그</button>
+        <button role="tab" data-tab="progress" class="active" aria-selected="true">진행·안전</button>
+        <button role="tab" data-tab="turns" aria-selected="false">턴·검증</button>
+        <button role="tab" data-tab="extract" aria-selected="false">확정·추출</button>
+        <button role="tab" data-tab="json" aria-selected="false">로그</button>
       </nav>
       <div class="tab-body" id="tab-progress"></div>
       <div class="tab-body" id="tab-turns" hidden></div>

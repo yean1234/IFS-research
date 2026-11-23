@@ -246,6 +246,26 @@ def create_app(cfg: Config | None = None, runtime: Runtime | None = None, warmup
             raise HTTPException(503, f"미리보기를 그리지 못해 글 요약으로 바꿉니다: {rt.preview.reason}")
         return Response(content=data, media_type="image/png", headers={"Cache-Control": "no-store"})
 
+    @app.get("/api/sessions/{sid}/adjust/samples/{item}")
+    def adjust_samples(sid: str, item: str):
+        """조절 화면 견본(G44): 지금 상태에서 범주 항목 하나만 값마다 바꾼 덮어쓰기. 화면 표현 전용, 기록하지 않음."""
+        return {"item": item, "samples": sel_run(flow(sid).adjust_samples, item)}
+
+    @app.get("/api/sessions/{sid}/preview/sample/{item}/{index}.png")
+    def preview_sample_png(sid: str, item: str, index: int):
+        """image 모드 견본 그림(G44): 지금 상태에서 item만 index번째 값으로 바꾼 PNG. 기록하지 않음(플레이어 실패만 기존대로 내림)."""
+        f = flow(sid)
+        samples = sel_run(f.adjust_samples, item)
+        if not 0 <= index < len(samples):
+            raise HTTPException(404, f"견본 번호가 범위 밖입니다: {index}")
+        if f.preview_mode != "image":
+            raise HTTPException(409, f"이 세션의 미리보기 방식이 image가 아닙니다(지금 {f.preview_mode}: {f.preview_reason}).")
+        data = rt.preview.render(f.spec, samples[index]["overrides"])
+        if data is None:
+            f.note_preview_fallback()
+            raise HTTPException(503, f"미리보기를 그리지 못해 글 요약으로 바꿉니다: {rt.preview.reason}")
+        return Response(content=data, media_type="image/png", headers={"Cache-Control": "no-store"})
+
     @app.post("/api/sessions/{sid}/preview/client")
     def preview_client(sid: str, body: PreviewReport):
         """브라우저(stage.js)가 실제로 쓴 미리보기 방식(shown)과 실패(fallback)를 알린다. fallback이면 이 세션만

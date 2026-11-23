@@ -653,6 +653,22 @@ class SelectionFlow:
                 raise SelectionInvalid(f"후보가 아닙니다: {target}")
             return dict(c["overrides"])
 
+    def adjust_samples(self, item: str) -> list[dict]:
+        """조절 화면 견본(G44, 화면 표현 전용): 지금 상태에서 범주 항목 item만 이 세션의 값 하나로 바꾼 덮어쓰기를 값마다.
+        형태 버튼에 낱말 대신 견본 그림을 그리고(WebGL·image), 움직임 버튼에 머물면 본 미리보기로 미리 보여 주는 데 쓴다.
+        읽기만 한다: 조절 기록·selection.json·현재 상태를 바꾸지 않는다. 값 목록·검사는 adjust와 같다(_validate)."""
+        with self.lock:
+            self._require("adjusting")
+            it = self.table["adjustItems"]["items"].get(item)
+            if item not in ITEMS or it is None or it["kind"] != "category":
+                raise SelectionInvalid(f"견본은 범주 항목만 그립니다: {item}")
+            out = []
+            for v in self.item_values(item):
+                ov = dict(self.current)
+                ov.update(self._validate(item, v))
+                out.append({"value": v, "overrides": ov})
+            return out
+
     def unavailable_items(self) -> dict:
         """지금 미리보기 방식에서 화면에 반영되지 않아 끈 조절 항목 {항목: 이유}(G22)."""
         return dict(STILL_PREVIEW_UNAVAILABLE.get(self.preview_mode, {}))

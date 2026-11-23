@@ -112,7 +112,7 @@ window.__e2e = (() => {
       const t0 = performance.now();
       const it = S().cfg.adjustItems.find((x) => x.id === item);
       const row = () => document.querySelector(`.adjust-row[data-item="${item}"]`);
-      if (it.kind === "swatch") { const b = row().querySelector(`[aria-label="색 견본 ${value}"]`); if (b.disabled) return { disabled: true }; b.click(); }
+      if (it.kind === "swatch") { const b = row().querySelector(`[data-swatch="${value}"]`); if (b.disabled) return { disabled: true }; b.click(); }
       else if (it.kind === "category") {
         const extra = (S().view.adjustExtras || {})[item];
         const vals = extra !== undefined && !it.values.includes(extra) ? it.values.concat([extra]) : it.values;

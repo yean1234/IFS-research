@@ -271,6 +271,7 @@ MonoBehaviour:
   runner: {fileID: 1796345641}
   panelWidth: 620
   visible: 1
+  fontSize: 15
 --- !u!114 &1796345641
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -377,15 +378,21 @@ MonoBehaviour:
   fontSize: 64
   characterSize: 0.0085
   wrapChars: 20
-  labelCharacterSize: 0.0055
+  bodyLineSpacing: 1.13
+  numberCharacterSize: 0.01
+  labelCharacterSize: 0.0075
   labelWrapChars: 6
-  columnWidthM: 0.2
-  marginM: 0.06
+  columnWidthM: 0.22
+  marginM: 0.08
   textColor: {r: 0.08, g: 0.08, b: 0.1, a: 1}
-  highlightColor: {r: 0.1, g: 0.35, b: 0.85, a: 1}
+  highlightColor: {r: 0.05, g: 0.22, b: 0.62, a: 1}
   backgroundColor: {r: 0.9, g: 0.9, b: 0.91, a: 1}
+  selectionFillColor: {r: 0.8, g: 0.87, b: 1, a: 1}
+  selectionFrameM: 0.012
   showBackground: 1
   depthTestText: 1
+  maxTopM: 0.85
+  minBottomM: 0.05
 --- !u!114 &1796345643
 MonoBehaviour:
   m_ObjectHideFlags: 0

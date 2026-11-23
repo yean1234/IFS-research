@@ -8,7 +8,18 @@
 "use strict";
 
 (function () {
-  const S = { cfg: null, view: null, sid: null, imgSeq: 0, busy: false, answers: {}, reported: new Set() };
+  const S = { cfg: null, view: null, sid: null, imgSeq: 0, busy: false, answers: {}, reported: new Set(),
+              drawnStage: null, focusKey: null, samples: new Map(), lastThumb: {} };
+
+  // G44 화면 표현 설정(기록과 무관).
+  // 형태 버튼: 낱말·번호 대신 Unity가 그린 견본(지금 상태에서 형태만 바꾼 정지 그림). 글 요약(none)에서는 번호 그대로.
+  // 움직임 버튼: 정지 그림으로는 구별되지 않으므로, 버튼에 초점이 가거나 마우스가 머물면(DWELL_MS) 본 미리보기에서 그 움직임을
+  //   재생하고 떠나면 되돌린다(WebGL만). 이렇게 본 것은 조절 기록에 남지 않는다(누른 것만 기록) → ⚠ 사람이 정할 것. 끄려면 false.
+  //   화살표·물결 같은 기호는 방향·성질을 시스템이 해석해 내미는 것이라 쓰지 않았다(docs/validation/ui/README.md).
+  const MOTION_PREVIEW_ON_DWELL = true;
+  const DWELL_MS = 350;
+  const THUMB_W = 128, THUMB_H = 96;      // 견본 캡처 크기(화면에는 64×48로, 고해상도 화면 대비 2배)
+  const reducedMotion = () => !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
 
   async function ensureConfig() {
     if (S.cfg) return S.cfg;
@@ -59,9 +70,10 @@
       if (m === "image") {
         const img = el("img", { class: "preview-img", alt: "", "data-target": target, "data-mode": "image",
                                 src: `/api/sessions/${S.sid}/preview/${target}.png?v=${++S.imgSeq}` });
-        img.addEventListener("load", () => reportShown("image", stage));
+        const box = el("div", { class: `preview is-loading${target === "current" ? " live-slot-image" : ""}`, "aria-busy": "true" }, img);
+        img.addEventListener("load", () => { box.classList.remove("is-loading"); box.removeAttribute("aria-busy"); reportShown("image", stage); });
         img.addEventListener("error", () => refresh(true));   // 플레이어가 죽으면 서버가 이 세션을 none으로 내림 → 다시 그림
-        return el("div", { class: "preview" }, img);
+        return box;
       }
       reportShown("none", stage);
       return el("div", { class: "preview text", "data-mode": "none" }, el("ul", {}, ...(summary || []).map((s) => el("li", {}, s))));
@@ -81,6 +93,7 @@
   const WebGL = {
     sid: null, host: null, frame: null, p: null, started: null, failed: null,
     q: Promise.resolve(), seq: 0, applied: null, frozen: null, caps: new Map(), info: null, slot: null, ro: null,
+    thumbCache: new Map(), dbg: { thumbJobs: [] },     // dbg: 검증용(서버로 보내지 않음)
 
     probe() {
       // 이 브라우저가 WebGL2를 만들 수 있는가. 렌더러 문자열(GPU 이름)은 기록용(참여자 식별 정보 아님)
@@ -187,20 +200,23 @@
     // 후보 칸: 정지 그림. 같은 후보·덮어쓰기는 다시 찍지 않는다(화면을 다시 그려도 Unity를 부르지 않음).
     candidateNode(target, overrides) {
       const img = el("img", { class: "preview-img", alt: "", "data-target": target, "data-mode": "webgl", "data-overrides": canon(overrides) });
-      const holder = el("div", { class: "preview" }, img);
+      // 그림이 오기 전에도 같은 크기의 자리를 차지한다(4:3, 화면이 밀리지 않음)
+      const holder = el("div", { class: "preview is-loading", "aria-busy": "true" }, img);
+      const loaded = () => { holder.classList.remove("is-loading"); holder.removeAttribute("aria-busy"); };
       const key = `${S.sid}|${target}|${canon(overrides)}`;
       const stage = S.view.stage;
       const shown = () => {
         if ([...document.querySelectorAll('.cand img[data-mode="webgl"]')].every((x) => x.src))
           reportShown("webgl", stage, this.info);
       };
-      if (this.caps.has(key)) { img.src = this.caps.get(key); setTimeout(shown, 0); return holder; }
+      if (this.caps.has(key)) { img.src = this.caps.get(key); loaded(); setTimeout(shown, 0); return holder; }
       this.start().then(() => this.enqueue(`후보 캡처 ${target}`, async () => {
         await this.setFrozen(true);
         await this.apply(overrides);
         const url = await this.capture(target);
         this.caps.set(key, url);
         img.src = url;
+        loaded();
         img.dataset.captureSeq = String(this.seq);
         shown();
       })).catch(() => {});                        // 실패 처리는 enqueue·start의 fail이 한다(서버에 알리고 다시 그림)
@@ -209,13 +225,19 @@
 
     // 조절 화면: 자리만 만들고, 고정된 iframe을 그 위에 겹쳐 놓는다. 움직임을 재생한다(setFrozen(false)).
     liveSlot(overrides) {
-      const slot = el("div", { class: "preview live-slot", "data-mode": "webgl", "data-overrides": canon(overrides) });
-      this.slot = slot;
+      const slot = el("div", { class: "preview live-slot is-loading", "data-mode": "webgl", "data-overrides": canon(overrides), "aria-busy": "true" });
       const stage = S.view.stage;
-      this.start().then(() => this.enqueue("조절 화면 덮어쓰기", async () => {
+      // start()를 먼저 부른다: 이 세션의 첫 시작이면 start()가 teardown()으로 slot을 비우므로 slot은 그 뒤에 정한다.
+      // (G44에서 고침. 전에는 조절 화면이 첫 화면일 때 — 후보 단계를 건너뛴 세션(G34)이나 ?sid=로 다시 연 경우 — iframe이
+      //  화면 밖에 남아 첫 조절을 누르기 전까지 미리보기 자리가 회색 칸이었다.)
+      const started = this.start();
+      this.slot = slot;
+      started.then(() => this.enqueue("조절 화면 덮어쓰기", async () => {
         await this.setFrozen(false);
         await this.apply(overrides);
         slot.dataset.applied = canon(overrides);
+        slot.classList.remove("is-loading");
+        slot.removeAttribute("aria-busy");
         reportShown("webgl", stage, this.info);
       })).catch(() => {});
       return slot;
@@ -227,14 +249,55 @@
       if (!slot || this.failed) { this.host.className = "webgl-host parked"; this.host.style.cssText = ""; return; }
       const r = slot.getBoundingClientRect();
       this.host.className = "webgl-host live";
-      this.host.style.cssText = `left:${r.left + window.scrollX}px;top:${r.top + window.scrollY}px;width:${r.width}px;height:${r.height}px`;
+      // 창 기준 고정(position: fixed). 미리보기 칸이 스크롤을 따라 붙어 있는(sticky) 동안에는 자리가 그대로이고,
+      // 칸이 움직일 때만 scroll 이벤트에서 다시 맞춘다(iframe은 옮기지 않음 — 옮기면 Unity가 다시 시작됨).
+      this.host.style.cssText = `left:${r.left}px;top:${r.top}px;width:${r.width}px;height:${r.height}px`;
       if (!this.ro) {
         this.ro = new ResizeObserver(() => this.place());
         window.addEventListener("resize", () => this.place());
+        window.addEventListener("scroll", () => this.place(), { passive: true });
       }
       this.ro.disconnect();
       this.ro.observe(slot);
       this.ro.observe(document.body);
+    },
+
+    // 조절 화면 견본(G44): 지금 상태에서 한 항목만 바꾼 정지 그림을 작게 찍는다. 보이는 미리보기가 다른 형태로 깜빡이지 않게
+    // 한 작업 안에서 멈춤 → 값마다 덮어쓰기·캡처 → 지금 상태로 되돌림 → 다시 움직임을 쉬지 않고 이어 한다. Unity 호출(SendMessage)과
+    // 응답(dispatchEvent)이 모두 동기라 그 사이에 브라우저가 화면을 그리지 않는다(검증: dbg.thumbJobs[].framesBetween = 0).
+    // 찍은 견본은 덮어쓰기별로 기억해 같은 상태에서는 다시 찍지 않는다(형태만 바꾸면 견본 덮어쓰기가 같아 다시 찍지 않음).
+    thumbs(samples, w, h) {
+      const want = samples.filter((s) => !this.thumbCache.has(canon(s.overrides)));
+      if (!want.length) return Promise.resolve();
+      const curNow = () => (S.view && S.view.current && S.view.current.overrides) || {};
+      const forState = canon(curNow());
+      return this.start().then(() => this.enqueue("견본 그리기", async () => {
+        // 그사이 다른 값을 눌러 상태가 바뀌었으면 이 견본은 건너뜀(다음 그리기가 새 상태로 다시 부름 — 조절 응답을 늦추지 않게)
+        if (canon(curNow()) !== forState) return;
+        const cur = curNow();
+        const wasFrozen = this.frozen;
+        const win = this.frame && this.frame.contentWindow;
+        let frames = 0, rafId = 0;
+        const tick = () => { frames++; rafId = win.requestAnimationFrame(tick); };
+        if (win) rafId = win.requestAnimationFrame(tick);
+        const t0 = performance.now();
+        await this.setFrozen(true);
+        for (const s of want) {
+          await this.apply(s.overrides);
+          this.thumbCache.set(canon(s.overrides), await this.capture("thumb", w, h));
+        }
+        await this.apply(cur);
+        if (wasFrozen === false) await this.setFrozen(false);
+        if (win) win.cancelAnimationFrame(rafId);
+        this.dbg.thumbJobs.push({ n: want.length, ms: Math.round(performance.now() - t0), framesBetween: frames });
+      }));
+    },
+
+    // 움직임 버튼에 머무는 동안 본 미리보기에서 그 값을 재생(overrides), 떠나면 지금 상태로(null). 기록하지 않는다.
+    preview(overrides) {
+      if (!this.p || this.failed || !this.slot || !this.slot.isConnected) return;
+      const target = overrides || (S.view && S.view.current && S.view.current.overrides) || {};
+      this.enqueue("미리 보기", async () => { await this.setFrozen(false); await this.apply(target); }).catch(() => {});
     },
 
     fail(reason) {
@@ -254,22 +317,34 @@
     teardown() {
       this.closeFrame();
       this.sid = null; this.started = null; this.failed = null; this.q = Promise.resolve();
-      this.applied = null; this.frozen = null; this.caps.clear(); this.info = null; this.slot = null;
+      this.applied = null; this.frozen = null; this.caps.clear(); this.thumbCache.clear(); this.info = null; this.slot = null;
     },
   };
 
   // ── 서버 호출 ─────────────────────────────────────────────────────────────
-  async function call(method, path, body) {
+  // srcBtn: 누른 단추. 기다리는 동안 대기 표시(.is-pending, 0.2초 뒤에만 보임)와 aria-disabled를 붙이고, 다시 그린 뒤에는
+  // 같은 자리(data-fkey)로 초점을 돌려준다(키보드로 +를 여러 번 누를 때 매번 처음부터 Tab하지 않게).
+  async function call(method, path, body, srcBtn) {
     if (S.busy) return;
     S.busy = true;
+    const box = $("#stage");
+    box.setAttribute("aria-busy", "true");
+    if (srcBtn) {
+      srcBtn.classList.add("is-pending");
+      srcBtn.setAttribute("aria-disabled", "true");
+      if (srcBtn.dataset.fkey) S.focusKey = srcBtn.dataset.fkey;
+    }
     try {
       S.view = await api(method, path, body);
       draw();
     } catch (e) {
       toast(e.message);
+      if (srcBtn) { srcBtn.classList.remove("is-pending"); srcBtn.removeAttribute("aria-disabled"); }
+      box.classList.remove("choosing");
       await refresh(false);
     } finally {
       S.busy = false;
+      box.removeAttribute("aria-busy");
     }
   }
 
@@ -280,20 +355,61 @@
     } catch (e) { /* 단계가 꺼져 있음 */ }
   }
 
+  // 조절 견본용 덮어쓰기(서버 GET …/adjust/samples/{item}, 기록하지 않음). 지금 상태별로 기억한다.
+  async function samplesFor(item) {
+    const key = `${S.sid}|${item}|${canon(S.view && S.view.current && S.view.current.overrides)}`;
+    if (!S.samples.has(key)) {
+      const r = await api("GET", `/api/sessions/${S.sid}/adjust/samples/${item}`);
+      S.samples.set(key, r.samples);
+    }
+    return S.samples.get(key);
+  }
+
+  // image 모드 견본: 서버가 예비 플레이어로 그린 PNG(GET …/preview/sample/{item}/{k}.png). 덮어쓰기별로 기억한다.
+  const ImageThumbs = {
+    cache: new Map(),
+    async get(item, k, overrides) {
+      const key = `${S.sid}|${canon(overrides)}`;
+      if (!this.cache.has(key)) {
+        const res = await fetch(`/api/sessions/${S.sid}/preview/sample/${item}/${k}.png`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        this.cache.set(key, URL.createObjectURL(await res.blob()));
+      }
+      return this.cache.get(key);
+    },
+  };
+
   // ── 그리기 ────────────────────────────────────────────────────────────────
   function banners() {
     const out = [];
     const v = S.view;
     if (v.draftCount) {
-      out.push(el("p", { class: "warning draft-banner" },
+      // X35: 초안 문구 안내 띠(두 보기 모두). 글은 그대로, 모양만 차분한 띠로
+      out.push(el("p", { class: "notice draft-banner" },
         `초안 문구 사용 중 — 이 화면의 문구 ${v.draftCount}개가 status draft(IRB·연구팀 검토 전)입니다.`));
     }
     const p = v.preview || {};
     if (p.requested && p.requested !== "none" && p.mode !== p.requested) {
-      out.push(el("p", { class: "warning preview-fallback" },
+      // 대체 사유는 기술 정보라 연구자 보기에서만(연구자 패널 "미리보기 대체 이유"에도 있음)
+      out.push(el("p", { class: "warning preview-fallback researcher-only" },
         `미리보기를 ${p.mode === "image" ? "정지 그림" : "글 요약"}으로 보여 줍니다(${p.reason || "원인 미상"}).`));
     }
     return out;
+  }
+
+  // 단계가 바뀌면 그 화면의 첫 안내 글로 초점을 옮긴다(키보드·낭독기 사용자가 새 화면의 처음부터 읽게).
+  function intro(text) { return el("p", { class: "msg bot stage-top", tabindex: "-1" }, text); }
+
+  function focusTop(box) {
+    const t = box.querySelector(".stage-top");
+    if (t) { t.focus({ preventScroll: true }); window.scrollTo(0, 0); }
+  }
+
+  function restoreFocus(box, fkey) {
+    const sel = (k) => box.querySelector(`[data-fkey="${CSS.escape(k)}"]`);
+    let n = sel(fkey);
+    if (n && n.disabled && fkey.startsWith("step:")) n = sel(fkey.endsWith(":+") ? fkey.replace(/:\+$/, ":-") : fkey.replace(/:-$/, ":+"));
+    if (n && !n.disabled) n.focus({ preventScroll: true });
   }
 
   function draw() {
@@ -302,77 +418,211 @@
     if (!v || !v.stage) { box.hidden = true; return; }
     box.hidden = false;
     for (const id of ["#chat", "#composer", "#buttons", "#confirm-box"]) $(id).hidden = true;
+    const ae = document.activeElement;
+    const fkey = S.focusKey || (ae && box.contains(ae) && ae.dataset ? ae.dataset.fkey : null) || null;
+    S.focusKey = null;
+    const stageChanged = S.drawnStage !== v.stage;
+    S.drawnStage = v.stage;
     box.dataset.stage = v.stage;
     box.dataset.previewMode = (v.preview && v.preview.mode) || "none";
+    box.classList.remove("choosing");
     const parts = [...banners()];
     WebGL.slot = null;
     if (v.preview && v.preview.mode !== "webgl" && WebGL.host) WebGL.closeFrame();   // 내려간 뒤에는 iframe을 닫는다
     if (v.stage === "selecting") parts.push(...drawSelecting(v));
     else if (v.stage === "adjusting") parts.push(...drawAdjusting(v));
-    else if (v.stage === "premeasure") { WebGL.teardown(); drawPremeasure(box, parts); return; }
-    else if (v.stage === "done") { WebGL.teardown(); parts.push(el("p", { class: "msg bot closing" }, v.donePhrase || "")); }
+    else if (v.stage === "premeasure") { WebGL.teardown(); drawPremeasure(box, parts); progress(); return; }
+    else if (v.stage === "done") { WebGL.teardown(); parts.push(el("p", { class: "msg bot closing stage-top done-card", tabindex: "-1" }, v.donePhrase || "")); }
     box.replaceChildren(...parts);
     WebGL.place();
+    if (stageChanged) focusTop(box);
+    else if (fkey) restoreFocus(box, fkey);
+    progress();
     if (typeof refreshResearcher === "function") refreshResearcher();   // 연구자 화면에 단계 요약을 다시 그림
   }
 
+  function progress() { if (typeof updateProgress === "function") updateProgress(); }
+
+  // 후보를 고르면: 고른 칸을 표시하고 나머지는 흐리게, 단추는 대기(중복 제출 방지는 S.busy)
+  function choose(id, btn) {
+    if (S.busy) return;
+    const card = btn.closest(".cand");
+    if (card) card.classList.add("chosen");
+    btn.setAttribute("aria-pressed", "true");
+    $("#stage").classList.add("choosing");
+    call("POST", `/api/sessions/${S.sid}/selection`, { candidateId: id }, btn);
+  }
+
   function drawSelecting(v) {
-    const parts = [el("p", { class: "msg bot" }, phrase("figure_intro")),
-                   el("p", { class: "msg bot" }, phrase("candidates_intro"))];
-    const grid = el("div", { class: `cand-grid n${v.candidates.length}` });
-    for (const c of v.candidates) {
-      grid.append(el("div", { class: "cand", "data-id": c.id },
+    const parts = [intro(phrase("figure_intro")), el("p", { class: "msg bot" }, phrase("candidates_intro"))];
+    const grid = el("ul", { class: `cand-grid n${v.candidates.length}` });
+    v.candidates.forEach((c, i) => {
+      grid.append(el("li", { class: "cand", "data-id": c.id },
         Preview.node(c.id, c.summary, c.overrides),
-        el("button", { class: "primary", onclick: () => call("POST", `/api/sessions/${S.sid}/selection`, { candidateId: c.id }) },
-          phrase("choose_button"))));
-    }
+        el("button", { type: "button", class: "pick", "aria-label": `${phrase("choose_button")} ${i + 1}`, "data-fkey": `cand:${c.id}`,
+                       onclick: (e) => choose(c.id, e.currentTarget) }, phrase("choose_button"))));
+    });
     parts.push(grid);
-    parts.push(el("div", { class: "buttons" },
-      el("button", { class: "none-fit", onclick: () => call("POST", `/api/sessions/${S.sid}/selection`, { candidateId: "none" }) },
+    // [맞는 것이 없다]: 후보 단추와 같은 무게(같은 모양·크기), 후보 칸과 떨어진 자리(구분선 아래)
+    parts.push(el("div", { class: "none-fit-row" },
+      el("button", { type: "button", class: "pick none-fit", "data-fkey": "none", onclick: (e) => choose("none", e.currentTarget) },
         phrase("none_fit"))));
     return parts;
+  }
+
+  // 범주 항목(형태·움직임). 화면에 값 이름을 쓰지 않는다. 형태는 견본 그림, 견본이 없으면(글 요약) 번호.
+  function categoryOpts(it, v, now, off, lid, send) {
+    const extra = (v.adjustExtras || {})[it.id];   // 참여자가 말한 값이 표의 목록에 없으면 목록 끝에 붙여 현재 값으로 보이게 함
+    const vals = extra !== undefined && !it.values.includes(extra) ? it.values.concat([extra]) : it.values;
+    const mode = Preview.mode();
+    const thumbs = it.id === "form" && (mode === "webgl" || mode === "image") && !off;
+    const dwell = it.id === "motion" && mode === "webgl" && MOTION_PREVIEW_ON_DWELL && !off && !reducedMotion();
+    const opts = el("div", { class: `opts${thumbs ? " thumbs" : ""}`, role: "toolbar", "aria-labelledby": lid });
+    const imgs = [];
+    const last = S.lastThumb[it.id] || [];
+    vals.forEach((val, k) => {
+      const active = now === val;
+      const b = el("button", { type: "button", class: `opt${active ? " active" : ""}`, "aria-pressed": active ? "true" : "false",
+                               "aria-label": `${it.label} ${k + 1}`, "data-fkey": `cat:${it.id}:${k}`, onclick: (e) => send(it.id, val, e.currentTarget) },
+                   el("span", { class: "opt-num", "aria-hidden": "true" }, String(k + 1)));
+      if (thumbs) {
+        // 그림이 올 때까지는 직전 견본(같은 자리)을 보여 주고, 처음이면 빈 회색 칸(번호는 견본이 끝내 없을 때만 보임)
+        const img = el("img", { class: "thumb", alt: "", "aria-hidden": "true" });
+        b.classList.add("thumb-wait");
+        if (last[k]) { img.src = last[k]; b.classList.replace("thumb-wait", "has-thumb"); }
+        b.prepend(el("span", { class: "thumb-box", "aria-hidden": "true" }, img));   // 가운데를 키워 보여 줌(모든 값에 같은 배율)
+        imgs.push(img);
+      }
+      if (dwell) attachDwell(b, it.id, k);
+      opts.append(b);
+    });
+    if (thumbs) fillThumbs(it.id, opts, imgs);
+    return opts;
+  }
+
+  async function fillThumbs(item, opts, imgs) {
+    const giveUp = () => imgs.forEach((img) => { const b = img.closest("button"); if (b && !b.classList.contains("has-thumb")) b.classList.replace("thumb-wait", "thumb-failed"); });
+    const set = (k, url) => {
+      if (!url) return;
+      (S.lastThumb[item] = S.lastThumb[item] || [])[k] = url;
+      const img = imgs[k];
+      if (!img || !img.isConnected) return;
+      if (img.src !== url) img.src = url;
+      const b = img.closest("button");
+      b.classList.remove("thumb-wait", "thumb-failed");
+      b.classList.add("has-thumb");
+    };
+    let samples;
+    try { samples = await samplesFor(item); } catch (e) { giveUp(); return; }
+    const mode = Preview.mode();
+    try {
+      if (mode === "webgl") {
+        await WebGL.thumbs(samples, THUMB_W, THUMB_H);
+        samples.forEach((s, k) => set(k, WebGL.thumbCache.get(canon(s.overrides))));
+      } else if (mode === "image") {
+        for (let k = 0; k < samples.length; k++) set(k, await ImageThumbs.get(item, k, samples[k].overrides));
+      }
+    } catch (e) {
+      console.warn("[견본] 그리지 못함 → 번호로 표시", e);
+    }
+    giveUp();
+  }
+
+  // 움직임: 머물면 본 미리보기에서 재생, 떠나면 되돌림(WebGL). 누르면 그 값으로 고침(기록됨).
+  function attachDwell(b, item, k) {
+    let t = 0;
+    const slot = () => document.querySelector(".live-slot");
+    const startP = () => {
+      clearTimeout(t);
+      t = setTimeout(async () => {
+        let samples;
+        try { samples = await samplesFor(item); } catch (e) { return; }
+        if (!b.isConnected || S.busy) return;
+        b.classList.add("is-previewing");
+        if (slot()) slot().classList.add("is-previewing");
+        WebGL.preview(samples[k].overrides);
+      }, DWELL_MS);
+    };
+    const stopP = () => {
+      clearTimeout(t);
+      if (!b.classList.contains("is-previewing")) return;
+      b.classList.remove("is-previewing");
+      if (slot()) slot().classList.remove("is-previewing");
+      if (!S.busy) WebGL.preview(null);
+    };
+    b.addEventListener("mouseenter", startP);
+    b.addEventListener("focus", startP);
+    b.addEventListener("mouseleave", stopP);
+    b.addEventListener("blur", stopP);
+    b.addEventListener("click", () => { clearTimeout(t); b.classList.remove("is-previewing"); });
+  }
+
+  // 견본 묶음(색·형태·움직임)은 Tab 한 번에 들어가고 방향키(←→↑↓, Home·End)로 옮긴다(도구 막대 방식, 초점만 옮기고
+  // 고르지 않음 — 고르는 것은 Enter·Space). 색 17개를 Tab으로 하나씩 지나지 않게. 들어갈 때의 자리는 지금 고른 것.
+  function roving(group) {
+    const items = () => [...group.querySelectorAll("button")].filter((b) => !b.disabled);
+    const list0 = items();
+    const cur = list0.find((b) => b.getAttribute("aria-pressed") === "true") || list0[0];
+    group.querySelectorAll("button").forEach((b) => b.setAttribute("tabindex", b === cur ? "0" : "-1"));
+    group.addEventListener("keydown", (e) => {
+      const step = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
+      if (step === undefined && e.key !== "Home" && e.key !== "End") return;
+      const list = items();
+      const i = list.indexOf(document.activeElement);
+      if (i < 0) return;
+      e.preventDefault();
+      const j = e.key === "Home" ? 0 : e.key === "End" ? list.length - 1 : (i + step + list.length) % list.length;
+      list.forEach((b) => b.setAttribute("tabindex", b === list[j] ? "0" : "-1"));
+      list[j].focus();
+    });
+    return group;
   }
 
   function drawAdjusting(v) {
     const cur = (v.current && v.current.items) || {};
     const off = v.unavailableItems || {};
     const panel = el("div", { class: "adjust-panel" });
-    const send = (item, value) => call("POST", `/api/sessions/${S.sid}/adjust`, { item, value });
+    const send = (item, value, btn) => call("POST", `/api/sessions/${S.sid}/adjust`, { item, value }, btn);
     for (const it of S.cfg.adjustItems) {
-      const row = el("div", { class: `adjust-row${off[it.id] ? " off" : ""}`, "data-item": it.id }, el("span", { class: "adjust-label" }, it.label));
+      const lid = `adj-label-${it.id}`;
+      const row = el("div", { class: `adjust-row${off[it.id] ? " off" : ""}`, "data-item": it.id },
+        el("span", { class: "adjust-label", id: lid }, it.label));
       const now = cur[it.id];
       const btns = [];
       if (it.kind === "swatch") {
-        const chips = el("div", { class: "chips" });
-        for (const sw of it.values) {
-          const active = now && now.swatch === sw.id;
-          const b = el("button", { class: `chip${active ? " active" : ""}`, style: `background:${sw.hex}`, "aria-label": `색 견본 ${sw.id}`,
-                                   onclick: () => send(it.id, sw.id) });
+        // 색 견본: 이름 없이 색만. 고른 것은 색만이 아니라 두꺼운 테두리 + 체크 표시로. 낭독기 이름은 "색 n"(색 이름을 만들지 않음)
+        const chips = el("div", { class: "chips", role: "toolbar", "aria-labelledby": lid });
+        it.values.forEach((sw, k) => {
+          const active = !!(now && now.swatch === sw.id);
+          const b = el("button", { type: "button", class: `chip${active ? " active" : ""}`, style: `--swatch:${sw.hex}`,
+                                   "aria-pressed": active ? "true" : "false", "aria-label": `${it.label} ${k + 1}`,
+                                   "data-swatch": sw.id, "data-fkey": `sw:${sw.id}`, onclick: (e) => send(it.id, sw.id, e.currentTarget) });
           chips.append(b); btns.push(b);
-        }
-        row.append(chips);
-      } else if (it.kind === "category") {
-        const opts = el("div", { class: "opts" });
-        // 참여자가 말한 값이 표의 목록에 없으면 서버가 adjustExtras로 알려 준다 → 목록 끝에 붙여 현재 값으로 보이게 함
-        const extra = (v.adjustExtras || {})[it.id];
-        const vals = extra !== undefined && !it.values.includes(extra) ? it.values.concat([extra]) : it.values;
-        vals.forEach((val, k) => {
-          const b = el("button", { class: now === val ? "active" : "", onclick: () => send(it.id, val) }, String(k + 1));
-          opts.append(b); btns.push(b);
         });
-        row.append(opts);
+        row.append(roving(chips));
+      } else if (it.kind === "category") {
+        const opts = categoryOpts(it, v, now, !!off[it.id], lid, send);
+        btns.push(...opts.querySelectorAll("button"));
+        row.append(off[it.id] ? opts : roving(opts));
       } else {
+        // 단계: "n / N" 글 대신 칸 눈금 막대(지금 자리까지 채움, 지금 칸은 진하게) + −/+. 끝에서는 그쪽 단추를 끔.
         const vals = it.values;
         const idx = vals.findIndex((x) => Math.abs(x - now) < 1e-9);
+        const below = vals.filter((x) => x < now - 1e-9).length;   // 말한 값이 단계 사이일 때: 그보다 작은 단계 수
         const lower = [...vals].reverse().find((x) => x < now - 1e-9);
         const upper = vals.find((x) => x > now + 1e-9);
-        const minus = el("button", { onclick: () => send(it.id, lower) }, "−");
-        const plus = el("button", { onclick: () => send(it.id, upper) }, "+");
+        const minus = el("button", { type: "button", class: "step-btn", "aria-label": `${it.label} −`, "data-fkey": `step:${it.id}:-`,
+                                     onclick: (e) => send(it.id, lower, e.currentTarget) }, "−");
+        const plus = el("button", { type: "button", class: "step-btn", "aria-label": `${it.label} +`, "data-fkey": `step:${it.id}:+`,
+                                    onclick: (e) => send(it.id, upper, e.currentTarget) }, "+");
         minus.disabled = lower === undefined;
         plus.disabled = upper === undefined;
         btns.push(minus, plus);
-        row.append(el("div", { class: "stepper" }, minus,
-          el("span", { class: "pos" }, idx >= 0 ? `${idx + 1} / ${vals.length}` : `– / ${vals.length}`), plus));
+        const pos = idx >= 0 ? idx + 1 : below + 0.5;
+        const meter = el("div", { class: "meter", role: "meter", "aria-labelledby": lid, "aria-valuemin": "1", "aria-valuemax": String(vals.length),
+                                  "aria-valuenow": String(pos), "aria-valuetext": idx >= 0 ? `${idx + 1} / ${vals.length}` : `– / ${vals.length}` },
+          ...vals.map((_, k) => el("i", { class: idx >= 0 ? (k === idx ? "cur" : k < idx ? "on" : "") : (k < below ? "on" : "") })));
+        row.append(el("div", { class: "stepper" }, minus, meter, plus));
       }
       if (off[it.id]) {
         // G22: 이 미리보기 방식에서는 바꿔도 화면에 보이지 않는 항목(image = 정지 그림에서 움직임) → 끄고 이유 문구를 붙임
@@ -381,41 +631,64 @@
       }
       panel.append(row);
     }
-    return [el("p", { class: "msg bot" }, phrase("figure_intro")), el("p", { class: "msg bot" }, phrase("adjust_intro")),
-            el("div", { class: "adjust" }, Preview.node("current", v.current && v.current.summary, v.current && v.current.overrides), panel),
-            el("div", { class: "buttons" }, el("button", { class: "primary", onclick: () => call("POST", `/api/sessions/${S.sid}/adjust/finish`) },
-              phrase("adjust_finish_button")))];
+    return [intro(phrase("figure_intro")), el("p", { class: "msg bot" }, phrase("adjust_intro")),
+            el("div", { class: "adjust" },
+              el("div", { class: "adjust-preview" }, Preview.node("current", v.current && v.current.summary, v.current && v.current.overrides)),
+              panel),
+            el("div", { class: "buttons stage-actions" },
+              el("button", { type: "button", class: "primary", "data-fkey": "finish",
+                             onclick: (e) => call("POST", `/api/sessions/${S.sid}/adjust/finish`, undefined, e.currentTarget) },
+                phrase("adjust_finish_button")))];
   }
 
+  // 사전 측정: 문항을 모두 한 화면에(하나씩 넘기지 않음, G44). 척도 점마다 칸 전체가 눌리는 큰 자리(높이 44px 이상),
+  // [답하지 않기]는 같은 줄에서 떨어뜨려 둔다. 고르지 않은 문항이 있으면 기존 문구를 제출 단추 위에 띄우고 그 문항을 표시·초점.
   async function drawPremeasure(box, parts) {
     let pm;
     try { pm = await api("GET", `/api/sessions/${S.sid}/premeasure`); } catch (e) { toast(e.message); return; }
     const sc = pm.scale;
-    const form = el("form", { class: "premeasure" });
-    form.append(el("p", { class: "msg bot" }, pm.instruction));
+    const n = sc.max - sc.min + 1;
+    const form = el("form", { class: "premeasure", novalidate: "" });
+    form.append(el("p", { class: "msg bot stage-top pm-instruction", tabindex: "-1" }, pm.instruction));
     for (const it of pm.items) {
-      const opts = el("div", { class: "scale" });
+      const fs = el("fieldset", { class: "pm-item", "data-item": it.id });
+      const pts = el("div", { class: "scale-points", style: `--n:${n}` });
+      const pick = () => fs.classList.remove("missing");
       for (let k = sc.min; k <= sc.max; k++) {
         const id = `pm-${it.id}-${k}`;
         const input = el("input", { type: "radio", name: it.id, id, value: String(k) });
         if (S.answers[it.id] === k) input.checked = true;
-        input.addEventListener("change", () => { S.answers[it.id] = k; });
-        opts.append(el("label", { for: id, class: "pt" }, input, el("span", {}, `${k}`), el("small", {}, sc.anchors[String(k)] || "")));
+        input.addEventListener("change", () => { S.answers[it.id] = k; pick(); });
+        pts.append(el("label", { for: id, class: "pt" }, input, el("span", { class: "pt-num" }, `${k}`),
+          el("span", { class: "pt-anchor" }, sc.anchors[String(k)] || "")));
       }
       const skip = el("input", { type: "radio", name: it.id, id: `pm-${it.id}-skip`, value: "" });
       if (S.answers[it.id] === null) skip.checked = true;
-      skip.addEventListener("change", () => { S.answers[it.id] = null; });
-      opts.append(el("label", { for: `pm-${it.id}-skip`, class: "pt skip" }, skip, el("small", {}, pm.skipLabel)));
-      form.append(el("fieldset", { class: "pm-item", "data-item": it.id }, el("legend", {}, it.text), opts));
+      skip.addEventListener("change", () => { S.answers[it.id] = null; pick(); });
+      fs.append(el("legend", {}, it.text),
+        el("div", { class: "scale" }, pts, el("span", { class: "scale-gap", "aria-hidden": "true" }),
+          el("label", { for: `pm-${it.id}-skip`, class: "pt skip" }, skip, el("span", { class: "pt-anchor" }, pm.skipLabel))));
+      form.append(fs);
     }
-    form.append(el("div", { class: "buttons" }, el("button", { class: "primary", type: "submit" }, phrase("premeasure_submit_button"))));
+    const err = el("p", { class: "form-error", role: "alert", hidden: "" });
+    const submit = el("button", { class: "primary", type: "submit", "data-fkey": "pm-submit" }, phrase("premeasure_submit_button"));
+    form.append(err, el("div", { class: "buttons stage-actions" }, submit));
     form.addEventListener("submit", (e) => {
       e.preventDefault();
       const missing = pm.items.filter((i) => !(i.id in S.answers));
-      if (missing.length) { toast(`아직 고르지 않은 문항이 ${missing.length}개 있습니다.`); return; }
-      call("POST", `/api/sessions/${S.sid}/premeasure`, { responses: S.answers });
+      form.querySelectorAll(".pm-item").forEach((f) => f.classList.toggle("missing", missing.some((m) => m.id === f.dataset.item)));
+      if (missing.length) {
+        err.textContent = `아직 고르지 않은 문항이 ${missing.length}개 있습니다.`;
+        err.hidden = false;
+        const first = form.querySelector(`.pm-item[data-item="${CSS.escape(missing[0].id)}"] input`);
+        if (first) first.focus();
+        return;
+      }
+      err.hidden = true;
+      call("POST", `/api/sessions/${S.sid}/premeasure`, { responses: S.answers }, submit);
     });
     box.replaceChildren(...parts, form);
+    focusTop(box);
   }
 
   // ── app.js에서 부르는 곳 ───────────────────────────────────────────────────
@@ -428,7 +701,8 @@
       return;
     }
     if (v.selection.available) {
-      $("#buttons").prepend(el("button", { class: "primary", onclick: () => call("POST", `/api/sessions/${S.sid}/candidates`) },
+      $("#buttons").prepend(el("button", { class: "primary", "data-fkey": "next",
+                                         onclick: (e) => call("POST", `/api/sessions/${S.sid}/candidates`, undefined, e.currentTarget) },
         "다음 단계로"));
     }
   }
@@ -452,5 +726,8 @@
           ["출처 분포", v.sourceCounts ? JSON.stringify(v.sourceCounts) : null]]));
   }
 
-  window.ifsStage = { afterRender, researcherNote, _state: S, _webgl: WebGL };
+  // 진행 표시(app.js updateProgress)가 읽는 지금 단계
+  function current() { return { stage: S.view ? S.view.stage : null, skipped: !!(S.view && S.view.skipped) }; }
+
+  window.ifsStage = { afterRender, researcherNote, current, _state: S, _webgl: WebGL };
 })();

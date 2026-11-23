@@ -53,6 +53,7 @@ namespace UnityEngine
         public TextAlignment alignment { get; set; }
         public Color color { get; set; }
         public bool richText { get; set; }
+        public float lineSpacing { get; set; }
     }
 
     public static class Screen
@@ -70,18 +71,31 @@ namespace UnityEngine
         public KeyCode keyCode => KeyCode.None;
     }
 
+    public enum FontStyle { Normal = 0, Bold = 1, Italic = 2, BoldAndItalic = 3 }
+
+    public sealed class GUIStyleState
+    {
+        public Color textColor { get; set; }
+        public Texture2D background { get; set; }
+    }
+
     public sealed class GUIStyle
     {
         public GUIStyle() { }
         public GUIStyle(GUIStyle other) { }
         public bool wordWrap { get; set; }
         public bool richText { get; set; }
+        public int fontSize { get; set; }
+        public FontStyle fontStyle { get; set; }
+        public GUIStyleState normal { get; } = new GUIStyleState();
     }
 
     public sealed class GUISkin : Object
     {
         public GUIStyle label => new GUIStyle();
         public GUIStyle box => new GUIStyle();
+        public GUIStyle button => new GUIStyle();
+        public GUIStyle toggle => new GUIStyle();
     }
 
     public sealed class GUILayoutOption { }
@@ -92,23 +106,31 @@ namespace UnityEngine
     {
         public static GUISkin skin => new GUISkin();
         public static Color color { get; set; }
+        public static Color backgroundColor { get; set; }
         public static bool enabled { get; set; }
         public static void Label(Rect position, string text) { }
     }
 
     public static class GUILayout
     {
+        public static void BeginArea(Rect screenRect) { }
         public static void BeginArea(Rect screenRect, GUIStyle style) { }
         public static void EndArea() { }
         public static Vector2 BeginScrollView(Vector2 scrollPosition, params GUILayoutOption[] options) => scrollPosition;
         public static void EndScrollView() { }
         public static void BeginHorizontal(params GUILayoutOption[] options) { }
         public static void EndHorizontal() { }
+        public static void BeginVertical(GUIStyle style, params GUILayoutOption[] options) { }
+        public static void EndVertical() { }
+        public static void Space(float pixels) { }
+        public static void FlexibleSpace() { }
         public static void Label(string text, params GUILayoutOption[] options) { }
         public static void Label(string text, GUIStyle style, params GUILayoutOption[] options) { }
         public static string TextField(string text, params GUILayoutOption[] options) => text;
         public static bool Button(string text, params GUILayoutOption[] options) => false;
+        public static bool Button(string text, GUIStyle style, params GUILayoutOption[] options) => false;
         public static bool Toggle(bool value, string text, params GUILayoutOption[] options) => value;
+        public static bool Toggle(bool value, string text, GUIStyle style, params GUILayoutOption[] options) => value;
         public static GUILayoutOption Width(float width) => new GUILayoutOption();
         public static GUILayoutOption Height(float height) => new GUILayoutOption();
         public static GUILayoutOption ExpandWidth(bool expand) => new GUILayoutOption();

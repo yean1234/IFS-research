@@ -118,6 +118,7 @@ namespace UnityEngine
         public static Color black => new Color(0, 0, 0, 1);
         public static Color yellow => new Color(1, 0.92f, 0.016f, 1);
         public static Color operator *(Color c, float d) => c;
+        public Color linear => this;
     }
 
     public struct Color32
@@ -280,6 +281,9 @@ namespace UnityEngine
     public sealed class Texture2D : Texture
     {
         public Texture2D(int width, int height, TextureFormat textureFormat, bool mipChain, bool linear) { }
+        public Texture2D(int width, int height) { }
+        public void SetPixel(int x, int y, Color color) { }
+        public void Apply() { }
         public void ReadPixels(Rect source, int destX, int destY, bool recalculateMipMaps) { }
         public Color32[] GetPixels32() => Array.Empty<Color32>();
         public void SetPixels32(Color32[] colors) { }
@@ -393,6 +397,8 @@ namespace UnityEngine
         public static float Min(float a, float b) => a < b ? a : b;
         public static float Max(float a, float b) => a > b ? a : b;
         public static int Max(int a, int b) => a > b ? a : b;
+        public static int Min(int a, int b) => a < b ? a : b;
+        public static float Abs(float f) => f < 0 ? -f : f;
         public static float Lerp(float a, float b, float t) => a;
         public static float Clamp01(float v) => v;
         public static float Clamp(float value, float min, float max) => value;

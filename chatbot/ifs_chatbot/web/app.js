@@ -14,7 +14,52 @@ const el = (tag, attrs = {}, ...children) => {
   return n;
 };
 
-const state = { health: null, sid: null, view: null, log: null, tab: "progress", editing: false, busy: false };
+const state = { health: null, sid: null, view: null, log: null, tab: "progress", editing: false, busy: false, crisisFocused: false };
+
+// ── 보기: 연구자(기본) | 참여자 (G44) ────────────────────────────────────────
+// 기본은 연구자 보기다(지금까지의 기본값, 내부 시행 안내 2절 8번이 연구자 화면을 보며 점검함).
+// 참여자 보기는 가운데 한 단에 참여자가 보는 것만 둔다(연구자 패널·머리글 배지·문구 출처 꼬리표·미리보기 대체 사유 숨김).
+// 주소 ?view=participant|researcher로 열 수 있고, 머리글 [연구자 화면] 체크를 풀면 참여자 보기가 된다.
+// 참여자 보기에는 되돌리는 단추를 두지 않는다(참여자에게 보이는 글자를 늘리지 않음) → Ctrl+Alt+R 또는 주소로 되돌린다.
+function isResearcherView() { return document.body.dataset.view !== "participant"; }
+
+function setView(view, { updateUrl = true } = {}) {
+  const v = view === "participant" ? "participant" : "researcher";
+  document.body.dataset.view = v;
+  $("#toggle-researcher").checked = v === "researcher";
+  $("#researcher").hidden = v !== "researcher";
+  $("#layout").classList.toggle("solo", v !== "researcher");
+  if (updateUrl) {
+    const u = new URL(location.href);
+    u.searchParams.set("view", v);
+    history.replaceState(null, "", u);
+  }
+  if (state.view) render(state.view);
+}
+
+// ── 진행 표시: 글 없이 "n / N" + 칸 막대(G44). 단계 이름 문구를 새로 만들지 않는다 ──────────
+// 참여자가 거치는 단계: 면담 · 확정 (기본 설정) + 후보 · 조절 · 사전 측정 (새 흐름 [selection]).
+// 후보 단계를 건너뛴 세션(G34)은 그 칸을 지난 것으로 칠한다. 위기·그만·폐기에서는 숨긴다.
+function updateProgress() {
+  const box = $("#progress");
+  const v = state.view;
+  if (!v || ["crisis", "stopped", "withdrawn"].includes(v.state)) { box.hidden = true; return; }
+  const total = v.selection ? 5 : 2;
+  const sel = window.ifsStage ? window.ifsStage.current() : {};
+  let pos, done;
+  if (sel.stage === "selecting") { pos = 3; done = 2; }
+  else if (sel.stage === "adjusting") { pos = 4; done = 3; }
+  else if (sel.stage === "premeasure") { pos = 5; done = 4; }
+  else if (sel.stage === "done") { pos = 5; done = 5; }
+  else if (v.awaiting === "confirm") { pos = 2; done = 1; }
+  else if (v.state === "done") { pos = 2; done = 2; }
+  else { pos = 1; done = 0; }
+  $("#progress-count").textContent = `${pos} / ${total}`;
+  const bar = $("#progress-bar");
+  bar.replaceChildren(...Array.from({ length: total }, (_, i) =>
+    el("i", { class: i < done ? "done" : i === pos - 1 ? "current" : "" })));
+  box.hidden = false;
+}
 
 async function api(method, path, body) {
   const res = await fetch(path, {
@@ -35,10 +80,19 @@ function toast(msg) {
   toast._t = setTimeout(() => (t.hidden = true), 4000);
 }
 
+// 보내는 중: 중복 제출을 막고(단추 끔 + state.busy), 보내기 단추에 대기 표시, 상태 줄을 낭독기에 알림.
+// 초점이 있던 단추는 끄지 않고 aria-disabled로 둔다(끈 단추는 초점을 잃어 키보드 사용자가 처음부터 다시 Tab해야 함).
 function setBusy(on) {
   state.busy = on;
   $("#busy").hidden = !on;
-  document.querySelectorAll("#buttons button, #composer button").forEach((b) => (b.disabled = on));
+  $("#composer").setAttribute("aria-busy", on ? "true" : "false");
+  $("#btn-send").classList.toggle("is-pending", on);
+  document.querySelectorAll("#buttons button, #composer button").forEach((b) => {
+    if (b === document.activeElement) { b.setAttribute("aria-disabled", on ? "true" : "false"); b.classList.toggle("is-pending", on); }
+    else b.disabled = on;
+  });
+  if (!on) document.querySelectorAll("#buttons button[aria-disabled], #composer button[aria-disabled]").forEach((b) => {
+    b.removeAttribute("aria-disabled"); b.classList.remove("is-pending"); });
 }
 
 // ── 시작 ─────────────────────────────────────────────────────────────────────
@@ -119,17 +173,27 @@ const KIND_CLASS = { question: "bot", info: "bot info", check: "bot check", cris
 function render(v) {
   state.view = v;
   const chat = $("#chat");
+  let crisisNode = null;
   chat.replaceChildren(
     ...v.messages.map((m) => {
       const cls = m.speaker === "participant" ? "msg me" : `msg ${KIND_CLASS[m.kind] || "bot"}`;
       const node = el("div", { class: cls }, m.text);
-      if (m.speaker !== "participant" && m.source && $("#toggle-researcher").checked) {
+      if (m.speaker !== "participant" && m.source && isResearcherView()) {
         node.append(el("span", { class: "src", text: m.source }));
       }
+      if (m.kind === "crisis") { node.setAttribute("tabindex", "-1"); crisisNode = node; }
       return node;
     })
   );
   chat.scrollTop = chat.scrollHeight;
+  // 위기 고정 문구가 묻히지 않게(표시 방식만, 문구·판정은 그대로): 한 번만 그 문구로 초점을 옮겨 화면에 보이게 하고
+  // 낭독기가 읽게 한다. 대화 칸 안에서 잘리지 않게 대화 칸 높이 제한도 푼다(.chat.has-crisis).
+  chat.classList.toggle("has-crisis", !!crisisNode);
+  if (crisisNode && !state.crisisFocused) {
+    state.crisisFocused = true;
+    crisisNode.focus({ preventScroll: true });
+    crisisNode.scrollIntoView({ block: "nearest" });
+  }
 
   const cond = $("#badge-condition");
   cond.textContent = v.condition.label;
@@ -154,10 +218,11 @@ function render(v) {
   }
 
   $("#composer").hidden = v.awaiting !== "reply";
-  if (v.awaiting === "reply") $("#input").focus();
+  if (v.awaiting === "reply") $("#input").focus({ preventScroll: true });
 
   const btns = $("#buttons");
   btns.replaceChildren();
+  const risky = [];   // 그만·응답 폐기는 다른 단추와 떨어뜨려 줄 끝에 둔다(화면 순서 = 탭 순서 유지)
   for (const b of v.buttons) {
     if (b.action === "edit") {
       if (state.editing) {
@@ -169,13 +234,18 @@ function render(v) {
       continue;
     }
     if (state.editing && b.action === "confirm") continue;
-    const cls = b.action === "stop" || b.action === "withdraw" ? "danger" : ["start", "continue", "confirm"].includes(b.action) ? "primary" : "";
-    btns.append(el("button", { class: cls, onclick: () => act(b.action) }, b.label));
+    const danger = b.action === "stop" || b.action === "withdraw";
+    const cls = danger ? "danger" : ["start", "continue", "confirm"].includes(b.action) ? "primary" : "";
+    const node = el("button", { class: cls, onclick: () => act(b.action) }, b.label);
+    if (danger) risky.push(node); else btns.append(node);
   }
-  if (["done", "stopped", "crisis", "withdrawn"].includes(v.state)) {
-    btns.append(el("button", { class: "ghost", onclick: () => { location.search = ""; } }, "새 세션"));
+  if (risky.length) btns.append(el("span", { class: "spacer", "aria-hidden": "true" }), ...risky);
+  if (["done", "stopped", "crisis", "withdrawn"].includes(v.state) && isResearcherView()) {
+    // 새 세션은 연구자가 하는 일이라 연구자 보기에서만 보인다
+    btns.append(el("button", { class: "ghost", onclick: () => { const u = new URL(location.href); u.searchParams.delete("sid"); location.href = u; } }, "새 세션"));
   }
   if (window.ifsStage) window.ifsStage.afterRender(v);   // 면담 뒤 단계(stage.js, 새 흐름에서만)
+  updateProgress();
   refreshResearcher();
 }
 
@@ -313,7 +383,10 @@ function renderExtract(log) {
 // ── 이벤트 ───────────────────────────────────────────────────────────────────
 function switchTab(name) {
   state.tab = name;
-  document.querySelectorAll(".tabs button").forEach((b) => b.classList.toggle("active", b.dataset.tab === name));
+  document.querySelectorAll(".tabs button").forEach((b) => {
+    b.classList.toggle("active", b.dataset.tab === name);
+    b.setAttribute("aria-selected", b.dataset.tab === name ? "true" : "false");
+  });
   for (const id of ["progress", "turns", "extract", "json"]) $(`#tab-${id}`).hidden = id !== name;
 }
 
@@ -333,6 +406,17 @@ async function resumeFromUrl() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  setView(new URLSearchParams(location.search).get("view") || "researcher", { updateUrl: false });
+  // 머리글 실제 높이(줄바꿈되면 커짐) → 조절 미리보기가 따라 내려올 위치(--topbar-h)
+  const topbar = document.querySelector(".topbar");
+  new ResizeObserver(() => document.documentElement.style.setProperty("--topbar-h", `${topbar.offsetHeight}px`)).observe(topbar);
+  document.addEventListener("keydown", (e) => {
+    // 참여자 보기에서 연구자 보기로 돌아가기(화면에 단추를 두지 않음). 연구자 보기에서는 참여자 보기로.
+    if (e.ctrlKey && e.altKey && !e.shiftKey && (e.key === "r" || e.key === "R" || e.code === "KeyR")) {
+      e.preventDefault();
+      setView(isResearcherView() ? "participant" : "researcher");
+    }
+  });
   loadHealth().then(resumeFromUrl);
   $("#btn-create").addEventListener("click", createSession);
   $("#composer").addEventListener("submit", (e) => { e.preventDefault(); send($("#input").value); });
@@ -340,11 +424,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.key === "Enter" && !e.shiftKey && !e.isComposing) { e.preventDefault(); send($("#input").value); }
   });
   document.querySelectorAll(".tabs button").forEach((b) => b.addEventListener("click", () => switchTab(b.dataset.tab)));
-  $("#toggle-researcher").addEventListener("change", (e) => {
-    $("#researcher").hidden = !e.target.checked;
-    $("#layout").classList.toggle("solo", !e.target.checked);
-    if (state.view) render(state.view);
-  });
+  $("#toggle-researcher").addEventListener("change", (e) => setView(e.target.checked ? "researcher" : "participant"));
   $("#btn-download").addEventListener("click", () => {
     if (!state.log) return;
     const blob = new Blob([JSON.stringify(state.log, null, 2)], { type: "application/json" });
