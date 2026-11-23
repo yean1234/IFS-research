@@ -137,14 +137,16 @@ namespace IFS.SceneSpec
         /// <summary>모양 모형으로 바꿀 수 있는 form.type: 말하지 않음(null) 또는 blob.</summary>
         public static bool FormAllowsShape(string statedFormType) => statedFormType == null || statedFormType == "blob";
 
-        /// <summary>spec의 _unmapped에서 category = "shape"인 항목을 charSpan 순서로(같으면 원래 순서).</summary>
+        /// <summary>spec의 _unmapped에서 category = "shape"인 항목을 charSpan 순서로(같으면 원래 순서).
+        /// (2.2, CP10 G37) reason = excluded_shape(안전 제외로 그리지 않기로 한 말, 예: '뱀 같은 끈'의 '끈')는 모양어로 쓰지 않는다
+        /// (챗봇 candidates.shape_words와 같은 규칙). 2.0·2.1 문서에는 이 사유가 없어 결과가 같다.</summary>
         public static List<ShapeWord> ExtractWords(SceneSpecV2 spec)
         {
             var words = new List<ShapeWord>();
             if (spec?.Unmapped == null) return words;
             foreach (var u in spec.Unmapped)
             {
-                if (u == null || u.Category != "shape") continue;
+                if (u == null || u.Category != "shape" || u.Reason == "excluded_shape") continue;
                 var v = u.Value?["shape"];
                 words.Add(new ShapeWord
                 {

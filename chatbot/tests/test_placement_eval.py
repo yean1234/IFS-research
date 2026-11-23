@@ -579,3 +579,24 @@ def test_selection_skip_color_and_form_source_columns(tmp_path):
     assert (n["selection_skipped"], n["color_changed"], n["form_source"]) == (True, True, "said_unrendered_default")
     assert (o["selection_skipped"], o["color_changed"], o["form_source"]) == (None, None, "chosen")
     assert (x["selection_skipped"], x["color_changed"], x["form_source"]) == (None, None, None)
+
+
+def test_form_base_and_variant_source_columns(tmp_path):
+    """CP10 G39: sources.form.base·form.baseVariant를 열 form_base_source·form_variant_source로 읽는다(키가 없는 기록 = 빈칸)."""
+    new = {"file": "selection.json", "sha256": "ab", "formatVersion": "ifs-selection/0.2", "none": False,
+           "selectedCandidateId": None, "finalOverrides": {"form.base": "line"}, "skipped": True, "colorChanged": False,
+           "sources": {"form.type": "default", "form.base": "edited", "form.baseVariant": "edited"}}
+    old = {"file": "selection.json", "sha256": "cd", "formatVersion": "ifs-selection/0.2", "none": False,
+           "selectedCandidateId": None, "finalOverrides": {}, "skipped": True, "colorChanged": False,
+           "sources": {"form.type": "default", "form.base": "said"}}
+    make_placement_session(tmp_path, 1, "new", version="ifs-placement/0.2", manifest_extra={"selection": new})
+    make_placement_session(tmp_path, 2, "old", version="ifs-placement/0.2", manifest_extra={"selection": old})
+    make_placement_session(tmp_path, 3, "nosel")
+    res = analyze(tmp_path)
+    cols = res["columns"]
+    assert cols.index("form_base_source") == cols.index("form_source") + 1
+    assert cols.index("form_variant_source") == cols.index("form_base_source") + 1
+    n, o, x = row(res, "new"), row(res, "old"), row(res, "nosel")
+    assert (n["form_base_source"], n["form_variant_source"]) == ("edited", "edited")
+    assert (o["form_base_source"], o["form_variant_source"]) == ("said", None)
+    assert (x["form_base_source"], x["form_variant_source"]) == (None, None)

@@ -237,7 +237,8 @@ namespace IFS.SceneSpec
     public sealed class Provenance
     {
         /// <summary>explicit_lexicon(1층) | simile_marker(2층) | vad_lexicon(3층)
-        /// | (2.1) phrase_rule(구 규칙) | fuzzy_lexicon(퍼지, 확인 필요) | body_part_height(_inferred 제안)</summary>
+        /// | (2.1) phrase_rule(구 규칙) | fuzzy_lexicon(퍼지, 확인 필요) | body_part_height(_inferred 제안)
+        /// | (2.2, CP10 G38) lexicon_implied(form.baseVariant 전용: 말한 형상 낱말의 사전 뜻에서 온 변형값). 값은 검사하지 않고 그대로 읽는다</summary>
         [JsonProperty("source", Required = Required.Always)] public string Source;
         [JsonProperty("trigger", Required = Required.Always)] public string Trigger;
         [JsonProperty("charSpan", Required = Required.Always)] public int[] CharSpan;

@@ -1,0 +1,198 @@
+{
+  "meta": {
+    "specVersion": "2.2.0",
+    "participantId": "SYN",
+    "sessionId": "SYN-LEGACY-22",
+    "condition": "static",
+    "sourceTextHash": "sha256:9cae83bf36015053c6120a0e78c5ffa7eac9744cb4912f1aa56bb9411cd8b038",
+    "pipeline": {
+      "builder": "scene-spec-builder-v2/2.2.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@1.0.0",
+        "layer1Base": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@1.0.0",
+        "vad": "vad-ko@0.1.0",
+        "sceneParamsV2": "scene-params-v2@2.0.0",
+        "nounStoplist": "noun-stoplist-v2@1.0.0",
+        "baseShapes": "base-shapes-v1@0.5.0"
+      }
+    },
+    "mapping": {
+      "requested": "v2",
+      "used": "v1",
+      "fallbackReason": null
+    }
+  },
+  "form": {
+    "type": null,
+    "posture": null,
+    "base": "container",
+    "baseVariant": {
+      "opening": "wide"
+    }
+  },
+  "material": {
+    "color": {
+      "h": 0.333,
+      "s": 0.45,
+      "l": 0.4
+    },
+    "brightness": null,
+    "saturation": null,
+    "roughness": null,
+    "opacity": null,
+    "erosion": null
+  },
+  "layout": {
+    "size": 0.316,
+    "distance": null,
+    "verticalOffset": null
+  },
+  "motion": {
+    "type": null,
+    "speed": null
+  },
+  "body": {
+    "part": "chest",
+    "layer": "around_front"
+  },
+  "_provenance": {
+    "form.base": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "그릇",
+        "charSpan": [
+          9,
+          11
+        ],
+        "rule": "baseShapes.그릇>form.base:container"
+      }
+    ],
+    "form.baseVariant": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "그릇",
+        "charSpan": [
+          9,
+          11
+        ],
+        "rule": "baseShapes.그릇>form.baseVariant:opening=wide"
+      }
+    ],
+    "material.color": [
+      {
+        "source": "phrase_rule",
+        "trigger": "초록색이에요",
+        "charSpan": [
+          18,
+          24
+        ],
+        "rule": "colorTerm.초록색>material.color:hsl"
+      }
+    ],
+    "layout.size": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "작은",
+        "charSpan": [
+          6,
+          8
+        ],
+        "rule": "sizeLexicon.작>layout.size:logScale(0.6)"
+      }
+    ],
+    "body.part": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "가슴",
+        "charSpan": [
+          0,
+          2
+        ],
+        "rule": "bodyPartLexicon.가슴>body.part:chest"
+      }
+    ],
+    "body.layer": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "앞",
+        "charSpan": [
+          3,
+          4
+        ],
+        "rule": "bodyLayerLexicon.앞>body.layer:around_front"
+      }
+    ]
+  },
+  "_unmatched": [],
+  "_unmapped": [],
+  "_negated": [],
+  "_alternatives": [],
+  "_inferred": {
+    "layout.verticalOffset": {
+      "value": 0.72,
+      "_provenance": [
+        {
+          "source": "body_part_height",
+          "trigger": "가슴",
+          "charSpan": [
+            0,
+            2
+          ],
+          "rule": "bodyPartHeight.chest>layout.verticalOffset:0.72"
+        }
+      ]
+    }
+  },
+  "_context": [],
+  "_parts": [],
+  "_uncertain": [],
+  "_measurements": [],
+  "_direction": [],
+  "_needsConfirmation": [],
+  "_clauses": [
+    {
+      "charSpan": [
+        0,
+        16
+      ],
+      "text": "가슴 앞에 작은 그릇이 있어요",
+      "usedFor": [
+        "layout.size",
+        "body.part",
+        "body.layer"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        16,
+        17
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        18,
+        24
+      ],
+      "text": "초록색이에요",
+      "usedFor": [
+        "material.color"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        24,
+        25
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    }
+  ]
+}

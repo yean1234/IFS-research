@@ -1908,9 +1908,10 @@
             "vad_lexicon",
             "phrase_rule",
             "fuzzy_lexicon",
-            "body_part_height"
+            "body_part_height",
+            "lexicon_implied"
           ],
-          "description": "1층 사전 / 2층 직유 / 3층 V/A/D / (v2.1) 1층 구 규칙(수치·비교·색 수식·높이어) / 자모 퍼지 매칭(확인 필요) / 신체 부위 높이 제안(_inferred 전용)"
+          "description": "1층 사전 / 2층 직유 / 3층 V/A/D / (v2.1) 1층 구 규칙(수치·비교·색 수식·높이어) / 자모 퍼지 매칭(확인 필요) / 신체 부위 높이 제안(_inferred 전용) / (2.2, CP10 G38) 낱말 뜻에서 온 값 — form.baseVariant 전용: 참여자가 말한 형상 낱말(trigger)의 사전 뜻이 정한 변형값('그릇' → opening wide). 말한 낱말의 일부라 그리지만 같은 문장에서 참여자가 직접 한 말(explicit_lexicon)과 가른다"
         },
         "trigger": {
           "type": "string",

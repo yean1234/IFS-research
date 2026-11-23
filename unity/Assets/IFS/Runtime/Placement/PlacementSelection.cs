@@ -17,6 +17,7 @@
 //   sources            슬롯별 출처. 객체여야 하고, 키는 SlotNames, 값은 0.2면 SourceValues 여섯 가지(said|chosen|edited|default|
 //                      said_unrendered_chosen|said_unrendered_default — 뒤 둘은 모형이 없는 모양어를 말한 형태 자리, G32),
 //                      0.1이면 SourceValues01 네 가지 중 하나여야 한다 — 아니면 시작 거부(G27). 통과하면 manifest에 그대로 옮긴다(없거나 null이면 null).
+//                      form.baseVariant(기본 형상 변형값, CP10 G39)는 form.base와 함께만 온다 — form.base 없이 있으면 거부(어느 형상의 변형값인지 모름).
 // 덮어쓰기는 형상을 만들 때 한 번 적용하고 조건 단계 동안 바뀌지 않는다(VR 안에서 속성을 고치는 입력은 없음 — G11).
 // UnityEngine에 의존하지 않는다.
 using System;
@@ -41,10 +42,11 @@ namespace IFS.SceneSpec.Placement
         /// <summary>specSha256을 저장된 spec 파일 바이트로 쟀다는 표시(spec.sha256Basis). 러너는 이것만 받는다(G26).</summary>
         public const string FileBasis = "file";
         /// <summary>sources의 슬롯 이름(shared/schemas/selection.v0.2.json $defs.slotName과 같게 — pytest가 대조한다).
-        /// form.base(D6, SceneSpec 2.2.0 기본 형상)는 0.2에 하위 호환으로 더한 키다(0.1 슬롯 + form.base).</summary>
+        /// form.base(D6, SceneSpec 2.2.0 기본 형상)와 form.baseVariant(그 변형값, CP10 G39)는 0.2에 하위 호환으로 더한 키다
+        /// (0.1 슬롯 + form.base + form.baseVariant). form.baseVariant는 덮어쓰기 키가 아니다(base에서 정해짐).</summary>
         public static readonly string[] SlotNames =
         {
-            "form.type", "form.posture", "form.base", "material.color", "material.brightness", "material.saturation",
+            "form.type", "form.posture", "form.base", "form.baseVariant", "material.color", "material.brightness", "material.saturation",
             "material.roughness", "material.opacity", "material.erosion", "layout.size", "layout.distance",
             "layout.verticalOffset", "motion.type", "motion.speed", "body.part", "body.layer",
         };
@@ -215,6 +217,8 @@ namespace IFS.SceneSpec.Placement
                         errors.Add($"sources.{p.Name}: 출처 값 {p.Value.ToString(Formatting.None)}이 {string.Join(" | ", allowed)} 중 하나가 아님" +
                                    (v01 ? $"({FormatVersion01})" : ""));
                 }
+                if (srcObj.ContainsKey("form.baseVariant") && !srcObj.ContainsKey("form.base"))
+                    errors.Add("sources: form.baseVariant가 있는데 form.base가 없음 — 어느 기본 형상의 변형값인지 알 수 없음(CP10 G39)");
                 if (errors.Count == before) s.Sources = srcObj.DeepClone();
             }
 

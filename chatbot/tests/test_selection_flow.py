@@ -360,7 +360,7 @@ def test_unrendered_shape_chosen_gets_new_source(rt4):
     assert rec["source"] == "said_unrendered_chosen" and rec["value"] == "mist" and rec["chosenValue"] == "mist"
     assert [w["lemma"] for w in rec["saidWords"]] == ["길쭉"] and rec["saidWords"][0]["shape"] == "elongated"
     assert f.data["sources"]["layout.size"] == "chosen"            # 다른 축은 그대로 chosen
-    assert f.data["sourceCounts"]["said_unrendered_chosen"] == 1 and sum(f.data["sourceCounts"].values()) == 16
+    assert f.data["sourceCounts"]["said_unrendered_chosen"] == 1 and sum(f.data["sourceCounts"].values()) == 17
     valid(f.data)
     assert runner_contract_errors(json.loads((f.dir / "selection.json").read_text(encoding="utf-8"))) == []
 
@@ -464,7 +464,7 @@ def test_chosen_and_default_sources(rt4):
     assert src["layout.size"]["source"] == "chosen" and src["layout.size"]["chosenValue"] == 0.7
     assert src["material.color"]["source"] == "default" and src["material.color"]["value"] == {"h": 0.0, "s": 0.0, "l": 0.7}
     assert src["body.part"]["source"] == "said"
-    assert sum(f.data["sourceCounts"].values()) == 16
+    assert sum(f.data["sourceCounts"].values()) == 17
     assert f.data["finalOverrides"] == {"form.type": "mist", "layout.size": 0.7}
 
 
@@ -1012,6 +1012,8 @@ def runner_contract_errors(data: dict) -> list[str]:
         errs.append("sources")
     elif any(k not in RUNNER_SLOTS or v not in allowed for k, v in src.items()):
         errs.append("sources.values")                       # G27(0.1은 네 값, 0.2는 여섯 값)
+    elif "form.baseVariant" in src and "form.base" not in src:
+        errs.append("sources.baseVariant_without_base")     # CP10 G39
     spec = data.get("spec")
     if isinstance(spec, dict) and "sha256Basis" in spec and spec["sha256Basis"] != "file":
         errs.append("sha256Basis")                          # G26
@@ -1031,8 +1033,11 @@ def test_runner_slot_and_source_lists_match_csharp():
     slots = re.search(r"SlotNames\s*=\s*\{([^}]*)\}", src).group(1)
     sources = re.search(r"SourceValues\s*=\s*\{([^}]*)\}", src).group(1)
     sources01 = re.search(r"SourceValues01\s*=\s*\{([^}]*)\}", src).group(1)
-    # 0.2 슬롯 = 0.1 슬롯 + form.base(D6, SceneSpec 2.2.0 기본 형상 — 0.2에 하위 호환으로 더함)
-    assert set(re.findall(r'"([^"]+)"', slots)) == RUNNER_SLOTS == set(SCHEMA01["$defs"]["slotName"]["enum"]) | {"form.base"}
+    # 0.2 슬롯 = 0.1 슬롯 + form.base(D6, SceneSpec 2.2.0 기본 형상) + form.baseVariant(CP10 G39) — 0.2에 하위 호환으로 더함
+    want_slots = set(SCHEMA01["$defs"]["slotName"]["enum"]) | {"form.base", "form.baseVariant"}
+    assert set(re.findall(r'"([^"]+)"', slots)) == RUNNER_SLOTS == want_slots
+    from ifs_chatbot.candidates import SLOTS
+    assert set(SLOTS) == RUNNER_SLOTS
     assert set(re.findall(r'"([^"]+)"', sources)) == RUNNER_SOURCES == SIX_SOURCES
     assert set(re.findall(r'"([^"]+)"', sources01)) == RUNNER_SOURCES_01 == {"said", "chosen", "edited", "default"}
     from ifs_chatbot.selection import SOURCES

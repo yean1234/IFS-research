@@ -113,6 +113,35 @@ def _same_value(a, b) -> bool:
     return a == b
 
 
+FORM_SLOTS = ("form.type", "form.base", "form.baseVariant")   # 조절 항목 "형태" 한 번이 정하는 세 슬롯(G39)
+
+
+def variant_for(spec: dict, base_value):
+    """G39: 지금 base 값(덮어쓰기 뒤)에서 쓰이는 변형값. Unity SceneParams.CurrentBaseVariant와 같은 규칙 — base가 spec의 base와
+    같을 때만 spec의 form.baseVariant, 다르면 None(새 형상은 프리셋 기본값으로 그림). base를 바꿨다가 되돌리면 다시 spec의 값."""
+    sb = slot_value(spec, "form.base")
+    return slot_value(spec, "form.baseVariant") if sb is not None and base_value == sb else None
+
+
+def variant_key_basis(spec: dict) -> dict | None:
+    """G38: form.baseVariant 키마다 근거. lexicon_implied = 형상 낱말의 사전 뜻에서 옴('그릇' → opening wide),
+    said = 같은 문장에서 참여자가 직접 한 말('엉켜' → form tangle). provenance source(lexicon_implied, builder 2.3.0)
+    또는 rule 앞부분('baseShapes.' = 낱말 뜻, 'baseVariantCue.' = 참여자 말)으로 가른다 — builder 2.2.0 spec(source가 모두
+    explicit_lexicon)도 rule로 같은 결과가 된다. 변형값이 없으면 None."""
+    var = slot_value(spec, "form.baseVariant")
+    if not var:
+        return None
+    basis = {}
+    for pv in (spec.get("_provenance") or {}).get("form.baseVariant") or []:
+        rule = pv.get("rule") or ""
+        head, _, tail = rule.partition(">form.baseVariant:")
+        key = tail.split("=", 1)[0]
+        if key in var:
+            implied = pv.get("source") == "lexicon_implied" or head.startswith("baseShapes.")
+            basis[key] = "lexicon_implied" if implied else "said"
+    return {k: basis.get(k, "said") for k in sorted(var)}
+
+
 def selection_dir(log_dir: Path, session_id: str) -> Path:
     return Path(log_dir) / "selection" / session_id
 
@@ -414,10 +443,16 @@ class SelectionFlow:
             keys = self._validate(item, value)
             before = self._item_value(item, effective_params(self.spec, self.defaults, self.current))
             self.current.update(keys)
-            after = self._item_value(item, effective_params(self.spec, self.defaults, self.current))
+            params = effective_params(self.spec, self.defaults, self.current)
+            after = self._item_value(item, params)
             at = now_iso()
             ev = self.data["adjustments"]["events"]
-            ev.append({"i": len(ev), "item": item, "value": after, "previous": before, "at": at})
+            event = {"i": len(ev), "item": item, "value": after, "previous": before, "at": at}
+            if "valueOverrides" in self.table["adjustItems"]["items"][item]:
+                # G39: 형태 조작 한 번 = 고른 값 하나(value). 그 조작으로 정해진 세 슬롯을 함께 남긴다(변형값은 base가 spec의
+                # base와 다르면 null — 이전 base의 변형값은 지워짐)
+                event["formSlots"] = self._form_slots(params)
+            ev.append(event)
             summ = self.data["adjustments"]["items"].setdefault(item, {"count": 0, "first": before, "last": before,
                                                                        "firstAt": at, "lastAt": at})
             summ["count"] += 1
@@ -425,6 +460,11 @@ class SelectionFlow:
             self.data["colorChanged"] = self._color_changed()
             self._save()
             return self.view()
+
+    def _form_slots(self, params: dict) -> dict:
+        base = params.get("form.base", "none")
+        return {"form.type": params["form.type"], "form.base": base,
+                "form.baseVariant": copy.deepcopy(variant_for(self.spec, base))}
 
     def _color_changed(self) -> bool:
         """G31: 조절 기록에서 색의 처음 값과 마지막 값이 다른가(만졌다가 되돌리면 false, 횟수는 adjustments.items.color)."""
@@ -456,9 +496,16 @@ class SelectionFlow:
         final = effective_params(self.spec, self.defaults, self.current)
         start = effective_params(self.spec, self.defaults)
         edited: dict[str, object] = {}
+        form_item = None                                # G39: 형태 조절이 처음 값과 다른 값으로 끝났으면 그 기록(세 슬롯에 붙임)
         for item, summ in self.data["adjustments"]["items"].items():
             if _same_value(summ["last"], summ["first"]):
                 continue                                # 만졌지만 처음 값으로 돌아옴 → 출처는 그대로(횟수는 items에 남음)
+            if "valueOverrides" in items[item]:
+                form_item = {"item": item, "first": summ["first"], "last": summ["last"], "count": summ["count"]}
+                # G39: base가 바뀌면 이전 base의 변형값은 쓰이지 않는다(Unity와 같은 규칙). 바뀐 것을 '고침'으로 남김(값 null)
+                v0, v1 = variant_for(self.spec, start["form.base"]), variant_for(self.spec, final["form.base"])
+                if v1 != v0:
+                    edited["form.baseVariant"] = copy.deepcopy(v1)
             for slot in items[item]["slots"]:
                 if slot == "material.color":
                     edited[slot] = {k: round(final[f"material.color.{k}"], 4) for k in ("h", "s", "l")}
@@ -475,12 +522,14 @@ class SelectionFlow:
         default_of = {"material.color": {"h": d["material.color.h"], "s": d["material.color.s"], "l": d["material.color.l"]},
                       "material.saturation": d["material.color.s"]}
         out, counts = {}, {k: 0 for k in SOURCES}
+        basis = variant_key_basis(self.spec)
         for slot in SLOTS:
             slot_val = slot_value(self.spec, slot)
             said = slot_val
             if slot == "layout.distance" and floor and floor.get("said") is not None:
                 said = floor["said"]            # G33: 원래 말한 값(하한 전). 그려진 값은 value(= 슬롯 값 = 하한)
-            dv = default_of.get(slot, d.get(slot))
+            # form.baseVariant 기본값 = null(형상 프리셋 기본값, 값 표 defaults에 없음)
+            dv = None if slot == "form.baseVariant" else default_of.get(slot, d.get(slot))
             rec = {"saidValue": said, "chosenValue": chosen.get(slot), "defaultValue": dv}
             if slot in edited:
                 rec = {"source": "edited", "value": edited[slot], **rec}
@@ -497,6 +546,10 @@ class SelectionFlow:
                 rec = {"source": "default", "value": dv, **rec}
             if slot == "form.type" and (unrendered or rendered):
                 rec["saidWords"] = words                               # 원래 말한 모양어(G32)
+            if slot == "form.baseVariant" and basis is not None:
+                rec["keyBasis"] = basis                                # G38: 키마다 낱말 뜻(lexicon_implied) | 참여자 말(said)
+            if slot in FORM_SLOTS and form_item is not None:
+                rec["formItem"] = form_item                            # G39: 세 슬롯을 정한 형태 조작(처음·마지막 값·횟수)
             counts[rec["source"]] += 1
             out[slot] = rec
         return out, counts

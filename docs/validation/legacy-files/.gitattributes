@@ -1,0 +1,4 @@
+# 저장된 바이트 그대로(LF) 체크아웃한다. 선택 파일의 specSha256이 spec 파일 바이트의 sha256과 같아야 하므로
+# core.autocrlf 등 줄바꿈 변환을 하지 않는다(CP10 G41, selection-flow/runs와 같은 방식).
+*.json text eol=lf
+*.md text eol=lf

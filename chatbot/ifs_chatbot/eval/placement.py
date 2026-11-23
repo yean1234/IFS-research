@@ -74,6 +74,9 @@ RECORD_PREFIX = "ifs-placement/"
 # 그 밖의 파일·필드는 0.1과 같다. 실제 예시: docs/validation/runner-selection/records/
 # 같은 0.2 안에서 더한 키(2026-11-23, G31·G32·G34 — ifs-selection/0.2): selection.skipped(선택 단계를 건너뜀), selection.colorChanged
 # (색을 바꿨는지, 0.1 선택 파일이면 null). 출처 sources.form.type에 said_unrendered_chosen·said_unrendered_default가 올 수 있다.
+# (CP10 G39) sources에 form.base·form.baseVariant(기본 형상과 그 변형값) — 열 form_base_source·form_variant_source.
+# 변형값 키마다 낱말 뜻(lexicon_implied)·참여자 말(said)의 구분은 manifest에 없고 selection.json sourceDetails.form.baseVariant.keyBasis에
+# 있다(manifest selection.sha256으로 짝지음).
 # 없는 키는 빈칸으로 읽는다(이전 기록 그대로 읽힘).
 KNOWN_VERSIONS = ("ifs-placement/0.1", "ifs-placement/0.2")
 TRAJECTORY_PREFIX = "ifs-trajectory/"
@@ -103,7 +106,7 @@ SESSION_HEAD = [
     "participant", "session_id", "record_folder", "condition", "control_mode", "completed", "aborted_at",
     "condition_complete", "input_source", "head_source", "auto_mode", "draft_phrases", "object_radius_m",
     "selection_none", "selected_candidate_id", "n_final_overrides",
-    "selection_skipped", "color_changed", "form_source",
+    "selection_skipped", "color_changed", "form_source", "form_base_source", "form_variant_source",
     "final_distance_m", "final_azimuth_deg", "final_height_m", "grab_count", "first_grab_ms", "held_ms",
     "path_length_m", "confirmed",
     "show_rings", "nearest_ring_m", "ring_offset_m",
@@ -459,6 +462,10 @@ def load_session(cand: dict, facing_deg: float = DEFAULT_FACING_DEG) -> tuple[di
         "selection_skipped": sel.get("skipped") if isinstance(sel.get("skipped"), bool) else None,
         "color_changed": sel.get("colorChanged") if isinstance(sel.get("colorChanged"), bool) else None,
         "form_source": (sel.get("sources") or {}).get("form.type") if isinstance(sel.get("sources"), dict) else None,
+        # CP10 G39: 기본 형상·변형값 출처(키가 없는 기록 = 빈칸)
+        "form_base_source": (sel.get("sources") or {}).get("form.base") if isinstance(sel.get("sources"), dict) else None,
+        "form_variant_source": ((sel.get("sources") or {}).get("form.baseVariant")
+                                if isinstance(sel.get("sources"), dict) else None),
         "final_distance_m": _r(final_d), "final_azimuth_deg": _r(final_az), "final_height_m": _r(final_h),
         "grab_count": _int(pl.get("grabCount")), "first_grab_ms": _num(pl.get("firstGrabMs")),
         "held_ms": _num(pl.get("heldMs")), "path_length_m": _r(path_len),

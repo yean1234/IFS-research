@@ -27,6 +27,11 @@ D6  기본 형상 경로(builder 2.2.0, 결정 G21·G30, docs/asset-plan.md 3절
     form.base(container·line·sheet·flame·drop)에 넣고, 낱말 뜻과 같은 문장의 참여자 말이 정한 변형값을 form.baseVariant에 넣는다.
     그 명사의 다른 기록(_unmapped의 object·shape·unlisted_noun)은 지운다(이제 값의 근거). 안전 제외 낱말은 그리지 않고
     _unmapped reason excluded_shape로 남긴다. 출력은 언제나 specVersion 2.2.0(form.base·baseVariant가 null이어도 적음).
+    G37(builder 2.3.0): 제외 판정은 형태소 단위다. 명사 연속을 앞쪽의 띄어 쓴 맨 명사 어절까지 넓히고('해골 그릇'·'아이 장난감 상자')
+    그 안의 Kiwi 명사 토큰 하나라도 제외 낱말이거나 제외 합성어 목록(excludedCompounds: '칼날'·'핏물')에 있으면 그 연속 전체를
+    그리지 않는다. 부정된 것·직유 원천도 기록한다. 제외 낱말이 직유 원천이면('뱀 같은 끈') 같은 문장의 형상 낱말도 그리지 않고
+    value.excludedBy를 남긴다. 기록을 바꿀 때 원래 사유는 value.priorReason에 둔다.
+    G38(builder 2.3.0): 낱말 뜻에서 온 변형값의 provenance source는 lexicon_implied(같은 문장의 참여자 말로 정한 값은 explicit_lexicon).
 
 스키마 한계(스키마 2.2에서도 그대로): meta.mapping.used는 v0 | v1만 허용한다. v2는 requested = "v2",
 used = "v1"(가장 가까운 값: v2는 v1 위의 수정), pipeline.builder = scene-spec-builder-v2/…로 남긴다.
@@ -49,9 +54,15 @@ from .scene_spec import (MAPPING_USED_FOR, SPEC_VERSION_V22,  # noqa: F401 (v2 m
 
 # 2.1.0(2026-11-23, G33): 거리 하한 꼬리표에 말한 값(said=…)을 더함
 # 2.2.0(2026-11-23, D6·G30): 기본 형상 경로 form.base·form.baseVariant(스키마 2.2.0), 안전 제외 낱말 excluded_shape
-BUILDER_VERSION = "2.2.0"
+# 2.3.0(2026-11-23, CP10 G37·G38): 안전 제외를 형태소 단위로(넓힌 명사 연속 안의 제외 형태소 하나라도, 합성어 목록, 부정·직유도
+#       기록, 제외 낱말이 직유 원천이면 그 문장의 형상을 그리지 않음), 낱말 뜻에서 온 변형값의 source = lexicon_implied.
+#       출력 specVersion은 그대로 2.2.0(스키마 2.2.0에 provenance source 값을 하나 더함 — decisions.md 'CP10 반영 세부')
+BUILDER_VERSION = "2.3.0"
 BUILDER_ID = f"scene-spec-builder-v2/{BUILDER_VERSION}"
 MAPPER_ID = "v2"
+# G38: 낱말 뜻(base_shapes 사전 항목 variant)에서 온 form.baseVariant 값의 provenance source. 참여자가 같은 문장에서 직접 한 말
+# (variantCues)로 정해진 값은 다른 슬롯처럼 explicit_lexicon이다
+IMPLIED_SOURCE = "lexicon_implied"
 
 # 보존 기록 중 '이미 다룬 말'로 보는 필드(D1). _clauses(전체 원문 색인)·_uncertain(절 전체)·_unmatched는 넣지 않는다
 _COVER_KEYS = ("_provenance", "_unmapped", "_negated", "_alternatives", "_context", "_parts", "_measurements",
@@ -119,6 +130,11 @@ class SceneSpecBuilderV2(SceneSpecBuilderV1):
         self.bs_entries: dict[str, dict] = {e["lemma"]: e for e in bs["entries"]}
         self.bs_excluded: dict[str, str] = {w: code for code, ws in bs["excluded"].items()
                                             if not code.startswith("_") and code != "notListed" for w in ws}
+        # G37: Kiwi가 한 토큰으로 내는 제외 합성어('칼날'·'핏물')
+        for code, ws in (bs.get("excludedCompounds") or {}).items():
+            if not code.startswith("_"):
+                for w in ws:
+                    self.bs_excluded.setdefault(w, code)
         self.bs_roles = frozenset(bs["rules"]["roles"])
         self.bs_similes = bool(bs["rules"]["similes"])
         self.bs_numerals = frozenset(bs["rules"]["numeralDeterminers"])
@@ -181,6 +197,8 @@ class SceneSpecBuilderV2(SceneSpecBuilderV1):
         k = j + 1
         while k < n and toks[k].base_tag == "XSN":
             k += 1
+        if k + 1 < n and toks[k].base_tag == "JKC" and toks[k + 1].base_tag == "VCN" and doc.eoj[k] == doc.eoj[j]:
+            return "named"                                       # (2.3.0) '사람이 아니에요' — 이름을 말하고 부정함
         if k >= n or doc.eoj[k] == doc.eoj[j] or toks[k].base_tag not in ("MM", "NR", "SN"):
             return role
         if toks[k].base_tag == "NR":
@@ -190,13 +208,60 @@ class SceneSpecBuilderV2(SceneSpecBuilderV1):
             return self._noun_role(doc, m)
         return role
 
+    def _phrase_start(self, doc: Doc, a: int) -> int:
+        """G37: 명사 연속(토큰 a부터) 바로 앞에 띄어 쓴 맨 명사 어절('해골 그릇'의 '해골', '아이 장난감 상자'의 '아이 장난감')이
+        같은 절에 이어 있으면 그 어절까지 넓힌 시작 토큰. 안전 제외 판정에만 쓴다(형상 낱말 맞춤은 그대로 명사 연속 전체 글자)."""
+        toks = doc.toks
+        start = a
+        while True:
+            e = doc.eoj[start]
+            if e == 0 or doc.eojeols[e][0] != start:
+                return start                                     # 어절 첫 토큰이 아님('무기력' = 접두사 + 명사)
+            ids = doc.etoks(e - 1)
+            if not all(toks[x].base_tag in NOUN_TAGS for x in ids) or doc.eoj_clause(e - 1) != doc.clause[start]:
+                return start
+            start = ids[0]
+
+    def _excluded_forms(self, doc: Doc, pa: int, b: int, lemma: str) -> list[dict]:
+        """G37: 넓힌 명사 연속(토큰 pa..b) 안의 제외 낱말 형태소(Kiwi 명사 토큰 단위). 형태소 하나가 제외 낱말이거나, Kiwi가 한
+        토큰으로 내는 합성어 목록(excludedCompounds: '칼날'·'핏물')에 있으면 제외. 글자 부분 일치는 쓰지 않는다('칼슘'·'피부'·
+        '아이스크림'은 Kiwi가 한 토큰으로 내고 목록에 없어 제외되지 않음)."""
+        toks = doc.toks
+        out = []
+        for x in range(pa, b + 1):
+            code = self.bs_excluded.get(toks[x].form) if toks[x].base_tag in NOUN_TAGS else None
+            if code is not None:
+                out.append({"form": toks[x].form, "excluded": code, "charSpan": [toks[x].start, toks[x].end]})
+        if not out and lemma in self.bs_excluded:
+            s, e = toks[pa].start, toks[b].end
+            out.append({"form": lemma, "excluded": self.bs_excluded[lemma], "charSpan": [s, e]})
+        return out
+
+    @staticmethod
+    def _mark_excluded(unmapped: list, lo: int, hi: int, lemmas: set[str] | None, extra: dict) -> list[dict]:
+        """G37: [lo, hi) 구간과 겹치는 _unmapped 기록(사물·모양어·사전에 없는 명사, 직유 원형 대기 포함)을 excluded_shape로 바꾼다.
+        lemmas가 있으면 그 낱말의 기록만. 원래 사유는 value.priorReason에 남긴다(G40: 바꾸면서 정보를 지우지 않음)."""
+        out = []
+        for u in unmapped:
+            cs = u["_provenance"]["charSpan"]
+            if u["category"] not in ("object", "shape", "unlisted_noun") or not (cs[0] < hi and lo < cs[1]):
+                continue
+            if lemmas is not None and u["lemma"] not in lemmas:
+                continue
+            if u["reason"] != "excluded_shape":
+                u["value"] = {**u["value"], "priorReason": u["reason"], **extra}
+                u["reason"] = "excluded_shape"
+            out.append(u)
+        return out
+
     def _base_shapes(self, doc: Doc, spec: dict) -> tuple[str | None, dict | None, bool]:
         """형상 낱말 → form.base. (base, baseVariant, spec 기록을 바꿨는지). spec의 기록 필드를 제자리에서 고친다."""
         toks, text = doc.toks, doc.text
         n = len(toks)
         valued: set[int] = set()
         _span_chars(spec.get("_provenance"), valued)
-        context_sents = self._context_sentences(doc) | self._situation_sentences(doc, valued)
+        recall_sents = self._context_sentences(doc)
+        context_sents = recall_sents | self._situation_sentences(doc, valued)
         regions = self._situation_regions(doc)
         sim_src = {sm["srcIndex"]: sm for sm in self._similes(text, toks)} if self.bs_similes else {}
         # 이미 다른 값의 근거로 쓴 말('컵만 해요'·'신발 상자만 해요'의 크기 비교 기준, 부분·맥락 기록)은 형상 이름이 아니다.
@@ -219,11 +284,16 @@ class SceneSpecBuilderV2(SceneSpecBuilderV1):
             i = j + 1
             s, e = toks[a].start, toks[b].end
             lemma = text[s:e]
-            entry, code = self.bs_entries.get(lemma), self.bs_excluded.get(lemma)
+            pa = self._phrase_start(doc, a)
+            forms = self._excluded_forms(doc, pa, b, lemma)
+            entry, code = self.bs_entries.get(lemma), (forms[0]["excluded"] if forms else None)
             if entry is None and code is None:
                 continue
-            if doc.sent[b] in context_sents or any(s0 <= a and b < k0 for s0, k0 in regions):
-                continue                                         # 회상·상황 문장의 명사
+            # 회상·상황 문장의 명사. G37: 제외 낱말은 D1의 상황 문장 추정(②–④: '칼처럼 생긴 거예요'의 '거'도 상황 명사로 봄)을
+            # 쓰지 않고 v1 회상 문장('-던'·'장면')과 상황절('…때')만 뺀다 — 기록을 넓게 남기는 쪽(그리는 판정은 그대로)
+            if (doc.sent[b] in (recall_sents if code is not None else context_sents)
+                    or any(s0 <= a and b < k0 for s0, k0 in regions)):
+                continue
             if any(c in used for c in range(s, e)):
                 continue                                         # 크기 비교 기준 등 다른 값의 근거
             if a > 0 and doc.eoj[a - 1] != doc.eoj[a] and (toks[a - 1].base_tag in ("NR", "SN") or (
@@ -239,26 +309,56 @@ class SceneSpecBuilderV2(SceneSpecBuilderV1):
             sim = sim_src.get(b)
             if sim is None and self._base_role(doc, b) not in self.bs_roles:
                 continue                                         # 장소·목적어·꾸밈말
+            ps = toks[pa].start
             hits.append({"a": a, "b": b, "s": s, "e": e, "lemma": lemma, "entry": entry, "code": code,
-                         "negated": negated, "simile": sim})
+                         "negated": negated, "simile": sim, "ps": ps, "phrase": text[ps:e], "forms": forms})
         changed = False
         unmapped = spec["_unmapped"]
 
-        # 안전 제외 낱말: 그리지 않고 기록만(대신할 형상도 그리지 않음)
+        # G37: 직유 원천에 제외 낱말이 있으면('뱀 같은 끈', '끈이 있는데 뱀 같아요') 그 문장의 형상 낱말을 그리지 않는다.
+        # 부정된 직유('칼 같은 건 아니고')도 막는다 — 부정 판정이 틀릴 수 있어 그리지 않는 쪽(⚠ 사람이 정할 것)
+        blockers: dict[int, dict] = {}
         for h in hits:
-            if h["code"] is None or h["negated"]:
+            if h["code"] is not None and h["simile"] is not None:
+                blockers.setdefault(doc.sent[h["b"]], h)
+        for h in hits:
+            h["blockedBy"] = (blockers.get(doc.sent[h["b"]])
+                              if h["code"] is None and h["entry"] is not None and not h["negated"] else None)
+
+        # 안전 제외 낱말(G37: 넓힌 명사 연속 안의 형태소 하나라도): 그리지 않고 기록만(대신할 형상도 그리지 않음).
+        # 부정된 것·직유 원천도 기록한다(value.negated · value.simile)
+        for h in hits:
+            if h["code"] is None:
                 continue
             changed = True
-            same_span = [u for u in unmapped if u["_provenance"]["charSpan"] == [h["s"], h["e"]]]
-            if same_span:
-                for u in same_span:
-                    u["reason"] = "excluded_shape"
-                    u["value"] = {**u["value"], "excluded": h["code"]}
-            else:
+            extra = {"excluded": h["code"], "excludedForms": h["forms"]}
+            if h["phrase"] != h["lemma"]:
+                extra["excludedPhrase"] = h["phrase"]
+            if h["negated"]:
+                extra["negated"] = True
+            if h["simile"] is not None:
+                extra["simile"] = h["simile"]["marker"]
+            marked = self._mark_excluded(unmapped, h["ps"], h["e"], None, extra)
+            covered = any(u["_provenance"]["charSpan"][0] < f["charSpan"][1] and f["charSpan"][0] < u["_provenance"]["charSpan"][1]
+                          for u in marked for f in h["forms"])
+            if not covered:
+                unmapped.append({"lemma": h["phrase"], "category": "excluded_noun",
+                                 "value": {"noun": h["phrase"], **extra}, "reason": "excluded_shape",
+                                 "_provenance": self._prov("explicit_lexicon", text, h["ps"], h["e"],
+                                                           f"baseShapes.excluded.{h['forms'][0]['form']}")})
+        # 직유로 막힌 형상 낱말: 그 낱말의 기록을 excluded_shape로(없으면 새로), 막은 말을 value.excludedBy에
+        for h in hits:
+            bl = h["blockedBy"]
+            if bl is None:
+                continue
+            changed = True
+            extra = {"excluded": bl["code"], "excludedBy": {"phrase": bl["phrase"], "charSpan": [bl["ps"], bl["e"]],
+                                                           "rule": "simile_source"}}
+            if not self._mark_excluded(unmapped, h["s"], h["e"], {h["lemma"]}, extra):
                 unmapped.append({"lemma": h["lemma"], "category": "excluded_noun",
-                                 "value": {"noun": h["lemma"], "excluded": h["code"]}, "reason": "excluded_shape",
+                                 "value": {"noun": h["lemma"], **extra}, "reason": "excluded_shape",
                                  "_provenance": self._prov("explicit_lexicon", text, h["s"], h["e"],
-                                                           f"baseShapes.excluded.{h['lemma']}")})
+                                                           f"baseShapes.{h['lemma']}+blocked(simile_source)")})
         # 부정된 형상 낱말: _negated에 남긴다(이미 있으면 그대로)
         for h in hits:
             if h["entry"] is None or not h["negated"]:
@@ -272,7 +372,8 @@ class SceneSpecBuilderV2(SceneSpecBuilderV1):
             spec["_negated"].sort(key=lambda x: (x["_provenance"]["charSpan"][0], x["lemma"], x["category"]))
             unmapped.sort(key=lambda u: (u["_provenance"]["charSpan"][0], u["lemma"], u["category"]))
 
-        base_hits = sorted((h for h in hits if h["entry"] is not None and not h["negated"]), key=lambda h: h["s"])
+        base_hits = sorted((h for h in hits if h["entry"] is not None and not h["negated"] and h["code"] is None
+                            and h["blockedBy"] is None), key=lambda h: h["s"])
         if not base_hits:
             return None, None, changed
         changed = True
@@ -296,12 +397,13 @@ class SceneSpecBuilderV2(SceneSpecBuilderV1):
             if h["entry"]["base"] != key:
                 spec["_alternatives"].append({"path": "form.base", "value": h["entry"]["base"], "reason": "later_mention",
                                               "_provenance": [prov(h, f"baseShapes.{h['lemma']}>form.base:{h['entry']['base']}")]})
-        # 변형값: 낱말 뜻(이긴 명사의 사전 항목) → 같은 문장의 참여자 말이 덮어씀
+        # 변형값: 낱말 뜻(이긴 명사의 사전 항목) → 같은 문장의 참여자 말이 덮어씀.
+        # G38(2.3.0): 낱말 뜻에서 온 값은 그 낱말을 말한 것의 일부라 그리지만 source = lexicon_implied로 말한 것과 가른다
         variant: dict[str, str] = {}
         vprov: dict[str, dict] = {}
         for k, v in (win["entry"].get("variant") or {}).items():
             variant[k] = v
-            vprov[k] = prov(win, f"baseShapes.{win['lemma']}>form.baseVariant:{k}={v}")
+            vprov[k] = dict(prov(win, f"baseShapes.{win['lemma']}>form.baseVariant:{k}={v}"), source=IMPLIED_SOURCE)
         sents = {doc.sent[h["b"]] for h in same}
         for k, vals in (self.bs_cues.get(key) or {}).items():
             best = None                                          # (charSpan 시작, 값, provenance)

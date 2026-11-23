@@ -1,0 +1,20 @@
+{
+  "formatVersion": "ifs-selection/0.1",
+  "_note": "합성 고정 파일(참여자 자료 아님, CP10 G41). ifs-selection/0.1, spec_2.1.0.json(매퍼 v1 예시 EX03.v1)을 가리킨다. '맞는 것이 없다'(none)를 고르고 투명도만 고친 경우.",
+  "specSha256": "44c7946c64c509e4ec642070b7811d52388d2e3c8b359655aacc58c9d5cf9a21",
+  "runnerReady": true,
+  "runnerBlockers": [],
+  "selection": {
+    "selectedCandidateId": null,
+    "none": true
+  },
+  "finalOverrides": {
+    "material.opacity": 0.6
+  },
+  "sources": {
+    "form.type": "said",
+    "material.opacity": "edited",
+    "layout.size": "default",
+    "motion.type": "default"
+  }
+}

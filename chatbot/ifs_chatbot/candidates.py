@@ -29,13 +29,14 @@ from .paths import shared
 
 # 0.2.0(2026-11-23): G32 모형 없는 모양어, G34 밝기 제외·구별 규칙·선택 건너뜀
 # 0.3.0(2026-11-23, D6): form.base(출처 행·그려지는 형태 판정·갈림 match.in = form.base)
-GENERATOR_VERSION = "ifs-candidates/0.3.0"
+# 0.4.0(2026-11-23, CP10 G39·G37): 출처 행에 form.baseVariant, 안전 제외 기록(_unmapped reason excluded_shape)은 모양어로 세지 않음
+GENERATOR_VERSION = "ifs-candidates/0.4.0"
 TABLE_FILE = "candidate_values.v2.json"
 MAX_CANDIDATES = 4          # 지시문 6절 임시값(⚠ 사람이 정할 것). G19에서 상한
 
 # spec 슬롯(경로) — 출처 표의 행 순서
 SLOTS = (
-    "form.type", "form.posture", "form.base",
+    "form.type", "form.posture", "form.base", "form.baseVariant",
     "material.color", "material.brightness", "material.saturation", "material.roughness",
     "material.opacity", "material.erosion",
     "layout.size", "layout.distance", "layout.verticalOffset",
@@ -84,8 +85,10 @@ def slot_value(spec: dict, slot: str):
 
 
 def shape_words(spec: dict) -> list[dict]:
-    """매퍼가 _unmapped(category shape)에 남긴 모양어. Unity ShapeMapping이 읽는 것과 같은 목록."""
-    return [u for u in spec.get("_unmapped") or [] if u.get("category") == "shape"]
+    """매퍼가 _unmapped(category shape)에 남긴 모양어. Unity ShapeMapping이 읽는 것과 같은 목록.
+    G37: 안전 제외로 그리지 않기로 한 기록(reason excluded_shape, 예: '뱀 같은 끈'의 '끈')은 모양어로 세지 않는다
+    (세면 G32 규칙이 형태 후보를 벌려 그 말을 다른 형태로 그리게 됨). Unity ShapeMapping.ExtractWords도 같다."""
+    return [u for u in spec.get("_unmapped") or [] if u.get("category") == "shape" and u.get("reason") != "excluded_shape"]
 
 
 def _mapped_shapes(table: dict | None) -> set[str] | None:

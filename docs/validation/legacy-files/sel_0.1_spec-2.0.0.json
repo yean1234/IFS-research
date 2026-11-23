@@ -1,0 +1,26 @@
+{
+  "formatVersion": "ifs-selection/0.1",
+  "_note": "합성 고정 파일(참여자 자료 아님, CP10 G41). G31–G34 전(2026-11-22) 챗봇이 쓰던 ifs-selection/0.1 형식으로, spec_2.0.0.json(매퍼 v0 예시 EX02)을 가리킨다. 후보 c2를 고르고 색·밝기를 고친 경우.",
+  "specSha256": "47702fd28e208acba86cee262a8b5edb3628708d16d681eca0e5b3ca51df5f3d",
+  "runnerReady": true,
+  "runnerBlockers": [],
+  "selection": {
+    "selectedCandidateId": "c-0123456789ab",
+    "none": false
+  },
+  "finalOverrides": {
+    "form.type": "fragments",
+    "material.brightness": 0.35,
+    "material.color.h": 0.58,
+    "material.color.s": 0.4
+  },
+  "sources": {
+    "form.type": "chosen",
+    "form.posture": "said",
+    "material.color": "edited",
+    "material.brightness": "edited",
+    "material.roughness": "default",
+    "layout.size": "said",
+    "motion.type": "default"
+  }
+}

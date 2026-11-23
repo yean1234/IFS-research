@@ -1,0 +1,28 @@
+{
+  "formatVersion": "ifs-selection/0.2",
+  "_note": "합성 고정 파일(참여자 자료 아님, CP10 G41). D6 직후(CP10 반영 전) 형식: sources에 form.base는 있고 form.baseVariant는 없다. spec_2.2.0_builder-2.2.0.json(매퍼 v2 builder 2.2.0이 '가슴 앞에 작은 그릇이 있어요. 초록색이에요.'로 만든 것, 변형값 근거 source가 explicit_lexicon)을 가리킨다. 선택 단계를 건너뛰었고 형태를 line으로 고친 경우.",
+  "specSha256": "4c2f20e463295d105be063ae142bc953bdf038a3b12f66f9cdff637ed54880a5",
+  "spec": {
+    "path": null,
+    "sha256Basis": "file",
+    "specVersion": "2.2.0"
+  },
+  "runnerReady": true,
+  "runnerBlockers": [],
+  "selection": {
+    "selectedCandidateId": null,
+    "none": false,
+    "skipped": true
+  },
+  "colorChanged": false,
+  "finalOverrides": {
+    "form.base": "line"
+  },
+  "sources": {
+    "form.type": "default",
+    "form.base": "edited",
+    "material.color": "said",
+    "layout.size": "said",
+    "motion.type": "default"
+  }
+}
