@@ -68,7 +68,7 @@ POST /api/guard/check   {"text": "숨이 막히는 느낌이 올라와요"}
 
 - 형식: `shared/schemas/scene-spec.v2.json`, 설명: `docs/scene-spec-mapping.md`
 - 세션 로그에는 `sceneSpec: {path, specVersion, builder, sourceTextHash, problems}`만 남습니다.
-- [응답 폐기]를 누르면 장면 파일도 지웁니다.
+- [내 답 지우기]를 누르면 장면 파일도 지웁니다.
 - Unity는 지금 Inspector에 이 경로를 넣어 읽습니다. HTTP로 경로를 받는 방식은 `GET /api/sessions/{id}/scene`을 쓰도록 자리만 있습니다(`unity/README.md`).
 
 ## VR 이벤트 묶기

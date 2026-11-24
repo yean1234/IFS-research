@@ -85,7 +85,7 @@ window.__e2e = (() => {
   return {
     async next() {
       const t0 = performance.now();
-      (await until(() => [...document.querySelectorAll("#buttons button")].find((b) => b.textContent === "다음 단계로"), 20000, "다음 단계로")).click();
+      (await until(() => [...document.querySelectorAll("#buttons button")].find((b) => b.textContent === "다음으로"), 20000, "다음으로")).click();
       await until(() => S().view && S().view.stage, 20000, "stage");
       return { stage: S().view.stage, mode: S().view.preview.mode, t0 };
     },

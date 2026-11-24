@@ -52,11 +52,11 @@ ollama pull hf.co/mradermacher/kanana-safeguard-8b-GGUF:Q4_K_M   # 안전 분류
 | 안내 | AI 면담 보조자임을 알리고 중단 방법 안내 | 같음 |
 | Find | 고정 오프닝 → 고정 위치 질문 → LLM 후속 최대 1회 (anything_else·like_what) | 고정 오프닝 → 고정 위치 질문 |
 | Focus | 고정 "거기에 주의를 두고 잠시 머물러 보세요." (LLM 0회 — 스토리보드) | 같음 |
-| Flesh out | LLM 최대 5회 (질문 틀 6개) | 고정 "지금 그것이 어떻게 있는지, 떠오르는 대로 적어 주세요." |
+| Flesh out | LLM 최대 5회 (질문 틀 6개) | 고정 "지금 그것이 어떻게 있는지 떠오르는 대로 적어 주세요." |
 | 차원 프로브 | 아직 안 나온 차원만 고정 순서로: 크기·모양 → 색·밝기 → 움직임 | 같음 |
 | 확정 | 참여자 말을 그대로 모은 텍스트를 보여 주고 [이대로 맞아요] / [고칠게요] | 같음 |
 
-단계 순서·횟수·문구는 코드가 아니라 `shared/protocol/elicitation_protocol.v1.json`에 있습니다. Focus에 LLM 질문을 넣으려면 그 파일의 `maxTurns`를 바꿉니다.
+단계 순서·횟수·문구는 코드가 아니라 `shared/protocol/elicitation_protocol.v1.2.json`(기본 설정, 1.2.0)에 있습니다. Focus에 LLM 질문을 넣으려면 그 파일의 `maxTurns`를 바꿉니다.
 
 ## 모듈
 
@@ -81,7 +81,7 @@ ollama pull hf.co/mradermacher/kanana-safeguard-8b-GGUF:Q4_K_M   # 안전 분류
 - `chatbot/logs/scenes/<세션ID>.json` — 확정 텍스트에서 만든 장면 기술(SceneSpec v2). Unity가 읽는다. 형식은 `shared/schemas/scene-spec.v2.json`.
 - 참여자에게 나가지 않은 시도(보이지 않은 턴)와 걸린 이유, 재생성 횟수, 고정 대체 여부, 가드 판정, 연구자 알림, 확정 텍스트, 추출 미리보기까지 남깁니다.
 - 세션 ID는 가명만 받습니다(영문·숫자·`_`·`-`). 로그 폴더는 git에 올리지 않습니다.
-- 참여자가 끝난 뒤 [응답 폐기]를 누르면 로그 파일을 지웁니다. 위기 대응으로 멈춘 세션은 안전 기록이라 연구자가 처리합니다.
+- 참여자가 끝난 뒤 [내 답 지우기]를 누르면 로그 파일을 지웁니다. 위기 대응으로 멈춘 세션은 안전 기록이라 연구자가 처리합니다.
 - 암호화 저장(「IFS 이론이란?」 5절)은 아직 없습니다. 파일럿 전에 디스크 암호화나 별도 보관 절차가 필요합니다.
 
 ## 노션 설계에 덧붙인 것

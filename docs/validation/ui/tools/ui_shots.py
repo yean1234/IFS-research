@@ -345,7 +345,7 @@ async def keyboard(c, a, base, out):
     await wait_js(c, "state.view.state === 'done'")
     await asyncio.sleep(0.5)
     (out / "png" / f"kb_{a.mode}_1_next.png").write_bytes(await c.shot(False))
-    await step("다음 단계로", "__kb.match('#buttons button', '다음 단계로')")
+    await step("다음으로", "__kb.match('#buttons button', '다음으로')")
     await wait_js(c, "!!(window.ifsStage._state.view && window.ifsStage._state.view.stage)")
     st = await c.js("window.ifsStage._state.view.stage")
     if st == "selecting":
