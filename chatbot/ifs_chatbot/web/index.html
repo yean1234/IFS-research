@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>IFS 면담 데모</title>
+  <title>연구 면담</title>
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="/static/style.css">
 </head>
@@ -55,7 +55,7 @@
       <div id="chat" class="chat" role="log" aria-live="polite" hidden></div>
 
       <div id="confirm-box" class="confirm" hidden>
-        <label for="draft">확정 텍스트 — 참여자가 쓴 말을 그대로 모은 것</label>
+        <label for="draft">지금까지 적어 주신 말</label>
         <textarea id="draft" rows="6" readonly></textarea>
       </div>
 
@@ -67,7 +67,7 @@
         <button type="submit" class="primary" id="btn-send">보내기</button>
       </form>
       <div id="buttons" class="buttons"></div>
-      <p id="busy" class="busy" role="status" hidden>질문을 만들고 검사하는 중…</p>
+      <p id="busy" class="busy" role="status" hidden>다음 질문을 준비하고 있어요…</p>
 
       <!-- 면담 뒤 데스크톱 단계(4 후보 선택 · 5 조절 · 6 사전 측정). 설정 [selection] enabled일 때만 열린다. -->
       <div id="stage" class="stage" hidden></div>

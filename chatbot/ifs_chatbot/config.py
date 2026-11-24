@@ -11,7 +11,7 @@ from .paths import CHATBOT_DIR, CONFIG_DIR
 @dataclass(frozen=True)
 class InterviewConfig:
     condition: str = "chatbot"                     # chatbot(조건 2) | static(조건 1)
-    protocol: str = "elicitation_protocol.v1.json"  # shared/protocol/ 아래
+    protocol: str = "elicitation_protocol.v1.2.json"  # shared/protocol/ 아래
     prompt_version: str = "1.0.0"                  # chatbot/prompts/v<버전>/
 
 

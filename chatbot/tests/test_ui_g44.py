@@ -108,7 +108,7 @@ def test_stage_js_g44_contract():
     assert '"aria-pressed"' in web and "data-swatch" in web
     # 사전 측정은 한 화면에 모든 문항(넘기기 없음)
     pm = web[web.index("async function drawPremeasure("):]
-    assert "for (const it of pm.items)" in pm and "아직 고르지 않은 문항이" in pm
+    assert "for (const it of pm.items)" in pm and "아직 고르지 않은 문장이" in pm
     assert "MOTION_PREVIEW_ON_DWELL" in web and "prefers-reduced-motion" in web
 
 

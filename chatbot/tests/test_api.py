@@ -59,5 +59,5 @@ def test_unity_events_are_bundled_into_log(client):
 
 def test_web_demo_is_served(client):
     r = client.get("/")
-    assert r.status_code == 200 and "IFS 면담 데모" in r.text
+    assert r.status_code == 200 and "<title>연구 면담</title>" in r.text
     assert client.get("/static/app.js").status_code == 200

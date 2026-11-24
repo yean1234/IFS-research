@@ -1,11 +1,11 @@
 {
-  "version": "0.3",
+  "version": "0.4",
   "protocol": "placement-task",
   "texts": {
     "intro": {
-      "text": "지금부터 물체 하나를 보여 드려요. 안내가 나오면 그대로 따라 주세요.",
+      "text": "이제 물체 하나를 보여 드릴게요. 안내가 나오면 그대로 따라 주세요.",
       "status": "draft",
-      "source": "배치 러너 진행 안내 초안(2026-11-22), IRB 검토 전"
+      "source": "배치 러너 진행 안내 초안(2026-11-22), IRB 검토 전. G57(2026-11-24) 다듬음"
     },
     "baseline": {
       "text": "지금 이것을 편하게 바라봐 주세요.",
@@ -13,9 +13,9 @@
       "source": "docs/rq-v4-proposal.md 4.3절 지시문 초안(2026-11-22), IRB 검토 전"
     },
     "condition_place": {
-      "text": "지금 이것이 있기에 알맞다고 느껴지는 자리에 놓아 주세요. 몇 번이든 다시 옮길 수 있어요. 정했으면 확인을 눌러 주세요.",
+      "text": "지금 이것이 있기에 알맞다고 느껴지는 자리에 놓아 주세요. 몇 번이든 다시 옮겨도 괜찮아요. 다 놓았으면 확인 버튼을 눌러 주세요.",
       "status": "draft",
-      "source": "docs/rq-v4-proposal.md 4.3절 지시문 초안(2026-11-22), IRB 검토 전. 둘째·셋째 문장은 4.3절 형식(다시 옮기기 자유, 확정 동작)을 옮긴 것"
+      "source": "docs/rq-v4-proposal.md 4.3절 지시문 초안(2026-11-22), IRB 검토 전. 둘째·셋째 문장은 4.3절 형식(다시 옮기기 자유, 확정 동작)을 옮긴 것. G57(2026-11-24) 다듬음"
     },
     "condition_view": {
       "text": "지금 이것을 편하게 바라봐 주세요.",
@@ -23,14 +23,14 @@
       "source": "docs/rq-v4-proposal.md 4.3절 지시문 초안(2026-11-22), IRB 검토 전"
     },
     "condition_point_select": {
-      "text": "지금 이것이 있기에 알맞다고 느껴지는 자리를 바닥에서 가리키고 확인을 눌러 주세요. 그 자리로 옮겨 드려요.",
+      "text": "지금 이것이 있기에 알맞다고 느껴지는 자리를 바닥에서 가리킨 뒤 확인 버튼을 눌러 주세요. 그 자리로 옮겨 드릴게요.",
       "status": "draft",
-      "source": "docs/rq-v4-proposal.md 4.3절 지시문 초안(2026-11-22)을 가리켜 지정 조건(X44)에 맞게 옮긴 것, IRB 검토 전"
+      "source": "docs/rq-v4-proposal.md 4.3절 지시문 초안(2026-11-22)을 가리켜 지정 조건(X44)에 맞게 옮긴 것, IRB 검토 전. G57(2026-11-24) 다듬음"
     },
     "wait": {
-      "text": "잠시 기다려 주세요. 안내에 따라 다음으로 넘어가요.",
+      "text": "잠시 기다려 주세요. 다음 안내가 나올 거예요.",
       "status": "draft",
-      "source": "배치 러너 진행 안내 초안(2026-11-22), IRB 검토 전"
+      "source": "배치 러너 진행 안내 초안(2026-11-22), IRB 검토 전. G57(2026-11-24) 다듬음"
     },
     "stop_distance": {
       "text": "이것이 움직이는 동안, 알맞다고 느껴지는 자리에 왔을 때 버튼을 눌러 주세요.",
@@ -38,19 +38,19 @@
       "source": "docs/rq-v4-proposal.md 4.5절 멈춤 거리 지시문 초안(2026-11-22), IRB 검토 전"
     },
     "done": {
-      "text": "여기까지예요. 고맙습니다.",
+      "text": "이번 과제는 여기까지예요. 고맙습니다.",
       "status": "draft",
-      "source": "배치 러너 진행 안내 초안(2026-11-22), IRB 검토 전"
+      "source": "배치 러너 진행 안내 초안(2026-11-22), IRB 검토 전. G57(2026-11-24) 다듬음"
     },
     "practice": {
-      "text": "먼저 연습을 한 번 해 볼게요. 회색 상자를 잡아서 테두리로 표시된 자리에 옮긴 다음, 확인을 눌러 주세요.",
+      "text": "먼저 한 번 연습해 볼게요. 회색 상자를 잡아 테두리가 있는 자리로 옮기고 확인 버튼을 눌러 주세요.",
       "status": "draft",
-      "source": "docs/decisions.md G53(배치 공간 후보 B·E·F의 놓기 도움 (1) 배치 연습), 2026-11-24, IRB 검토 전. 설정 placementAssist를 켠 직접 배치 조건에서만 보임. 연습은 정해진 자리로 옮기는 과제(연습 자리가 본 과제의 기준점이 되지 않게)"
+      "source": "docs/decisions.md G53(배치 공간 후보 B·E·F의 놓기 도움 (1) 배치 연습), 2026-11-24, IRB 검토 전. 설정 placementAssist를 켠 직접 배치 조건에서만 보임. 연습은 정해진 자리로 옮기는 과제(연습 자리가 본 과제의 기준점이 되지 않게). G57(2026-11-24) 다듬음"
     },
     "placement_range": {
-      "text": "이 둥근 바닥 안이라면 어디든, 어떤 높이든 괜찮아요.",
+      "text": "둥근 바닥 안이면 어디든, 어떤 높이든 괜찮아요.",
       "status": "draft",
-      "source": "docs/decisions.md G53(놓기 도움 (4) 범위 안내 문장), 2026-11-24, IRB 검토 전. 설정 placementAssist를 켠 직접 배치 조건에서 condition_place 뒤에 줄을 바꿔 붙임"
+      "source": "docs/decisions.md G53(놓기 도움 (4) 범위 안내 문장), 2026-11-24, IRB 검토 전. 설정 placementAssist를 켠 직접 배치 조건에서 condition_place 뒤에 줄을 바꿔 붙임. G57(2026-11-24) 다듬음"
     },
     "own": {
       "text": "이것이 얼마나 '내 것' 같나요?",
@@ -60,20 +60,20 @@
       "source": "docs/rq-v4-proposal.md 4.5절 측정 표 문항 초안(2026-11-22), IRB 검토 전. 양 끝 뜻은 ownership_task.v0.json rating과 같음"
     },
     "appearance_match": {
-      "text": "이 형상의 모습은 내가 떠올린 것과 비슷하다",
+      "text": "이 물체의 모습은 내가 떠올린 것과 비슷하다",
       "when": "post",
       "optionalWhen": "pre",
       "anchors": { "low": "전혀 그렇지 않다", "high": "매우 그렇다" },
       "status": "draft",
-      "source": "docs/prompts/prototype-v4-build.md G13, 2026-11-22 — 모습 일치 문항(두 문항 분리의 하나). 기본은 사후만(when post), 사전은 설정 askOptionalItems(optionalWhen pre — 사전 측정은 데스크톱에서 하므로, G11). IRB 검토 전"
+      "source": "docs/prompts/prototype-v4-build.md G13, 2026-11-22 — 모습 일치 문항(두 문항 분리의 하나). 기본은 사후만(when post), 사전은 설정 askOptionalItems(optionalWhen pre — 사전 측정은 데스크톱에서 하므로, G11). IRB 검토 전. G57(2026-11-24) 다듬음"
     },
     "representativeness": {
-      "text": "이 형상은 내가 떠올린 그것을 나타낸다",
+      "text": "이 물체는 내가 떠올린 그것을 나타낸다",
       "when": "post",
       "optionalWhen": "pre",
       "anchors": { "low": "전혀 그렇지 않다", "high": "매우 그렇다" },
       "status": "draft",
-      "source": "docs/prompts/prototype-v4-build.md G13, 2026-11-22 — 대표성 문항(두 문항 분리의 하나, 하한 점검 기준 문항 — 기준값은 정하지 않음). 기본은 사후만(when post), 사전은 설정 askOptionalItems(optionalWhen pre — 사전 측정은 데스크톱에서 하므로, G11). IRB 검토 전"
+      "source": "docs/prompts/prototype-v4-build.md G13, 2026-11-22 — 대표성 문항(두 문항 분리의 하나, 하한 점검 기준 문항 — 기준값은 정하지 않음). 기본은 사후만(when post), 사전은 설정 askOptionalItems(optionalWhen pre — 사전 측정은 데스크톱에서 하므로, G11). IRB 검토 전. G57(2026-11-24) 다듬음"
     },
     "want_to_know": {
       "text": "이것에 대해 더 알고 싶다",
@@ -90,11 +90,11 @@
       "source": "docs/rq-v4-proposal.md 4.5절 측정 표 문항 초안(2026-11-22, V3 문항), IRB 검토 전"
     },
     "placed_by_me": {
-      "text": "방금 그것의 자리는 내가 정했다",
+      "text": "방금 이것이 있던 자리는 내가 정했다",
       "when": "check",
       "anchors": { "low": "전혀 그렇지 않다", "high": "매우 그렇다" },
       "status": "draft",
-      "source": "docs/rq-v4-proposal.md 4.5절 측정 표 점검 문항 초안(2026-11-22, V3 문항), IRB 검토 전"
+      "source": "docs/rq-v4-proposal.md 4.5절 측정 표 점검 문항 초안(2026-11-22, V3 문항), IRB 검토 전. G57(2026-11-24) 다듬음"
     }
   }
 }

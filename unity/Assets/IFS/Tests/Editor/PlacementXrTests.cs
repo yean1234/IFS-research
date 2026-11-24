@@ -348,8 +348,8 @@ namespace IFS.SceneSpec.Tests
             var s8 = t.Items.First(i => i.Key == "S8");
             Assert.That(s8.Points.Keys, Is.EqualTo(new[] { 1, 4, 7 }), "S8 양극(가운데 점)");
             Assert.That(s8.AnchorAt(4), Is.EqualTo("좋지도 싫지도 않다"));
-            Assert.That(t.InstructionFor("pre"), Does.StartWith("지금부터 몇 가지 문장을 보여 드리겠습니다."));
-            Assert.That(t.InstructionFor("post"), Does.Contain("\n앞에서 보신 문장이 다시 나옵니다."), "사후 = 공통 + 사후 문장");
+            Assert.That(t.InstructionFor("pre"), Does.StartWith("이제 문장 몇 개를 보여 드릴게요."));
+            Assert.That(t.InstructionFor("post"), Does.Contain("\n앞에서 본 문장이 다시 나와요."), "사후 = 공통 + 사후 문장");
             Assert.That(t["condition_place"], Is.EqualTo(PlacementTests.LoadText()["condition_place"]), "단계 안내는 기본 파일과 같다");
 
             var raw = (JObject)JObject.Parse(File.ReadAllText(ScaleAPath, Encoding.UTF8))["texts"];
@@ -384,7 +384,7 @@ namespace IFS.SceneSpec.Tests
                     {
                         sawInstruction = true;
                         Assert.That(x.CurrentItem, Is.Null, "지시문 동안에는 문항이 없다");
-                        Assert.That(x.ParticipantText, Does.StartWith("지금부터"));
+                        Assert.That(x.ParticipantText, Does.StartWith("이제 문장 몇 개를"));
                     }
                     return auto.Participant(x, 0.02);
                 }, auto.Experimenter);
@@ -401,7 +401,7 @@ namespace IFS.SceneSpec.Tests
             Assert.That(ev.Any(l => l.Contains("items_instruction,when=post;keys=items_instruction+items_instruction_post")), Is.True);
             var m = JObject.Parse(File.ReadAllText(Path.Combine(dir, "manifest.json")));
             Assert.That((string)m["taskText"]["file"], Is.EqualTo("placement_task.scaleA.v0.json"));
-            Assert.That((string)m["taskText"]["version"], Is.EqualTo("0.3-scaleA"), "G53 놓기 도움 문구를 더해 0.3");
+            Assert.That((string)m["taskText"]["version"], Is.EqualTo("0.4-scaleA"), "G53 놓기 도움 문구를 더해 0.3, G57 문구 다듬기로 0.4");
             Assert.That((int)m["taskText"]["draftCount"], Is.EqualTo(t.Count));
         }
 

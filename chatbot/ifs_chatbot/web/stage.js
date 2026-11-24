@@ -137,7 +137,7 @@
       if (!pr.ok) { this.started = Promise.reject(new Error(pr.reason)); this.started.catch(() => {}); this.fail(pr.reason); return this.started; }
       this.info = { renderer: pr.renderer, vendor: pr.vendor, version: pr.version };
       this.host = el("div", { class: "webgl-host parked", "aria-hidden": "true" });
-      this.frame = el("iframe", { class: "preview-frame", src: S.view.preview.webglUrl, title: "형상 미리보기", tabindex: "-1" });
+      this.frame = el("iframe", { class: "preview-frame", src: S.view.preview.webglUrl, title: "물체 미리보기", tabindex: "-1" });
       this.host.append(this.frame);
       document.body.append(this.host);
       const t0 = performance.now();
@@ -678,7 +678,7 @@
       const missing = pm.items.filter((i) => !(i.id in S.answers));
       form.querySelectorAll(".pm-item").forEach((f) => f.classList.toggle("missing", missing.some((m) => m.id === f.dataset.item)));
       if (missing.length) {
-        err.textContent = `아직 고르지 않은 문항이 ${missing.length}개 있습니다.`;
+        err.textContent = `아직 고르지 않은 문장이 ${missing.length}개 있어요.`;
         err.hidden = false;
         const first = form.querySelector(`.pm-item[data-item="${CSS.escape(missing[0].id)}"] input`);
         if (first) first.focus();
@@ -703,7 +703,7 @@
     if (v.selection.available) {
       $("#buttons").prepend(el("button", { class: "primary", "data-fkey": "next",
                                          onclick: (e) => call("POST", `/api/sessions/${S.sid}/candidates`, undefined, e.currentTarget) },
-        "다음 단계로"));
+        "다음으로"));
     }
   }
 

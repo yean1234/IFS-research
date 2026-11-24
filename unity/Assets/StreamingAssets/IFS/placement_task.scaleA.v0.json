@@ -1,12 +1,12 @@
 {
-  "version": "0.3-scaleA",
+  "version": "0.4-scaleA",
   "protocol": "placement-task",
-  "note": "docs/rq-v4-questionnaire-draft.md 3절의 주 척도안 A(7문항)와 보조 문항 S4–S8을 담은 선택용 문구 파일(2026-11-23). 모든 문구는 status draft(IRB 검토 전, 타당화 전 번안·수정판). 기본 문구 파일(placement_task.v0.json)은 그대로이고 Setup에서 고른다. 제외: S3(겹침 그림 IOS)은 그림 선택지가 필요해 이번 판에서 뺐다. S1(심리 거리)은 지시에 따라 S3과 함께 이번 묶음에서 뺐다(S1 자체는 글로 된 양극 척도라 그림 없이 anchors 1·4·7로 넣을 수 있다). S2는 초안에서 선택 문항이라 넣지 않았다. 문항 순서는 초안 3.7절(사전 A1–A7, S5, S6, S4, S8 / 사후 A1–A7, S5, S6, S7). 단계 안내 문구(intro 등)는 placement_task.v0.json과 같다. 0.2(2026-11-23): 두 평정 문항 G13(모습 일치 appearance_match·대표성 representativeness)을 사후 끝에 더함(사전은 설정 askOptionalItems). 0.3(2026-11-24): G53 놓기 도움 문구 practice·placement_range를 더함(placementAssist를 켰을 때만 보임, placement_task.v0.json과 같은 문구).",
+  "note": "docs/rq-v4-questionnaire-draft.md 3절의 주 척도안 A(7문항)와 보조 문항 S4–S8을 담은 선택용 문구 파일(2026-11-23). 모든 문구는 status draft(IRB 검토 전, 타당화 전 번안·수정판). 기본 문구 파일(placement_task.v0.json)은 그대로이고 Setup에서 고른다. 제외: S3(겹침 그림 IOS)은 그림 선택지가 필요해 이번 판에서 뺐다. S1(심리 거리)은 지시에 따라 S3과 함께 이번 묶음에서 뺐다(S1 자체는 글로 된 양극 척도라 그림 없이 anchors 1·4·7로 넣을 수 있다). S2는 초안에서 선택 문항이라 넣지 않았다. 문항 순서는 초안 3.7절(사전 A1–A7, S5, S6, S4, S8 / 사후 A1–A7, S5, S6, S7). 단계 안내 문구(intro 등)는 placement_task.v0.json과 같다. 0.2(2026-11-23): 두 평정 문항 G13(모습 일치 appearance_match·대표성 representativeness)을 사후 끝에 더함(사전은 설정 askOptionalItems). 0.3(2026-11-24): G53 놓기 도움 문구 practice·placement_range를 더함(placementAssist를 켰을 때만 보임, placement_task.v0.json과 같은 문구). 0.4(2026-11-24): G57 문구 다듬기 — 단계 안내·G13 두 문항·S7·공통/사후 지시문의 글을 다듬음(A1–A7·S4·S5·S6·S8·척도 닻은 그대로, placement_task.v0.json과 같은 키는 같은 글).",
   "texts": {
     "intro": {
-      "text": "지금부터 물체 하나를 보여 드려요. 안내가 나오면 그대로 따라 주세요.",
+      "text": "이제 물체 하나를 보여 드릴게요. 안내가 나오면 그대로 따라 주세요.",
       "status": "draft",
-      "source": "배치 러너 진행 안내 초안(2026-11-22), IRB 검토 전 — placement_task.v0.json과 같은 문구"
+      "source": "배치 러너 진행 안내 초안(2026-11-22), IRB 검토 전 — placement_task.v0.json과 같은 문구. G57(2026-11-24) 다듬음"
     },
     "baseline": {
       "text": "지금 이것을 편하게 바라봐 주세요.",
@@ -14,9 +14,9 @@
       "source": "docs/rq-v4-proposal.md 4.3절 지시문 초안(2026-11-22), IRB 검토 전 — placement_task.v0.json과 같은 문구"
     },
     "condition_place": {
-      "text": "지금 이것이 있기에 알맞다고 느껴지는 자리에 놓아 주세요. 몇 번이든 다시 옮길 수 있어요. 정했으면 확인을 눌러 주세요.",
+      "text": "지금 이것이 있기에 알맞다고 느껴지는 자리에 놓아 주세요. 몇 번이든 다시 옮겨도 괜찮아요. 다 놓았으면 확인 버튼을 눌러 주세요.",
       "status": "draft",
-      "source": "docs/rq-v4-proposal.md 4.3절 지시문 초안(2026-11-22), IRB 검토 전. 둘째·셋째 문장은 4.3절 형식(다시 옮기기 자유, 확정 동작)을 옮긴 것 — placement_task.v0.json과 같은 문구"
+      "source": "docs/rq-v4-proposal.md 4.3절 지시문 초안(2026-11-22), IRB 검토 전. 둘째·셋째 문장은 4.3절 형식(다시 옮기기 자유, 확정 동작)을 옮긴 것 — placement_task.v0.json과 같은 문구. G57(2026-11-24) 다듬음"
     },
     "condition_view": {
       "text": "지금 이것을 편하게 바라봐 주세요.",
@@ -24,14 +24,14 @@
       "source": "docs/rq-v4-proposal.md 4.3절 지시문 초안(2026-11-22), IRB 검토 전 — placement_task.v0.json과 같은 문구"
     },
     "condition_point_select": {
-      "text": "지금 이것이 있기에 알맞다고 느껴지는 자리를 바닥에서 가리키고 확인을 눌러 주세요. 그 자리로 옮겨 드려요.",
+      "text": "지금 이것이 있기에 알맞다고 느껴지는 자리를 바닥에서 가리킨 뒤 확인 버튼을 눌러 주세요. 그 자리로 옮겨 드릴게요.",
       "status": "draft",
-      "source": "docs/rq-v4-proposal.md 4.3절 지시문 초안(2026-11-22)을 가리켜 지정 조건(X44)에 맞게 옮긴 것, IRB 검토 전 — placement_task.v0.json과 같은 문구"
+      "source": "docs/rq-v4-proposal.md 4.3절 지시문 초안(2026-11-22)을 가리켜 지정 조건(X44)에 맞게 옮긴 것, IRB 검토 전 — placement_task.v0.json과 같은 문구. G57(2026-11-24) 다듬음"
     },
     "wait": {
-      "text": "잠시 기다려 주세요. 안내에 따라 다음으로 넘어가요.",
+      "text": "잠시 기다려 주세요. 다음 안내가 나올 거예요.",
       "status": "draft",
-      "source": "배치 러너 진행 안내 초안(2026-11-22), IRB 검토 전 — placement_task.v0.json과 같은 문구"
+      "source": "배치 러너 진행 안내 초안(2026-11-22), IRB 검토 전 — placement_task.v0.json과 같은 문구. G57(2026-11-24) 다듬음"
     },
     "stop_distance": {
       "text": "이것이 움직이는 동안, 알맞다고 느껴지는 자리에 왔을 때 버튼을 눌러 주세요.",
@@ -39,29 +39,29 @@
       "source": "docs/rq-v4-proposal.md 4.5절 멈춤 거리 지시문 초안(2026-11-22), IRB 검토 전 — placement_task.v0.json과 같은 문구"
     },
     "done": {
-      "text": "여기까지예요. 고맙습니다.",
+      "text": "이번 과제는 여기까지예요. 고맙습니다.",
       "status": "draft",
-      "source": "배치 러너 진행 안내 초안(2026-11-22), IRB 검토 전 — placement_task.v0.json과 같은 문구"
+      "source": "배치 러너 진행 안내 초안(2026-11-22), IRB 검토 전 — placement_task.v0.json과 같은 문구. G57(2026-11-24) 다듬음"
     },
     "practice": {
-      "text": "먼저 연습을 한 번 해 볼게요. 회색 상자를 잡아서 테두리로 표시된 자리에 옮긴 다음, 확인을 눌러 주세요.",
+      "text": "먼저 한 번 연습해 볼게요. 회색 상자를 잡아 테두리가 있는 자리로 옮기고 확인 버튼을 눌러 주세요.",
       "status": "draft",
-      "source": "docs/decisions.md G53(배치 공간 후보 B·E·F의 놓기 도움 (1) 배치 연습), 2026-11-24, IRB 검토 전. 설정 placementAssist를 켠 직접 배치 조건에서만 보임. 연습은 정해진 자리로 옮기는 과제(연습 자리가 본 과제의 기준점이 되지 않게)"
+      "source": "docs/decisions.md G53(배치 공간 후보 B·E·F의 놓기 도움 (1) 배치 연습), 2026-11-24, IRB 검토 전. 설정 placementAssist를 켠 직접 배치 조건에서만 보임. 연습은 정해진 자리로 옮기는 과제(연습 자리가 본 과제의 기준점이 되지 않게). G57(2026-11-24) 다듬음"
     },
     "placement_range": {
-      "text": "이 둥근 바닥 안이라면 어디든, 어떤 높이든 괜찮아요.",
+      "text": "둥근 바닥 안이면 어디든, 어떤 높이든 괜찮아요.",
       "status": "draft",
-      "source": "docs/decisions.md G53(놓기 도움 (4) 범위 안내 문장), 2026-11-24, IRB 검토 전. 설정 placementAssist를 켠 직접 배치 조건에서 condition_place 뒤에 줄을 바꿔 붙임"
+      "source": "docs/decisions.md G53(놓기 도움 (4) 범위 안내 문장), 2026-11-24, IRB 검토 전. 설정 placementAssist를 켠 직접 배치 조건에서 condition_place 뒤에 줄을 바꿔 붙임. G57(2026-11-24) 다듬음"
     },
     "items_instruction": {
-      "text": "지금부터 몇 가지 문장을 보여 드리겠습니다. 문장 속 '이것'은 면담에서 말씀하신, 지금 마음에 걸려 있는 그것을 가리킵니다. 조금 전 본 물체는 그것을 말씀하신 대로 나타낸 것입니다. 평소가 아니라 바로 지금 이 순간을 기준으로, 각 문장이 지금의 나에게 얼마나 맞는지 골라 주세요. 맞거나 틀린 답은 없습니다.",
+      "text": "이제 문장 몇 개를 보여 드릴게요. 문장 속 '이것'은 면담에서 말씀하신, 지금 마음에 걸려 있는 그것을 가리켜요. 조금 전에 보신 물체는 그것을 말씀하신 대로 나타낸 거예요. 평소가 아니라 바로 지금을 기준으로, 각 문장이 지금의 나에게 얼마나 맞는지 골라 주세요. 맞거나 틀린 답은 없어요.",
       "status": "draft",
-      "source": "docs/rq-v4-questionnaire-draft.md 3.1절 공통 지시문(자작, SCFQ의 'at this moment' 지시를 따름, 2026-11-22), IRB 검토 전. '지금 마음에 걸려 있는'은 면담 첫 질문의 실제 고정 문구에 맞춰야 함(초안 3.1절 주)"
+      "source": "docs/rq-v4-questionnaire-draft.md 3.1절 공통 지시문(자작, SCFQ의 'at this moment' 지시를 따름, 2026-11-22), IRB 검토 전. '지금 마음에 걸려 있는'은 면담 첫 질문의 실제 고정 문구에 맞춰야 함(초안 3.1절 주). G57(2026-11-24) 다듬음"
     },
     "items_instruction_post": {
-      "text": "앞에서 보신 문장이 다시 나옵니다. 앞의 답을 떠올려 맞추려 하지 마시고, 지금 이 순간을 기준으로 답해 주세요.",
+      "text": "앞에서 본 문장이 다시 나와요. 아까 고른 답에 맞추려 하지 말고, 지금 이 순간을 기준으로 답해 주세요.",
       "status": "draft",
-      "source": "docs/rq-v4-questionnaire-draft.md 3.1절 사후에만 덧붙이는 문장(자작, 2026-11-22), IRB 검토 전"
+      "source": "docs/rq-v4-questionnaire-draft.md 3.1절 사후에만 덧붙이는 문장(자작, 2026-11-22), IRB 검토 전. G57(2026-11-24) 다듬음"
     },
     "A1": {
       "text": "지금 이것 때문에 마음이 힘들다.",
@@ -226,14 +226,14 @@
       "source": "docs/rq-v4-questionnaire-draft.md 3.6절 보조 문항 S4 내 것 같다(자작, 기존 V3·research-design 4.1 문구 재사용, 공변량, 사전만, 2026-11-22), IRB 검토 전"
     },
     "S7": {
-      "text": "조금 전 이것과 함께 있던 시간 동안, 이것이 있던 자리는 내가 정했다.",
+      "text": "조금 전 이것과 함께 있을 때, 이것이 있던 자리는 내가 정했다.",
       "when": "post",
       "anchors": {
         "1": "전혀 그렇지 않다",
         "7": "매우 그렇다"
       },
       "status": "draft",
-      "source": "docs/rq-v4-questionnaire-draft.md 3.6절 보조 문항 S7 조작 확인(자작, V3 수정, 사후만 — 멈춤 거리 과제 앞, 2026-11-22), IRB 검토 전"
+      "source": "docs/rq-v4-questionnaire-draft.md 3.6절 보조 문항 S7 조작 확인(자작, V3 수정, 사후만 — 멈춤 거리 과제 앞, 2026-11-22), IRB 검토 전. G57(2026-11-24) 다듬음"
     },
     "S8": {
       "text": "지금 이것은 나에게 어떻게 느껴지나요?",
@@ -247,7 +247,7 @@
       "source": "docs/rq-v4-questionnaire-draft.md 3.6절 보조 문항 S8 정서가(자작, 양극 척도, 사전 — 사후는 선택이라 넣지 않음, 2026-11-22), IRB 검토 전"
     },
     "appearance_match": {
-      "text": "이 형상의 모습은 내가 떠올린 것과 비슷하다",
+      "text": "이 물체의 모습은 내가 떠올린 것과 비슷하다",
       "when": "post",
       "optionalWhen": "pre",
       "anchors": {
@@ -255,10 +255,10 @@
         "7": "매우 그렇다"
       },
       "status": "draft",
-      "source": "docs/prompts/prototype-v4-build.md G13, 2026-11-22 — 모습 일치 문항(두 문항 분리의 하나). 기본은 사후만(when post), 사전은 설정 askOptionalItems(optionalWhen pre — 사전 측정은 데스크톱에서 하므로, G11). IRB 검토 전"
+      "source": "docs/prompts/prototype-v4-build.md G13, 2026-11-22 — 모습 일치 문항(두 문항 분리의 하나). 기본은 사후만(when post), 사전은 설정 askOptionalItems(optionalWhen pre — 사전 측정은 데스크톱에서 하므로, G11). IRB 검토 전. G57(2026-11-24) 다듬음"
     },
     "representativeness": {
-      "text": "이 형상은 내가 떠올린 그것을 나타낸다",
+      "text": "이 물체는 내가 떠올린 그것을 나타낸다",
       "when": "post",
       "optionalWhen": "pre",
       "anchors": {
@@ -266,7 +266,7 @@
         "7": "매우 그렇다"
       },
       "status": "draft",
-      "source": "docs/prompts/prototype-v4-build.md G13, 2026-11-22 — 대표성 문항(두 문항 분리의 하나, 하한 점검 기준 문항 — 기준값은 정하지 않음). 기본은 사후만(when post), 사전은 설정 askOptionalItems(optionalWhen pre — 사전 측정은 데스크톱에서 하므로, G11). IRB 검토 전"
+      "source": "docs/prompts/prototype-v4-build.md G13, 2026-11-22 — 대표성 문항(두 문항 분리의 하나, 하한 점검 기준 문항 — 기준값은 정하지 않음). 기본은 사후만(when post), 사전은 설정 askOptionalItems(optionalWhen pre — 사전 측정은 데스크톱에서 하므로, G11). IRB 검토 전. G57(2026-11-24) 다듬음"
     }
   }
 }

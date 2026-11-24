@@ -3,7 +3,7 @@
 
 [interview]
 condition = "chatbot"                     # chatbot = 조건 2 · AI 챗봇 면담 / static = 조건 1 · 정적 프롬프트
-protocol = "elicitation_protocol.v1.json" # shared/protocol/ 아래 파일
+protocol = "elicitation_protocol.v1.2.json" # shared/protocol/ 아래 파일 (1.2.0, G57 문구 다듬기)
 prompt_version = "1.0.0"                  # chatbot/prompts/v1.0.0/
 
 [llm]
@@ -48,6 +48,6 @@ strict = false                # true: v1을 요청했는데 시작 때 v1을 못
 
 [drift]
 enabled = true                # 확정 직후 단계별 스냅샷으로 심상 유지(표류) 판정 → 세션 로그 drift(참여자에게 안 보임)
-recall_check = false          # Flesh out 뒤 회상 확인 문구. 확증 비교에서는 끈다. 켜려면 interview.protocol = v1.1
-self_report = false           # 확정 직후 자기보고 1–7. 문구가 draft(IRB 검토 전). 켜려면 interview.protocol = v1.1
+recall_check = false          # Flesh out 뒤 회상 확인 문구. 확증 비교에서는 끈다. v1.1 이상 프로토콜 필요(v1.2 포함)
+self_report = false           # 확정 직후 자기보고 1–7. 문구가 draft(IRB 검토 전). v1.1 이상 프로토콜 필요(v1.2 포함)
 allow_draft_phrases = false   # 위 두 문구가 status = draft면 false일 때 켜지 않고 경고. 개발·시연에서만 true

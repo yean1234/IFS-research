@@ -323,7 +323,7 @@ class Session:
                 raise SessionError("지금은 답을 받을 차례가 아닙니다.")
             text = normalize(text)
             if not text:
-                raise SessionError("빈 답은 보낼 수 없습니다. 넘어가려면 [넘어가기]를 누르세요.")
+                raise SessionError("아직 적은 내용이 없어요. 넘어가려면 [넘어가기]를 눌러 주세요.")
             step, stage = self.step, self.stage
             verdict = self.rt.guard.check_input(text)
             safety = self.rt.safety
@@ -706,7 +706,7 @@ class Session:
             self._alert("drift_error", d["error"], None)
 
     def _ask_recall(self) -> bool:
-        """Flesh out 뒤, 확정 요약 전에 한 번: '{X}' — 지금 떠오르는 것도 그 '{X}'인가요? (X = 참여자의 형상 명사 원문)"""
+        """Flesh out 뒤, 확정 요약 전에 한 번: 지금 떠오르는 것도 그 '{X}'인가요? (X = 참여자의 형상 명사 원문)"""
         if not self.rt.drift_recall or self.recall_asked or self.rt.drift is None:
             return False
         self.recall_asked = True
@@ -949,7 +949,7 @@ class Session:
             return [{"action": f"self_report:{v}", "label": f"{v} {anchors[str(v)]}" if str(v) in anchors else str(v)}
                     for v in range(int(sc["min"]), int(sc["max"]) + 1)] + [{"action": "self_report:skip", "label": skip}]
         if self.state in ("done", "stopped"):
-            return [{"action": "withdraw", "label": "응답 폐기"}]
+            return [{"action": "withdraw", "label": "내 답 지우기"}]
         return []
 
     def view(self) -> dict:

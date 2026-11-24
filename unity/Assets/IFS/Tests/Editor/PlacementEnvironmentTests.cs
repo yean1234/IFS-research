@@ -362,11 +362,11 @@ namespace IFS.SceneSpec.Tests
                     foreach (var banned in new[] { "치료", "내담자", "진단", "환자", "멀리", "치우" })
                         Assert.That(t[k], Does.Not.Contain(banned), k);
                 }
-                Assert.That(t[PlacementTaskText.PlacementRangeKey], Is.EqualTo("이 둥근 바닥 안이라면 어디든, 어떤 높이든 괜찮아요."));
+                Assert.That(t[PlacementTaskText.PlacementRangeKey], Is.EqualTo("둥근 바닥 안이면 어디든, 어떤 높이든 괜찮아요."));
                 Assert.That(t[PlacementTaskText.PracticeKey], Is.EqualTo(PlacementTaskText.Load(DefaultPath)[PlacementTaskText.PracticeKey]), "두 파일 같은 문구");
             }
-            Assert.That(PlacementTaskText.Load(DefaultPath).Version, Is.EqualTo("0.3"));
-            Assert.That(PlacementTaskText.Load(ScaleAPath).Version, Is.EqualTo("0.3-scaleA"));
+            Assert.That(PlacementTaskText.Load(DefaultPath).Version, Is.EqualTo("0.4"));
+            Assert.That(PlacementTaskText.Load(ScaleAPath).Version, Is.EqualTo("0.4-scaleA"));
         }
 
         // ── 놓기 도움 화면 규칙 ──────────────────────────────────────────

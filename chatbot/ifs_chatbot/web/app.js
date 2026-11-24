@@ -156,7 +156,7 @@ async function send(text) {
 
 async function act(action, text) {
   if (state.busy) return;
-  if (action === "withdraw" && !confirm("이 세션의 응답을 저장하지 않고 폐기할까요? 되돌릴 수 없습니다.")) return;
+  if (action === "withdraw" && !confirm("지금까지 적어 주신 내용을 저장하지 않고 지울까요? 지우면 되돌릴 수 없어요.")) return;
   setBusy(true);
   try {
     render(await api("POST", `/api/sessions/${state.sid}/action`, { action, text }));
@@ -226,7 +226,7 @@ function render(v) {
   for (const b of v.buttons) {
     if (b.action === "edit") {
       if (state.editing) {
-        btns.append(el("button", { class: "primary", onclick: () => act("edit", $("#draft").value) }, "고친 내용으로 확정"));
+        btns.append(el("button", { class: "primary", onclick: () => act("edit", $("#draft").value) }, "고친 내용으로 할게요"));
         btns.append(el("button", { class: "ghost", onclick: () => { state.editing = false; render(state.view); } }, "취소"));
       } else {
         btns.append(el("button", { onclick: () => { state.editing = true; render(state.view); $("#draft").focus(); } }, b.label));

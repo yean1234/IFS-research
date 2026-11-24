@@ -640,17 +640,17 @@ def test_protocol_all_draft_with_source():
 def test_protocol_texts_match_sources_verbatim():
     p = SelectionProtocol()
     items = {i["id"]: i["text"] for i in p.items()}
-    assert items["G13_appearance"] == "이 형상의 모습은 내가 떠올린 것과 비슷하다"
-    assert items["G13_representation"] == "이 형상은 내가 떠올린 그것을 나타낸다"
+    assert items["G13_appearance"] == "이 물체의 모습은 내가 떠올린 것과 비슷하다"          # G57
+    assert items["G13_representation"] == "이 물체는 내가 떠올린 그것을 나타낸다"
     doc = (REPO_ROOT / "docs" / "rq-v4-questionnaire-draft.md").read_text(encoding="utf-8")
     for i in range(1, 8):
         row = next(line for line in doc.splitlines() if line.startswith(f"| A{i}"))
         assert items[f"A{i}"] in row, f"A{i}"
-    assert p.text("figure_intro") == "당신이 말한 것을 바탕으로 만든, 그것을 대신하는 형상입니다."
-    assert p.text("none_fit") == "맞는 것이 없다"
+    assert p.text("figure_intro") == "면담에서 말씀하신 것을 바탕으로, 떠올리신 그것을 대신할 물체를 만들었어요."
+    assert p.text("none_fit") == "맞는 게 없어요"
     labels = [p.data["adjustItemLabels"][k]["text"] for k in TABLE["adjustItems"]["order"]]
     assert labels == ["색", "형태", "밝기", "투명도", "크기", "질감", "움직임"]          # G31: 색이 맨 앞
-    assert p.version == "0.3.0" and "single_candidate_intro" not in p.data["phrases"]  # G34: 후보 1개 화면 없음
+    assert p.version == "0.4.0" and "single_candidate_intro" not in p.data["phrases"]  # G34: 후보 1개 화면 없음
     assert p.data["changes"][0]["version"] == p.version and p.data["phrases"]["adjust_item_unavailable"]["status"] == "draft"
     assert "proceed_single_button" not in p.data["phrases"]
 

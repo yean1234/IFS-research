@@ -449,6 +449,35 @@ def test_protocol_v11_phrases_are_draft_and_keep_v1(rt_v11):
     assert not any(w in p11["fixedPhrases"]["recall_check"]["text"] for w in ("처음", "아까", "원래"))  # 지금 떠오르는 것만 묻는다
 
 
+def test_protocol_v12_only_rewords_draft_phrases():
+    """G57: v1.2는 v1.1의 draft 문구 글만 다듬는다. 단계·틀·spec 문구·상태·선택지·척도는 그대로다."""
+    p11 = json.loads(shared("protocol", "elicitation_protocol.v1.1.json").read_text(encoding="utf-8"))
+    p12 = json.loads(shared("protocol", "elicitation_protocol.v1.2.json").read_text(encoding="utf-8"))
+    assert p12["protocolVersion"] == "1.2.0" and p12["changes"][0]["version"] == "1.2.0"
+    assert p12["changes"][0]["status"] == "draft" and "G57" in p12["changes"][0]["source"]
+    assert p12["changes"][1:] == p11["changes"]
+    assert {k: v for k, v in p12.items() if k not in ("protocolVersion", "changes", "fixedPhrases")} \
+        == {k: v for k, v in p11.items() if k not in ("protocolVersion", "changes", "fixedPhrases")}
+    assert p12["fixedPhrases"].keys() == p11["fixedPhrases"].keys()
+    changed = {k for k in p11["fixedPhrases"] if p12["fixedPhrases"][k]["text"] != p11["fixedPhrases"][k]["text"]}
+    assert changed == {"intro", "focus_hold", "fleshout_open", "depth_present", "confirm_intro", "closing",
+                       "withdrawn", "recall_check", "self_report_drift"}
+    for k, v11 in p11["fixedPhrases"].items():
+        v12 = p12["fixedPhrases"][k]
+        assert v12["status"] == v11["status"], k                                   # spec 문구는 그대로, 다듬은 것은 draft 유지
+        assert {a: b for a, b in v12.items() if a not in ("text", "source", "note")} \
+            == {a: b for a, b in v11.items() if a not in ("text", "source", "note")}, k
+        if k in changed:
+            assert v11["status"] in ("draft", "spec+draft"), k
+            assert "G57" in (v12.get("source", "") + v12.get("note", "")), k
+    assert p12["fixedPhrases"]["focus_hold"]["text"].startswith("거기에 주의를 두고 잠시 머물러 보세요.")  # spec 앞 문장 그대로
+    banned = ("왜", "기억", "과거", "이유", "예전", "옛날", "어릴", "내담자", "진단", "증상")
+    for k in changed:
+        assert not any(w in p12["fixedPhrases"][k]["text"] for w in banned), k
+    assert not any(w in p12["fixedPhrases"]["recall_check"]["text"] for w in ("처음", "아까", "원래"))
+    assert p12["fixedPhrases"]["recall_check"]["text"].count("{X}") == 1
+
+
 def _schema_errors(s):
     from jsonschema import Draft202012Validator
     schema = json.loads(shared("schemas", "session_log.schema.json").read_text(encoding="utf-8"))

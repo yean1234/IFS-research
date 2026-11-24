@@ -163,7 +163,7 @@ namespace IFS.SceneSpec.Tests
         {
             string path = Path.Combine(Application.streamingAssetsPath, OwnershipTaskText.DefaultRelativePath);
             var t = OwnershipTaskText.Load(path);
-            Assert.That(t.Version, Is.EqualTo("0.1"));
+            Assert.That(t.Version, Is.EqualTo("0.2"));   // G57 문구 다듬기로 0.2
             Assert.That(t.FileName, Is.EqualTo("ownership_task.v0.json"));
             foreach (var k in OwnershipTaskText.RequiredKeys)
             {
