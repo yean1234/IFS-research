@@ -5,7 +5,7 @@
 
 [interview]
 condition = "chatbot"
-protocol = "elicitation_protocol.v1.2.json"
+protocol = "elicitation_protocol.v1.3.json"
 prompt_version = "1.0.0"
 
 [llm]

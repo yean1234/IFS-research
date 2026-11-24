@@ -56,7 +56,7 @@ ollama pull hf.co/mradermacher/kanana-safeguard-8b-GGUF:Q4_K_M   # 안전 분류
 | 차원 프로브 | 아직 안 나온 차원만 고정 순서로: 크기·모양 → 색·밝기 → 움직임 | 같음 |
 | 확정 | 참여자 말을 그대로 모은 텍스트를 보여 주고 [이대로 맞아요] / [고칠게요] | 같음 |
 
-단계 순서·횟수·문구는 코드가 아니라 `shared/protocol/elicitation_protocol.v1.2.json`(기본 설정, 1.2.0)에 있습니다. Focus에 LLM 질문을 넣으려면 그 파일의 `maxTurns`를 바꿉니다.
+단계 순서·횟수·문구는 코드가 아니라 `shared/protocol/elicitation_protocol.v1.3.json`(기본 설정, 1.3.0)에 있습니다. Focus에 LLM 질문을 넣으려면 그 파일의 `maxTurns`를 바꿉니다.
 
 ## 모듈
 

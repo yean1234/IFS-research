@@ -14,7 +14,8 @@ def test_health_and_protocol(client):
     h = client.get("/api/health").json()
     assert h["backend"]["ok"] and set(h["conditions"]) == {"static", "chatbot"}
     p = client.get("/api/protocol").json()
-    assert p["fixedPhrases"]["opening"]["status"] == "spec"
+    assert p["fixedPhrases"]["opening"]["status"] == "draft"                  # 1.3.0(G58): 번안 초안
+    assert p["fixedPhrases"]["location"]["status"] == "spec"
 
 
 def test_full_session_over_http(client):

@@ -1,4 +1,4 @@
-"""유도 면담 프로토콜(shared/protocol/elicitation_protocol.v1.2.json, 기본) 읽기.
+"""유도 면담 프로토콜(shared/protocol/elicitation_protocol.v1.3.json, 기본) 읽기.
 
 단계 순서, 고정 문구, 질문 틀, 차원 프로브를 코드가 아니라 공용 JSON에서 가져온다.
 Unity와 챗봇이 같은 문구를 쓰게 하려는 것이다.
@@ -26,7 +26,7 @@ class Step:
 
 class Protocol:
     def __init__(self, path: str | Path | None = None):
-        self.path = Path(path) if path else shared("protocol", "elicitation_protocol.v1.2.json")
+        self.path = Path(path) if path else shared("protocol", "elicitation_protocol.v1.3.json")
         if not self.path.is_absolute() and not self.path.exists():
             self.path = shared("protocol", str(path))
         self.data = json.loads(self.path.read_text(encoding="utf-8"))
