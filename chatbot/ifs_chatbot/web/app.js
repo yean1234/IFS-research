@@ -435,7 +435,13 @@ async function resumeFromUrl() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  setView(new URLSearchParams(location.search).get("view") || "researcher", { updateUrl: false });
+  const qp = new URLSearchParams(location.search);
+  if (qp.get("view") === "postinterview" && window.ifsPostInterview) {
+    // 사후 면담 기록 화면(G59, 연구자용): 면담 화면은 그리지 않는다(postinterview.js)
+    window.ifsPostInterview.open(qp.get("session") || qp.get("sid"));
+    return;
+  }
+  setView(qp.get("view") || "researcher", { updateUrl: false });
   // 머리글 실제 높이(줄바꿈되면 커짐) → 조절 미리보기가 따라 내려올 위치(--topbar-h)
   const topbar = document.querySelector(".topbar");
   new ResizeObserver(() => document.documentElement.style.setProperty("--topbar-h", `${topbar.offsetHeight}px`)).observe(topbar);

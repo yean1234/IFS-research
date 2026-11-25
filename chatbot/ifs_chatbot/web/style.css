@@ -338,3 +338,15 @@ th { color: var(--ink-soft); font-weight: 600; }
   .preview.is-loading::after { background: rgba(255, 255, 255, .18); }
   button.is-pending::after { border-right-color: currentColor; border-style: dotted; }
 }
+
+/* 사후 면담 기록 화면(G59, 연구자용, postinterview.js). 사전 측정 칸(.pm-item·.scale)을 그대로 쓰고 몇 줄만 더함 */
+.postinterview { display: flex; flex-direction: column; gap: var(--space-4); }
+.pi-rules summary { cursor: pointer; font-weight: 600; }
+.pi-rules ul { margin: var(--space-2) 0 0; padding-left: 1.2em; }
+.pi-prompt { margin: var(--space-2) 0; padding: var(--space-2) var(--space-3); border-left: 4px solid var(--line-strong); background: var(--bg); line-height: var(--lh); }
+.pi-prompt-live { margin: 0; font-size: var(--fs-small); color: var(--ink-soft); min-height: 1.2em; }
+.pi-prompt-live.bad { color: var(--danger); }
+.pi-skip { display: inline-flex; gap: var(--space-1); align-items: center; margin-top: var(--space-2); font-size: var(--fs-small); color: var(--ink-soft); }
+.pi-options { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-4); }
+.pi-sub { margin-top: var(--space-3); }
+.pi-sub-text { margin: 0; font-weight: 600; }

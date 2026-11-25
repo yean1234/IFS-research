@@ -301,6 +301,49 @@ namespace IFS.SceneSpec.Tests
             Assert.DoesNotThrow(() => RunFixed(PlacementTests.ShortConfig("place"), FixedText()));
         }
 
+        // ── 보기만 조건의 배치 연습(G59, practiceInAllConditions) ────────
+        [Test]
+        public void PracticeInAllConditions_gives_view_conditions_the_same_practice()
+        {
+            var d = new PlacementConfig();
+            Assert.That(d.practiceInAllConditions, Is.False);
+            Assert.That(d.ToJson().ContainsKey("practiceInAllConditions"), Is.False, "기본값이면 config에 넣지 않는다(기록 바이트 동일)");
+            Assert.That(new PlacementConfig { practiceInAllConditions = true }.Validate().Any(e => e.StartsWith("practiceInAllConditions")), Is.True,
+                "놓기 도움 없이 켜면 오류(연습은 놓기 도움의 일부)");
+            Assert.That(new PlacementConfig { practiceInAllConditions = true, condition = "view" }.HasPractice, Is.False, "놓기 도움이 꺼져 있으면 연습 없음");
+            Assert.That(new PlacementConfig { practiceInAllConditions = true, placementAssist = true }.Clone().practiceInAllConditions, Is.True);
+
+            foreach (var mode in new[] { PlacementConfig.ModeStatic, PlacementConfig.ModePointSelect })
+            {
+                var cfg = Assist("view", mode: mode);
+                cfg.practiceInAllConditions = true;
+                Assert.That(cfg.Validate(), Is.Empty, mode);
+                Assert.That(cfg.HasPractice, Is.True, mode);
+                var practiceText = new List<string>();
+                var conditionText = new List<string>();
+                string dir = RunFixed(cfg, FixedTextWithAssist(), eachFrame: s =>
+                {
+                    if (s.PracticeActive) practiceText.Add(s.ParticipantText);
+                    if (s.Phase == PlacementPhase.Condition && s.ParticipantText != null) conditionText.Add(s.ParticipantText);
+                });
+                Assert.That(PhaseEvents(dir), Is.EqualTo(new[] { "intro", "practice", "baseline", "pre_items", "pre_wait", "condition", "post_items", "post_wait", "stop_distance", "check_items", "done" }), mode);
+                Assert.That(practiceText.Distinct(), Is.EqualTo(new[] { "PRACTICE" }), mode + ": 직접 배치 조건과 같은 연습 안내");
+                Assert.That(conditionText.Distinct(), Is.EqualTo(new[] { mode == PlacementConfig.ModePointSelect ? "cs" : "cv" }), mode + ": 보기만 지시문은 그대로(범위 문장 없음)");
+                var pr = Json(dir, PlacementRecordWriter.PracticeFile);
+                Assert.That((bool)pr["confirmed"], Is.True, mode);
+                Assert.That((int)pr["grabCount"], Is.EqualTo(1), mode);
+                Assert.That((double)pr["errorM"], Is.LessThan(0.01), mode);
+                var m = Json(dir, "manifest.json");
+                Assert.That(m["environment"]["practice"].Type, Is.EqualTo(JTokenType.Object), mode + ": environment.practice가 남는다");
+                Assert.That((bool)m["config"]["practiceInAllConditions"], Is.True);
+                Assert.That(((JObject)m["config"]).Properties().Last().Name, Is.EqualTo("practiceInAllConditions"), "새 키는 config 맨 끝");
+                var pl = Json(dir, "placement.json");
+                Assert.That((string)pl["controlMode"], Is.EqualTo(mode));
+                Assert.That((int)pl["grabCount"], Is.EqualTo(0), mode + ": 연습 잡기는 본 결과에 섞이지 않는다");
+                Assert.That(Csv(dir, "objpose.csv").Any(c => c[1] == "practice"), Is.False);
+            }
+        }
+
         // ── manifest(G52·G55) ────────────────────────────────────────────
         [Test]
         public void Manifest_records_environment_assist_texture_and_practice_target()
@@ -365,8 +408,8 @@ namespace IFS.SceneSpec.Tests
                 Assert.That(t[PlacementTaskText.PlacementRangeKey], Is.EqualTo("둥근 바닥 안이면 어디든, 어떤 높이든 괜찮아요."));
                 Assert.That(t[PlacementTaskText.PracticeKey], Is.EqualTo(PlacementTaskText.Load(DefaultPath)[PlacementTaskText.PracticeKey]), "두 파일 같은 문구");
             }
-            Assert.That(PlacementTaskText.Load(DefaultPath).Version, Is.EqualTo("0.4"));
-            Assert.That(PlacementTaskText.Load(ScaleAPath).Version, Is.EqualTo("0.4-scaleA"));
+            Assert.That(PlacementTaskText.Load(DefaultPath).Version, Is.EqualTo("0.5"));
+            Assert.That(PlacementTaskText.Load(ScaleAPath).Version, Is.EqualTo("0.5-scaleA"));
         }
 
         // ── 놓기 도움 화면 규칙 ──────────────────────────────────────────

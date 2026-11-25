@@ -340,7 +340,14 @@ spec마다 참여자 번호를 하나씩 올립니다. 씬 만들기 배치: `-e
 
 ### 단계
 
-`intro → baseline → pre_items → pre_wait → condition → post_items → post_wait → stop_distance → check_items → done` (기록 형식 계약의 이름 그대로. `setup`은 세션을 만들기 전이라 기록에 없음). 놓기 도움(`placementAssist`)을 켠 직접 배치 조건에서만 `intro`와 `baseline` 사이에 배치 연습 `practice`가 끼어듭니다(아래 「배치 공간 후보 B·E·F」).
+`intro → baseline → pre_items → pre_wait → condition → post_items → post_wait → stop_distance → check_items → done` (기록 형식 계약의 이름 그대로. `setup`은 세션을 만들기 전이라 기록에 없음). 놓기 도움(`placementAssist`)을 켠 직접 배치 조건에서만 `intro`와 `baseline` 사이에 배치 연습 `practice`가 끼어듭니다(아래 「배치 공간 후보 B·E·F」. `practiceInAllConditions`를 함께 켜면 보기만 조건에도 — G59).
+
+2026-11-25 G59(논문 심사 관점 검토의 보완, 둘 다 기본 꺼짐 — 본 설계에 쓸지는 ⚠ 사람이 정할 것):
+
+- `checkBeforeStopDistance`: 점검 평정을 멈춤 거리 **앞**, 사후 평정 바로 뒤로 옮깁니다 — `… → condition → post_items → check_items → post_wait → stop_distance → done`. 기본(꺼짐)은 위 순서대로 멈춤 거리 **뒤**입니다. 멈춤 거리에서 버튼을 누른 뒤에는 보기만 조건도 "자리는 내가 정했다"에 그렇다고 답할 수 있고 "방금 이것이 있던 자리"도 모호해지기 때문입니다. 점검 동안 물체는 사후와 같이 조건 단계가 끝난 자리에 있습니다(`hideObjectDuringItems`면 숨김). 점검 문항이 없으면(또는 모두 끄면) 단계째 건너뛰고 `post_wait`로 갑니다.
+- `practiceInAllConditions`: 놓기 도움의 배치 연습(뜻 없는 회색 상자 옮기기 1회, 문구 `practice`)을 보기만 조건(static·system_move·replay·point_select)에서도 합니다. 조건 전 컨트롤러 경험을 두 집단에서 같게 하려는 것입니다. 연습만 같아지고 보기만 조건의 다른 화면(지시문, 범위 문장 없음)은 그대로입니다. `placementAssist`를 켰을 때만 쓸 수 있습니다(꺼져 있으면 확인 단계 오류, 실험자 화면에서는 놓기 도움 아래에만 보임).
+- 사후·점검 평정 때 물체 숨기기는 이미 있는 `hideObjectDuringItems`(2026-11-23)로 합니다 — 켜면 사전·사후·점검 세 평정 단계 모두에서 숨기고, 기본(꺼짐)에서는 사후·점검 동안 물체가 조건 단계가 끝난 자리(직접 배치는 놓은 자리, 보기만 static은 1.5 m)에 보입니다. 측정 순간의 시각 자극이 조건과 함께 달라지는 것을 막으려면 켭니다.
+- 두 설정은 켰을 때만 manifest `config` 맨 끝에 `true`로 남습니다. 기본값에서는 화면·기록이 G59 전과 바이트 단위로 같습니다(`PlacementEnvironmentTests`의 sha256 대조가 그대로 통과). 실험자 화면 체크, 자동 시행 `-checkBeforeStopDistance`·`-practiceInAllConditions`.
 
 | 단계 | 물체 | 넘어가는 때 |
 | --- | --- | --- |
@@ -398,6 +405,7 @@ spec마다 참여자 번호를 하나씩 올립니다. 씬 만들기 배치: `-e
 | 헤드셋(2026-11-23 추가) | `inputMode`(auto: 헤드셋이 켜져 있으면 XR, 없으면 데스크톱 · desktop · xr: 헤드셋이 없으면 시작 거부), `xrHand`(right · left), `participantRatesWithController`(false), `hideObjectDuringItems`(false — 설문 초안의 제안이지만 절차 변경이라 팀 결정 전) |
 | 평정 문항(2026-11-23 D8 추가) | `askOptionalItems`(false — 켜면 문항의 `optionalWhen` 단계에서도 묻는다. 두 평정 문항 G13을 헤드셋 사전에도 물을 때), `disabledItems`([] — 묻지 않을 문항 키. 예: 기존 "내 것 같다" `own`(기본 파일)·`S4`(scaleA). 문구 파일에 없는 키면 확인 단계 오류) |
 | 배치 공간 후보(2026-11-24 G52–G53 추가) | `environment`(neutral · space · nature), `placementAssist`(false), `practiceTargetDistanceM`(2.0)·`practiceTargetAzimuthDeg`(−45)·`practiceTargetHeightM`(0.8) — 연습 목표 자리 잠정값(⚠ 사람이 정할 것), `practiceCubeSizeM`(0.25). 기본값이면 manifest `config`에 이 키들을 넣지 않는다(아래 절) |
+| 절차 선택(2026-11-25 G59 추가) | `checkBeforeStopDistance`(false — 켜면 점검 평정을 멈춤 거리 앞, 사후 평정 바로 뒤에), `practiceInAllConditions`(false — 켜면 놓기 도움의 배치 연습을 보기만 조건에서도. `placementAssist` 필요). 켰을 때만 manifest `config` 맨 끝에 남는다 |
 
 헤드셋 표시값은 기록에 영향이 없어 `PlacementConfig`가 아니라 컴포넌트 Inspector에 있습니다: `PlacementRunner`의 판 자리 `textForwardM`(2.0)·`textHeightM`(0.6, 판 중심), `rayOnlyWhenUsable`(true), `PlacementTextPanel`의 글자 크기(본문 `characterSize` 0.0085, 평정 숫자 `numberCharacterSize` 0.010, 기준점 뜻 `labelCharacterSize` 0.0075 — 2026-11-23 전 0.0055)·줄 길이(20자)·본문 줄 간격(`bodyLineSpacing` 1.13 ≈ 1.5 em)·기준점 칸 너비(0.22 m, 전 0.2)·여백(0.08 m, 전 0.06)·고른 칸 색(`highlightColor` 짙은 파랑, `selectionFillColor` 옅은 파랑, 테두리 `selectionFrameM` 0.012 m)·판 위 가장자리 상한(`maxTopM` 0.85 m)·아래 가장자리 하한(`minBottomM` 0.05 m), `XrPlacementInput`의 광선 굵기·길이와 썸스틱 데드존(0.2)·트리거 이력(0.55/0.35). 씬 파일(`PlacementExperiment.unity`)의 값도 같은 값으로 고쳤습니다.
 
@@ -419,7 +427,7 @@ spec마다 참여자 번호를 하나씩 올립니다. 씬 만들기 배치: `-e
 
 **놓기 도움(G53, `placementAssist`)** — 직접 배치 조건에서:
 
-1. **배치 연습 1회**(`intro` 다음 새 단계 `practice`): 본 물체는 숨기고 뜻 없는 회색 상자(한 변 0.25 m)를 본 물체와 같은 시작 자리에 둡니다. 목표 자리는 바닥 고리 + 같은 크기의 파란 테두리 상자(설정 `practiceTarget*`, 잠정 2.0 m·−45°·높이 0.8 m). 잡기·밀기/당기기는 본 과제와 같고, 참여자가 확인을 누르면 끝(목표와의 거리는 기록만, 다시 시키지 않음), 실험자는 "다음"(Enter)으로 건너뛸 수 있습니다. 안내 글은 문구 `practice`. **보기만(view) 조건에는 연습이 없습니다**(⚠ 사람이 정할 것).
+1. **배치 연습 1회**(`intro` 다음 새 단계 `practice`): 본 물체는 숨기고 뜻 없는 회색 상자(한 변 0.25 m)를 본 물체와 같은 시작 자리에 둡니다. 목표 자리는 바닥 고리 + 같은 크기의 파란 테두리 상자(설정 `practiceTarget*`, 잠정 2.0 m·−45°·높이 0.8 m). 잡기·밀기/당기기는 본 과제와 같고, 참여자가 확인을 누르면 끝(목표와의 거리는 기록만, 다시 시키지 않음), 실험자는 "다음"(Enter)으로 건너뛸 수 있습니다. 안내 글은 문구 `practice`. **기본으로 보기만(view) 조건에는 연습이 없습니다**(⚠ 사람이 정할 것). `practiceInAllConditions`(G59)를 켜면 보기만 조건에도 같은 연습이 들어갑니다(`practice.json`·`practice_*` 사건·manifest `environment.practice`도 같이).
 2. 든 동안 물체 중심에서 바닥까지 수직선(굵기 8 mm)과 바로 아래 바닥 고리(반지름 = 물체 경계 반지름, 최소 0.12 m).
 3. 든 물체의 수평 거리가 바닥 가장자리 1 m 안으로 들어오면 경계 띠가 회색(0.36)에서 밝은 회색(0.94)으로 smoothstep으로 밝아짐(`PlacementAssistVisuals.BoundaryGlow`).
 4. 직접 배치 지시문 뒤에 줄을 바꿔 범위 안내 문장(`placement_range`, draft) "둥근 바닥 안이면 어디든, 어떤 높이든 괜찮아요."(G57에서 다듬음)
@@ -461,7 +469,11 @@ spec마다 참여자 번호를 하나씩 올립니다. 씬 만들기 배치: `-e
 
 ### 문구 파일
 
-`StreamingAssets/IFS/placement_task.v0.json` — `ownership_task.v0.json`과 같은 구조(`version`, `protocol`, `texts.{key}.text · status · source`)에 평정 문항 필드 `when`(pre | post | check 또는 배열), `anchors.low/high`(1과 7의 뜻)를 더했습니다. **16개 모두 `status: draft`**(IRB 검토 전, `source`에 출처. 2026-11-23 D8에서 두 평정 문항을 더해 version 0.1 → 0.2, 2026-11-24 G53에서 놓기 도움 문구 `practice`·`placement_range`를 더해 0.2 → 0.3 — 두 문구는 `placementAssist`를 켰을 때만 보이고 그때만 필수, scaleA 파일도 같은 두 문구를 더해 0.3-scaleA). 배치 지시문은 방향을 암시하는 말("멀리", "치우다")을 쓰지 않습니다. draft 문구가 있으면 확인 화면 맨 위 경고, `events.csv`의 `warning`, manifest `taskText.draftCount`·`draftKeys`에 남습니다(소유감 러너와 같은 방식).
+`StreamingAssets/IFS/placement_task.v0.json` — `ownership_task.v0.json`과 같은 구조(`version`, `protocol`, `texts.{key}.text · status · source`)에 평정 문항 필드 `when`(pre | post | check 또는 배열), `anchors.low/high`(1과 7의 뜻)를 더했습니다. **19개 모두 `status: draft`**(IRB 검토 전, `source`에 출처. 2026-11-23 D8에서 두 평정 문항을 더해 version 0.1 → 0.2, 2026-11-24 G53에서 놓기 도움 문구 `practice`·`placement_range`를 더해 0.2 → 0.3 — 두 문구는 `placementAssist`를 켰을 때만 보이고 그때만 필수, scaleA 파일도 같은 두 문구를 더해 0.3-scaleA. G57 문구 다듬기로 0.4. 2026-11-25 G59에서 세 문항을 더해 0.5 — 아래).
+
+평정 문항(기본 파일 0.5, 파일 순서 = 묻는 순서): 사전 `own` → `distance_feel` / 사후 `own` → `appearance_match` → `representativeness` → `want_to_know` → `withdraw_attention` → `distance_feel` / 점검 `placed_by_me` → `place_fit` → `want_move`.
+
+- **G59 문항(2026-11-25, `source`에 "docs/decisions.md G59, 2026-11-25"와 "IRB 검토 전")**: 거리감 `distance_feel`("지금 이것과 나 사이는 얼마나 멀게 느껴지나요?", 1 매우 가깝다 – 7 매우 멀다, 사전·사후 목록의 맨 끝 — Kross·Ayduk 계열 자기 거리두기 문항과 Takasawa(2021)의 걱정과의 거리 7점 문항을 물체에 맞게 옮긴 초안, 원문 대조 전), RQ3 자리 평정 `place_fit`("방금 이것이 있던 자리는 나에게 알맞게 느껴졌다")·`want_move`("할 수 있었다면 이것을 다른 자리로 옮기고 싶었다", 둘 다 점검, 1 전혀 그렇지 않다 – 7 매우 그렇다 — 두 조건 공통이라 보기만 조건에도 대응 값이 생김). 분석기는 `rating_{item}_{when}` 열을 문항 키대로 만들므로 고치지 않았습니다. 배치 지시문은 방향을 암시하는 말("멀리", "치우다")을 쓰지 않습니다. draft 문구가 있으면 확인 화면 맨 위 경고, `events.csv`의 `warning`, manifest `taskText.draftCount`·`draftKeys`에 남습니다(소유감 러너와 같은 방식).
 
 2026-11-23 형식 추가(선택 필드, 기존 파일은 그대로 유효 — 테스트가 확인):
 
@@ -470,11 +482,13 @@ spec마다 참여자 번호를 하나씩 올립니다. 씬 만들기 배치: `-e
 
 2026-11-23 D8 형식 추가(선택 필드, 기존 파일은 그대로 유효 — 테스트가 확인):
 
-- 문항별 범위 `min`·`max`(정수, 없으면 1–7, 0 ≤ min < max ≤ 100). `anchors` 숫자 키도 이 범위 안이어야 합니다. 구별 프로파일의 0–10 문항(M1p·M2·M3, `docs/rq-v4-differentiation-measure.md`)을 받기 위한 것이고, **0–10 문항을 문구 파일에 실제로 넣지는 않았습니다**(주 척도는 사람이 정할 것 — 기능과 테스트만). 실험자 키보드는 두 자리(10)까지 이어 치고, 참여자 컨트롤러는 가운데 값(0–10이면 5)에서 시작해 범위 안에서 한 칸씩, 헤드셋 판의 숫자 줄도 범위만큼(칸이 7개보다 많으면 줄 전체가 7칸 너비가 되게 칸을 좁힘). `ratings.csv` 형식은 그대로(값만 범위대로).
+- 문항별 범위 `min`·`max`(정수, 없으면 1–7, 0 ≤ min < max ≤ 100). `anchors` 숫자 키도 이 범위 안이어야 합니다. 구별 프로파일의 0–10 문항(M1p·M2·M3, `docs/rq-v4-differentiation-measure.md`)을 받기 위한 것입니다. D8에서는 기능과 테스트만 넣었고, 2026-11-25 G59에서 scaleA 파일에 **M2 하나만** 실제로 넣었습니다(아래 scaleA 절. 기본 파일에는 0–10 문항이 없음, 주 척도는 사람이 정할 것). 실험자 키보드는 두 자리(10)까지 이어 치고, 참여자 컨트롤러는 가운데 값(0–10이면 5)에서 시작해 범위 안에서 한 칸씩, 헤드셋 판의 숫자 줄도 범위만큼(칸이 7개보다 많으면 줄 전체가 7칸 너비가 되게 칸을 좁힘). `ratings.csv` 형식은 그대로(값만 범위대로).
 - `optionalWhen`(pre | post | check 또는 배열): 설정 `askOptionalItems`를 켰을 때만 그 단계에서도 묻습니다. 평정 문항이 아닌 키(when 없음)에 `min`·`max`·`optionalWhen`을 쓰면 오류.
 - **두 평정 문항(G13)**: 모습 일치 `appearance_match`("이 물체의 모습은 내가 떠올린 것과 비슷하다")와 대표성 `representativeness`("이 물체는 내가 떠올린 그것을 나타낸다", G57에서 "형상" → "물체"), 1–7, `status: draft`, `source`는 "docs/prompts/prototype-v4-build.md G13, 2026-11-22 …". 두 파일 모두 `when: post`, `optionalWhen: pre` — 흐름상 사전 측정은 데스크톱에서 하므로(G11) 헤드셋에서는 기본 **사후만** 묻고, 사전에도 물으려면 `askOptionalItems`를 켭니다. 기본 파일은 `own` 바로 뒤, scaleA는 사후 끝(S7 뒤). 기존 "내 것 같다"(`own`, scaleA `S4`)는 지우지 않았고 `disabledItems`로 끌 수 있습니다. 하한 점검 기준(대표성)의 값은 정하지 않았습니다(⚠ 사람이 정할 것).
 
 **두 번째 문구 파일 `placement_task.scaleA.v0.json`**(선택, Setup에서 고름): `docs/rq-v4-questionnaire-draft.md` 3절의 주 척도안 A 7문항(사전·사후, 7점 기준점 모두 이름)과 보조 문항 S4(사전)·S5·S6(사전·사후)·S7(사후)·S8(사전, 1·4·7 양극), 공통 지시문과 사후 덧붙임 문장. **24개 모두 `status: draft`**, `source`에 초안 문서의 절과 문항 ID(두 평정 문항 G13은 지시문 G13). 순서는 초안 3.7절(사전 A1–A7·S5·S6·S4·S8 = 11문항, 사후 A1–A7·S5·S6·S7 = 10문항)에 사후 끝 G13 두 문항(= 사후 12문항, version 0.1-scaleA → 0.2-scaleA). S3(겹침 그림 IOS)은 그림 선택지가 필요해 뺐고, S1(심리 거리)은 이번 묶음에서 함께 뺐습니다(S1 자체는 글 양극 척도라 anchors 1·4·7로 넣을 수 있음). S2는 초안에서도 선택 문항이라 넣지 않았습니다. 단계 안내 문구(intro 등)는 기본 파일과 같습니다. 기본 문구 파일은 바뀌지 않았고 기본 선택도 그대로입니다.
+
+scaleA 0.5-scaleA(2026-11-25 G59, 키 29개 모두 draft): 사전·사후 끝에 구별 프로파일 초안(`docs/rq-v4-differentiation-measure.md` 3.1절) 문구 그대로 **M2**("지금 나는 나 자신을 이것과는 별개로 경험한다.", 0–10, 기준점 0 전혀 아니다 · 10 매우 그렇다 — 설문 초안 3.2절 B′용 11점)와 **P1**("지금 나와 이것의 관계는 어느 쪽에 더 가깝나요?", 1 이것이 곧 나다 · 4 반반이다 · 7 이것은 나에게 있는 것이지, 나 전체는 아니다), 그 뒤 맨 끝에 `distance_feel`, 점검에 `place_fit` → `want_move`(이 파일에는 `placed_by_me`가 없음 — 조작 확인은 사후 S7). 순서: 사전 A1–A7·S5·S6·S4·S8·M2·P1·distance_feel = 14문항, 사후 A1–A7·S5·S6·S7·appearance_match·representativeness·M2·P1·distance_feel = 15문항, 점검 2문항(자동 시행 평정 31개). 점검 문항이 생겨 공통 지시문(`items_instruction`)이 점검 앞에도 한 번 보입니다(점검용 덧붙임 문장 `items_instruction_check`는 없음).
 
 ### 기록 (계약 `ifs-placement/0.2`, 참여자 데이터 — git 밖)
 
@@ -495,6 +509,8 @@ spec마다 참여자 번호를 하나씩 올립니다. 씬 만들기 배치: `-e
 2026-11-23 기록 형식 변경은 추가만 했습니다(`recordVersion`은 그대로 `ifs-placement/0.1`, 기존 열·키 삭제 없음): manifest `config`에 `inputMode`·`xrHand`·`participantRatesWithController`·`hideObjectDuringItems` 네 키, `inputSource`에 실제 값 `xr`, 위 `events.csv` 사건들. `hideObjectDuringItems`를 켜면 평정 단계 동안 물체가 숨어 `objpose.csv`에 그 단계 행이 없고 `headpose.csv`의 물체 칸이 빈칸입니다(숨은 단계의 기존 규칙). 분석기(`ifs_chatbot.eval.placement`)는 바꾸지 않았습니다(추가 키·사건을 읽지 않음, 문항 열은 `rating_A1_pre`처럼 자동으로 생김).
 
 **0.1 → 0.2(2026-11-23 D8·D9)**: 추가만 했습니다. manifest에 `selection`·`appliedOverrides` 두 키, `config`에 `askOptionalItems`·`disabledItems` 두 키, `events.csv`에 `selection` 사건(선택 파일로 시작할 때만). CSV 헤더·다른 manifest 키·파일 목록은 그대로이고, 선택 파일 없이 돌리면 내용은 0.1과 같고 `recordVersion`과 두 키(`selection: null`, `appliedOverrides: {}`)만 다릅니다. `ratings.csv`의 값은 문항 범위대로(기본 1–7, 범위를 넓힌 문항은 예: 0–10). 분석기 `ifs_chatbot.eval.placement`는 `recordVersion`이 접두어 `ifs-placement/`로 시작하는 manifest를 모두 읽으므로 0.2 기록도 읽힙니다. 다만 아는 버전 목록(`KNOWN_VERSIONS`)이 `ifs-placement/0.1`뿐이라 0.2 세션에는 `version_mismatch` 플래그가 붙습니다(분석기는 이번에 고치지 않음 — 목록에 0.2를 더하는 것은 chatbot 쪽 작업). 분석기는 `selection`·`appliedOverrides`를 읽지 않습니다.
+
+**2026-11-25 G59(형식 0.2 유지, 추가만)**: manifest `config`에 `checkBeforeStopDistance`·`practiceInAllConditions`를 켰을 때만(`true`) 맨 끝에 붙입니다. `checkBeforeStopDistance`면 `events.csv` phase 순서가 `post_items → check_items → post_wait → stop_distance → done`(분석기의 조건 단계 뒤 단계 목록에 `check_items`가 이미 있어 `abortedAt` 해석은 같음). 기본값에서는 G59 전과 바이트 단위로 같습니다.
 
 중단(Esc·Play 멈춤)하면 그때까지의 CSV가 남고, 조건 단계 중이었으면 그때까지의 `placement.json`(`conditionCompleted: false`)·`trajectory.json`도 씁니다. 분석기는 이런 세션에 `partial_condition`을 달고 조건 단계 지표 칸을 비웁니다.
 
@@ -643,7 +659,7 @@ Windows 빌드(선택): 메뉴 **IFS ▸ Experiment ▸ Build Placement Experime
   -runTests -testPlatform EditMode -testResults <결과.xml> -logFile <로그>
 ```
 
-EditMode **480개**(2026-11-24 배치 공간 후보 G52–G56 뒤 배치모드로 전부 통과, dotnet 413개 — 더한 것: `PlacementEnvironmentTests.cs` 14개(기본값 기록이 G52 전 코드로 잰 sha256과 같음 — Unity(Mono)에서는 headpose.csv만 빼고, 설정 기본값·검증·키, 배치 연습 기록·본 결과와 섞이지 않음·건너뛰기·중단, 보기만 조건에는 연습 없음, 범위 문장은 도움을 켠 직접 배치에서만, 도움 문구가 없으면 시작 거부, manifest environment·사진 sha, draftKeys에서 도움 문구 빼기, 두 문구 파일의 도움 문구(draft·G53 출처·금지어·버전 0.3), 경계 띠 밝기, 새 셰이더 세 개가 Resources에 있고 단일 패스 매크로, 별 하늘 원문에 시간·난수·텍스처 없음, 자연 사진 sha·LICENSE·4096 × 2048 — dotnet·Unity 둘 다), `UnityOnly/PlacementEnvironmentRenderTests.cs` 7개(셰이더 Resources 로드·컴파일, 사진 가져오기 설정(밉맵·압축·ASTC), 배경 공간 바꾸기·되돌리기와 neutral 무변화, 별 하늘 렌더가 다시 만들어도 같은 화소·남색·별, 기본값 공간 물체 목록 그대로·도움 물체, 러너 자동 시행(놓기 도움 + 자연), 러너가 씬 환경에 공간을 얹고 되돌림)). 그 전 459개(2026-11-23 G44와 G45–G51 병합 마무리 뒤 배치모드로 전부 통과, dotnet 399개 — 더한 것: G45–G51의 `PlacementSelectionTests` safetyFlags 1개(`LegacyFilesTests`는 no_asset 단언만 보탬), 병합 마무리의 `PlacementSelectionTests.Safety_notice_lines_for_the_experimenter_gui_only` 1개(알림 줄, 진행·중단 단추를 부르지 않음, 실험자 GUI만 씀 — dotnet·Unity 둘 다)). 그 전 457개(2026-11-23 화면 개선 G44 뒤 배치모드로 전부 통과, dotnet 397개 — 더한 것: `PlacementPanelMetricsTests.cs` 8개(시야각 식, 기본 글자 크기가 2.24 m에서 잉크 1° 이상, WCAG 대비비, 기본 색 쌍 4.5:1 이상, 칸 너비·뜻 줄바꿈, scaleA 7점 뜻이 이웃 칸과 붙지 않음, 고른 칸, 중단 두 번 누르기 — dotnet·Unity 둘 다), `UnityOnly/PlacementTextPanelTests.cs` 2개(고른 칸 테두리·굵기·색과 고르기 전 표시 없음, 선형 색 변환, 키가 큰 판의 위 가장자리 ≤ 0.85 m)). 그 전 447개·dotnet 389개. 그 전 440개(2026-11-23 기본 형상 D6 뒤 배치모드로 전부 통과, dotnet 383개). 그 전 335개(2026-11-23 구름 수정(D7)·러너 선택 파일(D8·D9) 뒤 배치모드로 전부 통과. 그 전 307개(미리보기 D4). 그 전 278개(헤드셋 프로토타입), 257개, 배치 러너 CP7 반영 때 192개). 아래 표는 2026-11-22 기준이고, 그 뒤 더한 것은 표 아래에 적었습니다:
+EditMode **482개**(2026-11-25 G59 헤드셋 쪽 보완 뒤 배치모드로 전부 통과, dotnet 415개 — 더한 것: `PlacementTests.CheckBeforeStopDistance_asks_check_items_right_after_post_items`(place·view static·point_select에서 점검이 사후 바로 뒤·멈춤 거리 시행보다 먼저, 점검 동안 물체는 조건이 끝난 자리, 점검 문항을 모두 끄면 단계째 건너뜀, 점검 중 중단 = `check_items`, 기본값이면 config에 키 없음), `PlacementEnvironmentTests.PracticeInAllConditions_gives_view_conditions_the_same_practice`(보기만 static·point_select에 같은 연습·practice.json·environment.practice, 보기만 지시문 그대로, 연습 잡기가 본 결과에 섞이지 않음, 놓기 도움 없이 켜면 오류, 기본값이면 키 없음) — dotnet·Unity 둘 다. 기존 테스트는 문항 수·순서·자동 응답 값·버전(0.5, 0.5-scaleA)과 scaleA M2의 0–10 범위·P1 문구를 고침). 그 전 480개(2026-11-24 배치 공간 후보 G52–G56 뒤 배치모드로 전부 통과, dotnet 413개 — 더한 것: `PlacementEnvironmentTests.cs` 14개(기본값 기록이 G52 전 코드로 잰 sha256과 같음 — Unity(Mono)에서는 headpose.csv만 빼고, 설정 기본값·검증·키, 배치 연습 기록·본 결과와 섞이지 않음·건너뛰기·중단, 보기만 조건에는 연습 없음, 범위 문장은 도움을 켠 직접 배치에서만, 도움 문구가 없으면 시작 거부, manifest environment·사진 sha, draftKeys에서 도움 문구 빼기, 두 문구 파일의 도움 문구(draft·G53 출처·금지어·버전 0.3), 경계 띠 밝기, 새 셰이더 세 개가 Resources에 있고 단일 패스 매크로, 별 하늘 원문에 시간·난수·텍스처 없음, 자연 사진 sha·LICENSE·4096 × 2048 — dotnet·Unity 둘 다), `UnityOnly/PlacementEnvironmentRenderTests.cs` 7개(셰이더 Resources 로드·컴파일, 사진 가져오기 설정(밉맵·압축·ASTC), 배경 공간 바꾸기·되돌리기와 neutral 무변화, 별 하늘 렌더가 다시 만들어도 같은 화소·남색·별, 기본값 공간 물체 목록 그대로·도움 물체, 러너 자동 시행(놓기 도움 + 자연), 러너가 씬 환경에 공간을 얹고 되돌림)). 그 전 459개(2026-11-23 G44와 G45–G51 병합 마무리 뒤 배치모드로 전부 통과, dotnet 399개 — 더한 것: G45–G51의 `PlacementSelectionTests` safetyFlags 1개(`LegacyFilesTests`는 no_asset 단언만 보탬), 병합 마무리의 `PlacementSelectionTests.Safety_notice_lines_for_the_experimenter_gui_only` 1개(알림 줄, 진행·중단 단추를 부르지 않음, 실험자 GUI만 씀 — dotnet·Unity 둘 다)). 그 전 457개(2026-11-23 화면 개선 G44 뒤 배치모드로 전부 통과, dotnet 397개 — 더한 것: `PlacementPanelMetricsTests.cs` 8개(시야각 식, 기본 글자 크기가 2.24 m에서 잉크 1° 이상, WCAG 대비비, 기본 색 쌍 4.5:1 이상, 칸 너비·뜻 줄바꿈, scaleA 7점 뜻이 이웃 칸과 붙지 않음, 고른 칸, 중단 두 번 누르기 — dotnet·Unity 둘 다), `UnityOnly/PlacementTextPanelTests.cs` 2개(고른 칸 테두리·굵기·색과 고르기 전 표시 없음, 선형 색 변환, 키가 큰 판의 위 가장자리 ≤ 0.85 m)). 그 전 447개·dotnet 389개. 그 전 440개(2026-11-23 기본 형상 D6 뒤 배치모드로 전부 통과, dotnet 383개). 그 전 335개(2026-11-23 구름 수정(D7)·러너 선택 파일(D8·D9) 뒤 배치모드로 전부 통과. 그 전 307개(미리보기 D4). 그 전 278개(헤드셋 프로토타입), 257개, 배치 러너 CP7 반영 때 192개). 아래 표는 2026-11-22 기준이고, 그 뒤 더한 것은 표 아래에 적었습니다:
 
 | 파일 | 개수 | 내용 |
 | --- | --- | --- |
@@ -663,7 +679,7 @@ EditMode **480개**(2026-11-24 배치 공간 후보 G52–G56 뒤 배치모드�
 
 | 파일 | 개수 | 내용 |
 | --- | --- | --- |
-| `PlacementXrTests.cs` | 15 | 입력 고르기 규칙(XR 유/무 × auto·desktop·xr), 새 설정 기본값·검증, XR 입력 규칙(가짜 장치: 트리거 이력·눌린 순간, 그립, A 확인, 꺼 둔 동안·장치 끊김 뒤 가짜 눌림 없음, 썸스틱 데드존·평정 한 칸씩), 광선 끝 길이, view 조건에서 XR 잡기·밀기 무시, XR 밀기로 팔 길이 너머 → holdMaxM·바닥 경계 clamp → 당기기 holdMinM, anchors 숫자 키·기존 파일 호환·잘못된 키 거부, scaleA 파일(전부 draft·출처·순서·기준점·금지어), scaleA 한 바퀴(지시문 → 문항, 평정 21개), `hideObjectDuringItems`, 참여자 컨트롤러 평정(가운데에서 시작·트리거 확정·`by=controller`, 끄면 무시, 실험자 입력 우선), `recenter` 기록 |
+| `PlacementXrTests.cs` | 15 | 입력 고르기 규칙(XR 유/무 × auto·desktop·xr), 새 설정 기본값·검증, XR 입력 규칙(가짜 장치: 트리거 이력·눌린 순간, 그립, A 확인, 꺼 둔 동안·장치 끊김 뒤 가짜 눌림 없음, 썸스틱 데드존·평정 한 칸씩), 광선 끝 길이, view 조건에서 XR 잡기·밀기 무시, XR 밀기로 팔 길이 너머 → holdMaxM·바닥 경계 clamp → 당기기 holdMinM, anchors 숫자 키·기존 파일 호환·잘못된 키 거부, scaleA 파일(전부 draft·출처·순서·기준점·금지어), scaleA 한 바퀴(지시문 → 문항, 평정 31개 — G59 뒤), `hideObjectDuringItems`, 참여자 컨트롤러 평정(가운데에서 시작·트리거 확정·`by=controller`, 끄면 무시, 실험자 입력 우선), `recenter` 기록 |
 | `MistShaderSourceTests.cs` | +1 | 안개·하늘 셰이더의 스테레오 인스턴싱 매크로(인스턴스 ID를 조각 단계까지) |
 | `UnityOnly/PlacementRunnerXrTests.cs` | 5 | 씬 구성(리그 아래 눈높이 카메라, XR 없으면 정면 재설정 안 함), 헤드셋 없으면 auto → desktop·강제 xr 거부, 헤드셋 있음(흉내) + 가짜 컨트롤러 → `inputSource: xr`·잡기·밀기가 세션과 그리기에 반영·`xr_status`, 참여자 판 자리(정면 2 m, 눈높이 아래)·평정 기준점 줄·평정 동안 숨김, scaleA 자동 시행 |
 

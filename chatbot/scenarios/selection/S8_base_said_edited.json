@@ -27,6 +27,7 @@
     }
   ],
   "premeasure": {
+    "W1_intensity": 5,
     "A1": 5,
     "A2": 4,
     "A3": 3,

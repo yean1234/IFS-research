@@ -131,6 +131,17 @@ namespace IFS.SceneSpec.Placement
         /// <summary>연습 상자 한 변(m).</summary>
         public double practiceCubeSizeM = 0.25;
 
+        // ── 절차 선택(G59, 2026-11-25) ─────────────────────────────────
+        // 논문 심사 관점 검토에서 나온 보완. 둘 다 기본 꺼짐이고, 기본값에서는 화면·기록이 G59 전과 바이트 단위로 같다
+        // (켰을 때만 manifest config 맨 끝에 키를 남긴다). 본 설계에 쓸지는 정하지 않았다(⚠ 사람이 정할 것).
+        /// <summary>켜면 점검 문항(when check)을 멈춤 거리 앞, 사후 평정 바로 뒤에 묻는다
+        /// (condition → post_items → check_items → post_wait → stop_distance → done). 기본 꺼짐: 멈춤 거리 뒤(예전 순서).
+        /// 멈춤 거리에서 버튼을 누른 뒤에는 보기만 조건도 "자리는 내가 정했다"에 그렇다고 답할 수 있고 "방금 있던 자리"도 모호해지기 때문.</summary>
+        public bool checkBeforeStopDistance = false;
+        /// <summary>켜면 놓기 도움(placementAssist)의 배치 연습(뜻 없는 회색 상자 옮기기 1회)을 보기만 조건에서도 한다
+        /// (조건 전 컨트롤러 경험을 두 조건에서 같게). placementAssist를 켰을 때만 쓴다(꺼져 있으면 확인 단계에서 오류). 기본 꺼짐.</summary>
+        public bool practiceInAllConditions = false;
+
         public const string EnvironmentNeutral = "neutral";
         public const string EnvironmentSpace = "space";
         public const string EnvironmentNature = "nature";
@@ -138,8 +149,9 @@ namespace IFS.SceneSpec.Placement
 
         /// <summary>공간 설정이 기본값이 아니다(manifest에 environment 블록과 config 키를 더한다).</summary>
         public bool UsesSpaceOptions => environment != EnvironmentNeutral || placementAssist;
-        /// <summary>이 세션에 배치 연습이 있다: 놓기 도움을 켰고 직접 배치 조건일 때만(⚠ 보기만 조건에서는 연습하지 않음 — 사람이 정할 것).</summary>
-        public bool HasPractice => placementAssist && IsPlace;
+        /// <summary>이 세션에 배치 연습이 있다: 놓기 도움을 켰고 직접 배치 조건일 때(기본). practiceInAllConditions를 켜면 보기만 조건에서도
+        /// (G59 — ⚠ 어느 쪽을 본 설계로 쓸지는 사람이 정할 것).</summary>
+        public bool HasPractice => placementAssist && (IsPlace || practiceInAllConditions);
 
         public const string InputModeAuto = "auto";
         public const string InputModeDesktop = "desktop";
@@ -222,6 +234,8 @@ namespace IFS.SceneSpec.Placement
                 if (!(practiceTargetHeightM >= minHeightM && practiceTargetHeightM <= maxHeightM)) e.Add($"practiceTargetHeightM {practiceTargetHeightM}: [minHeightM, maxHeightM] 밖");
                 if (!(Finite(practiceCubeSizeM) && practiceCubeSizeM > 0 && practiceCubeSizeM <= 1)) e.Add($"practiceCubeSizeM {practiceCubeSizeM}: (0, 1] 밖");
             }
+            if (practiceInAllConditions && !placementAssist)
+                e.Add("practiceInAllConditions: 놓기 도움(placementAssist)을 켰을 때만 쓴다(배치 연습은 놓기 도움의 일부)");
             return e;
         }
 
@@ -238,6 +252,9 @@ namespace IFS.SceneSpec.Placement
                 j["practiceTargetHeightM"] = practiceTargetHeightM;
                 j["practiceCubeSizeM"] = practiceCubeSizeM;
             }
+            // 2026-11-25 추가(G59). 켰을 때만 넣는다(기본값이면 기존 기록과 바이트 단위로 같게).
+            if (checkBeforeStopDistance) j["checkBeforeStopDistance"] = true;
+            if (practiceInAllConditions) j["practiceInAllConditions"] = true;
             return j;
         }
 

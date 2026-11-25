@@ -1,7 +1,10 @@
 // 배치 실험(RQ V4) 한 회기의 단계 흐름과 기록(UnityEngine 없이 — dotnet 테스트에서도 끝까지 돈다).
 //   intro → [practice] → baseline → pre_items → pre_wait → condition → post_items → post_wait → stop_distance → check_items → done
 //   (setup은 러너가 세션을 만들기 전 단계라 기록에 없다. *_items는 해당 when 문항이 없으면 건너뛴다.
+//    설정 checkBeforeStopDistance(G59, 2026-11-25, 기본 꺼짐)를 켜면 점검 평정을 사후 평정 바로 뒤로 옮긴다:
+//    … → post_items → check_items → post_wait → stop_distance → done.
 //    practice는 놓기 도움 placementAssist를 켠 직접 배치 조건에서만 있다(G53, 2026-11-24) — 뜻 없는 회색 상자를 표시된 자리로 옮기고 확인.
+//    practiceInAllConditions(G59, 기본 꺼짐)를 함께 켜면 보기만 조건에서도 같은 연습을 한다.
 //    연습은 events.csv(practice_*)와 practice.json에만 남고 placement.json·trajectory.json·objpose.csv에는 들어가지 않는다.)
 // 시계: Tick(dt)으로 받은 dt를 더한 시각(사람 실행은 Time.unscaledDeltaTime, 자동 시행은 고정 dt).
 // 물체 위치·보이기·참여자 글은 이 클래스가 정하고, Unity 러너(PlacementRunner)는 그대로 그린다.
@@ -223,6 +226,19 @@ namespace IFS.SceneSpec.Placement
 
         static PlacementPhase NextOf(PlacementPhase p) => p == PlacementPhase.Done ? p : (PlacementPhase)((int)p + 1);
 
+        /// <summary>이 세션의 다음 단계. 기본은 enum 순서(NextOf). checkBeforeStopDistance(G59)를 켜면 점검 평정을 사후 평정 바로 뒤로 옮긴다:
+        /// post_items → check_items → post_wait → stop_distance → done.</summary>
+        PlacementPhase Next(PlacementPhase p)
+        {
+            if (_cfg.checkBeforeStopDistance)
+            {
+                if (p == PlacementPhase.PostItems) return PlacementPhase.CheckItems;
+                if (p == PlacementPhase.CheckItems) return PlacementPhase.PostWait;
+                if (p == PlacementPhase.StopDistance) return PlacementPhase.Done;
+            }
+            return NextOf(p);
+        }
+
         string Mode => _cfg.EffectiveControlMode;
 
         // ── 시간·기록 ────────────────────────────────────────────────────
@@ -296,7 +312,7 @@ namespace IFS.SceneSpec.Placement
                     string when = p == PlacementPhase.PreItems ? PlacementTaskText.WhenPre
                         : p == PlacementPhase.PostItems ? PlacementTaskText.WhenPost : PlacementTaskText.WhenCheck;
                     var items = _text.ItemsFor(when, _cfg.askOptionalItems, _cfg.disabledItems);   // optionalWhen은 설정을 켰을 때만, disabledItems는 뺀다
-                    if (items.Count == 0) { GoTo(NextOf(p)); return; }
+                    if (items.Count == 0) { GoTo(Next(p)); return; }
                     SetPhase(p);
                     _items = items;
                     _itemsWhen = when;
@@ -385,7 +401,7 @@ namespace IFS.SceneSpec.Placement
             Event("rating", $"item={item.Key};when={_itemsWhen};rating={v};rt_ms={rt}" + (by != null ? ";by=" + by : ""));
             _itemIndex++;
             if (_itemIndex < _items.Count) AskItem();
-            else GoTo(NextOf(Phase));
+            else GoTo(Next(Phase));
         }
 
         // ── 조건 단계 ────────────────────────────────────────────────────
@@ -718,7 +734,7 @@ namespace IFS.SceneSpec.Placement
             if (!_trialActive)
             {
                 if (_now < _itiUntil - Eps) return;
-                if (_stopIndex + 1 >= _stopPlan.Count) { GoTo(PlacementPhase.CheckItems); return; }
+                if (_stopIndex + 1 >= _stopPlan.Count) { GoTo(Next(PlacementPhase.StopDistance)); return; }   // 기본: check_items, checkBeforeStopDistance면 done
                 StartTrial(_stopIndex + 1);
                 return;
             }
@@ -830,7 +846,7 @@ namespace IFS.SceneSpec.Placement
                     break;
                 case PlacementPhase.PreWait:
                 case PlacementPhase.PostWait:
-                    GoTo(NextOf(Phase));
+                    GoTo(Next(Phase));
                     break;
                 case PlacementPhase.StopDistance:
                     if (!_stopStarted)

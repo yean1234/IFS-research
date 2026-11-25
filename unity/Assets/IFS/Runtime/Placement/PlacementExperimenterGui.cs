@@ -115,7 +115,9 @@ namespace IFS.SceneSpec.Placement
                 : cfg.environment == PlacementConfig.EnvironmentSpace ? "후보 E"
                 : cfg.environment == PlacementConfig.EnvironmentNature ? "후보 F" : "후보 B";
             string drawn = applied == cfg.environment ? "" : $"  <color={ColError}>화면은 {applied}(그리지 못함 — 확인에서 오류)</color>";
-            string practice = cfg.placementAssist ? (cfg.IsPlace ? " · 배치 연습 있음" : " · 배치 연습 없음(보기만 조건)") : "";
+            string practice = !cfg.placementAssist ? ""
+                : cfg.HasPractice ? (cfg.IsPlace ? " · 배치 연습 있음" : " · 배치 연습 있음(보기만 조건도 — practiceInAllConditions)")
+                : " · 배치 연습 없음(보기만 조건)";
             return $"공간 <b>{cfg.environment}</b> · 놓기 도움 <b>{(cfg.placementAssist ? "켜짐" : "꺼짐")}</b>{practice}   <color={ColMuted}>{candidate}</color>{drawn}";
         }
 
@@ -209,8 +211,12 @@ namespace IFS.SceneSpec.Placement
             if (assist != cfg.placementAssist)
             {
                 cfg.placementAssist = assist;
+                if (!assist) cfg.practiceInAllConditions = false;   // 연습은 놓기 도움의 일부(G59) — 도움을 끄면 함께 끈다
                 runner.RefreshSpace();
             }
+            if (cfg.placementAssist)
+                cfg.practiceInAllConditions = GUILayout.Toggle(cfg.practiceInAllConditions,
+                    "   └ 배치 연습을 보기만 조건에서도(G59, practiceInAllConditions — 조건 전 컨트롤러 경험을 같게. 팀 결정 전)", _toggle);
             GUILayout.Label("참여자 입력(auto = 헤드셋이 켜져 있으면 XR 컨트롤러, 없으면 데스크톱)", _wrap);
             GUILayout.BeginHorizontal();
             foreach (var m in PlacementConfig.InputModes)
@@ -226,6 +232,8 @@ namespace IFS.SceneSpec.Placement
             cfg.participantRatesWithController = GUILayout.Toggle(cfg.participantRatesWithController,
                 " 참여자가 컨트롤러로 평정(썸스틱 좌우 고르기, 트리거 확정) — 꺼 두면 참여자는 말로 답하고 실험자가 숫자를 넣는다", _toggle);
             cfg.hideObjectDuringItems = GUILayout.Toggle(cfg.hideObjectDuringItems, " 평정 동안 물체 숨기기(설문 초안의 제안, 절차 변경이라 팀 결정 전)", _toggle);
+            cfg.checkBeforeStopDistance = GUILayout.Toggle(cfg.checkBeforeStopDistance,
+                " 점검 문항을 멈춤 거리 앞에(G59, checkBeforeStopDistance — 사후 평정 바로 뒤. 기본: 멈춤 거리 뒤. 팀 결정 전)", _toggle);
             cfg.askOptionalItems = GUILayout.Toggle(cfg.askOptionalItems, " 선택 단계 문항도 묻기(optionalWhen — 두 평정 문항 모습 일치·대표성을 사전에도. 기본 꺼짐: 사전 측정은 데스크톱)", _toggle);
             GUILayout.Label("묻지 않을 평정 문항 키(쉼표로, 예: own 또는 S4 — 기존 '내 것 같다' 문항 끄기)", _wrap);
             string disabled = GUILayout.TextField(string.Join(",", cfg.disabledItems ?? new string[0]));

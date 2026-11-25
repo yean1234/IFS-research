@@ -156,8 +156,10 @@ def delete_selection_dir(log_dir: Path, session_id: str) -> bool:
     return False
 
 
-def ui_config(protocol: SelectionProtocol, table: dict, preview_info: dict, enabled: bool) -> dict:
-    """웹 화면이 그리는 데 쓰는 고정 정보(문구 원문, 항목 이름, 값 목록). 값에는 이름을 붙이지 않는다."""
+def ui_config(protocol: SelectionProtocol, table: dict, preview_info: dict, enabled: bool,
+              participant_draft_banner: bool = True) -> dict:
+    """웹 화면이 그리는 데 쓰는 고정 정보(문구 원문, 항목 이름, 값 목록). 값에는 이름을 붙이지 않는다.
+    participantDraftBanner = false면 초안 문구 경고 줄(X35)을 연구자 보기에서만 그린다(G59, 기록은 그대로)."""
     items = table["adjustItems"]["items"]
     labels = protocol.data["adjustItemLabels"]
     adjust = []
@@ -172,6 +174,7 @@ def ui_config(protocol: SelectionProtocol, table: dict, preview_info: dict, enab
     pm = protocol.data["premeasure"]
     return {
         "enabled": enabled,
+        "participantDraftBanner": bool(participant_draft_banner),
         "protocol": protocol.info(),
         "phrases": {k: v["text"] for k, v in protocol.data["phrases"].items()},
         "adjustItems": adjust,

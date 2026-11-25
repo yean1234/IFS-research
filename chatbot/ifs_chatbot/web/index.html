@@ -71,6 +71,9 @@
 
       <!-- 면담 뒤 데스크톱 단계(4 후보 선택 · 5 조절 · 6 사전 측정). 설정 [selection] enabled일 때만 열린다. -->
       <div id="stage" class="stage" hidden></div>
+
+      <!-- 사후 면담 기록(G59, 연구자가 여는 화면): 주소 ?view=postinterview&session=<세션 ID>. postinterview.js -->
+      <div id="postinterview" class="postinterview" hidden></div>
     </section>
 
     <aside class="panel researcher researcher-only" id="researcher" aria-label="연구자 화면">
@@ -94,5 +97,6 @@
   <div id="toast" class="toast" role="status" hidden></div>
   <script src="/static/app.js"></script>
   <script src="/static/stage.js"></script>
+  <script src="/static/postinterview.js"></script>
 </body>
 </html>

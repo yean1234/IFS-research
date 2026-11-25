@@ -60,7 +60,7 @@ def valid(data, validator=None):
     assert not errs, errs[:3]
 
 
-ALL_ITEMS = {i: None for i in ["A1", "A2", "A3", "A4", "A5", "A6", "A7", "G13_appearance", "G13_representation"]}
+ALL_ITEMS = {i: None for i in ["W1_intensity", "A1", "A2", "A3", "A4", "A5", "A6", "A7", "G13_appearance", "G13_representation"]}
 
 
 # ── 단계 순서 ────────────────────────────────────────────────────────────────
@@ -620,9 +620,9 @@ def test_premeasure_validation_and_record(rt4):
     good = {k: (i % 7) + 1 for i, k in enumerate(ALL_ITEMS)}
     good["A5"] = None
     v = f.submit_premeasure(good)
-    assert v["stage"] == "done" and f.data["premeasure"]["answered"] == 8 and f.data["premeasure"]["skipped"] == 1
+    assert v["stage"] == "done" and f.data["premeasure"]["answered"] == 9 and f.data["premeasure"]["skipped"] == 1
     pm = json.loads((f.dir / "premeasure.json").read_text(encoding="utf-8"))
-    assert pm["formatVersion"] == "ifs-premeasure/0.1" and len(pm["items"]) == 9 and pm["draftCount"] > 0
+    assert pm["formatVersion"] == "ifs-premeasure/0.1" and len(pm["items"]) == 10 and pm["draftCount"] > 0
     assert {i["id"]: i["value"] for i in pm["items"]} == good
     with pytest.raises(SelectionError):
         f.submit_premeasure(good)
@@ -650,9 +650,26 @@ def test_protocol_texts_match_sources_verbatim():
     assert p.text("none_fit") == "맞는 게 없어요"
     labels = [p.data["adjustItemLabels"][k]["text"] for k in TABLE["adjustItems"]["order"]]
     assert labels == ["색", "형태", "밝기", "투명도", "크기", "질감", "움직임"]          # G31: 색이 맨 앞
-    assert p.version == "0.4.0" and "single_candidate_intro" not in p.data["phrases"]  # G34: 후보 1개 화면 없음
+    assert p.version == "0.5.0" and "single_candidate_intro" not in p.data["phrases"]  # G34: 후보 1개 화면 없음
     assert p.data["changes"][0]["version"] == p.version and p.data["phrases"]["adjust_item_unavailable"]["status"] == "draft"
     assert "proceed_single_button" not in p.data["phrases"]
+
+
+def test_g59_premeasure_instruction_and_intensity_item():
+    """G59: 지시문은 물체가 떠올린 것을 나타낸다고 단정하지 않고, 지시 대상은 면담 첫 질문(G58)에 맞춘다. W1은 첫 문항."""
+    p = SelectionProtocol()
+    pm = p.data["premeasure"]
+    ins = pm["instruction"]["text"]
+    assert "조금 전에 보신 물체는 면담에서 말씀하신 것을 바탕으로 만든 거예요." in ins
+    assert "'이것'은 면담에서 떠올리신 그것을 가리켜요" in ins
+    for gone in ("말씀하신 대로 나타낸", "마음에 걸려 있는", "면담에서 말씀하신, "):
+        assert gone not in ins
+    first = p.items()[0]
+    assert first["id"] == "W1_intensity" and first["text"] == "지금 그것을 떠올리면 마음이 많이 쓰인다"
+    assert [i["id"] for i in p.items()][1:8] == [f"A{i}" for i in range(1, 8)]
+    for entry in (pm["instruction"], first, p.data["changes"][0]):
+        assert entry["status"] == "draft" and "G59" in entry["source"] and "IRB 검토 전" in entry["source"]
+    assert p.data["changes"][0]["version"] == "0.5.0"
 
 
 def test_protocol_has_no_therapy_terms():
@@ -748,7 +765,7 @@ def test_http_flow(tmp_path):
     fin = c.get("/api/sessions/SYN-HTTP/final").json()
     assert fin["spec"]["meta"]["sessionId"] == "SYN-HTTP" and fin["selection"]["finalOverrides"]["layout.size"] == 0.8
     pv = c.get("/api/sessions/SYN-HTTP/premeasure").json()
-    assert len(pv["items"]) == 9
+    assert len(pv["items"]) == 10 and pv["items"][0]["id"] == "W1_intensity"
     assert c.post("/api/sessions/SYN-HTTP/premeasure", json={"responses": {"A1": 9}}).status_code == 422
     r = c.post("/api/sessions/SYN-HTTP/premeasure", json={"responses": dict(ALL_ITEMS, A2=2)})
     assert r.status_code == 200 and r.json()["stage"] == "done"
@@ -772,7 +789,7 @@ def test_existing_endpoints_unchanged_in_default_config(rt):
 
 def test_web_assets_have_no_external_urls():
     web = REPO_ROOT / "chatbot" / "ifs_chatbot" / "web"
-    for name in ("index.html", "app.js", "stage.js", "style.css"):
+    for name in ("index.html", "app.js", "stage.js", "postinterview.js", "style.css"):
         text = (web / name).read_text(encoding="utf-8")
         assert not re.search(r"https?://", text), name
 

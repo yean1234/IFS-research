@@ -1,7 +1,7 @@
 {
-  "version": "0.4-scaleA",
+  "version": "0.5-scaleA",
   "protocol": "placement-task",
-  "note": "docs/rq-v4-questionnaire-draft.md 3절의 주 척도안 A(7문항)와 보조 문항 S4–S8을 담은 선택용 문구 파일(2026-11-23). 모든 문구는 status draft(IRB 검토 전, 타당화 전 번안·수정판). 기본 문구 파일(placement_task.v0.json)은 그대로이고 Setup에서 고른다. 제외: S3(겹침 그림 IOS)은 그림 선택지가 필요해 이번 판에서 뺐다. S1(심리 거리)은 지시에 따라 S3과 함께 이번 묶음에서 뺐다(S1 자체는 글로 된 양극 척도라 그림 없이 anchors 1·4·7로 넣을 수 있다). S2는 초안에서 선택 문항이라 넣지 않았다. 문항 순서는 초안 3.7절(사전 A1–A7, S5, S6, S4, S8 / 사후 A1–A7, S5, S6, S7). 단계 안내 문구(intro 등)는 placement_task.v0.json과 같다. 0.2(2026-11-23): 두 평정 문항 G13(모습 일치 appearance_match·대표성 representativeness)을 사후 끝에 더함(사전은 설정 askOptionalItems). 0.3(2026-11-24): G53 놓기 도움 문구 practice·placement_range를 더함(placementAssist를 켰을 때만 보임, placement_task.v0.json과 같은 문구). 0.4(2026-11-24): G57 문구 다듬기 — 단계 안내·G13 두 문항·S7·공통/사후 지시문의 글을 다듬음(A1–A7·S4·S5·S6·S8·척도 닻은 그대로, placement_task.v0.json과 같은 키는 같은 글).",
+  "note": "docs/rq-v4-questionnaire-draft.md 3절의 주 척도안 A(7문항)와 보조 문항 S4–S8을 담은 선택용 문구 파일(2026-11-23). 모든 문구는 status draft(IRB 검토 전, 타당화 전 번안·수정판). 기본 문구 파일(placement_task.v0.json)은 그대로이고 Setup에서 고른다. 제외: S3(겹침 그림 IOS)은 그림 선택지가 필요해 이번 판에서 뺐다. S1(심리 거리)은 지시에 따라 S3과 함께 이번 묶음에서 뺐다(S1 자체는 글로 된 양극 척도라 그림 없이 anchors 1·4·7로 넣을 수 있다). S2는 초안에서 선택 문항이라 넣지 않았다. 문항 순서는 초안 3.7절(사전 A1–A7, S5, S6, S4, S8 / 사후 A1–A7, S5, S6, S7). 단계 안내 문구(intro 등)는 placement_task.v0.json과 같다. 0.2(2026-11-23): 두 평정 문항 G13(모습 일치 appearance_match·대표성 representativeness)을 사후 끝에 더함(사전은 설정 askOptionalItems). 0.3(2026-11-24): G53 놓기 도움 문구 practice·placement_range를 더함(placementAssist를 켰을 때만 보임, placement_task.v0.json과 같은 문구). 0.4(2026-11-24): G57 문구 다듬기 — 단계 안내·G13 두 문항·S7·공통/사후 지시문의 글을 다듬음(A1–A7·S4·S5·S6·S8·척도 닻은 그대로, placement_task.v0.json과 같은 키는 같은 글). 0.5(2026-11-25): G59 — 구별 프로파일 초안(docs/rq-v4-differentiation-measure.md 3.1절)의 M2(0–10)·P1(양극 1–7)과 거리감 문항 distance_feel을 사전·사후 끝에(distance_feel이 맨 끝), 자리 평정 place_fit·want_move를 점검 단계(check)에 더함(placement_task.v0.json과 같은 키는 같은 글. 이 파일에는 placed_by_me가 없어 점검은 place_fit → want_move).",
   "texts": {
     "intro": {
       "text": "이제 물체 하나를 보여 드릴게요. 안내가 나오면 그대로 따라 주세요.",
@@ -54,9 +54,9 @@
       "source": "docs/decisions.md G53(놓기 도움 (4) 범위 안내 문장), 2026-11-24, IRB 검토 전. 설정 placementAssist를 켠 직접 배치 조건에서 condition_place 뒤에 줄을 바꿔 붙임. G57(2026-11-24) 다듬음"
     },
     "items_instruction": {
-      "text": "이제 문장 몇 개를 보여 드릴게요. 문장 속 '이것'은 면담에서 말씀하신, 지금 마음에 걸려 있는 그것을 가리켜요. 조금 전에 보신 물체는 그것을 말씀하신 대로 나타낸 거예요. 평소가 아니라 바로 지금을 기준으로, 각 문장이 지금의 나에게 얼마나 맞는지 골라 주세요. 맞거나 틀린 답은 없어요.",
+      "text": "이제 문장 몇 개를 보여 드릴게요. 문장 속 '이것'은 면담에서 떠올리신 그것을 가리켜요. 조금 전에 보신 물체는 면담에서 말씀하신 것을 바탕으로 만든 거예요. 평소가 아니라 바로 지금을 기준으로, 각 문장이 지금의 나에게 얼마나 맞는지 골라 주세요. 맞거나 틀린 답은 없어요.",
       "status": "draft",
-      "source": "docs/rq-v4-questionnaire-draft.md 3.1절 공통 지시문(자작, SCFQ의 'at this moment' 지시를 따름, 2026-11-22), IRB 검토 전. '지금 마음에 걸려 있는'은 면담 첫 질문의 실제 고정 문구에 맞춰야 함(초안 3.1절 주). G57(2026-11-24) 다듬음"
+      "source": "docs/rq-v4-questionnaire-draft.md 3.1절 공통 지시문(자작, SCFQ의 'at this moment' 지시를 따름, 2026-11-22), IRB 검토 전. '지금 마음에 걸려 있는'은 면담 첫 질문의 실제 고정 문구에 맞춰야 함(초안 3.1절 주). G57(2026-11-24) 다듬음. G59(docs/decisions.md G59, 2026-11-25): 단정 표현('말씀하신 대로 나타낸')을 빼고 가리키는 대상을 첫 질문(G58)과 웹 사전 측정 지시문(selection 0.5.0)에 맞춤"
     },
     "items_instruction_post": {
       "text": "앞에서 본 문장이 다시 나와요. 아까 고른 답에 맞추려 하지 말고, 지금 이 순간을 기준으로 답해 주세요.",
@@ -267,6 +267,68 @@
       },
       "status": "draft",
       "source": "docs/prompts/prototype-v4-build.md G13, 2026-11-22 — 대표성 문항(두 문항 분리의 하나, 하한 점검 기준 문항 — 기준값은 정하지 않음). 기본은 사후만(when post), 사전은 설정 askOptionalItems(optionalWhen pre — 사전 측정은 데스크톱에서 하므로, G11). IRB 검토 전. G57(2026-11-24) 다듬음"
+    },
+    "M2": {
+      "text": "지금 나는 나 자신을 이것과는 별개로 경험한다.",
+      "when": [
+        "pre",
+        "post"
+      ],
+      "min": 0,
+      "max": 10,
+      "anchors": {
+        "0": "전혀 아니다",
+        "10": "매우 그렇다"
+      },
+      "status": "draft",
+      "source": "docs/rq-v4-differentiation-measure.md 3.1절 구별 프로파일 M2 (나) 탈동일시(MPoD-s 2번 수정 — docs/rq-v4-questionnaire-draft.md 3.5절 M2 그대로, 응답 0–10). 기준점은 docs/rq-v4-questionnaire-draft.md 3.2절 B′용 11점(0 전혀 아니다 … 10 매우 그렇다, 양 끝에만 이름). docs/decisions.md G59, 2026-11-25, IRB 검토 전"
+    },
+    "P1": {
+      "text": "지금 나와 이것의 관계는 어느 쪽에 더 가깝나요?",
+      "when": [
+        "pre",
+        "post"
+      ],
+      "anchors": {
+        "1": "이것이 곧 나다",
+        "4": "반반이다",
+        "7": "이것은 나에게 있는 것이지, 나 전체는 아니다"
+      },
+      "status": "draft",
+      "source": "docs/rq-v4-differentiation-measure.md 3.1절 구별 프로파일 P1 (나) 탈동일시(자작, 양극 척도 — IFS unblending 정의와 Bernstein의 탈동일시 정의를 양극 문장으로 옮김, '부분·part' 낱말은 쓰지 않음). docs/decisions.md G59, 2026-11-25, IRB 검토 전"
+    },
+    "distance_feel": {
+      "text": "지금 이것과 나 사이는 얼마나 멀게 느껴지나요?",
+      "when": [
+        "pre",
+        "post"
+      ],
+      "anchors": {
+        "1": "매우 가깝다",
+        "7": "매우 멀다"
+      },
+      "status": "draft",
+      "source": "docs/decisions.md G59, 2026-11-25 — G59 거리감 1문항 초안 — Kross·Ayduk 계열 자기 거리두기 문항과 Takasawa(2021)의 걱정과의 거리 7점 문항을 물체에 맞게 옮긴 것(원문 대조 전). 사전·사후 문항 목록의 맨 끝. IRB 검토 전 — placement_task.v0.json과 같은 문구"
+    },
+    "place_fit": {
+      "text": "방금 이것이 있던 자리는 나에게 알맞게 느껴졌다",
+      "when": "check",
+      "anchors": {
+        "1": "전혀 그렇지 않다",
+        "7": "매우 그렇다"
+      },
+      "status": "draft",
+      "source": "docs/decisions.md G59, 2026-11-25 — G59 RQ3 자리 평정 초안(두 조건 공통 — 보기만 조건에도 대응 값이 생김). IRB 검토 전 — placement_task.v0.json과 같은 문구"
+    },
+    "want_move": {
+      "text": "할 수 있었다면 이것을 다른 자리로 옮기고 싶었다",
+      "when": "check",
+      "anchors": {
+        "1": "전혀 그렇지 않다",
+        "7": "매우 그렇다"
+      },
+      "status": "draft",
+      "source": "docs/decisions.md G59, 2026-11-25 — G59 RQ3 자리 평정 초안(두 조건 공통 — 보기만 조건에도 대응 값이 생김). 점검 단계에서 place_fit 다음. IRB 검토 전 — placement_task.v0.json과 같은 문구"
     }
   }
 }

@@ -4,6 +4,8 @@ LLM 없음, 표준 라이브러리만, 결정론적(같은 기록 → 같은 출
   python -m ifs_chatbot.eval.placement --records <기록 루트 또는 그 아래 폴더> --out <폴더> [--facing-deg 15]
   (--gaze-deg는 --facing-deg의 옛 이름으로 남겨 둔 별칭)
   → <폴더>/placement_sessions.csv(세션 1행), stop_trials.csv(멈춤 거리 시행 1행), placement_summary.json
+  선택(G59): --selection-dir <챗봇 logs/selection> — 사전 측정·사후 면담 파일이 있으면 pre_*·pi_* 열과 요약 selfReport를 더한다
+  (eval/self_report.py). 파일이 하나도 없으면 출력은 바이트까지 그대로.
 
 기록 형식은 계약 `ifs-placement/0.1`(Unity 러너와 따로 구현하므로 둘 사이의 약속)을 따른다.
   manifest.json, headpose.csv, objpose.csv, events.csv, placement.json, stopdistance.csv, ratings.csv,
@@ -68,6 +70,7 @@ from pathlib import Path
 
 from .ownership import _int, _num, _read_csv, _read_json, _rel, _r, _truthy, _write_csv, circular_range_deg
 from .profile_items import rating_range
+from .self_report import PI_FILE, PRE_FILE, session_columns
 
 RECORD_PREFIX = "ifs-placement/"
 # 0.2(2026-11-23): 러너가 selection.json(챗봇 후보·조절 단계, ifs-selection/0.1)을 읽어 manifest에 selection{…}·appliedOverrides를 더함.
@@ -620,24 +623,42 @@ def config_mismatches(sessions: list[dict]) -> dict[str, list]:
 
 
 def analyze(records: str | Path, out_dir: str | Path | None = None, facing_deg: float = DEFAULT_FACING_DEG,
-            gaze_deg: float | None = None) -> dict:
-    """gaze_deg는 facing_deg의 옛 이름(별칭). 둘 다 주면 gaze_deg를 쓴다."""
+            gaze_deg: float | None = None, selection_dir: str | Path | None = None) -> dict:
+    """gaze_deg는 facing_deg의 옛 이름(별칭). 둘 다 주면 gaze_deg를 쓴다.
+    selection_dir(선택, G59): 챗봇 세션 폴더 뿌리(chatbot/logs/selection). 기록 폴더나 그 아래 <sessionId>/에
+    premeasure.json·postinterview.json이 있으면 pre_*·pi_* 열을 더한다(eval/self_report.py). 하나도 없으면 출력은 그대로."""
     if gaze_deg is not None:
         facing_deg = gaze_deg
     root = Path(records)
     if not root.exists():
         raise FileNotFoundError(f"기록 경로가 없습니다: {records}")
+    sel_root = Path(selection_dir) if selection_dir is not None else None
     chosen, skipped = discover(root)
-    sessions, stops, rating_map = [], [], []
+    sessions, stops, rating_map, self_map = [], [], [], []
+    self_numeric: set[str] = set()
+    self_files = {PRE_FILE: 0, PI_FILE: 0}
     for cand in chosen:
         srow, ratings, rows = load_session(cand, facing_deg)
+        cols, sflags, numeric, found = session_columns(cand["folder"], srow["session_id"], srow["condition"],
+                                                       srow["control_mode"], sel_root)
+        if sflags:
+            srow["flags"] = ";".join(x for x in (srow["flags"], *sflags) if x)
+        self_numeric |= numeric
+        for k, v in found.items():
+            self_files[k] += int(v)
         sessions.append(srow)
         rating_map.append(ratings)
+        self_map.append(cols)
         stops.extend(rows)
     rating_cols = sorted({k for r in rating_map for k in r}, key=_rating_sort_key)
-    for s, r in zip(sessions, rating_map):
+    self_cols: list[str] = []                     # 처음 나온 순서(세션 순서 → 파일 안 문항 순서), 결정론적
+    for cols in self_map:
+        self_cols.extend(k for k in cols if k not in self_cols)
+    for s, r, sc in zip(sessions, rating_map, self_map):
         for c in rating_cols:
             s[c] = r.get(c)
+        for c in self_cols:
+            s[c] = sc.get(c)
     included = [s for s in sessions if s["completed"] and s["condition_complete"]]
     incomplete = [s for s in sessions if not s["completed"]]
     partial = [s for s in sessions if s["completed"] and not s["condition_complete"]]
@@ -686,11 +707,19 @@ def analyze(records: str | Path, out_dir: str | Path | None = None, facing_deg: 
         "nByConditionControl": {"all": _count(sessions, _group_key), "included": _count(included, _group_key)},
         "draftPhraseSessions": len(drafted),
         "autoModeSessions": len(auto),
-        "summaries": summarize(included, rating_cols),
+        "summaries": summarize(included, rating_cols + [c for c in self_cols if c in self_numeric]),
         "skipped": skipped,
         "warnings": warnings,
     }
-    columns = SESSION_HEAD + rating_cols + SESSION_TAIL
+    if self_cols:
+        # 파일이 있을 때만 붙는 키(없으면 요약 JSON이 그대로)
+        summary["selfReport"] = {
+            "files": {"premeasure": self_files[PRE_FILE], "postinterview": self_files[PI_FILE]},
+            "columns": self_cols,
+            "note": "사전 측정(pre_*)·사후 면담(pi_*) 열. 사후 면담 자유 글은 표에 넣지 않고 글자 수(_chars)·건너뜀(_skipped)만 "
+                    "적는다. 모든 문구는 초안(draft, IRB 검토 전)이다(G59).",
+        }
+    columns = SESSION_HEAD + rating_cols + self_cols + SESSION_TAIL
     if out_dir is not None:
         out = Path(out_dir)
         out.mkdir(parents=True, exist_ok=True)
@@ -727,10 +756,14 @@ def main(argv: list[str] | None = None) -> None:
     ap.add_argument("--facing-deg", "--gaze-deg", dest="facing_deg", type=float, default=DEFAULT_FACING_DEG,
                     help=f"head_facing_ratio로 셀 머리 정면–물체 방향 최대 각(기본 {DEFAULT_FACING_DEG:g}°). "
                          "눈 추적이 아니라 머리 방향 기준. --gaze-deg는 옛 이름(별칭)")
+    ap.add_argument("--selection-dir", default=None,
+                    help="(선택, G59) 챗봇 세션 폴더 뿌리(보통 chatbot/logs/selection). <sessionId>/premeasure.json·"
+                         "postinterview.json이 있으면 pre_*·pi_* 열을 더한다(자유 글은 글자 수·건너뜀만). 기록 폴더 안의 같은 "
+                         "이름 파일은 이 인자 없이도 읽는다")
     args = ap.parse_args(argv)
     if not Path(args.records).exists():
         ap.error(f"--records 경로가 없습니다: {args.records}")
-    res = analyze(args.records, args.out, args.facing_deg)
+    res = analyze(args.records, args.out, args.facing_deg, selection_dir=args.selection_dir)
     _print_summary(res["summary"])
     print(f"결과: {Path(args.out) / 'placement_summary.json'}")
 

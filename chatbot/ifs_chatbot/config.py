@@ -85,6 +85,11 @@ class SelectionConfig:
     table: str = "candidate_values.v2.json"        # shared/lexicon/ 아래(2.0.0: D6 기본 형상. 1.0.0·0.1.0 표는 v1·v0 파일)
     # 문구가 status = draft면 후보 단계를 시작하지 않는다(X35의 requireSpecPhrases와 같은 뜻). 기본 false: 시작하되 화면·기록에 알림
     require_spec_phrases: bool = False
+    # 참여자 화면 맨 위 초안 문구 경고 줄(X35)을 참여자 보기에서도 보일지. false면 연구자 보기에서만 보임(기록의 draftCount·
+    # draftKeys와 서버 경고는 그대로). 기본 true(지금과 같음). 숨길지는 사람이 정한다(G59)
+    participant_draft_banner: bool = True
+    # 사후 면담 기록 화면(/?view=postinterview&session=<ID>)이 읽는 문항 파일(shared/protocol/ 아래, G59). [selection] enabled일 때만 열림
+    post_interview: str = "post_interview.v0.json"
 
 
 @dataclass(frozen=True)

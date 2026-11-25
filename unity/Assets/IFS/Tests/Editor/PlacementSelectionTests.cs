@@ -528,10 +528,12 @@ namespace IFS.SceneSpec.Tests
         }
 
         // ── 평정 범위 ────────────────────────────────────────────────────
-        /// <summary>기본 문구 파일에 0–10 사전 문항 하나(m1p_test)를 더한 테스트용 문구(실제 파일에는 넣지 않는다).</summary>
+        /// <summary>기본 문구 파일에 0–10 사전 문항 하나(m1p_test)를 더한 테스트용 문구(실제 파일에는 넣지 않는다).
+        /// 사전 문항이 own → m1p_test 순서가 되게 G59 거리감 문항(distance_feel, 사전·사후 끝)은 뺀다.</summary>
         static PlacementTaskText TextWithZeroToTen(bool optionalOnly = false)
         {
             var raw = JObject.Parse(File.ReadAllText(DefaultPath, Encoding.UTF8));
+            ((JObject)raw["texts"]).Remove("distance_feel");
             ((JObject)raw["texts"]).Add("m1p_test", new JObject
             {
                 ["text"] = "합성 0–10 문항",
@@ -550,7 +552,11 @@ namespace IFS.SceneSpec.Tests
         {
             var t = PlacementTests.LoadText();
             Assert.That(t.Items.All(i => i.Min == 1 && i.Max == 7), Is.True, "min·max가 없는 기존 문항은 1–7");
-            Assert.That(PlacementTaskText.Load(ScaleAPath).Items.All(i => i.Min == 1 && i.Max == 7), Is.True);
+            var scaleA = PlacementTaskText.Load(ScaleAPath);
+            Assert.That(scaleA.Items.Where(i => i.Key != "M2").All(i => i.Min == 1 && i.Max == 7), Is.True);
+            var m2 = scaleA.Items.Single(i => i.Key == "M2");
+            Assert.That((m2.Min, m2.Max), Is.EqualTo((0, 10)), "G59 M2: 구별 프로파일 초안 그대로 0–10");
+            Assert.That((m2.AnchorLow, m2.AnchorHigh), Is.EqualTo(("전혀 아니다", "매우 그렇다")), "설문 초안 3.2절 B′용 11점(양 끝에만 이름)");
             var z = TextWithZeroToTen().Items.First(i => i.Key == "m1p_test");
             Assert.That((z.Min, z.Max), Is.EqualTo((0, 10)));
             Assert.That(z.AnchorLow, Is.EqualTo("전혀"));
@@ -676,18 +682,19 @@ namespace IFS.SceneSpec.Tests
                     Assert.That(it.AnchorHigh, Is.Not.Empty);
                 }
             }
-            Assert.That(PlacementTests.LoadText().Version, Is.EqualTo("0.4"), "문항을 더해 0.2로, 놓기 도움 문구(G53)를 더해 0.3으로, 문구 다듬기(G57)로 0.4로 올림");
-            Assert.That(PlacementTaskText.Load(ScaleAPath).Version, Is.EqualTo("0.4-scaleA"));
+            Assert.That(PlacementTests.LoadText().Version, Is.EqualTo("0.5"), "문항을 더해 0.2로, 놓기 도움 문구(G53)를 더해 0.3으로, 문구 다듬기(G57)로 0.4로, G59 문항으로 0.5로 올림");
+            Assert.That(PlacementTaskText.Load(ScaleAPath).Version, Is.EqualTo("0.5-scaleA"));
         }
 
         [Test]
         public void Optional_pre_setting_adds_the_two_items_before_and_disabled_items_drop_the_old_one()
         {
             var t = PlacementTests.LoadText();
-            Assert.That(t.ItemsFor("pre", false, null).Select(i => i.Key), Is.EqualTo(new[] { "own" }), "기본: 사전에는 기존 문항만");
-            Assert.That(t.ItemsFor("pre", true, null).Select(i => i.Key), Is.EqualTo(new[] { "own", "appearance_match", "representativeness" }));
+            Assert.That(t.ItemsFor("pre", false, null).Select(i => i.Key), Is.EqualTo(new[] { "own", "distance_feel" }), "기본: 사전에는 기존 문항 + 거리감(G59, 맨 끝)만");
+            Assert.That(t.ItemsFor("pre", true, null).Select(i => i.Key), Is.EqualTo(new[] { "own", "appearance_match", "representativeness", "distance_feel" }),
+                "선택 단계 문항을 더해도 거리감은 맨 끝");
             Assert.That(t.ItemsFor("post", false, new[] { "own" }).Select(i => i.Key),
-                Is.EqualTo(new[] { "appearance_match", "representativeness", "want_to_know", "withdraw_attention" }), "기존 '내 것 같다' 끄기");
+                Is.EqualTo(new[] { "appearance_match", "representativeness", "want_to_know", "withdraw_attention", "distance_feel" }), "기존 '내 것 같다' 끄기");
             Assert.That(new PlacementConfig { disabledItems = new[] { "own", "S4", "nope" } }.UnknownDisabledItems(t), Is.EqualTo(new[] { "S4", "nope" }));
             Assert.That(new PlacementConfig { disabledItems = new[] { " " } }.Validate().Any(e => e.StartsWith("disabledItems")), Is.True);
             var json = new PlacementConfig { askOptionalItems = true, disabledItems = new[] { "own" } }.ToJson();
@@ -708,20 +715,21 @@ namespace IFS.SceneSpec.Tests
             var rows = File.ReadAllLines(Path.Combine(dir, "ratings.csv")).Skip(1).Select(l => l.Split(',')).Select(r => r[0] + "/" + r[1]).ToList();
             Assert.That(rows, Is.EqualTo(new[]
             {
-                "appearance_match/pre", "representativeness/pre",
-                "appearance_match/post", "representativeness/post", "want_to_know/post", "withdraw_attention/post", "placed_by_me/check",
+                "appearance_match/pre", "representativeness/pre", "distance_feel/pre",
+                "appearance_match/post", "representativeness/post", "want_to_know/post", "withdraw_attention/post", "distance_feel/post",
+                "placed_by_me/check", "place_fit/check", "want_move/check",
             }));
 
-            // 기본 설정: 사전 = own만, 사후에 두 문항
+            // 기본 설정: 사전 = own과 거리감(G59), 사후에 두 문항
             using (var s = NewSession(PlacementTests.ShortConfig("place"))) { RunToEnd(s); dir = s.RecordDirectory; }
             rows = File.ReadAllLines(Path.Combine(dir, "ratings.csv")).Skip(1).Select(l => l.Split(',')).Select(r => r[0] + "/" + r[1]).ToList();
-            Assert.That(rows.Where(r => r.EndsWith("/pre")), Is.EqualTo(new[] { "own/pre" }));
+            Assert.That(rows.Where(r => r.EndsWith("/pre")), Is.EqualTo(new[] { "own/pre", "distance_feel/pre" }));
             Assert.That(rows, Does.Contain("appearance_match/post"));
             Assert.That(rows, Does.Contain("representativeness/post"));
 
             // 사전 문항을 모두 끄면 사전 평정 단계를 건너뛴다
             cfg = PlacementTests.ShortConfig("view");
-            cfg.disabledItems = new[] { "own" };
+            cfg.disabledItems = new[] { "own", "distance_feel" };
             using (var s = NewSession(cfg)) { RunToEnd(s); dir = s.RecordDirectory; }
             var phases = File.ReadAllLines(Path.Combine(dir, "events.csv")).Skip(1).Select(l => l.Split(',')).Where(c => c[1] == "phase").Select(c => c[2]).ToList();
             Assert.That(phases, Does.Not.Contain("pre_items"));

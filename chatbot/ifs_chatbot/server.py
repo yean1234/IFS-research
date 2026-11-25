@@ -23,9 +23,10 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from .config import Config, load_config
-from .controller import Runtime, Session, SessionError
+from .controller import SESSION_ID_RE, Runtime, Session, SessionError
 from .paths import WEB_DIR
-from .selection import SelectionError, SelectionInvalid, ui_config
+from .postinterview import PostInterviewProtocol, PostInterviewStore
+from .selection import SelectionError, SelectionInvalid, selection_dir, ui_config
 
 log = logging.getLogger("ifs_chatbot.server")
 
@@ -73,6 +74,13 @@ class PreviewReport(BaseModel):
 
 class PremeasureAnswers(BaseModel):
     responses: dict[str, Any] = Field(..., description="문항 id → 1–7 정수 또는 null(답하지 않음)")
+
+
+class PostInterviewPart(BaseModel):
+    condition: str = Field(..., max_length=16, description="place | view | point_select")
+    part: str = Field(..., max_length=16, description="free(PI1–PI5) | after_free(PI6–PI8, free 저장 뒤에만)")
+    responses: list[dict[str, Any]] = Field(..., max_length=64,
+                                            description="[{id, text | choice | value | word, skipped}] (shared/protocol/post_interview.v0.json)")
 
 
 def create_app(cfg: Config | None = None, runtime: Runtime | None = None, warmup: bool = True) -> FastAPI:
@@ -187,7 +195,8 @@ def create_app(cfg: Config | None = None, runtime: Runtime | None = None, warmup
     @app.get("/api/selection/config")
     def selection_config():
         """후보·조절·사전 측정 화면의 고정 문구(초안 표시 포함), 조절 항목과 값 목록, 미리보기 모드."""
-        return ui_config(rt.selection_protocol, rt.candidate_table, rt.preview.info(), rt.cfg.selection.enabled)
+        return ui_config(rt.selection_protocol, rt.candidate_table, rt.preview.info(), rt.cfg.selection.enabled,
+                         rt.cfg.selection.participant_draft_banner)
 
     @app.get("/api/sessions/{sid}/selection")
     def selection_state(sid: str):
@@ -272,6 +281,33 @@ def create_app(cfg: Config | None = None, runtime: Runtime | None = None, warmup
         webgl → image(예비 플레이어가 있으면) → none(글 요약)으로 내려가고 selection.json·세션 로그에 남는다."""
         f = flow(sid)
         return sel_run(f.client_preview, body.event, body.mode, body.stage, body.reason, body.webgl)
+
+    # ── 사후 면담 기록(G59, 연구자 화면 /?view=postinterview&session=<ID>). LLM 호출 없음. [selection] enabled일 때만 ──────
+    pi_store = PostInterviewStore(PostInterviewProtocol(rt.cfg.selection.post_interview), rt.cfg.log_dir, rt.persist_logs)
+    app.state.post_interview = pi_store
+
+    def pi_session(sid: str) -> str:
+        """메모리에 있는 세션, 또는 같은 세션 폴더에 selection.json이 있는 세션(서버를 다시 띄운 뒤)만 받는다."""
+        if not rt.cfg.selection.enabled:
+            raise HTTPException(409, "사후 면담 기록은 새 흐름에서만 엽니다([selection] enabled = false). --config v4.")
+        if not SESSION_ID_RE.match(sid):
+            raise HTTPException(422, "세션 ID는 영문·숫자·_·- 1–40자만 됩니다.")
+        if sid not in rt.sessions and not (selection_dir(rt.cfg.log_dir, sid) / "selection.json").is_file():
+            raise HTTPException(404, f"세션이 없습니다: {sid}")
+        return sid
+
+    @app.get("/api/postinterview/config")
+    def post_interview_config():
+        """사후 면담 문항·실험자 규칙·조건(모두 draft). 기록 화면이 이것으로 그린다."""
+        return pi_store.protocol.ui(rt.cfg.selection.enabled)
+
+    @app.get("/api/sessions/{sid}/postinterview")
+    def post_interview_get(sid: str):
+        return pi_store.view(pi_session(sid))
+
+    @app.post("/api/sessions/{sid}/postinterview")
+    def post_interview_post(sid: str, body: PostInterviewPart):
+        return sel_run(pi_store.save, pi_session(sid), body.condition, body.part, body.responses)
 
     @app.exception_handler(RuntimeError)
     def runtime_error(_request, exc: RuntimeError):

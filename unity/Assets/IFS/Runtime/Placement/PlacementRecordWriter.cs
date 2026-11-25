@@ -11,6 +11,9 @@
 //   practice_release·practice_end, headpose.csv phase practice(물체 칸 빈칸 — 본 물체는 숨김). objpose.csv·placement.json·trajectory.json에는 연습이 없다.
 //   taskText.draftKeys·draftCount는 이 세션이 보일 수 있는 문구만 센다(도움이 꺼져 있으면 도움 문구 practice·placement_range를 뺀다).
 //   기본값에서는 G52 전과 바이트 단위로 같다(문구 파일 version만 0.2 → 0.3 — 그 값은 파일에서 읽는다).
+//   2026-11-25(G59, 형식 버전 0.2 유지 — 추가만): config의 checkBeforeStopDistance·practiceInAllConditions는 켰을 때만(true) 맨 끝에 남는다.
+//   checkBeforeStopDistance면 events phase 순서가 post_items → check_items → post_wait → stop_distance → done. practiceInAllConditions면
+//   보기만 조건에도 practice.json·practice_* 사건·environment.practice가 생긴다.
 //   {recordRoot}/placement/P{번호:000}/{sessionId}/{UTC yyyyMMdd-HHmmss}[-n]/
 //     manifest.json · headpose.csv · objpose.csv · events.csv · placement.json · stopdistance.csv · ratings.csv · trajectory.json · summary.json
 //   UTF-8(BOM 없음), 숫자는 InvariantCulture, 줄바꿈 \n. CSV는 줄마다 바로 쓰므로 중간에 꺼져도 그때까지 남는다.

@@ -384,8 +384,10 @@
     const out = [];
     const v = S.view;
     if (v.draftCount) {
-      // X35: 초안 문구 안내 띠(두 보기 모두). 글은 그대로, 모양만 차분한 띠로
-      out.push(el("p", { class: "notice draft-banner" },
+      // X35: 초안 문구 안내 띠(기본은 두 보기 모두). 글은 그대로, 모양만 차분한 띠로.
+      // [selection] participant_draft_banner = false면 연구자 보기에서만(G59). 기록의 draftCount·draftKeys는 그대로
+      const solo = S.cfg && S.cfg.participantDraftBanner === false;
+      out.push(el("p", { class: `notice draft-banner${solo ? " researcher-only" : ""}` },
         `초안 문구 사용 중 — 이 화면의 문구 ${v.draftCount}개가 status draft(IRB·연구팀 검토 전)입니다.`));
     }
     const p = v.preview || {};

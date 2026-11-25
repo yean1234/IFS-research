@@ -1,0 +1,119 @@
+{
+  "protocolId": "ifs-post-interview",
+  "protocolVersion": "0.1.0",
+  "status": "draft",
+  "date": "2026-11-25",
+  "description": "사후 면담(RQ3 '자리와 그 뜻') 문항과 실험자 규칙. 모든 평정이 끝나고 헤드셋을 벗은 뒤, 실험자가 구두로 묻고 참여자 말을 받아 적는다. 몇 문항은 참여자가 직접 적거나 고른다. 연구자가 여는 기록 화면(/?view=postinterview&session=<세션 ID>)이 이 파일을 읽어 그린다. LLM을 쓰지 않는다. 모든 문구는 초안(status draft)이며 IRB 검토 전이다. 실험자 대본: docs/post-interview-guide.md.",
+  "phraseStatusLegend": {
+    "spec": "설계 문서에 적힌 문구 그대로. IRB 승인 대상.",
+    "draft": "새로 쓴 초안. IRB 제출 전에 연구팀 검토 필요."
+  },
+  "sources": {
+    "decisions": "docs/decisions.md G59, 2026-11-25",
+    "review": "docs/codex-reviews/D6.md(논문 심사 관점 검토)",
+    "guide": "docs/post-interview-guide.md"
+  },
+  "changes": [
+    {"version": "0.1.0", "date": "2026-11-25", "status": "draft", "source": "docs/decisions.md G59, 2026-11-25. IRB 검토 전",
+     "summary": "처음 만듦: 실험자 규칙 6개, 문항 PI1–PI8(PI2는 조건에 따라 둘 중 하나, PI6은 평정 6항목 묶음), 참여자가 보는 넘어가기 문구 둘.",
+     "reason": "RQ3(놓은 자리와 그 뜻)를 사후 합리화 위험을 줄인 방식으로 받기 위함. 선행 척도가 아니라 이 연구의 초안이다."}
+  ],
+
+  "conditions": [
+    {"id": "place", "label": "place — 참여자가 물체를 직접 놓음"},
+    {"id": "view", "label": "view — 보기만(static·replay·system_move)"},
+    {"id": "point_select", "label": "point_select — 보기만 조건에서 바닥을 가리켜 자리를 고름"}
+  ],
+  "conditionsNote": "문항의 conditions가 없으면 모든 조건에 묻는다. 연구자 메모용 이름이며 참여자에게 보이지 않는다.",
+
+  "parts": [
+    {"id": "free", "note": "자유 응답(PI1–PI5). 이 부분을 저장(또는 건너뜀)한 뒤에만 다음 부분이 보인다."},
+    {"id": "after_free", "note": "자유 응답 뒤 문항(PI6–PI8). 평정 묶음 PI6이 자유 응답을 이끌지 않게 뒤에 둔다."}
+  ],
+
+  "experimenterRules": [
+    {"id": "R1_no_why", "text": "'왜'를 묻지 않는다.", "status": "draft",
+     "source": "G59. '왜' 대신 '어떻게 알았나'를 묻는다 — 사후 합리화 위험(Nisbett & Wilson 1977)을 줄이기 위함. docs/decisions.md G59, 2026-11-25. IRB 검토 전"},
+    {"id": "R2_no_examples", "text": "예시나 선택지를 주지 않는다(PI4·PI7의 정해진 선택지는 빼고).", "status": "draft",
+     "source": "AGENTS.md 원칙 3과 같은 뜻. docs/decisions.md G59, 2026-11-25. IRB 검토 전"},
+    {"id": "R3_no_past", "text": "과거나 기억을 묻지 않는다.", "status": "draft",
+     "source": "AGENTS.md 원칙 3·8과 같은 뜻. docs/decisions.md G59, 2026-11-25. IRB 검토 전"},
+    {"id": "R4_no_new_words", "text": "참여자가 먼저 쓰지 않은 낱말(거리, 멀리, 가까이, 치우다, 피하다, 편하다, 안전)을 쓰지 않는다.", "status": "draft",
+     "words": ["거리", "멀리", "가까이", "치우", "피하", "편하", "안전"],
+     "source": "Clean Language 틀(참여자 낱말만 되돌림). 자리의 뜻을 실험자가 먼저 정하지 않기 위함. docs/decisions.md G59, 2026-11-25. IRB 검토 전"},
+    {"id": "R5_verbatim", "text": "참여자 말을 고치거나 요약하지 않고 그대로 받아 적는다.", "status": "draft",
+     "source": "docs/decisions.md G59, 2026-11-25. IRB 검토 전"},
+    {"id": "R6_timing", "text": "모든 평정이 끝나고 헤드셋을 벗은 뒤에 한다.", "status": "draft",
+     "source": "사후 면담이 VR 안 평정에 영향을 주지 않게. docs/decisions.md G59, 2026-11-25. IRB 검토 전"}
+  ],
+
+  "uiPhrases": {
+    "typedSkip": {"text": "넘어갈게요", "status": "draft",
+                  "source": "자작. 참여자가 직접 적는 문항(PI5·PI8)을 넘길 때 누르는 단추. docs/decisions.md G59, 2026-11-25. IRB 검토 전"},
+    "ratingSkip": {"text": "답하지 않을게요", "status": "draft",
+                   "source": "selection_protocol.v0.json premeasure.skipLabel과 같은 글. docs/decisions.md G59, 2026-11-25. IRB 검토 전"}
+  },
+
+  "items": [
+    {"id": "PI1_place_recall", "part": "free", "kind": "oral", "enteredBy": "experimenter",
+     "text": "방금 물체가 있던 자리를 떠올려 주세요. 그 자리가 어떤 자리였는지, 떠오르는 대로 말해 주세요.",
+     "status": "draft",
+     "source": "G59 RQ3 자리 설명 초안. 되묻기는 Clean Language 틀. 선행 척도가 아니라 이 연구의 초안. docs/decisions.md G59, 2026-11-25. IRB 검토 전"},
+    {"id": "PI2_how_known", "part": "free", "kind": "oral", "enteredBy": "experimenter", "conditions": ["place", "point_select"],
+     "text": "그 자리에 놓던 순간으로 돌아가 볼게요. 그때 '여기다' 하는 것을 어떻게 알았나요?",
+     "status": "draft",
+     "source": "G59 RQ3 자리 설명 초안. '왜' 대신 '어떻게 알았나'를 묻는 것은 사후 합리화 위험(Nisbett & Wilson 1977)을 줄이기 위함. 선행 척도가 아니라 이 연구의 초안. docs/decisions.md G59, 2026-11-25. IRB 검토 전"},
+    {"id": "PI2_view_noticed", "part": "free", "kind": "oral", "enteredBy": "experimenter", "conditions": ["view"],
+     "text": "물체를 바라보던 때로 돌아가 볼게요. 그때 무엇을 알아차렸는지 떠오르는 대로 말해 주세요.",
+     "status": "draft",
+     "source": "G59 RQ3 자리 설명 초안(보기만 조건 — 참여자가 자리를 고르지 않았으므로 '어떻게 알았나'를 묻지 않음). 선행 척도가 아니라 이 연구의 초안. docs/decisions.md G59, 2026-11-25. IRB 검토 전"},
+    {"id": "PI3_more", "part": "free", "kind": "oral_repeat", "enteredBy": "experimenter", "maxRounds": 2,
+     "placeholder": "{X}", "fill": "participant_word",
+     "fillNote": "{X}에는 참여자가 PI1·PI2(또는 앞 회차 PI3)에서 실제로 한 낱말·짧은 구(3어절 이하)만 넣는다. 기록 화면과 서버는 X가 앞서 받아 적은 글에 글자 그대로 있는지 확인한다.",
+     "text": "말씀하신 '{X}'에 대해 더 있나요?",
+     "status": "draft",
+     "source": "G59. 되묻기는 Clean Language 틀(참여자 낱말만 되돌림). 최대 2회. docs/decisions.md G59, 2026-11-25. IRB 검토 전"},
+    {"id": "PI4_timing", "part": "free", "kind": "choice", "enteredBy": "participant",
+     "text": "방금 말씀하신 것은 그때 알아차린 것인가요, 지금 돌아보며 떠오른 것인가요?",
+     "options": [
+       {"id": "then", "text": "그때"},
+       {"id": "now", "text": "지금"},
+       {"id": "both", "text": "둘 다"},
+       {"id": "unsure", "text": "잘 모르겠어요"}
+     ],
+     "status": "draft",
+     "source": "G59. 자리 설명이 그때의 알아차림인지 사후 재구성인지 참여자 스스로 표시(분석의 민감도 점검에 씀). docs/decisions.md G59, 2026-11-25. IRB 검토 전"},
+    {"id": "PI5_one_line", "part": "free", "kind": "typed", "enteredBy": "participant",
+     "text": "방금 말씀하신 것 가운데 가장 중요한 것을 한 줄로 적어 주세요. 적고 싶지 않으면 넘어가도 돼요.",
+     "status": "draft",
+     "source": "G59. 참여자가 직접 적음(실험자의 받아 적기를 거치지 않은 한 줄). 건너뛰기 가능. docs/decisions.md G59, 2026-11-25. IRB 검토 전"},
+    {"id": "PI6_basis", "part": "after_free", "kind": "rating_group", "enteredBy": "participant", "conditions": ["place", "point_select"],
+     "text": "자리를 정할 때 아래 점들이 얼마나 영향을 주었나요?",
+     "scale": {"min": 1, "max": 7, "anchors": {"1": "전혀 영향을 주지 않았다", "7": "매우 많이 영향을 주었다"}},
+     "items": [
+       {"id": "B1_visibility", "text": "잘 보이는 자리인지"},
+       {"id": "B2_reach", "text": "손으로 옮기기 편한 자리인지"},
+       {"id": "B3_floor_marks", "text": "바닥의 고리나 표시"},
+       {"id": "B4_apart", "text": "이것과 떨어져 있고 싶은 마음"},
+       {"id": "B5_near", "text": "이것을 가까이 두고 싶은 마음"},
+       {"id": "B6_no_thought", "text": "특별히 생각하지 않고 놓았다"}
+     ],
+     "status": "draft",
+     "note": "자유 응답(PI1–PI5)을 저장하거나 건너뛴 뒤에만 보인다. 이 묶음의 낱말(가까이·편한 등)이 자유 응답을 이끌지 않게 하기 위함. 각 항목은 건너뛸 수 있다.",
+     "source": "G59 자리 근거 평정 초안 — 과제·조작 편의(B1·B2·B3)와 관계 방향(B4·B5)과 무심(B6)을 가르기 위함. 선행 척도가 아니라 이 연구의 초안. docs/decisions.md G59, 2026-11-25. IRB 검토 전"},
+    {"id": "PI7_referent", "part": "after_free", "kind": "choice", "enteredBy": "participant",
+     "text": "문항에 나온 '이것'을 무엇으로 읽으셨나요?",
+     "options": [
+       {"id": "object", "text": "눈앞의 물체"},
+       {"id": "inner", "text": "마음속 그것"},
+       {"id": "both", "text": "둘 다"},
+       {"id": "unsure", "text": "잘 모르겠어요"}
+     ],
+     "status": "draft",
+     "source": "G59. 평정 문항의 '이것'이 가리킨 대상 점검(조작 점검). docs/decisions.md G59, 2026-11-25. IRB 검토 전"},
+    {"id": "PI8_purpose", "part": "after_free", "kind": "typed", "enteredBy": "participant",
+     "text": "이 연구가 무엇을 알아보려 한다고 생각하셨나요?",
+     "status": "draft",
+     "source": "G59. 요구 특성(연구 목적 짐작) 점검. 건너뛰기 가능. docs/decisions.md G59, 2026-11-25. IRB 검토 전"}
+  ]
+}

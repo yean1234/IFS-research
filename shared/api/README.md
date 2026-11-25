@@ -71,6 +71,18 @@ POST /api/guard/check   {"text": "숨이 막히는 느낌이 올라와요"}
 - [내 답 지우기]를 누르면 장면 파일도 지웁니다.
 - Unity는 지금 Inspector에 이 경로를 넣어 읽습니다. HTTP로 경로를 받는 방식은 `GET /api/sessions/{id}/scene`을 쓰도록 자리만 있습니다(`unity/README.md`).
 
+## 사후 면담 기록 (G59, 새 흐름 `--config v4`에서만)
+
+연구자 화면 `/?view=postinterview&session=<세션 ID>`가 씁니다. LLM을 부르지 않습니다. 기본 설정(`[selection] enabled = false`)에서는 `409`입니다. 문항은 `shared/protocol/post_interview.v0.json`(모두 draft), 대본은 `docs/post-interview-guide.md`.
+
+| 메서드 · 경로 | 본문 | 돌려주는 것 |
+| --- | --- | --- |
+| `GET /api/postinterview/config` | — | 문항·실험자 규칙·조건 목록·초안 수 |
+| `GET /api/sessions/{id}/postinterview` | — | `{"sessionId", "record", "path", "nextPart"}` (`record`가 없으면 `null`) |
+| `POST /api/sessions/{id}/postinterview` | `{"condition": "place"\|"view"\|"point_select", "part": "free"\|"after_free", "responses": [{"id", "text"\|"choice"\|"value"\|"word", "skipped"}]}` | 위와 같음. `after_free`(PI6–PI8)는 `free`(PI1–PI5)를 저장한 뒤에만 받음(아니면 `409`). 이미 저장한 부분은 덮어쓰지 않음(`409`). 표·조건 밖 문항·값은 `422` |
+
+세션은 지금 서버에 있는 세션이거나, 같은 세션 폴더(`<log_dir>/selection/<id>/`)에 `selection.json`이 있는 세션만 받습니다. 기록은 그 폴더의 `postinterview.json`(`ifs-postinterview/0.1`, git 밖)입니다.
+
 ## VR 이벤트 묶기
 
 Unity가 따로 남기는 `initialScene.json`, `finalScene.json`, `events.csv`(거리 0.1초 간격)와 별도로, 요약값을 같은 세션 로그에 붙일 수 있습니다.

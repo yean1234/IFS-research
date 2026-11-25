@@ -178,10 +178,18 @@ namespace IFS.SceneSpec.Tests
             var t = LoadText();
             Assert.That(t.Protocol, Is.EqualTo("placement-task"));
             Assert.That(t.DraftKeys.Count, Is.EqualTo(t.Count), "모든 문구 status draft(IRB 전)");
-            Assert.That(t.ItemsFor("pre").Select(i => i.Key), Is.EqualTo(new[] { "own" }));
-            Assert.That(t.ItemsFor("post").Select(i => i.Key), Is.EqualTo(new[] { "own", "appearance_match", "representativeness", "want_to_know", "withdraw_attention" }),
-                "두 평정 문항(G13)은 기본 사후만");
-            Assert.That(t.ItemsFor("check").Select(i => i.Key), Is.EqualTo(new[] { "placed_by_me" }));
+            Assert.That(t.ItemsFor("pre").Select(i => i.Key), Is.EqualTo(new[] { "own", "distance_feel" }), "거리감(G59)은 사전 맨 끝");
+            Assert.That(t.ItemsFor("post").Select(i => i.Key), Is.EqualTo(new[] { "own", "appearance_match", "representativeness", "want_to_know", "withdraw_attention", "distance_feel" }),
+                "두 평정 문항(G13)은 기본 사후만, 거리감(G59)은 사후 맨 끝");
+            Assert.That(t.ItemsFor("check").Select(i => i.Key), Is.EqualTo(new[] { "placed_by_me", "place_fit", "want_move" }), "G59 자리 평정 두 문항은 placed_by_me 뒤");
+            foreach (var k in new[] { "distance_feel", "place_fit", "want_move" })
+            {
+                var src = (string)JObject.Parse(File.ReadAllText(Path.Combine(Application.streamingAssetsPath, PlacementTaskText.DefaultRelativePath), Encoding.UTF8))["texts"][k]["source"];
+                Assert.That(src, Does.Contain("docs/decisions.md G59, 2026-11-25"), k + ": 출처");
+                Assert.That(t.Status(k), Is.EqualTo("draft"), k);
+            }
+            var dist = t.Items.Single(i => i.Key == "distance_feel");
+            Assert.That((dist.AnchorLow, dist.AnchorHigh, dist.Min, dist.Max), Is.EqualTo(("매우 가깝다", "매우 멀다", 1, 7)));
             Assert.That(t["condition_place"], Does.StartWith("지금 이것이 있기에 알맞다고 느껴지는 자리에 놓아 주세요."));
             Assert.That(t["condition_view"], Is.EqualTo("지금 이것을 편하게 바라봐 주세요."));
             Assert.That(t["stop_distance"], Is.EqualTo("이것이 움직이는 동안, 알맞다고 느껴지는 자리에 왔을 때 버튼을 눌러 주세요."));
@@ -341,11 +349,65 @@ namespace IFS.SceneSpec.Tests
             var rows = Csv(dir, "ratings.csv");
             Assert.That(rows.Select(r => r[0] + "/" + r[1] + "/" + r[2]), Is.EqualTo(new[]
             {
-                "own/pre/5", "own/post/3", "appearance_match/post/4", "representativeness/post/2", "want_to_know/post/6", "withdraw_attention/post/4",
-                "placed_by_me/check/5",
+                // 자동 응답은 5, 3, 4, 2, 6, 4를 차례로 돈다(G59 문항이 끼어 값이 한 칸씩 밀림)
+                "own/pre/5", "distance_feel/pre/3",
+                "own/post/4", "appearance_match/post/2", "representativeness/post/6", "want_to_know/post/4", "withdraw_attention/post/5", "distance_feel/post/3",
+                "placed_by_me/check/4", "place_fit/check/2", "want_move/check/6",
             }));
             Assert.That(rows.All(r => long.Parse(r[3]) >= 0), Is.True);
             Assert.That(Csv(dir, "events.csv").Count(c => c[1] == "rating_cancel"), Is.EqualTo(1));
+        }
+
+        // ── 점검 문항을 멈춤 거리 앞으로(G59, checkBeforeStopDistance) ────
+        [Test]
+        public void CheckBeforeStopDistance_asks_check_items_right_after_post_items()
+        {
+            var d = new PlacementConfig();
+            Assert.That(d.checkBeforeStopDistance, Is.False, "기본: 점검은 멈춤 거리 뒤(예전 순서)");
+            Assert.That(d.ToJson().ContainsKey("checkBeforeStopDistance"), Is.False, "기본값이면 config에 넣지 않는다(기록 바이트 동일)");
+            Assert.That(new PlacementConfig { checkBeforeStopDistance = true }.Clone().checkBeforeStopDistance, Is.True);
+
+            var moved = new[] { "intro", "baseline", "pre_items", "pre_wait", "condition", "post_items", "check_items", "post_wait", "stop_distance", "done" };
+            foreach (var (cond, mode) in new[] { ("place", PlacementConfig.ModeStatic), ("view", PlacementConfig.ModeStatic), ("view", PlacementConfig.ModePointSelect) })
+            {
+                var cfg = ShortConfig(cond, mode);
+                cfg.checkBeforeStopDistance = true;
+                Assert.That(cfg.Validate(), Is.Empty);
+                var checkPositions = new List<PVec3>();
+                PVec3 final = default;
+                string dir = Run(cfg, participantOverride: (s, dt, f) =>
+                {
+                    if (s.Phase == PlacementPhase.CheckItems && s.CurrentItem != null) { checkPositions.Add(s.ObjectPosition); final = s.ConditionFinalPosition; }
+                    return f;
+                });
+                string tag = cond + "/" + mode;
+                Assert.That(PhaseEvents(dir), Is.EqualTo(moved), tag);
+                var ev = Csv(dir, "events.csv");
+                long lastCheck = ev.Where(c => c[1] == "rating" && c[2].Contains("when=check")).Max(c => long.Parse(c[0], Inv));
+                long firstTrial = ev.Where(c => c[1] == "stop_trial_start").Min(c => long.Parse(c[0], Inv));
+                Assert.That(lastCheck, Is.LessThan(firstTrial), tag + ": 점검 평정이 멈춤 거리 시행보다 먼저");
+                Assert.That(Csv(dir, "ratings.csv").Where(r => r[1] == "check").Select(r => r[0]), Is.EqualTo(new[] { "placed_by_me", "place_fit", "want_move" }), tag);
+                Assert.That(Csv(dir, "stopdistance.csv"), Is.Not.Empty, tag + ": 멈춤 거리는 그대로 한다");
+                Assert.That(checkPositions, Is.Not.Empty);
+                Assert.That(checkPositions.All(p => p.Equals(final)), Is.True, tag + ": 점검 동안 물체는 조건 단계가 끝난 자리");
+                var m = Json(dir, "manifest.json");
+                Assert.That((bool)m["config"]["checkBeforeStopDistance"], Is.True, tag);
+                Assert.That(((JObject)m["config"]).Properties().Last().Name, Is.EqualTo("checkBeforeStopDistance"), "새 키는 config 맨 끝");
+                Assert.That((bool)Json(dir, "summary.json")["completed"], Is.True);
+            }
+
+            // 점검 문항을 모두 끄면 점검 단계째 건너뛰고 사후 대기로 간다
+            var off = ShortConfig("view");
+            off.checkBeforeStopDistance = true;
+            off.disabledItems = new[] { "placed_by_me", "place_fit", "want_move" };
+            Assert.That(PhaseEvents(Run(off)), Is.EqualTo(moved.Where(p => p != "check_items")));
+
+            // 점검 단계에서 중단하면 abortedAt = check_items(조건 단계 뒤 — 분석기 PHASES_AFTER_CONDITION에 들어 있음)
+            var ab = ShortConfig("place");
+            ab.checkBeforeStopDistance = true;
+            string aborted = Run(ab, abortWhen: s => s.Phase == PlacementPhase.CheckItems && s.SecondsInPhase > 0.5);
+            Assert.That((string)Json(aborted, "summary.json")["abortedAt"], Is.EqualTo("check_items"));
+            Assert.That(Csv(aborted, "stopdistance.csv"), Is.Empty);
         }
 
         [Test]
@@ -550,8 +612,9 @@ namespace IFS.SceneSpec.Tests
         public void Item_phases_without_items_are_skipped()
         {
             var raw = JObject.Parse(File.ReadAllText(Path.Combine(Application.streamingAssetsPath, PlacementTaskText.DefaultRelativePath), Encoding.UTF8));
-            ((JObject)raw["texts"]).Remove("placed_by_me");
+            foreach (var k in new[] { "placed_by_me", "place_fit", "want_move" }) ((JObject)raw["texts"]).Remove(k);   // 점검 문항 없음
             raw["texts"]["own"]["when"] = "post";
+            raw["texts"]["distance_feel"]["when"] = "post";   // 사전 문항 없음(G59 거리감도 사후만으로)
             var text = PlacementTaskText.Parse(raw.ToString(), "test.json");
             string dir = Run(ShortConfig("view"), text: text);
             Assert.That(PhaseEvents(dir), Is.EqualTo(new[] { "intro", "baseline", "pre_wait", "condition", "post_items", "post_wait", "stop_distance", "done" }));

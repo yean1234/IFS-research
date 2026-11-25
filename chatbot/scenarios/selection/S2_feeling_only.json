@@ -18,6 +18,7 @@
   "selection": "index:3",
   "adjust": [],
   "premeasure": {
+    "W1_intensity": 3,
     "A1": 3,
     "A2": 3,
     "A3": 2,
