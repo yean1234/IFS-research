@@ -1,0 +1,10 @@
+{
+  "phase": "done",
+  "round": 3,
+  "threadId": "01a1f77d-9443-7802-bea1-be9a64ce80b6",
+  "last_score": 6.45,
+  "last_verdict": "REVISE",
+  "status": "completed",
+  "timestamp": "2026-11-20T18:20:00+09:00",
+  "note": "3라운드에서 중단: 점수 정체, 남은 감점은 구현·기기 실행·사람 자료로만 해소. Codex 사용량 세션 기록상 주간 1%."
+}

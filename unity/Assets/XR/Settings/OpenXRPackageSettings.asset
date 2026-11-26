@@ -527,6 +527,31 @@ MonoBehaviour:
   m_optimizeBufferDiscards: 0
   m_symmetricProjection: 0
   m_foveatedRenderingApi: 0
+--- !u!114 &-3298958207572744613
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5a1f07dc5afe854f9f12a4194aca3fb, type: 3}
+  m_Name: WebGL
+  m_EditorClassIdentifier: 
+  features:
+  - {fileID: 2858029834253596789}
+  customLoaderName: 
+  m_renderMode: 1
+  m_latencyOptimization: 0
+  m_autoColorSubmissionMode: 1
+  m_colorSubmissionModes:
+    m_List: 00000000
+  m_depthSubmissionMode: 0
+  m_spacewarpMotionVectorTextureFormat: 0
+  m_optimizeBufferDiscards: 0
+  m_symmetricProjection: 0
+  m_foveatedRenderingApi: 0
 --- !u!114 &-3275702935279930216
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -740,13 +765,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f0ebc320a151d3408ea1e9fce54d40e, type: 3}
   m_Name: OpenXRPackageSettings
   m_EditorClassIdentifier: 
-  Keys: 01000000070000000e0000000400000019000000
+  Keys: 01000000070000000e00000004000000190000000d000000
   Values:
   - {fileID: 1153333242593101008}
   - {fileID: 7174071210843459990}
   - {fileID: 597409545442063225}
   - {fileID: 4684901015763877016}
   - {fileID: -3840960942504098070}
+  - {fileID: -3298958207572744613}
 --- !u!114 &130438513300695972
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1083,6 +1109,28 @@ MonoBehaviour:
   extensionStrings:
   - XR_KHR_binding_modification
   - XR_EXT_dpad_binding
+--- !u!114 &2858029834253596789
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b213d3e3c7f3109449eb46a4c8ee42f0, type: 3}
+  m_Name: XrPerformanceSettingsFeature WebGL
+  m_EditorClassIdentifier: 
+  m_enabled: 0
+  nameUi: XR Performance Settings
+  version: 1.0.0
+  featureIdInternal: com.unity.openxr.feature.extension.performance_settings
+  openxrExtensionStrings: XR_EXT_performance_settings
+  company: Unity
+  priority: 0
+  targetOpenXRApiVersion: 
+  required: 0
+  customRuntimeLoaderName: 
 --- !u!114 &4016190246327669815
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1372,23 +1420,23 @@ MonoBehaviour:
   m_Name: Android
   m_EditorClassIdentifier: 
   features:
-  - {fileID: 4016190246327669815}
-  - {fileID: -6469284173182420051}
-  - {fileID: 5565092554040344978}
-  - {fileID: 909835618255579089}
   - {fileID: -1053170617372690459}
-  - {fileID: 8602984319063490550}
-  - {fileID: -67263576780132205}
-  - {fileID: -1443087605363477836}
-  - {fileID: 4525154475927236953}
-  - {fileID: 982698926915354693}
   - {fileID: 2677323456946760755}
+  - {fileID: 4525154475927236953}
+  - {fileID: -3275702935279930216}
+  - {fileID: -6564462193815727027}
   - {fileID: -8288001400514375759}
   - {fileID: 4470072039323042358}
-  - {fileID: 130438513300695972}
-  - {fileID: -6564462193815727027}
-  - {fileID: -3275702935279930216}
+  - {fileID: 909835618255579089}
   - {fileID: -8797845149742093342}
+  - {fileID: 982698926915354693}
+  - {fileID: -1443087605363477836}
+  - {fileID: 5565092554040344978}
+  - {fileID: -6469284173182420051}
+  - {fileID: -67263576780132205}
+  - {fileID: 8602984319063490550}
+  - {fileID: 4016190246327669815}
+  - {fileID: 130438513300695972}
   customLoaderName: 
   m_renderMode: 1
   m_latencyOptimization: 0

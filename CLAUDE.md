@@ -14,7 +14,8 @@
 - 체크포인트마다 Codex 독립 검토:
   codex exec --sandbox read-only -c model_reasoning_effort="medium" -C . -o <임시>/cpN_last.md - < docs/codex-reviews/prompts/CPN_prompt.md
   프롬프트는 docs/codex-reviews/prompts/, 응답 원문은 docs/codex-reviews/CPN.md에 저장한다(로컬 절대 경로는 <repo>/로 바꾼다).
-- Codex 호출은 작업 하나당 최대 3회.
+- Codex 호출 횟수는 고정 상한을 두지 않는다. 대신 Codex 사용량 한도의 남은 비율이 50% 아래로 떨어지지 않는 선에서만 호출한다.
+  호출 전후로 남은 비율을 확인하고(세션 기록의 rate_limits), 50%에 가까워지면 멈추고 사용자에게 알린다.
 
 ## 토큰 절약
 - 하위 에이전트에게는 목표, 관련 파일 경로, 완료 기준만 넘긴다.
