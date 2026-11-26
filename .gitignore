@@ -2,6 +2,14 @@
 chatbot/logs/
 chatbot/reports/
 *.session.json
+# 보기 전 보고 사본과 소유감 분석 출력(참여자 값 p·평정 포함) — 기록 폴더 밖으로 복사돼도 올리지 않음.
+# 합성 fixture는 chatbot/tests/fixtures/ 아래에 다른 이름(*.synthetic.json, manifest_*.json)으로만 둔다.
+prereport.json
+prereport.json.tmp
+shift_pairs.csv
+stimuli.csv
+sessions.csv
+**/ownership/P[0-9][0-9][0-9]/
 
 # Python
 .venv/

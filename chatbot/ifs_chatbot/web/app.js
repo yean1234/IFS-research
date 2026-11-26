@@ -245,8 +245,23 @@ function render(v) {
     btns.append(el("button", { class: "ghost", onclick: () => { const u = new URL(location.href); u.searchParams.delete("sid"); location.href = u; } }, "새 세션"));
   }
   if (window.ifsStage) window.ifsStage.afterRender(v);   // 면담 뒤 단계(stage.js, 새 흐름에서만)
+  if (["done", "stopped"].includes(v.state)) addPrereportLink(v.sessionId);   // 보기 전 보고 과제(RQ v2 계열)
   updateProgress();
   refreshResearcher();
+}
+
+// 보기 전 보고 과제(면담 밖, 고정 문구): 확정 텍스트와 장면 파일이 생긴 뒤에만 연결을 보인다
+async function addPrereportLink(sid) {
+  try {
+    const s = await api("GET", `/api/sessions/${encodeURIComponent(sid)}/prereport`);
+    if (!s.available || state.sid !== sid || $("#btn-prereport")) return;
+    state.prereportTask = state.prereportTask || await api("GET", "/api/prereport/task");
+    const label = state.prereportTask.fixedPhrases.open_link.text;   // 문구는 과제 파일(prereport_task.v0.3.json)에서
+    if ($("#btn-prereport")) return;
+    $("#buttons").append(el("a", { id: "btn-prereport", class: "button primary", href: `/prereport?session=${encodeURIComponent(sid)}` }, label));
+  } catch (e) {
+    /* 폐기된 세션 등 */
+  }
 }
 
 // ── 연구자 화면 ───────────────────────────────────────────────────────────────

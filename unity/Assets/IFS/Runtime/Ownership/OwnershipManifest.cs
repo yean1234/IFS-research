@@ -25,13 +25,18 @@ namespace IFS.SceneSpec.Ownership
         public string TaskTextVersion;
         /// <summary>문구 파일에서 status draft인 키(이름순). null이면 빈 목록으로 기록.</summary>
         public string[] TaskTextDraftKeys;
+        /// <summary>보기 전 보고(OwnershipPrereport.ToJson). 없으면 null로 기록.</summary>
+        public JObject Prereport;
     }
 
     public static class OwnershipManifest
     {
         /// <summary>0.2: taskText.draftCount·draftKeys, 색 변형 magnitude.deltaE00Composited, config.requireSpecPhrases 추가.
-        /// deltaE00은 셰이더 알베도 기준(0.1은 HSL 해석값 기준).</summary>
-        public const string RecordVersion = "ifs-ownership/0.2";
+        /// deltaE00은 셰이더 알베도 기준(0.1은 HSL 해석값 기준).
+        /// 0.3: ratingItem(최상위), shiftPairs, variants[].kind, config의 쌍 설정·ratingItem, ratings.csv 끝 열 item.
+        /// order 길이는 보여 준 조건 수(5·7·9). orderRows·conditionSet, prereport, shiftPairs의 wM·loM·hiM·
+        /// deltaEComposited_lo/hi·axisChoiceBasis·provenanceWithoutValue·categoryCheck.</summary>
+        public const string RecordVersion = "ifs-ownership/0.3";
 
         public static JObject Build(OwnershipPlan plan, OwnershipSessionInfo info)
         {
@@ -45,6 +50,8 @@ namespace IFS.SceneSpec.Ownership
                 ["participantNumber"] = plan.ParticipantNumber,
                 ["cb"] = plan.Cb,
                 ["orderRow"] = plan.OrderRow,
+                ["orderRows"] = plan.OrderRows,
+                ["conditionSet"] = plan.ConditionSet,
                 ["sessionId"] = info.SessionId,
                 ["specFile"] = info.SpecFile != null ? FileNameOnly(info.SpecFile) : null,
                 ["specSha256"] = info.SpecSha256,
@@ -58,10 +65,13 @@ namespace IFS.SceneSpec.Ownership
                     ["draftCount"] = info.TaskTextDraftKeys?.Length ?? 0,
                     ["draftKeys"] = new JArray(info.TaskTextDraftKeys ?? new string[0]),
                 },
+                ["ratingItem"] = plan.Config.ratingItem,
+                ["prereport"] = info.Prereport != null ? (JToken)info.Prereport.DeepClone() : JValue.CreateNull(),
                 ["config"] = plan.Config.ToJson(),
                 ["flags"] = plan.FlagsJson(),
                 ["original"] = plan.OriginalJson(),
                 ["variants"] = plan.VariantsJson(),
+                ["shiftPairs"] = plan.ShiftPairsJson(),
                 ["order"] = new JArray(plan.Order),
             };
         }

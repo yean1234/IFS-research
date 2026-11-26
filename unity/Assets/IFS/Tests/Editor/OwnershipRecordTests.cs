@@ -31,7 +31,7 @@ namespace IFS.SceneSpec.Tests
 
         // 계약 문자열을 여기 그대로 적어 둔다(상수를 바꾸면 이 테스트가 깨져야 한다).
         const string Headpose = "time_ms,phase,position,variant,head_x,head_y,head_z,head_qx,head_qy,head_qz,head_qw,obj_x,obj_y,obj_z,distance_m,angle_deg";
-        const string Ratings = "position,variant,rating,rt_ms,view_ms,cancelled";
+        const string Ratings = "position,variant,rating,rt_ms,view_ms,cancelled,item";
         const string Difference = "variant,rating,rt_ms";
         const string Events = "time_ms,event,detail";
 
@@ -58,13 +58,13 @@ namespace IFS.SceneSpec.Tests
                 w.Head(new HeadSample { TimeMs = 50, Phase = "viewing", Position = 1, Variant = "size", HeadX = 0, HeadY = 1.6, HeadZ = 0, Qw = 1,
                     HasObject = true, ObjX = 0, ObjY = 1.28, ObjZ = 1.19, DistanceM = 1.23, AngleDeg = 15.5 });
                 w.Head(new HeadSample { TimeMs = 100, Phase = "rating", Position = 1, HeadY = 1.6, Qw = 1 });
-                w.Rating(1, "size", 7, 812, 30000, true);
-                w.Rating(1, "size", 5, 400, 30000, false);
+                w.Rating(1, "size", 7, 812, 30000, true, "resemblance");
+                w.Rating(1, "size", 5, 400, 30000, false, "resemblance");
                 w.Difference("color", 4, 1234);
                 w.Event(0, "phase", "viewing;position=1;variant=size");
                 w.Event(5, "note", "쉼표, 따옴표\" 포함");
                 w.WriteSummary(OwnershipRecordWriter.BuildSummary(true, null, 3, "orig", 900,
-                    new Dictionary<string, int> { { "size", 5 }, { "orig", 6 } }, started.AddMinutes(5)));
+                    new Dictionary<string, int> { { "size_hi", 2 }, { "color_lo", 3 }, { "size", 5 }, { "orig", 6 } }, started.AddMinutes(5)));
                 w.WriteManifest(new JObject { ["recordVersion"] = OwnershipManifest.RecordVersion });
             }
             Assert.That(dir, Is.EqualTo(Path.Combine(_tmp, "ownership", "P007", "SYN_sess", "20261117-010203")), "폴더 = ownership/P{번호:000}/{sessionId}/{UTC}");
@@ -79,7 +79,7 @@ namespace IFS.SceneSpec.Tests
             Assert.That(head[2], Is.EqualTo("100,rating,1,,0.0000,1.6000,0.0000,0.000000,0.000000,0.000000,1.000000,,,,,"), "형상 없으면 빈칸");
             Assert.That(head[1].Split(',').Length, Is.EqualTo(Headpose.Split(',').Length));
             var ratings = File.ReadAllLines(Path.Combine(dir, "ratings.csv"));
-            Assert.That(ratings, Is.EqualTo(new[] { Ratings, "1,size,7,812,30000,1", "1,size,5,400,30000,0" }));
+            Assert.That(ratings, Is.EqualTo(new[] { Ratings, "1,size,7,812,30000,1,resemblance", "1,size,5,400,30000,0,resemblance" }));
             Assert.That(File.ReadAllLines(Path.Combine(dir, "difference.csv")), Is.EqualTo(new[] { Difference, "color,4,1234" }));
             var events = File.ReadAllLines(Path.Combine(dir, "events.csv"));
             Assert.That(events[0], Is.EqualTo(Events));
@@ -91,7 +91,7 @@ namespace IFS.SceneSpec.Tests
             Assert.That((int)summary["finalChoice"]["position"], Is.EqualTo(3));
             Assert.That((string)summary["finalChoice"]["variant"], Is.EqualTo("orig"));
             Assert.That((long)summary["finalChoice"]["rt_ms"], Is.EqualTo(900));
-            Assert.That(((JObject)summary["ratings"]).Properties().Select(p => p.Name), Is.EqualTo(new[] { "orig", "size" }), "조건 순서");
+            Assert.That(((JObject)summary["ratings"]).Properties().Select(p => p.Name), Is.EqualTo(new[] { "orig", "size", "color_lo", "size_hi" }), "조건 순서");
             Assert.That((string)summary["endedAtUtc"], Is.EqualTo("2026-11-17T01:07:03.000Z"));
         }
 
@@ -163,9 +163,11 @@ namespace IFS.SceneSpec.Tests
         {
             string path = Path.Combine(Application.streamingAssetsPath, OwnershipTaskText.DefaultRelativePath);
             var t = OwnershipTaskText.Load(path);
-            Assert.That(t.Version, Is.EqualTo("0.2"));   // G57 문구 다듬기로 0.2
-            Assert.That(t.FileName, Is.EqualTo("ownership_task.v0.json"));
-            foreach (var k in OwnershipTaskText.RequiredKeys)
+            Assert.That(t.Version, Is.EqualTo("0.2"));
+            Assert.That(t.FileName, Is.EqualTo("ownership_task.v0.2.json"));
+            Assert.That(t.Keys.OrderBy(k => k, StringComparer.Ordinal), Is.EqualTo(new[]
+                { "difference", "done", "final_choice", "final_choice_resemblance", "rating", "rating_resemblance", "viewing_intro" }));
+            foreach (var k in t.Keys)
             {
                 Assert.That(t[k], Is.Not.Null.And.Not.Empty, k);
                 Assert.That(t.Status(k), Is.EqualTo("draft"), k + " status");
@@ -173,9 +175,31 @@ namespace IFS.SceneSpec.Tests
                     Assert.That(t[k].Contains(banned), Is.False, $"{k}: '{banned}' 표현 금지(AGENTS.md 8)");
             }
             Assert.That(t["rating"], Does.Contain("1(전혀 내 것 같지 않다)").And.Contain("7(완전히 내 것 같다)"));
+            Assert.That(t.RatingText("resemblance"), Does.Contain("떠올린 모습과").And.Contain("닮았").And.Contain("1(").And.Contain("7("));
+            Assert.That(t.RatingText("mine"), Is.EqualTo(t["rating"]));
+            Assert.That(t.FinalChoiceText("resemblance", 9), Does.StartWith("9개 중").And.Contain("닮은"));
+            Assert.That(t.FinalChoiceText("mine", 7), Does.StartWith("7개 중").And.Contain("'내 것'"));
+            foreach (var k in new[] { "rating_resemblance", "final_choice_resemblance" })
+                Assert.That(t.Source(k), Is.EqualTo("docs/rq-v2-proposal.md 3.5 (초안, IRB 검토 전)"), k + " source");
+            foreach (var item in new[] { "resemblance", "mine" })
+                foreach (var n in new[] { 5, 7, 9 })
+                    Assert.That(t.Problems(item, n), Is.Empty, $"{item} n={n}");
             Assert.Throws<FormatException>(() => OwnershipTaskText.Parse("{\"version\":\"0.1\",\"texts\":{}}"), "빠진 문구는 오류");
-            Assert.That(t.DraftKeys, Is.EqualTo(OwnershipTaskText.RequiredKeys.OrderBy(k => k, StringComparer.Ordinal).ToList()), "지금 문구 5개는 모두 draft");
-            Assert.That(OwnershipRunner.DraftNotice(t, false), Does.Contain("5/5"), "실험자 화면 경고 줄");
+            Assert.That(t.DraftKeys.Count, Is.EqualTo(7), "지금 문구 7개는 모두 draft");
+            Assert.That(OwnershipRunner.DraftNotice(t, false), Does.Contain("7/7"), "실험자 화면 경고 줄");
+        }
+
+        // 0.1 문구 파일은 0.2 이전 세션 재현용으로 남는다: '내 것' 문항·조건 5개에서만 쓸 수 있다.
+        [Test]
+        public void Old_task_text_file_still_loads_but_only_fits_mine_with_five_conditions()
+        {
+            var t = OwnershipTaskText.Load(Path.Combine(Application.streamingAssetsPath, "IFS", "ownership_task.v0.json"));
+            // main 계열 G57(2026-11-24)이 이 파일의 문구를 다듬어 0.1 → 0.2로 올렸다(파일 이름으로 0.2 파일과 구분).
+            Assert.That(t.Version, Is.EqualTo("0.2"));
+            Assert.That(t.Problems("mine", 5), Is.Empty);
+            Assert.That(t.Problems("mine", 9).Single(), Does.Contain("{n}"), "\"다섯 개 중\" 문구로 9개를 물을 수 없다");
+            Assert.That(t.Problems("resemblance", 5).Count, Is.EqualTo(2), "닮음 문구 두 개가 없다");
+            Assert.That(t.FinalChoiceText("mine", 5), Is.EqualTo(t["final_choice"]));
         }
 
         static OwnershipTaskText TaskText(params (string key, string status)[] items)
@@ -238,6 +262,97 @@ namespace IFS.SceneSpec.Tests
             double r = OwnershipGeometry.MinRadiusWithoutOverlap(30, 0.7, 0.1);
             double chord = 2 * r * Math.Sin(15 * Math.PI / 180);
             Assert.That(chord, Is.EqualTo(0.8).Within(1e-9), "이웃 중심 거리 = 폭 + 틈");
+        }
+
+        // ── 보기 전 보고(CP5 C) ──────────────────────────────────────────
+        static byte[] PrereportBytes(string specSha, double sizeValue, string commitment) => new UTF8Encoding(false).GetBytes(
+            "{\n  \"schema\": \"ifs-prereport/0.1\",\n  \"sessionId\": \"SYN-pre\",\n  \"participant\": null,\n  \"specSha256\": \"" + specSha +
+            "\",\n  \"taskTextFile\": \"prereport_task.v0.json\",\n  \"taskTextVersion\": \"0.1\",\n  \"createdAtUtc\": \"2026-11-18T01:02:03.000Z\",\n" +
+            "  \"attributes\": {\"color\": {\"commitment\": \"" + commitment + "\", \"value\": {\"h\": 0.1, \"l\": 0.2}, \"method\": \"hue_lightness_field\", \"nSelections\": 1}," +
+            " \"size\": {\"commitment\": \"" + commitment + "\", \"value\": " + sizeValue.ToString(System.Globalization.CultureInfo.InvariantCulture) +
+            ", \"method\": \"size_slider\", \"nSelections\": 2}, \"form\": {\"commitment\": \"" + commitment + "\"}, \"motion\": {\"commitment\": \"" + commitment + "\"}}\n}\n");
+
+        const string SpecSha = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+
+        [Test]
+        public void Prereport_reads_only_three_fields_hashes_and_copies_bytes()
+        {
+            var bytes = PrereportBytes(SpecSha, 0.8, "from_start");
+            var p = OwnershipPrereport.FromBytes(bytes, "C:\\x\\deep/SYN-pre.prereport.json", SpecSha);
+            var j = p.ToJson();
+            Assert.That(j.Properties().Select(x => x.Name), Is.EqualTo(new[] { "file", "sha256", "specSha256", "specSha256Match", "matchedBy", "sessionId", "createdAtUtc", "copiedAtUtc" }),
+                "고른 값·확정 여부는 manifest에 옮기지 않는다");
+            Assert.That((string)j["file"], Is.EqualTo("SYN-pre.prereport.json"));
+            Assert.That((string)j["sha256"], Is.EqualTo(OwnershipManifest.Sha256Hex(bytes)));
+            Assert.That((bool)j["specSha256Match"], Is.True);
+            Assert.That((string)j["matchedBy"], Is.EqualTo("primary"));
+            Assert.That(j["copiedAtUtc"].ToString(Newtonsoft.Json.Formatting.None), Is.EqualTo("null"), "복사 전에는 null(러너가 복사한 시각을 채운다)");
+            Assert.That((string)j["sessionId"], Is.EqualTo("SYN-pre"));
+            Assert.That((string)j["createdAtUtc"], Is.EqualTo("2026-11-18T01:02:03.000Z"), "날짜 문자열을 바꾸지 않는다");
+            Assert.That(OwnershipPrereport.Status(p), Is.EqualTo("있음"));
+
+            using (var w = new OwnershipRecordWriter(_tmp, 1, "SYN-pre", new DateTime(2026, 11, 18, 1, 2, 3, DateTimeKind.Utc)))
+            {
+                w.WritePrereport(p.Bytes);
+                Assert.That(File.ReadAllBytes(Path.Combine(w.Directory, OwnershipRecordWriter.PrereportFile)), Is.EqualTo(bytes), "바이트 그대로");
+            }
+            Assert.Throws<FormatException>(() => OwnershipPrereport.FromBytes(Encoding.UTF8.GetBytes("[1]"), "x.json", SpecSha));
+        }
+
+        [Test]
+        public void Prereport_is_required_only_when_configured_and_must_match_the_spec_hash()
+        {
+            var match = OwnershipPrereport.FromBytes(PrereportBytes(SpecSha, 0.8, "from_start"), "a.json", SpecSha);
+            var other = OwnershipPrereport.FromBytes(PrereportBytes(SpecSha, 0.8, "from_start"), "a.json", new string('b', 64));
+            Assert.That(OwnershipPrereport.Status(null), Is.EqualTo("없음"));
+            Assert.That(OwnershipPrereport.Status(other), Is.EqualTo("해시 불일치"));
+            Assert.That(OwnershipPrereport.Refusal(null, false), Is.Null, "기본(requirePrereport 꺼짐)은 없어도 시작");
+            Assert.That(OwnershipPrereport.Refusal(other, false), Is.Null);
+            Assert.That(OwnershipPrereport.Refusal(null, true), Does.Contain("requirePrereport"));
+            Assert.That(OwnershipPrereport.Refusal(other, true), Does.Contain("specSha256"));
+            Assert.That(OwnershipPrereport.Refusal(match, true), Is.Null);
+            Assert.That(other.MatchedBy, Is.Null);
+            Assert.That(other.Sha256, Has.Length.EqualTo(64), "불일치여도 sha256은 늘 채운다");
+
+            // altSpecSha256(대체 매핑 파일 S.v0.json 등)의 값과 같아도 일치(분석기와 같은 규칙)
+            string altSha = new string('c', 64);
+            string text = new UTF8Encoding(false).GetString(PrereportBytes(SpecSha, 0.8, "from_start"))
+                .Replace("\"taskTextFile\"", "\"altSpecSha256\": {\"S.v0.json\": \"" + altSha + "\", \"S.v1.json\": \"" + new string('d', 64) + "\"},\n  \"taskTextFile\"");
+            var viaAlt = OwnershipPrereport.FromBytes(new UTF8Encoding(false).GetBytes(text), "a.json", altSha);
+            Assert.That((viaAlt.SpecSha256Match, viaAlt.MatchedBy), Is.EqualTo((true, "alt")));
+            Assert.That(OwnershipPrereport.Refusal(viaAlt, true), Is.Null, "대체 매핑 파일을 골라도 시작");
+            Assert.That(OwnershipPrereport.Status(viaAlt), Is.EqualTo("있음"));
+            var none = OwnershipPrereport.FromBytes(new UTF8Encoding(false).GetBytes(text), "a.json", new string('e', 64));
+            Assert.That((none.SpecSha256Match, none.MatchedBy), Is.EqualTo((false, (string)null)));
+            Assert.That(OwnershipPrereport.Refusal(none, true), Does.Contain("altSpecSha256"));
+            Assert.That(new OwnershipConfig().requirePrereport, Is.False);
+        }
+
+        // 보고 유무·내용을 바꿔도 variants·order·shiftPairs가 바이트까지 같다(생성기에는 보고 입력이 없다).
+        [Test]
+        public void Prereport_content_never_changes_the_plan()
+        {
+            var plan = OwnershipVariantGenerator.Generate(OwnershipVariantTests.StatedSpec().Parse(), 3, new OwnershipConfig());
+            string Part(OwnershipPrereport pre)
+            {
+                var info = new OwnershipSessionInfo { SessionId = "S", Prereport = pre?.ToJson() };
+                var m = OwnershipManifest.Build(plan, info);
+                return OwnershipJson.Serialize(new JArray(m["variants"], m["order"], m["shiftPairs"], m["cb"], m["orderRow"]));
+            }
+            string none = Part(null);
+            Assert.That(Part(OwnershipPrereport.FromBytes(PrereportBytes(SpecSha, 0.1, "not_set"), "a.json", SpecSha)), Is.EqualTo(none));
+            Assert.That(Part(OwnershipPrereport.FromBytes(PrereportBytes(SpecSha, 0.9, "from_start"), "a.json", SpecSha)), Is.EqualTo(none));
+            var again = OwnershipVariantGenerator.Generate(OwnershipVariantTests.StatedSpec().Parse(), 3, new OwnershipConfig());
+            Assert.That(OwnershipJson.Serialize(again.VariantsJson()), Is.EqualTo(OwnershipJson.Serialize(plan.VariantsJson())));
+            Assert.That(typeof(OwnershipVariantGenerator).GetMethods().Where(m => m.Name == "Generate")
+                .SelectMany(m => m.GetParameters()).Any(pp => pp.ParameterType == typeof(OwnershipPrereport)), Is.False, "생성기 입력에 보고가 없다");
+        }
+
+        [Test]
+        public void First_viewing_utc_event_has_a_fixed_name_and_iso_detail()
+        {
+            Assert.That(OwnershipRecordWriter.FirstViewingUtcEvent, Is.EqualTo("first_viewing_utc"));
+            Assert.That(OwnershipRecordWriter.FormatUtc(new DateTime(2026, 11, 18, 1, 2, 3, 45, DateTimeKind.Utc)), Is.EqualTo("2026-11-18T01:02:03.045Z"));
         }
     }
 }

@@ -1,0 +1,661 @@
+{
+  "recordVersion": "ifs-ownership/0.3",
+  "generatorVersion": "ownership-variants/0.3",
+  "participantNumber": 3,
+  "cb": 0,
+  "orderRow": 2,
+  "orderRows": 18,
+  "conditionSet": "color|color_hi|color_lo|form|motion|orig|size|size_hi|size_lo",
+  "sessionId": "SYN-shift-default",
+  "specFile": "SYN-shift-default.json",
+  "specSha256": "0",
+  "startedAtUtc": "2026-01-01T00:00:00.000Z",
+  "headSource": "desktop",
+  "unityVersion": "test",
+  "taskText": {
+    "file": "ownership_task.v0.2.json",
+    "version": "0.2",
+    "draftCount": 7,
+    "draftKeys": [
+      "difference",
+      "done",
+      "final_choice",
+      "final_choice_resemblance",
+      "rating",
+      "rating_resemblance",
+      "viewing_intro"
+    ]
+  },
+  "ratingItem": "resemblance",
+  "prereport": null,
+  "config": {
+    "generatorVersion": "ownership-variants/0.3",
+    "sizeStep": 0.25,
+    "colorDeltaE": 30.0,
+    "viewSeconds": 30.0,
+    "headSampleHz": 20.0,
+    "gazeConeDeg": 15.0,
+    "finalChoiceArcDeg": 120.0,
+    "finalChoiceRadiusM": 0.0,
+    "differenceRating": true,
+    "requireSpecPhrases": false,
+    "shiftAttributes": [
+      "color",
+      "size"
+    ],
+    "sizeShiftStep": 0.1,
+    "colorShiftDeltaE": 12.0,
+    "maxHueShiftDeg": 20.0,
+    "shiftSymmetryTolerance": 3.0,
+    "ratingItem": "resemblance",
+    "requirePrereport": false
+  },
+  "flags": {
+    "lowVisibility": false
+  },
+  "original": {
+    "params": {
+      "form.posture": "none",
+      "form.type": "blob",
+      "layout.distance": 0.33,
+      "layout.size": 0.5,
+      "layout.verticalOffset": 0.75,
+      "material.brightness": 0.5,
+      "material.color.h": 0.0,
+      "material.color.l": 0.7,
+      "material.color.s": 0.0,
+      "material.erosion": 0.0,
+      "material.opacity": 1.0,
+      "material.roughness": 0.5,
+      "motion.speed": 0.5,
+      "motion.type": "still"
+    },
+    "shapeModel": "none",
+    "rendered": "blob",
+    "statedKeys": [],
+    "defaultKeys": [
+      "form.posture",
+      "form.type",
+      "layout.distance",
+      "layout.size",
+      "layout.verticalOffset",
+      "material.brightness",
+      "material.color.h",
+      "material.color.l",
+      "material.color.s",
+      "material.erosion",
+      "material.opacity",
+      "material.roughness",
+      "motion.speed",
+      "motion.type"
+    ],
+    "unmappedCount": 0,
+    "unmatchedCount": 0,
+    "alternativesCount": 0,
+    "needsConfirmationCount": 0,
+    "effectiveOpacity": 1.0,
+    "shape": {
+      "status": "none",
+      "applied": null,
+      "model": null,
+      "viaPrefab": null,
+      "formType": null,
+      "words": []
+    }
+  },
+  "variants": [
+    {
+      "id": "orig",
+      "attribute": null,
+      "kind": "orig",
+      "overrides": {},
+      "shapeModel": null,
+      "params": {
+        "form.posture": "none",
+        "form.type": "blob",
+        "layout.distance": 0.33,
+        "layout.size": 0.5,
+        "layout.verticalOffset": 0.75,
+        "material.brightness": 0.5,
+        "material.color.h": 0.0,
+        "material.color.l": 0.7,
+        "material.color.s": 0.0,
+        "material.erosion": 0.0,
+        "material.opacity": 1.0,
+        "material.roughness": 0.5,
+        "motion.speed": 0.5,
+        "motion.type": "still"
+      },
+      "rendered": "blob"
+    },
+    {
+      "id": "form",
+      "attribute": "form",
+      "kind": "mismatch",
+      "overrides": {},
+      "shapeModel": "Cube",
+      "changedKeys": [
+        "form.shapeModel"
+      ],
+      "from": {
+        "form.type": "blob",
+        "shapeModel": "none",
+        "rendered": "blob"
+      },
+      "to": {
+        "form.type": "blob",
+        "shapeModel": "Cube",
+        "rendered": "Cube"
+      },
+      "rule": "add",
+      "source": "default",
+      "sourceByKey": {
+        "form.shapeModel": "default"
+      },
+      "flags": {
+        "saidNotRendered": false,
+        "forced": false,
+        "belowTarget": false,
+        "motionAltersScale": false
+      },
+      "magnitude": null,
+      "detail": {
+        "shapeStatus": "none",
+        "shapeWords": [],
+        "motionVisibleFrom": false,
+        "motionVisibleTo": false
+      },
+      "params": {
+        "form.posture": "none",
+        "form.type": "blob",
+        "layout.distance": 0.33,
+        "layout.size": 0.5,
+        "layout.verticalOffset": 0.75,
+        "material.brightness": 0.5,
+        "material.color.h": 0.0,
+        "material.color.l": 0.7,
+        "material.color.s": 0.0,
+        "material.erosion": 0.0,
+        "material.opacity": 1.0,
+        "material.roughness": 0.5,
+        "motion.speed": 0.5,
+        "motion.type": "still"
+      },
+      "rendered": "Cube"
+    },
+    {
+      "id": "color",
+      "attribute": "color",
+      "kind": "mismatch",
+      "overrides": {
+        "material.color.l": 0.37
+      },
+      "shapeModel": null,
+      "changedKeys": [
+        "material.color.l"
+      ],
+      "from": {
+        "material.color.h": 0.0,
+        "material.color.s": 0.0,
+        "material.color.l": 0.7
+      },
+      "to": {
+        "material.color.h": 0.0,
+        "material.color.s": 0.0,
+        "material.color.l": 0.37
+      },
+      "rule": "lightness",
+      "source": "default",
+      "sourceByKey": {
+        "material.color.l": "default"
+      },
+      "flags": {
+        "saidNotRendered": false,
+        "forced": false,
+        "belowTarget": false,
+        "motionAltersScale": false
+      },
+      "magnitude": {
+        "deltaE00": 30.322,
+        "deltaE00Composited": 30.322
+      },
+      "detail": {
+        "achromatic": true,
+        "targetDeltaE00": 30.0,
+        "direction": "darker",
+        "steps": 66,
+        "stepSize": "0.005",
+        "saturationSource": "default",
+        "deltaEBasis": "albedo",
+        "brightnessFactor": 1.0,
+        "compositeAlpha": 1.0,
+        "compositeBackground": [
+          0.74,
+          0.74,
+          0.75
+        ]
+      },
+      "params": {
+        "form.posture": "none",
+        "form.type": "blob",
+        "layout.distance": 0.33,
+        "layout.size": 0.5,
+        "layout.verticalOffset": 0.75,
+        "material.brightness": 0.5,
+        "material.color.h": 0.0,
+        "material.color.l": 0.37,
+        "material.color.s": 0.0,
+        "material.erosion": 0.0,
+        "material.opacity": 1.0,
+        "material.roughness": 0.5,
+        "motion.speed": 0.5,
+        "motion.type": "still"
+      },
+      "rendered": "blob"
+    },
+    {
+      "id": "size",
+      "attribute": "size",
+      "kind": "mismatch",
+      "overrides": {
+        "layout.size": 0.75
+      },
+      "shapeModel": null,
+      "changedKeys": [
+        "layout.size"
+      ],
+      "from": {
+        "layout.size": 0.5
+      },
+      "to": {
+        "layout.size": 0.75
+      },
+      "rule": "up",
+      "source": "default",
+      "sourceByKey": {
+        "layout.size": "default"
+      },
+      "flags": {
+        "saidNotRendered": false,
+        "forced": false,
+        "belowTarget": false,
+        "motionAltersScale": false
+      },
+      "magnitude": {
+        "sizeStep": 0.25
+      },
+      "detail": {
+        "direction": "up",
+        "scaleFrom": 1.0,
+        "scaleTo": 2.0
+      },
+      "params": {
+        "form.posture": "none",
+        "form.type": "blob",
+        "layout.distance": 0.33,
+        "layout.size": 0.75,
+        "layout.verticalOffset": 0.75,
+        "material.brightness": 0.5,
+        "material.color.h": 0.0,
+        "material.color.l": 0.7,
+        "material.color.s": 0.0,
+        "material.erosion": 0.0,
+        "material.opacity": 1.0,
+        "material.roughness": 0.5,
+        "motion.speed": 0.5,
+        "motion.type": "still"
+      },
+      "rendered": "blob"
+    },
+    {
+      "id": "motion",
+      "attribute": "motion",
+      "kind": "mismatch",
+      "overrides": {
+        "motion.type": "floating"
+      },
+      "shapeModel": null,
+      "changedKeys": [
+        "motion.type"
+      ],
+      "from": {
+        "motion.type": "still"
+      },
+      "to": {
+        "motion.type": "floating"
+      },
+      "rule": "add",
+      "source": "default",
+      "sourceByKey": {
+        "motion.type": "default"
+      },
+      "flags": {
+        "saidNotRendered": false,
+        "forced": false,
+        "belowTarget": false,
+        "motionAltersScale": false
+      },
+      "magnitude": null,
+      "detail": {
+        "originalGroup": "Still",
+        "variantGroup": "Drift",
+        "originalVisible": false,
+        "speed": 0.5
+      },
+      "params": {
+        "form.posture": "none",
+        "form.type": "blob",
+        "layout.distance": 0.33,
+        "layout.size": 0.5,
+        "layout.verticalOffset": 0.75,
+        "material.brightness": 0.5,
+        "material.color.h": 0.0,
+        "material.color.l": 0.7,
+        "material.color.s": 0.0,
+        "material.erosion": 0.0,
+        "material.opacity": 1.0,
+        "material.roughness": 0.5,
+        "motion.speed": 0.5,
+        "motion.type": "floating"
+      },
+      "rendered": "blob"
+    },
+    {
+      "id": "color_lo",
+      "attribute": "color",
+      "kind": "shift",
+      "overrides": {
+        "material.color.l": 0.545
+      },
+      "shapeModel": null,
+      "changedKeys": [
+        "material.color.l"
+      ],
+      "from": {
+        "material.color.h": 0.0,
+        "material.color.s": 0.0,
+        "material.color.l": 0.7
+      },
+      "to": {
+        "material.color.h": 0.0,
+        "material.color.s": 0.0,
+        "material.color.l": 0.545
+      },
+      "rule": "lightness",
+      "source": "default",
+      "sourceByKey": {
+        "material.color.l": "default"
+      },
+      "flags": {
+        "saidNotRendered": false,
+        "forced": false,
+        "belowTarget": false,
+        "motionAltersScale": false
+      },
+      "magnitude": {
+        "deltaE00": 12.213,
+        "deltaE00Composited": 12.213
+      },
+      "detail": {
+        "pair": "color",
+        "side": "lo",
+        "axis": "lightness",
+        "targetDeltaE00": 12.0,
+        "steps": 31,
+        "stepSize": "0.005",
+        "deltaEBasis": "albedo",
+        "brightnessFactor": 1.0,
+        "compositeAlpha": 1.0
+      },
+      "params": {
+        "form.posture": "none",
+        "form.type": "blob",
+        "layout.distance": 0.33,
+        "layout.size": 0.5,
+        "layout.verticalOffset": 0.75,
+        "material.brightness": 0.5,
+        "material.color.h": 0.0,
+        "material.color.l": 0.545,
+        "material.color.s": 0.0,
+        "material.erosion": 0.0,
+        "material.opacity": 1.0,
+        "material.roughness": 0.5,
+        "motion.speed": 0.5,
+        "motion.type": "still"
+      },
+      "rendered": "blob"
+    },
+    {
+      "id": "color_hi",
+      "attribute": "color",
+      "kind": "shift",
+      "overrides": {
+        "material.color.l": 0.895
+      },
+      "shapeModel": null,
+      "changedKeys": [
+        "material.color.l"
+      ],
+      "from": {
+        "material.color.h": 0.0,
+        "material.color.s": 0.0,
+        "material.color.l": 0.7
+      },
+      "to": {
+        "material.color.h": 0.0,
+        "material.color.s": 0.0,
+        "material.color.l": 0.895
+      },
+      "rule": "lightness",
+      "source": "default",
+      "sourceByKey": {
+        "material.color.l": "default"
+      },
+      "flags": {
+        "saidNotRendered": false,
+        "forced": false,
+        "belowTarget": false,
+        "motionAltersScale": false
+      },
+      "magnitude": {
+        "deltaE00": 12.174,
+        "deltaE00Composited": 12.174
+      },
+      "detail": {
+        "pair": "color",
+        "side": "hi",
+        "axis": "lightness",
+        "targetDeltaE00": 12.0,
+        "steps": 39,
+        "stepSize": "0.005",
+        "deltaEBasis": "albedo",
+        "brightnessFactor": 1.0,
+        "compositeAlpha": 1.0
+      },
+      "params": {
+        "form.posture": "none",
+        "form.type": "blob",
+        "layout.distance": 0.33,
+        "layout.size": 0.5,
+        "layout.verticalOffset": 0.75,
+        "material.brightness": 0.5,
+        "material.color.h": 0.0,
+        "material.color.l": 0.895,
+        "material.color.s": 0.0,
+        "material.erosion": 0.0,
+        "material.opacity": 1.0,
+        "material.roughness": 0.5,
+        "motion.speed": 0.5,
+        "motion.type": "still"
+      },
+      "rendered": "blob"
+    },
+    {
+      "id": "size_lo",
+      "attribute": "size",
+      "kind": "shift",
+      "overrides": {
+        "layout.size": 0.4
+      },
+      "shapeModel": null,
+      "changedKeys": [
+        "layout.size"
+      ],
+      "from": {
+        "layout.size": 0.5
+      },
+      "to": {
+        "layout.size": 0.4
+      },
+      "rule": "size",
+      "source": "default",
+      "sourceByKey": {
+        "layout.size": "default"
+      },
+      "flags": {
+        "saidNotRendered": false,
+        "forced": false,
+        "belowTarget": false,
+        "motionAltersScale": false
+      },
+      "magnitude": {
+        "sizeStep": 0.1
+      },
+      "detail": {
+        "pair": "size",
+        "side": "lo",
+        "axis": "size",
+        "scaleFrom": 1.0,
+        "scaleTo": 0.7579
+      },
+      "params": {
+        "form.posture": "none",
+        "form.type": "blob",
+        "layout.distance": 0.33,
+        "layout.size": 0.4,
+        "layout.verticalOffset": 0.75,
+        "material.brightness": 0.5,
+        "material.color.h": 0.0,
+        "material.color.l": 0.7,
+        "material.color.s": 0.0,
+        "material.erosion": 0.0,
+        "material.opacity": 1.0,
+        "material.roughness": 0.5,
+        "motion.speed": 0.5,
+        "motion.type": "still"
+      },
+      "rendered": "blob"
+    },
+    {
+      "id": "size_hi",
+      "attribute": "size",
+      "kind": "shift",
+      "overrides": {
+        "layout.size": 0.6
+      },
+      "shapeModel": null,
+      "changedKeys": [
+        "layout.size"
+      ],
+      "from": {
+        "layout.size": 0.5
+      },
+      "to": {
+        "layout.size": 0.6
+      },
+      "rule": "size",
+      "source": "default",
+      "sourceByKey": {
+        "layout.size": "default"
+      },
+      "flags": {
+        "saidNotRendered": false,
+        "forced": false,
+        "belowTarget": false,
+        "motionAltersScale": false
+      },
+      "magnitude": {
+        "sizeStep": 0.1
+      },
+      "detail": {
+        "pair": "size",
+        "side": "hi",
+        "axis": "size",
+        "scaleFrom": 1.0,
+        "scaleTo": 1.3195
+      },
+      "params": {
+        "form.posture": "none",
+        "form.type": "blob",
+        "layout.distance": 0.33,
+        "layout.size": 0.6,
+        "layout.verticalOffset": 0.75,
+        "material.brightness": 0.5,
+        "material.color.h": 0.0,
+        "material.color.l": 0.7,
+        "material.color.s": 0.0,
+        "material.erosion": 0.0,
+        "material.opacity": 1.0,
+        "material.roughness": 0.5,
+        "motion.speed": 0.5,
+        "motion.type": "still"
+      },
+      "rendered": "blob"
+    }
+  ],
+  "shiftPairs": [
+    {
+      "attribute": "color",
+      "axis": "lightness",
+      "basis": "default",
+      "axisChoiceBasis": "default",
+      "provenanceWithoutValue": false,
+      "w": 0.7,
+      "lo": 0.545,
+      "hi": 0.895,
+      "wM": null,
+      "loM": null,
+      "hiM": null,
+      "step": 0.005,
+      "deltaE_lo": 12.213,
+      "deltaE_hi": 12.174,
+      "deltaEComposited_lo": 12.213,
+      "deltaEComposited_hi": 12.174,
+      "categoryCheck": null,
+      "valid": true,
+      "skipReason": null
+    },
+    {
+      "attribute": "size",
+      "axis": "size",
+      "basis": "default",
+      "axisChoiceBasis": null,
+      "provenanceWithoutValue": false,
+      "w": 0.5,
+      "lo": 0.4,
+      "hi": 0.6,
+      "wM": 0.35,
+      "loM": 0.26525,
+      "hiM": 0.461828,
+      "step": 0.1,
+      "deltaE_lo": null,
+      "deltaE_hi": null,
+      "deltaEComposited_lo": null,
+      "deltaEComposited_hi": null,
+      "categoryCheck": "not_applicable",
+      "valid": true,
+      "skipReason": null
+    }
+  ],
+  "order": [
+    "color",
+    "size",
+    "form",
+    "motion",
+    "orig",
+    "color_lo",
+    "size_hi",
+    "color_hi",
+    "size_lo"
+  ]
+}

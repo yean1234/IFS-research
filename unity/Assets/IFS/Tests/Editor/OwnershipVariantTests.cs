@@ -11,14 +11,31 @@ namespace IFS.SceneSpec.Tests
 {
     public class OwnershipVariantTests
     {
+        // 이 파일의 기존(0.2) 테스트는 쌍을 끈 설정(shiftAttributes 빈 목록 = 0.2와 같은 동작)으로 돈다.
+        // 같은 말·다른 값 쌍 테스트는 아래 "같은 말·다른 값" 절에서 기본 설정(color·size 켬)으로 돈다.
+        public static OwnershipConfig NoShift(OwnershipConfig cfg = null)
+        {
+            cfg = (cfg ?? new OwnershipConfig()).Clone();
+            cfg.shiftAttributes = new List<string>();
+            return cfg;
+        }
+
         static OwnershipPlan Gen(JObject spec, int participant = 1, OwnershipConfig cfg = null) =>
-            OwnershipVariantGenerator.Generate(spec.Parse(), participant, cfg ?? new OwnershipConfig());
+            OwnershipVariantGenerator.Generate(spec.Parse(), participant, NoShift(cfg));
 
         static OwnershipPlan GenOk(JObject spec, int participant = 1, OwnershipConfig cfg = null)
         {
             var p = Gen(spec, participant, cfg);
             Assert.That(p.Errors, Is.Empty, string.Join("\n", p.Errors));
             Assert.That(p.Variants.Select(v => v.Id), Is.EqualTo(new[] { "orig", "form", "color", "size", "motion" }));
+            return p;
+        }
+
+        static OwnershipPlan GenShift(JObject spec, int participant = 1, OwnershipConfig cfg = null)
+        {
+            var p = OwnershipVariantGenerator.Generate(spec.Parse(), participant, cfg ?? new OwnershipConfig());
+            Assert.That(p.Errors, Is.Empty, string.Join("\n", p.Errors));
+            Assert.That(p.Variants.Take(5).Select(v => v.Id), Is.EqualTo(new[] { "orig", "form", "color", "size", "motion" }));
             return p;
         }
 
@@ -112,16 +129,22 @@ namespace IFS.SceneSpec.Tests
             var m = ParseNoDates(OwnershipJson.Serialize(OwnershipManifest.Build(GenOk(OwnershipTestSpecs.Empty("SYN-det")), info)));
             Assert.That(m.Properties().Select(p => p.Name).ToArray(), Is.EqualTo(new[]
             {
-                "recordVersion", "generatorVersion", "participantNumber", "cb", "orderRow", "sessionId", "specFile", "specSha256",
-                "startedAtUtc", "headSource", "unityVersion", "taskText", "config", "flags", "original", "variants", "order",
+                "recordVersion", "generatorVersion", "participantNumber", "cb", "orderRow", "orderRows", "conditionSet", "sessionId", "specFile", "specSha256",
+                "startedAtUtc", "headSource", "unityVersion", "taskText", "ratingItem", "prereport", "config", "flags", "original", "variants",
+                "shiftPairs", "order",
             }));
-            Assert.That((string)m["recordVersion"], Is.EqualTo("ifs-ownership/0.2"));
-            Assert.That((string)m["generatorVersion"], Is.EqualTo("ownership-variants/0.2"));
+            Assert.That((string)m["recordVersion"], Is.EqualTo("ifs-ownership/0.3"));
+            Assert.That((string)m["generatorVersion"], Is.EqualTo("ownership-variants/0.3"));
+            Assert.That((string)m["ratingItem"], Is.EqualTo("resemblance"));
+            Assert.That((int)m["orderRows"], Is.EqualTo(10));
+            Assert.That((string)m["conditionSet"], Is.EqualTo("color|form|motion|orig|size"));
+            Assert.That(m["prereport"].Type, Is.EqualTo(JTokenType.Null), "보기 전 보고가 없으면 null");
             Assert.That(((JObject)m["taskText"]).Properties().Select(p => p.Name), Is.EqualTo(new[] { "file", "version", "draftCount", "draftKeys" }));
             Assert.That((int)m["taskText"]["draftCount"], Is.EqualTo(2));
             Assert.That(m["taskText"]["draftKeys"].ToObject<string[]>(), Is.EqualTo(new[] { "done", "rating" }));
             Assert.That((string)m["specFile"], Is.EqualTo("SYN-det.json"));
-            foreach (var k in new[] { "sizeStep", "colorDeltaE", "viewSeconds", "headSampleHz", "gazeConeDeg", "finalChoiceArcDeg", "differenceRating", "requireSpecPhrases", "generatorVersion" })
+            foreach (var k in new[] { "sizeStep", "colorDeltaE", "viewSeconds", "headSampleHz", "gazeConeDeg", "finalChoiceArcDeg", "differenceRating", "requireSpecPhrases", "generatorVersion",
+                                      "shiftAttributes", "sizeShiftStep", "colorShiftDeltaE", "maxHueShiftDeg", "shiftSymmetryTolerance", "ratingItem", "requirePrereport" })
                 Assert.That(m["config"][k], Is.Not.Null, "config." + k);
             Assert.That(m["flags"]["lowVisibility"], Is.Not.Null);
             foreach (var k in new[] { "params", "shapeModel", "statedKeys", "defaultKeys", "unmappedCount", "unmatchedCount" })
@@ -131,8 +154,9 @@ namespace IFS.SceneSpec.Tests
             Assert.That(orig["attribute"].Type, Is.EqualTo(JTokenType.Null));
             Assert.That(((JObject)orig["overrides"]).Count, Is.EqualTo(0));
             Assert.That(orig["shapeModel"].Type, Is.EqualTo(JTokenType.Null));
+            Assert.That((string)orig["kind"], Is.EqualTo("orig"));
             foreach (JObject v in ((JArray)m["variants"]).Skip(1))
-                foreach (var k in new[] { "id", "attribute", "overrides", "shapeModel", "changedKeys", "from", "to", "rule", "source", "sourceByKey", "flags", "magnitude" })
+                foreach (var k in new[] { "id", "attribute", "kind", "overrides", "shapeModel", "changedKeys", "from", "to", "rule", "source", "sourceByKey", "flags", "magnitude" })
                     Assert.That(v.ContainsKey(k), Is.True, (string)v["id"] + "." + k);
             Assert.That(((JArray)m["order"]).Count, Is.EqualTo(5));
             var color = ((JArray)m["variants"]).Cast<JObject>().Single(v => (string)v["id"] == "color");
@@ -548,6 +572,435 @@ namespace IFS.SceneSpec.Tests
             var plan = GenOk(spec);
             Assert.That(plan.OriginalParams.InferredUsed, Is.Empty);
             Assert.That(plan.OriginalParams.GetNumber("layout.size"), Is.EqualTo(0.5), "기본값 0.5(제안 0.9를 쓰지 않음)");
+        }
+
+        // ── 같은 말·다른 값 쌍 ──────────────────────────────────────────
+        // 합성 spec 두 개: 말한 유채색(HSL 0.6/0.5/0.5) + 말한 크기 0.3, 모두 기본값. 덤프(IFS_DUMP_DIR)·보고에 쓴다.
+        public static JObject StatedSpec() => OwnershipTestSpecs.Empty("SYN-shift-stated").Hsl(0.6, 0.5, 0.5, "파란")
+            .Slot("layout.size", 0.3, "작은").Slot("motion.type", "swaying", "흔들");
+        public static JObject DefaultSpec() => OwnershipTestSpecs.Empty("SYN-shift-default");
+
+        static OwnershipSessionInfo ShiftInfo(string id) => new OwnershipSessionInfo
+        {
+            SessionId = id, SpecFile = id + ".json", SpecSha256 = "0", StartedAtUtc = "2026-01-01T00:00:00.000Z",
+            HeadSource = "desktop", UnityVersion = "test", TaskTextFile = "ownership_task.v0.2.json", TaskTextVersion = "0.2",
+            TaskTextDraftKeys = new[] { "difference", "done", "final_choice", "final_choice_resemblance", "rating", "rating_resemblance", "viewing_intro" },
+        };
+
+        [Test]
+        public void Dump_shift_manifests_when_requested()
+        {
+            string dir = Environment.GetEnvironmentVariable("IFS_DUMP_DIR");
+            var cases = new[] { ("manifest_stated.json", StatedSpec(), "SYN-shift-stated"), ("manifest_default.json", DefaultSpec(), "SYN-shift-default") };
+            foreach (var (file, spec, id) in cases)
+            {
+                var plan = GenShift(spec, 3);
+                string json = OwnershipJson.Serialize(OwnershipManifest.Build(plan, ShiftInfo(id)));
+                TestContext.Progress.WriteLine($"{file}: order={string.Join(",", plan.Order)}; pairs=" +
+                    string.Join(" | ", plan.ShiftPairs.Select(p => p.ToJson().ToString(Newtonsoft.Json.Formatting.None))));
+                if (!string.IsNullOrEmpty(dir)) System.IO.File.WriteAllText(System.IO.Path.Combine(dir, file), json, new System.Text.UTF8Encoding(false));
+            }
+        }
+        // n조건 Williams: 행마다 조건이 한 번씩, 한 주기에서 각 위치·각 순서쌍이 같은 횟수(짝수 1번, 홀수 2번).
+        [TestCase(4)]
+        [TestCase(5)]
+        [TestCase(6)]
+        [TestCase(7)]
+        [TestCase(8)]
+        [TestCase(9)]
+        public void Williams_design_generalizes_to_n_conditions_with_first_order_carryover_balance(int n)
+        {
+            var rows = WilliamsDesign.RowsFor(n);
+            int reps = n % 2 == 0 ? 1 : 2;
+            Assert.That(rows.Length, Is.EqualTo(n * reps), "짝수 n행, 홀수 2n행");
+            Assert.That(rows.All(r => r.Length == n && r.OrderBy(x => x).SequenceEqual(Enumerable.Range(0, n))), Is.True, "행마다 조건이 한 번씩");
+            for (int pos = 0; pos < n; pos++)
+                for (int c = 0; c < n; c++)
+                    Assert.That(rows.Count(r => r[pos] == c), Is.EqualTo(reps), $"조건 {c}가 위치 {pos + 1}에 {reps}번");
+            var pairs = new Dictionary<(int, int), int>();
+            foreach (var r in rows)
+                for (int i = 0; i + 1 < r.Length; i++)
+                    pairs[(r[i], r[i + 1])] = pairs.TryGetValue((r[i], r[i + 1]), out int k) ? k + 1 : 1;
+            Assert.That(pairs.Count, Is.EqualTo(n * (n - 1)), "서로 다른 순서쌍이 모두 나온다");
+            Assert.That(pairs.Values.All(k => k == reps), Is.True, $"각 순서쌍(a 바로 다음 b)이 {reps}번씩");
+            Assert.That(WilliamsDesign.Generate(n).Select(r => string.Join(",", r)), Is.EqualTo(rows.Select(r => string.Join(",", r))),
+                "n = 5도 일반 규칙과 같은 표(상수 표는 0.2 세션 재현용)");
+        }
+
+        [Test]
+        public void Order_is_assigned_after_the_shown_conditions_are_known()
+        {
+            var ids = new List<string>();
+            for (int participant = 1; participant <= 18; participant++)
+            {
+                var plan = GenShift(DefaultSpec(), participant);
+                var shown = plan.Variants.Select(v => v.Id).ToList();
+                Assert.That(shown, Is.EqualTo(OwnershipVariantGenerator.ConditionIds), "기본 spec: 9개 모두");
+                Assert.That(plan.Order.OrderBy(x => x, StringComparer.Ordinal), Is.EqualTo(shown.OrderBy(x => x, StringComparer.Ordinal)), "보여 줄 조건이 한 번씩");
+                Assert.That(plan.OrderRow, Is.EqualTo((participant - 1) % 18));
+                Assert.That(plan.Order, Is.EqualTo(WilliamsDesign.OrderFor(participant, shown)));
+                ids.Add(string.Join(",", plan.Order));
+            }
+            Assert.That(ids.Distinct().Count(), Is.EqualTo(18), "9조건 = 18행, 18명이면 행이 한 번씩");
+
+            // 색 쌍이 빠지면(무효) 조건 7개 → 14행
+            var seven = GenShift(DefaultSpec().Hsl(0.0, 0.12, 0.9), 15);
+            Assert.That(seven.Variants.Select(v => v.Id), Is.EqualTo(new[] { "orig", "form", "color", "size", "motion", "size_lo", "size_hi" }));
+            Assert.That(seven.OrderRow, Is.EqualTo(14 % 14));
+            Assert.That(seven.Order, Is.EqualTo(WilliamsDesign.OrderFor(15, seven.Variants.Select(v => v.Id).ToList())));
+        }
+
+        // 쌍을 끄면(shiftAttributes 빈 목록) 0.2 생성기와 같은 계획(원본·변형)과 순서·cb를 낸다. 0.2 기록 형식을 재현하는 것은
+        // 아니다(0.2 직렬화 모드는 없음): 0.3 manifest에서 버전 문자열과 0.3에 더한 필드를 걷어 낸 나머지가 바이트까지 같다.
+        // Golden/ownership_v02_*.json = 0.3 변경 직전 생성기(ownership-variants/0.2)로 만든 manifest.
+        [TestCase("ownership_v02_default_p1.json", 1)]
+        [TestCase("ownership_v02_stated_p7.json", 7)]
+        [TestCase("ownership_v02_mist_p12.json", 12)]
+        public void Empty_shift_attributes_reproduce_the_v02_plan_and_order_not_the_v02_record_format(string golden, int participant)
+        {
+            JObject spec;
+            switch (participant)
+            {
+                case 1: spec = OwnershipTestSpecs.Empty("SYN-golden"); break;
+                case 7:
+                    spec = OwnershipTestSpecs.Empty("SYN-golden").Hsl(0.597, 0.49, 0.7).Slot("layout.size", 0.333)
+                        .Slot("motion.type", "swaying").ShapeWord("round", "동그란", 4);
+                    break;
+                default:
+                    spec = OwnershipTestSpecs.Empty("SYN-golden").Slot("form.type", "mist").Hsl(0.0, 0.05, 0.3)
+                        .Slot("layout.size", 0.9).Slot("material.opacity", 0.6).Slot("material.brightness", 0.2);
+                    break;
+            }
+            var info = new OwnershipSessionInfo
+            {
+                SessionId = "SYN-golden", SpecFile = "SYN-golden.json", SpecSha256 = "0", StartedAtUtc = "2026-01-01T00:00:00.000Z",
+                HeadSource = "desktop", UnityVersion = "test", TaskTextFile = "ownership_task.v0.json", TaskTextVersion = "0.1",
+                TaskTextDraftKeys = new[] { "done", "rating" },
+            };
+            var cfg = new OwnershipConfig { shiftAttributes = new List<string>() };
+            var plan = OwnershipVariantGenerator.Generate(spec.Parse(), participant, cfg);
+            Assert.That(plan.Errors, Is.Empty, string.Join("\n", plan.Errors));
+            var m = OwnershipManifest.Build(plan, info);
+            Assert.That(m["shiftPairs"].Select(p => (string)p["skipReason"]), Is.EqualTo(new[] { "disabled", "disabled" }));
+            // 0.3에서 더한 것만 걷어 낸다
+            m["recordVersion"] = "ifs-ownership/0.2";
+            m["generatorVersion"] = "ownership-variants/0.2";
+            m["config"]["generatorVersion"] = "ownership-variants/0.2";
+            m.Remove("ratingItem");
+            m.Remove("shiftPairs");
+            m.Remove("orderRows");
+            m.Remove("conditionSet");
+            m.Remove("prereport");
+            foreach (var k in new[] { "shiftAttributes", "sizeShiftStep", "colorShiftDeltaE", "maxHueShiftDeg", "shiftSymmetryTolerance", "ratingItem", "requirePrereport" })
+                ((JObject)m["config"]).Remove(k);
+            foreach (JObject v in (JArray)m["variants"]) v.Remove("kind");
+            string path = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(UnityEngine.Application.streamingAssetsPath), "IFS", "Tests", "Editor", "Golden", golden);
+            Assert.That(OwnershipJson.Serialize(m), Is.EqualTo(System.IO.File.ReadAllText(path, System.Text.Encoding.UTF8)));
+        }
+
+        [Test]
+        public void Stated_chromatic_color_and_stated_size_make_two_valid_pairs()
+        {
+            var plan = GenShift(StatedSpec(), 3);
+            Assert.That(plan.Variants.Select(v => v.Id), Is.EqualTo(OwnershipVariantGenerator.ConditionIds));
+            Assert.That(plan.Variants.Select(v => v.Kind), Is.EqualTo(new[] { "orig", "mismatch", "mismatch", "mismatch", "mismatch", "shift", "shift", "shift", "shift" }));
+            var color = plan.ShiftPairs[0];
+            Assert.That((color.Attribute, color.Axis, color.Basis, color.Valid), Is.EqualTo(("color", "hue", "stated", true)));
+            Assert.That(color.W, Is.EqualTo(0.6));
+            // lo = 색상 −, hi = 색상 +. 각자 목표 ΔE00 ≥ 12에 닿는 최소 각(≤ 20°), 색상만 바뀐다.
+            var lab0 = LabOf(0.6, 0.5, 0.5);
+            foreach (var (side, dir) in new[] { ("lo", -1), ("hi", +1) })
+            {
+                var v = plan.Get("color_" + side);
+                double to = v.Override.Numbers["material.color.h"];
+                Assert.That(v.Override.Numbers.Keys, Is.EqualTo(new[] { "material.color.h" }));
+                int k = (int)v.Detail["steps"];
+                Assert.That(k, Is.InRange(1, 20));
+                Assert.That(to, Is.EqualTo(Math.Round(0.6 + dir * k / 360.0, 4)).Within(1e-9));
+                Assert.That(Math.Abs(to - 0.6) * 360, Is.LessThanOrEqualTo(20.0 + 1e-9), "반올림해 적용할 값으로 상한 검사");
+                double de = ColorMetrics.DeltaE2000(lab0, LabOf(to, 0.5, 0.5));
+                Assert.That(de, Is.GreaterThanOrEqualTo(12.0));
+                Assert.That((double)v.Magnitude["deltaE00"], Is.EqualTo(Math.Round(de, 3)));
+                Assert.That(v.Source, Is.EqualTo("stated"));
+            }
+            Assert.That(Math.Abs(color.DeltaELo.Value - color.DeltaEHi.Value), Is.LessThanOrEqualTo(3.0));
+            Assert.That(color.Lo, Is.EqualTo(plan.Get("color_lo").Override.Numbers["material.color.h"]));
+            Assert.That(color.Hi, Is.EqualTo(plan.Get("color_hi").Override.Numbers["material.color.h"]));
+
+            var size = plan.ShiftPairs[1];
+            Assert.That((size.Attribute, size.Axis, size.Basis, size.W, size.Lo, size.Hi, size.Step), Is.EqualTo(("size", "size", "stated", 0.3, (double?)0.2, (double?)0.4, (double?)0.1)));
+            Assert.That(size.DeltaELo, Is.Null);
+            Assert.That(size.CategoryCheck, Is.EqualTo("passed"));
+            Assert.That(color.AxisChoiceBasis, Is.EqualTo("stated"));
+            Assert.That(color.WM, Is.Null);
+            Assert.That(color.DeltaECompositedLo, Is.EqualTo(color.DeltaELo).Within(0.002), "불투명이면 합성해도 같다");
+            Assert.That(plan.Get("size_lo").Override.Numbers["layout.size"], Is.EqualTo(0.2));
+            Assert.That(plan.Get("size_hi").Override.Numbers["layout.size"], Is.EqualTo(0.4));
+            // 어긋난 변형은 쌍과 무관하게 0.2와 같다
+            var old = GenOk(StatedSpec(), 3);
+            for (int i = 0; i < 5; i++)
+                Assert.That(JToken.DeepEquals(plan.Variants[i].ToJson(), old.Variants[i].ToJson()), Is.True, plan.Variants[i].Id);
+        }
+
+        [Test]
+        public void All_default_spec_uses_the_lightness_axis_and_default_basis()
+        {
+            var plan = GenShift(DefaultSpec(), 3);
+            var color = plan.ShiftPairs[0];
+            Assert.That((color.Axis, color.Basis, color.W, color.Step, color.Valid), Is.EqualTo(("lightness", "default", 0.7, (double?)0.005, true)));
+            Assert.That(color.Lo, Is.LessThan(0.7).And.GreaterThanOrEqualTo(0.05));
+            Assert.That(color.Hi, Is.GreaterThan(0.7).And.LessThanOrEqualTo(0.95));
+            Assert.That(plan.Get("color_lo").Override.Numbers.Keys, Is.EqualTo(new[] { "material.color.l" }));
+            var size = plan.ShiftPairs[1];
+            Assert.That((size.Basis, size.W, size.Lo, size.Hi, size.Valid), Is.EqualTo(("default", 0.5, (double?)0.4, (double?)0.6, true)));
+        }
+
+        // 크기 쌍: [0, 1] 밖이면 out_of_range, 말한 크기가 0.5를 넘어가면 crosses_category(기본값이면 검사하지 않음).
+        [TestCase(0.05, true, "out_of_range")]
+        [TestCase(0.95, true, "out_of_range")]
+        [TestCase(0.45, true, "crosses_category")]
+        [TestCase(0.55, true, "crosses_category")]
+        [TestCase(0.4, true, "crosses_category")]   // hi 0.5는 0.5 미만이 아님
+        [TestCase(0.39, true, null)]
+        [TestCase(0.61, true, null)]
+        [TestCase(0.5, true, null)]       // 0.5는 쪽이 없다
+        [TestCase(0.45, false, null)]     // 값만 있고 근거 없음 → 기본값 취급
+        [TestCase(0.1, true, null)]       // lo 0.0은 범위 안
+        public void Size_pair_validity(double w, bool stated, string reason)
+        {
+            var spec = OwnershipTestSpecs.Empty("SYN-sizepair");
+            if (stated) spec.Slot("layout.size", w, "크기");
+            else spec["layout"]["size"] = w;
+            var plan = GenShift(spec);
+            var pair = plan.ShiftPairs.Single(p => p.Attribute == "size");
+            Assert.That(pair.SkipReason, Is.EqualTo(reason));
+            Assert.That(pair.Valid, Is.EqualTo(reason == null));
+            Assert.That(pair.Basis, Is.EqualTo(stated ? "stated" : "default"));
+            Assert.That(plan.Get("size_lo") != null, Is.EqualTo(reason == null), "무효면 둘 다 빠진다");
+            Assert.That(plan.Get("size_hi") != null, Is.EqualTo(reason == null));
+            Assert.That(plan.Order.Length, Is.EqualTo(plan.Variants.Count));
+        }
+
+        [Test]
+        public void Color_pair_skip_reasons()
+        {
+            // 연한 유채색: 20° 안에서 ΔE00 12에 못 닿음 → range_exceeded(명도로 대체하지 않음)
+            var weak = GenShift(OwnershipTestSpecs.Empty("SYN-cp").Hsl(0.0, 0.12, 0.9));
+            Assert.That((weak.ShiftPairs[0].Axis, weak.ShiftPairs[0].SkipReason), Is.EqualTo(("hue", "range_exceeded")));
+            Assert.That(weak.Get("color_lo"), Is.Null);
+            Assert.That(weak.Get("color_hi"), Is.Null);
+            // 무채색이 0.95보다 밝음 → 밝게 갈 수 없음
+            var light = GenShift(OwnershipTestSpecs.Empty("SYN-cp").Hsl(0.0, 0.0, 0.97));
+            Assert.That((light.ShiftPairs[0].Axis, light.ShiftPairs[0].SkipReason, light.ShiftPairs[0].Hi), Is.EqualTo(("lightness", "range_exceeded", (double?)null)));
+            // 허용치 0이면 두 방향 ΔE00이 조금만 달라도 asymmetric
+            var asym = GenShift(StatedSpec(), 1, new OwnershipConfig { shiftSymmetryTolerance = 0 });
+            Assert.That(asym.ShiftPairs[0].SkipReason, Is.EqualTo("asymmetric"));
+            Assert.That(asym.Variants.Count, Is.EqualTo(7));
+            // 잘 보이지 않으면(lowVisibility) 두 쌍 모두 not_rendered
+            var faint = GenShift(OwnershipTestSpecs.Empty("SYN-cp").Slot("material.opacity", 0.1));
+            Assert.That(faint.ShiftPairs.Select(p => p.SkipReason), Is.EqualTo(new[] { "not_rendered", "not_rendered" }));
+            Assert.That(faint.Order.Length, Is.EqualTo(5));
+            // 꺼진 속성은 disabled(값 없음)
+            var off = GenShift(StatedSpec(), 1, new OwnershipConfig { shiftAttributes = new List<string> { "size" } });
+            Assert.That((off.ShiftPairs[0].SkipReason, off.ShiftPairs[0].Lo, off.ShiftPairs[0].Step), Is.EqualTo(("disabled", (double?)null, (double?)null)));
+            Assert.That(off.ShiftPairs[1].Valid, Is.True);
+            Assert.That(off.Variants.Select(v => v.Id).Skip(5), Is.EqualTo(new[] { "size_lo", "size_hi" }));
+        }
+
+        [Test]
+        public void Shift_config_is_validated()
+        {
+            Assert.That(new OwnershipConfig().Validate(), Is.Empty);
+            Assert.That(new OwnershipConfig().shiftAttributes, Is.EqualTo(new[] { "color", "size" }));
+            Assert.That(new OwnershipConfig().ratingItem, Is.EqualTo("resemblance"));
+            Assert.That(new OwnershipConfig { shiftAttributes = new List<string> { "motion" } }.Validate().Single(), Does.Contain("motion"));
+            Assert.That(new OwnershipConfig { shiftAttributes = new List<string> { "size", "size" } }.Validate(), Is.Not.Empty);
+            Assert.That(new OwnershipConfig { shiftAttributes = null }.Validate(), Is.Not.Empty);
+            Assert.That(new OwnershipConfig { ratingItem = "liking" }.Validate(), Is.Not.Empty);
+            Assert.That(new OwnershipConfig { sizeShiftStep = 0 }.Validate(), Is.Not.Empty);
+            Assert.That(new OwnershipConfig { colorShiftDeltaE = -1 }.Validate(), Is.Not.Empty);
+            Assert.That(new OwnershipConfig { maxHueShiftDeg = 0.5 }.Validate(), Is.Not.Empty);
+            Assert.That(new OwnershipConfig { shiftSymmetryTolerance = -0.1 }.Validate(), Is.Not.Empty);
+            var a = new OwnershipConfig();
+            var b = a.Clone();
+            b.shiftAttributes.Clear();
+            Assert.That(a.shiftAttributes.Count, Is.EqualTo(2), "Clone은 목록을 복사한다");
+            Assert.That(Gen(DefaultSpec(), 1, new OwnershipConfig { ratingItem = "x" }).Ok, Is.False, "설정 오류면 계획을 만들지 않는다");
+            Assert.That(WilliamsDesign.MaxConditions, Is.EqualTo(9));
+        }
+
+        [Test]
+        public void Shift_manifest_is_deterministic_and_hides_pair_direction_from_the_experimenter_line()
+        {
+            string a = OwnershipJson.Serialize(OwnershipManifest.Build(GenShift(StatedSpec(), 3), ShiftInfo("x")));
+            string b = OwnershipJson.Serialize(OwnershipManifest.Build(GenShift(StatedSpec(), 3), ShiftInfo("x")));
+            Assert.That(b, Is.EqualTo(a));
+            var m = ParseNoDates(a);
+            Assert.That(((JObject)m["shiftPairs"][0]).Properties().Select(p => p.Name), Is.EqualTo(new[]
+                { "attribute", "axis", "basis", "axisChoiceBasis", "provenanceWithoutValue", "w", "lo", "hi", "wM", "loM", "hiM", "step",
+                  "deltaE_lo", "deltaE_hi", "deltaEComposited_lo", "deltaEComposited_hi", "categoryCheck", "valid", "skipReason" }));
+            Assert.That(m["variants"].Select(v => (string)v["kind"]).Distinct(), Is.EqualTo(new[] { "orig", "mismatch", "shift" }));
+            Assert.That(((JArray)m["order"]).Count, Is.EqualTo(9));
+            var plan = GenShift(StatedSpec(), 3);
+            foreach (var id in new[] { "color_lo", "color_hi", "size_lo", "size_hi" })
+                Assert.That(plan.Get(id).Describe(), Is.EqualTo(id + ": 같은 말·다른 값 쌍"), "실험자 화면에는 id만");
+        }
+
+        // ── CP5: 반올림 전 범주 검사, 대칭, 최소 이동폭 ─────────────────────
+        [TestCase(0.49996, "failed", "crosses_category")]     // 반올림하면 0.5지만 0.5 미만 → hi가 0.5를 넘음
+        [TestCase(0.50004, "failed", "crosses_category")]
+        [TestCase(0.5, "skipped_neutral", null)]
+        [TestCase(0.39996, "failed", "crosses_category")]      // 반올림 전 hi 0.49996 < 0.5지만 적용할 hi = 0.5 → 실패
+        [TestCase(0.38996, "passed", null)]                    // 적용할 hi 0.48996 < 0.5
+        [TestCase(0.60004, "failed", "crosses_category")]      // 적용할 lo = 0.5 → 실패
+        public void Size_category_check_uses_the_unrounded_side_and_the_applied_ends(double w, string check, string reason)
+        {
+            var plan = GenShift(OwnershipTestSpecs.Empty("SYN-raw").Slot("layout.size", w, "크기"));
+            var pair = plan.ShiftPairs[1];
+            Assert.That(pair.CategoryCheck, Is.EqualTo(check));
+            Assert.That(pair.SkipReason, Is.EqualTo(reason));
+            if (pair.Valid)
+            {
+                Assert.That(pair.Lo < w && w < pair.Hi, Is.True);
+                Assert.That(Math.Abs((pair.Hi.Value - w) - (w - pair.Lo.Value)), Is.LessThanOrEqualTo(OwnershipVariantGenerator.SizeSymmetryTolerance + 1e-12), "로그 척도 대칭");
+            }
+            var dflt = GenShift(DefaultSpec()).ShiftPairs[1];
+            Assert.That(dflt.CategoryCheck, Is.EqualTo("not_applicable"));
+        }
+
+        [Test]
+        public void Size_category_check_with_the_minimum_step_catches_an_applied_end_of_exactly_one_half()
+        {
+            var cfg = new OwnershipConfig { sizeShiftStep = 0.02 };
+            var pair = GenShift(OwnershipTestSpecs.Empty("SYN-raw").Slot("layout.size", 0.47996, "크기"), 1, cfg).ShiftPairs[1];
+            Assert.That(pair.Hi, Is.EqualTo(0.5), "반올림 전 0.49996 → 적용 0.5");
+            Assert.That((pair.CategoryCheck, pair.SkipReason), Is.EqualTo(("failed", "crosses_category")));
+        }
+
+        [Test]
+        public void Size_pair_widths_are_recorded_to_six_decimals()
+        {
+            var pair = GenShift(OwnershipTestSpecs.Empty("SYN-raw").Slot("layout.size", 0.3, "크기")).ShiftPairs[1];
+            Assert.That(pair.WM, Is.EqualTo(Math.Round(RenderedSize.MaxHorizontalWidthM(0.3, "none"), 6)));
+            Assert.That(pair.LoM, Is.EqualTo(Math.Round(RenderedSize.MaxHorizontalWidthM(0.2, "none"), 6)));
+            Assert.That(pair.HiM, Is.EqualTo(Math.Round(RenderedSize.MaxHorizontalWidthM(0.4, "none"), 6)));
+            // 로그 척도 등거리: log2(w/lo) = log2(hi/w) (6자리에서 구분)
+            Assert.That(Math.Log(pair.WM.Value / pair.LoM.Value, 2), Is.EqualTo(Math.Log(pair.HiM.Value / pair.WM.Value, 2)).Within(1e-4));
+        }
+
+        [Test]
+        public void Size_shift_step_below_minimum_is_a_config_error()
+        {
+            Assert.That(new OwnershipConfig { sizeShiftStep = 0.019 }.Validate().Single(), Does.Contain("sizeShiftStep"));
+            Assert.That(new OwnershipConfig { sizeShiftStep = 0.02 }.Validate(), Is.Empty);
+        }
+
+        // 화면 폭: 로더와 같은 함수(RenderedSize), 자세 배율 포함.
+        [TestCase(null, 1.0)]
+        [TestCase("lying", 1.3)]
+        [TestCase("standing", 0.9)]
+        public void Size_pair_records_rendered_width_in_metres(string posture, double widest)
+        {
+            var spec = DefaultSpec();
+            if (posture != null) spec.Slot("form.posture", posture, "자세");
+            var pair = GenShift(spec).ShiftPairs[1];
+            Assert.That(pair.WM, Is.EqualTo(Math.Round(0.35 * widest, 6)).Within(1e-9));
+            Assert.That(pair.LoM, Is.EqualTo(Math.Round(0.35 * Math.Pow(2, (0.4 - 0.5) * 4) * widest, 6)).Within(1e-9));
+            Assert.That(pair.HiM, Is.EqualTo(Math.Round(RenderedSize.MaxHorizontalWidthM(0.6, posture ?? "none"), 6)).Within(1e-9));
+            Assert.That(pair.DeltaECompositedLo, Is.Null);
+            foreach (var kv in RenderedSize.PostureTable)
+                Assert.That(SceneLoader.PostureScale[kv.Key].x, Is.EqualTo((float)kv.Value.x), "로더 자세 표 = RenderedSize 표 " + kv.Key);
+            Assert.That(SceneLoader.PostureScale.Count, Is.EqualTo(RenderedSize.PostureTable.Count));
+        }
+
+        // basis: 슬롯 값 + 근거. 근거만 있으면 default + provenanceWithoutValue. 채도 출처는 axisChoiceBasis로 따로.
+        [Test]
+        public void Pair_basis_needs_a_value_and_provenance_and_saturation_source_does_not_make_it_mixed()
+        {
+            var provOnly = DefaultSpec();
+            ((JObject)provOnly["_provenance"])["layout.size"] = new JArray(new JObject
+                { ["source"] = "explicit_lexicon", ["trigger"] = "크기", ["charSpan"] = new JArray(0, 2), ["rule"] = "synthetic.크기" });
+            var sp = GenShift(provOnly).ShiftPairs[1];
+            Assert.That((sp.Basis, sp.ProvenanceWithoutValue, sp.CategoryCheck), Is.EqualTo(("default", true, "not_applicable")));
+
+            var sat = StatedSpec();
+            sat["material"]["saturation"] = 0.5;   // 값만 있고 근거 없음
+            var plan = GenShift(sat);
+            var cp = plan.ShiftPairs[0];
+            Assert.That((cp.Basis, cp.AxisChoiceBasis, cp.ProvenanceWithoutValue), Is.EqualTo(("stated", "default", false)));
+            Assert.That(plan.Get("color_lo").Source, Is.EqualTo("stated"));
+        }
+
+        // 상한 안 lo × hi 후보에서 조건을 만족하는 최소 이동 쌍을 고른다(전수 비교).
+        [TestCase(0.6, 0.5, 0.4, 3.0)]
+        [TestCase(0.6, 0.5, 0.4, 0.3)]
+        [TestCase(0.33, 0.3, 0.6, 1.0)]
+        [TestCase(0.0, 0.8, 0.5, 0.5)]
+        public void Color_pair_is_the_smallest_symmetric_pair_within_the_cap(double h, double s, double l, double tol)
+        {
+            var cfg = new OwnershipConfig { shiftSymmetryTolerance = tol };
+            var plan = GenShift(OwnershipTestSpecs.Empty("SYN-sym").Hsl(h, s, l), 1, cfg);
+            var pair = plan.ShiftPairs[0];
+            var lab0 = LabOf(h, s, l);
+            List<(int k, double v, double de)> Cands(int dir)
+            {
+                var list = new List<(int, double, double)>();
+                for (int k = 1; k <= 180; k++)
+                {
+                    double raw = h + dir * k / 360.0;
+                    double v = Math.Round(raw - Math.Floor(raw), 4) % 1.0;
+                    double d = Math.Abs(v - h) % 1.0;
+                    if (Math.Min(d, 1 - d) * 360 > 20 + 1e-9) break;
+                    list.Add((k, v, ColorMetrics.DeltaE2000(lab0, LabOf(v, s, l))));
+                }
+                return list;
+            }
+            var lo = Cands(-1).Where(c => c.de >= 12).ToList();
+            var hi = Cands(+1).Where(c => c.de >= 12).ToList();
+            var ok = (from a in lo from b in hi where Math.Abs(a.de - b.de) <= tol
+                      orderby Math.Max(a.k, b.k), a.k + b.k, a.k select (a, b)).ToList();
+            if (ok.Count == 0)
+            {
+                Assert.That(pair.Valid, Is.False);
+                Assert.That(pair.SkipReason, Is.EqualTo(lo.Count == 0 || hi.Count == 0 ? "range_exceeded" : "asymmetric"));
+                return;
+            }
+            Assert.That(pair.Valid, Is.True, pair.SkipReason);
+            Assert.That(pair.Lo, Is.EqualTo(ok[0].a.v).Within(1e-9));
+            Assert.That(pair.Hi, Is.EqualTo(ok[0].b.v).Within(1e-9));
+            Assert.That(Math.Abs(pair.DeltaELo.Value - pair.DeltaEHi.Value), Is.LessThanOrEqualTo(tol + 0.001));
+        }
+
+        [Test]
+        public void Hue_cap_is_checked_on_the_rounded_value_actually_applied()
+        {
+            // 0.6 + 20/360 = 0.65556 → 반올림 0.6556 = 20.016° > 20° → 쓰지 않는다
+            var plan = GenShift(OwnershipTestSpecs.Empty("SYN-cap").Hsl(0.6, 0.5, 0.4), 1, new OwnershipConfig { colorShiftDeltaE = 1000 });
+            Assert.That(plan.ShiftPairs[0].SkipReason, Is.EqualTo("range_exceeded"));
+            var pair = GenShift(StatedSpec()).ShiftPairs[0];
+            Assert.That(pair.Hi, Is.Not.EqualTo(0.6556));
+            Assert.That(Math.Abs(pair.Hi.Value - 0.6) * 360, Is.LessThanOrEqualTo(20 + 1e-9));
+        }
+
+        // cb 일반화: n = 5는 X31 규칙과 같고, 7조건(14행)은 두 주기(28명)에서 행 × cb가 한 번씩.
+        [Test]
+        public void Balance_bit_generalizes_to_the_row_count_of_n()
+        {
+            for (int p = 1; p <= 60; p++) Assert.That(WilliamsDesign.CbFor(p, 5), Is.EqualTo(WilliamsDesign.CbFor(p)), "n = 5 = X31");
+            foreach (int n in new[] { 5, 7, 9 })
+            {
+                int rows = WilliamsDesign.RowsFor(n).Length;
+                var cells = Enumerable.Range(1, 2 * rows).Select(p => (WilliamsDesign.RowFor(p, n), WilliamsDesign.CbFor(p, n))).ToList();
+                Assert.That(cells.Distinct().Count(), Is.EqualTo(2 * rows), $"n={n}: 두 주기에서 행 × cb 칸이 한 번씩");
+            }
+            // 색 쌍 무효(7조건) spec: 계획의 cb·orderRows·conditionSet
+            for (int p = 1; p <= 28; p++)
+            {
+                var plan = GenShift(DefaultSpec().Hsl(0.0, 0.12, 0.9), p);
+                Assert.That(plan.OrderRows, Is.EqualTo(14));
+                Assert.That(plan.Cb, Is.EqualTo(WilliamsDesign.CbFor(p, 7)));
+                Assert.That(plan.ConditionSet, Is.EqualTo("color|form|motion|orig|size|size_hi|size_lo"));
+            }
         }
     }
 }

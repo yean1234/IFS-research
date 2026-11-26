@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title></title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <!-- 참여자에게 보이는 문구는 모두 shared/protocol/prereport_task.v0.2.json에서 채운다 -->
+  <header class="topbar">
+    <div class="brand">
+      <span class="dot" aria-hidden="true"></span>
+      <div>
+        <h1 id="pr-title"></h1>
+        <p class="sub" id="pr-session"></p>
+      </div>
+    </div>
+    <div class="badges"><span id="pr-progress" class="badge muted" hidden></span></div>
+  </header>
+
+  <main class="layout solo">
+    <section class="panel participant prereport">
+      <p id="pr-message" class="msg bot info" hidden></p>
+      <div id="pr-step" hidden>
+        <p id="pr-intro" class="hint"></p>
+        <h2 id="pr-question"></h2>
+
+        <div id="pr-commit">
+          <div id="pr-options" class="pr-options" role="radiogroup"></div>
+        </div>
+
+        <div id="pr-pick" hidden>
+          <p id="pr-answer" class="hint"></p>
+          <div id="pr-color" class="pr-pick" hidden>
+            <p id="pr-color-text" class="hint"></p>
+            <div class="pr-color-row">
+              <canvas id="pr-color-field" width="440" height="240"></canvas>
+              <canvas id="pr-achromatic" width="40" height="240"></canvas>
+            </div>
+          </div>
+          <div id="pr-size" class="pr-pick" hidden>
+            <p id="pr-size-text" class="hint"></p>
+            <canvas id="pr-size-view" width="480" height="300"></canvas>
+            <div id="pr-size-track" class="pr-track" role="slider" tabindex="0" aria-valuemin="0" aria-valuemax="1">
+              <div id="pr-size-thumb" class="pr-thumb" hidden></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="buttons">
+          <button id="pr-back" class="ghost" hidden></button>
+          <button id="pr-next" class="primary" disabled></button>
+        </div>
+      </div>
+    </section>
+  </main>
+  <div id="toast" class="toast" role="status" hidden></div>
+  <script src="/static/prereport.js"></script>
+</body>
+</html>

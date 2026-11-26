@@ -28,7 +28,7 @@ ollama pull hf.co/mradermacher/kanana-safeguard-8b-GGUF:Q4_K_M   # 안전 분류
 | 위기 안내에 연락처 넣기 | `--researcher-contact "연구자 OOO 010-…"` 또는 config의 `researcher_contact` |
 | 테스트 | `python -m pytest` (오프라인), `$env:IFS_LIVE=1; python -m pytest -m live` (로컬 모델) |
 | 모델 비교 | `python -m ifs_chatbot.simulate --model gemma4:e4b --model qwen3.5:9b --runs 3` |
-| 소유감 실험 기록 요약 | `python -m ifs_chatbot.eval.ownership --records <기록 루트> --out <폴더>` (형상·세션 CSV + RQ1–RQ3 기술 통계, 기록은 저장소 밖) |
+| 소유감 실험 기록 요약 | `python -m ifs_chatbot.eval.ownership --records <기록 루트> --out <폴더>` (형상·세션 CSV + RQ1–RQ3 기술 통계, 기록 0.3이면 같은 말·다른 값 쌍과 세션 폴더의 `prereport.json`으로 shift_pairs.csv·가까운−먼 요약, 기록은 저장소 밖) |
 
 ## 한 턴이 도는 순서
 
@@ -85,6 +85,33 @@ ollama pull hf.co/mradermacher/kanana-safeguard-8b-GGUF:Q4_K_M   # 안전 분류
 - 세션 ID는 가명만 받습니다(영문·숫자·`_`·`-`). 로그 폴더는 git에 올리지 않습니다.
 - 참여자가 끝난 뒤 [내 답 지우기]를 누르면 로그 파일을 지웁니다. 위기 대응으로 멈춘 세션은 안전 기록이라 연구자가 처리합니다.
 - 암호화 저장(「IFS 이론이란?」 5절)은 아직 없습니다. 파일럿 전에 디스크 암호화나 별도 보관 절차가 필요합니다.
+
+## 보기 전 보고 과제 (`/prereport?session=<id>`)
+
+확정 텍스트 뒤, 형상을 보기 전에 속성마다 ①②③과 색·크기 값을 한 번 받습니다(문구 `shared/protocol/prereport_task.v0.3.json`,
+형식 `shared/schemas/prereport.v0.2.json`, 면담·검증기 밖, LLM 없음). 기록은 `logs/<sessionId>/prereport.json`이고
+장면 JSON에는 들어가지 않습니다. 장면 파일 sha256은 확정 때 고정한 값을 붙입니다.
+
+**철회 절차.** [내 답 지우기](이전 이름 [응답 폐기])는 챗봇 쪽 세션 로그·장면 파일·`logs/<sessionId>/prereport.json`만 지웁니다. Unity 러너가
+기록 폴더(`…/ownership/P###/<sessionId>/<UTC>/prereport.json`)에 복사한 사본과 그 기록 폴더, 그리고 분석 출력
+(`stimuli.csv`·`sessions.csv`·`shift_pairs.csv`·`summary.json`)은 연구자가 직접 지우고 분석을 다시 돌려야 합니다.
+분석을 다시 돌릴 때는 철회한 세션 ID를 한 줄에 하나씩 적은 파일을 넘깁니다:
+`python -m ifs_chatbot.eval.ownership --records <기록 루트> --out <저장소 밖 폴더> --withdrawn <철회 목록.txt>`.
+그 세션의 기록 폴더는 평정·보고를 읽기 전에 빠지고 summary에는 개수(`records.withdrawn`)만 남습니다. 출력 폴더가 git
+저장소 안이고 무시 규칙에 걸리지 않으면 분석기가 경고합니다.
+이 파일들은 저장소 밖에 두며, 저장소 안에 복사돼도 `.gitignore`가 막습니다(합성 fixture는 `tests/fixtures/` 아래
+`*.synthetic.json` 또는 `manifest_*.json` 이름만 씁니다).
+
+**한계.**
+- 웹 크기 막대의 원은 기본 지름 0.35 m(Unity 프리미티브 대체 크기) × 2^((s − 0.5) × 4)로 그립니다. 웹은 프리팹 실제 크기나
+  자세 스케일(웅크림·납작·곧음)을 모르므로, 같은 s가 Unity 화면에서 다른 물리 크기일 수 있습니다. 그래서 보고에 원의 실제
+  길이 `widthM`을 함께 남기고, 분석기는 manifest의 `wM`·`loM`·`hiM`(Unity가 그린 가장 넓은 가로 폭)이 있으면 log(미터)로
+  비교합니다. 없으면 0–1 눈금으로 비교하고 `size_scale_fallback`을 표시합니다. Unity의 `wM`도 셰이더 굴곡과 프리팹 실제
+  크기는 포함하지 않는 명목값입니다.
+- 색 면은 채도 0.6 고정입니다. 회색은 오른쪽 무채색 띠로 고릅니다(`{h: null, s: 0, l}`).
+- '보기 전'의 증거는 Unity 러너가 첫 제시 전에 보고를 기록 폴더로 복사하고 그 sha256을 `manifest.prereport`에 남긴
+  사실입니다. 분석기는 이 해시가 없거나 맞지 않으면 `report_spec_mismatch`로 뺍니다. 보고 시각(`createdAtUtc`)과
+  `events.csv`의 `first_viewing_utc` 비교는 두 기계의 시계가 다를 수 있어 경고(`report_clock_warning`)로만 씁니다.
 
 ## 노션 설계에 덧붙인 것
 

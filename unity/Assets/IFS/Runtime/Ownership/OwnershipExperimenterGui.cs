@@ -71,6 +71,9 @@ namespace IFS.SceneSpec.Ownership
             GUILayout.EndScrollView();
             GUILayout.Label("3. spec 경로(목록에서 고르거나 직접 입력)");
             runner.SpecPathText = GUILayout.TextField(runner.SpecPathText ?? "");
+            GUILayout.Label("4. 보기 전 보고 파일 경로(선택. 내용은 화면·자극에 쓰지 않고 기록 폴더에 복사만 함)" +
+                            (runner.Config.requirePrereport ? " — requirePrereport 켬: 없거나 해시가 다르면 시작하지 않음" : ""), _wrap);
+            runner.PrereportPathText = GUILayout.TextField(runner.PrereportPathText ?? "");
             if (GUILayout.Button("확인 → SpecCheck", GUILayout.Height(32))) runner.Check();
         }
 
@@ -79,6 +82,7 @@ namespace IFS.SceneSpec.Ownership
             var plan = runner.Plan;
             DrawDraftNotice();
             GUILayout.Label($"참여자 {runner.ParticipantNumberText}  cb={plan?.Cb}  순서 행={plan?.OrderRow}  순서: {(plan != null ? string.Join(" → ", plan.Order) : "")}", _wrap);
+            GUILayout.Label($"보기 전 보고: <b>{runner.PrereportStatus}</b>", _wrap);
             GUILayout.Label("<b>속성별 말한 값 / 기본값 / 근거 없음</b>  (슬롯 | spec 값 | 구분 | 근거 말 | 해석값)  — 구분은 _provenance 기준(변형 source와 같음)", _wrap);
             foreach (var r in runner.SpecTable())
             {
@@ -93,7 +97,7 @@ namespace IFS.SceneSpec.Ownership
             if (plan != null)
             {
                 GUILayout.Label($"<b>원본</b>: {plan.OriginalRendered} (모양 모형 {plan.OriginalShapeModel}), 유효 불투명도 {plan.EffectiveOpacity:0.###}", _wrap);
-                GUILayout.Label("<b>변형 4개</b>", _wrap);
+                GUILayout.Label($"<b>보여 줄 형상 {plan.Order.Length}개</b> (원본 + 변형 {plan.Variants.Count - 1}개, 평정 문항 {runner.Config.ratingItem})", _wrap);
                 foreach (var v in plan.Variants.Where(v => !v.IsOriginal))
                 {
                     string flags = string.Join(" ", new[]
@@ -123,22 +127,22 @@ namespace IFS.SceneSpec.Ownership
                     GUILayout.Label("안내 문구를 보여 주는 중. 참여자가 준비되면 Space/Enter → 첫 형상.", _wrap);
                     break;
                 case OwnershipPhase.Viewing:
-                    GUILayout.Label($"제시 {runner.Position}/5: <b>{runner.ShownVariant}</b>   남은 시간 {runner.ViewSecondsLeft:0.0}초 (참여자에게는 보이지 않음)", _wrap);
+                    GUILayout.Label($"제시 {runner.Position}/{plan.Order.Length}: <b>{runner.ShownVariant}</b>   남은 시간 {runner.ViewSecondsLeft:0.0}초 (참여자에게는 보이지 않음)", _wrap);
                     break;
                 case OwnershipPhase.Rating:
-                    GUILayout.Label($"평정 {runner.Position}/5 ({plan.Order[runner.Position - 1]}): 참여자가 말한 숫자 1–7을 누르세요.", _wrap);
+                    GUILayout.Label($"평정 {runner.Position}/{plan.Order.Length} ({plan.Order[runner.Position - 1]}): 참여자가 말한 숫자 1–7을 누르세요.", _wrap);
                     GUILayout.Label(runner.PendingInput.HasValue
                         ? $"입력됨: <b>{runner.PendingInput}</b> — Space/Enter 확정·다음, Backspace 취소"
                         : "입력 대기", _wrap);
                     break;
                 case OwnershipPhase.FinalChoice:
-                    GUILayout.Label("마지막 선택: 참여자가 말한 번호 1–5. 호의 왼쪽부터 1–5 = " +
+                    GUILayout.Label($"마지막 선택: 참여자가 말한 번호 1–{plan.Order.Length}. 호의 왼쪽부터 1–{plan.Order.Length} = " +
                                     string.Join(", ", plan.Order.Select((id, i) => $"{i + 1}:{id}")), _wrap);
                     GUILayout.Label(runner.PendingInput.HasValue
                         ? $"입력됨: <b>{runner.PendingInput}</b> — Space/Enter 확정, Backspace 취소" : "입력 대기", _wrap);
                     break;
                 case OwnershipPhase.Difference:
-                    GUILayout.Label($"차이 평정 {runner.DifferenceIndex + 1}/4: 왼쪽 원본, 오른쪽 <b>{runner.DifferenceVariant}</b>. 숫자 1–7.", _wrap);
+                    GUILayout.Label($"차이 평정 {runner.DifferenceIndex + 1}/{plan.Order.Length - 1}: 왼쪽 원본, 오른쪽 <b>{runner.DifferenceVariant}</b>. 숫자 1–7.", _wrap);
                     GUILayout.Label(runner.PendingInput.HasValue
                         ? $"입력됨: <b>{runner.PendingInput}</b> — Space/Enter 확정·다음, Backspace 취소" : "입력 대기", _wrap);
                     break;

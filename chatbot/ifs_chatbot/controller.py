@@ -20,6 +20,7 @@ import secrets
 import threading
 from collections import defaultdict
 from datetime import datetime
+from pathlib import Path
 
 from .anchors import anchor_candidates
 from .clarify import clarify_targets, question_json
@@ -32,6 +33,7 @@ from .lexicon import Lexicon
 from .candidates import load_table as load_candidate_table
 from .candidates import safety_flags
 from .llm import GenerationRequest, OfflineTemplateBackend, OllamaBackend
+from . import prereport as prereport_mod
 from .paths import CHATBOT_DIR, shared
 from .preview import PreviewService
 from .prompts import PromptContext, PromptSet, TranscriptLine
@@ -256,6 +258,7 @@ class Session:
         self.id, self.condition = session_id, condition
         self.participant_id = participant_id   # 가명. 피험자 내 설계에서 한 사람의 여러 세션을 묶는다(장면 meta에만 씀)
         self.scene_spec: dict | None = None
+        self.scene_hashes: dict | None = None      # 확정 시점에 고정한 장면 파일별 sha256(보기 전 보고가 쓴다)
         self.steps: list[Step] = self.p.sequence(condition)
         self.idx = 0
         self.step_state: dict[int, dict] = defaultdict(dict)
@@ -438,6 +441,7 @@ class Session:
             if self.selection_flow is not None:
                 self.selection_flow.persist = False
             self.selection_flow = None
+            prereport_mod.delete_record(self.cfg.log_dir, self.id)
             self.log.data.update(turns=[], alerts=[], capture={}, confirmedText=None, confirmation=None,
                                  extraction=None, events=[], endedBy="withdrawn", sceneSpec=None, drift=None)
             self.participant_texts, self.transcript, self.asked, self.confirm_draft = [], [], [], None
@@ -466,6 +470,47 @@ class Session:
             ev = self.log.add_event(kind, payload)
             self._save()
             return ev
+
+    # ── 보기 전 보고 과제 (면담 밖, 고정 문구, LLM 없음 — ifs_chatbot/prereport.py) ──────────
+    @property
+    def prereport_path(self):
+        return prereport_mod.record_path(self.cfg.log_dir, self.id)
+
+    def prereport_status(self) -> dict:
+        """과제를 열 수 있는지(확정 텍스트와 장면 파일이 있어야 함)와 이미 냈는지. 고른 값은 돌려주지 않는다."""
+        with self.lock:
+            reason = None
+            if self.state == "withdrawn":
+                reason = "폐기된 세션입니다."
+            elif not self.log.data.get("confirmedText"):
+                reason = "확정 텍스트가 아직 없습니다([이대로 맞아요] 뒤에 열립니다)."
+            elif not self.scene_hashes:
+                reason = "확정 때 만든 장면 파일이 없습니다(장면 파일의 sha256을 남겨야 하므로 과제를 열 수 없습니다)."
+            submitted = self.prereport_path.is_file()
+            return {"sessionId": self.id, "available": reason is None and not submitted,
+                    "submitted": submitted, "reason": reason}
+
+    def submit_prereport(self, attributes: dict) -> dict:
+        """참여자 답(attributes)에 ID·장면 sha256·문구 판을 붙여 스키마 검사 뒤 한 번만 쓴다.
+        → {"ok": True, ...} / 스키마 위반이면 ValueError(위반 목록), 순서가 틀리면 SessionError."""
+        with self.lock:
+            st = self.prereport_status()
+            if st["submitted"]:
+                raise SessionError("보기 전 보고는 이미 냈습니다(한 번만 받습니다).")
+            if st["reason"]:
+                raise SessionError(st["reason"])
+            # 장면 sha256·대체 매핑 파일 목록은 확정 때 고정한 값(지금 파일을 다시 읽지 않는다)
+            rec = prereport_mod.build_record(session_id=self.id, participant=self.participant_id,
+                                             frozen=self.scene_hashes, attributes=attributes)
+            problems = prereport_mod.validate(rec)
+            if problems:
+                raise ValueError(problems)
+            prereport_mod.write_record(rec, self.prereport_path)
+            # 세션 로그에는 낸 사실과 파일 짝만 남긴다(고른 값·①②③은 별도 파일에만)
+            self.log.add_event("prereport", {"file": f"{self.id}/{prereport_mod.RECORD_NAME}",
+                                             "specSha256": rec["specSha256"], "taskTextVersion": rec["taskTextVersion"]})
+            self._save()
+            return {"ok": True, "sessionId": self.id, "specSha256": rec["specSha256"], "createdAtUtc": rec["createdAtUtc"]}
 
     # ── 진행 ────────────────────────────────────────────────────────────────
     def _on_reply(self, step: Step, text: str, no_more: bool) -> None:
@@ -885,10 +930,17 @@ class Session:
             if self.cfg.mapping.save_both:
                 variants = self._write_variants(text, spec, mapping, norm, problems)
             self.scene_spec = spec
+            self.scene_hashes = None
+            if saved:
+                others = [Path(v) for k, v in variants.items() if k in ("v0", "v1") and v]
+                self.scene_hashes = prereport_mod.freeze_hashes(Path(saved), others)
             self.log.data["sceneSpec"] = {"path": saved, "specVersion": spec["meta"]["specVersion"],
                                           "builder": spec["meta"]["pipeline"]["builder"],
                                           "sourceTextHash": spec["meta"]["sourceTextHash"], "problems": problems,
-                                          "mapping": mapping, "variants": variants}
+                                          "mapping": mapping, "variants": variants,
+                                          # 시각(frozenAtUtc)은 빼고 남긴다: 같은 확정 텍스트 → 같은 로그 내용(재현 검사)
+                                          "sha256": None if self.scene_hashes is None else
+                                          {k: v for k, v in self.scene_hashes.items() if k != "frozenAtUtc"}}
             if mapping["fallbackReason"]:
                 self.log.data["sceneSpec"]["fallback"] = True
             # G50 (4): 넷째 제외 범주(죽음·자해·외상) 낱말이 있으면 세션 기록에 남기고 연구자 알림으로 실험자 화면에 알린다.
@@ -930,6 +982,7 @@ class Session:
 
     def _delete_scene(self) -> None:
         self.scene_spec = None
+        self.scene_hashes = None
         for path in (self.scene_path, self.variant_path("v0"), self.variant_path("v1")):
             try:
                 path.unlink(missing_ok=True)

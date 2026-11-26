@@ -1,0 +1,112 @@
+{
+  "taskId": "ifs-prereport-task",
+  "taskVersion": "0.1",
+  "recordSchema": "shared/schemas/prereport.v0.json",
+  "description": "보기 전 보고 과제. 확정 텍스트([이대로 맞아요]) 뒤, 만든 형상을 보기 전에 속성마다 한 번 확정 여부(①②③)를 묻고, 색·크기는 ①②일 때만 값을 한 번 고르게 한다. 면담(질문 틀 6개·검증기 V1–V9) 밖의 고정 문구 과제다. LLM을 부르지 않고, 고른 값은 장면 JSON에 넣지 않는다.",
+  "sources": {
+    "design": "docs/rq-v2-proposal.md 3.2 (초안, IRB 검토 전)",
+    "options": "Bigelow 외(2023) Study 5의 '정하지 않음' 보기"
+  },
+  "changes": [
+    {
+      "version": "0.1",
+      "date": "2026-11-18",
+      "status": "draft",
+      "source": "docs/rq-v2-proposal.md 3.2 (초안, IRB 검토 전); 선택지 구성은 Bigelow 외(2023) Study 5의 '정하지 않음' 보기를 따름",
+      "summary": "처음 만든 판. 속성 4개(색·크기·모양·움직임)의 확정 여부 문항, 보기 3개, 색·크기 값 고르기 안내, 완료 문구.",
+      "reason": "③(지금도 정해진 것이 없다)을 고른 속성은 값을 받지 않는다. 제안서 3.2의 '③도 굳이 하나 고르게 한다'는 안은 이 판에 넣지 않았다(사용자가 답하지 않은 값을 만들지 않는다: AGENTS.md 2). 모든 문구는 IRB 제출 전 연구팀 검토가 필요한 초안이다."
+    }
+  ],
+  "phraseStatusLegend": {
+    "spec": "설계 문서에 적힌 문구 그대로. IRB 승인 대상.",
+    "draft": "새로 쓴 초안. IRB 제출 전에 연구팀 검토 필요."
+  },
+
+  "attributeOrder": ["color", "size", "form", "motion"],
+  "attributes": {
+    "color": {
+      "labelKo": "색",
+      "question": { "text": "떠올린 모습에 색이 있었나요?", "status": "draft",
+                    "source": "docs/rq-v2-proposal.md 3.2 (초안, IRB 검토 전); 선택지 구성은 Bigelow 외(2023) Study 5의 '정하지 않음' 보기를 따름" },
+      "valuePick": "color"
+    },
+    "size": {
+      "labelKo": "크기",
+      "question": { "text": "떠올린 모습에 크기가 있었나요?", "status": "draft",
+                    "source": "docs/rq-v2-proposal.md 3.2 (초안, IRB 검토 전); 선택지 구성은 Bigelow 외(2023) Study 5의 '정하지 않음' 보기를 따름" },
+      "valuePick": "size"
+    },
+    "form": {
+      "labelKo": "모양",
+      "question": { "text": "떠올린 모습에 모양이 있었나요?", "status": "draft",
+                    "source": "docs/rq-v2-proposal.md 3.2 (초안, IRB 검토 전); 선택지 구성은 Bigelow 외(2023) Study 5의 '정하지 않음' 보기를 따름" },
+      "valuePick": null
+    },
+    "motion": {
+      "labelKo": "움직임",
+      "question": { "text": "떠올린 모습에 움직임이 있었나요?", "status": "draft",
+                    "source": "docs/rq-v2-proposal.md 3.2 (초안, IRB 검토 전); 선택지 구성은 Bigelow 외(2023) Study 5의 '정하지 않음' 보기를 따름" },
+      "valuePick": null
+    }
+  },
+
+  "commitmentOptions": [
+    { "id": "from_start", "mark": "①", "label": "처음부터 있었다", "status": "draft",
+      "source": "docs/rq-v2-proposal.md 3.2 (초안, IRB 검토 전); 선택지 구성은 Bigelow 외(2023) Study 5의 '정하지 않음' 보기를 따름" },
+    { "id": "when_asked", "mark": "②", "label": "물어봐서 그때 정했다", "status": "draft",
+      "source": "docs/rq-v2-proposal.md 3.2 (초안, IRB 검토 전); 선택지 구성은 Bigelow 외(2023) Study 5의 '정하지 않음' 보기를 따름" },
+    { "id": "not_set", "mark": "③", "label": "지금도 정해진 것이 없다", "status": "draft",
+      "source": "docs/rq-v2-proposal.md 3.2 (초안, IRB 검토 전); 선택지 구성은 Bigelow 외(2023) Study 5의 '정하지 않음' 보기를 따름",
+      "note": "이 보기를 고르면 값 고르기를 보이지 않고 값을 비워 둔다(기본값을 넣지 않는다)." }
+  ],
+
+  "fixedPhrases": {
+    "intro": {
+      "text": "모양을 보기 전에 몇 가지만 여쭐게요. 방금 확정한 내용을 떠올리며, 속성마다 가장 가까운 답을 하나 골라 주세요. 맞고 틀린 답은 없어요.",
+      "status": "draft",
+      "source": "docs/rq-v2-proposal.md 3.2 (초안, IRB 검토 전); 선택지 구성은 Bigelow 외(2023) Study 5의 '정하지 않음' 보기를 따름"
+    },
+    "color_pick": {
+      "text": "떠올린 색에 가장 가까운 곳을 눌러 주세요. 다시 누르면 고친 곳으로 바뀝니다.",
+      "status": "draft",
+      "source": "docs/rq-v2-proposal.md 3.2 (초안, IRB 검토 전); 선택지 구성은 Bigelow 외(2023) Study 5의 '정하지 않음' 보기를 따름"
+    },
+    "size_pick": {
+      "text": "막대를 움직여 동그라미를 떠올린 크기에 가장 가깝게 맞춰 주세요. 옆의 사람 모양은 크기를 가늠하기 위한 것입니다.",
+      "status": "draft",
+      "source": "docs/rq-v2-proposal.md 3.2 (초안, IRB 검토 전); 선택지 구성은 Bigelow 외(2023) Study 5의 '정하지 않음' 보기를 따름"
+    },
+    "next_button": { "text": "확인", "status": "draft",
+                     "source": "docs/rq-v2-proposal.md 3.2 (초안, IRB 검토 전); 선택지 구성은 Bigelow 외(2023) Study 5의 '정하지 않음' 보기를 따름" },
+    "done": {
+      "text": "답해 주셔서 고마워요. 이제 연구자의 안내에 따라 다음 단계로 넘어갈게요.",
+      "status": "draft",
+      "source": "docs/rq-v2-proposal.md 3.2 (초안, IRB 검토 전); 선택지 구성은 Bigelow 외(2023) Study 5의 '정하지 않음' 보기를 따름"
+    },
+    "not_ready": {
+      "text": "아직 이 과제를 할 수 없습니다. 면담 내용을 확정한 뒤에 열립니다.",
+      "status": "draft",
+      "source": "docs/rq-v2-proposal.md 3.2 (초안, IRB 검토 전); 선택지 구성은 Bigelow 외(2023) Study 5의 '정하지 않음' 보기를 따름"
+    }
+  },
+
+  "colorField": {
+    "method": "hue_lightness_field",
+    "saturation": 0.6,
+    "hueAxis": "x",
+    "lightnessAxis": "y",
+    "lightnessTop": 0.95,
+    "lightnessBottom": 0.05,
+    "note": "가로 = 색상각 h(0–1, 왼쪽 0), 세로 = 밝기 l(위 0.95 → 아래 0.05), 채도 고정. 한 번 누른 점이 값 {h, l}이 된다. 채도 0.6은 이 과제가 정한 값이다(설계 문서에 없음, 검토 필요). 회색(채도 0)은 이 판에서 고를 수 없다."
+  },
+  "sizeSlider": {
+    "method": "size_slider",
+    "scale": "scene-spec layout.size와 같은 로그 척도: 지름 = 기본 지름 × 2^((s − 0.5) × 4)",
+    "baseDiameterM": 0.35,
+    "baseDiameterSource": "unity/README.md에는 기본 지름이 없다. unity/Assets/IFS/Runtime/Loading/SceneLoader.cs의 primitiveBaseSize 기본값 0.35 m(프리미티브 대체 때 기본 크기)를 썼다. 프리팹 형상은 프리팹 자체 크기가 ×1이라 다를 수 있다.",
+    "figureHeightM": 1.7,
+    "figureHeightSource": "unity/README.md 기본 눈높이 1.6 m / 0.936 ≈ 1.71 m",
+    "start": 0.5,
+    "note": "막대는 0.5에서 시작하지만, 참여자가 한 번 움직이기 전에는 동그라미를 그리지 않고 [확인]을 막는다(손대지 않은 시작값을 답으로 저장하지 않는다)."
+  }
+}

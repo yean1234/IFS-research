@@ -1,0 +1,350 @@
+{
+  "recordVersion": "ifs-ownership/0.2",
+  "generatorVersion": "ownership-variants/0.2",
+  "participantNumber": 12,
+  "cb": 0,
+  "orderRow": 1,
+  "sessionId": "SYN-golden",
+  "specFile": "SYN-golden.json",
+  "specSha256": "0",
+  "startedAtUtc": "2026-01-01T00:00:00.000Z",
+  "headSource": "desktop",
+  "unityVersion": "test",
+  "taskText": {
+    "file": "ownership_task.v0.json",
+    "version": "0.1",
+    "draftCount": 2,
+    "draftKeys": [
+      "done",
+      "rating"
+    ]
+  },
+  "config": {
+    "generatorVersion": "ownership-variants/0.2",
+    "sizeStep": 0.25,
+    "colorDeltaE": 30.0,
+    "viewSeconds": 30.0,
+    "headSampleHz": 20.0,
+    "gazeConeDeg": 15.0,
+    "finalChoiceArcDeg": 120.0,
+    "finalChoiceRadiusM": 0.0,
+    "differenceRating": true,
+    "requireSpecPhrases": false
+  },
+  "flags": {
+    "lowVisibility": false
+  },
+  "original": {
+    "params": {
+      "form.posture": "none",
+      "form.type": "mist",
+      "layout.distance": 0.33,
+      "layout.size": 0.9,
+      "layout.verticalOffset": 0.75,
+      "material.brightness": 0.2,
+      "material.color.h": 0.0,
+      "material.color.l": 0.3,
+      "material.color.s": 0.05,
+      "material.erosion": 0.0,
+      "material.opacity": 0.6,
+      "material.roughness": 0.5,
+      "motion.speed": 0.5,
+      "motion.type": "still"
+    },
+    "shapeModel": "none",
+    "rendered": "mist",
+    "statedKeys": [
+      "form.type",
+      "layout.size",
+      "material.brightness",
+      "material.color.h",
+      "material.color.l",
+      "material.color.s",
+      "material.opacity"
+    ],
+    "defaultKeys": [
+      "form.posture",
+      "layout.distance",
+      "layout.verticalOffset",
+      "material.erosion",
+      "material.roughness",
+      "motion.speed",
+      "motion.type"
+    ],
+    "unmappedCount": 0,
+    "unmatchedCount": 0,
+    "alternativesCount": 0,
+    "needsConfirmationCount": 0,
+    "effectiveOpacity": 0.3,
+    "shape": {
+      "status": "none",
+      "applied": null,
+      "model": null,
+      "viaPrefab": null,
+      "formType": "mist",
+      "words": []
+    }
+  },
+  "variants": [
+    {
+      "id": "orig",
+      "attribute": null,
+      "overrides": {},
+      "shapeModel": null,
+      "params": {
+        "form.posture": "none",
+        "form.type": "mist",
+        "layout.distance": 0.33,
+        "layout.size": 0.9,
+        "layout.verticalOffset": 0.75,
+        "material.brightness": 0.2,
+        "material.color.h": 0.0,
+        "material.color.l": 0.3,
+        "material.color.s": 0.05,
+        "material.erosion": 0.0,
+        "material.opacity": 0.6,
+        "material.roughness": 0.5,
+        "motion.speed": 0.5,
+        "motion.type": "still"
+      },
+      "rendered": "mist"
+    },
+    {
+      "id": "form",
+      "attribute": "form",
+      "overrides": {
+        "form.type": "blob"
+      },
+      "shapeModel": null,
+      "changedKeys": [
+        "form.type"
+      ],
+      "from": {
+        "form.type": "mist",
+        "shapeModel": "none",
+        "rendered": "mist"
+      },
+      "to": {
+        "form.type": "blob",
+        "shapeModel": "none",
+        "rendered": "blob"
+      },
+      "rule": "remove",
+      "source": "stated",
+      "sourceByKey": {
+        "form.type": "stated"
+      },
+      "flags": {
+        "saidNotRendered": false,
+        "forced": false,
+        "belowTarget": false,
+        "motionAltersScale": false
+      },
+      "magnitude": null,
+      "detail": {
+        "shapeStatus": "none",
+        "shapeWords": [],
+        "motionVisibleFrom": false,
+        "motionVisibleTo": false
+      },
+      "params": {
+        "form.posture": "none",
+        "form.type": "blob",
+        "layout.distance": 0.33,
+        "layout.size": 0.9,
+        "layout.verticalOffset": 0.75,
+        "material.brightness": 0.2,
+        "material.color.h": 0.0,
+        "material.color.l": 0.3,
+        "material.color.s": 0.05,
+        "material.erosion": 0.0,
+        "material.opacity": 0.6,
+        "material.roughness": 0.5,
+        "motion.speed": 0.5,
+        "motion.type": "still"
+      },
+      "rendered": "blob"
+    },
+    {
+      "id": "color",
+      "attribute": "color",
+      "overrides": {
+        "material.color.l": 0.685
+      },
+      "shapeModel": null,
+      "changedKeys": [
+        "material.color.l"
+      ],
+      "from": {
+        "material.color.h": 0.0,
+        "material.color.s": 0.05,
+        "material.color.l": 0.3
+      },
+      "to": {
+        "material.color.h": 0.0,
+        "material.color.s": 0.05,
+        "material.color.l": 0.685
+      },
+      "rule": "lightness",
+      "source": "stated",
+      "sourceByKey": {
+        "material.color.l": "stated"
+      },
+      "flags": {
+        "saidNotRendered": false,
+        "forced": false,
+        "belowTarget": false,
+        "motionAltersScale": false
+      },
+      "magnitude": {
+        "deltaE00": 30.242,
+        "deltaE00Composited": 3.696
+      },
+      "detail": {
+        "achromatic": true,
+        "targetDeltaE00": 30.0,
+        "direction": "lighter",
+        "steps": 77,
+        "stepSize": "0.005",
+        "saturationSource": "stated",
+        "deltaEBasis": "albedo",
+        "brightnessFactor": 0.64,
+        "compositeAlpha": 0.3,
+        "compositeBackground": [
+          0.74,
+          0.74,
+          0.75
+        ]
+      },
+      "params": {
+        "form.posture": "none",
+        "form.type": "mist",
+        "layout.distance": 0.33,
+        "layout.size": 0.9,
+        "layout.verticalOffset": 0.75,
+        "material.brightness": 0.2,
+        "material.color.h": 0.0,
+        "material.color.l": 0.685,
+        "material.color.s": 0.05,
+        "material.erosion": 0.0,
+        "material.opacity": 0.6,
+        "material.roughness": 0.5,
+        "motion.speed": 0.5,
+        "motion.type": "still"
+      },
+      "rendered": "mist"
+    },
+    {
+      "id": "size",
+      "attribute": "size",
+      "overrides": {
+        "layout.size": 0.65
+      },
+      "shapeModel": null,
+      "changedKeys": [
+        "layout.size"
+      ],
+      "from": {
+        "layout.size": 0.9
+      },
+      "to": {
+        "layout.size": 0.65
+      },
+      "rule": "down",
+      "source": "stated",
+      "sourceByKey": {
+        "layout.size": "stated"
+      },
+      "flags": {
+        "saidNotRendered": false,
+        "forced": true,
+        "belowTarget": false,
+        "motionAltersScale": false
+      },
+      "magnitude": {
+        "sizeStep": 0.25
+      },
+      "detail": {
+        "direction": "down",
+        "scaleFrom": 3.0314,
+        "scaleTo": 1.5157
+      },
+      "params": {
+        "form.posture": "none",
+        "form.type": "mist",
+        "layout.distance": 0.33,
+        "layout.size": 0.65,
+        "layout.verticalOffset": 0.75,
+        "material.brightness": 0.2,
+        "material.color.h": 0.0,
+        "material.color.l": 0.3,
+        "material.color.s": 0.05,
+        "material.erosion": 0.0,
+        "material.opacity": 0.6,
+        "material.roughness": 0.5,
+        "motion.speed": 0.5,
+        "motion.type": "still"
+      },
+      "rendered": "mist"
+    },
+    {
+      "id": "motion",
+      "attribute": "motion",
+      "overrides": {
+        "motion.type": "floating"
+      },
+      "shapeModel": null,
+      "changedKeys": [
+        "motion.type"
+      ],
+      "from": {
+        "motion.type": "still"
+      },
+      "to": {
+        "motion.type": "floating"
+      },
+      "rule": "add",
+      "source": "default",
+      "sourceByKey": {
+        "motion.type": "default"
+      },
+      "flags": {
+        "saidNotRendered": false,
+        "forced": false,
+        "belowTarget": false,
+        "motionAltersScale": false
+      },
+      "magnitude": null,
+      "detail": {
+        "originalGroup": "Still",
+        "variantGroup": "Drift",
+        "originalVisible": false,
+        "speed": 0.5
+      },
+      "params": {
+        "form.posture": "none",
+        "form.type": "mist",
+        "layout.distance": 0.33,
+        "layout.size": 0.9,
+        "layout.verticalOffset": 0.75,
+        "material.brightness": 0.2,
+        "material.color.h": 0.0,
+        "material.color.l": 0.3,
+        "material.color.s": 0.05,
+        "material.erosion": 0.0,
+        "material.opacity": 0.6,
+        "material.roughness": 0.5,
+        "motion.speed": 0.5,
+        "motion.type": "floating"
+      },
+      "rendered": "mist"
+    }
+  ],
+  "order": [
+    "form",
+    "color",
+    "orig",
+    "size",
+    "motion"
+  ]
+}

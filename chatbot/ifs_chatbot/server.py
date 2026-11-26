@@ -23,6 +23,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from .config import Config, load_config
+from . import prereport as prereport_mod
 from .controller import SESSION_ID_RE, Runtime, Session, SessionError
 from .paths import WEB_DIR
 from .postinterview import PostInterviewProtocol, PostInterviewStore
@@ -49,6 +50,10 @@ class Action(BaseModel):
 class Event(BaseModel):
     type: str = Field(..., max_length=64, description="예: calibration, distance_summary, feel_toward, containment")
     payload: dict = Field(default_factory=dict)
+
+
+class PrereportBody(BaseModel):
+    attributes: dict = Field(..., description="color·size·form·motion 답. 형식: shared/schemas/prereport.v0.2.json")
 
 
 class GuardCheck(BaseModel):
@@ -165,6 +170,28 @@ def create_app(cfg: Config | None = None, runtime: Runtime | None = None, warmup
     def add_event(sid: str, body: Event):
         """Unity 등에서 보내는 이벤트(보정량, 거리 요약, Feel toward 응답 등)를 같은 세션 로그에 묶는다."""
         return run(get_session(sid).add_event, body.type, body.payload)
+
+    @app.get("/api/prereport/task")
+    def prereport_task():
+        """보기 전 보고 과제의 고정 문구(shared/protocol/prereport_task.v0.3.json). 면담 밖 과제, LLM 없음."""
+        return prereport_mod.task_text()
+
+    @app.get("/api/sessions/{sid}/prereport")
+    def prereport_status(sid: str):
+        """과제를 열 수 있는지·이미 냈는지만 알린다(고른 값은 돌려주지 않는다)."""
+        return get_session(sid).prereport_status()
+
+    @app.post("/api/sessions/{sid}/prereport", status_code=201)
+    def prereport_submit(sid: str, body: PrereportBody):
+        """확정 텍스트 뒤 한 번만 받는다. 확정 전·두 번째 제출은 409, 스키마 위반은 422.
+        <log_dir>/<sid>/prereport.json에 쓰고, 장면 JSON에는 넣지 않는다."""
+        s = get_session(sid)
+        try:
+            return s.submit_prereport(body.attributes)
+        except SessionError as exc:
+            raise HTTPException(409, str(exc)) from exc
+        except ValueError as exc:
+            raise HTTPException(422, {"message": "보기 전 보고 형식이 맞지 않습니다.", "problems": exc.args[0]}) from exc
 
     @app.post("/api/guard/check")
     def guard_check(body: GuardCheck):
@@ -323,6 +350,11 @@ def create_app(cfg: Config | None = None, runtime: Runtime | None = None, warmup
         @app.get("/")
         def index():
             return FileResponse(WEB_DIR / "index.html")
+
+        @app.get("/prereport")
+        def prereport_page():
+            """보기 전 보고 과제 화면(?session=<sid>). 확정 전에는 화면이 과제를 열지 않고, 서버도 제출을 막는다."""
+            return FileResponse(WEB_DIR / "prereport.html")
 
     return app
 
