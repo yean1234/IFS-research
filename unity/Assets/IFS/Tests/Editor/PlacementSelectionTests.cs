@@ -682,8 +682,8 @@ namespace IFS.SceneSpec.Tests
                     Assert.That(it.AnchorHigh, Is.Not.Empty);
                 }
             }
-            Assert.That(PlacementTests.LoadText().Version, Is.EqualTo("0.5"), "문항을 더해 0.2로, 놓기 도움 문구(G53)를 더해 0.3으로, 문구 다듬기(G57)로 0.4로, G59 문항으로 0.5로 올림");
-            Assert.That(PlacementTaskText.Load(ScaleAPath).Version, Is.EqualTo("0.5-scaleA"));
+            Assert.That(PlacementTests.LoadText().Version, Is.EqualTo("0.6"), "문항을 더해 0.2로, 놓기 도움 문구(G53)를 더해 0.3으로, 문구 다듬기(G57)로 0.4로, G59 문항으로 0.5로, G60 want_move를 빼 0.6으로 올림");
+            Assert.That(PlacementTaskText.Load(ScaleAPath).Version, Is.EqualTo("0.6-scaleA"));
         }
 
         [Test]
@@ -717,7 +717,7 @@ namespace IFS.SceneSpec.Tests
             {
                 "appearance_match/pre", "representativeness/pre", "distance_feel/pre",
                 "appearance_match/post", "representativeness/post", "want_to_know/post", "withdraw_attention/post", "distance_feel/post",
-                "placed_by_me/check", "place_fit/check", "want_move/check",
+                "placed_by_me/check", "place_fit/check",
             }));
 
             // 기본 설정: 사전 = own과 거리감(G59), 사후에 두 문항

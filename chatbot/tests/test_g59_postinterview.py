@@ -24,13 +24,44 @@ FREE_PLACE = ["PI1_place_recall", "PI2_how_known", "PI3_more", "PI4_timing", "PI
 # ── 프로토콜 ────────────────────────────────────────────────────────────────
 def test_protocol_all_draft_with_g59_source():
     p = PostInterviewProtocol()
-    assert p.version == "0.1.0" and p.data["status"] == "draft"
+    assert p.version == "0.2.0" and p.data["status"] == "draft"                # G60: 0.1.0 → 0.2.0
     entries = list(p._entries())
     assert entries and len(p.draft_keys()) == len(entries)
+    assert "items.PI1_place_recall.clarify" in p.draft_keys()                  # G60 되받기 한 줄도 draft로 셈
     for _, v in entries:
-        assert v["status"] == "draft" and "G59" in v["source"] and "IRB 검토 전" in v["source"]
+        assert v["status"] == "draft" and ("G59" in v["source"] or "G60" in v["source"]) and "IRB 검토 전" in v["source"]
     ch = p.data["changes"][0]
-    assert ch["version"] == p.version and "G59" in ch["source"]
+    assert ch["version"] == p.version and "G60" in ch["source"]
+    assert p.data["changes"][1]["version"] == "0.1.0" and "G59" in p.data["changes"][1]["source"]
+
+
+def test_g60_pi1_wording_clarify_and_purposes():
+    """G60: PI1에 '나에게'를 넣고, 되물을 때 쓰는 고정 한 줄을 둔다. 모든 문항에 연구자용 purpose가 있고
+    기록 화면 설정(참여자가 직접 고르는 문항도 있는 화면)에는 보내지 않는다."""
+    p = PostInterviewProtocol()
+    pi1 = next(i for i in p.data["items"] if i["id"] == "PI1_place_recall")
+    assert pi1["text"] == "방금 물체가 있던 자리를 떠올려 주세요. 그 자리는 나에게 어떤 자리였는지, 떠오르는 대로 말해 주세요."
+    assert pi1["clarify"]["text"] == "정답은 없어요. 그 자리에 대해 떠오르는 것이면 무엇이든 괜찮아요."
+    words = next(r for r in p.data["experimenterRules"] if r["id"] == "R4_no_new_words")["words"]
+    assert not any(w in pi1["clarify"]["text"] for w in words) and "왜" not in pi1["clarify"]["text"]
+    for it in p.data["items"]:
+        assert isinstance(it.get("purpose"), str) and it["purpose"].strip(), it["id"]
+    cfg = p.ui(True)
+    assert not any("purpose" in it for it in cfg["items"])
+    dumped = json.dumps(cfg, ensure_ascii=False)
+    assert not any(it["purpose"] in dumped for it in p.data["items"])
+    js = (WEB / "postinterview.js").read_text(encoding="utf-8")
+    assert not re.search(r"\.purpose\b|\[\"purpose\"\]", js) and "clarify" not in js
+    # A층은 헤드셋 place_fit 1문항(want_move는 G60에서 뺌). 글은 헤드셋 문구 파일과 같다
+    layers = {l["id"]: l for l in p.data["rq3Layers"]}
+    assert [i["key"] for i in layers["A"]["items"]] == ["place_fit"]
+    ids = {i["id"] for i in p.data["items"]}
+    assert {i["id"] for k in "BCD" for i in layers[k]["items"]} == ids
+    ifs = REPO_ROOT / "unity" / "Assets" / "StreamingAssets" / "IFS"
+    for name, ver in (("placement_task.v0.json", "0.6"), ("placement_task.scaleA.v0.json", "0.6-scaleA")):
+        t = json.loads((ifs / name).read_text(encoding="utf-8"))
+        assert t["version"] == ver and "want_move" not in t["texts"], name
+        assert t["texts"]["place_fit"]["text"] == layers["A"]["items"][0]["text"], name
 
 
 def test_protocol_items_by_condition_and_order():

@@ -1,6 +1,7 @@
 {
-  "version": "0.5",
+  "version": "0.6",
   "protocol": "placement-task",
+  "note": "0.6(2026-11-26): G60 — 점검 문항 want_move를 뺌(교수님 결정 2026-11-26), 멈춤 거리 반복 멈춤 문구 stop_distance_loop·stop_loop_hint를 더함(G60-2, 설정 stopMode loop일 때만 보임 — 기본 single에서는 draftKeys에 들어가지 않음). 버전은 0.6 그대로.",
   "texts": {
     "intro": {
       "text": "이제 물체 하나를 보여 드릴게요. 안내가 나오면 그대로 따라 주세요.",
@@ -36,6 +37,16 @@
       "text": "이것이 움직이는 동안, 알맞다고 느껴지는 자리에 왔을 때 버튼을 눌러 주세요.",
       "status": "draft",
       "source": "docs/rq-v4-proposal.md 4.5절 멈춤 거리 지시문 초안(2026-11-22), IRB 검토 전"
+    },
+    "stop_distance_loop": {
+      "text": "이제 이것이 앞뒤로 천천히 움직여요. 알맞다고 느껴지는 자리에 오면 방아쇠를 눌러 멈춰 주세요. 다시 누르면 다시 움직여요. 몇 번이든 고쳐도 괜찮아요. 멈춘 자리가 알맞으면 확인 버튼을 눌러 정해 주세요.",
+      "status": "draft",
+      "source": "교수님 피드백 2026-11-26 / G60-2 — 멈춤 거리 반복 멈춤 지시문 초안(정해진 왕복 경로, 멈춤/다시 움직임 토글, 확정 버튼). 설정 stopMode loop일 때만 stop_distance 대신 보임. IRB 검토 전"
+    },
+    "stop_loop_hint": {
+      "text": "방아쇠: 다시 움직이기 · 확인 버튼: 이 자리로 정하기",
+      "status": "draft",
+      "source": "교수님 피드백 2026-11-26 / G60-2 — 반복 멈춤에서 물체가 멈춘 동안 stop_distance_loop 아래에 줄을 바꿔 붙이는 조작 안내 초안. 설정 stopMode loop일 때만 보임. IRB 검토 전"
     },
     "done": {
       "text": "이번 과제는 여기까지예요. 고맙습니다.",
@@ -109,13 +120,6 @@
       "anchors": { "low": "전혀 그렇지 않다", "high": "매우 그렇다" },
       "status": "draft",
       "source": "docs/decisions.md G59, 2026-11-25 — G59 RQ3 자리 평정 초안(두 조건 공통 — 보기만 조건에도 대응 값이 생김). 점검 단계에서 placed_by_me 다음. IRB 검토 전"
-    },
-    "want_move": {
-      "text": "할 수 있었다면 이것을 다른 자리로 옮기고 싶었다",
-      "when": "check",
-      "anchors": { "low": "전혀 그렇지 않다", "high": "매우 그렇다" },
-      "status": "draft",
-      "source": "docs/decisions.md G59, 2026-11-25 — G59 RQ3 자리 평정 초안(두 조건 공통 — 보기만 조건에도 대응 값이 생김). 점검 단계에서 place_fit 다음. IRB 검토 전"
     }
   }
 }

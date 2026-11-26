@@ -1,0 +1,137 @@
+var_a,method_a,component_a,var_b,method_b,component_b,same_component,same_method,n,rho
+awareness_change,self_report,awareness,disid_change,self_report,disidentification,0,1,24,-0.064
+awareness_change,self_report,awareness,reactivity_change,self_report,reactivity,0,1,24,0.377
+awareness_change,self_report,awareness,P2_change,self_report,attitude,0,1,24,0.252
+awareness_change,self_report,awareness,S5_change,self_report,attitude_approach,0,1,24,0.064
+awareness_change,self_report,awareness,S6_change,self_report,attitude_withdraw,0,1,24,-0.316
+awareness_change,self_report,awareness,delta_d_m,behavior,distance(성분 미정),0,0,18,-0.562
+awareness_change,self_report,awareness,g_late,behavior,attention_orientation(해석),0,0,24,0.347
+awareness_change,self_report,awareness,g_shift,behavior,attention_orientation(해석),0,0,24,0.282
+awareness_change,self_report,awareness,sd_asym_m,behavior,distance(성분 미정),0,0,0,
+awareness_change,self_report,awareness,regrab_count,behavior,adjustment(성분 미정),0,0,18,0.223
+awareness_change,self_report,awareness,la_K1_change,language,disidentification(해석: 자기 거리두기),0,0,24,0.281
+awareness_change,self_report,awareness,la_K2_change,language,disidentification,0,0,24,-0.115
+awareness_change,self_report,awareness,la_K3_change,language,disidentification,0,0,24,0.44
+awareness_change,self_report,awareness,la_K4_change,language,object_reference(해석),0,0,24,-0.189
+awareness_change,self_report,awareness,la_K6_change,language,temporal_distance(해석),0,0,24,-0.115
+awareness_change,self_report,awareness,la_K7_change,language,unspecified,0,0,24,-0.265
+disid_change,self_report,disidentification,reactivity_change,self_report,reactivity,0,1,24,0.193
+disid_change,self_report,disidentification,P2_change,self_report,attitude,0,1,24,0.017
+disid_change,self_report,disidentification,S5_change,self_report,attitude_approach,0,1,24,-0.137
+disid_change,self_report,disidentification,S6_change,self_report,attitude_withdraw,0,1,24,-0.095
+disid_change,self_report,disidentification,delta_d_m,behavior,distance(성분 미정),0,0,18,0.008
+disid_change,self_report,disidentification,g_late,behavior,attention_orientation(해석),0,0,24,-0.118
+disid_change,self_report,disidentification,g_shift,behavior,attention_orientation(해석),0,0,24,-0.112
+disid_change,self_report,disidentification,sd_asym_m,behavior,distance(성분 미정),0,0,0,
+disid_change,self_report,disidentification,regrab_count,behavior,adjustment(성분 미정),0,0,18,-0.378
+disid_change,self_report,disidentification,la_K1_change,language,disidentification(해석: 자기 거리두기),0,0,24,-0.067
+disid_change,self_report,disidentification,la_K2_change,language,disidentification,1,0,24,-0.426
+disid_change,self_report,disidentification,la_K3_change,language,disidentification,1,0,24,0.349
+disid_change,self_report,disidentification,la_K4_change,language,object_reference(해석),0,0,24,-0.223
+disid_change,self_report,disidentification,la_K6_change,language,temporal_distance(해석),0,0,24,-0.426
+disid_change,self_report,disidentification,la_K7_change,language,unspecified,0,0,24,0.43
+reactivity_change,self_report,reactivity,P2_change,self_report,attitude,0,1,24,0.398
+reactivity_change,self_report,reactivity,S5_change,self_report,attitude_approach,0,1,24,0.501
+reactivity_change,self_report,reactivity,S6_change,self_report,attitude_withdraw,0,1,24,-0.688
+reactivity_change,self_report,reactivity,delta_d_m,behavior,distance(성분 미정),0,0,18,-0.512
+reactivity_change,self_report,reactivity,g_late,behavior,attention_orientation(해석),0,0,24,0.372
+reactivity_change,self_report,reactivity,g_shift,behavior,attention_orientation(해석),0,0,24,0.464
+reactivity_change,self_report,reactivity,sd_asym_m,behavior,distance(성분 미정),0,0,0,
+reactivity_change,self_report,reactivity,regrab_count,behavior,adjustment(성분 미정),0,0,18,0.089
+reactivity_change,self_report,reactivity,la_K1_change,language,disidentification(해석: 자기 거리두기),0,0,24,0.649
+reactivity_change,self_report,reactivity,la_K2_change,language,disidentification,0,0,24,0.195
+reactivity_change,self_report,reactivity,la_K3_change,language,disidentification,0,0,24,0.555
+reactivity_change,self_report,reactivity,la_K4_change,language,object_reference(해석),0,0,24,-0.639
+reactivity_change,self_report,reactivity,la_K6_change,language,temporal_distance(해석),0,0,24,0.195
+reactivity_change,self_report,reactivity,la_K7_change,language,unspecified,0,0,24,-0.057
+P2_change,self_report,attitude,S5_change,self_report,attitude_approach,0,1,24,0.653
+P2_change,self_report,attitude,S6_change,self_report,attitude_withdraw,0,1,24,-0.477
+P2_change,self_report,attitude,delta_d_m,behavior,distance(성분 미정),0,0,18,-0.75
+P2_change,self_report,attitude,g_late,behavior,attention_orientation(해석),0,0,24,0.678
+P2_change,self_report,attitude,g_shift,behavior,attention_orientation(해석),0,0,24,0.645
+P2_change,self_report,attitude,sd_asym_m,behavior,distance(성분 미정),0,0,0,
+P2_change,self_report,attitude,regrab_count,behavior,adjustment(성분 미정),0,0,18,0.361
+P2_change,self_report,attitude,la_K1_change,language,disidentification(해석: 자기 거리두기),0,0,24,0.4
+P2_change,self_report,attitude,la_K2_change,language,disidentification,0,0,24,-0.128
+P2_change,self_report,attitude,la_K3_change,language,disidentification,0,0,24,0.59
+P2_change,self_report,attitude,la_K4_change,language,object_reference(해석),0,0,24,-0.672
+P2_change,self_report,attitude,la_K6_change,language,temporal_distance(해석),0,0,24,-0.128
+P2_change,self_report,attitude,la_K7_change,language,unspecified,0,0,24,0.363
+S5_change,self_report,attitude_approach,S6_change,self_report,attitude_withdraw,0,1,24,-0.492
+S5_change,self_report,attitude_approach,delta_d_m,behavior,distance(성분 미정),0,0,18,-0.623
+S5_change,self_report,attitude_approach,g_late,behavior,attention_orientation(해석),0,0,24,0.658
+S5_change,self_report,attitude_approach,g_shift,behavior,attention_orientation(해석),0,0,24,0.702
+S5_change,self_report,attitude_approach,sd_asym_m,behavior,distance(성분 미정),0,0,0,
+S5_change,self_report,attitude_approach,regrab_count,behavior,adjustment(성분 미정),0,0,18,0.244
+S5_change,self_report,attitude_approach,la_K1_change,language,disidentification(해석: 자기 거리두기),0,0,24,0.633
+S5_change,self_report,attitude_approach,la_K2_change,language,disidentification,0,0,24,0.195
+S5_change,self_report,attitude_approach,la_K3_change,language,disidentification,0,0,24,0.535
+S5_change,self_report,attitude_approach,la_K4_change,language,object_reference(해석),0,0,24,-0.583
+S5_change,self_report,attitude_approach,la_K6_change,language,temporal_distance(해석),0,0,24,0.195
+S5_change,self_report,attitude_approach,la_K7_change,language,unspecified,0,0,24,-0.066
+S6_change,self_report,attitude_withdraw,delta_d_m,behavior,distance(성분 미정),0,0,18,0.708
+S6_change,self_report,attitude_withdraw,g_late,behavior,attention_orientation(해석),0,0,24,-0.402
+S6_change,self_report,attitude_withdraw,g_shift,behavior,attention_orientation(해석),0,0,24,-0.511
+S6_change,self_report,attitude_withdraw,sd_asym_m,behavior,distance(성분 미정),0,0,0,
+S6_change,self_report,attitude_withdraw,regrab_count,behavior,adjustment(성분 미정),0,0,18,-0.143
+S6_change,self_report,attitude_withdraw,la_K1_change,language,disidentification(해석: 자기 거리두기),0,0,24,-0.778
+S6_change,self_report,attitude_withdraw,la_K2_change,language,disidentification,0,0,24,-0.214
+S6_change,self_report,attitude_withdraw,la_K3_change,language,disidentification,0,0,24,-0.684
+S6_change,self_report,attitude_withdraw,la_K4_change,language,object_reference(해석),0,0,24,0.856
+S6_change,self_report,attitude_withdraw,la_K6_change,language,temporal_distance(해석),0,0,24,-0.214
+S6_change,self_report,attitude_withdraw,la_K7_change,language,unspecified,0,0,24,-0.065
+delta_d_m,behavior,distance(성분 미정),g_late,behavior,attention_orientation(해석),0,1,18,-0.719
+delta_d_m,behavior,distance(성분 미정),g_shift,behavior,attention_orientation(해석),0,1,18,-0.716
+delta_d_m,behavior,distance(성분 미정),sd_asym_m,behavior,distance(성분 미정),1,1,0,
+delta_d_m,behavior,distance(성분 미정),regrab_count,behavior,adjustment(성분 미정),0,1,18,-0.418
+delta_d_m,behavior,distance(성분 미정),la_K1_change,language,disidentification(해석: 자기 거리두기),0,0,18,-0.818
+delta_d_m,behavior,distance(성분 미정),la_K2_change,language,disidentification,0,0,18,
+delta_d_m,behavior,distance(성분 미정),la_K3_change,language,disidentification,0,0,18,-0.818
+delta_d_m,behavior,distance(성분 미정),la_K4_change,language,object_reference(해석),0,0,18,0.825
+delta_d_m,behavior,distance(성분 미정),la_K6_change,language,temporal_distance(해석),0,0,18,
+delta_d_m,behavior,distance(성분 미정),la_K7_change,language,unspecified,0,0,18,
+g_late,behavior,attention_orientation(해석),g_shift,behavior,attention_orientation(해석),1,1,24,0.936
+g_late,behavior,attention_orientation(해석),sd_asym_m,behavior,distance(성분 미정),0,1,0,
+g_late,behavior,attention_orientation(해석),regrab_count,behavior,adjustment(성분 미정),0,1,18,0.396
+g_late,behavior,attention_orientation(해석),la_K1_change,language,disidentification(해석: 자기 거리두기),0,0,24,0.325
+g_late,behavior,attention_orientation(해석),la_K2_change,language,disidentification,0,0,24,-0.236
+g_late,behavior,attention_orientation(해석),la_K3_change,language,disidentification,0,0,24,0.612
+g_late,behavior,attention_orientation(해석),la_K4_change,language,object_reference(해석),0,0,24,-0.441
+g_late,behavior,attention_orientation(해석),la_K6_change,language,temporal_distance(해석),0,0,24,-0.236
+g_late,behavior,attention_orientation(해석),la_K7_change,language,unspecified,0,0,24,0.182
+g_shift,behavior,attention_orientation(해석),sd_asym_m,behavior,distance(성분 미정),0,1,0,
+g_shift,behavior,attention_orientation(해석),regrab_count,behavior,adjustment(성분 미정),0,1,18,0.396
+g_shift,behavior,attention_orientation(해석),la_K1_change,language,disidentification(해석: 자기 거리두기),0,0,24,0.433
+g_shift,behavior,attention_orientation(해석),la_K2_change,language,disidentification,0,0,24,-0.139
+g_shift,behavior,attention_orientation(해석),la_K3_change,language,disidentification,0,0,24,0.64
+g_shift,behavior,attention_orientation(해석),la_K4_change,language,object_reference(해석),0,0,24,-0.519
+g_shift,behavior,attention_orientation(해석),la_K6_change,language,temporal_distance(해석),0,0,24,-0.139
+g_shift,behavior,attention_orientation(해석),la_K7_change,language,unspecified,0,0,24,0.137
+sd_asym_m,behavior,distance(성분 미정),regrab_count,behavior,adjustment(성분 미정),0,1,0,
+sd_asym_m,behavior,distance(성분 미정),la_K1_change,language,disidentification(해석: 자기 거리두기),0,0,0,
+sd_asym_m,behavior,distance(성분 미정),la_K2_change,language,disidentification,0,0,0,
+sd_asym_m,behavior,distance(성분 미정),la_K3_change,language,disidentification,0,0,0,
+sd_asym_m,behavior,distance(성분 미정),la_K4_change,language,object_reference(해석),0,0,0,
+sd_asym_m,behavior,distance(성분 미정),la_K6_change,language,temporal_distance(해석),0,0,0,
+sd_asym_m,behavior,distance(성분 미정),la_K7_change,language,unspecified,0,0,0,
+regrab_count,behavior,adjustment(성분 미정),la_K1_change,language,disidentification(해석: 자기 거리두기),0,0,18,0
+regrab_count,behavior,adjustment(성분 미정),la_K2_change,language,disidentification,0,0,18,
+regrab_count,behavior,adjustment(성분 미정),la_K3_change,language,disidentification,0,0,18,0
+regrab_count,behavior,adjustment(성분 미정),la_K4_change,language,object_reference(해석),0,0,18,0
+regrab_count,behavior,adjustment(성분 미정),la_K6_change,language,temporal_distance(해석),0,0,18,
+regrab_count,behavior,adjustment(성분 미정),la_K7_change,language,unspecified,0,0,18,
+la_K1_change,language,disidentification(해석: 자기 거리두기),la_K2_change,language,disidentification,0,1,24,0.577
+la_K1_change,language,disidentification(해석: 자기 거리두기),la_K3_change,language,disidentification,0,1,24,0.577
+la_K1_change,language,disidentification(해석: 자기 거리두기),la_K4_change,language,object_reference(해석),0,1,24,-0.76
+la_K1_change,language,disidentification(해석: 자기 거리두기),la_K6_change,language,temporal_distance(해석),0,1,24,0.577
+la_K1_change,language,disidentification(해석: 자기 거리두기),la_K7_change,language,unspecified,0,1,24,-0.378
+la_K2_change,language,disidentification,la_K3_change,language,disidentification,1,1,24,-0.333
+la_K2_change,language,disidentification,la_K4_change,language,object_reference(해석),0,1,24,-0.098
+la_K2_change,language,disidentification,la_K6_change,language,temporal_distance(해석),0,1,24,1
+la_K2_change,language,disidentification,la_K7_change,language,unspecified,0,1,24,-0.655
+la_K3_change,language,disidentification,la_K4_change,language,object_reference(해석),0,1,24,-0.78
+la_K3_change,language,disidentification,la_K6_change,language,temporal_distance(해석),0,1,24,-0.333
+la_K3_change,language,disidentification,la_K7_change,language,unspecified,0,1,24,0.218
+la_K4_change,language,object_reference(해석),la_K6_change,language,temporal_distance(해석),0,1,24,-0.098
+la_K4_change,language,object_reference(해석),la_K7_change,language,unspecified,0,1,24,-0.287
+la_K6_change,language,temporal_distance(해석),la_K7_change,language,unspecified,0,1,24,-0.655

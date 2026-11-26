@@ -11,7 +11,7 @@ from .paths import CHATBOT_DIR, CONFIG_DIR
 @dataclass(frozen=True)
 class InterviewConfig:
     condition: str = "chatbot"                     # chatbot(조건 2) | static(조건 1)
-    protocol: str = "elicitation_protocol.v1.3.json"  # shared/protocol/ 아래
+    protocol: str = "elicitation_protocol.v1.4.json"  # shared/protocol/ 아래
     prompt_version: str = "1.0.0"                  # chatbot/prompts/v<버전>/
 
 
@@ -64,6 +64,13 @@ class MappingConfig:
     # True면 mode = "v1"인데 v1 빌더를 만들지 못할 때(시작 시점) v0로 넘어가지 않고 Runtime 생성에서 예외로 멈춘다.
     # 세션 도중 확정 시점의 v1 build 예외는 strict여도 v0 대체 + meta.mapping + 연구자 알림(참여자 세션을 끊지 않음).
     strict: bool = False
+    # G61(매퍼 v2에서만, mode = "v2"). 비우면 끔 — 기본 출력은 builder 2.4.0·스펙 2.2.0과 바이트 단위로 같다.
+    # ext_lexicon: 1층 사전 v2 오버레이(shared/lexicon/ 아래, 예 "layer1_lexicon.v2.json") → 스펙 2.3.0(윤곽·발광).
+    #   ⚠ Unity가 2.3.0을 읽게 되기 전에는 켜지 않는다(헤드셋 러너·WebGL 미리보기의 엄격 파서가 모르는 버전을 거부)
+    ext_lexicon: str = ""
+    ext_params: str = "scene_params.v3.json"     # ext_lexicon을 켰을 때 읽는 대응표(서수 단계·정도·렌더 수치)
+    # variant_rules: 형태 변이 규칙층(예 "variant_rules.v0.json"). 사전에 직접 없는 의태어 변이형의 뿌리를 규칙으로 찾는다
+    variant_rules: str = ""
 
 
 @dataclass(frozen=True)

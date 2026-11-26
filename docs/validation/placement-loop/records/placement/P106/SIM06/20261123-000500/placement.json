@@ -1,0 +1,18 @@
+{
+  "condition": "view",
+  "controlMode": "static",
+  "phaseDurationMs": 90000,
+  "finalX": 0.0,
+  "finalY": 1.109,
+  "finalZ": 1.5,
+  "finalDistanceM": 1.5,
+  "finalAzimuthDeg": 0.0,
+  "finalHeightM": 1.109,
+  "grabCount": 0,
+  "firstGrabMs": null,
+  "heldMs": 0,
+  "pathLengthM": 0.0,
+  "confirmed": false,
+  "confirmMs": null,
+  "conditionCompleted": true
+}

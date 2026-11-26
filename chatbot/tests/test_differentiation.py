@@ -324,3 +324,103 @@ def test_unity_records_format_compatible():
     place = [r for r in res["rows"] if r["condition"] == "place"]
     assert len(place) == 1 and place[0]["quadrant"] in dv.QUADRANTS and place[0]["g_late"] is not None
     assert place[0]["S5_post"] is not None and "S5=want_to_know" in place[0]["sr_aliases"]
+
+
+# ---------------------------------------------------------------- G60-2 반복 멈춤(stopMode loop)의 멈춤 성분
+
+def _loop_rounds(finals):
+    from test_placement_eval import _round
+    rounds = [_round(1, 1, 0.5, 0.5, "approach")]                    # 연습 — 섞이면 평균이 틀어짐
+    for i, f in enumerate(finals, 2):
+        rounds.append(_round(i, 0, f, f + 0.1 if f is not None else 1.9, "approach" if i % 2 else "recede",
+                             reason="confirmed" if f is not None else "timeout_stopped"))
+    return rounds
+
+
+def test_loop_session_uses_the_placement_main_value(tmp_path):
+    from test_placement_eval import make_loop_session
+    make_loop_session(tmp_path, 1, "lp", _loop_rounds([1.6, 1.8, None, 1.7]))
+    res = dv.analyze([tmp_path], out_dir=tmp_path / "out")
+    r = row(res, "lp")
+    pl = next(s for s in placement.analyze(tmp_path)["sessions"] if s["session_id"] == "lp")
+    assert r["sd_mean_m"] == pl["stop_final_mean_m"] == pytest.approx((1.6 + 1.8 + 1.7) / 3, abs=1e-4)
+    assert (r["stop_mode"], r["sd_final_n"]) == ("loop", 3)
+    assert r["sd_asym_m"] is None and r["sd_approach_m"] is None and r["sd_recede_m"] is None, "한계법 방향별 값은 정의되지 않음"
+    assert "sd_from_loop_final" in r["flags"] and "sd_loop_insufficient" not in r["flags"]
+    head = (tmp_path / "out" / "differentiation_profile.csv").read_text(encoding="utf-8").splitlines()[0].split(",")
+    i = head.index("sd_mean_m")
+    assert head[i + 1:i + 3] == dv.LOOP_BEH_COLS and res["columns"] == head
+    sm = json.loads((tmp_path / "out" / "differentiation_summary.json").read_text(encoding="utf-8"))["behavior"]["stopMode"]
+    assert sm["sessions"] == {"single": 0, "loop": 1} and sm["mixed"] is False and sm["loopInsufficient"] == 0
+    assert "config_mismatch:stop_mode" not in res["summary"]["warnings"]
+    assert res["summary"]["behavior"]["byCondition"]["place"]["sd_mean_m"]["n"] == 1
+
+
+def test_loop_with_fewer_than_two_confirmed_rounds_stays_blank(tmp_path):
+    from test_placement_eval import make_loop_session
+    make_loop_session(tmp_path, 1, "few", _loop_rounds([1.6, None, None]))
+    r = row(dv.analyze([tmp_path]), "few")
+    assert r["sd_mean_m"] is None and r["sd_final_n"] == 1, "확정 라운드 2개 미만 — 마지막 멈춤으로 채우지 않음(원칙 2)"
+    assert "sd_loop_insufficient" in r["flags"]
+
+
+def test_single_and_loop_mixed_is_flagged(tmp_path):
+    from test_placement_eval import make_loop_session
+    make_loop_session(tmp_path, 1, "lp", _loop_rounds([1.6, 1.8, 1.7]))
+    session(tmp_path, 2, "single")
+    res = dv.analyze([tmp_path], out_dir=tmp_path / "out")
+    assert "config_mismatch:stop_mode" in res["summary"]["warnings"]
+    assert any(w.endswith("config_mismatch:stopDistance") for w in res["summary"]["warnings"]), "placement의 설정 점검도 그대로"
+    s, lp = row(res, "single"), row(res, "lp")
+    assert (s["stop_mode"], s["sd_final_n"], lp["stop_mode"]) == ("single", None, "loop")
+    assert s["sd_mean_m"] is not None and s["sd_asym_m"] is not None and "sd_from_loop_final" not in s["flags"]
+    sm = res["summary"]["behavior"]["stopMode"]
+    assert sm["mixed"] is True and sm["included"] == {"single": 1, "loop": 1}
+    # 미완료 loop 세션은 섞임 판정(요약 포함 세션 기준)에 들지 않는다
+    other = tmp_path / "o2"
+    make_loop_session(other, 1, "lp-incomplete", _loop_rounds([1.6, 1.8]))
+    session(other, 2, "single2")
+    summ = next(other.rglob("lp-incomplete/*/summary.json"))
+    summ.write_text(json.dumps({**json.loads(summ.read_text(encoding="utf-8")), "completed": False}), encoding="utf-8")
+    res2 = dv.analyze([other])
+    assert row(res2, "lp-incomplete")["included"] is False
+    assert "config_mismatch:stop_mode" not in res2["summary"]["warnings"]
+    assert res2["summary"]["behavior"]["stopMode"]["included"] == {"single": 1, "loop": 0}
+
+
+def test_single_only_output_has_no_loop_columns_or_keys(tmp_path):
+    session(tmp_path / "r", 1, "a")
+    session(tmp_path / "r", 2, "b", final=(3.0, 0.0, 0.8), late=60)
+    res = dv.analyze([tmp_path / "r"], out_dir=tmp_path / "o")
+    head = (tmp_path / "o" / "differentiation_profile.csv").read_text(encoding="utf-8").splitlines()[0].split(",")
+    assert head == dv.PROFILE_COLUMNS and "columns" not in res
+    assert all("stop_mode" not in r and "sd_final_n" not in r for r in res["rows"])
+    assert "stopMode" not in res["summary"]["behavior"]
+
+
+def test_committed_single_validation_outputs_are_byte_identical(tmp_path):
+    """docs/validation/differentiation(G60 전 single 합성 기록)의 결과를 지금 코드로 다시 만들면 바이트까지 같다."""
+    base = REPO / "docs" / "validation" / "differentiation"
+    if not (base / "records").is_dir():
+        pytest.skip("검증 폴더 없음")
+    out = tmp_path / "d"
+    dv.analyze([base / "records"], utterances=base / "utterances.jsonl", out_dir=out)
+    for name in ("differentiation_profile.csv", "differentiation_convergence.csv", "differentiation_summary.json"):
+        assert (out / name).read_bytes() == (base / "analysis" / "differentiation" / name).read_bytes(), name
+
+
+def test_sim_loop_pipeline_runs_differentiation(tmp_path):
+    check = sim_placement.run_pipeline(tmp_path, seed=5, per_type=1, hz=2, extra_records=None, stop_mode="loop")
+    an = tmp_path / "analysis"
+    assert (an / "differentiation" / "differentiation_profile.csv").is_file()
+    assert (an / "differentiation_median" / "differentiation_summary.json").is_file()
+    rows = list(csv.DictReader((an / "differentiation" / "differentiation_profile.csv").open(encoding="utf-8")))
+    assert rows and all(r["stop_mode"] == "loop" for r in rows)
+    assert sum(1 for r in rows if r["sd_mean_m"]) >= len(rows) - 1
+    for arch, v in check["byArchetype"].items():
+        lo, hi = v["stop_assumed_range_m"]
+        if v["sd_mean_mean"] is not None:
+            assert lo - 0.2 <= v["sd_mean_mean"] <= hi + 0.2, arch
+    # 기본(single) 파이프라인의 sim_check에는 loop 키가 없다
+    single = sim_placement.run_pipeline(tmp_path / "s", seed=5, per_type=1, hz=2, extra_records=None)
+    assert all("sd_mean_mean" not in v for v in single["byArchetype"].values())

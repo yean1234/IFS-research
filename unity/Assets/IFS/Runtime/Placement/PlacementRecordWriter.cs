@@ -14,6 +14,12 @@
 //   2026-11-25(G59, 형식 버전 0.2 유지 — 추가만): config의 checkBeforeStopDistance·practiceInAllConditions는 켰을 때만(true) 맨 끝에 남는다.
 //   checkBeforeStopDistance면 events phase 순서가 post_items → check_items → post_wait → stop_distance → done. practiceInAllConditions면
 //   보기만 조건에도 practice.json·practice_* 사건·environment.practice가 생긴다.
+//   2026-11-26(G60-2·G60-3, 형식 버전 0.2 유지 — 추가만, 기본값에서는 G60 전과 바이트 단위로 같다):
+//   · stopMode loop일 때만 stoprounds.csv(라운드 1행)·stopadjust.csv(멈춤·재개·확정·무시된 입력·끝점 반사마다 1행)를 더 만들고,
+//     manifest stopDistance에 mode·loop{…, plan}을 더한다. stopdistance.csv는 헤더만 남는다. config 끝에 stopMode·stopLoop* 키.
+//     events stop_round_start·stop_round_end. objpose.csv state에 stop_paused(멈춘 동안)가 더해진다.
+//   · eyeHeightMode relative일 때만 manifest 맨 끝 eyeHeight{mode, referenceM, measuredM, offsetM, sdM, pitchDeg, samples,
+//     trackingOrigin, source}, events eye_height_calibrated, config 끝에 eyeHeight*·eyeCalib* 키.
 //   {recordRoot}/placement/P{번호:000}/{sessionId}/{UTC yyyyMMdd-HHmmss}[-n]/
 //     manifest.json · headpose.csv · objpose.csv · events.csv · placement.json · stopdistance.csv · ratings.csv · trajectory.json · summary.json
 //   UTF-8(BOM 없음), 숫자는 InvariantCulture, 줄바꿈 \n. CSV는 줄마다 바로 쓰므로 중간에 꺼져도 그때까지 남는다.
@@ -57,10 +63,23 @@ namespace IFS.SceneSpec.Placement
             ManifestFile, HeadposeFile, ObjposeFile, EventsFile, PlacementFile, StopDistanceFile, RatingsFile, TrajectoryFile, SummaryFile,
         };
 
+        // ── 멈춤 거리 반복 멈춤(G60-2, stopMode loop일 때만) ──────────────────
+        /// <summary>라운드 요약(라운드 1행).</summary>
+        public const string StopRoundsFile = "stoprounds.csv";
+        /// <summary>조정 사건(시작·멈춤·재개·끝점 반사·확정·무시된 입력·끝).</summary>
+        public const string StopAdjustFile = "stopadjust.csv";
+        /// <summary>loop 세션에만 생기는 파일(AllFiles에 넣지 않음).</summary>
+        public static readonly string[] LoopFiles = { StopRoundsFile, StopAdjustFile };
+        public const string StopRoundsHeader =
+            "round,practice,start_dir,start_distance_m,speed_mps,final_distance_m,first_stop_distance_m,last_stop_distance_m,n_stops,n_resumes," +
+            "final_motion_dir,passes_before_confirm,stop_spread_m,at_bound,end_reason,duration_ms,eye_object_distance_m";
+        public const string StopAdjustHeader = "round,practice,time_ms,t_ms,event,distance_m,motion_dir,rt_ms";
+
         static readonly UTF8Encoding Utf8NoBom = new UTF8Encoding(false);
         static readonly CultureInfo Inv = CultureInfo.InvariantCulture;
 
         readonly StreamWriter _head, _obj, _events, _stop, _ratings;
+        StreamWriter _rounds, _adjust;
         int _headUnflushed, _objUnflushed;
         bool _disposed;
 
@@ -163,6 +182,38 @@ namespace IFS.SceneSpec.Placement
             _ratings.Flush();
         }
 
+        /// <summary>stopMode loop: stoprounds.csv·stopadjust.csv를 연다(헤더). 기본(single)에서는 부르지 않는다.</summary>
+        public void EnableStopLoop()
+        {
+            if (_disposed || _rounds != null) return;
+            _rounds = Open(StopRoundsFile, StopRoundsHeader);
+            _adjust = Open(StopAdjustFile, StopAdjustHeader);
+        }
+
+        static string Opt(double? v, string fmt = "0.0000") => v.HasValue ? N(v.Value, fmt) : "";
+
+        /// <summary>stoprounds.csv 한 줄(값이 없으면 빈칸).</summary>
+        public void StopRound(StopRoundResult r)
+        {
+            if (_disposed || _rounds == null || r == null) return;
+            _rounds.WriteLine(string.Join(",",
+                r.Round.ToString(Inv), r.Practice ? "1" : "0", Csv(r.StartDirection), N(r.StartM, "0.0000"), N(r.SpeedMps, "0.0000"),
+                Opt(r.FinalM), Opt(r.FirstStopM), Opt(r.LastStopM), r.NStops.ToString(Inv), r.NResumes.ToString(Inv),
+                Csv(r.FinalMotionDir), r.PassesBeforeConfirm.HasValue ? r.PassesBeforeConfirm.Value.ToString(Inv) : "",
+                Opt(r.StopSpreadM), r.AtBound.HasValue ? (r.AtBound.Value ? "1" : "0") : "", Csv(r.EndReason),
+                r.DurationMs.ToString(Inv), Opt(r.EyeObjectDistanceM)));
+            _rounds.Flush();
+        }
+
+        /// <summary>stopadjust.csv 한 줄. tMs = 라운드 시작부터, rtMs = 직전 상태 변화(시작·멈춤·재개)부터.</summary>
+        public void StopAdjust(int round, bool practice, long timeMs, long tMs, string ev, double distanceM, string motionDir, long rtMs)
+        {
+            if (_disposed || _adjust == null) return;
+            _adjust.WriteLine(string.Join(",", round.ToString(Inv), practice ? "1" : "0", timeMs.ToString(Inv), tMs.ToString(Inv), Csv(ev),
+                N(distanceM, "0.0000"), Csv(motionDir), rtMs.ToString(Inv)));
+            _adjust.Flush();
+        }
+
         public static string FormatUtc(DateTime t) => OwnershipRecordWriter.FormatUtc(t);
 
         /// <summary>summary.json: { completed, abortedAt, endedAtUtc }.</summary>
@@ -183,11 +234,35 @@ namespace IFS.SceneSpec.Placement
         {
             if (_disposed) return;
             _disposed = true;
-            foreach (var w in new[] { _head, _obj, _events, _stop, _ratings })
+            foreach (var w in new[] { _head, _obj, _events, _stop, _ratings, _rounds, _adjust })
             {
+                if (w == null) continue;
                 try { w.Flush(); w.Dispose(); } catch (ObjectDisposedException) { }
             }
         }
+    }
+
+    /// <summary>stoprounds.csv 한 줄(G60-2). 값이 없으면 null(빈칸) — 확정하지 않은 라운드의 확정값을 시스템이 채우지 않는다.</summary>
+    public sealed class StopRoundResult
+    {
+        public int Round;
+        public bool Practice;
+        public string StartDirection;
+        public double StartM, SpeedMps;
+        /// <summary>확정한 거리(멈춘 상태에서 확정). 확정이 없으면 null.</summary>
+        public double? FinalM;
+        public double? FirstStopM, LastStopM;
+        public int NStops, NResumes;
+        /// <summary>마지막 멈춤 직전 진행 방향(approach | recede). 멈춤이 없으면 null.</summary>
+        public string FinalMotionDir;
+        public int? PassesBeforeConfirm;
+        public double? StopSpreadM;
+        public bool? AtBound;
+        /// <summary>confirmed | timeout_stopped | timeout_moving | aborted</summary>
+        public string EndReason;
+        public long DurationMs;
+        /// <summary>확정 순간 머리(눈)와 물체 중심의 3차원 거리(m). 확정이 없으면 null.</summary>
+        public double? EyeObjectDistanceM;
     }
 
     /// <summary>머리 자세(세계 좌표, 단위 쿼터니언).</summary>
@@ -226,6 +301,8 @@ namespace IFS.SceneSpec.Placement
         public PlacementSelection Selection;
         /// <summary>실제로 적용된 덮어쓰기(키 → 그려지는 값). null이면 빈 객체로 기록.</summary>
         public JObject AppliedOverrides;
+        /// <summary>눈높이(G60-3). 설정 eyeHeightMode relative면 필수(보정 결과 또는 데스크톱 고정값), none이면 쓰지 않는다.</summary>
+        public EyeHeightInfo EyeHeight;
     }
 
     public static class PlacementManifest
@@ -310,8 +387,41 @@ namespace IFS.SceneSpec.Placement
             var m = BuildBase(cfg, info);
             var env = EnvironmentJson(cfg);
             if (env != null) m["environment"] = env;   // 기본값이면 키를 넣지 않는다(G52 전과 같은 바이트)
+            if (cfg.IsStopLoop)
+            {
+                // G60-2: 기존 stopDistance 키는 그대로 두고 mode·loop를 더한다(single이면 키를 넣지 않음)
+                var sd = (JObject)m["stopDistance"];
+                sd["mode"] = cfg.stopMode;
+                sd["loop"] = StopLoopJson(cfg, info?.ParticipantNumber ?? 0);
+            }
+            if (cfg.IsEyeRelative && info?.EyeHeight != null) m["eyeHeight"] = info.EyeHeight.ManifestJson(cfg);   // G60-3, relative일 때만
             return m;
         }
+
+        /// <summary>manifest stopDistance.loop(G60-2): 경로·라운드·입력 규칙과 이 참여자의 라운드 계획.</summary>
+        public static JObject StopLoopJson(PlacementConfig cfg, int participantNumber) => new JObject
+        {
+            ["minM"] = cfg.stopLoopMinM,
+            ["maxM"] = cfg.stopLoopMaxM,
+            ["speedMps"] = cfg.stopSpeedMps,
+            ["heightM"] = cfg.stopHeightM,
+            ["startMinM"] = cfg.stopLoopStartMinM,
+            ["startMaxM"] = cfg.stopLoopStartMaxM,
+            ["startRule"] = StopLoopSchedule.StartRule,
+            ["rounds"] = cfg.stopLoopRounds,
+            ["practiceRounds"] = cfg.stopLoopPracticeRounds,
+            ["roundSeconds"] = cfg.stopLoopRoundSeconds,
+            ["toggleDebounceMs"] = cfg.stopLoopToggleDebounceMs,
+            ["hideRings"] = cfg.stopLoopHideRings,
+            ["input"] = "toggle=trigger(desktop Space): stop/resume same direction; confirm=A·X(desktop F): only while stopped",
+            ["plan"] = new JArray(StopLoopSchedule.Build(cfg, participantNumber).Select(p => (object)new JObject
+            {
+                ["round"] = p.Round,
+                ["practice"] = p.Practice,
+                ["startDir"] = p.StartDirection,
+                ["startDistanceM"] = p.StartM,
+            }).ToArray()),
+        };
 
         static JObject BuildBase(PlacementConfig cfg, PlacementSessionInfo info)
         {

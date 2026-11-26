@@ -1,7 +1,7 @@
 {
-  "version": "0.5-scaleA",
+  "version": "0.6-scaleA",
   "protocol": "placement-task",
-  "note": "docs/rq-v4-questionnaire-draft.md 3절의 주 척도안 A(7문항)와 보조 문항 S4–S8을 담은 선택용 문구 파일(2026-11-23). 모든 문구는 status draft(IRB 검토 전, 타당화 전 번안·수정판). 기본 문구 파일(placement_task.v0.json)은 그대로이고 Setup에서 고른다. 제외: S3(겹침 그림 IOS)은 그림 선택지가 필요해 이번 판에서 뺐다. S1(심리 거리)은 지시에 따라 S3과 함께 이번 묶음에서 뺐다(S1 자체는 글로 된 양극 척도라 그림 없이 anchors 1·4·7로 넣을 수 있다). S2는 초안에서 선택 문항이라 넣지 않았다. 문항 순서는 초안 3.7절(사전 A1–A7, S5, S6, S4, S8 / 사후 A1–A7, S5, S6, S7). 단계 안내 문구(intro 등)는 placement_task.v0.json과 같다. 0.2(2026-11-23): 두 평정 문항 G13(모습 일치 appearance_match·대표성 representativeness)을 사후 끝에 더함(사전은 설정 askOptionalItems). 0.3(2026-11-24): G53 놓기 도움 문구 practice·placement_range를 더함(placementAssist를 켰을 때만 보임, placement_task.v0.json과 같은 문구). 0.4(2026-11-24): G57 문구 다듬기 — 단계 안내·G13 두 문항·S7·공통/사후 지시문의 글을 다듬음(A1–A7·S4·S5·S6·S8·척도 닻은 그대로, placement_task.v0.json과 같은 키는 같은 글). 0.5(2026-11-25): G59 — 구별 프로파일 초안(docs/rq-v4-differentiation-measure.md 3.1절)의 M2(0–10)·P1(양극 1–7)과 거리감 문항 distance_feel을 사전·사후 끝에(distance_feel이 맨 끝), 자리 평정 place_fit·want_move를 점검 단계(check)에 더함(placement_task.v0.json과 같은 키는 같은 글. 이 파일에는 placed_by_me가 없어 점검은 place_fit → want_move).",
+  "note": "docs/rq-v4-questionnaire-draft.md 3절의 주 척도안 A(7문항)와 보조 문항 S4–S8을 담은 선택용 문구 파일(2026-11-23). 모든 문구는 status draft(IRB 검토 전, 타당화 전 번안·수정판). 기본 문구 파일(placement_task.v0.json)은 그대로이고 Setup에서 고른다. 제외: S3(겹침 그림 IOS)은 그림 선택지가 필요해 이번 판에서 뺐다. S1(심리 거리)은 지시에 따라 S3과 함께 이번 묶음에서 뺐다(S1 자체는 글로 된 양극 척도라 그림 없이 anchors 1·4·7로 넣을 수 있다). S2는 초안에서 선택 문항이라 넣지 않았다. 문항 순서는 초안 3.7절(사전 A1–A7, S5, S6, S4, S8 / 사후 A1–A7, S5, S6, S7). 단계 안내 문구(intro 등)는 placement_task.v0.json과 같다. 0.2(2026-11-23): 두 평정 문항 G13(모습 일치 appearance_match·대표성 representativeness)을 사후 끝에 더함(사전은 설정 askOptionalItems). 0.3(2026-11-24): G53 놓기 도움 문구 practice·placement_range를 더함(placementAssist를 켰을 때만 보임, placement_task.v0.json과 같은 문구). 0.4(2026-11-24): G57 문구 다듬기 — 단계 안내·G13 두 문항·S7·공통/사후 지시문의 글을 다듬음(A1–A7·S4·S5·S6·S8·척도 닻은 그대로, placement_task.v0.json과 같은 키는 같은 글). 0.5(2026-11-25): G59 — 구별 프로파일 초안(docs/rq-v4-differentiation-measure.md 3.1절)의 M2(0–10)·P1(양극 1–7)과 거리감 문항 distance_feel을 사전·사후 끝에(distance_feel이 맨 끝), 자리 평정 place_fit·want_move를 점검 단계(check)에 더함(placement_task.v0.json과 같은 키는 같은 글. 이 파일에는 placed_by_me가 없어 점검은 place_fit → want_move). 0.6(2026-11-26): G60 — 자리 평정 want_move를 뺌(멈춤 거리 과제에서 여러 번 고칠 수 있게 하므로. 교수님 결정 2026-11-26). 점검은 place_fit 하나. 같은 0.6 안에서(2026-11-26) G60-2 반복 멈춤 문구 stop_distance_loop·stop_loop_hint를 더함(설정 stopMode loop일 때만 보임, placement_task.v0.json과 같은 문구).",
   "texts": {
     "intro": {
       "text": "이제 물체 하나를 보여 드릴게요. 안내가 나오면 그대로 따라 주세요.",
@@ -37,6 +37,16 @@
       "text": "이것이 움직이는 동안, 알맞다고 느껴지는 자리에 왔을 때 버튼을 눌러 주세요.",
       "status": "draft",
       "source": "docs/rq-v4-proposal.md 4.5절 멈춤 거리 지시문 초안(2026-11-22), IRB 검토 전 — placement_task.v0.json과 같은 문구"
+    },
+    "stop_distance_loop": {
+      "text": "이제 이것이 앞뒤로 천천히 움직여요. 알맞다고 느껴지는 자리에 오면 방아쇠를 눌러 멈춰 주세요. 다시 누르면 다시 움직여요. 몇 번이든 고쳐도 괜찮아요. 멈춘 자리가 알맞으면 확인 버튼을 눌러 정해 주세요.",
+      "status": "draft",
+      "source": "교수님 피드백 2026-11-26 / G60-2 — 멈춤 거리 반복 멈춤 지시문 초안(정해진 왕복 경로, 멈춤/다시 움직임 토글, 확정 버튼). 설정 stopMode loop일 때만 stop_distance 대신 보임. IRB 검토 전 — placement_task.v0.json과 같은 문구"
+    },
+    "stop_loop_hint": {
+      "text": "방아쇠: 다시 움직이기 · 확인 버튼: 이 자리로 정하기",
+      "status": "draft",
+      "source": "교수님 피드백 2026-11-26 / G60-2 — 반복 멈춤에서 물체가 멈춘 동안 stop_distance_loop 아래에 줄을 바꿔 붙이는 조작 안내 초안. 설정 stopMode loop일 때만 보임. IRB 검토 전 — placement_task.v0.json과 같은 문구"
     },
     "done": {
       "text": "이번 과제는 여기까지예요. 고맙습니다.",
@@ -319,16 +329,6 @@
       },
       "status": "draft",
       "source": "docs/decisions.md G59, 2026-11-25 — G59 RQ3 자리 평정 초안(두 조건 공통 — 보기만 조건에도 대응 값이 생김). IRB 검토 전 — placement_task.v0.json과 같은 문구"
-    },
-    "want_move": {
-      "text": "할 수 있었다면 이것을 다른 자리로 옮기고 싶었다",
-      "when": "check",
-      "anchors": {
-        "1": "전혀 그렇지 않다",
-        "7": "매우 그렇다"
-      },
-      "status": "draft",
-      "source": "docs/decisions.md G59, 2026-11-25 — G59 RQ3 자리 평정 초안(두 조건 공통 — 보기만 조건에도 대응 값이 생김). 점검 단계에서 place_fit 다음. IRB 검토 전 — placement_task.v0.json과 같은 문구"
     }
   }
 }

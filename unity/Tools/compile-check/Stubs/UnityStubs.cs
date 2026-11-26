@@ -407,7 +407,7 @@ namespace UnityEngine
         public static float Cos(float f) => 0f;
     }
 
-    public static class Time { public static float deltaTime => 0f; public static float unscaledDeltaTime => 0f; }
+    public static class Time { public static float deltaTime => 0f; public static float unscaledDeltaTime => 0f; public static float unscaledTime => 0f; }
 
     [AttributeUsage(AttributeTargets.Field)] public sealed class SerializeField : Attribute { }
     public class PropertyAttribute : Attribute { }

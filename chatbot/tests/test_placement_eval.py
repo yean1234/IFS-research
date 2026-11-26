@@ -299,6 +299,27 @@ def test_rating_columns_union(tmp_path):
     assert res["columns"][-2:] == ["obj_path_from_objpose_m", "flags"]
 
 
+def test_old_want_move_records_still_read_with_new_records(tmp_path):
+    """G60: 문구 파일 0.6에서 want_move를 뺐다. 0.5 기록(want_move 행 있음)과 0.6 기록을 함께 읽으면
+    열은 합집합으로 남고, 0.6 기록의 want_move 칸은 빈 값이다(0으로 채우거나 짐작하지 않음, 원칙 2)."""
+    old = [["placed_by_me", "check", 4, 800], ["place_fit", "check", 2, 700], ["want_move", "check", 6, 600]]
+    new = [["placed_by_me", "check", 5, 800], ["place_fit", "check", 3, 700]]
+    make_placement_session(tmp_path, 1, "old", ratings=old,
+                           manifest_extra={"taskText": {"file": "placement_task.v0.json", "version": "0.5", "draftCount": 0, "draftKeys": []}})
+    make_placement_session(tmp_path, 2, "new", "view", ratings=new,
+                           manifest_extra={"taskText": {"file": "placement_task.v0.json", "version": "0.6", "draftCount": 0, "draftKeys": []}})
+    res = analyze(tmp_path)
+    assert "rating_want_move_check" in res["columns"]
+    o, n = row(res, "old"), row(res, "new")
+    assert o["rating_want_move_check"] == 6 and o["rating_place_fit_check"] == 2
+    assert n["rating_want_move_check"] is None and n["rating_place_fit_check"] == 3
+    assert "rating_out_of_range" not in n["flags"]
+    # 0.6 기록만 있으면 want_move 열 자체가 없다
+    only_new = tmp_path / "only_new"
+    make_placement_session(only_new, 3, "new2", ratings=new)
+    assert "rating_want_move_check" not in analyze(only_new)["columns"]
+
+
 def test_objpose_path_mismatch_flag(tmp_path):
     make_placement_session(tmp_path, 1, "ok")
     make_placement_session(tmp_path, 2, "bad", path_length=5.0)
@@ -643,3 +664,152 @@ def test_same_environment_sessions_have_no_environment_mismatch(tmp_path):
     for i, sid in enumerate(("a", "b"), 1):
         make_placement_session(other, i, sid, manifest_extra={"environment": _env_block("nature", True)})
     assert "config_mismatch:environment" not in analyze(other)["summary"]["warnings"]
+
+
+# ---------------------------------------------------------------- G60-2 반복 멈춤 · G60-3 눈높이(2026-11-26)
+
+LOOP_ROUNDS_COLS = ["round", "practice", "start_dir", "start_distance_m", "speed_mps", "final_distance_m", "first_stop_distance_m",
+                    "last_stop_distance_m", "n_stops", "n_resumes", "final_motion_dir", "passes_before_confirm", "stop_spread_m",
+                    "at_bound", "end_reason", "duration_ms", "eye_object_distance_m"]
+
+
+def _loop_block(plan_seed=1):
+    return {"speedMps": 0.25, "approachStartM": 3.0, "recedeStartM": 0.5, "trialsPerDirection": 4, "practiceTrials": 2,
+            "minM": 0.2, "maxM": 3.5, "mode": "loop",
+            "loop": {"minM": 0.4, "maxM": 3.6, "rounds": 4, "practiceRounds": 1, "roundSeconds": 75,
+                     "plan": [{"round": 1, "practice": True, "startDir": "approach", "startDistanceM": 1.0 + plan_seed / 10}]}}
+
+
+def _round(r, practice, final, first, direction, reason="confirmed", passes=0, at_bound=0, eye=1.5):
+    conf = reason == "confirmed"
+    return [r, practice, "approach", 2.0, 0.25, final if conf else "", first if first is not None else "",
+            (final if conf else first) if first is not None else "", 1 if first is not None else 0, 0,
+            direction if first is not None else "", passes if conf else "", 0.0 if first is not None else "",
+            at_bound if conf else "", reason, 9000, eye if conf else ""]
+
+
+def make_loop_session(root, pnum, sid, rounds, condition="place", control=None, final=(2.05, 30.0, 0.8), eye=None,
+                      plan_seed=1, omit_loop_files=()):
+    extra = {"stopDistance": _loop_block(plan_seed)}
+    if eye is not None:
+        extra["eyeHeight"] = {"mode": "relative", "referenceM": 1.6, "measuredM": eye, "offsetM": round(eye - 1.6, 4),
+                              "sdM": 0.005, "pitchDeg": 1.0, "samples": 20, "trackingOrigin": "Floor", "source": "calibrated"}
+    folder = make_placement_session(root, pnum, sid, condition, control, final=final, manifest_extra=extra,
+                                    version="ifs-placement/0.2")
+    _csv(folder / "stopdistance.csv", STOP_COLS, [])           # loop: 헤더만
+    if "stoprounds.csv" not in omit_loop_files:
+        _csv(folder / "stoprounds.csv", LOOP_ROUNDS_COLS, rounds)
+    if "stopadjust.csv" not in omit_loop_files:
+        _csv(folder / "stopadjust.csv", ["round", "practice", "time_ms", "t_ms", "event", "distance_m", "motion_dir", "rt_ms"],
+             [[1, 1, 0, 0, "start", 2.0, "approach", 0]])
+    return folder
+
+
+def test_old_records_get_no_loop_or_eye_columns(tmp_path):
+    four_conditions(tmp_path)
+    res = analyze(tmp_path, tmp_path / "out")
+    assert not set(placement.LOOP_COLUMNS + placement.EYE_COLUMNS) & set(res["columns"]), "새 열은 해당 세션이 있을 때만"
+    assert not (tmp_path / "out" / "stop_loop_rounds.csv").exists()
+    assert "stopLoop" not in res["summary"] and "eyeHeight" not in res["summary"]
+    assert all("stop_mode" not in s and "eye_height_m" not in s for s in res["sessions"])
+
+
+def test_loop_session_main_value_directions_and_anchor(tmp_path):
+    rounds = [_round(1, 1, 0.3, 0.3, "approach"),                     # 연습 — 섞이면 평균이 크게 틀어짐
+              _round(2, 0, 1.6, 1.7, "approach", passes=1),
+              _round(3, 0, 1.8, 1.75, "recede"),
+              _round(4, 0, None, 1.9, "recede", reason="timeout_stopped"),   # 미확정 — 마지막 멈춤으로 채우지 않음
+              _round(5, 0, 1.7, 1.8, "approach", at_bound=1)]
+    make_loop_session(tmp_path, 1, "loop-place", rounds)
+    make_placement_session(tmp_path, 2, "old-single", version="ifs-placement/0.2")
+    res = analyze(tmp_path, tmp_path / "out")
+    cols = res["columns"]
+    i = cols.index("head_yaw_range_deg") + 1
+    assert cols[i:i + len(placement.LOOP_COLUMNS)] == placement.LOOP_COLUMNS
+    s, old = row(res, "loop-place"), row(res, "old-single")
+    assert s["stop_mode"] == "loop" and old["stop_mode"] == "single"
+    assert s["stop_final_mean_m"] == pytest.approx((1.6 + 1.8 + 1.7) / 3, abs=1e-4)
+    assert (s["stop_final_n"], s["stop_n_unconfirmed"], s["stop_n_at_bound"]) == (3, 1, 1)
+    assert s["stop_final_approach_mean_m"] == pytest.approx(1.65)
+    assert s["stop_final_recede_mean_m"] == pytest.approx(1.8)
+    assert s["stop_first_minus_final_mean_m"] == pytest.approx(((1.7 - 1.6) + (1.75 - 1.8) + (1.8 - 1.7)) / 3, abs=1e-4)
+    assert s["stop_passes_mean"] == pytest.approx(1 / 3, abs=1e-4)
+    assert s["stop_minus_condition_final_m"] == pytest.approx(s["stop_final_mean_m"] - 2.05, abs=1e-4)
+    assert s["eye_object_distance_m"] == pytest.approx(1.5)
+    assert s["stop_mean_m"] is None and s["stop_n_valid"] == 0, "single 열은 빈칸"
+    assert "stop_trials_short" not in s["flags"] and "stop_unconfirmed:1" in s["flags"]
+    assert old["stop_final_mean_m"] is None and old["stop_minus_condition_final_m"] is None and old["stop_mean_m"] is not None
+    rounds_out = list(csv.DictReader((tmp_path / "out" / "stop_loop_rounds.csv").open(encoding="utf-8")))
+    assert len(rounds_out) == 5 and rounds_out[3]["final_distance_m"] == ""
+    assert [r["included"] for r in rounds_out] == ["0", "1", "1", "0", "1"], "bool은 stop_trials.csv처럼 0/1"
+    sl = res["summary"]["stopLoop"]
+    assert sl["nSessions"] == 1 and sl["rounds"]["unconfirmed"] == 1
+    assert sl["rounds"]["endReasons"] == {"confirmed": 3, "timeout_stopped": 1}
+
+
+def test_loop_needs_two_confirmed_rounds_and_flags_missing_files(tmp_path):
+    rounds = [_round(1, 1, 1.0, 1.0, "approach"), _round(2, 0, 1.6, 1.7, "approach"),
+              _round(3, 0, None, None, "approach", reason="timeout_moving")]
+    make_loop_session(tmp_path, 1, "few", rounds, omit_loop_files=("stopadjust.csv",))
+    s = row(analyze(tmp_path), "few")
+    assert s["stop_final_mean_m"] is None and s["stop_final_n"] == 1, "확정 라운드 2개 미만이면 빈칸"
+    assert "missing_file:stopadjust.csv" in s["flags"] and "stop_rounds_short" in s["flags"]
+
+
+def test_loop_anchor_in_both_conditions_and_direction_gap_warning(tmp_path):
+    big_gap = [_round(1, 1, 1.0, 1.0, "approach"), _round(2, 0, 1.2, 1.3, "approach"), _round(3, 0, 1.6, 1.5, "recede"),
+               _round(4, 0, 1.2, 1.3, "approach"), _round(5, 0, 1.6, 1.5, "recede")]
+    make_loop_session(tmp_path, 1, "lp", big_gap, plan_seed=1)
+    make_loop_session(tmp_path, 2, "lv", big_gap, condition="view", control="static", plan_seed=2)
+    res = analyze(tmp_path)
+    v = row(res, "lv")
+    assert v["final_distance_m"] == pytest.approx(1.5), "보기만(static) 조건의 끝 자리 = 시작 자리"
+    assert v["stop_minus_condition_final_m"] == pytest.approx(1.4 - 1.5, abs=1e-4), "보기만 조건도 닻 지표를 낸다"
+    sl = res["summary"]["stopLoop"]
+    assert sl["directionDiff"]["meanAbs"] == pytest.approx(0.4, abs=1e-4)
+    assert any(w.startswith("stop_loop_direction_gap") for w in res["summary"]["warnings"])
+    assert "config_mismatch:stopDistance" not in res["summary"]["warnings"], "출발 계획(plan)은 사람마다 달라 비교에서 뺀다"
+    assert set(sl["conditionEffect"]) == {"stop_final_mean_m", "stop_minus_condition_final_m"}
+
+
+def test_eye_height_columns_and_old_records_blank(tmp_path):
+    rounds = [_round(1, 1, 1.0, 1.0, "approach"), _round(2, 0, 1.6, 1.7, "approach"), _round(3, 0, 1.8, 1.75, "recede")]
+    make_loop_session(tmp_path, 1, "eye", rounds, eye=1.75, final=(2.05, 30.0, 0.8))
+    make_placement_session(tmp_path, 2, "old")
+    res = analyze(tmp_path, tmp_path / "out")
+    cols = res["columns"]
+    assert cols.index("eye_height_m") == cols.index("eye_object_distance_m") + 1, "눈높이 열은 반복 멈춤 열 뒤"
+    e, o = row(res, "eye"), row(res, "old")
+    assert (e["eye_height_m"], e["eye_height_source"]) == (1.75, "calibrated")
+    assert e["final_height_rel_eye_m"] == pytest.approx(0.8 - 1.75)
+    assert e["final_height_ratio_eye"] == pytest.approx(0.8 / 1.75, abs=1e-4)
+    assert e["head_y_drift_m"] == pytest.approx(1.6 - 1.75), "조건 단계 head_y 중앙값 − E"
+    assert (o["eye_height_m"], o["final_height_rel_eye_m"], o["head_y_drift_m"], o["eye_height_source"]) == (None, None, None, None)
+    assert res["summary"]["eyeHeight"]["sources"] == {"calibrated": 1}
+    header = (tmp_path / "out" / "placement_sessions.csv").read_text(encoding="utf-8").splitlines()[0].split(",")
+    assert "final_height_ratio_eye" in header
+
+
+def test_sim_loop_plan_matches_the_unity_runner_and_default_sim_is_unchanged(tmp_path):
+    """sim_placement의 xorshift64* 계획 = 러너 StopLoopSchedule(PlacementStopLoopTests에 고정한 값). 기본 생성은 새 난수를 뽑지 않는다."""
+    from ifs_chatbot.eval import sim_placement as sim
+    r = sim.XorShift64Star(1)
+    assert [r.next_ulong() for _ in range(3)] == [5424204624148110235, 15555979849632202484, 6851360858507811590]
+    assert [p["startDistanceM"] for p in sim.stop_loop_plan(1, "approach")] == [1.588, 2.687, 1.743, 1.462, 2.718]
+    assert [p["startDistanceM"] for p in sim.stop_loop_plan(2, "recede")] == [2.082, 1.169, 2.798, 1.197, 1.743]
+    assert [p["startDistanceM"] for p in sim.stop_loop_plan(7, "approach")] == [1.163, 1.517, 1.708, 2.107, 2.304]
+    assert [p["startDir"] for p in sim.stop_loop_plan(2, "recede")][:3] == ["recede", "approach", "recede"]
+    # 해석적 라운드: 2.0에서 가까워지며 1.0 멈춤 → 0.4 반사 → 1.5 멈춤·확정(러너 테스트와 같은 시나리오)
+    res = sim.simulate_loop_round(2.0, -1, [1.0, 1.5], True)
+    assert res["reason"] == "confirmed" and res["final"] == pytest.approx(1.5)
+    assert sim._passes(res["points"], res["final"]) == 1
+    assert [e[1] for e in res["events"]] == ["start", "stop", "resume", "turn", "stop", "confirm"]
+    assert sim.simulate_loop_round(2.0, -1, [], False)["reason"] == "timeout_moving"
+    assert sim.simulate_loop_round(2.0, -1, [1.0], False)["reason"] == "timeout_stopped"
+    a, b = tmp_path / "a", tmp_path / "b"
+    sim.generate(a, per_type=1)
+    sim.generate(b, per_type=1, stop_mode="loop", eye_mode="relative")
+    assert not list(a.rglob("stoprounds.csv")) and list(b.rglob("stoprounds.csv"))
+    res_b = analyze(b / "records")
+    assert all(s["stop_mode"] == "loop" and s["eye_height_source"] == "calibrated" for s in res_b["sessions"])
+    assert "stopMode" not in json.loads((a / "sim_truth.json").read_text(encoding="utf-8"))

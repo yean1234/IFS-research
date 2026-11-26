@@ -5,7 +5,7 @@
 
 [interview]
 condition = "chatbot"
-protocol = "elicitation_protocol.v1.3.json"
+protocol = "elicitation_protocol.v1.4.json"
 prompt_version = "1.0.0"
 
 [llm]
@@ -46,6 +46,10 @@ save_both = true              # v0·v1·v2 비교 파일도 남김
 clarify_loop = false
 clarify_max = 2
 strict = false
+# G61(docs/viz-pipeline-direction.md). 둘 다 기본 꺼짐 — 켜지 않으면 v2 출력은 builder 2.4.0·스펙 2.2.0 그대로.
+ext_lexicon = ""                          # "layer1_lexicon.v2.json"이면 스펙 2.3.0(윤곽·발광). ⚠ Unity가 2.3을 읽게 된 뒤에 켤 것
+ext_params = "scene_params.v3.json"       # ext_lexicon을 켰을 때의 대응표
+variant_rules = ""                        # "variant_rules.v0.json"이면 형태 변이 규칙층(의태어 변이형 → 사전 뿌리)
 
 [drift]
 enabled = true

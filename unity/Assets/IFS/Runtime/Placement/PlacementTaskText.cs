@@ -15,6 +15,8 @@
 //   · 설정 disabledItems(문항 키 목록)에 든 문항은 묻지 않는다(예: 기존 "내 것 같다" 문항을 끌 때). 문구 파일은 그대로 둔다.
 // 2026-11-24 G53 추가(문구 파일 0.3, 기존 파일은 그대로 유효): 놓기 도움 문구 practice(배치 연습 안내)·placement_range(범위 안내 문장).
 //   설정 placementAssist를 켰을 때만 보이고 그때만 필수다. 꺼져 있으면 draftKeys·초안 경고에서도 뺀다(DraftKeysFor).
+// 2026-11-26 G60-2 추가(문구 파일 0.6, 기존 파일은 그대로 유효): 반복 멈춤 문구 stop_distance_loop(왕복 멈춤 지시문)·stop_loop_hint(멈춘 동안
+//   조작 안내). 설정 stopMode loop일 때만 보이고 그때만 필수다. single(기본)이면 draftKeys·초안 경고에서도 뺀다(DraftKeysFor).
 // UnityEngine에 의존하지 않는다.
 using System;
 using System.Collections.Generic;
@@ -117,14 +119,30 @@ namespace IFS.SceneSpec.Placement
         /// (기본값 기록이 G52 전과 같게). 파일에 없어도 되지만, 도움을 켠 세션은 시작을 거부한다(AssistKeysMissing).</summary>
         public static readonly string[] AssistKeys = { PracticeKey, PlacementRangeKey };
 
-        /// <summary>이 세션이 보일 수 있는 문구 가운데 draft인 키(이름순). assist가 꺼져 있으면 AssistKeys를 뺀다.</summary>
-        public List<string> DraftKeysFor(bool assist) => DraftKeys.Where(k => assist || !AssistKeys.Contains(k)).ToList();
+        // ── 멈춤 거리 반복 멈춤 문구(G60-2, 2026-11-26, 문구 파일 0.6) ─────────
+        /// <summary>왕복 멈춤 지시문(stop_distance 대신).</summary>
+        public const string StopLoopKey = "stop_distance_loop";
+        /// <summary>멈춘 동안 지시문 아래에 붙는 조작 안내.</summary>
+        public const string StopLoopHintKey = "stop_loop_hint";
+        /// <summary>설정 stopMode loop일 때만 보이는 문구 키. single(기본)이면 manifest draftKeys·초안 경고에서 뺀다(기본값 기록이 G60 전과 같게).</summary>
+        public static readonly string[] LoopKeys = { StopLoopKey, StopLoopHintKey };
 
-        /// <summary>이 세션이 보일 수 있는 문구 수. assist가 꺼져 있으면 AssistKeys를 뺀다.</summary>
-        public int CountFor(bool assist) => _text.Keys.Count(k => assist || !AssistKeys.Contains(k));
+        /// <summary>이 세션이 보일 수 있는 문구 가운데 draft인 키(이름순). assist가 꺼져 있으면 AssistKeys를, loop가 꺼져 있으면 LoopKeys를 뺀다.</summary>
+        public List<string> DraftKeysFor(bool assist, bool loop = false) => DraftKeys.Where(k => Visible(k, assist, loop)).ToList();
+
+        /// <summary>설정으로: DraftKeysFor(placementAssist, stopMode loop).</summary>
+        public List<string> DraftKeysFor(PlacementConfig cfg) => DraftKeysFor(cfg != null && cfg.placementAssist, cfg != null && cfg.IsStopLoop);
+
+        /// <summary>이 세션이 보일 수 있는 문구 수. assist가 꺼져 있으면 AssistKeys를, loop가 꺼져 있으면 LoopKeys를 뺀다.</summary>
+        public int CountFor(bool assist, bool loop = false) => _text.Keys.Count(k => Visible(k, assist, loop));
+
+        static bool Visible(string key, bool assist, bool loop) => (assist || !AssistKeys.Contains(key)) && (loop || !LoopKeys.Contains(key));
 
         /// <summary>파일에 없는 놓기 도움 문구 키(도움을 켠 세션은 이것이 비어 있어야 시작한다).</summary>
         public List<string> AssistKeysMissing() => AssistKeys.Where(k => !_text.ContainsKey(k)).ToList();
+
+        /// <summary>파일에 없는 반복 멈춤 문구 키(stopMode loop 세션은 이것이 비어 있어야 시작한다).</summary>
+        public List<string> LoopKeysMissing() => LoopKeys.Where(k => !_text.ContainsKey(k)).ToList();
 
         /// <summary>평정 단계(when)의 지시문 키(파일에 있는 것만, 보일 순서). 없으면 빈 목록.</summary>
         public List<string> InstructionKeysFor(string when)
@@ -240,20 +258,21 @@ namespace IFS.SceneSpec.Placement
 
         /// <summary>draft 문구가 있으면 실험자 화면 맨 위·events.csv warning에 남길 한 줄(없으면 null).
         /// assist: 놓기 도움(G53)을 켠 세션이면 true — 꺼져 있으면 도움 문구(AssistKeys)는 보이지 않으니 세지 않는다.</summary>
-        public static string DraftNotice(PlacementTaskText text, bool requireSpec, bool assist = false)
+        public static string DraftNotice(PlacementTaskText text, bool requireSpec, bool assist = false, bool loop = false)
         {
             if (text == null) return null;
-            var keys = text.DraftKeysFor(assist);
+            var keys = text.DraftKeysFor(assist, loop);
             if (keys.Count == 0) return null;
-            return $"초안 문구 사용 중: {text.FileName ?? "문구 파일"}(version {text.Version})의 문구 {keys.Count}/{text.CountFor(assist)}개가 status draft" +
+            return $"초안 문구 사용 중: {text.FileName ?? "문구 파일"}(version {text.Version})의 문구 {keys.Count}/{text.CountFor(assist, loop)}개가 status draft" +
                    $"(IRB 확인 전) — {string.Join(", ", keys)}. " +
                    (requireSpec ? "requireSpecPhrases가 켜져 있어 시작할 수 없습니다." : "본 실험 자료로 쓰기 전에 spec 문구로 바꾸세요(manifest에 기록됨).");
         }
 
-        /// <summary>requireSpecPhrases가 켜져 있고 draft 문구가 있으면 시작 거부 이유, 아니면 null.</summary>
-        public static string SpecPhraseRefusal(PlacementTaskText text, bool requireSpec, bool assist = false) =>
-            requireSpec && text != null && text.DraftKeysFor(assist).Count > 0
-                ? $"requireSpecPhrases가 켜져 있는데 draft 문구 {text.DraftKeysFor(assist).Count}개({string.Join(", ", text.DraftKeysFor(assist))})가 있어 세션을 시작하지 않습니다"
+        /// <summary>requireSpecPhrases가 켜져 있고 draft 문구가 있으면 시작 거부 이유, 아니면 null.
+        /// loop: 멈춤 거리 반복 멈춤(G60-2)을 켠 세션이면 true — 꺼져 있으면 LoopKeys는 보이지 않으니 세지 않는다.</summary>
+        public static string SpecPhraseRefusal(PlacementTaskText text, bool requireSpec, bool assist = false, bool loop = false) =>
+            requireSpec && text != null && text.DraftKeysFor(assist, loop).Count > 0
+                ? $"requireSpecPhrases가 켜져 있는데 draft 문구 {text.DraftKeysFor(assist, loop).Count}개({string.Join(", ", text.DraftKeysFor(assist, loop))})가 있어 세션을 시작하지 않습니다"
                 : null;
     }
 }

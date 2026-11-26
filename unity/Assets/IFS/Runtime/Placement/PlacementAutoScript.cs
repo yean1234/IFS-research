@@ -42,6 +42,24 @@ namespace IFS.SceneSpec.Placement
         /// PracticeConfirmAtSeconds에 확인을 누른다. 음수면 누르지 않는다(실험자가 넘겨야 끝남).</summary>
         public double PracticeGrabAtSeconds = 0.5, PracticeMoveSeconds = 2.0, PracticeConfirmAtSeconds = 3.0;
 
+        /// <summary>멈춤 거리 반복 멈춤(G60-2, stopMode loop): 라운드(연습 포함 순서, 넘치면 처음부터 다시)마다 차례로 멈출 거리(m).
+        /// 물체가 그 거리를 지나는 프레임에 트리거를 누르고, 다음 거리가 남았으면 LoopDwellSeconds 뒤 다시 눌러 움직인다.
+        /// 마지막 멈춤 뒤 LoopConfirm이 true면 LoopDwellSeconds 뒤 확정, false면 확정하지 않는다(timeout_stopped).
+        /// 빈 배열 = 한 번도 누르지 않음(timeout_moving).</summary>
+        public double[][] LoopStops =
+        {
+            new[] { 1.50 },               // 연습: 한 번 멈추고 확정
+            new[] { 1.80, 1.60 },         // 멈춤 → 다시 움직임 → 멈춤 → 확정
+            new[] { 1.70 },
+            new double[0],                // 한 번도 누르지 않음(상한 도달, 확정값 빈칸)
+            new[] { 1.50, 1.30, 1.45 },   // 두 번 고침
+        };
+        public bool[] LoopConfirm = { true, true, true, false, true };
+        /// <summary>멈춘 뒤(또는 다시 누르기 전) 머무는 시간(초). 디바운스(250 ms)보다 길다.</summary>
+        public double LoopDwellSeconds = 0.6;
+        /// <summary>이 라운드 번호(1부터)에서는 처음 움직이는 동안 확정을 한 번 눌러 본다(무시되어야 함 — confirm_ignored). 0이면 하지 않음.</summary>
+        public int LoopConfirmWhileMovingRound = 2;
+
         // 진행 상태
         int _ratingCount;
         bool _cancelled;
@@ -51,6 +69,8 @@ namespace IFS.SceneSpec.Placement
         bool _confirmed, _pointed;
         bool _practiceGrabbed, _practiceConfirmed;
         PVec3 _practiceFrom;
+        int _loopRound = -1, _loopNext;
+        bool _loopConfirmTried;
 
         const double Rad = Math.PI / 180.0;
 
@@ -64,6 +84,7 @@ namespace IFS.SceneSpec.Placement
             if (s == null || s.Finished) return f;
             if (s.Phase == PlacementPhase.Condition) return s.Config.IsPlace ? PlaceFrame(s) : ViewFrame(s);
             if (s.Phase == PlacementPhase.Practice) return PracticeFrame(s);
+            if (s.Phase == PlacementPhase.StopDistance && s.Config.IsStopLoop) return LoopFrame(s, dt);
             if (s.Phase == PlacementPhase.StopDistance && s.StopTrialActive)
             {
                 var plan = s.CurrentStopTrial;
@@ -143,6 +164,42 @@ namespace IFS.SceneSpec.Placement
                 _practiceConfirmed = true;
                 f.ConfirmDown = true;
             }
+            return f;
+        }
+
+        // 반복 멈춤(G60-2): 라운드마다 LoopStops를 차례로 — 지나는 프레임에 멈춤, 머문 뒤 다시 움직임 또는 확정
+        PlacementInputFrame LoopFrame(PlacementSession s, double dt)
+        {
+            var f = new PlacementInputFrame();
+            var round = s.CurrentStopRound;
+            if (round == null) return f;
+            int ri = round.Round - 1;
+            if (ri != _loopRound) { _loopRound = ri; _loopNext = 0; _loopConfirmTried = false; }
+            var stops = LoopStops.Length > 0 ? LoopStops[ri % LoopStops.Length] ?? new double[0] : new double[0];
+            bool confirm = LoopConfirm.Length > 0 && LoopConfirm[ri % LoopConfirm.Length];
+            if (s.StopLoopMoving)
+            {
+                if (!_loopConfirmTried && round.Round == LoopConfirmWhileMovingRound && s.StopLoopSecondsSinceChange >= LoopDwellSeconds)
+                {
+                    _loopConfirmTried = true;
+                    f.ConfirmDown = true;   // 움직이는 중의 확정 — 무시되어야 한다
+                    return f;
+                }
+                if (_loopNext >= stops.Length) return f;
+                double target = stops[_loopNext];
+                double cur = s.StopDistanceNow;
+                double next = cur + s.StopLoopDirection * s.Config.stopSpeedMps * Math.Max(0, dt);
+                bool crosses = s.StopLoopDirection < 0 ? (cur > target && next <= target) : (cur < target && next >= target);
+                if (crosses && s.StopLoopSecondsSinceChange >= LoopDwellSeconds)
+                {
+                    _loopNext++;
+                    f.StopDown = f.StopHeld = true;
+                }
+                return f;
+            }
+            if (s.StopLoopSecondsSinceChange < LoopDwellSeconds) return f;
+            if (_loopNext < stops.Length) f.StopDown = f.StopHeld = true;   // 다음 멈춤 자리로 다시 움직임
+            else if (confirm) f.ConfirmDown = true;
             return f;
         }
 

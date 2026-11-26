@@ -8,7 +8,7 @@ namespace UnityEngine
     {
         None = 0, Backspace = 8, Return = 13, Escape = 27, Space = 32,
         Alpha0 = 48, Alpha1 = 49, Alpha2 = 50, Alpha3 = 51, Alpha4 = 52, Alpha5 = 53, Alpha6 = 54, Alpha7 = 55, Alpha8 = 56, Alpha9 = 57,
-        A = 97, D = 100, E = 101, F = 102, Q = 113, R = 114, S = 115, W = 119,
+        A = 97, D = 100, E = 101, F = 102, H = 104, Q = 113, R = 114, S = 115, W = 119,
         Keypad0 = 256, Keypad1 = 257, Keypad2 = 258, Keypad3 = 259, Keypad4 = 260, Keypad5 = 261, Keypad6 = 262, Keypad7 = 263,
         Keypad8 = 264, Keypad9 = 265, KeypadEnter = 271, F1 = 282,
     }

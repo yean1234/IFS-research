@@ -167,6 +167,18 @@ namespace IFS.SceneSpec.Placement
             if (head && GUILayout.Button("정면 재설정 (R)", _button, GUILayout.Width(150), GUILayout.Height(30))) runner.Recenter();
             GUILayout.EndHorizontal();
             if (runner.LastRecenterMessage != null) GUILayout.Label(runner.LastRecenterMessage, _small);
+            // G60-3 눈높이(relative일 때만): 상태 한 줄 + Check 단계에서 재기 단추
+            string eye = runner.EyeHeightStatus;
+            if (eye != null)
+            {
+                GUILayout.BeginHorizontal();
+                bool ok = runner.EyeCalibration != null && runner.EyeCalibration.Ok;
+                GUILayout.Label(ok || !head ? eye : $"<color={ColWarn}>{eye}</color>", _small);
+                if (head && runner.Stage == PlacementRunnerStage.Checked && runner.Session == null && !runner.EyeCalibrating
+                    && GUILayout.Button("눈높이 재기 (H)", _button, GUILayout.Width(150), GUILayout.Height(30)))
+                    runner.BeginEyeCalibration();
+                GUILayout.EndHorizontal();
+            }
         }
 
         // ── 단계별 ───────────────────────────────────────────────────────
@@ -234,6 +246,12 @@ namespace IFS.SceneSpec.Placement
             cfg.hideObjectDuringItems = GUILayout.Toggle(cfg.hideObjectDuringItems, " 평정 동안 물체 숨기기(설문 초안의 제안, 절차 변경이라 팀 결정 전)", _toggle);
             cfg.checkBeforeStopDistance = GUILayout.Toggle(cfg.checkBeforeStopDistance,
                 " 점검 문항을 멈춤 거리 앞에(G59, checkBeforeStopDistance — 사후 평정 바로 뒤. 기본: 멈춤 거리 뒤. 팀 결정 전)", _toggle);
+            bool loop = GUILayout.Toggle(cfg.IsStopLoop,
+                " 멈춤 거리 반복 멈춤(G60-2, stopMode loop — 왕복 경로, 트리거로 멈춤/다시 움직임, A·X로 확정, 연습 1 + 본 4라운드. 기본: 한 번 누름. 팀 결정 전)", _toggle);
+            cfg.stopMode = loop ? PlacementConfig.StopModeLoop : PlacementConfig.StopModeSingle;
+            bool eyeRel = GUILayout.Toggle(cfg.IsEyeRelative,
+                " 눈높이 기준 배치(G60-3, eyeHeightMode relative — Check 뒤 H로 눈높이를 재고 물체 높이를 E − 1.60 m만큼 옮김. 기본: 절대 높이. 팀 결정 전)", _toggle);
+            cfg.eyeHeightMode = eyeRel ? PlacementConfig.EyeHeightRelative : PlacementConfig.EyeHeightNone;
             cfg.askOptionalItems = GUILayout.Toggle(cfg.askOptionalItems, " 선택 단계 문항도 묻기(optionalWhen — 두 평정 문항 모습 일치·대표성을 사전에도. 기본 꺼짐: 사전 측정은 데스크톱)", _toggle);
             GUILayout.Label("묻지 않을 평정 문항 키(쉼표로, 예: own 또는 S4 — 기존 '내 것 같다' 문항 끄기)", _wrap);
             string disabled = GUILayout.TextField(string.Join(",", cfg.disabledItems ?? new string[0]));
@@ -299,15 +317,29 @@ namespace IFS.SceneSpec.Placement
                                 "참여자가 확인을 누르면 끝, 실험자는 '다음'(Enter)으로 건너뛸 수 있다", _wrap);
             if (s.Phase == PlacementPhase.StopDistance)
             {
-                var t = s.CurrentStopTrial;
-                GUILayout.Label(!s.StopTrialsStarted ? "멈춤 거리: 안내를 확인한 뒤 '다음'(Enter)으로 시작"
-                    : $"멈춤 거리 시행 {t?.Trial ?? 0}/{s.StopPlan.Count} {(t != null && t.Practice ? "(연습)" : "")} {t?.Direction}  지금 {s.StopDistanceNow:0.00} m", _wrap);
+                if (s.Config.IsStopLoop)
+                {
+                    // G60-2 반복 멈춤: 라운드·움직임 상태·멈춤 횟수·남은 시간
+                    var r = s.CurrentStopRound;
+                    GUILayout.Label(!s.StopTrialsStarted ? "멈춤 거리(반복 멈춤): 안내를 확인한 뒤 '다음'(Enter)으로 시작"
+                        : r == null ? "멈춤 거리(반복 멈춤): 라운드 사이"
+                        : $"멈춤 거리 라운드 {r.Round}/{s.StopLoopPlan.Count} {(r.Practice ? "(연습)" : "")}  {(s.StopLoopMoving ? (s.StopLoopDirection < 0 ? "가까워지는 중" : "멀어지는 중") : "<b>멈춤</b>")}  " +
+                          $"지금 {s.StopDistanceNow:0.00} m  멈춤 {s.StopLoopStopCount}회  남은 {s.StopLoopSecondsLeft:0} s", _wrap);
+                }
+                else
+                {
+                    var t = s.CurrentStopTrial;
+                    GUILayout.Label(!s.StopTrialsStarted ? "멈춤 거리: 안내를 확인한 뒤 '다음'(Enter)으로 시작"
+                        : $"멈춤 거리 시행 {t?.Trial ?? 0}/{s.StopPlan.Count} {(t != null && t.Practice ? "(연습)" : "")} {t?.Direction}  지금 {s.StopDistanceNow:0.00} m", _wrap);
+                }
             }
             // 참여자 조작 안내(늘 보이게, 단추 위)
             string help = runner.ActiveInputSource == XrPlacementInput.Source
-                ? "참여자 XR 조작: 광선으로 가리키고 트리거(또는 그립) 누르고 있기 = 잡기, 썸스틱 앞/뒤 = 밀기/당기기, A·X = 확인, 트리거 = 멈춤 거리 버튼" +
+                ? "참여자 XR 조작: 광선으로 가리키고 트리거(또는 그립) 누르고 있기 = 잡기, 썸스틱 앞/뒤 = 밀기/당기기, A·X = 확인, " +
+                  (s.Config.IsStopLoop ? "멈춤 거리: 트리거 = 멈춤/다시 움직임, A·X = 이 자리로 확정(멈춘 상태에서만)" : "트리거 = 멈춤 거리 버튼") +
                   (s.Config.participantRatesWithController ? ", 평정: 썸스틱 좌우 고르기·트리거 확정" : "") + ".  실험자 R = 정면 재설정"
-                : "참여자 데스크톱 조작: 왼쪽 단추 누르고 있기 = 잡기, 휠 또는 E/Q = 밀기/당기기, F = 확인, Space = 멈춤 거리 버튼. 오른쪽 드래그·WASD = 둘러보기·이동";
+                : "참여자 데스크톱 조작: 왼쪽 단추 누르고 있기 = 잡기, 휠 또는 E/Q = 밀기/당기기, F = 확인, " +
+                  (s.Config.IsStopLoop ? "멈춤 거리: Space = 멈춤/다시 움직임, F = 확정(멈춘 상태에서만)" : "Space = 멈춤 거리 버튼") + ". 오른쪽 드래그·WASD = 둘러보기·이동";
             GUILayout.Label($"<color={ColMuted}>{help}</color>", _small);
 
             bool waits = s.Phase == PlacementPhase.Intro || s.Phase == PlacementPhase.Practice || s.Phase == PlacementPhase.PreWait || s.Phase == PlacementPhase.PostWait

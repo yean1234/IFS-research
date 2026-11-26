@@ -181,8 +181,9 @@ namespace IFS.SceneSpec.Tests
             Assert.That(t.ItemsFor("pre").Select(i => i.Key), Is.EqualTo(new[] { "own", "distance_feel" }), "거리감(G59)은 사전 맨 끝");
             Assert.That(t.ItemsFor("post").Select(i => i.Key), Is.EqualTo(new[] { "own", "appearance_match", "representativeness", "want_to_know", "withdraw_attention", "distance_feel" }),
                 "두 평정 문항(G13)은 기본 사후만, 거리감(G59)은 사후 맨 끝");
-            Assert.That(t.ItemsFor("check").Select(i => i.Key), Is.EqualTo(new[] { "placed_by_me", "place_fit", "want_move" }), "G59 자리 평정 두 문항은 placed_by_me 뒤");
-            foreach (var k in new[] { "distance_feel", "place_fit", "want_move" })
+            Assert.That(t.ItemsFor("check").Select(i => i.Key), Is.EqualTo(new[] { "placed_by_me", "place_fit" }), "G59 자리 평정은 placed_by_me 뒤(G60에서 want_move를 뺌)");
+            Assert.That(t.Items.Any(i => i.Key == "want_move"), Is.False, "G60: want_move 없음(0.6)");
+            foreach (var k in new[] { "distance_feel", "place_fit" })
             {
                 var src = (string)JObject.Parse(File.ReadAllText(Path.Combine(Application.streamingAssetsPath, PlacementTaskText.DefaultRelativePath), Encoding.UTF8))["texts"][k]["source"];
                 Assert.That(src, Does.Contain("docs/decisions.md G59, 2026-11-25"), k + ": 출처");
@@ -352,7 +353,7 @@ namespace IFS.SceneSpec.Tests
                 // 자동 응답은 5, 3, 4, 2, 6, 4를 차례로 돈다(G59 문항이 끼어 값이 한 칸씩 밀림)
                 "own/pre/5", "distance_feel/pre/3",
                 "own/post/4", "appearance_match/post/2", "representativeness/post/6", "want_to_know/post/4", "withdraw_attention/post/5", "distance_feel/post/3",
-                "placed_by_me/check/4", "place_fit/check/2", "want_move/check/6",
+                "placed_by_me/check/4", "place_fit/check/2",
             }));
             Assert.That(rows.All(r => long.Parse(r[3]) >= 0), Is.True);
             Assert.That(Csv(dir, "events.csv").Count(c => c[1] == "rating_cancel"), Is.EqualTo(1));
@@ -386,7 +387,7 @@ namespace IFS.SceneSpec.Tests
                 long lastCheck = ev.Where(c => c[1] == "rating" && c[2].Contains("when=check")).Max(c => long.Parse(c[0], Inv));
                 long firstTrial = ev.Where(c => c[1] == "stop_trial_start").Min(c => long.Parse(c[0], Inv));
                 Assert.That(lastCheck, Is.LessThan(firstTrial), tag + ": 점검 평정이 멈춤 거리 시행보다 먼저");
-                Assert.That(Csv(dir, "ratings.csv").Where(r => r[1] == "check").Select(r => r[0]), Is.EqualTo(new[] { "placed_by_me", "place_fit", "want_move" }), tag);
+                Assert.That(Csv(dir, "ratings.csv").Where(r => r[1] == "check").Select(r => r[0]), Is.EqualTo(new[] { "placed_by_me", "place_fit" }), tag);
                 Assert.That(Csv(dir, "stopdistance.csv"), Is.Not.Empty, tag + ": 멈춤 거리는 그대로 한다");
                 Assert.That(checkPositions, Is.Not.Empty);
                 Assert.That(checkPositions.All(p => p.Equals(final)), Is.True, tag + ": 점검 동안 물체는 조건 단계가 끝난 자리");
@@ -399,7 +400,7 @@ namespace IFS.SceneSpec.Tests
             // 점검 문항을 모두 끄면 점검 단계째 건너뛰고 사후 대기로 간다
             var off = ShortConfig("view");
             off.checkBeforeStopDistance = true;
-            off.disabledItems = new[] { "placed_by_me", "place_fit", "want_move" };
+            off.disabledItems = new[] { "placed_by_me", "place_fit" };
             Assert.That(PhaseEvents(Run(off)), Is.EqualTo(moved.Where(p => p != "check_items")));
 
             // 점검 단계에서 중단하면 abortedAt = check_items(조건 단계 뒤 — 분석기 PHASES_AFTER_CONDITION에 들어 있음)
@@ -612,7 +613,7 @@ namespace IFS.SceneSpec.Tests
         public void Item_phases_without_items_are_skipped()
         {
             var raw = JObject.Parse(File.ReadAllText(Path.Combine(Application.streamingAssetsPath, PlacementTaskText.DefaultRelativePath), Encoding.UTF8));
-            foreach (var k in new[] { "placed_by_me", "place_fit", "want_move" }) ((JObject)raw["texts"]).Remove(k);   // 점검 문항 없음
+            foreach (var k in new[] { "placed_by_me", "place_fit" }) ((JObject)raw["texts"]).Remove(k);   // 점검 문항 없음
             raw["texts"]["own"]["when"] = "post";
             raw["texts"]["distance_feel"]["when"] = "post";   // 사전 문항 없음(G59 거리감도 사후만으로)
             var text = PlacementTaskText.Parse(raw.ToString(), "test.json");

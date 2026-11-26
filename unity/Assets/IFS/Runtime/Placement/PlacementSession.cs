@@ -6,6 +6,10 @@
 //    practice는 놓기 도움 placementAssist를 켠 직접 배치 조건에서만 있다(G53, 2026-11-24) — 뜻 없는 회색 상자를 표시된 자리로 옮기고 확인.
 //    practiceInAllConditions(G59, 기본 꺼짐)를 함께 켜면 보기만 조건에서도 같은 연습을 한다.
 //    연습은 events.csv(practice_*)와 practice.json에만 남고 placement.json·trajectory.json·objpose.csv에는 들어가지 않는다.)
+// 멈춤 거리(2026-11-26 G60-2): 설정 stopMode single(기본)은 예전 그대로(한 번 누르면 시행 끝), loop는 왕복 경로에서 멈춤/재개를
+//   여러 번 하고 확정 버튼으로 정한다(StepStopLoop — stoprounds.csv·stopadjust.csv).
+// 눈높이(2026-11-26 G60-3): 설정 eyeHeightMode relative면 시작·멈춤 경로·system_move 목표·연습 목표 높이에 (E − 기준)을 더한다(Eye()).
+//   E는 PlacementSessionInfo.EyeHeight(러너의 보정 결과). none이면 더하는 값이 0이라 예전과 같다.
 // 시계: Tick(dt)으로 받은 dt를 더한 시각(사람 실행은 Time.unscaledDeltaTime, 자동 시행은 고정 dt).
 // 물체 위치·보이기·참여자 글은 이 클래스가 정하고, Unity 러너(PlacementRunner)는 그대로 그린다.
 // 기록 형식: 계약 ifs-placement/0.2(PlacementRecordWriter — 0.1에 선택 파일·적용한 덮어쓰기 키만 더함. 2026-11-24 G52–G53: 공간 설정이
@@ -98,6 +102,20 @@ namespace IFS.SceneSpec.Placement
         double _itiUntil, _trialStart, _stopD;
         bool _stopPrevHeld;   // 직전 프레임에 멈춤 버튼이 눌려 있었나(눌림의 '내려가는 순간'만 인정하려고)
 
+        // 멈춤 거리 반복 멈춤(G60-2, stopMode loop)
+        List<StopRoundPlan> _loopPlan;
+        int _roundIndex = -1;
+        bool _roundActive, _loopMoving;
+        int _loopDir;   // −1 = 가까워짐(approach), +1 = 멀어짐(recede)
+        double _roundStart, _lastChange, _lastToggle;
+        readonly List<double> _loopStops = new List<double>();
+        readonly List<double> _loopPoints = new List<double>();   // 출발·끝점 반사·멈춤 자리(확정 전에 지나간 횟수 계산)
+        int _loopResumes;
+        string _loopLastStopDir;
+
+        // 눈높이(G60-3)
+        readonly double _eyeOffset;
+
         public PlacementSession(PlacementConfig cfg, PlacementTaskText text, PlacementSessionInfo info, string recordRoot,
             PlacementTrajectory replay = null, IEnumerable<string> warnings = null)
         {
@@ -108,22 +126,35 @@ namespace IFS.SceneSpec.Placement
             _text = text ?? throw new ArgumentNullException(nameof(text));
             if (_cfg.placementAssist && _text.AssistKeysMissing().Count > 0)
                 throw new ArgumentException("놓기 도움(placementAssist)을 켰는데 문구 파일에 " + string.Join(", ", _text.AssistKeysMissing()) + " 문구가 없습니다(문구 파일 0.3 이상)");
+            if (_cfg.IsStopLoop && _text.LoopKeysMissing().Count > 0)
+                throw new ArgumentException("멈춤 거리 반복 멈춤(stopMode loop)을 켰는데 문구 파일에 " + string.Join(", ", _text.LoopKeysMissing()) + " 문구가 없습니다(문구 파일 0.6 이상)");
             _info = info ?? new PlacementSessionInfo();
             if (_cfg.EffectiveControlMode == PlacementConfig.ModeReplay && (replay == null || replay.Samples.Count == 0))
                 throw new ArgumentException("controlMode replay에는 재생할 궤적이 필요합니다");
+            if (_cfg.IsEyeRelative)
+            {
+                // G60-3: relative에서는 눈높이(보정 결과 또는 데스크톱 고정값)가 있어야 시작한다
+                var eye = _info.EyeHeight;
+                if (eye == null) throw new ArgumentException("eyeHeightMode relative인데 눈높이 보정이 없습니다(Check 단계에서 H로 재기)");
+                if (eye.Source != EyeHeightInfo.SourceDesktopFixed && (eye.MeasuredM < _cfg.eyeHeightMinM - 1e-9 || eye.MeasuredM > _cfg.eyeHeightMaxM + 1e-9))
+                    throw new ArgumentException($"눈높이 {eye.MeasuredM.ToString("0.000", Inv)} m가 [eyeHeightMinM, eyeHeightMaxM] 밖입니다");
+                _eyeOffset = _cfg.EyeOffsetFor(eye.MeasuredM);
+            }
             _replay = replay;
             _clock = new HeadSampleClock(_cfg.headSampleHz);
             _headSource = _info.HeadSource;
             GrabRadiusM = _cfg.grabRadiusMinM;
-            StartPosition = PlacementGeometry.FromPolar(_cfg.startDistanceM, 0, _cfg.startHeightM);
+            StartPosition = PlacementGeometry.FromPolar(_cfg.startDistanceM, 0, Eye(_cfg.startHeightM));
             _obj = StartPosition;
             _conditionFinal = StartPosition;
             _stopPlan = StopDistanceSchedule.Build(_cfg, _info.ParticipantNumber);
+            if (_cfg.IsStopLoop) _loopPlan = StopLoopSchedule.Build(_cfg, _info.ParticipantNumber);
 
             _writer = new PlacementRecordWriter(recordRoot, _info.ParticipantNumber, _info.SessionId, _info.StartedUtc);
             RecordDirectory = _writer.Directory;
             try
             {
+                if (_cfg.IsStopLoop) _writer.EnableStopLoop();   // G60-2: loop일 때만 stoprounds.csv·stopadjust.csv
                 _writer.WriteJson(PlacementRecordWriter.ManifestFile, PlacementManifest.Build(_cfg, _info));
             }
             catch
@@ -134,6 +165,7 @@ namespace IFS.SceneSpec.Placement
             Event("session_start", $"participant={_info.ParticipantNumber};condition={_cfg.condition};controlMode={_cfg.EffectiveControlMode};" +
                                    $"headSource={_info.HeadSource};inputSource={_info.InputSource}");
             if (_info.AutoMode) Event("auto_mode", "scripted inputs (verification only, not participant data)");
+            if (_cfg.IsEyeRelative) Event("eye_height_calibrated", _info.EyeHeight.EventDetail(_cfg));
             foreach (var w in warnings ?? Enumerable.Empty<string>()) Event("warning", w);
             GoTo(PlacementPhase.Intro);
         }
@@ -195,6 +227,27 @@ namespace IFS.SceneSpec.Placement
         public StopTrialPlan CurrentStopTrial => _stopIndex >= 0 && _stopIndex < _stopPlan.Count ? _stopPlan[_stopIndex] : null;
         public IReadOnlyList<StopTrialPlan> StopPlan => _stopPlan;
         public double StopDistanceNow => _stopD;
+        // ── 멈춤 거리 반복 멈춤(G60-2) ─────────────────────────────────
+        /// <summary>loop 라운드 계획(single이면 null).</summary>
+        public IReadOnlyList<StopRoundPlan> StopLoopPlan => _loopPlan;
+        /// <summary>지금 라운드(라운드 사이·시작 전이면 null).</summary>
+        public StopRoundPlan CurrentStopRound => _roundActive && _loopPlan != null && _roundIndex >= 0 && _roundIndex < _loopPlan.Count ? _loopPlan[_roundIndex] : null;
+        public bool StopRoundActive => _roundActive;
+        /// <summary>loop 물체가 움직이는 중(라운드 안). 멈춰 있으면 false.</summary>
+        public bool StopLoopMoving => _roundActive && _loopMoving;
+        /// <summary>loop 진행 방향: −1 가까워짐, +1 멀어짐.</summary>
+        public int StopLoopDirection => _loopDir;
+        /// <summary>이번 라운드 멈춤 횟수.</summary>
+        public int StopLoopStopCount => _loopStops.Count;
+        /// <summary>직전 상태 변화(라운드 시작·멈춤·재개)부터 지난 시간(초).</summary>
+        public double StopLoopSecondsSinceChange => _roundActive ? _now - _lastChange : 0;
+        /// <summary>이번 라운드 남은 시간(초). 라운드 밖이면 NaN.</summary>
+        public double StopLoopSecondsLeft => _roundActive ? Math.Max(0, _cfg.stopLoopRoundSeconds - (_now - _roundStart)) : double.NaN;
+        // ── 눈높이(G60-3) ───────────────────────────────────────────
+        /// <summary>물체 높이를 옮긴 양(E − 기준, m). none이면 0.</summary>
+        public double EyeOffsetM => _eyeOffset;
+        /// <summary>이 세션의 눈높이 E(relative일 때 보정값, 아니면 null).</summary>
+        public double? EyeHeightM => _cfg.IsEyeRelative ? _info.EyeHeight?.MeasuredM : null;
         public int GrabCount => _grabCount;
         public bool Confirmed => _confirmed;
         public double PathLengthM => _pathLength;
@@ -249,6 +302,9 @@ namespace IFS.SceneSpec.Placement
         void Event(string ev, string detail) => _writer?.Event(NowMs, ev, detail);
 
         static string F(double v, string fmt = "0.0000") => v.ToString(fmt, Inv);
+
+        /// <summary>설정 높이 → 실제 높이(G60-3 relative면 + (E − 기준), none이면 그대로).</summary>
+        double Eye(double configuredHeightM) => configuredHeightM + _eyeOffset;
 
         static string Where(PVec3 p) =>
             $"distance_m={F(PlacementGeometry.HorizontalDistance(p))};azimuth_deg={F(PlacementGeometry.AzimuthDeg(p), "0.00")};height_m={F(p.Y)}";
@@ -351,7 +407,9 @@ namespace IFS.SceneSpec.Placement
                     _stopStarted = false;
                     _trialActive = false;
                     _stopIndex = -1;
-                    ShowText("stop_distance");
+                    _roundActive = false;
+                    _roundIndex = -1;
+                    ShowText(_cfg.IsStopLoop ? PlacementTaskText.StopLoopKey : "stop_distance");
                     break;
                 case PlacementPhase.Done:
                     Finish(true, null);
@@ -539,7 +597,7 @@ namespace IFS.SceneSpec.Placement
         {
             if (!_moveStarted && SecondsInPhase >= _cfg.systemMoveDelaySeconds - Eps)
             {
-                var target = PlacementGeometry.FromPolar(_cfg.systemMoveTargetDistanceM, _cfg.systemMoveTargetAzimuthDeg, _cfg.systemMoveTargetHeightM);
+                var target = PlacementGeometry.FromPolar(_cfg.systemMoveTargetDistanceM, _cfg.systemMoveTargetAzimuthDeg, Eye(_cfg.systemMoveTargetHeightM));
                 StartMove(target, "system_move_start", $"target_{Where(ClampSpace(target)).Replace(";", ";target_")};speed_mps={F(_cfg.systemMoveSpeedMps)}");
                 return;   // 움직임은 다음 프레임부터
             }
@@ -638,7 +696,7 @@ namespace IFS.SceneSpec.Placement
             _visible = false;   // 본 물체는 숨긴다(연습 상자는 러너가 따로 그린다)
             _state = StateIdle;
             _pracPos = StartPosition;
-            _pracTarget = PlacementGeometry.FromPolar(_cfg.practiceTargetDistanceM, _cfg.practiceTargetAzimuthDeg, _cfg.practiceTargetHeightM);
+            _pracTarget = PlacementGeometry.FromPolar(_cfg.practiceTargetDistanceM, _cfg.practiceTargetAzimuthDeg, Eye(_cfg.practiceTargetHeightM));
             _pracHeld = false;
             _pracWritten = false;
             _pracGrabCount = 0;
@@ -728,9 +786,10 @@ namespace IFS.SceneSpec.Placement
         //   실제 누른 순간은 직전 프레임과 이 프레임 사이 어딘가라 기록 거리의 최대 오차는 stopSpeedMps × dt.
         //   경계(stopMinM·stopMaxM)에 닿는 같은 프레임에 누르면 누름이 이긴다(거리 = 경계값, timed_out = 0).
         //   누름은 stopPress(직전 프레임에 눌려 있지 않던 StopDown)만 센다. 시행을 시작하는 프레임의 누름은 버린다.
-        void StepStop(double dt, bool stopPress)
+        void StepStop(double dt, bool stopPress, bool confirmPress)
         {
             if (!_stopStarted) return;
+            if (_cfg.IsStopLoop) { StepStopLoop(dt, stopPress, confirmPress); return; }
             if (!_trialActive)
             {
                 if (_now < _itiUntil - Eps) return;
@@ -744,7 +803,7 @@ namespace IFS.SceneSpec.Placement
             bool atLimit = plan.IsApproach ? d <= _cfg.stopMinM + Eps : d >= _cfg.stopMaxM - Eps;
             if (atLimit) d = plan.IsApproach ? _cfg.stopMinM : _cfg.stopMaxM;
             _stopD = d;
-            SetObject(PlacementGeometry.FromPolar(d, 0, _cfg.stopHeightM), false);
+            SetObject(PlacementGeometry.FromPolar(d, 0, Eye(_cfg.stopHeightM)), false);
             long rt = Ms(_now - _trialStart);
             // ② 버튼 → ③ 기록
             if (stopPress)
@@ -769,7 +828,7 @@ namespace IFS.SceneSpec.Placement
             _trialActive = true;
             _trialStart = _now;
             _stopD = plan.StartM;
-            SetObject(PlacementGeometry.FromPolar(_stopD, 0, _cfg.stopHeightM), false);
+            SetObject(PlacementGeometry.FromPolar(_stopD, 0, Eye(_cfg.stopHeightM)), false);
             _visible = true;
             _state = StateStop;
             _clock.Reset();
@@ -783,6 +842,187 @@ namespace IFS.SceneSpec.Placement
             _visible = false;
             _state = StateIdle;
             _itiUntil = _now + _cfg.stopItiSeconds;
+        }
+
+        // ── 멈춤 거리 반복 멈춤(G60-2, stopMode loop) ─────────────────────
+        // 정면 직선 위 왕복(stopLoopMinM ↔ stopLoopMaxM, stopSpeedMps 일정, 끝에서 감속 없이 반사). 한 프레임의 순서(고정):
+        //   ① 움직이는 중이면 이동(끝점을 넘으면 넘은 만큼 되돌아오고 turn 행) → ② 확정(A·X·F) → ③ 토글(트리거·Space) → ④ 시간 상한.
+        //   확정은 프레임 시작 때 멈춰 있었을 때만 받는다(움직이는 중이면 confirm_ignored 행만). 같은 프레임에 토글과 확정이 함께 오면
+        //   확정을 먼저 본다(멈춘 상태에서 둘을 함께 누르면 그 자리로 확정).
+        //   토글은 직전에 받아들인 토글부터 stopLoopToggleDebounceMs 안이면 버린다(toggle_ignored 행). 다시 움직이면 멈추기 전 방향 그대로.
+        //   라운드를 시작하는 프레임의 누름은 버린다(single과 같은 규칙). 누름은 '내려가는 순간'만 센다(Tick의 stopPress).
+        //   시간 상한(라운드 시작부터 stopLoopRoundSeconds)에 닿으면 확정값은 빈칸으로 두고 end_reason timeout_stopped | timeout_moving
+        //   (원칙 2: 참여자가 확정하지 않은 값을 시스템이 정하지 않는다). 마지막 멈춤 거리는 last_stop_distance_m에 따로 남는다.
+        public const string StatePaused = "stop_paused";
+        /// <summary>확정값이 끝점에서 이 거리(m) 안이면 at_bound = 1.</summary>
+        public const double StopLoopBoundToleranceM = 0.05;
+
+        static string DirName(int dir) => dir < 0 ? PlacementConfig.DirectionApproach : PlacementConfig.DirectionRecede;
+
+        void StepStopLoop(double dt, bool stopPress, bool confirmPress)
+        {
+            if (!_roundActive)
+            {
+                if (_now < _itiUntil - Eps) return;
+                if (_roundIndex + 1 >= _loopPlan.Count) { GoTo(Next(PlacementPhase.StopDistance)); return; }
+                StartRound(_roundIndex + 1);
+                return;
+            }
+            // ① 이동
+            if (_loopMoving)
+            {
+                double d = _stopD + _loopDir * _cfg.stopSpeedMps * dt;
+                for (int guard = 0; guard < 64 && (d > _cfg.stopLoopMaxM || d < _cfg.stopLoopMinM); guard++)
+                {
+                    double bound = d > _cfg.stopLoopMaxM ? _cfg.stopLoopMaxM : _cfg.stopLoopMinM;
+                    d = 2 * bound - d;
+                    _loopDir = -_loopDir;
+                    _loopPoints.Add(bound);
+                    Adjust("turn", bound, DirName(_loopDir), false);
+                }
+                _stopD = Math.Min(_cfg.stopLoopMaxM, Math.Max(_cfg.stopLoopMinM, d));
+                SetObject(PlacementGeometry.FromPolar(_stopD, 0, Eye(_cfg.stopHeightM)), false);
+            }
+            // ② 확정(프레임 시작 때의 상태로 판단)
+            if (confirmPress)
+            {
+                if (!_loopMoving)
+                {
+                    Adjust("confirm", _stopD, _loopLastStopDir, false);
+                    EndRound(StopLoopEnd.Confirmed);
+                    return;
+                }
+                Adjust("confirm_ignored", _stopD, DirName(_loopDir), false);
+            }
+            // ③ 토글
+            if (stopPress)
+            {
+                if ((_now - _lastToggle) * 1000.0 < _cfg.stopLoopToggleDebounceMs - Eps)
+                    Adjust("toggle_ignored", _stopD, DirName(_loopDir), false);
+                else if (_loopMoving)
+                {
+                    _loopMoving = false;
+                    _loopStops.Add(_stopD);
+                    _loopPoints.Add(_stopD);
+                    _loopLastStopDir = DirName(_loopDir);
+                    Adjust("stop", _stopD, _loopLastStopDir, true);
+                    _lastToggle = _now;
+                    _state = StatePaused;
+                    ShowStopLoopText();
+                }
+                else
+                {
+                    _loopMoving = true;
+                    _loopResumes++;
+                    Adjust("resume", _stopD, DirName(_loopDir), true);
+                    _lastToggle = _now;
+                    _state = StateStop;
+                    ShowStopLoopText();
+                }
+            }
+            // ④ 시간 상한
+            if (_now - _roundStart >= _cfg.stopLoopRoundSeconds - Eps)
+            {
+                string reason = _loopMoving ? StopLoopEnd.TimeoutMoving : StopLoopEnd.TimeoutStopped;
+                Adjust("timeout", _stopD, _loopMoving ? DirName(_loopDir) : _loopLastStopDir, false);
+                EndRound(reason);
+            }
+        }
+
+        /// <summary>stoprounds.csv end_reason 값.</summary>
+        public static class StopLoopEnd
+        {
+            public const string Confirmed = "confirmed";
+            public const string TimeoutStopped = "timeout_stopped";
+            public const string TimeoutMoving = "timeout_moving";
+            public const string Aborted = "aborted";
+        }
+
+        /// <summary>참여자 글: 움직이는 동안은 stop_distance_loop, 멈춘 동안은 그 아래에 줄을 바꿔 stop_loop_hint.</summary>
+        void ShowStopLoopText()
+        {
+            if (_roundActive && !_loopMoving)
+            {
+                ParticipantTextKey = PlacementTaskText.StopLoopKey + "+" + PlacementTaskText.StopLoopHintKey;
+                ParticipantText = _text[PlacementTaskText.StopLoopKey] + "\n" + _text[PlacementTaskText.StopLoopHintKey];
+            }
+            else ShowText(PlacementTaskText.StopLoopKey);
+        }
+
+        /// <summary>stopadjust.csv 한 줄. changeState면 이 사건이 상태 변화(멈춤·재개)라 rt 기준 시각을 지금으로 옮긴다.</summary>
+        void Adjust(string ev, double distance, string dir, bool changeState)
+        {
+            var plan = _loopPlan[_roundIndex];
+            _writer?.StopAdjust(plan.Round, plan.Practice, NowMs, Ms(_now - _roundStart), ev, distance, dir, Ms(_now - _lastChange));
+            if (changeState) _lastChange = _now;
+        }
+
+        void StartRound(int index)
+        {
+            _roundIndex = index;
+            var plan = _loopPlan[index];
+            _roundActive = true;
+            _loopMoving = true;
+            _loopDir = plan.StartsApproaching ? -1 : 1;
+            _stopD = plan.StartM;
+            _roundStart = _lastChange = _now;
+            _lastToggle = double.NegativeInfinity;
+            _loopStops.Clear();
+            _loopPoints.Clear();
+            _loopPoints.Add(plan.StartM);
+            _loopResumes = 0;
+            _loopLastStopDir = null;
+            SetObject(PlacementGeometry.FromPolar(_stopD, 0, Eye(_cfg.stopHeightM)), false);
+            _visible = true;
+            _state = StateStop;
+            _clock.Reset();
+            ShowStopLoopText();
+            Event("stop_round_start", $"round={plan.Round};practice={(plan.Practice ? 1 : 0)};start_dir={plan.StartDirection};" +
+                                      $"start_m={F(plan.StartM)};speed_mps={F(_cfg.stopSpeedMps)}");
+            Adjust("start", _stopD, plan.StartDirection, false);
+        }
+
+        /// <summary>확정 전에 물체가 최종 거리를 지나간 횟수: 출발·끝점 반사·멈춤 자리를 이은 구간 가운데 최종 거리를 안쪽에(끝점 제외) 품은 구간 수.</summary>
+        static int PassesThrough(List<double> points, double final)
+        {
+            int n = 0;
+            for (int i = 0; i + 1 < points.Count; i++)
+            {
+                double lo = Math.Min(points[i], points[i + 1]), hi = Math.Max(points[i], points[i + 1]);
+                if (final > lo + 1e-6 && final < hi - 1e-6) n++;
+            }
+            return n;
+        }
+
+        void EndRound(string reason)
+        {
+            var plan = _loopPlan[_roundIndex];
+            bool confirmed = reason == StopLoopEnd.Confirmed;
+            double? final = confirmed ? _stopD : (double?)null;
+            var r = new StopRoundResult
+            {
+                Round = plan.Round, Practice = plan.Practice, StartDirection = plan.StartDirection, StartM = plan.StartM, SpeedMps = _cfg.stopSpeedMps,
+                FinalM = final,
+                FirstStopM = _loopStops.Count > 0 ? _loopStops[0] : (double?)null,
+                LastStopM = _loopStops.Count > 0 ? _loopStops[_loopStops.Count - 1] : (double?)null,
+                NStops = _loopStops.Count, NResumes = _loopResumes,
+                FinalMotionDir = _loopLastStopDir,
+                PassesBeforeConfirm = confirmed ? PassesThrough(_loopPoints, _stopD) : (int?)null,
+                StopSpreadM = _loopStops.Count > 0 ? _loopStops.Max() - _loopStops.Min() : (double?)null,
+                AtBound = confirmed ? (_stopD - _cfg.stopLoopMinM <= StopLoopBoundToleranceM + 1e-9 || _cfg.stopLoopMaxM - _stopD <= StopLoopBoundToleranceM + 1e-9) : (bool?)null,
+                EndReason = reason,
+                DurationMs = Ms(_now - _roundStart),
+                EyeObjectDistanceM = confirmed ? PVec3.Distance(_head.Position, _obj) : (double?)null,
+            };
+            _writer?.StopRound(r);
+            Event("stop_round_end", $"round={plan.Round};end_reason={reason};final_m={(final.HasValue ? F(final.Value) : "")};" +
+                                    $"n_stops={r.NStops};duration_ms={r.DurationMs}");
+            _roundActive = false;
+            _loopMoving = false;
+            _visible = false;
+            _state = StateIdle;
+            _itiUntil = _now + _cfg.stopItiSeconds;
+            ShowText(PlacementTaskText.StopLoopKey);
         }
 
         // ── 실험자 입력 ──────────────────────────────────────────────────
@@ -901,7 +1141,7 @@ namespace IFS.SceneSpec.Placement
                     else StepCondition(dt, input);
                     break;
                 case PlacementPhase.StopDistance:
-                    StepStop(dt, stopPress);
+                    StepStop(dt, stopPress, input.ConfirmDown);   // 확정(ConfirmDown)은 loop에서만 쓴다(G60-2)
                     break;
             }
             Sample();
@@ -929,6 +1169,11 @@ namespace IFS.SceneSpec.Placement
             if (Finished) return;
             if (Phase == PlacementPhase.Condition && !_conditionWritten) EndCondition(advance: false);   // 중단해도 조건 단계 자료는 남긴다
             if (Phase == PlacementPhase.Practice && !_pracWritten) EndPractice("abort", advance: false);   // 연습 중 중단도 practice.json에 남긴다
+            if (Phase == PlacementPhase.StopDistance && _cfg.IsStopLoop && _roundActive)   // 라운드 중 중단도 stoprounds.csv에 남긴다(확정값 빈칸)
+            {
+                Adjust("abort", _stopD, _loopMoving ? DirName(_loopDir) : _loopLastStopDir, false);
+                EndRound(StopLoopEnd.Aborted);
+            }
             if (!completed) Event("abort", abortedAt);   // 확정 전 평정(_pending)은 ratings.csv에 쓰지 않는다
             Phase = PlacementPhase.Done;
             _phaseStart = _now;

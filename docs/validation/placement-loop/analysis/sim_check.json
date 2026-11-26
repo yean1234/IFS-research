@@ -1,0 +1,210 @@
+{
+  "version": "sim-placement/0.1",
+  "synthetic": true,
+  "note": "합성 자료: 파이프라인 검증용이며 효과의 근거가 아님. 유형별 값은 생성기가 정한 가정의 복원이다 — 분석 코드가 정의대로 계산하는지의 확인이지 측정의 타당성 근거가 아니다.",
+  "byArchetype": {
+    "near_look": {
+      "label": "가까이 두고 바라봄",
+      "n": 6,
+      "expected_quadrant": "NL",
+      "assigned_fixed": {
+        "NL": 6
+      },
+      "match_fixed": 6,
+      "assigned_median": {
+        "NA": 1,
+        "NL": 5
+      },
+      "match_median": 5,
+      "g_late_mean": 0.859,
+      "delta_d_mean": -0.41,
+      "language_means": {
+        "K1_pre": 1.0,
+        "K1_post": 1.0,
+        "K2_pre": 1.0,
+        "K2_post": 0.0,
+        "K3_pre": 0.0,
+        "K3_post": 1.0,
+        "K3b_pre": 0.0,
+        "K3b_post": 0.0,
+        "K4_pre": 0.333,
+        "K4_post": 0.0,
+        "K5_pre": 0.0,
+        "K5_post": 0.0,
+        "K6_pre": 0.0,
+        "K6_post": 0.0,
+        "K7_pre": 0.0,
+        "K7_post": 0.0
+      },
+      "disid_change_mean": 0.272,
+      "ambivalent_post": 0,
+      "cases": {
+        "NL_differentiated": 5
+      },
+      "stop_assumed_range_m": [
+        0.7,
+        0.9
+      ],
+      "sd_mean_mean": 0.79,
+      "sd_loop_insufficient": 0
+    },
+    "far_look": {
+      "label": "멀리 두고 바라봄",
+      "n": 6,
+      "expected_quadrant": "FL",
+      "assigned_fixed": {
+        "FL": 6
+      },
+      "match_fixed": 6,
+      "assigned_median": {
+        "FA": 2,
+        "FL": 1,
+        "NL": 3
+      },
+      "match_median": 1,
+      "g_late_mean": 0.821,
+      "delta_d_mean": 1.377,
+      "language_means": {
+        "K1_pre": 1.0,
+        "K1_post": 0.0,
+        "K2_pre": 1.0,
+        "K2_post": 0.0,
+        "K3_pre": 0.0,
+        "K3_post": 0.0,
+        "K3b_pre": 0.0,
+        "K3b_post": 0.0,
+        "K4_pre": 0.0,
+        "K4_post": 1.0,
+        "K5_pre": 0.0,
+        "K5_post": 1.0,
+        "K6_pre": 0.0,
+        "K6_post": 0.0,
+        "K7_pre": 0.0,
+        "K7_post": 0.0
+      },
+      "disid_change_mean": 0.125,
+      "ambivalent_post": 4,
+      "cases": {
+        "FL_with_S6_high": 6
+      },
+      "stop_assumed_range_m": [
+        1.5,
+        1.8
+      ],
+      "sd_mean_mean": 1.602,
+      "sd_loop_insufficient": 1
+    },
+    "far_away": {
+      "label": "멀리 두고 고개 돌림",
+      "n": 6,
+      "expected_quadrant": "FA",
+      "assigned_fixed": {
+        "FA": 6
+      },
+      "match_fixed": 6,
+      "assigned_median": {
+        "FA": 6
+      },
+      "match_median": 6,
+      "g_late_mean": 0.156,
+      "delta_d_mean": 1.792,
+      "language_means": {
+        "K1_pre": 1.0,
+        "K1_post": 0.0,
+        "K2_pre": 1.0,
+        "K2_post": 0.0,
+        "K3_pre": 0.0,
+        "K3_post": 0.0,
+        "K3b_pre": 0.0,
+        "K3b_post": 1.0,
+        "K4_pre": 0.0,
+        "K4_post": 1.0,
+        "K5_pre": 0.0,
+        "K5_post": 0.0,
+        "K6_pre": 0.0,
+        "K6_post": 0.0,
+        "K7_pre": 0.0,
+        "K7_post": 0.0
+      },
+      "disid_change_mean": 0.272,
+      "ambivalent_post": 0,
+      "cases": {
+        "disid_up_but_FA": 6
+      },
+      "stop_assumed_range_m": [
+        1.7,
+        2.1
+      ],
+      "sd_mean_mean": 1.926,
+      "sd_loop_insufficient": 0
+    },
+    "view_only": {
+      "label": "보기만 조건",
+      "n": 6,
+      "expected_quadrant": null,
+      "assigned_fixed": {
+        "None": 6
+      },
+      "match_fixed": null,
+      "assigned_median": {
+        "None": 6
+      },
+      "match_median": null,
+      "g_late_mean": 0.584,
+      "delta_d_mean": null,
+      "language_means": {
+        "K1_pre": 0.0,
+        "K1_post": 0.0,
+        "K2_pre": 0.0,
+        "K2_post": 0.0,
+        "K3_pre": 0.0,
+        "K3_post": 0.0,
+        "K3b_pre": 0.0,
+        "K3b_post": 0.0,
+        "K4_pre": 0.0,
+        "K4_post": 0.5,
+        "K5_pre": 0.0,
+        "K5_post": 0.0,
+        "K6_pre": 0.0,
+        "K6_post": 1.0,
+        "K7_pre": 1.0,
+        "K7_post": 0.5
+      },
+      "disid_change_mean": 0.128,
+      "ambivalent_post": 0,
+      "cases": {},
+      "stop_assumed_range_m": [
+        1.1,
+        1.3
+      ],
+      "sd_mean_mean": 1.198,
+      "sd_loop_insufficient": 0
+    }
+  },
+  "sameComponentCrossMethod": [
+    {
+      "var_a": "disid_change",
+      "method_a": "self_report",
+      "component_a": "disidentification",
+      "var_b": "la_K2_change",
+      "method_b": "language",
+      "component_b": "disidentification",
+      "same_component": true,
+      "same_method": false,
+      "n": 24,
+      "rho": -0.426
+    },
+    {
+      "var_a": "disid_change",
+      "method_a": "self_report",
+      "component_a": "disidentification",
+      "var_b": "la_K3_change",
+      "method_b": "language",
+      "component_b": "disidentification",
+      "same_component": true,
+      "same_method": false,
+      "n": 24,
+      "rho": 0.349
+    }
+  ]
+}

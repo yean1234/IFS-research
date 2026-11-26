@@ -382,10 +382,14 @@ namespace IFS.SceneSpec.Tests
             var t = PlacementTaskText.Load(DefaultPath);
             Assert.That(t.DraftKeys, Does.Contain("practice").And.Contain("placement_range"));
             Assert.That(t.DraftKeysFor(false), Does.Not.Contain("practice").And.Not.Contain("placement_range"));
-            Assert.That(t.DraftKeysFor(true), Is.EqualTo(t.DraftKeys));
-            Assert.That(t.CountFor(false), Is.EqualTo(t.Count - 2));
+            // G60-2(문구 파일 0.6): 반복 멈춤 문구 두 개도 stopMode loop가 아니면 빠진다
+            Assert.That(t.DraftKeysFor(true), Is.EqualTo(t.DraftKeys.Where(k => !PlacementTaskText.LoopKeys.Contains(k)).ToList()));
+            Assert.That(t.DraftKeysFor(true, true), Is.EqualTo(t.DraftKeys));
+            Assert.That(t.CountFor(false), Is.EqualTo(t.Count - 4));
+            Assert.That(t.CountFor(true), Is.EqualTo(t.Count - 2));
             Assert.That(PlacementTaskText.DraftNotice(t, false), Does.Contain($"{t.CountFor(false)}/{t.CountFor(false)}개"));
-            Assert.That(PlacementTaskText.DraftNotice(t, false, true), Does.Contain($"{t.Count}/{t.Count}개"));
+            Assert.That(PlacementTaskText.DraftNotice(t, false, true), Does.Contain($"{t.Count - 2}/{t.Count - 2}개"));
+            Assert.That(PlacementTaskText.DraftNotice(t, false, true, true), Does.Contain($"{t.Count}/{t.Count}개"));
         }
 
         // ── 문구 파일(원칙 7) ─────────────────────────────────────────────
@@ -408,8 +412,8 @@ namespace IFS.SceneSpec.Tests
                 Assert.That(t[PlacementTaskText.PlacementRangeKey], Is.EqualTo("둥근 바닥 안이면 어디든, 어떤 높이든 괜찮아요."));
                 Assert.That(t[PlacementTaskText.PracticeKey], Is.EqualTo(PlacementTaskText.Load(DefaultPath)[PlacementTaskText.PracticeKey]), "두 파일 같은 문구");
             }
-            Assert.That(PlacementTaskText.Load(DefaultPath).Version, Is.EqualTo("0.5"));
-            Assert.That(PlacementTaskText.Load(ScaleAPath).Version, Is.EqualTo("0.5-scaleA"));
+            Assert.That(PlacementTaskText.Load(DefaultPath).Version, Is.EqualTo("0.6"));
+            Assert.That(PlacementTaskText.Load(ScaleAPath).Version, Is.EqualTo("0.6-scaleA"));
         }
 
         // ── 놓기 도움 화면 규칙 ──────────────────────────────────────────

@@ -142,6 +142,62 @@ namespace IFS.SceneSpec.Placement
         /// (조건 전 컨트롤러 경험을 두 조건에서 같게). placementAssist를 켰을 때만 쓴다(꺼져 있으면 확인 단계에서 오류). 기본 꺼짐.</summary>
         public bool practiceInAllConditions = false;
 
+        // ── 멈춤 거리 반복 멈춤(G60-2, 2026-11-26 교수님 피드백 2) ───────────
+        // 기본 single = 예전 과제(한 번 누르면 시행 끝, X49) 그대로 — 화면·기록이 G60 전과 바이트 단위로 같다.
+        // loop = 정면 직선 위 왕복(stopLoopMinM ↔ stopLoopMaxM, 속도 stopSpeedMps, 끝에서 감속 없이 되돌아감).
+        //   트리거(데스크톱 Space) = 멈춤/다시 움직임 토글(다시 움직이면 멈추기 전 방향 그대로), A·X(데스크톱 F) = 확정(멈춘 상태에서만).
+        //   연습 stopLoopPracticeRounds + 본 stopLoopRounds 라운드, 라운드마다 출발 방향을 번갈아 두고(첫 방향 = stopFirstDirection),
+        //   출발 거리는 [stopLoopStartMinM, stopLoopStartMaxM]에서 참여자 번호를 시드로 한 xorshift64*(StopLoopSchedule)로 정한다.
+        //   기록은 stoprounds.csv·stopadjust.csv(새 파일)와 manifest stopDistance.mode·loop. 아래 키는 loop일 때만 config 맨 끝에 남는다.
+        //   ⚠ 본 설계로 쓸지는 사람이 정할 것(docs/decisions.md G60).
+        /// <summary>멈춤 거리 방식: single(기본, 한 번 누름) | loop(왕복 + 멈춤/재개 + 확정).</summary>
+        public string stopMode = StopModeSingle;
+        /// <summary>loop 왕복 경로의 가까운 끝·먼 끝(m, '나' 기준 수평 거리).</summary>
+        public double stopLoopMinM = 0.4;
+        public double stopLoopMaxM = 3.6;
+        /// <summary>loop 출발 거리 범위(m). 라운드마다 이 안에서 의사난수로 고른다.</summary>
+        public double stopLoopStartMinM = 1.0;
+        public double stopLoopStartMaxM = 3.0;
+        /// <summary>loop 본 라운드 수와 연습 라운드 수.</summary>
+        public int stopLoopRounds = 4;
+        public int stopLoopPracticeRounds = 1;
+        /// <summary>loop 라운드 시간 상한(초, 움직이기 시작한 때부터). 넘으면 확정값은 빈칸(end_reason timeout_*).</summary>
+        public double stopLoopRoundSeconds = 75;
+        /// <summary>loop 토글(멈춤/다시 움직임) 사이 이 시간(ms) 안의 다시 누름은 버린다(사건으로만 남김).</summary>
+        public double stopLoopToggleDebounceMs = 250;
+        /// <summary>loop 멈춤 거리 단계 동안 바닥 거리 고리를 숨긴다(고리가 방금 놓은 거리를 맞추는 자가 되지 않게). loop일 때만 쓴다.</summary>
+        public bool stopLoopHideRings = true;
+
+        // ── 눈높이 정규화(G60-3, 2026-11-26 교수님 피드백 3) ─────────────────
+        // 기본 none = 예전 그대로(물체 높이는 세계 절대값). relative = 물체·경로 높이를 참여자 눈높이 E 기준으로 옮긴다:
+        //   실제 높이 = 설정 높이 + (E − eyeHeightReferenceM). 대상: 시작 높이, 멈춤 경로 높이, system_move 목표, 연습 목표, 문구 판.
+        //   카메라·리그 높이와 수평 거리, 참여자가 직접 놓은 높이는 바꾸지 않는다. E는 Check 단계 실험자 키 H로 잰다(EyeHeightCalibration).
+        //   아래 키는 relative일 때만 config 맨 끝에 남는다. ⚠ 본 설계로 쓸지는 사람이 정할 것.
+        /// <summary>눈높이 기준: none(기본, 절대 높이) | relative(눈높이 기준 상대 배치).</summary>
+        public string eyeHeightMode = EyeHeightNone;
+        /// <summary>기준 눈높이(m). 이 눈높이에서는 none과 같은 자리가 된다.</summary>
+        public double eyeHeightReferenceM = 1.6;
+        /// <summary>보정 통과 범위(m).</summary>
+        public double eyeHeightMinM = 1.30;
+        public double eyeHeightMaxM = 1.95;
+        /// <summary>보정 표본 시간(초, 20 Hz).</summary>
+        public double eyeCalibSeconds = 1.0;
+        /// <summary>보정 통과 조건: 표본 표준편차(m) 이하, 머리 pitch 절댓값(도) 이하.</summary>
+        public double eyeCalibMaxSdM = 0.02;
+        public double eyeCalibMaxPitchDeg = 15;
+
+        public const string StopModeSingle = "single";
+        public const string StopModeLoop = "loop";
+        public static readonly string[] StopModes = { StopModeSingle, StopModeLoop };
+        public const string EyeHeightNone = "none";
+        public const string EyeHeightRelative = "relative";
+        public static readonly string[] EyeHeightModes = { EyeHeightNone, EyeHeightRelative };
+
+        /// <summary>멈춤 거리가 왕복 반복 멈춤(G60-2)이다.</summary>
+        public bool IsStopLoop => stopMode == StopModeLoop;
+        /// <summary>눈높이 기준 상대 배치(G60-3)다.</summary>
+        public bool IsEyeRelative => eyeHeightMode == EyeHeightRelative;
+
         public const string EnvironmentNeutral = "neutral";
         public const string EnvironmentSpace = "space";
         public const string EnvironmentNature = "nature";
@@ -236,8 +292,46 @@ namespace IFS.SceneSpec.Placement
             }
             if (practiceInAllConditions && !placementAssist)
                 e.Add("practiceInAllConditions: 놓기 도움(placementAssist)을 켰을 때만 쓴다(배치 연습은 놓기 도움의 일부)");
+            if (!StopModes.Contains(stopMode)) e.Add($"stopMode {stopMode}: single | loop 중 하나");
+            if (IsStopLoop)
+            {
+                if (!(Finite(stopLoopMinM) && Finite(stopLoopMaxM) && stopLoopMinM >= 0 && stopLoopMaxM > stopLoopMinM))
+                    e.Add($"stopLoopMinM {stopLoopMinM} / stopLoopMaxM {stopLoopMaxM}: 0 ≤ min < max");
+                if (!(stopLoopMaxM <= floorRadiusM)) e.Add($"stopLoopMaxM {stopLoopMaxM}: floorRadiusM {floorRadiusM} 이하여야 함(바닥 밖으로 나가지 않게)");
+                if (!(Finite(stopLoopStartMinM) && Finite(stopLoopStartMaxM) && stopLoopStartMinM > stopLoopMinM
+                      && stopLoopStartMaxM >= stopLoopStartMinM && stopLoopStartMaxM < stopLoopMaxM))
+                    e.Add($"stopLoopStartMinM {stopLoopStartMinM} / stopLoopStartMaxM {stopLoopStartMaxM}: stopLoopMinM < 시작 최소 ≤ 시작 최대 < stopLoopMaxM");
+                if (stopLoopRounds < 1) e.Add($"stopLoopRounds {stopLoopRounds}: 1 이상");
+                if (stopLoopPracticeRounds < 0) e.Add($"stopLoopPracticeRounds {stopLoopPracticeRounds}: 0 이상");
+                if (!(Finite(stopLoopRoundSeconds) && stopLoopRoundSeconds > 0)) e.Add($"stopLoopRoundSeconds {stopLoopRoundSeconds}: 0보다 커야 함");
+                if (!(Finite(stopLoopToggleDebounceMs) && stopLoopToggleDebounceMs >= 0)) e.Add($"stopLoopToggleDebounceMs {stopLoopToggleDebounceMs}: 0 이상");
+            }
+            if (!EyeHeightModes.Contains(eyeHeightMode)) e.Add($"eyeHeightMode {eyeHeightMode}: none | relative 중 하나");
+            if (IsEyeRelative)
+            {
+                if (!(Finite(eyeHeightReferenceM) && eyeHeightReferenceM > 0 && eyeHeightReferenceM < 3)) e.Add($"eyeHeightReferenceM {eyeHeightReferenceM}: (0, 3) 밖");
+                if (!(Finite(eyeHeightMinM) && Finite(eyeHeightMaxM) && eyeHeightMinM > 0 && eyeHeightMaxM > eyeHeightMinM))
+                    e.Add($"eyeHeightMinM {eyeHeightMinM} / eyeHeightMaxM {eyeHeightMaxM}: 0 < min < max");
+                if (!(Finite(eyeCalibSeconds) && eyeCalibSeconds > 0 && eyeCalibSeconds <= 10)) e.Add($"eyeCalibSeconds {eyeCalibSeconds}: (0, 10] 밖");
+                if (!(Finite(eyeCalibMaxSdM) && eyeCalibMaxSdM > 0)) e.Add($"eyeCalibMaxSdM {eyeCalibMaxSdM}: 0보다 커야 함");
+                if (!(Finite(eyeCalibMaxPitchDeg) && eyeCalibMaxPitchDeg > 0 && eyeCalibMaxPitchDeg <= 90)) e.Add($"eyeCalibMaxPitchDeg {eyeCalibMaxPitchDeg}: (0, 90] 밖");
+                // 통과 범위의 어느 눈높이에서도 옮긴 높이가 [minHeightM, maxHeightM] 안이어야 한다(보정 뒤에 시작을 거부하지 않게 미리 막는다)
+                void Shifted(string name, double h)
+                {
+                    double lo = h + (eyeHeightMinM - eyeHeightReferenceM), hi = h + (eyeHeightMaxM - eyeHeightReferenceM);
+                    if (!(lo >= minHeightM && hi <= maxHeightM))
+                        e.Add($"{name} {h}: 눈높이 {eyeHeightMinM}–{eyeHeightMaxM} m에서 옮긴 높이 {lo:0.###}–{hi:0.###} m가 [minHeightM, maxHeightM] 밖");
+                }
+                Shifted("startHeightM", startHeightM);
+                Shifted("stopHeightM", stopHeightM);
+                if (condition == ConditionView && controlMode == ModeSystemMove) Shifted("systemMoveTargetHeightM", systemMoveTargetHeightM);
+                if (HasPractice) Shifted("practiceTargetHeightM", practiceTargetHeightM);
+            }
             return e;
         }
+
+        /// <summary>relative에서 높이를 옮기는 양(E − eyeHeightReferenceM). none이면 0.</summary>
+        public double EyeOffsetFor(double eyeHeightM) => IsEyeRelative ? eyeHeightM - eyeHeightReferenceM : 0;
 
         public JObject ToJson()
         {
@@ -255,6 +349,30 @@ namespace IFS.SceneSpec.Placement
             // 2026-11-25 추가(G59). 켰을 때만 넣는다(기본값이면 기존 기록과 바이트 단위로 같게).
             if (checkBeforeStopDistance) j["checkBeforeStopDistance"] = true;
             if (practiceInAllConditions) j["practiceInAllConditions"] = true;
+            // 2026-11-26 추가(G60-2·G60-3). 기본값(single·none)이 아닐 때만 넣는다(기존 기록과 바이트 단위로 같게).
+            if (IsStopLoop)
+            {
+                j["stopMode"] = stopMode;
+                j["stopLoopMinM"] = stopLoopMinM;
+                j["stopLoopMaxM"] = stopLoopMaxM;
+                j["stopLoopStartMinM"] = stopLoopStartMinM;
+                j["stopLoopStartMaxM"] = stopLoopStartMaxM;
+                j["stopLoopRounds"] = stopLoopRounds;
+                j["stopLoopPracticeRounds"] = stopLoopPracticeRounds;
+                j["stopLoopRoundSeconds"] = stopLoopRoundSeconds;
+                j["stopLoopToggleDebounceMs"] = stopLoopToggleDebounceMs;
+                j["stopLoopHideRings"] = stopLoopHideRings;
+            }
+            if (IsEyeRelative)
+            {
+                j["eyeHeightMode"] = eyeHeightMode;
+                j["eyeHeightReferenceM"] = eyeHeightReferenceM;
+                j["eyeHeightMinM"] = eyeHeightMinM;
+                j["eyeHeightMaxM"] = eyeHeightMaxM;
+                j["eyeCalibSeconds"] = eyeCalibSeconds;
+                j["eyeCalibMaxSdM"] = eyeCalibMaxSdM;
+                j["eyeCalibMaxPitchDeg"] = eyeCalibMaxPitchDeg;
+            }
             return j;
         }
 

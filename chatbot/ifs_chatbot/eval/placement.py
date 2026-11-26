@@ -53,6 +53,25 @@ LLM 없음, 표준 라이브러리만, 결정론적(같은 기록 → 같은 출
 - 설정 일치 점검: 요약에 넣은 세션들 사이에서 manifest config의 baselineSeconds·conditionSeconds·conditionEndsOnConfirm,
   manifest space·stopDistance가 다르면 요약 warnings에 config_mismatch:<키>를 넣는다(빠진 값도 하나의 값으로 본다).
 
+멈춤 거리 반복 멈춤(G60-2, 2026-11-26 — manifest stopDistance.mode == "loop"인 세션)
+- 원자료는 stoprounds.csv(라운드 1행)와 stopadjust.csv(조정 사건). stopdistance.csv는 헤더만이라 single 열(stop_approach_mean_m 등)은 빈칸이고
+  stop_trials_short 점검도 하지 않는다. loop 세션이 하나라도 있을 때만 세션 표에 LOOP_COLUMNS를, 결과 폴더에 stop_loop_rounds.csv를,
+  요약에 stopLoop를 더한다(loop 세션이 없으면 출력은 G60 전과 바이트까지 같다).
+- 주 값 stop_final_mean_m = 본 라운드(practice=0) 가운데 확정된(end_reason confirmed) 라운드의 final_distance_m 평균. 확정 라운드가
+  LOOP_MIN_CONFIRMED(2)개 미만이면 빈칸. 확정하지 않은 라운드는 결측으로 세고(stop_n_unconfirmed) 마지막 멈춤 거리로 채우지 않는다(원칙 2).
+- 방향별 평균 stop_final_approach_mean_m·stop_final_recede_mean_m은 final_motion_dir(마지막 멈춤 직전 진행 방향)로 나눈다.
+  요약 stopLoop.directionDiff에서 세션별 차(approach − recede)의 평균 절댓값이 LOOP_DIR_WARN_M(0.15 m)을 넘으면 경고한다(히스테리시스 점검).
+- stop_first_minus_final_mean_m = 확정 라운드마다 first_stop_distance_m − final_distance_m의 평균(예전 단일 누름 지표와 잇는 값).
+- 닻 지표 stop_minus_condition_final_m = stop_final_mean_m − final_distance_m(조건 단계 끝 자리, placement.json). 두 조건 모두 계산한다
+  (보기만 조건의 닻: static은 시작 자리, system_move는 목표 자리). 조건 단계가 끝까지 가지 않으면 빈칸.
+- eye_object_distance_m = 확정 순간 머리–물체 3차원 거리의 본 라운드 평균.
+- 설정 일치 점검에서 stopDistance.loop.plan(참여자 번호로 정한 출발 계획)은 사람마다 달라 비교에서 뺀다.
+
+눈높이(G60-3, 2026-11-26 — manifest eyeHeight가 있는 세션)
+- eyeHeight가 있는 세션이 하나라도 있을 때만 EYE_COLUMNS를 더한다. eye_height_m = eyeHeight.measuredM(E), eye_height_source =
+  calibrated | desktop_fixed. final_height_rel_eye_m = final_height_m − E, final_height_ratio_eye = final_height_m / E,
+  head_y_drift_m = 조건 단계 headpose head_y 중앙값 − E(웅크리기·까치발 점검). 키가 없는 옛 기록은 빈칸.
+
 효과크기
 - Cohen d = (평균A − 평균B) / 합동 표준편차(n−1 가중). Hedges g = J·d, J = 1 − 3/(4·df − 1), df = nA + nB − 2
   (소표본 보정). d의 95% 구간 ci95_normal_approx = d ± 1.96·√((nA+nB)/(nA·nB) + d²/(2(nA+nB)))
@@ -88,6 +107,8 @@ RECORD_PREFIX = "ifs-placement/"
 # experimenter | abort, 연습이 없으면 빈칸). 연습은 placement.json·objpose.csv에 들어가지 않고, headpose.csv phase practice는 머리 행동에서
 # 빠진다(condition만 셈). 세션 사이 environment가 다르면 config_mismatch:environment.
 # 없는 키는 빈칸으로 읽는다(이전 기록 그대로 읽힘).
+# (G60-2·G60-3, 2026-11-26, 형식 0.2 유지 — 추가만) stopDistance.mode·loop{…, plan}과 stoprounds.csv·stopadjust.csv(loop일 때만),
+# manifest eyeHeight{…}(relative일 때만). 위 「멈춤 거리 반복 멈춤」「눈높이」 절 참고.
 KNOWN_VERSIONS = ("ifs-placement/0.1", "ifs-placement/0.2")
 TRAJECTORY_PREFIX = "ifs-trajectory/"
 SUMMARY_VERSION = "placement-summary/0.1"
@@ -109,7 +130,8 @@ CONFIG_CHECK_KEYS = (("baselineSeconds", ("config", "baselineSeconds")),
                      ("conditionEndsOnConfirm", ("config", "conditionEndsOnConfirm")),
                      ("space", ("space",)),
                      ("stopDistance", ("stopDistance",)),
-                     ("environment", ("environment",)))
+                     ("environment", ("environment",)),
+                     ("eyeHeightMode", ("config", "eyeHeightMode")))
 EXPECTED_FILES = ("headpose.csv", "objpose.csv", "events.csv", "placement.json", "stopdistance.csv",
                   "ratings.csv", "trajectory.json", "summary.json")
 
@@ -137,6 +159,23 @@ DESC_METRICS = ("final_distance_m", "final_height_m", "grab_count", "first_grab_
                 "stop_approach_mean_m", "stop_recede_mean_m", "stop_mean_m", "stop_sd_m",
                 "head_obj_distance_mean_m", "head_facing_ratio", "head_yaw_range_deg", "obj_path_from_objpose_m")
 STOP_METRICS = ("stop_mean_m", "stop_approach_mean_m", "stop_recede_mean_m")
+
+# G60-2 반복 멈춤(loop 세션이 하나라도 있을 때만 세션 표에 붙는 열)
+LOOP_FILES = ("stoprounds.csv", "stopadjust.csv")
+LOOP_MIN_CONFIRMED = 2           # 확정된 본 라운드가 이보다 적으면 stop_final_mean_m 빈칸
+LOOP_DIR_WARN_M = 0.15           # 방향별 평균 차가 이보다 크면 요약 경고(히스테리시스)
+LOOP_COLUMNS = ["stop_mode", "stop_final_mean_m", "stop_final_sd_m", "stop_final_n", "stop_n_unconfirmed",
+                "stop_final_approach_mean_m", "stop_final_recede_mean_m", "stop_first_minus_final_mean_m",
+                "stop_passes_mean", "stop_n_at_bound", "stop_minus_condition_final_m", "eye_object_distance_m"]
+LOOP_ROUND_COLUMNS = ["participant", "session_id", "condition", "control_mode", "completed", "round", "practice", "start_dir",
+                      "start_distance_m", "final_distance_m", "first_stop_distance_m", "last_stop_distance_m", "n_stops",
+                      "n_resumes", "final_motion_dir", "passes_before_confirm", "stop_spread_m", "at_bound", "end_reason",
+                      "duration_ms", "eye_object_distance_m", "included"]
+LOOP_METRICS = ("stop_final_mean_m", "stop_final_approach_mean_m", "stop_final_recede_mean_m",
+                "stop_first_minus_final_mean_m", "stop_minus_condition_final_m", "eye_object_distance_m")
+# G60-3 눈높이(manifest eyeHeight가 있는 세션이 하나라도 있을 때만)
+EYE_COLUMNS = ["eye_height_m", "eye_height_source", "final_height_rel_eye_m", "final_height_ratio_eye", "head_y_drift_m"]
+EYE_METRICS = ("eye_height_m", "final_height_rel_eye_m", "final_height_ratio_eye", "head_y_drift_m")
 
 
 # ---------------------------------------------------------------- 계산 도우미
@@ -236,6 +275,14 @@ def pearson(xs: list[float], ys: list[float]) -> float | None:
 
 def _mean(vals: list[float]) -> float | None:
     return sum(vals) / len(vals) if vals else None
+
+
+def _median(vals: list[float]) -> float | None:
+    if not vals:
+        return None
+    s = sorted(vals)
+    n = len(s)
+    return s[n // 2] if n % 2 else (s[n // 2 - 1] + s[n // 2]) / 2
 
 
 def _xyz(row: dict, prefix: str) -> tuple[float, float, float] | None:
@@ -409,19 +456,93 @@ def load_session(cand: dict, facing_deg: float = DEFAULT_FACING_DEG) -> tuple[di
         flags.append("stop_direction_unknown")
     if missing_val:
         flags.append("stop_value_missing")
-    per_dir = _int(_dict(man.get("stopDistance")).get("trialsPerDirection"))
-    if per_dir is not None:
+    stop_cfg = _dict(man.get("stopDistance"))
+    is_loop = stop_cfg.get("mode") == "loop"
+    per_dir = _int(stop_cfg.get("trialsPerDirection"))
+    if per_dir is not None and not is_loop:      # loop(G60-2)는 stopdistance.csv에 시행이 없다
         for d in DIRECTIONS:
             if n_main[d] < per_dir:
                 flags.append(f"stop_trials_short:{d}")
     m_app, m_rec = _mean(by_dir["approach"]), _mean(by_dir["recede"])
     valid = by_dir["approach"] + by_dir["recede"]
 
+    # 반복 멈춤(G60-2): stoprounds.csv
+    loop_rows: list[dict] = []
+    loop_vals: dict = {}
+    if is_loop:
+        for name in LOOP_FILES:
+            p = folder / name
+            if not p.is_file():
+                flags.append(f"missing_file:{name}")
+            elif p.stat().st_size == 0:
+                flags.append(f"empty_file:{name}")
+        finals, firsts_minus, passes, eye_d = [], [], [], []
+        by_final_dir: dict[str, list[float]] = {d: [] for d in DIRECTIONS}
+        n_unconfirmed = n_bound = 0
+        for row in _read_csv(folder / "stoprounds.csv"):
+            practice = _truthy(row.get("practice"))
+            final = _num(row.get("final_distance_m"))
+            confirmed = row.get("end_reason") == "confirmed" and final is not None
+            included = confirmed and not practice
+            if not practice:
+                if not confirmed:
+                    n_unconfirmed += 1
+                else:
+                    finals.append(final)
+                    fdir = row.get("final_motion_dir")
+                    if fdir in by_final_dir:
+                        by_final_dir[fdir].append(final)
+                    first = _num(row.get("first_stop_distance_m"))
+                    if first is not None:
+                        firsts_minus.append(first - final)
+                    pz = _num(row.get("passes_before_confirm"))
+                    if pz is not None:
+                        passes.append(pz)
+                    if _truthy(row.get("at_bound")):
+                        n_bound += 1
+                    ed = _num(row.get("eye_object_distance_m"))
+                    if ed is not None:
+                        eye_d.append(ed)
+            loop_rows.append({
+                "round": _int(row.get("round")), "practice": practice, "start_dir": row.get("start_dir") or None,
+                "start_distance_m": _num(row.get("start_distance_m")), "final_distance_m": final,
+                "first_stop_distance_m": _num(row.get("first_stop_distance_m")),
+                "last_stop_distance_m": _num(row.get("last_stop_distance_m")),
+                "n_stops": _int(row.get("n_stops")), "n_resumes": _int(row.get("n_resumes")),
+                "final_motion_dir": row.get("final_motion_dir") or None,
+                "passes_before_confirm": _int(row.get("passes_before_confirm")),
+                "stop_spread_m": _num(row.get("stop_spread_m")),
+                "at_bound": _truthy(row.get("at_bound")) if row.get("at_bound") else None,
+                "end_reason": row.get("end_reason") or None, "duration_ms": _num(row.get("duration_ms")),
+                "eye_object_distance_m": _num(row.get("eye_object_distance_m")), "included": included})
+        rounds_cfg = _int(_dict(stop_cfg.get("loop")).get("rounds"))
+        n_main_rounds = sum(1 for r in loop_rows if not r["practice"])
+        if rounds_cfg is not None and n_main_rounds < rounds_cfg:
+            flags.append("stop_rounds_short")
+        if n_unconfirmed:
+            flags.append(f"stop_unconfirmed:{n_unconfirmed}")
+        mean_final = _mean(finals) if len(finals) >= LOOP_MIN_CONFIRMED else None
+        loop_vals = {
+            "stop_final_mean_m": mean_final, "stop_final_sd_m": _sd(finals), "stop_final_n": len(finals),
+            "stop_n_unconfirmed": n_unconfirmed,
+            "stop_final_approach_mean_m": _mean(by_final_dir["approach"]),
+            "stop_final_recede_mean_m": _mean(by_final_dir["recede"]),
+            "stop_first_minus_final_mean_m": _mean(firsts_minus), "stop_passes_mean": _mean(passes),
+            "stop_n_at_bound": n_bound, "eye_object_distance_m": _mean(eye_d),
+        }
+
+    # 눈높이(G60-3): manifest eyeHeight
+    eye_block = _dict(man.get("eyeHeight"))
+    eye_h = _num(eye_block.get("measuredM"))
+
     # 머리 행동(조건 단계)
-    angles, dists, yaws = [], [], []
+    angles, dists, yaws, head_ys = [], [], [], []
     for row in _read_csv(folder / "headpose.csv"):
         if row.get("phase") != "condition":
             continue
+        hy = _num(row.get("head_y"))
+        if hy is not None:
+            head_ys.append(hy)
         a, dist = _num(row.get("angle_deg")), _num(row.get("distance_m"))
         if a is not None:
             angles.append(a)
@@ -505,10 +626,28 @@ def load_session(cand: dict, facing_deg: float = DEFAULT_FACING_DEG) -> tuple[di
         "flags": ";".join(flags),
         "_space": space,
         "_manifest": man,
+        "_loop_rounds": loop_rows,
+        "_has_loop": is_loop,
+        "_has_eye": bool(eye_block),
     }
+    # G60-2 반복 멈춤 열(loop 세션이 하나라도 있을 때만 표에 나간다 — analyze가 정함)
+    srow["stop_mode"] = "loop" if is_loop else "single"
+    for k in LOOP_COLUMNS[1:]:
+        v = loop_vals.get(k)
+        srow[k] = _r(v) if isinstance(v, float) else v
+    # G60-3 눈높이 열(eyeHeight가 있는 세션이 하나라도 있을 때만)
+    srow["eye_height_m"] = _r(eye_h)
+    srow["eye_height_source"] = eye_block.get("source") if isinstance(eye_block.get("source"), str) else None
+    srow["final_height_rel_eye_m"] = _r(final_h - eye_h) if final_h is not None and eye_h else None
+    srow["final_height_ratio_eye"] = _r(final_h / eye_h) if final_h is not None and eye_h else None
+    hm = _median(head_ys)
+    srow["head_y_drift_m"] = _r(hm - eye_h) if hm is not None and eye_h else None
     if not cond_complete:
-        for k in CONDITION_METRICS:     # 중단된 조건 단계: 완료 자료처럼 보이지 않게 비운다(원자료 파일은 그대로)
-            srow[k] = None
+        for k in CONDITION_METRICS + ("final_height_rel_eye_m", "final_height_ratio_eye", "head_y_drift_m"):
+            srow[k] = None     # 중단된 조건 단계: 완료 자료처럼 보이지 않게 비운다(원자료 파일은 그대로)
+    # 닻 지표: 확정 멈춤 거리 평균 − 조건 단계 끝 자리(두 조건 모두)
+    sfm, fdm = srow.get("stop_final_mean_m"), srow.get("final_distance_m")
+    srow["stop_minus_condition_final_m"] = _r(sfm - fdm) if is_loop and sfm is not None and fdm is not None else None
     ident = {"participant": participant, "session_id": sid, "condition": condition, "control_mode": control,
              "completed": completed}
     return srow, ratings, [{**ident, **r} for r in stop_rows]
@@ -616,6 +755,9 @@ def config_mismatches(sessions: list[dict]) -> dict[str, list]:
         seen: dict[str, object] = {}
         for s in sessions:
             v = _path(s.get("_manifest") or {}, path)
+            if key == "stopDistance" and isinstance(v, dict) and isinstance(v.get("loop"), dict) and "plan" in v["loop"]:
+                # G60-2: 출발 계획은 참여자 번호로 정해 사람마다 다르다 — 설정 비교에서 뺀다
+                v = {**v, "loop": {k: x for k, x in v["loop"].items() if k != "plan"}}
             seen.setdefault(json.dumps(v, sort_keys=True, ensure_ascii=False), v)
         if len(seen) > 1:
             out[key] = [seen[k] for k in sorted(seen)]
@@ -719,18 +861,103 @@ def analyze(records: str | Path, out_dir: str | Path | None = None, facing_deg: 
             "note": "사전 측정(pre_*)·사후 면담(pi_*) 열. 사후 면담 자유 글은 표에 넣지 않고 글자 수(_chars)·건너뜀(_skipped)만 "
                     "적는다. 모든 문구는 초안(draft, IRB 검토 전)이다(G59).",
         }
-    columns = SESSION_HEAD + rating_cols + self_cols + SESSION_TAIL
+    # G60-2·G60-3: 해당 세션이 하나라도 있을 때만 붙는 열(없으면 출력이 G60 전과 같다)
+    has_loop = any(s["_has_loop"] for s in sessions)
+    has_eye = any(s["_has_eye"] for s in sessions)
+    extra_cols = (LOOP_COLUMNS if has_loop else []) + (EYE_COLUMNS if has_eye else [])
+    loop_rounds: list[dict] = []
+    for s in sessions:
+        ident = {"participant": s["participant"], "session_id": s["session_id"], "condition": s["condition"],
+                 "control_mode": s["control_mode"], "completed": s["completed"]}
+        loop_rounds.extend({**ident, **r} for r in s["_loop_rounds"])
+        if not has_loop:
+            for k in LOOP_COLUMNS:
+                s.pop(k, None)
+        if not has_eye:
+            for k in EYE_COLUMNS:
+                s.pop(k, None)
+    if has_loop:
+        summary["stopLoop"] = loop_summary(included, loop_rounds)
+        summary["warnings"].extend(summary["stopLoop"]["warnings"])
+    if has_eye:
+        summary["eyeHeight"] = eye_summary(included)
+    columns = SESSION_HEAD + extra_cols + rating_cols + self_cols + SESSION_TAIL
     if out_dir is not None:
         out = Path(out_dir)
         out.mkdir(parents=True, exist_ok=True)
         _write_csv(out / "placement_sessions.csv", columns, sessions)
         _write_csv(out / "stop_trials.csv", STOP_COLUMNS, stops)
+        if has_loop:
+            _write_csv(out / "stop_loop_rounds.csv", LOOP_ROUND_COLUMNS, loop_rounds)
         (out / "placement_summary.json").write_text(json.dumps(summary, ensure_ascii=False, indent=2) + "\n",
                                                     encoding="utf-8")
     for s in sessions:
-        s.pop("_space", None)
-        s.pop("_manifest", None)
-    return {"sessions": sessions, "stop_trials": stops, "summary": summary, "columns": columns}
+        for k in ("_space", "_manifest", "_loop_rounds", "_has_loop", "_has_eye"):
+            s.pop(k, None)
+    res = {"sessions": sessions, "stop_trials": stops, "summary": summary, "columns": columns}
+    if has_loop:
+        res["stop_loop_rounds"] = loop_rounds
+    return res
+
+
+def loop_summary(included: list[dict], rounds: list[dict]) -> dict:
+    """G60-2 반복 멈춤 요약(loop 세션만). 기술 통계·효과크기·상관만 — 유의성 판정은 내지 않는다."""
+    loop = [s for s in included if s.get("stop_mode") == "loop"]
+    by_cond = {c: [s for s in loop if s["condition"] == c] for c in CONDITIONS}
+
+    def dir_diff(s):
+        a, r = s.get("stop_final_approach_mean_m"), s.get("stop_final_recede_mean_m")
+        return None if a is None or r is None else a - r
+
+    diffs = [d for d in (dir_diff(s) for s in loop) if d is not None]
+    warnings: list[str] = []
+    mean_abs = _mean([abs(d) for d in diffs])
+    if mean_abs is not None and mean_abs > LOOP_DIR_WARN_M:
+        warnings.append(f"stop_loop_direction_gap: 마지막 진행 방향별 확정 거리 차의 평균 절댓값 {mean_abs:.3f} m > {LOOP_DIR_WARN_M} m"
+                        " — 지나친 자리를 받아들이는 편향(히스테리시스) 확인")
+    place, view = by_cond.get("place", []), by_cond.get("view", [])
+    corr_pairs = [(s["final_distance_m"], s["stop_final_mean_m"]) for s in place
+                  if s.get("final_distance_m") is not None and s.get("stop_final_mean_m") is not None]
+    main_rounds = [r for r in rounds if not r["practice"]]
+    reasons: dict[str, int] = {}
+    for r in main_rounds:
+        reasons[str(r["end_reason"])] = reasons.get(str(r["end_reason"]), 0) + 1
+    return {
+        "definition": "stop_final_mean_m = 본 라운드 가운데 확정(confirmed) 라운드의 final_distance_m 평균(확정 라운드 "
+                      f"{LOOP_MIN_CONFIRMED}개 미만이면 빈칸). 확정하지 않은 라운드는 결측(마지막 멈춤 거리로 채우지 않음). "
+                      "stop_minus_condition_final_m = stop_final_mean_m − 조건 단계 끝 자리(두 조건 모두, 닻 지표).",
+        "nSessions": len(loop),
+        "byCondition": {c: {"n": len(rows), **{m: describe(s.get(m) for s in rows) for m in LOOP_METRICS}}
+                        for c, rows in by_cond.items()},
+        "directionDiff": {"definition": "세션별 stop_final_approach_mean_m − stop_final_recede_mean_m(마지막 진행 방향별)",
+                          "all": describe(diffs), "meanAbs": _r(mean_abs), "warnAboveM": LOOP_DIR_WARN_M},
+        "conditionEffect": {m: cohen_d([s.get(m) for s in place], [s.get(m) for s in view])
+                            for m in ("stop_final_mean_m", "stop_minus_condition_final_m")},
+        "placeDistanceStopCorrelation": {"final_distance_m~stop_final_mean_m": {"n": len(corr_pairs), "r": _r(
+            pearson([p[0] for p in corr_pairs], [p[1] for p in corr_pairs]))}},
+        "rounds": {"main": len(main_rounds), "endReasons": dict(sorted(reasons.items())),
+                   "unconfirmed": sum(1 for r in main_rounds if r["end_reason"] != "confirmed")},
+        "note": "직접 배치에서 놓은 거리와 멈춤 거리의 상관은 '같은 선호의 반복'과 '방금 놓은 거리 기억 맞추기'를 가를 수 없다"
+                "(docs/codex-reviews/D7_claude.md A4). 보기만 조건의 닻(시작·목표 자리)과 함께 stop_minus_condition_final_m으로 본다.",
+        "warnings": warnings,
+    }
+
+
+def eye_summary(included: list[dict]) -> dict:
+    """G60-3 눈높이 요약(eyeHeight가 있는 세션만)."""
+    eye = [s for s in included if s.get("eye_height_m") is not None]
+    sources: dict[str, int] = {}
+    for s in eye:
+        sources[str(s.get("eye_height_source"))] = sources.get(str(s.get("eye_height_source")), 0) + 1
+    return {
+        "definition": "eye_height_m = manifest eyeHeight.measuredM(E). final_height_rel_eye_m = 놓은 높이 − E, "
+                      "final_height_ratio_eye = 놓은 높이 / E, head_y_drift_m = 조건 단계 head_y 중앙값 − E.",
+        "nSessions": len(eye),
+        "sources": dict(sorted(sources.items())),
+        "byCondition": {c: {"n": sum(1 for s in eye if s["condition"] == c),
+                            **{m: describe(s.get(m) for s in eye if s["condition"] == c) for m in EYE_METRICS}}
+                        for c in CONDITIONS},
+    }
 
 
 def _print_summary(summary: dict) -> None:

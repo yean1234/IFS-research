@@ -1,0 +1,6 @@
+round,practice,start_dir,start_distance_m,speed_mps,final_distance_m,first_stop_distance_m,last_stop_distance_m,n_stops,n_resumes,final_motion_dir,passes_before_confirm,stop_spread_m,at_bound,end_reason,duration_ms,eye_object_distance_m
+1,1,recede,1.0930,0.2500,0.9050,0.9050,0.9050,1,0,approach,0,0.0000,0,confirmed,21608,0.9895
+2,0,approach,2.1360,0.2500,0.8440,0.8440,0.8440,1,0,approach,0,0.0000,0,confirmed,5968,0.9340
+3,0,recede,1.2530,0.2500,0.6710,0.5000,0.6710,3,2,recede,1,0.1710,0,confirmed,25672,0.7812
+4,0,approach,1.1670,0.2500,,0.6880,0.6880,1,0,approach,,0.0000,,timeout_stopped,75000,
+5,0,recede,1.9570,0.2500,0.7800,0.7800,0.7800,1,0,approach,0,0.0000,0,confirmed,18652,0.8766

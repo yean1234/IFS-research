@@ -1,0 +1,128 @@
+{
+  "recordVersion": "ifs-placement/0.1",
+  "participantNumber": 107,
+  "sessionId": "SIM07",
+  "specFile": "synthetic",
+  "specSha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "startedAtUtc": "2026-11-23T00:06:00.000Z",
+  "unityVersion": "none (synthetic)",
+  "headSource": "desktop",
+  "inputSource": "auto",
+  "condition": "view",
+  "controlMode": "static",
+  "space": {
+    "floorRadiusM": 4.0,
+    "ringRadiiM": [
+      1.0,
+      2.0,
+      3.0
+    ],
+    "showRings": true,
+    "startDistanceM": 1.5,
+    "startHeightM": 1.2,
+    "startPlacementSource": "experiment_config"
+  },
+  "object": {
+    "boundingRadiusM": 0.2
+  },
+  "stopDistance": {
+    "speedMps": 0.25,
+    "approachStartM": 3.0,
+    "recedeStartM": 0.5,
+    "trialsPerDirection": 4,
+    "practiceTrials": 2,
+    "minM": 0.2,
+    "maxM": 4.0,
+    "mode": "loop",
+    "loop": {
+      "minM": 0.4,
+      "maxM": 3.6,
+      "speedMps": 0.25,
+      "heightM": 1.2,
+      "startMinM": 1.0,
+      "startMaxM": 3.0,
+      "startRule": "xorshift64star(splitmix64(participantNumber)), uniform [startMinM, startMaxM], round 0.001 m",
+      "rounds": 4,
+      "practiceRounds": 1,
+      "roundSeconds": 75.0,
+      "toggleDebounceMs": 250.0,
+      "hideRings": true,
+      "plan": [
+        {
+          "round": 1,
+          "practice": true,
+          "startDir": "approach",
+          "startDistanceM": 2.511
+        },
+        {
+          "round": 2,
+          "practice": false,
+          "startDir": "recede",
+          "startDistanceM": 1.305
+        },
+        {
+          "round": 3,
+          "practice": false,
+          "startDir": "approach",
+          "startDistanceM": 2.375
+        },
+        {
+          "round": 4,
+          "practice": false,
+          "startDir": "recede",
+          "startDistanceM": 1.76
+        },
+        {
+          "round": 5,
+          "practice": false,
+          "startDir": "approach",
+          "startDistanceM": 2.276
+        }
+      ]
+    }
+  },
+  "replaySource": null,
+  "systemMoveTarget": null,
+  "taskText": {
+    "file": "synthetic (문구 없음 — 문항 키만)",
+    "version": null,
+    "draftCount": 7,
+    "draftKeys": [
+      "M1p",
+      "M2",
+      "P1",
+      "M3",
+      "P2",
+      "S5",
+      "S6"
+    ]
+  },
+  "config": {
+    "baselineSeconds": 30.0,
+    "conditionSeconds": 90.0,
+    "conditionEndsOnConfirm": false,
+    "headSampleHz": 4.0,
+    "stopMode": "loop",
+    "eyeHeightMode": "relative"
+  },
+  "flags": {
+    "autoMode": true,
+    "synthetic": true,
+    "syntheticNote": "합성 자료: 파이프라인 검증용이며 효과의 근거가 아님",
+    "simulator": "sim-placement/0.1",
+    "seed": 20261123,
+    "stopFirstDirection": "approach",
+    "layoutIgnored": false
+  },
+  "eyeHeight": {
+    "mode": "relative",
+    "referenceM": 1.6,
+    "measuredM": 1.446,
+    "offsetM": -0.154,
+    "sdM": 0.006,
+    "pitchDeg": 2.0,
+    "samples": 20,
+    "trackingOrigin": "Floor",
+    "source": "calibrated"
+  }
+}

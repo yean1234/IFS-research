@@ -336,8 +336,8 @@ namespace IFS.SceneSpec.Tests
                 "초안 3.7절 사전 순서(S1·S3 제외) + G59 구별 문항 M2·P1과 거리감(맨 끝)");
             Assert.That(t.ItemsFor("post").Select(i => i.Key), Is.EqualTo(A.Concat(new[] { "S5", "S6", "S7", "appearance_match", "representativeness", "M2", "P1", "distance_feel" })),
                 "초안 3.7절 사후 순서 + 두 평정 문항(G13, 0.2에서 사후 끝에 더함) + G59 M2·P1·거리감(맨 끝)");
-            Assert.That(t.ItemsFor("check").Select(i => i.Key), Is.EqualTo(new[] { "place_fit", "want_move" }), "G59 자리 평정(이 파일에는 placed_by_me가 없다 — 조작 확인은 사후 S7)");
-            Assert.That(t.Items.Count, Is.EqualTo(19), "A 7문항 + S4–S8 5문항 + G13 2문항 + G59 5문항");
+            Assert.That(t.ItemsFor("check").Select(i => i.Key), Is.EqualTo(new[] { "place_fit" }), "G59 자리 평정(이 파일에는 placed_by_me가 없다 — 조작 확인은 사후 S7). G60에서 want_move를 뺌");
+            Assert.That(t.Items.Count, Is.EqualTo(18), "A 7문항 + S4–S8 5문항 + G13 2문항 + G59 4문항(G60에서 want_move를 뺌)");
             var p1 = t.Items.First(i => i.Key == "P1");
             Assert.That(p1.Text, Is.EqualTo("지금 나와 이것의 관계는 어느 쪽에 더 가깝나요?"), "구별 프로파일 초안 3.1절 P1 문구 그대로");
             Assert.That(p1.Points.Keys, Is.EqualTo(new[] { 1, 4, 7 }), "P1 양극(가운데 점)");
@@ -346,7 +346,7 @@ namespace IFS.SceneSpec.Tests
             foreach (var k in new[] { "M2", "P1" })
                 Assert.That((string)JObject.Parse(File.ReadAllText(ScaleAPath, Encoding.UTF8))["texts"][k]["source"], Does.Contain("docs/rq-v4-differentiation-measure.md"), k + ": 출처 = 구별 프로파일 초안");
             var def = PlacementTests.LoadText();
-            foreach (var k in new[] { "distance_feel", "place_fit", "want_move" })
+            foreach (var k in new[] { "distance_feel", "place_fit" })
             {
                 var a = t.Items.Single(i => i.Key == k);
                 var b = def.Items.Single(i => i.Key == k);
@@ -409,17 +409,17 @@ namespace IFS.SceneSpec.Tests
                 dir = s.RecordDirectory;
             }
             var ratings = File.ReadAllLines(Path.Combine(dir, "ratings.csv")).Skip(1).Select(l => l.Split(',')).ToList();
-            Assert.That(ratings.Count, Is.EqualTo(14 + 15 + 2), "사전 14 + 사후 15(G13 두 문항 포함, 기본 사후만) + 점검 2(G59)");
+            Assert.That(ratings.Count, Is.EqualTo(14 + 15 + 1), "사전 14 + 사후 15(G13 두 문항 포함, 기본 사후만) + 점검 1(G59 place_fit, G60에서 want_move를 뺌)");
             Assert.That(ratings.Where(r => r[1] == "pre").Select(r => r[0]).Last(), Is.EqualTo("distance_feel"));
             Assert.That(ratings.Where(r => r[1] == "post").Select(r => r[0]).Last(), Is.EqualTo("distance_feel"));
-            Assert.That(ratings.Where(r => r[1] == "check").Select(r => r[0]), Is.EqualTo(new[] { "place_fit", "want_move" }));
+            Assert.That(ratings.Where(r => r[1] == "check").Select(r => r[0]), Is.EqualTo(new[] { "place_fit" }));
             Assert.That(ratings.Where(r => r[0] == "M2").All(r => int.Parse(r[2]) >= 0 && int.Parse(r[2]) <= 10), Is.True, "M2 0–10");
             var ev = File.ReadAllLines(Path.Combine(dir, "events.csv")).Skip(1).ToList();
             Assert.That(ev.Count(l => l.Contains(",items_instruction,")), Is.EqualTo(3), "사전·사후·점검(G59로 점검 문항이 생겨 공통 지시문이 점검 앞에도 보임)");
             Assert.That(ev.Any(l => l.Contains("items_instruction,when=post;keys=items_instruction+items_instruction_post")), Is.True);
             var m = JObject.Parse(File.ReadAllText(Path.Combine(dir, "manifest.json")));
             Assert.That((string)m["taskText"]["file"], Is.EqualTo("placement_task.scaleA.v0.json"));
-            Assert.That((string)m["taskText"]["version"], Is.EqualTo("0.5-scaleA"), "G53 놓기 도움 문구를 더해 0.3, G57 문구 다듬기로 0.4, G59 문항으로 0.5");
+            Assert.That((string)m["taskText"]["version"], Is.EqualTo("0.6-scaleA"), "G53 놓기 도움 문구를 더해 0.3, G57 문구 다듬기로 0.4, G59 문항으로 0.5, G60 want_move를 빼 0.6");
             Assert.That((int)m["taskText"]["draftCount"], Is.EqualTo(t.Count));
         }
 

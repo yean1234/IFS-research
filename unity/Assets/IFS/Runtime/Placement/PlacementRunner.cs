@@ -2,7 +2,7 @@
 // 조건(place | view)·통제 방식(static | system_move | replay | point_select)에 따라 한 회기를 진행한다.
 // 단계 흐름·기록은 PlacementSession(UnityEngine 없음)이 맡고, 이 컴포넌트는 그것을 그린다:
 //   물체(SceneLoader — 장면 속성은 기존 로더 경로 그대로), 공간(PlacementSpace), 참여자 글(ParticipantTextDisplay), 입력(IPlacementInput).
-// 실험자 키: 숫자 0–9 평정(문항 범위 안, 두 자리 범위는 이어 침), Backspace 직전 입력 취소, Enter 확정·다음, Esc 중단, R 정면 재설정(XR).
+// 실험자 키: 숫자 0–9 평정(문항 범위 안, 두 자리 범위는 이어 침), Backspace 직전 입력 취소, Enter 확정·다음, Esc 중단, R 정면 재설정(XR), H 눈높이 재기(G60-3, relative일 때 Check 단계).
 // 선택 파일(선택, D8): 챗봇의 selection.json(ifs-selection/0.1·0.2 — PlacementSelection). 있으면 원본 spec + finalOverrides로 형상을 한 번 만들고
 //   (조건 단계 동안 바뀌지 않음), sha 불일치·모르는 키·적용하지 못한 키는 시작 거부. 없으면 예전처럼 spec만.
 // 참여자 입력: 설정 inputMode(auto | desktop | xr)에 따라 Check 때 고른다(PlacementInputSelection) —
@@ -11,6 +11,9 @@
 // 자동 시행(검증용): BeginAuto(스크립트, 설정) 뒤 Tick(dt)을 밖에서 부르면 사람 없이 끝까지 간다(시뮬레이션 시계).
 // 배치 공간 후보(G52–G55, 2026-11-24): 설정 environment(neutral | space | nature)로 중립 환경의 하늘을 바꾸고(EnvironmentStyle),
 //   placementAssist면 놓기 도움(연습 상자·목표 자리, 든 동안 수직선·바닥 고리, 경계 띠 밝아짐)을 그린다. 기본값에서는 아무것도 더하지 않는다.
+// 멈춤 거리 반복 멈춤(G60-2, 2026-11-26): 설정 stopMode loop면 멈춤 거리 단계 동안 바닥 고리를 숨긴다(stopLoopHideRings).
+// 눈높이 정규화(G60-3, 2026-11-26): 설정 eyeHeightMode relative면 Check 뒤 실험자 키 H로 눈높이 E를 재야 시작할 수 있고(데스크톱·자동 시행은
+//   기준값 고정), 참여자 판의 높이와 눈 앵커를 E 기준으로 옮긴다. 카메라·리그 높이는 바꾸지 않는다.
 // 헤드셋 실기는 확인하지 않았다(2026-11-23 — docs/headset-checklist.md).
 using System;
 using System.Collections.Generic;
@@ -113,7 +116,29 @@ namespace IFS.SceneSpec.Placement
         public List<string> TaskTextFiles { get; } = new List<string>();
         public SceneLoader Loader => _loader;
         public PlacementSpaceHandle Space => _space;
-        public string DraftPhraseNotice => PlacementTaskText.DraftNotice(TaskText, config.requireSpecPhrases, config.placementAssist);
+        public string DraftPhraseNotice => PlacementTaskText.DraftNotice(TaskText, config.requireSpecPhrases, config.placementAssist, config.IsStopLoop);
+        // ── 눈높이 보정(G60-3, eyeHeightMode relative) ──────────────────────
+        /// <summary>마지막 눈높이 보정 결과(Check 단계 실험자 키 H). 없으면 null. Check·설정으로 돌아가기·다음 참여자에서 지운다.</summary>
+        public EyeHeightCalibration.Result EyeCalibration { get; private set; }
+        /// <summary>눈높이 표본을 모으는 중(1 s).</summary>
+        public bool EyeCalibrating => _eyeSampler != null;
+        /// <summary>실험자 화면 한 줄(보정 상태). relative가 아니면 null.</summary>
+        public string EyeHeightStatus
+        {
+            get
+            {
+                if (!config.IsEyeRelative) return null;
+                if (_auto != null || !XrHeadActive) return $"눈높이: 데스크톱·자동 시행이라 기준값 {config.eyeHeightReferenceM:0.00} m 고정(desktop_fixed)";
+                if (_eyeSampler != null) return $"눈높이 재는 중… {_eyeSampler.Count}/{_eyeSampler.Needed}";
+                if (EyeCalibration == null) return "눈높이: 아직 재지 않음 — 참여자를 똑바로 세운 뒤 H(시작하려면 필요)";
+                var i = EyeCalibration.Info;
+                return EyeCalibration.Ok
+                    ? $"눈높이 E = {i.MeasuredM:0.000} m (SD {i.SdM:0.000} m, pitch {i.PitchDeg:0.0}°, 표본 {i.Samples}) — 물체 높이 {config.EyeOffsetFor(i.MeasuredM):+0.000;-0.000;0.000} m"
+                    : "눈높이 보정 실패: " + EyeCalibration.Reason + " — 다시 H";
+            }
+        }
+        /// <summary>문구 판·참여자 글의 눈높이 앵커(m): relative면 이 세션의 E, 아니면 Inspector anchorEyeHeightM.</summary>
+        public float PanelEyeHeightM => Session?.EyeHeightM is double e ? (float)e : anchorEyeHeightM;
         /// <summary>지금 화면에 실제로 그려진 배경 공간(EnvironmentStyle.Apply 결과). 실험자 화면이 읽는다.</summary>
         public string AppliedEnvironment { get; private set; } = PlacementConfig.EnvironmentNeutral;
         public List<SpecFileEntry> SpecFiles { get; } = new List<SpecFileEntry>();
@@ -133,6 +158,9 @@ namespace IFS.SceneSpec.Placement
         string _shownText;
         IPlacementInput _activeInput;
         string _activeSource;
+        EyeHeightSampler _eyeSampler;
+        float _eyeSamplerStart;
+        bool _ringsHidden;
 
         // ── 수명 ─────────────────────────────────────────────────────────
         void Awake()
@@ -151,8 +179,64 @@ namespace IFS.SceneSpec.Placement
                 if (XrHeadActive) { xrInput.Configure(xrRig != null ? xrRig.transform : null, config.xrHand); XrControllerPresent = xrInput.ControllerPresent; }
                 else XrControllerPresent = false;
             }
+            StepEyeCalibration();
             Tick(Time.unscaledDeltaTime);
             PollKeys();
+        }
+
+        // ── 눈높이 보정(G60-3) ──────────────────────────────────────────
+        /// <summary>눈높이 재기 시작(Check 단계, 실험자 키 H 또는 실험자 화면 단추). relative가 아니거나 헤드셋이 없으면 아무것도 하지 않는다.
+        /// 20 Hz로 eyeCalibSeconds 동안 머리 높이·pitch를 모아 EyeHeightCalibration.Evaluate로 판정한다.</summary>
+        public bool BeginEyeCalibration()
+        {
+            if (!config.IsEyeRelative || Stage != PlacementRunnerStage.Checked || Session != null || _auto != null || !XrHeadActive) return false;
+            EyeCalibration = null;
+            ClearEyeRefusal();
+            _eyeSampler = new EyeHeightSampler(config);
+            _eyeSamplerStart = Time.unscaledTime;
+            return true;
+        }
+
+        string _eyeRefusal;
+
+        /// <summary>시작 거부로 넣은 눈높이 오류 줄을 지운다(다시 잴 때).</summary>
+        void ClearEyeRefusal()
+        {
+            if (_eyeRefusal != null) Errors.Remove(_eyeRefusal);
+            _eyeRefusal = null;
+        }
+
+        void StepEyeCalibration()
+        {
+            if (_eyeSampler == null) return;
+            if (Stage != PlacementRunnerStage.Checked || Session != null) { _eyeSampler = null; return; }
+            var h = CurrentHead();
+            _eyeSampler.Add(Time.unscaledTime - _eyeSamplerStart, h.Y, EyeHeightCalibration.PitchDegFromQuaternion(h.Qx, h.Qy, h.Qz, h.Qw));
+            if (!_eyeSampler.Done) return;
+            EyeCalibration = FinishEyeCalibration(_eyeSampler);
+            _eyeSampler = null;
+        }
+
+        /// <summary>모은 표본으로 판정한다(테스트에서 표본을 직접 넣을 때도 쓴다).</summary>
+        public EyeHeightCalibration.Result FinishEyeCalibration(EyeHeightSampler sampler)
+        {
+            bool floor = xrRig != null && xrRig.FloorOrigin;
+            var r = EyeHeightCalibration.Evaluate(config, sampler.Heights, sampler.Pitches, floor, xrRig?.TrackingOrigin);
+            EyeCalibration = r;
+            ClearEyeRefusal();
+            Debug.Log("[IFS] 눈높이 보정: " + (r.Ok ? "통과 " : "실패 ") + (r.Info != null ? r.Info.EventDetail(config) : "") + (r.Reason != null ? " — " + r.Reason : ""), this);
+            return r;
+        }
+
+        /// <summary>세션에 넘길 눈높이: relative가 아니면 null, 데스크톱·자동 시행이면 기준값 고정, XR이면 통과한 보정 결과(없으면 null + 거부 이유).</summary>
+        EyeHeightInfo EyeHeightForSession(out string refusal)
+        {
+            refusal = null;
+            if (!config.IsEyeRelative) return null;
+            if (_auto != null || !XrHeadActive) return EyeHeightInfo.DesktopFixed(config.eyeHeightReferenceM);
+            if (EyeCalibration == null) { refusal = "eyeHeightMode relative인데 눈높이를 재지 않았습니다 — 참여자를 똑바로 세우고 정면 재설정(R) 뒤 H로 재세요"; return null; }
+            if (!EyeCalibration.Ok) { refusal = "눈높이 보정이 통과하지 못했습니다: " + EyeCalibration.Reason + " — 다시 H"; return null; }
+            return EyeCalibration.Info;
         }
 
         void OnDestroy()
@@ -297,6 +381,9 @@ namespace IFS.SceneSpec.Placement
             Selection = null;
             _replay = null;
             _layoutWarning = null;
+            EyeCalibration = null;   // 눈높이는 Check 뒤에 잰다(G60-3)
+            _eyeSampler = null;
+            _eyeRefusal = null;
             if (!int.TryParse((ParticipantNumberText ?? "").Trim(), out int number) || number < 1)
                 Errors.Add("참여자 번호는 1 이상의 정수여야 합니다");
             string path = (SpecPathText ?? "").Trim().Trim('"');
@@ -328,12 +415,16 @@ namespace IFS.SceneSpec.Placement
                     Errors.Add($"disabledItems의 {k}: 문구 파일({TaskText.FileName})에 그 평정 문항이 없습니다");
             if (TaskText != null && config.placementAssist && TaskText.AssistKeysMissing().Count > 0)
                 Errors.Add($"놓기 도움을 켰는데 문구 파일({TaskText.FileName})에 {string.Join(", ", TaskText.AssistKeysMissing())} 문구가 없습니다(문구 파일 0.3 이상)");
+            if (TaskText != null && config.IsStopLoop && TaskText.LoopKeysMissing().Count > 0)
+                Errors.Add($"멈춤 거리 반복 멈춤(stopMode loop)을 켰는데 문구 파일({TaskText.FileName})에 {string.Join(", ", TaskText.LoopKeysMissing())} 문구가 없습니다(문구 파일 0.6 이상)");
             if (!BuildSpace())
                 Errors.Add($"공간 {config.environment}을(를) 그리지 못했습니다(셰이더·사진 확인 — 콘솔). 기록이 실제 화면과 달라지므로 시작하지 않습니다");
             CheckSelection();
-            string refusal = PlacementTaskText.SpecPhraseRefusal(TaskText, config.requireSpecPhrases, config.placementAssist);
+            string refusal = PlacementTaskText.SpecPhraseRefusal(TaskText, config.requireSpecPhrases, config.placementAssist, config.IsStopLoop);
             if (refusal != null) Errors.Add(refusal);
             if (config.EffectiveControlMode == PlacementConfig.ModeReplay) CheckReplay();
+            if (config.IsEyeRelative && config.EffectiveControlMode == PlacementConfig.ModeReplay)
+                Warnings.Add("eyeHeightMode relative인데 controlMode replay입니다 — 재생 궤적의 높이는 원본 기록의 절대 높이 그대로라 눈높이 기준으로 옮기지 않습니다");
             Font font = null;
             if (textDisplay != null) { font = textDisplay.EnsureFont(); if (textDisplay.FontWarning != null) Warnings.Add(textDisplay.FontWarning); }
             if (panel != null) panel.SetFont(font);
@@ -436,6 +527,9 @@ namespace IFS.SceneSpec.Placement
         public void BackToSetup()
         {
             if (Session != null) return;
+            EyeCalibration = null;
+            _eyeSampler = null;
+            _eyeRefusal = null;
             Stage = PlacementRunnerStage.Setup;
             Errors.Clear();
             Warnings.Clear();
@@ -462,6 +556,14 @@ namespace IFS.SceneSpec.Placement
                 try { selSha = OwnershipManifest.Sha256OfFile(_selectionFullPath); }
                 catch (Exception e) { Errors.Add("선택 파일을 다시 읽지 못했습니다: " + e.Message); return false; }
                 if (selSha != _selectionSha) { Errors.Add("확인한 뒤 선택 파일이 바뀌었습니다 — 다시 확인하세요"); return false; }
+            }
+            var eyeHeight = EyeHeightForSession(out string eyeRefusal);   // G60-3: relative면 보정(또는 데스크톱 고정값)이 있어야 시작
+            if (eyeRefusal != null)
+            {
+                ClearEyeRefusal();
+                _eyeRefusal = eyeRefusal;
+                Errors.Add(eyeRefusal);   // 실험자 화면 오류 줄. 다시 재면(H) 지운다
+                return false;
             }
 
             Cleanup();
@@ -517,7 +619,7 @@ namespace IFS.SceneSpec.Placement
                 AutoMode = _auto != null,
                 TaskTextFile = TaskText.FileName,
                 TaskTextVersion = TaskText.Version,
-                TaskTextDraftKeys = TaskText.DraftKeysFor(config.placementAssist).ToArray(),   // 이 세션이 보일 수 있는 draft 문구만(G53)
+                TaskTextDraftKeys = TaskText.DraftKeysFor(config).ToArray(),   // 이 세션이 보일 수 있는 draft 문구만(G53·G60-2)
                 ReplayFile = _replay != null ? Path.GetFileName(_replayFullPath) : null,
                 ReplaySha256 = _replay != null ? _replaySha : null,
                 ReplaySourceSessionId = _replay?.SourceSessionId,
@@ -525,6 +627,7 @@ namespace IFS.SceneSpec.Placement
                 LayoutIgnored = _layoutWarning != null,
                 Selection = Selection,
                 AppliedOverrides = AppliedOverrides,
+                EyeHeight = eyeHeight,   // G60-3: relative일 때만(아니면 null)
             };
             try
             {
@@ -574,6 +677,7 @@ namespace IFS.SceneSpec.Placement
         {
             _space?.Dispose();
             _space = PlacementSpace.Build(config, transform);
+            _ringsHidden = false;
             PlacementSpace.HideEnvironmentFloor();
             return ApplyEnvironment();
         }
@@ -675,8 +779,10 @@ namespace IFS.SceneSpec.Placement
                 root.transform.SetPositionAndRotation(pos, look.sqrMagnitude > 1e-6f ? Quaternion.LookRotation(look.normalized, Vector3.up) : Quaternion.identity);
                 if (root.activeSelf != Session.ObjectVisible) root.SetActive(Session.ObjectVisible);
             }
-            var textAt = new Vector3(0f, textHeightM, textForwardM);
-            var eye = new Vector3(0f, anchorEyeHeightM, 0f);
+            // G60-3: relative면 판 높이와 눈 앵커를 E 기준으로 옮긴다(판과 눈의 기하가 사람마다 같게). none이면 예전 그대로
+            float eyeOffset = (float)Session.EyeOffsetM;
+            var textAt = new Vector3(0f, textHeightM + eyeOffset, textForwardM);
+            var eye = new Vector3(0f, PanelEyeHeightM, 0f);
             if (panel != null)
             {
                 // 헤드셋 안 판: 평정 문항이면 문항 + 1–7 기준점(참여자가 고르는 중인 값 강조), 아니면 안내 글
@@ -692,6 +798,8 @@ namespace IFS.SceneSpec.Placement
                 else textDisplay.Show(_shownText, textAt, eye);
             }
             ApplyXrRay();
+            // G60-2: 반복 멈춤에서 stopLoopHideRings면 멈춤 거리 단계 동안 바닥 거리 고리를 숨긴다
+            SetRingsHidden(!Session.Finished && Session.Phase == PlacementPhase.StopDistance && Session.Config.IsStopLoop && Session.Config.stopLoopHideRings);
             if (_space != null && Session.Config.placementAssist) ApplyAssistVisuals();
             if (_space != null)
             {
@@ -734,6 +842,18 @@ namespace IFS.SceneSpec.Placement
             xrInput.ShowRay(show, end);
         }
 
+        /// <summary>바닥 거리 고리를 숨기거나 다시 보인다(showRings로 만든 고리만, 바뀔 때만 건드림).</summary>
+        void SetRingsHidden(bool hidden)
+        {
+            if (_space == null || hidden == _ringsHidden) return;
+            _ringsHidden = hidden;
+            foreach (var r in _space.Rings)
+                if (r != null) r.SetActive(!hidden);
+        }
+
+        /// <summary>바닥 거리 고리가 지금 숨겨져 있다(G60-2 stopLoopHideRings).</summary>
+        public bool RingsHidden => _ringsHidden;
+
         static void SetMarker(GameObject marker, PVec3? at)
         {
             if (marker == null) return;
@@ -757,6 +877,7 @@ namespace IFS.SceneSpec.Placement
             if (UnityEngine.Input.GetKeyDown(KeyCode.Backspace)) Session?.PressBackspace();
             if (UnityEngine.Input.GetKeyDown(KeyCode.Return) || UnityEngine.Input.GetKeyDown(KeyCode.KeypadEnter)) PressConfirm();
             if (UnityEngine.Input.GetKeyDown(KeyCode.R)) Recenter();
+            if (UnityEngine.Input.GetKeyDown(KeyCode.H)) BeginEyeCalibration();   // G60-3: Check 단계에서 눈높이 재기(relative일 때만)
         }
 
         /// <summary>정면 재설정(XR): 지금 머리 자리를 '나'의 자리로, 보는 방향을 정면으로. 세션 중이면 events.csv에 recenter로 남긴다.
@@ -808,6 +929,10 @@ namespace IFS.SceneSpec.Placement
             _shownText = null;
             _activeInput = null;
             _activeSource = null;
+            EyeCalibration = null;   // 눈높이는 참여자마다 다시 잰다(G60-3)
+            _eyeSampler = null;
+            _eyeRefusal = null;
+            SetRingsHidden(false);
             Stage = PlacementRunnerStage.Setup;
             Spec = null;
             Selection = null;

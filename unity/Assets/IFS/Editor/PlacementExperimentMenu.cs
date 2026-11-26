@@ -144,6 +144,9 @@ namespace IFS.SceneSpec.EditorTools
             if ((v = Value(args, "-placementAssist")) != null) cfg.placementAssist = bool.Parse(v);
             if ((v = Value(args, "-checkBeforeStopDistance")) != null) cfg.checkBeforeStopDistance = bool.Parse(v);
             if ((v = Value(args, "-practiceInAllConditions")) != null) cfg.practiceInAllConditions = bool.Parse(v);
+            if ((v = Value(args, "-stopMode")) != null) cfg.stopMode = v;   // G60-2: single | loop
+            if ((v = Value(args, "-stopLoopRoundSeconds")) != null) cfg.stopLoopRoundSeconds = double.Parse(v, CultureInfo.InvariantCulture);
+            if ((v = Value(args, "-eyeHeightMode")) != null) cfg.eyeHeightMode = v;   // G60-3: none | relative(자동 시행은 기준값 고정)
             return cfg;
         }
 

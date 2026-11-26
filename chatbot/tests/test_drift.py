@@ -500,6 +500,29 @@ def test_protocol_v13_only_changes_opening():
     assert not any(w in op13["text"] for w in banned)
 
 
+def test_protocol_v14_only_changes_opening():
+    """G60: v1.4는 v1.3에서 opening 하나만 바꾼다(새 글, draft 유지). 단계·틀·다른 문구·상태·선택지·척도는 그대로다."""
+    p13 = json.loads(shared("protocol", "elicitation_protocol.v1.3.json").read_text(encoding="utf-8"))
+    p14 = json.loads(shared("protocol", "elicitation_protocol.v1.4.json").read_text(encoding="utf-8"))
+    assert p14["protocolVersion"] == "1.4.0" and p14["changes"][0]["version"] == "1.4.0"
+    assert p14["changes"][0]["status"] == "draft" and "G60" in p14["changes"][0]["source"]
+    assert p14["changes"][1:] == p13["changes"]
+    assert {k: v for k, v in p14.items() if k not in ("protocolVersion", "changes", "fixedPhrases")} \
+        == {k: v for k, v in p13.items() if k not in ("protocolVersion", "changes", "fixedPhrases")}
+    assert p14["fixedPhrases"].keys() == p13["fixedPhrases"].keys()
+    assert {k: v for k, v in p14["fixedPhrases"].items() if k != "opening"} \
+        == {k: v for k, v in p13["fixedPhrases"].items() if k != "opening"}
+    op13, op14 = p13["fixedPhrases"]["opening"], p14["fixedPhrases"]["opening"]
+    assert op13["status"] == "draft" and op14["status"] == "draft"
+    assert op14["text"] == ("요즘 가장 신경 쓰고 있는 일 가운데 우선순위가 가장 높은 일 하나를 떠올려 주세요. 자세한 내용은 말하지 않아도 괜찮아요. "
+                            "그 일을 떠올리면 지금 어떤 느낌이 드나요?")
+    assert "자세한 내용은 말하지 않아도 괜찮아요." in op13["text"]                # 둘째 문장은 1.3.0 그대로
+    assert "G60" in op14["source"] and "2026-11-26" in op14["source"]
+    assert "걱정" not in op14["text"]
+    banned = ("왜", "기억", "과거", "이유", "예전", "옛날", "어릴", "내담자", "진단", "증상", "치료", "상담")
+    assert not any(w in op14["text"] for w in banned)
+
+
 def _schema_errors(s):
     from jsonschema import Draft202012Validator
     schema = json.loads(shared("schemas", "session_log.schema.json").read_text(encoding="utf-8"))

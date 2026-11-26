@@ -34,6 +34,13 @@ LLM 없음, 표준 라이브러리 + Kiwi(언어 표지), 결정적. **한 점�
   쪽(같으면 가까운 쪽). 방향 축 fixed = g_late > facing_threshold(기본 0.5), median = 표본 g_late 중앙값보다 크면 봄.
   칸: NL near_facing, FL far_facing, FA far_not_facing, NA near_not_facing. 보기만 조건은 2×2를 만들지 않는다.
 - 멈춤 거리 sd_asym_m = 접근 평균 − 후퇴 평균. regrab_count = grab_count − 1(직접 배치만, 첫 잡기 제외).
+- 반복 멈춤(G60-2, placement 세션 표 stop_mode == "loop"): 멈춤 성분 sd_mean_m = placement의 주 값 stop_final_mean_m(본 라운드 중
+  확정된 라운드의 확정 거리 평균, 확정 라운드가 2개 미만이면 placement가 빈칸으로 둔다 — 여기서도 채우지 않음, flags sd_loop_insufficient).
+  sd_approach_m·sd_recede_m·sd_asym_m은 한계법(single)의 출발 방향별 값이라 loop에서는 정의되지 않아 빈칸이다(loop의 방향별 평균은
+  마지막 진행 방향으로 나눈 히스테리시스 점검이지 같은 지표가 아님). loop 세션에는 flags sd_from_loop_final.
+  loop 세션이 하나라도 있을 때만 프로파일 표에 stop_mode·sd_final_n 열(sd_mean_m 뒤)과 요약 behavior.stopMode를 더한다
+  (없으면 출력은 G60 전과 바이트까지 같다). 요약 포함 세션에 single과 loop가 섞이면 sd_mean_m의 정의가 세션마다 달라
+  warnings에 config_mismatch:stop_mode를 넣는다(placement의 config_mismatch 관례).
 
 언어(문서 3.3, ifs_chatbot.eval.language_markers): L-A 발화의 K1–K7 개수 pre/post/change(post − pre), 절 수.
 L-B 발화의 기존 사전 감정어(부정된 것은 ~ 표시)와 분류 없는 용언 원형 목록.
@@ -149,6 +156,13 @@ LANG_COLS = [f"la_{k}_{w}" for k in lm.MARKERS for w in ("pre", "post", "change"
             ["lb_emotion_pre", "lb_emotion_post", "lb_emotion_n_pre", "lb_emotion_n_post", "lb_emotion_n_change",
              "lb_predicates_pre", "lb_predicates_post"]
 PROFILE_COLUMNS = PROFILE_ID + SR_COLS + BEH_COLS + LANG_COLS + ["flags"]
+# G60-2 반복 멈춤: loop 세션이 하나라도 있을 때만 sd_mean_m 뒤에 붙는 열
+LOOP_BEH_COLS = ["stop_mode", "sd_final_n"]
+STOP_MODE_DEFINITIONS = {
+    "single": "sd_mean_m = (접근 평균 + 후퇴 평균) / 2(한계법, 연습·시간 초과 제외 — placement stop_mean_m)",
+    "loop": "sd_mean_m = 본 라운드 중 확정된 라운드의 확정 거리 평균(placement stop_final_mean_m, 확정 라운드 2개 이상일 때만). "
+            "sd_asym_m은 정의되지 않아 빈칸",
+}
 CONV_COLUMNS = ["var_a", "method_a", "component_a", "var_b", "method_b", "component_b", "same_component",
                 "same_method", "n", "rho"]
 
@@ -333,10 +347,23 @@ def behavior(s: dict, row: dict, flags: list[str], start_default: float) -> None
             flags.append("facing_from_whole_condition")
     row["g_shift"] = _r(_sub(row["g_late"], row["g_early"]))
     row["head_obj_distance_mean_m"] = _num(s.get("head_obj_distance_mean_m"))
-    a, r = _num(s.get("stop_approach_mean_m")), _num(s.get("stop_recede_mean_m"))
-    row["sd_approach_m"], row["sd_recede_m"] = a, r
-    row["sd_asym_m"] = _r(_sub(a, r))
-    row["sd_mean_m"] = _num(s.get("stop_mean_m"))
+    if s.get("stop_mode") == "loop":
+        # G60-2 반복 멈춤: 주 값(확정 거리 평균)만 멈춤 성분으로 쓴다. 한계법 방향별 값은 정의되지 않는다
+        row["sd_approach_m"] = row["sd_recede_m"] = row["sd_asym_m"] = None
+        row["sd_mean_m"] = _num(s.get("stop_final_mean_m"))
+        row["stop_mode"] = "loop"
+        n = _num(s.get("stop_final_n"))
+        row["sd_final_n"] = int(n) if n is not None else None
+        flags.append("sd_from_loop_final")
+        if row["sd_mean_m"] is None:
+            flags.append("sd_loop_insufficient")
+    else:
+        a, r = _num(s.get("stop_approach_mean_m")), _num(s.get("stop_recede_mean_m"))
+        row["sd_approach_m"], row["sd_recede_m"] = a, r
+        row["sd_asym_m"] = _r(_sub(a, r))
+        row["sd_mean_m"] = _num(s.get("stop_mean_m"))
+        row["stop_mode"] = "single"
+        row["sd_final_n"] = None
     gc = _num(s.get("grab_count"))
     row["grab_count"] = int(gc) if gc is not None else None
     row["regrab_count"] = (max(int(gc) - 1, 0) if gc is not None else None) if place else None
@@ -549,19 +576,46 @@ def analyze(records: list[str | Path] | None = None, sessions_csv: str | Path | 
               "input": "records" if records else "sessions_csv"}
     if sum(1 for r in inc if r["condition"] == "place") < 3:
         warnings.append("요약 포함 place 세션이 3개 미만 — median 분할과 상관은 의미가 거의 없음")
+    # G60-2: loop 세션이 있을 때만 새 열·요약 키(없으면 G60 전과 같은 출력)
+    has_loop = any(r["stop_mode"] == "loop" for r in rows)
+    inc_modes = {m: sum(1 for r in inc if r["stop_mode"] == m) for m in ("single", "loop")}
+    mixed = inc_modes["single"] > 0 and inc_modes["loop"] > 0
+    if mixed:
+        warnings.append("config_mismatch:stop_mode")
     summary = summarize(rows, quad, conv, cases, params, warnings, len(flat))
+    columns = PROFILE_COLUMNS
+    if has_loop:
+        i = PROFILE_COLUMNS.index("sd_mean_m") + 1
+        columns = PROFILE_COLUMNS[:i] + LOOP_BEH_COLS + PROFILE_COLUMNS[i:]
+        summary["behavior"]["stopMode"] = {
+            "sessions": {m: sum(1 for r in rows if r["stop_mode"] == m) for m in ("single", "loop")},
+            "included": inc_modes,
+            "mixed": mixed,
+            "definitions": STOP_MODE_DEFINITIONS,
+            "loopInsufficient": sum(1 for r in rows if "sd_loop_insufficient" in r["flags"]),
+            "note": "loop 세션의 sd_mean_m은 placement 분석기의 주 값 stop_final_mean_m이다. 확정하지 않은 라운드는 결측이고 "
+                    "마지막 멈춤 거리로 채우지 않는다(원칙 2). single과 loop가 섞이면 sd_mean_m을 한 분포로 읽지 않는다"
+                    "(config_mismatch:stop_mode).",
+        }
+    else:
+        for r in rows:
+            for k in LOOP_BEH_COLS:
+                r.pop(k, None)
     for r in rows:
         r["flags"] = ";".join(r["flags"])
     if out_dir is not None:
         out = Path(out_dir)
         out.mkdir(parents=True, exist_ok=True)
-        _write_csv(out / "differentiation_profile.csv", PROFILE_COLUMNS, rows)
+        _write_csv(out / "differentiation_profile.csv", columns, rows)
         _write_csv(out / "differentiation_convergence.csv", CONV_COLUMNS, conv)
         if flat:
             _write_csv(out / "language_markers.csv", lm.CSV_COLUMNS, flat)
         (out / "differentiation_summary.json").write_text(json.dumps(summary, ensure_ascii=False, indent=2) + "\n",
                                                           encoding="utf-8")
-    return {"rows": rows, "convergence": conv, "cases": cases, "summary": summary, "utterances": flat}
+    res = {"rows": rows, "convergence": conv, "cases": cases, "summary": summary, "utterances": flat}
+    if has_loop:
+        res["columns"] = columns
+    return res
 
 
 def _print_summary(summary: dict) -> None:
@@ -573,6 +627,10 @@ def _print_summary(summary: dict) -> None:
     print("  2×2(place): " + ", ".join(f"{k} {v}" for k, v in summary["behavior"]["quadrantCounts"].items()))
     hit = ", ".join(f"{k} {v}" for k, v in summary["cases"]["counts"].items() if v)
     print("  사례: " + (hit or "없음"))
+    sm = summary["behavior"].get("stopMode")
+    if sm:
+        print(f"  멈춤 거리 방식(요약 포함): single {sm['included']['single']}, loop {sm['included']['loop']}"
+              + (" — 섞임(config_mismatch:stop_mode)" if sm["mixed"] else ""))
 
 
 def main(argv: list[str] | None = None) -> None:

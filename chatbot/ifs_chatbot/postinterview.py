@@ -28,6 +28,7 @@ PARTS = ("free", "after_free")
 KINDS = ("oral", "oral_repeat", "choice", "typed", "rating_group")
 MAX_TEXT = 4000
 MAX_WORD_EOJEOL = 3          # PI3의 {X}: 참여자 낱말·짧은 구(면담 검증기의 인용 한도와 같은 3어절)
+UI_HIDDEN_KEYS = ("purpose",)  # 연구자용 문항 목적(G60). 기록 화면 설정에 보내지 않는다
 
 
 class PostInterviewProtocol:
@@ -52,6 +53,8 @@ class PostInterviewProtocol:
             yield f"uiPhrases.{k}", v
         for it in self.data["items"]:
             yield f"items.{it['id']}", it
+            if it.get("clarify"):                      # 되물을 때 실험자가 말하는 고정 한 줄(G60, PI1)
+                yield f"items.{it['id']}.clarify", it["clarify"]
 
     def draft_keys(self) -> list[str]:
         return [k for k, v in self._entries() if v.get("status") != "spec"]
@@ -69,11 +72,13 @@ class PostInterviewProtocol:
                 if (not it.get("conditions") or condition in it["conditions"]) and (part is None or it["part"] == part)]
 
     def ui(self, enabled: bool) -> dict:
-        """기록 화면이 그리는 데 쓰는 것(문항·규칙·조건). 출처·상태도 함께(연구자 화면)."""
+        """기록 화면이 그리는 데 쓰는 것(문항·규칙·조건). 출처·상태도 함께(연구자 화면).
+        문항의 purpose(연구자용 '알고 싶은 것', G60)는 보내지 않는다 — 몇 문항은 참여자가 이 화면에서 직접 고르거나 적기 때문이다."""
+        items = [{k: v for k, v in it.items() if k not in UI_HIDDEN_KEYS} for it in copy.deepcopy(self.data["items"])]
         return {"enabled": enabled, "protocol": self.info(), "conditions": copy.deepcopy(self.data["conditions"]),
                 "parts": copy.deepcopy(self.data["parts"]), "experimenterRules": copy.deepcopy(self.data["experimenterRules"]),
                 "uiPhrases": {k: v["text"] for k, v in self.data["uiPhrases"].items()},
-                "items": copy.deepcopy(self.data["items"]), "maxWordEojeol": MAX_WORD_EOJEOL, "formatVersion": FORMAT_VERSION}
+                "items": items, "maxWordEojeol": MAX_WORD_EOJEOL, "formatVersion": FORMAT_VERSION}
 
 
 def _text(v, where: str) -> str:

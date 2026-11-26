@@ -38,6 +38,8 @@
 | 2.2 | 정면 재설정 | 참여자를 원판 가운데 둥근 표식에 세우고 정면을 보게 한 뒤 실험자 R | 실험자 화면에 "정면 재설정 …" 줄. 참여자가 표식 위에 있고, 정면이 원판의 정면(물체가 나올 쪽) | | |
 | 2.3 | 원판 경계·고리 | 둘러보기 | 반지름 4 m 원판 가장자리의 진한 띠, 옅은 고리 3개(1·2·3 m)가 보임. 고리를 끄면(`showRings`) 안 보임 | | |
 | 2.4 | 눈높이 기록 | 시작 뒤 `headpose.csv`의 head_y | 참여자 실제 눈높이와 ±5 cm 안 | | |
+| 2.5 | 눈높이 재기(G60-3, 선택) | Setup에서 "눈높이 기준 배치"(`eyeHeightMode relative`) 켜고 확인 → 정면 재설정(R) → 참여자에게 말로 "편하게 똑바로 서서 앞을 봐 주세요" → 실험자 H(또는 "눈높이 재기" 단추) | 1초 뒤 실험자 화면에 `눈높이 E = … m (SD …, pitch …°)`. E가 참여자 실제 눈높이(바닥에서 눈까지 줄자)와 ±3 cm 안인지 메모. 고개를 숙이고 H → "고개가 아래로 …°" 실패, 걸으며 H → "SD" 실패가 나는지. 재지 않고 Enter → "눈높이를 재지 않았습니다" 오류로 시작 안 됨 | | |
+| 2.6 | 눈높이 기준 자리(G60-3, 선택) | 2.5 뒤 시작, 키가 다른 두 사람(가능하면 E 차이 15 cm 이상) | 물체 시작 높이가 각자 눈보다 약 0.4 m 아래(정면 1.5 m에서 내려다보는 각이 두 사람에게 비슷함), 판도 같은 양만큼 옮겨짐. 실제 바닥·원판 높이는 그대로. 키 큰 사람·작은 사람 모두 판 글이 물체에 가리지 않는지. `manifest.json` 맨 끝 `eyeHeight`(source `calibrated`, trackingOrigin `Floor`), `events.csv`에 `eye_height_calibrated` | | |
 
 ## 3. 물체와 참여자 판
 
@@ -77,6 +79,10 @@
 | 5.3 | 멈춤 거리 버튼 | 멈춤 거리 단계 → 실험자 Enter → 물체가 다가올 때 트리거 | 누른 순간 멈춤, 다음 시행. `stopdistance.csv`에 거리 | | |
 | 5.4 | 미리 누른 버튼 | 시행이 시작되기 전부터 트리거를 누르고 있기 | 그 시행은 멈추지 않음(떼었다 다시 눌러야 멈춤) | | |
 | 5.5 | 참여자 컨트롤러 평정(선택) | Setup에서 "참여자가 컨트롤러로 평정" 켜기 → 평정 단계에서 썸스틱 좌우·트리거 | 처음 젖히면 4 칸에 테두리(3.9), 한 칸씩 이동, 트리거로 확정되고 다음 문항. `events.csv`의 rating에 `by=controller` | | |
+| 5.6 | 반복 멈춤(G60-2, 선택) | Setup에서 "멈춤 거리 반복 멈춤"(`stopMode loop`) 켜고 시작 → 멈춤 거리 단계에서 실험자 Enter | 판에 반복 멈춤 지시문. 물체가 정면에서 0.4–3.6 m를 일정 속도로 오가고 끝에서 바로 되돌아감(끝에서 느려지지 않음). 이 단계 동안 바닥 고리 1·2·3 m가 숨겨짐 | | |
+| 5.7 | 반복 멈춤 조작 | 트리거 한 번 → 멈춤, 다시 트리거 → 같은 방향으로 다시 움직임, 멈춘 채 A(왼손은 X) → 확정 | 멈추면 판 아래에 조작 안내 한 줄이 더 보임. 움직이는 중 A는 무시됨(실험자 화면 상태 그대로). 확정하면 물체가 사라지고 2초 뒤 다음 라운드(연습 1 + 본 4). 트리거를 아주 빨리 두 번 눌렀을 때(0.25 s 안) 두 번째가 무시되는지, 반대로 일부러 빠르게 고치려는 사람에게 무시가 답답하게 느껴지는지 메모 | | |
+| 5.8 | 반복 멈춤 상한·시간 | 한 라운드에서 아무것도 누르지 않기 | 75초 뒤 다음 라운드로 넘어감. `stoprounds.csv`의 그 라운드 `final_distance_m` 빈칸, `end_reason timeout_moving`. 전체 멈춤 거리 단계가 몇 분 걸렸는지, 오가는 속도(0.25 m/s)가 지루하거나 어지럽지 않은지 메모 | | |
+| 5.9 | 트리거와 잡기가 겹치지 않음 | 직접 배치 조건 → 멈춤 거리 단계 | 멈춤 거리 단계에서 트리거가 물체를 잡지 않고(광선 안 보임) 멈춤/다시 움직임만 함 | | |
 
 ## 6. 렌더·편안함
 
@@ -92,7 +98,7 @@
 
 | # | 확인 | 방법 | 기대 결과 | 결과 | 메모 |
 | --- | --- | --- | --- | --- | --- |
-| 7.1 | 기록 파일 | 끝난 뒤 실험자 화면의 기록 폴더 | 9개 파일(manifest·headpose·objpose·events·placement·stopdistance·ratings·trajectory·summary) | | |
+| 7.1 | 기록 파일 | 끝난 뒤 실험자 화면의 기록 폴더 | 9개 파일(manifest·headpose·objpose·events·placement·stopdistance·ratings·trajectory·summary). 반복 멈춤(5.6)을 켰으면 `stoprounds.csv`·`stopadjust.csv`가 더 있고 `stopdistance.csv`는 헤더만 | | |
 | 7.2 | manifest | `manifest.json` | `headSource: "xr"`, `inputSource: "xr"`, `config.inputMode`·`xrHand`, 절대 경로 없음 | | |
 | 7.3 | events | `events.csv` | `xr_status`(장치·손·추적 원점), R을 눌렀으면 `recenter`, 초안 문구 `warning` | | |
 | 7.4 | 분석기 | `cd chatbot; .venv\Scripts\python.exe -m ifs_chatbot.eval.placement --records <기록 루트> --out <결과 폴더>` | 오류 없이 `placement_sessions.csv`·`stop_trials.csv`·`placement_summary.json`. `input_source = xr`, 플래그는 `runner_warning`(초안 문구)뿐 | | |
