@@ -31,8 +31,12 @@ namespace IFS.SceneSpec
             }
             foreach (var kv in Categories)
             {
-                if (Array.IndexOf(SceneParams.CategoricalKeys, kv.Key) < 0 && kv.Key != SceneParams.BaseKey) errors.Add("범주 키가 아님: " + kv.Key);
+                bool contour = ContourRender.Levels.TryGetValue(kv.Key, out var levels);
+                if (Array.IndexOf(SceneParams.CategoricalKeys, kv.Key) < 0 && kv.Key != SceneParams.BaseKey && !contour) errors.Add("범주 키가 아님: " + kv.Key);
                 else if (kv.Value == null) errors.Add(kv.Key + ": 값이 null");
+                // (2.3) 윤곽·발광 범주 키(docs/scene-spec-mapping.md 8.4절 6번). 챗봇은 아직 보내지 않는다. "none"은 발광 끔
+                else if (contour && Array.IndexOf(levels, kv.Value) < 0)
+                    errors.Add($"모르는 {kv.Key}: {kv.Value}(가능: {string.Join(", ", levels)})");
                 else if (kv.Key == SceneParams.BaseKey && kv.Value != SceneParams.NoBase && !BaseShapes.IsBase(kv.Value))
                     errors.Add($"모르는 기본 형상: {kv.Value}(가능: {string.Join(", ", BaseShapes.All)}, {SceneParams.NoBase})");
                 else if (kv.Key == "form.type" && Array.IndexOf(SceneParams.FormTypes, kv.Value) < 0) errors.Add("모르는 형태: " + kv.Value);

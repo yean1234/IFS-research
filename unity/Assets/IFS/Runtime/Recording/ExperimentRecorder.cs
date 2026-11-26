@@ -56,8 +56,10 @@ namespace IFS.SceneSpec
         }
 
         /// <summary>처음 로드한 값. rawSpecJson은 읽은 파일 그대로(분석 때 원본과 대조).
-        /// shape = 모양어 판정(ShapeResolution.ToJson(): status·applied·model·viaPrefab·formType·words). 없으면 기록하지 않는다.</summary>
-        public void WriteInitial(SceneParams initial, string rawSpecJson, IEnumerable<string> notes = null, JObject shape = null)
+        /// shape = 모양어 판정(ShapeResolution.ToJson(): status·applied·model·viaPrefab·formType·words). 없으면 기록하지 않는다.
+        /// (2.3) contour·emission = 윤곽·발광 판정(FormRenderPlan.ContourJson·EmissionJson). 2.3 spec일 때만 있고, 없으면 기록하지 않는다.</summary>
+        public void WriteInitial(SceneParams initial, string rawSpecJson, IEnumerable<string> notes = null, JObject shape = null,
+                                 JObject contour = null, JObject emission = null)
         {
             var o = (JObject)_context.DeepClone();
             o["kind"] = "initial";
@@ -67,6 +69,8 @@ namespace IFS.SceneSpec
             o["inferredUsed"] = new JArray(initial.InferredUsed);
             o["notes"] = new JArray((notes ?? Enumerable.Empty<string>()).ToArray());
             if (shape != null) o["shape"] = shape.DeepClone();
+            if (contour != null) o["contour"] = contour.DeepClone();
+            if (emission != null) o["emission"] = emission.DeepClone();
             o["spec"] = JToken.Parse(rawSpecJson);
             WriteJson("initialScene.json", o);
         }

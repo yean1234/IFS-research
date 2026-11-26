@@ -1,0 +1,2891 @@
+{
+  "format": "ifs-lexicon-proposals/0.1",
+  "generatedBy": "tools/lexicon_proposals.py collect",
+  "generatedOn": "2026-11-26",
+  "source": "synthetic — dev.json·mock_corpus.json·g61-synthetic-sentences.json(모두 합성)",
+  "lexiconChain": [
+    "layer1_lexicon.v0.json (sha256:8d323696764c)",
+    "layer1_lexicon.v1.json (sha256:53c3c678c21e)",
+    "layer1_lexicon.v2.json (sha256:511e8691ceca)"
+  ],
+  "variantRules": "variant-rules@0.1.0",
+  "sources": [
+    {
+      "kind": "synthetic_corpus",
+      "name": "dev.json",
+      "specs": 30,
+      "mapper": "scene-spec-builder-v2/2.5.0"
+    },
+    {
+      "kind": "synthetic_corpus",
+      "name": "mock_corpus.json",
+      "specs": 36,
+      "mapper": "scene-spec-builder-v2/2.5.0"
+    },
+    {
+      "kind": "synthetic_corpus",
+      "name": "g61-synthetic-sentences.json",
+      "specs": 30,
+      "mapper": "scene-spec-builder-v2/2.5.0"
+    }
+  ],
+  "privacy": "참여자 세션에서 만든 파일이면 참여자 데이터다. git에 올리지 않는다(AGENTS.md 6). 합성 자료로 만든 예시만 저장소에 둔다.",
+  "howToReview": [
+    "항목마다 decision.status를 approved 또는 rejected로 바꾼다. approved면 approvedBy(검토자)·approvedOn(YYYY-MM-DD)을 반드시 채운다.",
+    "후보를 그대로 받으려면 decision.useCandidate에 candidates의 번호(0부터)를 적는다 — lemma·pos·category·value를 그 후보에서 가져오되 표제어는 term(또는 decision.lemma)이다.",
+    "새 값을 직접 정하려면 decision.lemma(Kiwi 형태: 용언은 어간, -하다 형용사는 어근 XR)·pos·category·value를 적는다. value 키는 그 범주의 다른 항목과 같아야 한다(예: texture → {\"texture\": …}).",
+    "참여자가 그 속성을 직접 말한 낱말만 승인한다. 감정어 → 색·모양처럼 말하지 않은 것을 채우는 대응은 승인하지 않는다(AGENTS.md 원칙 2).",
+    "decision.ex에 그 표제어가 실제로 걸리는 합성 예문을 적으면 merge가 Kiwi로 확인한다(참여자 문장을 적지 않는다).",
+    "후보(candidates)는 시스템이 고른 값이 아니라 검토를 돕는 이웃 낱말이다. jamo_neighbor는 거리 2까지라 다른 뜻의 낱말도 섞인다."
+  ],
+  "skippedNonAttribute": {
+    "note": "매퍼의 다른 규칙이 쓰는 말·불용 명사·기능어라 사전 후보에서 뺀 말(낱말: 횟수)",
+    "words": {
+      "모르": 29,
+      "잘": 23,
+      "떠오르": 17,
+      "안": 17,
+      "계속": 13,
+      "장면": 11,
+      "살짝": 10,
+      "오": 8,
+      "그대로": 7,
+      "저녁": 7,
+      "가끔": 6,
+      "생각나": 6,
+      "주말": 6,
+      "가": 5,
+      "아침": 5,
+      "일": 5,
+      "거의": 4,
+      "눈": 4,
+      "말": 4,
+      "어제": 4,
+      "오후": 4,
+      "전체": 4,
+      "끝": 3,
+      "자리": 3,
+      "발밑": 2,
+      "밤": 2,
+      "살짝살짝": 2,
+      "오랜만": 2,
+      "위아래": 2,
+      "제자리": 2,
+      "줄": 2,
+      "직전": 2,
+      "처음": 2
+    }
+  },
+  "items": [
+    {
+      "id": "P0001",
+      "term": "가운데",
+      "tag": "NNG",
+      "kind": "unmatched",
+      "why": "사전에 없음",
+      "count": 6,
+      "specs": 6,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0002",
+      "term": "나",
+      "tag": "VV",
+      "kind": "unmatched",
+      "why": "사전에 없음",
+      "count": 5,
+      "specs": 5,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0003",
+      "term": "날",
+      "tag": "NNG",
+      "kind": "unmatched",
+      "why": "사전에 없음",
+      "count": 5,
+      "specs": 5,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0004",
+      "term": "다",
+      "tag": "MAG",
+      "kind": "unmatched",
+      "why": "사전에 없음",
+      "count": 5,
+      "specs": 5,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0005",
+      "term": "바로",
+      "tag": "MAG",
+      "kind": "unmatched",
+      "why": "사전에 없음",
+      "count": 5,
+      "specs": 5,
+      "candidates": [
+        {
+          "via": "jamo_neighbor",
+          "lemma": "바래",
+          "pos": "VV",
+          "category": "saturation",
+          "value": {
+            "level": "faded"
+          },
+          "matched": "바래",
+          "distance": 1
+        }
+      ],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0006",
+      "term": "보",
+      "tag": "VV",
+      "kind": "unmatched",
+      "why": "사전에 없음",
+      "count": 5,
+      "specs": 5,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0007",
+      "term": "바람",
+      "tag": "NNG",
+      "kind": "unlisted_noun",
+      "why": "사전에 없는 명사",
+      "count": 4,
+      "specs": 4,
+      "candidates": [
+        {
+          "via": "jamo_neighbor",
+          "lemma": "사람",
+          "pos": "NNG",
+          "category": "object",
+          "value": {
+            "object": "person_figure"
+          },
+          "matched": "사람",
+          "distance": 1
+        },
+        {
+          "via": "jamo_neighbor",
+          "lemma": "바깥",
+          "pos": "NNG",
+          "category": "body_layer",
+          "value": {
+            "layer": "around"
+          },
+          "matched": "바깥",
+          "distance": 2
+        },
+        {
+          "via": "jamo_neighbor",
+          "lemma": "바래",
+          "pos": "VV",
+          "category": "saturation",
+          "value": {
+            "level": "faded"
+          },
+          "matched": "바래",
+          "distance": 2
+        }
+      ],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0008",
+      "term": "집",
+      "tag": "NNG",
+      "kind": "unlisted_noun",
+      "why": "사전에 없는 명사",
+      "count": 4,
+      "specs": 4,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0009",
+      "term": "감기",
+      "tag": "VV",
+      "kind": "unmatched",
+      "why": "사전에 없음",
+      "count": 4,
+      "specs": 2,
+      "candidates": [
+        {
+          "via": "jamo_neighbor",
+          "lemma": "가시",
+          "pos": "NNG",
+          "category": "object",
+          "value": {
+            "object": "thorn"
+          },
+          "matched": "가시",
+          "distance": 2
+        },
+        {
+          "via": "jamo_neighbor",
+          "lemma": "각지",
+          "pos": "VA",
+          "category": "contour",
+          "value": {
+            "roundness": "angular"
+          },
+          "matched": "각지",
+          "distance": 2
+        },
+        {
+          "via": "jamo_neighbor",
+          "lemma": "각지",
+          "pos": "VA",
+          "category": "shape",
+          "value": {
+            "shape": "angular"
+          },
+          "matched": "각지",
+          "distance": 2
+        }
+      ],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0010",
+      "term": "놓이",
+      "tag": "VV",
+      "kind": "unmatched",
+      "why": "사전에 없음",
+      "count": 4,
+      "specs": 3,
+      "candidates": [
+        {
+          "via": "jamo_neighbor",
+          "lemma": "조이",
+          "pos": "VV",
+          "category": "sensation",
+          "value": {
+            "sensation": "tightening"
+          },
+          "matched": "조이",
+          "distance": 2
+        },
+        {
+          "via": "jamo_neighbor",
+          "lemma": "종이",
+          "pos": "NNG",
+          "category": "object",
+          "value": {
+            "object": "paper"
+          },
+          "matched": "종이",
+          "distance": 2
+        }
+      ],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0011",
+      "term": "먼저",
+      "tag": "MAG",
+      "kind": "unmatched",
+      "why": "사전에 없음",
+      "count": 4,
+      "specs": 4,
+      "candidates": [
+        {
+          "via": "jamo_neighbor",
+          "lemma": "번지",
+          "pos": "VV",
+          "category": "movement",
+          "value": {
+            "motion": "spreading"
+          },
+          "matched": "번지",
+          "distance": 2
+        }
+      ],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0012",
+      "term": "고양이",
+      "tag": "NNG",
+      "kind": "unlisted_noun",
+      "why": "사전에 없는 명사",
+      "count": 3,
+      "specs": 1,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0013",
+      "term": "꽃",
+      "tag": "NNG",
+      "kind": "unlisted_noun",
+      "why": "사전에 없는 명사",
+      "count": 3,
+      "specs": 1,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0014",
+      "term": "병",
+      "tag": "NNG",
+      "kind": "unlisted_noun",
+      "why": "사전에 없는 명사",
+      "count": 3,
+      "specs": 1,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0015",
+      "term": "친구",
+      "tag": "NNG",
+      "kind": "unlisted_noun",
+      "why": "사전에 없는 명사",
+      "count": 3,
+      "specs": 3,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0016",
+      "term": "회의",
+      "tag": "NNG",
+      "kind": "unlisted_noun",
+      "why": "사전에 없는 명사",
+      "count": 3,
+      "specs": 3,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0017",
+      "term": "간질간질",
+      "tag": "MAG",
+      "kind": "unmatched",
+      "why": "사전에 없음",
+      "count": 3,
+      "specs": 3,
+      "candidates": [
+        {
+          "via": "jamo_neighbor",
+          "lemma": "반질반질",
+          "pos": "XR",
+          "category": "texture",
+          "value": {
+            "texture": "glossy"
+          },
+          "matched": "반질반질",
+          "distance": 2
+        }
+      ],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0018",
+      "term": "군데군데",
+      "tag": "MAG",
+      "kind": "unmatched",
+      "why": "사전에 없음",
+      "count": 3,
+      "specs": 3,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0019",
+      "term": "기다리",
+      "tag": "VV",
+      "kind": "unmatched",
+      "why": "사전에 없음",
+      "count": 3,
+      "specs": 3,
+      "candidates": [
+        {
+          "via": "jamo_neighbor",
+          "lemma": "기다랗",
+          "pos": "VA",
+          "category": "contour",
+          "value": {
+            "aspect": "elongated"
+          },
+          "matched": "기다랗",
+          "distance": 2
+        },
+        {
+          "via": "jamo_neighbor",
+          "lemma": "다리",
+          "pos": "NNG",
+          "category": "body_part",
+          "value": {
+            "part": "leg"
+          },
+          "matched": "다리",
+          "distance": 2
+        },
+        {
+          "via": "shared_morpheme",
+          "lemma": "다리",
+          "pos": "NNG",
+          "category": "body_part",
+          "value": {
+            "part": "leg"
+          },
+          "matched": "다리"
+        }
+      ],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0020",
+      "term": "길",
+      "tag": "NNG",
+      "kind": "unmatched",
+      "why": "사전에 없음",
+      "count": 3,
+      "specs": 3,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0021",
+      "term": "닿",
+      "tag": "VV",
+      "kind": "unmatched",
+      "why": "사전에 없음",
+      "count": 3,
+      "specs": 2,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0022",
+      "term": "덮",
+      "tag": "VV",
+      "kind": "unmatched",
+      "why": "사전에 없음",
+      "count": 3,
+      "specs": 2,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0023",
+      "term": "따르",
+      "tag": "VV",
+      "kind": "unmatched",
+      "why": "사전에 없음",
+      "count": 3,
+      "specs": 2,
+      "candidates": [
+        {
+          "via": "jamo_neighbor",
+          "lemma": "빠르",
+          "pos": "VA",
+          "category": "movement",
+          "value": {
+            "speed": "fast"
+          },
+          "matched": "빠르",
+          "distance": 1
+        },
+        {
+          "via": "jamo_neighbor",
+          "lemma": "타르",
+          "pos": "NNG",
+          "category": "object",
+          "value": {
+            "object": "tar"
+          },
+          "matched": "타르",
+          "distance": 1
+        }
+      ],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0024",
+      "term": "딱히",
+      "tag": "MAG",
+      "kind": "unmatched",
+      "why": "사전에 없음",
+      "count": 3,
+      "specs": 3,
+      "candidates": [
+        {
+          "via": "jamo_neighbor",
+          "lemma": "막히",
+          "pos": "VV",
+          "category": "sensation",
+          "value": {
+            "sensation": "blocked"
+          },
+          "matched": "막히",
+          "distance": 1
+        },
+        {
+          "via": "jamo_neighbor",
+          "lemma": "각지",
+          "pos": "VA",
+          "category": "contour",
+          "value": {
+            "roundness": "angular"
+          },
+          "matched": "각지",
+          "distance": 2
+        },
+        {
+          "via": "jamo_neighbor",
+          "lemma": "각지",
+          "pos": "VA",
+          "category": "shape",
+          "value": {
+            "shape": "angular"
+          },
+          "matched": "각지",
+          "distance": 2
+        }
+      ],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0025",
+      "term": "받",
+      "tag": "VV",
+      "kind": "unmatched",
+      "why": "사전에 없음",
+      "count": 3,
+      "specs": 3,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0026",
+      "term": "비",
+      "tag": "NNG",
+      "kind": "unmatched",
+      "why": "사전에 없음",
+      "count": 3,
+      "specs": 3,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0027",
+      "term": "산책",
+      "tag": "NNG",
+      "kind": "unmatched",
+      "why": "사전에 없음",
+      "count": 3,
+      "specs": 3,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0028",
+      "term": "생기",
+      "tag": "VV",
+      "kind": "unmatched",
+      "why": "사전에 없음",
+      "count": 3,
+      "specs": 3,
+      "candidates": [
+        {
+          "via": "jamo_neighbor",
+          "lemma": "냉기",
+          "pos": "NNG",
+          "category": "temperature",
+          "value": {
+            "temperature": "cold"
+          },
+          "matched": "냉기",
+          "distance": 1
+        }
+      ],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0029",
+      "term": "섞이",
+      "tag": "VV",
+      "kind": "unmatched",
+      "why": "사전에 없음",
+      "count": 3,
+      "specs": 3,
+      "candidates": [
+        {
+          "via": "jamo_neighbor",
+          "lemma": "덩이",
+          "pos": "NNG",
+          "category": "form",
+          "value": {
+            "prototype": "blob"
+          },
+          "matched": "덩이",
+          "distance": 2
+        },
+        {
+          "via": "jamo_neighbor",
+          "lemma": "숙이",
+          "pos": "VV",
+          "category": "posture",
+          "value": {
+            "posture": "bowed"
+          },
+          "matched": "숙이",
+          "distance": 2
+        }
+      ],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0030",
+      "term": "지나가",
+      "tag": "VV",
+      "kind": "unmatched",
+      "why": "사전에 없음",
+      "count": 3,
+      "specs": 3,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0031",
+      "term": "공간",
+      "tag": "NNG",
+      "kind": "unlisted_noun",
+      "why": "사전에 없는 명사",
+      "count": 2,
+      "specs": 1,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0032",
+      "term": "금",
+      "tag": "NNG",
+      "kind": "unlisted_noun",
+      "why": "사전에 없는 명사",
+      "count": 2,
+      "specs": 1,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0033",
+      "term": "나무",
+      "tag": "NNG",
+      "kind": "unlisted_noun",
+      "why": "사전에 없는 명사",
+      "count": 2,
+      "specs": 2,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0034",
+      "term": "날개",
+      "tag": "NNG",
+      "kind": "unlisted_noun",
+      "why": "사전에 없는 명사",
+      "count": 2,
+      "specs": 1,
+      "candidates": [
+        {
+          "via": "jamo_neighbor",
+          "lemma": "안개",
+          "pos": "NNG",
+          "category": "form",
+          "value": {
+            "prototype": "mist"
+          },
+          "matched": "안개",
+          "distance": 2
+        }
+      ],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0035",
+      "term": "동네",
+      "tag": "NNG",
+      "kind": "unlisted_noun",
+      "why": "사전에 없는 명사",
+      "count": 2,
+      "specs": 2,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0036",
+      "term": "몰",
+      "tag": "NNG",
+      "kind": "unlisted_noun",
+      "why": "사전에 없는 명사",
+      "count": 2,
+      "specs": 1,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0037",
+      "term": "버스",
+      "tag": "NNG",
+      "kind": "unlisted_noun",
+      "why": "사전에 없는 명사",
+      "count": 2,
+      "specs": 2,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0038",
+      "term": "사진",
+      "tag": "NNG",
+      "kind": "unlisted_noun",
+      "why": "사전에 없는 명사",
+      "count": 2,
+      "specs": 2,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0039",
+      "term": "새",
+      "tag": "NNG",
+      "kind": "unlisted_noun",
+      "why": "사전에 없는 명사",
+      "count": 2,
+      "specs": 1,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0040",
+      "term": "시험",
+      "tag": "NNG",
+      "kind": "unlisted_noun",
+      "why": "사전에 없는 명사",
+      "count": 2,
+      "specs": 2,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0041",
+      "term": "육각",
+      "tag": "NNG",
+      "kind": "unlisted_noun",
+      "why": "사전에 없는 명사",
+      "count": 2,
+      "specs": 1,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0042",
+      "term": "이사",
+      "tag": "NNG",
+      "kind": "unlisted_noun",
+      "why": "사전에 없는 명사",
+      "count": 2,
+      "specs": 2,
+      "candidates": [
+        {
+          "via": "jamo_neighbor",
+          "lemma": "이마",
+          "pos": "NNG",
+          "category": "body_part",
+          "value": {
+            "part": "forehead"
+          },
+          "matched": "이마",
+          "distance": 1
+        }
+      ],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0043",
+      "term": "창문",
+      "tag": "NNG",
+      "kind": "unlisted_noun",
+      "why": "사전에 없는 명사",
+      "count": 2,
+      "specs": 2,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0044",
+      "term": "책상",
+      "tag": "NNG",
+      "kind": "unlisted_noun",
+      "why": "사전에 없는 명사",
+      "count": 2,
+      "specs": 2,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0045",
+      "term": "회사",
+      "tag": "NNG",
+      "kind": "unlisted_noun",
+      "why": "사전에 없는 명사",
+      "count": 2,
+      "specs": 2,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0046",
+      "term": "가느다랗",
+      "tag": "VA",
+      "kind": "unmatched",
+      "why": "사전에 없음",
+      "count": 2,
+      "specs": 2,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0047",
+      "term": "걸치",
+      "tag": "VV",
+      "kind": "unmatched",
+      "why": "사전에 없음",
+      "count": 2,
+      "specs": 2,
+      "candidates": [
+        {
+          "via": "jamo_neighbor",
+          "lemma": "거칠",
+          "pos": "VA",
+          "category": "texture",
+          "value": {
+            "texture": "rough"
+          },
+          "matched": "거칠",
+          "distance": 2
+        },
+        {
+          "via": "jamo_neighbor",
+          "lemma": "떨리",
+          "pos": "VV",
+          "category": "movement",
+          "value": {
+            "motion": "trembling"
+          },
+          "matched": "떨리",
+          "distance": 2
+        },
+        {
+          "via": "jamo_neighbor",
+          "lemma": "멀리",
+          "pos": "MAG",
+          "category": "distance",
+          "value": {
+            "distance": "far"
+          },
+          "matched": "멀리",
+          "distance": 2
+        }
+      ],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0048",
+      "term": "고이",
+      "tag": "VV",
+      "kind": "unmatched",
+      "why": "사전에 없음",
+      "count": 2,
+      "specs": 2,
+      "candidates": [
+        {
+          "via": "jamo_neighbor",
+          "lemma": "고요",
+          "pos": "XR",
+          "category": "sound",
+          "value": {
+            "sound": "quiet"
+          },
+          "matched": "고요",
+          "distance": 1
+        },
+        {
+          "via": "jamo_neighbor",
+          "lemma": "조이",
+          "pos": "VV",
+          "category": "sensation",
+          "value": {
+            "sensation": "tightening"
+          },
+          "matched": "조이",
+          "distance": 1
+        }
+      ],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0049",
+      "term": "그리",
+      "tag": "VV",
+      "kind": "unmatched",
+      "why": "사전에 없음",
+      "count": 2,
+      "specs": 2,
+      "candidates": [
+        {
+          "via": "jamo_neighbor",
+          "lemma": "그립",
+          "pos": "VA",
+          "category": "emotion",
+          "value": {
+            "emotion": "longing"
+          },
+          "matched": "그립",
+          "distance": 1
+        },
+        {
+          "via": "jamo_neighbor",
+          "lemma": "느리",
+          "pos": "VA",
+          "category": "movement",
+          "value": {
+            "speed": "slow"
+          },
+          "matched": "느리",
+          "distance": 1
+        },
+        {
+          "via": "jamo_neighbor",
+          "lemma": "흐리",
+          "pos": "VA",
+          "category": "brightness",
+          "value": {
+            "level": "dim"
+          },
+          "matched": "흐리",
+          "distance": 1
+        }
+      ],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0050",
+      "term": "끝나",
+      "tag": "VV",
+      "kind": "unmatched",
+      "why": "사전에 없음",
+      "count": 2,
+      "specs": 2,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0051",
+      "term": "내리",
+      "tag": "VV",
+      "kind": "unmatched",
+      "why": "사전에 없음",
+      "count": 2,
+      "specs": 2,
+      "candidates": [
+        {
+          "via": "jamo_neighbor",
+          "lemma": "느리",
+          "pos": "VA",
+          "category": "movement",
+          "value": {
+            "speed": "slow"
+          },
+          "matched": "느리",
+          "distance": 1
+        }
+      ],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0052",
+      "term": "들어오",
+      "tag": "VV",
+      "kind": "unmatched",
+      "why": "사전에 없음",
+      "count": 2,
+      "specs": 2,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0053",
+      "term": "마르",
+      "tag": "VV",
+      "kind": "unmatched",
+      "why": "사전에 없음",
+      "count": 2,
+      "specs": 1,
+      "candidates": [
+        {
+          "via": "jamo_neighbor",
+          "lemma": "빠르",
+          "pos": "VA",
+          "category": "movement",
+          "value": {
+            "speed": "fast"
+          },
+          "matched": "빠르",
+          "distance": 1
+        },
+        {
+          "via": "jamo_neighbor",
+          "lemma": "타르",
+          "pos": "NNG",
+          "category": "object",
+          "value": {
+            "object": "tar"
+          },
+          "matched": "타르",
+          "distance": 1
+        }
+      ],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0054",
+      "term": "말리",
+      "tag": "VV",
+      "kind": "unmatched",
+      "why": "사전에 없음",
+      "count": 2,
+      "specs": 2,
+      "candidates": [
+        {
+          "via": "jamo_neighbor",
+          "lemma": "멀리",
+          "pos": "MAG",
+          "category": "distance",
+          "value": {
+            "distance": "far"
+          },
+          "matched": "멀리",
+          "distance": 1
+        },
+        {
+          "via": "jamo_neighbor",
+          "lemma": "빨리",
+          "pos": "MAG",
+          "category": "movement",
+          "value": {
+            "speed": "fast"
+          },
+          "matched": "빨리",
+          "distance": 1
+        },
+        {
+          "via": "jamo_neighbor",
+          "lemma": "눌리",
+          "pos": "VV",
+          "category": "sensation",
+          "value": {
+            "sensation": "pressed"
+          },
+          "matched": "눌리",
+          "distance": 2
+        }
+      ],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0055",
+      "term": "모서리",
+      "tag": "NNG",
+      "kind": "unmatched",
+      "why": "사전에 없음",
+      "count": 2,
+      "specs": 2,
+      "candidates": [
+        {
+          "via": "jamo_neighbor",
+          "lemma": "머리",
+          "pos": "NNG",
+          "category": "body_part",
+          "value": {
+            "part": "head"
+          },
+          "matched": "머리",
+          "distance": 2
+        },
+        {
+          "via": "jamo_neighbor",
+          "lemma": "목소리",
+          "pos": "NNG",
+          "category": "sound",
+          "value": {
+            "sound": "voice"
+          },
+          "matched": "목소리",
+          "distance": 2
+        }
+      ],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0056",
+      "term": "물컹",
+      "tag": "XR",
+      "kind": "unmatched",
+      "why": "사전에 없음",
+      "count": 2,
+      "specs": 1,
+      "candidates": [
+        {
+          "via": "jamo_neighbor",
+          "lemma": "물렁",
+          "pos": "XR",
+          "category": "texture",
+          "value": {
+            "texture": "squishy"
+          },
+          "matched": "물렁",
+          "distance": 1
+        },
+        {
+          "via": "jamo_neighbor",
+          "lemma": "출렁",
+          "pos": "XR",
+          "category": "movement",
+          "value": {
+            "motion": "sloshing"
+          },
+          "matched": "출렁",
+          "distance": 2
+        }
+      ],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0057",
+      "term": "부시",
+      "tag": "VA",
+      "kind": "unmatched",
+      "why": "사전에 없음",
+      "count": 2,
+      "specs": 2,
+      "candidates": [
+        {
+          "via": "jamo_neighbor",
+          "lemma": "쑤시",
+          "pos": "VV",
+          "category": "sensation",
+          "value": {
+            "sensation": "aching"
+          },
+          "matched": "쑤시",
+          "distance": 1
+        }
+      ],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0058",
+      "term": "쉬",
+      "tag": "VV",
+      "kind": "unmatched",
+      "why": "사전에 없음",
+      "count": 2,
+      "specs": 2,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0059",
+      "term": "얹히",
+      "tag": "VV",
+      "kind": "unmatched",
+      "why": "사전에 없음",
+      "count": 2,
+      "specs": 2,
+      "candidates": [
+        {
+          "via": "jamo_neighbor",
+          "lemma": "얽히",
+          "pos": "VV",
+          "category": "texture",
+          "value": {
+            "texture": "tangled"
+          },
+          "matched": "얽히",
+          "distance": 1
+        },
+        {
+          "via": "jamo_neighbor",
+          "lemma": "엉키",
+          "pos": "VV",
+          "category": "texture",
+          "value": {
+            "texture": "tangled"
+          },
+          "matched": "엉키",
+          "distance": 2
+        }
+      ],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0060",
+      "term": "오래",
+      "tag": "MAG",
+      "kind": "unmatched",
+      "why": "사전에 없음",
+      "count": 2,
+      "specs": 2,
+      "candidates": [
+        {
+          "via": "jamo_neighbor",
+          "lemma": "아래",
+          "pos": "NNG",
+          "category": "body_layer",
+          "value": {
+            "layer": "around_below"
+          },
+          "matched": "아래",
+          "distance": 1
+        }
+      ],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0061",
+      "term": "점점",
+      "tag": "MAG",
+      "kind": "unmatched",
+      "why": "사전에 없음",
+      "count": 2,
+      "specs": 1,
+      "candidates": [
+        {
+          "via": "jamo_neighbor",
+          "lemma": "컴컴",
+          "pos": "XR",
+          "category": "brightness",
+          "value": {
+            "level": "dark"
+          },
+          "matched": "컴컴",
+          "distance": 2
+        }
+      ],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0062",
+      "term": "준비",
+      "tag": "NNG",
+      "kind": "unmatched",
+      "why": "사전에 없음",
+      "count": 2,
+      "specs": 2,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0063",
+      "term": "텅",
+      "tag": "MAG",
+      "kind": "unmatched",
+      "why": "사전에 없음",
+      "count": 2,
+      "specs": 1,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0064",
+      "term": "통통",
+      "tag": "MAG",
+      "kind": "unmatched",
+      "why": "사전에 없음",
+      "count": 2,
+      "specs": 2,
+      "candidates": [
+        {
+          "via": "jamo_neighbor",
+          "lemma": "통증",
+          "pos": "NNG",
+          "category": "sensation",
+          "value": {
+            "sensation": "pain"
+          },
+          "matched": "통증",
+          "distance": 2
+        }
+      ],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0065",
+      "term": "통화",
+      "tag": "NNG",
+      "kind": "unmatched",
+      "why": "사전에 없음",
+      "count": 2,
+      "specs": 2,
+      "candidates": [
+        {
+          "via": "jamo_neighbor",
+          "lemma": "공허",
+          "pos": "NNG",
+          "category": "emotion",
+          "value": {
+            "emotion": "empty"
+          },
+          "matched": "공허",
+          "distance": 2
+        }
+      ],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0066",
+      "term": "퇴근",
+      "tag": "NNG",
+      "kind": "unmatched",
+      "why": "사전에 없음",
+      "count": 2,
+      "specs": 2,
+      "candidates": [
+        {
+          "via": "jamo_neighbor",
+          "lemma": "뻐근",
+          "pos": "XR",
+          "category": "sensation",
+          "value": {
+            "sensation": "stiff"
+          },
+          "matched": "뻐근",
+          "distance": 2
+        }
+      ],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0067",
+      "term": "흘러내리",
+      "tag": "VV",
+      "kind": "unmatched",
+      "why": "사전에 없음",
+      "count": 2,
+      "specs": 2,
+      "candidates": [
+        {
+          "via": "shared_morpheme",
+          "lemma": "흐르",
+          "pos": "VV",
+          "category": "movement",
+          "value": {
+            "motion": "drifting"
+          },
+          "matched": "흐르"
+        }
+      ],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0068",
+      "term": "얇",
+      "tag": "-",
+      "kind": "no_scene_value:shape",
+      "why": "사전에 있으나 장면 값 없음(no_scene_param)",
+      "count": 9,
+      "specs": 7,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0069",
+      "term": "가장자리",
+      "tag": "-",
+      "kind": "no_scene_value:shape",
+      "why": "사전에 있으나 장면 값 없음(no_scene_param)",
+      "count": 8,
+      "specs": 8,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0070",
+      "term": "동그랗",
+      "tag": "-",
+      "kind": "no_scene_value:shape",
+      "why": "사전에 있으나 장면 값 없음(no_scene_param)",
+      "count": 8,
+      "specs": 6,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0071",
+      "term": "따뜻",
+      "tag": "-",
+      "kind": "no_scene_value:temperature",
+      "why": "사전에 있으나 장면 값 없음(no_scene_param)",
+      "count": 8,
+      "specs": 7,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0072",
+      "term": "비",
+      "tag": "-",
+      "kind": "no_scene_value:shape",
+      "why": "사전에 있으나 장면 값 없음(no_scene_param)",
+      "count": 6,
+      "specs": 2,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0073",
+      "term": "무겁",
+      "tag": "-",
+      "kind": "no_scene_value:weight",
+      "why": "사전에 있으나 장면 값 없음(no_scene_param)",
+      "count": 6,
+      "specs": 4,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0074",
+      "term": "붙",
+      "tag": "-",
+      "kind": "no_scene_value:distance",
+      "why": "사전에 있으나 장면 값 없음(no_scene_param)",
+      "count": 5,
+      "specs": 3,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0075",
+      "term": "납작",
+      "tag": "-",
+      "kind": "no_scene_value:shape",
+      "why": "사전에 있으나 장면 값 없음(no_scene_param)",
+      "count": 5,
+      "specs": 5,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0076",
+      "term": "네모나",
+      "tag": "-",
+      "kind": "no_scene_value:shape",
+      "why": "사전에 있으나 장면 값 없음(no_scene_param)",
+      "count": 5,
+      "specs": 4,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0077",
+      "term": "둥글",
+      "tag": "-",
+      "kind": "no_scene_value:shape",
+      "why": "사전에 있으나 장면 값 없음(no_scene_param)",
+      "count": 5,
+      "specs": 4,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0078",
+      "term": "딱딱",
+      "tag": "-",
+      "kind": "no_scene_value:texture",
+      "why": "사전에 있으나 장면 값 없음(no_value_mapping)",
+      "count": 5,
+      "specs": 4,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0079",
+      "term": "유리",
+      "tag": "-",
+      "kind": "no_scene_value:object",
+      "why": "사전에 있으나 장면 값 없음(no_scene_param)",
+      "count": 4,
+      "specs": 3,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0080",
+      "term": "차갑",
+      "tag": "-",
+      "kind": "no_scene_value:temperature",
+      "why": "사전에 있으나 장면 값 없음(no_scene_param)",
+      "count": 4,
+      "specs": 4,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0081",
+      "term": "물",
+      "tag": "-",
+      "kind": "no_scene_value:object",
+      "why": "사전에 있으나 장면 값 없음(no_scene_param)",
+      "count": 3,
+      "specs": 3,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0082",
+      "term": "감싸",
+      "tag": "-",
+      "kind": "no_scene_value:relation",
+      "why": "사전에 있으나 장면 값 없음(no_scene_param)",
+      "count": 3,
+      "specs": 3,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0083",
+      "term": "둘러싸",
+      "tag": "-",
+      "kind": "no_scene_value:relation",
+      "why": "사전에 있으나 장면 값 없음(no_scene_param)",
+      "count": 3,
+      "specs": 3,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0084",
+      "term": "답답",
+      "tag": "-",
+      "kind": "no_scene_value:sensation",
+      "why": "사전에 있으나 장면 값 없음(no_scene_param)",
+      "count": 3,
+      "specs": 1,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0085",
+      "term": "뾰족",
+      "tag": "-",
+      "kind": "no_scene_value:shape",
+      "why": "사전에 있으나 장면 값 없음(no_scene_param)",
+      "count": 3,
+      "specs": 2,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0086",
+      "term": "커지",
+      "tag": "-",
+      "kind": "no_scene_value:size",
+      "why": "사전에 있으나 장면 값 없음(no_value_mapping)",
+      "count": 3,
+      "specs": 2,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0087",
+      "term": "몽글몽글",
+      "tag": "-",
+      "kind": "no_scene_value:texture",
+      "why": "사전에 있으나 장면 값 없음(no_value_mapping)",
+      "count": 3,
+      "specs": 3,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0088",
+      "term": "보송보송",
+      "tag": "-",
+      "kind": "no_scene_value:texture",
+      "why": "사전에 있으나 장면 값 없음(no_value_mapping)",
+      "count": 3,
+      "specs": 3,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0089",
+      "term": "엉키",
+      "tag": "-",
+      "kind": "no_scene_value:texture",
+      "why": "사전에 있으나 장면 값 없음(no_value_mapping)",
+      "count": 3,
+      "specs": 2,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0090",
+      "term": "공",
+      "tag": "-",
+      "kind": "no_scene_value:object",
+      "why": "사전에 있으나 장면 값 없음(no_scene_param)",
+      "count": 2,
+      "specs": 2,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0091",
+      "term": "구름",
+      "tag": "-",
+      "kind": "no_scene_value:object",
+      "why": "사전에 있으나 장면 값 없음(no_scene_param)",
+      "count": 2,
+      "specs": 1,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0092",
+      "term": "상자",
+      "tag": "-",
+      "kind": "no_scene_value:object",
+      "why": "사전에 있으나 장면 값 없음(no_scene_param)",
+      "count": 2,
+      "specs": 2,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0093",
+      "term": "혼자",
+      "tag": "-",
+      "kind": "no_scene_value:relation",
+      "why": "사전에 있으나 장면 값 없음(no_scene_param)",
+      "count": 2,
+      "specs": 2,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0094",
+      "term": "숨",
+      "tag": "-",
+      "kind": "no_scene_value:sensation",
+      "why": "사전에 있으나 장면 값 없음(no_scene_param)",
+      "count": 2,
+      "specs": 2,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0095",
+      "term": "구멍",
+      "tag": "-",
+      "kind": "no_scene_value:shape",
+      "why": "사전에 있으나 장면 값 없음(no_scene_param)",
+      "count": 2,
+      "specs": 1,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0096",
+      "term": "길",
+      "tag": "-",
+      "kind": "no_scene_value:shape",
+      "why": "사전에 있으나 장면 값 없음(no_scene_param)",
+      "count": 2,
+      "specs": 2,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0097",
+      "term": "부풀",
+      "tag": "-",
+      "kind": "no_scene_value:size",
+      "why": "사전에 있으나 장면 값 없음(no_value_mapping)",
+      "count": 2,
+      "specs": 2,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0098",
+      "term": "단단",
+      "tag": "-",
+      "kind": "no_scene_value:texture",
+      "why": "사전에 있으나 장면 값 없음(no_value_mapping)",
+      "count": 2,
+      "specs": 2,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0099",
+      "term": "말랑",
+      "tag": "-",
+      "kind": "no_scene_value:texture",
+      "why": "사전에 있으나 장면 값 없음(no_value_mapping)",
+      "count": 2,
+      "specs": 2,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0100",
+      "term": "가볍",
+      "tag": "-",
+      "kind": "no_scene_value:weight",
+      "why": "사전에 있으나 장면 값 없음(no_scene_param)",
+      "count": 2,
+      "specs": 2,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    },
+    {
+      "id": "P0101",
+      "term": "묵직",
+      "tag": "-",
+      "kind": "no_scene_value:weight",
+      "why": "사전에 있으나 장면 값 없음(no_scene_param)",
+      "count": 2,
+      "specs": 2,
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      }
+    }
+  ]
+}

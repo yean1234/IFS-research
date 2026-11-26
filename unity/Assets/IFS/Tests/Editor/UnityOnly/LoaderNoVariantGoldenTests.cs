@@ -151,7 +151,7 @@ namespace IFS.SceneSpec.Tests
             return sb.ToString();
         }
 
-        static void Describe(SceneLoader l, StringBuilder sb)
+        public static void Describe(SceneLoader l, StringBuilder sb)
         {
             sb.Append("params: ").Append(JObject.FromObject(l.InitialParams.ToRecord()).ToString(Formatting.None)).Append('\n');
             sb.Append("current: ").Append(JObject.FromObject(l.CurrentParams.ToRecord()).ToString(Formatting.None)).Append('\n');
@@ -209,7 +209,7 @@ namespace IFS.SceneSpec.Tests
             for (int i = 0; i < t.childCount; i++) Walk(t.GetChild(i), depth + 1, sb);
         }
 
-        static void DescribeRecords(string root, StringBuilder sb)
+        public static void DescribeRecords(string root, StringBuilder sb)
         {
             if (!Directory.Exists(root)) { sb.Append("records: none\n"); return; }
             foreach (var dir in Directory.GetDirectories(root).OrderBy(d => d, StringComparer.Ordinal))

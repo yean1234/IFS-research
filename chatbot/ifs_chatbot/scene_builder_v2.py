@@ -46,17 +46,20 @@ from __future__ import annotations
 
 import json
 import re
+from collections import defaultdict
 from pathlib import Path
 
+from .extract import FUNCTION_LEMMAS
 from .korean import Analyzer
-from .lexicon import Hit, Lexicon
+from .lexicon import Hit, LexEntry, Lexicon
 from .paths import shared
 from .scene_builder import normalize_confirmed
-from .scene_builder_v1 import (EOJEOL_TAG, NOUN_TAGS, PUNCT_TAGS, SIMILE_SKIP_TAGS, TOPIC_PARTICLES, Cand, Doc,
-                               SceneSpecBuilderV1,
+from .scene_builder_v1 import (EOJEOL_TAG, NOUN_TAGS, PUNCT_TAGS, SIMILE_SKIP_TAGS, SKIP_LEXICON_CATEGORIES,
+                               TOPIC_PARTICLES, Cand, Doc, SceneSpecBuilderV1,
                                fallback_spec)  # noqa: F401 (fallback_spec: 컨트롤러가 같은 대체 경로를 씀)
-from .scene_spec import (MAPPING_USED_FOR, SPEC_VERSION_V22,  # noqa: F401 (v2 meta.mapping 규칙을 함께 내보냄)
-                         is_mapping_fallback)
+from .scene_spec import (EXT_SLOT_PATHS, MAPPING_USED_FOR, SPEC_VERSION_V22,  # noqa: F401 (v2 meta.mapping 규칙을 함께 내보냄)
+                         SPEC_VERSION_V23, is_mapping_fallback)
+from .variants import VariantMatch, VariantRules, parse_tag
 
 # 2.1.0(2026-11-23, G33): 거리 하한 꼬리표에 말한 값(said=…)을 더함
 # 2.2.0(2026-11-23, D6·G30): 기본 형상 경로 form.base·form.baseVariant(스키마 2.2.0), 안전 제외 낱말 excluded_shape
@@ -69,7 +72,15 @@ from .scene_spec import (MAPPING_USED_FOR, SPEC_VERSION_V22,  # noqa: F401 (v2 m
 #       '같이'(JKB) 비교 표지. 출력 specVersion은 그대로 2.2.0(스키마 2.2.0 _unmapped.reason에 no_asset을 더함)
 BUILDER_VERSION = "2.4.0"
 BUILDER_ID = f"scene-spec-builder-v2/{BUILDER_VERSION}"
+# 2.5.0(2026-11-26, G61 ①②): 선택 기능 두 가지. 둘 다 꺼져 있으면(기본) 출력과 builder 표기가 2.4.0과 바이트 단위로 같다
+#       (G52와 같은 관례: 기본값이 아닐 때만 새 표기·새 키). 켰을 때만 builder = …/2.5.0.
+#   ① ext_lexicon: 1층 사전 v2 오버레이(윤곽 contour·발광 emission) → 스펙 2.3.0(form.roundness·form.aspect·material.emission)
+#   ② variant_rules: 형태 변이 규칙층(어미·파생 접사·겹친 꼴·의태어 모음·자음 교체, 뿌리가 사전에 있을 때만)
+BUILDER_VERSION_EXT = "2.5.0"
+BUILDER_ID_EXT = f"scene-spec-builder-v2/{BUILDER_VERSION_EXT}"
 MAPPER_ID = "v2"
+# 1층 사전 v2 오버레이의 새 범주. 매퍼 v1 경로(_lexicon_cands)에는 넣지 않고 _extension이 따로 읽는다
+EXT_CATEGORIES = frozenset({"contour", "emission"})
 # G38: 낱말 뜻(base_shapes 사전 항목 variant)에서 온 form.baseVariant 값의 provenance source. 참여자가 같은 문장에서 직접 한 말
 # (variantCues)로 정해진 값은 다른 슬롯처럼 explicit_lexicon이다
 IMPLIED_SOURCE = "lexicon_implied"
@@ -98,8 +109,24 @@ class SceneSpecBuilderV2(SceneSpecBuilderV1):
 
     def __init__(self, analyzer: Analyzer, lexicon: Lexicon | None = None, params_path: str | Path | None = None,
                  vad_path: str | Path | None = None, v2_params_path: str | Path | None = None,
-                 stoplist_path: str | Path | None = None, base_shapes_path: str | Path | None = None):
+                 stoplist_path: str | Path | None = None, base_shapes_path: str | Path | None = None,
+                 ext_lexicon_path: str | Path | None = None, ext_params_path: str | Path | None = None,
+                 variant_rules_path: str | Path | None = None):
+        """ext_lexicon_path(1층 사전 v2 오버레이)를 주면 스펙 2.3(윤곽·발광)을 내고, variant_rules_path를 주면 형태 변이
+        규칙층을 켠다(G61). 둘 다 없으면(기본) 출력은 builder 2.4.0과 바이트 단위로 같다."""
+        if ext_lexicon_path and lexicon is None:
+            lexicon = load_lexicon_chain(analyzer, [shared("lexicon", "layer1_lexicon.v0.json"),
+                                                    shared("lexicon", "layer1_lexicon.v1.json"), Path(ext_lexicon_path)])
         super().__init__(analyzer, lexicon, params_path, vad_path)
+        self.ext: dict | None = None
+        if ext_lexicon_path:
+            p3 = json.loads(Path(ext_params_path or shared("lexicon", "scene_params.v3.json")).read_text(encoding="utf-8"))
+            self.ext = p3
+            self.ext_layer1: dict[str, list[dict]] = p3["layer1"]
+            self.ext_levels: dict[str, tuple[list[str], str]] = {path: (d["levels"], d["neutral"])
+                                                                for path, d in p3["ordinal"].items()}
+            self.ext_negation: dict[str, str | None] = {k: v for k, v in p3["negation"].items() if k != "note"}
+        self.variants: VariantRules | None = VariantRules(variant_rules_path) if variant_rules_path else None
         self.p2 = json.loads(Path(v2_params_path or shared("lexicon", "scene_params.v2.json")).read_text(encoding="utf-8"))
         stop = json.loads(Path(stoplist_path or shared("lexicon", "noun_stoplist.v2.json")).read_text(encoding="utf-8"))
         self.stop_info = f"{stop['lexiconId']}@{stop['lexiconVersion']}"
@@ -167,19 +194,35 @@ class SceneSpecBuilderV2(SceneSpecBuilderV1):
     def from_runtime(cls, rt) -> "SceneSpecBuilderV2":
         return cls(rt.analyzer)
 
+    @property
+    def builder_id(self) -> str:
+        return BUILDER_ID_EXT if (self.ext is not None or self.variants is not None) else BUILDER_ID
+
+    @property
+    def spec_version(self) -> str:
+        return SPEC_VERSION_V23 if self.ext is not None else SPEC_VERSION_V22
+
     def info(self) -> dict:
-        return {"builder": BUILDER_ID, "specVersion": SPEC_VERSION_V22, "lexicons": self._lexicons(), "mapper": MAPPER_ID}
+        return {"builder": self.builder_id, "specVersion": self.spec_version, "lexicons": self._lexicons(),
+                "mapper": MAPPER_ID}
 
     def _lexicons(self) -> dict:
-        return {**super()._lexicons(),
-                "sceneParamsV2": f"{self.p2['lexiconId']}@{self.p2['lexiconVersion']}",
-                "nounStoplist": self.stop_info, "baseShapes": self.bs_info}
+        out = {**super()._lexicons(),
+               "sceneParamsV2": f"{self.p2['lexiconId']}@{self.p2['lexiconVersion']}",
+               "nounStoplist": self.stop_info, "baseShapes": self.bs_info}
+        # G61: 켠 기능만 키를 더한다(기본 출력의 키 목록은 그대로)
+        if self.ext is not None:
+            out["layer1Chain"] = getattr(self.lexicon, "chain_info", "")
+            out["sceneParamsV3"] = f"{self.ext['lexiconId']}@{self.ext['lexiconVersion']}"
+        if self.variants is not None:
+            out["variantRules"] = self.variants.info
+        return out
 
     # ── 진입점 ─────────────────────────────────────────────────────────────────
     def build(self, text: str, *, session_id: str | None = None, participant_id: str | None = None,
               condition: str | None = None) -> dict:
         spec = super().build(text, session_id=session_id, participant_id=participant_id, condition=condition)
-        spec["meta"]["pipeline"]["builder"] = BUILDER_ID
+        spec["meta"]["pipeline"]["builder"] = self.builder_id
         spec["meta"]["mapping"] = {"requested": MAPPER_ID, "used": MAPPING_USED_FOR[MAPPER_ID], "fallbackReason": None}
         # D1: v1 build가 끝난 spec 위에서 다시 분석한다(같은 분석기·같은 텍스트라 결정적. 빌드 사이 상태를 두지 않음)
         norm = normalize_confirmed(text)
@@ -205,6 +248,11 @@ class SceneSpecBuilderV2(SceneSpecBuilderV1):
             tok_level = [u for u in spec["_unmatched"] if u["tag"] != EOJEOL_TAG]
             spec["_unmatched"] = sorted(tok_level + self._unmatched_eojeols(doc, spec),
                                         key=lambda u: (u["charSpan"][0], u["charSpan"][1]))
+        # G61 ①: 윤곽·발광(스펙 2.3.0). 다른 슬롯·기록을 다 정한 뒤 따로 읽는다(2.2 슬롯의 결과는 바뀌지 않음)
+        if self.ext is not None:
+            self._extension(doc, spec, hits)
+            spec["meta"]["specVersion"] = SPEC_VERSION_V23
+            _attach_variant_records(spec)
         return spec
 
     # ── D6: 기본 형상 ─────────────────────────────────────────────────────────
@@ -762,6 +810,341 @@ class SceneSpecBuilderV2(SceneSpecBuilderV1):
                                                    al["reason"]))
         return key, (variant or None), changed
 
+    # ── G61 ②: 형태 변이 규칙층 ──────────────────────────────────────────────
+    def _lookup(self, form: str) -> list[LexEntry]:
+        return self.lexicon._by_form.get(form, []) + self.lexicon._by_alt.get(form, [])
+
+    def _main_accept(self, e: LexEntry) -> bool:
+        """v1 경로로 받을 사전 항목(색·차원어·스펙 2.3 범주 빼고 모두). 장면 대응이 없는 범주(모양어 shape 등)도 받아
+        직접 일치와 같게 _unmapped에 남긴다('둥글둥글해요' → 둥글 → _unmapped shape round)."""
+        return (e.category not in SKIP_LEXICON_CATEGORIES and e.category not in EXT_CATEGORIES
+                and e.category not in ("body_layer", "self_reference"))
+
+    def _value_accept(self, e: LexEntry) -> bool:
+        """값을 내는 항목만(어절 단위 변이 — _unmapped를 쓸 자리가 없는 경로)."""
+        return (e.category in self.layer1 and e.category not in SKIP_LEXICON_CATEGORIES
+                and any(self._map(tg, e.value) for tg in self.layer1[e.category]))
+
+    def _variant_cands(self, doc: Doc, hit_toks: set[int], consumed: set[int], similes, negated: list,
+                       unmapped: list) -> list[Cand]:
+        """1층 사전에 직접 걸리지 않았고 기존 의태어 파생(v1 mimeticDerivation)도 걸리지 않은 토큰에 변이 규칙을 건다.
+        뿌리가 사전에 있을 때만 그 항목의 값(v1과 같은 대응·정도 부사)을 낸다. 부정되면 _negated, 장면 대응이 없는 범주면
+        _unmapped에 직접 일치와 같은 꼴로 남긴다. 다룬 토큰은 consumed에 넣어 자모 퍼지·미대응 기록으로 가지 않게 한다
+        (순서: 직접 → 파생 → 변이 → 퍼지)."""
+        assert self.variants is not None
+        toks = doc.toks
+        n = len(toks)
+        coord_neg = getattr(doc, "coord_neg", set())
+        out: list[Cand] = []
+        seen: set[tuple[int, str]] = set()
+        for i, t in enumerate(toks):
+            if i in hit_toks or i in consumed or t.base_tag not in self.variants.source_tags or t.lemma in FUNCTION_LEMMAS:
+                continue
+            nx = (toks[i + 1] if i + 1 < n and doc.eoj[i + 1] == doc.eoj[i]
+                  and toks[i + 1].base_tag in ("VV", "XSV", "XSA") else None)
+            if self._derive_mimetic(t.form, nx.form if nx is not None else None):
+                continue                                    # 기존 파생 규칙이 맡는다(v1 _fuzzy)
+            m = self.variants.resolve(t.form, t.base_tag, nx.form if nx is not None else None, self._lookup,
+                                      self._main_accept)
+            if m is None:
+                continue
+            if (doc.eoj[i], m.root) in seen:                # '꺼칠/XR 꺼칠/XR' — 같은 어절의 같은 뿌리는 한 번만
+                consumed.add(i)
+                continue
+            seen.add((doc.eoj[i], m.root))
+            sim = self._vehicle_of(t, similes)
+            layer = 2 if sim else 1
+            neg = Lexicon._negated(toks, i) or self._noun_negated(doc, i) or i in coord_neg
+
+            def mk(rule: str, _i=i, _sim=sim) -> dict:
+                p = self._eoj_prov(doc, _i, rule)
+                return dict(p, rule=f"simile.{_sim['marker']}>{rule}", source="simile_marker") if _sim else p
+
+            for e in m.entries:
+                if neg:
+                    negated.append({"lemma": e.lemma, "category": e.category, "_provenance": mk(f"{m.tag()}>{e.rule}")})
+                    continue
+                targets = [tg for tg in self.layer1.get(e.category, []) if tg["path"] != "body.layer"]
+                produced = 0
+                for tg in targets:
+                    mapped = self._map(tg, e.value)
+                    if mapped is None:
+                        continue
+                    value, key = mapped
+                    path = tg["path"]
+                    if isinstance(value, float) and path in self.v["scalarCenters"]:
+                        value = self._apply_degree(path, value, self._degree(doc, i)[0], key)
+                    sub = 1 if path == "motion.type" and self._is_state(doc, i, t.form) else 0
+                    out.append(Cand(path, value, i, t.start, [mk(f"{m.tag()}>{e.rule}>{path}:{key}")], layer=layer, sub=sub))
+                    produced += 1
+                if not produced:
+                    unmapped.append({"lemma": e.lemma, "category": e.category, "value": dict(e.value),
+                                     "reason": "no_value_mapping" if self.layer1.get(e.category) else "no_scene_param",
+                                     "_provenance": mk(f"{m.tag()}>{e.rule}")})
+            consumed.add(i)
+        return out
+
+    def _fuzzy_eojeol(self, doc: Doc, cands: list[Cand], covered: set[int], fuzzy_toks: set[int]) -> list[Cand]:
+        """변이 규칙을 켰으면 Kiwi가 조각내거나 통째로 명사로 묶은 어절('빤짝여요' → 빨/VV ᆫ 짝 이 …, '몰랑몰랑해요/NNG')을
+        어절 표면형으로 먼저 변이 규칙에 넣는다(자모 퍼지보다 앞). 부정된 어절은 값을 만들지 않고 넘긴다."""
+        out: list[Cand] = []
+        if self.variants is not None:
+            cand_toks = {c.tok for c in cands}
+            for e in range(len(doc.eojeols)):
+                if doc.is_punct_eoj(e):
+                    continue
+                ids = list(doc.etoks(e))
+                if any(k in covered or k in cand_toks or k in fuzzy_toks for k in ids):
+                    continue
+                tags = [doc.toks[k].base_tag for k in ids]
+                if not ("UN" in tags or len(ids) >= 3 or (len(ids) == 1 and tags[0] == "NNG")):
+                    continue
+                if Lexicon._negated(doc.toks, ids[0]) or Lexicon._negated(doc.toks, ids[-1]):
+                    continue
+                w = doc.etext(e).strip(" .,!?~")
+                m = self.variants.resolve(w, "EOJEOL", None, self._lookup, self._value_accept)
+                if m is None:
+                    continue
+                for ent in m.entries:
+                    for tg in self.layer1[ent.category]:
+                        mapped = self._map(tg, ent.value)
+                        if mapped is None or tg["path"] == "body.layer":
+                            continue
+                        value, key = mapped
+                        path = tg["path"]
+                        if isinstance(value, float) and path in self.v["scalarCenters"]:
+                            value = self._apply_degree(path, value, self._degree(doc, ids[0])[0], key)
+                        out.append(Cand(path, value, ids[0], doc.toks[ids[0]].start,
+                                        [self._eoj_prov(doc, ids[0], f"{m.tag()}>{ent.rule}>{path}:{key}")]))
+                fuzzy_toks.update(ids)
+            covered = covered | fuzzy_toks
+        return out + super()._fuzzy_eojeol(doc, cands + out, covered, fuzzy_toks)
+
+    # ── G61 ①: 윤곽·발광(스펙 2.3) ──────────────────────────────────────────
+    def _ext_step(self, path: str, value: str) -> str | None:
+        """약한 정도 부사: 한 단계 중립 쪽으로. 중립(·none)까지는 가지 않는다. 옮기지 않으면 None."""
+        levels, neutral = self.ext_levels[path]
+        if value not in levels or value == neutral:
+            return None
+        k, nk = levels.index(value), levels.index(neutral)
+        j = k + (1 if k < nk else -1)
+        return None if j == nk else levels[j]
+
+    def _ext_cands(self, doc: Doc, e: LexEntry, i: int, similes, coord_neg: set[int], hit: Hit | None,
+                   via: VariantMatch | None, negated: list, phrase: tuple[int, int, int, str] | None = None) -> list[Cand]:
+        """phrase = (첫 토큰, 용언 토큰, 구 끝 글자, 규칙 이름): 명사 + 용언 구('각이 진' · '빛이 나요')."""
+        toks = doc.toks
+        sim = self._vehicle_of(toks[i], similes)
+        layer = 2 if sim else 1
+        predicate = e.pos in ("VA", "VV", "XR") or toks[i].base_tag in ("VA", "VV")
+        base_rule = e.rule if via is None else f"{via.tag()}>{e.rule}"
+        if phrase is not None:
+            base_rule = f"{phrase[3]}>{e.rule}"
+
+        def mk(rule: str) -> dict:
+            if phrase is not None:
+                p = self._prov("phrase_rule", doc.text, toks[phrase[0]].start, phrase[2], rule)
+            else:
+                p = self._eoj_prov(doc, i, rule) if (predicate or via is not None) else self._tok_prov(doc, i, rule)
+            return dict(p, rule=f"simile.{sim['marker']}>{rule}", source="simile_marker") if sim else p
+
+        if phrase is not None:
+            v = phrase[1]
+            pv = toks[v - 1] if v > 0 else None
+            neg = Lexicon._negated(toks, v) or (pv is not None and pv.form in ("안", "못") and pv.base_tag == "MAG") \
+                or v in coord_neg
+        else:
+            neg = (hit.negated if hit is not None else Lexicon._negated(toks, i)) or self._noun_negated(doc, i) \
+                or i in coord_neg
+        out: list[Cand] = []
+        for tg in self.ext_layer1.get(e.category, []):
+            mapped = self._map(tg, e.value)
+            if mapped is None:
+                continue
+            value, key = mapped
+            path = tg["path"]
+            if neg:
+                said = self.ext_negation.get(path)
+                if said is None:            # 윤곽어 부정: 반대 값을 만들지 않는다(원칙 2)
+                    negated.append({"lemma": e.lemma, "category": e.category, "_provenance": mk(base_rule)})
+                else:                       # 발광어 부정: '빛이 없다'를 말함 → none
+                    out.append(Cand(path, said, i, toks[i].start, [mk(f"{base_rule}>{path}:{key}(negated)")], layer=layer))
+                continue
+            tail = ""
+            k, f = self._degree(doc, phrase[1] if phrase is not None else i)   # 구는 용언 앞의 정도 부사('빛이 좀 나요')
+            if f is not None and k == self.k["weak"]:
+                moved = self._ext_step(path, value)
+                if moved is not None:
+                    value, tail = moved, f"+degree({doc.etext(f)})"
+            out.append(Cand(path, value, i, toks[i].start, [mk(f"{base_rule}>{path}:{key}{tail}")], layer=layer))
+        return out
+
+    def _extension(self, doc: Doc, spec: dict, hits: list[Hit]) -> None:
+        """1층 사전 v2의 윤곽·발광 낱말 → form.roundness·form.aspect·material.emission(스펙 2.3). v1과 같은 범위 규칙
+        (회상 문장·배경 사물·자리 표지·모름·자기 정정·때)을 쓰고, 부분(안쪽·가장자리 …)만 말한 것은 _parts에 남긴다.
+        변이 규칙을 켰으면 사전에 직접 걸리지 않은 토큰도 윤곽·발광 뿌리로 찾는다."""
+        assert self.ext is not None
+        text, toks = doc.text, doc.toks
+        n = len(toks)
+        coord_neg = self._coord_negated(doc)
+        similes = self._similes(text, toks)
+        context_sents = self._context_sentences(doc)
+        negated: list[dict] = []
+        cands: list[Cand] = []
+        hit_toks = {h.token_index for h in hits}
+        ext_toks = {h.token_index for h in hits if h.entry.category in EXT_CATEGORIES}
+        for h in hits:
+            if h.entry.category in EXT_CATEGORIES:
+                cands += self._ext_cands(doc, h.entry, h.token_index, similes, coord_neg, h, None, negated)
+        # 명사 + 용언 구('각이 진' · '모가 난' · '빛이 나요', Kiwi가 '각진'을 각/NNG + 지/VV로 나눈 경우 포함)
+        ph = self.ext.get("phrases") or {}
+        items = {(x["noun"], x["verb"]): x["as"] for x in ph.get("items", [])}
+        particles = set(ph.get("particles", []))
+        for i, t in enumerate(toks):
+            if t.base_tag not in NOUN_TAGS or i in ext_toks or not any(k0 == t.form for k0, _ in items):
+                continue
+            k = i + 1
+            while k < n and toks[k].base_tag in ("JKS", "JX") and toks[k].form in particles and doc.eoj[k] == doc.eoj[i]:
+                k += 1
+            adv = 0
+            while k < n and toks[k].base_tag == "MAG" and adv < int(ph.get("maxAdverbs", 0)):
+                k, adv = k + 1, adv + 1
+            if k >= n or toks[k].base_tag != "VV" or doc.clause[k] != doc.clause[i] or (t.form, toks[k].form) not in items:
+                continue
+            ents = [e for e in self._lookup(items[(t.form, toks[k].form)]) if e.category in EXT_CATEGORIES]
+            end = doc.espan(doc.eoj[k])[1]
+            for e in ents:
+                cands += self._ext_cands(doc, e, i, similes, coord_neg, None, None, negated,
+                                         phrase=(i, k, end, f"phrase.{t.form}+{toks[k].form}"))
+            if ents:
+                hit_toks |= {i, k}
+        if self.variants is not None:
+            seen: set[tuple[int, str]] = set()
+            for i, t in enumerate(toks):
+                if i in hit_toks or t.base_tag not in self.variants.source_tags or t.lemma in FUNCTION_LEMMAS:
+                    continue
+                nx = (toks[i + 1] if i + 1 < n and doc.eoj[i + 1] == doc.eoj[i]
+                      and toks[i + 1].base_tag in ("VV", "XSV", "XSA") else None)
+                m = self.variants.resolve(t.form, t.base_tag, nx.form if nx is not None else None, self._lookup,
+                                          lambda e: e.category in EXT_CATEGORIES)
+                if m is None or (doc.eoj[i], m.root) in seen:
+                    continue
+                seen.add((doc.eoj[i], m.root))
+                for e in m.entries:
+                    cands += self._ext_cands(doc, e, i, similes, coord_neg, None, m, negated)
+            # 어절 단위(Kiwi가 조각낸 어절: '빤짝여요' → 빨/VV ᆫ 짝 이 …) — 매퍼 v1 경로의 _fuzzy_eojeol 변이와 같은 조건
+            ext_cand_toks = {c.tok for c in cands} | hit_toks
+            for e_ in range(len(doc.eojeols)):
+                if doc.is_punct_eoj(e_):
+                    continue
+                ids = list(doc.etoks(e_))
+                tags = [toks[k].base_tag for k in ids]
+                if any(k in ext_cand_toks for k in ids) or not (
+                        "UN" in tags or len(ids) >= 3 or (len(ids) == 1 and tags[0] == "NNG")):
+                    continue
+                m = self.variants.resolve(doc.etext(e_).strip(" .,!?~"), "EOJEOL", None, self._lookup,
+                                          lambda e: e.category in EXT_CATEGORIES)
+                if m is None:
+                    continue
+                for e in m.entries:
+                    cands += self._ext_cands(doc, e, ids[0], similes, coord_neg, None, m, negated)
+        # 범위 규칙: 회상 문장·배경 주어·때(v1 _scope). 관형어가 꾸미는 명사(배경·자리 표지·부분)는 v1이 form.posture에만
+        # 보므로 윤곽·발광에도 같은 규칙을 여기서 건다
+        self._scope(doc, cands, context_sents, similes)
+        sim_src = {s["srcIndex"] for s in similes}
+        for c in cands:
+            if c.status != "ok":
+                continue
+            e = doc.eoj[c.tok]
+            attr_e = e if self._is_attributive(doc, e) else self._coordinated_attributive(doc, e)
+            hn = self._head_noun(doc, attr_e) if attr_e is not None else None
+            if hn:
+                noun, k = hn
+                if c.path.startswith("form.") and k not in sim_src:
+                    if self._is_background(noun):
+                        c.status, c.reason = "context", "background_object"
+                        continue
+                    if self._is_landmark(doc, k):
+                        c.status, c.reason = "context", "landmark_object"
+                        continue
+                if noun in self.part_class and c.part is None:
+                    c.part, c.part_class = noun, self.part_class[noun]
+            if c.part is None:
+                tp = self._topic(doc, c.tok)
+                if tp and tp[0] in self.part_class:
+                    c.part, c.part_class = tp[0], self.part_class[tp[0]]
+        for u in spec.get("_uncertain") or []:                 # '잘 모르겠어요' 절(v1이 이미 찾음)
+            s, e = u["charSpan"]
+            for c in cands:
+                if c.status == "ok" and s <= c.start < e:
+                    c.status, c.reason = "uncertain", "participant_uncertain"
+        self._corrections(doc, cands)
+        # 병합(v1 _merge와 같은 순위: 차원 주제 > 때 > 층 > 근거 종류 > 먼저 말한 것)
+        values: dict[str, str] = {}
+        prov: dict[str, list[dict]] = {}
+        alts: list[dict] = []
+        parts: list[dict] = []
+        context: list[dict] = []
+        by_path: dict[str, list[Cand]] = defaultdict(list)
+        for c in cands:
+            p0 = c.provs[0]
+            if c.status == "context":
+                context.append({"text": p0["trigger"], "charSpan": p0["charSpan"], "reason": c.reason, "path": c.path,
+                                "value": c.value, "rule": p0["rule"]})
+            elif c.status in ("corrected", "uncertain"):
+                alts.append({"path": c.path, "value": c.value, "reason": c.reason, "_provenance": list(c.provs)})
+            elif c.status == "ok":
+                if c.part_class in ("inner", "detail"):      # 부분만 말함 → 전체 값으로 올리지 않는다
+                    parts.append({"text": p0["trigger"], "charSpan": p0["charSpan"], "part": c.part,
+                                  "partClass": c.part_class, "path": c.path, "value": c.value, "rule": p0["rule"]})
+                else:
+                    by_path[c.path].append(c)
+        for path in EXT_SLOT_PATHS:
+            cs = sorted(by_path.get(path, []), key=lambda c: (-int(c.dim_topic), -c.tense, c.layer, c.klass, c.sub, c.start))
+            if not cs:
+                continue
+            win = cs[0]
+            values[path], prov[path] = win.value, list(win.provs)
+            for c in cs[1:]:
+                if c.layer == win.layer and c.value == win.value:
+                    prov[path] += [p for p in c.provs if p not in prov[path]]
+                    continue
+                reason = "lower_layer" if c.layer > win.layer else ("superseded" if c.tense < win.tense else "later_mention")
+                alts.append({"path": path, "value": c.value, "reason": reason, "_provenance": list(c.provs)})
+        # spec에 쓰기. 키 순서: form = … base · baseVariant · roundness · aspect, material = … erosion · emission
+        spec["form"] = {**spec["form"], "roundness": values.get("form.roundness"), "aspect": values.get("form.aspect")}
+        spec["material"] = {**spec["material"], "emission": values.get("material.emission")}
+        spec["_provenance"] = _ordered_provenance({**spec["_provenance"], **prov})
+        spec["_alternatives"] = sorted(spec["_alternatives"] + alts,
+                                       key=lambda al: (_PATH_ORDER.get(al["path"], 99), al["_provenance"][0]["charSpan"][0],
+                                                       al["reason"]))
+        spec["_negated"] = sorted(spec["_negated"] + negated,
+                                  key=lambda x: (x["_provenance"]["charSpan"][0], x["lemma"], x["category"]))
+        spec["_context"] = sorted(spec["_context"] + context, key=lambda x: (x["charSpan"][0], x["charSpan"][1],
+                                                                             str(x.get("path")), str(x.get("reason"))))
+        spec["_parts"] = sorted(spec["_parts"] + parts, key=lambda x: (x["charSpan"][0], x["charSpan"][1], str(x.get("path"))))
+        # 절 색인: 윤곽·발광 근거가 든 절에 슬롯을 더한다(읽기용 색인 — 보존의 증거로 세지 않음, 6.5절)
+        used = [(path, p["charSpan"]) for path, ps in prov.items() for p in ps]
+        for cl in spec.get("_clauses") or []:
+            s, e = cl["charSpan"]
+            add = {path for path, (x, y) in used if x < e and s < y}
+            if add:
+                cl["usedFor"] = sorted(set(cl["usedFor"]) | add, key=lambda p: (_PATH_ORDER.get(p, 99), p))
+                if cl["status"] == "unused":
+                    cl["status"] = "partly_used"
+        # 읽지 못한 말: 이제 값·보존 기록이 덮은 토큰을 빼고, 어절 항목은 다시 계산한다
+        covered: set[int] = set()
+        _span_chars({"p": prov, "a": alts, "n": negated, "c": context, "parts": parts}, covered)
+        # 구 규칙('모가 나')의 명사가 D1에서 사전에 없는 명사로 기록됐으면 지운다(이제 윤곽 근거 — D6 기본 형상과 같은 처리)
+        spec["_unmapped"] = [u for u in spec["_unmapped"]
+                             if not (u["category"] == "unlisted_noun"
+                                     and all(ch in covered for ch in range(*u["_provenance"]["charSpan"])))]
+        tok_level = [u for u in spec["_unmatched"] if u["tag"] != EOJEOL_TAG
+                     and not all(ch in covered for ch in range(u["charSpan"][0], u["charSpan"][1]))]
+        spec["_unmatched"] = tok_level        # 어절 항목을 먼저 빼야 다시 계산할 때 옛 어절 항목이 '보존됨'으로 세지 않는다
+        spec["_unmatched"] = sorted(tok_level + self._unmatched_eojeols(doc, spec),
+                                    key=lambda u: (u["charSpan"][0], u["charSpan"][1]))
+
     # ── D1: 배경 사물이 형상인 경우 ───────────────────────────────────────────
     def _figure_background_tokens(self, doc: Doc, context_sents: set[int]) -> set[int]:
         """배경 사물 낱말(backgroundNouns)이 '있다'·'생기다'·'놓이다'의 주어이고 같은 절에 다른 배경 처소어가 없으면
@@ -998,6 +1381,10 @@ class SceneSpecBuilderV2(SceneSpecBuilderV1):
             if toks[ts[0]].form in self.opacity_nouns and toks[ts[-1]].base_tag == "JKB" and toks[ts[-1]].form == "에":
                 consumed.add(h.token_index)
                 near_opacity.add(ts[0])
+        all_hit_toks = {h.token_index for h in hits}
+        if self.ext is not None:
+            # 1층 사전 v2의 윤곽·발광 범주는 v1 경로에 넣지 않는다(장면 대응이 없어 _unmapped로 가지 않게). _extension이 읽는다
+            hits = [h for h in hits if h.entry.category not in EXT_CATEGORIES]
         by_tok: dict[int, list[Hit]] = {}
         for h in hits:
             by_tok.setdefault(h.token_index, []).append(h)
@@ -1014,6 +1401,8 @@ class SceneSpecBuilderV2(SceneSpecBuilderV1):
                                      "reason": "no_scene_param", "_provenance": dict(c.provs[0], rule=rule.split(">")[0])})
                     continue
             keep.append(c)
+        if self.variants is not None:
+            keep += self._variant_cands(doc, all_hit_toks, consumed, similes, negated, unmapped)
         return keep
 
     def _transparent(self, doc: Doc, c: Cand, near: bool) -> None:
@@ -1103,12 +1492,13 @@ class SceneSpecBuilderV2(SceneSpecBuilderV1):
         return super()._merge(keep, uncertain_paths, records)
 
 
-# _provenance·_alternatives의 경로 순서(SceneSpec 슬롯 순서에 2.2 슬롯을 form.posture 뒤에 끼움)
+# _provenance·_alternatives의 경로 순서(SceneSpec 슬롯 순서에 2.2 슬롯을 form.posture 뒤에, 2.3 슬롯을 form.baseVariant·
+# material.erosion 뒤에 끼움. 2.3 슬롯은 ext_lexicon을 켰을 때만 나오므로 기본 출력의 순서는 그대로)
 _PATH_ORDER = {p: k for k, p in enumerate((
-    "form.type", "form.posture", "form.base", "form.baseVariant",
+    "form.type", "form.posture", "form.base", "form.baseVariant", "form.roundness", "form.aspect",
     "material.color", "material.brightness", "material.saturation", "material.roughness", "material.opacity",
-    "material.erosion", "layout.size", "layout.distance", "layout.verticalOffset", "motion.type", "motion.speed",
-    "body.part", "body.layer"))}
+    "material.erosion", "material.emission", "layout.size", "layout.distance", "layout.verticalOffset", "motion.type",
+    "motion.speed", "body.part", "body.layer"))}
 
 
 def _ordered_provenance(prov: dict) -> dict:
@@ -1143,3 +1533,67 @@ def floor_record(spec: dict) -> dict | None:
 def factory(rt) -> SceneSpecBuilderV2:
     """corpus_run·fidelity의 --mapper v2(= ifs_chatbot.scene_builder_v2:factory) 용."""
     return SceneSpecBuilderV2.from_runtime(rt)
+
+
+def factory_variants(rt) -> SceneSpecBuilderV2:
+    """--mapper ifs_chatbot.scene_builder_v2:factory_variants — 매퍼 v2 + 형태 변이 규칙층(스펙 2.2 그대로). G61 ②"""
+    return SceneSpecBuilderV2(rt.analyzer, variant_rules_path=shared("lexicon", "variant_rules.v0.json"))
+
+
+def factory_v23(rt) -> SceneSpecBuilderV2:
+    """--mapper ifs_chatbot.scene_builder_v2:factory_v23 — 매퍼 v2 + 1층 사전 v2(윤곽·발광, 스펙 2.3). G61 ①"""
+    return SceneSpecBuilderV2(rt.analyzer, ext_lexicon_path=shared("lexicon", "layer1_lexicon.v2.json"))
+
+
+def factory_v23_variants(rt) -> SceneSpecBuilderV2:
+    """--mapper ifs_chatbot.scene_builder_v2:factory_v23_variants — ①과 ②를 모두 켬."""
+    return SceneSpecBuilderV2(rt.analyzer, ext_lexicon_path=shared("lexicon", "layer1_lexicon.v2.json"),
+                              variant_rules_path=shared("lexicon", "variant_rules.v0.json"))
+
+
+def load_lexicon_chain(analyzer: Analyzer, files: list) -> Lexicon:
+    """v0 사전 + 오버레이들(차례대로)을 합친 1층 사전(load_lexicon_v1의 일반형). 오버레이는 v1과 같은 규칙:
+    같은 (범주, 표제어, 품사)는 뒤 파일이 대신하고, remove의 (범주, 표제어)는 뺀다. 파일은 읽기만 한다."""
+    paths = [Path(f) for f in files]
+    data = json.loads(paths[0].read_text(encoding="utf-8"))
+    infos = [f"{data.get('lexiconId')}@{data.get('lexiconVersion')}"]
+    merged = data
+    for p in paths[1:]:
+        ov = json.loads(p.read_text(encoding="utf-8"))
+        removed = {(r["category"], r["lemma"]) for r in ov.get("remove", [])}
+        keys = {(e["category"], e["lemma"], e["pos"]) for e in ov["entries"]}
+        entries = [e for e in merged["entries"]
+                   if (e["category"], e["lemma"]) not in removed and (e["category"], e["lemma"], e["pos"]) not in keys]
+        merged = {**merged, "lexiconId": ov.get("lexiconId", merged.get("lexiconId")),
+                  "lexiconVersion": ov["lexiconVersion"],
+                  "categories": {**merged["categories"], **ov.get("categories", {})},
+                  "entries": entries + ov["entries"]}
+        infos.append(f"{ov.get('lexiconId')}@{ov['lexiconVersion']}")
+    lex = Lexicon(paths[-1], analyzer, data=merged)
+    lex.base_info = infos[0]            # type: ignore[attr-defined]
+    lex.chain_info = " + ".join(infos)  # type: ignore[attr-defined]
+    return lex
+
+
+def _attach_variant_records(spec: dict) -> None:
+    """스펙 2.3: 형태 변이 규칙층 근거(rule 안의 'variant(…)')를 provenance.variant 구조로도 남긴다."""
+    def fix(p: dict) -> None:
+        rule = p.get("rule") or ""
+        k = rule.find("variant(")
+        if k >= 0:
+            rec = parse_tag(rule[k:])
+            if rec is not None:
+                p["variant"] = rec
+
+    for provs in (spec.get("_provenance") or {}).values():
+        for p in provs:
+            fix(p)
+    for a in spec.get("_alternatives") or []:
+        for p in a["_provenance"]:
+            fix(p)
+    for name in ("_unmapped", "_negated"):
+        for item in spec.get(name) or []:
+            fix(item["_provenance"])
+    for inf in (spec.get("_inferred") or {}).values():
+        for p in inf["_provenance"]:
+            fix(p)

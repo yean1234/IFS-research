@@ -1,0 +1,78 @@
+{
+  "lexiconId": "scene-params-v3",
+  "lexiconVersion": "0.1.0",
+  "status": "draft — 수치는 Unity 화면으로 확인하지 않은 초안 (G61 ①, 2026-11-26)",
+  "description": "SceneSpec 2.3 확장(윤곽 form.roundness·form.aspect, 발광 material.emission)의 대응표. 매퍼 v2가 [mapping] ext_lexicon을 켰을 때만 읽는다(ext_params). layer1 = 1층 사전 v2 범주 → 슬롯, ordinal = 서수 단계, degree = 정도 부사 규칙, render = Unity 해석기가 서수를 수치로 바꾸는 표(스키마에는 서수만 있다). scene_params.v1·v2를 대신하지 않고 그 위에 더한다.",
+  "howToEdit": [
+    "서수 단계 이름을 바꾸면 스키마(shared/schemas/scene-spec.v2.3.json)와 Unity 해석기를 함께 바꾼다.",
+    "수치(render)를 바꾸면 lexiconVersion을 올린다. 장면 파일 meta.pipeline.lexicons.sceneParamsV3에 버전이 남는다. Unity 구현은 이 파일을 읽거나 같은 값을 코드에 두고 테스트로 대조한다.",
+    "정서 → 모양 문헌(곡선 = 긍정 등)은 이 표의 근거로 쓰지 않는다. 표는 참여자가 직접 말한 모양어·빛 말을 그리는 방법만 정한다(AGENTS.md 원칙 2).",
+    "참여자의 실제 응답 문장을 넣지 않는다."
+  ],
+  "layer1": {
+    "contour": [
+      {"path": "form.roundness", "transform": "enum", "key": "roundness"},
+      {"path": "form.aspect", "transform": "enum", "key": "aspect"}
+    ],
+    "emission": [
+      {"path": "material.emission", "transform": "enum", "key": "emission"}
+    ]
+  },
+  "ordinal": {
+    "form.roundness": {"levels": ["angular", "slightly_angular", "neutral", "slightly_rounded", "rounded"], "neutral": "neutral"},
+    "form.aspect": {"levels": ["elongated", "slightly_elongated", "neutral", "slightly_flattened", "flattened"], "neutral": "neutral"},
+    "material.emission": {"levels": ["none", "faint", "glowing"], "neutral": "none"}
+  },
+  "degree": {
+    "weak": "step_toward_neutral",
+    "strong": "unchanged",
+    "note": "앞 어절의 약한 정도 부사(scene_params.v1.json v1.degreeAdverbs.weak: 살짝·조금·약간 …)면 한 단계 중립 쪽으로 옮긴다(rounded → slightly_rounded, angular → slightly_angular, elongated → slightly_elongated, glowing → faint). 이미 slightly_*·faint면 그대로(중립·none까지는 가지 않는다 — 말한 것은 '조금 그렇다'이지 '아니다'가 아님). 센 정도 부사는 바꾸지 않는다(가장 끝 단계보다 더 갈 곳이 없음). 옮기면 provenance rule 끝에 '+degree(<부사>)'를 단다"
+  },
+  "negation": {
+    "material.emission": "none",
+    "form.roundness": null,
+    "form.aspect": null,
+    "note": "발광어가 부정되면 '빛이 없다'를 말한 것이라 none(rule 끝 '(negated)'). 윤곽어 부정('둥글지 않아요')은 반대 값(각짐)을 뜻하지 않으므로 값을 만들지 않고 _negated에 남긴다"
+  },
+  "phrases": {
+    "items": [
+      {"noun": "각", "verb": "지", "as": "각지"},
+      {"noun": "모", "verb": "나", "as": "모나"},
+      {"noun": "빛", "verb": "나", "as": "빛나"}
+    ],
+    "particles": ["이", "가", "은", "는", "도"],
+    "maxAdverbs": 2,
+    "note": "명사 + (조사 이·가·은·는·도) + (부사 둘까지) + 용언 구를 1층 사전 v2의 한 항목으로 읽는다(같은 절 안). '각이 진'·'모가 난'·'빛이 나요', Kiwi가 '각진'을 각/NNG + 지/VV로 나눈 경우. 근거 source = phrase_rule, 구간 = 명사부터 용언 어절 끝까지. 부정('빛이 안 나요')은 용언 앞 안·못과 뒤 않·없으로 본다"
+  },
+  "render": {
+    "contour": {
+      "superquadric": {
+        "angular": {"e1": 0.1, "e2": 0.1},
+        "slightly_angular": {"e1": 0.3, "e2": 0.3},
+        "neutral": {"e1": 0.5, "e2": 0.5},
+        "slightly_rounded": {"e1": 0.75, "e2": 0.75},
+        "rounded": {"e1": 1.0, "e2": 1.0}
+      },
+      "superquadricNote": "Barr(1981) 초타원체. e1 = 위아래(위도) 단면 지수, e2 = 수평(경도) 단면 지수. 1 = 구, 0.1 = 모서리가 살짝 둥근 정육면체. 두 지수를 같게 둔다(말한 것이 '둥긂 정도' 하나이므로). e > 1(팔면체·별꼴)은 쓰지 않는다",
+      "aspectRatios": {
+        "elongated": [0.5, 1.0, 0.5],
+        "slightly_elongated": [0.75, 1.0, 0.75],
+        "neutral": [1.0, 1.0, 1.0],
+        "slightly_flattened": [1.0, 0.7, 1.0],
+        "flattened": [1.0, 0.4, 1.0]
+      },
+      "aspectRatiosNote": "Unity 국소 축 (x, y, z) 배율, y가 위. 가장 긴 축 = 1로 맞춰 layout.size(가장 긴 변)의 뜻을 지킨다. flattened 0.4는 기존 FlatCylinder 모형의 두께 비(0.4)와 같다",
+      "aspectAxisDefault": "y",
+      "aspectAxisNote": "참여자는 길쭉한 '방향'을 말하지 않았다. 길쭉함의 긴 축은 세로(y)로 그리되 이것은 기본값이므로 Unity 기록 defaultsUsed에 'form.aspect.axis'를 남긴다. 자세(form.posture)의 크기 변형은 그 위에 지금처럼 곱한다",
+      "mesh": {"unitDiameter": 1.0, "longitudeSegments": 48, "latitudeSegments": 24, "baseSizeNote": "모양 모형과 같은 기본 크기(SceneLoader Primitive Base Size 0.35 m)로 줄여 layout.size 뜻을 같게"},
+      "shaderNote": "슈퍼쿼드릭 메시는 모양 모형처럼 정점 변위(_Displacement)·굴곡(_Lumpiness)을 0으로 둔다(각진 윤곽이 노이즈로 흐려지지 않게). roundness가 null이고 aspect만 있으면 기본 덩어리 메시(노이즈 그대로)에 축 비율만 곱한다"
+    },
+    "emission": {
+      "intensity": {"none": 0.0, "faint": 0.35, "glowing": 1.0},
+      "color": "drawn_base_color",
+      "colorNote": "발광 색 = 그 물체를 그리는 바탕색(말한 material.color, 없으면 이미 쓰는 기본색 — 그 기본색은 지금처럼 defaultsUsed에 material.color로 남음). 새 색을 만들지 않는다. 밝기·채도 슬롯이 바꾼 바탕색 그대로에 세기를 곱해 셰이더 발광 항(_EmissionColor)에 더한다",
+      "bloom": false,
+      "bloomNote": "블룸 후처리는 넣지 않는다(Quest 비용, docs/viz-research-json-unity.md E4)"
+    }
+  }
+}

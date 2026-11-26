@@ -5,6 +5,7 @@
 //                       안개 셰이더를 못 쓰면 이전 경로(구 + Fade 셰이더, renderPath "mist(legacy)")
 //   fragments         : 불규칙한 각진 조각 5개를 합친 메시 하나(FragmentMesh, 평면 음영, 정점 변위 0) + IFS 셰이더
 //   shapeModel        : 모양 모형 4종(ShapeModelFactory) + 정점 변위 0
+//   superquadric      : (2.3) form.roundness가 있는 기본 덩어리 경로 — 슈퍼쿼드릭 메시(SuperquadricMesh) + 정점 변위 0
 // 렌더러는 FormRenderPlan만 본다(매퍼 정보를 모른다, X65). 프리팹·프리미티브 대체 경로는 SceneLoader가 맡는다.
 // 재질의 공통 슬롯(_BaseColor·_Brightness·_Roughness·_Opacity·_Erosion, 대체 프로퍼티)은 SceneLoader가 넣는다.
 using System.Collections.Generic;
@@ -35,6 +36,11 @@ namespace IFS.SceneSpec
         public const string OpaqueShaderResource = "IFS/SceneSpecOpaque";
         public const string FadeShaderResource = "IFS/SceneSpecFade";
         public const string DisplacementProperty = "_Displacement";
+        /// <summary>(2.3) IFS 셰이더 발광 항(선형 RGB, 기본 검정 = 0). 명세(8.4절 4번)의 `_EmissionColor` 대신 이 이름을 쓴다:
+        /// `_EmissionColor`는 Built-in Standard의 예약 이름(키워드 _EMISSION·GI 발광 플래그)이고 SceneLoader의 밝기 대체 경로
+        /// (ShaderParamNames.emissionFallback)와 golden 지문(LoaderNoVariantGoldenTests.ColorProps)이 그 이름의 유무를 읽어
+        /// IFS 셰이더에 더하면 2.0–2.2 지문이 바뀐다. 키워드 없이 서피스 셰이더의 o.Emission에 더하기만 한다.</summary>
+        public const string EmissionProperty = "_IfsEmission";
         public const string MistShaderResource = "IFS/SceneSpecMist";
         /// <summary>안개 대리 구의 반지름(물체 좌표). 셰이더 IFS_MIST_RADIUS와 같게.</summary>
         public const float MistRadius = 0.75f;
@@ -161,6 +167,30 @@ namespace IFS.SceneSpec
             mesh.triangles = tris;
             mesh.RecalculateBounds();
             _bases[key] = mesh;
+            return mesh;
+        }
+
+        static readonly Dictionary<(double, double), Mesh> _superquadrics = new Dictionary<(double, double), Mesh>();
+
+        /// <summary>(2.3) 슈퍼쿼드릭 메시(SuperquadricMesh). 같은 (e1, e2)면 같은 메시라 한 번 만들어 재사용한다.</summary>
+        public static Mesh SuperquadricMesh(double e1, double e2)
+        {
+            if (_superquadrics.TryGetValue((e1, e2), out var cached) && cached != null) return cached;
+            IFS.SceneSpec.SuperquadricMesh.Build(e1, e2, out float[] xyz, out float[] nrm, out int[] tris);
+            var verts = new Vector3[xyz.Length / 3];
+            var normals = new Vector3[verts.Length];
+            for (int i = 0; i < verts.Length; i++)
+            {
+                verts[i] = new Vector3(xyz[i * 3], xyz[i * 3 + 1], xyz[i * 3 + 2]);
+                normals[i] = new Vector3(nrm[i * 3], nrm[i * 3 + 1], nrm[i * 3 + 2]);
+            }
+            var inv = System.Globalization.CultureInfo.InvariantCulture;
+            var mesh = new Mesh { name = "IFS Superquadric " + ContourRender.MeshRule + " e" + e1.ToString(inv) };
+            mesh.vertices = verts;
+            mesh.normals = normals;
+            mesh.triangles = tris;
+            mesh.RecalculateBounds();
+            _superquadrics[(e1, e2)] = mesh;
             return mesh;
         }
 
@@ -315,6 +345,25 @@ namespace IFS.SceneSpec
         }
     }
 
+    /// <summary>(2.3) 슈퍼쿼드릭(form.roundness, 기본 덩어리 경로): SuperquadricMesh 메시 하나 + IFS 셰이더(모양 모형과 같은 프리셋, 정점 변위 0).
+    /// 재질 슬롯(색·밝기·채도·거칠기·불투명도·침식·발광)과 움직임은 다른 형상과 같이 먹는다. 축 비율(form.aspect)은 로더가 국소 배율에 곱한다.</summary>
+    public sealed class SuperquadricRenderer : IcoFormRenderer
+    {
+        public SuperquadricRenderer() : base(FormRenderPlan.RendererSuperquadric) { }
+
+        public override GameObject CreateModel(FormRenderPlan plan)
+        {
+            var go = new GameObject("superquadric " + plan.Roundness);
+            var mesh = FormRenderResources.SuperquadricMesh(plan.E1.Value, plan.E2.Value);
+            go.AddComponent<MeshFilter>().sharedMesh = mesh;
+            var mat = new Material(FormRenderResources.Opaque) { name = "IFS contour (" + ContourRender.MeshRule + ")" };
+            mat.SetFloat("_Seed", 0f);
+            go.AddComponent<MeshRenderer>().sharedMaterial = mat;
+            go.AddComponent<MeshCollider>().sharedMesh = mesh;
+            return go;
+        }
+    }
+
     public static class FormRenderers
     {
         static readonly Dictionary<string, IFormRenderer> ByName = new Dictionary<string, IFormRenderer>
@@ -324,6 +373,7 @@ namespace IFS.SceneSpec
             { FormRenderPlan.RendererShell, new IcoFormRenderer(FormRenderPlan.RendererShell) },
             { FormRenderPlan.RendererFragments, new FragmentsRenderer() },
             { FormRenderPlan.RendererShapeModel, new ShapeModelRenderer() },
+            { FormRenderPlan.RendererSuperquadric, new SuperquadricRenderer() },
         };
 
         /// <summary>안개 셰이더를 못 쓸 때의 안개(이전 경로: 구 + Fade 셰이더).</summary>

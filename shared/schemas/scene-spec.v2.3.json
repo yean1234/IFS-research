@@ -1,0 +1,2301 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ifs-research.local/shared/schemas/scene-spec.v2.3.json",
+  "title": "IFSSceneSpec v2.3",
+  "description": "SceneSpec v2.2의 상위 호환 확장(그릴 수 있는 형상 넓히기, 결정 G61 ①, 2026-11-26). v2.0·v2.1·v2.2 문서는 그대로 유효하다(파이썬 validate는 specVersion에 맞는 스키마 파일로 검사한다). 2.3.0 문서는 2.2 슬롯에 더해 form.roundness(둥긂 정도), form.aspect(길쭉함·납작함), material.emission(발광)을 반드시 가진다(말하지 않았으면 null). 값은 서수 단계 이름뿐이고 수치(슈퍼쿼드릭 지수·축 비율·발광 세기)는 shared/lexicon/scene_params.v3.json render 절과 docs/scene-spec-mapping.md 8절이 정한다. 세 슬롯이 모두 null이면 렌더러는 2.2와 같은 그림을 그린다. 값 규칙은 다른 슬롯과 같다: 말하지 않은 값은 null, 값이 있으면 _provenance에 근거가 있다. provenance.variant(선택)는 형태 변이 규칙층(shared/lexicon/variant_rules.v0.json)으로 대응한 근거의 규칙·원래 표면형·뿌리다. 2.3.0을 내는 것은 [mapping] ext_lexicon을 켠 매핑 v2뿐이다. 근거: docs/scene-spec-mapping.md, AGENTS.md 1·2.",
+  "x-schemaVersion": "2.3.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "meta",
+    "form",
+    "material",
+    "layout",
+    "motion",
+    "body",
+    "_provenance",
+    "_unmatched",
+    "_unmapped",
+    "_negated",
+    "_alternatives",
+    "_inferred"
+  ],
+  "properties": {
+    "meta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "specVersion",
+        "participantId",
+        "sessionId",
+        "condition",
+        "sourceTextHash",
+        "pipeline"
+      ],
+      "properties": {
+        "specVersion": {
+          "enum": [
+            "2.0.0",
+            "2.1.0",
+            "2.2.0",
+            "2.3.0"
+          ]
+        },
+        "participantId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[A-Za-z0-9_-]{1,40}$",
+          "description": "가명 ID. 모르면 null"
+        },
+        "sessionId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[A-Za-z0-9_-]{1,40}$"
+        },
+        "condition": {
+          "enum": [
+            "chatbot",
+            "static",
+            null
+          ],
+          "description": "유도 조건(elicitationCondition)"
+        },
+        "sourceTextHash": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "description": "정규화한 확정 텍스트(UTF-8)의 SHA-256. charSpan도 이 텍스트 기준"
+        },
+        "pipeline": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "builder",
+            "analyzer",
+            "lexicons"
+          ],
+          "properties": {
+            "builder": {
+              "type": "string"
+            },
+            "analyzer": {
+              "enum": [
+                "kiwi",
+                "fallback-regex"
+              ]
+            },
+            "lexicons": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "mapping": {
+          "description": "어느 매핑이 이 파일을 만들었나. v1이 예외로 실패하면 used = v0와 fallbackReason이 남는다",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "requested",
+            "used",
+            "fallbackReason"
+          ],
+          "properties": {
+            "requested": {
+              "type": "string"
+            },
+            "used": {
+              "enum": [
+                "v0",
+                "v1"
+              ]
+            },
+            "fallbackReason": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "form": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "posture"
+      ],
+      "properties": {
+        "type": {
+          "description": "사전 제작 에셋 4종 중 하나. 덩어리/안개/껍질/조각",
+          "enum": [
+            "blob",
+            "mist",
+            "shell",
+            "fragments",
+            null
+          ]
+        },
+        "posture": {
+          "description": "자세어(웅크리다 → curled). 렌더러가 변형 프리셋으로 표현",
+          "enum": [
+            "bent",
+            "bowed",
+            "cowering",
+            "crouched",
+            "curled",
+            "drooping",
+            "hanging",
+            "hiding",
+            "hunched",
+            "limp",
+            "lying",
+            "prone",
+            "sagging",
+            "sitting",
+            "standing",
+            "turned_away",
+            null
+          ]
+        },
+        "base": {
+          "description": "(2.2) 기본 형상(형상을 이름 붙이는 명사 → 범주 → 기본 형상, shared/lexicon/base_shapes.v1.json). 말하지 않았으면 null",
+          "enum": [
+            "container",
+            "line",
+            "sheet",
+            "flame",
+            "drop",
+            null
+          ]
+        },
+        "baseVariant": {
+          "description": "(2.2) 낱말 뜻(또는 같은 문장의 참여자 말)이 정한 기본 형상 변형값. 정한 키만 둔다. 하나도 정하지 않았으면 null(렌더러가 형상 프리셋 기본값으로 그린다)",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/baseVariant"
+            }
+          ]
+        },
+        "roundness": {
+          "description": "(2.3) 둥긂·각짐 정도(서수). 참여자가 직접 말한 윤곽어(둥글·각지·모나 …)만. neutral은 사전이 내지 않는다(참여자 조절·기본값용). 렌더: 슈퍼쿼드릭 지수(scene_params.v3.json render.contour.superquadric). 말하지 않았으면 null",
+          "enum": [
+            "angular",
+            "slightly_angular",
+            "neutral",
+            "slightly_rounded",
+            "rounded",
+            null
+          ]
+        },
+        "aspect": {
+          "description": "(2.3) 길쭉함·납작함(서수). 길쭉·기다랗·납작·평평 …. 렌더: 축 비율(render.contour.aspectRatios, 긴 축 = 1). 길쭉함의 방향은 말하지 않은 것이라 렌더러 기본값(세로)이고 defaultsUsed에 남는다. 말하지 않았으면 null",
+          "enum": [
+            "elongated",
+            "slightly_elongated",
+            "neutral",
+            "slightly_flattened",
+            "flattened",
+            null
+          ]
+        }
+      }
+    },
+    "material": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "color",
+        "brightness",
+        "saturation",
+        "roughness",
+        "opacity",
+        "erosion"
+      ],
+      "properties": {
+        "color": {
+          "description": "HSL, 각 0–1 (h = 색상각/360)",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/hsl"
+            }
+          ]
+        },
+        "brightness": {
+          "$ref": "#/$defs/unitOrNull",
+          "description": "밝기·발광 0(어두움)–1(눈부심)"
+        },
+        "saturation": {
+          "$ref": "#/$defs/unitOrNull",
+          "description": "채도어(선명·탁하 …). null이 아니면 렌더러가 color.s 대신 쓴다"
+        },
+        "roughness": {
+          "$ref": "#/$defs/unitOrNull",
+          "description": "표면 거칠기 0(젖은·매끈)–1(거칠·녹슨)"
+        },
+        "opacity": {
+          "$ref": "#/$defs/unitOrNull",
+          "description": "불투명도 0(투명)–1(불투명)"
+        },
+        "erosion": {
+          "$ref": "#/$defs/unitOrNull",
+          "description": "가장자리 침식·디졸브 0(온전)–1(부서짐). 삭다·갈라지다·깨지다"
+        },
+        "emission": {
+          "description": "(2.3) 발광(서수). 빛나·번쩍이·환하 → glowing, 반짝이 → faint, 발광어 부정('빛나지 않아요') → none(말한 값). 색은 따로 없다: 렌더러는 그리는 바탕색(말한 색 또는 기본색)에 세기(render.emission.intensity)를 곱한다. 말하지 않았으면 null",
+          "enum": [
+            "none",
+            "faint",
+            "glowing",
+            null
+          ]
+        }
+      }
+    },
+    "layout": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "size",
+        "distance",
+        "verticalOffset"
+      ],
+      "properties": {
+        "size": {
+          "$ref": "#/$defs/unitOrNull",
+          "description": "로그 척도 크기. 0.5 = 에셋 기본 크기(×1), 0 = ×0.25, 1 = ×4. size = 0.5 + log2(scale)/4"
+        },
+        "distance": {
+          "$ref": "#/$defs/unitOrNull",
+          "description": "참여자 머리에서 수평 거리. 0 = 최소(0.3 m), 1 = 최대(3.0 m), 선형"
+        },
+        "verticalOffset": {
+          "$ref": "#/$defs/unitOrNull",
+          "description": "높이 = 참여자 키에 대한 비율. 0 = 바닥, 1 = 정수리. 가슴 0.72"
+        }
+      }
+    },
+    "motion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "speed"
+      ],
+      "properties": {
+        "type": {
+          "description": "움직임어(흔들리다 → swaying). 움직임 부정('움직임은 없어요')만 still",
+          "enum": [
+            "approaching",
+            "churning",
+            "circling",
+            "collapsing",
+            "drifting",
+            "floating",
+            "moving",
+            "pounding",
+            "pushing",
+            "rippling",
+            "rising",
+            "rotating",
+            "scattering",
+            "settling",
+            "sinking",
+            "sloshing",
+            "spreading",
+            "still",
+            "swaying",
+            "trembling",
+            "vibrating",
+            "wriggling",
+            null
+          ]
+        },
+        "speed": {
+          "$ref": "#/$defs/unitOrNull",
+          "description": "0(아주 느림)–1(아주 빠름)"
+        }
+      }
+    },
+    "body": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "part",
+        "layer"
+      ],
+      "properties": {
+        "part": {
+          "description": "참여자가 말한 신체 부위. 감정 이름에서 추론하지 않는다",
+          "enum": [
+            "arm",
+            "back",
+            "belly",
+            "body",
+            "chest",
+            "face",
+            "flank",
+            "foot",
+            "forehead",
+            "hand",
+            "head",
+            "heart",
+            "leg",
+            "lower_back",
+            "lower_belly",
+            "nape",
+            "shoulder",
+            "skin",
+            "solar_plexus",
+            "throat",
+            "throat_neck",
+            "whole_body",
+            null
+          ]
+        },
+        "layer": {
+          "description": "몸 기준 위치(안·표면·주변). 같은 줄에 신체 부위어가 있을 때만",
+          "enum": [
+            "inner",
+            "surface",
+            "surface_above",
+            "around",
+            "around_front",
+            "around_behind",
+            "around_side",
+            "around_below",
+            null
+          ]
+        }
+      }
+    },
+    "_provenance": {
+      "description": "슬롯 경로 → 그 값을 만든 근거 목록. null인 슬롯은 키가 없다",
+      "type": "object",
+      "propertyNames": {
+        "enum": [
+          "form.type",
+          "form.posture",
+          "form.base",
+          "form.baseVariant",
+          "form.roundness",
+          "form.aspect",
+          "material.color",
+          "material.brightness",
+          "material.saturation",
+          "material.roughness",
+          "material.opacity",
+          "material.erosion",
+          "material.emission",
+          "layout.size",
+          "layout.distance",
+          "layout.verticalOffset",
+          "motion.type",
+          "motion.speed",
+          "body.part",
+          "body.layer"
+        ]
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/provenanceList"
+      }
+    },
+    "_unmatched": {
+      "description": "참여자가 말했지만 시스템이 값으로 읽지 못한 말(소실 정보). 1층 사전에 없는 내용어(낱말 항목)와, 값·다른 보존 필드가 다 덮지 못한 어절의 원문(tag EOJEOL, 빌더 1.2.0부터)",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "lemma",
+          "tag",
+          "surface",
+          "charSpan"
+        ],
+        "properties": {
+          "lemma": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "surface": {
+            "type": "string"
+          },
+          "charSpan": {
+            "$ref": "#/$defs/charSpan"
+          }
+        }
+      }
+    },
+    "_unmapped": {
+      "description": "사전에는 있지만 v2 장면 파라미터로 옮길 곳이 없는 말(형태어 '가장자리', 자기지칭 '나' …) (2.2) reason excluded_shape = 형상 낱말이지만 연구 범위·안전 때문에 그리지 않는 말(사람·아이, 공격하는 존재, 무기, 죽음·외상, 피·올가미). value.excluded에 사유 코드 (2026-11-23, G45–G51 — 2.2.0을 고침, 판 번호는 올리지 않음) reason excluded_shape의 범주는 person·threat·weapon·death_self_harm_trauma(value.excluded), reason no_asset = 에셋이 없어 그리지 않는 범주의 낱말(동물, value.noAsset). 매퍼 v2 builder 2.4.0은 목록 낱말이 나온 자리마다 value.position(head | modifier | simile_source | color_comparison | color_expression | unanalyzed)·role·scope·sentence·formSaid(형상 자체라 그리지 않음 → 형태 후보)·usedForShape(false)를, 넷째 범주면 strict·formBlock을, 목록 낱말 때문에 그리지 않은 형상 낱말·모양어면 value.blockedBy{lemma, charSpan, category, rule}를 남긴다(docs/decisions.md 'G45–G51 구현 세부').",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "lemma",
+          "category",
+          "value",
+          "reason",
+          "_provenance"
+        ],
+        "properties": {
+          "lemma": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "value": {
+            "type": "object"
+          },
+          "reason": {
+            "enum": [
+              "no_scene_param",
+              "no_value_mapping",
+              "no_body_part_context",
+              "simile_prototype_pending",
+              "idiom",
+              "excluded_shape",
+              "no_asset"
+            ]
+          },
+          "_provenance": {
+            "$ref": "#/$defs/provenance"
+          }
+        }
+      }
+    },
+    "_negated": {
+      "description": "부정된 말('무겁진 않아요'). 값으로 넣지 않고 기록만 한다",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "lemma",
+          "category",
+          "_provenance"
+        ],
+        "properties": {
+          "lemma": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "_provenance": {
+            "$ref": "#/$defs/provenance"
+          }
+        }
+      }
+    },
+    "_alternatives": {
+      "description": "같은 슬롯의 다른 근거. lower_layer·later_mention(v2.0), lower_priority(구체어·움직임 동사·측정값에 밀림), superseded('처음엔 …했다가' 뒤 상태에 밀림), self_corrected('아 아니다'·'X보다는'), participant_uncertain('잘 모르겠어요'), needs_confirmation(자모 퍼지 일치 후보. 값으로 쓰지 않음 — 참여자 확인 전, 원칙 2)",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "path",
+          "value",
+          "reason",
+          "_provenance"
+        ],
+        "properties": {
+          "path": {
+            "enum": [
+              "form.type",
+              "form.posture",
+              "form.base",
+              "form.roundness",
+              "form.aspect",
+              "material.color",
+              "material.brightness",
+              "material.saturation",
+              "material.roughness",
+              "material.opacity",
+              "material.erosion",
+              "material.emission",
+              "layout.size",
+              "layout.distance",
+              "layout.verticalOffset",
+              "motion.type",
+              "motion.speed",
+              "body.part",
+              "body.layer"
+            ]
+          },
+          "value": {},
+          "reason": {
+            "enum": [
+              "lower_layer",
+              "later_mention",
+              "lower_priority",
+              "superseded",
+              "self_corrected",
+              "participant_uncertain",
+              "needs_confirmation"
+            ]
+          },
+          "_provenance": {
+            "$ref": "#/$defs/provenanceList"
+          }
+        }
+      }
+    },
+    "_inferred": {
+      "description": "3층(V/A/D) 제안. 값이 null인 슬롯에만 생기고, 값 자리에 들어가지 않는다(원칙 3). 렌더러는 기본적으로 쓰지 않는다",
+      "type": "object",
+      "propertyNames": {
+        "enum": [
+          "form.type",
+          "form.posture",
+          "material.color",
+          "material.brightness",
+          "material.saturation",
+          "material.roughness",
+          "material.opacity",
+          "material.erosion",
+          "layout.size",
+          "layout.distance",
+          "layout.verticalOffset",
+          "motion.type",
+          "motion.speed",
+          "body.part",
+          "body.layer"
+        ]
+      },
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "value",
+          "_provenance"
+        ],
+        "properties": {
+          "value": {
+            "$ref": "#/$defs/unit"
+          },
+          "_provenance": {
+            "$ref": "#/$defs/provenanceList"
+          }
+        }
+      }
+    },
+    "_context": {
+      "description": "(v2.1) 범위 규칙으로 값에서 뺀 말. 회상 문장·배경 사물·자리 표지 사물의 속성어",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "text",
+          "charSpan",
+          "reason",
+          "path",
+          "value",
+          "rule"
+        ],
+        "properties": {
+          "text": {
+            "type": "string",
+            "minLength": 1
+          },
+          "charSpan": {
+            "$ref": "#/$defs/charSpan"
+          },
+          "reason": {
+            "enum": [
+              "recollection_sentence",
+              "background_object",
+              "background_subject",
+              "landmark_object",
+              "object_relative_position"
+            ]
+          },
+          "path": {
+            "$ref": "#/$defs/slotPathOrNull"
+          },
+          "value": {},
+          "rule": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "_parts": {
+      "description": "(v2.1) 부분(테두리·가장자리·안쪽 …)의 속성. 전체 값으로 쓰지 않은 것",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "text",
+          "charSpan",
+          "part",
+          "partClass",
+          "path",
+          "value",
+          "rule"
+        ],
+        "properties": {
+          "text": {
+            "type": "string",
+            "minLength": 1
+          },
+          "charSpan": {
+            "$ref": "#/$defs/charSpan"
+          },
+          "part": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "partClass": {
+            "enum": [
+              "outer",
+              "inner",
+              "detail",
+              null
+            ]
+          },
+          "path": {
+            "$ref": "#/$defs/slotPath"
+          },
+          "value": {},
+          "rule": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "_uncertain": {
+      "description": "(v2.1) 참여자가 모른다고 말한 절. paths의 슬롯은 값을 비운다",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "text",
+          "charSpan",
+          "paths",
+          "marker"
+        ],
+        "properties": {
+          "text": {
+            "type": "string",
+            "minLength": 1
+          },
+          "charSpan": {
+            "$ref": "#/$defs/charSpan"
+          },
+          "paths": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/slotPath"
+            }
+          },
+          "marker": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "_measurements": {
+      "description": "(v2.1) 수치·비교로 읽은 물리 크기(m). usedFor가 null이면 값으로 쓰지 않음(폭·모름)",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "text",
+          "charSpan",
+          "kind",
+          "meters",
+          "dimension",
+          "reference",
+          "usedFor"
+        ],
+        "properties": {
+          "text": {
+            "type": "string",
+            "minLength": 1
+          },
+          "charSpan": {
+            "$ref": "#/$defs/charSpan"
+          },
+          "kind": {
+            "enum": [
+              "number_unit",
+              "reference",
+              "cover"
+            ]
+          },
+          "meters": {
+            "type": "number",
+            "minimum": 0
+          },
+          "dimension": {
+            "enum": [
+              "size",
+              "distance",
+              "width",
+              "unknown"
+            ]
+          },
+          "reference": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "usedFor": {
+            "$ref": "#/$defs/slotPathOrNull"
+          }
+        }
+      }
+    },
+    "_direction": {
+      "description": "(v2.1) 왼쪽·오른쪽 방향어. v2에 방향 슬롯이 없어 보존만 한다",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "text",
+          "charSpan",
+          "horizontal",
+          "vertical",
+          "depth"
+        ],
+        "properties": {
+          "text": {
+            "type": "string",
+            "minLength": 1
+          },
+          "charSpan": {
+            "$ref": "#/$defs/charSpan"
+          },
+          "horizontal": {
+            "enum": [
+              "left",
+              "right",
+              null
+            ]
+          },
+          "vertical": {
+            "enum": [
+              "up",
+              "down",
+              null
+            ]
+          },
+          "depth": {
+            "enum": [
+              "front",
+              "behind",
+              null
+            ]
+          }
+        }
+      }
+    },
+    "_needsConfirmation": {
+      "description": "(v2.1) 자모 퍼지 일치 후보 — 확인 필요. 슬롯 값에는 쓰지 않는다(값은 _alternatives의 needs_confirmation에만)",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "path",
+          "trigger",
+          "charSpan",
+          "reason",
+          "matched"
+        ],
+        "properties": {
+          "path": {
+            "$ref": "#/$defs/slotPath"
+          },
+          "trigger": {
+            "type": "string",
+            "minLength": 1
+          },
+          "charSpan": {
+            "$ref": "#/$defs/charSpan"
+          },
+          "reason": {
+            "const": "fuzzy_lexicon"
+          },
+          "matched": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "_clauses": {
+      "description": "(v2.1) 확정 텍스트 전체의 절 단위 원문 색인(무손실). 각 절이 어느 슬롯 값에 쓰였는지",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "charSpan",
+          "text",
+          "usedFor",
+          "status"
+        ],
+        "properties": {
+          "charSpan": {
+            "$ref": "#/$defs/charSpan"
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1
+          },
+          "usedFor": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/slotPath"
+            }
+          },
+          "status": {
+            "enum": [
+              "used",
+              "partly_used",
+              "unused",
+              "context"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$comment": "원칙 3·4: form.type가 null이면 _provenance에 없어야 하고, 값이 있으면 _provenance가 있어야 하며 _inferred에는 없어야 한다",
+      "if": {
+        "properties": {
+          "form": {
+            "properties": {
+              "type": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "_provenance": {
+            "not": {
+              "required": [
+                "form.type"
+              ]
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "_provenance": {
+            "required": [
+              "form.type"
+            ]
+          },
+          "_inferred": {
+            "not": {
+              "required": [
+                "form.type"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "$comment": "원칙 3·4: form.posture가 null이면 _provenance에 없어야 하고, 값이 있으면 _provenance가 있어야 하며 _inferred에는 없어야 한다",
+      "if": {
+        "properties": {
+          "form": {
+            "properties": {
+              "posture": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "_provenance": {
+            "not": {
+              "required": [
+                "form.posture"
+              ]
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "_provenance": {
+            "required": [
+              "form.posture"
+            ]
+          },
+          "_inferred": {
+            "not": {
+              "required": [
+                "form.posture"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "$comment": "원칙 3·4: material.color가 null이면 _provenance에 없어야 하고, 값이 있으면 _provenance가 있어야 하며 _inferred에는 없어야 한다",
+      "if": {
+        "properties": {
+          "material": {
+            "properties": {
+              "color": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "_provenance": {
+            "not": {
+              "required": [
+                "material.color"
+              ]
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "_provenance": {
+            "required": [
+              "material.color"
+            ]
+          },
+          "_inferred": {
+            "not": {
+              "required": [
+                "material.color"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "$comment": "원칙 3·4: material.brightness가 null이면 _provenance에 없어야 하고, 값이 있으면 _provenance가 있어야 하며 _inferred에는 없어야 한다",
+      "if": {
+        "properties": {
+          "material": {
+            "properties": {
+              "brightness": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "_provenance": {
+            "not": {
+              "required": [
+                "material.brightness"
+              ]
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "_provenance": {
+            "required": [
+              "material.brightness"
+            ]
+          },
+          "_inferred": {
+            "not": {
+              "required": [
+                "material.brightness"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "$comment": "원칙 3·4: material.saturation가 null이면 _provenance에 없어야 하고, 값이 있으면 _provenance가 있어야 하며 _inferred에는 없어야 한다",
+      "if": {
+        "properties": {
+          "material": {
+            "properties": {
+              "saturation": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "_provenance": {
+            "not": {
+              "required": [
+                "material.saturation"
+              ]
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "_provenance": {
+            "required": [
+              "material.saturation"
+            ]
+          },
+          "_inferred": {
+            "not": {
+              "required": [
+                "material.saturation"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "$comment": "원칙 3·4: material.roughness가 null이면 _provenance에 없어야 하고, 값이 있으면 _provenance가 있어야 하며 _inferred에는 없어야 한다",
+      "if": {
+        "properties": {
+          "material": {
+            "properties": {
+              "roughness": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "_provenance": {
+            "not": {
+              "required": [
+                "material.roughness"
+              ]
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "_provenance": {
+            "required": [
+              "material.roughness"
+            ]
+          },
+          "_inferred": {
+            "not": {
+              "required": [
+                "material.roughness"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "$comment": "원칙 3·4: material.opacity가 null이면 _provenance에 없어야 하고, 값이 있으면 _provenance가 있어야 하며 _inferred에는 없어야 한다",
+      "if": {
+        "properties": {
+          "material": {
+            "properties": {
+              "opacity": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "_provenance": {
+            "not": {
+              "required": [
+                "material.opacity"
+              ]
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "_provenance": {
+            "required": [
+              "material.opacity"
+            ]
+          },
+          "_inferred": {
+            "not": {
+              "required": [
+                "material.opacity"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "$comment": "원칙 3·4: material.erosion가 null이면 _provenance에 없어야 하고, 값이 있으면 _provenance가 있어야 하며 _inferred에는 없어야 한다",
+      "if": {
+        "properties": {
+          "material": {
+            "properties": {
+              "erosion": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "_provenance": {
+            "not": {
+              "required": [
+                "material.erosion"
+              ]
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "_provenance": {
+            "required": [
+              "material.erosion"
+            ]
+          },
+          "_inferred": {
+            "not": {
+              "required": [
+                "material.erosion"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "$comment": "원칙 3·4: layout.size가 null이면 _provenance에 없어야 하고, 값이 있으면 _provenance가 있어야 하며 _inferred에는 없어야 한다",
+      "if": {
+        "properties": {
+          "layout": {
+            "properties": {
+              "size": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "_provenance": {
+            "not": {
+              "required": [
+                "layout.size"
+              ]
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "_provenance": {
+            "required": [
+              "layout.size"
+            ]
+          },
+          "_inferred": {
+            "not": {
+              "required": [
+                "layout.size"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "$comment": "원칙 3·4: layout.distance가 null이면 _provenance에 없어야 하고, 값이 있으면 _provenance가 있어야 하며 _inferred에는 없어야 한다",
+      "if": {
+        "properties": {
+          "layout": {
+            "properties": {
+              "distance": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "_provenance": {
+            "not": {
+              "required": [
+                "layout.distance"
+              ]
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "_provenance": {
+            "required": [
+              "layout.distance"
+            ]
+          },
+          "_inferred": {
+            "not": {
+              "required": [
+                "layout.distance"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "$comment": "원칙 3·4: layout.verticalOffset가 null이면 _provenance에 없어야 하고, 값이 있으면 _provenance가 있어야 하며 _inferred에는 없어야 한다",
+      "if": {
+        "properties": {
+          "layout": {
+            "properties": {
+              "verticalOffset": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "_provenance": {
+            "not": {
+              "required": [
+                "layout.verticalOffset"
+              ]
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "_provenance": {
+            "required": [
+              "layout.verticalOffset"
+            ]
+          },
+          "_inferred": {
+            "not": {
+              "required": [
+                "layout.verticalOffset"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "$comment": "원칙 3·4: motion.type가 null이면 _provenance에 없어야 하고, 값이 있으면 _provenance가 있어야 하며 _inferred에는 없어야 한다",
+      "if": {
+        "properties": {
+          "motion": {
+            "properties": {
+              "type": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "_provenance": {
+            "not": {
+              "required": [
+                "motion.type"
+              ]
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "_provenance": {
+            "required": [
+              "motion.type"
+            ]
+          },
+          "_inferred": {
+            "not": {
+              "required": [
+                "motion.type"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "$comment": "원칙 3·4: motion.speed가 null이면 _provenance에 없어야 하고, 값이 있으면 _provenance가 있어야 하며 _inferred에는 없어야 한다",
+      "if": {
+        "properties": {
+          "motion": {
+            "properties": {
+              "speed": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "_provenance": {
+            "not": {
+              "required": [
+                "motion.speed"
+              ]
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "_provenance": {
+            "required": [
+              "motion.speed"
+            ]
+          },
+          "_inferred": {
+            "not": {
+              "required": [
+                "motion.speed"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "$comment": "원칙 3·4: body.part가 null이면 _provenance에 없어야 하고, 값이 있으면 _provenance가 있어야 하며 _inferred에는 없어야 한다",
+      "if": {
+        "properties": {
+          "body": {
+            "properties": {
+              "part": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "_provenance": {
+            "not": {
+              "required": [
+                "body.part"
+              ]
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "_provenance": {
+            "required": [
+              "body.part"
+            ]
+          },
+          "_inferred": {
+            "not": {
+              "required": [
+                "body.part"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "$comment": "원칙 3·4: body.layer가 null이면 _provenance에 없어야 하고, 값이 있으면 _provenance가 있어야 하며 _inferred에는 없어야 한다",
+      "if": {
+        "properties": {
+          "body": {
+            "properties": {
+              "layer": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "_provenance": {
+            "not": {
+              "required": [
+                "body.layer"
+              ]
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "_provenance": {
+            "required": [
+              "body.layer"
+            ]
+          },
+          "_inferred": {
+            "not": {
+              "required": [
+                "body.layer"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "$comment": "specVersion 2.0.0 문서는 v2.0 형식 그대로여야 한다(2.1 전용 필드·meta.mapping 없음)",
+      "if": {
+        "properties": {
+          "meta": {
+            "properties": {
+              "specVersion": {
+                "const": "2.0.0"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "allOf": [
+          {
+            "not": {
+              "required": [
+                "_context"
+              ]
+            }
+          },
+          {
+            "not": {
+              "required": [
+                "_parts"
+              ]
+            }
+          },
+          {
+            "not": {
+              "required": [
+                "_uncertain"
+              ]
+            }
+          },
+          {
+            "not": {
+              "required": [
+                "_measurements"
+              ]
+            }
+          },
+          {
+            "not": {
+              "required": [
+                "_direction"
+              ]
+            }
+          },
+          {
+            "not": {
+              "required": [
+                "_needsConfirmation"
+              ]
+            }
+          },
+          {
+            "not": {
+              "required": [
+                "_clauses"
+              ]
+            }
+          },
+          {
+            "properties": {
+              "meta": {
+                "not": {
+                  "required": [
+                    "mapping"
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "$comment": "(2.2) specVersion 2.2.0 문서는 form.base·form.baseVariant를 반드시 가진다(null 포함)",
+      "if": {
+        "properties": {
+          "meta": {
+            "properties": {
+              "specVersion": {
+                "const": "2.2.0"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "form": {
+            "required": [
+              "type",
+              "posture",
+              "base",
+              "baseVariant"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "$comment": "원칙 3·4: form.base가 null(또는 없음)이면 _provenance에 없어야 하고, 값이 있으면 _provenance가 있어야 한다",
+      "if": {
+        "properties": {
+          "form": {
+            "properties": {
+              "base": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "_provenance": {
+            "not": {
+              "required": [
+                "form.base"
+              ]
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "_provenance": {
+            "required": [
+              "form.base"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "$comment": "원칙 3·4: form.baseVariant가 null(또는 없음)이면 _provenance에 없어야 하고, 값이 있으면 _provenance가 있어야 한다",
+      "if": {
+        "properties": {
+          "form": {
+            "properties": {
+              "baseVariant": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "_provenance": {
+            "not": {
+              "required": [
+                "form.baseVariant"
+              ]
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "_provenance": {
+            "required": [
+              "form.baseVariant"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "$comment": "form.base가 null(또는 없음)이면 form.baseVariant도 null이어야 한다",
+      "if": {
+        "properties": {
+          "form": {
+            "properties": {
+              "base": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "form": {
+            "properties": {
+              "baseVariant": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "$comment": "form.base = container이면 baseVariant 키는 opening, profile만",
+      "if": {
+        "properties": {
+          "form": {
+            "required": [
+              "base"
+            ],
+            "properties": {
+              "base": {
+                "const": "container"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "form": {
+            "properties": {
+              "baseVariant": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "object",
+                    "propertyNames": {
+                      "enum": [
+                        "opening",
+                        "profile"
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "$comment": "form.base = line이면 baseVariant 키는 form, gauge만",
+      "if": {
+        "properties": {
+          "form": {
+            "required": [
+              "base"
+            ],
+            "properties": {
+              "base": {
+                "const": "line"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "form": {
+            "properties": {
+              "baseVariant": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "object",
+                    "propertyNames": {
+                      "enum": [
+                        "form",
+                        "gauge"
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "$comment": "form.base = sheet이면 baseVariant 키는 drape만",
+      "if": {
+        "properties": {
+          "form": {
+            "required": [
+              "base"
+            ],
+            "properties": {
+              "base": {
+                "const": "sheet"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "form": {
+            "properties": {
+              "baseVariant": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "object",
+                    "propertyNames": {
+                      "enum": [
+                        "drape"
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "$comment": "form.base = flame이면 baseVariant 키는 (없음 → null)만",
+      "if": {
+        "properties": {
+          "form": {
+            "required": [
+              "base"
+            ],
+            "properties": {
+              "base": {
+                "const": "flame"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "form": {
+            "properties": {
+              "baseVariant": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "$comment": "form.base = drop이면 baseVariant 키는 (없음 → null)만",
+      "if": {
+        "properties": {
+          "form": {
+            "required": [
+              "base"
+            ],
+            "properties": {
+              "base": {
+                "const": "drop"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "form": {
+            "properties": {
+              "baseVariant": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "$comment": "(2.3) specVersion 2.3.0 문서는 form.base·form.baseVariant·form.roundness·form.aspect와 material.emission을 반드시 가진다(null 포함)",
+      "if": {
+        "properties": {
+          "meta": {
+            "properties": {
+              "specVersion": {
+                "const": "2.3.0"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "form": {
+            "required": [
+              "type",
+              "posture",
+              "base",
+              "baseVariant",
+              "roundness",
+              "aspect"
+            ]
+          },
+          "material": {
+            "required": [
+              "color",
+              "brightness",
+              "saturation",
+              "roughness",
+              "opacity",
+              "erosion",
+              "emission"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "$comment": "(2.3) 2.0.0·2.1.0·2.2.0 문서에는 2.3 슬롯이 없어야 한다",
+      "if": {
+        "properties": {
+          "meta": {
+            "properties": {
+              "specVersion": {
+                "enum": [
+                  "2.0.0",
+                  "2.1.0",
+                  "2.2.0"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "form": {
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "roundness"
+                  ]
+                },
+                {
+                  "required": [
+                    "aspect"
+                  ]
+                }
+              ]
+            }
+          },
+          "material": {
+            "not": {
+              "required": [
+                "emission"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "$comment": "원칙 3·4: form.roundness가 null(또는 없음)이면 _provenance에 없어야 하고, 값이 있으면 _provenance가 있어야 한다",
+      "if": {
+        "properties": {
+          "form": {
+            "properties": {
+              "roundness": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "_provenance": {
+            "not": {
+              "required": [
+                "form.roundness"
+              ]
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "_provenance": {
+            "required": [
+              "form.roundness"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "$comment": "원칙 3·4: form.aspect가 null(또는 없음)이면 _provenance에 없어야 하고, 값이 있으면 _provenance가 있어야 한다",
+      "if": {
+        "properties": {
+          "form": {
+            "properties": {
+              "aspect": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "_provenance": {
+            "not": {
+              "required": [
+                "form.aspect"
+              ]
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "_provenance": {
+            "required": [
+              "form.aspect"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "$comment": "원칙 3·4: material.emission가 null(또는 없음)이면 _provenance에 없어야 하고, 값이 있으면 _provenance가 있어야 한다",
+      "if": {
+        "properties": {
+          "material": {
+            "properties": {
+              "emission": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "_provenance": {
+            "not": {
+              "required": [
+                "material.emission"
+              ]
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "_provenance": {
+            "required": [
+              "material.emission"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "unit": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "unitOrNull": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 1
+    },
+    "hsl": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "h",
+        "s",
+        "l"
+      ],
+      "properties": {
+        "h": {
+          "$ref": "#/$defs/unit"
+        },
+        "s": {
+          "$ref": "#/$defs/unit"
+        },
+        "l": {
+          "$ref": "#/$defs/unit"
+        }
+      }
+    },
+    "charSpan": {
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source",
+        "trigger",
+        "charSpan",
+        "rule"
+      ],
+      "properties": {
+        "source": {
+          "enum": [
+            "explicit_lexicon",
+            "simile_marker",
+            "vad_lexicon",
+            "phrase_rule",
+            "fuzzy_lexicon",
+            "body_part_height",
+            "lexicon_implied"
+          ],
+          "description": "1층 사전 / 2층 직유 / 3층 V/A/D / (v2.1) 1층 구 규칙(수치·비교·색 수식·높이어) / 자모 퍼지 매칭(확인 필요) / 신체 부위 높이 제안(_inferred 전용) / (2.2, CP10 G38) 낱말 뜻에서 온 값 — form.baseVariant 전용: 참여자가 말한 형상 낱말(trigger)의 사전 뜻이 정한 변형값('그릇' → opening wide). 말한 낱말의 일부라 그리지만 같은 문장에서 참여자가 직접 한 말(explicit_lexicon)과 가른다"
+        },
+        "trigger": {
+          "type": "string",
+          "minLength": 1,
+          "description": "확정 텍스트에서 그 값을 만든 말(charSpan 구간과 같다)"
+        },
+        "charSpan": {
+          "$ref": "#/$defs/charSpan"
+        },
+        "rule": {
+          "type": "string",
+          "minLength": 1,
+          "description": "<근거 규칙>><슬롯 경로>:<대응 키>"
+        },
+        "needsConfirmation": {
+          "type": "boolean",
+          "description": "퍼지 일치 근거. 참여자 확인 전이라 _alternatives(needs_confirmation)에만 나오고 슬롯 값의 _provenance에는 나오지 않는다"
+        },
+        "variant": {
+          "description": "(2.3) 형태 변이 규칙층으로 대응한 근거. rules = 적용 순서(ending · suffix:<접사> · reduplication · ideophone_vowel · ideophone_consonant · ideophone_vowel+consonant), surface = 규칙에 넣은 원래 표면형, root = 사전에서 찾은 꼴, grade = 강도 기록(larger · smaller · stronger · weaker · attenuated — 값은 바꾸지 않음). 같은 내용이 rule 앞머리 'variant(…)'에도 있다",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "rules",
+            "surface",
+            "root",
+            "grade"
+          ],
+          "properties": {
+            "rules": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "surface": {
+              "type": "string",
+              "minLength": 1
+            },
+            "root": {
+              "type": "string",
+              "minLength": 1
+            },
+            "grade": {
+              "type": "array",
+              "items": {
+                "enum": [
+                  "larger",
+                  "smaller",
+                  "stronger",
+                  "weaker",
+                  "attenuated"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "provenanceList": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/provenance"
+      }
+    },
+    "slotPath": {
+      "enum": [
+        "form.type",
+        "form.posture",
+        "form.base",
+        "form.baseVariant",
+        "form.roundness",
+        "form.aspect",
+        "material.color",
+        "material.brightness",
+        "material.saturation",
+        "material.roughness",
+        "material.opacity",
+        "material.erosion",
+        "material.emission",
+        "layout.size",
+        "layout.distance",
+        "layout.verticalOffset",
+        "motion.type",
+        "motion.speed",
+        "body.part",
+        "body.layer"
+      ]
+    },
+    "slotPathOrNull": {
+      "enum": [
+        "form.type",
+        "form.posture",
+        "form.base",
+        "form.baseVariant",
+        "form.roundness",
+        "form.aspect",
+        "material.color",
+        "material.brightness",
+        "material.saturation",
+        "material.roughness",
+        "material.opacity",
+        "material.erosion",
+        "material.emission",
+        "layout.size",
+        "layout.distance",
+        "layout.verticalOffset",
+        "motion.type",
+        "motion.speed",
+        "body.part",
+        "body.layer",
+        null
+      ]
+    },
+    "baseVariant": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "opening": {
+          "enum": [
+            "wide",
+            "narrow"
+          ],
+          "description": "container: 입구 넓음/좁음"
+        },
+        "profile": {
+          "enum": [
+            "round",
+            "square"
+          ],
+          "description": "container: 단면 둥긂/네모"
+        },
+        "form": {
+          "enum": [
+            "curve",
+            "tangle",
+            "knot"
+          ],
+          "description": "line: 열린 곡선/엉킨 덩이/닫힌 매듭"
+        },
+        "gauge": {
+          "enum": [
+            "thin",
+            "thick"
+          ],
+          "description": "line: 가늘게/굵게(정하지 않으면 보통)"
+        },
+        "drape": {
+          "enum": [
+            "paper",
+            "cloth"
+          ],
+          "description": "sheet: 종이(물결 작음)/천(물결 큼)"
+        }
+      }
+    }
+  }
+}

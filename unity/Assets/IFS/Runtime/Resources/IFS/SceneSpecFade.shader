@@ -16,6 +16,7 @@ Shader "IFS/SceneSpec Fade"
         _Density ("Density", Range(0, 1)) = 0.5
         _ShellOpen ("Shell Opening", Range(0, 1)) = 0
         _Displacement ("Displacement", Range(0, 1)) = 1
+        _IfsEmission ("Emission (linear, 2.3)", Color) = (0, 0, 0, 0)
     }
     SubShader
     {

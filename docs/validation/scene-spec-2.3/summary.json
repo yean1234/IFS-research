@@ -1,0 +1,1788 @@
+[
+ {
+  "id": "A_R0_-",
+  "roundness": "angular",
+  "aspect": null,
+  "emission": {
+   "level": null,
+   "intensity": null,
+   "colorSource": null
+  },
+  "color": "default",
+  "loaded": true,
+  "renderPath": "superquadric",
+  "contour": {
+   "status": "applied",
+   "roundness": "angular",
+   "aspect": null,
+   "mesh": "superquadric/1",
+   "e1": 0.1,
+   "e2": 0.1,
+   "axisRatios": null
+  },
+  "defaultsUsed": [
+   "form.type",
+   "form.posture",
+   "form.base",
+   "form.aspect"
+  ],
+  "visiblePixels": 27058,
+  "silhouette": {
+   "circularity": 0.855,
+   "components": 1,
+   "edgeFalloffPx": 0.85,
+   "maskPixels": 26819
+  },
+  "contrastDeltaL": 9.37,
+  "colorPrimaryDeltaE00VsSpec": 5.7,
+  "colorPrimaryMeanSrgb8": [
+   159,
+   159,
+   159
+  ],
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 2208,
+  "frameP95Ms": 1.009,
+  "contourNotes": [
+   "form.aspect: SceneSpec 값이 null → 기본값으로 그림(축 배율 (1, 1, 1))",
+   "form.roundness=angular: 형상 프리셋 기본값 — 슈퍼쿼드릭 메시(규칙 superquadric/1, e1 0.1, e2 0.1, 경도 48 × 위도 24, 지름 1 × 기본 크기)로 기본 덩어리 메시를 대신함. 정점 변위 0, 굴곡 0, 노이즈 크기 1.6. 수치 scene-params-v3/0.1.0"
+  ],
+  "planPreset": {
+   "lumpiness": 0.0,
+   "noiseScale": 1.6,
+   "fuzz": 0.0,
+   "density": 1.0,
+   "shellOpen": 0.0
+  },
+  "zeroDisplacement": true
+ },
+ {
+  "id": "A_R0_E",
+  "roundness": "angular",
+  "aspect": "elongated",
+  "emission": {
+   "level": null,
+   "intensity": null,
+   "colorSource": null
+  },
+  "color": "default",
+  "loaded": true,
+  "renderPath": "superquadric",
+  "contour": {
+   "status": "applied",
+   "roundness": "angular",
+   "aspect": "elongated",
+   "mesh": "superquadric/1",
+   "e1": 0.1,
+   "e2": 0.1,
+   "axisRatios": [
+    0.5,
+    1.0,
+    0.5
+   ]
+  },
+  "defaultsUsed": [
+   "form.type",
+   "form.posture",
+   "form.base",
+   "form.aspect.axis"
+  ],
+  "visiblePixels": 11474,
+  "silhouette": {
+   "circularity": 0.738,
+   "components": 1,
+   "edgeFalloffPx": 0.7,
+   "maskPixels": 11307
+  },
+  "contrastDeltaL": 9.18,
+  "colorPrimaryDeltaE00VsSpec": 5.72,
+  "colorPrimaryMeanSrgb8": [
+   159,
+   159,
+   159
+  ],
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 2208,
+  "frameP95Ms": 2.075,
+  "contourNotes": [
+   "form.aspect.axis: 길쭉함·납작함의 긴 축 방향을 말하지 않음 → 기본값 세로(y)",
+   "form.roundness=angular: 형상 프리셋 기본값 — 슈퍼쿼드릭 메시(규칙 superquadric/1, e1 0.1, e2 0.1, 경도 48 × 위도 24, 지름 1 × 기본 크기)로 기본 덩어리 메시를 대신함. 정점 변위 0, 굴곡 0, 노이즈 크기 1.6. 수치 scene-params-v3/0.1.0"
+  ],
+  "planPreset": {
+   "lumpiness": 0.0,
+   "noiseScale": 1.6,
+   "fuzz": 0.0,
+   "density": 1.0,
+   "shellOpen": 0.0
+  },
+  "zeroDisplacement": true
+ },
+ {
+  "id": "A_R0_F",
+  "roundness": "angular",
+  "aspect": "flattened",
+  "emission": {
+   "level": null,
+   "intensity": null,
+   "colorSource": null
+  },
+  "color": "default",
+  "loaded": true,
+  "renderPath": "superquadric",
+  "contour": {
+   "status": "applied",
+   "roundness": "angular",
+   "aspect": "flattened",
+   "mesh": "superquadric/1",
+   "e1": 0.1,
+   "e2": 0.1,
+   "axisRatios": [
+    1.0,
+    0.4,
+    1.0
+   ]
+  },
+  "defaultsUsed": [
+   "form.type",
+   "form.posture",
+   "form.base",
+   "form.aspect.axis"
+  ],
+  "visiblePixels": 13881,
+  "silhouette": {
+   "circularity": 0.793,
+   "components": 1,
+   "edgeFalloffPx": 0.86,
+   "maskPixels": 13700
+  },
+  "contrastDeltaL": 13.36,
+  "colorPrimaryDeltaE00VsSpec": 3.08,
+  "colorPrimaryMeanSrgb8": [
+   167,
+   168,
+   168
+  ],
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 2208,
+  "frameP95Ms": 0.958,
+  "contourNotes": [
+   "form.aspect.axis: 길쭉함·납작함의 긴 축 방향을 말하지 않음 → 기본값 세로(y)",
+   "form.roundness=angular: 형상 프리셋 기본값 — 슈퍼쿼드릭 메시(규칙 superquadric/1, e1 0.1, e2 0.1, 경도 48 × 위도 24, 지름 1 × 기본 크기)로 기본 덩어리 메시를 대신함. 정점 변위 0, 굴곡 0, 노이즈 크기 1.6. 수치 scene-params-v3/0.1.0"
+  ],
+  "planPreset": {
+   "lumpiness": 0.0,
+   "noiseScale": 1.6,
+   "fuzz": 0.0,
+   "density": 1.0,
+   "shellOpen": 0.0
+  },
+  "zeroDisplacement": true
+ },
+ {
+  "id": "A_R1_-",
+  "roundness": "slightly_angular",
+  "aspect": null,
+  "emission": {
+   "level": null,
+   "intensity": null,
+   "colorSource": null
+  },
+  "color": "default",
+  "loaded": true,
+  "renderPath": "superquadric",
+  "contour": {
+   "status": "applied",
+   "roundness": "slightly_angular",
+   "aspect": null,
+   "mesh": "superquadric/1",
+   "e1": 0.3,
+   "e2": 0.3,
+   "axisRatios": null
+  },
+  "defaultsUsed": [
+   "form.type",
+   "form.posture",
+   "form.base",
+   "form.aspect"
+  ],
+  "visiblePixels": 24073,
+  "silhouette": {
+   "circularity": 0.902,
+   "components": 1,
+   "edgeFalloffPx": 0.79,
+   "maskPixels": 23853
+  },
+  "contrastDeltaL": 9.43,
+  "colorPrimaryDeltaE00VsSpec": 5.46,
+  "colorPrimaryMeanSrgb8": [
+   160,
+   160,
+   160
+  ],
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 2208,
+  "frameP95Ms": 0.401,
+  "contourNotes": [
+   "form.aspect: SceneSpec 값이 null → 기본값으로 그림(축 배율 (1, 1, 1))",
+   "form.roundness=slightly_angular: 형상 프리셋 기본값 — 슈퍼쿼드릭 메시(규칙 superquadric/1, e1 0.3, e2 0.3, 경도 48 × 위도 24, 지름 1 × 기본 크기)로 기본 덩어리 메시를 대신함. 정점 변위 0, 굴곡 0, 노이즈 크기 1.6. 수치 scene-params-v3/0.1.0"
+  ],
+  "planPreset": {
+   "lumpiness": 0.0,
+   "noiseScale": 1.6,
+   "fuzz": 0.0,
+   "density": 1.0,
+   "shellOpen": 0.0
+  },
+  "zeroDisplacement": true
+ },
+ {
+  "id": "A_R1_E",
+  "roundness": "slightly_angular",
+  "aspect": "elongated",
+  "emission": {
+   "level": null,
+   "intensity": null,
+   "colorSource": null
+  },
+  "color": "default",
+  "loaded": true,
+  "renderPath": "superquadric",
+  "contour": {
+   "status": "applied",
+   "roundness": "slightly_angular",
+   "aspect": "elongated",
+   "mesh": "superquadric/1",
+   "e1": 0.3,
+   "e2": 0.3,
+   "axisRatios": [
+    0.5,
+    1.0,
+    0.5
+   ]
+  },
+  "defaultsUsed": [
+   "form.type",
+   "form.posture",
+   "form.base",
+   "form.aspect.axis"
+  ],
+  "visiblePixels": 10556,
+  "silhouette": {
+   "circularity": 0.782,
+   "components": 1,
+   "edgeFalloffPx": 0.71,
+   "maskPixels": 10442
+  },
+  "contrastDeltaL": 8.67,
+  "colorPrimaryDeltaE00VsSpec": 5.68,
+  "colorPrimaryMeanSrgb8": [
+   159,
+   159,
+   159
+  ],
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 2208,
+  "frameP95Ms": 0.895,
+  "contourNotes": [
+   "form.aspect.axis: 길쭉함·납작함의 긴 축 방향을 말하지 않음 → 기본값 세로(y)",
+   "form.roundness=slightly_angular: 형상 프리셋 기본값 — 슈퍼쿼드릭 메시(규칙 superquadric/1, e1 0.3, e2 0.3, 경도 48 × 위도 24, 지름 1 × 기본 크기)로 기본 덩어리 메시를 대신함. 정점 변위 0, 굴곡 0, 노이즈 크기 1.6. 수치 scene-params-v3/0.1.0"
+  ],
+  "planPreset": {
+   "lumpiness": 0.0,
+   "noiseScale": 1.6,
+   "fuzz": 0.0,
+   "density": 1.0,
+   "shellOpen": 0.0
+  },
+  "zeroDisplacement": true
+ },
+ {
+  "id": "A_R1_F",
+  "roundness": "slightly_angular",
+  "aspect": "flattened",
+  "emission": {
+   "level": null,
+   "intensity": null,
+   "colorSource": null
+  },
+  "color": "default",
+  "loaded": true,
+  "renderPath": "superquadric",
+  "contour": {
+   "status": "applied",
+   "roundness": "slightly_angular",
+   "aspect": "flattened",
+   "mesh": "superquadric/1",
+   "e1": 0.3,
+   "e2": 0.3,
+   "axisRatios": [
+    1.0,
+    0.4,
+    1.0
+   ]
+  },
+  "defaultsUsed": [
+   "form.type",
+   "form.posture",
+   "form.base",
+   "form.aspect.axis"
+  ],
+  "visiblePixels": 12178,
+  "silhouette": {
+   "circularity": 0.817,
+   "components": 1,
+   "edgeFalloffPx": 0.6,
+   "maskPixels": 12011
+  },
+  "contrastDeltaL": 13.39,
+  "colorPrimaryDeltaE00VsSpec": 1.42,
+  "colorPrimaryMeanSrgb8": [
+   173,
+   174,
+   174
+  ],
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 2208,
+  "frameP95Ms": 0.884,
+  "contourNotes": [
+   "form.aspect.axis: 길쭉함·납작함의 긴 축 방향을 말하지 않음 → 기본값 세로(y)",
+   "form.roundness=slightly_angular: 형상 프리셋 기본값 — 슈퍼쿼드릭 메시(규칙 superquadric/1, e1 0.3, e2 0.3, 경도 48 × 위도 24, 지름 1 × 기본 크기)로 기본 덩어리 메시를 대신함. 정점 변위 0, 굴곡 0, 노이즈 크기 1.6. 수치 scene-params-v3/0.1.0"
+  ],
+  "planPreset": {
+   "lumpiness": 0.0,
+   "noiseScale": 1.6,
+   "fuzz": 0.0,
+   "density": 1.0,
+   "shellOpen": 0.0
+  },
+  "zeroDisplacement": true
+ },
+ {
+  "id": "A_R2_-",
+  "roundness": "neutral",
+  "aspect": null,
+  "emission": {
+   "level": null,
+   "intensity": null,
+   "colorSource": null
+  },
+  "color": "default",
+  "loaded": true,
+  "renderPath": "superquadric",
+  "contour": {
+   "status": "applied",
+   "roundness": "neutral",
+   "aspect": null,
+   "mesh": "superquadric/1",
+   "e1": 0.5,
+   "e2": 0.5,
+   "axisRatios": null
+  },
+  "defaultsUsed": [
+   "form.type",
+   "form.posture",
+   "form.base",
+   "form.aspect"
+  ],
+  "visiblePixels": 21390,
+  "silhouette": {
+   "circularity": 0.933,
+   "components": 1,
+   "edgeFalloffPx": 0.76,
+   "maskPixels": 21215
+  },
+  "contrastDeltaL": 9.32,
+  "colorPrimaryDeltaE00VsSpec": 4.44,
+  "colorPrimaryMeanSrgb8": [
+   163,
+   163,
+   163
+  ],
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 2208,
+  "frameP95Ms": 0.398,
+  "contourNotes": [
+   "form.aspect: SceneSpec 값이 null → 기본값으로 그림(축 배율 (1, 1, 1))",
+   "form.roundness=neutral: 형상 프리셋 기본값 — 슈퍼쿼드릭 메시(규칙 superquadric/1, e1 0.5, e2 0.5, 경도 48 × 위도 24, 지름 1 × 기본 크기)로 기본 덩어리 메시를 대신함. 정점 변위 0, 굴곡 0, 노이즈 크기 1.6. 수치 scene-params-v3/0.1.0"
+  ],
+  "planPreset": {
+   "lumpiness": 0.0,
+   "noiseScale": 1.6,
+   "fuzz": 0.0,
+   "density": 1.0,
+   "shellOpen": 0.0
+  },
+  "zeroDisplacement": true
+ },
+ {
+  "id": "A_R2_E",
+  "roundness": "neutral",
+  "aspect": "elongated",
+  "emission": {
+   "level": null,
+   "intensity": null,
+   "colorSource": null
+  },
+  "color": "default",
+  "loaded": true,
+  "renderPath": "superquadric",
+  "contour": {
+   "status": "applied",
+   "roundness": "neutral",
+   "aspect": "elongated",
+   "mesh": "superquadric/1",
+   "e1": 0.5,
+   "e2": 0.5,
+   "axisRatios": [
+    0.5,
+    1.0,
+    0.5
+   ]
+  },
+  "defaultsUsed": [
+   "form.type",
+   "form.posture",
+   "form.base",
+   "form.aspect.axis"
+  ],
+  "visiblePixels": 9691,
+  "silhouette": {
+   "circularity": 0.809,
+   "components": 1,
+   "edgeFalloffPx": 0.71,
+   "maskPixels": 9558
+  },
+  "contrastDeltaL": 8.02,
+  "colorPrimaryDeltaE00VsSpec": 5.4,
+  "colorPrimaryMeanSrgb8": [
+   160,
+   160,
+   160
+  ],
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 2208,
+  "frameP95Ms": 0.42,
+  "contourNotes": [
+   "form.aspect.axis: 길쭉함·납작함의 긴 축 방향을 말하지 않음 → 기본값 세로(y)",
+   "form.roundness=neutral: 형상 프리셋 기본값 — 슈퍼쿼드릭 메시(규칙 superquadric/1, e1 0.5, e2 0.5, 경도 48 × 위도 24, 지름 1 × 기본 크기)로 기본 덩어리 메시를 대신함. 정점 변위 0, 굴곡 0, 노이즈 크기 1.6. 수치 scene-params-v3/0.1.0"
+  ],
+  "planPreset": {
+   "lumpiness": 0.0,
+   "noiseScale": 1.6,
+   "fuzz": 0.0,
+   "density": 1.0,
+   "shellOpen": 0.0
+  },
+  "zeroDisplacement": true
+ },
+ {
+  "id": "A_R2_F",
+  "roundness": "neutral",
+  "aspect": "flattened",
+  "emission": {
+   "level": null,
+   "intensity": null,
+   "colorSource": null
+  },
+  "color": "default",
+  "loaded": true,
+  "renderPath": "superquadric",
+  "contour": {
+   "status": "applied",
+   "roundness": "neutral",
+   "aspect": "flattened",
+   "mesh": "superquadric/1",
+   "e1": 0.5,
+   "e2": 0.5,
+   "axisRatios": [
+    1.0,
+    0.4,
+    1.0
+   ]
+  },
+  "defaultsUsed": [
+   "form.type",
+   "form.posture",
+   "form.base",
+   "form.aspect.axis"
+  ],
+  "visiblePixels": 10679,
+  "silhouette": {
+   "circularity": 0.832,
+   "components": 1,
+   "edgeFalloffPx": 0.8,
+   "maskPixels": 10519
+  },
+  "contrastDeltaL": 13.31,
+  "colorPrimaryDeltaE00VsSpec": 0.47,
+  "colorPrimaryMeanSrgb8": [
+   179,
+   180,
+   180
+  ],
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 2208,
+  "frameP95Ms": 0.436,
+  "contourNotes": [
+   "form.aspect.axis: 길쭉함·납작함의 긴 축 방향을 말하지 않음 → 기본값 세로(y)",
+   "form.roundness=neutral: 형상 프리셋 기본값 — 슈퍼쿼드릭 메시(규칙 superquadric/1, e1 0.5, e2 0.5, 경도 48 × 위도 24, 지름 1 × 기본 크기)로 기본 덩어리 메시를 대신함. 정점 변위 0, 굴곡 0, 노이즈 크기 1.6. 수치 scene-params-v3/0.1.0"
+  ],
+  "planPreset": {
+   "lumpiness": 0.0,
+   "noiseScale": 1.6,
+   "fuzz": 0.0,
+   "density": 1.0,
+   "shellOpen": 0.0
+  },
+  "zeroDisplacement": true
+ },
+ {
+  "id": "A_R3_-",
+  "roundness": "slightly_rounded",
+  "aspect": null,
+  "emission": {
+   "level": null,
+   "intensity": null,
+   "colorSource": null
+  },
+  "color": "default",
+  "loaded": true,
+  "renderPath": "superquadric",
+  "contour": {
+   "status": "applied",
+   "roundness": "slightly_rounded",
+   "aspect": null,
+   "mesh": "superquadric/1",
+   "e1": 0.75,
+   "e2": 0.75,
+   "axisRatios": null
+  },
+  "defaultsUsed": [
+   "form.type",
+   "form.posture",
+   "form.base",
+   "form.aspect"
+  ],
+  "visiblePixels": 18487,
+  "silhouette": {
+   "circularity": 0.963,
+   "components": 1,
+   "edgeFalloffPx": 0.73,
+   "maskPixels": 18333
+  },
+  "contrastDeltaL": 8.35,
+  "colorPrimaryDeltaE00VsSpec": 2.87,
+  "colorPrimaryMeanSrgb8": [
+   168,
+   168,
+   169
+  ],
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 2208,
+  "frameP95Ms": 0.468,
+  "contourNotes": [
+   "form.aspect: SceneSpec 값이 null → 기본값으로 그림(축 배율 (1, 1, 1))",
+   "form.roundness=slightly_rounded: 형상 프리셋 기본값 — 슈퍼쿼드릭 메시(규칙 superquadric/1, e1 0.75, e2 0.75, 경도 48 × 위도 24, 지름 1 × 기본 크기)로 기본 덩어리 메시를 대신함. 정점 변위 0, 굴곡 0, 노이즈 크기 1.6. 수치 scene-params-v3/0.1.0"
+  ],
+  "planPreset": {
+   "lumpiness": 0.0,
+   "noiseScale": 1.6,
+   "fuzz": 0.0,
+   "density": 1.0,
+   "shellOpen": 0.0
+  },
+  "zeroDisplacement": true
+ },
+ {
+  "id": "A_R3_E",
+  "roundness": "slightly_rounded",
+  "aspect": "elongated",
+  "emission": {
+   "level": null,
+   "intensity": null,
+   "colorSource": null
+  },
+  "color": "default",
+  "loaded": true,
+  "renderPath": "superquadric",
+  "contour": {
+   "status": "applied",
+   "roundness": "slightly_rounded",
+   "aspect": "elongated",
+   "mesh": "superquadric/1",
+   "e1": 0.75,
+   "e2": 0.75,
+   "axisRatios": [
+    0.5,
+    1.0,
+    0.5
+   ]
+  },
+  "defaultsUsed": [
+   "form.type",
+   "form.posture",
+   "form.base",
+   "form.aspect.axis"
+  ],
+  "visiblePixels": 8688,
+  "silhouette": {
+   "circularity": 0.826,
+   "components": 1,
+   "edgeFalloffPx": 0.74,
+   "maskPixels": 8556
+  },
+  "contrastDeltaL": 6.72,
+  "colorPrimaryDeltaE00VsSpec": 4.91,
+  "colorPrimaryMeanSrgb8": [
+   161,
+   162,
+   162
+  ],
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 2208,
+  "frameP95Ms": 0.394,
+  "contourNotes": [
+   "form.aspect.axis: 길쭉함·납작함의 긴 축 방향을 말하지 않음 → 기본값 세로(y)",
+   "form.roundness=slightly_rounded: 형상 프리셋 기본값 — 슈퍼쿼드릭 메시(규칙 superquadric/1, e1 0.75, e2 0.75, 경도 48 × 위도 24, 지름 1 × 기본 크기)로 기본 덩어리 메시를 대신함. 정점 변위 0, 굴곡 0, 노이즈 크기 1.6. 수치 scene-params-v3/0.1.0"
+  ],
+  "planPreset": {
+   "lumpiness": 0.0,
+   "noiseScale": 1.6,
+   "fuzz": 0.0,
+   "density": 1.0,
+   "shellOpen": 0.0
+  },
+  "zeroDisplacement": true
+ },
+ {
+  "id": "A_R3_F",
+  "roundness": "slightly_rounded",
+  "aspect": "flattened",
+  "emission": {
+   "level": null,
+   "intensity": null,
+   "colorSource": null
+  },
+  "color": "default",
+  "loaded": true,
+  "renderPath": "superquadric",
+  "contour": {
+   "status": "applied",
+   "roundness": "slightly_rounded",
+   "aspect": "flattened",
+   "mesh": "superquadric/1",
+   "e1": 0.75,
+   "e2": 0.75,
+   "axisRatios": [
+    1.0,
+    0.4,
+    1.0
+   ]
+  },
+  "defaultsUsed": [
+   "form.type",
+   "form.posture",
+   "form.base",
+   "form.aspect.axis"
+  ],
+  "visiblePixels": 8955,
+  "silhouette": {
+   "circularity": 0.823,
+   "components": 1,
+   "edgeFalloffPx": 0.7,
+   "maskPixels": 8838
+  },
+  "contrastDeltaL": 12.99,
+  "colorPrimaryDeltaE00VsSpec": 1.57,
+  "colorPrimaryMeanSrgb8": [
+   184,
+   184,
+   185
+  ],
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 2208,
+  "frameP95Ms": 0.52,
+  "contourNotes": [
+   "form.aspect.axis: 길쭉함·납작함의 긴 축 방향을 말하지 않음 → 기본값 세로(y)",
+   "form.roundness=slightly_rounded: 형상 프리셋 기본값 — 슈퍼쿼드릭 메시(규칙 superquadric/1, e1 0.75, e2 0.75, 경도 48 × 위도 24, 지름 1 × 기본 크기)로 기본 덩어리 메시를 대신함. 정점 변위 0, 굴곡 0, 노이즈 크기 1.6. 수치 scene-params-v3/0.1.0"
+  ],
+  "planPreset": {
+   "lumpiness": 0.0,
+   "noiseScale": 1.6,
+   "fuzz": 0.0,
+   "density": 1.0,
+   "shellOpen": 0.0
+  },
+  "zeroDisplacement": true
+ },
+ {
+  "id": "A_R4_-",
+  "roundness": "rounded",
+  "aspect": null,
+  "emission": {
+   "level": null,
+   "intensity": null,
+   "colorSource": null
+  },
+  "color": "default",
+  "loaded": true,
+  "renderPath": "superquadric",
+  "contour": {
+   "status": "applied",
+   "roundness": "rounded",
+   "aspect": null,
+   "mesh": "superquadric/1",
+   "e1": 1.0,
+   "e2": 1.0,
+   "axisRatios": null
+  },
+  "defaultsUsed": [
+   "form.type",
+   "form.posture",
+   "form.base",
+   "form.aspect"
+  ],
+  "visiblePixels": 16076,
+  "silhouette": {
+   "circularity": 0.97,
+   "components": 1,
+   "edgeFalloffPx": 0.73,
+   "maskPixels": 15914
+  },
+  "contrastDeltaL": 7.33,
+  "colorPrimaryDeltaE00VsSpec": 2.14,
+  "colorPrimaryMeanSrgb8": [
+   171,
+   171,
+   171
+  ],
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 2208,
+  "frameP95Ms": 0.412,
+  "contourNotes": [
+   "form.aspect: SceneSpec 값이 null → 기본값으로 그림(축 배율 (1, 1, 1))",
+   "form.roundness=rounded: 형상 프리셋 기본값 — 슈퍼쿼드릭 메시(규칙 superquadric/1, e1 1, e2 1, 경도 48 × 위도 24, 지름 1 × 기본 크기)로 기본 덩어리 메시를 대신함. 정점 변위 0, 굴곡 0, 노이즈 크기 1.6. 수치 scene-params-v3/0.1.0"
+  ],
+  "planPreset": {
+   "lumpiness": 0.0,
+   "noiseScale": 1.6,
+   "fuzz": 0.0,
+   "density": 1.0,
+   "shellOpen": 0.0
+  },
+  "zeroDisplacement": true
+ },
+ {
+  "id": "A_R4_E",
+  "roundness": "rounded",
+  "aspect": "elongated",
+  "emission": {
+   "level": null,
+   "intensity": null,
+   "colorSource": null
+  },
+  "color": "default",
+  "loaded": true,
+  "renderPath": "superquadric",
+  "contour": {
+   "status": "applied",
+   "roundness": "rounded",
+   "aspect": "elongated",
+   "mesh": "superquadric/1",
+   "e1": 1.0,
+   "e2": 1.0,
+   "axisRatios": [
+    0.5,
+    1.0,
+    0.5
+   ]
+  },
+  "defaultsUsed": [
+   "form.type",
+   "form.posture",
+   "form.base",
+   "form.aspect.axis"
+  ],
+  "visiblePixels": 7765,
+  "silhouette": {
+   "circularity": 0.828,
+   "components": 1,
+   "edgeFalloffPx": 0.7,
+   "maskPixels": 7655
+  },
+  "contrastDeltaL": 5.36,
+  "colorPrimaryDeltaE00VsSpec": 5.05,
+  "colorPrimaryMeanSrgb8": [
+   161,
+   161,
+   161
+  ],
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 2208,
+  "frameP95Ms": 0.4,
+  "contourNotes": [
+   "form.aspect.axis: 길쭉함·납작함의 긴 축 방향을 말하지 않음 → 기본값 세로(y)",
+   "form.roundness=rounded: 형상 프리셋 기본값 — 슈퍼쿼드릭 메시(규칙 superquadric/1, e1 1, e2 1, 경도 48 × 위도 24, 지름 1 × 기본 크기)로 기본 덩어리 메시를 대신함. 정점 변위 0, 굴곡 0, 노이즈 크기 1.6. 수치 scene-params-v3/0.1.0"
+  ],
+  "planPreset": {
+   "lumpiness": 0.0,
+   "noiseScale": 1.6,
+   "fuzz": 0.0,
+   "density": 1.0,
+   "shellOpen": 0.0
+  },
+  "zeroDisplacement": true
+ },
+ {
+  "id": "A_R4_F",
+  "roundness": "rounded",
+  "aspect": "flattened",
+  "emission": {
+   "level": null,
+   "intensity": null,
+   "colorSource": null
+  },
+  "color": "default",
+  "loaded": true,
+  "renderPath": "superquadric",
+  "contour": {
+   "status": "applied",
+   "roundness": "rounded",
+   "aspect": "flattened",
+   "mesh": "superquadric/1",
+   "e1": 1.0,
+   "e2": 1.0,
+   "axisRatios": [
+    1.0,
+    0.4,
+    1.0
+   ]
+  },
+  "defaultsUsed": [
+   "form.type",
+   "form.posture",
+   "form.base",
+   "form.aspect.axis"
+  ],
+  "visiblePixels": 7518,
+  "silhouette": {
+   "circularity": 0.785,
+   "components": 1,
+   "edgeFalloffPx": 0.69,
+   "maskPixels": 7396
+  },
+  "contrastDeltaL": 12.72,
+  "colorPrimaryDeltaE00VsSpec": 2.24,
+  "colorPrimaryMeanSrgb8": [
+   186,
+   187,
+   187
+  ],
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 2208,
+  "frameP95Ms": 0.289,
+  "contourNotes": [
+   "form.aspect.axis: 길쭉함·납작함의 긴 축 방향을 말하지 않음 → 기본값 세로(y)",
+   "form.roundness=rounded: 형상 프리셋 기본값 — 슈퍼쿼드릭 메시(규칙 superquadric/1, e1 1, e2 1, 경도 48 × 위도 24, 지름 1 × 기본 크기)로 기본 덩어리 메시를 대신함. 정점 변위 0, 굴곡 0, 노이즈 크기 1.6. 수치 scene-params-v3/0.1.0"
+  ],
+  "planPreset": {
+   "lumpiness": 0.0,
+   "noiseScale": 1.6,
+   "fuzz": 0.0,
+   "density": 1.0,
+   "shellOpen": 0.0
+  },
+  "zeroDisplacement": true
+ },
+ {
+  "id": "A_Rn_-",
+  "roundness": null,
+  "aspect": null,
+  "emission": {
+   "level": null,
+   "intensity": null,
+   "colorSource": null
+  },
+  "color": "default",
+  "loaded": true,
+  "renderPath": "blob",
+  "contour": {
+   "status": "none",
+   "roundness": null,
+   "aspect": null,
+   "mesh": null,
+   "e1": null,
+   "e2": null,
+   "axisRatios": null
+  },
+  "defaultsUsed": [
+   "form.type",
+   "form.posture",
+   "form.base"
+  ],
+  "visiblePixels": 15724,
+  "silhouette": {
+   "circularity": 0.964,
+   "components": 1,
+   "edgeFalloffPx": 0.67,
+   "maskPixels": 15583
+  },
+  "contrastDeltaL": 6.63,
+  "colorPrimaryDeltaE00VsSpec": 3.52,
+  "colorPrimaryMeanSrgb8": [
+   166,
+   166,
+   167
+  ],
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 5120,
+  "frameP95Ms": 0.305,
+  "contourNotes": [],
+  "planPreset": {
+   "lumpiness": 0.14,
+   "noiseScale": 1.6,
+   "fuzz": 0.0,
+   "density": 1.0,
+   "shellOpen": 0.0
+  },
+  "zeroDisplacement": false
+ },
+ {
+  "id": "A_Rn_E",
+  "roundness": null,
+  "aspect": "elongated",
+  "emission": {
+   "level": null,
+   "intensity": null,
+   "colorSource": null
+  },
+  "color": "default",
+  "loaded": true,
+  "renderPath": "blob",
+  "contour": {
+   "status": "applied",
+   "roundness": null,
+   "aspect": "elongated",
+   "mesh": "default",
+   "e1": null,
+   "e2": null,
+   "axisRatios": [
+    0.5,
+    1.0,
+    0.5
+   ]
+  },
+  "defaultsUsed": [
+   "form.type",
+   "form.posture",
+   "form.base",
+   "form.roundness",
+   "form.aspect.axis"
+  ],
+  "visiblePixels": 7572,
+  "silhouette": {
+   "circularity": 0.815,
+   "components": 1,
+   "edgeFalloffPx": 0.72,
+   "maskPixels": 7474
+  },
+  "contrastDeltaL": 5.39,
+  "colorPrimaryDeltaE00VsSpec": 6.03,
+  "colorPrimaryMeanSrgb8": [
+   158,
+   158,
+   158
+  ],
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 5120,
+  "frameP95Ms": 0.411,
+  "contourNotes": [
+   "form.roundness: SceneSpec 값이 null → 기본값으로 그림(기본 덩어리 메시)",
+   "form.aspect.axis: 길쭉함·납작함의 긴 축 방향을 말하지 않음 → 기본값 세로(y)"
+  ],
+  "planPreset": {
+   "lumpiness": 0.14,
+   "noiseScale": 1.6,
+   "fuzz": 0.0,
+   "density": 1.0,
+   "shellOpen": 0.0
+  },
+  "zeroDisplacement": false
+ },
+ {
+  "id": "A_Rn_F",
+  "roundness": null,
+  "aspect": "flattened",
+  "emission": {
+   "level": null,
+   "intensity": null,
+   "colorSource": null
+  },
+  "color": "default",
+  "loaded": true,
+  "renderPath": "blob",
+  "contour": {
+   "status": "applied",
+   "roundness": null,
+   "aspect": "flattened",
+   "mesh": "default",
+   "e1": null,
+   "e2": null,
+   "axisRatios": [
+    1.0,
+    0.4,
+    1.0
+   ]
+  },
+  "defaultsUsed": [
+   "form.type",
+   "form.posture",
+   "form.base",
+   "form.roundness",
+   "form.aspect.axis"
+  ],
+  "visiblePixels": 7388,
+  "silhouette": {
+   "circularity": 0.779,
+   "components": 1,
+   "edgeFalloffPx": 0.68,
+   "maskPixels": 7265
+  },
+  "contrastDeltaL": 11.7,
+  "colorPrimaryDeltaE00VsSpec": 1.67,
+  "colorPrimaryMeanSrgb8": [
+   184,
+   184,
+   185
+  ],
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 5120,
+  "frameP95Ms": 0.38,
+  "contourNotes": [
+   "form.roundness: SceneSpec 값이 null → 기본값으로 그림(기본 덩어리 메시)",
+   "form.aspect.axis: 길쭉함·납작함의 긴 축 방향을 말하지 않음 → 기본값 세로(y)"
+  ],
+  "planPreset": {
+   "lumpiness": 0.14,
+   "noiseScale": 1.6,
+   "fuzz": 0.0,
+   "density": 1.0,
+   "shellOpen": 0.0
+  },
+  "zeroDisplacement": false
+ },
+ {
+  "id": "B_faint_R0_blue",
+  "roundness": "angular",
+  "aspect": null,
+  "emission": {
+   "level": "faint",
+   "intensity": 0.35,
+   "colorSource": "said"
+  },
+  "color": "blue(said)",
+  "loaded": true,
+  "renderPath": "superquadric",
+  "contour": {
+   "status": "applied",
+   "roundness": "angular",
+   "aspect": null,
+   "mesh": "superquadric/1",
+   "e1": 0.1,
+   "e2": 0.1,
+   "axisRatios": null
+  },
+  "defaultsUsed": [
+   "form.type",
+   "form.posture",
+   "form.base",
+   "form.aspect"
+  ],
+  "visiblePixels": 27058,
+  "silhouette": {
+   "circularity": 0.86,
+   "components": 1,
+   "edgeFalloffPx": 0.85,
+   "maskPixels": 26944
+  },
+  "contrastDeltaL": -12.99,
+  "colorPrimaryDeltaE00VsSpec": 3.48,
+  "colorPrimaryMeanSrgb8": [
+   64,
+   101,
+   162
+  ],
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 2208,
+  "frameP95Ms": 0.396,
+  "contourNotes": [
+   "form.aspect: SceneSpec 값이 null → 기본값으로 그림(축 배율 (1, 1, 1))",
+   "form.roundness=angular: 형상 프리셋 기본값 — 슈퍼쿼드릭 메시(규칙 superquadric/1, e1 0.1, e2 0.1, 경도 48 × 위도 24, 지름 1 × 기본 크기)로 기본 덩어리 메시를 대신함. 정점 변위 0, 굴곡 0, 노이즈 크기 1.6. 수치 scene-params-v3/0.1.0"
+  ],
+  "planPreset": {
+   "lumpiness": 0.0,
+   "noiseScale": 1.6,
+   "fuzz": 0.0,
+   "density": 1.0,
+   "shellOpen": 0.0
+  },
+  "zeroDisplacement": true
+ },
+ {
+  "id": "B_faint_R0_gray",
+  "roundness": "angular",
+  "aspect": null,
+  "emission": {
+   "level": "faint",
+   "intensity": 0.35,
+   "colorSource": "default"
+  },
+  "color": "default",
+  "loaded": true,
+  "renderPath": "superquadric",
+  "contour": {
+   "status": "applied",
+   "roundness": "angular",
+   "aspect": null,
+   "mesh": "superquadric/1",
+   "e1": 0.1,
+   "e2": 0.1,
+   "axisRatios": null
+  },
+  "defaultsUsed": [
+   "form.type",
+   "form.posture",
+   "form.base",
+   "form.aspect"
+  ],
+  "visiblePixels": 27058,
+  "silhouette": {
+   "circularity": 0.855,
+   "components": 1,
+   "edgeFalloffPx": 0.85,
+   "maskPixels": 26754
+  },
+  "contrastDeltaL": 20.03,
+  "colorPrimaryDeltaE00VsSpec": 2.58,
+  "colorPrimaryMeanSrgb8": [
+   188,
+   188,
+   188
+  ],
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 2208,
+  "frameP95Ms": 0.312,
+  "contourNotes": [
+   "form.aspect: SceneSpec 값이 null → 기본값으로 그림(축 배율 (1, 1, 1))",
+   "form.roundness=angular: 형상 프리셋 기본값 — 슈퍼쿼드릭 메시(규칙 superquadric/1, e1 0.1, e2 0.1, 경도 48 × 위도 24, 지름 1 × 기본 크기)로 기본 덩어리 메시를 대신함. 정점 변위 0, 굴곡 0, 노이즈 크기 1.6. 수치 scene-params-v3/0.1.0"
+  ],
+  "planPreset": {
+   "lumpiness": 0.0,
+   "noiseScale": 1.6,
+   "fuzz": 0.0,
+   "density": 1.0,
+   "shellOpen": 0.0
+  },
+  "zeroDisplacement": true
+ },
+ {
+  "id": "B_faint_R4_blue",
+  "roundness": "rounded",
+  "aspect": null,
+  "emission": {
+   "level": "faint",
+   "intensity": 0.35,
+   "colorSource": "said"
+  },
+  "color": "blue(said)",
+  "loaded": true,
+  "renderPath": "superquadric",
+  "contour": {
+   "status": "applied",
+   "roundness": "rounded",
+   "aspect": null,
+   "mesh": "superquadric/1",
+   "e1": 1.0,
+   "e2": 1.0,
+   "axisRatios": null
+  },
+  "defaultsUsed": [
+   "form.type",
+   "form.posture",
+   "form.base",
+   "form.aspect"
+  ],
+  "visiblePixels": 16076,
+  "silhouette": {
+   "circularity": 0.974,
+   "components": 1,
+   "edgeFalloffPx": 0.73,
+   "maskPixels": 15944
+  },
+  "contrastDeltaL": -12.81,
+  "colorPrimaryDeltaE00VsSpec": 7.19,
+  "colorPrimaryMeanSrgb8": [
+   75,
+   111,
+   172
+  ],
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 2208,
+  "frameP95Ms": 0.37,
+  "contourNotes": [
+   "form.aspect: SceneSpec 값이 null → 기본값으로 그림(축 배율 (1, 1, 1))",
+   "form.roundness=rounded: 형상 프리셋 기본값 — 슈퍼쿼드릭 메시(규칙 superquadric/1, e1 1, e2 1, 경도 48 × 위도 24, 지름 1 × 기본 크기)로 기본 덩어리 메시를 대신함. 정점 변위 0, 굴곡 0, 노이즈 크기 1.6. 수치 scene-params-v3/0.1.0"
+  ],
+  "planPreset": {
+   "lumpiness": 0.0,
+   "noiseScale": 1.6,
+   "fuzz": 0.0,
+   "density": 1.0,
+   "shellOpen": 0.0
+  },
+  "zeroDisplacement": true
+ },
+ {
+  "id": "B_faint_R4_gray",
+  "roundness": "rounded",
+  "aspect": null,
+  "emission": {
+   "level": "faint",
+   "intensity": 0.35,
+   "colorSource": "default"
+  },
+  "color": "default",
+  "loaded": true,
+  "renderPath": "superquadric",
+  "contour": {
+   "status": "applied",
+   "roundness": "rounded",
+   "aspect": null,
+   "mesh": "superquadric/1",
+   "e1": 1.0,
+   "e2": 1.0,
+   "axisRatios": null
+  },
+  "defaultsUsed": [
+   "form.type",
+   "form.posture",
+   "form.base",
+   "form.aspect"
+  ],
+  "visiblePixels": 16076,
+  "silhouette": {
+   "circularity": 0.97,
+   "components": 1,
+   "edgeFalloffPx": 0.73,
+   "maskPixels": 15848
+  },
+  "contrastDeltaL": 19.11,
+  "colorPrimaryDeltaE00VsSpec": 5.1,
+  "colorPrimaryMeanSrgb8": [
+   198,
+   198,
+   198
+  ],
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 2208,
+  "frameP95Ms": 0.423,
+  "contourNotes": [
+   "form.aspect: SceneSpec 값이 null → 기본값으로 그림(축 배율 (1, 1, 1))",
+   "form.roundness=rounded: 형상 프리셋 기본값 — 슈퍼쿼드릭 메시(규칙 superquadric/1, e1 1, e2 1, 경도 48 × 위도 24, 지름 1 × 기본 크기)로 기본 덩어리 메시를 대신함. 정점 변위 0, 굴곡 0, 노이즈 크기 1.6. 수치 scene-params-v3/0.1.0"
+  ],
+  "planPreset": {
+   "lumpiness": 0.0,
+   "noiseScale": 1.6,
+   "fuzz": 0.0,
+   "density": 1.0,
+   "shellOpen": 0.0
+  },
+  "zeroDisplacement": true
+ },
+ {
+  "id": "B_glowing_R0_blue",
+  "roundness": "angular",
+  "aspect": null,
+  "emission": {
+   "level": "glowing",
+   "intensity": 1.0,
+   "colorSource": "said"
+  },
+  "color": "blue(said)",
+  "loaded": true,
+  "renderPath": "superquadric",
+  "contour": {
+   "status": "applied",
+   "roundness": "angular",
+   "aspect": null,
+   "mesh": "superquadric/1",
+   "e1": 0.1,
+   "e2": 0.1,
+   "axisRatios": null
+  },
+  "defaultsUsed": [
+   "form.type",
+   "form.posture",
+   "form.base",
+   "form.aspect"
+  ],
+  "visiblePixels": 27058,
+  "silhouette": {
+   "circularity": 0.857,
+   "components": 1,
+   "edgeFalloffPx": 0.85,
+   "maskPixels": 26809
+  },
+  "contrastDeltaL": -4.36,
+  "colorPrimaryDeltaE00VsSpec": 12.45,
+  "colorPrimaryMeanSrgb8": [
+   76,
+   124,
+   199
+  ],
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 2208,
+  "frameP95Ms": 0.301,
+  "contourNotes": [
+   "form.aspect: SceneSpec 값이 null → 기본값으로 그림(축 배율 (1, 1, 1))",
+   "form.roundness=angular: 형상 프리셋 기본값 — 슈퍼쿼드릭 메시(규칙 superquadric/1, e1 0.1, e2 0.1, 경도 48 × 위도 24, 지름 1 × 기본 크기)로 기본 덩어리 메시를 대신함. 정점 변위 0, 굴곡 0, 노이즈 크기 1.6. 수치 scene-params-v3/0.1.0"
+  ],
+  "planPreset": {
+   "lumpiness": 0.0,
+   "noiseScale": 1.6,
+   "fuzz": 0.0,
+   "density": 1.0,
+   "shellOpen": 0.0
+  },
+  "zeroDisplacement": true
+ },
+ {
+  "id": "B_glowing_R0_gray",
+  "roundness": "angular",
+  "aspect": null,
+  "emission": {
+   "level": "glowing",
+   "intensity": 1.0,
+   "colorSource": "default"
+  },
+  "color": "default",
+  "loaded": true,
+  "renderPath": "superquadric",
+  "contour": {
+   "status": "applied",
+   "roundness": "angular",
+   "aspect": null,
+   "mesh": "superquadric/1",
+   "e1": 0.1,
+   "e2": 0.1,
+   "axisRatios": null
+  },
+  "defaultsUsed": [
+   "form.type",
+   "form.posture",
+   "form.base",
+   "form.aspect"
+  ],
+  "visiblePixels": 27058,
+  "silhouette": {
+   "circularity": 0.855,
+   "components": 1,
+   "edgeFalloffPx": 0.82,
+   "maskPixels": 26747
+  },
+  "contrastDeltaL": 34.8,
+  "colorPrimaryDeltaE00VsSpec": 12.66,
+  "colorPrimaryMeanSrgb8": [
+   230,
+   230,
+   231
+  ],
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 2208,
+  "frameP95Ms": 0.355,
+  "contourNotes": [
+   "form.aspect: SceneSpec 값이 null → 기본값으로 그림(축 배율 (1, 1, 1))",
+   "form.roundness=angular: 형상 프리셋 기본값 — 슈퍼쿼드릭 메시(규칙 superquadric/1, e1 0.1, e2 0.1, 경도 48 × 위도 24, 지름 1 × 기본 크기)로 기본 덩어리 메시를 대신함. 정점 변위 0, 굴곡 0, 노이즈 크기 1.6. 수치 scene-params-v3/0.1.0"
+  ],
+  "planPreset": {
+   "lumpiness": 0.0,
+   "noiseScale": 1.6,
+   "fuzz": 0.0,
+   "density": 1.0,
+   "shellOpen": 0.0
+  },
+  "zeroDisplacement": true
+ },
+ {
+  "id": "B_glowing_R4_blue",
+  "roundness": "rounded",
+  "aspect": null,
+  "emission": {
+   "level": "glowing",
+   "intensity": 1.0,
+   "colorSource": "said"
+  },
+  "color": "blue(said)",
+  "loaded": true,
+  "renderPath": "superquadric",
+  "contour": {
+   "status": "applied",
+   "roundness": "rounded",
+   "aspect": null,
+   "mesh": "superquadric/1",
+   "e1": 1.0,
+   "e2": 1.0,
+   "axisRatios": null
+  },
+  "defaultsUsed": [
+   "form.type",
+   "form.posture",
+   "form.base",
+   "form.aspect"
+  ],
+  "visiblePixels": 16076,
+  "silhouette": {
+   "circularity": 0.975,
+   "components": 1,
+   "edgeFalloffPx": 0.73,
+   "maskPixels": 15908
+  },
+  "contrastDeltaL": -3.92,
+  "colorPrimaryDeltaE00VsSpec": 15.61,
+  "colorPrimaryMeanSrgb8": [
+   86,
+   131,
+   206
+  ],
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 2208,
+  "frameP95Ms": 0.382,
+  "contourNotes": [
+   "form.aspect: SceneSpec 값이 null → 기본값으로 그림(축 배율 (1, 1, 1))",
+   "form.roundness=rounded: 형상 프리셋 기본값 — 슈퍼쿼드릭 메시(규칙 superquadric/1, e1 1, e2 1, 경도 48 × 위도 24, 지름 1 × 기본 크기)로 기본 덩어리 메시를 대신함. 정점 변위 0, 굴곡 0, 노이즈 크기 1.6. 수치 scene-params-v3/0.1.0"
+  ],
+  "planPreset": {
+   "lumpiness": 0.0,
+   "noiseScale": 1.6,
+   "fuzz": 0.0,
+   "density": 1.0,
+   "shellOpen": 0.0
+  },
+  "zeroDisplacement": true
+ },
+ {
+  "id": "B_glowing_R4_gray",
+  "roundness": "rounded",
+  "aspect": null,
+  "emission": {
+   "level": "glowing",
+   "intensity": 1.0,
+   "colorSource": "default"
+  },
+  "color": "default",
+  "loaded": true,
+  "renderPath": "superquadric",
+  "contour": {
+   "status": "applied",
+   "roundness": "rounded",
+   "aspect": null,
+   "mesh": "superquadric/1",
+   "e1": 1.0,
+   "e2": 1.0,
+   "axisRatios": null
+  },
+  "defaultsUsed": [
+   "form.type",
+   "form.posture",
+   "form.base",
+   "form.aspect"
+  ],
+  "visiblePixels": 16076,
+  "silhouette": {
+   "circularity": 0.968,
+   "components": 1,
+   "edgeFalloffPx": 0.71,
+   "maskPixels": 15848
+  },
+  "contrastDeltaL": 34.67,
+  "colorPrimaryDeltaE00VsSpec": 14.25,
+  "colorPrimaryMeanSrgb8": [
+   238,
+   238,
+   238
+  ],
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 2208,
+  "frameP95Ms": 0.381,
+  "contourNotes": [
+   "form.aspect: SceneSpec 값이 null → 기본값으로 그림(축 배율 (1, 1, 1))",
+   "form.roundness=rounded: 형상 프리셋 기본값 — 슈퍼쿼드릭 메시(규칙 superquadric/1, e1 1, e2 1, 경도 48 × 위도 24, 지름 1 × 기본 크기)로 기본 덩어리 메시를 대신함. 정점 변위 0, 굴곡 0, 노이즈 크기 1.6. 수치 scene-params-v3/0.1.0"
+  ],
+  "planPreset": {
+   "lumpiness": 0.0,
+   "noiseScale": 1.6,
+   "fuzz": 0.0,
+   "density": 1.0,
+   "shellOpen": 0.0
+  },
+  "zeroDisplacement": true
+ },
+ {
+  "id": "B_none_R0_blue",
+  "roundness": "angular",
+  "aspect": null,
+  "emission": {
+   "level": "none",
+   "intensity": 0.0,
+   "colorSource": "said"
+  },
+  "color": "blue(said)",
+  "loaded": true,
+  "renderPath": "superquadric",
+  "contour": {
+   "status": "applied",
+   "roundness": "angular",
+   "aspect": null,
+   "mesh": "superquadric/1",
+   "e1": 0.1,
+   "e2": 0.1,
+   "axisRatios": null
+  },
+  "defaultsUsed": [
+   "form.type",
+   "form.posture",
+   "form.base",
+   "form.aspect"
+  ],
+  "visiblePixels": 27058,
+  "silhouette": {
+   "circularity": 0.859,
+   "components": 1,
+   "edgeFalloffPx": 0.85,
+   "maskPixels": 26947
+  },
+  "contrastDeltaL": -18.99,
+  "colorPrimaryDeltaE00VsSpec": 2.93,
+  "colorPrimaryMeanSrgb8": [
+   56,
+   86,
+   137
+  ],
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 2208,
+  "frameP95Ms": 0.428,
+  "contourNotes": [
+   "form.aspect: SceneSpec 값이 null → 기본값으로 그림(축 배율 (1, 1, 1))",
+   "form.roundness=angular: 형상 프리셋 기본값 — 슈퍼쿼드릭 메시(규칙 superquadric/1, e1 0.1, e2 0.1, 경도 48 × 위도 24, 지름 1 × 기본 크기)로 기본 덩어리 메시를 대신함. 정점 변위 0, 굴곡 0, 노이즈 크기 1.6. 수치 scene-params-v3/0.1.0"
+  ],
+  "planPreset": {
+   "lumpiness": 0.0,
+   "noiseScale": 1.6,
+   "fuzz": 0.0,
+   "density": 1.0,
+   "shellOpen": 0.0
+  },
+  "zeroDisplacement": true
+ },
+ {
+  "id": "B_none_R0_gray",
+  "roundness": "angular",
+  "aspect": null,
+  "emission": {
+   "level": "none",
+   "intensity": 0.0,
+   "colorSource": "default"
+  },
+  "color": "default",
+  "loaded": true,
+  "renderPath": "superquadric",
+  "contour": {
+   "status": "applied",
+   "roundness": "angular",
+   "aspect": null,
+   "mesh": "superquadric/1",
+   "e1": 0.1,
+   "e2": 0.1,
+   "axisRatios": null
+  },
+  "defaultsUsed": [
+   "form.type",
+   "form.posture",
+   "form.base",
+   "form.aspect"
+  ],
+  "visiblePixels": 27058,
+  "silhouette": {
+   "circularity": 0.855,
+   "components": 1,
+   "edgeFalloffPx": 0.85,
+   "maskPixels": 26819
+  },
+  "contrastDeltaL": 9.37,
+  "colorPrimaryDeltaE00VsSpec": 5.7,
+  "colorPrimaryMeanSrgb8": [
+   159,
+   159,
+   159
+  ],
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 2208,
+  "frameP95Ms": 0.291,
+  "contourNotes": [
+   "form.aspect: SceneSpec 값이 null → 기본값으로 그림(축 배율 (1, 1, 1))",
+   "form.roundness=angular: 형상 프리셋 기본값 — 슈퍼쿼드릭 메시(규칙 superquadric/1, e1 0.1, e2 0.1, 경도 48 × 위도 24, 지름 1 × 기본 크기)로 기본 덩어리 메시를 대신함. 정점 변위 0, 굴곡 0, 노이즈 크기 1.6. 수치 scene-params-v3/0.1.0"
+  ],
+  "planPreset": {
+   "lumpiness": 0.0,
+   "noiseScale": 1.6,
+   "fuzz": 0.0,
+   "density": 1.0,
+   "shellOpen": 0.0
+  },
+  "zeroDisplacement": true
+ },
+ {
+  "id": "B_none_R4_blue",
+  "roundness": "rounded",
+  "aspect": null,
+  "emission": {
+   "level": "none",
+   "intensity": 0.0,
+   "colorSource": "said"
+  },
+  "color": "blue(said)",
+  "loaded": true,
+  "renderPath": "superquadric",
+  "contour": {
+   "status": "applied",
+   "roundness": "rounded",
+   "aspect": null,
+   "mesh": "superquadric/1",
+   "e1": 1.0,
+   "e2": 1.0,
+   "axisRatios": null
+  },
+  "defaultsUsed": [
+   "form.type",
+   "form.posture",
+   "form.base",
+   "form.aspect"
+  ],
+  "visiblePixels": 16076,
+  "silhouette": {
+   "circularity": 0.971,
+   "components": 1,
+   "edgeFalloffPx": 0.73,
+   "maskPixels": 15946
+  },
+  "contrastDeltaL": -19.2,
+  "colorPrimaryDeltaE00VsSpec": 3.18,
+  "colorPrimaryMeanSrgb8": [
+   69,
+   98,
+   149
+  ],
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 2208,
+  "frameP95Ms": 0.413,
+  "contourNotes": [
+   "form.aspect: SceneSpec 값이 null → 기본값으로 그림(축 배율 (1, 1, 1))",
+   "form.roundness=rounded: 형상 프리셋 기본값 — 슈퍼쿼드릭 메시(규칙 superquadric/1, e1 1, e2 1, 경도 48 × 위도 24, 지름 1 × 기본 크기)로 기본 덩어리 메시를 대신함. 정점 변위 0, 굴곡 0, 노이즈 크기 1.6. 수치 scene-params-v3/0.1.0"
+  ],
+  "planPreset": {
+   "lumpiness": 0.0,
+   "noiseScale": 1.6,
+   "fuzz": 0.0,
+   "density": 1.0,
+   "shellOpen": 0.0
+  },
+  "zeroDisplacement": true
+ },
+ {
+  "id": "B_none_R4_gray",
+  "roundness": "rounded",
+  "aspect": null,
+  "emission": {
+   "level": "none",
+   "intensity": 0.0,
+   "colorSource": "default"
+  },
+  "color": "default",
+  "loaded": true,
+  "renderPath": "superquadric",
+  "contour": {
+   "status": "applied",
+   "roundness": "rounded",
+   "aspect": null,
+   "mesh": "superquadric/1",
+   "e1": 1.0,
+   "e2": 1.0,
+   "axisRatios": null
+  },
+  "defaultsUsed": [
+   "form.type",
+   "form.posture",
+   "form.base",
+   "form.aspect"
+  ],
+  "visiblePixels": 16076,
+  "silhouette": {
+   "circularity": 0.97,
+   "components": 1,
+   "edgeFalloffPx": 0.73,
+   "maskPixels": 15914
+  },
+  "contrastDeltaL": 7.33,
+  "colorPrimaryDeltaE00VsSpec": 2.14,
+  "colorPrimaryMeanSrgb8": [
+   171,
+   171,
+   171
+  ],
+  "consoleErrors": 0,
+  "consoleWarnings": 0,
+  "modelTriangles": 2208,
+  "frameP95Ms": 0.378,
+  "contourNotes": [
+   "form.aspect: SceneSpec 값이 null → 기본값으로 그림(축 배율 (1, 1, 1))",
+   "form.roundness=rounded: 형상 프리셋 기본값 — 슈퍼쿼드릭 메시(규칙 superquadric/1, e1 1, e2 1, 경도 48 × 위도 24, 지름 1 × 기본 크기)로 기본 덩어리 메시를 대신함. 정점 변위 0, 굴곡 0, 노이즈 크기 1.6. 수치 scene-params-v3/0.1.0"
+  ],
+  "planPreset": {
+   "lumpiness": 0.0,
+   "noiseScale": 1.6,
+   "fuzz": 0.0,
+   "density": 1.0,
+   "shellOpen": 0.0
+  },
+  "zeroDisplacement": true
+ }
+]

@@ -1,5 +1,8 @@
-// SceneSpec v2 데이터 클래스 — shared/schemas/scene-spec.v2.json(2.0.0)·scene-spec.v2.1.json(2.1.0)·scene-spec.v2.2.json(2.2.0)과 1:1.
+// SceneSpec v2 데이터 클래스 — shared/schemas/scene-spec.v2.json(2.0.0)·scene-spec.v2.1.json(2.1.0)·scene-spec.v2.2.json(2.2.0)·
+// scene-spec.v2.3.json(2.3.0)과 1:1.
 // 2.2.0(매핑 v2 builder 2.2.0, D6)은 form.base·form.baseVariant(기본 형상)를 더한다. 2.0·2.1 문서에는 키가 없다.
+// 2.3.0(G61 ①)은 form.roundness·form.aspect·material.emission(서수 단계 이름, null 허용)과 선택 필드 _provenance[].variant를 더한다.
+// 2.0–2.2 문서에는 세 키가 없다. 원문에 키가 있었는지는 SceneSpecJson.Parse가 따로 본다(왕복 직렬화·golden 지문이 그대로이도록).
 // UnityEngine에 의존하지 않는다(유닛 테스트·dotnet 컴파일 검사에서 그대로 쓴다). 파싱은 Newtonsoft JSON.
 // null = 참여자가 말하지 않은 값. 기본값을 채우는 일은 SceneParams가 하고, 무엇을 채웠는지 기록한다.
 // 2.1.0(개선 매핑 v1)은 보존 필드(_context … _clauses)와 meta.mapping을 더한다. 2.0.0 문서에는 없으므로
@@ -18,7 +21,9 @@ namespace IFS.SceneSpec
         public const string SpecVersionV21 = "2.1.0";
         /// <summary>v2.2 형식(매핑 v2 builder 2.2.0, 기본 형상 form.base·form.baseVariant — 결정 G21·G30).</summary>
         public const string SpecVersionV22 = "2.2.0";
-        public static readonly string[] SupportedSpecVersions = { SupportedSpecVersion, SpecVersionV21, SpecVersionV22 };
+        /// <summary>v2.3 형식(G61 ①: form.roundness·form.aspect·material.emission, 선택 provenance.variant — docs/scene-spec-mapping.md 8절).</summary>
+        public const string SpecVersionV23 = "2.3.0";
+        public static readonly string[] SupportedSpecVersions = { SupportedSpecVersion, SpecVersionV21, SpecVersionV22, SpecVersionV23 };
 
         [JsonProperty("meta", Required = Required.Always)] public SpecMeta Meta;
         [JsonProperty("form", Required = Required.Always)] public FormSpec Form;
@@ -171,8 +176,20 @@ namespace IFS.SceneSpec
         /// 2.0·2.1 문서에는 없어야 한다. 다시 쓸 때도 키가 있던 문서만 두 키를 쓴다(2.0·2.1 왕복이 그대로).</summary>
         [JsonIgnore] public bool BaseKeysPresent;
 
+        /// <summary>(2.3) 둥긂·각짐 정도(서수): angular | slightly_angular | neutral | slightly_rounded | rounded | null.
+        /// 표에 없는 값은 SceneSpecJson.Parse가 파싱 오류로 낸다. 2.0–2.2 문서에는 키가 없다.</summary>
+        [JsonProperty("roundness")] public string Roundness;
+        /// <summary>(2.3) 길쭉함·납작함(서수): elongated | slightly_elongated | neutral | slightly_flattened | flattened | null.</summary>
+        [JsonProperty("aspect")] public string Aspect;
+
+        /// <summary>원문 form 객체에 roundness·aspect 키가 있었는가(SceneSpecJson.Parse가 채운다). 2.3.0 문서는 둘 다 있어야 하고
+        /// 2.0–2.2 문서에는 없어야 한다. 다시 쓸 때도 키가 있던 문서만 두 키를 쓴다(2.0–2.2 왕복이 그대로).</summary>
+        [JsonIgnore] public bool ContourKeysPresent;
+
         public bool ShouldSerializeBase() => BaseKeysPresent || Base != null;
         public bool ShouldSerializeBaseVariant() => BaseKeysPresent || BaseVariant != null;
+        public bool ShouldSerializeRoundness() => ContourKeysPresent || Roundness != null;
+        public bool ShouldSerializeAspect() => ContourKeysPresent || Aspect != null;
     }
 
     /// <summary>(2.2) 기본 형상 변형값. 키마다 null = 정하지 않음(렌더러가 형상 프리셋 기본값). 쓰는 키는 기본 형상마다 다르다
@@ -206,6 +223,13 @@ namespace IFS.SceneSpec
         [JsonProperty("roughness", Required = Required.AllowNull)] public double? Roughness;
         [JsonProperty("opacity", Required = Required.AllowNull)] public double? Opacity;
         [JsonProperty("erosion", Required = Required.AllowNull)] public double? Erosion;
+        /// <summary>(2.3) 발광(서수): none | faint | glowing | null. none은 '빛이 없다'고 말한 값(null = 말하지 않음과 다르다).</summary>
+        [JsonProperty("emission")] public string Emission;
+
+        /// <summary>원문 material 객체에 emission 키가 있었는가(SceneSpecJson.Parse가 채운다). 2.3.0 문서에만 있다.</summary>
+        [JsonIgnore] public bool EmissionKeyPresent;
+
+        public bool ShouldSerializeEmission() => EmissionKeyPresent || Emission != null;
     }
 
     public sealed class HslColor
@@ -245,6 +269,18 @@ namespace IFS.SceneSpec
         [JsonProperty("rule", Required = Required.Always)] public string Rule;
         /// <summary>(2.1) 퍼지 매칭 값이면 true. 없으면 쓰지 않는다.</summary>
         [JsonProperty("needsConfirmation", NullValueHandling = NullValueHandling.Ignore)] public bool? NeedsConfirmation;
+        /// <summary>(2.3) 형태 변이 규칙층 근거(선택). 렌더에는 쓰지 않고 그대로 읽는다. 없으면 쓰지 않는다.</summary>
+        [JsonProperty("variant", NullValueHandling = NullValueHandling.Ignore)] public VariantProvenance Variant;
+    }
+
+    /// <summary>(2.3) 형태 변이 규칙층으로 대응한 근거(shared/schemas/scene-spec.v2.3.json $defs.provenance.variant).
+    /// rules = 적용 순서, surface = 원래 표면형, root = 사전에서 찾은 꼴, grade = 강도 기록(값은 바꾸지 않음).</summary>
+    public sealed class VariantProvenance
+    {
+        [JsonProperty("rules", Required = Required.Always)] public List<string> Rules;
+        [JsonProperty("surface", Required = Required.Always)] public string Surface;
+        [JsonProperty("root", Required = Required.Always)] public string Root;
+        [JsonProperty("grade", Required = Required.Always)] public List<string> Grade;
     }
 
     public sealed class UnmatchedToken

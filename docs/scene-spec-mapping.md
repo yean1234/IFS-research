@@ -310,3 +310,150 @@ v1까지는 사전에 없는 명사(화분, 물병, 인형)가 기록 없이 사
 | 소유감 러너 | 형태 변형은 `form.base`를 건드리지 않음(G21, `BaseShapeTests.Ownership_variants_do_not_touch_form_base`) |
 | 사전 버전 | `meta.pipeline.lexicons.baseShapes` = `base-shapes-v1@0.5.0` |
 | 남은 것 | `meta.mapping.used`는 여전히 v0 | v1(v2는 v1으로 적음, 2.2 스키마에서도 그대로). 채점기(`eval/fidelity.py`)에는 `form.base` 정답 기준이 없어 v2의 기본 형상 반영은 채점하지 않음 |
+
+## 8. 스펙 2.3: 윤곽·발광과 형태 변이 규칙층 (G61, 2026-11-26)
+
+근거: `docs/decisions.md` G61(① 그릴 수 있는 형상 ② 받아들이는 말), 조사 `docs/viz-research-json-unity.md` 4.2절(E1 슈퍼쿼드릭 윤곽, E4 발광), `docs/viz-research-open-vocabulary.md` B-1절. 방향 전체와 하지 않은 것은 `docs/viz-pipeline-direction.md`에 있습니다. **Unity 구현자는 8.2·8.4·8.5절만 보고 구현할 수 있게 썼습니다.**
+
+### 8.1 무엇이 바뀌었나, 켜는 법
+
+| 파일 | 내용 |
+| --- | --- |
+| `shared/schemas/scene-spec.v2.3.json` | 2.3.0 형식. 2.2 스키마에 슬롯 3개(`form.roundness`, `form.aspect`, `material.emission`)와 선택 필드 `provenance.variant`를 더함. 2.0–2.2 문서도 그대로 받음 |
+| `shared/lexicon/layer1_lexicon.v2.json` | 1층 사전 v2 오버레이(v0 + v1 위). 새 범주 `contour`(윤곽어 16개)·`emission`(발광어 8개)만 더함 |
+| `shared/lexicon/scene_params.v3.json` | 새 범주 → 슬롯(`layer1`), 서수 단계(`ordinal`), 정도 부사(`degree`), 부정(`negation`), 명사 + 용언 구(`phrases`), **Unity 수치 대응표(`render`)** |
+| `shared/lexicon/variant_rules.v0.json` | 형태 변이 규칙층의 닫힌 표(어미·파생 접사·겹친 꼴·의태어 모음·자음 교체, 불용 표) |
+| `chatbot/ifs_chatbot/variants.py` | 변이 규칙 해석기 |
+| `chatbot/ifs_chatbot/scene_builder_v2.py` | 매퍼 v2에 두 기능을 선택으로 더함(builder 2.5.0) |
+
+설정은 `config/*.toml`의 `[mapping]`이고 `mode = "v2"`일 때만 씁니다.
+
+| 키 | 기본 | 뜻 |
+| --- | --- | --- |
+| `ext_lexicon` | `""`(끔) | `"layer1_lexicon.v2.json"`이면 스펙 2.3.0을 냅니다 |
+| `ext_params` | `"scene_params.v3.json"` | `ext_lexicon`을 켰을 때 읽는 대응표 |
+| `variant_rules` | `""`(끔) | `"variant_rules.v0.json"`이면 형태 변이 규칙층을 켭니다. 스펙 버전은 바꾸지 않습니다(2.2.0 그대로, 근거는 `rule` 꼬리표) |
+
+- **둘 다 꺼져 있으면(기본) 매퍼 v2 출력은 builder 2.4.0·스펙 2.2.0과 바이트 단위로 같습니다.** dev.json 30개, `mock_corpus.json` 36개, G61 합성 30개에서 G61 전 HEAD(`d21f984`)의 빌더 출력과 바이트 비교해 모두 같았고, 6문장을 sha256으로 고정했습니다(`chatbot/tests/test_g61_viz_pipeline.py::test_default_v2_output_unchanged_by_g61`). 하나라도 켜면 `meta.pipeline.builder`가 `scene-spec-builder-v2/2.5.0`이 되고, 켠 기능만 `meta.pipeline.lexicons`에 키(`layer1Chain`·`sceneParamsV3`·`variantRules`)가 생깁니다(G52와 같은 관례: 기본값이 아닐 때만 새 표기).
+- `config/v4.toml`에도 두 키를 꺼진 채로 적었습니다. **Unity는 2.3.0을 읽고 그립니다**(2026-11-26): 파서(`SceneSpecJson`)·`SceneLoader`를 같이 쓰는 헤드셋 러너·WebGL 미리보기·배치 캡처가 8.4절대로 윤곽·발광을 그리고, 세 값이 모두 null인 2.3 문서는 2.2와 같은 메시·머티리얼·화소입니다(`unity/README.md`, 화면 `docs/validation/scene-spec-2.3/`). 명세와 다른 점은 셰이더 발광 프로퍼티 이름 하나(`_EmissionColor` 대신 `_IfsEmission` — Built-in Standard 예약 이름이고 2.0–2.2 golden 지문이 그 이름의 유무를 읽기 때문)입니다. `ext_lexicon`을 켤지는 아직 정하지 않았습니다(헤드셋 확인 전). `variant_rules`는 스펙을 바꾸지 않아 Unity와 무관하게 켤 수 있습니다(권고는 `docs/viz-pipeline-direction.md`).
+
+### 8.2 최종 스키마 2.3.0 (Unity 구현자용)
+
+```json
+"form": {"type": "blob", "posture": null, "base": null, "baseVariant": null,
+         "roundness": "angular", "aspect": null},
+"material": {"color": {"h": 0.0, "s": 0.05, "l": 0.45}, "brightness": null, "saturation": null,
+             "roughness": null, "opacity": null, "erosion": null, "emission": "glowing"}
+```
+
+| 슬롯 | 값(서수, 왼쪽부터 순서) | null | 사전 낱말(1층 사전 v2) |
+| --- | --- | --- | --- |
+| `form.roundness` | `angular` · `slightly_angular` · `neutral` · `slightly_rounded` · `rounded` | 둥긂을 말하지 않음 | 각지·모나·네모나 → angular, 둥글·동그랗·둥그렇·동글동글·둥글둥글 → rounded, 둥그스름·동그스름 → slightly_rounded. 구 '각이 지다'·'모가 나다' → angular |
+| `form.aspect` | `elongated` · `slightly_elongated` · `neutral` · `slightly_flattened` · `flattened` | 길쭉함·납작함을 말하지 않음 | 길쭉·기다랗 → elongated, 갸름 → slightly_elongated, 납작·평평·넓적 → flattened |
+| `material.emission` | `none` · `faint` · `glowing` | 발광을 말하지 않음 | 빛나·번쩍이·번쩍거리·환하·눈부시 → glowing, 반짝이·반짝거리·반짝반짝 → faint, 구 '빛이 나다' → glowing. 부정('빛나지 않아요'·'빛이 안 나요') → none |
+
+- 2.3.0 문서는 세 키를 **반드시 가집니다**(값이 null이어도). 2.2 키(`form.base`·`form.baseVariant`)도 그대로 반드시 있습니다. 2.0·2.1·2.2 문서에 세 키가 있으면 스키마와 `check_principles()`가 거부합니다.
+- 값 규칙은 다른 슬롯과 같습니다. 값이 있으면 `_provenance["form.roundness"]` 같은 근거가 있고, null이면 근거가 없습니다. `_inferred`에는 나오지 않습니다(추론 제안을 만들지 않음).
+- `neutral`(둥긂·길쭉함)은 사전이 내지 않습니다. 나중에 참여자 조절(④)과 렌더러 기본값을 위한 단계입니다.
+- `_alternatives`·`_context`·`_parts`·`_uncertain`·`_clauses`의 `path`에 세 경로가 올 수 있습니다. 윤곽어 부정은 `_negated`(category `contour`)에 남습니다.
+- `provenance.variant`(선택): 형태 변이 규칙층 근거의 구조 기록. `{"rules": [...], "surface": "빤짝빤짝", "root": "반짝반짝", "grade": ["stronger"]}`. 같은 내용이 `rule` 앞머리 `variant(…)`에도 있습니다(2.2 문서에는 구조 필드가 없어 꼬리표만). Unity는 이 필드를 읽지 않아도 되지만 엄격 파서라면 키를 알아야 합니다.
+- 렌더러가 새로 받을 수 있는 덮어쓰기 키(아직 챗봇이 쓰지 않음, ④ 설계용): `form.roundness`·`form.aspect`·`material.emission`(범주 문자열, `"none"`은 발광 끔).
+
+### 8.3 매퍼 규칙 (사전 → 값)
+
+1. **직접 묘사어만.** 참여자가 모양·빛을 직접 말했을 때만 값이 생깁니다. 감정어·온도어로 윤곽·발광을 정하지 않습니다(`'불안하고 답답해요'` → 세 슬롯 모두 null). '밝은 색'의 '밝다'는 명도(`material.brightness`)라 발광이 아닙니다. 넣지 않은 낱말과 이유는 `layer1_lexicon.v2.json`의 `notIncluded`.
+2. **정도 부사.** 앞 어절이 약한 정도 부사(살짝·조금·약간 …)면 한 단계 중립 쪽으로 옮깁니다(rounded → slightly_rounded, glowing → faint). 중립·none까지는 가지 않습니다. 센 정도 부사는 바꾸지 않습니다. 옮기면 `rule` 끝에 `+degree(살짝)`. 구('빛이 좀 나요')는 용언 앞 부사를 봅니다.
+3. **부정.** 발광어 부정 → `none`(말한 값: 빛이 없다, `rule` 끝 `(negated)`). 윤곽어 부정('둥글지 않아요') → 값 없음, `_negated`에만(반대 값 '각짐'을 만들지 않음).
+4. **범위 규칙**은 v1과 같습니다. 회상 문장 → `_context`, 배경 사물·자리 표지 사물을 꾸미는 윤곽어('둥근 탁자 위에') → `_context`(background_object·landmark_object), 부분 명사(안쪽·가장자리 …)를 주제로 하거나 꾸미는 말('가장자리가 빛나요') → `_parts`(전체 값으로 올리지 않음, 겉·표면은 전체), 모름 절 → `_alternatives`(participant_uncertain), 자기 정정·'처음엔 …했다가' → `_alternatives`(self_corrected·superseded). 병합 순위도 v1과 같습니다(차원 주제 > 때 > 층 > 근거 종류 > 먼저 말한 것). 직유 원천의 꾸밈말('둥근 돌 같은')은 2층(`source = simile_marker`)입니다.
+5. **구 규칙**(`scene_params.v3.json` `phrases`): 명사 + (이·가·은·는·도) + (부사 둘까지) + 용언이 같은 절에 있으면 '각+지'·'모+나'·'빛+나'를 사전 항목 각지·모나·빛나로 읽습니다. Kiwi가 문맥에 따라 '각진'을 `각/NNG + 지/VV`로 나누는 경우도 이것으로 받습니다. 근거 `source = phrase_rule`, 구간은 명사부터 용언 어절 끝까지. 그 명사가 D1에서 사전에 없는 명사(`unlisted_noun`)로 기록됐으면 지웁니다(D6 기본 형상과 같은 처리).
+6. **2.2 슬롯과의 관계.** 윤곽·발광은 다른 슬롯과 기록을 다 정한 뒤 따로 읽으므로 2.2 슬롯 값은 바뀌지 않습니다. 같은 낱말이 다른 범주에도 있으면 둘 다 걸립니다(v1 오버레이 규칙과 같음): '둥근'은 v0 모양어(`_unmapped` category shape round — Unity 구 모형이 읽음)로 **그대로 남고** `form.roundness = rounded`의 근거도 됩니다. '빛나요'는 `material.brightness = 0.9`와 `material.emission = glowing`을 함께 냅니다(밝기 슬롯은 2.2와 같음).
+7. `_unmatched`는 새 근거가 덮은 토큰을 빼고 어절 항목을 다시 계산합니다. `_clauses`는 근거가 든 절의 `usedFor`에 새 경로를 더합니다(읽기용 색인).
+
+### 8.4 Unity 해석 규칙 (구현자용)
+
+1. **파서.** `SupportedSpecVersions`에 2.3.0. `FormSpec.Roundness`·`FormSpec.Aspect`·`MaterialSpec.Emission`(문자열, null 허용). 표에 없는 값은 파싱 오류(기본 형상 변형 키와 같게). 2.0–2.2 문서의 왕복 직렬화와 golden 지문이 바뀌지 않게, 2.2 때처럼 원문에 키가 있었는지 따로 봅니다. `provenance.variant`는 선택 키로 받습니다.
+2. **어느 형상을 그리나(윤곽 적용 순서).** 위에서부터 처음 맞는 것:
+   1. `form.type`이 mist·shell·fragments → 그 형태. 윤곽은 `not_applied_form`.
+   2. `form.base`가 승인된 기본 형상이고 `form.type`이 null·blob → 기본 형상. 윤곽은 `not_applied_base`.
+   3. 모양 모형이 적용됨(`docs/shape-mapping.md` 규칙: `_unmapped` category shape의 round·square·flat·pointed) → 그 모형 그대로. 윤곽(둥긂·길쭉함 둘 다)은 `not_applied_model`. **충돌 규칙:** 둥글·동그랗·네모나·납작·평평은 모양 모형 낱말이면서 윤곽어라, 모형이 있으면 2.2와 같은 그림을 지키고 같은 말을 두 번 적용하지 않습니다(예: 납작 원기둥을 또 납작하게 만들지 않음).
+   4. 그 밖(기본 덩어리 경로):
+      - `form.roundness`가 있으면 **슈퍼쿼드릭 메시**(8.5 표의 e1·e2)로 기본 덩어리 메시를 대신합니다. 모양 모형처럼 정점 변위 `_Displacement`·굴곡 `_Lumpiness`를 0으로 둡니다(각진 윤곽이 노이즈로 흐려지지 않게). 색·밝기·거칠기·불투명도·침식은 같은 IFS 셰이더로 그대로.
+      - `form.roundness`가 null이고 `form.aspect`만 있으면 **기본 덩어리 메시를 그대로** 쓰고 축 배율만 곱합니다(말하지 않은 둥긂을 바꾸지 않음).
+      - `form.aspect`가 있으면 8.5 표의 축 비율 (x, y, z)를 형상의 국소 배율에 곱합니다. 긴 축 = 1이라 `layout.size`(가장 긴 변)의 뜻이 그대로입니다. 그 위에 지금처럼 `layout.size` 배율과 `form.posture` 크기 변형을 곱합니다.
+      - 두 슬롯이 모두 null이면 **2.2와 완전히 같은 경로**(같은 메시·같은 셰이더 값·같은 기록)입니다.
+3. **슈퍼쿼드릭 메시(`superquadric/1`).** 지름 1(반축 0.5)인 단위 형상을 만들고 모양 모형과 같은 기본 크기(`SceneLoader ▸ Placement ▸ Primitive Base Size`, 0.35 m)로 줄입니다. Unity 국소 축(y가 위)으로:
+   - η ∈ [−π/2, π/2](위도), ω ∈ [−π, π)(경도), f(c, e) = sign(c)·|c|^e
+   - x = 0.5·f(cos η, e1)·f(cos ω, e2), y = 0.5·f(sin η, e1), z = 0.5·f(cos η, e1)·f(sin ω, e2)
+   - 경도 48칸 × 위도 24칸(원뿔 모형과 같은 48조각), 극점은 한 점으로 모읍니다. e가 작으면(angular 0.1) 정점이 모서리 근처에 몰려 `RecalculateNormals`의 음영이 얼룩질 수 있습니다. 같은 매개변수 격자에서 이웃 정점 차의 외적으로 법선을 구하거나(이음매·극점은 평균), 해석 법선(Barr 1981의 법선 식: 지수 e를 2 − e로 바꾼 같은 꼴)을 쓰고, 모서리 음영을 화면으로 확인합니다. 난수가 없어 같은 값이면 같은 메시입니다.
+   - 확인 기준: e1 = e2 = 1이면 지름 1인 구(정점 오차 1e-5 이내), 0.1이면 한 변 1인 정육면체에 가까운 둥근 상자.
+4. **발광.** 형상 경로와 상관없이(1–4 모두) 적용합니다.
+   - 발광 색 = 그 물체를 그리는 **바탕색 그대로**(말한 `material.color`에 밝기·채도 슬롯과 덮어쓰기까지 반영한 최종 바탕색. 색을 말하지 않았으면 지금 쓰는 기본색 — 그 기본색은 지금처럼 `defaultsUsed`에 `material.color`로 남음). **새 색을 만들지 않습니다.**
+   - 셰이더 발광 항 = 바탕색(선형) × 세기(8.5 표). IFS 셰이더에 `_EmissionColor`(기본 검정 = 0, 그래서 null·none이면 2.2와 같은 화소) 항 하나를 더합니다. 블룸 후처리는 넣지 않습니다(Quest 비용).
+   - 반투명 형태(mist 등)도 같은 규칙입니다.
+5. **기록(`initialScene.json`, 배치 캡처 `report.json`).** 2.3 문서일 때만 새 키:
+   - `contour`: `{"status": "applied" | "not_applied_form" | "not_applied_base" | "not_applied_model" | "none", "roundness", "aspect", "mesh": "superquadric/1" | "default", "e1", "e2", "axisRatios": [x, y, z]}` — 적용하지 않았으면 수치는 null(기본값과 미지정을 섞지 않음).
+   - `emission`: `{"level", "intensity", "colorSource": "said" | "default"}`.
+   - `defaultsUsed`에 더할 것: 길쭉함·납작함을 그렸으면 `form.aspect.axis`(긴 축 방향 = 세로 y는 말하지 않은 기본값), 슈퍼쿼드릭을 그렸는데 `form.aspect`가 null이면 `form.aspect`, 축 배율만 곱했는데 `form.roundness`가 null이면 `form.roundness`.
+6. **덮어쓰기.** `SceneOverride`가 `form.roundness`·`form.aspect`·`material.emission` 범주 키를 받을 수 있게 둡니다(챗봇은 아직 보내지 않음. 선택 기록 `selection.v0.2.json`은 바꾸지 않았음).
+7. **테스트.** 2.0–2.2 golden 지문 불변, 세 슬롯이 모두 null인 2.3 문서는 2.2 문서와 렌더·기록이 같음(specVersion 빼고), e = 1 구 대조, 적용 순서 1–4, 발광 null·none일 때 화소 불변.
+
+### 8.5 수치 대응표 (`scene_params.v3.json` `render`, 초안 — 화면 확인 전)
+
+| `form.roundness` | e1 | e2 | 모양 |
+| --- | --- | --- | --- |
+| `angular` | 0.1 | 0.1 | 모서리가 살짝 둥근 정육면체 |
+| `slightly_angular` | 0.3 | 0.3 | 둥근 상자 |
+| `neutral` | 0.5 | 0.5 | 쿠션 꼴 |
+| `slightly_rounded` | 0.75 | 0.75 | 덜 둥근 구 |
+| `rounded` | 1.0 | 1.0 | 구 |
+
+| `form.aspect` | (x, y, z) 배율 |
+| --- | --- |
+| `elongated` | (0.5, 1.0, 0.5) |
+| `slightly_elongated` | (0.75, 1.0, 0.75) |
+| `neutral` | (1.0, 1.0, 1.0) |
+| `slightly_flattened` | (1.0, 0.7, 1.0) |
+| `flattened` | (1.0, 0.4, 1.0) — FlatCylinder 모형의 두께 비 0.4와 같음 |
+
+| `material.emission` | 세기 |
+| --- | --- |
+| `none` | 0.0 |
+| `faint` | 0.35 |
+| `glowing` | 1.0 |
+
+- 두 지수를 같게 둡니다(참여자가 말한 것은 '둥긂 정도' 하나). e > 1(팔면체·별꼴)은 쓰지 않습니다.
+- 길쭉함의 긴 축은 세로(y)입니다. 참여자가 방향을 말하지 않았으므로 기본값이고 `defaultsUsed`에 남깁니다.
+- 수치를 바꾸면 `scene_params.v3.json`의 `lexiconVersion`을 올립니다. 정서 → 모양 문헌(곡선 = 긍정 등)은 이 표의 근거가 아닙니다(원칙 2). 표는 직접 말한 모양어를 어떻게 그릴지만 정합니다.
+
+### 8.6 형태 변이 규칙층 (`variant_rules.v0.json`)
+
+**순서**: ① 1층 사전 직접 일치 → ② 기존 의태어 파생(v1 `mimeticDerivation`: -거리다·-대다·-이다·겹친 꼴) → ③ 변이 규칙층 → ④ 자모 퍼지(`_alternatives`, 값 아님). ③은 ①②가 아무것도 내지 않은 토큰에만, 뿌리가 사전에 있을 때만 그 항목의 값(정도 부사 포함 v1과 같은 대응)을 냅니다. ③이 다룬 토큰은 ④로 가지 않습니다. 퍼지는 '다른 낱말일 수도 있는' 거리 1 후보이고 변이는 닫힌 표의 규칙 일치라 변이가 앞섭니다.
+
+| 규칙(이름) | 하는 일 | 예(합성) |
+| --- | --- | --- |
+| `ending` | Kiwi가 어미까지 한 토큰(NNG·UN)으로 묶거나 어절을 조각낸 경우 어미를 뗌(안에 든 파생 접사도 기록) | 빤짝여요 → 빤짝 (+suffix:이) |
+| `suffix:<접사>` | -스럽·-스름·-스레·-거리·-대·-이·-하를 뗌. -스름·-스레는 grade `attenuated`만 남김 | 탄탄하 → 탄탄 |
+| `reduplication` | ABAB → AB | 빤짝빤짝 → 빤짝 |
+| `ideophone_vowel` | 양성 ↔ 음성 모음 쌍(ㅏ↔ㅓ, ㅗ↔ㅜ, ㅏ↔ㅜ, ㅐ↔ㅔ, ㅐ↔ㅣ, ㅑ↔ㅕ, ㅛ↔ㅠ, ㅘ↔ㅝ, ㅚ↔ㅟ), 한 낱말 안에서 같은 방향 | 꺼칠 → 까칠(larger), 번질번질 → 반질반질(larger), 꼼틀 → 꿈틀거리(smaller) |
+| `ideophone_consonant` | 초성 예사 ↔ 거센 ↔ 된소리(ㄱㅋㄲ, ㄷㅌㄸ, ㅂㅍㅃ, ㅈㅊㅉ, ㅅㅆ), 같은 방향 | 빤짝 → 반짝(stronger), 탄탄 → 단단(stronger) |
+
+- **과잉 일치 막기**: (a) 교체는 의태어 꼴에만 — 말한 쪽이 XR·MAG이거나 겹친 꼴·접사·어미를 뗀 꼴일 때만(용언 원형 '말려' → '멀리' 오대응을 dev에서 보고 막음), 사전 쪽은 XR·MAG이나 -거리·-이·-대 동사이고 감각 의태어 범주(질감·움직임·밝기·소리·모양·온도·무게·윤곽·발광)일 때만. (b) 모음과 자음을 한꺼번에 바꾸지 않음('통통' → '둥둥' 오대응을 dev에서 보고 끔). (c) 같은 단계에서 서로 다른 값이 걸리면 대응하지 않음. (d) 불용 표: 부들부들·철렁·촐랑·설렁·탁탁·털털·동동·감감·벌벌·펄펄·콩콩·쿵쿵·뻥뻥·번번·반반. (e) 보통 명사에는 걸지 않음. 규칙마다 양·음 테스트가 있습니다(`test_g61_viz_pipeline.py`).
+- **강도는 기록만**: 큰말·작은말(`larger`·`smaller`), 센·여린 소리(`stronger`·`weaker`), -스름(`attenuated`)은 값을 바꾸지 않습니다. '꺼칠꺼칠'과 '까칠까칠'은 같은 `material.roughness`입니다.
+- **부정**이면 값을 만들지 않고 `_negated`에(규칙 꼬리표 그대로). 뿌리가 사전에 있으나 장면 값이 없으면('탄탄' → 단단 firm) 직접 일치와 같게 `_unmapped`에.
+- **근거 형식**: `rule = "variant(suffix:하>ideophone_vowel;surface=꺼칠;root=까칠;grade=larger)>textureLexicon.까칠>material.roughness:rough"`. 스펙 2.3 문서에서는 `provenance.variant`에도 구조로 남습니다.
+- **dev 수치**(held-out 미사용, 확정 텍스트 근사 = 코퍼스 replies를 줄바꿈으로 이음): dev.json + mock_corpus 66개에서 변이 규칙이 값을 낸 것 0건(두 오대응을 막은 뒤), 토큰 단위 `_unmatched` 460 → 460. G61 합성 30문장(규칙을 보고 지은 문장이라 평가 아님)에서 값 5개·기록 3개, `_unmatched` 37 → 31, 퍼지 대안 3 → 1. 스펙 2.3을 함께 켜면 66개에서 윤곽 값 15(둥긂 12·길쭉함 3), 발광 값 10, `_unmatched` 460 → 453.
+
+### 8.7 입자 형태(`form.type = particles`)는 자리를 예약하지 않았다
+
+- 지금 1층 사전 v1은 '알갱이'·'가루'·'입자'·'부스러기'를 `fragments`로 대응합니다. 입자 형태를 만들면 이 낱말들의 대응을 다시 정해야 하고(어느 것이 파편이고 어느 것이 입자인가), 그것은 사전 결정이지 스키마 자리 문제가 아닙니다.
+- 해석기가 없는 enum 값을 스키마에 먼저 넣으면 엄격 파서·후보 값 표(`candidate_values.v2.json`의 형태 항목)·러너 덮어쓰기 검사가 '받지만 그리지 못하는 값'을 갖게 됩니다. 기본값과 미지정을 섞지 않는다는 원칙과도 맞지 않습니다.
+- 권고: 입자 렌더(Shuriken, 고정 시드)와 사전 재대응을 함께 정할 때 2.4에서 `form.type` 값으로 더합니다. 밀도(빽빽·촘촘)는 그때의 매개변수 후보입니다(`docs/validation/lexicon-proposals/priority-imagery.proposals.json`).
+
+### 8.8 남은 문제
+
+- **기존 결함(이번에 고치지 않음, 기본 출력을 바꾸게 되므로):** builder 2.2.0 이후 D6 기본 형상 경로가 `_unmatched`의 어절 항목을 다시 계산할 때 옛 어절 항목을 지우지 않은 채 계산해, 기본 형상(또는 제외 낱말)이 나온 spec에서는 **어절 단위 `_unmatched`가 모두 사라집니다**(dev + mock 66개 중 20개. 어절 항목이 66개 합계 636개인데, 옛 항목을 빼고 다시 계산하면 956개). 무손실 보존(6.5절) 결함입니다. 스펙 2.3 경로는 다시 계산할 때 옛 항목을 먼저 빼므로 이 결함이 없습니다 — 그래서 2.2와 2.3 출력의 어절 항목 수를 그대로 견주면 안 됩니다. 고칠지와 golden 재고정은 메인이 정할 일입니다.
+- 윤곽은 형상 전체에만 적용합니다. '끝이 뾰족'처럼 부분 형상, 구멍·고리(위상), 시간에 따른 형태 변화는 범위 밖입니다(`docs/viz-research-json-unity.md` E2·E5).
+- 모양 모형이 있는 말과 윤곽어를 같이 말하면('둥글고 길쭉한') 모형이 이기고 길쭉함은 그려지지 않습니다(8.4 규칙 3, 기록에는 남음).
+- 검증기 V5는 계속 v0 사전만 봅니다. 면담자가 새 윤곽어('갸름한')를 먼저 꺼내는 경우는 V5 사전 검사가 아니라 `strict_novel_content`에만 걸립니다.
+- 변이 규칙층은 dev에서 값을 하나도 내지 않았습니다. 이득은 변이형이 실제로 얼마나 나오는지에 달렸고, 새 평가 문장(X13)으로 재야 합니다.
+- 연구자 승인형 사전 확장으로 더한 항목은 `ext_lexicon` 사슬(v0 + v1 + 새 파일)로만 쓰입니다. 스펙 2.3 없이 1층 사전만 넓히는 설정은 아직 없습니다.

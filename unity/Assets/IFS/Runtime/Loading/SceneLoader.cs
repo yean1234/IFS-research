@@ -5,6 +5,8 @@
 //   _unmapped 모양어 → 모양 모형(round 구 · square 큐브 · flat 납작 원기둥 · pointed 원뿔, ShapeMapping).
 //                    form.type이 null·blob일 때만. 표에 없는 모양어는 경고하고 unmapped_shape로 기록(구로 바꾸지 않음).
 //                    판정은 initialScene.json·report.json의 "shape"(docs/shape-mapping.md)
+//   (2.3) form.roundness → 슈퍼쿼드릭 메시(기본 덩어리 경로만), form.aspect → 국소 축 배율, material.emission → _IfsEmission
+//                    (적용 순서·기록은 FormRenderPlan, docs/scene-spec-mapping.md 8.4절. 세 값이 모두 null이면 2.2와 같은 경로)
 //   material.*     → Shader Graph 파라미터(_BaseColor, _Brightness, _Roughness, _Opacity, _Erosion)
 //   layout.*       → Transform(거리·높이·크기), form.posture → 크기 변형 프리셋
 //   motion.*       → SpecMotion(절차적 움직임)
@@ -287,6 +289,7 @@ namespace IFS.SceneSpec
                 Note($"변형 덮어쓰기(기록 안 함): 모양 모형 강제 → {Shape.Model}", false);
             }
             NoteShapeWords(fileName, spec.Meta.SessionId);
+            NoteContourDefaults();
 
             CaptureAnchor();
             BuildHierarchy();
@@ -298,7 +301,8 @@ namespace IFS.SceneSpec
                 var sessionId = spec.Meta.SessionId ?? Path.GetFileNameWithoutExtension(fileName);
                 // 문자열 로드면 specPath 자리에 "(json) 이름"을 남긴다(파일 경로가 아님을 구분)
                 _recorder = new ExperimentRecorder(RecordRoot, sessionId, spec, full ?? "(json) " + fileName);
-                _recorder.WriteInitial(InitialParams, raw, _notes, Shape.ToJson());
+                // (2.3) 윤곽·발광 기록은 2.3 spec(또는 덮어쓰기로 정함)일 때만(처음 로드한 값의 계획 = 지금 계획)
+                _recorder.WriteInitial(InitialParams, raw, _notes, Shape.ToJson(), RenderPlan?.ContourJson(), RenderPlan?.EmissionJson());
                 Debug.Log($"[SceneLoader] 기록 폴더: {_recorder.Directory}", this);
             }
             Debug.Log($"[SceneLoader] {fileName} 로드: form={CurrentParams.GetCategory("form.type")}, " +
@@ -401,7 +405,7 @@ namespace IFS.SceneSpec
             if (CurrentParams == null) return false;
             string from = CurrentParams.GetCategory(key);
             if (!CurrentParams.SetCategory(key, value)) return false;
-            if (key == "form.type" || key == SceneParams.BaseKey) BuildHierarchy();
+            if (key == "form.type" || key == SceneParams.BaseKey || key == ContourRender.RoundnessKey) BuildHierarchy();
             ApplyAll();
             _recorder?.RecordChange(key, from, value, CurrentDistance());
             return true;
@@ -487,6 +491,7 @@ namespace IFS.SceneSpec
                 return;
             }
             if (RenderPlan.BaseShape != null && BuildBaseShape()) return;
+            if (RenderPlan.Renderer == FormRenderPlan.RendererSuperquadric && BuildSuperquadric()) return;
             if (RenderPlan.BaseRequested != null && RenderPlan.BaseStatus != FormRenderPlan.BaseApplied)
                 Note($"form.base={RenderPlan.BaseRequested}: 그리지 않음({RenderPlan.BaseStatus}" +
                      (RenderPlan.BaseStatus == FormRenderPlan.BaseNotAppliedForm ? $" — form.type={form}의 형태 모형을 지킴" :
@@ -545,6 +550,29 @@ namespace IFS.SceneSpec
             RenderPath = renderer.Name;
             if (RenderPlan.PresetNote != null) Note(RenderPlan.PresetNote, false);
             _model.name = "model (base " + RenderPlan.BaseShape + ")";
+            _modelBaseScale = _model.transform.localScale;
+            return true;
+        }
+
+        // (2.3) 슈퍼쿼드릭(form.roundness, 기본 덩어리 경로): 기본 형상처럼 프리팹을 쓰지 않고 절차 메시로만 만든다
+        // (blob 프리팹이 연결돼 있어도 말한 윤곽이 앞선다). IFS 셰이더를 쓸 수 없으면 false → 형태 경로로 그리고 그 사실을 남긴다.
+        bool BuildSuperquadric()
+        {
+            if (!useProceduralModels || !FormRenderResources.LoadIfsShaders())
+            {
+                Note($"form.roundness={RenderPlan.Roundness}: IFS 셰이더를 쓸 수 없어 슈퍼쿼드릭 메시를 그리지 못함 — " +
+                     (useProceduralModels ? FormRenderResources.IfsShaderProblem() : "useProceduralModels가 꺼져 있음"), true);
+                return false;
+            }
+            var renderer = FormRenderers.For(RenderPlan);
+            _model = renderer.CreateModel(RenderPlan);
+            foreach (var r in _model.GetComponentsInChildren<Renderer>())
+                foreach (var m in r.sharedMaterials) if (m != null) _ownedMaterials.Add(m);
+            _model.transform.SetParent(_motion.transform, false);
+            _model.transform.localScale = Vector3.one * placement.primitiveBaseSize;
+            RenderPath = renderer.Name;
+            if (RenderPlan.PresetNote != null) Note(RenderPlan.PresetNote, false);
+            _model.name = "model (" + RenderPlan.FormType + ", contour " + RenderPlan.Roundness + ")";
             _modelBaseScale = _model.transform.localScale;
             return true;
         }
@@ -641,6 +669,32 @@ namespace IFS.SceneSpec
 
         static string Span(int[] s) => s == null ? "" : string.Join(",", s);
 
+        // (2.3) 윤곽을 그린 경로 때문에 기본값으로 정한 것(긴 축 방향, 말하지 않은 둥긂·길쭉함)을 defaultsUsed·notes에 남긴다.
+        // 처음 값(InitialParams)의 계획으로 정한다. 2.0–2.2 spec과 세 슬롯이 모두 null인 2.3 spec은 아무것도 더하지 않는다.
+        void NoteContourDefaults()
+        {
+            if (!InitialParams.HasContourSlots) return;
+            var plan = FormRenderPlan.Build(InitialParams, InitialParams.GetCategory("form.type"), Shape);
+            foreach (var key in plan.ContourDefaultsUsed)
+            {
+                if (!InitialParams.DefaultsUsed.Contains(key)) InitialParams.DefaultsUsed.Add(key);
+                if (!CurrentParams.DefaultsUsed.Contains(key)) CurrentParams.DefaultsUsed.Add(key);
+                Note(key == ContourRender.AspectAxisKey
+                    ? $"{key}: 길쭉함·납작함의 긴 축 방향을 말하지 않음 → 기본값 세로({ContourRender.AspectAxisDefault})"
+                    : $"{key}: SceneSpec 값이 null → 기본값으로 그림({(key == ContourRender.AspectKey ? "축 배율 (1, 1, 1)" : "기본 덩어리 메시")})", false);
+            }
+            // 매퍼는 윤곽어('각진'·'길쭉한')를 v0 모양어(_unmapped category shape)로도 남긴다 — 모양 모형 표에 없어 unmapped_shape 경고가
+            // 나지만 윤곽 슬롯이 그 말을 그렸음을 함께 적는다(경고 문장 자체는 2.2와 같게 둔다)
+            if (plan.ContourStatus == ContourRender.StatusApplied && Shape.Words.Exists(w => w.Status == ShapeMapping.StatusUnmapped))
+                Note($"모양 모형 표에 없는 모양어({string.Join(", ", Shape.Words.FindAll(w => w.Status == ShapeMapping.StatusUnmapped).ConvertAll(w => w.Shape ?? "값 없음"))})가 있지만 " +
+                     $"스펙 2.3 윤곽 슬롯(form.roundness={plan.Roundness ?? "null"}, form.aspect={plan.Aspect ?? "null"})으로 윤곽을 그림", false);
+            if (plan.ContourStatus != ContourRender.StatusApplied && plan.ContourStatus != ContourRender.StatusNone)
+                Note($"form.roundness={plan.Roundness ?? "null"}, form.aspect={plan.Aspect ?? "null"}: 윤곽을 그리지 않음({plan.ContourStatus}" +
+                     (plan.ContourStatus == ContourRender.StatusNotAppliedModel ? $" — 모양 모형 {plan.ShapeModel}을 지킴" :
+                      plan.ContourStatus == ContourRender.StatusNotAppliedBase ? $" — 기본 형상 {plan.BaseShape}이 윤곽을 정함" :
+                      $" — form.type={plan.FormType}의 형태 모형을 지킴") + ")", false);
+        }
+
         // 형상만 바꿀 때(조정 중 form.type 변경): 이전 형상이 쓰던 머티리얼 사본도 함께 지운다.
         // 지우지 않으면 _ownedMaterials에 남아 Unload·OnDestroy 때까지 쌓인다.
         void ReleaseModel()
@@ -696,6 +750,7 @@ namespace IFS.SceneSpec
         void ApplyAll()
         {
             if (_root == null || CurrentParams == null) return;
+            RenderPlan = BuildPlan();   // (2.3) 축 비율(form.aspect)을 ApplyLayout이 지금 값으로 읽도록 먼저 계획을 갱신(ApplyMaterial이 다시 만든다 — 같은 계획)
             ApplyLayout();
             ApplyMaterial();
             ApplyMotion();
@@ -740,7 +795,11 @@ namespace IFS.SceneSpec
                 deform = Vector3.one;
                 Note($"form.posture={posture}: 변형 프리셋이 없어 적용하지 않음", true);
             }
-            _model.transform.localScale = Vector3.Scale(_modelBaseScale * scale, deform);
+            var local = Vector3.Scale(_modelBaseScale * scale, deform);
+            // (2.3) form.aspect: 축 비율 (x, y, z)를 형상 국소 배율에 곱한다(긴 축 = 1, layout.size 뜻 그대로). 적용하지 않으면 곱하지 않는다
+            var axis = RenderPlan?.AxisRatios;
+            if (axis != null) local = Vector3.Scale(local, new Vector3((float)axis[0], (float)axis[1], (float)axis[2]));
+            _model.transform.localScale = local;
         }
 
         void ApplyMaterial()
@@ -785,6 +844,15 @@ namespace IFS.SceneSpec
 
                     if (m.HasProperty(sp.erosion)) m.SetFloat(sp.erosion, erosion);
                     else if (erosion > 0.001f) Note($"{m.shader.name}: {sp.erosion} 없음 → material.erosion 적용 안 됨", true);
+
+                    // (2.3) material.emission: 말했을 때만 넣는다(null이면 셰이더 기본 검정 그대로 → 2.2와 같은 머티리얼·화소).
+                    // SetColor는 선형 색공간에서 sRGB → 선형으로 바꿔 넣으므로 계획의 선형 값을 sRGB로 부호화해 넘긴다(셰이더는 선형 값을 받음).
+                    if (plan.EmissionSrgb(out float er, out float eg, out float eb))
+                    {
+                        if (m.HasProperty(FormRenderResources.EmissionProperty)) m.SetColor(FormRenderResources.EmissionProperty, new Color(er, eg, eb, 1f));
+                        else if (plan.EmissionIntensity > 0)
+                            Note($"{m.shader.name}: {FormRenderResources.EmissionProperty} 없음 → material.emission={plan.EmissionLevel} 적용 안 됨", true);
+                    }
                 }
                 // 그림자는 렌더러가 정한다(반투명·안개는 끔).
                 if (anyIfs) rend.shadowCastingMode = formRenderer.Shadow(plan);

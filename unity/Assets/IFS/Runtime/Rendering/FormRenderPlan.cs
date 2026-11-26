@@ -104,7 +104,127 @@ namespace IFS.SceneSpec
         public IReadOnlyList<string> BaseVariantDefaults { get; private set; }
         public int BaseSeed { get; private set; }
 
+        // ── (2.3) 윤곽·발광(docs/scene-spec-mapping.md 8.4절). 2.0–2.2 spec(HasContour = false)에서는 모두 null이고 계획 JSON에도 나오지 않는다 ──
+        /// <summary>슈퍼쿼드릭 렌더러 이름(report.json의 renderPath).</summary>
+        public const string RendererSuperquadric = "superquadric";
+        /// <summary>윤곽·발광 슬롯이 있는 값 집합인가(SceneParams.HasContourSlots).</summary>
+        public bool HasContour { get; private set; }
+        /// <summary>applied | not_applied_form | not_applied_base | not_applied_model | none.</summary>
+        public string ContourStatus { get; private set; }
+        /// <summary>지금 값의 form.roundness·form.aspect(null = 말하지 않음). 적용하지 않아도 남는다.</summary>
+        public string Roundness { get; private set; }
+        public string Aspect { get; private set; }
+        /// <summary>그린 메시: superquadric/1(둥긂을 말함) | default(길쭉함만 말해 기본 덩어리 메시에 축 배율만). 적용하지 않았으면 null.</summary>
+        public string ContourMesh { get; private set; }
+        /// <summary>슈퍼쿼드릭 지수. 슈퍼쿼드릭을 그리지 않으면 null.</summary>
+        public double? E1 { get; private set; }
+        public double? E2 { get; private set; }
+        /// <summary>형상 국소 배율에 곱할 (x, y, z). 길쭉함을 적용하지 않으면 null(로더가 배율을 곱하지 않는다).</summary>
+        public double[] AxisRatios { get; private set; }
+        /// <summary>그린 경로 때문에 기본값으로 정한 것(defaultsUsed에 더함): form.aspect.axis · form.aspect · form.roundness.</summary>
+        public IReadOnlyList<string> ContourDefaultsUsed { get; private set; } = new string[0];
+        /// <summary>material.emission(null = 말하지 않음, none = 빛이 없다고 말함).</summary>
+        public string EmissionLevel { get; private set; }
+        /// <summary>발광 세기(ContourRender). 말하지 않았으면 null.</summary>
+        public double? EmissionIntensity { get; private set; }
+        /// <summary>발광 색의 출처: said(말한 색) | default(기본색). 발광을 말하지 않았으면 null.</summary>
+        public string EmissionColorSource { get; private set; }
+        /// <summary>셰이더 발광 항(선형 RGB) = 바탕색(셰이더 알베도 식 RenderedColor.AlbedoSrgb, 선형) × 세기. 발광을 말하지 않았으면 null
+        /// (로더가 셰이더 값을 건드리지 않는다 — 기본 검정이라 2.2와 같은 화소).</summary>
+        public double[] EmissionLinear { get; private set; }
+
         FormRenderPlan() { }
+
+        /// <summary>(2.3) 윤곽 적용 순서(8.4절 2번)와 발광(4번)을 계획에 얹는다. 2.0–2.2 값 집합이면 아무것도 바꾸지 않는다.</summary>
+        void ApplyContourAndEmission(SceneParams current)
+        {
+            if (!current.HasContourSlots) return;
+            HasContour = true;
+            Roundness = current.GetCategory(ContourRender.RoundnessKey);
+            Aspect = current.GetCategory(ContourRender.AspectKey);
+            var defaults = new List<string>();
+            if (Roundness == null && Aspect == null) ContourStatus = ContourRender.StatusNone;
+            else if (BaseShape != null) ContourStatus = ContourRender.StatusNotAppliedBase;              // 2. 기본 형상
+            else if (FormType != "blob") ContourStatus = ContourRender.StatusNotAppliedForm;           // 1. mist·shell·fragments
+            else if (ShapeModel != null) ContourStatus = ContourRender.StatusNotAppliedModel;          // 3. 모양 모형(같은 말을 두 번 적용하지 않음)
+            else
+            {
+                // 4. 기본 덩어리 경로
+                ContourStatus = ContourRender.StatusApplied;
+                var inv = System.Globalization.CultureInfo.InvariantCulture;
+                if (Roundness != null)
+                {
+                    var (e1, e2) = ContourRender.Exponents(Roundness);
+                    E1 = e1;
+                    E2 = e2;
+                    ContourMesh = ContourRender.MeshRule;
+                    Renderer = RendererSuperquadric;
+                    Preset = ShapePreset;             // 굴곡 0(모양 모형과 같은 프리셋)
+                    ZeroDisplacement = true;          // 정점 변위 0 — 각진 윤곽이 노이즈로 흐려지지 않게
+                    PresetNote = $"form.roundness={Roundness}: 형상 프리셋 기본값 — 슈퍼쿼드릭 메시(규칙 {ContourRender.MeshRule}, " +
+                                 $"e1 {e1.ToString(inv)}, e2 {e2.ToString(inv)}, 경도 {ContourRender.LongitudeSegments} × 위도 {ContourRender.LatitudeSegments}, " +
+                                 $"지름 1 × 기본 크기)로 기본 덩어리 메시를 대신함. 정점 변위 0, 굴곡 0, 노이즈 크기 {ShapePreset.NoiseScale.ToString(inv)}. " +
+                                 $"수치 {ContourRender.ParamsVersion}";
+                    if (Aspect == null) defaults.Add(ContourRender.AspectKey);
+                }
+                else
+                {
+                    ContourMesh = ContourRender.MeshDefault;   // 말하지 않은 둥긂은 바꾸지 않는다(기본 덩어리 메시 그대로)
+                    defaults.Add(ContourRender.RoundnessKey);
+                }
+                if (Aspect != null)
+                {
+                    AxisRatios = ContourRender.AxisRatios(Aspect);
+                    if (Aspect != "neutral") defaults.Add(ContourRender.AspectAxisKey);   // 긴 축 방향(세로 y)은 말하지 않은 기본값
+                }
+            }
+            ContourDefaultsUsed = defaults;
+
+            // 발광: 형상 경로와 상관없이. 색은 그리는 바탕색 그대로(새 색 없음), 세기만 곱한다. 블룸 없음.
+            EmissionLevel = current.GetCategory(ContourRender.EmissionKey);
+            if (EmissionLevel != null)
+            {
+                double k = ContourRender.EmissionIntensity(EmissionLevel);
+                EmissionIntensity = k;
+                EmissionColorSource = current.DefaultsUsed.Contains("material.color.h") || current.DefaultsUsed.Contains("material.color.l") ? "default" : "said";
+                RenderedColor.AlbedoSrgb(current.GetNumber("material.color.h"), current.GetNumber("material.color.s"),
+                    current.GetNumber("material.color.l"), current.GetNumber("material.brightness"), out double r, out double g, out double b);
+                EmissionLinear = new[] { ColorMetrics.SrgbToLinear(r) * k, ColorMetrics.SrgbToLinear(g) * k, ColorMetrics.SrgbToLinear(b) * k };
+            }
+        }
+
+        /// <summary>(2.3) 머티리얼에 넣는 발광 색(sRGB 부호화, 각 0–1). Unity는 선형 색공간에서 색 프로퍼티를 선형으로 바꿔 넣으므로
+        /// 셰이더는 EmissionLinear를 받는다. 발광을 말하지 않았으면 false.</summary>
+        public bool EmissionSrgb(out float r, out float g, out float b)
+        {
+            r = g = b = 0f;
+            if (EmissionLinear == null) return false;
+            r = (float)ColorMetrics.LinearToSrgb(EmissionLinear[0]);
+            g = (float)ColorMetrics.LinearToSrgb(EmissionLinear[1]);
+            b = (float)ColorMetrics.LinearToSrgb(EmissionLinear[2]);
+            return true;
+        }
+
+        /// <summary>(2.3) 기록의 contour(initialScene.json·report.json·계획 JSON). 2.0–2.2 값 집합이면 null.
+        /// 적용하지 않았으면 수치(mesh·e1·e2·axisRatios)는 null — 기본값과 미지정을 섞지 않는다.</summary>
+        public JObject ContourJson() => !HasContour ? null : new JObject
+        {
+            ["status"] = ContourStatus,
+            ["roundness"] = Roundness,
+            ["aspect"] = Aspect,
+            ["mesh"] = ContourMesh,
+            ["e1"] = E1,
+            ["e2"] = E2,
+            ["axisRatios"] = AxisRatios != null ? new JArray(AxisRatios) : null,
+        };
+
+        /// <summary>(2.3) 기록의 emission. 2.0–2.2 값 집합이면 null.</summary>
+        public JObject EmissionJson() => !HasContour ? null : new JObject
+        {
+            ["level"] = EmissionLevel,
+            ["intensity"] = EmissionIntensity,
+            ["colorSource"] = EmissionColorSource,
+        };
 
         /// <summary>
         /// current = 지금 적용할 값, initialFormType = 처음 로드 때의 form.type, shape = 모양어 판정(없으면 null).
@@ -127,7 +247,13 @@ namespace IFS.SceneSpec
                 else baseStatus = BaseApplied;
             }
             bool baseApplied = baseStatus == BaseApplied;
-            if (baseApplied) return BuildBase(current, form, baseReq);
+            var plan = baseApplied ? BuildBase(current, form, baseReq) : BuildForm(current, form, initialFormType, shape, baseReq, baseStatus);
+            plan.ApplyContourAndEmission(current);
+            return plan;
+        }
+
+        static FormRenderPlan BuildForm(SceneParams current, string form, string initialFormType, ShapeResolution shape, string baseReq, string baseStatus)
+        {
             bool shapeModel = shape?.Model != null && form == initialFormType;
             RenderedColor.BaseSrgb(current.GetNumber("material.color.h"), current.GetNumber("material.color.s"),
                 current.GetNumber("material.color.l"), out double r, out double g, out double b);
@@ -285,6 +411,12 @@ namespace IFS.SceneSpec
             var o = CoreJson();
             var b = BaseJson();
             if (b != null) o["base"] = b;
+            // (2.3) 윤곽·발광 슬롯이 있을 때만(2.0–2.2 spec의 계획 JSON은 그대로)
+            if (HasContour)
+            {
+                o["contour"] = ContourJson();
+                o["emission"] = EmissionJson();
+            }
             return o;
         }
 

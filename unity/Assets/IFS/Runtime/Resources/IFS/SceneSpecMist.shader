@@ -21,6 +21,7 @@
 //   _Brightness 밝기 배율 lerp(0.4, 1, saturate(2B)) — IFSSceneSpecCommon.cginc·C# RenderedColor.BrightnessFactor와 같은 식. 0.5 초과분은 발광(색 × (B − 0.5) × 2.4)
 //   _Opacity    최종 알파 배율(덩어리 속 최대 알파 ≈ opacity)
 //   _Roughness  표면 반사(광택)가 아니다. 노이즈 크기 배율 lerp(0.7, 1.3, R)과 색 얼룩 세기(기존 식 lerp(1, 0.7 + 0.6·얼룩, 0.25 + 0.6R))
+//   _IfsEmission (2.3) 발광 항(선형 RGB, 기본 0) — 표본 색에 더한다(IFSSceneSpecCommon.cginc와 같은 값)
 //   _Erosion    밀도 결손(노이즈가 기준보다 낮은 곳의 밀도를 0으로, 기존 Opaque의 침식과 같은 문턱 erosion × 0.62)
 // 형상 프리셋(로더가 넣음): _Lump0…_Lump4, _Lumpiness(겉면 노이즈 진폭 배율), _NoiseScale, _Density(0.5), _Seed. _Fuzz·_ShellOpen·_Displacement는 쓰지 않는다.
 // 그림자 없음(U5): ShadowCaster 패스가 없고 FallBack도 없다. 투명 겹침 1층(ZWrite Off), 드로콜 1.
@@ -40,6 +41,7 @@ Shader "IFS/SceneSpec Mist"
         _Seed ("Seed", Float) = 0
         _Density ("Density", Range(0, 1)) = 0.5
         _FloorY ("Floor Height (world)", Float) = -10000
+        _IfsEmission ("Emission (linear, 2.3)", Color) = (0, 0, 0, 0)
         // 덩어리(물체 좌표 xyz = 중심, w = 반지름). 로더가 MistLumps.Build(seed)로 채운다. 기본값은 seed 0이 아니라 대략의 자리(로더가 늘 덮어씀)
         _Lump0 ("Lump 0", Vector) = (0, -0.04, 0, 0.35)
         _Lump1 ("Lump 1", Vector) = (0.29, 0.12, 0, 0.24)
@@ -243,7 +245,7 @@ Shader "IFS/SceneSpec Mist"
                     float selfShadow = exp(-sigma * 0.25 * thick);
                     float3 lit = _LightColor0.rgb * saturate((dot(n, lightDir) + 0.4) / 1.4) * selfShadow + ShadeSH9(float4(n, 1.0));
                     float3 col = baseCol * lerp(1.0, 0.7 + 0.6 * mottle, 0.25 + 0.6 * _Roughness);   // 거칠수록 얼룩
-                    float3 c3 = col * bright * lit + col * emission;
+                    float3 c3 = col * bright * lit + col * emission + _IfsEmission.rgb;   // (2.3) material.emission(기본 0)
                     acc += (1.0 - accA) * a * c3;
                     accA += (1.0 - accA) * a;
                 }

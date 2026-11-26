@@ -66,6 +66,12 @@ namespace IFS.SceneSpec
         /// <summary>지금 기본 형상의 변형값(spec 기본 형상과 같으면 spec 변형값, 아니면 null = 형상 프리셋 기본값).</summary>
         public BaseVariantSpec CurrentBaseVariant => _cat[BaseKey] == SpecBase ? SpecBaseVariant : null;
 
+        /// <summary>(2.3) 윤곽·발광 슬롯이 있는 값 집합인가(2.3 spec, 또는 덮어쓰기로 셋 중 하나를 정함). 이때만 렌더 계획·기록에
+        /// contour·emission이 나온다. 세 값(form.roundness·form.aspect·material.emission)은 범주 값으로 들고 있지만 null(말하지 않음)을
+        /// 기본값으로 채우지 않는다 — 렌더 계획이 무엇을 기본값으로 그렸는지 따로 남긴다(ContourRender, docs/scene-spec-mapping.md 8.4절).
+        /// CategoricalKeys·ToRecord에는 넣지 않는다(2.0–2.2 spec의 기록·golden 지문이 그대로, 2.3 null 문서의 params도 2.2와 같다).</summary>
+        public bool HasContourSlots { get; private set; }
+
         SceneParams() { }
 
         public static SceneParams FromSpec(SceneSpecV2 s, SceneDefaults d, bool useInferred = false)
@@ -97,6 +103,11 @@ namespace IFS.SceneSpec
             p.SpecBaseVariant = p.SpecBase != null ? s.Form.BaseVariant?.Clone() : null;
             p._cat[BaseKey] = p.SpecBase ?? NoBase;
             if (p.HasBaseSlot && p.SpecBase == null) p.DefaultsUsed.Add(BaseKey);
+            // (2.3) 윤곽·발광: 말한 값 그대로(null = 말하지 않음). 기본값 기록은 렌더 계획이 정한다(그린 경로에 따라 다르므로)
+            p.HasContourSlots = SceneSpecJson.HasContourKeys(s) || s.Form.Roundness != null || s.Form.Aspect != null || s.Material.Emission != null;
+            p._cat[ContourRender.RoundnessKey] = ContourRender.IsRoundness(s.Form.Roundness) ? s.Form.Roundness : null;
+            p._cat[ContourRender.AspectKey] = ContourRender.IsAspect(s.Form.Aspect) ? s.Form.Aspect : null;
+            p._cat[ContourRender.EmissionKey] = ContourRender.IsEmission(s.Material.Emission) ? s.Material.Emission : null;
             var c = s.Material.Color;
             Num("material.color.h", c?.H, null, d.colorH);
             Num("material.color.s", s.Material.Saturation ?? c?.S, null, d.colorS);   // 채도어가 있으면 그 값
@@ -134,6 +145,12 @@ namespace IFS.SceneSpec
             if (key == "form.type" && Array.IndexOf(FormTypes, value) < 0) throw new ArgumentException("모르는 형태: " + value);
             if (key == BaseKey && value != NoBase && !BaseShapes.IsBase(value)) throw new ArgumentException("모르는 기본 형상: " + value);
             if (key == BaseKey && value != NoBase) HasBaseSlot = true;
+            if (ContourRender.Levels.TryGetValue(key, out var levels))
+            {
+                if (value == null || Array.IndexOf(levels, value) < 0)
+                    throw new ArgumentException($"모르는 {key}: {value}(가능: {string.Join(", ", levels)})");
+                HasContourSlots = true;
+            }
             if (_cat[key] == value) return false;
             _cat[key] = value;
             return true;
@@ -149,6 +166,7 @@ namespace IFS.SceneSpec
             p.HasBaseSlot = HasBaseSlot;
             p.SpecBase = SpecBase;
             p.SpecBaseVariant = SpecBaseVariant?.Clone();
+            p.HasContourSlots = HasContourSlots;
             return p;
         }
 
@@ -189,6 +207,8 @@ namespace IFS.SceneSpec
         {
             var r = CategoricalKeys.Where(k => initial._cat[k] != final._cat[k]).ToList();
             if ((initial.HasBaseSlot || final.HasBaseSlot) && initial._cat[BaseKey] != final._cat[BaseKey]) r.Add(BaseKey);
+            foreach (var k in ContourRender.SlotPaths)
+                if (initial._cat[k] != final._cat[k]) r.Add(k);
             return r;
         }
 

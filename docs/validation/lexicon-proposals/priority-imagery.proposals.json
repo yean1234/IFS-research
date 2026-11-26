@@ -1,0 +1,1467 @@
+{
+  "format": "ifs-lexicon-proposals/0.1",
+  "generatedBy": "tools/lexicon_proposals.py seed",
+  "generatedOn": "2026-11-26",
+  "source": "synthetic, 연구자 검토 전",
+  "lexiconChain": [
+    "layer1_lexicon.v0.json (sha256:8d323696764c)",
+    "layer1_lexicon.v1.json (sha256:53c3c678c21e)",
+    "layer1_lexicon.v2.json (sha256:511e8691ceca)"
+  ],
+  "variantRules": "variant-rules@0.1.0",
+  "sources": [
+    {
+      "kind": "word_list",
+      "name": "priority-imagery-words.json",
+      "words": 40
+    }
+  ],
+  "privacy": "참여자 세션에서 만든 파일이면 참여자 데이터다. git에 올리지 않는다(AGENTS.md 6). 합성 자료로 만든 예시만 저장소에 둔다.",
+  "howToReview": [
+    "항목마다 decision.status를 approved 또는 rejected로 바꾼다. approved면 approvedBy(검토자)·approvedOn(YYYY-MM-DD)을 반드시 채운다.",
+    "후보를 그대로 받으려면 decision.useCandidate에 candidates의 번호(0부터)를 적는다 — lemma·pos·category·value를 그 후보에서 가져오되 표제어는 term(또는 decision.lemma)이다.",
+    "새 값을 직접 정하려면 decision.lemma(Kiwi 형태: 용언은 어간, -하다 형용사는 어근 XR)·pos·category·value를 적는다. value 키는 그 범주의 다른 항목과 같아야 한다(예: texture → {\"texture\": …}).",
+    "참여자가 그 속성을 직접 말한 낱말만 승인한다. 감정어 → 색·모양처럼 말하지 않은 것을 채우는 대응은 승인하지 않는다(AGENTS.md 원칙 2).",
+    "decision.ex에 그 표제어가 실제로 걸리는 합성 예문을 적으면 merge가 Kiwi로 확인한다(참여자 문장을 적지 않는다).",
+    "후보(candidates)는 시스템이 고른 값이 아니라 검토를 돕는 이웃 낱말이다. jamo_neighbor는 거리 2까지라 다른 뜻의 낱말도 섞인다."
+  ],
+  "items": [
+    {
+      "id": "S0001",
+      "term": "빽빽하다",
+      "analysis": "빽빽하/VA 다/EF",
+      "tag": "VA",
+      "kind": "seed",
+      "inLexicon": [],
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      },
+      "draftSuggestion": {
+        "category": null,
+        "note": "밀도(빽빽함). 지금 스펙에 자리 없음 — 입자 형태(form particles)를 만들면 그 밀도 값 후보"
+      }
+    },
+    {
+      "id": "S0002",
+      "term": "촘촘하다",
+      "analysis": "촘촘하/VA 다/EC",
+      "tag": "VA",
+      "kind": "seed",
+      "inLexicon": [],
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      },
+      "draftSuggestion": {
+        "category": null,
+        "note": "밀도. 위와 같음"
+      }
+    },
+    {
+      "id": "S0003",
+      "term": "빼곡하다",
+      "analysis": "빼곡/MAG 하/XSA 다/EF",
+      "tag": "MAG",
+      "kind": "seed",
+      "inLexicon": [],
+      "candidates": [
+        {
+          "via": "jamo_neighbor",
+          "lemma": "뾰족",
+          "pos": "XR",
+          "category": "shape",
+          "value": {
+            "shape": "pointed"
+          },
+          "matched": "뾰족",
+          "distance": 2
+        }
+      ],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      },
+      "draftSuggestion": {
+        "category": null,
+        "note": "밀도. 위와 같음"
+      }
+    },
+    {
+      "id": "S0004",
+      "term": "가득하다",
+      "analysis": "가득/MAG 하/XSA 다/EF",
+      "tag": "MAG",
+      "kind": "seed",
+      "inLexicon": [],
+      "candidates": [
+        {
+          "via": "jamo_neighbor",
+          "lemma": "가슴",
+          "pos": "NNG",
+          "category": "body_part",
+          "value": {
+            "part": "chest"
+          },
+          "matched": "가슴",
+          "distance": 2
+        },
+        {
+          "via": "jamo_neighbor",
+          "lemma": "따듯",
+          "pos": "XR",
+          "category": "temperature",
+          "value": {
+            "temperature": "warm"
+          },
+          "matched": "따듯",
+          "distance": 2
+        }
+      ],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      },
+      "draftSuggestion": {
+        "category": null,
+        "note": "채움 정도. 크기(layout.size)로 읽으면 추론 — 자리 없음으로 둠"
+      }
+    },
+    {
+      "id": "S0005",
+      "term": "팽팽하다",
+      "analysis": "팽팽/XR 하/XSA 다/EF",
+      "tag": "XR",
+      "kind": "seed",
+      "inLexicon": [],
+      "candidates": [
+        {
+          "via": "jamo_neighbor",
+          "lemma": "평평",
+          "pos": "XR",
+          "category": "contour",
+          "value": {
+            "aspect": "flattened"
+          },
+          "matched": "평평",
+          "distance": 2
+        },
+        {
+          "via": "jamo_neighbor",
+          "lemma": "평평",
+          "pos": "XR",
+          "category": "shape",
+          "value": {
+            "shape": "flat"
+          },
+          "matched": "평평",
+          "distance": 2
+        }
+      ],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      },
+      "draftSuggestion": {
+        "category": "texture",
+        "value": {
+          "texture": "taut"
+        },
+        "note": "장면 값 대응은 연구자가 정함(지금 texture 표에 taut 없음)"
+      }
+    },
+    {
+      "id": "S0006",
+      "term": "탱탱하다",
+      "analysis": "탱탱/MAG 하/XSA 다/EF",
+      "tag": "MAG",
+      "kind": "seed",
+      "inLexicon": [],
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      },
+      "draftSuggestion": {
+        "category": "texture",
+        "value": {
+          "texture": "firm"
+        },
+        "note": "단단과 같은 값 후보"
+      }
+    },
+    {
+      "id": "S0007",
+      "term": "빳빳하다",
+      "analysis": "빳빳/XR 하/XSA 다/EF",
+      "tag": "XR",
+      "kind": "seed",
+      "inLexicon": [],
+      "candidates": [
+        {
+          "via": "variant_rule",
+          "lemma": "뻣뻣",
+          "pos": "XR",
+          "category": "texture",
+          "value": {
+            "texture": "stiff"
+          },
+          "rules": [
+            "ideophone_vowel"
+          ],
+          "root": "뻣뻣",
+          "grade": [
+            "smaller"
+          ]
+        },
+        {
+          "via": "jamo_neighbor",
+          "lemma": "뻣뻣",
+          "pos": "XR",
+          "category": "texture",
+          "value": {
+            "texture": "stiff"
+          },
+          "matched": "뻣뻣",
+          "distance": 2
+        }
+      ],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      },
+      "draftSuggestion": {
+        "category": "texture",
+        "value": {
+          "texture": "stiff"
+        },
+        "note": "뻣뻣의 작은말 — 변이 규칙(모음 교체)으로 이미 닿는지 candidates 확인"
+      }
+    },
+    {
+      "id": "S0008",
+      "term": "뻑뻑하다",
+      "analysis": "뻑뻑/XR 하/XSA 다/EF",
+      "tag": "XR",
+      "kind": "seed",
+      "inLexicon": [],
+      "candidates": [
+        {
+          "via": "jamo_neighbor",
+          "lemma": "뻣뻣",
+          "pos": "XR",
+          "category": "texture",
+          "value": {
+            "texture": "stiff"
+          },
+          "matched": "뻣뻣",
+          "distance": 2
+        }
+      ],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      },
+      "draftSuggestion": {
+        "category": "texture",
+        "value": {
+          "texture": "stiff"
+        }
+      }
+    },
+    {
+      "id": "S0009",
+      "term": "묵직하다",
+      "analysis": "묵직하/VA 다/EF",
+      "tag": "VA",
+      "kind": "seed",
+      "inLexicon": [
+        {
+          "lemma": "묵직",
+          "pos": "XR",
+          "category": "weight",
+          "value": {
+            "weight": "heavy"
+          }
+        }
+      ],
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      },
+      "draftSuggestion": {
+        "category": "weight",
+        "note": "이미 사전에 있음(inLexicon) — 확인용"
+      }
+    },
+    {
+      "id": "S0010",
+      "term": "육중하다",
+      "analysis": "육중/XR 하/XSA 다/EF",
+      "tag": "XR",
+      "kind": "seed",
+      "inLexicon": [],
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      },
+      "draftSuggestion": {
+        "category": "weight",
+        "value": {
+          "weight": "heavy"
+        }
+      }
+    },
+    {
+      "id": "S0011",
+      "term": "두툼하다",
+      "analysis": "두툼/XR 하/XSA 다/EF",
+      "tag": "XR",
+      "kind": "seed",
+      "inLexicon": [],
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      },
+      "draftSuggestion": {
+        "category": "shape",
+        "value": {
+          "shape": "thick"
+        },
+        "note": "두껍과 같은 모양 값(모형 없음)"
+      }
+    },
+    {
+      "id": "S0012",
+      "term": "뭉툭하다",
+      "analysis": "뭉툭/MAG 하/XSA 다/EF",
+      "tag": "MAG",
+      "kind": "seed",
+      "inLexicon": [],
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      },
+      "draftSuggestion": {
+        "category": "contour",
+        "value": {
+          "roundness": "slightly_rounded"
+        },
+        "note": "끝·모서리가 무딘 것. 부분(끝)만 말하는 경우가 많아 전체 윤곽으로 받을지 연구자 판단"
+      }
+    },
+    {
+      "id": "S0013",
+      "term": "반듯하다",
+      "analysis": "반듯/XR 하/XSA 다/EF",
+      "tag": "XR",
+      "kind": "seed",
+      "inLexicon": [],
+      "candidates": [
+        {
+          "via": "jamo_neighbor",
+          "lemma": "따듯",
+          "pos": "XR",
+          "category": "temperature",
+          "value": {
+            "temperature": "warm"
+          },
+          "matched": "따듯",
+          "distance": 2
+        },
+        {
+          "via": "jamo_neighbor",
+          "lemma": "발등",
+          "pos": "NNG",
+          "category": "body_part",
+          "value": {
+            "part": "foot"
+          },
+          "matched": "발등",
+          "distance": 2
+        }
+      ],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      },
+      "draftSuggestion": {
+        "category": null,
+        "note": "곧고 바름. 윤곽(각짐)으로 읽으면 넓게 해석하는 것 — 보류 권고"
+      }
+    },
+    {
+      "id": "S0014",
+      "term": "네모반듯하다",
+      "analysis": "네모/NNG 반듯/XR 하/XSA 다/EF",
+      "tag": "EOJEOL",
+      "kind": "seed",
+      "inLexicon": [
+        {
+          "lemma": "네모",
+          "pos": "NNG",
+          "category": "shape",
+          "value": {
+            "shape": "square"
+          }
+        }
+      ],
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      },
+      "draftSuggestion": {
+        "category": "contour",
+        "value": {
+          "roundness": "angular"
+        }
+      }
+    },
+    {
+      "id": "S0015",
+      "term": "각지다",
+      "analysis": "각지/VA 다/EC",
+      "tag": "VA",
+      "kind": "seed",
+      "inLexicon": [
+        {
+          "lemma": "각지",
+          "pos": "VA",
+          "category": "shape",
+          "value": {
+            "shape": "angular"
+          }
+        },
+        {
+          "lemma": "각지",
+          "pos": "VA",
+          "category": "contour",
+          "value": {
+            "roundness": "angular"
+          }
+        }
+      ],
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      },
+      "draftSuggestion": {
+        "category": "contour",
+        "note": "이미 사전에 있음(1층 사전 v2) — 확인용"
+      }
+    },
+    {
+      "id": "S0016",
+      "term": "삐죽삐죽하다",
+      "analysis": "삐죽삐죽/MAG 하/XSA 다/EC",
+      "tag": "MAG",
+      "kind": "seed",
+      "inLexicon": [],
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      },
+      "draftSuggestion": {
+        "category": "shape",
+        "value": {
+          "shape": "pointed"
+        },
+        "note": "뾰족과 같은 모형(원뿔) 후보. 부분 형상이면 전체에 적용되는 한계(shape-mapping.md)"
+      }
+    },
+    {
+      "id": "S0017",
+      "term": "들쭉날쭉하다",
+      "analysis": "들쭉날쭉/MAG 하/XSA 다/EF",
+      "tag": "MAG",
+      "kind": "seed",
+      "inLexicon": [],
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      },
+      "draftSuggestion": {
+        "category": "shape",
+        "value": {
+          "shape": "bumpy"
+        },
+        "note": "고르지 않음. 울퉁불퉁과 같은 값으로 둘지 연구자 판단"
+      }
+    },
+    {
+      "id": "S0018",
+      "term": "구불구불하다",
+      "analysis": "구불구불/MAG 하/XSA 다/EF",
+      "tag": "MAG",
+      "kind": "seed",
+      "inLexicon": [],
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      },
+      "draftSuggestion": {
+        "category": null,
+        "note": "선 형상(form.base line)의 곡선 변형 단서 후보 — base_shapes variantCues에 넣을지 연구자 판단"
+      }
+    },
+    {
+      "id": "S0019",
+      "term": "꼬불꼬불하다",
+      "analysis": "꼬불꼬불/MAG 하/XSA 다/EF",
+      "tag": "MAG",
+      "kind": "seed",
+      "inLexicon": [],
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      },
+      "draftSuggestion": {
+        "category": null,
+        "note": "위와 같음"
+      }
+    },
+    {
+      "id": "S0020",
+      "term": "얽히고설키다",
+      "analysis": "얽히고설키/VV 다/EF",
+      "tag": "VV",
+      "kind": "seed",
+      "inLexicon": [],
+      "candidates": [
+        {
+          "via": "shared_morpheme",
+          "lemma": "얽히",
+          "pos": "VV",
+          "category": "texture",
+          "value": {
+            "texture": "tangled"
+          },
+          "matched": "얽히"
+        }
+      ],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      },
+      "draftSuggestion": {
+        "category": "texture",
+        "value": {
+          "texture": "tangled"
+        },
+        "note": "얽히(사전)와 같은 값"
+      }
+    },
+    {
+      "id": "S0021",
+      "term": "뒤엉키다",
+      "analysis": "뒤엉키/VV 다/EF",
+      "tag": "VV",
+      "kind": "seed",
+      "inLexicon": [],
+      "candidates": [
+        {
+          "via": "jamo_neighbor",
+          "lemma": "엉키",
+          "pos": "VV",
+          "category": "texture",
+          "value": {
+            "texture": "tangled"
+          },
+          "matched": "엉키",
+          "distance": 2
+        },
+        {
+          "via": "shared_morpheme",
+          "lemma": "엉키",
+          "pos": "VV",
+          "category": "texture",
+          "value": {
+            "texture": "tangled"
+          },
+          "matched": "엉키"
+        }
+      ],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      },
+      "draftSuggestion": {
+        "category": "texture",
+        "value": {
+          "texture": "tangled"
+        },
+        "note": "엉키(사전)와 같은 값"
+      }
+    },
+    {
+      "id": "S0022",
+      "term": "겹겹이",
+      "analysis": "겹겹/NNG 이/JKS",
+      "tag": "NNG",
+      "kind": "seed",
+      "inLexicon": [],
+      "candidates": [
+        {
+          "via": "jamo_neighbor",
+          "lemma": "역겹",
+          "pos": "VA",
+          "category": "emotion",
+          "value": {
+            "emotion": "disgust"
+          },
+          "matched": "역겹",
+          "distance": 2
+        }
+      ],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      },
+      "draftSuggestion": {
+        "category": null,
+        "note": "여러 겹. 스펙이 물체 하나라 자리 없음"
+      }
+    },
+    {
+      "id": "S0023",
+      "term": "켜켜이",
+      "analysis": "켜켜이/MAG",
+      "tag": "MAG",
+      "kind": "seed",
+      "inLexicon": [],
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      },
+      "draftSuggestion": {
+        "category": null,
+        "note": "위와 같음"
+      }
+    },
+    {
+      "id": "S0024",
+      "term": "차곡차곡",
+      "analysis": "차곡차곡/MAG",
+      "tag": "MAG",
+      "kind": "seed",
+      "inLexicon": [],
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      },
+      "draftSuggestion": {
+        "category": null,
+        "note": "쌓임. 자리 없음"
+      }
+    },
+    {
+      "id": "S0025",
+      "term": "쌓이다",
+      "analysis": "쌓이/VV 다/EC",
+      "tag": "VV",
+      "kind": "seed",
+      "inLexicon": [],
+      "candidates": [
+        {
+          "via": "jamo_neighbor",
+          "lemma": "아이",
+          "pos": "NNG",
+          "category": "object",
+          "value": {
+            "object": "child_figure"
+          },
+          "matched": "아이",
+          "distance": 2
+        }
+      ],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      },
+      "draftSuggestion": {
+        "category": null,
+        "note": "쌓임. 자리 없음"
+      }
+    },
+    {
+      "id": "S0026",
+      "term": "산더미",
+      "analysis": "산더미/NNG",
+      "tag": "NNG",
+      "kind": "seed",
+      "inLexicon": [],
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      },
+      "draftSuggestion": {
+        "category": null,
+        "note": "비교 크기 기준 사물 후보(scene_params.v1 referenceObjects) — 크기 값은 연구자가 정함"
+      }
+    },
+    {
+      "id": "S0027",
+      "term": "짓누르다",
+      "analysis": "짓누르/VV 다/EF",
+      "tag": "VV",
+      "kind": "seed",
+      "inLexicon": [
+        {
+          "lemma": "짓누르",
+          "pos": "VV",
+          "category": "sensation",
+          "value": {
+            "sensation": "crushing"
+          }
+        }
+      ],
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      },
+      "draftSuggestion": {
+        "category": "sensation",
+        "note": "누르(사전 신체 감각어)와 같은 범주 — 장면 값 없음"
+      }
+    },
+    {
+      "id": "S0028",
+      "term": "조여들다",
+      "analysis": "조여들/VV 다/EC",
+      "tag": "VV",
+      "kind": "seed",
+      "inLexicon": [],
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      },
+      "draftSuggestion": {
+        "category": "sensation",
+        "note": "조이(사전)와 같은 범주"
+      }
+    },
+    {
+      "id": "S0029",
+      "term": "째깍째깍",
+      "analysis": "째깍째깍/MAG",
+      "tag": "MAG",
+      "kind": "seed",
+      "inLexicon": [],
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      },
+      "draftSuggestion": {
+        "category": "sound",
+        "value": {
+          "sound": "ticking"
+        },
+        "note": "소리 범주(장면 값 없음, 기록만)"
+      }
+    },
+    {
+      "id": "S0030",
+      "term": "깜빡이다",
+      "analysis": "깜빡이/VV 다/EC",
+      "tag": "VV",
+      "kind": "seed",
+      "inLexicon": [],
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      },
+      "draftSuggestion": {
+        "category": "emission",
+        "value": {
+          "emission": "faint"
+        },
+        "note": "깜빡임(시간에 따른 변화)은 표현 못 함 — 약한 발광으로 둘지 연구자 판단"
+      }
+    },
+    {
+      "id": "S0031",
+      "term": "번뜩이다",
+      "analysis": "번뜩이/VV 다/EC",
+      "tag": "VV",
+      "kind": "seed",
+      "inLexicon": [],
+      "candidates": [
+        {
+          "via": "jamo_neighbor",
+          "lemma": "번쩍이",
+          "pos": "VV",
+          "category": "brightness",
+          "value": {
+            "level": "glowing"
+          },
+          "matched": "번쩍이",
+          "distance": 2
+        },
+        {
+          "via": "jamo_neighbor",
+          "lemma": "번쩍이",
+          "pos": "VV",
+          "category": "emission",
+          "value": {
+            "emission": "glowing"
+          },
+          "matched": "번쩍이",
+          "distance": 2
+        }
+      ],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      },
+      "draftSuggestion": {
+        "category": "emission",
+        "value": {
+          "emission": "glowing"
+        }
+      }
+    },
+    {
+      "id": "S0032",
+      "term": "아른거리다",
+      "analysis": "아른거리/VV 다/EF",
+      "tag": "VV",
+      "kind": "seed",
+      "inLexicon": [],
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      },
+      "draftSuggestion": {
+        "category": "movement",
+        "note": "어른거림. 흔들림(swaying)으로 둘지 연구자 판단"
+      }
+    },
+    {
+      "id": "S0033",
+      "term": "불룩하다",
+      "analysis": "불룩/MAG 하/XSA 다/EF",
+      "tag": "MAG",
+      "kind": "seed",
+      "inLexicon": [],
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      },
+      "draftSuggestion": {
+        "category": "shape",
+        "value": {
+          "shape": "bulging"
+        },
+        "note": "부푼 모양. 모형·윤곽 자리 없음(새 모양 값)"
+      }
+    },
+    {
+      "id": "S0034",
+      "term": "볼록하다",
+      "analysis": "볼록/MAG 하/XSA 다/EF",
+      "tag": "MAG",
+      "kind": "seed",
+      "inLexicon": [],
+      "candidates": [
+        {
+          "via": "jamo_neighbor",
+          "lemma": "발목",
+          "pos": "NNG",
+          "category": "body_part",
+          "value": {
+            "part": "foot"
+          },
+          "matched": "발목",
+          "distance": 2
+        }
+      ],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      },
+      "draftSuggestion": {
+        "category": "shape",
+        "value": {
+          "shape": "bulging"
+        },
+        "note": "불룩의 작은말 — 하나만 넣고 다른 하나는 변이 규칙(모음 교체)에 맡길 수 있음"
+      }
+    },
+    {
+      "id": "S0035",
+      "term": "움푹하다",
+      "analysis": "움푹/MAG 하/XSA 다/EF",
+      "tag": "MAG",
+      "kind": "seed",
+      "inLexicon": [],
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      },
+      "draftSuggestion": {
+        "category": "shape",
+        "value": {
+          "shape": "hollow"
+        },
+        "note": "패임. 비(빈) 모양과 같은 값 후보"
+      }
+    },
+    {
+      "id": "S0036",
+      "term": "오목하다",
+      "analysis": "오목/MAG 하/XSA 다/EF",
+      "tag": "MAG",
+      "kind": "seed",
+      "inLexicon": [],
+      "candidates": [
+        {
+          "via": "jamo_neighbor",
+          "lemma": "목",
+          "pos": "NNG",
+          "category": "body_part",
+          "value": {
+            "part": "throat_neck"
+          },
+          "matched": "목",
+          "distance": 2
+        },
+        {
+          "via": "jamo_neighbor",
+          "lemma": "손목",
+          "pos": "NNG",
+          "category": "body_part",
+          "value": {
+            "part": "hand"
+          },
+          "matched": "손목",
+          "distance": 2
+        },
+        {
+          "via": "jamo_neighbor",
+          "lemma": "온몸",
+          "pos": "NNG",
+          "category": "body_part",
+          "value": {
+            "part": "whole_body"
+          },
+          "matched": "온몸",
+          "distance": 2
+        }
+      ],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      },
+      "draftSuggestion": {
+        "category": "shape",
+        "value": {
+          "shape": "hollow"
+        }
+      }
+    },
+    {
+      "id": "S0037",
+      "term": "홀쭉하다",
+      "analysis": "홀쭉/XR 하/XSA 다/EC",
+      "tag": "XR",
+      "kind": "seed",
+      "inLexicon": [],
+      "candidates": [
+        {
+          "via": "jamo_neighbor",
+          "lemma": "길쭉",
+          "pos": "XR",
+          "category": "contour",
+          "value": {
+            "aspect": "elongated"
+          },
+          "matched": "길쭉",
+          "distance": 2
+        },
+        {
+          "via": "jamo_neighbor",
+          "lemma": "길쭉",
+          "pos": "XR",
+          "category": "shape",
+          "value": {
+            "shape": "elongated"
+          },
+          "matched": "길쭉",
+          "distance": 2
+        }
+      ],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      },
+      "draftSuggestion": {
+        "category": "contour",
+        "value": {
+          "aspect": "slightly_elongated"
+        },
+        "note": "가늘고 긺. 갸름과 같은 값으로 둘지 연구자 판단"
+      }
+    },
+    {
+      "id": "S0038",
+      "term": "희뿌옇다",
+      "analysis": "희뿌옇/VA-I 다/EF",
+      "tag": "VA",
+      "kind": "seed",
+      "inLexicon": [],
+      "candidates": [
+        {
+          "via": "jamo_neighbor",
+          "lemma": "뿌옇",
+          "pos": "VA",
+          "category": "brightness",
+          "value": {
+            "level": "hazy"
+          },
+          "matched": "뿌옇",
+          "distance": 2
+        },
+        {
+          "via": "shared_morpheme",
+          "lemma": "뿌옇",
+          "pos": "VA",
+          "category": "brightness",
+          "value": {
+            "level": "hazy"
+          },
+          "matched": "뿌옇"
+        }
+      ],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      },
+      "draftSuggestion": {
+        "category": "brightness",
+        "value": {
+          "level": "hazy"
+        },
+        "note": "뿌옇(사전)과 같은 값"
+      }
+    },
+    {
+      "id": "S0039",
+      "term": "덩그러니",
+      "analysis": "덩그렇/VA-I 니/EC",
+      "tag": "VA",
+      "kind": "seed",
+      "inLexicon": [],
+      "candidates": [
+        {
+          "via": "jamo_neighbor",
+          "lemma": "둥그렇",
+          "pos": "VA",
+          "category": "contour",
+          "value": {
+            "roundness": "rounded"
+          },
+          "matched": "둥그렇",
+          "distance": 1
+        },
+        {
+          "via": "jamo_neighbor",
+          "lemma": "동그랗",
+          "pos": "VA",
+          "category": "contour",
+          "value": {
+            "roundness": "rounded"
+          },
+          "matched": "동그랗",
+          "distance": 2
+        },
+        {
+          "via": "jamo_neighbor",
+          "lemma": "동그랗",
+          "pos": "VA",
+          "category": "shape",
+          "value": {
+            "shape": "round"
+          },
+          "matched": "동그랗",
+          "distance": 2
+        }
+      ],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      },
+      "draftSuggestion": {
+        "category": null,
+        "note": "홀로 놓임. 자리 없음"
+      }
+    },
+    {
+      "id": "S0040",
+      "term": "꽉 막히다",
+      "analysis": "꽉/MAG 막히/VV 다/EF",
+      "tag": "EOJEOL",
+      "kind": "seed",
+      "inLexicon": [
+        {
+          "lemma": "막히",
+          "pos": "VV",
+          "category": "sensation",
+          "value": {
+            "sensation": "blocked"
+          }
+        }
+      ],
+      "candidates": [],
+      "decision": {
+        "status": "proposed",
+        "lemma": null,
+        "pos": null,
+        "category": null,
+        "value": null,
+        "ex": null,
+        "useCandidate": null,
+        "approvedBy": "",
+        "approvedOn": "",
+        "note": ""
+      },
+      "draftSuggestion": {
+        "category": "sensation",
+        "note": "막히(사전 신체 감각어) — 장면 값 없음"
+      }
+    }
+  ]
+}

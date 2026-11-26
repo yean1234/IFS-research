@@ -231,6 +231,12 @@ namespace IFS.SceneSpec.EditorTools
                     entry["shape"] = loader.Shape.ToJson();
                     entry["renderPath"] = loader.RenderPath;
                     entry["renderPlan"] = loader.RenderPlan?.ToJson();
+                    // (2.3) 윤곽·발광 판정(docs/scene-spec-mapping.md 8.4절 5번). 2.3 spec일 때만 키가 생긴다(2.0–2.2 보고서는 그대로)
+                    if (loader.RenderPlan != null && loader.RenderPlan.HasContour)
+                    {
+                        entry["contour"] = loader.RenderPlan.ContourJson();
+                        entry["emission"] = loader.RenderPlan.EmissionJson();
+                    }
                     // 안개 셰이더가 바닥 아래 밀도를 0으로 자르는가(안개 셰이더가 아니면 null). 잘렸으면 notes에도 있다.
                     entry["mistFloor"] = loader.MistFloor?.ToJson();
 

@@ -1,0 +1,211 @@
+{
+  "meta": {
+    "specVersion": "2.3.0",
+    "participantId": null,
+    "sessionId": "SYN-EX23-elongated",
+    "condition": null,
+    "sourceTextHash": "sha256:fd01aa230506334bfa6125e5346b78185d28344780de14e48fa8fce44a779468",
+    "pipeline": {
+      "builder": "scene-spec-builder-v2/2.5.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@2.0.0",
+        "layer1Base": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@1.0.0",
+        "vad": "vad-ko@0.1.0",
+        "sceneParamsV2": "scene-params-v2@2.0.0",
+        "nounStoplist": "noun-stoplist-v2@1.0.0",
+        "baseShapes": "base-shapes-v1@0.7.0",
+        "layer1Chain": "layer1-attribute-lexicon@0.1.0 + layer1-attribute-lexicon@1.0.0 + layer1-attribute-lexicon@2.0.0",
+        "sceneParamsV3": "scene-params-v3@0.1.0",
+        "variantRules": "variant-rules@0.1.0"
+      }
+    },
+    "mapping": {
+      "requested": "v2",
+      "used": "v1",
+      "fallbackReason": null
+    }
+  },
+  "form": {
+    "type": null,
+    "posture": null,
+    "base": null,
+    "baseVariant": null,
+    "roundness": null,
+    "aspect": "elongated"
+  },
+  "material": {
+    "color": null,
+    "brightness": 0.85,
+    "saturation": null,
+    "roughness": null,
+    "opacity": null,
+    "erosion": null,
+    "emission": "faint"
+  },
+  "layout": {
+    "size": null,
+    "distance": null,
+    "verticalOffset": null
+  },
+  "motion": {
+    "type": null,
+    "speed": null
+  },
+  "body": {
+    "part": null,
+    "layer": null
+  },
+  "_provenance": {
+    "form.aspect": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "길쭉하고",
+        "charSpan": [
+          0,
+          4
+        ],
+        "rule": "contourLexicon.길쭉>form.aspect:elongated"
+      }
+    ],
+    "material.brightness": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "빤짝빤짝",
+        "charSpan": [
+          5,
+          9
+        ],
+        "rule": "variant(ideophone_consonant;surface=빤짝빤짝;root=반짝반짝;grade=stronger)>brightnessLexicon.반짝반짝>material.brightness:sparkling",
+        "variant": {
+          "rules": [
+            "ideophone_consonant"
+          ],
+          "surface": "빤짝빤짝",
+          "root": "반짝반짝",
+          "grade": [
+            "stronger"
+          ]
+        }
+      }
+    ],
+    "material.emission": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "빤짝빤짝",
+        "charSpan": [
+          5,
+          9
+        ],
+        "rule": "variant(ideophone_consonant;surface=빤짝빤짝;root=반짝반짝;grade=stronger)>emissionLexicon.반짝반짝>material.emission:faint",
+        "variant": {
+          "rules": [
+            "ideophone_consonant"
+          ],
+          "surface": "빤짝빤짝",
+          "root": "반짝반짝",
+          "grade": [
+            "stronger"
+          ]
+        }
+      }
+    ]
+  },
+  "_unmatched": [],
+  "_unmapped": [
+    {
+      "lemma": "길쭉",
+      "category": "shape",
+      "value": {
+        "shape": "elongated"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "길쭉하고",
+        "charSpan": [
+          0,
+          4
+        ],
+        "rule": "shapeLexicon.길쭉"
+      }
+    }
+  ],
+  "_negated": [],
+  "_alternatives": [
+    {
+      "path": "material.brightness",
+      "value": 0.9,
+      "reason": "later_mention",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "빛나요",
+          "charSpan": [
+            10,
+            13
+          ],
+          "rule": "brightnessLexicon.빛나>material.brightness:glowing"
+        }
+      ]
+    },
+    {
+      "path": "material.emission",
+      "value": "glowing",
+      "reason": "later_mention",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "빛나요",
+          "charSpan": [
+            10,
+            13
+          ],
+          "rule": "emissionLexicon.빛나>material.emission:glowing"
+        }
+      ]
+    }
+  ],
+  "_inferred": {},
+  "_context": [],
+  "_parts": [],
+  "_uncertain": [],
+  "_measurements": [],
+  "_direction": [],
+  "_needsConfirmation": [],
+  "_clauses": [
+    {
+      "charSpan": [
+        0,
+        4
+      ],
+      "text": "길쭉하고",
+      "usedFor": [
+        "form.aspect"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        5,
+        13
+      ],
+      "text": "빤짝빤짝 빛나요",
+      "usedFor": [
+        "material.brightness",
+        "material.emission"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        13,
+        14
+      ],
+      "text": ".",
+      "usedFor": [],
+      "status": "unused"
+    }
+  ]
+}

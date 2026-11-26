@@ -3,6 +3,8 @@
 //   _BaseColor  색(HSL → RGB)      _Brightness 밝기·발광     _Roughness 거칠기(얼룩·잔요철·광택)
 //   _Opacity    불투명도(Fade만)   _Erosion    가장자리 침식(삭아감·갈라짐)
 // 형태별 모양은 로더가 정하는 프리셋 값: _Lumpiness(덩어리 굴곡) _NoiseScale _Seed _Fuzz(안개 가장자리) _Density _ShellOpen(껍질 열림)
+// _IfsEmission: (2.3) 발광 항(선형 RGB, 기본 0). 로더가 material.emission이 있을 때만 바탕색(알베도 식) × 세기로 넣는다.
+//   Built-in Standard의 _EmissionColor·_EMISSION 키워드는 쓰지 않는다(키워드 없이 o.Emission에 더하기만).
 // _Displacement: 정점 변위(굴곡 + 잔요철) 전체에 곱하는 값. 기본 1 = 원래 그대로(blob·shell). fragments(각진 조각 메시)는 로더가 0.
 //   모양 모형(큐브·원뿔·원기둥·구, docs/shape-mapping.md)은 로더가 0으로 둔다. 각진 메시는 모서리 정점이 면마다 따로라
 //   법선 방향으로 밀면 면이 벌어지고 윤곽이 흐려지기 때문이다. 색·밝기·거칠기(얼룩·광택)·불투명도·침식은 그대로 반영된다.
@@ -21,6 +23,7 @@ half _Fuzz;
 half _Density;
 half _ShellOpen;
 half _Displacement;
+half4 _IfsEmission;   // (2.3) 발광 항(선형 RGB) = 바탕색 × 세기. 로더가 material.emission이 있을 때만 넣는다. 기본 검정 = 0 → 2.2와 같은 화소
 
 struct Input
 {
@@ -135,6 +138,7 @@ void ifsSurface(Input IN, inout SurfaceOutputStandard o, float interior)
     o.Metallic = 0.0;
     o.Smoothness = saturate((1.0 - _Roughness) * 0.92 * lerp(0.8, 1.0, mottle) * (1.0 - 0.8 * edge));
     o.Emission = col * saturate(_Brightness - 0.5) * 2.4 * (1.0 - interior); // 0.5 초과는 빛남
+    o.Emission += _IfsEmission.rgb * (1.0 - interior);                     // (2.3) material.emission(새 색 없음, 블룸 없음)
     o.Alpha = 1.0;
 }
 

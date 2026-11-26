@@ -125,9 +125,16 @@ class Runtime:
             self.warnings.append(f"개선 매핑(v1)을 불러오지 못해 v0로 대체합니다: {self.mapping_load_error}")
         # 매핑 v2(scene_builder_v2.py, D1·D2 수정)는 mode = "v2"로 요청했을 때만 만든다(기본 v1 세션의 동작·기록은 그대로).
         # 실패 처리는 v1과 같다: strict면 시작을 멈추고, 아니면 v0로 대체하고 경고를 남긴다.
+        if cfg.mapping.mode != "v2" and (cfg.mapping.ext_lexicon or cfg.mapping.variant_rules):
+            self.warnings.append("[mapping] ext_lexicon·variant_rules는 mode = \"v2\"에서만 씁니다. 지금 설정에서는 쓰지 않습니다.")
         if cfg.mapping.mode == "v2":
             try:
-                self.scene_builders["v2"] = SceneSpecBuilderV2(self.analyzer)
+                m = cfg.mapping
+                self.scene_builders["v2"] = SceneSpecBuilderV2(
+                    self.analyzer,
+                    ext_lexicon_path=shared("lexicon", m.ext_lexicon) if m.ext_lexicon else None,
+                    ext_params_path=shared("lexicon", m.ext_params) if m.ext_lexicon else None,
+                    variant_rules_path=shared("lexicon", m.variant_rules) if m.variant_rules else None)
             except Exception as exc:  # noqa: BLE001
                 self.mapping_load_error = f"{type(exc).__name__}: {exc}"
                 if cfg.mapping.strict:
