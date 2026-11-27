@@ -679,6 +679,8 @@ namespace IFS.SceneSpec.Placement
                 ReplaySha256 = _replay != null ? _replaySha : null,
                 ReplaySourceSessionId = _replay?.SourceSessionId,
                 ObjectBoundingRadiusM = objectRadius > 0 ? objectRadius : (double?)null,
+                ObjectBoundsM = _loader.ObjectLocalBoundsM(),   // G72: 로드 직후 물체 자기 틀 경계 상자(움직임 전)
+                ObjectProportions = PlacementManifest.ProportionsJson(_loader.CurrentParams, Selection),   // G72: 비율 슬롯이 있을 때만
                 LayoutIgnored = _layoutWarning != null,
                 Selection = Selection,
                 AppliedOverrides = AppliedOverrides,

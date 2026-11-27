@@ -1,0 +1,234 @@
+{
+  "source": "BatchCapture report.json (요약, 로컬 경로 없음)",
+  "ok": true,
+  "consoleErrors": 0,
+  "captureFailures": 0,
+  "specs": [
+    {
+      "spec": "H-blob-long.24.json",
+      "renderPath": "blob",
+      "proportions": {
+        "effective": [
+          0.4,
+          1.0,
+          0.4
+        ],
+        "raw": [
+          0.4,
+          1.0,
+          0.4
+        ],
+        "axisSaid": false,
+        "method": "local_scale",
+        "rule": "longest-edge/1",
+        "aspectSuperseded": false
+      },
+      "params": {
+        "layout.proportions.x": 0.4,
+        "layout.proportions.y": 1.0,
+        "layout.proportions.z": 0.4,
+        "layout.size": 0.5
+      },
+      "defaultsUsedProportions": [
+        "layout.proportions.axis"
+      ],
+      "visiblePixels": 6037,
+      "circularity": 0.725,
+      "notesProportions": [
+        "layout.proportions.axis: 긴 축·짧은 축 방향을 말하지 않음 → 기준 틀(길쭉하면 세로 y가 긺, 납작하면 세로 y가 짧음)로 그림",
+        "layout.proportions: x·y·z 비율 (0.4, 1, 0.4)(원값 (0.4, 1, 0.4)) — 국소 배율, 가장 긴 변은 layout.size가 정함(규칙 longest-edge/1)"
+      ]
+    },
+    {
+      "spec": "H-blob.22.json",
+      "renderPath": "blob",
+      "proportions": null,
+      "params": {
+        "layout.size": 0.5
+      },
+      "defaultsUsedProportions": [],
+      "visiblePixels": 15724,
+      "circularity": 0.964,
+      "notesProportions": []
+    },
+    {
+      "spec": "H-frag-wide.24.json",
+      "renderPath": "fragments",
+      "proportions": {
+        "effective": [
+          1.0,
+          0.3,
+          1.0
+        ],
+        "raw": [
+          1.0,
+          0.3,
+          1.0
+        ],
+        "axisSaid": true,
+        "method": "fragment_distribution",
+        "rule": "longest-edge/1",
+        "aspectSuperseded": false
+      },
+      "params": {
+        "layout.proportions.x": 1.0,
+        "layout.proportions.y": 0.3,
+        "layout.proportions.z": 1.0,
+        "layout.size": 0.5
+      },
+      "defaultsUsedProportions": [],
+      "visiblePixels": 5275,
+      "circularity": 0.252,
+      "notesProportions": [
+        "layout.proportions: x·y·z 비율 (1, 0.3, 1)(원값 (1, 0.3, 1)) — 조각 배치를 늘임, 가장 긴 변은 layout.size가 정함(규칙 longest-edge/1)"
+      ]
+    },
+    {
+      "spec": "H-frag.22.json",
+      "renderPath": "fragments",
+      "proportions": null,
+      "params": {
+        "layout.size": 0.5
+      },
+      "defaultsUsedProportions": [],
+      "visiblePixels": 6216,
+      "circularity": 0.155,
+      "notesProportions": []
+    },
+    {
+      "spec": "H-mist-wide.24.json",
+      "renderPath": "mist",
+      "proportions": {
+        "effective": [
+          1.0,
+          0.3,
+          1.0
+        ],
+        "raw": [
+          1.0,
+          0.3,
+          1.0
+        ],
+        "axisSaid": true,
+        "method": "local_scale",
+        "rule": "longest-edge/1",
+        "aspectSuperseded": false
+      },
+      "params": {
+        "layout.proportions.x": 1.0,
+        "layout.proportions.y": 0.3,
+        "layout.proportions.z": 1.0,
+        "layout.size": 0.5
+      },
+      "defaultsUsedProportions": [],
+      "visiblePixels": 4848,
+      "circularity": 0.533,
+      "notesProportions": [
+        "layout.proportions: x·y·z 비율 (1, 0.3, 1)(원값 (1, 0.3, 1)) — 국소 배율, 가장 긴 변은 layout.size가 정함(규칙 longest-edge/1)"
+      ]
+    },
+    {
+      "spec": "H-mist.22.json",
+      "renderPath": "mist",
+      "proportions": null,
+      "params": {
+        "layout.size": 0.5
+      },
+      "defaultsUsedProportions": [],
+      "visiblePixels": 11612,
+      "circularity": 0.739,
+      "notesProportions": []
+    },
+    {
+      "spec": "M-long-stone.22.json",
+      "renderPath": "blob",
+      "proportions": null,
+      "params": {
+        "layout.size": 0.5
+      },
+      "defaultsUsedProportions": [],
+      "visiblePixels": 15724,
+      "circularity": 0.964,
+      "notesProportions": []
+    },
+    {
+      "spec": "M-long-stone.24.json",
+      "renderPath": "blob",
+      "proportions": {
+        "effective": [
+          0.4,
+          1.0,
+          0.4
+        ],
+        "raw": [
+          0.4,
+          1.0,
+          0.4
+        ],
+        "axisSaid": false,
+        "method": "local_scale",
+        "rule": "longest-edge/1",
+        "aspectSuperseded": false
+      },
+      "params": {
+        "layout.proportions.x": 0.4,
+        "layout.proportions.y": 1.0,
+        "layout.proportions.z": 0.4,
+        "layout.size": 0.5
+      },
+      "defaultsUsedProportions": [
+        "layout.proportions.axis"
+      ],
+      "visiblePixels": 6037,
+      "circularity": 0.725,
+      "notesProportions": [
+        "layout.proportions.axis: 긴 축·짧은 축 방향을 말하지 않음 → 기준 틀(길쭉하면 세로 y가 긺, 납작하면 세로 y가 짧음)로 그림",
+        "layout.proportions: x·y·z 비율 (0.4, 1, 0.4)(원값 (0.4, 1, 0.4)) — 국소 배율, 가장 긴 변은 layout.size가 정함(규칙 longest-edge/1)"
+      ]
+    },
+    {
+      "spec": "M-wide-mist.22.json",
+      "renderPath": "mist",
+      "proportions": null,
+      "params": {
+        "layout.size": 0.621
+      },
+      "defaultsUsedProportions": [],
+      "visiblePixels": 22724,
+      "circularity": 0.749,
+      "notesProportions": []
+    },
+    {
+      "spec": "M-wide-mist.24.json",
+      "renderPath": "mist",
+      "proportions": {
+        "effective": [
+          1.0,
+          0.3,
+          1.0
+        ],
+        "raw": [
+          1.0,
+          0.3,
+          1.0
+        ],
+        "axisSaid": true,
+        "method": "local_scale",
+        "rule": "longest-edge/1",
+        "aspectSuperseded": false
+      },
+      "params": {
+        "layout.proportions.x": 1.0,
+        "layout.proportions.y": 0.3,
+        "layout.proportions.z": 1.0,
+        "layout.size": 0.621
+      },
+      "defaultsUsedProportions": [],
+      "visiblePixels": 9563,
+      "circularity": 0.532,
+      "notesProportions": [
+        "layout.proportions: x·y·z 비율 (1, 0.3, 1)(원값 (1, 0.3, 1)) — 국소 배율, 가장 긴 변은 layout.size가 정함(규칙 longest-edge/1)"
+      ]
+    }
+  ]
+}

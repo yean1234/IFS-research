@@ -1,0 +1,47 @@
+{
+  "meta": {
+    "specVersion": "2.2.0",
+    "participantId": null,
+    "sessionId": "SYN-G72-H-blob.22",
+    "condition": null,
+    "sourceTextHash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+    "pipeline": {
+      "builder": "hand-written (G72 capture)",
+      "analyzer": "none",
+      "lexicons": {}
+    }
+  },
+  "form": {
+    "type": null,
+    "posture": null,
+    "base": null,
+    "baseVariant": null
+  },
+  "material": {
+    "color": null,
+    "brightness": null,
+    "saturation": null,
+    "roughness": null,
+    "opacity": null,
+    "erosion": null
+  },
+  "layout": {
+    "size": null,
+    "distance": null,
+    "verticalOffset": null
+  },
+  "motion": {
+    "type": null,
+    "speed": null
+  },
+  "body": {
+    "part": null,
+    "layer": null
+  },
+  "_provenance": {},
+  "_unmatched": [],
+  "_unmapped": [],
+  "_negated": [],
+  "_alternatives": [],
+  "_inferred": {}
+}

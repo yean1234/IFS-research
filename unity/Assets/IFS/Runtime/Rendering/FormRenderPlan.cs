@@ -133,7 +133,43 @@ namespace IFS.SceneSpec
         /// (로더가 셰이더 값을 건드리지 않는다 — 기본 검정이라 2.2와 같은 화소).</summary>
         public double[] EmissionLinear { get; private set; }
 
+        // ── (2.4, G72) x·y·z 비율(ProportionsRender). 비율이 주어지지 않으면(spec null·덮어쓰기 없음) 모두 null이고 계획 JSON에도 나오지 않는다 ──
+        /// <summary>유효 비율 (x, y, z)(가장 큰 값 = 1). 주어지지 않으면 null(로더가 비율을 곱하지 않는다 — 2.3과 같은 그림).</summary>
+        public double[] Proportions { get; private set; }
+        /// <summary>비율 원값(spec 값 0.2–1 또는 덮어쓰기·조절 화면 값 0.2–2.0). 주어지지 않으면 null.</summary>
+        public double[] ProportionsRaw { get; private set; }
+        /// <summary>원값 / 가장 큰 값이 0.2 아래라 0.2로 올린 축이 있는가(로더 notes).</summary>
+        public bool ProportionsClamped { get; private set; }
+        /// <summary>spec 비율의 axisSaid(spec 값이 null이면 null).</summary>
+        public bool? ProportionsAxisSaid { get; private set; }
+        /// <summary>local_scale(메시 형상: 국소 배율) | fragment_distribution(fragments: 조각 배치를 늘임). 주어지지 않으면 null.</summary>
+        public string ProportionsMethod { get; private set; }
+        /// <summary>비율이 주어져 form.aspect 축 비율을 쓰지 않았는가(form.aspect 값은 그대로 기록에 남음).</summary>
+        public bool AspectSuperseded { get; private set; }
+
         FormRenderPlan() { }
+
+        /// <summary>(2.4) 비율을 계획에 얹는다. 주어지지 않으면 아무것도 바꾸지 않는다(2.0–2.3 계획 그대로).</summary>
+        void ApplyProportions(SceneParams current)
+        {
+            if (!current.ProportionsGiven) return;
+            ProportionsRaw = current.ProportionsRaw;
+            Proportions = ProportionsRender.Normalize(ProportionsRaw[0], ProportionsRaw[1], ProportionsRaw[2], out bool clamped);
+            ProportionsClamped = clamped;
+            ProportionsAxisSaid = current.SpecProportionsAxisSaid;
+            ProportionsMethod = Renderer == RendererFragments ? ProportionsRender.MethodFragmentDistribution : ProportionsRender.MethodLocalScale;
+        }
+
+        /// <summary>(2.4) 기록의 proportions(계획 JSON·report.json). 비율이 주어지지 않으면 null.</summary>
+        public JObject ProportionsJson() => Proportions == null ? null : new JObject
+        {
+            ["effective"] = new JArray(System.Math.Round(Proportions[0], 5), System.Math.Round(Proportions[1], 5), System.Math.Round(Proportions[2], 5)),
+            ["raw"] = new JArray(System.Math.Round(ProportionsRaw[0], 5), System.Math.Round(ProportionsRaw[1], 5), System.Math.Round(ProportionsRaw[2], 5)),
+            ["axisSaid"] = ProportionsAxisSaid,
+            ["method"] = ProportionsMethod,
+            ["rule"] = ProportionsRender.RuleVersion,
+            ["aspectSuperseded"] = AspectSuperseded,
+        };
 
         /// <summary>(2.3) 윤곽 적용 순서(8.4절 2번)와 발광(4번)을 계획에 얹는다. 2.0–2.2 값 집합이면 아무것도 바꾸지 않는다.</summary>
         void ApplyContourAndEmission(SceneParams current)
@@ -172,7 +208,9 @@ namespace IFS.SceneSpec
                     ContourMesh = ContourRender.MeshDefault;   // 말하지 않은 둥긂은 바꾸지 않는다(기본 덩어리 메시 그대로)
                     defaults.Add(ContourRender.RoundnessKey);
                 }
-                if (Aspect != null)
+                if (Aspect != null && current.ProportionsGiven)
+                    AspectSuperseded = true;   // (2.4) x·y·z 비율이 앞선다 — 축 비율을 곱하지 않고 form.aspect 값만 기록에 남긴다
+                else if (Aspect != null)
                 {
                     AxisRatios = ContourRender.AxisRatios(Aspect);
                     if (Aspect != "neutral") defaults.Add(ContourRender.AspectAxisKey);   // 긴 축 방향(세로 y)은 말하지 않은 기본값
@@ -207,16 +245,23 @@ namespace IFS.SceneSpec
 
         /// <summary>(2.3) 기록의 contour(initialScene.json·report.json·계획 JSON). 2.0–2.2 값 집합이면 null.
         /// 적용하지 않았으면 수치(mesh·e1·e2·axisRatios)는 null — 기본값과 미지정을 섞지 않는다.</summary>
-        public JObject ContourJson() => !HasContour ? null : new JObject
+        public JObject ContourJson()
         {
-            ["status"] = ContourStatus,
-            ["roundness"] = Roundness,
-            ["aspect"] = Aspect,
-            ["mesh"] = ContourMesh,
-            ["e1"] = E1,
-            ["e2"] = E2,
-            ["axisRatios"] = AxisRatios != null ? new JArray(AxisRatios) : null,
-        };
+            if (!HasContour) return null;
+            var o = new JObject
+            {
+                ["status"] = ContourStatus,
+                ["roundness"] = Roundness,
+                ["aspect"] = Aspect,
+                ["mesh"] = ContourMesh,
+                ["e1"] = E1,
+                ["e2"] = E2,
+                ["axisRatios"] = AxisRatios != null ? new JArray(AxisRatios) : null,
+            };
+            // (2.4) 비율이 form.aspect를 대신 그렸을 때만(그 밖에는 2.3과 같은 키)
+            if (AspectSuperseded) o["aspectSupersededBy"] = ProportionsRender.Key;
+            return o;
+        }
 
         /// <summary>(2.3) 기록의 emission. 2.0–2.2 값 집합이면 null.</summary>
         public JObject EmissionJson() => !HasContour ? null : new JObject
@@ -248,6 +293,7 @@ namespace IFS.SceneSpec
             }
             bool baseApplied = baseStatus == BaseApplied;
             var plan = baseApplied ? BuildBase(current, form, baseReq) : BuildForm(current, form, initialFormType, shape, baseReq, baseStatus);
+            plan.ApplyProportions(current);
             plan.ApplyContourAndEmission(current);
             return plan;
         }
@@ -417,6 +463,8 @@ namespace IFS.SceneSpec
                 o["contour"] = ContourJson();
                 o["emission"] = EmissionJson();
             }
+            // (2.4) 비율이 주어졌을 때만(spec null·덮어쓰기 없음이면 2.3과 같은 계획 JSON)
+            if (Proportions != null) o["proportions"] = ProportionsJson();
             return o;
         }
 

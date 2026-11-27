@@ -111,6 +111,33 @@ namespace IFS.SceneSpec.FormAsset
             renderedLongest = AssetLongest * uniform;
         }
 
+        /// <summary>(2.4, G72) x·y·z 비율 p(가장 큰 값 = 1, null이면 위 Place와 같음)를 넣은 맞춤. 생성 메시를 p로 비균일하게 늘인 뒤 균일 배율 u로
+        /// 가장 긴 변을 절차 모형의 가장 긴 변에 맞춘다: 생성 메시 국소 배율 = p × u, u = L0 / max_k(AssetSize[k] × p[k]).
+        /// proceduralLocalScale0 = 비율을 넣지 않은 절차 모형 국소 배율, ProceduralSize = 비율을 넣지 않은 절차 모형 경계 → L0(비율로 바뀌지 않음).
+        /// 위치는 비율로 늘인 절차 모형(가장 긴 변 규칙, ProportionsRender.FitLocalScale)의 중심에 맞춘다.</summary>
+        public void Place(double[] proceduralLocalScale0, double[] proportions, out double[] scale, out double uniform, out double[] localPosition,
+                          out double proceduralLongest, out double renderedLongest)
+        {
+            if (proportions == null)
+            {
+                Place(proceduralLocalScale0, out uniform, out localPosition, out proceduralLongest, out renderedLongest);
+                scale = new[] { uniform, uniform, uniform };
+                return;
+            }
+            var procFinal = ProportionsRender.FitLocalScale(ProceduralSize, ProceduralSize, proceduralLocalScale0, proportions, out proceduralLongest, out _);
+            double a1 = 0;
+            for (int k = 0; k < 3; k++) a1 = Math.Max(a1, AssetSize[k] * proportions[k]);
+            uniform = a1 > 1e-12 ? proceduralLongest / a1 : 0;
+            scale = new[] { proportions[0] * uniform, proportions[1] * uniform, proportions[2] * uniform };
+            localPosition = new double[3];
+            renderedLongest = 0;
+            for (int k = 0; k < 3; k++)
+            {
+                localPosition[k] = ProceduralCenter[k] * procFinal[k] - AssetCenter[k] * scale[k];
+                renderedLongest = Math.Max(renderedLongest, AssetSize[k] * scale[k]);
+            }
+        }
+
         public static double RelativeError(double rendered, double procedural) =>
             procedural > 1e-12 ? Math.Abs(rendered - procedural) / procedural : double.NaN;
 

@@ -315,7 +315,10 @@ namespace IFS.SceneSpec.Ownership
             if (orig.InferredUsed.Count > 0) plan.Errors.Add("_inferred 값을 썼습니다(useInferredSuggestions는 꺼져 있어야 함): " + string.Join(", ", orig.InferredUsed));
             plan.Shape = ShapeMapping.Resolve(spec);
             plan.DefaultKeys = orig.DefaultsUsed.OrderBy(k => k, StringComparer.Ordinal).ToList();
-            plan.StatedKeys = orig.ToRecord().Keys.Where(k => !orig.DefaultsUsed.Contains(k)).OrderBy(k => k, StringComparer.Ordinal).ToList();
+            // (2.4) 비율 슬롯이 null(기본값 layout.proportions)이면 축별 기록 키(layout.proportions.x·y·z)도 말한 키가 아니다
+            bool propDefault = orig.DefaultsUsed.Contains(ProportionsRender.Key);
+            plan.StatedKeys = orig.ToRecord().Keys.Where(k => !orig.DefaultsUsed.Contains(k) && !(propDefault && ProportionsRender.IsAxisKey(k)))
+                .OrderBy(k => k, StringComparer.Ordinal).ToList();
             plan.UnmappedCount = spec.Unmapped?.Count ?? 0;
             plan.UnmatchedCount = spec.Unmatched?.Count ?? 0;
             plan.AlternativesCount = spec.Alternatives?.Count ?? 0;

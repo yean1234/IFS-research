@@ -27,6 +27,10 @@
 //     events stop_round_start·stop_round_end. objpose.csv state에 stop_paused(멈춘 동안)가 더해진다.
 //   · eyeHeightMode relative일 때만 manifest 맨 끝 eyeHeight{mode, referenceM, measuredM, offsetM, sdM, pitchDeg, samples,
 //     trackingOrigin, source}, events eye_height_calibrated, config 끝에 eyeHeight*·eyeCalib* 키.
+//   2026-11-27(G72 x·y·z 비율, 형식 버전 0.2 유지 — 추가만): object.boundsM{x, y, z} = 로드 직후(움직임 전) 물체 자기 틀의 경계 상자(m,
+//   너비·높이·깊이, 정점 경계 × 배율, 안개는 레이마칭 구 상한 — SceneLoader.ObjectLocalBoundsM). 렌더러가 있는 실행이면 늘 있고, 잴 수 없으면 키 없음.
+//   object.proportions{x, y, z(유효 비율, 가장 큰 값 1), raw{x, y, z}(원값), source, axisSaid} — 2.4 spec이거나 덮어쓰기에 비율 키가 있을 때만
+//   (그 밖에는 키 없음 → 이전 기록 바이트 그대로). source = 선택 파일 sources["layout.proportions"], 없으면 spec 값이 있으면 said, 아니면 default.
 //   {recordRoot}/placement/P{번호:000}/{sessionId}/{UTC yyyyMMdd-HHmmss}[-n]/
 //     manifest.json · headpose.csv · objpose.csv · events.csv · placement.json · stopdistance.csv · ratings.csv · trajectory.json · summary.json
 //   UTF-8(BOM 없음), 숫자는 InvariantCulture, 줄바꿈 \n. CSV는 줄마다 바로 쓰므로 중간에 꺼져도 그때까지 남는다.
@@ -302,6 +306,10 @@ namespace IFS.SceneSpec.Placement
         /// <summary>물체 렌더 경계의 반지름(m): 불러온 물체 렌더러 경계 상자(AABB)의 가장 큰 반폭. 구할 수 없으면 null.
         /// 거리 기록은 모두 물체 중심 기준이라, 보이는 가장자리까지의 거리는 대략 이만큼 짧다.</summary>
         public double? ObjectBoundingRadiusM;
+        /// <summary>(G72) 물체 자기 틀의 경계 상자(m, 너비 x · 높이 y · 깊이 z), 로드 직후(움직임 전). 잴 수 없으면 null(manifest에 키 없음).</summary>
+        public double[] ObjectBoundsM;
+        /// <summary>(G72) manifest object.proportions(PlacementManifest.ProportionsJson). 2.4 spec도 비율 덮어쓰기도 아니면 null(키 없음).</summary>
+        public JObject ObjectProportions;
         /// <summary>spec에 layout.distance·verticalOffset 값이 있었는데 실험 설정의 시작 자리를 쓰느라 무시했다.</summary>
         public bool LayoutIgnored;
         /// <summary>선택 파일(selection.json). 없으면 null(spec만으로 진행 — manifest selection: null).</summary>
@@ -329,6 +337,28 @@ namespace IFS.SceneSpec.Placement
             string Val(double? v) => v.HasValue ? v.Value.ToString("0.###", inv) : "null";
             return $"{LayoutIgnoredTag}: spec layout.distance={Val(distance)}, layout.verticalOffset={Val(verticalOffset)} 대신 " +
                    $"실험 설정 startDistanceM={(cfg?.startDistanceM ?? 0).ToString("0.###", inv)}, startHeightM={(cfg?.startHeightM ?? 0).ToString("0.###", inv)}을 씀(두 조건이 같은 자리에서 시작)";
+        }
+
+        /// <summary>(G72) manifest object.proportions. 비율 슬롯이 없으면(2.0–2.3 spec이고 비율 덮어쓰기 없음) null.
+        /// x·y·z = 유효 비율(가장 큰 값 1, 소수 4자리), raw = 원값, source = 선택 파일 sources["layout.proportions"] → 없으면 spec 값이 있으면 said, 아니면 default,
+        /// axisSaid = spec 값의 axisSaid(spec 값이 null이면 null).</summary>
+        public static JObject ProportionsJson(SceneParams drawn, PlacementSelection selection)
+        {
+            if (drawn == null || !drawn.HasProportionsSlot) return null;
+            var e = drawn.ProportionsEffective;
+            var r = drawn.ProportionsRaw;
+            var src = (selection?.Sources as JObject)?[ProportionsRender.Key];
+            string source = src != null && src.Type == JTokenType.String ? (string)src
+                : drawn.SpecProportionsAxisSaid.HasValue ? "said" : "default";
+            return new JObject
+            {
+                ["x"] = Math.Round(e[0], 4),
+                ["y"] = Math.Round(e[1], 4),
+                ["z"] = Math.Round(e[2], 4),
+                ["raw"] = new JObject { ["x"] = Math.Round(r[0], 4), ["y"] = Math.Round(r[1], 4), ["z"] = Math.Round(r[2], 4) },
+                ["source"] = source,
+                ["axisSaid"] = drawn.SpecProportionsAxisSaid.HasValue ? new JValue(drawn.SpecProportionsAxisSaid.Value) : JValue.CreateNull(),
+            };
         }
 
         /// <summary>manifest environment(G52–G55): 공간 이름·놓기 도움·하늘(별 하늘 규칙 또는 자연 사진 출처·sha256)·연습 목표.
@@ -395,6 +425,14 @@ namespace IFS.SceneSpec.Placement
         public static JObject Build(PlacementConfig cfg, PlacementSessionInfo info)
         {
             var m = BuildBase(cfg, info);
+            // G72: 물체 경계 상자(잴 수 있을 때)와 x·y·z 비율(비율 슬롯이 있을 때만) — object 안 끝에 더한다
+            var obj = (JObject)m["object"];
+            if (info?.ObjectBoundsM != null && info.ObjectBoundsM.Length == 3)
+                obj["boundsM"] = new JObject
+                {
+                    ["x"] = Math.Round(info.ObjectBoundsM[0], 5), ["y"] = Math.Round(info.ObjectBoundsM[1], 5), ["z"] = Math.Round(info.ObjectBoundsM[2], 5),
+                };
+            if (info?.ObjectProportions != null) obj["proportions"] = info.ObjectProportions.DeepClone();
             var env = EnvironmentJson(cfg);
             if (env != null) m["environment"] = env;   // 기본값이면 키를 넣지 않는다(G52 전과 같은 바이트)
             if (cfg.IsStopLoop)

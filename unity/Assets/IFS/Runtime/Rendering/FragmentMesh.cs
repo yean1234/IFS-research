@@ -4,6 +4,8 @@
 // 규칙 자체를 바꾸면 같은 seed라도 메시가 달라지므로 RuleVersion을 올린다(계획 JSON·notes의 fragmentRule로 추적).
 // 배치(중심)와 대략의 크기는 이전 경로(구 5개: 중심 BaseOffsets, 반지름 0.5 × (0.42 − 0.04 i))를 따라 전체 범위가 비슷하다
 // → layout.size의 뜻(기본 크기 대비 배율)이 바뀌지 않는다.
+// (2.4, G72) x·y·z 비율이 주어지면 조각 하나하나를 찌그러뜨리지 않고 조각 배치(중심 오프셋)만 축마다 p로 늘이고 줄인다
+// (난수 순서·조각 모양은 그대로 → 비율이 없으면 이전 메시와 비트 단위로 같다). 가장 긴 변은 로더가 균일 배율로 맞춘다(ProportionsRender).
 // UnityEngine에 의존하지 않는다(dotnet 테스트 가능). 난수는 자체 구현(SplitMix64)이라 런타임이 달라도 같은 수열이다.
 using System;
 
@@ -81,7 +83,12 @@ namespace IFS.SceneSpec
         /// 조각 pieces개를 합친 메시. xyz·nrm = 정점(면마다 3개, 평면 음영), tris = 삼각형 인덱스(앞면 = cross(b − a, c − a)가 바깥).
         /// pieceOfTriangle[i] = i번째 삼각형이 속한 조각. 좌표 단위는 구 지름 1(이전 IcoSphere 반지름 0.5)과 같다.
         /// </summary>
-        public static void Build(int seed, int pieces, out float[] xyz, out float[] nrm, out int[] tris, out int[] pieceOfTriangle)
+        public static void Build(int seed, int pieces, out float[] xyz, out float[] nrm, out int[] tris, out int[] pieceOfTriangle) =>
+            Build(seed, pieces, null, out xyz, out nrm, out tris, out pieceOfTriangle);
+
+        /// <summary>(2.4) proportions = 유효 비율 (x, y, z)(가장 큰 값 = 1) 또는 null. null이면 위 Build와 같은 메시.
+        /// 조각 중심(흔들기 뒤)에만 축마다 곱한다 — 조각의 모양·크기·방향은 그대로다.</summary>
+        public static void Build(int seed, int pieces, double[] proportions, out float[] xyz, out float[] nrm, out int[] tris, out int[] pieceOfTriangle)
         {
             if (pieces < 1 || pieces > 32) throw new ArgumentOutOfRangeException(nameof(pieces));
             int faces = IcoFaces.Length / 3;
@@ -98,6 +105,7 @@ namespace IFS.SceneSpec
                 double[] c = piece < BaseOffsets.Length
                     ? new[] { BaseOffsets[piece][0] + rng.Range(-0.03, 0.03), BaseOffsets[piece][1] + rng.Range(-0.03, 0.03), BaseOffsets[piece][2] + rng.Range(-0.03, 0.03) }
                     : new[] { rng.Range(-0.4, 0.4), rng.Range(-0.4, 0.4), rng.Range(-0.4, 0.4) };
+                if (proportions != null) { c[0] *= proportions[0]; c[1] *= proportions[1]; c[2] *= proportions[2]; }   // (2.4) 배치만 늘임
                 // 크기: 이전 구 반지름 0.5 × (0.42 − 0.04 i) × SizeScale(6번째부터는 가장 작은 것)
                 double size = SizeScale * 0.5 * (0.42 - 0.04 * Math.Min(piece, BaseOffsets.Length - 1)) * rng.Range(SizeJitterLo, SizeJitterHi);
                 // 축마다 늘이고 줄임(납작한 파편) + 꼭짓점마다 반지름 흔들기(각진 덩이)
@@ -133,6 +141,16 @@ namespace IFS.SceneSpec
                     pieceOfTriangle[piece * faces + f] = piece;
                 }
             }
+        }
+
+        /// <summary>메시의 정점 경계 상자 크기(x, y, z)와 중심. 가장 긴 변 규칙(ProportionsRender)이 비율 전·후 경계로 쓴다.</summary>
+        public static void Bounds(int seed, int pieces, double[] proportions, out double[] center, out double[] size)
+        {
+            Build(seed, pieces, proportions, out float[] xyz, out _, out _, out _);
+            double[] mn = { double.MaxValue, double.MaxValue, double.MaxValue }, mx = { double.MinValue, double.MinValue, double.MinValue };
+            for (int i = 0; i < xyz.Length; i++) { int k = i % 3; if (xyz[i] < mn[k]) mn[k] = xyz[i]; if (xyz[i] > mx[k]) mx[k] = xyz[i]; }
+            center = new[] { (mn[0] + mx[0]) / 2, (mn[1] + mx[1]) / 2, (mn[2] + mx[2]) / 2 };
+            size = new[] { mx[0] - mn[0], mx[1] - mn[1], mx[2] - mn[2] };
         }
 
         /// <summary>정점 좌표의 FNV-1a 해시(결정성 확인용).</summary>

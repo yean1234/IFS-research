@@ -1,0 +1,134 @@
+{
+  "meta": {
+    "specVersion": "2.2.0",
+    "participantId": null,
+    "sessionId": null,
+    "condition": null,
+    "sourceTextHash": "sha256:98d0c2b7d29aa9d8df03e5b718e853f6b50bea32613caadb69111c423d793955",
+    "pipeline": {
+      "builder": "scene-spec-builder-v2/2.6.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@1.0.0",
+        "layer1Base": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@1.0.0",
+        "vad": "vad-ko@0.1.0",
+        "sceneParamsV2": "scene-params-v2@2.1.0",
+        "nounStoplist": "noun-stoplist-v2@1.0.0",
+        "baseShapes": "base-shapes-v1@0.7.0"
+      }
+    },
+    "mapping": {
+      "requested": "v2",
+      "used": "v1",
+      "fallbackReason": null
+    }
+  },
+  "form": {
+    "type": "mist",
+    "posture": null,
+    "base": null,
+    "baseVariant": null
+  },
+  "material": {
+    "color": null,
+    "brightness": null,
+    "saturation": null,
+    "roughness": null,
+    "opacity": null,
+    "erosion": null
+  },
+  "layout": {
+    "size": 0.621,
+    "distance": null,
+    "verticalOffset": null
+  },
+  "motion": {
+    "type": "spreading",
+    "speed": null
+  },
+  "body": {
+    "part": null,
+    "layer": null
+  },
+  "_provenance": {
+    "form.type": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "안개",
+        "charSpan": [
+          7,
+          9
+        ],
+        "rule": "formLexicon.안개>form.type:mist"
+      }
+    ],
+    "layout.size": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "넓게",
+        "charSpan": [
+          0,
+          2
+        ],
+        "rule": "sizeLexicon.넓>layout.size:logScale(1.4)"
+      }
+    ],
+    "motion.type": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "펼쳐진",
+        "charSpan": [
+          3,
+          6
+        ],
+        "rule": "motionLexicon.펼쳐지>motion.type:spreading"
+      }
+    ]
+  },
+  "_unmatched": [
+    {
+      "lemma": "떠오르",
+      "tag": "VV",
+      "surface": "떠오른",
+      "charSpan": [
+        11,
+        14
+      ]
+    },
+    {
+      "lemma": "떠오르",
+      "tag": "EOJEOL",
+      "surface": "떠오른다",
+      "charSpan": [
+        11,
+        15
+      ]
+    }
+  ],
+  "_unmapped": [],
+  "_negated": [],
+  "_alternatives": [],
+  "_inferred": {},
+  "_context": [],
+  "_parts": [],
+  "_uncertain": [],
+  "_measurements": [],
+  "_direction": [],
+  "_needsConfirmation": [],
+  "_clauses": [
+    {
+      "charSpan": [
+        0,
+        15
+      ],
+      "text": "넓게 펼쳐진 안개가 떠오른다",
+      "usedFor": [
+        "form.type",
+        "layout.size",
+        "motion.type"
+      ],
+      "status": "partly_used"
+    }
+  ]
+}

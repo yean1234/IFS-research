@@ -72,6 +72,21 @@ namespace IFS.SceneSpec
         /// CategoricalKeys·ToRecord에는 넣지 않는다(2.0–2.2 spec의 기록·golden 지문이 그대로, 2.3 null 문서의 params도 2.2와 같다).</summary>
         public bool HasContourSlots { get; private set; }
 
+        /// <summary>(2.4, G72) x·y·z 비율 슬롯이 있는 값 집합인가(2.4 spec, 또는 덮어쓰기·조정으로 비율 키를 정함). 이때만 ToRecord·Deltas에
+        /// layout.proportions.x·y·z(유효 비율 = 원값 / 가장 큰 값, 소수 4자리)가 나온다. NumericKeys에는 넣지 않는다(2.0–2.3 spec의 기록·golden 지문이 그대로).
+        /// 원값(spec 값 0.2–1 또는 덮어쓰기·조절 화면 값 0.2–2.0 그대로)은 수치 키 layout.proportions.x·y·z로 들고 있다(GetNumber는 원값).</summary>
+        public bool HasProportionsSlot { get; private set; }
+        /// <summary>(2.4) 비율이 주어졌는가(spec 값이 null이 아니거나, 덮어쓰기·조정으로 비율 키를 하나라도 정함). 이때만 렌더러가 비율을 그리고
+        /// form.aspect 축 비율을 쓰지 않는다(비율이 앞선다). 주어지지 않으면 (1, 1, 1) — 2.3과 같은 그림.</summary>
+        public bool ProportionsGiven { get; private set; }
+        /// <summary>(2.4) spec 비율 값의 axisSaid(spec 값이 null이면 null).</summary>
+        public bool? SpecProportionsAxisSaid { get; private set; }
+
+        /// <summary>(2.4) 지금 비율의 원값 (x, y, z)(0.2–2.0). 새 배열.</summary>
+        public double[] ProportionsRaw => new[] { _num[ProportionsRender.XKey], _num[ProportionsRender.YKey], _num[ProportionsRender.ZKey] };
+        /// <summary>(2.4) 지금 비율의 유효 값(clamp(원값 / 가장 큰 값, 0.2, 1), 가장 큰 값 = 1). 새 배열.</summary>
+        public double[] ProportionsEffective => ProportionsRender.Normalize(_num[ProportionsRender.XKey], _num[ProportionsRender.YKey], _num[ProportionsRender.ZKey]);
+
         SceneParams() { }
 
         public static SceneParams FromSpec(SceneSpecV2 s, SceneDefaults d, bool useInferred = false)
@@ -119,6 +134,15 @@ namespace IFS.SceneSpec
             Num("layout.size", s.Layout.Size, "layout.size", d.size);
             Num("layout.distance", s.Layout.Distance, null, d.distance);
             Num("layout.verticalOffset", s.Layout.VerticalOffset, null, d.verticalOffset);
+            // (2.4) x·y·z 비율: 원값 그대로(0.2–1로 자름), null이면 (1, 1, 1). 기본값 기록은 2.4 spec(비율 슬롯이 있음)일 때만
+            var pr = s.Layout.Proportions;
+            p.HasProportionsSlot = s.Layout.ProportionsKeyPresent || pr != null;
+            p.ProportionsGiven = pr != null;
+            p.SpecProportionsAxisSaid = pr?.AxisSaid;
+            p._num[ProportionsRender.XKey] = ProportionsRender.Clamp(pr?.X ?? 1.0);
+            p._num[ProportionsRender.YKey] = ProportionsRender.Clamp(pr?.Y ?? 1.0);
+            p._num[ProportionsRender.ZKey] = ProportionsRender.Clamp(pr?.Z ?? 1.0);
+            if (p.HasProportionsSlot && pr == null) p.DefaultsUsed.Add(ProportionsRender.Key);
             Cat("motion.type", s.Motion.Type, d.motionType);
             Num("motion.speed", s.Motion.Speed, "motion.speed", d.motionSpeed);
             return p;
@@ -129,11 +153,17 @@ namespace IFS.SceneSpec
         public double GetNumber(string key) => _num[key];
         public string GetCategory(string key) => _cat[key];
 
-        /// <summary>0–1로 잘라 넣는다. 값이 실제로 바뀌면 true.</summary>
+        /// <summary>0–1로 잘라 넣는다((2.4) 비율 키는 0.2–1로 자르고 비율 슬롯을 연다). 값이 실제로 바뀌면 true.</summary>
         public bool SetNumber(string key, double value)
         {
             if (!_num.ContainsKey(key)) throw new ArgumentException("수치 파라미터가 아님: " + key);
-            value = Clamp01(value);
+            if (ProportionsRender.IsAxisKey(key))
+            {
+                HasProportionsSlot = true;
+                ProportionsGiven = true;   // 원값이 그대로여도 '정했다'(덮어쓰기 1.0 = 말한 값과 같음)
+                value = ProportionsRender.ClampRaw(value);   // 원값 0.2–2.0(덮어쓰기 검사가 밖이면 이미 거부)
+            }
+            else value = Clamp01(value);
             if (Math.Abs(_num[key] - value) < 1e-9) return false;
             _num[key] = value;
             return true;
@@ -167,6 +197,9 @@ namespace IFS.SceneSpec
             p.SpecBase = SpecBase;
             p.SpecBaseVariant = SpecBaseVariant?.Clone();
             p.HasContourSlots = HasContourSlots;
+            p.HasProportionsSlot = HasProportionsSlot;
+            p.ProportionsGiven = ProportionsGiven;
+            p.SpecProportionsAxisSaid = SpecProportionsAxisSaid;
             return p;
         }
 
@@ -177,13 +210,26 @@ namespace IFS.SceneSpec
             foreach (var k in NumericKeys) r[k] = Math.Round(_num[k], 4);
             foreach (var k in CategoricalKeys) r[k] = _cat[k];
             if (HasBaseSlot) r[BaseKey] = _cat[BaseKey];
+            // (2.4) 비율 슬롯이 있을 때만 유효 비율(가장 큰 값 = 1)
+            if (HasProportionsSlot)
+            {
+                var e = ProportionsEffective;
+                for (int k = 0; k < 3; k++) r[ProportionsRender.AxisKeys[k]] = Math.Round(e[k], 4);
+            }
             return r;
         }
 
-        /// <summary>초기값 → 최종값 차이(0–1 척도). 색상(h)은 원형이라 짧은 쪽으로 잰다.</summary>
+        /// <summary>초기값 → 최종값 차이(0–1 척도). 색상(h)은 원형이라 짧은 쪽으로 잰다.
+        /// (2.4) 비율 슬롯이 어느 쪽에든 있으면 layout.proportions.x·y·z(유효 비율의 차이)도 넣는다.</summary>
         public static SortedDictionary<string, double> Deltas(SceneParams initial, SceneParams final)
         {
             var r = new SortedDictionary<string, double>(StringComparer.Ordinal);
+            if (initial.HasProportionsSlot || final.HasProportionsSlot)
+            {
+                var a = initial.ProportionsEffective;
+                var b = final.ProportionsEffective;
+                for (int k = 0; k < 3; k++) r[ProportionsRender.AxisKeys[k]] = Math.Round(b[k] - a[k], 4);
+            }
             foreach (var k in NumericKeys)
             {
                 double delta = final._num[k] - initial._num[k];
@@ -196,10 +242,12 @@ namespace IFS.SceneSpec
             return r;
         }
 
-        /// <summary>수치 파라미터 조정량의 RMS(0–1). 범주 변경은 따로 센다. 분석용 잠정 지표(decision-log).</summary>
+        /// <summary>수치 파라미터 조정량의 RMS(0–1). 범주 변경은 따로 센다. 분석용 잠정 지표(decision-log).
+        /// NumericKeys만 센다((2.4) 비율 차이는 Deltas에만 — spec 판이 달라도 지표의 분모가 같게).</summary>
         public static double AdjustmentRms(SceneParams initial, SceneParams final)
         {
-            var d = Deltas(initial, final).Values.ToArray();
+            var all = Deltas(initial, final);
+            var d = NumericKeys.Select(k => all[k]).ToArray();
             return Math.Round(Math.Sqrt(d.Sum(x => x * x) / d.Length), 4);
         }
 

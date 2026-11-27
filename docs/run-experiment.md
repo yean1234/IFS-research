@@ -74,6 +74,7 @@ cd <repo>\chatbot
 ```
 
 - 결과: `placement_sessions.csv`(세션 1행: 놓은 자리, 반복 멈춤 확정 거리 `stop_final_*`, 눈높이 기준 열 `eye_height_m`·`final_height_rel_eye_m` 등, 헤드셋 평정 `rating_<문항>_<pre|post|check>`, 사전 측정 `pre_*`, 사후 면담 `pi_*`), `stop_loop_rounds.csv`(라운드 1행), `stop_trials.csv`, `placement_summary.json`.
+- 물체 크기·모양 공변량(G72, RQ2): `object_width_m`·`object_height_m`·`object_depth_m`(불러온 직후 물체 자기 축의 경계 상자, m — manifest `object.boundsM`)과 `proportions_x·y·z`(그리는 너비·높이·깊이 비율, 가장 큰 값 = 1)·`proportions_source`(said | edited | default)·`proportions_axis_said`(manifest `object.proportions`). 그런 기록이 하나도 없으면 열이 붙지 않습니다.
 - 주 분석의 사전 점수는 헤드셋 `pre_items`(`rating_A1_pre` 등), 컴퓨터 사전 측정(`pre_A1` 등)은 보조입니다(G67). 열의 뜻은 `chatbot/ifs_chatbot/eval/placement.py`와 `eval/self_report.py` 머리말.
 - 미리 정한 분석 규칙(민감도 분석)은 뼈대 6절과 `docs/decisions.md` G59-11. 분석기는 기술 통계만 내고 유의성 판정은 하지 않습니다.
 

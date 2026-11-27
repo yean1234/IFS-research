@@ -4,6 +4,7 @@
 //                       밀도장은 seed로 고정한 둥근 덩어리 5개 + 중간 주파수 노이즈(D7, MistLumps)
 //                       안개 셰이더를 못 쓰면 이전 경로(구 + Fade 셰이더, renderPath "mist(legacy)")
 //   fragments         : 불규칙한 각진 조각 5개를 합친 메시 하나(FragmentMesh, 평면 음영, 정점 변위 0) + IFS 셰이더
+//                       (2.4) x·y·z 비율이 주어지면 조각 배치만 늘인 메시(G72). 그 밖의 형상은 로더가 국소 배율로 늘인다
 //   shapeModel        : 모양 모형 4종(ShapeModelFactory) + 정점 변위 0
 //   superquadric      : (2.3) form.roundness가 있는 기본 덩어리 경로 — 슈퍼쿼드릭 메시(SuperquadricMesh) + 정점 변위 0
 // 렌더러는 FormRenderPlan만 본다(매퍼 정보를 모른다, X65). 프리팹·프리미티브 대체 경로는 SceneLoader가 맡는다.
@@ -124,12 +125,19 @@ namespace IFS.SceneSpec
         }
 
         static readonly Dictionary<(int, int), Mesh> _fragments = new Dictionary<(int, int), Mesh>();
+        static readonly Dictionary<(int, int, double, double, double), Mesh> _fragmentsProp = new Dictionary<(int, int, double, double, double), Mesh>();
 
         /// <summary>조각 메시(FragmentMesh). 같은 (seed, 조각 수)면 같은 메시라 한 번 만들어 재사용한다.</summary>
-        public static Mesh FragmentsMesh(int seed, int pieces)
+        public static Mesh FragmentsMesh(int seed, int pieces) => FragmentsMesh(seed, pieces, null);
+
+        /// <summary>(2.4) 조각 배치를 x·y·z 비율로 늘인 조각 메시. proportions가 null이면 위와 같은 메시(같은 캐시).
+        /// 같은 (seed, 조각 수, 비율)이면 같은 메시라 따로 캐시한다(비율 없는 메시 캐시는 그대로).</summary>
+        public static Mesh FragmentsMesh(int seed, int pieces, double[] proportions)
         {
-            if (_fragments.TryGetValue((seed, pieces), out var cached) && cached != null) return cached;
-            FragmentMesh.Build(seed, pieces, out float[] xyz, out float[] nrm, out int[] tris, out _);
+            var pkey = proportions != null ? (seed, pieces, proportions[0], proportions[1], proportions[2]) : default;
+            if (proportions == null) { if (_fragments.TryGetValue((seed, pieces), out var cached) && cached != null) return cached; }
+            else if (_fragmentsProp.TryGetValue(pkey, out var cachedP) && cachedP != null) return cachedP;
+            FragmentMesh.Build(seed, pieces, proportions, out float[] xyz, out float[] nrm, out int[] tris, out _);
             var verts = new Vector3[xyz.Length / 3];
             var normals = new Vector3[verts.Length];
             for (int i = 0; i < verts.Length; i++)
@@ -142,7 +150,8 @@ namespace IFS.SceneSpec
             mesh.normals = normals;
             mesh.triangles = tris;
             mesh.RecalculateBounds();
-            _fragments[(seed, pieces)] = mesh;
+            if (proportions == null) _fragments[(seed, pieces)] = mesh;
+            else _fragmentsProp[pkey] = mesh;
             return mesh;
         }
 
@@ -269,7 +278,8 @@ namespace IFS.SceneSpec
         public override GameObject CreateModel(FormRenderPlan plan)
         {
             var go = new GameObject("fragments");
-            var mesh = FormRenderResources.FragmentsMesh(plan.FragmentSeed, plan.FragmentPieces);
+            // (2.4) 비율이 주어지면 조각 배치를 늘인 메시(조각 모양은 그대로). 없으면 이전 메시
+            var mesh = FormRenderResources.FragmentsMesh(plan.FragmentSeed, plan.FragmentPieces, plan.Proportions);
             go.AddComponent<MeshFilter>().sharedMesh = mesh;
             var mat = new Material(FormRenderResources.Opaque);
             mat.SetFloat("_Seed", plan.FragmentSeed);

@@ -216,6 +216,20 @@ def spec_sha256(spec: dict) -> str:
     return sha256_text(canonical(normalized_spec(spec)))
 
 
+PROPORTION_KEYS = ("layout.proportions.x", "layout.proportions.y", "layout.proportions.z")
+PROPORTION_FLOOR = 0.2       # 그리는 비율의 하한(스펙 2.4 layout.proportions 범위, Unity ProportionsRender와 같음)
+
+
+def proportions_effective(params: dict) -> dict | None:
+    """G72: 조절 원값 세 개 → 그리는 비율 {x, y, z}(가장 큰 값 = 1, 0.2 아래는 0.2, 소수 4자리). 키가 없으면 None.
+    Unity(ProportionsRender)와 같은 식: clamp(raw / max(raw), 0.2, 1)."""
+    if PROPORTION_KEYS[0] not in params:
+        return None
+    raw = [float(params[k]) for k in PROPORTION_KEYS]
+    m = max(raw)
+    return {ax: round(max(PROPORTION_FLOOR, min(1.0, v / m)), 4) for ax, v in zip("xyz", raw)}
+
+
 def effective_params(spec: dict, defaults: dict, overrides: dict | None = None) -> dict:
     """SceneParams.FromSpec(useInferred=false)과 같은 규칙으로 렌더에 쓰일 값(SceneParams 키)을 만든 뒤 덮어쓰기를 얹는다."""
     def clamp(v):
@@ -235,6 +249,12 @@ def effective_params(spec: dict, defaults: dict, overrides: dict | None = None) 
         v = slot_value(spec, slot)
         p[key] = clamp(v if v is not None else defaults[key])
     p["motion.type"] = slot_value(spec, "motion.type") or defaults["motion.type"]
+    # G72: 너비·높이·깊이 비율(값 표 3.0.0처럼 기본값에 키가 있을 때만 — 2.0.0 표의 출력은 그대로). 말한 비율(spec, 가장 큰 값 = 1)
+    # 또는 기본값 1.0. 조절 덮어쓰기는 원값(0.2–2.0)이고 렌더러가 가장 큰 값으로 나눈다(proportions_effective)
+    if PROPORTION_KEYS[0] in defaults:
+        pv = slot_value(spec, "layout.proportions")
+        for k, ax in zip(PROPORTION_KEYS, "xyz"):
+            p[k] = float(pv[ax]) if isinstance(pv, dict) else float(defaults[k])
     for k, v in (overrides or {}).items():
         p[k] = v
     return p

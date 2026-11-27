@@ -1090,10 +1090,11 @@ def test_runner_slot_and_source_lists_match_csharp():
     sources = re.search(r"SourceValues\s*=\s*\{([^}]*)\}", src).group(1)
     sources01 = re.search(r"SourceValues01\s*=\s*\{([^}]*)\}", src).group(1)
     # 0.2 슬롯 = 0.1 슬롯 + form.base(D6, SceneSpec 2.2.0 기본 형상) + form.baseVariant(CP10 G39) — 0.2에 하위 호환으로 더함
-    want_slots = set(SCHEMA01["$defs"]["slotName"]["enum"]) | {"form.base", "form.baseVariant"}
+    # G72: layout.proportions(값 표 3.0.0일 때만 sources에 나옴)도 0.2에 하위 호환으로 더함
+    want_slots = set(SCHEMA01["$defs"]["slotName"]["enum"]) | {"form.base", "form.baseVariant", "layout.proportions"}
     assert set(re.findall(r'"([^"]+)"', slots)) == RUNNER_SLOTS == want_slots
     from ifs_chatbot.candidates import SLOTS
-    assert set(SLOTS) == RUNNER_SLOTS
+    assert set(SLOTS) | {"layout.proportions"} == RUNNER_SLOTS     # 비율 슬롯은 selection.PROPORTION_SLOT(표 3.0.0만)
     assert set(re.findall(r'"([^"]+)"', sources)) == RUNNER_SOURCES == SIX_SOURCES
     assert set(re.findall(r'"([^"]+)"', sources01)) == RUNNER_SOURCES_01 == {"said", "chosen", "edited", "default"}
     from ifs_chatbot.selection import SOURCES

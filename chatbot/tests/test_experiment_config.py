@@ -43,9 +43,13 @@ def test_experiment_config_is_bridge_plus_v4_plus_backbone_values():
     # LLM·표류·미리보기 = v4
     assert exp.llm == v4.llm and exp.drift == v4.drift and exp.preview == v4.preview
     # 매핑 = v4(매퍼 v2), strict만 pilot과 같게
-    assert exp.mapping == replace(v4.mapping, strict=True)
+    assert exp.mapping == replace(v4.mapping, strict=True, proportions="scene_params.v2.json")   # G72: 비율
+    assert v4.mapping.proportions == ""
     # 선택 단계 = v4, 초안 경고 줄만 참여자 보기에서 숨김(뼈대 3절·G59-8)
-    assert exp.selection == replace(v4.selection, participant_draft_banner=False)
+    # G72: 조절 항목 너비·높이·깊이(값 표 3.0.0 · 문구 0.7.0)
+    assert exp.selection == replace(v4.selection, participant_draft_banner=False, protocol="selection_protocol.v0.7.json",
+                                    table="candidate_values.v3.json")
+    assert v4.selection.table == "candidate_values.v2.json" and v4.selection.protocol == "selection_protocol.v0.json"
     # 생성 메시는 끔(세션에 자동으로 이어지지 않음 — 파일 주석)
     assert exp.gen3d.enabled is False and exp.gen3d == v4.gen3d
     assert exp.session == v4.session
