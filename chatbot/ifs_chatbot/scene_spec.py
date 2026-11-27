@@ -37,6 +37,9 @@ SCHEMA_FILE_V24 = "scene-spec.v2.4.json"
 PROPORTION_SLOT_PATHS: tuple[str, ...] = ("layout.proportions",)
 PROPORTION_AXES: tuple[str, ...] = ("x", "y", "z")
 PROPORTION_RANGE: tuple[float, float] = (0.2, 1.0)
+# (G74) 2.4.0의 선택 슬롯: 안개 입자 모양. [mapping] mist_kinds를 켠 매핑만 적는다. 다른 목록에는 넣지 않는다
+MIST_KIND_SLOT_PATHS: tuple[str, ...] = ("form.mistKind",)
+MIST_KINDS: tuple[str, ...] = ("fog", "smoke", "dust", "cloud")
 V21_FIELDS: tuple[str, ...] = ("_context", "_parts", "_uncertain", "_measurements", "_direction",
                                "_needsConfirmation", "_clauses")
 SLOT_PATHS: tuple[str, ...] = (
@@ -133,7 +136,7 @@ def check_principles(spec: dict, text: str) -> list[str]:
     if spec.get("meta", {}).get("sourceTextHash") != text_hash(text):
         problems.append("meta.sourceTextHash가 확정 텍스트의 해시와 다르다")
     sv = (spec.get("meta") or {}).get("specVersion")
-    for path in SLOT_PATHS + BASE_SLOT_PATHS + EXT_SLOT_PATHS + PROPORTION_SLOT_PATHS:  # 스키마와 같은 규칙을 코드로도 확인(스키마를 고칠 때 안전망). 2.2–2.4 슬롯은 없으면 건너뜀
+    for path in SLOT_PATHS + BASE_SLOT_PATHS + EXT_SLOT_PATHS + PROPORTION_SLOT_PATHS + MIST_KIND_SLOT_PATHS:  # 스키마와 같은 규칙을 코드로도 확인(스키마를 고칠 때 안전망). 2.2–2.4 슬롯은 없으면 건너뜀
         try:
             value = get_slot(spec, path)
         except (KeyError, TypeError):
@@ -142,6 +145,8 @@ def check_principles(spec: dict, text: str) -> list[str]:
             problems.append(f"{path}: specVersion {sv} 문서에는 없어야 한다(2.2.0 이상 전용)")
         if path in EXT_SLOT_PATHS and sv not in (SPEC_VERSION_V23, SPEC_VERSION_V24):
             problems.append(f"{path}: specVersion {sv} 문서에는 없어야 한다(2.3.0 전용 슬롯 — 2.4.0에서는 선택)")
+        if path in MIST_KIND_SLOT_PATHS and sv != SPEC_VERSION_V24:
+            problems.append(f"{path}: specVersion {sv} 문서에는 없어야 한다(2.4.0의 선택 슬롯)")
         if path in PROPORTION_SLOT_PATHS:
             if sv != SPEC_VERSION_V24:
                 problems.append(f"{path}: specVersion {sv} 문서에는 없어야 한다(2.4.0 전용)")

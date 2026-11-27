@@ -2,6 +2,7 @@
 //   Numbers·Categories = SceneParams 키 → 값(SetNumber·SetCategory와 같은 뜻, 0–1 조정 포함)
 //   (2.4, G72) layout.proportions.x·y·z = x·y·z 비율의 원값(참여자 조절 화면 값, 0.2–2.0). 렌더러가 셋의 가장 큰 값으로 나누고 0.2–1로 자른다.
 //              일부 축만 주면 나머지는 spec 값(spec이 null이면 1.0). 위치·거리 키와 달리 선택 파일 덮어쓰기에 넣을 수 있다.
+//   (2.4 선택, G74) form.mistKind = 안개 입자 모양(fog·smoke·dust·cloud). form.type이 mist일 때만 그림에 쓰인다.
 //   ShapeModel = 모양 모형 강제(Sphere·Cube·FlatCylinder·Cone). null이면 spec의 모양어 판정을 그대로 쓴다.
 //                form.type 덮어쓰기와 별개 필드다. 해석된 form.type이 blob일 때만 쓸 수 있다.
 // 덮어쓰기는 참여자 조정이 아니므로 ExperimentRecorder.RecordChange를 타지 않는다(SceneLoader.Load(path, override)).
@@ -38,8 +39,12 @@ namespace IFS.SceneSpec
             foreach (var kv in Categories)
             {
                 bool contour = ContourRender.Levels.TryGetValue(kv.Key, out var levels);
-                if (Array.IndexOf(SceneParams.CategoricalKeys, kv.Key) < 0 && kv.Key != SceneParams.BaseKey && !contour) errors.Add("범주 키가 아님: " + kv.Key);
+                bool mistKind = kv.Key == MistKinds.Key;
+                if (Array.IndexOf(SceneParams.CategoricalKeys, kv.Key) < 0 && kv.Key != SceneParams.BaseKey && !contour && !mistKind) errors.Add("범주 키가 아님: " + kv.Key);
                 else if (kv.Value == null) errors.Add(kv.Key + ": 값이 null");
+                // (2.4 선택, G74) 안개 입자 모양(fog·smoke·dust·cloud). form.type이 mist일 때만 그림에 쓰인다
+                else if (mistKind && !MistKinds.IsKind(kv.Value))
+                    errors.Add($"모르는 {kv.Key}: {kv.Value}(가능: {string.Join(", ", MistKinds.Values)})");
                 // (2.3) 윤곽·발광 범주 키(docs/scene-spec-mapping.md 8.4절 6번). 챗봇은 아직 보내지 않는다. "none"은 발광 끔
                 else if (contour && Array.IndexOf(levels, kv.Value) < 0)
                     errors.Add($"모르는 {kv.Key}: {kv.Value}(가능: {string.Join(", ", levels)})");

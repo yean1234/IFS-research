@@ -145,7 +145,8 @@ class Runtime:
                     ext_lexicon_path=shared("lexicon", m.ext_lexicon) if m.ext_lexicon else None,
                     ext_params_path=shared("lexicon", m.ext_params) if m.ext_lexicon else None,
                     variant_rules_path=shared("lexicon", m.variant_rules) if m.variant_rules else None,
-                    proportions_path=shared("lexicon", m.proportions) if m.proportions else None)   # G72(기본 끔)
+                    proportions_path=shared("lexicon", m.proportions) if m.proportions else None,   # G72(기본 끔)
+                    mist_kinds_path=shared("lexicon", m.mist_kinds) if m.mist_kinds else None)      # G74(기본 끔)
             except Exception as exc:  # noqa: BLE001
                 self.mapping_load_error = f"{type(exc).__name__}: {exc}"
                 if cfg.mapping.strict:

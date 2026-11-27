@@ -26,6 +26,8 @@ namespace IFS.SceneSpec
         public const string RendererMist = "mist";
         public const string RendererShell = "shell";
         public const string RendererFragments = "fragments";
+        /// <summary>(2.4 선택, G74) form.type = mist + form.mistKind = dust: 작은 알갱이 메시(DustMesh). 안개 셰이더를 쓰지 않는다.</summary>
+        public const string RendererMistDust = "mistDust";
         public const string RendererShapeModel = "shapeModel";
         /// <summary>기본 형상 렌더러 이름의 앞머리("base:container" …, report.json renderPath).</summary>
         public const string RendererBasePrefix = "base:";
@@ -147,7 +149,99 @@ namespace IFS.SceneSpec
         /// <summary>비율이 주어져 form.aspect 축 비율을 쓰지 않았는가(form.aspect 값은 그대로 기록에 남음).</summary>
         public bool AspectSuperseded { get; private set; }
 
+        // ── (2.4 선택, G74) 안개 입자 모양(MistKinds). 슬롯이 없는 값 집합(SceneParams.HasMistKindSlot = false)이면 모두 null이고 계획 JSON에도 나오지 않는다 ──
+        /// <summary>form.mistKind 슬롯이 있는 값 집합인가.</summary>
+        public bool HasMistKind { get; private set; }
+        /// <summary>지금 값의 form.mistKind(null = 말하지 않음). 그리지 않아도 남는다.</summary>
+        public string MistKindRequested { get; private set; }
+        /// <summary>applied | not_applied_form(형태가 mist가 아님) | none(말하지 않음 → cloud와 같은 그림).</summary>
+        public string MistKindStatus { get; private set; }
+        /// <summary>그린 종류(applied일 때만). 아니면 null.</summary>
+        public string MistKind { get; private set; }
+        /// <summary>fog·smoke의 셰이더 형상 프리셋. cloud·null·dust·mist가 아니면 null(렌더러가 셰이더 기본값 = cloud를 넣는다).</summary>
+        public MistShape MistShape { get; private set; }
+        /// <summary>dust 알갱이 수·seed·규칙(그 밖에는 0·0·null).</summary>
+        public int DustGrains { get; private set; }
+        public int DustSeed { get; private set; }
+        public string DustRule { get; private set; }
+
         FormRenderPlan() { }
+
+        /// <summary>(2.4 선택, G74) 안개 입자 모양을 계획에 얹는다. 슬롯이 없으면 아무것도 바꾸지 않는다(2.4 이전 계획 그대로).
+        /// cloud·null은 렌더러·프리셋을 바꾸지 않는다(2.4 이전 안개 그림).</summary>
+        void ApplyMistKind(SceneParams current)
+        {
+            if (!current.HasMistKindSlot) return;
+            HasMistKind = true;
+            MistKindRequested = current.GetCategory(MistKinds.Key);
+            if (MistKindRequested == null) { MistKindStatus = MistKinds.StatusNone; return; }
+            if (Renderer != RendererMist) { MistKindStatus = MistKinds.StatusNotAppliedForm; return; }
+            MistKindStatus = MistKinds.StatusApplied;
+            MistKind = MistKindRequested;
+            if (MistKind == MistKinds.Cloud) return;
+            var inv = System.Globalization.CultureInfo.InvariantCulture;
+            var preset = MistKinds.Preset(MistKind);
+            Preset = preset;
+            if (MistKind == MistKinds.Dust)
+            {
+                Renderer = RendererMistDust;
+                ZeroDisplacement = true;
+                MistRule = null;
+                MistSeed = 0;
+                DustGrains = DustMesh.DefaultGrains;
+                DustSeed = DustMesh.DefaultSeed;
+                DustRule = DustMesh.RuleVersion;
+                PresetNote = $"form.type=mist, form.mistKind=dust: 형상 프리셋 기본값 — 작은 알갱이 {DustMesh.DefaultGrains}개를 합친 메시 하나" +
+                             $"(규칙 {DustMesh.RuleVersion}, seed {DustMesh.DefaultSeed}, 가운데 무리 σ {R3(DustMesh.Sigma)}·흩어진 알갱이 {R3(DustMesh.StrayFraction)}, " +
+                             $"배치 반지름 {R3(DustMesh.PlacementRadius)}, 알갱이 반지름 {R3(DustMesh.GrainRadiusMin)}–{R3(DustMesh.GrainRadiusMax)}), " +
+                             $"반투명 셰이더(알파 = opacity), 정점 변위 0, 노이즈 크기 {preset.NoiseScale.ToString(inv)}. 수치 {MistKinds.ParamsVersion}";
+                return;
+            }
+            MistShape = MistKinds.Shape(MistKind);
+            MistRule = MistKinds.RuleFor(MistKind);
+            var s = MistShape;
+            PresetNote = $"form.type=mist, form.mistKind={MistKind}: 형상 프리셋 기본값 — 구 대리 메시 + 레이마칭 {MistSteps}걸음, 덩어리 {MistLumps.Count}개" +
+                         $"(배치 규칙 {MistRule}, seed {MistSeed}), 겉면 흔들림 {preset.Lumpiness.ToString(inv)}, 노이즈 크기 {preset.NoiseScale.ToString(inv)}, " +
+                         $"밀도 {preset.Density.ToString(inv)}, 가장자리 폭 ×{R3(s.EdgeRampMul)}, 덩어리 눌림 ({R3(s.Squash[0])}, {R3(s.Squash[1])}, {R3(s.Squash[2])}), " +
+                         $"노이즈 결 ({R3(s.NoiseStretch[0])}, {R3(s.NoiseStretch[1])}, {R3(s.NoiseStretch[2])}), 비틀림 {R3(s.Twist)}, 가닥 {R3(s.Strands)}, " +
+                         $"높이 감쇠 {R3(s.HeightFade[0])}–{R3(s.HeightFade[1])}. 수치 {MistKinds.ParamsVersion}";
+        }
+
+        /// <summary>(2.4 선택, G74) 기록의 mistKind(계획 JSON·report.json). 슬롯이 없으면 null.</summary>
+        public JObject MistKindJson()
+        {
+            if (!HasMistKind) return null;
+            var o = new JObject
+            {
+                ["requested"] = MistKindRequested,
+                ["status"] = MistKindStatus,
+                ["kind"] = MistKind,
+                ["rule"] = MistKind == null ? null : MistKinds.RuleFor(MistKind),
+                ["params"] = MistKind == null ? null : MistKinds.ParamsVersion,
+            };
+            if (MistShape != null)
+                o["shape"] = new JObject
+                {
+                    ["edgeRampMul"] = System.Math.Round(MistShape.EdgeRampMul, 5),
+                    ["squash"] = new JArray(MistShape.Squash),
+                    ["noiseStretch"] = new JArray(MistShape.NoiseStretch),
+                    ["twist"] = System.Math.Round(MistShape.Twist, 5),
+                    ["strands"] = System.Math.Round(MistShape.Strands, 5),
+                    ["heightFade"] = new JArray(MistShape.HeightFade),
+                };
+            if (DustRule != null)
+                o["dust"] = new JObject
+                {
+                    ["version"] = DustRule,
+                    ["grains"] = DustGrains,
+                    ["seed"] = DustSeed,
+                    ["placementRadius"] = DustMesh.PlacementRadius,
+                    ["sigma"] = DustMesh.Sigma,
+                    ["strayFraction"] = DustMesh.StrayFraction,
+                    ["grainRadiusRange"] = new JArray(DustMesh.GrainRadiusMin, DustMesh.GrainRadiusMax),
+                };
+            return o;
+        }
 
         /// <summary>(2.4) 비율을 계획에 얹는다. 주어지지 않으면 아무것도 바꾸지 않는다(2.0–2.3 계획 그대로).</summary>
         void ApplyProportions(SceneParams current)
@@ -157,7 +251,8 @@ namespace IFS.SceneSpec
             Proportions = ProportionsRender.Normalize(ProportionsRaw[0], ProportionsRaw[1], ProportionsRaw[2], out bool clamped);
             ProportionsClamped = clamped;
             ProportionsAxisSaid = current.SpecProportionsAxisSaid;
-            ProportionsMethod = Renderer == RendererFragments ? ProportionsRender.MethodFragmentDistribution : ProportionsRender.MethodLocalScale;
+            ProportionsMethod = Renderer == RendererFragments || Renderer == RendererMistDust
+                ? ProportionsRender.MethodFragmentDistribution : ProportionsRender.MethodLocalScale;   // (G74) dust 알갱이도 자리만 늘인다
         }
 
         /// <summary>(2.4) 기록의 proportions(계획 JSON·report.json). 비율이 주어지지 않으면 null.</summary>
@@ -293,6 +388,7 @@ namespace IFS.SceneSpec
             }
             bool baseApplied = baseStatus == BaseApplied;
             var plan = baseApplied ? BuildBase(current, form, baseReq) : BuildForm(current, form, initialFormType, shape, baseReq, baseStatus);
+            plan.ApplyMistKind(current);
             plan.ApplyProportions(current);
             plan.ApplyContourAndEmission(current);
             return plan;
@@ -444,11 +540,15 @@ namespace IFS.SceneSpec
         {
             if (MistRule == null) return null;
             var lumps = new JArray();
-            var l = MistLumps.Build(MistSeed);
+            var l = MistLumpLayout();
             for (int k = 0; k < l.Length / 4; k++)
                 lumps.Add(new JArray(System.Math.Round(l[k * 4], 5), System.Math.Round(l[k * 4 + 1], 5), System.Math.Round(l[k * 4 + 2], 5), System.Math.Round(l[k * 4 + 3], 5)));
             return new JObject { ["version"] = MistRule, ["seed"] = MistSeed, ["lumps"] = lumps };
         }
+
+        /// <summary>안개 덩어리 (x, y, z, r) × 5: (G74) 그리는 종류(fog·smoke)의 배치, 아니면 2.4 이전 배치(MistLumps.Build).
+        /// 좌표는 밀도장 공간(물체 좌표 ⊙ MistShape.Squash).</summary>
+        public double[] MistLumpLayout() => MistKinds.BuildLumps(MistKind, MistSeed);
 
         /// <summary>계획 전체(비교·기록용). 키 순서가 고정이라 문자열 비교로 같은 계획인지 볼 수 있다.
         /// 기본 형상(2.2)이 있을 때만 끝에 "base"를 붙인다(2.0·2.1 spec의 계획 JSON은 그대로).</summary>
@@ -465,6 +565,8 @@ namespace IFS.SceneSpec
             }
             // (2.4) 비율이 주어졌을 때만(spec null·덮어쓰기 없음이면 2.3과 같은 계획 JSON)
             if (Proportions != null) o["proportions"] = ProportionsJson();
+            // (2.4 선택, G74) 안개 입자 모양 슬롯이 있을 때만
+            if (HasMistKind) o["mistKind"] = MistKindJson();
             return o;
         }
 

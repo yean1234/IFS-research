@@ -153,5 +153,31 @@
     "extraBackgroundNote": "scope의 배경 낱말에 더하는 것(매퍼 v1 backgroundNouns는 고치지 않음 — 다른 슬롯 출력 불변). '넓게 펼쳐진 들판 위에 작은 돌이 있어요'의 '넓게 펼쳐진'은 형상이 아니라 배경의 모양이다.",
         "heightNoun": {"noun": "키", "particles": ["가", "이"], "predicate": "크", "profile": "tall", "note": "'키가 큰'·'키가 커요'(같은 절, 명사 + 주격 조사 + 크/VA). 사람 낱말은 형태 단계에서 따로 막힌다(G45)"},
     "scope": "본 장면 문장만(회상 문장 _context_sentences는 아님). 움직임 비유의 절·매개어(G71 actionSimile region·vehicles) 안의 낱말은 비율을 채우지 않는다. 꾸미는(관형형) 말이면 바로 뒤 명사가, 서술이면 같은 절의 주어가 배경 낱말(backgroundNouns)·신체 부위·자기 지칭이면 형상의 모양이 아니라서 채우지 않는다. 부정('납작하지 않아요')은 _negated(category proportions). 여러 번 말하면 처음 말한 것이 값이고, 다른 profile이면 뒤의 것은 _alternatives(later_mention), 같은 profile이면 근거만 더한다."
+  },
+  "mistKinds": {
+    "tableVersion": "0.1.0",
+    "status": "draft",
+    "added": "2026-11-27 (결정 G74 — 연구 책임자: 안개·연기·먼지가 모두 같은 모양(뭉친 구름)으로 그려진다)",
+    "versionNote": "이 표는 자체 판(tableVersion)을 쓴다(proportions 표와 같은 관례). 파일 lexiconVersion(2.1.0)은 올리지 않았다 — 올리면 [mapping] mist_kinds를 끈 설정의 spec meta(sceneParamsV2)·후보 id까지 바뀐다. 켠 매핑만 meta.pipeline.lexicons.mistKindTable에 'scene-params-v2.mistKinds@<tableVersion>'을 남긴다. 낱말·규칙을 바꾸면 tableVersion을 올린다.",
+    "slot": "form.mistKind",
+    "note": "[mapping] mist_kinds를 켠 매핑 v2만 읽는다(스펙 2.4.0의 선택 슬롯 form.mistKind, [mapping] proportions도 켜져 있어야 함). 값 = 안개 형태(form.type mist)를 그릴 때의 입자 모양. 참여자가 아래 낱말을 형상 자리(주어·이름만 말함 — base_shapes rules.roles, 또는 비교 원천 '연기 같은 게')에서 말했을 때만 채운다(원칙 2). 낱말이 없거나 '그냥 뿌연'처럼 종류를 말하지 않았으면 null(Unity는 지금 그림 = cloud와 같은 덩어리, defaultsUsed에 form.mistKind). form.type을 정하지 않는다: form.type이 mist가 아니면(덩어리·조각 등, 또는 비어 있어 후보 단계가 고름) 값은 기록에만 남고 그리지 않는다(Unity 계획 mistKind.status not_applied_form) — 후보·조절에서 mist를 고르면 그때 그 종류로 그린다. 근거 provenance: 직접 말함 source explicit_lexicon, 비교 원천 source simile_marker(층 2), rule 'mistKinds.<낱말>>form.mistKind:<종류>'(+simile(<표지>)).",
+    "kinds": {
+      "fog": {"note": "안개·수증기·아지랑이 — 넓고 낮게 깔린 옅고 부드러운 층(Unity: 납작한 덩어리를 옆으로 넓게, 가장자리 폭 넓게, 밀도 낮게)"},
+      "smoke": {"note": "연기·김 — 위로 피어오르는 기둥, 꼬인 가닥, 위로 갈수록 옅어짐(Unity: 세로로 쌓인 덩어리, 세로로 늘인 노이즈를 높이에 따라 비틂)"},
+      "dust": {"note": "먼지·모래·가루 — 작은 알갱이가 흩어짐(Unity: 셰이더 대신 작은 알갱이 메시를 seed로 결정론 배치)"},
+      "cloud": {"note": "구름·먹구름 — 뭉친 덩어리(Unity: 지금 그림 그대로 — 덩어리 5개 lumps5/1)"}
+    },
+    "nouns": {
+      "안개": "fog", "물안개": "fog", "해무": "fog", "수증기": "fog", "아지랑이": "fog",
+      "연기": "smoke", "매연": "smoke", "김": "smoke",
+      "먼지": "dust", "흙먼지": "dust", "모래먼지": "dust", "미세먼지": "dust", "먼지구름": "dust", "황사": "dust", "모래": "dust", "가루": "dust", "꽃가루": "dust",
+      "구름": "cloud", "먹구름": "cloud", "뭉게구름": "cloud", "비구름": "cloud"
+    },
+    "nounsNote": "명사 연속(띄어쓰기 없이 붙은 명사 토큰들, '모래먼지' = 모래 + 먼지) 전체 글자로 먼저 찾고, 없으면 중심 명사 토큰 하나로 찾는다('미세 먼지'·'담배 연기' → 먼지·연기). 한 토큰 합성어('빵가루')는 표에 없으면 읽지 않는다. 바로 뒤에 동사·형용사 접미사(XSV·XSA)가 붙으면 다른 뜻이라 읽지 않는다('연기됐어요'·'연기해요').",
+    "rejectNextTags": ["XSV", "XSA"],
+    "homonyms": {
+      "김": {"predicates": ["나", "피어오르", "피어나", "오르", "올라오", "서리", "솟"], "adverbs": ["모락모락", "뭉게뭉게", "폴폴", "솔솔"], "note": "'김'은 성씨·바다 김과 같은 글자라 같은 절에 김이 나는 모양의 용언(Kiwi 어간)이나 부사가 있을 때만 읽는다('김이 모락모락 나요'). 비교('김처럼 피어올라요')도 같은 규칙"}
+    },
+    "scope": "본 장면 문장만: 회상 문장·상황 문장·상황절('~할 때') 안의 낱말은 읽지 않는다(형상 낱말 D6과 같은 범위). 형상 자리(주어·이름)나 비교 원천이 아니면(장소 '안개 속에', 목적어 '연기를 뿜는', 꾸밈 '구름의') 읽지 않는다. 색 비교('먹구름처럼 시커먼')도 읽지 않는다. 움직임 비유의 매개어(G71: '연기처럼 피어올라요', '구름이 흘러가듯이 물체가 …')는 form.type처럼 채우지 않고 _alternatives(lower_priority, rule 끝 +actionSimile(…))에 남긴다(actionSimile.demoteFormType이 false면 채운다). 부정·거둬들임('안개는 아니에요', '연기, 아니 구름이에요')은 _negated(category mist_kind). 직접 말한 것(층 1)이 비교 원천(층 2)보다 앞서고(뒤진 것은 lower_layer), 같은 층에서는 처음 말한 것이 값이며 다른 종류는 _alternatives(later_mention), 같은 종류는 근거만 더한다. 이 낱말 기록 가운데 사전에 없는 명사(_unmapped unlisted_noun, 예 '먼지'·'김')는 값의 근거가 되면 지운다(G72와 같음). 사물 기록(_unmapped object '구름'·'연기')은 그대로 둔다(G71-e)."
   }
 }

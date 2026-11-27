@@ -1,0 +1,445 @@
+{
+ "generatedFrom": "BatchCapture report.json (ok=True)",
+ "summary": {
+  "mist": {
+   "specs": 8,
+   "visiblePixelsMean": 10977.125,
+   "maxAlphaMean": 0.954,
+   "circularityMean": 0.646,
+   "componentsMean": 1.0,
+   "edgeFalloffPxMean": 15.158,
+   "contrastDeltaLMean": 3.163,
+   "frameMsP95Max": 1.043
+  },
+  "mistDust": {
+   "specs": 1,
+   "visiblePixelsMean": 4789.0,
+   "maxAlphaMean": 1.0,
+   "circularityMean": 0.004,
+   "componentsMean": 33.0,
+   "edgeFalloffPxMean": 0.8,
+   "contrastDeltaLMean": 4.38,
+   "frameMsP95Max": 0.35
+  }
+ },
+ "specs": [
+  {
+   "spec": "M-1-fog.after.json",
+   "renderPath": "mist",
+   "mistKind": {
+    "requested": "fog",
+    "status": "applied",
+    "kind": "fog",
+    "rule": "fog5/1",
+    "params": "mistKinds/1",
+    "shape": {
+     "edgeRampMul": 3.0,
+     "squash": [
+      1.0,
+      2.0,
+      1.0
+     ],
+     "noiseStretch": [
+      1.0,
+      2.2,
+      1.0
+     ],
+     "twist": 0.0,
+     "strands": 0.0,
+     "heightFade": [
+      0.0,
+      0.0
+     ]
+    }
+   },
+   "mistRule": "fog5/1",
+   "proportions": null,
+   "defaultsUsed": [
+    "form.posture",
+    "form.base",
+    "material.color.h",
+    "material.color.s",
+    "material.color.l",
+    "material.brightness",
+    "material.roughness",
+    "material.opacity",
+    "material.erosion",
+    "layout.size",
+    "layout.distance",
+    "layout.verticalOffset",
+    "layout.proportions",
+    "motion.type",
+    "motion.speed"
+   ],
+   "visiblePixels": 8819,
+   "maxAlpha": 0.947,
+   "circularity": 0.719,
+   "components": 1,
+   "edgeFalloffPx": 20.17,
+   "frameMsP95": 1.043,
+   "notes": [
+    "form.type=mist: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시",
+    "form.type=mist, form.mistKind=fog: 형상 프리셋 기본값 — 구 대리 메시 + 레이마칭 8걸음, 덩어리 5개(배치 규칙 fog5/1, seed 0), 겉면 흔들림 0.1, 노이즈 크기 0.6, 밀도 0.45, 가장자리 폭 ×3, 덩어리 눌림 (1, 2, 1), 노이즈 결 (1, 2.2, 1), 비틀림 0, 가닥 0, 높이 감쇠 0–0. 수치 mistKinds/1"
+   ]
+  },
+  {
+   "spec": "M-1-fog.before.json",
+   "renderPath": "mist",
+   "mistKind": null,
+   "mistRule": "lumps5/1",
+   "proportions": null,
+   "defaultsUsed": [
+    "form.posture",
+    "form.base",
+    "material.color.h",
+    "material.color.s",
+    "material.color.l",
+    "material.brightness",
+    "material.roughness",
+    "material.opacity",
+    "material.erosion",
+    "layout.size",
+    "layout.distance",
+    "layout.verticalOffset",
+    "layout.proportions",
+    "motion.type",
+    "motion.speed"
+   ],
+   "visiblePixels": 11612,
+   "maxAlpha": 0.996,
+   "circularity": 0.739,
+   "components": 1,
+   "edgeFalloffPx": 12.39,
+   "frameMsP95": 0.235,
+   "notes": [
+    "form.type=mist: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시",
+    "form.type=mist: 형상 프리셋 기본값 — 구 대리 메시 + 레이마칭 8걸음, 둥근 덩어리 5개(배치 규칙 lumps5/1, seed 0) + 중간 주파수 노이즈(겉면 흔들림 0.3, 노이즈 크기 1.1), 밀도 0.5(광학 두께 배율. 덩어리 속 알파는 opacity 가까이까지 차고 opacity를 넘지 않음). mist에서 material.roughness는 표면 반사(광택)가 아니라 밀도 노이즈 크기 배율(0.7–1.3)과 색 얼룩 세기를 정함"
+   ]
+  },
+  {
+   "spec": "M-2-smoke.after.json",
+   "renderPath": "mist",
+   "mistKind": {
+    "requested": "smoke",
+    "status": "applied",
+    "kind": "smoke",
+    "rule": "smoke5/1",
+    "params": "mistKinds/1",
+    "shape": {
+     "edgeRampMul": 1.3,
+     "squash": [
+      1.0,
+      1.0,
+      1.0
+     ],
+     "noiseStretch": [
+      1.0,
+      0.35,
+      1.0
+     ],
+     "twist": 6.0,
+     "strands": 0.45,
+     "heightFade": [
+      0.3,
+      0.66
+     ]
+    }
+   },
+   "mistRule": "smoke5/1",
+   "proportions": null,
+   "defaultsUsed": [
+    "form.posture",
+    "form.base",
+    "material.color.h",
+    "material.color.s",
+    "material.color.l",
+    "material.brightness",
+    "material.roughness",
+    "material.opacity",
+    "material.erosion",
+    "layout.size",
+    "layout.distance",
+    "layout.verticalOffset",
+    "layout.proportions",
+    "motion.type",
+    "motion.speed"
+   ],
+   "visiblePixels": 9521,
+   "maxAlpha": 0.887,
+   "circularity": 0.371,
+   "components": 1,
+   "edgeFalloffPx": 18.78,
+   "frameMsP95": 0.692,
+   "notes": [
+    "form.type=mist: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시",
+    "form.type=mist, form.mistKind=smoke: 형상 프리셋 기본값 — 구 대리 메시 + 레이마칭 8걸음, 덩어리 5개(배치 규칙 smoke5/1, seed 0), 겉면 흔들림 0.35, 노이즈 크기 1.3, 밀도 0.65, 가장자리 폭 ×1.3, 덩어리 눌림 (1, 1, 1), 노이즈 결 (1, 0.35, 1), 비틀림 6, 가닥 0.45, 높이 감쇠 0.3–0.66. 수치 mistKinds/1"
+   ]
+  },
+  {
+   "spec": "M-2-smoke.before.json",
+   "renderPath": "mist",
+   "mistKind": null,
+   "mistRule": "lumps5/1",
+   "proportions": null,
+   "defaultsUsed": [
+    "form.posture",
+    "form.base",
+    "material.color.h",
+    "material.color.s",
+    "material.color.l",
+    "material.brightness",
+    "material.roughness",
+    "material.opacity",
+    "material.erosion",
+    "layout.size",
+    "layout.distance",
+    "layout.verticalOffset",
+    "layout.proportions",
+    "motion.type",
+    "motion.speed"
+   ],
+   "visiblePixels": 11612,
+   "maxAlpha": 0.996,
+   "circularity": 0.739,
+   "components": 1,
+   "edgeFalloffPx": 12.39,
+   "frameMsP95": 0.771,
+   "notes": [
+    "form.type=mist: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시",
+    "form.type=mist: 형상 프리셋 기본값 — 구 대리 메시 + 레이마칭 8걸음, 둥근 덩어리 5개(배치 규칙 lumps5/1, seed 0) + 중간 주파수 노이즈(겉면 흔들림 0.3, 노이즈 크기 1.1), 밀도 0.5(광학 두께 배율. 덩어리 속 알파는 opacity 가까이까지 차고 opacity를 넘지 않음). mist에서 material.roughness는 표면 반사(광택)가 아니라 밀도 노이즈 크기 배율(0.7–1.3)과 색 얼룩 세기를 정함"
+   ]
+  },
+  {
+   "spec": "M-3-dust.after.json",
+   "renderPath": "mistDust",
+   "mistKind": {
+    "requested": "dust",
+    "status": "applied",
+    "kind": "dust",
+    "rule": "dust520/1",
+    "params": "mistKinds/1",
+    "dust": {
+     "version": "dust520/1",
+     "grains": 520,
+     "seed": 0,
+     "placementRadius": 0.56,
+     "sigma": 0.2,
+     "strayFraction": 0.15,
+     "grainRadiusRange": [
+      0.01,
+      0.024
+     ]
+    }
+   },
+   "mistRule": null,
+   "proportions": null,
+   "defaultsUsed": [
+    "form.posture",
+    "form.base",
+    "material.color.h",
+    "material.color.s",
+    "material.color.l",
+    "material.brightness",
+    "material.roughness",
+    "material.opacity",
+    "material.erosion",
+    "layout.size",
+    "layout.distance",
+    "layout.verticalOffset",
+    "layout.proportions",
+    "motion.type",
+    "motion.speed"
+   ],
+   "visiblePixels": 4789,
+   "maxAlpha": 1.0,
+   "circularity": 0.004,
+   "components": 33,
+   "edgeFalloffPx": 0.8,
+   "frameMsP95": 0.35,
+   "notes": [
+    "form.type=mist: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시",
+    "form.type=mist, form.mistKind=dust: 형상 프리셋 기본값 — 작은 알갱이 520개를 합친 메시 하나(규칙 dust520/1, seed 0, 가운데 무리 σ 0.2·흩어진 알갱이 0.15, 배치 반지름 0.56, 알갱이 반지름 0.01–0.024), 반투명 셰이더(알파 = opacity), 정점 변위 0, 노이즈 크기 2.4. 수치 mistKinds/1"
+   ]
+  },
+  {
+   "spec": "M-3-dust.before.json",
+   "renderPath": "mist",
+   "mistKind": null,
+   "mistRule": "lumps5/1",
+   "proportions": null,
+   "defaultsUsed": [
+    "form.posture",
+    "form.base",
+    "material.color.h",
+    "material.color.s",
+    "material.color.l",
+    "material.brightness",
+    "material.roughness",
+    "material.opacity",
+    "material.erosion",
+    "layout.size",
+    "layout.distance",
+    "layout.verticalOffset",
+    "layout.proportions",
+    "motion.type",
+    "motion.speed"
+   ],
+   "visiblePixels": 11612,
+   "maxAlpha": 0.996,
+   "circularity": 0.739,
+   "components": 1,
+   "edgeFalloffPx": 12.39,
+   "frameMsP95": 0.568,
+   "notes": [
+    "form.type=mist: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시",
+    "form.type=mist: 형상 프리셋 기본값 — 구 대리 메시 + 레이마칭 8걸음, 둥근 덩어리 5개(배치 규칙 lumps5/1, seed 0) + 중간 주파수 노이즈(겉면 흔들림 0.3, 노이즈 크기 1.1), 밀도 0.5(광학 두께 배율. 덩어리 속 알파는 opacity 가까이까지 차고 opacity를 넘지 않음). mist에서 material.roughness는 표면 반사(광택)가 아니라 밀도 노이즈 크기 배율(0.7–1.3)과 색 얼룩 세기를 정함"
+   ]
+  },
+  {
+   "spec": "M-4-cloud.after.json",
+   "renderPath": "mist",
+   "mistKind": {
+    "requested": "cloud",
+    "status": "applied",
+    "kind": "cloud",
+    "rule": "lumps5/1",
+    "params": "mistKinds/1"
+   },
+   "mistRule": "lumps5/1",
+   "proportions": null,
+   "defaultsUsed": [
+    "form.posture",
+    "form.base",
+    "material.color.h",
+    "material.color.s",
+    "material.color.l",
+    "material.brightness",
+    "material.roughness",
+    "material.opacity",
+    "material.erosion",
+    "layout.size",
+    "layout.distance",
+    "layout.verticalOffset",
+    "layout.proportions",
+    "motion.type",
+    "motion.speed"
+   ],
+   "visiblePixels": 11612,
+   "maxAlpha": 0.996,
+   "circularity": 0.739,
+   "components": 1,
+   "edgeFalloffPx": 12.39,
+   "frameMsP95": 0.923,
+   "notes": [
+    "form.type=mist: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시",
+    "form.type=mist: 형상 프리셋 기본값 — 구 대리 메시 + 레이마칭 8걸음, 둥근 덩어리 5개(배치 규칙 lumps5/1, seed 0) + 중간 주파수 노이즈(겉면 흔들림 0.3, 노이즈 크기 1.1), 밀도 0.5(광학 두께 배율. 덩어리 속 알파는 opacity 가까이까지 차고 opacity를 넘지 않음). mist에서 material.roughness는 표면 반사(광택)가 아니라 밀도 노이즈 크기 배율(0.7–1.3)과 색 얼룩 세기를 정함"
+   ]
+  },
+  {
+   "spec": "M-4-cloud.before.json",
+   "renderPath": "mist",
+   "mistKind": null,
+   "mistRule": "lumps5/1",
+   "proportions": null,
+   "defaultsUsed": [
+    "form.posture",
+    "form.base",
+    "material.color.h",
+    "material.color.s",
+    "material.color.l",
+    "material.brightness",
+    "material.roughness",
+    "material.opacity",
+    "material.erosion",
+    "layout.size",
+    "layout.distance",
+    "layout.verticalOffset",
+    "layout.proportions",
+    "motion.type",
+    "motion.speed"
+   ],
+   "visiblePixels": 11612,
+   "maxAlpha": 0.996,
+   "circularity": 0.739,
+   "components": 1,
+   "edgeFalloffPx": 12.39,
+   "frameMsP95": 0.387,
+   "notes": [
+    "form.type=mist: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시",
+    "form.type=mist: 형상 프리셋 기본값 — 구 대리 메시 + 레이마칭 8걸음, 둥근 덩어리 5개(배치 규칙 lumps5/1, seed 0) + 중간 주파수 노이즈(겉면 흔들림 0.3, 노이즈 크기 1.1), 밀도 0.5(광학 두께 배율. 덩어리 속 알파는 opacity 가까이까지 차고 opacity를 넘지 않음). mist에서 material.roughness는 표면 반사(광택)가 아니라 밀도 노이즈 크기 배율(0.7–1.3)과 색 얼룩 세기를 정함"
+   ]
+  },
+  {
+   "spec": "M-5-fog-wide.after.json",
+   "renderPath": "mist",
+   "mistKind": {
+    "requested": "fog",
+    "status": "applied",
+    "kind": "fog",
+    "rule": "fog5/1",
+    "params": "mistKinds/1",
+    "shape": {
+     "edgeRampMul": 3.0,
+     "squash": [
+      1.0,
+      2.0,
+      1.0
+     ],
+     "noiseStretch": [
+      1.0,
+      2.2,
+      1.0
+     ],
+     "twist": 0.0,
+     "strands": 0.0,
+     "heightFade": [
+      0.0,
+      0.0
+     ]
+    }
+   },
+   "mistRule": "fog5/1",
+   "proportions": {
+    "effective": [
+     1.0,
+     0.3,
+     1.0
+    ],
+    "raw": [
+     1.0,
+     0.3,
+     1.0
+    ],
+    "axisSaid": true,
+    "method": "local_scale",
+    "rule": "longest-edge/1",
+    "aspectSuperseded": false
+   },
+   "defaultsUsed": [
+    "form.posture",
+    "form.base",
+    "material.color.h",
+    "material.color.s",
+    "material.color.l",
+    "material.brightness",
+    "material.roughness",
+    "material.opacity",
+    "material.erosion",
+    "layout.distance",
+    "layout.verticalOffset",
+    "motion.type",
+    "motion.speed"
+   ],
+   "visiblePixels": 11417,
+   "maxAlpha": 0.819,
+   "circularity": 0.385,
+   "components": 1,
+   "edgeFalloffPx": 20.36,
+   "frameMsP95": 0.785,
+   "notes": [
+    "form.type=mist: 프리팹이 연결되지 않아 기본 절차 모형(IFS 셰이더)으로 표시",
+    "form.type=mist, form.mistKind=fog: 형상 프리셋 기본값 — 구 대리 메시 + 레이마칭 8걸음, 덩어리 5개(배치 규칙 fog5/1, seed 0), 겉면 흔들림 0.1, 노이즈 크기 0.6, 밀도 0.45, 가장자리 폭 ×3, 덩어리 눌림 (1, 2, 1), 노이즈 결 (1, 2.2, 1), 비틀림 0, 가닥 0, 높이 감쇠 0–0. 수치 mistKinds/1"
+   ]
+  }
+ ]
+}

@@ -6,6 +6,7 @@
 #   G70(2026-11-27)부터 [interview] protocol·prompt_version과 [guard] safety_lexicon 세 값만 bridge.toml과 다르다(1.6 · v1.2.0 · 0.3.0).
 #   G72(2026-11-27)부터 [mapping] proportions와 [selection] protocol·table 세 값이 v4.toml과 다르다(너비·높이·깊이 비율 — 스펙 2.4.0,
 #   조절 항목 너비·높이·깊이, selection_protocol 0.7.0, 값 표 3.0.0). 다른 설정 파일은 그대로라 출력·조절 항목이 예전과 같다.
+#   G74(2026-11-27)부터 [mapping] mist_kinds도 v4.toml과 다르다(안개 입자 모양 form.mistKind — 스펙 2.4.0의 선택 슬롯, builder 2.9.0).
 # 기존 설정 파일(default·pilot·v4·v4-gen3d·bridge·mac8gb)과 코드 기본값은 바꾸지 않았다. ◆ = v4.toml과 다른 곳.
 # 헤드셋 쪽 권고값(공간 B + 놓기 도움, 두 조건 연습, 자리 문항 → 멈춤 거리, 평정 중 물체 숨김, UI 묶음 G63, 반복 멈춤 loop,
 #   눈높이 기준 배치 relative, 문구 scaleA)은 이 파일이 아니라 Unity 러너 Setup의 [본 실험 권고 설정 켜기](-experimentPreset true)가 켠다.
@@ -65,6 +66,8 @@ ext_params = "scene_params.v3.json"
 variant_rules = ""
 proportions = "scene_params.v2.json"   # ◆ G72: 너비·높이·깊이 비율(layout.proportions, 스펙 2.4.0, builder 2.8.0 — 그 파일의 proportions 표).
                                         #   Unity 러너·미리보기가 2.4.0을 읽는 빌드여야 한다(헤드셋 빌드를 다시 만들기 전에는 러너가 2.4.0을 거부할 수 있음)
+mist_kinds = "scene_params.v2.json"    # ◆ G74: 안개 입자 모양(form.mistKind — 안개·연기·먼지·구름, 스펙 2.4.0의 선택 슬롯, builder 2.9.0 — 그 파일의 mistKinds 표).
+                                        #   form.type이 mist일 때 종류별로 그린다. Unity 러너·미리보기가 form.mistKind를 읽는 빌드여야 한다(옛 러너는 모르는 필드로 거부)
 
 [drift]
 enabled = true

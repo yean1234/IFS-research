@@ -3,6 +3,10 @@
 //   mist              : 구 대리 메시 하나를 그리고 물체 좌표 레이마칭으로 밀도를 쌓는 SceneSpecMist 셰이더(X66).
 //                       밀도장은 seed로 고정한 둥근 덩어리 5개 + 중간 주파수 노이즈(D7, MistLumps)
 //                       안개 셰이더를 못 쓰면 이전 경로(구 + Fade 셰이더, renderPath "mist(legacy)")
+//                       (2.4 선택, G74) form.mistKind fog·smoke는 같은 셰이더에 종류별 프로퍼티(덩어리 배치·눌림·노이즈 결·비틀림·가닥·높이 감쇠, MistKinds).
+//                       cloud·null은 2.4 이전 그림(프로퍼티 기본값)
+//   mistDust          : (2.4 선택, G74) form.mistKind = dust — 작은 알갱이 메시 하나(DustMesh, 평면 음영, 정점 변위 0) + IFS 반투명 셰이더.
+//                       x·y·z 비율이 주어지면 알갱이 자리만 늘인 메시(fragments와 같은 방법)
 //   fragments         : 불규칙한 각진 조각 5개를 합친 메시 하나(FragmentMesh, 평면 음영, 정점 변위 0) + IFS 셰이더
 //                       (2.4) x·y·z 비율이 주어지면 조각 배치만 늘인 메시(G72). 그 밖의 형상은 로더가 국소 배율로 늘인다
 //   shapeModel        : 모양 모형 4종(ShapeModelFactory) + 정점 변위 0
@@ -155,6 +159,30 @@ namespace IFS.SceneSpec
             return mesh;
         }
 
+        static readonly Dictionary<(int, int, double, double, double, bool), Mesh> _dust = new Dictionary<(int, int, double, double, double, bool), Mesh>();
+
+        /// <summary>(2.4 선택, G74) dust 알갱이 메시(DustMesh). 같은 (seed, 알갱이 수, 비율)이면 같은 메시라 한 번 만들어 재사용한다.</summary>
+        public static Mesh DustMesh(int seed, int grains, double[] proportions)
+        {
+            var key = proportions != null ? (seed, grains, proportions[0], proportions[1], proportions[2], true) : (seed, grains, 1.0, 1.0, 1.0, false);
+            if (_dust.TryGetValue(key, out var cached) && cached != null) return cached;
+            IFS.SceneSpec.DustMesh.Build(seed, grains, proportions, out float[] xyz, out float[] nrm, out int[] tris, out _);
+            var verts = new Vector3[xyz.Length / 3];
+            var normals = new Vector3[verts.Length];
+            for (int i = 0; i < verts.Length; i++)
+            {
+                verts[i] = new Vector3(xyz[i * 3], xyz[i * 3 + 1], xyz[i * 3 + 2]);
+                normals[i] = new Vector3(nrm[i * 3], nrm[i * 3 + 1], nrm[i * 3 + 2]);
+            }
+            var mesh = new Mesh { name = "IFS Dust " + IFS.SceneSpec.DustMesh.RuleVersion };
+            mesh.vertices = verts;
+            mesh.normals = normals;
+            mesh.triangles = tris;
+            mesh.RecalculateBounds();
+            _dust[key] = mesh;
+            return mesh;
+        }
+
         static readonly Dictionary<string, Mesh> _bases = new Dictionary<string, Mesh>();
 
         /// <summary>(2.2) 기본 형상 메시(BaseShapeMesh). 같은 (형상, 변형값, seed)면 같은 메시라 한 번 만들어 재사용한다.</summary>
@@ -227,9 +255,28 @@ namespace IFS.SceneSpec
         }
 
         /// <summary>mist 덩어리(D7): MistLumps.Build(seed)의 중심·반지름을 _Lump0…로 넣는다(물체 좌표 xyz = 중심, w = 반지름).</summary>
-        public static void ApplyMistLumps(Material m, int seed)
+        public static void ApplyMistLumps(Material m, int seed) => ApplyLumps(m, MistLumps.Build(seed));
+
+        /// <summary>(G74) 계획의 덩어리 배치(종류별 — fog·smoke, 아니면 MistLumps.Build)와 셰이더 형상 프리셋을 넣는다.
+        /// cloud·null은 셰이더 기본값(MistShape.Default)을 넣는다 — 2.4 이전과 같은 화소.</summary>
+        public static void ApplyMistKind(Material m, FormRenderPlan plan)
         {
-            var l = MistLumps.Build(seed);
+            ApplyLumps(m, plan.MistLumpLayout());
+            var s = plan.MistShape ?? MistShape.Default;
+            m.SetFloat(MistEdgeRampMulProperty, (float)s.EdgeRampMul);
+            m.SetVector(MistSquashProperty, new Vector4((float)s.Squash[0], (float)s.Squash[1], (float)s.Squash[2], 0f));
+            m.SetVector(MistNoiseStretchProperty, new Vector4((float)s.NoiseStretch[0], (float)s.NoiseStretch[1], (float)s.NoiseStretch[2], 0f));
+            m.SetFloat(MistTwistProperty, (float)s.Twist);
+            m.SetFloat(MistStrandsProperty, (float)s.Strands);
+            m.SetVector(MistHeightFadeProperty, new Vector4((float)s.HeightFade[0], (float)s.HeightFade[1], 0f, 0f));
+        }
+
+        /// <summary>(G74) 안개 셰이더의 종류별 프로퍼티 이름(MistShaderSourceTests가 셰이더 선언과 대조).</summary>
+        public const string MistEdgeRampMulProperty = "_EdgeRampMul", MistSquashProperty = "_Squash", MistNoiseStretchProperty = "_NoiseStretch",
+            MistTwistProperty = "_Twist", MistStrandsProperty = "_Strands", MistHeightFadeProperty = "_HeightFade";
+
+        static void ApplyLumps(Material m, double[] l)
+        {
             for (int k = 0; k < MistLumps.Count; k++)
                 m.SetVector(MistLumpProperty(k), new Vector4((float)l[k * 4], (float)l[k * 4 + 1], (float)l[k * 4 + 2], (float)l[k * 4 + 3]));
         }
@@ -314,7 +361,7 @@ namespace IFS.SceneSpec
                 m.SetFloat("_NoiseScale", plan.Preset.NoiseScale);
                 m.SetFloat("_Density", plan.Preset.Density);
                 m.SetFloat("_Seed", plan.MistSeed);
-                FormRenderResources.ApplyMistLumps(m, plan.MistSeed);
+                FormRenderResources.ApplyMistKind(m, plan);   // (G74) 종류별 덩어리·형상 프리셋(cloud·null은 2.4 이전 값)
                 return true;
             }
             // 프리팹 등 이전 IFS 셰이더 머티리얼은 이전 방식(구 + Fade)
@@ -324,6 +371,27 @@ namespace IFS.SceneSpec
         }
 
         public ShadowCastingMode Shadow(FormRenderPlan plan) => ShadowCastingMode.Off;
+    }
+
+    /// <summary>(2.4 선택, G74) mistDust: form.type = mist + form.mistKind = dust. 작은 알갱이 메시 하나(DustMesh, 드로콜 1, 평면 음영) +
+    /// IFS 셰이더(반투명 — form.type mist라 Fade, 알파 = opacity, 정점 변위 0). 재질 슬롯·움직임은 다른 형상과 같이 먹는다. 그림자 없음(안개와 같음).</summary>
+    public sealed class DustRenderer : IcoFormRenderer
+    {
+        public DustRenderer() : base(FormRenderPlan.RendererMistDust) { }
+
+        public override GameObject CreateModel(FormRenderPlan plan)
+        {
+            var go = new GameObject("mistDust");
+            var mesh = FormRenderResources.DustMesh(plan.DustSeed, plan.DustGrains, plan.Proportions);
+            go.AddComponent<MeshFilter>().sharedMesh = mesh;
+            var mat = new Material(FormRenderResources.Opaque);
+            mat.SetFloat("_Seed", plan.DustSeed);
+            go.AddComponent<MeshRenderer>().sharedMaterial = mat;
+            go.AddComponent<SphereCollider>();
+            return go;
+        }
+
+        public override ShadowCastingMode Shadow(FormRenderPlan plan) => ShadowCastingMode.Off;
     }
 
     /// <summary>모양 모형(구·큐브·납작 원기둥·원뿔). 메뉴와 같은 함수(ShapeModelFactory)로 만든다.</summary>
@@ -384,6 +452,7 @@ namespace IFS.SceneSpec
             { FormRenderPlan.RendererMist, new MistRenderer() },
             { FormRenderPlan.RendererShell, new IcoFormRenderer(FormRenderPlan.RendererShell) },
             { FormRenderPlan.RendererFragments, new FragmentsRenderer() },
+            { FormRenderPlan.RendererMistDust, new DustRenderer() },
             { FormRenderPlan.RendererShapeModel, new ShapeModelRenderer() },
             { FormRenderPlan.RendererSuperquadric, new SuperquadricRenderer() },
         };

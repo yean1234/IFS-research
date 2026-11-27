@@ -91,6 +91,11 @@ BUILDER_ID_EXT = f"scene-spec-builder-v2/{BUILDER_VERSION_EXT}"
 #       G61 ①②를 함께 켜도 이 표기(2.7.0의 내용 포함). 꺼져 있으면 출력·표기는 2.6.0/2.7.0 그대로다
 BUILDER_VERSION_PROP = "2.8.0"
 BUILDER_ID_PROP = f"scene-spec-builder-v2/{BUILDER_VERSION_PROP}"
+# 2.9.0(2026-11-27, G74): [mapping] mist_kinds를 켰을 때만 이 표기 — 안개 입자 모양(form.mistKind: fog·smoke·dust·cloud, 스펙 2.4.0의
+#       선택 슬롯). 참여자가 안개·연기·먼지·구름 낱말을 형상 자리에서 말했을 때만 채운다(scene_params.v2 mistKinds 표).
+#       [mapping] proportions도 켜야 한다(스펙 2.4.0). 꺼져 있으면 출력·표기는 2.8.0 그대로다
+BUILDER_VERSION_MIST = "2.9.0"
+BUILDER_ID_MIST = f"scene-spec-builder-v2/{BUILDER_VERSION_MIST}"
 MAPPER_ID = "v2"
 # 1층 사전 v2 오버레이의 새 범주. 매퍼 v1 경로(_lexicon_cands)에는 넣지 않고 _extension이 따로 읽는다
 EXT_CATEGORIES = frozenset({"contour", "emission"})
@@ -124,7 +129,8 @@ class SceneSpecBuilderV2(SceneSpecBuilderV1):
                  vad_path: str | Path | None = None, v2_params_path: str | Path | None = None,
                  stoplist_path: str | Path | None = None, base_shapes_path: str | Path | None = None,
                  ext_lexicon_path: str | Path | None = None, ext_params_path: str | Path | None = None,
-                 variant_rules_path: str | Path | None = None, proportions_path: str | Path | None = None):
+                 variant_rules_path: str | Path | None = None, proportions_path: str | Path | None = None,
+                 mist_kinds_path: str | Path | None = None):
         """ext_lexicon_path(1층 사전 v2 오버레이)를 주면 스펙 2.3(윤곽·발광)을 내고, variant_rules_path를 주면 형태 변이
         규칙층을 켠다(G61). 둘 다 없으면(기본) 출력은 builder 2.4.0과 바이트 단위로 같다."""
         if ext_lexicon_path and lexicon is None:
@@ -152,7 +158,15 @@ class SceneSpecBuilderV2(SceneSpecBuilderV1):
                     self.prop_stems.setdefault((s["form"] + "하", "VA"), s)
             self.prop_background = frozenset(self.prop.get("extraBackgroundNouns", []))
             self.prop_preds = {r["form"]: r for r in self.prop["resultativePredicates"]}
-        self.p2 = json.loads(Path(v2_params_path or shared("lexicon", "scene_params.v2.json")).read_text(encoding="utf-8"))
+        # G74: 안개 입자 모양 표(scene_params.v2.json mistKinds). 스펙 2.4.0의 선택 슬롯이라 비율 표(2.4.0)와 함께만 켠다
+        self.mist: dict | None = None
+        if mist_kinds_path:
+            if self.prop is None:
+                raise ValueError("[mapping] mist_kinds는 [mapping] proportions(스펙 2.4.0)와 함께 켜야 한다")
+            mf = json.loads(Path(mist_kinds_path).read_text(encoding="utf-8"))
+            self.mist = mf["mistKinds"]
+            self.mist_info = f"{mf['lexiconId']}.mistKinds@{self.mist['tableVersion']}"
+        self.p2 =json.loads(Path(v2_params_path or shared("lexicon", "scene_params.v2.json")).read_text(encoding="utf-8"))
         stop = json.loads(Path(stoplist_path or shared("lexicon", "noun_stoplist.v2.json")).read_text(encoding="utf-8"))
         self.stop_info = f"{stop['lexiconId']}@{stop['lexiconVersion']}"
         op, ds, po, un = self.p2["opacity"], self.p2["distance"], self.p2["posture"], self.p2["unlistedNouns"]
@@ -232,6 +246,8 @@ class SceneSpecBuilderV2(SceneSpecBuilderV1):
 
     @property
     def builder_id(self) -> str:
+        if self.mist is not None:
+            return BUILDER_ID_MIST
         if self.prop is not None:
             return BUILDER_ID_PROP
         return BUILDER_ID_EXT if (self.ext is not None or self.variants is not None) else BUILDER_ID
@@ -258,6 +274,8 @@ class SceneSpecBuilderV2(SceneSpecBuilderV1):
             out["variantRules"] = self.variants.info
         if self.prop is not None:
             out["proportionsTable"] = self.prop_info
+        if self.mist is not None:
+            out["mistKindTable"] = self.mist_info
         return out
 
     # ── 진입점 ─────────────────────────────────────────────────────────────────
@@ -305,6 +323,9 @@ class SceneSpecBuilderV2(SceneSpecBuilderV1):
             _attach_variant_records(spec)
         if self.prop is not None:
             spec["meta"]["specVersion"] = SPEC_VERSION_V24
+        # G74: 안개 입자 모양(form.mistKind, 2.4.0 선택 슬롯). 형태 슬롯을 다 정한 뒤 따로 읽는다(다른 슬롯은 바뀌지 않음)
+        if self.mist is not None:
+            self._mist_kind(doc, spec)
         return spec
 
     # ── D6: 기본 형상 ─────────────────────────────────────────────────────────
@@ -1684,6 +1705,140 @@ class SceneSpecBuilderV2(SceneSpecBuilderV1):
         spec["_unmatched"] = sorted(tok_level + self._unmatched_eojeols(doc, spec),
                                     key=lambda u: (u["charSpan"][0], u["charSpan"][1]))
 
+    # ── G74: 안개 입자 모양 ────────────────────────────────────────────────
+    def _mist_kind_matches(self, doc: Doc, spec: dict) -> list[dict]:
+        """mistKinds 표 낱말이 형상 자리에 나온 곳. 같은 글 → 같은 목록(문서만 본다). 항목: kind · lemma · s·e(글자 구간) ·
+        layer(1 직접, 2 비교 원천) · marker(비교 표지) · status(ok | negated | vehicle) · tag(움직임 비유 꼬리표) · retracted."""
+        toks, text, mk = doc.toks, doc.text, self.mist
+        nouns: dict[str, str] = mk["nouns"]
+        reject = set(mk.get("rejectNextTags", []))
+        homs: dict[str, dict] = mk.get("homonyms", {})
+        phrases = self._phrases(doc)
+        phrase_of = {x: p for p in phrases for x in p["nouns"]}
+        by_last = {p["b"]: p for p in phrases}
+        color_toks = {h.token_index for h in self.lexicon.hits(text) if h.entry.category == "color"}
+        sim_of: dict[int, dict] = {}
+        for sm in self._simile_markers(doc):
+            p = by_last.get(sm["srcIndex"])
+            if p is None or p["id"] in sim_of:
+                continue
+            kind, tgt = self._attach(doc, sm["markerIndex"], p["a"], phrase_of, color_toks)
+            if kind == "phrase" and tgt is p:
+                kind, tgt = "unresolved", None
+            sim_of[p["id"]] = {"marker": sm["marker"], "kind": kind, "target": tgt}
+        # 범위: 형상 낱말(D6 _base_shapes)과 같은 회상·상황 문장·상황절
+        valued: set[int] = set()
+        _span_chars(spec.get("_provenance"), valued)
+        formal_etm = {sv["target"] - 1 for sv in sim_of.values() if sv["kind"] == "formal" and sv["target"] > 0
+                      and toks[sv["target"] - 1].base_tag == "ETM"}
+        recall = self._context_sentences(doc) | self._situation_sentences(doc, valued, skip_etm=formal_etm)
+        regions = self._situation_regions(doc)
+        acts = self._action_similes(doc) if self.act["demoteFormType"] else []
+        veh = {k: a for a in acts for k in a["vehicles"]}
+        out: list[dict] = []
+        for p in phrases:
+            ha, hb = p["headRun"]
+            lemma, s, e = p["lemma"], p["hs"], p["he"]
+            kind = nouns.get(lemma)
+            if kind is None:
+                h = toks[p["head"]]
+                kind = nouns.get(h.form)
+                lemma, s, e = h.form, h.start, h.end
+            if kind is None:
+                continue
+            nx = hb + 1
+            if nx < len(toks) and doc.eoj[nx] == doc.eoj[hb] and toks[nx].base_tag in reject:
+                continue                                         # '연기됐어요'·'연기해요' — 다른 뜻
+            if doc.sent[p["b"]] in recall or any(s0 <= p["a"] and p["b"] < k0 for s0, k0 in regions):
+                continue                                         # 회상 문장·상황절
+            sv = sim_of.get(p["id"])
+            if sv is not None and sv["kind"] == "color":
+                continue                                         # '먹구름처럼 시커먼' — 색 비교 기준
+            direct = p["role"] in self.bs_roles
+            if not direct and sv is None:
+                continue                                         # 장소('안개 속에')·목적어·꾸밈말
+            g = homs.get(lemma)
+            if g is not None:
+                cl = doc.clause[p["head"]]
+                if not any((toks[k].form in g.get("predicates", []) and toks[k].base_tag in ("VV", "VA"))
+                           or (toks[k].form in g.get("adverbs", []) and toks[k].base_tag == "MAG")
+                           for k in doc.clause_toks(cl)):
+                    continue                                     # '김' — 김이 나는 모양의 말이 같은 절에 없음
+            neg = Lexicon._negated(toks, p["b"]) or self._noun_negated(doc, p["b"])
+            if sv is not None and sv["kind"] == "formal":
+                neg = neg or Lexicon._negated(toks, sv["target"])
+            retracted = self._retracted(doc, p["b"])
+            a = next((veh[x] for x in p["nouns"] if x in veh), None)
+            status = "negated" if (neg or retracted) else ("vehicle" if a is not None else "ok")
+            out.append({"kind": kind, "lemma": lemma, "s": s, "e": e, "layer": 1 if direct and sv is None else 2,
+                        "marker": sv["marker"] if sv is not None else None, "status": status,
+                        "tag": a["tag"] if a is not None else None, "retracted": retracted})
+        return out
+
+    def _mist_kind(self, doc: Doc, spec: dict) -> None:
+        """G74: form.mistKind(스펙 2.4.0 선택 슬롯). 말하지 않았으면 null. form 묶음 맨 끝에 둔다."""
+        text = doc.text
+        value, provs, alts, negated = None, [], [], []
+        ms = self._mist_kind_matches(doc, spec)
+
+        def prov(m: dict) -> dict:
+            rule = f"mistKinds.{m['lemma']}>form.mistKind:{m['kind']}"
+            if m["marker"] is not None:
+                return self._prov("simile_marker", text, m["s"], m["e"], f"{rule}+simile({m['marker']})")
+            return self._prov("explicit_lexicon", text, m["s"], m["e"], rule)
+
+        live = []
+        for m in sorted(ms, key=lambda m: (m["s"], m["e"])):
+            if m["status"] == "negated":
+                rule = f"mistKinds.{m['lemma']}" + ("+retracted(아니)" if m["retracted"] else "")
+                negated.append({"lemma": m["lemma"], "category": "mist_kind",
+                                "_provenance": self._prov("explicit_lexicon", text, m["s"], m["e"], rule)})
+            elif m["status"] == "vehicle":
+                p = prov(m)
+                alts.append({"path": "form.mistKind", "value": m["kind"], "reason": "lower_priority",
+                             "_provenance": [dict(p, rule=f"{p['rule']}+{m['tag']}")]})
+            else:
+                live.append(m)
+        if live:
+            top = min(m["layer"] for m in live)
+            win = next(m for m in live if m["layer"] == top)
+            value = win["kind"]
+            for m in live:
+                if m["kind"] == value:
+                    provs.append(prov(m))
+                else:
+                    reason = "lower_layer" if m["layer"] > top else "later_mention"
+                    alts.append({"path": "form.mistKind", "value": m["kind"], "reason": reason, "_provenance": [prov(m)]})
+        spec["form"] = {**spec["form"], "mistKind": value}
+        if value is not None:
+            spec["_provenance"] = _ordered_provenance({**spec["_provenance"], "form.mistKind": provs})
+        if alts:
+            spec["_alternatives"] = sorted(spec["_alternatives"] + alts,
+                                           key=lambda al: (_PATH_ORDER.get(al["path"], 99), al["_provenance"][0]["charSpan"][0],
+                                                           al["reason"]))
+        if negated:
+            spec["_negated"] = sorted(spec["_negated"] + negated,
+                                      key=lambda x: (x["_provenance"]["charSpan"][0], x["lemma"], x["category"]))
+        if not (provs or alts or negated):
+            return
+        used = [p["charSpan"] for p in provs]
+        for cl in spec.get("_clauses") or []:
+            s, e = cl["charSpan"]
+            if any(x < e and s < y for x, y in used):
+                cl["usedFor"] = sorted(set(cl["usedFor"]) | {"form.mistKind"}, key=lambda q: (_PATH_ORDER.get(q, 99), q))
+                if cl["status"] == "unused":
+                    cl["status"] = "partly_used"
+        covered: set[int] = set()
+        _span_chars({"p": provs, "a": alts, "n": negated}, covered)
+        spec["_unmapped"] = [u for u in spec["_unmapped"]
+                             if not (u["category"] == "unlisted_noun"
+                                     and all(ch in covered for ch in range(*u["_provenance"]["charSpan"])))]
+        tok_level = [u for u in spec["_unmatched"] if u["tag"] != EOJEOL_TAG
+                     and not all(ch in covered for ch in range(u["charSpan"][0], u["charSpan"][1]))]
+        spec["_unmatched"] = tok_level
+        spec["_unmatched"] = sorted(tok_level + self._unmatched_eojeols(doc, spec),
+                                    key=lambda u: (u["charSpan"][0], u["charSpan"][1]))
+
     def _resultative(self, doc: Doc, k: int) -> bool:
         """용언 k가 결과 상태 꼴인가: 완료 관형형('퍼진')이나 '-어 있-'('퍼져 있어요')."""
         toks = doc.toks
@@ -1999,7 +2154,7 @@ class SceneSpecBuilderV2(SceneSpecBuilderV1):
 # _provenance·_alternatives의 경로 순서(SceneSpec 슬롯 순서에 2.2 슬롯을 form.posture 뒤에, 2.3 슬롯을 form.baseVariant·
 # material.erosion 뒤에 끼움. 2.3 슬롯은 ext_lexicon을 켰을 때만 나오므로 기본 출력의 순서는 그대로)
 _PATH_ORDER = {p: k for k, p in enumerate((
-    "form.type", "form.posture", "form.base", "form.baseVariant", "form.roundness", "form.aspect",
+    "form.type", "form.posture", "form.base", "form.baseVariant", "form.roundness", "form.aspect", "form.mistKind",
     "material.color", "material.brightness", "material.saturation", "material.roughness", "material.opacity",
     "material.erosion", "material.emission", "layout.size", "layout.distance", "layout.verticalOffset", "layout.proportions",
     "motion.type",

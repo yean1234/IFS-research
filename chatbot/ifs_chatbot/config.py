@@ -87,6 +87,9 @@ class MappingConfig:
     # G72: 너비·높이·깊이 비율(layout.proportions, 스펙 2.4.0). 비율 표가 든 파일(shared/lexicon/ 아래, 예 "scene_params.v2.json" —
     #   그 proportions 표). 비우면 끔 — 출력은 그대로(스펙 2.2.0·2.3.0). Unity 러너·미리보기가 2.4.0을 읽는 빌드에서만 켠다
     proportions: str = ""
+    # G74: 안개 입자 모양(form.mistKind — fog·smoke·dust·cloud, 스펙 2.4.0의 선택 슬롯). 표가 든 파일(예 "scene_params.v2.json" — 그 mistKinds 표).
+    #   비우면 끔 — 출력은 그대로. proportions를 함께 켜야 한다(스펙 2.4.0). Unity 러너·미리보기가 form.mistKind를 읽는 빌드에서만 켠다
+    mist_kinds: str = ""
 
 
 @dataclass(frozen=True)

@@ -190,6 +190,14 @@ namespace IFS.SceneSpec
         /// 2.0–2.2 문서에는 없어야 한다. 다시 쓸 때도 키가 있던 문서만 두 키를 쓴다(2.0–2.2 왕복이 그대로).</summary>
         [JsonIgnore] public bool ContourKeysPresent;
 
+        /// <summary>(2.4 선택, G74) 안개 입자 모양: fog | smoke | dust | cloud | null(MistKinds). 매퍼가 [mapping] mist_kinds를 켰을 때만 키가 있다.
+        /// 표에 없는 값은 SceneSpecJson.Parse가 파싱 오류로 낸다. 2.0–2.3 문서에는 키가 없다.</summary>
+        [JsonProperty("mistKind")] public string MistKind;
+
+        /// <summary>원문 form 객체에 mistKind 키가 있었는가(SceneSpecJson.Parse가 채운다). 다시 쓸 때도 키가 있던 문서만 쓴다.</summary>
+        [JsonIgnore] public bool MistKindKeyPresent;
+
+        public bool ShouldSerializeMistKind() => MistKindKeyPresent || MistKind != null;
         public bool ShouldSerializeBase() => BaseKeysPresent || Base != null;
         public bool ShouldSerializeBaseVariant() => BaseKeysPresent || BaseVariant != null;
         public bool ShouldSerializeRoundness() => ContourKeysPresent || Roundness != null;
