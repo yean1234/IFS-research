@@ -50,12 +50,14 @@ def empty_spec():
 
 
 # ── 결정성(완료 기준) ─────────────────────────────────────────────────────────
-GOLDEN = {   # 생성기 0.5.0 · 표 2.0.0 · 매퍼 v2 builder 2.4.0 · 기본 형상 사전 0.7.0 (2026-11-23, G45–G51: saidWords.unrenderedBy)
-    T_FORM: "92cddc90c60503a3b2c8fb01468ec7139a2ad9c878604fdb086040525be85bef",
-    T_FEEL: "3e7f9b1654043a14ee0fe1f264cac05bb45fa4d268dc51f657b0f5b04c4ce1a6",
-    T_CLOUD: "2f54a9c85b3810cde872bd65c9c4e25d6ad5ca4e1f771b7b1d35405e0183247c",
-    T_LONG: "e37edac4ed395c4b372a449cccd61ba7061fe1035837a13b24ed0ea2b27aa136",
-    T_MOTION: "3459a4bce22f51f25a364f1dd6825775072eb71bd96b2e2a484fdcf6243ee624",
+GOLDEN = {   # 생성기 0.5.0 · 표 2.0.0 · 매퍼 v2 builder 2.6.0 · scene_params.v2 2.1.0 · 기본 형상 사전 0.7.0
+    # (2026-11-27 builder 2.6.0: 다섯 문장 모두 spec 본문은 2.4.0과 같고 meta의 builder·sceneParamsV2 표기만 바뀌어 값을 다시 잼 —
+    #  meta를 2.4.0 표기로 되돌리면 이전 값과 같음을 확인함)
+    T_FORM: "c040298bf7489a2ce1ecb052bc5c0c52319f25270bad91329cb9279552e2383c",
+    T_FEEL: "c3dee8cd610e172f66df6e64ae86bd275d1eb741c555a35f746c6f6e239d753b",
+    T_CLOUD: "1c2c34d6e97a08281f968c26a5ea87b9cd81d4bdceb7dbb0ef245438ae42a859",
+    T_LONG: "fe07c41fb776217260c59cadbcaca7c5ce211e3e6c7aa389729612a0bb8be02b",
+    T_MOTION: "e5f129785ffea65bd545e029a9fd8393a5b2633ab82afeb52a5dedec1167819e",
 }
 
 

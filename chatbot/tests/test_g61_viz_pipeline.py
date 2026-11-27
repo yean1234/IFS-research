@@ -69,13 +69,14 @@ def _rules(spec, path):
 # ── 기본값 불변 ───────────────────────────────────────────────────────────────
 # G61 전 HEAD(d21f984)의 scene_builder_v2.py로 잰 출력 sha256. 윤곽·발광어와 의태어 변이형이 든 합성 문장이라
 # 두 기능이 기본에서 새지 않았는지 본다(dev.json·mock_corpus.json 66개 + 합성 30개도 같은 비교로 모두 같았다 — 작업 기록)
+# 2026-11-27 builder 2.6.0: 여섯 문장 모두 본문은 그대로이고 meta의 builder·sceneParamsV2 표기만 바뀌어 다시 잼(meta를 2.4.0 표기로 되돌리면 이전 값과 같음)
 PINNED = {
-    "가슴 앞에 각진 회색 덩어리가 있어요.": "60114227b4441f9f5e1968a0e546fd5ccda50a00bb1d0e67a48e208cce3bb653",
-    "머리 위에 빤짝빤짝 빛나는 공 같은 게 떠 있어요.": "245ca1709ca7e79d781b78a723283d2fbd69876b3d919be18f7aaff4b04abe6e",
-    "꺼칠꺼칠한 네모난 상자가 눈앞에 있어요.": "2d3d02fae07067038d967bf263f45541692299a6c13952c2d3c34b1587763f95",
-    "모가 난 돌덩이가 배 속에 있어요. 빛은 안 나요.": "113193351bae1dbd61b1af1cb97ce12ff4dbd9cc15f3e27085e14c85fa095665",
-    "살짝 둥그스름하고 환하게 빛나요.": "7121a40c99e604bb557ad566d2ae6c3d92e6ae48a806fa917fc23dc891854566",
-    "번질번질한 검은 덩어리가 꼼틀거려요.": "d8b72cfd5c2d97bb415f18ce9abc8f35e10520f1a3d733e11027a474beaa82ce",
+    "가슴 앞에 각진 회색 덩어리가 있어요.": "0e60f5cac5a8247f2be1484ce96f4fe185a74af3fe985083802937e3a245a80c",
+    "머리 위에 빤짝빤짝 빛나는 공 같은 게 떠 있어요.": "0cb1794a8b3ae915ac4c6853dbee21d3b80ee2895fc69f8e3eeef9febe768c8e",
+    "꺼칠꺼칠한 네모난 상자가 눈앞에 있어요.": "d8d55e66234e168b5484c6e69e19a72731da6bd9ac50f1886179e658bed42e78",
+    "모가 난 돌덩이가 배 속에 있어요. 빛은 안 나요.": "843139b194210e0607ceccf24a08c31a27e8741dcd2ff7c2fd5c8bfa2c09fe8b",
+    "살짝 둥그스름하고 환하게 빛나요.": "71505c8f758951f3525f2c4b39c88e64dbc0f88e5929ae6510edbb45b642b055",
+    "번질번질한 검은 덩어리가 꼼틀거려요.": "e682b55033a58bf21a606a91db9c9c30f80730018c193368b61202a55fbf225d",
 }
 
 
@@ -85,7 +86,7 @@ def test_default_v2_output_unchanged_by_g61(plain, text, sha):
 
 
 def test_default_builder_id_and_version(plain):
-    assert plain.builder_id == BUILDER_ID == "scene-spec-builder-v2/2.4.0"
+    assert plain.builder_id == BUILDER_ID == "scene-spec-builder-v2/2.6.0"   # 2.4.0 → 2.6.0(2026-11-27)
     assert plain.info()["specVersion"] == SPEC_VERSION_V22
     spec = plain.build("둥근 덩어리가 빛나요.")
     assert "roundness" not in spec["form"] and "emission" not in spec["material"]

@@ -457,3 +457,22 @@ v1까지는 사전에 없는 명사(화분, 물병, 인형)가 기록 없이 사
 - 검증기 V5는 계속 v0 사전만 봅니다. 면담자가 새 윤곽어('갸름한')를 먼저 꺼내는 경우는 V5 사전 검사가 아니라 `strict_novel_content`에만 걸립니다.
 - 변이 규칙층은 dev에서 값을 하나도 내지 않았습니다. 이득은 변이형이 실제로 얼마나 나오는지에 달렸고, 새 평가 문장(X13)으로 재야 합니다.
 - 연구자 승인형 사전 확장으로 더한 항목은 `ext_lexicon` 사슬(v0 + v1 + 새 파일)로만 쓰입니다. 스펙 2.3 없이 1층 사전만 넓히는 설정은 아직 없습니다.
+
+## 9. 매퍼 v2 builder 2.6.0: 형태 슬롯 우선순위 (2026-11-27)
+
+계기는 연구 책임자의 `--config experiment` 시험 세션이다. 「기본 모형은 구형」·「동그란 원?」·「모양은 구체」라고 말했는데 물체가 직사각형 천으로 나왔다. '천'은 「바람이 불면 천이 펄럭이듯이 물체가 계속 꾸물꾸물 움직이는 느낌」의 움직임 비유 안 낱말이었다. 규칙과 수치는 `shared/lexicon/scene_params.v2.json` 2.1.0(`shapePriority`·`neutralSize`·`surfaceTerms`·`speedWish`), 시험은 `chatbot/tests/test_g69_shape_priority.py`다. v0·v1 출력은 그대로이고 스펙 판도 2.2.0 그대로다(스키마에 있는 값·사유만 씀).
+
+| 고친 것 | 규칙 | 기록 |
+| --- | --- | --- |
+| 움직임 비유 매개어가 형태를 채움 | (A) '-듯이'·'-는 것처럼' 절의 명사는 같은 문장 뒤에 따로 주어가 있을 때 매개어. (B) 'N처럼 V'에서 V가 움직임 사전 낱말이면(결과 상태 '퍼진'·'퍼져 있어요'는 빼고) N이 매개어. 매개어는 `form.base`·`form.type`을 채우지 않는다 | `_alternatives`(lower_priority, rule `+actionSimile(…)`), 움직임 값 근거에 `actionSimile.<낱말>>motion.type:<값>` |
+| 직접 형태 진술이 형상 낱말에 짐 | 모양어(round·square·flat·pointed)가 형상 낱말·매개어를 꾸미거나 서술하지 않으면 직접 진술. 맞지 않는 형상 낱말(`compatibleBase` 밖)과 비유에서 온 mist·shell·fragments를 내린다. 형태 틀 안 형상 낱말끼리('모양은 그릇 같아요')는 기존 규칙 | `_alternatives`(lower_priority, rule `+directShape(…)`) |
+| '구형'·'구체'가 형태로 안 잡힘 | 모양 명사 → 모양어 round(Unity Sphere). 다른 명사를 꾸미면('구형 핸드폰') 안 씀, '구체적'·'구체화'도 안 씀(사전 '구체' blob도 v2에서 막음) | `_unmapped` category shape, rule `shapeNoun.<낱말>>shape:round` |
+| 줄 끝 명사가 다음 줄 명사를 꾸민 것으로 읽힘 | `_noun_role`: 줄이 바뀌면 이름만 말한 것(named) | — |
+| '보통 크기'가 비어 있음 | 크기 주제 명사와 함께 쓴 '보통·중간·적당' → `layout.size` 0.5(말함) | `neutralSize.보통>layout.size:0.5` |
+| '무광' | 어절 표면형 → `material.roughness` 0.7(초안), '유광' 0.1 | `surfaceTerm.무광>material.roughness:matte` |
+| '빨리 끝내고 싶다' → 빠르기 0.8 | 빠르기 부사가 '-고 싶-'을 꾸미면 쓰지 않음 | `_alternatives`(lower_priority, rule `+wish(…)`) |
+
+- '-듯이' 절 안의 색·크기·질감 값은 층 2(비유)로 내려 직접 진술에 진다(「빨간 천이 펄럭이듯이 파란 물체가」 → 파랑). 비유 절의 움직임 동사는 물체가 움직이는 모양새라 그대로 둔다.
+- 「천이 펄럭이듯이 움직여요」처럼 비유 절 뒤에 주어가 없으면 천이 물체일 수도 있어 지금처럼 그린다(보수적).
+- `actionSimile.demoteFormType`(기본 true)을 false로 하면 form.type은 2.4.0처럼 둔다(「구름처럼 떠다녀요」 → mist). 기본 true에서는 형태가 빈 자리가 되어 후보 단계가 형태 축(blob·mist)을 벌린다.
+- 물음표·'것 같아'(「역동적인 형체?」, 「동그란 원?」)는 '모른다'(`_uncertain`)가 아니라 말한 것으로 둔다(지금과 같음).
