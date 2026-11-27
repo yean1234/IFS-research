@@ -109,25 +109,44 @@
 
 참여자가 첫 답을 '불안해요'·'기대돼요'처럼 감정어나 추상적인 기분으로 했을 때, 형상 없이 면담이 끝나지 않게 다리 질문을 한 번 냅니다. 사양은 `docs/codex-reviews/prompts/D9_rebuttal_prompt.md` 「메인의 판정」 표, 세부는 `docs/codex-reviews/D9_claude.md`입니다. 결정 기록은 `docs/decisions.md`에 메인이 남깁니다.
 
+**두 단계의 역할(반박 처리 표 2).** focus_hold는 **주의 유지** 단계입니다. 「거기에 주의를 두고 잠시 머물러 보세요. 준비가 되면 지금 알아차려지는 것을 적어 주세요.」는 주의를 두라는 요청이고, 감각의 질을 묻지 않습니다. bridge는 형상 신호가 없을 때 한 번만 내는 Clean Language 형식의 **은유 질문**(질문 틀 like_what)입니다. 그래서 지금 흐름에는 감각의 질을 묻는 단계가 따로 없습니다. 몸 감각 질문(G64-b)을 넣을지는 연구 책임자에게 열린 문제로 남깁니다.
+
+**성공 기준(반박 처리 표 1).** 은유 질문 한 번은 구체 심상을 보장하지 않습니다. 답으로 장면('시험 전날 같아요')·사람·추상·거절이 올 수 있습니다. 그래서 이 설계의 성공 기준은 "구체 심상이 나왔는가"가 아니라 **"다리 뒤 참여자가 스스로 형상 표현을 낸 비율"**입니다. 분모는 다리를 물은 세션(`capture.bridge.asked = true`), 분자는 그 가운데 다리 답이나 그 뒤 답에서 처음 형상 신호가 나온 세션(`capture.firstElicitedBy.kind`가 bridge·llm·probe이고 그 턴이 다리 뒤)입니다. 형상 신호는 규칙 판정이라 아래 오분류가 섞이므로, 원문을 사람이 다시 코딩한 값과 함께 냅니다. 다리 답은 원문 그대로 기록하고, 추상·장면·사람·거절이어도 더 묻지 않습니다(응답 유형 자동 분류는 넣지 않음, 반박 5 보류).
+
 **켜는 곳.** `config/bridge.toml`에서만 켭니다. 이 설정은 프로토콜 `elicitation_protocol.v1.5.json`, 프롬프트 v1.1.0, 사전 오버레이 `layer1_interview.v0.json`, 안전 사전 `safety_ko.v0.2.json`, `[interview] anchor_doe_root`, `[validator] predicate_as_noun`을 씁니다. 기존 설정(default·pilot·v4·mac8gb)은 v1.4 프로토콜과 v1.0.0 프롬프트, v0 사전을 그대로 쓰고, 그 설정의 흐름과 기록 키는 바뀌지 않습니다(`tests/test_d9_bridge.py`).
 
 | 항목 | 내용 |
 | --- | --- |
 | 흐름 | 모든 참여자에게 같은 순서. 형상 신호가 opening부터 직전 답까지 없을 때만 `bridge` 단계에서 1회 묻는다. 조건 2는 focus_hold(와 LLM 0회인 focus 단계) 뒤·flesh_out LLM 앞, 조건 1은 focus_hold 뒤·fleshout_open 앞. 두 조건에 같은 규칙과 같은 문장이 나간다. 프로브 순서는 바꾸지 않았다 |
 | 문장 | X가 있으면 질문 틀 like_what 「그 '{X}'은(는) 마치 무엇 같나요?」(`protocol.realize`), X가 없으면 새 고정 문구 `bridge_like_what_plain` 「지금 그것은 마치 무엇 같나요?」(status draft). LLM을 부르지 않는다 |
-| X | focus_hold 답의 감각어(명사·'-하'/'-되' 어근)가 먼저, 다음으로 opening 답의 감정어. 활용형 용언('설레요'·'조여요')뿐이면 X를 넣지 않는다. 명사형으로 바꾸면 참여자가 쓰지 않은 말이 되기 때문이다. 기억·외상 서사 발화(L5 strong)의 말은 쓰지 않는다 |
-| 형상 신호 | 사전 범주 form·shape·object·size·color·brightness·texture·opacity·posture(부정되지 않은 것), 또는 일반명사 + '같/처럼/마냥/같이'. 같은 표제어가 sensation·emotion에도 있으면('숨') 근거로 치지 않고, 비유 앞 명사가 감정어·감각어·신체부위어·인용 금지어여도 치지 않는다. **흐름에만 쓰고 장면 값에는 쓰지 않는다(원칙 2)** |
-| find LLM | 형상 신호가 없으면 허용 틀을 anything_else 하나로 줄인다(`stages.find.allowedTemplatesWhenNoImage`). like_what은 질 단계 뒤의 다리 질문이 맡는다 |
-| 압박하지 않기 | focus_hold나 다리 질문에 짧은 '없어요·모르겠어요'가 오면 flesh_out LLM을 건너뛴다. 차원 프로브는 지금처럼 한 번씩 묻는다 |
-| 기록 | `capture.imageSignal`(답마다 `timeline`, find 시점 `atFind`, 다리 시점 `atBridge`, 확정 텍스트 `confirmed`), `capture.firstElicitedBy`(형상이 처음 나온 답을 끌어낸 턴 종류: opening·llm:find·focus_hold·bridge·llm:flesh_out·probe:… ), `capture.imageless`(확정 전까지 형상 신호가 없었는지), `capture.bridge`(물었는지, X와 고른 근거, 검사 결과, 대체 여부). 다리 질문 턴은 `source = bridge:like_what` 또는 `fixed:bridge_like_what_plain` |
+| X | focus_hold 답의 감각어(명사·'-하'/'-되' 어근)가 먼저, 다음으로 opening 답의 감정어. **X는 1층 사전의 그 범주(focus_hold 답은 sensation, opening 답은 emotion) 항목이면서 참여자 원문의 부분 문자열일 때만 쓴다**(반박 3). 사전 밖 일반명사('시험이 걱정돼요'의 '시험')는 X가 되지 않는다(이 예에서는 '걱정'). 분석기가 표제어를 나눠 인용 후보가 없으면('불안' → '불/안') 그 범주 명사·어근 표제어(두 글자 이상)가 원문에 글자 그대로, 형태소 경계에 맞게 나올 때만 그 말을 쓴다(대체 경로, `basis.rule = lexicon_surface_match`. 분석기 경로는 `lexicon_category_and_participant_substring`). 활용형 용언('설레요'·'조여요')뿐이면 X를 넣지 않는다. 명사형으로 바꾸면 참여자가 쓰지 않은 말이 되기 때문이다. 기억·외상 서사 발화(L5 strong)의 말은 쓰지 않는다. 고른 근거는 `capture.bridge.xSelection.basis`(답·범주·종류·원문 위치), X가 없으면 `xSelection.noXReason`(답마다 no_answer·depth_strong·predicate_only·none_in_category)과 버린 후보(`tried[].rejected`)를 남긴다 |
+| 형상 신호 | 사전 범주 form·shape·object·size·color·brightness·texture·opacity·posture(부정되지 않은 것), 또는 일반명사 + '같/처럼/마냥/같이'. 같은 표제어가 sensation·emotion에도 있으면('숨') 근거로 치지 않고, 비유 앞 명사가 감정어·감각어·신체부위어·인용 금지어여도 치지 않는다. 판정마다 근거 표현(`evidence[].trigger`·`charSpan`), 부정 여부(항목마다 `negated`. 부정으로 뺀 후보는 `excluded[]`의 `why = negated`. 답마다 `timeline[]`에 `negatedExcluded`(부정으로 뺀 사전 적중), `negatedInEvidence`(부정이 기록만 된 비유 적중), `negated`(둘 중 하나라도)로 집계), 판정 시점(`judgedAt`: reply·find_llm·bridge·confirmed, 턴 번호)을 남긴다(반박 4b). 비유 표지 뒤 부정('돌 같지 않아요')은 `negated`로 기록만 하고 판정에는 쓰지 않는다. **사전 표면 일치 규칙:** 적중 형태소의 원문 위치가 그보다 긴 감정·감각 표제어의 원문 표면 일치 안에 들어 있으면('가슴이 조이고 불안해요'의 '불'이 '불안' 안) 신호로 치지 않고 `excluded`에 `why = inside_lexicon_term`, `term`으로 남긴다. 문맥 규칙이 아니라 표면 일치다('불꽃 같아요'·'돌 같아요'는 그대로 신호 있음). **흐름에만 쓰고 장면 값에는 쓰지 않는다(원칙 2)** |
+| find LLM | 형상 신호가 없으면 허용 틀을 anything_else 하나로 줄인다(`stages.find.allowedTemplatesWhenNoImage`). like_what은 focus_hold(주의 유지) 뒤의 다리 질문이 맡는다 |
+| 압박하지 않기 | 다리 답이 짧은 '없어요·모르겠어요'면 flesh_out LLM을 건너뛴다. focus_hold 답이 '없어요'여도 다리 답에 내용이 있으면 flesh_out LLM을 그대로 묻는다(직전 noMore를 물려받지 않음). 다리를 내지 않은 경우는 1.4와 같다(focus_hold의 '없어요'가 flesh_out LLM을 건너뛰게 함). 차원 프로브는 지금처럼 한 번씩 묻는다 |
+| 기록 | `capture.imageSignal`(답마다 `timeline`, find 시점 `atFind`, 다리 시점 `atBridge`, 확정 텍스트 `confirmed`), `capture.firstElicitedBy`(형상이 처음 나온 답을 끌어낸 턴 종류. `kind`는 opening / focus_hold / bridge / llm / probe 다섯 값으로 스키마에 열거(반박 6). 고정 문구는 단계로 나눈다: find 단계 opening·location = opening, focus 단계 = focus_hold, flesh_out 단계 fleshout_open(조건 1) = probe. 자세한 종류는 `detail`: opening·location·llm:find·focus_hold·bridge·llm:flesh_out·probe:…·fleshout_open. 답마다의 값은 `timeline[].elicitedBy`), `capture.imageless`(확정 전까지 형상 신호가 없었는지), `capture.bridge`(물었는지, X와 고른 근거 또는 X 없음 사유, X 문장 검사 `checks`, 고정 문장 검사 `plainChecks`, 대체 사유 `fallbackReason`: no_x · x_sentence_failed_validation). 다리 질문 턴은 `source = bridge:like_what` 또는 `fixed:bridge_like_what_plain` |
 
-**검증기를 약하게 한 점(원칙 3에 따라 이유를 남김).** 다리 문장(X가 있는 것)에는 검증기 V1–V7·V9를 걸고, 하나라도 걸리면 X 없는 고정 문장으로 바꿉니다. **V8(출력 가드 모델)은 걸지 않습니다**(`Runtime.clarify_validator`, `guard=None`). 확인 질문 루프(5-1)와 같은 이유입니다. 문장이 질문 틀과 참여자 원문 인용으로만 되어 있어 새 내용이 들어갈 수 없고, 가드 모델을 부르면 LLM 호출이 생겨 결정론("같은 답 → 같은 다리 문장")이 깨집니다. 참여자 답은 지금처럼 입력 가드(키워드 + 가드 모델)를 거칩니다. X 없는 고정 문장은 다른 고정 문구처럼 검증기를 거치지 않습니다.
+**검증기를 약하게 한 점(원칙 3에 따라 이유를 남김).** 다리 문장(X가 있는 것)에는 검증기 V1–V7·V9를 걸고, 하나라도 걸리면 X 없는 고정 문장으로 바꿉니다(대체 사유 `fallbackReason = x_sentence_failed_validation`, 걸린 사유는 `capture.bridge.checks`).
 
-**검증기를 강하게 한 점.** V7에 `predicate_as_noun`을 더했습니다(`[validator] predicate_as_noun`, bridge.toml만 켬). what_kind·where·like_what 틀의 X가 종결어미(EF)로 끝나는 활용형이면 막습니다. "그 '설레요'는 어떤 '설레요'인가요?" 같은 어색한 질문이 이전에는 통과했습니다. anything_else("'설레요'에 대해 더 있나요?")는 그대로 허용합니다. find 틀 제한도 허용 범위를 줄이는 쪽입니다.
+- **V8(출력 가드 모델)을 걸지 않는 이유는 다리 문장이 질문 틀과 참여자 원문 인용만으로 된 문장(X 없는 문장은 틀만)이라서입니다.** 새 내용이 들어갈 자리가 없고, 가드 모델을 부르면 LLM 호출이 생겨 결정론("같은 답 → 같은 다리 문장")이 깨집니다. 안전 판정을 면제한다는 뜻이 아닙니다. 참여자 답은 지금처럼 입력 가드(키워드 + 가드 모델)를 거치고, 위기 판정 뒤에는 고정 문구만 나갑니다(`Runtime.clarify_validator`, `guard=None`, 확인 질문 루프 5-1과 같음).
+- **X 없는 고정 문장 `bridge_like_what_plain`은 고정 문구 전용 검증 경로를 거칩니다**(반박 7, `Validator.check(..., require_quote=False)`). V1·V2·V4·V5·V6·V7·V9는 그대로 걸고, **인용 요구(V1 `anchor_required`와 V3 전부)만 뺍니다.** 참여자 말을 인용하지 않게 만든 문장이라 인용 요구를 걸면 늘 막히기 때문입니다. V3가 지키는 것(인용이 참여자 원문 그대로인가)은 인용이 없는 문장에서는 지킬 대상이 없습니다. 결과는 `capture.bridge.plainChecks`(적용·제외 목록, 통과 여부, 사유)에, 대체 사유는 `fallbackReason`(no_x · x_sentence_failed_validation)에 남깁니다. 고정 문장마저 걸리면 내지 않고 다리를 건너뜁니다(`skipped = plain_phrase_failed_validation`, 알림 `bridge_plain_blocked`). 검증기를 거치지 않은 문장은 내보내지 않습니다. 이 경로는 bridge 설정의 다리 단계에서만 쓰고, 다른 경로의 기본값(`require_quote=True`)은 바뀌지 않습니다.
 
-**부수 수정(모두 bridge.toml에서만).** (1) 인용 후보 '-되' 어근 규칙: 분석기가 '기대되/VV'처럼 한 덩어리로 내면 '기대'를 어근 후보로 쓴다. 어근이 한 글자면('안되'·'잘되') 쓰지 않는다. 지금 Kiwi는 '기대/NNG + 되/XSV'로 나누므로 대부분 명사 경로로 잡힌다. (2) 감정어 사전에 '기대'(alt '기대되')를 오버레이로 더했다. emotion 범주는 슬롯을 정하지 않으므로 값 추론은 생기지 않는다. (3) 안전 사전 0.2.0: 은유 정규식을 `숨이?\s*막(히|힌|힐|혀|혔)`로 넓혀 '숨막혀요'·'숨이 막힌'도 확인 문구로 보낸다. noMore에 '안 보여요·안 떠올라요'를 더했다. (4) 프롬프트 v1.1.0: stage_find·stage_flesh_out 두 블록만 고쳤다(`chatbot/prompts/v1.1.0/README.md`).
+**검증기를 강하게 한 점.** 다리 질문을 낸 세션에서는 그 뒤 LLM의 허용 틀에서 like_what을 뺍니다(CP11, 다리 1회를 LLM이 되풀이하지 않게). 프롬프트 맥락의 허용 목록과 V2 `template_not_allowed`가 같은 목록을 쓰므로 like_what을 내면 재생성·대체 경로로 갑니다(`capture.bridge.blockedTemplateAfter`). 다리를 건너뛴 세션은 그대로입니다. V7에 `predicate_as_noun`을 더했습니다(`[validator] predicate_as_noun`, bridge.toml만 켬). what_kind·where·like_what 틀의 X가 종결어미(EF)로 끝나는 활용형이면 막습니다. "그 '설레요'는 어떤 '설레요'인가요?" 같은 어색한 질문이 이전에는 통과했습니다. anything_else("'설레요'에 대해 더 있나요?")는 그대로 허용합니다. find 틀 제한도 허용 범위를 줄이는 쪽입니다.
 
-**남은 위험(숨기지 않고 적음).** 형상 신호 판정은 사전 범위에 묶입니다. '머리가 하얘져요'(color)·'구름 위에 있는 것 같아요'(object)는 신호가 있다고 보아 다리를 건너뛰고, 사전 밖 명사로만 답하면 다리를 묻습니다(1회뿐). '시험 전날 같아요'·'엄마 같아요'처럼 장면·사람을 쓴 비유도 지금 규칙에서는 형상 신호로 칩니다. 다리 질문이 만든 형상은 함께 만든 것에 가까우므로, RQ 닮음 분석은 `firstElicitedBy`로 나눠 봅니다. 새 고정 문구와 프롬프트는 draft이며 IRB·팀 검토 전입니다.
+**부수 수정(모두 bridge.toml에서만).** (1) 인용 후보 '-되' 어근 규칙: 분석기가 '기대되/VV'처럼 한 덩어리로 내면 '기대'를 어근 후보로 쓴다. 어근이 한 글자면('안되'·'잘되') 쓰지 않는다. 지금 Kiwi는 '기대/NNG + 되/XSV'로 나누므로 대부분 명사 경로로 잡힌다. (2) 감정어 사전에 '기대'(alt '기대되')를 오버레이로 더했다. emotion 범주는 슬롯을 정하지 않으므로 값 추론은 생기지 않는다. (3) 안전 사전 0.2.0: 은유 정규식을 `숨이?\s*막(히|힌|힐|혀|혔)`로 넓혀 '숨막혀요'·'숨이 막힌'도 확인 문구로 보낸다. noMore에 '안 보여요·안 떠올라요'를 더했다. 이 패턴은 발화 전체 일치만 본다(어미 '-요·-네요·-ㅂ니다'까지). '안 보이는데 차가운 느낌이에요'처럼 뒤에 묘사가 이어지면 noMore가 아니어서 그 묘사는 participant_texts·확정 초안에 남는다(원칙 2). (4) 프롬프트 v1.1.0: stage_find·stage_flesh_out 두 블록만 고쳤다(`chatbot/prompts/v1.1.0/README.md`).
+
+**남은 위험(숨기지 않고 적음).** 형상 신호 판정은 사전 범위에 묶입니다. '머리가 하얘져요'(color)·'구름 위에 있는 것 같아요'(object)는 신호가 있다고 보아 다리를 건너뛰고, 사전 밖 명사로만 답하면 다리를 묻습니다(1회뿐). 아래는 **알려진 오분류**로 시험에 지금 판정 그대로 고정했습니다(`tests/test_d9_bridge.py`의 `KNOWN_MISCLASSIFIED`·`CODEX_15`). 문맥 규칙은 더 넣지 않았습니다(반박 4b, 시험 안 된 규칙이 늘어남). 잘못 건너뛰는 쪽이 잘못 묻는 쪽보다 해롭다는 점을 알고 둡니다.
+
+| 발화 | 지금 판정(근거) | 왜 오분류인가 |
+| --- | --- | --- |
+| 밝은 성격이에요 | 신호 있음(brightness '밝') | 성격 묘사 |
+| 시험 전날 같아요 | 신호 있음(비유 '전날 같') | 장면·상황 비유 |
+| 엄마 같아요 | 신호 있음(비유 '엄마 같') | 사람 비유 |
+| 벽에 막힌 느낌이에요 | 신호 있음(object '벽') | '막힌 느낌'의 은유 |
+| 돌 같지 않아요 | 신호 있음(object '돌'·비유 '돌 같') | 비유 표지 뒤 부정은 기록만 함 |
+
+'가슴이 조이고 불안해요'는 표면 일치 규칙으로 신호 없음이 되어 다리를 묻고 X '불안'을 고르지만, 참여자 원문 쪽 분석이 '불/안'으로 나뉘어 X 문장이 V5(`leak:불안`)에 걸리고 X 없는 고정 문장으로 바뀝니다(검증기는 약하게 하지 않았습니다). 다리 질문이 만든 형상은 함께 만든 것에 가까우므로, RQ 닮음 분석은 `firstElicitedBy`로 나눠 봅니다(아래 분석 메모). 새 고정 문구와 프롬프트는 draft이며 IRB·팀 검토 전입니다.
+
+**분석 메모(반박 6).** 다리 노출 사례는 분석에서 따로 층화합니다. 층: (가) 다리를 묻지 않음(형상 신호가 먼저 있었음), (나) 다리를 물었고 형상이 다리 답이나 그 뒤에서 처음 나옴(`firstElicitedBy.kind` = bridge, 또는 다리 뒤의 llm·probe), (다) 다리를 물었으나 확정까지 형상 신호 없음(`imageless = true`). (나)의 형상은 시스템 질문이 끌어낸 것이므로 "떠올린 모습과 닮았다" 평정을 (가)와 합치지 않고 나눠 보고합니다. 조건 1·2 비교에서는 두 조건 모두 같은 다리 질문에 노출되므로, 조건 차이에 다리 노출이 섞이지 않습니다. 분석 계획 쪽 기록은 `docs/research-design.md` 6.1절 7번 항목입니다.
 
 ## 6. 다음 작업
 

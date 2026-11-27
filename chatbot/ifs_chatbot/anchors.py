@@ -135,6 +135,24 @@ def anchor_candidates(texts: list[str], lexicon: Lexicon, analyzer: Analyzer, sa
 
 
 # ── 다리 질문의 X (D9, 프로토콜 1.5 imageBridge.xSelection) ─────────────────────
+SURFACE_FALLBACK_POS = {"NNG", "XR"}   # 대체 경로는 명사·어근 표제어만(활용형 용언을 X로 쓰지 않는 규칙과 같게)
+
+
+def _surface_fallback(text: str, cat: str, lexicon: Lexicon, analyzer: Analyzer,
+                      safety: SafetyLexicon) -> tuple[str, int] | None:
+    """분석기가 표제어를 나눠('불안' → '불/NNG + 안/MAG') 인용 후보가 없을 때, 그 범주 명사·어근 표제어가 원문에 글자 그대로
+    나오면 그 말. 두 글자 이상이고, 원문 형태소 경계에 맞아야 한다('화분'의 '화'처럼 한 형태소 안쪽 일부는 쓰지 않음)."""
+    from .extract import inside_terms   # extract는 anchors를 함수 안에서만 부른다(순환 없음)
+
+    text = normalize(text)
+    toks = analyzer.tokens(text)
+    starts, ends = {t.start for t in toks}, {t.end for t in toks}
+    for s, e, w in sorted(inside_terms(text, lexicon, {cat}, SURFACE_FALLBACK_POS), key=lambda t: (t[0], -(t[1] - t[0]))):
+        if len(w) < 2 or s not in starts or e not in ends or w in ANCHOR_STOP or safety.has_depth_marker(w):
+            continue
+        return w, s
+    return None
+
 BRIDGE_X_ORDER = (("focus_hold", "sensation"), ("opening", "emotion"))
 BRIDGE_X_KINDS = ("noun", "root")
 
@@ -146,6 +164,11 @@ def bridge_anchor(answers: dict[str, str | None], lexicon: Lexicon, analyzer: An
     차례: focus_hold 답의 감각어(명사·어근) → opening 답의 감정어(명사·어근). 발화 안에서는 앞에 나온 것.
     활용형 용언('설레요'·'조여요')만 있으면 X를 넣지 않는다 — 명사형으로 바꾸면 참여자가 쓰지 않은 말이 된다.
     X는 늘 참여자 원문의 부분 문자열이다. 기억·외상 서사 발화(L5 strong)의 말은 쓰지 않는다.
+    X는 1층 사전의 그 범주(감각·감정) 항목에 든 말이면서 원문 부분 문자열일 때만 쓴다(반박 처리 표 3). 사전 밖 일반명사
+    ('시험이 걱정돼요'의 '시험')는 X가 되지 않는다.
+
+    기록(세션 로그 capture.bridge.xSelection): X가 있으면 basis(고른 근거: 어느 답·범주·종류·원문 위치), 없으면
+    noXReason(답마다 왜 없었는지). tried에는 답마다 본 후보와 버린 후보(rejected: 범주가 다른 인용 후보)를 남긴다.
     """
     tried: list[dict] = []
     for source, cat in order:
@@ -156,12 +179,28 @@ def bridge_anchor(answers: dict[str, str | None], lexicon: Lexicon, analyzer: An
         if safety.depth(text)["strong"]:
             tried.append({"from": source, "category": cat, "found": None, "why": "depth_strong"})
             continue
-        cands = [a for a in anchors_in(text, lexicon, analyzer, safety, doe_root=doe_root) if a.cat == cat]
-        pick = next((a for a in cands if a.kind in kinds), None)
+        all_cands = anchors_in(text, lexicon, analyzer, safety, doe_root=doe_root)
+        rejected = [{"text": a.text, "kind": a.kind, "category": a.cat} for a in all_cands if a.cat != cat]
+        cands = [a for a in all_cands if a.cat == cat]
+        # 원문 부분 문자열 확인(anchors_in이 이미 보장하지만 X 자리에는 한 번 더 확인한다)
+        pick = next((a for a in cands if a.kind in kinds and a.text in text), None)
         if pick is not None:
+            start = text.find(pick.text)
             tried.append({"from": source, "category": cat, "found": pick.text, "kind": pick.kind})
-            return pick.text, {"from": source, "category": cat, "kind": pick.kind, "tried": tried}
-        tried.append({"from": source, "category": cat, "found": None,
-                      "why": "predicate_only" if cands else "none_in_category",
-                      "predicates": [a.text for a in cands if a.kind == "predicate"]})
-    return "", {"from": None, "tried": tried}
+            basis = {"rule": "lexicon_category_and_participant_substring", "from": source, "category": cat,
+                     "kind": pick.kind, "charSpan": [start, start + len(pick.text)]}
+            return pick.text, {"from": source, "category": cat, "kind": pick.kind, "basis": basis, "tried": tried}
+        why = "predicate_only" if any(a.kind == "predicate" for a in cands) else "none_in_category"
+        if why == "none_in_category":
+            sx = _surface_fallback(text, cat, lexicon, analyzer, safety)
+            if sx is not None:
+                word, start = sx
+                tried.append({"from": source, "category": cat, "found": word, "kind": "lexicon_surface",
+                              "rejected": rejected})
+                basis = {"rule": "lexicon_surface_match", "from": source, "category": cat, "kind": "lexicon_surface",
+                         "charSpan": [start, start + len(word)],
+                         "note": "형태소 분석이 표제어를 나눠 인용 후보가 없을 때의 대체 경로(사전 표제어의 원문 표면 일치)"}
+                return word, {"from": source, "category": cat, "kind": "lexicon_surface", "basis": basis, "tried": tried}
+        tried.append({"from": source, "category": cat, "found": None, "why": why,
+                      "predicates": [a.text for a in cands if a.kind == "predicate"], "rejected": rejected})
+    return "", {"from": None, "noXReason": [f"{t['from']}:{t['why']}" for t in tried], "tried": tried}

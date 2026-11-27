@@ -14,7 +14,7 @@
       "status": "draft",
       "source": "D9(docs/codex-reviews/prompts/D9_rebuttal_prompt.md 「메인의 판정」, docs/codex-reviews/D9_claude.md). 결정 기록은 docs/decisions.md",
       "summary": "감정어·추상 서술로 시작한 면담에서 형상 신호가 없을 때만 focus_hold 뒤에 결정론 다리 질문 1회(bridge 단계)를 두 조건 모두에 더했다. 새 고정 문구 bridge_like_what_plain(draft) 하나, imageBridge·imageSignal 절, stages.find.allowedTemplatesWhenNoImage를 더했다. 다른 단계 순서·질문 틀·기존 고정 문구·프로브 순서·crisis·driftChecks 절은 바꾸지 않았다. v1.0.0–v1.4.0 파일은 그대로 둔다.",
-      "reason": "감정 형용사('불안해요', '기대돼요')로 답한 참여자는 지금 흐름에서 형상 없이 확정되는 일이 많다(D9 진단). Clean Language 'And that's X like what?'(질문 틀 like_what)을 질 단계(focus_hold) 뒤에 LLM 없이 한 번만 낸다. 초안이라 연구팀·IRB 검토 전이다."
+      "reason": "감정 형용사('불안해요', '기대돼요')로 답한 참여자는 지금 흐름에서 형상 없이 확정되는 일이 많다(D9 진단). Clean Language 'And that's X like what?'(질문 틀 like_what)을 focus_hold(주의를 두고 머무는 단계, 감각의 질을 묻지 않음) 뒤에 LLM 없이 한 번만 낸다. 초안이라 연구팀·IRB 검토 전이다."
     },
     {
       "version": "1.4.0",
@@ -160,7 +160,7 @@
       "allowedTemplatesWhenNoImage": [
         "anything_else"
       ],
-      "allowedTemplatesWhenNoImageNote": "D9: imageSignal이 아직 없으면 find LLM은 anything_else만 쓴다. like_what은 질 단계(focus_hold) 뒤 다리 질문으로 미룬다. 형상 신호가 있으면 allowedTemplates 그대로."
+      "allowedTemplatesWhenNoImageNote": "D9: imageSignal이 아직 없으면 find LLM은 anything_else만 쓴다. like_what은 focus_hold(주의 유지) 뒤 다리 질문(은유 질문)으로 미룬다. 형상 신호가 있으면 allowedTemplates 그대로."
     },
     "focus": {
       "ifs": "Focus",
@@ -487,7 +487,7 @@
       "onFail": "plainPhrase",
       "reason": "틀 + 참여자 원문 인용뿐인 결정론 문장이다. V8(가드 모델)을 부르면 결정론이 깨진다. 참여자 답은 그대로 L1 입력 검사를 거친다."
     },
-    "noMore": "focus_hold나 다리 질문에 짧은 '없어요·모르겠어요'가 오면 flesh_out LLM 질문을 건너뛴다(압박하지 않기). 차원 프로브는 그대로 묻는다.",
+    "noMore": "다리 질문에 짧은 '없어요·모르겠어요'가 오면 flesh_out LLM 질문을 건너뛴다(압박하지 않기). focus_hold 답이 '없어요'여도 다리 답에 내용이 있으면 flesh_out LLM을 묻는다. 다리를 내지 않으면 focus_hold 답의 '없어요'가 지금처럼 flesh_out LLM을 건너뛰게 한다. 차원 프로브는 그대로 묻는다.",
     "record": "세션 로그 capture.bridge, capture.imageSignal(시점별), capture.firstElicitedBy(형상이 처음 나온 턴 종류), capture.imageless"
   },
   "imageSignal": {

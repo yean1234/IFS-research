@@ -101,10 +101,21 @@
       "properties": {
         "bodyRelation": { "type": "object", "description": "Find 위치 질문의 답. focus.location (예: chest.inner)" },
         "findModality": { "type": "object", "description": "연구자용 휴리스틱 표지. 참여자에게 보이지 않는다." },
-        "imageSignal": { "type": "object", "description": "D9(프로토콜 1.5만): 형상 신호 규칙 판정. timeline(답마다)·atFind·atBridge·confirmed. 흐름에만 쓰고 장면 값에는 쓰지 않는다." },
-        "firstElicitedBy": { "type": ["object", "null"], "description": "D9: 형상 신호가 처음 나온 답과 그 답을 끌어낸 턴 종류(opening·llm:find·focus_hold·bridge·llm:flesh_out·probe:…). 없으면 null." },
+        "imageSignal": { "type": "object", "description": "D9(프로토콜 1.5만): 형상 신호 규칙 판정. timeline(답마다)·atFind·atBridge·confirmed. 판정마다 judgedAt(판정 시점: reply·find_llm·bridge·confirmed), evidence(근거 표현 trigger·charSpan·negated), excluded(부정 negated·중복 범주·사전 표면 안 inside_lexicon_term으로 뺀 후보와 why)를 남긴다. timeline의 부정 집계: negatedExcluded(부정으로 신호에서 뺀 사전 적중이 있음), negatedInEvidence(부정이 기록만 된 비유 적중이 evidence에 있음, 판정 불변), negated(둘 중 하나라도). bridge를 물은 세션은 capture.bridge.blockedTemplateAfter에 그 뒤 LLM 허용 목록에서 뺀 틀을 적는다. 흐름에만 쓰고 장면 값에는 쓰지 않는다." },
+        "firstElicitedBy": {
+          "type": ["object", "null"],
+          "description": "D9: 형상 신호가 처음 나온 답을 끌어낸 턴 종류. kind는 5가지(고정 문구는 단계로 나눔: find 단계 opening·location = opening, focus 단계 = focus_hold, flesh_out 단계 fleshout_open = probe). detail은 자세한 턴 종류(opening·location·llm:find·focus_hold·bridge·llm:flesh_out·probe:…·fleshout_open). 없으면 null.",
+          "required": ["kind"],
+          "properties": {
+            "kind": { "type": "string", "enum": ["opening", "focus_hold", "bridge", "llm", "probe"] },
+            "detail": { "type": "string" },
+            "i": { "type": "integer" },
+            "askedBy": { "type": ["string", "null"] },
+            "evidence": { "type": "array", "items": { "type": "string" } }
+          }
+        },
         "imageless": { "type": ["boolean", "null"], "description": "D9: 확정 전까지 형상 신호가 없었는지. 확정 단계에 닿지 않으면 null." },
-        "bridge": { "type": "object", "description": "D9: 다리 질문(물었는지, X와 고른 근거, 검사 결과, X 없는 고정 문장으로 대체했는지)." }
+        "bridge": { "type": "object", "description": "D9: 다리 질문(물었는지, X와 고른 근거 xSelection.basis 또는 X 없음 사유 xSelection.noXReason, X 문장 검사 checks, X 없는 고정 문장의 검사 plainChecks와 대체 사유 fallbackReason: no_x | x_sentence_failed_validation)." }
       }
     },
     "confirmedText": { "type": ["string", "null"], "description": "참여자가 [이대로 맞아요]를 누른 텍스트. 점선 아래(추출)로 넘어가는 유일한 것." },

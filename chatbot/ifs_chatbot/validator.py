@@ -143,7 +143,10 @@ class Validator:
         self.max_anchor_eojeol = max_anchor_eojeol
         self.predicate_as_noun = predicate_as_noun
 
-    def check(self, raw: str, ctx: TurnContext) -> CheckResult:
+    def check(self, raw: str, ctx: TurnContext, require_quote: bool = True) -> CheckResult:
+        """require_quote=False는 고정 문구 전용 경로(D9 다리 질문의 X 없는 문장 bridge_like_what_plain)에만 쓴다.
+        참여자 말을 인용하지 않게 만든 고정 문장이라 인용 요구(V1 anchor_required·V3 전부)만 빼고 나머지는 그대로 건다.
+        기본값 True — 기존 경로(LLM 질문·확인 질문·X 있는 다리 문장)는 바뀌지 않는다. 이유는 docs/chatbot-design.md 5-3."""
         # ── V1 ──
         try:
             out = json.loads(raw)
@@ -168,7 +171,7 @@ class Validator:
         if move == "ask":
             if template == "none" or not out["utterance"]:
                 reasons.append("V1:ask_without_template_or_utterance")
-            if template not in ("then_what", "none") and not out["anchor_quote"]:
+            if require_quote and template not in ("then_what", "none") and not out["anchor_quote"]:
                 reasons.append("V1:anchor_required")
         elif out["utterance"]:
             notes.append(f"move={move}인데 utterance가 있음(무시함)")
@@ -190,20 +193,20 @@ class Validator:
             s = squash(s)
             return bool(s) and any(s in p for p in p_squashed)
 
-        # ── V3 ──
-        if anchor and not verbatim(anchor):
-            reasons.append(f"V3:anchor_not_verbatim:{anchor}")
+        # ── V3 ── (require_quote=False인 고정 문구 경로에서는 건너뛴다)
         quotes = quoted_spans(utt)
-        for q in quotes:
+        if require_quote and anchor and not verbatim(anchor):
+            reasons.append(f"V3:anchor_not_verbatim:{anchor}")
+        for q in quotes if require_quote else []:
             if not verbatim(q):
                 reasons.append(f"V3:quote_not_verbatim:{q}")
-        if anchor and squash(anchor) not in squash(utt):
+        if require_quote and anchor and squash(anchor) not in squash(utt):
             reasons.append("V3:anchor_not_in_utterance")
-        if template == "relationship" and len({squash(q) for q in quotes}) < 2:
+        if require_quote and template == "relationship" and len({squash(q) for q in quotes}) < 2:
             reasons.append("V3:relationship_needs_two_quotes")
         # (확장) 인용은 참여자의 '단어'여야 한다. 문장 통째 되풀이는 clean 질문이 아니고,
         # 가드 모델도 조롱처럼 읽는다(gemma4:e4b 실험에서 S2로 판정됨).
-        for q in dict.fromkeys([anchor, *quotes]):
+        for q in dict.fromkeys([anchor, *quotes]) if require_quote else []:
             if not q:
                 continue
             n = len(q.split())

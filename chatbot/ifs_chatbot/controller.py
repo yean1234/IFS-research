@@ -28,6 +28,7 @@ from .config import Config
 from .drift import PARAMS as DRIFT_PARAMS
 from .drift import DriftAssessor, participant_turns, summarize
 from .extract import Extractor, find_modality, image_signal, parse_body_relation
+from .form_assets import FormAssetStore
 from .korean import Analyzer, normalize
 from .lexicon import Lexicon
 from .candidates import load_table as load_candidate_table
@@ -200,6 +201,15 @@ class Runtime:
                 self.warnings.append(f"[selection] 후보·조절·사전 측정 문구 {n}개가 초안(status draft)입니다(X35: 화면·기록에 표시).")
             if self.preview.reason:
                 self.warnings.append(f"[preview] {self.preview.reason}")
+        # G62: 생성 형태 메시 후보([gen3d] enabled일 때만). 꺼져 있으면 None — 후보·기록·화면 출력이 G62 전과 같다
+        self.form_assets: FormAssetStore | None = None
+        if cfg.gen3d.enabled:
+            root = Path(cfg.gen3d.assets_dir)
+            self.form_assets = FormAssetStore(root if root.is_absolute() else (CHATBOT_DIR / root).resolve(),
+                                              cfg.gen3d.max_candidates, cfg.gen3d.default_form_source)
+            if not self.form_assets.root.is_dir():
+                self.warnings.append("[gen3d] 자산 폴더가 없어 생성 형태 후보를 내지 않습니다(절차 메시 후보만): "
+                                     f"assets_dir = {cfg.gen3d.assets_dir}")
 
     def header(self, condition: str) -> dict:
         h = {
@@ -247,6 +257,7 @@ class Runtime:
             "selection": {"enabled": self.cfg.selection.enabled, **self.selection_protocol.info(),
                           "tableVersion": self.candidate_table["tableVersion"]},
             "preview": self.preview.info(),
+            **({"gen3d": self.form_assets.info()} if self.form_assets is not None else {}),   # G62: 켰을 때만(꺼지면 출력 그대로)
             "warnings": self.warnings,
         }
 
@@ -550,8 +561,9 @@ class Session:
             st["answered"] = True
             self.idx += 1
         elif step.type == "bridge":
-            # 압박하지 않기: focus_hold나 다리 질문에 '없어요'류가 오면 다음 LLM 질문(flesh_out)을 건너뛴다
-            self.last_no_more = no_more or bool(st.get("prevNoMore"))
+            # 압박하지 않기: 다리 답이 '없어요'류면 다음 LLM 질문(flesh_out)을 건너뛴다. 다리 답에 내용이 있으면
+            # focus_hold 답이 '없어요'였어도 flesh_out LLM을 그대로 묻는다(직전 noMore를 물려받지 않음)
+            self.last_no_more = no_more
             st["answered"] = True
             self.idx += 1
         elif step.type == "llm":
@@ -567,9 +579,10 @@ class Session:
         return self._img_cache[text]
 
     def _image_signal_all(self) -> dict:
-        """opening부터 직전 답까지 참여자 발화 전체('없어요' 제외)의 형상 신호."""
+        """opening부터 직전 답까지 참여자 발화 전체('없어요' 제외)의 형상 신호. excluded = 부정·중복 범주로 뺀 후보."""
         ev = [{**e, "text": t} for t in self.participant_texts for e in self._img(t)["evidence"]]
-        return {"present": bool(ev), "evidence": ev}
+        ex = [{**e, "text": t} for t in self.participant_texts for e in self._img(t)["excluded"]]
+        return {"present": bool(ev), "evidence": ev, "excluded": ex}
 
     def _image_capture(self) -> dict:
         cap = self.log.data["capture"]
@@ -592,20 +605,40 @@ class Session:
             return f"llm:{step.stage}"
         return step.type
 
+    @staticmethod
+    def _elicited_by(step: Step) -> str:
+        """firstElicitedBy.kind(반박 처리 표 6): opening | focus_hold | bridge | llm | probe.
+        고정 문구는 단계로 나눈다 — find 단계(opening·location) = opening, focus 단계(focus_hold) = focus_hold,
+        flesh_out 단계(조건 1 fleshout_open) = probe. 자세한 턴 종류는 detail에 남긴다."""
+        if step.type == "bridge":
+            return "bridge"
+        if step.type == "llm":
+            return "llm"
+        if step.type == "probes":
+            return "probe"
+        return {"find": "opening", "focus": "focus_hold"}.get(step.stage or "", "probe")
+
     def _record_image_signal(self, step: Step, st: dict, text: str, no_more: bool) -> None:
         sig = self._image_capture()
         turn_i = len(self.log.turns) - 1
         asked_by = next((t.get("source") for t in reversed(self.log.turns[:-1])
                          if t.get("speaker") in ("system", "interviewer") and t.get("text")), None)
         kind = self._reply_kind(step, st)
-        own = {"present": False, "evidence": []} if no_more else self._img(text)
+        by = self._elicited_by(step)
+        own = {"present": False, "evidence": [], "excluded": []} if no_more else self._img(text)
         cum = self._image_signal_all()
-        sig["timeline"].append({"i": turn_i, "kind": kind, "askedBy": asked_by, "stage": step.stage,
-                                "noMore": no_more, "present": own["present"], "cumulative": cum["present"],
-                                "evidence": own["evidence"]})
+        neg_ex = any(e.get("why") == "negated" for e in own["excluded"])
+        neg_ev = any(e.get("negated") for e in own["evidence"])
+        # 판정 시점 = 이 답(turn i, 단계). evidence의 trigger가 근거 표현, excluded의 why = negated가 부정으로 뺀 것
+        sig["timeline"].append({"i": turn_i, "judgedAt": "reply", "kind": kind, "elicitedBy": by, "askedBy": asked_by,
+                                "stage": step.stage, "noMore": no_more, "present": own["present"],
+                                "cumulative": cum["present"], "evidence": own["evidence"], "excluded": own["excluded"],
+                                # negated = 이 답에 부정 표지가 있었는지(양쪽). 판정과 무관한 기록이다(CP11):
+                                # negatedExcluded = 부정으로 신호에서 뺀 사전 적중, negatedInEvidence = 부정이 기록만 된 비유 적중
+                                "negatedExcluded": neg_ex, "negatedInEvidence": neg_ev, "negated": neg_ex or neg_ev})
         cap = self.log.data["capture"]
         if own["present"] and cap.get("firstElicitedBy") is None:
-            cap["firstElicitedBy"] = {"kind": kind, "i": turn_i, "askedBy": asked_by,
+            cap["firstElicitedBy"] = {"kind": by, "detail": kind, "i": turn_i, "askedBy": asked_by,
                                       "evidence": list(dict.fromkeys(e.get("lemma") or e.get("noun") for e in own["evidence"]))}
 
     def _bridge(self, step: Step, st: dict) -> bool:
@@ -613,7 +646,8 @@ class Session:
         br = self.p.bridge or {}
         sig_all = self._image_signal_all()
         cap = self.log.data["capture"]
-        self._image_capture()["atBridge"] = {"present": sig_all["present"], "evidence": sig_all["evidence"],
+        self._image_capture()["atBridge"] = {"judgedAt": "bridge", "present": sig_all["present"],
+                                             "evidence": sig_all["evidence"], "excluded": sig_all["excluded"],
                                              "turn": len(self.log.turns)}
         if sig_all["present"]:
             cap["bridge"] = {"asked": False, "skipped": "image_signal_present", "stage": step.stage}
@@ -625,13 +659,12 @@ class Session:
         plain = br.get("plainPhrase", "bridge_like_what_plain")
         rec = {"asked": True, "stage": step.stage, "x": x or None, "xSelection": xinfo, "template": template,
                "validation": "V1–V7·V9 (V8 가드 모델은 걸지 않음: 틀 + 참여자 원문 인용뿐인 결정론 문장)"}
-        st["prevNoMore"] = self.last_no_more
+        last = self.participant_texts[-1] if self.participant_texts else ""
+        vctx = TurnContext(step.stage, [template], list(self.participant_texts), last, None)
         if x:
             utt = self.p.realize(template, x)
             out = {"stage": step.stage, "risk_signal": "none", "move": "ask", "template": template,
                    "anchor_quote": x, "utterance": utt}
-            last = self.participant_texts[-1] if self.participant_texts else ""
-            vctx = TurnContext(step.stage, [template], list(self.participant_texts), last, None)
             r = self.rt.clarify_validator.check(json.dumps(out, ensure_ascii=False), vctx)
             rec["checks"] = {"passed": r.passed, "reasons": r.reasons}
             if r.passed:
@@ -642,13 +675,34 @@ class Session:
                 self.asked.append({"template": template, "utterance": utt, "anchor": x})
                 st["asked"] = True
                 return True
+        # X 없는 고정 문장. 대체 사유: no_x(X를 고르지 못함, 사유는 xSelection.noXReason) | x_sentence_failed_validation
         rec["phrase"] = plain
         rec["fallback"] = bool(x)            # X가 있었는데 검증에 걸려 X 없는 문장으로 바꿈
+        rec["fallbackReason"] = "x_sentence_failed_validation" if x else "no_x"
+        # 고정 문구 전용 검증 경로(반박 처리 표 7): V1·V2·V4–V7·V9. 인용이 없게 만든 문장이라 인용 요구(V1 anchor_required·V3)만
+        # 빼고, V8 가드 모델은 X 문장과 같은 이유로 걸지 않는다(docs/chatbot-design.md 5-3)
+        plain_text = self.p.phrase(plain)
+        pout = {"stage": step.stage, "risk_signal": "none", "move": "ask", "template": template,
+                "anchor_quote": "", "utterance": plain_text}
+        pr = self.rt.clarify_validator.check(json.dumps(pout, ensure_ascii=False), vctx, require_quote=False)
+        rec["plainChecks"] = {"path": "fixed_phrase", "applied": "V1·V2·V4·V5·V6·V7·V9",
+                              "notApplied": ["V1:anchor_required", "V3", "V8"], "passed": pr.passed, "reasons": pr.reasons}
+        if not pr.passed:
+            # 고정 문장마저 걸리면 내지 않는다(검증기를 거치지 않은 문장을 내보내지 않음). 다리 1회는 쓴 것으로 친다
+            rec["asked"] = False
+            rec["skipped"] = "plain_phrase_failed_validation"
+            cap["bridge"] = rec
+            st["skipped"] = True
+            self._alert("bridge_plain_blocked", f"다리 고정 문장이 검증기에 걸려 내지 않음: {', '.join(pr.reasons)}",
+                        len(self.log.turns) - 1)
+            return False
         cap["bridge"] = rec
-        self._say_fixed(plain, stage=step.stage,
-                        checks={"passed": not x, "reasons": rec.get("checks", {}).get("reasons", []),
-                                "regenerations": 0, "fallback": bool(x), "v8": "not_applied"})
-        self.asked.append({"template": plain, "utterance": self.p.phrase(plain), "anchor": ""})
+        self._say_fixed(plain, stage=step.stage, output=pout,
+                        checks={"passed": True, "reasons": [], "regenerations": 0, "fallback": bool(x),
+                                "fallbackReason": rec["fallbackReason"],
+                                "xSentenceReasons": rec.get("checks", {}).get("reasons", []),
+                                "path": "fixed_phrase", "v8": "not_applied"})
+        self.asked.append({"template": plain, "utterance": plain_text, "anchor": ""})
         st["asked"] = True
         return True
 
@@ -730,11 +784,19 @@ class Session:
 
         allowed = self.p.allowed_templates(stage)
         if self.image_on and self.p.restricts_without_image(stage):
-            # D9: 형상 신호가 아직 없으면 find LLM은 anything_else만(like_what은 질 단계 뒤 다리 질문으로 미룬다)
+            # D9: 형상 신호가 아직 없으면 find LLM은 anything_else만(like_what은 focus_hold 뒤 다리 질문으로 미룬다)
             sig_all = self._image_signal_all()
             allowed = self.p.allowed_templates(stage, image_present=sig_all["present"])
-            self._image_capture()["atFind"] = {"present": sig_all["present"], "evidence": sig_all["evidence"],
+            self._image_capture()["atFind"] = {"judgedAt": "find_llm", "present": sig_all["present"],
+                                               "evidence": sig_all["evidence"], "excluded": sig_all["excluded"],
                                                "allowedTemplates": allowed, "turn": len(self.log.turns)}
+        if self.image_on and (self.log.data["capture"].get("bridge") or {}).get("asked"):
+            # D9(CP11): 다리 질문(like_what)을 이미 낸 세션에서는 그 뒤 LLM이 같은 틀을 다시 고르지 못한다(다리 1회).
+            # 프롬프트의 허용 목록과 검증(V2 template_not_allowed)이 같은 목록을 쓰므로 둘 다 막힌다
+            bt = (self.p.bridge or {}).get("template", "like_what")
+            if bt in allowed:
+                allowed = [t for t in allowed if t != bt]
+                self.log.data["capture"]["bridge"].setdefault("blockedTemplateAfter", bt)
         cands = anchor_candidates(self.participant_texts, self.rt.lexicon, self.rt.analyzer, self.rt.safety,
                                   used={a.get("anchor", "") for a in self.asked},
                                   doe_root=self.cfg.interview.anchor_doe_root)
@@ -854,7 +916,9 @@ class Session:
         self.log.data["extraction"] = self.rt.extractor.run(text, self.log.data["capture"].get("bodyRelation"))
         if self.image_on:
             sig = self._img(text)
-            self._image_capture()["confirmed"] = {"present": sig["present"], "evidence": sig["evidence"], "edited": edited}
+            self._image_capture()["confirmed"] = {"judgedAt": "confirmed", "present": sig["present"],
+                                                  "evidence": sig["evidence"], "excluded": sig["excluded"],
+                                                  "edited": edited, "turn": len(self.log.turns) - 1}
 
     def _confirmed(self, text: str, edited: bool) -> None:
         """[이대로 맞아요]/[고칠게요] 뒤. 확인 질문 루프가 켜져 있고 물을 말이 있으면 먼저 묻는다."""

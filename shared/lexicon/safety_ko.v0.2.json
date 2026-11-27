@@ -3,7 +3,7 @@
   "lexiconVersion": "0.2.0",
   "changes": [
     { "version": "0.2.0", "date": "2026-11-27", "status": "draft", "source": "D9 부수 수정(docs/codex-reviews/prompts/D9_rebuttal_prompt.md)",
-      "summary": "metaphor 층 cannot_breathe 정규식 숨이?\\s*막히 → 숨이?\\s*막(히|힌|힐|혀|혔). '숨막혀요'·'숨이 막힌'을 놓치던 결함. control.noMore에 '안 보여요'·'안 떠올라요'를 더함. 다른 패턴은 그대로. safety_ko.v0.json(0.1.0)은 그대로 두고 config [guard] safety_lexicon으로 고른다." }
+      "summary": "metaphor 층 cannot_breathe 정규식 숨이?\\s*막히 → 숨이?\\s*막(히|힌|힐|혀|혔). '숨막혀요'·'숨이 막힌'을 놓치던 결함. control.noMore에 '안 보여요'·'안 떠올라요'를 더함(발화 전체 일치만, 어미 '-요·-네요·-ㅂ니다'까지. '안 보이는데 차가운 느낌이에요'처럼 뒤에 묘사가 이어지면 noMore가 아니다). 다른 패턴은 그대로. safety_ko.v0.json(0.1.0)은 그대로 두고 config [guard] safety_lexicon으로 고른다." }
   ],
   "status": "draft — 연구팀·IRB 검토 전",
   "language": "ko",
@@ -87,7 +87,7 @@
         "그게\\s*(다|전부)",
         "모르겠|잘\\s*모르|모름|글쎄",
         "떠오르(지\\s*않|는\\s*(게|것이?)\\s*없)|생각이\\s*안\\s*나",
-        "^(잘\\s*)?안\\s*(보여|보이|떠올라|떠오르)",
+        "^(잘\\s*)?안\\s*(보여요|보여|보이네요|보입니다|떠올라요|떠올라|떠오르네요|떠오릅니다)$",
         "넘어갈게요|넘어가\\s*주세요|넘어갈래요|다음으로|패스|pass|skip",
         "말하고\\s*싶지\\s*않|답하고\\s*싶지\\s*않|대답하고\\s*싶지\\s*않"
       ]
