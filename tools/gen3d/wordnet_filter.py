@@ -15,6 +15,32 @@ import hashlib
 from pathlib import Path
 
 
+def _file_sha256(p: Path) -> str:
+    h = hashlib.sha256()
+    with open(p, "rb") as f:
+        for b in iter(lambda: f.read(1 << 20), b""):
+            h.update(b)
+    return h.hexdigest()
+
+
+def data_sha256(p: Path) -> str | None:
+    """WordNet 데이터 내용 해시. 압축 파일이면 파일 바이트, 폴더면 안의 파일을 상대 경로(posix) 차례로 정렬해
+    (경로, 파일 sha256)를 이어 해시한다(CP13 지적 3). 숨은 파일('.'로 시작: .DS_Store 등)은 내용이 아니라 뺀다.
+    같은 내용이면 설치 위치·파일 시각과 상관없이 같은 값, 파일 하나라도 다르면 다른 값."""
+    p = Path(p)
+    if p.is_file():
+        return _file_sha256(p)
+    if not p.is_dir():
+        return None
+    h = hashlib.sha256()
+    h.update(b"dir-v1\n")
+    files = sorted((f.relative_to(p).as_posix(), f) for f in p.rglob("*")
+                   if f.is_file() and not any(part.startswith(".") for part in f.relative_to(p).parts))
+    for rel, f in files:
+        h.update(rel.encode("utf-8") + b"\0" + _file_sha256(f).encode("ascii") + b"\n")
+    return h.hexdigest()
+
+
 class NltkWordNet:
     """nltk WordNet 백엔드. 데이터가 없으면 LookupError(내려받지 않음)."""
     name = "nltk"
@@ -35,12 +61,7 @@ class NltkWordNet:
             except LookupError:
                 continue
             self.data_path = p.name
-            if p.is_file():
-                h = hashlib.sha256()
-                with open(p, "rb") as f:
-                    for b in iter(lambda: f.read(1 << 20), b""):
-                        h.update(b)
-                self.data_sha256 = h.hexdigest()
+            self.data_sha256 = data_sha256(p)
             break
 
     def noun_senses(self, phrase: str) -> list[tuple[str, frozenset]]:

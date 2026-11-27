@@ -1,6 +1,6 @@
 # G62 생성 형태 메시 후보 프로필: v4.toml과 같고 [gen3d]만 켠다(설계 docs/codex-reviews/D8_claude.md, 결정 G62).
 # G73(CP13b, 2026-11-28): 다시 적기([gen3d] resay)도 이 프로필에서만 켠다. 그래서 [selection] protocol·table도 v4와 다르다
-# (다시 적기 문구 0.8.0, 값 표 3.0.0). selection.json은 ifs-selection/0.4.
+# (다시 적기 문구 0.8.1, 값 표 3.0.0). selection.json은 ifs-selection/0.4.
 # 실행: python -m ifs_chatbot.server --config v4-gen3d
 # 챗봇은 형태 생성 모델을 부르지 않는다. 생성 도구(tools/gen3d)가 assets_dir에 둔 GLB + 사이드카(form-asset.v0)를 확정 텍스트의
 # sha256으로 찾아 절차 메시 후보 뒤에 최대 max_candidates개를 더한다. selection.json은 ifs-selection/0.3.
@@ -64,7 +64,7 @@ allow_draft_phrases = false
 
 [selection]
 enabled = true                                  # 확정 뒤 후보 선택 · 조절 · 사전 측정 단계를 연다
-protocol = "selection_protocol.v0.8.json"       # ◆ G73(CP13b): 0.7.0 + 다시 적기 문구(0.8.0, 모두 draft). v4.toml은 v0.json(0.6.0) 그대로
+protocol = "selection_protocol.v0.8.json"       # ◆ G73(CP13b): 0.7.0 + 다시 적기 문구(0.8.0, 모두 draft. 0.8.1 G73-r 고지 문구). v4.toml은 v0.json(0.6.0) 그대로
 table = "candidate_values.v3.json"              # ◆ G73(CP13b): 너비·높이·깊이 항목(3.0.0, G72) — 다시 적은 글의 비율 값을 참여자가 조절 화면에서 고칠 수 있게
 require_spec_phrases = false                    # true면 초안 문구가 있을 때 후보 단계를 시작하지 않음(X35)
 participant_draft_banner = true                 # false면 초안 문구 경고 줄을 참여자 보기에서 숨김(연구자 보기·기록에는 남음, G59). ⚠ 사람이 정할 것

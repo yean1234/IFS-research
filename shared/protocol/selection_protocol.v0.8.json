@@ -1,9 +1,9 @@
 {
   "protocolId": "ifs-selection-flow",
-  "protocolVersion": "0.8.0",
+  "protocolVersion": "0.8.1",
   "status": "draft",
   "date": "2026-11-28",
-  "description": "면담 뒤 데스크톱 단계(4 후보 선택 · 5 조절 · 6 사전 측정)의 고정 문구. docs/prompts/prototype-v4-build.md 1절 흐름 표, 결정 G10·G13·G19·G23. 모든 문구는 초안(status draft)이며 IRB·연구팀 검토 전이다. 화면과 기록은 초안 문구를 쓰고 있다는 사실을 알린다(결정 X35 방식: 화면 맨 위 경고 줄, 기록의 draftCount·draftKeys). elicitation_protocol 파일은 바꾸지 않았다. (0.8.0, G73) [맞는 게 없어요] 뒤 '다시 적기' 문구를 더한 판(resay 설정에서만).",
+  "description": "면담 뒤 데스크톱 단계(4 후보 선택 · 5 조절 · 6 사전 측정)의 고정 문구. docs/prompts/prototype-v4-build.md 1절 흐름 표, 결정 G10·G13·G19·G23. 모든 문구는 초안(status draft)이며 IRB·연구팀 검토 전이다. 화면과 기록은 초안 문구를 쓰고 있다는 사실을 알린다(결정 X35 방식: 화면 맨 위 경고 줄, 기록의 draftCount·draftKeys). elicitation_protocol 파일은 바꾸지 않았다. (0.8.0, G73) [맞는 게 없어요] 뒤 '다시 적기' 문구를 더한 판(resay 설정에서만). (0.8.1, G73-r) resay_intro에서 '(퍼짐·옅기·빛)'을 뺌.",
   "phraseStatusLegend": {
     "spec": "설계 문서에 적힌 문구 그대로. IRB 승인 대상.",
     "draft": "새로 쓴 초안. IRB 제출 전에 연구팀 검토 필요."
@@ -12,9 +12,18 @@
     "build_prompt": "docs/prompts/prototype-v4-build.md (2026-11-22 클라우드 세션에서 연구 책임자와 정함)",
     "decisions": "docs/decisions.md G7–G24, G31–G34",
     "questionnaire": "docs/rq-v4-questionnaire-draft.md 3.1–3.3절(2026-11-22)",
-    "g73": "docs/decisions.md G73, docs/codex-reviews/D12_claude.md 1절(2026-11-28)"
+    "g73": "docs/decisions.md G73, docs/codex-reviews/D12_claude.md 1절(2026-11-28)",
+    "g73r": "docs/decisions.md G73-r(CP13b 구현 판정, 2026-11-28)"
   },
   "changes": [
+    {
+      "version": "0.8.1",
+      "date": "2026-11-28",
+      "status": "draft",
+      "source": "docs/decisions.md G73-r(CP13b 구현 판정), 2026-11-28. IRB 검토 전",
+      "summary": "resay_intro 글에서 '(퍼짐·옅기·빛)'을 뺌: '적어 주신 글은 물체의 모양과 모습을 만드는 데 쓰이고, 기록으로 남아요.' 다른 문구·항목 이름은 바꾸지 않음.",
+      "reason": "원칙 3(AGENTS.md): 참여자가 쓰지 않은 차원어(퍼짐·옅기·빛)가 화면에 나오면 답의 보기로 읽혀 참여자의 글을 그 낱말 쪽으로 이끈다. 쓰임 고지(D12 반박 1)는 '모양과 모습'과 다음 화면에서 직접 확인·수정한다는 문장으로 지킨다(G73-r). draft."
+    },
     {
       "version": "0.8.0",
       "date": "2026-11-28",
@@ -127,10 +136,10 @@
       "note": "미리보기가 정지 그림일 때 움직임 줄 아래에 붙는다(selection.STILL_PREVIEW_UNAVAILABLE). 항목 이름·값 이름을 다시 쓰지 않는다."
     },
     "resay_intro": {
-      "text": "떠올리신 그것이 어떤 모습인지 한 번 더 글로 적어 주세요. 적어 주신 글은 물체의 모양과 모습(퍼짐·옅기·빛)을 만드는 데 쓰이고, 기록으로 남아요. 글로 정해진 모습은 다음 화면에서 직접 확인하고 고칠 수 있어요.",
+      "text": "떠올리신 그것이 어떤 모습인지 한 번 더 글로 적어 주세요. 적어 주신 글은 물체의 모양과 모습을 만드는 데 쓰이고, 기록으로 남아요. 글로 정해진 모습은 다음 화면에서 직접 확인하고 고칠 수 있어요.",
       "status": "draft",
-      "source": "자작(2026-11-28, CP13b). 결정 G73·G73-d(docs/decisions.md). IRB 검토 전",
-      "note": "G73 고지(반박 1 수용): 무엇에 쓰이는지(모양과 모습 — 퍼짐·옅기·빛), 기록된다는 것, 다음 화면에서 확인·수정한다는 것. 예시·선택지·감정 이름·묘사어를 넣지 않는다(원칙 3). '퍼짐·옅기·빛'은 쓰임을 알리는 낱말이고 답의 보기가 아니다(⚠ 사람이 정할 것: 보기로 읽힐 수 있음)."
+      "source": "자작(2026-11-28, CP13b). 결정 G73·G73-d·G73-r(docs/decisions.md). 0.8.1에서 고침. IRB 검토 전",
+      "note": "G73 고지(반박 1 수용): 무엇에 쓰이는지(물체의 모양과 모습), 기록된다는 것, 다음 화면에서 확인·수정한다는 것. 예시·선택지·감정 이름·묘사어·차원어를 넣지 않는다(원칙 3). 0.8.1(G73-r): 보기로 읽힐 수 있던 '(퍼짐·옅기·빛)'을 뺌."
     },
     "resay_submit_button": {
       "text": "이 글로 만들어 주세요",

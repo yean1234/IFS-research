@@ -193,7 +193,7 @@ def test_resay_true_without_phrases_or_gen3d_stays_off(tmp_path):
 
 def test_protocol_08_new_phrases_are_draft_and_clean():
     p = SelectionProtocol(P08)
-    assert p.version == "0.8.0" and not missing_phrases(p)
+    assert p.version == "0.8.1" and not missing_phrases(p)
     old = SelectionProtocol("selection_protocol.v0.7.json")
     for k, v in old.data["phrases"].items():                     # 0.7 문구는 그대로
         assert p.data["phrases"][k]["text"] == v["text"]
@@ -206,8 +206,13 @@ def test_protocol_08_new_phrases_are_draft_and_clean():
         # 원칙 3·8: 예시·선택지·감정 이름·치료 표현 없음
         assert not re.search(r"예를 들|예컨대|처럼요|같은 것|불안|슬픔|화가|우울|걱정|치료|상담|내담자|진단", t), (k, t)
     intro = new["resay_intro"]["text"]
-    assert "모양과 모습(퍼짐·옅기·빛)" in intro and "기록" in intro and "고칠 수 있어요" in intro
-    assert p.data["changes"][0]["version"] == "0.8.0"
+    # G73-r(0.8.1): 참여자가 쓰지 않은 차원어를 보기로 내지 않는다(원칙 3)
+    assert intro == ("떠올리신 그것이 어떤 모습인지 한 번 더 글로 적어 주세요. 적어 주신 글은 물체의 모양과 모습을 만드는 데 "
+                     "쓰이고, 기록으로 남아요. 글로 정해진 모습은 다음 화면에서 직접 확인하고 고칠 수 있어요.")
+    assert not re.search(r"퍼짐|옅기|짙기|빛|투명|밀도", intro)
+    assert [c["version"] for c in p.data["changes"][:2]] == ["0.8.1", "0.8.0"]
+    ch = p.data["changes"][0]
+    assert ch["status"] == "draft" and "G73-r" in ch["source"] and "원칙 3" in ch["reason"]
 
 
 # ── 켜짐: 갈래별 흐름 ────────────────────────────────────────────────────────

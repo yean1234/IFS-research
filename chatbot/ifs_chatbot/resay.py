@@ -22,7 +22,7 @@ from .scene_builder import normalize_confirmed
 from .scene_builder_v1 import Doc
 from .scene_builder_v2 import SceneSpecBuilderV2
 
-RESAY_MAPPING_VERSION = "resay-mapping/0.1.0"
+RESAY_MAPPING_VERSION = "resay-mapping/0.2.0"
 BRANCHES = ("solid", "mist", "light", "flame", "blocked", "none")
 _PRED_TAGS = {"VA", "VV", "MAG", "XR"}
 _FORM_POSITIONS = ("head", "simile", "noun_modifier")
@@ -115,8 +115,8 @@ class ResayMapper:
             w = basis[0]
             values["form.type"] = self._record("mist", [w["charSpan"]], [w["ko"]],
                                                [f"resay.branch.mist({w['ko']})>form.type:mist"], "resay_branch")
-        self._density(doc, context, mediators, branch, values, dropped)
-        self._visibility(doc, context, values, dropped)
+        self._density(doc, context, mediators, branch, values, dropped, not_read)
+        self._visibility(doc, context, values, dropped, not_read)
         if branch == "light" and values.get("material.emission") is None:
             w = basis[0]
             implied = self.values["branches"]["light"]["impliedEmission"]
@@ -285,22 +285,59 @@ class ResayMapper:
             else:
                 not_read.append({"path": path, "charSpans": spans, "reason": "not_allowed_slot"})
 
-    def _negated_pred(self, doc: Doc, k: int) -> bool:
-        """용언·어근 k가 부정되었나: 바로 앞 '안'(MAG), 또는 같은 어절의 '-지' 뒤에 오는 '않'·'못'(VX)."""
+    def _negators(self, doc: Doc, k: int) -> list[int]:
+        """용언·어근 k를 부정하는 표지의 토큰 위치(글 차례). 범위는 k에 걸리는 것만 센다(CP13 지적 1).
+        - 앞 부정: k 바로 앞 '안'·'못'(MAG, 같은 문장). 다른 용언 앞의 '안'은 그 용언의 것이다.
+        - 뒤 부정: k와 같은 어절의 '-지'(EC) (+ 보조사 JX) 뒤 '않'·'못'(VX). 그 '않'에 다시 '-지 않'이 붙으면
+          ('보이지 않지는 않아요') 바깥 부정으로 또 센다.
+        - 바깥 부정: 부정 사슬 끝 어절이 관형형(ETM) + '것'(NNB) (+ 격조사·보조사) + '아니'(VCN)('보이는 게 아니에요').
+        다른 절('짙지 않고 안 보여요')의 부정은 그 절 용언에만 걸린다. 극성은 _polarity: 표지 0개 = 부정 없음,
+        1개 = 부정, 2개 이상 = 이중 부정(홀짝으로 뜻을 정하지 않는다)."""
         toks = doc.toks
+        out: list[int] = []
         if k > 0 and toks[k - 1].form in ("안", "못") and toks[k - 1].base_tag == "MAG" and doc.sent[k - 1] == doc.sent[k]:
-            return True
-        m = k + 1
-        while m < len(toks) and doc.eoj[m] == doc.eoj[k]:
-            if toks[m].form == "지" and toks[m].base_tag == "EC":
-                n = m + 1
-                while n < len(toks) and toks[n].base_tag == "JX":
-                    n += 1
-                return n < len(toks) and toks[n].form in ("않", "못") and toks[n].base_tag in ("VX", "MAG")
+            out.append(k - 1)
+        p = k
+        while True:                                     # 뒤 부정 사슬: 용언 → -지 → 않 → -지 → 않 …
+            nxt = None
+            m = p + 1
+            while m < len(toks) and doc.eoj[m] == doc.eoj[p]:
+                if toks[m].form == "지" and toks[m].base_tag == "EC":
+                    n = m + 1
+                    while n < len(toks) and toks[n].base_tag == "JX":
+                        n += 1
+                    if n < len(toks) and toks[n].form in ("않", "못") and toks[n].base_tag in ("VX", "MAG"):
+                        nxt = n
+                    break
+                if toks[m].base_tag in ("EC", "ETM", "EF", "ETN"):
+                    break                               # 어미에서 어절의 용언이 끝난다(다음 용언의 '-지'는 그 용언 것)
+                m += 1
+            if nxt is None:
+                break
+            out.append(nxt)
+            p = nxt
+        m = p + 1                                       # 바깥 부정: -ㄴ 것이 아니다
+        while m < len(toks) and doc.eoj[m] == doc.eoj[p] and toks[m].base_tag != "ETM":
+            if toks[m].base_tag in ("EC", "EF", "ETN"):
+                return out
             m += 1
-        return False
+        if m < len(toks) and toks[m].base_tag == "ETM" and doc.eoj[m] == doc.eoj[p]:
+            n = m + 1
+            if n < len(toks) and toks[n].form in ("것", "거") and toks[n].base_tag == "NNB":
+                n += 1
+                while n < len(toks) and toks[n].base_tag in ("JKS", "JKC", "JX"):
+                    n += 1
+                if n < len(toks) and toks[n].form == "아니" and toks[n].base_tag == "VCN" and doc.sent[n] == doc.sent[k]:
+                    out.append(n)
+        return out
 
-    def _density(self, doc: Doc, context: set, mediators: set, branch: str, values: dict, dropped: list) -> None:
+    def _polarity(self, doc: Doc, k: int) -> str:
+        """plain(부정 없음) | negated(표지 1개) | double_negation(2개 이상: 규칙이 뜻을 확정하지 못함 → 값을 채우지 않는다)."""
+        n = len(self._negators(doc, k))
+        return "plain" if n == 0 else ("negated" if n == 1 else "double_negation")
+
+    def _density(self, doc: Doc, context: set, mediators: set, branch: str, values: dict, dropped: list,
+                 not_read: list) -> None:
         d = self.values["density"]
         toks, norm = doc.toks, doc.text
         found = False
@@ -320,13 +357,18 @@ class ResayMapper:
                 if toks[m].base_tag == "MAG" and toks[m].form in self.density_mods:
                     mod, mod_k = self.density_mods[toks[m].form], m
                     break
-            neg = self._negated_pred(doc, k)
-            key = level + ("+negated" if neg else (f"+{mod}" if mod else ""))
+            pol = self._polarity(doc, k)
+            key = level + ("+negated" if pol == "negated" else (f"+{mod}" if mod else ""))
             s0 = toks[mod_k].start if mod_k is not None else e_span[0]
             span = [s0, e_span[1]]
             ko = norm[span[0]:span[1]]
             if branch != "mist":
                 dropped.append({"ko": ko, "charSpan": span, "reason": "branch_not_mist", "kind": "density"})
+                continue
+            if pol == "double_negation":                # 원칙 2: 말한 뜻을 규칙이 확정할 수 없으면 비운다
+                negs = self._negators(doc, k)           # 글자 위치: 앞 '안'부터 마지막 부정 표지까지
+                not_read.append({"path": d["path"], "reason": "double_negation",
+                                 "charSpans": [[min(span[0], toks[negs[0]].start), max(span[1], toks[negs[-1]].end)]]})
                 continue
             if found:
                 dropped.append({"ko": ko, "charSpan": span, "reason": "later_mention", "kind": "density"})
@@ -335,17 +377,25 @@ class ResayMapper:
             v = d["values"][key]
             values[d["path"]] = self._record(v, [span], [ko], [f"resay.density.{key}({ko})>{d['path']}:{v}"], "resay_rule")
 
-    def _visibility(self, doc: Doc, context: set, values: dict, dropped: list) -> None:
+    def _visibility(self, doc: Doc, context: set, values: dict, dropped: list, not_read: list) -> None:
         rule = self.values["visibility"]["rules"][0]
         path = self.values["visibility"]["path"]
         toks, norm = doc.toks, doc.text
         for k, t in enumerate(toks):
-            if not (t.form == "보이" and t.base_tag == "VV") or doc.sent[k] in context or not self._negated_pred(doc, k):
+            if not (t.form == "보이" and t.base_tag == "VV") or doc.sent[k] in context:
                 continue
-            a = k - 1 if k > 0 and toks[k - 1].form == "안" and toks[k - 1].base_tag == "MAG" else k
+            negs = self._negators(doc, k)
+            if not negs:
+                continue
+            if len(negs) > 1:                           # 이중 부정('안 보이지는 않아요'): 값을 채우지 않는다(원칙 2)
+                s = toks[min(k, negs[0])].start         # 글자 위치: 앞 '안'부터 마지막 부정 표지까지
+                e = toks[max(k, negs[-1])].end
+                not_read.append({"path": path, "charSpans": [[s, e]], "reason": "double_negation"})
+                continue
+            a = k - 1 if negs[0] < k else k
             s = toks[a].start
             e = toks[k].end
-            m = k + 1                                   # '-지 않는'까지 원문 위치에 넣는다
+            m = k + 1                                   # '-지 않'까지 원문 위치에 넣는다
             while m < len(toks) and doc.eoj[m] <= doc.eoj[k] + 1 and toks[m].base_tag in ("EC", "JX", "VX", "ETM", "EF"):
                 e = toks[m].end
                 if toks[m].base_tag == "VX":

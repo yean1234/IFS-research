@@ -25,7 +25,7 @@ from common import CHATBOT  # noqa: E402
 from wordnet_filter import WordNetFilter  # noqa: E402
 
 sys.path.insert(0, str(CHATBOT))
-RESAY_PROMPT_VERSION = "gen3d-resay-prompt/0.1.0"
+RESAY_PROMPT_VERSION = "gen3d-resay-prompt/0.2.0"
 FILTER_PATH = CHATBOT.parent / "shared" / "lexicon" / "resay_prompt_filter.v0.json"
 _FORM_POSITIONS = ("head", "simile", "noun_modifier")
 
@@ -129,11 +129,10 @@ def resay_prompts(text: str, mapping: dict, *, bilingual: BilingualDict | None, 
         accepted_bi.append({"i": i, "j": jx, "ko": w["ko"], "span": list(w["charSpan"]), "pos": w["position"],
                             "senses": [(p["en"], p["synset"]) for p in passing], "dictEntryId": entry["id"]})
 
-    hand_head = any(a["e"]["pos"] == "noun" and a["e"]["slot"] == "shape_noun" and a["pos"] == "head"
-                    for a in core["accepted"])
-    bi_head = any(a["pos"] == "head" for a in accepted_bi)
-    if unresolved_heads and not (hand_head or bi_head):
-        return _blocked(base, "unjudged_head_noun", unresolved_heads)   # fail closed: 판정 못 한 중심 명사를 기본 낱말로 바꾸지 않음
+    # G73-j fail closed: 판정 못 한 중심 명사가 하나라도 있으면 다른 중심 명사(손 사전·대역 사전)가 잡혀도 막는다.
+    # 판정 못 한 낱말을 빼고 남은 낱말로 만들면 참여자가 말한 사물이 아닌 것을 만든다(CP13 지적 2).
+    if unresolved_heads:
+        return _blocked(base, "unjudged_head_noun", unresolved_heads)
 
     n_variants = max([len(a["senses"]) for a in accepted_bi] or [1])
     out_prompts = []

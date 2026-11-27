@@ -90,6 +90,45 @@ def test_density_words(m, text, density):
     assert r["branch"] == "mist" and r["values"]["mist.density"]["value"] == density
 
 
+# CP13 지적 1: 부정은 범위(어느 용언에 걸리나)와 극성(표지 개수)으로 본다. 이중 부정은 값을 채우지 않고 notRead에 사유를 남긴다
+@pytest.mark.parametrize("text,expect", [
+    # 단일 부정
+    ("보이지 않는 안개", {"form.type": "mist", "material.opacity": 0.15}),
+    ("안 보이는 안개", {"form.type": "mist", "material.opacity": 0.15}),
+    ("빽빽하지 않은 연기", {"form.type": "mist", "mist.density": 0.35}),
+    ("짙은 게 아닌 안개", {"form.type": "mist", "mist.density": 0.35}),          # 바깥 부정(-ㄴ 것이 아니다)
+    # 부정이 없거나 다른 절에 있음: 부정은 그 절 용언에만 걸린다
+    ("안 보이고 짙은 안개", {"form.type": "mist", "mist.density": 0.8, "material.opacity": 0.15}),
+    ("짙지 않은 안개가 보여요", {"form.type": "mist", "mist.density": 0.35}),
+    ("안 보이는 짙은 안개", {"form.type": "mist", "mist.density": 0.8, "material.opacity": 0.15}),
+    # 이중 부정: 그 값만 비움
+    ("짙지 않지는 않은 안개", {"form.type": "mist"}),
+    ("안 짙지는 않은 안개", {"form.type": "mist"}),
+    ("안 보이는 게 아닌 안개", {"form.type": "mist"}),
+    ("안 보이지는 않는 짙은 안개", {"form.type": "mist", "mist.density": 0.8}),
+    ("짙지 않고 안 보이지도 않는 안개", {"form.type": "mist", "mist.density": 0.35}),
+])
+def test_negation_scope_and_polarity(m, text, expect):
+    r = m.map(text)
+    assert r["branch"] == "mist" and vals(r) == expect, text
+
+
+@pytest.mark.parametrize("text,path,ko", [
+    ("안개가 안 보이지는 않아요", "material.opacity", "안 보이지는 않"),
+    ("안개가 보이지 않지는 않아요", "material.opacity", "보이지 않지는 않"),
+    ("안 보이지는 않는 짙은 안개", "material.opacity", "안 보이지는 않"),
+    ("짙지 않지는 않은 안개", "mist.density", "짙지 않지는 않"),
+    ("안 짙지는 않은 안개", "mist.density", "안 짙지는 않"),
+])
+def test_double_negation_leaves_value_empty_with_reason(m, text, path, ko):
+    r = m.map(text)
+    assert r["values"][path] is None                          # Codex 재현: 예전에는 opacity 0.15
+    (nr,) = [x for x in r["notRead"] if x["reason"] == "double_negation"]
+    assert nr["path"] == path and set(nr) == {"path", "charSpans", "reason"}
+    norm = normalize_confirmed(text)
+    assert [norm[s:e] for s, e in nr["charSpans"]] == [ko]
+
+
 def test_density_outside_mist_is_dropped(m):
     r = m.map("빽빽한 덩어리가 있어요")
     assert r["branch"] == "solid" and r["values"]["mist.density"] is None

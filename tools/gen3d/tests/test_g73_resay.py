@@ -186,6 +186,24 @@ def test_unjudged_head_noun_fails_closed(mapper, bilingual, wordnet, reason):
     assert g.calls == []
 
 
+@pytest.mark.parametrize("text", ["미지사물, 둥근 덩어리", "미지사물이 있고 둥근 덩어리도 있어요", "둥근 덩어리와 미지사물",
+                                  "미지사물과 조약돌"])
+def test_any_unjudged_head_blocks_even_with_other_head(mapper, text):
+    """CP13 지적 2(G73-j): 판정 못 한 중심 명사가 하나라도 있으면 다른 중심 명사(손 사전·대역 사전)가 잡혀도 막는다."""
+    g = FakeGenerator()
+    r = pipe(mapper).run(text, generator=g)
+    assert r["branch"] == "solid" and r["prompt"]["status"] == "blocked"
+    assert r["prompt"]["blockReason"] == "unjudged_head_noun"
+    assert r["prompt"]["blockDetail"] == "not_in_bilingual_dict:미지사물" and r["prompt"]["prompts"] == []
+    assert g.calls == [] and r["generatorCalls"] == 0
+
+
+def test_unjudged_simile_word_is_only_dropped(mapper):
+    """G73-j: 비유 원천·꾸밈 낱말은 그 낱말만 버린다(중심 명사가 판정되면 생성)."""
+    r = pipe(mapper).run("미지사물 같은 덩어리", generator=FakeGenerator())
+    assert r["prompt"]["status"] == "ok" and r["prompt"]["prompts"][0]["text"].split(",")[0] == "a single lump"
+
+
 def test_two_senses_make_one_prompt_per_sense(mapper):
     g = FakeGenerator()
     r = pipe(mapper).run("종이 있어요", generator=g)
@@ -322,6 +340,35 @@ def test_wordnet_unavailable_judges_nothing():
     wn = WordNetFilter(FILT, None, "nltk_not_installed")
     assert not wn.available and wn.judge("pebble")["verdict"] == "unjudgeable"
     assert wn.info() == {"available": False, "reason": "nltk_not_installed", "senseScope": "dominant"}
+
+
+def test_wordnet_data_sha256_for_zip_and_folder(tmp_path):
+    """CP13 지적 3: WordNet이 폴더로 설치돼도 내용 해시를 남긴다(파일을 상대 경로 차례로 정렬)."""
+    import hashlib
+
+    from wordnet_filter import data_sha256
+    z = tmp_path / "wordnet.zip"
+    z.write_bytes(b"zip-bytes")
+    assert data_sha256(z) == hashlib.sha256(b"zip-bytes").hexdigest()
+    assert data_sha256(tmp_path / "none") is None
+
+    def make(root, order, extra=None):
+        for name in order:
+            (root / name).parent.mkdir(parents=True, exist_ok=True)
+            (root / name).write_bytes({"data.noun": b"n1", "index.noun": b"i1", "sub/lexnames": b"l1"}[name])
+        if extra:
+            (root / extra[0]).write_bytes(extra[1])
+        return root
+
+    a = make(tmp_path / "a" / "wordnet", ["data.noun", "index.noun", "sub/lexnames"])
+    b = make(tmp_path / "b" / "wordnet", ["sub/lexnames", "index.noun", "data.noun"], (".DS_Store", b"x"))
+    ha = data_sha256(a)
+    assert ha and len(ha) == 64 and ha == data_sha256(b)          # 위치·만든 차례·숨은 파일과 상관없이 같음
+    (b / "data.noun").write_bytes(b"n2")
+    assert data_sha256(b) != ha                                   # 내용이 다르면 다름(같은 판 표기라도)
+    (b / "data.noun").write_bytes(b"n1")
+    (b / "data.verb").write_bytes(b"v1")
+    assert data_sha256(b) != ha                                   # 파일이 늘어도 다름
 
 
 def test_real_nltk_wordnet_if_present():
