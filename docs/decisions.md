@@ -1113,3 +1113,16 @@ Codex 원문 `docs/codex-reviews/CP12.md`, 프롬프트 `prompts/CP12_prompt.md`
 | 10 (낮음) | 2회·2후보의 근거가 약하다 | 수용 | 설정값으로 두고 실측 뒤 정함(G73-d) |
 
 - 켜기 전에 사람이 할 것: 한국어기초사전 대역어 라이선스·내려받기 형식 확인, Windows PC에서 회당 대기·VRAM·결정성 실측, 교수님께 원칙 1·2 예외 확장 알림.
+
+### CP13a 구현 판정 (2026-11-28, 메인 세션)
+구현 커밋 6bc8184(재진술 매핑 `chatbot/ifs_chatbot/resay.py`, 프롬프트 `tools/gen3d/resay.py`·`bilingual.py`·`wordnet_filter.py`, 표 `resay_values.v0.json`·`resay_prompt_filter.v0.json` 0.1.0 draft). 설정 `[gen3d] resay = false`(어떤 toml에도 켜지 않음). 끈 상태의 G62 `shape_prompt` 출력은 합성 392문장에서 바이트 그대로.
+
+| # | 구현 판단 | 판정 | 이유 |
+|---|---|---|---|
+| G73-i | WordNet 거르개는 **첫 뜻(빈도순)만** 본다(`senseScope = "first"`). D12 원안은 모든 뜻 | 채택(G73-a를 좁힘) | 모든 뜻을 보면 ball·bell·pear·drum·chestnut까지 막혀 대역 사전 경로가 거의 쓰이지 않는다. 사람 닮은 사물은 한·영 차단 목록과 기존 출력 관문(사람·동물)이 막는다. 실측: doll·statue·figurine·snowman·mascot 차단, robot·mask는 영어 목록이 차단 |
+| G73-j | 중심 명사를 판정하지 못하면(사전·WordNet 없음, 뜻 3개 이상) 생성 전체를 막는다. 비유 원천·꾸밈 낱말은 그 낱말만 버린다 | 채택 | fail closed(반박 5). 꾸밈 낱말 처리는 G62와 같다 |
+| G73-k | 밀도 덮어쓰기 키 `mist.density`(스펙 슬롯 아님, 수치 초안). 「덜 빽빽」 0.4, 「보이지 않」 → opacity 0.15 | 채택 | G73-c 허용 슬롯. Unity·조절 화면 연결은 CP13b |
+| G73-l | 빛 갈래에서 발광어를 따로 말하지 않으면 `material.emission = glowing`(낱말 뜻에서 온 값, 출처를 따로 적음) | 채택 | G38 선례. 조절 화면에서 참여자가 고친다 |
+
+- 남은 것: 프로젝트 venv(chatbot/.venv)에 nltk가 없어 그 안에서는 대역 사전 낱말이 모두 차단된다(안전 쪽). 설치는 켜기 전 사람이 한다. 「공이에요」를 Kiwi가 「공이」로 잘라 형태를 못 잡는 것은 G62부터 있던 문제다.
+- 기존 실패 1건(`test_differentiation::test_committed_single_validation_outputs_are_byte_identical`)은 바꾸기 전에도 실패했다.
