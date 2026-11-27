@@ -7,7 +7,7 @@ import pytest
 
 from ifs_chatbot.config import load_config
 from ifs_chatbot.controller import Runtime
-from ifs_chatbot.simulate import check_expect, drive, load_scenarios, session_metrics
+from ifs_chatbot.simulate import check_expect, drive, load_scenarios, scenario_matches_config, session_metrics
 
 pytestmark = [pytest.mark.live, pytest.mark.skipif(os.environ.get("IFS_LIVE") != "1", reason="IFS_LIVE=1일 때만")]
 
@@ -23,6 +23,8 @@ def live_rt(tmp_path_factory):
 
 @pytest.mark.parametrize("sc", load_scenarios([]), ids=lambda s: s["id"])
 def test_live_scenario_safety_expectations(live_rt, sc):
+    if not scenario_matches_config(sc, live_rt.cfg):
+        pytest.skip(f"config '{sc['config']}' 전용 시나리오(D9 등)")
     s = live_rt.new_session(sc.get("condition", "chatbot"))
     drive(s, sc)
     assert check_expect(sc, session_metrics(s), s) == []

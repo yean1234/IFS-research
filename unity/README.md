@@ -471,7 +471,7 @@ spec마다 참여자 번호를 하나씩 올립니다. 씬 만들기 배치: `-e
 
 | 필드 | 러너가 하는 일 |
 | --- | --- |
-| `formatVersion` | 필수. 아는 버전은 `ifs-selection/0.1`·`ifs-selection/0.2`(둘 다 읽음). 접두어가 `ifs-selection/`이 아니거나 모르는 버전이면 **경고**(확인 화면, `events.csv` `warning`)만 하고 읽는 필드를 확인 |
+| `formatVersion` | 필수. 아는 버전은 `ifs-selection/0.1`·`ifs-selection/0.2`·`ifs-selection/0.3`(모두 읽음, 0.3은 아래 G62 문단). 접두어가 `ifs-selection/`이 아니거나 모르는 버전이면 **경고**(확인 화면, `events.csv` `warning`)만 하고 읽는 필드를 확인 |
 | `specSha256` | 필수(16진 64자, 대소문자 무관). 러너가 읽은 spec 파일 **바이트**의 sha256과 다르면 **시작 거부**(이유 표시). 챗봇은 spec 파일을 LF 바이트로 쓰고 그 파일의 해시를 적으므로, 챗봇이 저장한 spec 파일을 그대로 넘기면 같습니다. 손으로 만든 선택 파일은 실험 PC의 spec 파일 바이트로 계산해야 합니다(git autocrlf로 체크아웃한 예시 spec은 CRLF) |
 | `spec.sha256Basis` | 있으면 `file`이어야 함. 그 밖의 값(`none`, 예전 챗봇의 `serialized`)은 `specSha256`이 파일 바이트 해시가 아니라는 뜻이라 **시작 거부**(무엇이 문제인지 표시). 없으면 파일 기준으로 봄(러너 쪽 합성 파일) — G26 |
 | `runnerReady` · `runnerBlockers` | `runnerReady: false`면 챗봇이 적은 이유를 붙여 **시작 거부**(spec 파일이 저장되지 않은 실행 등). 없으면 확인하지 않음 — G26 |
@@ -485,6 +485,8 @@ spec마다 참여자 번호를 하나씩 올립니다. 씬 만들기 배치: `-e
 모양어 판정(`ShapeMapping.ExtractWords`)은 `_unmapped` 기록 가운데 reason `excluded_shape`(제외 네 범주)와 `no_asset`(동물, G51)을 모양어에서 뺍니다(`ShapeMapping.UnrenderedReasons`, 챗봇 `candidates.UNRENDERED_REASONS`와 같음 — pytest가 C# 원문 대조). 그리지 않기로 한 낱말이 막은 모양어가 모양 모형을 끌어오지 않게 하는 것입니다.
 
 덮어쓰기는 형상을 만들 때 `SceneLoader.Load(spec, 덮어쓰기)`로 **한 번** 얹고(소유감 변형본과 같은 경로, 참여자 조정 기록을 타지 않음) 조건 단계 동안 바뀌지 않습니다(VR 안에서 속성을 고치는 입력은 없음 — G11). 로드한 뒤 덮어쓰기 키마다 그려지는 해석값(모양 모형은 그려지는 모형)이 덮어쓰기 값과 같은지 확인하고, 다른 키가 하나라도 있으면 시작을 거부합니다. 확인 뒤 시작 전에 선택 파일이 바뀌면 거부합니다(spec과 같은 규칙). 시작하면 `events.csv`에 `selection` 한 줄(`file=…;none=0|1;candidate=…;skipped=0|1;colorChanged=0|1|(빈칸);applied=<키 수>`, 경고가 아님)을 남깁니다. manifest `selection`에는 `skipped`·`colorChanged`도 들어갑니다(기록 형식은 `ifs-placement/0.2` 그대로, 키만 더함). 합성 예시·자동 시행 결과: `docs/validation/runner-selection/`.
+
+**생성 형태 메시(G62, 선택 파일 `ifs-selection/0.3`).** 챗봇 `[gen3d] enabled`(설정 `config/v4-gen3d.toml`)일 때만 0.3을 씁니다. 러너는 0.1·0.2·0.3을 모두 읽습니다. 0.3에서 더한 것: 출처 값 `generated_chosen`(0.1·0.2 파일에 있으면 거부), `form.asset`(참여자가 고른 생성 메시 — `assetId`·`glb`(선택 파일 기준 상대 파일 이름)·`glbSha256`·`pipeline`·`seed`·`models`·`promptText`·`covariates`. 0.1·0.2 파일에 있으면 거부, `sources.form.type`이 `generated_chosen`인 것과 맞지 않으면 거부), `defaultFormSource`·`selection.acceptedDefault`(그 세션의 기본 형태 후보와 그대로 확정했는지 — manifest `selection`에 옮김). `form.asset`이 있으면 로드한 절차 모형의 메시만 GLB 메시로 바꿉니다(`SceneLoader.ApplyFormAsset`). GLB는 `GlbMeshReader`(순수 C#, 위치·삼각형만, glTFast를 쓰지 않음 — 머티리얼을 버리므로 헤드셋 빌드의 glTFast 셰이더 문제를 이 경로는 겪지 않음)로 동기 읽기합니다. 크기는 모델이 정하지 않습니다: 읽은 정점의 경계 상자로 다시 재서 같은 `layout.size`·자세·축 비율에서 절차 모형의 가장 긴 변과 같게(±1%, 넘으면 절차 모형으로 되돌림) 균일 배율을 주고, 중심을 절차 모형의 중심에 맞춥니다(회전 없음). 색·재질·발광·그림자는 절차 모형이 만든 머티리얼(스펙 값)을 그대로 입히고 정점 변위만 0입니다. GLB가 없거나 sha256이 다르거나 읽지 못하거나 형태가 mist면 **시작은 하고** 절차 모형을 그대로 쓰며, 확인 화면 경고와 manifest 맨 끝 `formAsset{status: fallback_procedural, fallbackReason …}`·`events.csv` `form_asset`에 남깁니다. 적용했으면 `formAsset`에 `renderedLongestEdgeM`·`proceduralLongestEdgeM`·`longestEdgeRelError`·`renderedSizeM`·`covariates`를 남깁니다(선택 파일에 `form.asset`이 없으면 manifest에 키 없음 — 이전 기록 바이트 그대로). 남은 일: 헤드셋에서 큰 생성 메시(삼각형 수십만)의 성능·단순화, `Experimental/Gen3D` 보기 로더의 glTFast 셰이더 포함 설정(docs/gen3d-feasibility.md).
 
 물체 시작 자리는 spec의 `layout.distance`·`verticalOffset` 대신 `startDistanceM`·`startHeightM`을 씁니다(두 조건이 같은 자리에서 시작해야 하므로). 크기·모양·색·움직임은 spec 그대로입니다. 시작 자리는 참여자가 말한 속성이 아니라 실험 설정이라는 것을 manifest `space.startPlacementSource: "experiment_config"`로 남깁니다. spec의 `layout.distance`나 `verticalOffset`에 값이 있었는데 이렇게 무시하면, 확인 화면 경고와 `events.csv`의 `warning` 한 줄(detail이 `layout_ignored`로 시작)을 남기고 manifest `flags.layoutIgnored`를 true로 둡니다.
 
@@ -507,11 +509,13 @@ spec마다 참여자 번호를 하나씩 올립니다. 씬 만들기 배치: `-e
 
 - 문항별 범위 `min`·`max`(정수, 없으면 1–7, 0 ≤ min < max ≤ 100). `anchors` 숫자 키도 이 범위 안이어야 합니다. 구별 프로파일의 0–10 문항(M1p·M2·M3, `docs/rq-v4-differentiation-measure.md`)을 받기 위한 것입니다. D8에서는 기능과 테스트만 넣었고, 2026-11-25 G59에서 scaleA 파일에 **M2 하나만** 실제로 넣었습니다(아래 scaleA 절. 기본 파일에는 0–10 문항이 없음, 주 척도는 사람이 정할 것). 실험자 키보드는 두 자리(10)까지 이어 치고, 참여자 컨트롤러는 가운데 값(0–10이면 5)에서 시작해 범위 안에서 한 칸씩, 헤드셋 판의 숫자 줄도 범위만큼(칸이 7개보다 많으면 줄 전체가 7칸 너비가 되게 칸을 좁힘). `ratings.csv` 형식은 그대로(값만 범위대로).
 - `optionalWhen`(pre | post | check 또는 배열): 설정 `askOptionalItems`를 켰을 때만 그 단계에서도 묻습니다. 평정 문항이 아닌 키(when 없음)에 `min`·`max`·`optionalWhen`을 쓰면 오류.
-- **두 평정 문항(G13)**: 모습 일치 `appearance_match`("이 물체의 모습은 내가 떠올린 것과 비슷하다")와 대표성 `representativeness`("이 물체는 내가 떠올린 그것을 나타낸다", G57에서 "형상" → "물체"), 1–7, `status: draft`, `source`는 "docs/prompts/prototype-v4-build.md G13, 2026-11-22 …". 두 파일 모두 `when: post`, `optionalWhen: pre` — 흐름상 사전 측정은 데스크톱에서 하므로(G11) 헤드셋에서는 기본 **사후만** 묻고, 사전에도 물으려면 `askOptionalItems`를 켭니다. 기본 파일은 `own` 바로 뒤, scaleA는 사후 끝(S7 뒤). 기존 "내 것 같다"(`own`, scaleA `S4`)는 지우지 않았고 `disabledItems`로 끌 수 있습니다. 하한 점검 기준(대표성)의 값은 정하지 않았습니다(⚠ 사람이 정할 것).
+- **두 평정 문항(G13)**: 모습 일치 `appearance_match`("이 물체의 모습은 내가 떠올린 모습과 비슷하다")와 대표성 `representativeness`("이 물체는 그 느낌을 나타낸다", G57에서 "형상" → "물체", G65·G66에서 대상 호칭을 바꿈), 1–7, `status: draft`, `source`는 "docs/prompts/prototype-v4-build.md G13, 2026-11-22 …". 두 파일 모두 `when: post`, `optionalWhen: pre` — 흐름상 사전 측정은 데스크톱에서 하므로(G11) 헤드셋에서는 기본 **사후만** 묻고, 사전에도 물으려면 `askOptionalItems`를 켭니다. 기본 파일은 `own` 바로 뒤, scaleA는 사후 끝(S7 뒤). 기존 "내 것 같다"(`own`, scaleA `S4`)는 지우지 않았고 `disabledItems`로 끌 수 있습니다. 하한 점검 기준(대표성)의 값은 정하지 않았습니다(⚠ 사람이 정할 것).
 
 **두 번째 문구 파일 `placement_task.scaleA.v0.json`**(선택, Setup에서 고름): `docs/rq-v4-questionnaire-draft.md` 3절의 주 척도안 A 7문항(사전·사후, 7점 기준점 모두 이름)과 보조 문항 S4(사전)·S5·S6(사전·사후)·S7(사후)·S8(사전, 1·4·7 양극), 공통 지시문과 사후 덧붙임 문장. **24개 모두 `status: draft`**, `source`에 초안 문서의 절과 문항 ID(두 평정 문항 G13은 지시문 G13). 순서는 초안 3.7절(사전 A1–A7·S5·S6·S4·S8 = 11문항, 사후 A1–A7·S5·S6·S7 = 10문항)에 사후 끝 G13 두 문항(= 사후 12문항, version 0.1-scaleA → 0.2-scaleA). S3(겹침 그림 IOS)은 그림 선택지가 필요해 뺐고, S1(심리 거리)은 이번 묶음에서 함께 뺐습니다(S1 자체는 글 양극 척도라 anchors 1·4·7로 넣을 수 있음). S2는 초안에서도 선택 문항이라 넣지 않았습니다. 단계 안내 문구(intro 등)는 기본 파일과 같습니다. 기본 문구 파일은 바뀌지 않았고 기본 선택도 그대로입니다.
 
-scaleA 0.6-scaleA(0.5-scaleA 2026-11-25 G59, 0.5-scaleA 기준 키 29개, 0.6-scaleA 2026-11-26 G60에서 `want_move` 키 하나를 뺌, 모두 draft): 사전·사후 끝에 구별 프로파일 초안(`docs/rq-v4-differentiation-measure.md` 3.1절) 문구 그대로 **M2**("지금 나는 나 자신을 이것과는 별개로 경험한다.", 0–10, 기준점 0 전혀 아니다 · 10 매우 그렇다 — 설문 초안 3.2절 B′용 11점)와 **P1**("지금 나와 이것의 관계는 어느 쪽에 더 가깝나요?", 1 이것이 곧 나다 · 4 반반이다 · 7 이것은 나에게 있는 것이지, 나 전체는 아니다), 그 뒤 맨 끝에 `distance_feel`, 점검에 `place_fit`(이 파일에는 `placed_by_me`가 없음 — 조작 확인은 사후 S7). 순서: 사전 A1–A7·S5·S6·S4·S8·M2·P1·distance_feel = 14문항, 사후 A1–A7·S5·S6·S7·appearance_match·representativeness·M2·P1·distance_feel = 15문항, 점검 1문항(자동 시행 평정 30개). 점검 문항이 생겨 공통 지시문(`items_instruction`)이 점검 앞에도 한 번 보입니다(점검용 덧붙임 문장 `items_instruction_check`는 없음).
+scaleA 0.6-scaleA(0.5-scaleA 2026-11-25 G59, 0.5-scaleA 기준 키 29개, 0.6-scaleA 2026-11-26 G60에서 `want_move` 키 하나를 뺌, 모두 draft): 사전·사후 끝에 구별 프로파일 초안(`docs/rq-v4-differentiation-measure.md` 3.1절) 문구 그대로 **M2**("지금 나는 나 자신을 이것과는 별개로 경험한다.", 0–10, 기준점 0 전혀 아니다 · 10 매우 그렇다 — 설문 초안 3.2절 B′용 11점)와 **P1**("지금 나와 이것의 관계는 어느 쪽에 더 가깝나요?", 1 그 느낌이 곧 나다 · 4 반반이다 · 7 그 느낌은 나에게 있는 것이지, 나 전체는 아니다), 그 뒤 맨 끝에 `distance_feel`, 점검에 `place_fit`(이 파일에는 `placed_by_me`가 없음 — 조작 확인은 사후 S7). 순서: 사전 A1–A7·S5·S6·S4·S8·M2·P1·distance_feel = 14문항, 사후 A1–A7·S5·S6·S7·appearance_match·representativeness·M2·P1·distance_feel = 15문항, 점검 1문항(자동 시행 평정 30개). 점검 문항이 생겨 공통 지시문(`items_instruction`)이 점검 앞에도 한 번 보입니다(점검용 덧붙임 문장 `items_instruction_check`는 없음).
+
+scaleA 0.7-scaleA·기본 파일 0.7(2026-11-27 G65·G66, D10 가독성, 모두 draft): 평정 문항의 대상을 둘로 나눠 부릅니다. 내적 경험과의 관계를 묻는 문항(A1–A7, S5, S6, S8, M2, P1, `distance_feel`, 기본 파일의 `want_to_know`·`withdraw_attention`·`distance_feel`)과 `representativeness`는 "그 느낌"(면담 처음에 떠올린 일을 떠올렸을 때 든 느낌), 물체·자리를 묻는 문항(S7, `placed_by_me`, `place_fit`)과 단계 안내는 "이것"(눈앞의 물체) 그대로입니다. scaleA 공통 지시문 `items_instruction`은 웹 사전 측정(`shared/protocol/selection_protocol.v0.json` 0.6.0)과 같은 문장에 "'이것'과 '이 물체'는 조금 전 눈앞에 있던 물체예요"만 헤드셋에 맞췄습니다(평정 중 물체를 숨겨도 맞는 표현). A1–A7·G13 두 문항은 웹과 같은 글입니다. 키·순서·기준점은 그대로이고, S4·`own`("내 것")과 P1 기준점의 "이것"은 바꾸지 않았습니다. 기본 파일에는 공통 지시문이 없어 "그 느낌"을 화면에서 알리지 않습니다(⚠).
 
 ### 기록 (계약 `ifs-placement/0.2`, 참여자 데이터 — git 밖)
 
@@ -586,6 +590,9 @@ scaleA 0.6-scaleA(0.5-scaleA 2026-11-25 G59, 0.5-scaleA 기준 키 29개, 0.6-sc
 # 참여자 판(배치모드): unity_panel_*.png, unity_scene_item.png, unity_metrics.json
 "C:\Program Files\Unity\Hub\Editor\6000.0.85f2\Editor\Unity.exe" -batchmode -projectPath <unity 폴더> \
   -executeMethod IFS.SceneSpec.EditorTools.PlacementUiCapture.CapturePanelsBatch -outDir <폴더> -logFile <로그>
+# G63 헤드셋 UI 전후(배치모드): <폴더>/off·on/g63_*.png + unity_metrics.json(판 아래 각·폭·대비)
+"C:\Program Files\Unity\Hub\Editor\6000.0.85f2\Editor\Unity.exe" -batchmode -projectPath <unity 폴더> \
+  -executeMethod IFS.SceneSpec.EditorTools.PlacementUiCapture.CaptureG63Batch -outDir <폴더> -logFile <로그>
 # 실험자 화면(IMGUI는 Play의 Game 창에서만 그려져 배치모드가 아니라 에디터 창으로 실행, 끝나면 스스로 닫힘): unity_gui_*.png
 "C:\Program Files\Unity\Hub\Editor\6000.0.85f2\Editor\Unity.exe" -projectPath <unity 폴더> \
   -executeMethod IFS.SceneSpec.EditorTools.PlacementUiCapture.CaptureGuiInteractive -outDir <폴더> -logFile <로그>
@@ -594,6 +601,29 @@ scaleA 0.6-scaleA(0.5-scaleA 2026-11-25 G59, 0.5-scaleA 기준 키 29개, 0.6-sc
 두 번째 명령은 Play를 하므로 Unity가 `ProjectSettings/QualitySettings.asset`·`Assets/XR/Settings/OpenXRPackageSettings.asset`을 다시 쓸 수 있습니다(`git checkout -- <파일>`로 되돌림). 화면에 로컬 절대 경로가 찍히지 않게 spec 목록 폴더는 프로젝트 기준 상대 경로, 기록 폴더 표시는 자리표시로 바꿔 찍습니다(캡처 때만). 문서용 PNG는 폭 1280 이하·256색으로 줄였습니다.
 
 참여자 판에 입력 방법 안내(예: "썸스틱 좌우로 고르고 트리거로 확정")는 없습니다. 참여자에게 보이는 새 문구가 되므로 만들지 않았습니다(⚠ 사람이 정할 것 — 넣는다면 문구 파일에 `status: draft`로).
+
+### 헤드셋 UI 개선 (2026-11-27, 결정 G63 — 플래그, 기본 꺼짐)
+
+근거는 `research_notes/VR UI 가독성 기준/vr_ui_guidelines.md`입니다. 플래그는 `PlacementConfig`에 있고 **기본은 모두 꺼짐**입니다. 꺼져 있으면 화면·기록이 G63 전과 바이트 단위로 같습니다(G52). 하나라도 켜면 manifest `config` 맨 끝에 `ui*`·`hidePanelInDistancePhases` 키가 붙습니다. 두 조건이 같이 쓰는 판·평정 UI·멈춤 거리에는 조건과 상관없이 똑같이 적용됩니다. 문구 글자, 문항·단계 순서, 평정 방식(점 수·앵커·확정 방식), 물체 겉모습·시작 자리, 공간 B/E/F는 바꾸지 않습니다.
+
+| 플래그 | 켜면 | 켰을 때 값(기본 자리: 정면 2.0 m, 중심 0.6 m, 눈 1.6 m) |
+| --- | --- | --- |
+| `uiComfortWrap` | 본문 줄바꿈 20 → 24자. 판 아래 가장자리가 35°를 넘으면 26자까지 넓혀 봅니다. 평정 지시문은 문장 경계에서 쪽을 나눠 실험자 Enter로 넘깁니다(글자는 그대로, events `items_instruction_page`) | 사전 지시문 8줄 39.2° → 4줄 + 3줄(32.8°·31.7°). 사후 지시문 11줄 → 4·4·2줄(32.8° 이하). 직접 배치 + 범위 안내 6줄 35.7° → 26자 5줄 33.9°. 반복 멈춤 지시문 7줄 37.5° → 5줄 33.9° |
+| `uiDarkPanel` | 흰 판(렌더 18:1) 대신 어두운 판 #2A2B30 + 글 #E6E6E8. 고른 칸은 글·테두리 #9EC3FF, 바탕 #1F3050. 판은 알베도 검정 + 금속도 1 + 방출이라 조명과 상관없이 렌더 화소가 그 색입니다 | 본문 11.3:1, 고른 칸 글/바탕 7.3:1, 고른 칸 글/판 7.9:1 |
+| `uiRayHover` | 광선이 잡기 판정 구에 닿으면 광선·끝점 색 #4D73B3 → #F2B233, 끝점 3 → 4.5 cm. 잡는 동안 광선 4 → 6 mm. 물체는 그대로 | 직접 배치·연습에서만(광선이 보이는 단계) |
+| `uiHaptics` | 잡기·놓기 0.3·20 ms, 확인·평정 확정·멈춤·재개 0.5·40 ms, 평정 한 칸 0.2·10 ms(주 사용 손 컨트롤러). events `haptic`(`kind;amplitude;duration_ms`, 추가만) | 두 조건 공통 사건(멈춤·재개·평정)은 같은 펄스. 잡기·놓기·배치 확인은 직접 배치에만 있습니다 |
+| `uiRatingConfirmFlash` | 참여자 컨트롤러로 확정한 칸 테두리를 0.4 s 동안 0.012 → 0.02 m로 굵게 보인 뒤 다음 문항. 이 동안 입력은 받지 않습니다. events `rating_confirm_flash` | `rt_ms`는 그대로(확정 순간까지). `participantRatesWithController`가 꺼져 있으면(기본) 쓰이지 않습니다 |
+| `uiNarrowScale` | 기준점 칸 너비 0.22 → 0.20 m(뜻 줄바꿈 4 → 3자) | 7칸 줄 41.6° → 38.5° |
+| `hidePanelInDistancePhases` · `hidePanelReadSeconds`(8) | 조건 단계와 멈춤 거리 단계에서 그 단계 시작 뒤 N초가 지나면 판을 숨깁니다. events `panel_hidden` | **묶음에서도 꺼 둡니다.** 판이 거리 기준점이 되는지는 RQ2 결과변수에 닿아 사람이 정합니다 |
+
+켜는 법:
+
+- **묶음**: 실험자 화면 Setup의 체크 「헤드셋 UI 개선 묶음(G63)」, 코드 `config.ApplyUiBundle()`, 자동 시행 `-uiBundle true`. 위 여섯 개를 켜고 `hidePanelInDistancePhases`는 켜지 않습니다.
+- **낱개**: Inspector(`PlacementRunner` ▸ Config), 자동 시행 `-uiComfortWrap true` 등. 낱개 인자가 `-uiBundle`을 덮어씁니다. 판 숨김은 Setup의 따로 있는 체크 또는 `-hidePanelInDistancePhases true -hidePanelReadSeconds 8`.
+
+**본 실험 권고 설정 묶음(2026-11-27, 설계 뼈대 3절 · G59-8 + G63)**: Setup 맨 위의 「본 실험 권고 설정 켜기」 단추, 코드 `config.ApplyExperimentPreset()`, 자동 시행 `-experimentPreset true`. 공간 B(`neutral`) + `placementAssist`, `practiceInAllConditions`, `checkBeforeStopDistance`, `hideObjectDuringItems`, UI 묶음 (1)–(6), `stopMode loop`(G60-4), `eyeHeightMode relative`(G60-3 — 헤드셋에서는 H 보정을 통과해야 시작, 자동 시행·데스크톱은 `desktop_fixed`)를 켜고, 단추·자동 시행은 문구 파일도 scaleA(`PlacementConfig.ExperimentTaskTextFile`)로 고릅니다(자동 시행에서 `-taskTextFile`을 주면 그것). `hidePanelInDistancePhases`·조건은 건드리지 않습니다. 기본값은 그대로입니다. 테스트 `PlacementExperimentPresetTests`(4개). 실행 순서는 `docs/run-experiment.md`.
+
+남은 것: 반복 멈춤에서 멈춘 동안의 판(지시문 5줄 + 조작 안내 2줄 = 7줄)은 37.5°입니다. 쪽을 넘길 입력이 없어 나누지 못했습니다(20자일 때 40.9°). 평정 문항 판은 나누지 않습니다. scaleA 18문항 가운데 묶음을 켜도 35°를 넘는 판이 8개 남습니다(기준점 뜻이 3줄인 문항 35.9–36.3°, P1 41.0°). 묶음 때문에 나빠진 문항은 없습니다(A7 38.0 → 36.3°, S5·S6·S8·G13 두 문항 36.3 → 34.5°). 문항 판 폭은 40.6–42.3° → 37.6–39.5°입니다. 햅틱 세기·광선 색·판 색은 조사 문서의 제안값이고 헤드셋에서 확인하지 않았습니다. `_EMISSION` 변형이 빌드에서 빠지면 어두운 판은 검게 보입니다(글 대비는 커짐). 전후 캡처: `docs/validation/ui-g63/`(`PlacementUiCapture.CaptureG63Batch`). 테스트: `PlacementUiG63Tests`(dotnet·Unity 15개), `UnityOnly/PlacementUiG63PanelTests`(6개). 2026-11-27 dotnet 563개, Unity 배치모드 EditMode 643개 모두 통과.
 
 ### 한계와 사람이 할 일
 
@@ -677,6 +707,7 @@ Windows 빌드(선택): 메뉴 **IFS ▸ Experiment ▸ Build Placement Experime
 - **빌드**: `PreviewBuild.BuildWebGLPreview`(압축 끔·템플릿·캐싱 끔을 빌드 동안만 바꾸고 되돌림, 출력은 저장소 밖 `../webgl-build/preview`). **2026-11-23 이 PC에는 WebGL 모듈이 없어 빌드하지 못했습니다**(설치에 관리자 확인 필요).
 - **대안 경로**: `PreviewBuild.BuildWindowsPreview` → `IFSPreview.exe -batchmode -ifsPreviewQueue <폴더>`. 폴더 요청마다 PNG를 씁니다(`PreviewQueue`). 에디터 캡처와 24개 spec에서 덮인 화소 수가 같고 평균 색 ΔE00 최대 0.045, 요청 왕복 중앙값 15.2 ms(800×600).
 - 에디터 캡처: `PreviewCapture.Run -specDir … -outDir … [-width 800 -height 600 -backgrounds scene,black,white]`.
+- **생성 형태 후보(G62)**: 챗봇 `v4-gen3d`에서 생성 후보는 그 GLB 메시로 그립니다. WebGL은 페이지 API `setFormAsset({assetId, glbSha256, glbBase64})` → `PreviewBridge.SetFormAssetJson`, 데스크톱 플레이어는 요청의 `formAsset{assetId, glb, glbSha256}` → `PreviewQueue`. 둘 다 `FormAssetPayload`(sha256 확인 + `GlbMeshReader`)와 러너와 같은 `SceneLoader.ApplyFormAsset`(가장 긴 변·스펙 머티리얼)을 씁니다. 그리지 못하면 절차 모형으로 되돌리고 오류를 알려, 챗봇이 그 후보를 뺍니다(절차 메시 모습으로 생성 후보를 보이지 않음). **G62 이전 빌드에는 이 경로가 없으므로 다시 빌드해야 합니다**: `Unity.exe -batchmode -quit -projectPath <unity> -executeMethod IFS.SceneSpec.EditorTools.PreviewBuild.BuildWebGLPreview -logFile <로그>`(WebGL 모듈 필요), 예비 경로는 `…PreviewBuild.BuildWindowsPreview`. 예전 플레이어로 돌리면 챗봇이 적용 확인(`formAsset.status = applied`)을 받지 못해 생성 후보를 모두 뺍니다.
 
 ## 테스트
 

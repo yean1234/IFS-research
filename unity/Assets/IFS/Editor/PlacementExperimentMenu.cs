@@ -14,6 +14,8 @@
 //               [-askOptionalItems true|false] [-disabledItems own,S4] [-dt 0.02]
 //               [-environment neutral|space|nature] [-placementAssist true|false]   (G52, 2026-11-24)
 //               [-checkBeforeStopDistance true|false] [-practiceInAllConditions true|false] -logFile <로그>   (G59, 2026-11-25)
+//               [-uiBundle true] [-uiComfortWrap|-uiDarkPanel|-uiRayHover|-uiHaptics|-uiRatingConfirmFlash|-uiNarrowScale true|false]
+//               [-hidePanelInDistancePhases true|false] [-hidePanelReadSeconds 8] [-participantRatesWithController true|false]   (G63, 2026-11-27)
 //   Windows 빌드: Unity.exe -batchmode -projectPath <unity> -executeMethod IFS.SceneSpec.EditorTools.PlacementExperimentMenu.BuildWindowsBatch -logFile <로그>
 //   (둘 다 -quit 없이 — 끝나면 EditorApplication.Exit(0/1)로 닫는다)
 // 자동 시행은 검증용이다: 합성 입력(PlacementAutoScript)으로 intro → done을 한 바퀴 돌고 기록 폴더를 만든다.
@@ -112,7 +114,7 @@ namespace IFS.SceneSpec.EditorTools
                 var cfg = ConfigFromArgs(args);
                 int participant = int.Parse(Value(args, "-participant") ?? "1", CultureInfo.InvariantCulture);
                 double dt = double.Parse(Value(args, "-dt") ?? "0.02", CultureInfo.InvariantCulture);
-                string dir = RunAutoTrial(spec, root, participant, cfg, dt, null, Value(args, "-taskTextFile"), Value(args, "-selectionPath"));
+                string dir = RunAutoTrial(spec, root, participant, cfg, dt, null, TaskTextFileFromArgs(args), Value(args, "-selectionPath"));
                 Debug.Log($"[IFS] 배치 실험 자동 시행 완료({cfg.condition}/{cfg.EffectiveControlMode}): {dir}");
                 exit = 0;
             }
@@ -127,6 +129,8 @@ namespace IFS.SceneSpec.EditorTools
         {
             var cfg = new PlacementConfig();
             string v;
+            // 설계 뼈대 3절 권고 설정을 먼저 켜고, 뒤의 낱개 인자가 덮어쓴다(-uiBundle과 같은 규칙). 문구 파일은 ExperimentTaskTextFor
+            if ((v = Value(args, "-experimentPreset")) != null && bool.Parse(v)) cfg.ApplyExperimentPreset();
             if ((v = Value(args, "-condition")) != null) cfg.condition = v;
             if ((v = Value(args, "-controlMode")) != null) cfg.controlMode = v;
             if ((v = Value(args, "-replayPath")) != null) cfg.replayPath = Path.GetFullPath(v);
@@ -147,7 +151,27 @@ namespace IFS.SceneSpec.EditorTools
             if ((v = Value(args, "-stopMode")) != null) cfg.stopMode = v;   // G60-2: single | loop
             if ((v = Value(args, "-stopLoopRoundSeconds")) != null) cfg.stopLoopRoundSeconds = double.Parse(v, CultureInfo.InvariantCulture);
             if ((v = Value(args, "-eyeHeightMode")) != null) cfg.eyeHeightMode = v;   // G60-3: none | relative(자동 시행은 기준값 고정)
+            // G63 헤드셋 UI: -uiBundle true = (1)–(6) 한꺼번에. 낱개 플래그가 뒤에서 덮어쓴다. -hidePanelInDistancePhases는 묶음에 들지 않는다
+            if ((v = Value(args, "-uiBundle")) != null && bool.Parse(v)) cfg.ApplyUiBundle();
+            if ((v = Value(args, "-uiComfortWrap")) != null) cfg.uiComfortWrap = bool.Parse(v);
+            if ((v = Value(args, "-uiDarkPanel")) != null) cfg.uiDarkPanel = bool.Parse(v);
+            if ((v = Value(args, "-uiRayHover")) != null) cfg.uiRayHover = bool.Parse(v);
+            if ((v = Value(args, "-uiHaptics")) != null) cfg.uiHaptics = bool.Parse(v);
+            if ((v = Value(args, "-uiRatingConfirmFlash")) != null) cfg.uiRatingConfirmFlash = bool.Parse(v);
+            if ((v = Value(args, "-uiNarrowScale")) != null) cfg.uiNarrowScale = bool.Parse(v);
+            if ((v = Value(args, "-hidePanelInDistancePhases")) != null) cfg.hidePanelInDistancePhases = bool.Parse(v);
+            if ((v = Value(args, "-hidePanelReadSeconds")) != null) cfg.hidePanelReadSeconds = double.Parse(v, CultureInfo.InvariantCulture);
+            if ((v = Value(args, "-participantRatesWithController")) != null) cfg.participantRatesWithController = bool.Parse(v);
             return cfg;
+        }
+
+        /// <summary>자동 시행의 문구 파일: -taskTextFile이 있으면 그것, 없고 -experimentPreset true면 권고 설정의 scaleA(G59-8), 아니면 null(기본 파일).</summary>
+        public static string TaskTextFileFromArgs(string[] args)
+        {
+            string t = Value(args, "-taskTextFile");
+            if (t != null) return t;
+            string p = Value(args, "-experimentPreset");
+            return p != null && bool.Parse(p) ? PlacementConfig.ExperimentTaskTextFile : null;
         }
 
         /// <summary>새 빈 씬에서 spec 하나로 intro → done을 사람 없이 돈다. 기록 폴더 경로를 돌려준다(실패하면 예외).

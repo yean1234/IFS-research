@@ -28,7 +28,7 @@ PARTS = ("free", "after_free")
 KINDS = ("oral", "oral_repeat", "choice", "typed", "rating_group")
 MAX_TEXT = 4000
 MAX_WORD_EOJEOL = 3          # PI3의 {X}: 참여자 낱말·짧은 구(면담 검증기의 인용 한도와 같은 3어절)
-UI_HIDDEN_KEYS = ("purpose",)  # 연구자용 문항 목적(G60). 기록 화면 설정에 보내지 않는다
+UI_HIDDEN_KEYS = ("purpose", "legacyOptions")  # 연구자용 문항 목적(G60), 예전 선택지(G66). 기록 화면 설정에 보내지 않는다
 
 
 class PostInterviewProtocol:
@@ -145,12 +145,13 @@ class PostInterviewStore:
             if not skipped and not t:
                 raise SelectionInvalid(f"{it['id']}: 글이 비었습니다(말하지 않았거나 넘어갔으면 skipped: true)")
             return [{**rec, "text": t, "skipped": skipped}]
-        # choice
-        ids = [o["id"] for o in it["options"]]
+        # choice — 화면에 내는 options와, 예전 판의 값을 계속 받기 위한 legacyOptions(화면에 내지 않음, G66 PI7)
+        opts = it["options"] + it.get("legacyOptions", [])
+        ids = [o["id"] for o in opts]
         ch = None if skipped else r.get("choice")
         if not skipped and ch not in ids:
             raise SelectionInvalid(f"{it['id']}: 선택지에 없는 값입니다: {ch!r} (가능: {ids})")
-        text = None if ch is None else next(o["text"] for o in it["options"] if o["id"] == ch)
+        text = None if ch is None else next(o["text"] for o in opts if o["id"] == ch)
         return [{**rec, "choice": ch, "choiceText": text, "skipped": skipped}]
 
     def _rounds(self, it: dict, mine: list, base: dict) -> list[dict]:

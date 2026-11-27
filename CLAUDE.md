@@ -1,5 +1,11 @@
 @AGENTS.md
 
+# 설계 뼈대
+이 연구 파이프라인의 개발은 `docs/design-backbone.md`를 뼈대로 한다(2026-11-27 사용자 결정).
+원본은 노션 「심사자 눈으로 본 설계 점검과 보완 — RQ3 질문 만들기 (11/25)」(페이지 ID 423ed99f9ad581229d41eb5a903c8966)다.
+- 기능·문구·설정을 만들거나 고치기 전에 뼈대의 어느 칸에 해당하는지 확인하고, 어긋나는 변경은 이유를 docs/decisions.md에 적고 사용자에게 알린다.
+- 하위 에이전트와 Codex에 설계·검토를 맡길 때 이 문서를 읽을 것에 넣는다.
+
 # 작업 방식 (Claude Code)
 
 ## 역할
@@ -8,14 +14,26 @@
 - 하위 에이전트(Opus): 구현, 테스트 실행, 파일 탐색, 로그·report.json 분석.
   결과는 요약(바뀐 파일, 핵심 수치, 실패 내용)만 돌려준다. 원문 전체를 붙이지 않는다.
 
-## GPT vs Claude 경쟁
-- 설계가 갈리는 결정: Claude 하위 에이전트와 Codex에게 서로의 답을 보여 주지 않고 따로 안을 받는다.
-  메인이 비교해서 하나를 고르고, 수용/반박/보류와 이유를 docs/decisions.md에 남긴다.
-- 체크포인트마다 Codex 독립 검토:
-  codex exec --sandbox read-only -c model_reasoning_effort="medium" -C . -o <임시>/cpN_last.md - < docs/codex-reviews/prompts/CPN_prompt.md
-  프롬프트는 docs/codex-reviews/prompts/, 응답 원문은 docs/codex-reviews/CPN.md에 저장한다(로컬 절대 경로는 <repo>/로 바꾼다).
-- Codex 호출 횟수는 고정 상한을 두지 않는다. 대신 Codex 사용량 한도의 남은 비율이 50% 아래로 떨어지지 않는 선에서만 호출한다.
-  호출 전후로 남은 비율을 확인하고(세션 기록의 rate_limits), 50%에 가까워지면 멈추고 사용자에게 알린다.
+## GPT vs Claude 경쟁 (Codex 오케스트레이션)
+Codex 사용량에는 하한을 두지 않는다. 한도가 다할 때까지 써도 된다(2026-11-27 사용자 결정).
+한도에 걸려 호출이 실패하면 그 사실을 사용자에게 알리고, 남은 일은 Claude 하위 에이전트만으로 이어 간다.
+
+Codex를 부르는 자리:
+1. **독립 설계안 (DN)**: 설계가 갈리는 결정은 Claude 하위 에이전트와 Codex에게 서로의 답을 보여 주지 않고 따로 안을 받는다.
+2. **판정 반박 (DN_rebuttal)**: 메인이 두 안을 견줘 고른 뒤, 고른 안과 버린 이유를 Codex에 보여 주고 반박을 받는다.
+   반박을 수용/반박/보류로 갈라 docs/decisions.md에 이유와 함께 남긴다.
+3. **구현 검토 (CPN)**: 체크포인트마다 diff를 Codex가 독립 검토한다. 작업 원칙 위반, 버그, 빠진 테스트를 찾게 한다.
+   지적을 고친 뒤에는 같은 CP를 한 번 더 돌려 고쳐졌는지 확인한다(CPN_recheck).
+4. **조사 교차 확인 (RN)**: 하위 에이전트가 가져온 선행 연구·데이터 가운데 결론을 떠받치는 서지와 수치는 Codex에 따로 확인시킨다.
+5. **막혔을 때**: 같은 문제를 두 번 고쳐도 안 풀리면 Codex에 진단이나 두 번째 구현을 맡긴다(codex:rescue).
+
+서로 기다릴 필요가 없는 호출은 동시에 돌린다. Claude 하위 에이전트의 작업과 Codex 검토도 나란히 돌린다.
+
+호출 방법:
+  codex exec --sandbox read-only -c model_reasoning_effort="high" -C . -o <임시>/<이름>_last.md - < docs/codex-reviews/prompts/<이름>_prompt.md
+  - 설계안·반박·구현 검토는 reasoning effort high, 단순 확인(재검토, 서지 확인)은 medium.
+  - 프롬프트는 docs/codex-reviews/prompts/, 응답 원문은 docs/codex-reviews/<이름>.md에 저장한다(로컬 절대 경로는 <repo>/로 바꾼다).
+  - 호출 뒤 남은 사용량(세션 기록의 rate_limits)은 참고로만 확인하고, 보고할 때 한 줄로 적는다.
 
 ## 토큰 절약
 - 하위 에이전트에게는 목표, 관련 파일 경로, 완료 기준만 넘긴다.

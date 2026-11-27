@@ -1,0 +1,272 @@
+{
+  "meta": {
+    "specVersion": "2.2.0",
+    "participantId": null,
+    "sessionId": "g64_b3_scene_people",
+    "condition": "chatbot",
+    "sourceTextHash": "sha256:c9bebdd2715ea365ef14d11a3aa211eb8d099f912a3912e8648b23efea6db096",
+    "pipeline": {
+      "builder": "scene-spec-builder-v2/2.4.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@1.0.0",
+        "layer1Base": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@1.0.0",
+        "vad": "vad-ko@0.1.0",
+        "sceneParamsV2": "scene-params-v2@2.0.0",
+        "nounStoplist": "noun-stoplist-v2@1.0.0",
+        "baseShapes": "base-shapes-v1@0.7.0"
+      }
+    },
+    "mapping": {
+      "requested": "v2",
+      "used": "v1",
+      "fallbackReason": null
+    }
+  },
+  "form": {
+    "type": null,
+    "posture": null,
+    "base": null,
+    "baseVariant": null
+  },
+  "material": {
+    "color": null,
+    "brightness": 0.15,
+    "saturation": null,
+    "roughness": null,
+    "opacity": null,
+    "erosion": null
+  },
+  "layout": {
+    "size": null,
+    "distance": null,
+    "verticalOffset": null
+  },
+  "motion": {
+    "type": null,
+    "speed": null
+  },
+  "body": {
+    "part": "body",
+    "layer": "around"
+  },
+  "_provenance": {
+    "material.brightness": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "어두워요",
+        "charSpan": [
+          52,
+          56
+        ],
+        "rule": "brightnessLexicon.어둡>material.brightness:dark"
+      }
+    ],
+    "body.part": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "몸",
+        "charSpan": [
+          7,
+          8
+        ],
+        "rule": "bodyPartLexicon.몸>body.part:body"
+      }
+    ],
+    "body.layer": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "주변",
+        "charSpan": [
+          9,
+          11
+        ],
+        "rule": "bodyLayerLexicon.주변>body.layer:around"
+      }
+    ]
+  },
+  "_unmatched": [
+    {
+      "lemma": "부담",
+      "tag": "NNG",
+      "surface": "부담",
+      "charSpan": [
+        0,
+        2
+      ]
+    },
+    {
+      "lemma": "빙",
+      "tag": "MAG",
+      "surface": "빙",
+      "charSpan": [
+        27,
+        28
+      ]
+    },
+    {
+      "lemma": "둘러서",
+      "tag": "VV",
+      "surface": "둘러서",
+      "charSpan": [
+        29,
+        32
+      ]
+    },
+    {
+      "lemma": "쳐다보",
+      "tag": "VV",
+      "surface": "쳐다보",
+      "charSpan": [
+        33,
+        36
+      ]
+    }
+  ],
+  "_unmapped": [
+    {
+      "lemma": "긴장",
+      "category": "emotion",
+      "value": {
+        "emotion": "tense",
+        "vadHint": "arousal mid-high"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "긴장",
+        "charSpan": [
+          14,
+          16
+        ],
+        "rule": "emotionLexicon.긴장"
+      }
+    },
+    {
+      "lemma": "사람",
+      "category": "object",
+      "value": {
+        "object": "person_figure",
+        "priorReason": "no_scene_param",
+        "noun": "사람",
+        "excluded": "person",
+        "position": "head",
+        "role": "subject",
+        "scope": "main",
+        "sentence": 3,
+        "formSaid": true,
+        "usedForShape": false
+      },
+      "reason": "excluded_shape",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "사람",
+        "charSpan": [
+          19,
+          21
+        ],
+        "rule": "objectLexicon.사람"
+      }
+    }
+  ],
+  "_negated": [],
+  "_alternatives": [],
+  "_inferred": {
+    "layout.size": {
+      "value": 0.4,
+      "_provenance": [
+        {
+          "source": "vad_lexicon",
+          "trigger": "긴장",
+          "charSpan": [
+            14,
+            16
+          ],
+          "rule": "vadLexicon.긴장>layout.size:dominance"
+        }
+      ]
+    },
+    "motion.speed": {
+      "value": 0.75,
+      "_provenance": [
+        {
+          "source": "vad_lexicon",
+          "trigger": "긴장",
+          "charSpan": [
+            14,
+            16
+          ],
+          "rule": "vadLexicon.긴장>motion.speed:arousal"
+        }
+      ]
+    }
+  },
+  "_context": [],
+  "_parts": [],
+  "_uncertain": [],
+  "_measurements": [],
+  "_direction": [],
+  "_needsConfirmation": [],
+  "_clauses": [
+    {
+      "charSpan": [
+        0,
+        6
+      ],
+      "text": "부담스러워요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        7,
+        13
+      ],
+      "text": "몸 주변이요",
+      "usedFor": [
+        "body.part",
+        "body.layer"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        14,
+        18
+      ],
+      "text": "긴장돼요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        19,
+        43
+      ],
+      "text": "사람들이 저를 빙 둘러서 쳐다보는 것 같아요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        44,
+        51
+      ],
+      "text": "여러 명이에요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        52,
+        56
+      ],
+      "text": "어두워요",
+      "usedFor": [
+        "material.brightness"
+      ],
+      "status": "used"
+    }
+  ]
+}

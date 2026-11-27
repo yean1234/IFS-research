@@ -24,15 +24,44 @@ FREE_PLACE = ["PI1_place_recall", "PI2_how_known", "PI3_more", "PI4_timing", "PI
 # ── 프로토콜 ────────────────────────────────────────────────────────────────
 def test_protocol_all_draft_with_g59_source():
     p = PostInterviewProtocol()
-    assert p.version == "0.2.0" and p.data["status"] == "draft"                # G60: 0.1.0 → 0.2.0
+    assert p.version == "0.3.0" and p.data["status"] == "draft"                # G60: 0.1.0 → 0.2.0, G66: → 0.3.0
     entries = list(p._entries())
     assert entries and len(p.draft_keys()) == len(entries)
     assert "items.PI1_place_recall.clarify" in p.draft_keys()                  # G60 되받기 한 줄도 draft로 셈
     for _, v in entries:
         assert v["status"] == "draft" and ("G59" in v["source"] or "G60" in v["source"]) and "IRB 검토 전" in v["source"]
     ch = p.data["changes"][0]
-    assert ch["version"] == p.version and "G60" in ch["source"]
-    assert p.data["changes"][1]["version"] == "0.1.0" and "G59" in p.data["changes"][1]["source"]
+    assert ch["version"] == p.version and "G66" in ch["source"] and ch["status"] == "draft"
+    assert p.data["changes"][1]["version"] == "0.2.0" and "G60" in p.data["changes"][1]["source"]
+    assert p.data["changes"][2]["version"] == "0.1.0" and "G59" in p.data["changes"][2]["source"]
+
+
+def test_g66_pi7_referent_wording_and_legacy_values(tmp_path):
+    """G66: 평정 문항의 호칭이 '그 느낌'으로 바뀌어 D1(PI7)도 '그 느낌'을 묻는다. 새 선택지 다섯을 화면에 내고,
+    0.2.0의 예전 값(inner·both)은 legacyOptions로 계속 받는다(화면 설정에는 보내지 않음)."""
+    p = PostInterviewProtocol()
+    pi7 = next(i for i in p.data["items"] if i["id"] == "PI7_referent")
+    assert pi7["text"] == "문항에 나온 '그 느낌'을 무엇으로 읽으셨나요?"
+    assert [(o["id"], o["text"]) for o in pi7["options"]] == [
+        ("feeling", "그 일을 떠올렸을 때 든 느낌"), ("event", "처음에 떠올린 일"), ("object", "눈앞에 있던 물체"),
+        ("mixed", "여러 가지가 섞였어요"), ("unsure", "잘 모르겠어요")]
+    assert [o["id"] for o in pi7["legacyOptions"]] == ["inner", "both"]
+    assert "G66" in pi7["source"] and "inner" in pi7["note"] and "both" in pi7["note"]
+    ui = next(i for i in p.ui(True)["items"] if i["id"] == "PI7_referent")
+    assert "legacyOptions" not in ui and [o["id"] for o in ui["options"]][0] == "feeling"
+    rt, c = _client(tmp_path)
+    started(rt, "SYN-PI7", T_FEEL)
+    url = "/api/sessions/SYN-PI7/postinterview"
+    free = [{"id": "PI1_place_recall", "skipped": True}, {"id": "PI2_view_noticed", "skipped": True},
+            {"id": "PI4_timing", "skipped": True}, {"id": "PI5_one_line", "skipped": True}]
+    assert c.post(url, json={"condition": "view", "part": "free", "responses": free}).status_code == 200
+    bad = [{"id": "PI7_referent", "choice": "thing"}, {"id": "PI8_purpose", "skipped": True}]
+    assert c.post(url, json={"condition": "view", "part": "after_free", "responses": bad}).status_code == 422
+    ok = [{"id": "PI7_referent", "choice": "feeling"}, {"id": "PI8_purpose", "skipped": True}]
+    rec = c.post(url, json={"condition": "view", "part": "after_free", "responses": ok}).json()["record"]
+    item = next(i for i in rec["items"] if i["id"] == "PI7_referent")
+    assert item["choice"] == "feeling" and item["choiceText"] == "그 일을 떠올렸을 때 든 느낌"
+    assert item["prompt"] == pi7["text"]
 
 
 def test_g60_pi1_wording_clarify_and_purposes():
@@ -58,7 +87,7 @@ def test_g60_pi1_wording_clarify_and_purposes():
     ids = {i["id"] for i in p.data["items"]}
     assert {i["id"] for k in "BCD" for i in layers[k]["items"]} == ids
     ifs = REPO_ROOT / "unity" / "Assets" / "StreamingAssets" / "IFS"
-    for name, ver in (("placement_task.v0.json", "0.6"), ("placement_task.scaleA.v0.json", "0.6-scaleA")):
+    for name, ver in (("placement_task.v0.json", "0.7"), ("placement_task.scaleA.v0.json", "0.7-scaleA")):
         t = json.loads((ifs / name).read_text(encoding="utf-8"))
         assert t["version"] == ver and "want_move" not in t["texts"], name
         assert t["texts"]["place_fit"]["text"] == layers["A"]["items"][0]["text"], name

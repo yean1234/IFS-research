@@ -1,0 +1,346 @@
+{
+  "meta": {
+    "specVersion": "2.2.0",
+    "participantId": null,
+    "sessionId": "g64_d2_mist",
+    "condition": "chatbot",
+    "sourceTextHash": "sha256:09f83381f77a90b18fb3728623ced81281e7bae4f15db33c0d8f4c3ac916c69e",
+    "pipeline": {
+      "builder": "scene-spec-builder-v2/2.4.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@1.0.0",
+        "layer1Base": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@1.0.0",
+        "vad": "vad-ko@0.1.0",
+        "sceneParamsV2": "scene-params-v2@2.0.0",
+        "nounStoplist": "noun-stoplist-v2@1.0.0",
+        "baseShapes": "base-shapes-v1@0.7.0"
+      }
+    },
+    "mapping": {
+      "requested": "v2",
+      "used": "v1",
+      "fallbackReason": null
+    }
+  },
+  "form": {
+    "type": "mist",
+    "posture": null,
+    "base": null,
+    "baseVariant": null
+  },
+  "material": {
+    "color": {
+      "h": 0.0,
+      "s": 0.05,
+      "l": 0.45
+    },
+    "brightness": 0.4,
+    "saturation": null,
+    "roughness": null,
+    "opacity": null,
+    "erosion": null
+  },
+  "layout": {
+    "size": 0.554,
+    "distance": null,
+    "verticalOffset": null
+  },
+  "motion": {
+    "type": "scattering",
+    "speed": 0.25
+  },
+  "body": {
+    "part": "head",
+    "layer": "inner"
+  },
+  "_provenance": {
+    "form.type": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "안개",
+        "charSpan": [
+          8,
+          10
+        ],
+        "rule": "formLexicon.안개>form.type:mist"
+      }
+    ],
+    "material.color": [
+      {
+        "source": "phrase_rule",
+        "trigger": "회색이에요",
+        "charSpan": [
+          25,
+          30
+        ],
+        "rule": "colorTerm.회색>material.color:hsl"
+      }
+    ],
+    "material.brightness": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "뿌연",
+        "charSpan": [
+          5,
+          7
+        ],
+        "rule": "brightnessLexicon.뿌옇>material.brightness:hazy"
+      }
+    ],
+    "layout.size": [
+      {
+        "source": "phrase_rule",
+        "trigger": "머리를 다 덮을 만큼",
+        "charSpan": [
+          47,
+          58
+        ],
+        "rule": "compare.cover.머리>layout.size:0.25m"
+      }
+    ],
+    "motion.type": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "흩어졌다",
+        "charSpan": [
+          35,
+          39
+        ],
+        "rule": "motionLexicon.흩어지>motion.type:scattering"
+      }
+    ],
+    "motion.speed": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "천천히",
+        "charSpan": [
+          31,
+          34
+        ],
+        "rule": "motionLexicon.천천히>motion.speed:slow"
+      }
+    ],
+    "body.part": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "머리",
+        "charSpan": [
+          18,
+          20
+        ],
+        "rule": "bodyPartLexicon.머리>body.part:head"
+      }
+    ],
+    "body.layer": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "안",
+        "charSpan": [
+          21,
+          22
+        ],
+        "rule": "bodyLayerLexicon.안>body.layer:inner"
+      }
+    ]
+  },
+  "_unmatched": [
+    {
+      "lemma": "머릿속",
+      "tag": "NNG",
+      "surface": "머릿속",
+      "charSpan": [
+        0,
+        3
+      ]
+    },
+    {
+      "lemma": "머릿속",
+      "tag": "EOJEOL",
+      "surface": "머릿속에",
+      "charSpan": [
+        0,
+        4
+      ]
+    },
+    {
+      "lemma": "끼",
+      "tag": "VV",
+      "surface": "껴",
+      "charSpan": [
+        12,
+        13
+      ]
+    },
+    {
+      "lemma": "있",
+      "tag": "EOJEOL",
+      "surface": "있어요",
+      "charSpan": [
+        14,
+        17
+      ]
+    },
+    {
+      "lemma": "안",
+      "tag": "MAG",
+      "surface": "안",
+      "charSpan": [
+        21,
+        22
+      ]
+    },
+    {
+      "lemma": "안",
+      "tag": "EOJEOL",
+      "surface": "안이요",
+      "charSpan": [
+        21,
+        24
+      ]
+    },
+    {
+      "lemma": "모이",
+      "tag": "VV",
+      "surface": "모였",
+      "charSpan": [
+        40,
+        42
+      ]
+    },
+    {
+      "lemma": "모이",
+      "tag": "EOJEOL",
+      "surface": "모였다",
+      "charSpan": [
+        40,
+        43
+      ]
+    },
+    {
+      "lemma": "하",
+      "tag": "EOJEOL",
+      "surface": "해요",
+      "charSpan": [
+        44,
+        46
+      ]
+    }
+  ],
+  "_unmapped": [],
+  "_negated": [],
+  "_alternatives": [
+    {
+      "path": "layout.size",
+      "value": 0.621,
+      "reason": "lower_priority",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "커요",
+          "charSpan": [
+            59,
+            61
+          ],
+          "rule": "sizeLexicon.크>layout.size:logScale(1.4)"
+        }
+      ]
+    }
+  ],
+  "_inferred": {
+    "layout.verticalOffset": {
+      "value": 0.93,
+      "_provenance": [
+        {
+          "source": "body_part_height",
+          "trigger": "머리",
+          "charSpan": [
+            18,
+            20
+          ],
+          "rule": "bodyPartHeight.head>layout.verticalOffset:0.93"
+        }
+      ]
+    }
+  },
+  "_context": [],
+  "_parts": [],
+  "_uncertain": [],
+  "_measurements": [
+    {
+      "text": "머리를 다 덮을 만큼",
+      "charSpan": [
+        47,
+        58
+      ],
+      "kind": "cover",
+      "meters": 0.25,
+      "dimension": "size",
+      "reference": "머리",
+      "usedFor": "layout.size"
+    }
+  ],
+  "_direction": [],
+  "_needsConfirmation": [],
+  "_clauses": [
+    {
+      "charSpan": [
+        0,
+        17
+      ],
+      "text": "머릿속에 뿌연 안개가 껴 있어요",
+      "usedFor": [
+        "form.type",
+        "material.brightness"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        18,
+        24
+      ],
+      "text": "머리 안이요",
+      "usedFor": [
+        "body.part",
+        "body.layer"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        25,
+        30
+      ],
+      "text": "회색이에요",
+      "usedFor": [
+        "material.color"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        31,
+        46
+      ],
+      "text": "천천히 흩어졌다 모였다 해요",
+      "usedFor": [
+        "motion.type",
+        "motion.speed"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        47,
+        61
+      ],
+      "text": "머리를 다 덮을 만큼 커요",
+      "usedFor": [
+        "layout.size"
+      ],
+      "status": "partly_used"
+    }
+  ]
+}

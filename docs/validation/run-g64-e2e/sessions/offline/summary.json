@@ -1,0 +1,524 @@
+{
+  "results": [
+    {
+      "model": "offline",
+      "scenario": "g64_b1_object_rich",
+      "run": 1,
+      "condition": "chatbot",
+      "metrics": {
+        "endedBy": "completed",
+        "llmTurns": 5,
+        "attempts": 8,
+        "firstTryPass": 3,
+        "blockedAttempts": 3,
+        "fallbacks": 0,
+        "regenerations": 3,
+        "reasons": {
+          "V7:predicate_as_noun": 3
+        },
+        "latencyMsMean": null,
+        "latencyMsMax": null,
+        "interviewerQuestions": [
+          "'걱정'에 대해 더 있나요?",
+          "'물'에 대해 더 있나요?",
+          "그 '주먹'은 어떤 '주먹'인가요?",
+          "'회색'에 대해 더 있나요?",
+          "그 '바닥'은 어떤 '바닥'인가요?"
+        ],
+        "softChecks": 0,
+        "crisis": false,
+        "alerts": [],
+        "probes": {
+          "asked": [
+            "size_shape"
+          ],
+          "skippedAsCovered": [
+            "color_brightness",
+            "movement"
+          ]
+        },
+        "bodyRelation": "in",
+        "findModality": [
+          "emotion",
+          "thought_or_sentence"
+        ],
+        "extracted": [
+          "걱정",
+          "가슴",
+          "안쪽",
+          "숨",
+          "물",
+          "젖은",
+          "표면",
+          "거칠어요",
+          "짙은",
+          "회색",
+          "천천히",
+          "가라앉아요"
+        ]
+      },
+      "expectFailures": [],
+      "log": "<scratch>\\offline\\sessions\\g64_b1_object_rich__offline__r1.json"
+    },
+    {
+      "model": "offline",
+      "scenario": "g64_b2_shape",
+      "run": 1,
+      "condition": "chatbot",
+      "metrics": {
+        "endedBy": "completed",
+        "llmTurns": 3,
+        "attempts": 4,
+        "firstTryPass": 2,
+        "blockedAttempts": 1,
+        "fallbacks": 0,
+        "regenerations": 1,
+        "reasons": {
+          "V7:predicate_as_noun": 1
+        },
+        "latencyMsMean": null,
+        "latencyMsMax": null,
+        "interviewerQuestions": [
+          "'막막'에 대해 더 있나요?",
+          "'공'에 대해 더 있나요?",
+          "그 '어깨'는 어떤 '어깨'인가요?"
+        ],
+        "softChecks": 0,
+        "crisis": false,
+        "alerts": [],
+        "probes": {
+          "asked": [
+            "color_brightness",
+            "movement"
+          ],
+          "skippedAsCovered": [
+            "size_shape"
+          ]
+        },
+        "bodyRelation": "on",
+        "findModality": [
+          "emotion"
+        ],
+        "extracted": [
+          "막막해요",
+          "어깨",
+          "몸",
+          "표면",
+          "어깨",
+          "뻐근해요",
+          "동그란",
+          "공",
+          "작아요",
+          "천천히"
+        ]
+      },
+      "expectFailures": [],
+      "log": "<scratch>\\offline\\sessions\\g64_b2_shape__offline__r1.json"
+    },
+    {
+      "model": "offline",
+      "scenario": "g64_b3_scene_people",
+      "run": 1,
+      "condition": "chatbot",
+      "metrics": {
+        "endedBy": "completed",
+        "llmTurns": 3,
+        "attempts": 3,
+        "firstTryPass": 3,
+        "blockedAttempts": 0,
+        "fallbacks": 0,
+        "regenerations": 0,
+        "reasons": {},
+        "latencyMsMean": null,
+        "latencyMsMax": null,
+        "interviewerQuestions": [
+          "'부담'에 대해 더 있나요?",
+          "'긴장'에 대해 더 있나요?",
+          "그 '사람'은 어떤 '사람'인가요?"
+        ],
+        "softChecks": 0,
+        "crisis": false,
+        "alerts": [],
+        "probes": {
+          "asked": [
+            "size_shape",
+            "color_brightness",
+            "movement"
+          ],
+          "skippedAsCovered": []
+        },
+        "bodyRelation": "around",
+        "findModality": [
+          "unknown_or_other"
+        ],
+        "extracted": [
+          "몸",
+          "주변",
+          "긴장",
+          "사람",
+          "어두워요"
+        ]
+      },
+      "expectFailures": [],
+      "log": "<scratch>\\offline\\sessions\\g64_b3_scene_people__offline__r1.json"
+    },
+    {
+      "model": "offline",
+      "scenario": "g64_b4_dontknow",
+      "run": 1,
+      "condition": "chatbot",
+      "metrics": {
+        "endedBy": "completed",
+        "llmTurns": 1,
+        "attempts": 1,
+        "firstTryPass": 1,
+        "blockedAttempts": 0,
+        "fallbacks": 0,
+        "regenerations": 0,
+        "reasons": {},
+        "latencyMsMean": null,
+        "latencyMsMax": null,
+        "interviewerQuestions": [
+          "'피곤'에 대해 더 있나요?"
+        ],
+        "softChecks": 0,
+        "crisis": false,
+        "alerts": [],
+        "probes": {
+          "asked": [
+            "size_shape",
+            "color_brightness",
+            "movement"
+          ],
+          "skippedAsCovered": []
+        },
+        "bodyRelation": "in",
+        "findModality": [
+          "unknown_or_other"
+        ],
+        "extracted": [
+          "몸"
+        ]
+      },
+      "expectFailures": [],
+      "log": "<scratch>\\offline\\sessions\\g64_b4_dontknow__offline__r1.json"
+    },
+    {
+      "model": "offline",
+      "scenario": "g64_b5_plain_flame",
+      "run": 1,
+      "condition": "chatbot",
+      "metrics": {
+        "endedBy": "completed",
+        "llmTurns": 3,
+        "attempts": 4,
+        "firstTryPass": 2,
+        "blockedAttempts": 1,
+        "fallbacks": 0,
+        "regenerations": 1,
+        "reasons": {
+          "V7:predicate_as_noun": 1
+        },
+        "latencyMsMean": null,
+        "latencyMsMax": null,
+        "interviewerQuestions": [
+          "'설레요'에 대해 더 있나요?",
+          "'두근거려요'에 대해 더 있나요?",
+          "그 '촛불'은 어떤 '촛불'인가요?"
+        ],
+        "softChecks": 0,
+        "crisis": false,
+        "alerts": [],
+        "probes": {
+          "asked": [],
+          "skippedAsCovered": [
+            "size_shape",
+            "color_brightness",
+            "movement"
+          ]
+        },
+        "bodyRelation": "around",
+        "findModality": [
+          "emotion"
+        ],
+        "extracted": [
+          "설레요",
+          "몸",
+          "주변",
+          "두근거려요",
+          "작은",
+          "노랗게",
+          "흔들려요"
+        ]
+      },
+      "expectFailures": [],
+      "log": "<scratch>\\offline\\sessions\\g64_b5_plain_flame__offline__r1.json"
+    },
+    {
+      "model": "offline",
+      "scenario": "g64_b6_tangle_sparse",
+      "run": 1,
+      "condition": "chatbot",
+      "metrics": {
+        "endedBy": "completed",
+        "llmTurns": 2,
+        "attempts": 2,
+        "firstTryPass": 2,
+        "blockedAttempts": 0,
+        "fallbacks": 0,
+        "regenerations": 0,
+        "reasons": {},
+        "latencyMsMean": null,
+        "latencyMsMax": null,
+        "interviewerQuestions": [
+          "'짜증'에 대해 더 있나요?",
+          "'실타래'에 대해 더 있나요?"
+        ],
+        "softChecks": 0,
+        "crisis": false,
+        "alerts": [],
+        "probes": {
+          "asked": [
+            "size_shape",
+            "color_brightness",
+            "movement"
+          ],
+          "skippedAsCovered": []
+        },
+        "bodyRelation": "in",
+        "findModality": [
+          "emotion"
+        ],
+        "extracted": [
+          "짜증",
+          "머리",
+          "머리",
+          "엉킨"
+        ]
+      },
+      "expectFailures": [],
+      "log": "<scratch>\\offline\\sessions\\g64_b6_tangle_sparse__offline__r1.json"
+    },
+    {
+      "model": "offline",
+      "scenario": "g64_b7_glass_negation",
+      "run": 1,
+      "condition": "chatbot",
+      "metrics": {
+        "endedBy": "completed",
+        "llmTurns": 3,
+        "attempts": 3,
+        "firstTryPass": 3,
+        "blockedAttempts": 0,
+        "fallbacks": 0,
+        "regenerations": 0,
+        "reasons": {},
+        "latencyMsMean": null,
+        "latencyMsMax": null,
+        "interviewerQuestions": [
+          "'불안'에 대해 더 있나요?",
+          "'유리'에 대해 더 있나요?",
+          "그 '막'은 어떤 '막'인가요?"
+        ],
+        "softChecks": 0,
+        "crisis": false,
+        "alerts": [],
+        "probes": {
+          "asked": [
+            "size_shape",
+            "color_brightness",
+            "movement"
+          ],
+          "skippedAsCovered": []
+        },
+        "bodyRelation": "in",
+        "findModality": [
+          "emotion"
+        ],
+        "extracted": [
+          "불안",
+          "목",
+          "안쪽",
+          "얇은",
+          "유리",
+          "막",
+          "투명",
+          "깨질",
+          "작지는",
+          "떨려요"
+        ]
+      },
+      "expectFailures": [],
+      "log": "<scratch>\\offline\\sessions\\g64_b7_glass_negation__offline__r1.json"
+    },
+    {
+      "model": "offline",
+      "scenario": "g64_d1_stone_rich",
+      "run": 1,
+      "condition": "chatbot",
+      "metrics": {
+        "endedBy": "completed",
+        "llmTurns": 3,
+        "attempts": 4,
+        "firstTryPass": 2,
+        "blockedAttempts": 1,
+        "fallbacks": 0,
+        "regenerations": 1,
+        "reasons": {
+          "V7:predicate_as_noun": 1
+        },
+        "latencyMsMean": null,
+        "latencyMsMax": null,
+        "interviewerQuestions": [
+          "'돌덩이'에 대해 더 있나요?",
+          "그 '단단'은 마치 무엇 같나요?",
+          "그 '칠'은 어떤 '칠'인가요?"
+        ],
+        "softChecks": 0,
+        "crisis": false,
+        "alerts": [],
+        "probes": {
+          "asked": [
+            "movement"
+          ],
+          "skippedAsCovered": [
+            "size_shape",
+            "color_brightness"
+          ]
+        },
+        "bodyRelation": "in",
+        "findModality": [
+          "body_sensation",
+          "image_or_scene"
+        ],
+        "extracted": [
+          "가슴",
+          "검은",
+          "몸",
+          "안",
+          "차갑고",
+          "단단해요",
+          "커지는",
+          "표면",
+          "거칠거칠해요"
+        ]
+      },
+      "expectFailures": [],
+      "log": "<scratch>\\offline\\sessions\\g64_d1_stone_rich__offline__r1.json"
+    },
+    {
+      "model": "offline",
+      "scenario": "g64_d2_mist",
+      "run": 1,
+      "condition": "chatbot",
+      "metrics": {
+        "endedBy": "completed",
+        "llmTurns": 2,
+        "attempts": 2,
+        "firstTryPass": 2,
+        "blockedAttempts": 0,
+        "fallbacks": 0,
+        "regenerations": 0,
+        "reasons": {},
+        "latencyMsMean": null,
+        "latencyMsMax": null,
+        "interviewerQuestions": [
+          "'안개'에 대해 더 있나요?",
+          "그 '회색'은 어떤 '회색'인가요?"
+        ],
+        "softChecks": 0,
+        "crisis": false,
+        "alerts": [],
+        "probes": {
+          "asked": [
+            "size_shape"
+          ],
+          "skippedAsCovered": [
+            "color_brightness",
+            "movement"
+          ]
+        },
+        "bodyRelation": "in",
+        "findModality": [
+          "image_or_scene"
+        ],
+        "extracted": [
+          "뿌연",
+          "안개",
+          "머리",
+          "회색",
+          "천천히",
+          "흩어졌다",
+          "머리",
+          "커요"
+        ]
+      },
+      "expectFailures": [],
+      "log": "<scratch>\\offline\\sessions\\g64_d2_mist__offline__r1.json"
+    },
+    {
+      "model": "offline",
+      "scenario": "g64_d3_lump_sparse",
+      "run": 1,
+      "condition": "chatbot",
+      "metrics": {
+        "endedBy": "completed",
+        "llmTurns": 2,
+        "attempts": 2,
+        "firstTryPass": 2,
+        "blockedAttempts": 0,
+        "fallbacks": 0,
+        "regenerations": 0,
+        "reasons": {},
+        "latencyMsMean": null,
+        "latencyMsMax": null,
+        "interviewerQuestions": [
+          "'덩어리'에 대해 더 있나요?",
+          "그 '몸'은 어떤 '몸'인가요?"
+        ],
+        "softChecks": 0,
+        "crisis": false,
+        "alerts": [],
+        "probes": {
+          "asked": [
+            "size_shape",
+            "color_brightness",
+            "movement"
+          ],
+          "skippedAsCovered": []
+        },
+        "bodyRelation": "in",
+        "findModality": [
+          "body_sensation",
+          "image_or_scene"
+        ],
+        "extracted": [
+          "배",
+          "덩어리",
+          "몸"
+        ]
+      },
+      "expectFailures": [],
+      "log": "<scratch>\\offline\\sessions\\g64_d3_lump_sparse__offline__r1.json"
+    }
+  ],
+  "summary": {
+    "offline": {
+      "sessions": 10,
+      "llmTurns": 27,
+      "attempts": 33,
+      "firstTryPass": 22,
+      "blockedAttempts": 6,
+      "fallbacks": 0,
+      "regenerations": 6,
+      "softChecks": 0,
+      "expectFailures": 0,
+      "firstTryPassRate": 0.815,
+      "fallbackRate": 0.0,
+      "latencyMsMean": 0,
+      "blockedByCheck": {
+        "V7:predicate_as_noun": 6
+      }
+    }
+  }
+}

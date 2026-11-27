@@ -1,0 +1,472 @@
+{
+ "storeInfo": {
+  "enabled": true,
+  "version": "ifs-form-assets/0.1.0",
+  "assetsDirExists": true,
+  "maxCandidates": 2,
+  "defaultFormSource": "auto",
+  "primitiveForms": {
+   "file": "primitive_forms.v0.json",
+   "version": "0.1.0",
+   "sha256": "a77c6da3dbbb522b611ac00404bbd68cb40ad3957c47462c92b71dea9e5b7ec3"
+  }
+ },
+ "sessions": {
+  "g64_b1_object_rich": {
+   "lookupKey": "f1e697e896f4f998148d5e8b5b95ef883dc20657fd5c8746fda38364724ff9f1",
+   "offered": [],
+   "rejected": [
+    {
+     "assetId": "49c24eaf4edda091",
+     "status": "blocked",
+     "reason": "blocked",
+     "detail": "no_shape_stated"
+    }
+   ],
+   "defaultFormSource": "procedural",
+   "defaultCandidateId": null,
+   "defaultFormRule": "no_generated_candidate",
+   "defaultFormBasis": {
+    "listFile": "primitive_forms.v0.json",
+    "listVersion": "0.1.0",
+    "listSha256": "a77c6da3dbbb522b611ac00404bbd68cb40ad3957c47462c92b71dea9e5b7ec3",
+    "assetIds": [],
+    "words": [],
+    "rule": "no_generated_candidate",
+    "source": "procedural"
+   },
+   "nCandidates": 4,
+   "displayOrder": [
+    "c-b9cd694f338e",
+    "c-77173242911b",
+    "c-7ad69ac1c44f",
+    "c-943ca118ac20"
+   ],
+   "renders": {
+    "procedural0": "images/gen3d/g64_b1_object_rich.proc.png"
+   }
+  },
+  "g64_b2_shape": {
+   "lookupKey": "dc7b4d94002cfb06e427e8bd2f2420d40fd65c62b31bf44a1dce13e4db45b8c3",
+   "offered": [
+    {
+     "candidateId": "g-ad872cc8de09",
+     "assetId": "cd261b4009896239"
+    }
+   ],
+   "rejected": [],
+   "defaultFormSource": "procedural",
+   "defaultCandidateId": null,
+   "defaultFormRule": "primitive_stated",
+   "defaultFormBasis": {
+    "listFile": "primitive_forms.v0.json",
+    "listVersion": "0.1.0",
+    "listSha256": "a77c6da3dbbb522b611ac00404bbd68cb40ad3957c47462c92b71dea9e5b7ec3",
+    "assetIds": [
+     "cd261b4009896239"
+    ],
+    "words": [
+     {
+      "ko": "동그란",
+      "charSpan": [
+       26,
+       29
+      ],
+      "lexiconKey": "동그랗",
+      "slot": "shape_modifier",
+      "primitive": true,
+      "reason": "listed_and_drawn",
+      "procedural": {
+       "check": "shape",
+       "value": "round"
+      }
+     },
+     {
+      "ko": "공",
+      "charSpan": [
+       30,
+       31
+      ],
+      "lexiconKey": "공",
+      "slot": "shape_noun",
+      "primitive": true,
+      "reason": "listed_and_drawn",
+      "procedural": {
+       "check": "form.type",
+       "value": "blob"
+      }
+     }
+    ],
+    "rule": "primitive_stated",
+    "source": "procedural"
+   },
+   "nCandidates": 5,
+   "displayOrder": [
+    "c-2921e672f12f",
+    "c-d5aab337aabd",
+    "g-ad872cc8de09",
+    "c-4ed9fbdd07ba",
+    "c-1d810089bcbd"
+   ],
+   "renders": {
+    "procedural0": "images/gen3d/g64_b2_shape.proc.png",
+    "generated0": "images/gen3d/g64_b2_shape.gen0.png"
+   }
+  },
+  "g64_b3_scene_people": {
+   "lookupKey": "c9bebdd2715ea365ef14d11a3aa211eb8d099f912a3912e8648b23efea6db096",
+   "offered": [],
+   "rejected": [
+    {
+     "assetId": "226fffe288592bce",
+     "status": "blocked",
+     "reason": "blocked",
+     "detail": "excluded_category"
+    }
+   ],
+   "defaultFormSource": "procedural",
+   "defaultCandidateId": null,
+   "defaultFormRule": "no_generated_candidate",
+   "defaultFormBasis": {
+    "listFile": "primitive_forms.v0.json",
+    "listVersion": "0.1.0",
+    "listSha256": "a77c6da3dbbb522b611ac00404bbd68cb40ad3957c47462c92b71dea9e5b7ec3",
+    "assetIds": [],
+    "words": [],
+    "rule": "no_generated_candidate",
+    "source": "procedural"
+   },
+   "nCandidates": 4,
+   "displayOrder": [
+    "c-2da7c684e6e9",
+    "c-83372ed40de4",
+    "c-693f339dbec7",
+    "c-a4802a1e3ec7"
+   ],
+   "renders": {
+    "procedural0": "images/gen3d/g64_b3_scene_people.proc.png"
+   }
+  },
+  "g64_b4_dontknow": {
+   "lookupKey": "f0d5948e8bd4b3b4f7584fddc43ec0beaf6a9b328711788d3f8bdd1fc6f27cba",
+   "offered": [],
+   "rejected": [
+    {
+     "assetId": "0d6edd4205ffe9d5",
+     "status": "blocked",
+     "reason": "blocked",
+     "detail": "no_shape_stated"
+    }
+   ],
+   "defaultFormSource": "procedural",
+   "defaultCandidateId": null,
+   "defaultFormRule": "no_generated_candidate",
+   "defaultFormBasis": {
+    "listFile": "primitive_forms.v0.json",
+    "listVersion": "0.1.0",
+    "listSha256": "a77c6da3dbbb522b611ac00404bbd68cb40ad3957c47462c92b71dea9e5b7ec3",
+    "assetIds": [],
+    "words": [],
+    "rule": "no_generated_candidate",
+    "source": "procedural"
+   },
+   "nCandidates": 4,
+   "displayOrder": [
+    "c-683d67f094a3",
+    "c-f77dd53c23cd",
+    "c-1d888d20759e",
+    "c-6d7f6e888bda"
+   ],
+   "renders": {
+    "procedural0": "images/gen3d/g64_b4_dontknow.proc.png"
+   }
+  },
+  "g64_b5_plain_flame": {
+   "lookupKey": "42d786373619654b80c32e0291a5f98753a73f61decd696eb7ba4009f3d6bf90",
+   "offered": [],
+   "rejected": [
+    {
+     "assetId": "edc7324c9e2efa2a",
+     "status": "blocked",
+     "reason": "blocked",
+     "detail": "excluded_category"
+    }
+   ],
+   "defaultFormSource": "procedural",
+   "defaultCandidateId": null,
+   "defaultFormRule": "no_generated_candidate",
+   "defaultFormBasis": {
+    "listFile": "primitive_forms.v0.json",
+    "listVersion": "0.1.0",
+    "listSha256": "a77c6da3dbbb522b611ac00404bbd68cb40ad3957c47462c92b71dea9e5b7ec3",
+    "assetIds": [],
+    "words": [],
+    "rule": "no_generated_candidate",
+    "source": "procedural"
+   },
+   "nCandidates": 4,
+   "displayOrder": [
+    "c-41f7432ff3bb",
+    "c-ec1badcadd6c",
+    "c-5e855ea2a59a",
+    "c-a8ed46d40e7d"
+   ],
+   "renders": {
+    "procedural0": "images/gen3d/g64_b5_plain_flame.proc.png"
+   }
+  },
+  "g64_b6_tangle_sparse": {
+   "lookupKey": "217bf17c9c415371929a714eeef02c7169fa82982c7edd9779d15d9f34c03501",
+   "offered": [
+    {
+     "candidateId": "g-9f2b107204f9",
+     "assetId": "4df20acebef16028"
+    }
+   ],
+   "rejected": [],
+   "defaultFormSource": "generated",
+   "defaultCandidateId": "g-9f2b107204f9",
+   "defaultFormRule": "non_primitive_stated",
+   "defaultFormBasis": {
+    "listFile": "primitive_forms.v0.json",
+    "listVersion": "0.1.0",
+    "listSha256": "a77c6da3dbbb522b611ac00404bbd68cb40ad3957c47462c92b71dea9e5b7ec3",
+    "assetIds": [
+     "4df20acebef16028"
+    ],
+    "words": [
+     {
+      "ko": "엉킨",
+      "charSpan": [
+       24,
+       26
+      ],
+      "lexiconKey": "엉키",
+      "slot": "shape_modifier",
+      "primitive": false,
+      "reason": "not_listed",
+      "procedural": null
+     },
+     {
+      "ko": "실타래",
+      "charSpan": [
+       27,
+       30
+      ],
+      "lexiconKey": "실타래",
+      "slot": "shape_noun",
+      "primitive": false,
+      "reason": "not_listed",
+      "procedural": null
+     }
+    ],
+    "rule": "non_primitive_stated",
+    "source": "generated"
+   },
+   "nCandidates": 5,
+   "displayOrder": [
+    "g-9f2b107204f9",
+    "c-a0aca032f4e5",
+    "c-94e451f3b182",
+    "c-2e70263729d3",
+    "c-bf72d1b76329"
+   ],
+   "renders": {
+    "procedural0": "images/gen3d/g64_b6_tangle_sparse.proc.png",
+    "generated0": "images/gen3d/g64_b6_tangle_sparse.gen0.png"
+   }
+  },
+  "g64_b7_glass_negation": {
+   "lookupKey": "db0ad76ffe2dc6ab2120b696728f0390ff90966ae78c23d44193e1889fdeff53",
+   "offered": [
+    {
+     "candidateId": "g-443ea240e42c",
+     "assetId": "f5ad8e8953a7f430"
+    }
+   ],
+   "rejected": [],
+   "defaultFormSource": "generated",
+   "defaultCandidateId": "g-443ea240e42c",
+   "defaultFormRule": "non_primitive_stated",
+   "defaultFormBasis": {
+    "listFile": "primitive_forms.v0.json",
+    "listVersion": "0.1.0",
+    "listSha256": "a77c6da3dbbb522b611ac00404bbd68cb40ad3957c47462c92b71dea9e5b7ec3",
+    "assetIds": [
+     "f5ad8e8953a7f430"
+    ],
+    "words": [
+     {
+      "ko": "얇",
+      "charSpan": [
+       24,
+       25
+      ],
+      "lexiconKey": "얇",
+      "slot": "shape_modifier",
+      "primitive": false,
+      "reason": "not_listed",
+      "procedural": null
+     },
+     {
+      "ko": "깨질",
+      "charSpan": [
+       43,
+       45
+      ],
+      "lexiconKey": "깨지",
+      "slot": "shape_modifier",
+      "primitive": false,
+      "reason": "not_listed",
+      "procedural": null
+     }
+    ],
+    "rule": "non_primitive_stated",
+    "source": "generated"
+   },
+   "nCandidates": 5,
+   "displayOrder": [
+    "g-443ea240e42c",
+    "c-14fb855c6697",
+    "c-a3a0da90eed2",
+    "c-824adbe1a5f0",
+    "c-b64b95cb4b81"
+   ],
+   "renders": {
+    "procedural0": "images/gen3d/g64_b7_glass_negation.proc.png",
+    "generated0": "images/gen3d/g64_b7_glass_negation.gen0.png"
+   }
+  },
+  "g64_d1_stone_rich": {
+   "lookupKey": "b7027d93bc218d01ddd792d8c2e5ce7fcc6b96c380439a4dd8559aec3b88d114",
+   "offered": [],
+   "rejected": [
+    {
+     "assetId": "31ee253c02053397",
+     "status": "blocked",
+     "reason": "blocked",
+     "detail": "no_shape_stated"
+    }
+   ],
+   "defaultFormSource": "procedural",
+   "defaultCandidateId": null,
+   "defaultFormRule": "no_generated_candidate",
+   "defaultFormBasis": {
+    "listFile": "primitive_forms.v0.json",
+    "listVersion": "0.1.0",
+    "listSha256": "a77c6da3dbbb522b611ac00404bbd68cb40ad3957c47462c92b71dea9e5b7ec3",
+    "assetIds": [],
+    "words": [],
+    "rule": "no_generated_candidate",
+    "source": "procedural"
+   },
+   "nCandidates": 4,
+   "displayOrder": [
+    "c-9398f2e49a3e",
+    "c-4472589f7809",
+    "c-0b32be38bfa5",
+    "c-a8b1da84fb4f"
+   ],
+   "renders": {
+    "procedural0": "images/gen3d/g64_d1_stone_rich.proc.png"
+   }
+  },
+  "g64_d2_mist": {
+   "lookupKey": "09f83381f77a90b18fb3728623ced81281e7bae4f15db33c0d8f4c3ac916c69e",
+   "offered": [],
+   "rejected": [
+    {
+     "assetId": "6f72fd03e40fa460",
+     "status": "blocked",
+     "reason": "blocked",
+     "detail": "excluded_category"
+    }
+   ],
+   "defaultFormSource": "procedural",
+   "defaultCandidateId": null,
+   "defaultFormRule": "no_generated_candidate",
+   "defaultFormBasis": {
+    "listFile": "primitive_forms.v0.json",
+    "listVersion": "0.1.0",
+    "listSha256": "a77c6da3dbbb522b611ac00404bbd68cb40ad3957c47462c92b71dea9e5b7ec3",
+    "assetIds": [],
+    "words": [],
+    "rule": "no_generated_candidate",
+    "source": "procedural"
+   },
+   "nCandidates": 4,
+   "displayOrder": [
+    "c-d659ac98c1b2",
+    "c-aac3bca9343f",
+    "c-6a1fe0982a94",
+    "c-73f51ebd0e5a"
+   ],
+   "renders": {
+    "procedural0": "images/gen3d/g64_d2_mist.proc.png"
+   }
+  },
+  "g64_d3_lump_sparse": {
+   "lookupKey": "28bc3e47a9b89a8ab1e20cf41c84530e70bb9d2053fe6f53d582238673851491",
+   "offered": [
+    {
+     "candidateId": "g-3f6971c7787d",
+     "assetId": "8b5b0f7f7bd5b164"
+    }
+   ],
+   "rejected": [],
+   "defaultFormSource": "generated",
+   "defaultCandidateId": "g-3f6971c7787d",
+   "defaultFormRule": "non_primitive_stated",
+   "defaultFormBasis": {
+    "listFile": "primitive_forms.v0.json",
+    "listVersion": "0.1.0",
+    "listSha256": "a77c6da3dbbb522b611ac00404bbd68cb40ad3957c47462c92b71dea9e5b7ec3",
+    "assetIds": [
+     "8b5b0f7f7bd5b164"
+    ],
+    "words": [
+     {
+      "ko": "덩어리",
+      "charSpan": [
+       8,
+       11
+      ],
+      "lexiconKey": "덩어리",
+      "slot": "shape_noun",
+      "primitive": false,
+      "reason": "not_listed",
+      "procedural": null
+     }
+    ],
+    "rule": "non_primitive_stated",
+    "source": "generated"
+   },
+   "nCandidates": 5,
+   "displayOrder": [
+    "g-3f6971c7787d",
+    "c-9af90612fdda",
+    "c-91215abd2698",
+    "c-b348705c4bfa",
+    "c-7d8699ca97bd"
+   ],
+   "renders": {
+    "procedural0": "images/gen3d/g64_d3_lump_sparse.proc.png",
+    "generated0": "images/gen3d/g64_d3_lump_sparse.gen0.png"
+   }
+  }
+ },
+ "renderer": {
+  "renderer": "unity-queue",
+  "command": [
+   "IFSPreview.exe"
+  ],
+  "running": true,
+  "startupSeconds": 5.352,
+  "renders": 14,
+  "lastRttMs": 24.99,
+  "size": [
+   640,
+   480
+  ]
+ }
+}

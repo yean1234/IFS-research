@@ -7,7 +7,8 @@
   <link rel="icon" href="data:,">
   <!-- IFS 형상 미리보기(WebGL, D4·결정 G12). 외부 CDN·글꼴·분석 스크립트를 쓰지 않는다(AGENTS.md 원칙 5).
        같은 출처의 Build/ 파일만 읽는다. 챗봇 서버가 이 폴더를 그대로 내보내면 된다(압축 끔 → 별도 헤더 불필요).
-       페이지 API: window.ifsPreview.load(spec) · applyOverrides(obj) · capture({id,width,height,background}) · setAutoRotate(deg) · setFrozen(bool)
+       페이지 API: window.ifsPreview.load(spec) · applyOverrides(obj) · setFormAsset({assetId,glbSha256,glbBase64}|null) ·
+       capture({id,width,height,background}) · setAutoRotate(deg) · setFrozen(bool)
        — 모두 Promise. 알림은 window 'ifs-preview' 이벤트(detail = {kind, payload}).
        주소 인자: ?spec=<같은 출처 JSON 경로>(준비되면 그 spec을 로드), ?rotate=<°/초>
        챗봇 연결(stage.js): Unity를 시작하지 못하면 ready가 거부된다(→ 챗봇이 image로 내려감). unityInfo = Unity 'ready' 알림
@@ -78,6 +79,8 @@
       timings: {},
       load: function (spec) { return request('load', null, 'LoadSpecJson', typeof spec === 'string' ? spec : JSON.stringify(spec)); },
       applyOverrides: function (ov) { return request('load', null, 'ApplyOverridesJson', ov == null ? '' : (typeof ov === 'string' ? ov : JSON.stringify(ov))); },
+      // G62: 생성 형태 GLB를 얹는다({assetId, glbSha256, glbBase64}) / null이면 걷는다. 응답 'loaded' {kind: 'formAsset', formAsset}
+      setFormAsset: function (a) { return request('load', null, 'SetFormAssetJson', a == null ? '' : JSON.stringify(a)); },
       capture: function (opt) {
         opt = Object.assign({ width: 800, height: 600, background: 'scene' }, opt || {});
         opt.id = opt.id || ('cap' + (++captureSeq));

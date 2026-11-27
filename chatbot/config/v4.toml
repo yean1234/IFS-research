@@ -78,3 +78,6 @@ start_timeout_s = 60
 request_timeout_s = 20
 webgl_ready_timeout_s = 30                      # 브라우저: Unity 준비 한도(넘으면 그 세션은 image로)
 webgl_request_timeout_s = 15                    # 브라우저: Unity 요청 하나(로드·덮어쓰기·캡처)의 한도
+
+[gen3d]
+enabled = false                                 # G62: 생성 형태 메시 후보. 기본 실험 경로에서는 끔(켠 설정: config/v4-gen3d.toml)

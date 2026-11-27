@@ -1,0 +1,537 @@
+{
+  "results": [
+    {
+      "model": "gemma4:e4b",
+      "scenario": "g64_b1_object_rich",
+      "run": 1,
+      "condition": "chatbot",
+      "metrics": {
+        "endedBy": "completed",
+        "llmTurns": 5,
+        "attempts": 9,
+        "firstTryPass": 2,
+        "blockedAttempts": 5,
+        "fallbacks": 1,
+        "regenerations": 4,
+        "reasons": {
+          "V2:template_not_allowed": 1,
+          "V7:predicate_as_noun": 3,
+          "V3:anchor_is_sentence": 1
+        },
+        "latencyMsMean": 960,
+        "latencyMsMax": 4074,
+        "interviewerQuestions": [
+          "'걱정'에 대해 더 있나요?",
+          "그 '돌덩이'는 어떤 '돌덩이'인가요?",
+          "방금 말씀하신 것에 대해 더 있나요?",
+          "'짙은 회색'에 대해 더 있나요?"
+        ],
+        "softChecks": 0,
+        "crisis": false,
+        "alerts": [],
+        "probes": {
+          "asked": [
+            "size_shape"
+          ],
+          "skippedAsCovered": [
+            "color_brightness",
+            "movement"
+          ]
+        },
+        "bodyRelation": "in",
+        "findModality": [
+          "emotion",
+          "thought_or_sentence"
+        ],
+        "extracted": [
+          "걱정",
+          "가슴",
+          "안쪽",
+          "숨",
+          "물",
+          "젖은",
+          "표면",
+          "거칠어요",
+          "짙은",
+          "회색",
+          "천천히",
+          "가라앉아요"
+        ]
+      },
+      "expectFailures": [],
+      "log": "<scratch>\\live\\sessions\\g64_b1_object_rich__gemma4-e4b__r1.json"
+    },
+    {
+      "model": "gemma4:e4b",
+      "scenario": "g64_b2_shape",
+      "run": 1,
+      "condition": "chatbot",
+      "metrics": {
+        "endedBy": "completed",
+        "llmTurns": 2,
+        "attempts": 2,
+        "firstTryPass": 2,
+        "blockedAttempts": 0,
+        "fallbacks": 0,
+        "regenerations": 0,
+        "reasons": {},
+        "latencyMsMean": 557,
+        "latencyMsMax": 571,
+        "interviewerQuestions": [
+          "'막막해요'에 대해 더 있나요?"
+        ],
+        "softChecks": 0,
+        "crisis": false,
+        "alerts": [],
+        "probes": {
+          "asked": [
+            "size_shape",
+            "color_brightness",
+            "movement"
+          ],
+          "skippedAsCovered": []
+        },
+        "bodyRelation": "on",
+        "findModality": [
+          "emotion"
+        ],
+        "extracted": [
+          "막막해요",
+          "어깨",
+          "몸",
+          "표면",
+          "어깨",
+          "뻐근해요",
+          "동그란",
+          "공",
+          "작아요",
+          "천천히"
+        ]
+      },
+      "expectFailures": [],
+      "log": "<scratch>\\live\\sessions\\g64_b2_shape__gemma4-e4b__r1.json"
+    },
+    {
+      "model": "gemma4:e4b",
+      "scenario": "g64_b3_scene_people",
+      "run": 1,
+      "condition": "chatbot",
+      "metrics": {
+        "endedBy": "completed",
+        "llmTurns": 3,
+        "attempts": 4,
+        "firstTryPass": 2,
+        "blockedAttempts": 1,
+        "fallbacks": 0,
+        "regenerations": 1,
+        "reasons": {
+          "V2:template_not_allowed": 1
+        },
+        "latencyMsMean": 535,
+        "latencyMsMax": 558,
+        "interviewerQuestions": [
+          "'몸 주변이요'에 대해 더 있나요?",
+          "'사람들'에 대해 더 있나요?",
+          "그 '사람'들은 어떤 '사람'인가요?"
+        ],
+        "softChecks": 0,
+        "crisis": false,
+        "alerts": [],
+        "probes": {
+          "asked": [
+            "size_shape",
+            "color_brightness",
+            "movement"
+          ],
+          "skippedAsCovered": []
+        },
+        "bodyRelation": "around",
+        "findModality": [
+          "unknown_or_other"
+        ],
+        "extracted": [
+          "몸",
+          "주변",
+          "긴장",
+          "사람",
+          "어두워요"
+        ]
+      },
+      "expectFailures": [],
+      "log": "<scratch>\\live\\sessions\\g64_b3_scene_people__gemma4-e4b__r1.json"
+    },
+    {
+      "model": "gemma4:e4b",
+      "scenario": "g64_b4_dontknow",
+      "run": 1,
+      "condition": "chatbot",
+      "metrics": {
+        "endedBy": "completed",
+        "llmTurns": 1,
+        "attempts": 1,
+        "firstTryPass": 1,
+        "blockedAttempts": 0,
+        "fallbacks": 0,
+        "regenerations": 0,
+        "reasons": {},
+        "latencyMsMean": 567,
+        "latencyMsMax": 567,
+        "interviewerQuestions": [
+          "'피곤'에 대해 더 있나요?"
+        ],
+        "softChecks": 0,
+        "crisis": false,
+        "alerts": [],
+        "probes": {
+          "asked": [
+            "size_shape",
+            "color_brightness",
+            "movement"
+          ],
+          "skippedAsCovered": []
+        },
+        "bodyRelation": "in",
+        "findModality": [
+          "unknown_or_other"
+        ],
+        "extracted": [
+          "몸"
+        ]
+      },
+      "expectFailures": [],
+      "log": "<scratch>\\live\\sessions\\g64_b4_dontknow__gemma4-e4b__r1.json"
+    },
+    {
+      "model": "gemma4:e4b",
+      "scenario": "g64_b5_plain_flame",
+      "run": 1,
+      "condition": "chatbot",
+      "metrics": {
+        "endedBy": "completed",
+        "llmTurns": 3,
+        "attempts": 4,
+        "firstTryPass": 2,
+        "blockedAttempts": 1,
+        "fallbacks": 0,
+        "regenerations": 1,
+        "reasons": {
+          "V2:template_not_allowed": 1
+        },
+        "latencyMsMean": 565,
+        "latencyMsMax": 618,
+        "interviewerQuestions": [
+          "'설레요'에 대해 더 있나요?",
+          "그 '작은 촛불'은 어떤 '작은 촛불'인가요?",
+          "그 '촛불'은 어떤 '촛불'인가요?"
+        ],
+        "softChecks": 0,
+        "crisis": false,
+        "alerts": [],
+        "probes": {
+          "asked": [],
+          "skippedAsCovered": [
+            "size_shape",
+            "color_brightness",
+            "movement"
+          ]
+        },
+        "bodyRelation": "around",
+        "findModality": [
+          "emotion"
+        ],
+        "extracted": [
+          "설레요",
+          "몸",
+          "주변",
+          "두근거려요",
+          "작은",
+          "노랗게",
+          "흔들려요"
+        ]
+      },
+      "expectFailures": [],
+      "log": "<scratch>\\live\\sessions\\g64_b5_plain_flame__gemma4-e4b__r1.json"
+    },
+    {
+      "model": "gemma4:e4b",
+      "scenario": "g64_b6_tangle_sparse",
+      "run": 1,
+      "condition": "chatbot",
+      "metrics": {
+        "endedBy": "completed",
+        "llmTurns": 2,
+        "attempts": 2,
+        "firstTryPass": 2,
+        "blockedAttempts": 0,
+        "fallbacks": 0,
+        "regenerations": 0,
+        "reasons": {},
+        "latencyMsMean": 570,
+        "latencyMsMax": 610,
+        "interviewerQuestions": [
+          "'짜증'에 대해 더 있나요?",
+          "그 '엉킨 실타래'는 어떤 '엉킨 실타래'인가요?"
+        ],
+        "softChecks": 0,
+        "crisis": false,
+        "alerts": [],
+        "probes": {
+          "asked": [
+            "size_shape",
+            "color_brightness",
+            "movement"
+          ],
+          "skippedAsCovered": []
+        },
+        "bodyRelation": "in",
+        "findModality": [
+          "emotion"
+        ],
+        "extracted": [
+          "짜증",
+          "머리",
+          "머리",
+          "엉킨"
+        ]
+      },
+      "expectFailures": [],
+      "log": "<scratch>\\live\\sessions\\g64_b6_tangle_sparse__gemma4-e4b__r1.json"
+    },
+    {
+      "model": "gemma4:e4b",
+      "scenario": "g64_b7_glass_negation",
+      "run": 1,
+      "condition": "chatbot",
+      "metrics": {
+        "endedBy": "completed",
+        "llmTurns": 3,
+        "attempts": 4,
+        "firstTryPass": 2,
+        "blockedAttempts": 1,
+        "fallbacks": 0,
+        "regenerations": 1,
+        "reasons": {
+          "V3:anchor_too_long": 1
+        },
+        "latencyMsMean": 582,
+        "latencyMsMax": 605,
+        "interviewerQuestions": [
+          "'목 안쪽이요'에 대해 더 있나요?",
+          "그 '얇은 유리막'은 어떤 '얇은 유리막'인가요?",
+          "그 '투명'은 어떤 '투명'인가요?"
+        ],
+        "softChecks": 0,
+        "crisis": false,
+        "alerts": [],
+        "probes": {
+          "asked": [
+            "size_shape",
+            "color_brightness",
+            "movement"
+          ],
+          "skippedAsCovered": []
+        },
+        "bodyRelation": "in",
+        "findModality": [
+          "emotion"
+        ],
+        "extracted": [
+          "불안",
+          "목",
+          "안쪽",
+          "얇은",
+          "유리",
+          "막",
+          "투명",
+          "깨질",
+          "작지는",
+          "떨려요"
+        ]
+      },
+      "expectFailures": [],
+      "log": "<scratch>\\live\\sessions\\g64_b7_glass_negation__gemma4-e4b__r1.json"
+    },
+    {
+      "model": "gemma4:e4b",
+      "scenario": "g64_d1_stone_rich",
+      "run": 1,
+      "condition": "chatbot",
+      "metrics": {
+        "endedBy": "completed",
+        "llmTurns": 3,
+        "attempts": 5,
+        "firstTryPass": 2,
+        "blockedAttempts": 3,
+        "fallbacks": 1,
+        "regenerations": 2,
+        "reasons": {
+          "V1:hold_without_risk_signal": 2,
+          "V7:predicate_as_noun": 1
+        },
+        "latencyMsMean": 561,
+        "latencyMsMax": 613,
+        "interviewerQuestions": [
+          "'검은 돌덩이'에 대해 더 있나요?",
+          "그 '돌덩이'는 어떤 '돌덩이'인가요?",
+          "방금 말씀하신 것에 대해 더 있나요?"
+        ],
+        "softChecks": 1,
+        "crisis": false,
+        "alerts": [
+          "soft_check"
+        ],
+        "probes": {
+          "asked": [
+            "movement"
+          ],
+          "skippedAsCovered": [
+            "size_shape",
+            "color_brightness"
+          ]
+        },
+        "bodyRelation": "in",
+        "findModality": [
+          "body_sensation",
+          "image_or_scene"
+        ],
+        "extracted": [
+          "가슴",
+          "검은",
+          "몸",
+          "안",
+          "차갑고",
+          "단단해요",
+          "커지는",
+          "표면",
+          "거칠거칠해요"
+        ]
+      },
+      "expectFailures": [],
+      "log": "<scratch>\\live\\sessions\\g64_d1_stone_rich__gemma4-e4b__r1.json"
+    },
+    {
+      "model": "gemma4:e4b",
+      "scenario": "g64_d2_mist",
+      "run": 1,
+      "condition": "chatbot",
+      "metrics": {
+        "endedBy": "completed",
+        "llmTurns": 2,
+        "attempts": 2,
+        "firstTryPass": 2,
+        "blockedAttempts": 0,
+        "fallbacks": 0,
+        "regenerations": 0,
+        "reasons": {},
+        "latencyMsMean": 574,
+        "latencyMsMax": 588,
+        "interviewerQuestions": [
+          "'뿌연 안개'에 대해 더 있나요?",
+          "그 '뿌연 안개'는 어떤 '뿌연 안개'인가요?"
+        ],
+        "softChecks": 0,
+        "crisis": false,
+        "alerts": [],
+        "probes": {
+          "asked": [
+            "size_shape"
+          ],
+          "skippedAsCovered": [
+            "color_brightness",
+            "movement"
+          ]
+        },
+        "bodyRelation": "in",
+        "findModality": [
+          "image_or_scene"
+        ],
+        "extracted": [
+          "뿌연",
+          "안개",
+          "머리",
+          "회색",
+          "천천히",
+          "흩어졌다",
+          "머리",
+          "커요"
+        ]
+      },
+      "expectFailures": [],
+      "log": "<scratch>\\live\\sessions\\g64_d2_mist__gemma4-e4b__r1.json"
+    },
+    {
+      "model": "gemma4:e4b",
+      "scenario": "g64_d3_lump_sparse",
+      "run": 1,
+      "condition": "chatbot",
+      "metrics": {
+        "endedBy": "completed",
+        "llmTurns": 2,
+        "attempts": 4,
+        "firstTryPass": 1,
+        "blockedAttempts": 3,
+        "fallbacks": 1,
+        "regenerations": 2,
+        "reasons": {
+          "V5:novel": 2,
+          "V7:template_literal": 2,
+          "V1:hold_without_risk_signal": 1
+        },
+        "latencyMsMean": 583,
+        "latencyMsMax": 636,
+        "interviewerQuestions": [
+          "'덩어리'에 대해 더 있나요?",
+          "방금 말씀하신 것에 대해 더 있나요?"
+        ],
+        "softChecks": 0,
+        "crisis": false,
+        "alerts": [],
+        "probes": {
+          "asked": [
+            "size_shape",
+            "color_brightness",
+            "movement"
+          ],
+          "skippedAsCovered": []
+        },
+        "bodyRelation": "in",
+        "findModality": [
+          "body_sensation",
+          "image_or_scene"
+        ],
+        "extracted": [
+          "배",
+          "덩어리",
+          "몸"
+        ]
+      },
+      "expectFailures": [],
+      "log": "<scratch>\\live\\sessions\\g64_d3_lump_sparse__gemma4-e4b__r1.json"
+    }
+  ],
+  "summary": {
+    "gemma4:e4b": {
+      "sessions": 10,
+      "llmTurns": 26,
+      "attempts": 37,
+      "firstTryPass": 18,
+      "blockedAttempts": 14,
+      "fallbacks": 3,
+      "regenerations": 11,
+      "softChecks": 1,
+      "expectFailures": 0,
+      "firstTryPassRate": 0.692,
+      "fallbackRate": 0.115,
+      "latencyMsMean": 661,
+      "blockedByCheck": {
+        "V1:hold_without_risk_signal": 3,
+        "V2:template_not_allowed": 3,
+        "V3:anchor_is_sentence": 1,
+        "V3:anchor_too_long": 1,
+        "V5:novel": 2,
+        "V7:predicate_as_noun": 4,
+        "V7:template_literal": 2
+      }
+    }
+  }
+}

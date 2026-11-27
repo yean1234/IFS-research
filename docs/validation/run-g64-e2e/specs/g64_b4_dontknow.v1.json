@@ -1,0 +1,189 @@
+{
+  "meta": {
+    "specVersion": "2.1.0",
+    "participantId": null,
+    "sessionId": "g64_b4_dontknow__gemma4-e4b__r1",
+    "condition": "chatbot",
+    "sourceTextHash": "sha256:f0d5948e8bd4b3b4f7584fddc43ec0beaf6a9b328711788d3f8bdd1fc6f27cba",
+    "pipeline": {
+      "builder": "scene-spec-builder-v1/1.2.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@1.0.0",
+        "layer1Base": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@1.0.0",
+        "vad": "vad-ko@0.1.0"
+      }
+    },
+    "mapping": {
+      "requested": "v1",
+      "used": "v1",
+      "fallbackReason": null
+    }
+  },
+  "form": {
+    "type": null,
+    "posture": null
+  },
+  "material": {
+    "color": null,
+    "brightness": null,
+    "saturation": null,
+    "roughness": null,
+    "opacity": null,
+    "erosion": null
+  },
+  "layout": {
+    "size": null,
+    "distance": null,
+    "verticalOffset": null
+  },
+  "motion": {
+    "type": null,
+    "speed": null
+  },
+  "body": {
+    "part": "body",
+    "layer": "inner"
+  },
+  "_provenance": {
+    "body.part": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "몸",
+        "charSpan": [
+          8,
+          9
+        ],
+        "rule": "bodyPartLexicon.몸>body.part:body"
+      }
+    ],
+    "body.layer": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "안",
+        "charSpan": [
+          10,
+          11
+        ],
+        "rule": "bodyLayerLexicon.안>body.layer:inner"
+      }
+    ]
+  },
+  "_unmatched": [
+    {
+      "lemma": "그냥",
+      "tag": "EOJEOL",
+      "surface": "그냥",
+      "charSpan": [
+        0,
+        2
+      ]
+    },
+    {
+      "lemma": "피곤",
+      "tag": "NNG",
+      "surface": "피곤",
+      "charSpan": [
+        3,
+        5
+      ]
+    },
+    {
+      "lemma": "피곤",
+      "tag": "EOJEOL",
+      "surface": "피곤해요",
+      "charSpan": [
+        3,
+        7
+      ]
+    },
+    {
+      "lemma": "안",
+      "tag": "MAG",
+      "surface": "안",
+      "charSpan": [
+        10,
+        11
+      ]
+    },
+    {
+      "lemma": "안",
+      "tag": "EOJEOL",
+      "surface": "안이요",
+      "charSpan": [
+        10,
+        13
+      ]
+    },
+    {
+      "lemma": "그냥",
+      "tag": "EOJEOL",
+      "surface": "그냥",
+      "charSpan": [
+        14,
+        16
+      ]
+    },
+    {
+      "lemma": "멍하",
+      "tag": "VA",
+      "surface": "멍해",
+      "charSpan": [
+        17,
+        19
+      ]
+    },
+    {
+      "lemma": "멍하",
+      "tag": "EOJEOL",
+      "surface": "멍해요",
+      "charSpan": [
+        17,
+        20
+      ]
+    }
+  ],
+  "_unmapped": [],
+  "_negated": [],
+  "_alternatives": [],
+  "_inferred": {},
+  "_context": [],
+  "_parts": [],
+  "_uncertain": [],
+  "_measurements": [],
+  "_direction": [],
+  "_needsConfirmation": [],
+  "_clauses": [
+    {
+      "charSpan": [
+        0,
+        7
+      ],
+      "text": "그냥 피곤해요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        8,
+        13
+      ],
+      "text": "몸 안이요",
+      "usedFor": [
+        "body.part",
+        "body.layer"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        14,
+        20
+      ],
+      "text": "그냥 멍해요",
+      "usedFor": [],
+      "status": "unused"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+- **지적 2 — 고쳐짐.** [controller.py](<repo>/chatbot/ifs_chatbot/controller.py:793), [validator.py](<repo>/chatbot/ifs_chatbot/validator.py:146), [test_d9_bridge.py](<repo>/chatbot/tests/test_d9_bridge.py:840): 다리를 물은 세션에서 설정된 bridge 틀을 허용 목록에서 빼고, 같은 목록으로 V2가 막습니다. 테스트는 차단 및 다리를 건너뛴 세션에서 `like_what` 허용을 각각 확인합니다. 다리 경로는 image 기능 활성화 설정에 한정되고, 1.4 기본 경로의 focus 동작을 확인하는 시험도 있습니다([controller.py](<repo>/chatbot/ifs_chatbot/controller.py:793), [test_d9_bridge.py](<repo>/chatbot/tests/test_d9_bridge.py:377)). 프롬프트 변경은 참여자가 이미 쓴 표현을 지정 틀로 묻게 하고 새 차원을 묻지 않도록 합니다([stage_flesh_out.txt](<repo>/chatbot/prompts/v1.1.0/stage_flesh_out.txt:3)); 예시나 선택지는 없습니다.
+
+- **지적 3 — 고쳐짐.** [controller.py](<repo>/chatbot/ifs_chatbot/controller.py:630): `negatedExcluded`는 부정으로 제외된 항목, `negatedInEvidence`는 부정 표시는 있지만 근거에 남은 비유, `negated`는 둘 중 하나가 있는 경우로 집계합니다. 뜻은 [extract.py](<repo>/chatbot/ifs_chatbot/extract.py:289)의 `evidence`·`excluded` 판정 및 [session_log.schema.json](<repo>/shared/schemas/session_log.schema.json:104), [chatbot-design.md](<repo>/docs/chatbot-design.md:123) 설명과 맞습니다. 시험은 두 집계 경우와 둘 다 아닌 경우를 확인합니다([test_d9_bridge.py](<repo>/chatbot/tests/test_d9_bridge.py:874)).
+
+- **지적 4 — 고쳐짐.** `docs/handoff-D9.md`를 가리키는 저장소 내 문서가 남아 있지 않습니다. 현재 검색에 잡히는 경로는 삭제 사실을 기록한 [decisions.md](<repo>/docs/decisions.md:943), 과거 검토 기록인 `docs/codex-reviews/CP11.md`, 검토 프롬프트 두 파일입니다. 현재 안내나 인수인계 문서에서 해당 파일을 참조하는 경우는 아닙니다.
+
+- **지적 1 반박 — 뒤집을 근거 없음.** 저장소 안에서 이전 형식의 `firstElicitedBy.kind` 값을 가진 실제 기록은 찾지 못했습니다. `llm:find` 등은 CP11 검토 문서의 재현 설명에만 나오고, 테스트는 과거 값이 새 스키마를 위반함을 보여 주는 시험입니다([CP11.md](<repo>/docs/codex-reviews/CP11.md:5), [test_d9_bridge.py](<repo>/chatbot/tests/test_d9_bridge.py:656)). 저장소 자료에서 판정을 반박할 만한 로그는 확인되지 않습니다.
+
+- **새 문제 — 없음(높음·중간).** 지정한 수정 범위에서 새로 드러난 높음·중간 문제는 없습니다.

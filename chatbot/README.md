@@ -24,6 +24,7 @@ ollama pull hf.co/mradermacher/kanana-safeguard-8b-GGUF:Q4_K_M   # 안전 분류
 | LLM 없이 흐름만 보기 | `python -m ifs_chatbot.server --backend offline` |
 | 조건 1(정적 프롬프트) | 웹 화면에서 고르거나 `--condition static` |
 | 연구 파일럿 설정 | `python -m ifs_chatbot.server --config pilot` (gemma4:31b, 가드 필수) |
+| 본 실험(v4 흐름 + 다리 질문 + 설계 뼈대 3절 권고값) | `python -m ifs_chatbot.server --config experiment` — 세션 전체 순서는 `docs/run-experiment.md` |
 | 다른 모델로 | `--model qwen3.5:9b` |
 | 위기 안내에 연락처 넣기 | `--researcher-contact "연구자 OOO 010-…"` 또는 config의 `researcher_contact` |
 | 테스트 | `python -m pytest` (오프라인), `$env:IFS_LIVE=1; python -m pytest -m live` (로컬 모델) |
@@ -73,7 +74,7 @@ ollama pull hf.co/mradermacher/kanana-safeguard-8b-GGUF:Q4_K_M   # 안전 분류
 | `scene_builder.py` · `scene_spec.py` | 확정 텍스트 → SceneSpec v2(0층 Kiwi · 1층 사전 · 2층 직유 · 3층 V/A/D 제안) → `logs/scenes/{sessionId}.json`. 형식 검사·원칙 검사 |
 | `session_log.py` | elicit-log/0.1 세션 로그(턴마다 저장) |
 | `server.py` · `web/` | FastAPI + 웹 데모(참여자 화면 / 연구자 화면) |
-| `selection.py` · `web/stage.js` | 새 흐름(`--config v4`)의 면담 뒤 단계: 후보 선택 · 조절 · 사전 측정(문구 `shared/protocol/selection_protocol.v0.json` 0.5.0, 사전 측정 10문항, 모두 draft) |
+| `selection.py` · `web/stage.js` | 새 흐름(`--config v4`)의 면담 뒤 단계: 후보 선택 · 조절 · 사전 측정(문구 `shared/protocol/selection_protocol.v0.json` 0.6.0, 사전 측정 10문항, 모두 draft) |
 | `postinterview.py` · `web/postinterview.js` | 사후 면담 기록 화면(G59, 연구자용, `/?view=postinterview&session=<세션 ID>`). 문항 `shared/protocol/post_interview.v0.json`, 대본 `docs/post-interview-guide.md`. LLM 없음 |
 | `cli.py` · `simulate.py` | 터미널 데모, 시나리오 재생·모델 비교 |
 

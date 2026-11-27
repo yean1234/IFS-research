@@ -1,0 +1,310 @@
+{
+  "meta": {
+    "specVersion": "2.1.0",
+    "participantId": null,
+    "sessionId": "g64_b6_tangle_sparse__gemma4-e4b__r1",
+    "condition": "chatbot",
+    "sourceTextHash": "sha256:217bf17c9c415371929a714eeef02c7169fa82982c7edd9779d15d9f34c03501",
+    "pipeline": {
+      "builder": "scene-spec-builder-v1/1.2.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@1.0.0",
+        "layer1Base": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@1.0.0",
+        "vad": "vad-ko@0.1.0"
+      }
+    },
+    "mapping": {
+      "requested": "v1",
+      "used": "v1",
+      "fallbackReason": null
+    }
+  },
+  "form": {
+    "type": null,
+    "posture": null
+  },
+  "material": {
+    "color": null,
+    "brightness": null,
+    "saturation": null,
+    "roughness": null,
+    "opacity": null,
+    "erosion": null
+  },
+  "layout": {
+    "size": null,
+    "distance": null,
+    "verticalOffset": null
+  },
+  "motion": {
+    "type": null,
+    "speed": null
+  },
+  "body": {
+    "part": "head",
+    "layer": "inner"
+  },
+  "_provenance": {
+    "body.part": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "머리",
+        "charSpan": [
+          7,
+          9
+        ],
+        "rule": "bodyPartLexicon.머리>body.part:head"
+      },
+      {
+        "source": "explicit_lexicon",
+        "trigger": "머리",
+        "charSpan": [
+          14,
+          16
+        ],
+        "rule": "bodyPartLexicon.머리>body.part:head"
+      }
+    ],
+    "body.layer": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "안",
+        "charSpan": [
+          10,
+          11
+        ],
+        "rule": "bodyLayerLexicon.안>body.layer:inner"
+      }
+    ]
+  },
+  "_unmatched": [
+    {
+      "lemma": "짜증",
+      "tag": "EOJEOL",
+      "surface": "짜증이",
+      "charSpan": [
+        0,
+        3
+      ]
+    },
+    {
+      "lemma": "나",
+      "tag": "VV",
+      "surface": "나",
+      "charSpan": [
+        4,
+        5
+      ]
+    },
+    {
+      "lemma": "나",
+      "tag": "EOJEOL",
+      "surface": "나요",
+      "charSpan": [
+        4,
+        6
+      ]
+    },
+    {
+      "lemma": "안",
+      "tag": "MAG",
+      "surface": "안",
+      "charSpan": [
+        10,
+        11
+      ]
+    },
+    {
+      "lemma": "안",
+      "tag": "EOJEOL",
+      "surface": "안이요",
+      "charSpan": [
+        10,
+        13
+      ]
+    },
+    {
+      "lemma": "지끈거리",
+      "tag": "VV",
+      "surface": "지끈거려",
+      "charSpan": [
+        18,
+        22
+      ]
+    },
+    {
+      "lemma": "지끈거리",
+      "tag": "EOJEOL",
+      "surface": "지끈거려요",
+      "charSpan": [
+        18,
+        23
+      ]
+    },
+    {
+      "lemma": "실타래",
+      "tag": "NNG",
+      "surface": "실타래",
+      "charSpan": [
+        27,
+        30
+      ]
+    },
+    {
+      "lemma": "같",
+      "tag": "EOJEOL",
+      "surface": "같아요",
+      "charSpan": [
+        31,
+        34
+      ]
+    }
+  ],
+  "_unmapped": [
+    {
+      "lemma": "짜증",
+      "category": "emotion",
+      "value": {
+        "emotion": "irritated"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "짜증",
+        "charSpan": [
+          0,
+          2
+        ],
+        "rule": "emotionLexicon.짜증"
+      }
+    },
+    {
+      "lemma": "엉키",
+      "category": "texture",
+      "value": {
+        "texture": "tangled"
+      },
+      "reason": "no_value_mapping",
+      "_provenance": {
+        "source": "simile_marker",
+        "trigger": "엉킨",
+        "charSpan": [
+          24,
+          26
+        ],
+        "rule": "simile.같은>textureLexicon.엉키"
+      }
+    }
+  ],
+  "_negated": [],
+  "_alternatives": [],
+  "_inferred": {
+    "material.brightness": {
+      "value": 0.2,
+      "_provenance": [
+        {
+          "source": "vad_lexicon",
+          "trigger": "짜증",
+          "charSpan": [
+            0,
+            2
+          ],
+          "rule": "vadLexicon.짜증>material.brightness:valence"
+        }
+      ]
+    },
+    "layout.size": {
+      "value": 0.5,
+      "_provenance": [
+        {
+          "source": "vad_lexicon",
+          "trigger": "짜증",
+          "charSpan": [
+            0,
+            2
+          ],
+          "rule": "vadLexicon.짜증>layout.size:dominance"
+        }
+      ]
+    },
+    "layout.verticalOffset": {
+      "value": 0.93,
+      "_provenance": [
+        {
+          "source": "body_part_height",
+          "trigger": "머리",
+          "charSpan": [
+            7,
+            9
+          ],
+          "rule": "bodyPartHeight.head>layout.verticalOffset:0.93"
+        }
+      ]
+    },
+    "motion.speed": {
+      "value": 0.7,
+      "_provenance": [
+        {
+          "source": "vad_lexicon",
+          "trigger": "짜증",
+          "charSpan": [
+            0,
+            2
+          ],
+          "rule": "vadLexicon.짜증>motion.speed:arousal"
+        }
+      ]
+    }
+  },
+  "_context": [],
+  "_parts": [],
+  "_uncertain": [],
+  "_measurements": [],
+  "_direction": [],
+  "_needsConfirmation": [],
+  "_clauses": [
+    {
+      "charSpan": [
+        0,
+        6
+      ],
+      "text": "짜증이 나요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        7,
+        13
+      ],
+      "text": "머리 안이요",
+      "usedFor": [
+        "body.part",
+        "body.layer"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        14,
+        23
+      ],
+      "text": "머리가 지끈거려요",
+      "usedFor": [
+        "body.part"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        24,
+        34
+      ],
+      "text": "엉킨 실타래 같아요",
+      "usedFor": [],
+      "status": "unused"
+    }
+  ]
+}

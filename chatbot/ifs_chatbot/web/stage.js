@@ -58,15 +58,20 @@
     draw();
   }
 
+  // G62: 생성 형태 GLB 하나를 그리지 못함(WebGL 전체 실패와 구분)
+  class AssetError extends Error {}
+
   // ── 미리보기 어댑터 ────────────────────────────────────────────────────────
   const Preview = {
     mode() { return (S.view && S.view.preview && S.view.preview.mode) || "none"; },
 
     // target = 후보 id 또는 "current". summary = 서버가 준 속성 요약(none 모드). overrides = 그 그림의 덮어쓰기.
-    node(target, summary, overrides) {
+    // asset(G62) = 생성 형태 후보의 {assetId, glbSha256, glbUrl}: 그 GLB 메시로 그린다(색·재질은 스펙 값). 서버가 none 모드에서는
+    // 생성 후보를 내지 않으므로 절차 메시 모습·글 요약으로 생성 후보를 보이는 일은 없다. image는 서버가 GLB로 그린 PNG.
+    node(target, summary, overrides, asset) {
       const m = this.mode();
       const stage = S.view.stage;
-      if (m === "webgl") return target === "current" ? WebGL.liveSlot(overrides) : WebGL.candidateNode(target, overrides);
+      if (m === "webgl") return target === "current" ? WebGL.liveSlot(overrides, asset) : WebGL.candidateNode(target, overrides, asset);
       if (m === "image") {
         const img = el("img", { class: "preview-img", alt: "", "data-target": target, "data-mode": "image",
                                 src: `/api/sessions/${S.sid}/preview/${target}.png?v=${++S.imgSeq}` });
@@ -91,7 +96,7 @@
   // - 후보 칸은 정지 그림이다(setFrozen(true) 뒤 capture, 값 표 구별 규칙 still_preview_motion의 전제). 조절 화면은 움직임을 재생한다.
   // - 준비 단계에서 형태 값마다 한 번씩 작게 그려 셰이더 컴파일 지연을 후보를 보이기 전에 치른다(서버 previewWarmup).
   const WebGL = {
-    sid: null, host: null, frame: null, p: null, started: null, failed: null,
+    sid: null, host: null, frame: null, p: null, started: null, failed: null, asset: "", glbCache: new Map(),
     q: Promise.resolve(), seq: 0, applied: null, frozen: null, caps: new Map(), info: null, slot: null, ro: null,
     thumbCache: new Map(), dbg: { thumbJobs: [] },     // dbg: 검증용(서버로 보내지 않음)
 
@@ -184,6 +189,51 @@
       this.applied = want;
     },
 
+    // G62: Unity에 생성 형태 GLB를 얹거나(asset) 걷는다(null). Unity가 지금 덮어쓰기로 다시 로드한다(덮어쓰기는 그대로).
+    // GLB만 실패하면 AssetError — 부른 쪽이 그 후보를 서버에 알려 빼고, WebGL 전체를 실패로 보지 않는다.
+    async setAsset(a) {
+      const want = a ? a.glbSha256 : "";
+      if (this.asset === want) return;
+      this.asset = null;                          // 응답을 확인하기 전까지는 무엇이 얹혔는지 모름
+      if (!a) {
+        const r = await this.p.setFormAsset(null);
+        if (!r || r.kind !== "formAsset") throw new Error("생성 형태 걷기 응답이 아님");
+        this.asset = "";
+        return;
+      }
+      let b64 = this.glbCache.get(want);
+      if (!b64) {
+        const res = await fetch(a.glbUrl, { cache: "no-store" });
+        if (!res.ok) throw new AssetError(`GLB를 받지 못함(${res.status})`);
+        const bytes = new Uint8Array(await res.arrayBuffer());
+        let bin = "";
+        for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+        b64 = btoa(bin);
+        this.glbCache.set(want, b64);
+      }
+      let r;
+      try {
+        r = await this.p.setFormAsset({ assetId: a.assetId, glbSha256: a.glbSha256, glbBase64: b64 });
+      } catch (e) {
+        this.asset = "";                          // Unity는 실패하면 생성 메시를 걷고 절차 메시로 둔다
+        throw new AssetError((e && e.message) || JSON.stringify(e));
+      }
+      if (!r || r.kind !== "formAsset" || !r.formAsset || r.formAsset.status !== "applied")
+        throw new AssetError(`생성 형태 응답이 적용이 아님(${r && r.formAsset && r.formAsset.fallbackReason})`);
+      this.asset = want;
+    },
+
+    // G62: 생성 형태를 그리지 못했다고 서버에 알린다 → 서버가 그 후보를 빼고(사유 기록) 화면을 다시 그린다
+    async assetFailed(target, reason) {
+      console.warn(`[preview] 생성 형태 ${target} 실패 → 후보에서 뺌: ${reason}`);
+      try {
+        S.view = await api("POST", `/api/sessions/${S.sid}/preview/client`,
+          { event: "asset_failed", mode: "webgl", stage: S.view && S.view.stage, reason: String(reason).slice(0, 300),
+            webgl: { candidateId: target } });
+      } catch (e) { console.error("[preview] asset_failed 알림 실패", e); }
+      draw();
+    },
+
     async setFrozen(on) {
       if (this.frozen === on) return;
       await this.p.setFrozen(on);
@@ -198,20 +248,24 @@
     },
 
     // 후보 칸: 정지 그림. 같은 후보·덮어쓰기는 다시 찍지 않는다(화면을 다시 그려도 Unity를 부르지 않음).
-    candidateNode(target, overrides) {
-      const img = el("img", { class: "preview-img", alt: "", "data-target": target, "data-mode": "webgl", "data-overrides": canon(overrides) });
+    candidateNode(target, overrides, asset) {
+      const img = el("img", { class: "preview-img", alt: "", "data-target": target, "data-mode": "webgl", "data-overrides": canon(overrides),
+                              "data-asset": asset ? asset.glbSha256 : "" });
       // 그림이 오기 전에도 같은 크기의 자리를 차지한다(4:3, 화면이 밀리지 않음)
       const holder = el("div", { class: "preview is-loading", "aria-busy": "true" }, img);
       const loaded = () => { holder.classList.remove("is-loading"); holder.removeAttribute("aria-busy"); };
-      const key = `${S.sid}|${target}|${canon(overrides)}`;
+      const key = `${S.sid}|${target}|${canon(overrides)}|${asset ? asset.glbSha256 : ""}`;
       const stage = S.view.stage;
       const shown = () => {
         if ([...document.querySelectorAll('.cand img[data-mode="webgl"]')].every((x) => x.src))
           reportShown("webgl", stage, this.info);
       };
       if (this.caps.has(key)) { img.src = this.caps.get(key); loaded(); setTimeout(shown, 0); return holder; }
+      let assetErr = null;
       this.start().then(() => this.enqueue(`후보 캡처 ${target}`, async () => {
         await this.setFrozen(true);
+        try { await this.setAsset(asset || null); }
+        catch (e) { if (e instanceof AssetError && asset) { assetErr = e.message; return; } throw e; }
         await this.apply(overrides);
         const url = await this.capture(target);
         this.caps.set(key, url);
@@ -219,12 +273,13 @@
         loaded();
         img.dataset.captureSeq = String(this.seq);
         shown();
-      })).catch(() => {});                        // 실패 처리는 enqueue·start의 fail이 한다(서버에 알리고 다시 그림)
+      })).then(() => { if (assetErr) this.assetFailed(target, assetErr); })
+        .catch(() => {});                         // 실패 처리는 enqueue·start의 fail이 한다(서버에 알리고 다시 그림)
       return holder;
     },
 
     // 조절 화면: 자리만 만들고, 고정된 iframe을 그 위에 겹쳐 놓는다. 움직임을 재생한다(setFrozen(false)).
-    liveSlot(overrides) {
+    liveSlot(overrides, asset) {
       const slot = el("div", { class: "preview live-slot is-loading", "data-mode": "webgl", "data-overrides": canon(overrides), "aria-busy": "true" });
       const stage = S.view.stage;
       // start()를 먼저 부른다: 이 세션의 첫 시작이면 start()가 teardown()으로 slot을 비우므로 slot은 그 뒤에 정한다.
@@ -232,14 +287,18 @@
       //  화면 밖에 남아 첫 조절을 누르기 전까지 미리보기 자리가 회색 칸이었다.)
       const started = this.start();
       this.slot = slot;
+      let assetErr = null;
       started.then(() => this.enqueue("조절 화면 덮어쓰기", async () => {
         await this.setFrozen(false);
+        try { await this.setAsset(asset || null); }
+        catch (e) { if (e instanceof AssetError && asset) { assetErr = e.message; return; } throw e; }
         await this.apply(overrides);
         slot.dataset.applied = canon(overrides);
         slot.classList.remove("is-loading");
         slot.removeAttribute("aria-busy");
         reportShown("webgl", stage, this.info);
-      })).catch(() => {});
+      })).then(() => { if (assetErr) this.assetFailed("current", assetErr); })
+        .catch(() => {});
       return slot;
     },
 
@@ -282,11 +341,14 @@
         if (win) rafId = win.requestAnimationFrame(tick);
         const t0 = performance.now();
         await this.setFrozen(true);
+        const curAsset = (S.view && S.view.currentAsset) || null;
+        if (curAsset) await this.setAsset(null);  // 형태 견본은 각 형태 값의 모습(절차 메시)이다
         for (const s of want) {
           await this.apply(s.overrides);
           this.thumbCache.set(canon(s.overrides), await this.capture("thumb", w, h));
         }
         await this.apply(cur);
+        if (curAsset) await this.setAsset(curAsset).catch(() => {});
         if (wasFrozen === false) await this.setFrozen(false);
         if (win) win.cancelAnimationFrame(rafId);
         this.dbg.thumbJobs.push({ n: want.length, ms: Math.round(performance.now() - t0), framesBetween: frames });
@@ -318,6 +380,7 @@
       this.closeFrame();
       this.sid = null; this.started = null; this.failed = null; this.q = Promise.resolve();
       this.applied = null; this.frozen = null; this.caps.clear(); this.thumbCache.clear(); this.info = null; this.slot = null;
+      this.asset = ""; this.glbCache.clear();
     },
   };
 
@@ -459,8 +522,10 @@
     const parts = [intro(phrase("figure_intro")), el("p", { class: "msg bot" }, phrase("candidates_intro"))];
     const grid = el("ul", { class: `cand-grid n${v.candidates.length}` });
     v.candidates.forEach((c, i) => {
-      grid.append(el("li", { class: "cand", "data-id": c.id },
-        Preview.node(c.id, c.summary, c.overrides),
+      // G62: [gen3d] default_form_source = generated(또는 auto가 사물 낱말로 판정, G62-i)면 기본 후보(c.default)가 맨 앞에 오고 테두리로 미리 선택해 보인다.
+      // 장면에는 참여자가 [고르기]로 확정해야 쓴다(새 문구 없음). 꺼져 있으면 c.default가 없어 지금과 같다
+      grid.append(el("li", { class: c.default ? "cand is-default" : "cand", "data-id": c.id },
+        Preview.node(c.id, c.summary, c.overrides, c.asset),
         el("button", { type: "button", class: "pick", "aria-label": `${phrase("choose_button")} ${i + 1}`, "data-fkey": `cand:${c.id}`,
                        onclick: (e) => choose(c.id, e.currentTarget) }, phrase("choose_button"))));
     });
@@ -635,7 +700,8 @@
     }
     return [intro(phrase("figure_intro")), el("p", { class: "msg bot" }, phrase("adjust_intro")),
             el("div", { class: "adjust" },
-              el("div", { class: "adjust-preview" }, Preview.node("current", v.current && v.current.summary, v.current && v.current.overrides)),
+              el("div", { class: "adjust-preview" }, Preview.node("current", v.current && v.current.summary, v.current && v.current.overrides,
+                                                                       v.currentAsset || null)),
               panel),
             el("div", { class: "buttons stage-actions" },
               el("button", { type: "button", class: "primary", "data-fkey": "finish",

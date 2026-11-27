@@ -246,6 +246,7 @@ th { color: var(--ink-soft); font-weight: 600; }
 .pick { width: 100%; min-height: 48px; font-weight: 600; color: var(--accent-strong); background: var(--panel); border: 2px solid var(--accent); }
 .pick:hover:not(:disabled):not([aria-disabled="true"]) { background: var(--accent-soft); }
 .cand.chosen { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+.cand.is-default { border-color: var(--accent); }   /* G62: 기본(미리 선택) 후보 — 확정은 [고르기] */
 .cand.chosen .pick, .pick[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); }
 .stage.choosing .cand:not(.chosen) { opacity: .5; }
 .stage.choosing .none-fit-row .none-fit:not([aria-pressed="true"]) { opacity: .5; }

@@ -9,6 +9,7 @@
 |   (확장)   | 엄격 모드: 질문 틀에 없는 새 내용어(돌, 차갑 …)가 따옴표 밖에 있음 | 재생성 |
 | V6 금지 패턴 | 예를 들·이를테면·아니면·혹은·왜·언제부터·무슨 일·것 같네요 + 규칙 5–7에서 뽑은 추가 표현 | 재생성 |
 | V7 질문 틀 일치 | where면 '어디', like_what이면 '무엇 같' 같은 표지어 | 재생성 |
+|   (확장, D9) | predicate_as_noun: what_kind·where·like_what의 X가 활용형('설레요')이면 막음. 설정으로 켬 | 재생성 |
 | V8 출력 가드 | 가드 모델·키워드 판정이 안전 | 재생성 없이 고정 문구 |
 | V9 깊이 제한(확장, L5) | 기억·관계 장면 표지(어릴 때, 엄마, 교실 …)를 인용해 파고들지 않음 | 재생성 |
 
@@ -85,6 +86,7 @@ REASON_TEXT = {
     "V6": "금지 표현이 있음",
     "V7": "고른 질문 틀과 문장이 맞지 않음",
     "V7:template_literal": "질문 틀의 '은(는)'·'{X}'를 그대로 씀 — 받침에 맞는 조사 하나만",
+    "V7:predicate_as_noun": "활용형 용언('설레요'처럼 어미로 끝나는 말)을 명사 자리 X에 넣음 — 명사·어근을 인용하거나 anything_else로",
     "V8": "출력 가드가 안전하지 않다고 판단",
     "V9": "기억·관계 장면을 인용해 깊이 들어감(L5)",
     "V9:depth_context": "기억·과거 장면을 말한 문장 속 말을 인용함(L5) — 지금 떠오른 것의 묘사어를 인용",
@@ -129,7 +131,8 @@ class CheckResult:
 class Validator:
     def __init__(self, protocol: Protocol, lexicon: Lexicon, safety: SafetyLexicon, analyzer: Analyzer,
                  schema: dict, guard: Guard | None = None, strict_novel_content: bool = True,
-                 depth_anchor_block: bool = True, check_output: bool = True, max_anchor_eojeol: int = 3):
+                 depth_anchor_block: bool = True, check_output: bool = True, max_anchor_eojeol: int = 3,
+                 predicate_as_noun: bool = False):
         self.protocol, self.lexicon, self.safety, self.analyzer = protocol, lexicon, safety, analyzer
         self.schema = schema
         self._schema_validator = jsonschema.Draft202012Validator(schema)
@@ -138,8 +141,12 @@ class Validator:
         self.depth_block = depth_anchor_block
         self.check_output = check_output
         self.max_anchor_eojeol = max_anchor_eojeol
+        self.predicate_as_noun = predicate_as_noun
 
-    def check(self, raw: str, ctx: TurnContext) -> CheckResult:
+    def check(self, raw: str, ctx: TurnContext, require_quote: bool = True) -> CheckResult:
+        """require_quote=False는 고정 문구 전용 경로(D9 다리 질문의 X 없는 문장 bridge_like_what_plain)에만 쓴다.
+        참여자 말을 인용하지 않게 만든 고정 문장이라 인용 요구(V1 anchor_required·V3 전부)만 빼고 나머지는 그대로 건다.
+        기본값 True — 기존 경로(LLM 질문·확인 질문·X 있는 다리 문장)는 바뀌지 않는다. 이유는 docs/chatbot-design.md 5-3."""
         # ── V1 ──
         try:
             out = json.loads(raw)
@@ -164,7 +171,7 @@ class Validator:
         if move == "ask":
             if template == "none" or not out["utterance"]:
                 reasons.append("V1:ask_without_template_or_utterance")
-            if template not in ("then_what", "none") and not out["anchor_quote"]:
+            if require_quote and template not in ("then_what", "none") and not out["anchor_quote"]:
                 reasons.append("V1:anchor_required")
         elif out["utterance"]:
             notes.append(f"move={move}인데 utterance가 있음(무시함)")
@@ -186,20 +193,20 @@ class Validator:
             s = squash(s)
             return bool(s) and any(s in p for p in p_squashed)
 
-        # ── V3 ──
-        if anchor and not verbatim(anchor):
-            reasons.append(f"V3:anchor_not_verbatim:{anchor}")
+        # ── V3 ── (require_quote=False인 고정 문구 경로에서는 건너뛴다)
         quotes = quoted_spans(utt)
-        for q in quotes:
+        if require_quote and anchor and not verbatim(anchor):
+            reasons.append(f"V3:anchor_not_verbatim:{anchor}")
+        for q in quotes if require_quote else []:
             if not verbatim(q):
                 reasons.append(f"V3:quote_not_verbatim:{q}")
-        if anchor and squash(anchor) not in squash(utt):
+        if require_quote and anchor and squash(anchor) not in squash(utt):
             reasons.append("V3:anchor_not_in_utterance")
-        if template == "relationship" and len({squash(q) for q in quotes}) < 2:
+        if require_quote and template == "relationship" and len({squash(q) for q in quotes}) < 2:
             reasons.append("V3:relationship_needs_two_quotes")
         # (확장) 인용은 참여자의 '단어'여야 한다. 문장 통째 되풀이는 clean 질문이 아니고,
         # 가드 모델도 조롱처럼 읽는다(gemma4:e4b 실험에서 S2로 판정됨).
-        for q in dict.fromkeys([anchor, *quotes]):
+        for q in dict.fromkeys([anchor, *quotes]) if require_quote else []:
             if not q:
                 continue
             n = len(q.split())
@@ -248,6 +255,14 @@ class Validator:
             reasons.append(f"V7:template_marker:{template}")
         if re.search(r"(은|는|이|가|와|과|을|를|으로|로)\((은|는|이|가|와|과|을|를|으로|로)\)|\{[XY]\}", utt):
             reasons.append("V7:template_literal")
+        # (확장, D9) 'X은(는) 어떤 X'·'X은(는) 어디쯤'·'X은(는) 마치 무엇 같' 자리는 명사 자리다. 활용형을 넣으면
+        # "그 '설레요'는 어떤 '설레요'인가요?"처럼 어색하다. 명사형으로 바꾸면 참여자가 쓰지 않은 말이 되므로 막기만 한다.
+        if self.predicate_as_noun and template in ("what_kind", "where", "like_what"):
+            for q in dict.fromkeys([anchor, *quotes]):
+                toks = [t for t in self.analyzer.tokens(q) if t.base_tag not in ("SF", "SP", "SS", "SE", "SW")] if q else []
+                if toks and toks[-1].base_tag == "EF":
+                    reasons.append(f"V7:predicate_as_noun:{q}")
+                    break
 
         # ── V9 (L5) ──
         if self.depth_block:

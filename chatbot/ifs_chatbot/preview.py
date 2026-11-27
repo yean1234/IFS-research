@@ -32,11 +32,28 @@ from pathlib import Path
 from .candidates import canonical, effective_params, sha256_text
 
 log = logging.getLogger("ifs_chatbot.preview")
+
+
+def _asset_bytes(asset: dict) -> bytes:
+    """asset의 GLB 바이트(sha256 다시 확인). 파일이 없거나 바뀌었으면 PreviewAssetError."""
+    import hashlib
+    try:
+        raw = Path(asset["glbPath"]).read_bytes()
+    except OSError as exc:
+        raise PreviewAssetError(f"GLB 파일을 읽지 못함: {exc}") from exc
+    if hashlib.sha256(raw).hexdigest() != asset["glbSha256"]:
+        raise PreviewAssetError("GLB 파일이 제시한 뒤 바뀜(sha256 다름)")
+    return raw
 MODES = ("webgl", "image", "none")
 
 
 class PreviewError(RuntimeError):
     """플레이어가 없거나 응답하지 않음 등. 서비스는 이것을 받으면 none으로 대체한다."""
+
+
+class PreviewAssetError(PreviewError):
+    """G62: 생성 형태 GLB 하나를 그리지 못함(플레이어 자체는 정상). 서비스는 image 경로를 닫지 않고 그대로 올린다 —
+    부른 쪽(SelectionFlow)이 그 생성 후보를 후보에서 빼고 사유를 기록한다(절차 메시 모습으로 생성 후보를 보이지 않는다)."""
 
 
 # ── PNG (외부 라이브러리 없이) ─────────────────────────────────────────────────
@@ -94,6 +111,41 @@ def fake_png(spec: dict, overrides: dict, defaults: dict, width: int = 160, heig
     return png_bytes(width, height, rows, {"Software": "ifs-chatbot fake preview (NOT Unity)"})
 
 
+def fake_asset_png(spec: dict, overrides: dict, defaults: dict, glb: bytes, width: int = 160, height: int = 120) -> bytes:
+    """테스트용 가짜 그림(생성 형태): GLB 정점을 정면(x, y)으로 투영한 점들로 윤곽을 찍는다. 색·밝기·투명도는 스펙 값(fake_png와 같은 식),
+    크기는 가장 긴 변을 절차 형상 지름에 맞춘다. 같은 입력 → 같은 바이트. Unity 렌더가 아니다."""
+    from .form_assets import GlbError, read_glb_positions
+    try:
+        pos, _ = read_glb_positions(glb)
+    except GlbError as exc:
+        raise PreviewAssetError(f"GLB를 읽지 못함: {exc}") from exc
+    p = effective_params(spec, defaults, overrides)
+    r, g, b = colorsys.hls_to_rgb(p["material.color.h"], p["material.color.l"], p["material.color.s"])
+    gain = 0.4 + 1.2 * p["material.brightness"]
+    col = [min(1.0, c * gain) for c in (r, g, b)]
+    alpha = p["material.opacity"]
+    diameter = 2 * min(width, height) * 0.22 * (2.0 ** ((p["layout.size"] - 0.5) * 2.0))
+    xs, ys, zs = [q[0] for q in pos], [q[1] for q in pos], [q[2] for q in pos]
+    longest = max(max(xs) - min(xs), max(ys) - min(ys), max(zs) - min(zs)) or 1.0
+    k = diameter / longest
+    cx, cy = (max(xs) + min(xs)) / 2, (max(ys) + min(ys)) / 2
+    hit = set()
+    for x, y, _z in pos:
+        px, py = int(round(width / 2 + (x - cx) * k)), int(round(height / 2 - (y - cy) * k))
+        for dx in (-1, 0, 1):
+            for dy in (-1, 0, 1):
+                hit.add((px + dx, py + dy))
+    bg = 0.74
+    rows = []
+    for y in range(height):
+        row = bytearray()
+        for x in range(width):
+            a = alpha if (x, y) in hit else 0.0
+            row += bytes(int(255 * ((1 - a) * bg + a * c)) for c in col)
+        rows.append(bytes(row))
+    return png_bytes(width, height, rows, {"Software": "ifs-chatbot fake preview (NOT Unity)", "Comment": "form asset"})
+
+
 # ── 렌더러 ──────────────────────────────────────────────────────────────────
 class FakeRenderer:
     name = "fake"
@@ -102,8 +154,10 @@ class FakeRenderer:
         self.defaults, self.width, self.height = defaults, width, height
         self.calls = 0
 
-    def render(self, spec_json: str, overrides: dict) -> bytes:
+    def render(self, spec_json: str, overrides: dict, asset: dict | None = None) -> bytes:
         self.calls += 1
+        if asset is not None:
+            return fake_asset_png(json.loads(spec_json), overrides, self.defaults, _asset_bytes(asset), self.width, self.height)
         return fake_png(json.loads(spec_json), overrides, self.defaults, self.width, self.height)
 
     def info(self) -> dict:
@@ -168,7 +222,7 @@ class UnityQueueRenderer:
         self.started_at = time.time()
         log.info("미리보기 플레이어 준비(%.2fs): %s", self.startup_s, self.queue_dir)
 
-    def render(self, spec_json: str, overrides: dict) -> bytes:
+    def render(self, spec_json: str, overrides: dict, asset: dict | None = None) -> bytes:
         with self.lock:
             self.start()
             self.seq += 1
@@ -178,6 +232,8 @@ class UnityQueueRenderer:
             png = Path(f"{out_prefix}_scene.png")
             body = {"specJson": spec_json, "overrides": overrides or {}, "width": self.width, "height": self.height,
                     "backgrounds": ["scene"], "out": str(out_prefix)}
+            if asset is not None:       # G62: 생성 형태 GLB(플레이어가 sha256을 다시 확인하고 GlbMeshReader로 읽음)
+                body["formAsset"] = {"assetId": asset["assetId"], "glb": str(asset["glbPath"]), "glbSha256": asset["glbSha256"]}
             tmp = self.queue_dir / f"{name}.tmp"
             tmp.write_text(json.dumps(body, ensure_ascii=False), encoding="utf-8")
             t0 = time.perf_counter()
@@ -199,8 +255,13 @@ class UnityQueueRenderer:
             if result is None:
                 raise PreviewError("플레이어 응답 파일을 읽지 못함")
             try:
+                if result.get("formAssetError"):
+                    raise PreviewAssetError("생성 형태 GLB를 그리지 못함: " + str(result.get("formAssetError"))[:300])
                 if not result.get("ok"):
                     raise PreviewError("플레이어가 그리지 못함: " + str(result.get("error"))[:300])
+                if asset is not None and (result.get("formAsset") or {}).get("status") != "applied":
+                    # G62 전에 빌드한 플레이어는 formAsset을 모르고 절차 메시로 그린다 → 그 그림을 생성 후보로 쓰지 않는다
+                    raise PreviewAssetError("플레이어가 생성 형태를 적용했다고 알리지 않음(G62 코드로 다시 빌드해야 함)")
                 data = png.read_bytes()
             finally:
                 for f in (done, png):
@@ -324,18 +385,24 @@ class PreviewService:
             except Exception:  # noqa: BLE001
                 pass
 
-    def render(self, spec: dict, overrides: dict) -> bytes | None:
-        """PNG 바이트. image 경로를 쓸 수 없거나 실패하면 None(실패하면 이후 image 경로는 닫힘)."""
+    def render(self, spec: dict, overrides: dict, asset: dict | None = None) -> bytes | None:
+        """PNG 바이트. image 경로를 쓸 수 없거나 실패하면 None(실패하면 이후 image 경로는 닫힘).
+        asset(G62) = {assetId, glbSha256, glbPath}: 생성 형태 메시로 그린다. 그 GLB만 그리지 못하면 PreviewAssetError를 올린다
+        (image 경로는 닫지 않음). asset이 없으면 지금과 같은 호출·캐시 키다."""
         if not self.image_ok:
             return None
         spec_json = json.dumps(spec, ensure_ascii=False)
-        key = sha256_text(spec_json + "|" + canonical(overrides or {}))
+        key = sha256_text(spec_json + "|" + canonical(overrides or {})
+                          + (("|asset:" + asset["glbSha256"]) if asset is not None else ""))
         with self._lock:
             if key in self._cache:
                 self._cache.move_to_end(key)
                 return self._cache[key]
         try:
-            data = self.renderer.render(spec_json, dict(overrides or {}))
+            data = (self.renderer.render(spec_json, dict(overrides or {}), asset) if asset is not None
+                    else self.renderer.render(spec_json, dict(overrides or {})))
+        except PreviewAssetError:
+            raise
         except PreviewError as exc:
             self._fail(str(exc))
             return None

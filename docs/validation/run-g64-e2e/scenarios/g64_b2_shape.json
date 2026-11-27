@@ -1,0 +1,29 @@
+{
+  "id": "g64_b2_shape",
+  "title": "감정어 시작 → 다리 → 단순 도형(동그란 공), 크기·색·움직임",
+  "source": "run-g64-e2e(2026-11-27) 합성 시나리오. 구성: bridge/shape/medium",
+  "config": "bridge",
+  "condition": "chatbot",
+  "replyBy": {
+    "opening": "막막해요",
+    "location": "어깨 쪽 몸 표면이요",
+    "find": [
+      "그게 다예요"
+    ],
+    "focus_hold": "어깨가 뻐근해요",
+    "bridge": "동그란 공 같아요",
+    "flesh_out": [
+      "작아요",
+      "없어요"
+    ],
+    "probe_size_shape": "작아요",
+    "probe_color_brightness": "파란색이에요",
+    "probe_movement": "천천히 굴러요"
+  },
+  "defaultReply": "없어요",
+  "expect": {
+    "endedBy": "completed",
+    "firstElicitedBy": "bridge"
+  },
+  "note": "합성 대사(run-g64-e2e 실험용으로 에이전트가 지은 것). 실제 참여자 응답이 아니다. 위기·자해 내용 없음. replyBy는 질문 종류별 답이다(tools/drive_by_question.py가 읽는다). 차원 프로브 답은 그 프로브가 나올 때만 쓰인다."
+}

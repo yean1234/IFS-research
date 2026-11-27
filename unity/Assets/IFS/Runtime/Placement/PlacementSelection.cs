@@ -1,4 +1,6 @@
-// 배치 러너가 읽는 선택 파일(selection.json, 형식 ifs-selection/0.1·0.2 — 챗봇 쪽 후보 선택·조절 단계가 쓴다. 결정 G15·G23, D8, G31–G34).
+// 배치 러너가 읽는 선택 파일(selection.json, 형식 ifs-selection/0.1·0.2·0.3 — 챗봇 쪽 후보 선택·조절 단계가 쓴다. 결정 G15·G23, D8, G31–G34, G62).
+//   0.3(G62): form.asset(고른 생성 형태 메시 — FormAssetRef, 러너가 GLB를 읽어 절차 메시 대신 씀), 출처 값 generated_chosen,
+//             defaultFormSource·selection.acceptedDefault(기본 후보·그대로 확정했는지 — manifest selection에 옮김). skipped·colorChanged 필수는 0.2와 같다.
 // 러너가 읽는 필드는 다음으로 고정한다. 그 밖의 필드는 읽지 않는다(무시).
 //   formatVersion      "ifs-selection/0.1" 또는 "ifs-selection/0.2"(KnownFormatVersions). 접두어 "ifs-selection/"이 아니거나 모르는 버전이면
 //                      경고(시작은 함). 모르는 버전은 0.2 규칙으로 읽는다.
@@ -29,6 +31,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using IFS.SceneSpec.Ownership;
+using FormAssetRef = IFS.SceneSpec.FormAsset.FormAssetRef;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -39,8 +42,9 @@ namespace IFS.SceneSpec.Placement
         public const string FormatPrefix = "ifs-selection/";
         public const string FormatVersion01 = "ifs-selection/0.1";
         public const string FormatVersion02 = "ifs-selection/0.2";
-        /// <summary>러너가 아는 선택 파일 버전(0.1: G27까지, 0.2: G31–G34). 둘 다 읽는다.</summary>
-        public static readonly string[] KnownFormatVersions = { "ifs-selection/0.1", "ifs-selection/0.2" };
+        public const string FormatVersion03 = "ifs-selection/0.3";
+        /// <summary>러너가 아는 선택 파일 버전(0.1: G27까지, 0.2: G31–G34, 0.3: G62 생성 형태 메시). 모두 읽는다.</summary>
+        public static readonly string[] KnownFormatVersions = { "ifs-selection/0.1", "ifs-selection/0.2", "ifs-selection/0.3" };
         /// <summary>선택 파일 덮어쓰기에 넣을 수 없는 키(위치·거리는 실험 조건 — G10). 러너가 시작 자리를 실험 설정으로 정한다.</summary>
         public static readonly string[] ForbiddenOverrideKeys = { "layout.distance", "layout.verticalOffset" };
         /// <summary>specSha256을 저장된 spec 파일 바이트로 쟀다는 표시(spec.sha256Basis). 러너는 이것만 받는다(G26).</summary>
@@ -59,6 +63,10 @@ namespace IFS.SceneSpec.Placement
         public static readonly string[] SourceValues = { "said", "chosen", "edited", "default", "said_unrendered_chosen", "said_unrendered_default" };
         /// <summary>0.1 sources의 출처 값 네 가지(selection.v0.1.json). 0.1 파일에 새 값이 있으면 거부한다.</summary>
         public static readonly string[] SourceValues01 = { "said", "chosen", "edited", "default" };
+        /// <summary>0.3 sources의 출처 값(selection.v0.3.json $defs.source): 0.2의 여섯 가지 + generated_chosen(생성 형태 후보를 고름, G62).
+        /// 0.1·0.2 파일에 generated_chosen이 있으면 거부한다.</summary>
+        public static readonly string[] SourceValues03 = { "said", "chosen", "edited", "default", "said_unrendered_chosen", "said_unrendered_default", "generated_chosen" };
+        public const string GeneratedChosen = "generated_chosen";
 
         /// <summary>파일 이름만(경로는 기록에 남기지 않는다).</summary>
         public string FileName { get; private set; }
@@ -87,6 +95,11 @@ namespace IFS.SceneSpec.Placement
         public IReadOnlyList<string> SafetyFlagCategories =>
             (SafetyFlags ?? new JArray()).OfType<JObject>().Select(f => f["category"]?.Type == JTokenType.String ? (string)f["category"] : null)
                 .Where(c => c != null).Distinct().ToList();
+        /// <summary>G62(0.3): 고른 생성 형태 메시(form.asset). 없거나 null이면 null(절차 메시). 러너가 GLB를 읽어 절차 메시 대신 쓴다.</summary>
+        public FormAssetRef FormAsset { get; private set; }
+        /// <summary>G62(0.3): 그 세션에서 기본이었던 형태 후보 출처(defaultFormSource)와 기본을 그대로 확정했는지(selection.acceptedDefault). 없으면 null.</summary>
+        public string DefaultFormSource { get; private set; }
+        public bool? AcceptedDefault { get; private set; }
         /// <summary>시작은 하되 남겨 둘 경고(확인 화면, events.csv warning).</summary>
         public List<string> Warnings { get; } = new List<string>();
 
@@ -135,6 +148,7 @@ namespace IFS.SceneSpec.Placement
             // 모르는 버전: 경고만 하고 새 필드는 있으면 읽음(없어도 거부하지 않음), 출처는 여섯 가지까지 받음.
             bool v01 = s.FormatVersion == FormatVersion01;
             bool v02 = s.FormatVersion == FormatVersion02;
+            bool v03 = s.FormatVersion == FormatVersion03;
 
             // specSha256의 기준(spec.sha256Basis)과 챗봇이 적은 runnerReady(G26). 기준이 파일이 아니면 해시를 비교하지 않고 거부한다.
             if (o["spec"] is JObject specInfo && specInfo.TryGetValue("sha256Basis", out var basis))
@@ -195,7 +209,10 @@ namespace IFS.SceneSpec.Placement
                 var skipped = sel["skipped"];
                 if (skipped != null && skipped.Type == JTokenType.Boolean) s.Skipped = (bool)skipped;
                 else if (skipped != null && skipped.Type != JTokenType.Null) errors.Add("selection.skipped는 true | false여야 함");
-                else if (v02) errors.Add("selection.skipped가 없음(ifs-selection/0.2에서 필수, true | false — G34)");
+                else if (v02 || v03) errors.Add($"selection.skipped가 없음({s.FormatVersion}에서 필수, true | false — G34)");
+                var acc = sel["acceptedDefault"];
+                if (acc != null && acc.Type == JTokenType.Boolean) s.AcceptedDefault = (bool)acc;
+                else if (acc != null && acc.Type != JTokenType.Null) errors.Add("selection.acceptedDefault는 true | false | null(G62)");
                 if (none != null && none.Type == JTokenType.Boolean)
                 {
                     if (s.None && s.SelectedCandidateId != null)
@@ -211,7 +228,7 @@ namespace IFS.SceneSpec.Placement
             var cc = o["colorChanged"];
             if (cc != null && cc.Type == JTokenType.Boolean) s.ColorChanged = (bool)cc;
             else if (cc != null && cc.Type != JTokenType.Null) errors.Add("colorChanged는 true | false여야 함");
-            else if (v02) errors.Add("colorChanged가 없음(ifs-selection/0.2에서 필수, true | false — G31)");
+            else if (v02 || v03) errors.Add($"colorChanged가 없음({s.FormatVersion}에서 필수, true | false — G31)");
 
             // sources: 슬롯 이름과 출처 값만 검사하고(G27) 값은 해석하지 않고 옮긴다. 없거나 null이면 null.
             var src = o["sources"];
@@ -220,7 +237,8 @@ namespace IFS.SceneSpec.Placement
             else
             {
                 int before = errors.Count;
-                var allowed = v01 ? SourceValues01 : SourceValues;
+                // 0.1은 네 값, 0.2는 여섯 값, 0.3·모르는 버전은 generated_chosen까지
+                var allowed = v01 ? SourceValues01 : v02 ? SourceValues : SourceValues03;
                 foreach (var p in srcObj.Properties())
                 {
                     if (Array.IndexOf(SlotNames, p.Name) < 0)
@@ -234,6 +252,33 @@ namespace IFS.SceneSpec.Placement
                     errors.Add("sources: form.baseVariant가 있는데 form.base가 없음 — 어느 기본 형상의 변형값인지 알 수 없음(CP10 G39)");
                 if (errors.Count == before) s.Sources = srcObj.DeepClone();
             }
+
+            // form.asset(G62, 0.3): 고른 생성 형태 메시. 0.1·0.2 파일에 있으면 거부(그 판에는 없는 필드). 출처와 맞아야 한다:
+            // form.type이 generated_chosen이면 form.asset이 있어야 하고, form.asset이 있으면 form.type은 generated_chosen이다.
+            var fa = (o["form"] as JObject)?["asset"];
+            if (fa != null && fa.Type != JTokenType.Null)
+            {
+                if (v01 || v02) errors.Add($"form.asset은 {FormatVersion03}부터 있는 필드인데 {s.FormatVersion} 파일에 있음(G62)");
+                else
+                {
+                    var r = FormAssetRef.Parse(fa, out var fe);
+                    if (r == null) errors.Add(fe);
+                    else s.FormAsset = r;
+                }
+            }
+            else if (o["form"] != null && o["form"].Type != JTokenType.Object && o["form"].Type != JTokenType.Null)
+                errors.Add("form은 객체여야 함(G62)");
+            string formSource = (s.Sources as JObject)?["form.type"]?.Type == JTokenType.String ? (string)s.Sources["form.type"] : null;
+            if (s.Sources != null)
+            {
+                if (formSource == GeneratedChosen && s.FormAsset == null && errors.Count == 0)
+                    errors.Add("sources.form.type이 generated_chosen인데 form.asset이 없음 — 어느 생성 메시를 골랐는지 알 수 없음(G62)");
+                else if (s.FormAsset != null && formSource != GeneratedChosen)
+                    errors.Add($"form.asset이 있는데 sources.form.type이 {formSource ?? "없음"} — 생성 메시를 쓸지 알 수 없음(G62)");
+            }
+            var dfs = o["defaultFormSource"];
+            if (dfs != null && dfs.Type == JTokenType.String) s.DefaultFormSource = (string)dfs;
+            else if (dfs != null && dfs.Type != JTokenType.Null) errors.Add("defaultFormSource는 문자열(G62)");
 
             // safetyFlags(G50 (4), 있으면): 형식만 검사하고 값은 해석하지 않고 옮긴다. 시작은 막지 않는다
             var sf = o["safetyFlags"];
@@ -339,6 +384,10 @@ namespace IFS.SceneSpec.Placement
                 ["colorChanged"] = ColorChanged.HasValue ? new JValue(ColorChanged.Value) : JValue.CreateNull(),
             };
             if (SafetyFlags != null) o["safetyFlags"] = SafetyFlags.DeepClone();
+            // G62: 0.3 파일에서 값이 있을 때만(이전 기록의 manifest 바이트 그대로). 적용 결과는 manifest 맨 위 formAsset
+            if (DefaultFormSource != null) o["defaultFormSource"] = DefaultFormSource;
+            if (AcceptedDefault.HasValue) o["acceptedDefault"] = AcceptedDefault.Value;
+            if (FormAsset != null) o["formAssetId"] = FormAsset.AssetId;
             return o;
         }
     }

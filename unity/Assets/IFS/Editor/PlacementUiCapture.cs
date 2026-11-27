@@ -11,6 +11,11 @@
 //    → unity_gui_*.png(Game 창 스크린숏: 실험자 화면 + 데스크톱 모의 참여자 시점). 끝나면 에디터를 닫는다.
 //    헤드셋은 쓰지 않는다(Play에서 OpenXR 초기화가 실패해도 계속된다). Play 뒤 Unity가 QualitySettings.asset·
 //    OpenXRPackageSettings.asset을 다시 쓰면 git checkout으로 되돌린다.
+// 3) G63 헤드셋 UI 개선 전후(2026-11-27, 배치모드): 같은 장면을 UI 플래그를 끈 설정과 묶음(ApplyUiBundle)을 켠 설정으로 찍는다.
+//    Unity.exe -batchmode -projectPath <unity> -executeMethod IFS.SceneSpec.EditorTools.PlacementUiCapture.CaptureG63Batch
+//              -outDir <폴더> [-recordRoot <임시 기록 루트>] -logFile <로그>
+//    → off/·on/ 아래 g63_panel_instruction.png(평정 지시문 — on은 첫 쪽), g63_panel_item7_cursor.png, g63_scene_item.png,
+//      on/g63_panel_item7_confirm_flash.png(확정 표시), 각 폴더 unity_metrics.json(판 아래 각·폭·대비 실측).
 // 기록 루트를 주지 않으면 OS 임시 폴더(저장소 밖)에 쓴다. 캡처 PNG 크기는 원본 그대로 — 문서용 축소는 따로.
 // 테스트 대상이 아닌 도구라 compile-check(dotnet)에서는 빈 파일이다(UNITY_EDITOR 아님).
 #if UNITY_EDITOR
@@ -62,8 +67,30 @@ namespace IFS.SceneSpec.EditorTools
             EditorApplication.Exit(exit);
         }
 
-        public static void CapturePanels(string outDir, string recordRoot)
+        // ── 3) G63 전후 ──────────────────────────────────────────────────
+        public static void CaptureG63Batch()
         {
+            int exit = 1;
+            try
+            {
+                string outDir = Path.GetFullPath(Arg("-outDir") ?? throw new ArgumentException("-outDir가 없습니다"));
+                CapturePanels(Path.Combine(outDir, "off"), TempRecordRoot(), new PlacementConfig(), "g63");
+                var on = new PlacementConfig();
+                on.ApplyUiBundle();
+                CapturePanels(Path.Combine(outDir, "on"), TempRecordRoot(), on, "g63");
+                exit = 0;
+            }
+            catch (Exception e) { Debug.LogError("[IFS] UI 캡처(G63) 실패: " + e); }
+            EditorApplication.Exit(exit);
+        }
+
+        public static void CapturePanels(string outDir, string recordRoot) => CapturePanels(outDir, recordRoot, null, null);
+
+        /// <summary>uiConfig: G63 UI 플래그를 가져올 설정(null이면 예전 캡처 그대로). prefix가 있으면(G63 전후) 장면을 줄여 찍는다.</summary>
+        public static void CapturePanels(string outDir, string recordRoot, PlacementConfig uiConfig, string prefix)
+        {
+            bool g63 = prefix != null;
+            string Name(string legacy, string shortName) => g63 ? prefix + "_" + shortName : legacy;
             Directory.CreateDirectory(outDir);
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             var runner = PlacementExperimentMenu.BuildObjects();
@@ -84,6 +111,20 @@ namespace IFS.SceneSpec.EditorTools
                 runner.SetRecordRoot(recordRoot);
                 runner.SelectTaskText(ScaleAFile);
                 var cfg = new PlacementConfig { condition = PlacementConfig.ConditionView, baselineSeconds = 1, participantRatesWithController = true };
+                if (uiConfig != null)
+                {
+                    cfg.uiComfortWrap = uiConfig.uiComfortWrap;
+                    cfg.uiDarkPanel = uiConfig.uiDarkPanel;
+                    cfg.uiRayHover = uiConfig.uiRayHover;
+                    cfg.uiHaptics = uiConfig.uiHaptics;
+                    cfg.uiRatingConfirmFlash = uiConfig.uiRatingConfirmFlash;
+                    cfg.uiNarrowScale = uiConfig.uiNarrowScale;
+                    metrics["uiFlags"] = new JObject
+                    {
+                        ["uiComfortWrap"] = cfg.uiComfortWrap, ["uiDarkPanel"] = cfg.uiDarkPanel, ["uiRayHover"] = cfg.uiRayHover,
+                        ["uiHaptics"] = cfg.uiHaptics, ["uiRatingConfirmFlash"] = cfg.uiRatingConfirmFlash, ["uiNarrowScale"] = cfg.uiNarrowScale,
+                    };
+                }
                 runner.BeginAuto(new PlacementAutoScript(), cfg);
                 runner.ParticipantNumberText = "1";
                 runner.SpecPathText = ExampleSpec();
@@ -94,28 +135,39 @@ namespace IFS.SceneSpec.EditorTools
                 metrics["glyph"] = MeasureGlyphs(panel, cam);
 
                 // intro(안내 글)
-                shots.Add(ShotEye(cam, panel, outDir, "unity_panel_intro", null));
+                if (!g63) shots.Add(ShotEye(cam, panel, outDir, "unity_panel_intro", null));
                 metrics["backgroundLighting"] = MeasureBackgroundLighting(cam, panel);
-                // 평정 지시문(scaleA 공통 지시문, 긴 글)
+                // 평정 지시문(scaleA 공통 지시문, 긴 글). G63 uiComfortWrap이면 문장 경계에서 나눈 첫 쪽
                 Advance(runner, () => s.ItemsInstructionActive);
-                shots.Add(ShotEye(cam, panel, outDir, "unity_panel_instruction", null));
+                shots.Add(ShotEye(cam, panel, outDir, Name("unity_panel_instruction", "panel_instruction"), null));
+                if (g63) shots[shots.Count - 1]["instructionPage"] = $"{s.InstructionPage}/{s.InstructionPageCount}";
                 // 첫 문항 A1(7점 모두 기준점), 참여자 컨트롤러로 6을 고르는 중
                 Advance(runner, () => s.CurrentItem != null);
                 SetCursor(runner, 6);
-                shots.Add(ShotEye(cam, panel, outDir, "unity_panel_item7_cursor", 6));
+                shots.Add(ShotEye(cam, panel, outDir, Name("unity_panel_item7_cursor", "panel_item7_cursor"), 6));
+                if (g63 && cfg.uiRatingConfirmFlash)
+                {
+                    // G63 (5) 확정 표시(0.4 s 굵은 테두리) — 판에 바로 그린다(세션 흐름과 같은 모양)
+                    panel.ShowItem(s.CurrentItem, 6, PanelCenter(runner), Eye(runner), confirmFlash: true);
+                    shots.Add(ShotEye(cam, panel, outDir, prefix + "_panel_item7_confirm_flash", 6));
+                }
                 // 같은 장면을 데스크톱 모의 시점(눈높이 1.6 m, 18° 아래, 세로 시야 60°)으로: 물체와 판의 자리
-                shots.Add(ShotDesktop(cam, panel, outDir, "unity_scene_item"));
-                // 고르기 전(커서 없음)
-                SetCursor(runner, null);
-                shots.Add(ShotEye(cam, panel, outDir, "unity_panel_item7_nocursor", null));
-                // 양 끝 기준점만 있는 문항(기본 문구 파일의 own과 같은 형태 — scaleA의 S5: 1·7만)
-                var ends = runner.TaskText.Items.First(i => i.Key == "S5");
-                panel.ShowItem(ends, 4, PanelCenter(runner), Eye(runner));
-                shots.Add(ShotEye(cam, panel, outDir, "unity_panel_item7_ends_cursor", 4));
-                // 0–10(11칸) 배치 확인용: 문구 파일에 0–10 문항이 없어 S5의 글·양 끝 기준점을 그대로 쓰고 범위만 0–10으로(화면 배치 점검용, 문구 아님)
-                var wide = new PlacementItem { Key = "layout_check_0_10", Text = ends.Text, When = new[] { "pre" }, Min = 0, Max = 10, AnchorLow = ends.AnchorLow, AnchorHigh = ends.AnchorHigh };
-                panel.ShowItem(wide, 7, PanelCenter(runner), Eye(runner));
-                shots.Add(ShotEye(cam, panel, outDir, "unity_panel_item11_cursor", 7));
+                panel.ShowItem(s.CurrentItem, 6, PanelCenter(runner), Eye(runner));
+                shots.Add(ShotDesktop(cam, panel, outDir, Name("unity_scene_item", "scene_item")));
+                if (!g63)
+                {
+                    // 고르기 전(커서 없음)
+                    SetCursor(runner, null);
+                    shots.Add(ShotEye(cam, panel, outDir, "unity_panel_item7_nocursor", null));
+                    // 양 끝 기준점만 있는 문항(기본 문구 파일의 own과 같은 형태 — scaleA의 S5: 1·7만)
+                    var ends = runner.TaskText.Items.First(i => i.Key == "S5");
+                    panel.ShowItem(ends, 4, PanelCenter(runner), Eye(runner));
+                    shots.Add(ShotEye(cam, panel, outDir, "unity_panel_item7_ends_cursor", 4));
+                    // 0–10(11칸) 배치 확인용: 문구 파일에 0–10 문항이 없어 S5의 글·양 끝 기준점을 그대로 쓰고 범위만 0–10으로(화면 배치 점검용, 문구 아님)
+                    var wide = new PlacementItem { Key = "layout_check_0_10", Text = ends.Text, When = new[] { "pre" }, Min = 0, Max = 10, AnchorLow = ends.AnchorLow, AnchorHigh = ends.AnchorHigh };
+                    panel.ShowItem(wide, 7, PanelCenter(runner), Eye(runner));
+                    shots.Add(ShotEye(cam, panel, outDir, "unity_panel_item11_cursor", 7));
+                }
             }
             finally
             {
@@ -181,6 +233,9 @@ namespace IFS.SceneSpec.EditorTools
                 ["panelSizeM"] = new JArray(Math.Round(panel.PanelSizeM.x, 4), Math.Round(panel.PanelSizeM.y, 4)),
                 ["eyeToPanelCenterM"] = Math.Round(Vector3.Distance(eye, center), 4),
                 ["panelWidthDeg"] = Math.Round(2 * Math.Atan(panel.PanelSizeM.x / 2 / Vector3.Distance(eye, center)) * 180 / Math.PI, 2),
+                ["panelBottomBelowHorizonDeg"] = Math.Round(panel.BottomBelowHorizonDeg, 2),   // G63
+                ["wrapChars"] = panel.WrapCharsShown,   // G63
+                ["darkTheme"] = panel.DarkTheme,   // G63
                 ["contrast"] = MeasureContrast(cam, tex, panel, cursor),
             };
             UnityEngine.Object.DestroyImmediate(tex);
@@ -351,20 +406,20 @@ namespace IFS.SceneSpec.EditorTools
             var bg = Median(Pixels(tex, new RectInt(bgRect.xMin + 8, bgRect.yMax - 9, Math.Max(1, bgRect.width - 16), 6)).ToList());
             o["panelScreenRect"] = $"{bgRect.xMin},{bgRect.yMin},{bgRect.width}x{bgRect.height}";
             o["panelBackgroundSrgb"] = Hex(bg);
-            var text = Darkest(Pixels(tex, TextRect(cam, body, tex)));
+            var text = Ink(Pixels(tex, TextRect(cam, body, tex)), bg);
             o["bodyTextSrgb"] = Hex(text);
             o["bodyContrast"] = Math.Round(PlacementPanelMetrics.ContrastRatio(Lum(text), Lum(bg)), 2);
             var labels = TryField(panel, "_labels") as List<TextMesh>;
             var numbers = TryField(panel, "_numbers") as List<TextMesh>;
             if (labels != null && labels.Count > 0 && labels[0].gameObject.activeSelf && !string.IsNullOrEmpty(labels[0].text))
             {
-                var lt = Darkest(Pixels(tex, TextRect(cam, labels[0], tex)));
+                var lt = Ink(Pixels(tex, TextRect(cam, labels[0], tex)), bg);
                 o["firstLabelSrgb"] = Hex(lt);
                 o["firstLabelContrast"] = Math.Round(PlacementPanelMetrics.ContrastRatio(Lum(lt), Lum(bg)), 2);
             }
             if (numbers != null && numbers.Count > 0 && numbers[0].gameObject.activeSelf)
             {
-                var nt = Darkest(Pixels(tex, TextRect(cam, numbers[0], tex)));
+                var nt = Ink(Pixels(tex, TextRect(cam, numbers[0], tex)), bg);
                 o["firstNumberSrgb"] = Hex(nt);
                 o["firstNumberContrast"] = Math.Round(PlacementPanelMetrics.ContrastRatio(Lum(nt), Lum(bg)), 2);
             }
@@ -372,16 +427,28 @@ namespace IFS.SceneSpec.EditorTools
             if (cursor.HasValue && sel != null)
             {
                 var r = TextRect(cam, sel, tex);
-                var num = Darkest(Pixels(tex, r));
                 // 고른 칸 바탕: 숫자 글자 상자 바로 위 2 px 띠(글자 밖)
                 var cell = Median(Pixels(tex, new RectInt(r.xMin, Math.Min(tex.height - 3, r.yMax + 2), r.width, 2)).ToList());
+                var num = Ink(Pixels(tex, r), cell);
                 o["selectedNumberSrgb"] = Hex(num);
                 o["selectedCellBackgroundSrgb"] = Hex(cell);
                 o["selectedNumberContrast"] = Math.Round(PlacementPanelMetrics.ContrastRatio(Lum(num), Lum(cell)), 2);
+                // G63: 칸 바탕을 고른 칸 바탕 사각형(테두리 안쪽) 화소의 중앙값으로도 잰다 — 위 2 px 띠는 테두리가 굵거나 글이 칸 위쪽에
+                // 붙으면 테두리에 걸린다(어두운 판·확정 표시). 기존 키는 그대로 두고 키를 더한다
+                if (TryField(panel, "_selFill") is GameObject fillGo && fillGo.activeSelf)
+                {
+                    var fr = ScreenRect(cam, fillGo.transform, new Bounds(Vector3.zero, new Vector3(1f, 1f, 0f)));
+                    var inner = new RectInt(fr.xMin + 3, fr.yMin + 3, Math.Max(1, fr.width - 6), Math.Max(1, fr.height - 6));
+                    var fill = Median(Pixels(tex, inner).ToList());
+                    var num2 = Ink(Pixels(tex, r), fill);
+                    o["selectedCellFillSrgb"] = Hex(fill);
+                    o["selectedNumberSrgbVsFill"] = Hex(num2);
+                    o["selectedNumberContrastVsFill"] = Math.Round(PlacementPanelMetrics.ContrastRatio(Lum(num2), Lum(fill)), 2);
+                }
                 int idx = numbers.IndexOf(sel);
                 if (labels != null && idx < labels.Count && !string.IsNullOrEmpty(labels[idx].text))
                 {
-                    var sl = Darkest(Pixels(tex, TextRect(cam, labels[idx], tex)));
+                    var sl = Ink(Pixels(tex, TextRect(cam, labels[idx], tex)), cell);
                     o["selectedLabelSrgb"] = Hex(sl);
                     o["selectedLabelContrast"] = Math.Round(PlacementPanelMetrics.ContrastRatio(Lum(sl), Lum(cell)), 2);
                 }
@@ -448,6 +515,15 @@ namespace IFS.SceneSpec.EditorTools
 
         static double Lum(Color32 c) => PlacementPanelMetrics.RelativeLuminance(c.r / 255.0, c.g / 255.0, c.b / 255.0);
         static Color32 Darkest(IEnumerable<Color32> px) => px.OrderBy(Lum).First();
+        /// <summary>글자 화소: 바탕보다 밝으면(G63 어두운 판의 밝은 글) 가장 밝은 화소, 아니면 가장 어두운 화소. 짙은 글/흰 판(기본)에서는 Darkest와 같다.</summary>
+        static Color32 Ink(IEnumerable<Color32> px, Color32 background)
+        {
+            var list = px.ToList();
+            var darkest = Darkest(list);
+            var brightest = list.OrderBy(Lum).Last();
+            double b = Lum(background);
+            return Math.Abs(Lum(brightest) - b) > Math.Abs(Lum(darkest) - b) ? brightest : darkest;
+        }
         static Color32 Median(List<Color32> px) => px.OrderBy(Lum).ElementAt(px.Count / 2);
         static string Hex(Color32 c) => $"#{c.r:X2}{c.g:X2}{c.b:X2}";
 

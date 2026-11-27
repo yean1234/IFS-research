@@ -1,0 +1,1944 @@
+{
+  "logVersion": "elicit-log/0.1",
+  "sessionId": "g64_b7_glass_negation__offline__r1",
+  "elicitationCondition": "chatbot",
+  "createdAt": "2026-11-27T16:00:29+09:00",
+  "endedAt": "2026-11-27T16:00:29+09:00",
+  "protocol": {
+    "promptVersion": "1.1.0",
+    "promptSha256": "sha256:f786ec582055cb04c03db037bc0cce4f4f9f8d3e4a4b717b98d5c585eb9ab082",
+    "contextTemplateVersion": "0.2.0",
+    "lexiconVersion": "layer1-attribute-lexicon@0.1.0 + layer1-interview-overlay@0.1.0",
+    "safetyLexiconVersion": "0.2.0",
+    "controllerVersion": "0.1.0",
+    "protocolId": "ifs-imagery-elicitation",
+    "protocolVersion": "1.5.0",
+    "anchorDoeRoot": true
+  },
+  "model": {
+    "name": "offline-template",
+    "quant": null,
+    "digest": null,
+    "runtime": "rule (개발용 대역, 연구 조건 아님)",
+    "sampling": null
+  },
+  "guard": {
+    "keywordLexicon": {
+      "file": "safety_ko.v0.2.json",
+      "version": "0.2.0"
+    },
+    "model": null,
+    "name": "keyword-only",
+    "digest": null
+  },
+  "analyzer": {
+    "backend": "kiwi",
+    "version": "0.24.1"
+  },
+  "validator": {
+    "strictNovelContent": true,
+    "l5Depth": "present_focus",
+    "maxAnchorEojeol": 3,
+    "maxRegenerations": 2,
+    "predicateAsNoun": true
+  },
+  "turns": [
+    {
+      "i": 0,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "system",
+      "source": "fixed:intro",
+      "stage": null,
+      "text": "안녕하세요. 저는 연구를 돕는 AI 면담 보조자예요. 지금 마음에 떠오르는 것을 자신의 말로 조금 더 표현해 볼 수 있게 질문만 드릴게요. 상담이나 치료는 아니에요. 잘 떠오르지 않으면 '잘 모르겠어요'라고 쓰셔도 괜찮아요. 그만하고 싶으면 언제든 [그만]을 누르거나 '그만'이라고 써 주세요. 바로 멈출게요.",
+      "phraseStatus": "draft"
+    },
+    {
+      "i": 1,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "participant",
+      "source": "control:start",
+      "stage": null,
+      "text": "[시작]"
+    },
+    {
+      "i": 2,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "system",
+      "source": "fixed:opening",
+      "stage": "find",
+      "text": "요즘 가장 신경 쓰고 있는 일 가운데 우선순위가 가장 높은 일 하나를 떠올려 주세요. 자세한 내용은 말하지 않아도 괜찮아요. 그 일을 떠올리면 지금 어떤 느낌이 드나요?",
+      "phraseStatus": "draft"
+    },
+    {
+      "i": 3,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "participant",
+      "source": "typed",
+      "stage": "find",
+      "text": "불안해요",
+      "guard": "SAFE",
+      "guardDetail": {
+        "level": "safe",
+        "label": "SAFE",
+        "alert": false,
+        "reasons": [],
+        "keywordHits": [],
+        "model": null
+      },
+      "crisisKeyword": false,
+      "flags": {
+        "noMore": false,
+        "delegation": false,
+        "depthStrong": [],
+        "depthWeak": []
+      }
+    },
+    {
+      "i": 4,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "system",
+      "source": "fixed:location",
+      "stage": "find",
+      "text": "그것이 몸 안에, 몸 표면에, 아니면 몸 주변에 있나요?",
+      "phraseStatus": "spec"
+    },
+    {
+      "i": 5,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "participant",
+      "source": "typed",
+      "stage": "find",
+      "text": "목 안쪽이요",
+      "guard": "SAFE",
+      "guardDetail": {
+        "level": "safe",
+        "label": "SAFE",
+        "alert": false,
+        "reasons": [],
+        "keywordHits": [],
+        "model": null
+      },
+      "crisisKeyword": false,
+      "flags": {
+        "noMore": false,
+        "delegation": false,
+        "depthStrong": [],
+        "depthWeak": []
+      }
+    },
+    {
+      "i": 6,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "interviewer",
+      "source": "llm",
+      "stage": "find",
+      "text": "'불안'에 대해 더 있나요?",
+      "output": {
+        "stage": "find",
+        "risk_signal": "none",
+        "move": "ask",
+        "template": "anything_else",
+        "anchor_quote": "불안",
+        "utterance": "'불안'에 대해 더 있나요?"
+      },
+      "checks": {
+        "passed": true,
+        "reasons": [],
+        "regenerations": 0,
+        "fallback": false
+      },
+      "attempts": [
+        {
+          "attempt": 0,
+          "seed": 7,
+          "raw": "{\"stage\": \"find\", \"risk_signal\": \"none\", \"move\": \"ask\", \"template\": \"anything_else\", \"anchor_quote\": \"불안\", \"utterance\": \"'불안'에 대해 더 있나요?\"}",
+          "parsed": {
+            "stage": "find",
+            "risk_signal": "none",
+            "move": "ask",
+            "template": "anything_else",
+            "anchor_quote": "불안",
+            "utterance": "'불안'에 대해 더 있나요?"
+          },
+          "passed": true,
+          "reasons": [],
+          "reasonsText": [],
+          "latencyMs": 0,
+          "meta": {
+            "offline": true
+          },
+          "guard": {
+            "level": "safe",
+            "label": "SAFE",
+            "alert": false,
+            "reasons": [],
+            "keywordHits": [],
+            "model": null
+          },
+          "notes": []
+        }
+      ]
+    },
+    {
+      "i": 7,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "participant",
+      "source": "typed",
+      "stage": "find",
+      "text": "없어요",
+      "guard": "SAFE",
+      "guardDetail": {
+        "level": "safe",
+        "label": "SAFE",
+        "alert": false,
+        "reasons": [],
+        "keywordHits": [],
+        "model": null
+      },
+      "crisisKeyword": false,
+      "flags": {
+        "noMore": true,
+        "delegation": false,
+        "depthStrong": [],
+        "depthWeak": []
+      }
+    },
+    {
+      "i": 8,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "system",
+      "source": "fixed:focus_hold",
+      "stage": "focus",
+      "text": "거기에 주의를 두고 잠시 머물러 보세요. 준비가 되면 지금 알아차려지는 것을 적어 주세요.",
+      "phraseStatus": "spec+draft"
+    },
+    {
+      "i": 9,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "participant",
+      "source": "typed",
+      "stage": "focus",
+      "text": "침이 잘 안 넘어가요",
+      "guard": "SAFE",
+      "guardDetail": {
+        "level": "safe",
+        "label": "SAFE",
+        "alert": false,
+        "reasons": [],
+        "keywordHits": [],
+        "model": null
+      },
+      "crisisKeyword": false,
+      "flags": {
+        "noMore": false,
+        "delegation": false,
+        "depthStrong": [],
+        "depthWeak": []
+      }
+    },
+    {
+      "i": 10,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "system",
+      "source": "bridge:like_what",
+      "stage": "flesh_out",
+      "text": "그 '불안'은 마치 무엇 같나요?",
+      "output": {
+        "stage": "flesh_out",
+        "risk_signal": "none",
+        "move": "ask",
+        "template": "like_what",
+        "anchor_quote": "불안",
+        "utterance": "그 '불안'은 마치 무엇 같나요?"
+      },
+      "checks": {
+        "passed": true,
+        "reasons": [],
+        "regenerations": 0,
+        "fallback": false,
+        "v8": "not_applied"
+      }
+    },
+    {
+      "i": 11,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "participant",
+      "source": "typed",
+      "stage": "flesh_out",
+      "text": "얇은 유리막 같아요",
+      "guard": "SAFE",
+      "guardDetail": {
+        "level": "safe",
+        "label": "SAFE",
+        "alert": false,
+        "reasons": [],
+        "keywordHits": [],
+        "model": null
+      },
+      "crisisKeyword": false,
+      "flags": {
+        "noMore": false,
+        "delegation": false,
+        "depthStrong": [],
+        "depthWeak": []
+      }
+    },
+    {
+      "i": 12,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "interviewer",
+      "source": "llm",
+      "stage": "flesh_out",
+      "text": "'유리'에 대해 더 있나요?",
+      "output": {
+        "stage": "flesh_out",
+        "risk_signal": "none",
+        "move": "ask",
+        "template": "anything_else",
+        "anchor_quote": "유리",
+        "utterance": "'유리'에 대해 더 있나요?"
+      },
+      "checks": {
+        "passed": true,
+        "reasons": [],
+        "regenerations": 0,
+        "fallback": false
+      },
+      "attempts": [
+        {
+          "attempt": 0,
+          "seed": 7,
+          "raw": "{\"stage\": \"flesh_out\", \"risk_signal\": \"none\", \"move\": \"ask\", \"template\": \"anything_else\", \"anchor_quote\": \"유리\", \"utterance\": \"'유리'에 대해 더 있나요?\"}",
+          "parsed": {
+            "stage": "flesh_out",
+            "risk_signal": "none",
+            "move": "ask",
+            "template": "anything_else",
+            "anchor_quote": "유리",
+            "utterance": "'유리'에 대해 더 있나요?"
+          },
+          "passed": true,
+          "reasons": [],
+          "reasonsText": [],
+          "latencyMs": 0,
+          "meta": {
+            "offline": true
+          },
+          "guard": {
+            "level": "safe",
+            "label": "SAFE",
+            "alert": false,
+            "reasons": [],
+            "keywordHits": [],
+            "model": null
+          },
+          "notes": []
+        }
+      ]
+    },
+    {
+      "i": 13,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "participant",
+      "source": "typed",
+      "stage": "flesh_out",
+      "text": "투명하고 금방 깨질 것 같아요",
+      "guard": "SAFE",
+      "guardDetail": {
+        "level": "safe",
+        "label": "SAFE",
+        "alert": false,
+        "reasons": [],
+        "keywordHits": [],
+        "model": null
+      },
+      "crisisKeyword": false,
+      "flags": {
+        "noMore": false,
+        "delegation": false,
+        "depthStrong": [],
+        "depthWeak": []
+      }
+    },
+    {
+      "i": 14,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "interviewer",
+      "source": "llm",
+      "stage": "flesh_out",
+      "text": "그 '막'은 어떤 '막'인가요?",
+      "output": {
+        "stage": "flesh_out",
+        "risk_signal": "none",
+        "move": "ask",
+        "template": "what_kind",
+        "anchor_quote": "막",
+        "utterance": "그 '막'은 어떤 '막'인가요?"
+      },
+      "checks": {
+        "passed": true,
+        "reasons": [],
+        "regenerations": 0,
+        "fallback": false
+      },
+      "attempts": [
+        {
+          "attempt": 0,
+          "seed": 7,
+          "raw": "{\"stage\": \"flesh_out\", \"risk_signal\": \"none\", \"move\": \"ask\", \"template\": \"what_kind\", \"anchor_quote\": \"막\", \"utterance\": \"그 '막'은 어떤 '막'인가요?\"}",
+          "parsed": {
+            "stage": "flesh_out",
+            "risk_signal": "none",
+            "move": "ask",
+            "template": "what_kind",
+            "anchor_quote": "막",
+            "utterance": "그 '막'은 어떤 '막'인가요?"
+          },
+          "passed": true,
+          "reasons": [],
+          "reasonsText": [],
+          "latencyMs": 0,
+          "meta": {
+            "offline": true
+          },
+          "guard": {
+            "level": "safe",
+            "label": "SAFE",
+            "alert": false,
+            "reasons": [],
+            "keywordHits": [],
+            "model": null
+          },
+          "notes": []
+        }
+      ]
+    },
+    {
+      "i": 15,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "participant",
+      "source": "typed",
+      "stage": "flesh_out",
+      "text": "없어요",
+      "guard": "SAFE",
+      "guardDetail": {
+        "level": "safe",
+        "label": "SAFE",
+        "alert": false,
+        "reasons": [],
+        "keywordHits": [],
+        "model": null
+      },
+      "crisisKeyword": false,
+      "flags": {
+        "noMore": true,
+        "delegation": false,
+        "depthStrong": [],
+        "depthWeak": []
+      }
+    },
+    {
+      "i": 16,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "system",
+      "source": "fixed:probe_size_shape",
+      "stage": "flesh_out",
+      "text": "그것에 크기나 모양이 있나요?",
+      "phraseStatus": "spec",
+      "probe": "size_shape"
+    },
+    {
+      "i": 17,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "participant",
+      "source": "typed",
+      "stage": "flesh_out",
+      "text": "작지는 않아요",
+      "guard": "SAFE",
+      "guardDetail": {
+        "level": "safe",
+        "label": "SAFE",
+        "alert": false,
+        "reasons": [],
+        "keywordHits": [],
+        "model": null
+      },
+      "crisisKeyword": false,
+      "flags": {
+        "noMore": false,
+        "delegation": false,
+        "depthStrong": [],
+        "depthWeak": []
+      }
+    },
+    {
+      "i": 18,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "system",
+      "source": "fixed:probe_color_brightness",
+      "stage": "flesh_out",
+      "text": "그것에 색이나 밝기가 있나요?",
+      "phraseStatus": "spec",
+      "probe": "color_brightness"
+    },
+    {
+      "i": 19,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "participant",
+      "source": "typed",
+      "stage": "flesh_out",
+      "text": "색은 없어요",
+      "guard": "SAFE",
+      "guardDetail": {
+        "level": "safe",
+        "label": "SAFE",
+        "alert": false,
+        "reasons": [],
+        "keywordHits": [],
+        "model": null
+      },
+      "crisisKeyword": false,
+      "flags": {
+        "noMore": false,
+        "delegation": false,
+        "depthStrong": [],
+        "depthWeak": []
+      }
+    },
+    {
+      "i": 20,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "system",
+      "source": "fixed:probe_movement",
+      "stage": "flesh_out",
+      "text": "그것에 움직임이 있나요?",
+      "phraseStatus": "spec",
+      "probe": "movement"
+    },
+    {
+      "i": 21,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "participant",
+      "source": "typed",
+      "stage": "flesh_out",
+      "text": "가끔 떨려요",
+      "guard": "SAFE",
+      "guardDetail": {
+        "level": "safe",
+        "label": "SAFE",
+        "alert": false,
+        "reasons": [],
+        "keywordHits": [],
+        "model": null
+      },
+      "crisisKeyword": false,
+      "flags": {
+        "noMore": false,
+        "delegation": false,
+        "depthStrong": [],
+        "depthWeak": []
+      }
+    },
+    {
+      "i": 22,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "system",
+      "source": "fixed:confirm_intro",
+      "stage": null,
+      "text": "지금까지 적어 주신 말을 그대로 모았어요. 이대로 맞는지 확인해 주세요. 고치고 싶은 곳은 직접 고치셔도 돼요.",
+      "phraseStatus": "draft",
+      "draft": "불안해요\n목 안쪽이요\n침이 잘 안 넘어가요\n얇은 유리막 같아요\n투명하고 금방 깨질 것 같아요\n작지는 않아요\n색은 없어요\n가끔 떨려요"
+    },
+    {
+      "i": 23,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "participant",
+      "source": "control:confirm",
+      "stage": null,
+      "text": "[이대로 맞아요]"
+    },
+    {
+      "i": 24,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "system",
+      "source": "fixed:closing",
+      "stage": null,
+      "text": "확인해 주셔서 고마워요. 면담은 여기까지예요. 다음 단계는 연구자가 안내해 드릴 거예요.",
+      "phraseStatus": "draft"
+    }
+  ],
+  "alerts": [],
+  "capture": {
+    "imageSignal": {
+      "use": "flow_only",
+      "protocolVersion": "1.5.0",
+      "note": "규칙 판정(사전 범주·비유 표지). 다리 질문·find 틀 제한에만 쓰고 장면 값에는 쓰지 않는다(원칙 2).",
+      "timeline": [
+        {
+          "i": 3,
+          "judgedAt": "reply",
+          "kind": "opening",
+          "elicitedBy": "opening",
+          "askedBy": "fixed:opening",
+          "stage": "find",
+          "noMore": false,
+          "present": false,
+          "cumulative": false,
+          "evidence": [],
+          "excluded": [],
+          "negatedExcluded": false,
+          "negatedInEvidence": false,
+          "negated": false
+        },
+        {
+          "i": 5,
+          "judgedAt": "reply",
+          "kind": "location",
+          "elicitedBy": "opening",
+          "askedBy": "fixed:location",
+          "stage": "find",
+          "noMore": false,
+          "present": false,
+          "cumulative": false,
+          "evidence": [],
+          "excluded": [],
+          "negatedExcluded": false,
+          "negatedInEvidence": false,
+          "negated": false
+        },
+        {
+          "i": 7,
+          "judgedAt": "reply",
+          "kind": "llm:find",
+          "elicitedBy": "llm",
+          "askedBy": "llm",
+          "stage": "find",
+          "noMore": true,
+          "present": false,
+          "cumulative": false,
+          "evidence": [],
+          "excluded": [],
+          "negatedExcluded": false,
+          "negatedInEvidence": false,
+          "negated": false
+        },
+        {
+          "i": 9,
+          "judgedAt": "reply",
+          "kind": "focus_hold",
+          "elicitedBy": "focus_hold",
+          "askedBy": "fixed:focus_hold",
+          "stage": "focus",
+          "noMore": false,
+          "present": false,
+          "cumulative": false,
+          "evidence": [],
+          "excluded": [],
+          "negatedExcluded": false,
+          "negatedInEvidence": false,
+          "negated": false
+        },
+        {
+          "i": 11,
+          "judgedAt": "reply",
+          "kind": "bridge",
+          "elicitedBy": "bridge",
+          "askedBy": "bridge:like_what",
+          "stage": "flesh_out",
+          "noMore": false,
+          "present": true,
+          "cumulative": true,
+          "evidence": [
+            {
+              "kind": "lexicon",
+              "category": "shape",
+              "lemma": "얇",
+              "trigger": "얇은",
+              "charSpan": [
+                0,
+                2
+              ],
+              "negated": false
+            },
+            {
+              "kind": "lexicon",
+              "category": "object",
+              "lemma": "유리",
+              "trigger": "유리",
+              "charSpan": [
+                3,
+                5
+              ],
+              "negated": false
+            },
+            {
+              "kind": "lexicon",
+              "category": "object",
+              "lemma": "막",
+              "trigger": "막",
+              "charSpan": [
+                5,
+                6
+              ],
+              "negated": false
+            },
+            {
+              "kind": "simile",
+              "noun": "막",
+              "marker": "같",
+              "trigger": "막 같",
+              "charSpan": [
+                5,
+                8
+              ],
+              "negated": false
+            }
+          ],
+          "excluded": [],
+          "negatedExcluded": false,
+          "negatedInEvidence": false,
+          "negated": false
+        },
+        {
+          "i": 13,
+          "judgedAt": "reply",
+          "kind": "llm:flesh_out",
+          "elicitedBy": "llm",
+          "askedBy": "llm",
+          "stage": "flesh_out",
+          "noMore": false,
+          "present": true,
+          "cumulative": true,
+          "evidence": [
+            {
+              "kind": "lexicon",
+              "category": "opacity",
+              "lemma": "투명",
+              "trigger": "투명",
+              "charSpan": [
+                0,
+                2
+              ],
+              "negated": false
+            },
+            {
+              "kind": "lexicon",
+              "category": "texture",
+              "lemma": "깨지",
+              "trigger": "깨질",
+              "charSpan": [
+                8,
+                10
+              ],
+              "negated": false
+            }
+          ],
+          "excluded": [],
+          "negatedExcluded": false,
+          "negatedInEvidence": false,
+          "negated": false
+        },
+        {
+          "i": 15,
+          "judgedAt": "reply",
+          "kind": "llm:flesh_out",
+          "elicitedBy": "llm",
+          "askedBy": "llm",
+          "stage": "flesh_out",
+          "noMore": true,
+          "present": false,
+          "cumulative": true,
+          "evidence": [],
+          "excluded": [],
+          "negatedExcluded": false,
+          "negatedInEvidence": false,
+          "negated": false
+        },
+        {
+          "i": 17,
+          "judgedAt": "reply",
+          "kind": "probe:size_shape",
+          "elicitedBy": "probe",
+          "askedBy": "fixed:probe_size_shape",
+          "stage": "flesh_out",
+          "noMore": false,
+          "present": false,
+          "cumulative": true,
+          "evidence": [],
+          "excluded": [
+            {
+              "kind": "lexicon",
+              "category": "size",
+              "lemma": "작",
+              "trigger": "작지는",
+              "charSpan": [
+                0,
+                3
+              ],
+              "negated": true,
+              "why": "negated"
+            }
+          ],
+          "negatedExcluded": true,
+          "negatedInEvidence": false,
+          "negated": true
+        },
+        {
+          "i": 19,
+          "judgedAt": "reply",
+          "kind": "probe:color_brightness",
+          "elicitedBy": "probe",
+          "askedBy": "fixed:probe_color_brightness",
+          "stage": "flesh_out",
+          "noMore": false,
+          "present": false,
+          "cumulative": true,
+          "evidence": [],
+          "excluded": [],
+          "negatedExcluded": false,
+          "negatedInEvidence": false,
+          "negated": false
+        },
+        {
+          "i": 21,
+          "judgedAt": "reply",
+          "kind": "probe:movement",
+          "elicitedBy": "probe",
+          "askedBy": "fixed:probe_movement",
+          "stage": "flesh_out",
+          "noMore": false,
+          "present": false,
+          "cumulative": true,
+          "evidence": [],
+          "excluded": [],
+          "negatedExcluded": false,
+          "negatedInEvidence": false,
+          "negated": false
+        }
+      ],
+      "atFind": {
+        "judgedAt": "find_llm",
+        "present": false,
+        "evidence": [],
+        "excluded": [],
+        "allowedTemplates": [
+          "anything_else"
+        ],
+        "turn": 6
+      },
+      "atBridge": {
+        "judgedAt": "bridge",
+        "present": false,
+        "evidence": [],
+        "excluded": [],
+        "turn": 10
+      },
+      "confirmed": {
+        "judgedAt": "confirmed",
+        "present": true,
+        "evidence": [
+          {
+            "kind": "lexicon",
+            "category": "shape",
+            "lemma": "얇",
+            "trigger": "얇은",
+            "charSpan": [
+              24,
+              26
+            ],
+            "negated": false
+          },
+          {
+            "kind": "lexicon",
+            "category": "object",
+            "lemma": "유리",
+            "trigger": "유리",
+            "charSpan": [
+              27,
+              29
+            ],
+            "negated": false
+          },
+          {
+            "kind": "lexicon",
+            "category": "object",
+            "lemma": "막",
+            "trigger": "막",
+            "charSpan": [
+              29,
+              30
+            ],
+            "negated": false
+          },
+          {
+            "kind": "lexicon",
+            "category": "opacity",
+            "lemma": "투명",
+            "trigger": "투명",
+            "charSpan": [
+              35,
+              37
+            ],
+            "negated": false
+          },
+          {
+            "kind": "lexicon",
+            "category": "texture",
+            "lemma": "깨지",
+            "trigger": "깨질",
+            "charSpan": [
+              43,
+              45
+            ],
+            "negated": false
+          },
+          {
+            "kind": "simile",
+            "noun": "막",
+            "marker": "같",
+            "trigger": "막 같",
+            "charSpan": [
+              29,
+              32
+            ],
+            "negated": false
+          }
+        ],
+        "excluded": [
+          {
+            "kind": "lexicon",
+            "category": "size",
+            "lemma": "작",
+            "trigger": "작지는",
+            "charSpan": [
+              52,
+              55
+            ],
+            "negated": true,
+            "why": "negated"
+          }
+        ],
+        "edited": false,
+        "turn": 23
+      }
+    },
+    "firstElicitedBy": {
+      "kind": "bridge",
+      "detail": "bridge",
+      "i": 11,
+      "askedBy": "bridge:like_what",
+      "evidence": [
+        "얇",
+        "유리",
+        "막"
+      ]
+    },
+    "imageless": false,
+    "findModality": {
+      "labels": [
+        "emotion"
+      ],
+      "categories": [
+        "emotion"
+      ],
+      "method": "heuristic: 1층 사전 범주",
+      "note": "2D 설문의 find.initial_response 6범주와 같은 이름. 참여자에게 보이지 않는다."
+    },
+    "bodyRelation": {
+      "status": "stated",
+      "text": "목 안쪽이요",
+      "part": "throat_neck",
+      "layer": "inner",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "목",
+          "charSpan": [
+            0,
+            1
+          ],
+          "rule": "bodyPartLexicon.목"
+        },
+        {
+          "source": "explicit_lexicon",
+          "trigger": "안쪽",
+          "charSpan": [
+            2,
+            4
+          ],
+          "rule": "bodyLayerLexicon.안쪽"
+        }
+      ],
+      "ifsLocation": "in"
+    },
+    "bridge": {
+      "asked": true,
+      "stage": "flesh_out",
+      "x": "불안",
+      "xSelection": {
+        "from": "opening",
+        "category": "emotion",
+        "kind": "noun",
+        "basis": {
+          "rule": "lexicon_category_and_participant_substring",
+          "from": "opening",
+          "category": "emotion",
+          "kind": "noun",
+          "charSpan": [
+            0,
+            2
+          ]
+        },
+        "tried": [
+          {
+            "from": "focus_hold",
+            "category": "sensation",
+            "found": null,
+            "why": "none_in_category",
+            "predicates": [],
+            "rejected": [
+              {
+                "text": "침",
+                "kind": "noun",
+                "category": null
+              }
+            ]
+          },
+          {
+            "from": "opening",
+            "category": "emotion",
+            "found": "불안",
+            "kind": "noun"
+          }
+        ]
+      },
+      "template": "like_what",
+      "validation": "V1–V7·V9 (V8 가드 모델은 걸지 않음: 틀 + 참여자 원문 인용뿐인 결정론 문장)",
+      "checks": {
+        "passed": true,
+        "reasons": []
+      },
+      "phrase": "template:like_what",
+      "blockedTemplateAfter": "like_what"
+    },
+    "probes": {
+      "asked": [
+        "size_shape",
+        "color_brightness",
+        "movement"
+      ],
+      "skippedAsCovered": []
+    }
+  },
+  "confirmedText": "불안해요\n목 안쪽이요\n침이 잘 안 넘어가요\n얇은 유리막 같아요\n투명하고 금방 깨질 것 같아요\n작지는 않아요\n색은 없어요\n가끔 떨려요",
+  "confirmation": {
+    "edited": false,
+    "draft": "불안해요\n목 안쪽이요\n침이 잘 안 넘어가요\n얇은 유리막 같아요\n투명하고 금방 깨질 것 같아요\n작지는 않아요\n색은 없어요\n가끔 떨려요",
+    "at": "2026-11-27T16:00:29+09:00"
+  },
+  "extraction": {
+    "extractorVersion": "0.1.0",
+    "lexicon": {
+      "lexiconId": "layer1-interview-overlay",
+      "lexiconVersion": "layer1-attribute-lexicon@0.1.0 + layer1-interview-overlay@0.1.0",
+      "entries": 380
+    },
+    "analyzer": {
+      "backend": "kiwi",
+      "version": "0.24.1"
+    },
+    "inputText": "불안해요\n목 안쪽이요\n침이 잘 안 넘어가요\n얇은 유리막 같아요\n투명하고 금방 깨질 것 같아요\n작지는 않아요\n색은 없어요\n가끔 떨려요",
+    "layers": {
+      "layer0": "kiwi",
+      "layer1": "lexicon",
+      "layer2": "simile-marker (prototype: lexicon only)",
+      "layer3": "not-implemented"
+    },
+    "attributes": [
+      {
+        "category": "emotion",
+        "slot": null,
+        "lemma": "불안",
+        "value": {
+          "emotion": "anxious"
+        },
+        "negated": false,
+        "change": null,
+        "valueSource": "notion",
+        "_provenance": {
+          "source": "explicit_lexicon",
+          "trigger": "불안",
+          "charSpan": [
+            0,
+            2
+          ],
+          "rule": "emotionLexicon.불안"
+        }
+      },
+      {
+        "category": "body_part",
+        "slot": "bodyRelation.part",
+        "lemma": "목",
+        "value": {
+          "part": "throat_neck"
+        },
+        "negated": false,
+        "change": null,
+        "valueSource": "notion",
+        "_provenance": {
+          "source": "explicit_lexicon",
+          "trigger": "목",
+          "charSpan": [
+            5,
+            6
+          ],
+          "rule": "bodyPartLexicon.목"
+        }
+      },
+      {
+        "category": "body_layer",
+        "slot": "bodyRelation.layer",
+        "lemma": "안쪽",
+        "value": {
+          "layer": "inner"
+        },
+        "negated": false,
+        "change": null,
+        "valueSource": "notion",
+        "_provenance": {
+          "source": "explicit_lexicon",
+          "trigger": "안쪽",
+          "charSpan": [
+            7,
+            9
+          ],
+          "rule": "bodyLayerLexicon.안쪽"
+        }
+      },
+      {
+        "category": "shape",
+        "slot": "form.shape",
+        "lemma": "얇",
+        "value": {
+          "shape": "thin"
+        },
+        "negated": false,
+        "change": null,
+        "valueSource": "notion",
+        "_provenance": {
+          "source": "explicit_lexicon",
+          "trigger": "얇은",
+          "charSpan": [
+            24,
+            26
+          ],
+          "rule": "shapeLexicon.얇"
+        }
+      },
+      {
+        "category": "object",
+        "slot": "carrier.noun",
+        "lemma": "유리",
+        "value": {
+          "object": "glass"
+        },
+        "negated": false,
+        "change": null,
+        "valueSource": "draft",
+        "_provenance": {
+          "source": "explicit_lexicon",
+          "trigger": "유리",
+          "charSpan": [
+            27,
+            29
+          ],
+          "rule": "objectLexicon.유리"
+        }
+      },
+      {
+        "category": "object",
+        "slot": "carrier.noun",
+        "lemma": "막",
+        "value": {
+          "object": "membrane"
+        },
+        "negated": false,
+        "change": null,
+        "valueSource": "notion",
+        "_provenance": {
+          "source": "explicit_lexicon",
+          "trigger": "막",
+          "charSpan": [
+            29,
+            30
+          ],
+          "rule": "objectLexicon.막"
+        }
+      },
+      {
+        "category": "opacity",
+        "slot": "material.opacity",
+        "lemma": "투명",
+        "value": {
+          "level": "transparent"
+        },
+        "negated": false,
+        "change": null,
+        "valueSource": "notion",
+        "_provenance": {
+          "source": "explicit_lexicon",
+          "trigger": "투명",
+          "charSpan": [
+            35,
+            37
+          ],
+          "rule": "opacityLexicon.투명"
+        }
+      },
+      {
+        "category": "texture",
+        "slot": "material.texture",
+        "lemma": "깨지",
+        "value": {
+          "texture": "broken"
+        },
+        "negated": false,
+        "change": null,
+        "valueSource": "notion",
+        "_provenance": {
+          "source": "explicit_lexicon",
+          "trigger": "깨질",
+          "charSpan": [
+            43,
+            45
+          ],
+          "rule": "textureLexicon.깨지"
+        }
+      },
+      {
+        "category": "size",
+        "slot": "layout.size",
+        "lemma": "작",
+        "value": {
+          "size": "small",
+          "scale": 0.6
+        },
+        "negated": true,
+        "change": null,
+        "valueSource": "notion",
+        "_provenance": {
+          "source": "explicit_lexicon",
+          "trigger": "작지는",
+          "charSpan": [
+            52,
+            55
+          ],
+          "rule": "sizeLexicon.작"
+        }
+      },
+      {
+        "category": "movement",
+        "slot": "motion",
+        "lemma": "떨리",
+        "value": {
+          "motion": "trembling"
+        },
+        "negated": false,
+        "change": null,
+        "valueSource": "notion",
+        "_provenance": {
+          "source": "explicit_lexicon",
+          "trigger": "떨려요",
+          "charSpan": [
+            70,
+            73
+          ],
+          "rule": "motionLexicon.떨리"
+        }
+      }
+    ],
+    "similes": [
+      {
+        "marker": "같은",
+        "sourceNoun": "유리막",
+        "charSpan": [
+          27,
+          32
+        ],
+        "formPrototype": null,
+        "method": "pending (FastText 유사도로 blob·mist·shell·fragments 중 선택 예정)",
+        "_provenance": {
+          "source": "simile_marker",
+          "trigger": "유리막 같",
+          "charSpan": [
+            27,
+            32
+          ],
+          "rule": "simile.같은"
+        }
+      }
+    ],
+    "unmatched": [
+      {
+        "lemma": "침",
+        "tag": "NNG",
+        "surface": "침",
+        "charSpan": [
+          12,
+          13
+        ]
+      },
+      {
+        "lemma": "잘",
+        "tag": "MAG",
+        "surface": "잘",
+        "charSpan": [
+          15,
+          16
+        ]
+      },
+      {
+        "lemma": "안",
+        "tag": "MAG",
+        "surface": "안",
+        "charSpan": [
+          17,
+          18
+        ]
+      },
+      {
+        "lemma": "넘어가",
+        "tag": "VV",
+        "surface": "넘어가",
+        "charSpan": [
+          19,
+          22
+        ]
+      },
+      {
+        "lemma": "금방",
+        "tag": "MAG",
+        "surface": "금방",
+        "charSpan": [
+          40,
+          42
+        ]
+      },
+      {
+        "lemma": "가끔",
+        "tag": "MAG",
+        "surface": "가끔",
+        "charSpan": [
+          67,
+          69
+        ]
+      }
+    ],
+    "lostInformation": {
+      "contentTokens": 16,
+      "unmatchedTokens": 6,
+      "rate": 0.375,
+      "note": "소실 정보율 근사치: 사전에 걸리지 않은 내용어 비율. 사람 주석(F1·kappa)과 함께 봐야 한다."
+    },
+    "sceneSpecDraft": {
+      "schema": "IFSSceneSpec-draft/0.1 (기존 TS IFSSceneSpec 필드명과 정렬 필요)",
+      "slots": {
+        "form.shape": {
+          "values": [
+            {
+              "value": {
+                "shape": "thin"
+              },
+              "_provenance": {
+                "source": "explicit_lexicon",
+                "trigger": "얇은",
+                "charSpan": [
+                  24,
+                  26
+                ],
+                "rule": "shapeLexicon.얇"
+              },
+              "valueSource": "notion"
+            }
+          ]
+        },
+        "material.opacity": {
+          "value": {
+            "level": "transparent"
+          },
+          "_provenance": {
+            "source": "explicit_lexicon",
+            "trigger": "투명",
+            "charSpan": [
+              35,
+              37
+            ],
+            "rule": "opacityLexicon.투명"
+          },
+          "valueSource": "notion"
+        },
+        "material.texture": {
+          "values": [
+            {
+              "value": {
+                "texture": "broken"
+              },
+              "_provenance": {
+                "source": "explicit_lexicon",
+                "trigger": "깨질",
+                "charSpan": [
+                  43,
+                  45
+                ],
+                "rule": "textureLexicon.깨지"
+              },
+              "valueSource": "notion"
+            }
+          ]
+        },
+        "motion": {
+          "values": [
+            {
+              "value": {
+                "motion": "trembling"
+              },
+              "_provenance": {
+                "source": "explicit_lexicon",
+                "trigger": "떨려요",
+                "charSpan": [
+                  70,
+                  73
+                ],
+                "rule": "motionLexicon.떨리"
+              },
+              "valueSource": "notion"
+            }
+          ]
+        },
+        "bodyRelation": {
+          "status": "stated",
+          "text": "목 안쪽이요",
+          "part": "throat_neck",
+          "layer": "inner",
+          "_provenance": [
+            {
+              "source": "explicit_lexicon",
+              "trigger": "목",
+              "charSpan": [
+                0,
+                1
+              ],
+              "rule": "bodyPartLexicon.목"
+            },
+            {
+              "source": "explicit_lexicon",
+              "trigger": "안쪽",
+              "charSpan": [
+                2,
+                4
+              ],
+              "rule": "bodyLayerLexicon.안쪽"
+            }
+          ],
+          "ifsLocation": "in"
+        }
+      },
+      "alternatives": {},
+      "negated": [
+        {
+          "slot": "layout.size",
+          "lemma": "작",
+          "_provenance": {
+            "source": "explicit_lexicon",
+            "trigger": "작지는",
+            "charSpan": [
+              52,
+              55
+            ],
+            "rule": "sizeLexicon.작"
+          }
+        }
+      ],
+      "unresolved": [
+        {
+          "slot": "form.type",
+          "sourceNoun": "유리막",
+          "reason": "prototype_pending"
+        }
+      ],
+      "unspecified": [
+        "form.type",
+        "material.color",
+        "material.brightness",
+        "material.saturation",
+        "material.temperature",
+        "physical.weight",
+        "layout.size",
+        "posture",
+        "sound",
+        "selfReference"
+      ],
+      "note": "참여자가 말한 것만 채웠다. 빈 슬롯은 3층(V/A/D)·설문 슬라이더(안전망)·VR 보정이 채울 몫이다."
+    }
+  },
+  "drift": {
+    "enabled": true,
+    "assessment": {
+      "version": "drift/1.1.0",
+      "params": {
+        "version": "drift-params/1.1.0",
+        "tauNumSoft": 0.25,
+        "tauNumHard": 0.5,
+        "neutral": 0.5,
+        "tauHueDeg": 60.0,
+        "tauL": 0.45,
+        "tauS": 0.4,
+        "chromaticMinS": 0.15,
+        "chromaticL": [
+          0.08,
+          0.92
+        ],
+        "groupWeights": {
+          "identity": 1.0,
+          "color": 1.0,
+          "size": 1.0,
+          "position": 1.0,
+          "shape": 0.5,
+          "surface": 0.5,
+          "motion": 0.0
+        },
+        "theta": 0.2,
+        "translationalMotion": [
+          "moving",
+          "drifting",
+          "rising",
+          "sinking",
+          "settling",
+          "approaching"
+        ],
+        "motionDirection": {
+          "rising": {
+            "vertical": "+"
+          },
+          "sinking": {
+            "vertical": "-"
+          },
+          "settling": {
+            "vertical": "-"
+          },
+          "approaching": {
+            "distance": "-"
+          }
+        },
+        "sizeCrossScale": "hard_only",
+        "selfReportDriftMax": 3
+      },
+      "snapshotBuilder": "v1",
+      "turns": [
+        {
+          "seq": 0,
+          "i": 3,
+          "stage": "find",
+          "slots": {},
+          "evidence": {},
+          "identity": [],
+          "identityDropped": [],
+          "unconfirmed": {},
+          "builder": "v1"
+        },
+        {
+          "seq": 1,
+          "i": 5,
+          "stage": "find",
+          "slots": {
+            "body.part": "throat_neck",
+            "body.layer": "inner"
+          },
+          "evidence": {
+            "body.part": "목",
+            "body.layer": "안쪽"
+          },
+          "identity": [],
+          "identityDropped": [],
+          "unconfirmed": {},
+          "builder": "v1"
+        },
+        {
+          "seq": 2,
+          "i": 9,
+          "stage": "focus",
+          "slots": {},
+          "evidence": {},
+          "identity": [
+            {
+              "surface": "침",
+              "head": "침",
+              "class": "침",
+              "position": "subject",
+              "charSpan": [
+                0,
+                1
+              ]
+            }
+          ],
+          "identityDropped": [],
+          "unconfirmed": {},
+          "builder": "v1"
+        },
+        {
+          "seq": 3,
+          "i": 11,
+          "stage": "flesh_out",
+          "slots": {
+            "form.type": "shell"
+          },
+          "evidence": {
+            "form.type": "유리막 같"
+          },
+          "identity": [],
+          "identityDropped": [
+            {
+              "surface": "유리막",
+              "head": "막",
+              "class": "막",
+              "position": "simile_property",
+              "charSpan": [
+                3,
+                6
+              ],
+              "why": "simile_property"
+            }
+          ],
+          "unconfirmed": {},
+          "builder": "v1"
+        },
+        {
+          "seq": 4,
+          "i": 13,
+          "stage": "flesh_out",
+          "slots": {
+            "material.opacity": 0.1,
+            "material.erosion": 0.6
+          },
+          "evidence": {
+            "material.opacity": "투명",
+            "material.erosion": "깨질"
+          },
+          "identity": [],
+          "identityDropped": [],
+          "unconfirmed": {},
+          "builder": "v1"
+        },
+        {
+          "seq": 5,
+          "i": 17,
+          "stage": "flesh_out",
+          "slots": {},
+          "evidence": {},
+          "identity": [],
+          "identityDropped": [],
+          "unconfirmed": {},
+          "builder": "v1"
+        },
+        {
+          "seq": 6,
+          "i": 19,
+          "stage": "flesh_out",
+          "slots": {},
+          "evidence": {},
+          "identity": [],
+          "identityDropped": [],
+          "unconfirmed": {},
+          "builder": "v1"
+        },
+        {
+          "seq": 7,
+          "i": 21,
+          "stage": "flesh_out",
+          "slots": {
+            "motion.type": "trembling"
+          },
+          "evidence": {
+            "motion.type": "떨려요"
+          },
+          "identity": [],
+          "identityDropped": [],
+          "unconfirmed": {
+            "body.part": {
+              "value": "chest",
+              "trigger": "가끔"
+            }
+          },
+          "builder": "v1"
+        }
+      ],
+      "stages": [
+        {
+          "stage": "find",
+          "slots": {
+            "body.part": "throat_neck",
+            "body.layer": "inner"
+          },
+          "source": {
+            "body.part": {
+              "i": 5,
+              "seq": 1,
+              "stage": "find",
+              "trigger": "목"
+            },
+            "body.layer": {
+              "i": 5,
+              "seq": 1,
+              "stage": "find",
+              "trigger": "안쪽"
+            }
+          },
+          "identity": [],
+          "identityTurn": null,
+          "identitySeq": null,
+          "turns": [
+            3,
+            5
+          ]
+        },
+        {
+          "stage": "focus",
+          "slots": {},
+          "source": {},
+          "identity": [
+            {
+              "surface": "침",
+              "head": "침",
+              "class": "침",
+              "position": "subject",
+              "charSpan": [
+                0,
+                1
+              ]
+            }
+          ],
+          "identityTurn": 9,
+          "identitySeq": 2,
+          "turns": [
+            9
+          ]
+        },
+        {
+          "stage": "flesh_out",
+          "slots": {
+            "form.type": "shell",
+            "material.opacity": 0.1,
+            "material.erosion": 0.6,
+            "motion.type": "trembling"
+          },
+          "source": {
+            "form.type": {
+              "i": 11,
+              "seq": 3,
+              "stage": "flesh_out",
+              "trigger": "유리막 같"
+            },
+            "material.opacity": {
+              "i": 13,
+              "seq": 4,
+              "stage": "flesh_out",
+              "trigger": "투명"
+            },
+            "material.erosion": {
+              "i": 13,
+              "seq": 4,
+              "stage": "flesh_out",
+              "trigger": "깨질"
+            },
+            "motion.type": {
+              "i": 21,
+              "seq": 7,
+              "stage": "flesh_out",
+              "trigger": "떨려요"
+            }
+          },
+          "identity": [],
+          "identityTurn": null,
+          "identitySeq": null,
+          "turns": [
+            11,
+            13,
+            17,
+            19,
+            21
+          ]
+        }
+      ],
+      "confirmationEdited": false,
+      "multipleObjects": {
+        "flag": false,
+        "turns": []
+      },
+      "first": "find",
+      "firstSnapshot": {
+        "slots": {
+          "body.part": "throat_neck",
+          "body.layer": "inner"
+        },
+        "source": {
+          "body.part": {
+            "i": 5,
+            "seq": 1,
+            "stage": "find",
+            "trigger": "목"
+          },
+          "body.layer": {
+            "i": 5,
+            "seq": 1,
+            "stage": "find",
+            "trigger": "안쪽"
+          }
+        },
+        "identity": [],
+        "identityTurn": null,
+        "identitySeq": null,
+        "turns": [
+          3,
+          5
+        ]
+      },
+      "final": {
+        "slots": {
+          "form.type": "shell",
+          "material.opacity": 0.1,
+          "material.erosion": 0.6,
+          "motion.type": "trembling"
+        },
+        "source": {
+          "form.type": {
+            "i": 11,
+            "seq": 3,
+            "stage": "flesh_out",
+            "trigger": "유리막 같"
+          },
+          "material.opacity": {
+            "i": 13,
+            "seq": 4,
+            "stage": "flesh_out",
+            "trigger": "투명"
+          },
+          "material.erosion": {
+            "i": 13,
+            "seq": 4,
+            "stage": "flesh_out",
+            "trigger": "깨질"
+          },
+          "motion.type": {
+            "i": 21,
+            "seq": 7,
+            "stage": "flesh_out",
+            "trigger": "떨려요"
+          }
+        },
+        "identity": [
+          {
+            "surface": "침",
+            "head": "침",
+            "class": "침",
+            "position": "subject",
+            "charSpan": [
+              0,
+              1
+            ]
+          }
+        ],
+        "identityTurn": 9,
+        "identitySeq": 2,
+        "turns": [
+          9,
+          11,
+          13,
+          17,
+          19,
+          21
+        ]
+      },
+      "primary": {
+        "from": "find",
+        "to": "final",
+        "slots": [],
+        "identity": {
+          "comparable": false
+        },
+        "groups": [],
+        "comparableWeight": 0,
+        "contradictedWeight": 0,
+        "DI": null,
+        "identityContradiction": false,
+        "movedByStatedMotion": false,
+        "explainedByMotion": [],
+        "decision": "undecidable"
+      },
+      "adjacent": [
+        {
+          "from": "find",
+          "to": "focus",
+          "DI": null,
+          "identityContradiction": false,
+          "decision": "undecidable"
+        },
+        {
+          "from": "focus",
+          "to": "flesh_out",
+          "DI": null,
+          "identityContradiction": false,
+          "decision": "undecidable"
+        }
+      ],
+      "maxAdjacentDI": null,
+      "decision": "undecidable",
+      "DI": null,
+      "acknowledged": {
+        "flag": false,
+        "markers": [],
+        "negatedMarkers": []
+      }
+    },
+    "summary": {
+      "decision": "undecidable",
+      "DI": null,
+      "identityContradiction": false,
+      "contradicted": [],
+      "comparable": [],
+      "acknowledged": false,
+      "maxAdjacentDI": null,
+      "first": "find",
+      "confirmationEdited": false,
+      "multipleObjects": false
+    },
+    "recallCheck": null,
+    "selfReport": null
+  },
+  "events": [],
+  "endedBy": "completed",
+  "rawSurveyResponseRef": null,
+  "sceneSpec": {
+    "path": "<scratch>\\offline\\sessions\\scenes\\g64_b7_glass_negation__offline__r1.json",
+    "specVersion": "2.1.0",
+    "builder": "scene-spec-builder-v1/1.2.0",
+    "sourceTextHash": "sha256:db0ad76ffe2dc6ab2120b696728f0390ff90966ae78c23d44193e1889fdeff53",
+    "problems": [],
+    "mapping": {
+      "requested": "v1",
+      "used": "v1",
+      "fallbackReason": null
+    },
+    "variants": {
+      "v0": "<scratch>\\offline\\sessions\\scenes\\g64_b7_glass_negation__offline__r1.v0.json",
+      "v1": "<scratch>\\offline\\sessions\\scenes\\g64_b7_glass_negation__offline__r1.v1.json"
+    },
+    "sha256": {
+      "specFile": "g64_b7_glass_negation__offline__r1.json",
+      "specSha256": "9c33afbe6acd709a25ca6fd59d933db7a74756c5880c6a391699c9e4b1471583",
+      "alt": {
+        "g64_b7_glass_negation__offline__r1.v0.json": "0c01604dabf6b3641c8ec9321be0dddb205b7596cd7ec251c019158eaa233485",
+        "g64_b7_glass_negation__offline__r1.v1.json": "9c33afbe6acd709a25ca6fd59d933db7a74756c5880c6a391699c9e4b1471583"
+      }
+    }
+  }
+}

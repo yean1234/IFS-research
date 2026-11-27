@@ -25,7 +25,9 @@ from pathlib import Path
 
 from .candidates import (SLOTS, base_drawn, candidates_bytes, effective_params, form_blocks, form_said_unrendered, generate,
                          rendered_shape_words, safety_flags, said_words, slot_value, spec_sha256, unrendered_said_words)
+from .form_assets import DEFAULT_PROCEDURAL, R_NO_SHAPE_PREVIEW, R_PREVIEW_FAILED, _rej, add_generated
 from .paths import shared
+from .scene_builder import normalize_confirmed
 from .scene_builder_v2 import floor_record
 from .session_log import now_iso
 
@@ -34,12 +36,18 @@ from .session_log import now_iso
 # (G45–G51, 하위 호환 추가 — 0.2 그대로) saidWords.unrenderedBy·category(말했지만 그리지 않은 이유), 맨 위 safetyFlags(G50 (4)),
 # sourceDetails.form.type.formBlocked(G50 (1) — 형태 후보를 내지 않음, 조절의 형태 바꾸기는 막지 않음)
 FORMAT_VERSION = "ifs-selection/0.2"
+# 0.3(G62, [gen3d] enabled일 때만 — 꺼져 있으면 0.2 그대로): 출처 값 generated_chosen(생성 형태 후보를 고름), 맨 위 form.asset
+# (고른 생성 메시: assetId·glb·glbSha256·pipeline·seed·models·promptText …, 아니면 null), generation(조회 키, 제시한 생성 후보,
+# 차단·실패·관문 탈락 등 거부 사유, 고른 결과·고르지 않은 생성 후보, 형태를 고쳐 버린 자산). 후보 sources 값 generated, 후보 origin·asset.
+FORMAT_VERSION_GEN3D = "ifs-selection/0.3"
+GENERATED_CHOSEN = "generated_chosen"
 PREMEASURE_VERSION = "ifs-premeasure/0.1"
 ITEMS = ("color", "form", "brightness", "opacity", "size", "texture", "motion")   # G31: 색이 맨 앞(표 adjustItems.order와 같음)
 NONE_CHOICE = "none"
 SKIP_REASON = "single_distinct_candidate"      # G34: 구별되는 후보가 하나뿐이라 선택 단계를 건너뜀
 # 슬롯 출처(G15 네 가지 + G32 두 가지). 러너(PlacementSelection.cs SourceValues)와 스키마 $defs.source가 같은 목록이다.
 SOURCES = ("said", "chosen", "edited", "default", "said_unrendered_chosen", "said_unrendered_default")
+SOURCES_GEN3D = SOURCES + (GENERATED_CHOSEN,)      # 0.3(G62)
 SAID_NOT_IN_TABLE = "said_value_not_in_table"
 
 # 러너에 넘길 수 없는 이유(runnerBlockers). 러너(PlacementSelection.cs)도 runnerReady = false면 이 글을 붙여 시작을 거부한다.
@@ -104,7 +112,7 @@ def swatch_hex(sw: dict) -> str:
 # image = 상주 플레이어의 정지 PNG(PreviewQueue가 그리기 전에 FreezeMotion) → 움직임 값을 바꿔도 그림이 같다.
 # webgl 조절 화면은 iframe 안에서 움직임이 재생되고, none(글 요약)은 요약 글에 motion.type이 바뀌어 나온다.
 STILL_PREVIEW_UNAVAILABLE = {"image": {"motion": "still_image_preview"}}
-PREVIEW_CLIENT_EVENTS = ("shown", "fallback")
+PREVIEW_CLIENT_EVENTS = ("shown", "fallback", "asset_failed")   # asset_failed(G62): 생성 형태 GLB 하나를 그리지 못함
 PREVIEW_STAGES = ("selecting", "adjusting")
 
 
@@ -223,6 +231,18 @@ class SelectionFlow:
         self.preview_reason: str | None = rt.preview.reason
         self._spec_blockers: list[str] = []
         self.extras: dict = self._said_value_extras()
+        # G62: 생성 형태 후보 자산 조회([gen3d] enabled일 때만, 아니면 None — 이때 출력은 G62 전과 같다)
+        self.form_assets = getattr(rt, "form_assets", None)
+        self._asset_paths: dict[str, Path] = {}          # 생성 후보 id → GLB 경로(기록에 쓰지 않음)
+        self._sidecar_paths: dict[str, Path] = {}
+
+    @property
+    def gen3d(self) -> bool:
+        return self.form_assets is not None
+
+    @property
+    def sources_list(self) -> tuple:
+        return SOURCES_GEN3D if self.gen3d else SOURCES
 
     # ── 도우미 ──────────────────────────────────────────────────────────────
     @property
@@ -327,6 +347,21 @@ class SelectionFlow:
                 raise SelectionError(f"[selection] require_spec_phrases = true인데 초안 문구가 {pinfo['draftCount']}개 있어 "
                                      "후보 단계를 시작하지 않습니다.")
             self.cands = generate(self.spec, self.s.id, self.table)
+            if self.gen3d:
+                # G62: 절차 후보는 그대로 두고 생성 후보(status ok + 관문 통과, 최대 max_candidates)를 뒤에 더한다
+                lookup = self.form_assets.lookup_for_spec(self.spec)
+                if self.preview_mode == "none" and lookup["offered"]:
+                    # 미리보기가 글 요약뿐이면 생성 형태를 보일 수 없다 → 참여자가 보지 않은 형태를 고르게 하지 않도록 내지 않는다
+                    lookup = {**lookup, "offered": [], "rejected": [
+                        _rej(a["assetId"], "ok", R_NO_SHAPE_PREVIEW, a["_sidecarPath"], "preview mode none")
+                        for a in lookup["offered"]] + lookup["rejected"]}
+                # G62-i: auto면 말한 형태 낱말(사이드카 tokens)이 단순 도형인지 사전·규칙으로 판정해 기본 출처를 정한다
+                basis = self.form_assets.judge_default(lookup, self.spec, self._confirmed_norm())
+                self.cands = add_generated(self.cands, lookup, self.s.id, self.form_assets.max_candidates,
+                                           self.form_assets.default_form_source, basis)
+                gen_ids = [g["candidateId"] for g in self.cands["generation"]["offered"]]
+                self._asset_paths = {cid: a["_glbPath"] for cid, a in zip(gen_ids, lookup["offered"])}
+                self._sidecar_paths = {cid: a["_sidecarPath"] for cid, a in zip(gen_ids, lookup["offered"])}
             scene = self.s.log.data.get("sceneSpec") or {}
             path = scene.get("path")
             # 러너 계약: 맨 위 specSha256 = 저장된 spec 파일 바이트의 sha256(러너가 읽는 파일과 다르면 시작 거부).
@@ -356,22 +391,22 @@ class SelectionFlow:
                 "safetyFlags": safety_flags(self.spec),                # G50 (4): 넷째 범주 표시(실험자용, 진행은 막지 않음)
                 "runnerReady": False, "runnerBlockers": [],
             }
+            if self.gen3d:
+                # G62(0.3): 고른 생성 메시(form.asset)와 생성 후보 기록. 꺼져 있으면 키 자체를 넣지 않는다(0.2 그대로)
+                self.data["formatVersion"] = FORMAT_VERSION_GEN3D
+                self.data["defaultFormSource"] = self.cands["generation"]["defaultFormSource"]   # 이 세션에서 기본이었던 것
+                self.data["form"] = {"asset": None}
+                self.data["generation"] = {**copy.deepcopy(self.cands["generation"]),
+                                           "shownOrder": [cid for cid in self.cands["displayOrder"] if cid in self._asset_paths],
+                                           "outcome": None, "acceptedDefault": None, "declined": [], "assetDropped": None}
             skip = self.cands["selectionStep"] == "skip"
             if skip:
-                # G34: 구별되는 후보가 하나뿐 → 선택 화면을 보이지 않고 그 후보(언제나 0번)로 조절에 들어간다.
-                # 고른 것이 아니므로 selectedCandidateId = null, none = false, skipped = true. 보여 준 후보는 없다.
-                op = self.cands["candidates"][0]
-                self.data["candidatesShown"], self.data["candidatesShownAt"] = [], None
-                self.data["selection"] = {"selectedCandidateId": None, "selectedIndex": None, "none": False,
-                                          "skipped": True, "skipReason": SKIP_REASON, "displayPosition": None,
-                                          "operationalId": op["id"], "operationalIndex": op["index"], "at": now}
-                self.data["stage"] = "adjusting"
-                self.current = dict(op["overrides"])
+                self._enter_skip(now)
             if self.persist:
                 self.dir.mkdir(parents=True, exist_ok=True)
                 (self.dir / "candidates.json").write_bytes(candidates_bytes(self.cands))
             self._save()
-            self._log_event("selection:candidates", {
+            payload = {
                 "selectionPath": str(self.dir / "selection.json") if self.persist else None,
                 "specSha256": self.data["specSha256"], "generatorVersion": self.cands["generatorVersion"],
                 "tableVersion": self.cands["tableVersion"], "candidateCount": len(self.cands["candidates"]),
@@ -380,7 +415,12 @@ class SelectionFlow:
                 "draftKeys": pinfo["draftKeys"], "previewMode": self.preview_mode,
                 "sha256Basis": basis, "adjustValueExtras": sorted(self.extras),
                 "selectionStep": self.cands["selectionStep"], "distinctRemoved": len(self.cands["distinct"]["removed"]),
-                "distanceFloor": self.data["distanceFloor"], "safetyFlags": len(self.data["safetyFlags"])})
+                "distanceFloor": self.data["distanceFloor"], "safetyFlags": len(self.data["safetyFlags"])}
+            if self.gen3d:
+                gen = self.cands["generation"]
+                payload["generation"] = {"offered": [g["assetId"] for g in gen["offered"]],
+                                         "rejected": [{"assetId": r["assetId"], "reason": r["reason"]} for r in gen["rejected"]]}
+            self._log_event("selection:candidates", payload)
             if skip:
                 self._log_event("selection:skipped", {"reason": SKIP_REASON,
                                                       "operationalId": self.data["selection"]["operationalId"]})
@@ -406,10 +446,174 @@ class SelectionFlow:
             self.data["selection"] = sel
             self.data["stage"] = "adjusting"
             self.current = dict(op["overrides"])
+            if self.gen3d:
+                self._record_generation_choice(op if choice != NONE_CHOICE else None)
             self._save()
             self._log_event("selection:selected", {k: sel[k] for k in ("selectedCandidateId", "none", "displayPosition",
                                                                       "operationalId", "operationalIndex")})
             return self.view()
+
+    def _enter_skip(self, now: str) -> None:
+        """G34: 구별되는 후보가 하나뿐 → 선택 화면을 보이지 않고 그 후보(언제나 0번)로 조절에 들어간다.
+        고른 것이 아니므로 selectedCandidateId = null, none = false, skipped = true. 보여 준 후보는 없다."""
+        op = self.cands["candidates"][0]
+        self.data["candidatesShown"], self.data["candidatesShownAt"] = [], None
+        self.data["selection"] = {"selectedCandidateId": None, "selectedIndex": None, "none": False,
+                                  "skipped": True, "skipReason": SKIP_REASON, "displayPosition": None,
+                                  "operationalId": op["id"], "operationalIndex": op["index"], "at": now}
+        self.data["stage"] = "adjusting"
+        self.current = dict(op["overrides"])
+        if self.gen3d:
+            self.data["generation"]["outcome"] = "skipped"      # 생성 후보가 없을 때만 건너뜀이 생긴다
+
+    # ── G62 생성 형태 후보 ──────────────────────────────────────────────────
+    def _confirmed_norm(self) -> str | None:
+        """사이드카 charSpan과 같은 기준의 확정 텍스트(normalize_confirmed). 없으면 None(판정은 fail closed)."""
+        text = self.s.log.data.get("confirmedText")
+        return normalize_confirmed(text) if isinstance(text, str) else None
+
+    def _preview_asset(self, a: dict | None, cid: str) -> dict | None:
+        path = self._asset_paths.get(cid)
+        if a is None or path is None:
+            return None
+        return {"assetId": a["assetId"], "glbSha256": a["glbSha256"], "glbPath": path}
+
+    def current_asset(self) -> dict | None:
+        """조절 중 지금 그릴 생성 메시: 생성 후보를 골랐고 형태 조절이 지금 처음 값과 같을 때만(형태를 바꾸면 그 형태가 보여야 함)."""
+        if not self.gen3d or self.data is None:
+            return None
+        rec = self.data["form"]["asset"]
+        if rec is None:
+            return None
+        items = self.table["adjustItems"]["items"]
+        for item, summ in self.data["adjustments"]["items"].items():
+            if "valueOverrides" in items[item] and not _same_value(summ["last"], summ["first"]):
+                return None
+        return self._preview_asset(rec, rec["candidateId"])
+
+    def preview_target(self, target: str) -> tuple[dict, dict | None]:
+        """미리보기 한 장의 (덮어쓰기, 생성 메시 | None). 생성 후보는 그 GLB로, current는 current_asset()으로 그린다."""
+        with self.lock:
+            overrides = self.overrides_for(target)
+            if not self.gen3d:
+                return overrides, None
+            if target == "current":
+                return overrides, self.current_asset()
+            c = self._cand(target)
+            return overrides, (self._preview_asset(c.get("asset"), target) if c is not None and "asset" in c else None)
+
+    def drop_generated(self, cid: str, reason: str, detail: str | None, source: str) -> bool:
+        """미리보기가 그리지 못한 생성 형태 후보를 후보 목록에서 뺀다(선택 전에만). 절차 메시 모습으로 생성 후보를 보이지 않기 위해서다.
+        기본 후보였으면 남은 생성 후보 가운데 첫째가 기본이 되고, 없으면 절차 메시가 기본(사유 기록). 생성 후보가 모두 빠졌고
+        절차 후보만으로는 건너뛸 세션(G34)이면 건너뜀으로 들어간다. cid = "current"(조절 중 고른 생성 메시)면 그 자산을 버린다."""
+        with self.lock:
+            if not self.gen3d or self.data is None:
+                return False
+            gen = self.data["generation"]
+            at = now_iso()
+            if cid == "current":
+                rec = self.data["form"]["asset"]
+                if rec is None:
+                    return False
+                self.data["form"]["asset"] = None
+                gen["assetDropped"] = {"assetId": rec["assetId"], "candidateId": rec["candidateId"], "reason": reason,
+                                       "detail": (detail or "")[:300]}
+                self._save()
+                self._log_event("selection:form_asset_dropped", {"assetId": rec["assetId"], "reason": reason, "source": source})
+                return True
+            c = self._cand(cid)
+            if c is None or "asset" not in c or self.stage != "selecting":
+                return False
+            self.cands["candidates"] = [x for x in self.cands["candidates"] if x["id"] != cid]
+            self.cands["displayOrder"] = [x for x in self.cands["displayOrder"] if x != cid]
+            self.data["candidatesShown"] = [x for x in self.data["candidatesShown"] if x != cid]
+            self._asset_paths.pop(cid, None)
+            drop = {"candidateId": cid, "assetId": c["asset"]["assetId"], "reason": reason, "source": source,
+                    "detail": (detail or "")[:300], "at": at}
+            for g in (self.cands["generation"], gen):
+                g["offered"] = [o for o in g["offered"] if o["candidateId"] != cid]
+                g.setdefault("previewDropped", []).append(dict(drop))
+            gen["shownOrder"] = [x for x in gen.get("shownOrder", []) if x != cid]
+            if gen.get("defaultCandidateId") == cid:
+                nxt = next((x for x in self.cands["displayOrder"] if x in self._asset_paths), None)
+                for g in (self.cands["generation"], gen):
+                    g["defaultCandidateId"] = nxt
+                    if nxt is None:
+                        g["defaultFormSource"] = DEFAULT_PROCEDURAL
+                        g["defaultFallbackReason"] = reason
+                if nxt is not None:
+                    self.cands["displayOrder"] = [nxt] + [x for x in self.cands["displayOrder"] if x != nxt]
+                    self.data["candidatesShown"] = list(self.cands["displayOrder"])
+                self.data["defaultFormSource"] = gen["defaultFormSource"]
+            if not self._asset_paths and gen.get("proceduralSelectionStep") == "skip" and len(self.cands["candidates"]) == 1:
+                self.cands["selectionStep"] = "skip"
+                self._enter_skip(at)
+            self._save()
+            self._log_event("selection:generated_dropped", {"candidateId": cid, "assetId": drop["assetId"],
+                                                            "reason": reason, "source": source})
+            return True
+
+    def _record_generation_choice(self, chosen: dict | None) -> None:
+        """고른 결과를 generation에 남기고, 생성 후보를 골랐으면 form.asset을 적는다(GLB·사이드카는 세션 폴더에 복사 —
+        러너는 selection.json 기준 상대 파일 이름 glb로 읽는다). 복사하지 못하면 glb = null(러너가 절차 메시로 돌아가고 기록함)."""
+        gen = self.data["generation"]
+        offered = [g["candidateId"] for g in gen["offered"]]
+        cid = chosen["id"] if chosen is not None else None
+        gen["outcome"] = "none" if chosen is None else ("generated_chosen" if cid in offered else "procedural_chosen")
+        gen["declined"] = [g["assetId"] for g in gen["offered"] if g["candidateId"] != cid]
+        # 기본 후보(미리 선택)가 있었으면 그대로 확정했는지(true) 다른 후보·'맞는 것이 없다'로 바꿨는지(false). 기본이 없으면 null
+        default_id = gen.get("defaultCandidateId")
+        gen["acceptedDefault"] = None if default_id is None else (cid == default_id)
+        self.data["selection"]["acceptedDefault"] = gen["acceptedDefault"]
+        if cid not in offered:
+            self.data["form"]["asset"] = None
+            return
+        a = chosen["asset"]
+        rec = {"candidateId": cid, **{k: copy.deepcopy(a[k]) for k in (
+            "assetId", "glb", "glbSha256", "sidecarSha256", "pipeline", "seed", "models", "promptText", "lexiconVersion",
+            "covariates", "normalization", "gate")}, "sidecar": None}
+        rec["glb"] = None
+        if self.persist:
+            self.dir.mkdir(parents=True, exist_ok=True)
+            stem = "form-asset-" + a["glbSha256"][:16]
+            try:
+                raw = Path(self._asset_paths[cid]).read_bytes()
+                if hashlib.sha256(raw).hexdigest() == a["glbSha256"]:
+                    (self.dir / (stem + ".glb")).write_bytes(raw)
+                    rec["glb"] = stem + ".glb"
+                else:
+                    gen.setdefault("copyErrors", []).append({"assetId": a["assetId"], "reason": "glb_sha256_mismatch"})
+                side = Path(self._sidecar_paths[cid]).read_bytes()
+                (self.dir / (stem + ".json")).write_bytes(side)
+                rec["sidecar"] = stem + ".json"
+            except OSError as exc:
+                gen.setdefault("copyErrors", []).append({"assetId": a["assetId"], "reason": f"copy_failed: {type(exc).__name__}"})
+        self.data["form"]["asset"] = rec
+
+    def _drop_asset_if_form_edited(self) -> None:
+        """생성 후보를 고른 뒤 형태 조절을 처음과 다른 값으로 끝냈으면 생성 메시를 쓰지 않는다(참여자가 고친 형태가 그려짐)."""
+        asset = self.data["form"]["asset"]
+        if asset is None:
+            return
+        items = self.table["adjustItems"]["items"]
+        for item, summ in self.data["adjustments"]["items"].items():
+            if "valueOverrides" in items[item] and not _same_value(summ["last"], summ["first"]):
+                self.data["form"]["asset"] = None
+                self.data["generation"]["assetDropped"] = {"assetId": asset["assetId"], "candidateId": asset["candidateId"],
+                                                           "reason": "form_edited", "formFirst": summ["first"],
+                                                           "formLast": summ["last"]}
+                return
+
+    def asset_glb(self, cid: str) -> bytes:
+        """생성 후보의 GLB 바이트(미리보기용). 제시한 생성 후보가 아니거나 파일이 바뀌었으면 SelectionInvalid."""
+        with self.lock:
+            c = self._cand(cid)
+            if c is None or "asset" not in c or cid not in self._asset_paths:
+                raise SelectionInvalid(f"생성 형태 후보가 아닙니다: {cid}")
+            raw = Path(self._asset_paths[cid]).read_bytes()
+            if hashlib.sha256(raw).hexdigest() != c["asset"]["glbSha256"]:
+                raise SelectionInvalid(f"생성 형태 GLB가 제시한 뒤 바뀌었습니다: {c['asset']['assetId']}")
+            return raw
 
     # ── 5 조절 ──────────────────────────────────────────────────────────────
     def _validate(self, item: str, value) -> dict:
@@ -528,7 +732,11 @@ class SelectionFlow:
         d = self.defaults
         default_of = {"material.color": {"h": d["material.color.h"], "s": d["material.color.s"], "l": d["material.color.l"]},
                       "material.saturation": d["material.color.s"]}
-        out, counts = {}, {k: 0 for k in SOURCES}
+        out, counts = {}, {k: 0 for k in self.sources_list}
+        # G62: 생성 형태 후보를 골랐고 형태 조절로 바꾸지 않았으면 form.type 출처는 generated_chosen(형태 조절을 다른 값으로
+        # 끝냈으면 자산을 버리고(finish) 다른 슬롯처럼 edited·said·default 규칙을 따른다)
+        asset = (self.data.get("form") or {}).get("asset") if self.gen3d else None
+        generated = asset is not None and form_item is None
         basis = variant_key_basis(self.spec)
         for slot in SLOTS:
             slot_val = slot_value(self.spec, slot)
@@ -538,7 +746,13 @@ class SelectionFlow:
             # form.baseVariant 기본값 = null(형상 프리셋 기본값, 값 표 defaults에 없음)
             dv = None if slot == "form.baseVariant" else default_of.get(slot, d.get(slot))
             rec = {"saidValue": said, "chosenValue": chosen.get(slot), "defaultValue": dv}
-            if slot in edited:
+            if slot == "form.type" and generated and slot not in edited:
+                rec = {"source": GENERATED_CHOSEN, "value": slot_val if slot_val is not None else dv, **rec,
+                       "generatedAsset": {"assetId": asset["assetId"], "glbSha256": asset["glbSha256"],
+                                          "candidateId": asset["candidateId"]},
+                       # 기본(미리 선택된) 생성 후보를 그대로 확정했으면 true, 다른 후보 가운데서 골랐으면 false
+                       "acceptedDefault": self.data["generation"].get("acceptedDefault") is True}
+            elif slot in edited:
                 rec = {"source": "edited", "value": edited[slot], **rec}
             elif slot in chosen:
                 rec = {"source": "said_unrendered_chosen" if slot == "form.type" and unrendered else "chosen",
@@ -568,6 +782,8 @@ class SelectionFlow:
         with self.lock:
             self._require("adjusting")
             self.data["adjustments"]["finishedAt"] = now_iso()
+            if self.gen3d:
+                self._drop_asset_if_form_edited()
             self.data["finalOverrides"] = self._final_overrides()
             self.data["sourceDetails"], self.data["sourceCounts"] = self._slot_sources()
             self.data["sources"] = {k: v["source"] for k, v in self.data["sourceDetails"].items()}   # 러너 계약 필드
@@ -721,6 +937,13 @@ class SelectionFlow:
             self._save()
             self.s.log.add_event("selection:preview", {"event": "fallback", **rec,
                                                        "adjustUnavailable": sorted(self.data["adjustUnavailable"])})
+            if to == "none" and self.gen3d:
+                # G62: 글 요약으로는 생성 형태를 보일 수 없다 → 남은 생성 후보를 빼고, 조절 중이면 고른 생성 메시도 버린다
+                for cid in list(self._asset_paths):
+                    if self.stage == "selecting":
+                        self.drop_generated(cid, R_NO_SHAPE_PREVIEW, "preview mode none", source)
+                if self.stage == "adjusting" and self.data["form"]["asset"] is not None:
+                    self.drop_generated("current", R_NO_SHAPE_PREVIEW, "preview mode none", source)
         self.s._save()
 
     def note_preview_fallback(self) -> None:
@@ -746,6 +969,13 @@ class SelectionFlow:
         with self.lock:
             if self.data is None:
                 raise SelectionError("후보가 아직 없습니다.")
+            if event == "asset_failed":
+                # G62: 브라우저 미리보기가 생성 형태 GLB 하나를 그리지 못함 → 그 후보를 빼고 사유를 남긴다(세션 방식은 그대로)
+                target = webgl.get("candidateId") if isinstance(webgl, dict) else None
+                if not isinstance(target, str) or not target:
+                    raise SelectionInvalid("asset_failed에는 webgl.candidateId(생성 후보 id 또는 current)가 필요합니다")
+                self.drop_generated(target, R_PREVIEW_FAILED, reason or "원인 미상", f"client:{mode}")
+                return self.view()
             if event == "fallback":
                 if mode == self.preview_mode and mode != "none":
                     self._downgrade(self.rt.preview.fallback_target(mode) if mode == "webgl" else "none",
@@ -815,6 +1045,25 @@ class SelectionFlow:
             out["candidates"] = [{"id": cid, "position": i, "index": by_id[cid]["index"],
                                   "overrides": by_id[cid]["overrides"], "summary": self.summary(by_id[cid]["overrides"])}
                                  for i, cid in enumerate(self.cands["displayOrder"])]
+            if self.gen3d:
+                # G62: 생성 후보 표시. 미리보기 쪽은 GLB를 이 주소로 받는다(webgl·image 플레이어 연결은 남은 일 — 지금은 절차 메시로 그려짐)
+                for c in out["candidates"]:
+                    a = by_id[c["id"]].get("asset")
+                    c["generated"] = a is not None
+                    if a is not None:
+                        c["asset"] = {"assetId": a["assetId"], "glbSha256": a["glbSha256"],
+                                      "glbUrl": f"/api/sessions/{self.s.id}/candidates/{c['id']}/asset.glb"}
+                default_id = self.cands["generation"]["defaultCandidateId"]
+                for c in out["candidates"]:
+                    c["default"] = c["id"] == default_id
+                out["defaultCandidateId"] = default_id          # 미리 선택할 후보(없으면 null). 확정은 참여자가 한다
+                out["defaultFormSource"] = self.data["defaultFormSource"]
+                out["formAsset"] = copy.deepcopy(self.data["form"]["asset"])
+                ca = self.current_asset()
+                # 조절 화면 미리보기가 그릴 생성 메시(형태를 바꾸면 null → 그 형태로 그림)
+                out["currentAsset"] = None if ca is None else {
+                    "assetId": ca["assetId"], "glbSha256": ca["glbSha256"],
+                    "glbUrl": f"/api/sessions/{self.s.id}/candidates/{self.data['form']['asset']['candidateId']}/asset.glb"}
             out["skipped"] = bool(self.data["selection"] and self.data["selection"].get("skipped"))
             out["axes"] = self.cands["axes"]
             out["note"] = self.cands["note"]

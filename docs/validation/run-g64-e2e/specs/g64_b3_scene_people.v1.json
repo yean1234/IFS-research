@@ -1,0 +1,339 @@
+{
+  "meta": {
+    "specVersion": "2.1.0",
+    "participantId": null,
+    "sessionId": "g64_b3_scene_people__gemma4-e4b__r1",
+    "condition": "chatbot",
+    "sourceTextHash": "sha256:c9bebdd2715ea365ef14d11a3aa211eb8d099f912a3912e8648b23efea6db096",
+    "pipeline": {
+      "builder": "scene-spec-builder-v1/1.2.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@1.0.0",
+        "layer1Base": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@1.0.0",
+        "vad": "vad-ko@0.1.0"
+      }
+    },
+    "mapping": {
+      "requested": "v1",
+      "used": "v1",
+      "fallbackReason": null
+    }
+  },
+  "form": {
+    "type": null,
+    "posture": null
+  },
+  "material": {
+    "color": null,
+    "brightness": 0.15,
+    "saturation": null,
+    "roughness": null,
+    "opacity": null,
+    "erosion": null
+  },
+  "layout": {
+    "size": null,
+    "distance": null,
+    "verticalOffset": null
+  },
+  "motion": {
+    "type": null,
+    "speed": null
+  },
+  "body": {
+    "part": "body",
+    "layer": "around"
+  },
+  "_provenance": {
+    "material.brightness": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "어두워요",
+        "charSpan": [
+          52,
+          56
+        ],
+        "rule": "brightnessLexicon.어둡>material.brightness:dark"
+      }
+    ],
+    "body.part": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "몸",
+        "charSpan": [
+          7,
+          8
+        ],
+        "rule": "bodyPartLexicon.몸>body.part:body"
+      }
+    ],
+    "body.layer": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "주변",
+        "charSpan": [
+          9,
+          11
+        ],
+        "rule": "bodyLayerLexicon.주변>body.layer:around"
+      }
+    ]
+  },
+  "_unmatched": [
+    {
+      "lemma": "부담",
+      "tag": "NNG",
+      "surface": "부담",
+      "charSpan": [
+        0,
+        2
+      ]
+    },
+    {
+      "lemma": "부담",
+      "tag": "EOJEOL",
+      "surface": "부담스러워요",
+      "charSpan": [
+        0,
+        6
+      ]
+    },
+    {
+      "lemma": "긴장",
+      "tag": "EOJEOL",
+      "surface": "긴장돼요",
+      "charSpan": [
+        14,
+        18
+      ]
+    },
+    {
+      "lemma": "사람",
+      "tag": "EOJEOL",
+      "surface": "사람들이",
+      "charSpan": [
+        19,
+        23
+      ]
+    },
+    {
+      "lemma": "저",
+      "tag": "EOJEOL",
+      "surface": "저를",
+      "charSpan": [
+        24,
+        26
+      ]
+    },
+    {
+      "lemma": "빙",
+      "tag": "MAG",
+      "surface": "빙",
+      "charSpan": [
+        27,
+        28
+      ]
+    },
+    {
+      "lemma": "둘러서",
+      "tag": "VV",
+      "surface": "둘러서",
+      "charSpan": [
+        29,
+        32
+      ]
+    },
+    {
+      "lemma": "쳐다보",
+      "tag": "VV",
+      "surface": "쳐다보",
+      "charSpan": [
+        33,
+        36
+      ]
+    },
+    {
+      "lemma": "쳐다보",
+      "tag": "EOJEOL",
+      "surface": "쳐다보는",
+      "charSpan": [
+        33,
+        37
+      ]
+    },
+    {
+      "lemma": "것",
+      "tag": "EOJEOL",
+      "surface": "것",
+      "charSpan": [
+        38,
+        39
+      ]
+    },
+    {
+      "lemma": "같",
+      "tag": "EOJEOL",
+      "surface": "같아요",
+      "charSpan": [
+        40,
+        43
+      ]
+    },
+    {
+      "lemma": "여러",
+      "tag": "EOJEOL",
+      "surface": "여러",
+      "charSpan": [
+        44,
+        46
+      ]
+    },
+    {
+      "lemma": "명",
+      "tag": "EOJEOL",
+      "surface": "명이에요",
+      "charSpan": [
+        47,
+        51
+      ]
+    }
+  ],
+  "_unmapped": [
+    {
+      "lemma": "긴장",
+      "category": "emotion",
+      "value": {
+        "emotion": "tense",
+        "vadHint": "arousal mid-high"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "긴장",
+        "charSpan": [
+          14,
+          16
+        ],
+        "rule": "emotionLexicon.긴장"
+      }
+    },
+    {
+      "lemma": "사람",
+      "category": "object",
+      "value": {
+        "object": "person_figure"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "사람",
+        "charSpan": [
+          19,
+          21
+        ],
+        "rule": "objectLexicon.사람"
+      }
+    }
+  ],
+  "_negated": [],
+  "_alternatives": [],
+  "_inferred": {
+    "layout.size": {
+      "value": 0.4,
+      "_provenance": [
+        {
+          "source": "vad_lexicon",
+          "trigger": "긴장",
+          "charSpan": [
+            14,
+            16
+          ],
+          "rule": "vadLexicon.긴장>layout.size:dominance"
+        }
+      ]
+    },
+    "motion.speed": {
+      "value": 0.75,
+      "_provenance": [
+        {
+          "source": "vad_lexicon",
+          "trigger": "긴장",
+          "charSpan": [
+            14,
+            16
+          ],
+          "rule": "vadLexicon.긴장>motion.speed:arousal"
+        }
+      ]
+    }
+  },
+  "_context": [],
+  "_parts": [],
+  "_uncertain": [],
+  "_measurements": [],
+  "_direction": [],
+  "_needsConfirmation": [],
+  "_clauses": [
+    {
+      "charSpan": [
+        0,
+        6
+      ],
+      "text": "부담스러워요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        7,
+        13
+      ],
+      "text": "몸 주변이요",
+      "usedFor": [
+        "body.part",
+        "body.layer"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        14,
+        18
+      ],
+      "text": "긴장돼요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        19,
+        43
+      ],
+      "text": "사람들이 저를 빙 둘러서 쳐다보는 것 같아요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        44,
+        51
+      ],
+      "text": "여러 명이에요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        52,
+        56
+      ],
+      "text": "어두워요",
+      "usedFor": [
+        "material.brightness"
+      ],
+      "status": "used"
+    }
+  ]
+}

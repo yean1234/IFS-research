@@ -1,0 +1,260 @@
+{
+  "meta": {
+    "specVersion": "2.1.0",
+    "participantId": null,
+    "sessionId": "g64_b5_plain_flame__gemma4-e4b__r1",
+    "condition": "chatbot",
+    "sourceTextHash": "sha256:42d786373619654b80c32e0291a5f98753a73f61decd696eb7ba4009f3d6bf90",
+    "pipeline": {
+      "builder": "scene-spec-builder-v1/1.2.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@1.0.0",
+        "layer1Base": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@1.0.0",
+        "vad": "vad-ko@0.1.0"
+      }
+    },
+    "mapping": {
+      "requested": "v1",
+      "used": "v1",
+      "fallbackReason": null
+    }
+  },
+  "form": {
+    "type": null,
+    "posture": null
+  },
+  "material": {
+    "color": {
+      "h": 0.144,
+      "s": 0.85,
+      "l": 0.6
+    },
+    "brightness": null,
+    "saturation": null,
+    "roughness": null,
+    "opacity": null,
+    "erosion": null
+  },
+  "layout": {
+    "size": 0.316,
+    "distance": null,
+    "verticalOffset": null
+  },
+  "motion": {
+    "type": "pounding",
+    "speed": null
+  },
+  "body": {
+    "part": "body",
+    "layer": "around"
+  },
+  "_provenance": {
+    "material.color": [
+      {
+        "source": "phrase_rule",
+        "trigger": "노랗게",
+        "charSpan": [
+          27,
+          30
+        ],
+        "rule": "colorTerm.노랗>material.color:hsl"
+      }
+    ],
+    "layout.size": [
+      {
+        "source": "simile_marker",
+        "trigger": "작은",
+        "charSpan": [
+          17,
+          19
+        ],
+        "rule": "simile.같은>sizeLexicon.작>layout.size:logScale(0.6)"
+      }
+    ],
+    "motion.type": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "두근거려요",
+        "charSpan": [
+          11,
+          16
+        ],
+        "rule": "motionLexicon.두근거리>motion.type:pounding"
+      }
+    ],
+    "body.part": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "몸",
+        "charSpan": [
+          4,
+          5
+        ],
+        "rule": "bodyPartLexicon.몸>body.part:body"
+      }
+    ],
+    "body.layer": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "주변",
+        "charSpan": [
+          6,
+          8
+        ],
+        "rule": "bodyLayerLexicon.주변>body.layer:around"
+      }
+    ]
+  },
+  "_unmatched": [
+    {
+      "lemma": "촛불",
+      "tag": "NNG",
+      "surface": "촛불",
+      "charSpan": [
+        20,
+        22
+      ]
+    },
+    {
+      "lemma": "같",
+      "tag": "EOJEOL",
+      "surface": "같아요",
+      "charSpan": [
+        23,
+        26
+      ]
+    }
+  ],
+  "_unmapped": [
+    {
+      "lemma": "설레",
+      "category": "emotion",
+      "value": {
+        "emotion": "excited"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "설레요",
+        "charSpan": [
+          0,
+          3
+        ],
+        "rule": "emotionLexicon.설레"
+      }
+    }
+  ],
+  "_negated": [],
+  "_alternatives": [
+    {
+      "path": "motion.type",
+      "value": "swaying",
+      "reason": "later_mention",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "흔들려요",
+          "charSpan": [
+            31,
+            35
+          ],
+          "rule": "motionLexicon.흔들리>motion.type:swaying"
+        }
+      ]
+    }
+  ],
+  "_inferred": {
+    "material.brightness": {
+      "value": 0.8,
+      "_provenance": [
+        {
+          "source": "vad_lexicon",
+          "trigger": "설레요",
+          "charSpan": [
+            0,
+            3
+          ],
+          "rule": "vadLexicon.설레>material.brightness:valence"
+        }
+      ]
+    },
+    "motion.speed": {
+      "value": 0.85,
+      "_provenance": [
+        {
+          "source": "vad_lexicon",
+          "trigger": "설레요",
+          "charSpan": [
+            0,
+            3
+          ],
+          "rule": "vadLexicon.설레>motion.speed:arousal"
+        }
+      ]
+    }
+  },
+  "_context": [],
+  "_parts": [],
+  "_uncertain": [],
+  "_measurements": [],
+  "_direction": [],
+  "_needsConfirmation": [],
+  "_clauses": [
+    {
+      "charSpan": [
+        0,
+        3
+      ],
+      "text": "설레요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        4,
+        10
+      ],
+      "text": "몸 주변이요",
+      "usedFor": [
+        "body.part",
+        "body.layer"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        11,
+        16
+      ],
+      "text": "두근거려요",
+      "usedFor": [
+        "motion.type"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        17,
+        26
+      ],
+      "text": "작은 촛불 같아요",
+      "usedFor": [
+        "layout.size"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        27,
+        35
+      ],
+      "text": "노랗게 흔들려요",
+      "usedFor": [
+        "material.color"
+      ],
+      "status": "partly_used"
+    }
+  ]
+}

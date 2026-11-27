@@ -199,6 +199,7 @@ namespace UnityEngine
         public Vector3[] normals { get; set; }
         public int[] triangles { get; set; }
         public Bounds bounds { get; set; }
+        public Rendering.IndexFormat indexFormat { get; set; }
         public int subMeshCount => 1;
         public uint GetIndexCount(int submesh) => 0;
         public void Clear() { }
@@ -423,6 +424,7 @@ namespace UnityEngine
 namespace UnityEngine.Rendering
 {
     public enum ShadowCastingMode { Off, On, TwoSided, ShadowsOnly }
+    public enum IndexFormat { UInt16 = 0, UInt32 = 1 }
     public enum AmbientMode { Skybox = 0, Trilight = 1, Flat = 3, Custom = 4 }
     public enum DefaultReflectionMode { Skybox, Custom }
     public struct SphericalHarmonicsL2 { }

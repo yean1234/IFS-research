@@ -66,6 +66,13 @@ namespace IFS.SceneSpec.Placement
             if (device.TryGetFeatureValue(CommonUsages.primary2DAxis, out Vector2 stick)) { s.StickX = stick.x; s.StickY = stick.y; }
             return s;
         }
+
+        /// <summary>G63 (4): 주 사용 손 컨트롤러에 햅틱 펄스(채널 0). 장치가 없거나 햅틱을 못 쓰면 false.</summary>
+        public bool SendHaptic(float amplitude, float durationSeconds)
+        {
+            var device = InputDevices.GetDeviceAtXRNode(Hand == PlacementConfig.HandLeft ? XRNode.LeftHand : XRNode.RightHand);
+            return device.isValid && device.SendHapticImpulse(0u, Mathf.Clamp01(amplitude), Mathf.Max(0f, durationSeconds));
+        }
     }
 
     [DisallowMultipleComponent]
@@ -85,11 +92,15 @@ namespace IFS.SceneSpec.Placement
         [Tooltip("광선 끝점 구 지름(m)")] [SerializeField] float rayEndDiameterM = 0.03f;
         [Tooltip("손 자리 구 지름(m)")] [SerializeField] float handDiameterM = 0.035f;
         [SerializeField] Color rayColor = new Color(0.30f, 0.45f, 0.70f, 1f);
+        [Tooltip("G63 (3) 겨눔·잡음 상태의 광선·끝점 색(uiRayHover를 켰을 때만)")]
+        [SerializeField] Color rayActiveColor = new Color(242f / 255f, 178f / 255f, 51f / 255f, 1f);
         [SerializeField] Color handColor = new Color(0.45f, 0.47f, 0.52f, 1f);
 
         IXrControllerSource _source;
         XrPlacementInputLogic _logic;
         GameObject _ray, _rayEnd, _handMarker;
+        Material _rayMat, _rayEndMat;
+        XrRayState _rayState = XrRayState.Idle;
         readonly List<Object> _owned = new List<Object>();
 
         public string SourceName => Source;
@@ -99,6 +110,15 @@ namespace IFS.SceneSpec.Placement
         public XrControllerSample LastSample { get; private set; } = XrControllerSample.None;
         public string DeviceName => _source?.DeviceName;
         public float RayMaxLengthM => rayMaxLengthM;
+        /// <summary>G63 (3): 마지막으로 그린 광선 상태(uiRayHover가 꺼져 있으면 늘 Idle). 테스트·점검용.</summary>
+        public XrRayState RayState => _rayState;
+        /// <summary>마지막으로 그린 광선 굵기·끝점 지름(m). 테스트·점검용.</summary>
+        public float RayWidthShownM { get; private set; }
+        public float RayEndDiameterShownM { get; private set; }
+
+        /// <summary>G63 (4): 주 사용 손 컨트롤러에 햅틱 펄스를 보낸다. 보냈으면 true(장치가 없거나 가짜 장치면 false).</summary>
+        public bool SendHaptic(PlacementHapticPulse pulse) =>
+            EnsureSource() is UnityXrControllerSource u && u.SendHaptic((float)pulse.Amplitude, pulse.DurationMs / 1000f);
 
         public void Configure(Transform space, string controllerHand)
         {
@@ -144,7 +164,11 @@ namespace IFS.SceneSpec.Placement
 
         // ── 보이는 것 ───────────────────────────────────────────────────
         /// <summary>광선을 보이거나 숨긴다. endDistance = 원점에서 끝점까지(m, XrRayVisual.EndDistance).</summary>
-        public void ShowRay(bool show, double endDistance)
+        public void ShowRay(bool show, double endDistance) => ShowRay(show, endDistance, XrRayState.Idle);
+
+        /// <summary>G63 (3): 상태별 광선. Idle이면 예전과 같은 굵기·끝점·색(Inspector 값), Hover면 끝점을 키우고 색을 바꾸며,
+        /// Held면 광선도 굵게. 물체의 색·재질은 건드리지 않는다.</summary>
+        public void ShowRay(bool show, double endDistance, XrRayState state)
         {
             var s = LastSample;
             bool visible = show && s.Valid && s.HasPose;
@@ -160,9 +184,20 @@ namespace IFS.SceneSpec.Placement
             float len = Mathf.Max(0.001f, Mathf.Min(rayMaxLengthM, (float)endDistance));
             // 원기둥 프리미티브는 y축으로 높이 2(−1..1) → y를 광선 방향으로 돌리고 길이의 절반으로 늘인다
             _ray.transform.SetPositionAndRotation(o + d * (len * 0.5f), Quaternion.LookRotation(d, Vector3.up) * Quaternion.Euler(90f, 0f, 0f));
-            _ray.transform.localScale = new Vector3(rayWidthM, len * 0.5f, rayWidthM);
+            float width = (float)XrRayStyle.WidthM(state, rayWidthM);
+            float endD = (float)XrRayStyle.EndDiameterM(state, rayEndDiameterM);
+            _ray.transform.localScale = new Vector3(width, len * 0.5f, width);
             _rayEnd.transform.position = o + d * len;
-            _rayEnd.transform.localScale = new Vector3(rayEndDiameterM, rayEndDiameterM, rayEndDiameterM);
+            _rayEnd.transform.localScale = new Vector3(endD, endD, endD);
+            RayWidthShownM = width;
+            RayEndDiameterShownM = endD;
+            if (state != _rayState)
+            {
+                var c = state == XrRayState.Idle ? rayColor : rayActiveColor;
+                if (_rayMat != null) _rayMat.color = c;
+                if (_rayEndMat != null) _rayEndMat.color = c;
+                _rayState = state;
+            }
             if (!_ray.activeSelf) _ray.SetActive(true);
             if (!_rayEnd.activeSelf) _rayEnd.SetActive(true);
         }
@@ -186,6 +221,10 @@ namespace IFS.SceneSpec.Placement
             if (_ray != null) return;
             _ray = Primitive(PrimitiveType.Cylinder, "xr ray", rayColor);
             _rayEnd = Primitive(PrimitiveType.Sphere, "xr ray end", rayColor);
+            var rr = _ray.GetComponent<MeshRenderer>();
+            var er = _rayEnd.GetComponent<MeshRenderer>();
+            _rayMat = rr != null ? rr.sharedMaterial : null;
+            _rayEndMat = er != null ? er.sharedMaterial : null;
             _handMarker = Primitive(PrimitiveType.Sphere, "xr hand", handColor);
         }
 

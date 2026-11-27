@@ -1,0 +1,32 @@
+{
+  "id": "emotion_bridge_x",
+  "title": "감정어로 시작 — 형상 신호가 없어 focus_hold 뒤 다리 질문 1회(X = 첫 답의 감정어 '불안')",
+  "source": "D9(docs/chatbot-design.md 5-3, docs/decisions.md G64). config/bridge.toml에서만 돈다",
+  "config": "bridge",
+  "condition": "chatbot",
+  "replies": [
+    "요즘 계속 불안해요",
+    "가슴 안쪽이요",
+    "없어요",
+    "그냥 그래요",
+    "차가운 물 같아요",
+    "없어요",
+    "없어요",
+    "없어요"
+  ],
+  "expect": {
+    "endedBy": "completed",
+    "bodyRelation": "in",
+    "findModalityIncludes": [
+      "emotion"
+    ],
+    "sourcesInclude": [
+      "bridge:like_what"
+    ],
+    "sourcesExclude": [
+      "fixed:bridge_like_what_plain"
+    ],
+    "firstElicitedBy": "bridge"
+  },
+  "note": "합성 대사. 실제 참여자 응답이 아니다. 다리 질문은 「그 '불안'은 마치 무엇 같나요?」(참여자 원문 '불안'), 그 답에서 처음 형상 신호가 나온다."
+}

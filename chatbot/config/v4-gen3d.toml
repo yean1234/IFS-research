@@ -1,0 +1,90 @@
+# G62 생성 형태 메시 후보 프로필: v4.toml과 같고 [gen3d]만 켠다(설계 docs/codex-reviews/D8_claude.md, 결정 G62).
+# 실행: python -m ifs_chatbot.server --config v4-gen3d
+# 챗봇은 형태 생성 모델을 부르지 않는다. 생성 도구(tools/gen3d)가 assets_dir에 둔 GLB + 사이드카(form-asset.v0)를 확정 텍스트의
+# sha256으로 찾아 절차 메시 후보 뒤에 최대 max_candidates개를 더한다. selection.json은 ifs-selection/0.3.
+# 미리보기: 생성 후보는 그 GLB 메시로 그린다(webgl = PreviewBridge.SetFormAssetJson, image = PreviewQueue formAsset, 색·재질은 스펙 값).
+# GLB를 그리지 못하면 그 후보를 빼고 사유를 기록하며, 글 요약(none)에서는 생성 후보를 내지 않는다.
+# ⚠ webgl·image 플레이어는 G62 코드로 다시 빌드해야 한다(저장소 밖 빌드 폴더가 예전 빌드면 GLB를 그리지 못해 생성 후보가 모두 빠짐).
+
+[interview]
+condition = "chatbot"
+protocol = "elicitation_protocol.v1.4.json"
+prompt_version = "1.0.0"
+
+[llm]
+backend = "ollama"
+model = "gemma4:e4b"
+host = "http://127.0.0.1:11434"
+timeout_s = 300
+temperature = 0.2
+top_p = 0.9
+seed = 7
+think = false
+num_ctx = 8192
+keep_alive = "30m"
+max_regenerations = 2
+retry_feedback = true
+
+[guard]
+keyword = true
+model_backend = "ollama"
+model = "hf.co/mradermacher/kanana-safeguard-8b-GGUF:Q4_K_M"
+format = "kanana"
+check_output = true
+required = false
+
+[validator]
+strict_novel_content = true
+l5_depth = "present_focus"
+max_anchor_eojeol = 3
+
+[session]
+log_dir = "logs"              # chatbot/logs/ (git에 올리지 않음). 후보·조절·측정 기록은 logs/selection/<sessionId>/
+scenes_dir = ""
+researcher_contact = "(연구자 연락처를 config에 입력하세요)"
+
+[mapping]
+mode = "v2"                   # 새 흐름은 매퍼 v2(D1 사전에 없는 명사 기록 · D2 형상이 사라지는 오류 수정, G24)
+save_both = true              # v0·v1·v2 비교 파일도 남김
+clarify_loop = false
+clarify_max = 2
+strict = false
+# G61(docs/viz-pipeline-direction.md). 둘 다 기본 꺼짐 — 켜지 않으면 v2 출력은 builder 2.4.0·스펙 2.2.0 그대로.
+ext_lexicon = ""                          # "layer1_lexicon.v2.json"이면 스펙 2.3.0(윤곽·발광). ⚠ Unity가 2.3을 읽게 된 뒤에 켤 것
+ext_params = "scene_params.v3.json"       # ext_lexicon을 켰을 때의 대응표
+variant_rules = ""                        # "variant_rules.v0.json"이면 형태 변이 규칙층(의태어 변이형 → 사전 뿌리)
+
+[drift]
+enabled = true
+recall_check = false
+self_report = false
+allow_draft_phrases = false
+
+[selection]
+enabled = true                                  # 확정 뒤 후보 선택 · 조절 · 사전 측정 단계를 연다
+protocol = "selection_protocol.v0.json"         # shared/protocol/ (모든 문구 status draft)
+table = "candidate_values.v2.json"              # shared/lexicon/ (후보·조절 값 표, 2.0.0 — D6 기본 형상. 1.0.0 = v1 파일)
+require_spec_phrases = false                    # true면 초안 문구가 있을 때 후보 단계를 시작하지 않음(X35)
+participant_draft_banner = true                 # false면 초안 문구 경고 줄을 참여자 보기에서 숨김(연구자 보기·기록에는 남음, G59). ⚠ 사람이 정할 것
+post_interview = "post_interview.v0.json"       # 사후 면담 기록 화면 /?view=postinterview&session=<ID>의 문항(shared/protocol/, 모두 draft, G59)
+
+[preview]
+mode = "webgl"                                  # webgl | image | none. G12: WebGL(빌드 폴더가 없거나 브라우저가 WebGL2를 못 쓰면
+                                                # 그 세션은 image(G25, 아래 플레이어) → 그것도 안 되면 글 요약으로 내려감. 기록은 selection.json preview)
+webgl_dir = "../../webgl-build/preview"         # 저장소 밖 WebGL 빌드(PreviewBuild.BuildWebGLPreview). git에 넣지 않음
+image_player = "../../webgl-build/preview-win/IFSPreview.exe"   # 예비: 저장소 밖 Windows 미리보기 플레이어(PreviewBuild.BuildWindowsPreview)
+queue_dir = ""                                  # 비우면 logs/preview-queue
+start_on_launch = false                         # 첫 미리보기 요청 때 플레이어를 띄움
+width = 320
+height = 240
+start_timeout_s = 60
+request_timeout_s = 20
+webgl_ready_timeout_s = 30                      # 브라우저: Unity 준비 한도(넘으면 그 세션은 image로)
+webgl_request_timeout_s = 15                    # 브라우저: Unity 요청 하나(로드·덮어쓰기·캡처)의 한도
+
+[gen3d]
+enabled = true                                  # G62: 생성 형태 메시 후보를 켬
+assets_dir = "../../gen3d-out"                  # 저장소 밖(chatbot/ 기준 상대 경로). 하위 폴더까지 사이드카를 찾는다
+max_candidates = 2                              # 절차 후보에 더할 생성 후보 최대 수(status ok + gate.passed)
+default_form_source = "auto"                    # G62-i: 말한 형태 낱말이 모두 단순 도형(primitive_forms.v0.json)이면 절차 메시가 기본, 그 밖의 사물이면 쓸 수 있는 생성 후보가 기본(맨 앞·미리 선택, 참여자가 확정해야 씀). "generated"·"procedural"은 고정
+

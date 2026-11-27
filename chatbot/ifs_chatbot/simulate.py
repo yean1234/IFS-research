@@ -38,6 +38,11 @@ def load_scenarios(paths: list[str]) -> list[dict]:
     return out
 
 
+def scenario_matches_config(sc: dict, cfg: Config) -> bool:
+    """시나리오에 "config"(예: "bridge", D9)가 있으면 그 설정에서만 돈다. 없으면 어느 설정에서나(예전 그대로)."""
+    return not sc.get("config") or Path(cfg.source).stem == sc["config"]
+
+
 def drive(session: Session, scenario: dict, max_steps: int = 80) -> None:
     replies = list(scenario.get("replies", []))
     soft = list(scenario.get("softCheck", ["continue"]))
@@ -121,6 +126,10 @@ def check_expect(sc: dict, m: dict, s: Session) -> list[str]:
     for k in exp.get("alertsInclude", []):
         if k not in m["alerts"]:
             fails.append(f"알림 {k} 없음")
+    if "firstElicitedBy" in exp:   # D9(프로토콜 1.5): 형상 신호가 처음 나온 턴 종류. null이면 끝까지 신호 없음
+        got = (s.log.data["capture"].get("firstElicitedBy") or {}).get("kind")
+        if got != exp["firstElicitedBy"]:
+            fails.append(f"firstElicitedBy {got} != {exp['firstElicitedBy']}")
     return fails
 
 
@@ -138,6 +147,10 @@ def run(cfg: Config, scenarios: list[dict], models: list[str | None], runs: int,
         else:
             rt.backend.warmup()
         for sc in scenarios:
+            if not scenario_matches_config(sc, mcfg):
+                if not quiet:
+                    print(f"[SKIP] {sc['id']}: config '{sc['config']}' 전용 시나리오(지금 {Path(mcfg.source).stem})")
+                continue
             for r in range(runs):
                 cond = sc.get("condition", "chatbot")
                 if cond == "chatbot" and not rt.backend_ok:

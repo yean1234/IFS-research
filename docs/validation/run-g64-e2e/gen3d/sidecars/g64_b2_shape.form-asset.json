@@ -1,0 +1,201 @@
+{
+  "schema": "form-asset.v0",
+  "assetId": "cd261b4009896239",
+  "cacheKey": "cd261b400989623921ddae5e1c1a0b6f86da950728c1d862f22ce5ef258eab9b",
+  "status": "ok",
+  "blockReason": null,
+  "blockDetail": null,
+  "error": null,
+  "glb": "cd261b4009896239.glb",
+  "glbSha256": "12343b2c4fd79fb29b6a39126094c2450e377c3e57d5d95abae66628d6eb3dde",
+  "pipeline": "sdxl-triposg",
+  "postprocessVersion": "g62-post/0.1.0",
+  "models": [
+    {
+      "name": "image",
+      "repo": "stabilityai/stable-diffusion-xl-base-1.0",
+      "revision": "462165984030d82259a11f4367a4eed129e94a7b",
+      "weightsSha256": {
+        "text_encoder/model.safetensors": "5c3d6454dd2d23414b56aa1b5858a72487a656937847b6fea8d0606d7a42cdbc",
+        "text_encoder_2/model.safetensors": "3a6032f63d37ae02bbc74ccd6a27440578cd71701f96532229d0154f55a8d3ff",
+        "unet/diffusion_pytorch_model.safetensors": "357650fbfb3c7b4d94c1f5fd7664da819ad1ff5a839430484b4ec422d03f710a",
+        "vae/diffusion_pytorch_model.safetensors": "1598f3d24932bcfe6634e8b618ea1e30ab1d57f5aad13a6d2de446d2199f2341"
+      },
+      "license": "CreativeML Open RAIL++-M"
+    },
+    {
+      "name": "rembg",
+      "repo": "github.com/danielgatis/rembg u2net.onnx",
+      "revision": null,
+      "weightsSha256": "8d10d2f3bb75ae3b6d527c77944fc5e7dcd94b29809d47a739a7a728a912b491",
+      "license": "MIT (rembg) / Apache-2.0 (U^2-Net)"
+    },
+    {
+      "name": "shape",
+      "repo": "VAST-AI/TripoSG",
+      "revision": "2c1c516d22d58db486a058d98d31bb6177344e06",
+      "weightsSha256": {
+        "image_encoder_dinov2/model.safetensors": "399fba97a95f22c36834418bc69373364a99af3a1153da1c0fb31db567c92e23",
+        "transformer/diffusion_pytorch_model.safetensors": "9192b5923f7b605b394192809aa2ceb73bf0f4009674d8e3b999b45bb97d4bf2",
+        "vae/diffusion_pytorch_model.safetensors": "a2e667c24927a5a35e5f19fcb4c75890e9399aa966b6db8131d7df733a750c8b"
+      },
+      "codeCommit": "fc5c40990181e2a756c4e0b1c2f4d6b5202faf8c",
+      "license": "MIT"
+    },
+    {
+      "name": "gate",
+      "repo": "openai/clip-vit-large-patch14",
+      "revision": "32bd64288804d66eefd0ccbe215aa642df71cc41",
+      "weightsSha256": {
+        "model.safetensors": "a2bf730a0c7debf160f7a6b50b3aaf3703e7e88ac73de7a314903141db026dcb"
+      },
+      "license": "MIT"
+    }
+  ],
+  "seed": 0,
+  "prompt": {
+    "text": "a single round ball, one solid object, matte gray clay, plain white background",
+    "negativeText": "person, human, face, eyes, figure, animal, hands, text, watermark, multiple objects, cropped, scenery, floor, shadow, color, two objects, pair, duplicate, group of objects, stand, pedestal, base plate, plinth, string, rope, chain, strap, holder, container, bowl, vase, tray, plate",
+    "lexiconVersion": "0.2.0",
+    "builderVersion": "gen3d-shape-prompt/0.2.0",
+    "tokens": [
+      {
+        "en": "a single",
+        "ko": null,
+        "charSpan": null,
+        "slot": "template",
+        "lexiconKey": null
+      },
+      {
+        "en": "round",
+        "ko": "동그란",
+        "charSpan": [
+          26,
+          29
+        ],
+        "slot": "shape_modifier",
+        "lexiconKey": "동그랗"
+      },
+      {
+        "en": "ball",
+        "ko": "공",
+        "charSpan": [
+          30,
+          31
+        ],
+        "slot": "shape_noun",
+        "lexiconKey": "공"
+      },
+      {
+        "en": "one solid object",
+        "ko": null,
+        "charSpan": null,
+        "slot": "template",
+        "lexiconKey": null
+      },
+      {
+        "en": "matte gray clay",
+        "ko": null,
+        "charSpan": null,
+        "slot": "template",
+        "lexiconKey": null
+      },
+      {
+        "en": "plain white background",
+        "ko": null,
+        "charSpan": null,
+        "slot": "template",
+        "lexiconKey": null
+      }
+    ],
+    "dropped": []
+  },
+  "sourceTextSha256": "dc7b4d94002cfb06e427e8bd2f2420d40fd65c62b31bf44a1dce13e4db45b8c3",
+  "normalization": {
+    "longestEdge": 1.0,
+    "pivot": "bottom-center",
+    "bboxBefore": {
+      "min": [
+        -0.951655,
+        -0.908618,
+        -0.951128
+      ],
+      "max": [
+        0.945484,
+        0.898739,
+        0.945018
+      ]
+    },
+    "bboxAfter": {
+      "min": [
+        -0.5,
+        0.0,
+        -0.499738
+      ],
+      "max": [
+        0.5,
+        0.952675,
+        0.499738
+      ]
+    },
+    "scaleApplied": 0.527109535,
+    "axisAligned": false,
+    "facesBefore": 538536,
+    "facesAfter": 20000,
+    "faceLimit": 20000
+  },
+  "covariates": {
+    "axisRatios": [
+      1.0,
+      0.9527,
+      0.9995
+    ],
+    "thinRisk": false,
+    "familiarObjectStated": true,
+    "pluralStated": false
+  },
+  "gate": {
+    "personLikeScore": 0.0149,
+    "passed": true,
+    "threshold": 0.5,
+    "views": 6,
+    "labelScores": {
+      "a person": 0.008,
+      "a human figure": 0.0019,
+      "a human face": 0.0011,
+      "a head with eyes and a mouth": 0.0001,
+      "an animal": 0.0013,
+      "an animal figurine": 0.0003,
+      "a doll": 0.0038,
+      "an inanimate object": 0.1667,
+      "an abstract shape": 0.4659,
+      "a rock": 0.023,
+      "a geometric solid": 0.3833,
+      "a household object": 0.0983,
+      "a lump of clay": 0.1578,
+      "a piece of cloth": 0.0221
+    },
+    "matchScore": 0.2384,
+    "model": "openai/clip-vit-large-patch14@32bd64288804d66eefd0ccbe215aa642df71cc41",
+    "multiObject": {
+      "components": 1,
+      "significant": 1,
+      "topFractions": [
+        1.0
+      ],
+      "minFraction": 0.05,
+      "applied": true,
+      "blocked": false
+    }
+  },
+  "timing": {
+    "image": 6.41,
+    "removeBackground": 0.28,
+    "shape": 18.1,
+    "postprocess": 4.87,
+    "vramImageGiB": 12.543,
+    "vramShapeGiB": 5.818,
+    "gate": 0.41
+  },
+  "cacheHit": false
+}

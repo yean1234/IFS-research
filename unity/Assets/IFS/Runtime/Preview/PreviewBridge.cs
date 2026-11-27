@@ -3,6 +3,8 @@
 //   LoadSpecJson(json)          spec JSON 문자열을 로드(덮어쓰기는 비운다). 성공 → JS ifsPreview 'loaded' {…}, 실패 → 'error' {…}
 //   ApplyOverridesJson(json)    지금 spec 위에 덮어쓰기 목록(SceneOverrideJson 형식, 예: {"form.type":"mist","material.opacity":0.6})을 얹어 다시 로드.
 //                               "" 또는 "{}" = 덮어쓰기 지움. 결과는 LoadSpecJson과 같은 콜백
+//   SetFormAssetJson(json)      G62: 생성 형태 GLB {"assetId","glbSha256","glbBase64"}를 얹는다("" = 걷기). 로드할 때마다 절차 모형의 메시를
+//                               이것으로 바꾼다(러너와 같은 SceneLoader.ApplyFormAsset — 가장 긴 변·재질 규칙). 결과는 'loaded' {kind:"formAsset"} 또는 'error'
 //   SetAutoRotate("12")         천천히 돌기(°/초, 0 = 멈춤)
 //   SetFrozen("1"|"0")          움직임(motion.type)을 멈추고 정지 자세로(비교 캡처용) / 다시 움직이게(다시 로드)
 //   Capture(json)               {"id":"..","width":800,"height":600,"background":"scene|black|white"} → 같은 크기로 렌더한 PNG(base64)를
@@ -122,6 +124,55 @@ namespace IFS.SceneSpec
             LoadInternal(_stage.SpecJson, ov, "overrides");
         }
 
+        /// <summary>G62: 생성 형태 GLB를 얹는다({"assetId","glbSha256","glbBase64"}) / ""이면 걷는다. 지금 spec·덮어쓰기로 다시 로드하고
+        /// 'loaded' {kind: "formAsset", formAsset: {status, renderedLongestEdgeM…} | null}. GLB를 받지 못하거나(sha256·형식) 적용하지 못하면
+        /// 생성 메시를 걷고 절차 모형으로 둔 뒤 'error' {kind: "formAsset"} — 챗봇은 그 후보를 빼고 사유를 기록한다.</summary>
+        public void SetFormAssetJson(string json)
+        {
+            EnsureStage();
+            if (_stage?.SpecJson == null) { NotifyError("formAsset", "먼저 LoadSpecJson으로 spec을 넣어야 합니다", null); return; }
+            if (string.IsNullOrWhiteSpace(json) || json.Trim() == "null")
+            {
+                _stage.ClearFormAsset();
+                LoadInternal(_stage.SpecJson, _stage.Overrides, "formAsset");
+                return;
+            }
+            FormAsset.FormAssetRef asset;
+            FormAsset.GlbMesh mesh;
+            string error;
+            try { mesh = FormAsset.FormAssetPayload.Decode(JObject.Parse(json), null, out asset, out error); }
+            catch (Newtonsoft.Json.JsonException e) { mesh = null; asset = null; error = "요청 JSON: " + e.Message; }
+            if (mesh == null) { RestoreProcedural(); NotifyError("formAsset", error, null); return; }
+            _stage.SetFormAsset(asset, mesh);
+            bool ok;
+            try { ok = _stage.Reapply(_stage.Overrides); }
+            catch (Exception e) { ok = false; error = e.GetType().Name + ": " + e.Message; }
+            var res = _stage.LastFormAsset;
+            if (!ok || res == null || !res.Applied)
+            {
+                string why = error ?? res?.FallbackReason ?? "다시 로드하지 못함";
+                RestoreProcedural();
+                NotifyError("formAsset", "생성 형태를 그리지 못했습니다: " + why, res?.Detail != null ? new List<string> { res.Detail } : null);
+                return;
+            }
+            if (_frozen) { _stage.SetYaw(0f); _stage.FreezeMotion(); }
+            Notify("loaded", new JObject
+            {
+                ["kind"] = "formAsset",
+                ["renderPath"] = _stage.Loader.RenderPath,
+                ["overrides"] = _stage.Overrides?.OverridesJson(),
+                ["formAsset"] = res.ManifestJson(),
+            });
+        }
+
+        // 생성 메시를 걷고 절차 모형으로 다시 로드(알리지 않음 — 부른 쪽이 error를 한 번만 알린다)
+        void RestoreProcedural()
+        {
+            _stage.ClearFormAsset();
+            try { _stage.Reapply(_stage.Overrides); } catch (Exception e) { Debug.LogWarning("[Preview] 절차 모형으로 되돌리지 못함: " + e.Message, this); }
+            if (_frozen) { _stage.SetYaw(0f); _stage.FreezeMotion(); }
+        }
+
         public void SetAutoRotate(string degPerSec)
         {
             if (float.TryParse(degPerSec, NumberStyles.Float, CultureInfo.InvariantCulture, out var v)) autoRotateDegPerSec = v;
@@ -192,7 +243,7 @@ namespace IFS.SceneSpec
             if (!ok) { NotifyError(kind, "spec을 로드하지 못했습니다", errors); return; }
             if (_frozen) { _stage.SetYaw(0f); _stage.FreezeMotion(); }
             var loader = _stage.Loader;
-            Notify("loaded", new JObject
+            var payload = new JObject
             {
                 ["kind"] = kind,
                 ["loadMs"] = Math.Round(sw.Elapsed.TotalMilliseconds, 1),
@@ -204,7 +255,10 @@ namespace IFS.SceneSpec
                 ["shapeModel"] = loader.Shape?.Model,
                 ["notes"] = new JArray(loader.Notes),
                 ["errors"] = new JArray(errors),
-            });
+            };
+            // G62: 생성 메시를 얹은 채 다시 로드했으면 그 결과(얹은 것이 없으면 키 없음 — 이전 응답 그대로)
+            if (_stage.LastFormAsset != null) payload["formAsset"] = _stage.LastFormAsset.ManifestJson();
+            Notify("loaded", payload);
         }
 
         void NotifyError(string kind, string message, List<string> details, string id = null)

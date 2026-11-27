@@ -98,7 +98,7 @@ def test_web_participant_view_and_progress_without_new_words():
 
 def test_stage_js_g44_contract():
     web = (WEB / "stage.js").read_text(encoding="utf-8")
-    live = web[web.index("liveSlot(overrides) {"):web.index("place() {")]
+    live = web[web.index("liveSlot(overrides, asset) {"):web.index("place() {")]
     # 첫 시작이 조절 화면이어도 미리보기 자리를 잃지 않음(start()가 teardown으로 slot을 비운 뒤에 slot을 정함)
     assert live.index("this.start()") < live.index("this.slot = slot")
     assert "/adjust/samples/" in web and "/preview/sample/" in web

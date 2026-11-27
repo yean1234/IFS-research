@@ -1,0 +1,8 @@
+image 4df20acebef16028 0 6.93
+image cd261b4009896239 0 6.41
+image f5ad8e8953a7f430 0 6.42
+shape 4df20acebef16028 0 {'image': 6.93, 'removeBackground': 0.41, 'shape': 18.14, 'postprocess': 7.47} 526370 -> 20000
+shape cd261b4009896239 0 {'image': 6.41, 'removeBackground': 0.28, 'shape': 18.1, 'postprocess': 4.87} 538536 -> 20000
+shape f5ad8e8953a7f430 0 {'image': 6.42, 'removeBackground': 0.19, 'shape': 17.85, 'postprocess': 1.7} 224059 -> 19999
+끝: <repo>/..\gen3d-out\g64e2e\g62-sdxl-triposg 모델 호출 {'image': 3, 'shape': 3, 'gate': 3} 스키마 문제 0
+exit=0

@@ -430,7 +430,7 @@ namespace IFS.SceneSpec.Tests
                         Assert.That(t[k], Does.Not.Contain(banned), k + ": 방향 암시·치료 표현·'방금 자리' 금지");
                 }
             }
-            Assert.That(def.Version, Is.EqualTo("0.6"), "같은 0.6 안에 더함");
+            Assert.That(def.Version, Is.EqualTo("0.7"), "G60-2는 0.6 안에 더함, G65·G66 문구로 0.7");
         }
 
         // ── 눈높이 보정 판정 ────────────────────────────────────────────

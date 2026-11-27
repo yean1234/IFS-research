@@ -241,3 +241,97 @@ def find_modality(text: str, lexicon: Lexicon) -> dict:
         labels.append("thought_or_sentence")
     return {"labels": labels or ["unknown_or_other"], "categories": sorted(cats),
             "method": "heuristic: 1층 사전 범주", "note": "2D 설문의 find.initial_response 6범주와 같은 이름. 참여자에게 보이지 않는다."}
+
+
+# ── 형상 신호 (D9, 프로토콜 1.5 imageSignal) ─────────────────────────────────
+IMAGE_SIGNAL_DEFAULT = {
+    "categories": ["form", "shape", "object", "size", "color", "brightness", "texture", "opacity", "posture"],
+    "excludeIfAlsoIn": ["sensation", "emotion"],
+    "simile": {"predicates": ["같"], "particles": ["처럼", "마냥", "같이"],
+               "nounTags": ["NNG", "NNP"], "nounExcludeCategories": ["emotion", "sensation", "body_part"]},
+}
+
+
+def image_signal(text: str, lexicon: Lexicon, analyzer: Analyzer, spec: dict | None = None) -> dict:
+    """참여자 발화에 형상 신호가 있는지(규칙만, LLM 없음). 흐름(다리 질문·find 틀 제한)에만 쓰고 장면 값에는 쓰지 않는다(원칙 2).
+
+    있음 = (1) 사전 범주 form·shape·object·size·color·brightness·texture·opacity·posture 항목이 부정 없이 나옴.
+             다만 같은 표제어가 sensation·emotion 범주에도 있으면('숨') 근거로 치지 않는다.
+           (2) 일반명사 바로 뒤 '같'(VA)·'처럼'·'마냥'·'같이' 비유 표지. 명사가 ANCHOR_STOP·감정어·감각어·신체부위어면 치지 않는다.
+    사전 표면 일치 규칙: 적중 형태소의 원문 위치가 감정·감각 표제어(lemma·alt)의 원문 표면 일치 안에 들어 있으면
+    ('가슴이 조이고 불안해요'에서 분석기가 '불안'을 '불/NNG + 안/MAG'로 나눠 생긴 '불') 신호로 치지 않고
+    excluded에 why = inside_lexicon_term으로 남긴다. 문맥 규칙이 아니라 사전 표면 일치다.
+    """
+    from .anchors import ANCHOR_STOP   # anchors는 extract를 부르지 않는다(순환 없음)
+
+    spec = spec or IMAGE_SIGNAL_DEFAULT
+    text = normalize(text)
+    cats = set(spec.get("categories", IMAGE_SIGNAL_DEFAULT["categories"]))
+    excl_cats = set(spec.get("excludeIfAlsoIn", IMAGE_SIGNAL_DEFAULT["excludeIfAlsoIn"]))
+    sim = {**IMAGE_SIGNAL_DEFAULT["simile"], **(spec.get("simile") or {})}
+    overlap = {e.lemma for e in lexicon.entries if e.category in excl_cats} \
+        | {a for e in lexicon.entries if e.category in excl_cats for a in e.alt}
+    evidence: list[dict] = []
+    excluded: list[dict] = []
+    hits = lexicon.hits(text) if text else []
+    toks = analyzer.tokens(text) if text else []
+    terms = inside_terms(text, lexicon, excl_cats)
+
+    def inside(start: int, end: int) -> str | None:
+        """[start, end)가 그보다 긴 감정·감각 표제어의 원문 표면 일치 안에 들어 있으면 그 표제어."""
+        return next((t for s, e, t in terms if s <= start and end <= e and (e - s) > (end - start)), None)
+
+    tok_cats: dict[int, set[str]] = {}
+    for h in hits:
+        tok_cats.setdefault(h.token_index, set()).add(h.entry.category)
+        if h.entry.category not in cats:
+            continue
+        # trigger = 근거 표현(원문 어절), negated = 부정 여부(반박 처리 표 4b: 근거·부정·판정 시점을 남긴다)
+        rec = {"kind": "lexicon", "category": h.entry.category, "lemma": h.entry.lemma, "trigger": h.trigger,
+               "charSpan": list(h.char_span), "negated": bool(h.negated)}
+        tk = toks[h.token_index] if 0 <= h.token_index < len(toks) else None
+        term = inside(tk.start, tk.end) if tk is not None else None
+        if term:
+            excluded.append({**rec, "why": "inside_lexicon_term", "term": term})
+        elif h.entry.lemma in overlap:
+            excluded.append({**rec, "why": "also_sensation_or_emotion"})
+        elif h.negated:
+            excluded.append({**rec, "why": "negated"})
+        else:
+            evidence.append(rec)
+    noun_excl = set(sim["nounExcludeCategories"])
+    for i, tok in enumerate(toks[:-1]):
+        nxt = toks[i + 1]
+        if tok.base_tag not in sim["nounTags"]:
+            continue
+        marker = (nxt.form in sim["predicates"] and nxt.base_tag in ("VA", "VV")) \
+            or (nxt.base_tag == "JKB" and nxt.form in sim["particles"])
+        if not marker:
+            continue
+        # negated: 표지 뒤 부정('돌 같지 않아요')을 기록만 한다. 비유 표지의 판정에는 쓰지 않는다(문맥 규칙을 늘리지 않음, 반박 4b)
+        rec = {"kind": "simile", "noun": tok.form, "marker": nxt.form, "trigger": text[tok.start:nxt.end],
+               "charSpan": [tok.start, nxt.end], "negated": Lexicon._negated(toks, i + 1)}
+        term = inside(tok.start, tok.end)
+        if term:
+            excluded.append({**rec, "why": "inside_lexicon_term", "term": term})
+        elif tok.form in ANCHOR_STOP or tok_cats.get(i, set()) & noun_excl:
+            excluded.append({**rec, "why": "noun_is_stop_emotion_sensation_or_body_part"})
+        else:
+            evidence.append(rec)
+    return {"present": bool(evidence), "evidence": evidence, "excluded": excluded}
+
+
+def inside_terms(text: str, lexicon: Lexicon, categories: set[str] | tuple[str, ...],
+                 pos: set[str] | None = None) -> list[tuple[int, int, str]]:
+    """그 범주 표제어(lemma·alt)가 원문에 글자 그대로 나오는 자리 (시작, 끝, 표제어). 긴 것부터, 같은 길이면 앞부터.
+    pos를 주면 그 품사 항목만(다리 X 대체 경로는 명사·어근만 쓴다)."""
+    text = normalize(text)
+    words = {w for e in lexicon.entries if e.category in categories and (pos is None or e.pos in pos)
+             for w in (e.lemma, *e.alt) if w}
+    out = []
+    for w in words:
+        start = text.find(w)
+        while start >= 0:
+            out.append((start, start + len(w), w))
+            start = text.find(w, start + 1)
+    return sorted(out, key=lambda t: (-(t[1] - t[0]), t[0]))
