@@ -1,0 +1,511 @@
+{
+  "meta": {
+    "specVersion": "2.2.0",
+    "participantId": null,
+    "sessionId": "g64_b7_glass_negation",
+    "condition": "chatbot",
+    "sourceTextHash": "sha256:db0ad76ffe2dc6ab2120b696728f0390ff90966ae78c23d44193e1889fdeff53",
+    "pipeline": {
+      "builder": "scene-spec-builder-v2/2.4.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@1.0.0",
+        "layer1Base": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@1.0.0",
+        "vad": "vad-ko@0.1.0",
+        "sceneParamsV2": "scene-params-v2@2.0.0",
+        "nounStoplist": "noun-stoplist-v2@1.0.0",
+        "baseShapes": "base-shapes-v1@0.7.0"
+      }
+    },
+    "mapping": {
+      "requested": "v2",
+      "used": "v1",
+      "fallbackReason": null
+    }
+  },
+  "form": {
+    "type": "shell",
+    "posture": null,
+    "base": null,
+    "baseVariant": null
+  },
+  "material": {
+    "color": null,
+    "brightness": null,
+    "saturation": null,
+    "roughness": null,
+    "opacity": 0.1,
+    "erosion": 0.6
+  },
+  "layout": {
+    "size": null,
+    "distance": null,
+    "verticalOffset": null
+  },
+  "motion": {
+    "type": "trembling",
+    "speed": null
+  },
+  "body": {
+    "part": "throat_neck",
+    "layer": "inner"
+  },
+  "_provenance": {
+    "form.type": [
+      {
+        "source": "simile_marker",
+        "trigger": "유리막 같",
+        "charSpan": [
+          27,
+          32
+        ],
+        "rule": "simile.같은>prototype.막>form.type:shell"
+      }
+    ],
+    "material.opacity": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "투명",
+        "charSpan": [
+          35,
+          37
+        ],
+        "rule": "opacityLexicon.투명>material.opacity:transparent"
+      }
+    ],
+    "material.erosion": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "깨질",
+        "charSpan": [
+          43,
+          45
+        ],
+        "rule": "textureLexicon.깨지>material.erosion:broken"
+      }
+    ],
+    "motion.type": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "떨려요",
+        "charSpan": [
+          70,
+          73
+        ],
+        "rule": "motionLexicon.떨리>motion.type:trembling"
+      }
+    ],
+    "body.part": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "목",
+        "charSpan": [
+          5,
+          6
+        ],
+        "rule": "bodyPartLexicon.목>body.part:throat_neck"
+      }
+    ],
+    "body.layer": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "안쪽",
+        "charSpan": [
+          7,
+          9
+        ],
+        "rule": "bodyLayerLexicon.안쪽>body.layer:inner"
+      }
+    ]
+  },
+  "_unmatched": [
+    {
+      "lemma": "불안",
+      "tag": "EOJEOL",
+      "surface": "불안해요",
+      "charSpan": [
+        0,
+        4
+      ]
+    },
+    {
+      "lemma": "침",
+      "tag": "EOJEOL",
+      "surface": "침이",
+      "charSpan": [
+        12,
+        14
+      ]
+    },
+    {
+      "lemma": "잘",
+      "tag": "MAG",
+      "surface": "잘",
+      "charSpan": [
+        15,
+        16
+      ]
+    },
+    {
+      "lemma": "안",
+      "tag": "MAG",
+      "surface": "안",
+      "charSpan": [
+        17,
+        18
+      ]
+    },
+    {
+      "lemma": "넘어가",
+      "tag": "VV",
+      "surface": "넘어가",
+      "charSpan": [
+        19,
+        22
+      ]
+    },
+    {
+      "lemma": "넘어가",
+      "tag": "EOJEOL",
+      "surface": "넘어가요",
+      "charSpan": [
+        19,
+        23
+      ]
+    },
+    {
+      "lemma": "유리+막",
+      "tag": "EOJEOL",
+      "surface": "유리막",
+      "charSpan": [
+        27,
+        30
+      ]
+    },
+    {
+      "lemma": "금방",
+      "tag": "MAG",
+      "surface": "금방",
+      "charSpan": [
+        40,
+        42
+      ]
+    },
+    {
+      "lemma": "것",
+      "tag": "EOJEOL",
+      "surface": "것",
+      "charSpan": [
+        46,
+        47
+      ]
+    },
+    {
+      "lemma": "같",
+      "tag": "EOJEOL",
+      "surface": "같아요",
+      "charSpan": [
+        48,
+        51
+      ]
+    },
+    {
+      "lemma": "않",
+      "tag": "EOJEOL",
+      "surface": "않아요",
+      "charSpan": [
+        56,
+        59
+      ]
+    }
+  ],
+  "_unmapped": [
+    {
+      "lemma": "불안",
+      "category": "emotion",
+      "value": {
+        "emotion": "anxious"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "불안",
+        "charSpan": [
+          0,
+          2
+        ],
+        "rule": "emotionLexicon.불안"
+      }
+    },
+    {
+      "lemma": "침",
+      "category": "unlisted_noun",
+      "value": {
+        "noun": "침",
+        "role": "subject",
+        "scope": "main"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "phrase_rule",
+        "trigger": "침",
+        "charSpan": [
+          12,
+          13
+        ],
+        "rule": "unlistedNoun.침"
+      }
+    },
+    {
+      "lemma": "얇",
+      "category": "shape",
+      "value": {
+        "shape": "thin"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "simile_marker",
+        "trigger": "얇은",
+        "charSpan": [
+          24,
+          26
+        ],
+        "rule": "simile.같은>shapeLexicon.얇"
+      }
+    },
+    {
+      "lemma": "유리",
+      "category": "object",
+      "value": {
+        "object": "glass"
+      },
+      "reason": "no_scene_param",
+      "_provenance": {
+        "source": "simile_marker",
+        "trigger": "유리",
+        "charSpan": [
+          27,
+          29
+        ],
+        "rule": "simile.같은>objectLexicon.유리"
+      }
+    }
+  ],
+  "_negated": [
+    {
+      "lemma": "작",
+      "category": "size",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "작지는",
+        "charSpan": [
+          52,
+          55
+        ],
+        "rule": "sizeLexicon.작"
+      }
+    },
+    {
+      "lemma": "색",
+      "category": "dimension",
+      "_provenance": {
+        "source": "explicit_lexicon",
+        "trigger": "색은 없어요",
+        "charSpan": [
+          60,
+          66
+        ],
+        "rule": "dimensionLexicon.색+없"
+      }
+    }
+  ],
+  "_alternatives": [
+    {
+      "path": "body.part",
+      "value": "chest",
+      "reason": "needs_confirmation",
+      "_provenance": [
+        {
+          "source": "fuzzy_lexicon",
+          "trigger": "가끔",
+          "charSpan": [
+            67,
+            69
+          ],
+          "rule": "fuzzy(d=1).가슴>bodyPartLexicon.가슴>body.part:chest",
+          "needsConfirmation": true
+        }
+      ]
+    }
+  ],
+  "_inferred": {
+    "material.brightness": {
+      "value": 0.2,
+      "_provenance": [
+        {
+          "source": "vad_lexicon",
+          "trigger": "불안",
+          "charSpan": [
+            0,
+            2
+          ],
+          "rule": "vadLexicon.불안>material.brightness:valence"
+        }
+      ]
+    },
+    "layout.size": {
+      "value": 0.25,
+      "_provenance": [
+        {
+          "source": "vad_lexicon",
+          "trigger": "불안",
+          "charSpan": [
+            0,
+            2
+          ],
+          "rule": "vadLexicon.불안>layout.size:dominance"
+        }
+      ]
+    },
+    "layout.verticalOffset": {
+      "value": 0.85,
+      "_provenance": [
+        {
+          "source": "body_part_height",
+          "trigger": "목",
+          "charSpan": [
+            5,
+            6
+          ],
+          "rule": "bodyPartHeight.throat_neck>layout.verticalOffset:0.85"
+        }
+      ]
+    },
+    "motion.speed": {
+      "value": 0.75,
+      "_provenance": [
+        {
+          "source": "vad_lexicon",
+          "trigger": "불안",
+          "charSpan": [
+            0,
+            2
+          ],
+          "rule": "vadLexicon.불안>motion.speed:arousal"
+        }
+      ]
+    }
+  },
+  "_context": [],
+  "_parts": [],
+  "_uncertain": [],
+  "_measurements": [],
+  "_direction": [],
+  "_needsConfirmation": [
+    {
+      "path": "body.part",
+      "trigger": "가끔",
+      "charSpan": [
+        67,
+        69
+      ],
+      "reason": "fuzzy_lexicon",
+      "matched": "가슴"
+    }
+  ],
+  "_clauses": [
+    {
+      "charSpan": [
+        0,
+        4
+      ],
+      "text": "불안해요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        5,
+        11
+      ],
+      "text": "목 안쪽이요",
+      "usedFor": [
+        "body.part",
+        "body.layer"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        12,
+        23
+      ],
+      "text": "침이 잘 안 넘어가요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        24,
+        34
+      ],
+      "text": "얇은 유리막 같아요",
+      "usedFor": [
+        "form.type"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        35,
+        39
+      ],
+      "text": "투명하고",
+      "usedFor": [
+        "material.opacity"
+      ],
+      "status": "used"
+    },
+    {
+      "charSpan": [
+        40,
+        51
+      ],
+      "text": "금방 깨질 것 같아요",
+      "usedFor": [
+        "material.erosion"
+      ],
+      "status": "partly_used"
+    },
+    {
+      "charSpan": [
+        52,
+        59
+      ],
+      "text": "작지는 않아요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        60,
+        66
+      ],
+      "text": "색은 없어요",
+      "usedFor": [],
+      "status": "unused"
+    },
+    {
+      "charSpan": [
+        67,
+        73
+      ],
+      "text": "가끔 떨려요",
+      "usedFor": [
+        "motion.type"
+      ],
+      "status": "partly_used"
+    }
+  ]
+}

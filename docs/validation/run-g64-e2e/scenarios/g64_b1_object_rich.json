@@ -1,0 +1,34 @@
+{
+  "id": "g64_b1_object_rich",
+  "title": "감정어 시작 → 다리 → 사물 비유(젖은 돌덩이), 크기·질감·색·움직임을 여러 개 말함",
+  "source": "run-g64-e2e(2026-11-27) 합성 시나리오. 구성: bridge/object/rich",
+  "config": "bridge",
+  "condition": "chatbot",
+  "replyBy": {
+    "opening": "그 일을 생각하면 걱정이 앞서요",
+    "location": "가슴 안쪽이요",
+    "find": [
+      "없어요"
+    ],
+    "focus_hold": "숨이 조금 얕아져요",
+    "bridge": "물에 젖은 돌덩이 같아요",
+    "flesh_out": [
+      "주먹만 하고 표면이 거칠어요",
+      "짙은 회색이에요",
+      "바닥으로 천천히 가라앉아요",
+      "없어요"
+    ],
+    "probe_size_shape": "주먹만 해요",
+    "probe_color_brightness": "짙은 회색이에요",
+    "probe_movement": "천천히 가라앉아요"
+  },
+  "defaultReply": "없어요",
+  "expect": {
+    "endedBy": "completed",
+    "firstElicitedBy": "bridge",
+    "sourcesInclude": [
+      "bridge:like_what"
+    ]
+  },
+  "note": "합성 대사(run-g64-e2e 실험용으로 에이전트가 지은 것). 실제 참여자 응답이 아니다. 위기·자해 내용 없음. replyBy는 질문 종류별 답이다(tools/drive_by_question.py가 읽는다). 차원 프로브 답은 그 프로브가 나올 때만 쓰인다."
+}

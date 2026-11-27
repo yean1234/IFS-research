@@ -1,0 +1,1795 @@
+{
+  "logVersion": "elicit-log/0.1",
+  "sessionId": "g64_b2_shape__offline__r1",
+  "elicitationCondition": "chatbot",
+  "createdAt": "2026-11-27T16:00:29+09:00",
+  "endedAt": "2026-11-27T16:00:29+09:00",
+  "protocol": {
+    "promptVersion": "1.1.0",
+    "promptSha256": "sha256:f786ec582055cb04c03db037bc0cce4f4f9f8d3e4a4b717b98d5c585eb9ab082",
+    "contextTemplateVersion": "0.2.0",
+    "lexiconVersion": "layer1-attribute-lexicon@0.1.0 + layer1-interview-overlay@0.1.0",
+    "safetyLexiconVersion": "0.2.0",
+    "controllerVersion": "0.1.0",
+    "protocolId": "ifs-imagery-elicitation",
+    "protocolVersion": "1.5.0",
+    "anchorDoeRoot": true
+  },
+  "model": {
+    "name": "offline-template",
+    "quant": null,
+    "digest": null,
+    "runtime": "rule (개발용 대역, 연구 조건 아님)",
+    "sampling": null
+  },
+  "guard": {
+    "keywordLexicon": {
+      "file": "safety_ko.v0.2.json",
+      "version": "0.2.0"
+    },
+    "model": null,
+    "name": "keyword-only",
+    "digest": null
+  },
+  "analyzer": {
+    "backend": "kiwi",
+    "version": "0.24.1"
+  },
+  "validator": {
+    "strictNovelContent": true,
+    "l5Depth": "present_focus",
+    "maxAnchorEojeol": 3,
+    "maxRegenerations": 2,
+    "predicateAsNoun": true
+  },
+  "turns": [
+    {
+      "i": 0,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "system",
+      "source": "fixed:intro",
+      "stage": null,
+      "text": "안녕하세요. 저는 연구를 돕는 AI 면담 보조자예요. 지금 마음에 떠오르는 것을 자신의 말로 조금 더 표현해 볼 수 있게 질문만 드릴게요. 상담이나 치료는 아니에요. 잘 떠오르지 않으면 '잘 모르겠어요'라고 쓰셔도 괜찮아요. 그만하고 싶으면 언제든 [그만]을 누르거나 '그만'이라고 써 주세요. 바로 멈출게요.",
+      "phraseStatus": "draft"
+    },
+    {
+      "i": 1,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "participant",
+      "source": "control:start",
+      "stage": null,
+      "text": "[시작]"
+    },
+    {
+      "i": 2,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "system",
+      "source": "fixed:opening",
+      "stage": "find",
+      "text": "요즘 가장 신경 쓰고 있는 일 가운데 우선순위가 가장 높은 일 하나를 떠올려 주세요. 자세한 내용은 말하지 않아도 괜찮아요. 그 일을 떠올리면 지금 어떤 느낌이 드나요?",
+      "phraseStatus": "draft"
+    },
+    {
+      "i": 3,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "participant",
+      "source": "typed",
+      "stage": "find",
+      "text": "막막해요",
+      "guard": "SAFE",
+      "guardDetail": {
+        "level": "safe",
+        "label": "SAFE",
+        "alert": false,
+        "reasons": [],
+        "keywordHits": [],
+        "model": null
+      },
+      "crisisKeyword": false,
+      "flags": {
+        "noMore": false,
+        "delegation": false,
+        "depthStrong": [],
+        "depthWeak": []
+      }
+    },
+    {
+      "i": 4,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "system",
+      "source": "fixed:location",
+      "stage": "find",
+      "text": "그것이 몸 안에, 몸 표면에, 아니면 몸 주변에 있나요?",
+      "phraseStatus": "spec"
+    },
+    {
+      "i": 5,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "participant",
+      "source": "typed",
+      "stage": "find",
+      "text": "어깨 쪽 몸 표면이요",
+      "guard": "SAFE",
+      "guardDetail": {
+        "level": "safe",
+        "label": "SAFE",
+        "alert": false,
+        "reasons": [],
+        "keywordHits": [],
+        "model": null
+      },
+      "crisisKeyword": false,
+      "flags": {
+        "noMore": false,
+        "delegation": false,
+        "depthStrong": [],
+        "depthWeak": []
+      }
+    },
+    {
+      "i": 6,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "interviewer",
+      "source": "llm",
+      "stage": "find",
+      "text": "'막막'에 대해 더 있나요?",
+      "output": {
+        "stage": "find",
+        "risk_signal": "none",
+        "move": "ask",
+        "template": "anything_else",
+        "anchor_quote": "막막",
+        "utterance": "'막막'에 대해 더 있나요?"
+      },
+      "checks": {
+        "passed": true,
+        "reasons": [],
+        "regenerations": 0,
+        "fallback": false
+      },
+      "attempts": [
+        {
+          "attempt": 0,
+          "seed": 7,
+          "raw": "{\"stage\": \"find\", \"risk_signal\": \"none\", \"move\": \"ask\", \"template\": \"anything_else\", \"anchor_quote\": \"막막\", \"utterance\": \"'막막'에 대해 더 있나요?\"}",
+          "parsed": {
+            "stage": "find",
+            "risk_signal": "none",
+            "move": "ask",
+            "template": "anything_else",
+            "anchor_quote": "막막",
+            "utterance": "'막막'에 대해 더 있나요?"
+          },
+          "passed": true,
+          "reasons": [],
+          "reasonsText": [],
+          "latencyMs": 0,
+          "meta": {
+            "offline": true
+          },
+          "guard": {
+            "level": "safe",
+            "label": "SAFE",
+            "alert": false,
+            "reasons": [],
+            "keywordHits": [],
+            "model": null
+          },
+          "notes": []
+        }
+      ]
+    },
+    {
+      "i": 7,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "participant",
+      "source": "typed",
+      "stage": "find",
+      "text": "그게 다예요",
+      "guard": "SAFE",
+      "guardDetail": {
+        "level": "safe",
+        "label": "SAFE",
+        "alert": false,
+        "reasons": [],
+        "keywordHits": [],
+        "model": null
+      },
+      "crisisKeyword": false,
+      "flags": {
+        "noMore": true,
+        "delegation": false,
+        "depthStrong": [],
+        "depthWeak": []
+      }
+    },
+    {
+      "i": 8,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "system",
+      "source": "fixed:focus_hold",
+      "stage": "focus",
+      "text": "거기에 주의를 두고 잠시 머물러 보세요. 준비가 되면 지금 알아차려지는 것을 적어 주세요.",
+      "phraseStatus": "spec+draft"
+    },
+    {
+      "i": 9,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "participant",
+      "source": "typed",
+      "stage": "focus",
+      "text": "어깨가 뻐근해요",
+      "guard": "SAFE",
+      "guardDetail": {
+        "level": "safe",
+        "label": "SAFE",
+        "alert": false,
+        "reasons": [],
+        "keywordHits": [],
+        "model": null
+      },
+      "crisisKeyword": false,
+      "flags": {
+        "noMore": false,
+        "delegation": false,
+        "depthStrong": [],
+        "depthWeak": []
+      }
+    },
+    {
+      "i": 10,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "system",
+      "source": "bridge:like_what",
+      "stage": "flesh_out",
+      "text": "그 '뻐근'은 마치 무엇 같나요?",
+      "output": {
+        "stage": "flesh_out",
+        "risk_signal": "none",
+        "move": "ask",
+        "template": "like_what",
+        "anchor_quote": "뻐근",
+        "utterance": "그 '뻐근'은 마치 무엇 같나요?"
+      },
+      "checks": {
+        "passed": true,
+        "reasons": [],
+        "regenerations": 0,
+        "fallback": false,
+        "v8": "not_applied"
+      }
+    },
+    {
+      "i": 11,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "participant",
+      "source": "typed",
+      "stage": "flesh_out",
+      "text": "동그란 공 같아요",
+      "guard": "SAFE",
+      "guardDetail": {
+        "level": "safe",
+        "label": "SAFE",
+        "alert": false,
+        "reasons": [],
+        "keywordHits": [],
+        "model": null
+      },
+      "crisisKeyword": false,
+      "flags": {
+        "noMore": false,
+        "delegation": false,
+        "depthStrong": [],
+        "depthWeak": []
+      }
+    },
+    {
+      "i": 12,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "interviewer",
+      "source": "llm",
+      "stage": "flesh_out",
+      "text": "'공'에 대해 더 있나요?",
+      "output": {
+        "stage": "flesh_out",
+        "risk_signal": "none",
+        "move": "ask",
+        "template": "anything_else",
+        "anchor_quote": "공",
+        "utterance": "'공'에 대해 더 있나요?"
+      },
+      "checks": {
+        "passed": true,
+        "reasons": [],
+        "regenerations": 0,
+        "fallback": false
+      },
+      "attempts": [
+        {
+          "attempt": 0,
+          "seed": 7,
+          "raw": "{\"stage\": \"flesh_out\", \"risk_signal\": \"none\", \"move\": \"ask\", \"template\": \"anything_else\", \"anchor_quote\": \"공\", \"utterance\": \"'공'에 대해 더 있나요?\"}",
+          "parsed": {
+            "stage": "flesh_out",
+            "risk_signal": "none",
+            "move": "ask",
+            "template": "anything_else",
+            "anchor_quote": "공",
+            "utterance": "'공'에 대해 더 있나요?"
+          },
+          "passed": true,
+          "reasons": [],
+          "reasonsText": [],
+          "latencyMs": 0,
+          "meta": {
+            "offline": true
+          },
+          "guard": {
+            "level": "safe",
+            "label": "SAFE",
+            "alert": false,
+            "reasons": [],
+            "keywordHits": [],
+            "model": null
+          },
+          "notes": []
+        }
+      ]
+    },
+    {
+      "i": 13,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "participant",
+      "source": "typed",
+      "stage": "flesh_out",
+      "text": "작아요",
+      "guard": "SAFE",
+      "guardDetail": {
+        "level": "safe",
+        "label": "SAFE",
+        "alert": false,
+        "reasons": [],
+        "keywordHits": [],
+        "model": null
+      },
+      "crisisKeyword": false,
+      "flags": {
+        "noMore": false,
+        "delegation": false,
+        "depthStrong": [],
+        "depthWeak": []
+      }
+    },
+    {
+      "i": 14,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "interviewer",
+      "source": "llm",
+      "stage": "flesh_out",
+      "text": "그 '어깨'는 어떤 '어깨'인가요?",
+      "output": {
+        "stage": "flesh_out",
+        "risk_signal": "none",
+        "move": "ask",
+        "template": "what_kind",
+        "anchor_quote": "어깨",
+        "utterance": "그 '어깨'는 어떤 '어깨'인가요?"
+      },
+      "checks": {
+        "passed": true,
+        "reasons": [],
+        "regenerations": 1,
+        "fallback": false
+      },
+      "attempts": [
+        {
+          "attempt": 0,
+          "seed": 7,
+          "raw": "{\"stage\": \"flesh_out\", \"risk_signal\": \"none\", \"move\": \"ask\", \"template\": \"what_kind\", \"anchor_quote\": \"작아요\", \"utterance\": \"그 '작아요'는 어떤 '작아요'인가요?\"}",
+          "parsed": {
+            "stage": "flesh_out",
+            "risk_signal": "none",
+            "move": "ask",
+            "template": "what_kind",
+            "anchor_quote": "작아요",
+            "utterance": "그 '작아요'는 어떤 '작아요'인가요?"
+          },
+          "passed": false,
+          "reasons": [
+            "V7:predicate_as_noun:작아요"
+          ],
+          "reasonsText": [
+            "V7 활용형 용언('설레요'처럼 어미로 끝나는 말)을 명사 자리 X에 넣음 — 명사·어근을 인용하거나 anything_else로: '작아요'"
+          ],
+          "latencyMs": 0,
+          "meta": {
+            "offline": true
+          },
+          "guard": null,
+          "notes": []
+        },
+        {
+          "attempt": 1,
+          "seed": 8,
+          "raw": "{\"stage\": \"flesh_out\", \"risk_signal\": \"none\", \"move\": \"ask\", \"template\": \"what_kind\", \"anchor_quote\": \"어깨\", \"utterance\": \"그 '어깨'는 어떤 '어깨'인가요?\"}",
+          "parsed": {
+            "stage": "flesh_out",
+            "risk_signal": "none",
+            "move": "ask",
+            "template": "what_kind",
+            "anchor_quote": "어깨",
+            "utterance": "그 '어깨'는 어떤 '어깨'인가요?"
+          },
+          "passed": true,
+          "reasons": [],
+          "reasonsText": [],
+          "latencyMs": 0,
+          "meta": {
+            "offline": true
+          },
+          "guard": {
+            "level": "safe",
+            "label": "SAFE",
+            "alert": false,
+            "reasons": [],
+            "keywordHits": [],
+            "model": null
+          },
+          "notes": []
+        }
+      ]
+    },
+    {
+      "i": 15,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "participant",
+      "source": "typed",
+      "stage": "flesh_out",
+      "text": "없어요",
+      "guard": "SAFE",
+      "guardDetail": {
+        "level": "safe",
+        "label": "SAFE",
+        "alert": false,
+        "reasons": [],
+        "keywordHits": [],
+        "model": null
+      },
+      "crisisKeyword": false,
+      "flags": {
+        "noMore": true,
+        "delegation": false,
+        "depthStrong": [],
+        "depthWeak": []
+      }
+    },
+    {
+      "i": 16,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "system",
+      "source": "fixed:probe_color_brightness",
+      "stage": "flesh_out",
+      "text": "그것에 색이나 밝기가 있나요?",
+      "phraseStatus": "spec",
+      "probe": "color_brightness"
+    },
+    {
+      "i": 17,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "participant",
+      "source": "typed",
+      "stage": "flesh_out",
+      "text": "파란색이에요",
+      "guard": "SAFE",
+      "guardDetail": {
+        "level": "safe",
+        "label": "SAFE",
+        "alert": false,
+        "reasons": [],
+        "keywordHits": [],
+        "model": null
+      },
+      "crisisKeyword": false,
+      "flags": {
+        "noMore": false,
+        "delegation": false,
+        "depthStrong": [],
+        "depthWeak": []
+      }
+    },
+    {
+      "i": 18,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "system",
+      "source": "fixed:probe_movement",
+      "stage": "flesh_out",
+      "text": "그것에 움직임이 있나요?",
+      "phraseStatus": "spec",
+      "probe": "movement"
+    },
+    {
+      "i": 19,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "participant",
+      "source": "typed",
+      "stage": "flesh_out",
+      "text": "천천히 굴러요",
+      "guard": "SAFE",
+      "guardDetail": {
+        "level": "safe",
+        "label": "SAFE",
+        "alert": false,
+        "reasons": [],
+        "keywordHits": [],
+        "model": null
+      },
+      "crisisKeyword": false,
+      "flags": {
+        "noMore": false,
+        "delegation": false,
+        "depthStrong": [],
+        "depthWeak": []
+      }
+    },
+    {
+      "i": 20,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "system",
+      "source": "fixed:confirm_intro",
+      "stage": null,
+      "text": "지금까지 적어 주신 말을 그대로 모았어요. 이대로 맞는지 확인해 주세요. 고치고 싶은 곳은 직접 고치셔도 돼요.",
+      "phraseStatus": "draft",
+      "draft": "막막해요\n어깨 쪽 몸 표면이요\n어깨가 뻐근해요\n동그란 공 같아요\n작아요\n파란색이에요\n천천히 굴러요"
+    },
+    {
+      "i": 21,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "participant",
+      "source": "control:confirm",
+      "stage": null,
+      "text": "[이대로 맞아요]"
+    },
+    {
+      "i": 22,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "system",
+      "source": "fixed:closing",
+      "stage": null,
+      "text": "확인해 주셔서 고마워요. 면담은 여기까지예요. 다음 단계는 연구자가 안내해 드릴 거예요.",
+      "phraseStatus": "draft"
+    }
+  ],
+  "alerts": [],
+  "capture": {
+    "imageSignal": {
+      "use": "flow_only",
+      "protocolVersion": "1.5.0",
+      "note": "규칙 판정(사전 범주·비유 표지). 다리 질문·find 틀 제한에만 쓰고 장면 값에는 쓰지 않는다(원칙 2).",
+      "timeline": [
+        {
+          "i": 3,
+          "judgedAt": "reply",
+          "kind": "opening",
+          "elicitedBy": "opening",
+          "askedBy": "fixed:opening",
+          "stage": "find",
+          "noMore": false,
+          "present": false,
+          "cumulative": false,
+          "evidence": [],
+          "excluded": [],
+          "negatedExcluded": false,
+          "negatedInEvidence": false,
+          "negated": false
+        },
+        {
+          "i": 5,
+          "judgedAt": "reply",
+          "kind": "location",
+          "elicitedBy": "opening",
+          "askedBy": "fixed:location",
+          "stage": "find",
+          "noMore": false,
+          "present": false,
+          "cumulative": false,
+          "evidence": [],
+          "excluded": [],
+          "negatedExcluded": false,
+          "negatedInEvidence": false,
+          "negated": false
+        },
+        {
+          "i": 7,
+          "judgedAt": "reply",
+          "kind": "llm:find",
+          "elicitedBy": "llm",
+          "askedBy": "llm",
+          "stage": "find",
+          "noMore": true,
+          "present": false,
+          "cumulative": false,
+          "evidence": [],
+          "excluded": [],
+          "negatedExcluded": false,
+          "negatedInEvidence": false,
+          "negated": false
+        },
+        {
+          "i": 9,
+          "judgedAt": "reply",
+          "kind": "focus_hold",
+          "elicitedBy": "focus_hold",
+          "askedBy": "fixed:focus_hold",
+          "stage": "focus",
+          "noMore": false,
+          "present": false,
+          "cumulative": false,
+          "evidence": [],
+          "excluded": [],
+          "negatedExcluded": false,
+          "negatedInEvidence": false,
+          "negated": false
+        },
+        {
+          "i": 11,
+          "judgedAt": "reply",
+          "kind": "bridge",
+          "elicitedBy": "bridge",
+          "askedBy": "bridge:like_what",
+          "stage": "flesh_out",
+          "noMore": false,
+          "present": true,
+          "cumulative": true,
+          "evidence": [
+            {
+              "kind": "lexicon",
+              "category": "shape",
+              "lemma": "동그랗",
+              "trigger": "동그란",
+              "charSpan": [
+                0,
+                3
+              ],
+              "negated": false
+            },
+            {
+              "kind": "lexicon",
+              "category": "object",
+              "lemma": "공",
+              "trigger": "공",
+              "charSpan": [
+                4,
+                5
+              ],
+              "negated": false
+            },
+            {
+              "kind": "simile",
+              "noun": "공",
+              "marker": "같",
+              "trigger": "공 같",
+              "charSpan": [
+                4,
+                7
+              ],
+              "negated": false
+            }
+          ],
+          "excluded": [],
+          "negatedExcluded": false,
+          "negatedInEvidence": false,
+          "negated": false
+        },
+        {
+          "i": 13,
+          "judgedAt": "reply",
+          "kind": "llm:flesh_out",
+          "elicitedBy": "llm",
+          "askedBy": "llm",
+          "stage": "flesh_out",
+          "noMore": false,
+          "present": true,
+          "cumulative": true,
+          "evidence": [
+            {
+              "kind": "lexicon",
+              "category": "size",
+              "lemma": "작",
+              "trigger": "작아요",
+              "charSpan": [
+                0,
+                3
+              ],
+              "negated": false
+            }
+          ],
+          "excluded": [],
+          "negatedExcluded": false,
+          "negatedInEvidence": false,
+          "negated": false
+        },
+        {
+          "i": 15,
+          "judgedAt": "reply",
+          "kind": "llm:flesh_out",
+          "elicitedBy": "llm",
+          "askedBy": "llm",
+          "stage": "flesh_out",
+          "noMore": true,
+          "present": false,
+          "cumulative": true,
+          "evidence": [],
+          "excluded": [],
+          "negatedExcluded": false,
+          "negatedInEvidence": false,
+          "negated": false
+        },
+        {
+          "i": 17,
+          "judgedAt": "reply",
+          "kind": "probe:color_brightness",
+          "elicitedBy": "probe",
+          "askedBy": "fixed:probe_color_brightness",
+          "stage": "flesh_out",
+          "noMore": false,
+          "present": false,
+          "cumulative": true,
+          "evidence": [],
+          "excluded": [],
+          "negatedExcluded": false,
+          "negatedInEvidence": false,
+          "negated": false
+        },
+        {
+          "i": 19,
+          "judgedAt": "reply",
+          "kind": "probe:movement",
+          "elicitedBy": "probe",
+          "askedBy": "fixed:probe_movement",
+          "stage": "flesh_out",
+          "noMore": false,
+          "present": false,
+          "cumulative": true,
+          "evidence": [],
+          "excluded": [],
+          "negatedExcluded": false,
+          "negatedInEvidence": false,
+          "negated": false
+        }
+      ],
+      "atFind": {
+        "judgedAt": "find_llm",
+        "present": false,
+        "evidence": [],
+        "excluded": [],
+        "allowedTemplates": [
+          "anything_else"
+        ],
+        "turn": 6
+      },
+      "atBridge": {
+        "judgedAt": "bridge",
+        "present": false,
+        "evidence": [],
+        "excluded": [],
+        "turn": 10
+      },
+      "confirmed": {
+        "judgedAt": "confirmed",
+        "present": true,
+        "evidence": [
+          {
+            "kind": "lexicon",
+            "category": "shape",
+            "lemma": "동그랗",
+            "trigger": "동그란",
+            "charSpan": [
+              26,
+              29
+            ],
+            "negated": false
+          },
+          {
+            "kind": "lexicon",
+            "category": "object",
+            "lemma": "공",
+            "trigger": "공",
+            "charSpan": [
+              30,
+              31
+            ],
+            "negated": false
+          },
+          {
+            "kind": "lexicon",
+            "category": "size",
+            "lemma": "작",
+            "trigger": "작아요",
+            "charSpan": [
+              36,
+              39
+            ],
+            "negated": false
+          },
+          {
+            "kind": "simile",
+            "noun": "공",
+            "marker": "같",
+            "trigger": "공 같",
+            "charSpan": [
+              30,
+              33
+            ],
+            "negated": false
+          }
+        ],
+        "excluded": [],
+        "edited": false,
+        "turn": 21
+      }
+    },
+    "firstElicitedBy": {
+      "kind": "bridge",
+      "detail": "bridge",
+      "i": 11,
+      "askedBy": "bridge:like_what",
+      "evidence": [
+        "동그랗",
+        "공"
+      ]
+    },
+    "imageless": false,
+    "findModality": {
+      "labels": [
+        "emotion"
+      ],
+      "categories": [
+        "emotion"
+      ],
+      "method": "heuristic: 1층 사전 범주",
+      "note": "2D 설문의 find.initial_response 6범주와 같은 이름. 참여자에게 보이지 않는다."
+    },
+    "bodyRelation": {
+      "status": "stated",
+      "text": "어깨 쪽 몸 표면이요",
+      "part": "shoulder",
+      "layer": "surface",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "어깨",
+          "charSpan": [
+            0,
+            2
+          ],
+          "rule": "bodyPartLexicon.어깨"
+        },
+        {
+          "source": "explicit_lexicon",
+          "trigger": "표면",
+          "charSpan": [
+            7,
+            9
+          ],
+          "rule": "bodyLayerLexicon.표면"
+        }
+      ],
+      "ifsLocation": "on"
+    },
+    "bridge": {
+      "asked": true,
+      "stage": "flesh_out",
+      "x": "뻐근",
+      "xSelection": {
+        "from": "focus_hold",
+        "category": "sensation",
+        "kind": "root",
+        "basis": {
+          "rule": "lexicon_category_and_participant_substring",
+          "from": "focus_hold",
+          "category": "sensation",
+          "kind": "root",
+          "charSpan": [
+            4,
+            6
+          ]
+        },
+        "tried": [
+          {
+            "from": "focus_hold",
+            "category": "sensation",
+            "found": "뻐근",
+            "kind": "root"
+          }
+        ]
+      },
+      "template": "like_what",
+      "validation": "V1–V7·V9 (V8 가드 모델은 걸지 않음: 틀 + 참여자 원문 인용뿐인 결정론 문장)",
+      "checks": {
+        "passed": true,
+        "reasons": []
+      },
+      "phrase": "template:like_what",
+      "blockedTemplateAfter": "like_what"
+    },
+    "probes": {
+      "asked": [
+        "color_brightness",
+        "movement"
+      ],
+      "skippedAsCovered": [
+        "size_shape"
+      ]
+    }
+  },
+  "confirmedText": "막막해요\n어깨 쪽 몸 표면이요\n어깨가 뻐근해요\n동그란 공 같아요\n작아요\n파란색이에요\n천천히 굴러요",
+  "confirmation": {
+    "edited": false,
+    "draft": "막막해요\n어깨 쪽 몸 표면이요\n어깨가 뻐근해요\n동그란 공 같아요\n작아요\n파란색이에요\n천천히 굴러요",
+    "at": "2026-11-27T16:00:29+09:00"
+  },
+  "extraction": {
+    "extractorVersion": "0.1.0",
+    "lexicon": {
+      "lexiconId": "layer1-interview-overlay",
+      "lexiconVersion": "layer1-attribute-lexicon@0.1.0 + layer1-interview-overlay@0.1.0",
+      "entries": 380
+    },
+    "analyzer": {
+      "backend": "kiwi",
+      "version": "0.24.1"
+    },
+    "inputText": "막막해요\n어깨 쪽 몸 표면이요\n어깨가 뻐근해요\n동그란 공 같아요\n작아요\n파란색이에요\n천천히 굴러요",
+    "layers": {
+      "layer0": "kiwi",
+      "layer1": "lexicon",
+      "layer2": "simile-marker (prototype: lexicon only)",
+      "layer3": "not-implemented"
+    },
+    "attributes": [
+      {
+        "category": "emotion",
+        "slot": null,
+        "lemma": "막막",
+        "value": {
+          "emotion": "at_a_loss"
+        },
+        "negated": false,
+        "change": null,
+        "valueSource": "draft",
+        "_provenance": {
+          "source": "explicit_lexicon",
+          "trigger": "막막해요",
+          "charSpan": [
+            0,
+            4
+          ],
+          "rule": "emotionLexicon.막막"
+        }
+      },
+      {
+        "category": "body_part",
+        "slot": "bodyRelation.part",
+        "lemma": "어깨",
+        "value": {
+          "part": "shoulder"
+        },
+        "negated": false,
+        "change": null,
+        "valueSource": "notion",
+        "_provenance": {
+          "source": "explicit_lexicon",
+          "trigger": "어깨",
+          "charSpan": [
+            5,
+            7
+          ],
+          "rule": "bodyPartLexicon.어깨"
+        }
+      },
+      {
+        "category": "body_part",
+        "slot": "bodyRelation.part",
+        "lemma": "몸",
+        "value": {
+          "part": "body"
+        },
+        "negated": false,
+        "change": null,
+        "valueSource": "notion",
+        "_provenance": {
+          "source": "explicit_lexicon",
+          "trigger": "몸",
+          "charSpan": [
+            10,
+            11
+          ],
+          "rule": "bodyPartLexicon.몸"
+        }
+      },
+      {
+        "category": "body_layer",
+        "slot": "bodyRelation.layer",
+        "lemma": "표면",
+        "value": {
+          "layer": "surface"
+        },
+        "negated": false,
+        "change": null,
+        "valueSource": "notion",
+        "_provenance": {
+          "source": "explicit_lexicon",
+          "trigger": "표면",
+          "charSpan": [
+            12,
+            14
+          ],
+          "rule": "bodyLayerLexicon.표면"
+        }
+      },
+      {
+        "category": "body_part",
+        "slot": "bodyRelation.part",
+        "lemma": "어깨",
+        "value": {
+          "part": "shoulder"
+        },
+        "negated": false,
+        "change": null,
+        "valueSource": "notion",
+        "_provenance": {
+          "source": "explicit_lexicon",
+          "trigger": "어깨",
+          "charSpan": [
+            17,
+            19
+          ],
+          "rule": "bodyPartLexicon.어깨"
+        }
+      },
+      {
+        "category": "sensation",
+        "slot": null,
+        "lemma": "뻐근",
+        "value": {
+          "sensation": "stiff"
+        },
+        "negated": false,
+        "change": null,
+        "valueSource": "draft",
+        "_provenance": {
+          "source": "explicit_lexicon",
+          "trigger": "뻐근해요",
+          "charSpan": [
+            21,
+            25
+          ],
+          "rule": "sensationLexicon.뻐근"
+        }
+      },
+      {
+        "category": "shape",
+        "slot": "form.shape",
+        "lemma": "동그랗",
+        "value": {
+          "shape": "round"
+        },
+        "negated": false,
+        "change": null,
+        "valueSource": "draft",
+        "_provenance": {
+          "source": "explicit_lexicon",
+          "trigger": "동그란",
+          "charSpan": [
+            26,
+            29
+          ],
+          "rule": "shapeLexicon.동그랗"
+        }
+      },
+      {
+        "category": "object",
+        "slot": "carrier.noun",
+        "lemma": "공",
+        "value": {
+          "object": "ball"
+        },
+        "negated": false,
+        "change": null,
+        "valueSource": "draft",
+        "_provenance": {
+          "source": "explicit_lexicon",
+          "trigger": "공",
+          "charSpan": [
+            30,
+            31
+          ],
+          "rule": "objectLexicon.공"
+        }
+      },
+      {
+        "category": "size",
+        "slot": "layout.size",
+        "lemma": "작",
+        "value": {
+          "size": "small",
+          "scale": 0.6
+        },
+        "negated": false,
+        "change": null,
+        "valueSource": "notion",
+        "_provenance": {
+          "source": "explicit_lexicon",
+          "trigger": "작아요",
+          "charSpan": [
+            36,
+            39
+          ],
+          "rule": "sizeLexicon.작"
+        }
+      },
+      {
+        "category": "movement",
+        "slot": "motion",
+        "lemma": "천천히",
+        "value": {
+          "speed": "slow"
+        },
+        "negated": false,
+        "change": null,
+        "valueSource": "notion",
+        "_provenance": {
+          "source": "explicit_lexicon",
+          "trigger": "천천히",
+          "charSpan": [
+            47,
+            50
+          ],
+          "rule": "motionLexicon.천천히"
+        }
+      }
+    ],
+    "similes": [
+      {
+        "marker": "같은",
+        "sourceNoun": "공",
+        "charSpan": [
+          30,
+          33
+        ],
+        "formPrototype": null,
+        "method": "pending (FastText 유사도로 blob·mist·shell·fragments 중 선택 예정)",
+        "_provenance": {
+          "source": "simile_marker",
+          "trigger": "공 같",
+          "charSpan": [
+            30,
+            33
+          ],
+          "rule": "simile.같은"
+        }
+      }
+    ],
+    "unmatched": [
+      {
+        "lemma": "파란색",
+        "tag": "NNG",
+        "surface": "파란색",
+        "charSpan": [
+          40,
+          43
+        ]
+      },
+      {
+        "lemma": "구르",
+        "tag": "VV",
+        "surface": "굴",
+        "charSpan": [
+          51,
+          52
+        ]
+      }
+    ],
+    "lostInformation": {
+      "contentTokens": 12,
+      "unmatchedTokens": 2,
+      "rate": 0.167,
+      "note": "소실 정보율 근사치: 사전에 걸리지 않은 내용어 비율. 사람 주석(F1·kappa)과 함께 봐야 한다."
+    },
+    "sceneSpecDraft": {
+      "schema": "IFSSceneSpec-draft/0.1 (기존 TS IFSSceneSpec 필드명과 정렬 필요)",
+      "slots": {
+        "form.shape": {
+          "values": [
+            {
+              "value": {
+                "shape": "round"
+              },
+              "_provenance": {
+                "source": "explicit_lexicon",
+                "trigger": "동그란",
+                "charSpan": [
+                  26,
+                  29
+                ],
+                "rule": "shapeLexicon.동그랗"
+              },
+              "valueSource": "draft"
+            }
+          ]
+        },
+        "layout.size": {
+          "value": {
+            "size": "small",
+            "scale": 0.6
+          },
+          "_provenance": {
+            "source": "explicit_lexicon",
+            "trigger": "작아요",
+            "charSpan": [
+              36,
+              39
+            ],
+            "rule": "sizeLexicon.작"
+          },
+          "valueSource": "notion"
+        },
+        "motion": {
+          "values": [
+            {
+              "value": {
+                "speed": "slow"
+              },
+              "_provenance": {
+                "source": "explicit_lexicon",
+                "trigger": "천천히",
+                "charSpan": [
+                  47,
+                  50
+                ],
+                "rule": "motionLexicon.천천히"
+              },
+              "valueSource": "notion"
+            }
+          ]
+        },
+        "bodyRelation": {
+          "status": "stated",
+          "text": "어깨 쪽 몸 표면이요",
+          "part": "shoulder",
+          "layer": "surface",
+          "_provenance": [
+            {
+              "source": "explicit_lexicon",
+              "trigger": "어깨",
+              "charSpan": [
+                0,
+                2
+              ],
+              "rule": "bodyPartLexicon.어깨"
+            },
+            {
+              "source": "explicit_lexicon",
+              "trigger": "표면",
+              "charSpan": [
+                7,
+                9
+              ],
+              "rule": "bodyLayerLexicon.표면"
+            }
+          ],
+          "ifsLocation": "on"
+        }
+      },
+      "alternatives": {},
+      "negated": [],
+      "unresolved": [
+        {
+          "slot": "form.type",
+          "sourceNoun": "공",
+          "reason": "prototype_pending"
+        }
+      ],
+      "unspecified": [
+        "form.type",
+        "material.color",
+        "material.brightness",
+        "material.saturation",
+        "material.opacity",
+        "material.texture",
+        "material.temperature",
+        "physical.weight",
+        "posture",
+        "sound",
+        "selfReference"
+      ],
+      "note": "참여자가 말한 것만 채웠다. 빈 슬롯은 3층(V/A/D)·설문 슬라이더(안전망)·VR 보정이 채울 몫이다."
+    }
+  },
+  "drift": {
+    "enabled": true,
+    "assessment": {
+      "version": "drift/1.1.0",
+      "params": {
+        "version": "drift-params/1.1.0",
+        "tauNumSoft": 0.25,
+        "tauNumHard": 0.5,
+        "neutral": 0.5,
+        "tauHueDeg": 60.0,
+        "tauL": 0.45,
+        "tauS": 0.4,
+        "chromaticMinS": 0.15,
+        "chromaticL": [
+          0.08,
+          0.92
+        ],
+        "groupWeights": {
+          "identity": 1.0,
+          "color": 1.0,
+          "size": 1.0,
+          "position": 1.0,
+          "shape": 0.5,
+          "surface": 0.5,
+          "motion": 0.0
+        },
+        "theta": 0.2,
+        "translationalMotion": [
+          "moving",
+          "drifting",
+          "rising",
+          "sinking",
+          "settling",
+          "approaching"
+        ],
+        "motionDirection": {
+          "rising": {
+            "vertical": "+"
+          },
+          "sinking": {
+            "vertical": "-"
+          },
+          "settling": {
+            "vertical": "-"
+          },
+          "approaching": {
+            "distance": "-"
+          }
+        },
+        "sizeCrossScale": "hard_only",
+        "selfReportDriftMax": 3
+      },
+      "snapshotBuilder": "v1",
+      "turns": [
+        {
+          "seq": 0,
+          "i": 3,
+          "stage": "find",
+          "slots": {},
+          "evidence": {},
+          "identity": [],
+          "identityDropped": [],
+          "unconfirmed": {},
+          "builder": "v1"
+        },
+        {
+          "seq": 1,
+          "i": 5,
+          "stage": "find",
+          "slots": {
+            "body.part": "shoulder",
+            "body.layer": "surface"
+          },
+          "evidence": {
+            "body.part": "어깨",
+            "body.layer": "표면"
+          },
+          "identity": [],
+          "identityDropped": [],
+          "unconfirmed": {},
+          "builder": "v1"
+        },
+        {
+          "seq": 2,
+          "i": 9,
+          "stage": "focus",
+          "slots": {
+            "body.part": "shoulder"
+          },
+          "evidence": {
+            "body.part": "어깨"
+          },
+          "identity": [],
+          "identityDropped": [],
+          "unconfirmed": {},
+          "builder": "v1"
+        },
+        {
+          "seq": 3,
+          "i": 11,
+          "stage": "flesh_out",
+          "slots": {
+            "form.type": "blob"
+          },
+          "evidence": {
+            "form.type": "공"
+          },
+          "identity": [],
+          "identityDropped": [
+            {
+              "surface": "공",
+              "head": "공",
+              "class": "공",
+              "position": "simile_property",
+              "charSpan": [
+                4,
+                5
+              ],
+              "why": "simile_property"
+            }
+          ],
+          "unconfirmed": {},
+          "builder": "v1"
+        },
+        {
+          "seq": 4,
+          "i": 13,
+          "stage": "flesh_out",
+          "slots": {
+            "layout.size": 0.316
+          },
+          "evidence": {
+            "layout.size": "작아요"
+          },
+          "identity": [],
+          "identityDropped": [],
+          "unconfirmed": {},
+          "scale": {
+            "layout.size": "word"
+          },
+          "builder": "v1"
+        },
+        {
+          "seq": 5,
+          "i": 17,
+          "stage": "flesh_out",
+          "slots": {
+            "material.color": {
+              "h": 0.597,
+              "s": 0.7,
+              "l": 0.5
+            }
+          },
+          "evidence": {
+            "material.color": "파란색이에요"
+          },
+          "identity": [],
+          "identityDropped": [],
+          "unconfirmed": {},
+          "builder": "v1"
+        },
+        {
+          "seq": 6,
+          "i": 19,
+          "stage": "flesh_out",
+          "slots": {
+            "motion.type": "rotating",
+            "motion.speed": 0.25
+          },
+          "evidence": {
+            "motion.type": "굴러요",
+            "motion.speed": "천천히"
+          },
+          "identity": [],
+          "identityDropped": [],
+          "unconfirmed": {},
+          "builder": "v1"
+        }
+      ],
+      "stages": [
+        {
+          "stage": "find",
+          "slots": {
+            "body.part": "shoulder",
+            "body.layer": "surface"
+          },
+          "source": {
+            "body.part": {
+              "i": 5,
+              "seq": 1,
+              "stage": "find",
+              "trigger": "어깨"
+            },
+            "body.layer": {
+              "i": 5,
+              "seq": 1,
+              "stage": "find",
+              "trigger": "표면"
+            }
+          },
+          "identity": [],
+          "identityTurn": null,
+          "identitySeq": null,
+          "turns": [
+            3,
+            5
+          ]
+        },
+        {
+          "stage": "focus",
+          "slots": {
+            "body.part": "shoulder"
+          },
+          "source": {
+            "body.part": {
+              "i": 9,
+              "seq": 2,
+              "stage": "focus",
+              "trigger": "어깨"
+            }
+          },
+          "identity": [],
+          "identityTurn": null,
+          "identitySeq": null,
+          "turns": [
+            9
+          ]
+        },
+        {
+          "stage": "flesh_out",
+          "slots": {
+            "form.type": "blob",
+            "layout.size": 0.316,
+            "material.color": {
+              "h": 0.597,
+              "s": 0.7,
+              "l": 0.5
+            },
+            "motion.type": "rotating",
+            "motion.speed": 0.25
+          },
+          "source": {
+            "form.type": {
+              "i": 11,
+              "seq": 3,
+              "stage": "flesh_out",
+              "trigger": "공"
+            },
+            "layout.size": {
+              "i": 13,
+              "seq": 4,
+              "stage": "flesh_out",
+              "trigger": "작아요",
+              "scale": "word"
+            },
+            "material.color": {
+              "i": 17,
+              "seq": 5,
+              "stage": "flesh_out",
+              "trigger": "파란색이에요"
+            },
+            "motion.type": {
+              "i": 19,
+              "seq": 6,
+              "stage": "flesh_out",
+              "trigger": "굴러요"
+            },
+            "motion.speed": {
+              "i": 19,
+              "seq": 6,
+              "stage": "flesh_out",
+              "trigger": "천천히"
+            }
+          },
+          "identity": [],
+          "identityTurn": null,
+          "identitySeq": null,
+          "turns": [
+            11,
+            13,
+            17,
+            19
+          ]
+        }
+      ],
+      "confirmationEdited": false,
+      "multipleObjects": {
+        "flag": false,
+        "turns": []
+      },
+      "first": "find",
+      "firstSnapshot": {
+        "slots": {
+          "body.part": "shoulder",
+          "body.layer": "surface"
+        },
+        "source": {
+          "body.part": {
+            "i": 5,
+            "seq": 1,
+            "stage": "find",
+            "trigger": "어깨"
+          },
+          "body.layer": {
+            "i": 5,
+            "seq": 1,
+            "stage": "find",
+            "trigger": "표면"
+          }
+        },
+        "identity": [],
+        "identityTurn": null,
+        "identitySeq": null,
+        "turns": [
+          3,
+          5
+        ]
+      },
+      "final": {
+        "slots": {
+          "body.part": "shoulder",
+          "form.type": "blob",
+          "layout.size": 0.316,
+          "material.color": {
+            "h": 0.597,
+            "s": 0.7,
+            "l": 0.5
+          },
+          "motion.type": "rotating",
+          "motion.speed": 0.25
+        },
+        "source": {
+          "body.part": {
+            "i": 9,
+            "seq": 2,
+            "stage": "focus",
+            "trigger": "어깨"
+          },
+          "form.type": {
+            "i": 11,
+            "seq": 3,
+            "stage": "flesh_out",
+            "trigger": "공"
+          },
+          "layout.size": {
+            "i": 13,
+            "seq": 4,
+            "stage": "flesh_out",
+            "trigger": "작아요",
+            "scale": "word"
+          },
+          "material.color": {
+            "i": 17,
+            "seq": 5,
+            "stage": "flesh_out",
+            "trigger": "파란색이에요"
+          },
+          "motion.type": {
+            "i": 19,
+            "seq": 6,
+            "stage": "flesh_out",
+            "trigger": "굴러요"
+          },
+          "motion.speed": {
+            "i": 19,
+            "seq": 6,
+            "stage": "flesh_out",
+            "trigger": "천천히"
+          }
+        },
+        "identity": [],
+        "identityTurn": null,
+        "identitySeq": null,
+        "turns": [
+          9,
+          11,
+          13,
+          17,
+          19
+        ]
+      },
+      "primary": {
+        "from": "find",
+        "to": "final",
+        "slots": [
+          {
+            "path": "body.part",
+            "group": "position",
+            "from": "shoulder",
+            "to": "shoulder",
+            "fromTurn": 5,
+            "toTurn": 9,
+            "verdict": "agree",
+            "reason": null
+          }
+        ],
+        "identity": {
+          "comparable": false
+        },
+        "groups": [
+          {
+            "group": "position",
+            "weight": 1.0,
+            "slots": [
+              "body.part"
+            ],
+            "verdict": "agree"
+          }
+        ],
+        "comparableWeight": 1.0,
+        "contradictedWeight": 0,
+        "DI": 0.0,
+        "identityContradiction": false,
+        "movedByStatedMotion": false,
+        "explainedByMotion": [],
+        "decision": "no_drift"
+      },
+      "adjacent": [
+        {
+          "from": "find",
+          "to": "focus",
+          "DI": 0.0,
+          "identityContradiction": false,
+          "decision": "no_drift"
+        },
+        {
+          "from": "focus",
+          "to": "flesh_out",
+          "DI": null,
+          "identityContradiction": false,
+          "decision": "undecidable"
+        }
+      ],
+      "maxAdjacentDI": 0.0,
+      "decision": "no_drift",
+      "DI": 0.0,
+      "acknowledged": {
+        "flag": false,
+        "markers": [],
+        "negatedMarkers": []
+      }
+    },
+    "summary": {
+      "decision": "no_drift",
+      "DI": 0.0,
+      "identityContradiction": false,
+      "contradicted": [],
+      "comparable": [
+        "position"
+      ],
+      "acknowledged": false,
+      "maxAdjacentDI": 0.0,
+      "first": "find",
+      "confirmationEdited": false,
+      "multipleObjects": false
+    },
+    "recallCheck": null,
+    "selfReport": null
+  },
+  "events": [],
+  "endedBy": "completed",
+  "rawSurveyResponseRef": null,
+  "sceneSpec": {
+    "path": "<scratch>\\offline\\sessions\\scenes\\g64_b2_shape__offline__r1.json",
+    "specVersion": "2.1.0",
+    "builder": "scene-spec-builder-v1/1.2.0",
+    "sourceTextHash": "sha256:dc7b4d94002cfb06e427e8bd2f2420d40fd65c62b31bf44a1dce13e4db45b8c3",
+    "problems": [],
+    "mapping": {
+      "requested": "v1",
+      "used": "v1",
+      "fallbackReason": null
+    },
+    "variants": {
+      "v0": "<scratch>\\offline\\sessions\\scenes\\g64_b2_shape__offline__r1.v0.json",
+      "v1": "<scratch>\\offline\\sessions\\scenes\\g64_b2_shape__offline__r1.v1.json"
+    },
+    "sha256": {
+      "specFile": "g64_b2_shape__offline__r1.json",
+      "specSha256": "c2bf750e429f7a6505472a201c12cde2734e0b9f97bca947c45e57d16dfeae2d",
+      "alt": {
+        "g64_b2_shape__offline__r1.v0.json": "1c18fc289043b5941f4c4ae593ca808a536569d94a9c257096b690069d7d1257",
+        "g64_b2_shape__offline__r1.v1.json": "c2bf750e429f7a6505472a201c12cde2734e0b9f97bca947c45e57d16dfeae2d"
+      }
+    }
+  }
+}

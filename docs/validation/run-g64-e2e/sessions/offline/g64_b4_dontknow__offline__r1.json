@@ -1,0 +1,1035 @@
+{
+  "logVersion": "elicit-log/0.1",
+  "sessionId": "g64_b4_dontknow__offline__r1",
+  "elicitationCondition": "chatbot",
+  "createdAt": "2026-11-27T16:00:29+09:00",
+  "endedAt": "2026-11-27T16:00:29+09:00",
+  "protocol": {
+    "promptVersion": "1.1.0",
+    "promptSha256": "sha256:f786ec582055cb04c03db037bc0cce4f4f9f8d3e4a4b717b98d5c585eb9ab082",
+    "contextTemplateVersion": "0.2.0",
+    "lexiconVersion": "layer1-attribute-lexicon@0.1.0 + layer1-interview-overlay@0.1.0",
+    "safetyLexiconVersion": "0.2.0",
+    "controllerVersion": "0.1.0",
+    "protocolId": "ifs-imagery-elicitation",
+    "protocolVersion": "1.5.0",
+    "anchorDoeRoot": true
+  },
+  "model": {
+    "name": "offline-template",
+    "quant": null,
+    "digest": null,
+    "runtime": "rule (개발용 대역, 연구 조건 아님)",
+    "sampling": null
+  },
+  "guard": {
+    "keywordLexicon": {
+      "file": "safety_ko.v0.2.json",
+      "version": "0.2.0"
+    },
+    "model": null,
+    "name": "keyword-only",
+    "digest": null
+  },
+  "analyzer": {
+    "backend": "kiwi",
+    "version": "0.24.1"
+  },
+  "validator": {
+    "strictNovelContent": true,
+    "l5Depth": "present_focus",
+    "maxAnchorEojeol": 3,
+    "maxRegenerations": 2,
+    "predicateAsNoun": true
+  },
+  "turns": [
+    {
+      "i": 0,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "system",
+      "source": "fixed:intro",
+      "stage": null,
+      "text": "안녕하세요. 저는 연구를 돕는 AI 면담 보조자예요. 지금 마음에 떠오르는 것을 자신의 말로 조금 더 표현해 볼 수 있게 질문만 드릴게요. 상담이나 치료는 아니에요. 잘 떠오르지 않으면 '잘 모르겠어요'라고 쓰셔도 괜찮아요. 그만하고 싶으면 언제든 [그만]을 누르거나 '그만'이라고 써 주세요. 바로 멈출게요.",
+      "phraseStatus": "draft"
+    },
+    {
+      "i": 1,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "participant",
+      "source": "control:start",
+      "stage": null,
+      "text": "[시작]"
+    },
+    {
+      "i": 2,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "system",
+      "source": "fixed:opening",
+      "stage": "find",
+      "text": "요즘 가장 신경 쓰고 있는 일 가운데 우선순위가 가장 높은 일 하나를 떠올려 주세요. 자세한 내용은 말하지 않아도 괜찮아요. 그 일을 떠올리면 지금 어떤 느낌이 드나요?",
+      "phraseStatus": "draft"
+    },
+    {
+      "i": 3,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "participant",
+      "source": "typed",
+      "stage": "find",
+      "text": "그냥 피곤해요",
+      "guard": "SAFE",
+      "guardDetail": {
+        "level": "safe",
+        "label": "SAFE",
+        "alert": false,
+        "reasons": [],
+        "keywordHits": [],
+        "model": null
+      },
+      "crisisKeyword": false,
+      "flags": {
+        "noMore": false,
+        "delegation": false,
+        "depthStrong": [],
+        "depthWeak": []
+      }
+    },
+    {
+      "i": 4,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "system",
+      "source": "fixed:location",
+      "stage": "find",
+      "text": "그것이 몸 안에, 몸 표면에, 아니면 몸 주변에 있나요?",
+      "phraseStatus": "spec"
+    },
+    {
+      "i": 5,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "participant",
+      "source": "typed",
+      "stage": "find",
+      "text": "몸 안이요",
+      "guard": "SAFE",
+      "guardDetail": {
+        "level": "safe",
+        "label": "SAFE",
+        "alert": false,
+        "reasons": [],
+        "keywordHits": [],
+        "model": null
+      },
+      "crisisKeyword": false,
+      "flags": {
+        "noMore": false,
+        "delegation": false,
+        "depthStrong": [],
+        "depthWeak": []
+      }
+    },
+    {
+      "i": 6,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "interviewer",
+      "source": "llm",
+      "stage": "find",
+      "text": "'피곤'에 대해 더 있나요?",
+      "output": {
+        "stage": "find",
+        "risk_signal": "none",
+        "move": "ask",
+        "template": "anything_else",
+        "anchor_quote": "피곤",
+        "utterance": "'피곤'에 대해 더 있나요?"
+      },
+      "checks": {
+        "passed": true,
+        "reasons": [],
+        "regenerations": 0,
+        "fallback": false
+      },
+      "attempts": [
+        {
+          "attempt": 0,
+          "seed": 7,
+          "raw": "{\"stage\": \"find\", \"risk_signal\": \"none\", \"move\": \"ask\", \"template\": \"anything_else\", \"anchor_quote\": \"피곤\", \"utterance\": \"'피곤'에 대해 더 있나요?\"}",
+          "parsed": {
+            "stage": "find",
+            "risk_signal": "none",
+            "move": "ask",
+            "template": "anything_else",
+            "anchor_quote": "피곤",
+            "utterance": "'피곤'에 대해 더 있나요?"
+          },
+          "passed": true,
+          "reasons": [],
+          "reasonsText": [],
+          "latencyMs": 0,
+          "meta": {
+            "offline": true
+          },
+          "guard": {
+            "level": "safe",
+            "label": "SAFE",
+            "alert": false,
+            "reasons": [],
+            "keywordHits": [],
+            "model": null
+          },
+          "notes": []
+        }
+      ]
+    },
+    {
+      "i": 7,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "participant",
+      "source": "typed",
+      "stage": "find",
+      "text": "없어요",
+      "guard": "SAFE",
+      "guardDetail": {
+        "level": "safe",
+        "label": "SAFE",
+        "alert": false,
+        "reasons": [],
+        "keywordHits": [],
+        "model": null
+      },
+      "crisisKeyword": false,
+      "flags": {
+        "noMore": true,
+        "delegation": false,
+        "depthStrong": [],
+        "depthWeak": []
+      }
+    },
+    {
+      "i": 8,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "system",
+      "source": "fixed:focus_hold",
+      "stage": "focus",
+      "text": "거기에 주의를 두고 잠시 머물러 보세요. 준비가 되면 지금 알아차려지는 것을 적어 주세요.",
+      "phraseStatus": "spec+draft"
+    },
+    {
+      "i": 9,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "participant",
+      "source": "typed",
+      "stage": "focus",
+      "text": "그냥 멍해요",
+      "guard": "SAFE",
+      "guardDetail": {
+        "level": "safe",
+        "label": "SAFE",
+        "alert": false,
+        "reasons": [],
+        "keywordHits": [],
+        "model": null
+      },
+      "crisisKeyword": false,
+      "flags": {
+        "noMore": false,
+        "delegation": false,
+        "depthStrong": [],
+        "depthWeak": []
+      }
+    },
+    {
+      "i": 10,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "system",
+      "source": "fixed:bridge_like_what_plain",
+      "stage": "flesh_out",
+      "text": "지금 그것은 마치 무엇 같나요?",
+      "phraseStatus": "draft",
+      "output": {
+        "stage": "flesh_out",
+        "risk_signal": "none",
+        "move": "ask",
+        "template": "like_what",
+        "anchor_quote": "",
+        "utterance": "지금 그것은 마치 무엇 같나요?"
+      },
+      "checks": {
+        "passed": true,
+        "reasons": [],
+        "regenerations": 0,
+        "fallback": false,
+        "fallbackReason": "no_x",
+        "xSentenceReasons": [],
+        "path": "fixed_phrase",
+        "v8": "not_applied"
+      }
+    },
+    {
+      "i": 11,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "participant",
+      "source": "typed",
+      "stage": "flesh_out",
+      "text": "모르겠어요",
+      "guard": "SAFE",
+      "guardDetail": {
+        "level": "safe",
+        "label": "SAFE",
+        "alert": false,
+        "reasons": [],
+        "keywordHits": [],
+        "model": null
+      },
+      "crisisKeyword": false,
+      "flags": {
+        "noMore": true,
+        "delegation": false,
+        "depthStrong": [],
+        "depthWeak": []
+      }
+    },
+    {
+      "i": 12,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "system",
+      "source": "fixed:probe_size_shape",
+      "stage": "flesh_out",
+      "text": "그것에 크기나 모양이 있나요?",
+      "phraseStatus": "spec",
+      "probe": "size_shape"
+    },
+    {
+      "i": 13,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "participant",
+      "source": "typed",
+      "stage": "flesh_out",
+      "text": "모르겠어요",
+      "guard": "SAFE",
+      "guardDetail": {
+        "level": "safe",
+        "label": "SAFE",
+        "alert": false,
+        "reasons": [],
+        "keywordHits": [],
+        "model": null
+      },
+      "crisisKeyword": false,
+      "flags": {
+        "noMore": true,
+        "delegation": false,
+        "depthStrong": [],
+        "depthWeak": []
+      }
+    },
+    {
+      "i": 14,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "system",
+      "source": "fixed:probe_color_brightness",
+      "stage": "flesh_out",
+      "text": "그것에 색이나 밝기가 있나요?",
+      "phraseStatus": "spec",
+      "probe": "color_brightness"
+    },
+    {
+      "i": 15,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "participant",
+      "source": "typed",
+      "stage": "flesh_out",
+      "text": "없어요",
+      "guard": "SAFE",
+      "guardDetail": {
+        "level": "safe",
+        "label": "SAFE",
+        "alert": false,
+        "reasons": [],
+        "keywordHits": [],
+        "model": null
+      },
+      "crisisKeyword": false,
+      "flags": {
+        "noMore": true,
+        "delegation": false,
+        "depthStrong": [],
+        "depthWeak": []
+      }
+    },
+    {
+      "i": 16,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "system",
+      "source": "fixed:probe_movement",
+      "stage": "flesh_out",
+      "text": "그것에 움직임이 있나요?",
+      "phraseStatus": "spec",
+      "probe": "movement"
+    },
+    {
+      "i": 17,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "participant",
+      "source": "typed",
+      "stage": "flesh_out",
+      "text": "없어요",
+      "guard": "SAFE",
+      "guardDetail": {
+        "level": "safe",
+        "label": "SAFE",
+        "alert": false,
+        "reasons": [],
+        "keywordHits": [],
+        "model": null
+      },
+      "crisisKeyword": false,
+      "flags": {
+        "noMore": true,
+        "delegation": false,
+        "depthStrong": [],
+        "depthWeak": []
+      }
+    },
+    {
+      "i": 18,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "system",
+      "source": "fixed:confirm_intro",
+      "stage": null,
+      "text": "지금까지 적어 주신 말을 그대로 모았어요. 이대로 맞는지 확인해 주세요. 고치고 싶은 곳은 직접 고치셔도 돼요.",
+      "phraseStatus": "draft",
+      "draft": "그냥 피곤해요\n몸 안이요\n그냥 멍해요"
+    },
+    {
+      "i": 19,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "participant",
+      "source": "control:confirm",
+      "stage": null,
+      "text": "[이대로 맞아요]"
+    },
+    {
+      "i": 20,
+      "at": "2026-11-27T16:00:29+09:00",
+      "speaker": "system",
+      "source": "fixed:closing",
+      "stage": null,
+      "text": "확인해 주셔서 고마워요. 면담은 여기까지예요. 다음 단계는 연구자가 안내해 드릴 거예요.",
+      "phraseStatus": "draft"
+    }
+  ],
+  "alerts": [],
+  "capture": {
+    "imageSignal": {
+      "use": "flow_only",
+      "protocolVersion": "1.5.0",
+      "note": "규칙 판정(사전 범주·비유 표지). 다리 질문·find 틀 제한에만 쓰고 장면 값에는 쓰지 않는다(원칙 2).",
+      "timeline": [
+        {
+          "i": 3,
+          "judgedAt": "reply",
+          "kind": "opening",
+          "elicitedBy": "opening",
+          "askedBy": "fixed:opening",
+          "stage": "find",
+          "noMore": false,
+          "present": false,
+          "cumulative": false,
+          "evidence": [],
+          "excluded": [],
+          "negatedExcluded": false,
+          "negatedInEvidence": false,
+          "negated": false
+        },
+        {
+          "i": 5,
+          "judgedAt": "reply",
+          "kind": "location",
+          "elicitedBy": "opening",
+          "askedBy": "fixed:location",
+          "stage": "find",
+          "noMore": false,
+          "present": false,
+          "cumulative": false,
+          "evidence": [],
+          "excluded": [],
+          "negatedExcluded": false,
+          "negatedInEvidence": false,
+          "negated": false
+        },
+        {
+          "i": 7,
+          "judgedAt": "reply",
+          "kind": "llm:find",
+          "elicitedBy": "llm",
+          "askedBy": "llm",
+          "stage": "find",
+          "noMore": true,
+          "present": false,
+          "cumulative": false,
+          "evidence": [],
+          "excluded": [],
+          "negatedExcluded": false,
+          "negatedInEvidence": false,
+          "negated": false
+        },
+        {
+          "i": 9,
+          "judgedAt": "reply",
+          "kind": "focus_hold",
+          "elicitedBy": "focus_hold",
+          "askedBy": "fixed:focus_hold",
+          "stage": "focus",
+          "noMore": false,
+          "present": false,
+          "cumulative": false,
+          "evidence": [],
+          "excluded": [],
+          "negatedExcluded": false,
+          "negatedInEvidence": false,
+          "negated": false
+        },
+        {
+          "i": 11,
+          "judgedAt": "reply",
+          "kind": "bridge",
+          "elicitedBy": "bridge",
+          "askedBy": "fixed:bridge_like_what_plain",
+          "stage": "flesh_out",
+          "noMore": true,
+          "present": false,
+          "cumulative": false,
+          "evidence": [],
+          "excluded": [],
+          "negatedExcluded": false,
+          "negatedInEvidence": false,
+          "negated": false
+        },
+        {
+          "i": 13,
+          "judgedAt": "reply",
+          "kind": "probe:size_shape",
+          "elicitedBy": "probe",
+          "askedBy": "fixed:probe_size_shape",
+          "stage": "flesh_out",
+          "noMore": true,
+          "present": false,
+          "cumulative": false,
+          "evidence": [],
+          "excluded": [],
+          "negatedExcluded": false,
+          "negatedInEvidence": false,
+          "negated": false
+        },
+        {
+          "i": 15,
+          "judgedAt": "reply",
+          "kind": "probe:color_brightness",
+          "elicitedBy": "probe",
+          "askedBy": "fixed:probe_color_brightness",
+          "stage": "flesh_out",
+          "noMore": true,
+          "present": false,
+          "cumulative": false,
+          "evidence": [],
+          "excluded": [],
+          "negatedExcluded": false,
+          "negatedInEvidence": false,
+          "negated": false
+        },
+        {
+          "i": 17,
+          "judgedAt": "reply",
+          "kind": "probe:movement",
+          "elicitedBy": "probe",
+          "askedBy": "fixed:probe_movement",
+          "stage": "flesh_out",
+          "noMore": true,
+          "present": false,
+          "cumulative": false,
+          "evidence": [],
+          "excluded": [],
+          "negatedExcluded": false,
+          "negatedInEvidence": false,
+          "negated": false
+        }
+      ],
+      "atFind": {
+        "judgedAt": "find_llm",
+        "present": false,
+        "evidence": [],
+        "excluded": [],
+        "allowedTemplates": [
+          "anything_else"
+        ],
+        "turn": 6
+      },
+      "atBridge": {
+        "judgedAt": "bridge",
+        "present": false,
+        "evidence": [],
+        "excluded": [],
+        "turn": 10
+      },
+      "confirmed": {
+        "judgedAt": "confirmed",
+        "present": false,
+        "evidence": [],
+        "excluded": [],
+        "edited": false,
+        "turn": 19
+      }
+    },
+    "firstElicitedBy": null,
+    "imageless": true,
+    "findModality": {
+      "labels": [
+        "unknown_or_other"
+      ],
+      "categories": [],
+      "method": "heuristic: 1층 사전 범주",
+      "note": "2D 설문의 find.initial_response 6범주와 같은 이름. 참여자에게 보이지 않는다."
+    },
+    "bodyRelation": {
+      "status": "stated",
+      "text": "몸 안이요",
+      "part": "body",
+      "layer": "inner",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "몸",
+          "charSpan": [
+            0,
+            1
+          ],
+          "rule": "bodyPartLexicon.몸"
+        }
+      ],
+      "ifsLocation": "in"
+    },
+    "bridge": {
+      "asked": true,
+      "stage": "flesh_out",
+      "x": null,
+      "xSelection": {
+        "from": null,
+        "noXReason": [
+          "focus_hold:none_in_category",
+          "opening:none_in_category"
+        ],
+        "tried": [
+          {
+            "from": "focus_hold",
+            "category": "sensation",
+            "found": null,
+            "why": "none_in_category",
+            "predicates": [],
+            "rejected": [
+              {
+                "text": "멍",
+                "kind": "root",
+                "category": null
+              }
+            ]
+          },
+          {
+            "from": "opening",
+            "category": "emotion",
+            "found": null,
+            "why": "none_in_category",
+            "predicates": [],
+            "rejected": [
+              {
+                "text": "피곤",
+                "kind": "noun",
+                "category": null
+              }
+            ]
+          }
+        ]
+      },
+      "template": "like_what",
+      "validation": "V1–V7·V9 (V8 가드 모델은 걸지 않음: 틀 + 참여자 원문 인용뿐인 결정론 문장)",
+      "phrase": "bridge_like_what_plain",
+      "fallback": false,
+      "fallbackReason": "no_x",
+      "plainChecks": {
+        "path": "fixed_phrase",
+        "applied": "V1·V2·V4·V5·V6·V7·V9",
+        "notApplied": [
+          "V1:anchor_required",
+          "V3",
+          "V8"
+        ],
+        "passed": true,
+        "reasons": []
+      }
+    },
+    "probes": {
+      "asked": [
+        "size_shape",
+        "color_brightness",
+        "movement"
+      ],
+      "skippedAsCovered": []
+    }
+  },
+  "confirmedText": "그냥 피곤해요\n몸 안이요\n그냥 멍해요",
+  "confirmation": {
+    "edited": false,
+    "draft": "그냥 피곤해요\n몸 안이요\n그냥 멍해요",
+    "at": "2026-11-27T16:00:29+09:00"
+  },
+  "extraction": {
+    "extractorVersion": "0.1.0",
+    "lexicon": {
+      "lexiconId": "layer1-interview-overlay",
+      "lexiconVersion": "layer1-attribute-lexicon@0.1.0 + layer1-interview-overlay@0.1.0",
+      "entries": 380
+    },
+    "analyzer": {
+      "backend": "kiwi",
+      "version": "0.24.1"
+    },
+    "inputText": "그냥 피곤해요\n몸 안이요\n그냥 멍해요",
+    "layers": {
+      "layer0": "kiwi",
+      "layer1": "lexicon",
+      "layer2": "simile-marker (prototype: lexicon only)",
+      "layer3": "not-implemented"
+    },
+    "attributes": [
+      {
+        "category": "body_part",
+        "slot": "bodyRelation.part",
+        "lemma": "몸",
+        "value": {
+          "part": "body"
+        },
+        "negated": false,
+        "change": null,
+        "valueSource": "notion",
+        "_provenance": {
+          "source": "explicit_lexicon",
+          "trigger": "몸",
+          "charSpan": [
+            8,
+            9
+          ],
+          "rule": "bodyPartLexicon.몸"
+        }
+      }
+    ],
+    "similes": [],
+    "unmatched": [
+      {
+        "lemma": "피곤",
+        "tag": "NNG",
+        "surface": "피곤",
+        "charSpan": [
+          3,
+          5
+        ]
+      },
+      {
+        "lemma": "안",
+        "tag": "MAG",
+        "surface": "안",
+        "charSpan": [
+          10,
+          11
+        ]
+      },
+      {
+        "lemma": "멍하",
+        "tag": "VA",
+        "surface": "멍해",
+        "charSpan": [
+          17,
+          19
+        ]
+      }
+    ],
+    "lostInformation": {
+      "contentTokens": 4,
+      "unmatchedTokens": 3,
+      "rate": 0.75,
+      "note": "소실 정보율 근사치: 사전에 걸리지 않은 내용어 비율. 사람 주석(F1·kappa)과 함께 봐야 한다."
+    },
+    "sceneSpecDraft": {
+      "schema": "IFSSceneSpec-draft/0.1 (기존 TS IFSSceneSpec 필드명과 정렬 필요)",
+      "slots": {
+        "bodyRelation": {
+          "status": "stated",
+          "text": "몸 안이요",
+          "part": "body",
+          "layer": "inner",
+          "_provenance": [
+            {
+              "source": "explicit_lexicon",
+              "trigger": "몸",
+              "charSpan": [
+                0,
+                1
+              ],
+              "rule": "bodyPartLexicon.몸"
+            }
+          ],
+          "ifsLocation": "in"
+        }
+      },
+      "alternatives": {},
+      "negated": [],
+      "unresolved": [],
+      "unspecified": [
+        "form.type",
+        "form.shape",
+        "material.color",
+        "material.brightness",
+        "material.saturation",
+        "material.opacity",
+        "material.texture",
+        "material.temperature",
+        "physical.weight",
+        "layout.size",
+        "motion",
+        "posture",
+        "sound",
+        "selfReference"
+      ],
+      "note": "참여자가 말한 것만 채웠다. 빈 슬롯은 3층(V/A/D)·설문 슬라이더(안전망)·VR 보정이 채울 몫이다."
+    }
+  },
+  "drift": {
+    "enabled": true,
+    "assessment": {
+      "version": "drift/1.1.0",
+      "params": {
+        "version": "drift-params/1.1.0",
+        "tauNumSoft": 0.25,
+        "tauNumHard": 0.5,
+        "neutral": 0.5,
+        "tauHueDeg": 60.0,
+        "tauL": 0.45,
+        "tauS": 0.4,
+        "chromaticMinS": 0.15,
+        "chromaticL": [
+          0.08,
+          0.92
+        ],
+        "groupWeights": {
+          "identity": 1.0,
+          "color": 1.0,
+          "size": 1.0,
+          "position": 1.0,
+          "shape": 0.5,
+          "surface": 0.5,
+          "motion": 0.0
+        },
+        "theta": 0.2,
+        "translationalMotion": [
+          "moving",
+          "drifting",
+          "rising",
+          "sinking",
+          "settling",
+          "approaching"
+        ],
+        "motionDirection": {
+          "rising": {
+            "vertical": "+"
+          },
+          "sinking": {
+            "vertical": "-"
+          },
+          "settling": {
+            "vertical": "-"
+          },
+          "approaching": {
+            "distance": "-"
+          }
+        },
+        "sizeCrossScale": "hard_only",
+        "selfReportDriftMax": 3
+      },
+      "snapshotBuilder": "v1",
+      "turns": [
+        {
+          "seq": 0,
+          "i": 3,
+          "stage": "find",
+          "slots": {},
+          "evidence": {},
+          "identity": [],
+          "identityDropped": [],
+          "unconfirmed": {},
+          "builder": "v1"
+        },
+        {
+          "seq": 1,
+          "i": 5,
+          "stage": "find",
+          "slots": {
+            "body.part": "body",
+            "body.layer": "inner"
+          },
+          "evidence": {
+            "body.part": "몸",
+            "body.layer": "안"
+          },
+          "identity": [],
+          "identityDropped": [],
+          "unconfirmed": {},
+          "builder": "v1"
+        },
+        {
+          "seq": 2,
+          "i": 9,
+          "stage": "focus",
+          "slots": {},
+          "evidence": {},
+          "identity": [],
+          "identityDropped": [],
+          "unconfirmed": {},
+          "builder": "v1"
+        }
+      ],
+      "stages": [
+        {
+          "stage": "find",
+          "slots": {
+            "body.part": "body",
+            "body.layer": "inner"
+          },
+          "source": {
+            "body.part": {
+              "i": 5,
+              "seq": 1,
+              "stage": "find",
+              "trigger": "몸"
+            },
+            "body.layer": {
+              "i": 5,
+              "seq": 1,
+              "stage": "find",
+              "trigger": "안"
+            }
+          },
+          "identity": [],
+          "identityTurn": null,
+          "identitySeq": null,
+          "turns": [
+            3,
+            5
+          ]
+        },
+        {
+          "stage": "focus",
+          "slots": {},
+          "source": {},
+          "identity": [],
+          "identityTurn": null,
+          "identitySeq": null,
+          "turns": [
+            9
+          ]
+        }
+      ],
+      "confirmationEdited": false,
+      "multipleObjects": {
+        "flag": false,
+        "turns": []
+      },
+      "first": "find",
+      "firstSnapshot": {
+        "slots": {
+          "body.part": "body",
+          "body.layer": "inner"
+        },
+        "source": {
+          "body.part": {
+            "i": 5,
+            "seq": 1,
+            "stage": "find",
+            "trigger": "몸"
+          },
+          "body.layer": {
+            "i": 5,
+            "seq": 1,
+            "stage": "find",
+            "trigger": "안"
+          }
+        },
+        "identity": [],
+        "identityTurn": null,
+        "identitySeq": null,
+        "turns": [
+          3,
+          5
+        ]
+      },
+      "final": {
+        "slots": {},
+        "source": {},
+        "identity": [],
+        "identityTurn": null,
+        "identitySeq": null,
+        "turns": [
+          9
+        ]
+      },
+      "primary": null,
+      "adjacent": [],
+      "maxAdjacentDI": null,
+      "decision": "undecidable",
+      "DI": null,
+      "acknowledged": {
+        "flag": false,
+        "markers": [],
+        "negatedMarkers": []
+      },
+      "reason": "no_later_snapshot"
+    },
+    "summary": {
+      "decision": "undecidable",
+      "DI": null,
+      "identityContradiction": null,
+      "contradicted": [],
+      "comparable": [],
+      "acknowledged": false,
+      "maxAdjacentDI": null,
+      "first": "find",
+      "confirmationEdited": false,
+      "multipleObjects": false
+    },
+    "recallCheck": null,
+    "selfReport": null
+  },
+  "events": [],
+  "endedBy": "completed",
+  "rawSurveyResponseRef": null,
+  "sceneSpec": {
+    "path": "<scratch>\\offline\\sessions\\scenes\\g64_b4_dontknow__offline__r1.json",
+    "specVersion": "2.1.0",
+    "builder": "scene-spec-builder-v1/1.2.0",
+    "sourceTextHash": "sha256:f0d5948e8bd4b3b4f7584fddc43ec0beaf6a9b328711788d3f8bdd1fc6f27cba",
+    "problems": [],
+    "mapping": {
+      "requested": "v1",
+      "used": "v1",
+      "fallbackReason": null
+    },
+    "variants": {
+      "v0": "<scratch>\\offline\\sessions\\scenes\\g64_b4_dontknow__offline__r1.v0.json",
+      "v1": "<scratch>\\offline\\sessions\\scenes\\g64_b4_dontknow__offline__r1.v1.json"
+    },
+    "sha256": {
+      "specFile": "g64_b4_dontknow__offline__r1.json",
+      "specSha256": "9d804446be996e54758392b49d22031bb8541a07573f4f9b0053be30f2dc522b",
+      "alt": {
+        "g64_b4_dontknow__offline__r1.v0.json": "8ebe7bfc656e2fb986378aeccabd11fd6ca6da2630a47de28c481382434efc45",
+        "g64_b4_dontknow__offline__r1.v1.json": "9d804446be996e54758392b49d22031bb8541a07573f4f9b0053be30f2dc522b"
+      }
+    }
+  }
+}

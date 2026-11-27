@@ -1,0 +1,1297 @@
+{
+  "logVersion": "elicit-log/0.1",
+  "sessionId": "g64_d3_lump_sparse__gemma4-e4b__r1",
+  "elicitationCondition": "chatbot",
+  "createdAt": "2026-11-27T16:01:18+09:00",
+  "endedAt": "2026-11-27T16:01:21+09:00",
+  "protocol": {
+    "promptVersion": "1.1.0",
+    "promptSha256": "sha256:f786ec582055cb04c03db037bc0cce4f4f9f8d3e4a4b717b98d5c585eb9ab082",
+    "contextTemplateVersion": "0.2.0",
+    "lexiconVersion": "layer1-attribute-lexicon@0.1.0 + layer1-interview-overlay@0.1.0",
+    "safetyLexiconVersion": "0.2.0",
+    "controllerVersion": "0.1.0",
+    "protocolId": "ifs-imagery-elicitation",
+    "protocolVersion": "1.5.0",
+    "anchorDoeRoot": true
+  },
+  "model": {
+    "name": "gemma4:e4b",
+    "quant": "Q4_K_M",
+    "parameterSize": "7.5B",
+    "digest": "sha256:dc35e8d9c6061baa6f0fa870975ab6932e2542b579b13ea0f199fa4bb7300c9c",
+    "runtime": "ollama 0.40.17",
+    "sampling": {
+      "temperature": 0.2,
+      "top_p": 0.9,
+      "seed": 7,
+      "thinking": false
+    },
+    "numCtx": 8192
+  },
+  "guard": {
+    "keywordLexicon": {
+      "file": "safety_ko.v0.2.json",
+      "version": "0.2.0"
+    },
+    "model": {
+      "name": "hf.co/mradermacher/kanana-safeguard-8b-GGUF:Q4_K_M",
+      "format": "kanana",
+      "digest": "34ca9739d8a4bcf9127501b114b775af807b48f7ce64befeec115d308c927c69",
+      "runtime": "ollama"
+    },
+    "name": "hf.co/mradermacher/kanana-safeguard-8b-GGUF:Q4_K_M",
+    "digest": "34ca9739d8a4bcf9127501b114b775af807b48f7ce64befeec115d308c927c69"
+  },
+  "analyzer": {
+    "backend": "kiwi",
+    "version": "0.24.1"
+  },
+  "validator": {
+    "strictNovelContent": true,
+    "l5Depth": "present_focus",
+    "maxAnchorEojeol": 3,
+    "maxRegenerations": 2,
+    "predicateAsNoun": true
+  },
+  "turns": [
+    {
+      "i": 0,
+      "at": "2026-11-27T16:01:18+09:00",
+      "speaker": "system",
+      "source": "fixed:intro",
+      "stage": null,
+      "text": "안녕하세요. 저는 연구를 돕는 AI 면담 보조자예요. 지금 마음에 떠오르는 것을 자신의 말로 조금 더 표현해 볼 수 있게 질문만 드릴게요. 상담이나 치료는 아니에요. 잘 떠오르지 않으면 '잘 모르겠어요'라고 쓰셔도 괜찮아요. 그만하고 싶으면 언제든 [그만]을 누르거나 '그만'이라고 써 주세요. 바로 멈출게요.",
+      "phraseStatus": "draft"
+    },
+    {
+      "i": 1,
+      "at": "2026-11-27T16:01:18+09:00",
+      "speaker": "participant",
+      "source": "control:start",
+      "stage": null,
+      "text": "[시작]"
+    },
+    {
+      "i": 2,
+      "at": "2026-11-27T16:01:18+09:00",
+      "speaker": "system",
+      "source": "fixed:opening",
+      "stage": "find",
+      "text": "요즘 가장 신경 쓰고 있는 일 가운데 우선순위가 가장 높은 일 하나를 떠올려 주세요. 자세한 내용은 말하지 않아도 괜찮아요. 그 일을 떠올리면 지금 어떤 느낌이 드나요?",
+      "phraseStatus": "draft"
+    },
+    {
+      "i": 3,
+      "at": "2026-11-27T16:01:18+09:00",
+      "speaker": "participant",
+      "source": "typed",
+      "stage": "find",
+      "text": "배 쪽에 뭔가 덩어리가 있어요",
+      "guard": "SAFE",
+      "guardDetail": {
+        "level": "safe",
+        "label": "SAFE",
+        "alert": false,
+        "reasons": [],
+        "keywordHits": [],
+        "model": {
+          "name": "hf.co/mradermacher/kanana-safeguard-8b-GGUF:Q4_K_M",
+          "label": "SAFE",
+          "category": null,
+          "raw": "",
+          "latency_ms": 140,
+          "note": "<SAFE> 토큰이 종료 토큰으로 처리됨"
+        }
+      },
+      "crisisKeyword": false,
+      "flags": {
+        "noMore": false,
+        "delegation": false,
+        "depthStrong": [],
+        "depthWeak": []
+      }
+    },
+    {
+      "i": 4,
+      "at": "2026-11-27T16:01:18+09:00",
+      "speaker": "system",
+      "source": "fixed:location",
+      "stage": "find",
+      "text": "그것이 몸 안에, 몸 표면에, 아니면 몸 주변에 있나요?",
+      "phraseStatus": "spec"
+    },
+    {
+      "i": 5,
+      "at": "2026-11-27T16:01:18+09:00",
+      "speaker": "participant",
+      "source": "typed",
+      "stage": "find",
+      "text": "몸 안이요",
+      "guard": "SAFE",
+      "guardDetail": {
+        "level": "safe",
+        "label": "SAFE",
+        "alert": false,
+        "reasons": [],
+        "keywordHits": [],
+        "model": {
+          "name": "hf.co/mradermacher/kanana-safeguard-8b-GGUF:Q4_K_M",
+          "label": "SAFE",
+          "category": null,
+          "raw": "",
+          "latency_ms": 171,
+          "note": "<SAFE> 토큰이 종료 토큰으로 처리됨"
+        }
+      },
+      "crisisKeyword": false,
+      "flags": {
+        "noMore": false,
+        "delegation": false,
+        "depthStrong": [],
+        "depthWeak": []
+      }
+    },
+    {
+      "i": 6,
+      "at": "2026-11-27T16:01:19+09:00",
+      "speaker": "interviewer",
+      "source": "llm",
+      "stage": "find",
+      "text": "'덩어리'에 대해 더 있나요?",
+      "output": {
+        "stage": "find",
+        "risk_signal": "none",
+        "move": "ask",
+        "template": "anything_else",
+        "anchor_quote": "덩어리",
+        "utterance": "'덩어리'에 대해 더 있나요?"
+      },
+      "checks": {
+        "passed": true,
+        "reasons": [],
+        "regenerations": 0,
+        "fallback": false
+      },
+      "attempts": [
+        {
+          "attempt": 0,
+          "seed": 7,
+          "raw": "{\n  \"stage\": \"find\",\n  \"risk_signal\": \"none\",\n  \"move\": \"ask\",\n  \"template\": \"anything_else\",\n  \"anchor_quote\": \"덩어리\",\n  \"utterance\": \"'덩어리'에 대해 더 있나요?\"\n}",
+          "parsed": {
+            "stage": "find",
+            "risk_signal": "none",
+            "move": "ask",
+            "template": "anything_else",
+            "anchor_quote": "덩어리",
+            "utterance": "'덩어리'에 대해 더 있나요?"
+          },
+          "passed": true,
+          "reasons": [],
+          "reasonsText": [],
+          "latencyMs": 596,
+          "meta": {
+            "eval_count": 69,
+            "prompt_eval_count": 983,
+            "done_reason": "stop",
+            "thinking_chars": 0
+          },
+          "guard": {
+            "level": "safe",
+            "label": "SAFE",
+            "alert": false,
+            "reasons": [],
+            "keywordHits": [],
+            "model": {
+              "name": "hf.co/mradermacher/kanana-safeguard-8b-GGUF:Q4_K_M",
+              "label": "SAFE",
+              "category": null,
+              "raw": "",
+              "latency_ms": 152,
+              "note": "<SAFE> 토큰이 종료 토큰으로 처리됨"
+            }
+          },
+          "notes": []
+        }
+      ]
+    },
+    {
+      "i": 7,
+      "at": "2026-11-27T16:01:19+09:00",
+      "speaker": "participant",
+      "source": "typed",
+      "stage": "find",
+      "text": "없어요",
+      "guard": "SAFE",
+      "guardDetail": {
+        "level": "safe",
+        "label": "SAFE",
+        "alert": false,
+        "reasons": [],
+        "keywordHits": [],
+        "model": {
+          "name": "hf.co/mradermacher/kanana-safeguard-8b-GGUF:Q4_K_M",
+          "label": "SAFE",
+          "category": null,
+          "raw": "",
+          "latency_ms": 159,
+          "note": "<SAFE> 토큰이 종료 토큰으로 처리됨"
+        }
+      },
+      "crisisKeyword": false,
+      "flags": {
+        "noMore": true,
+        "delegation": false,
+        "depthStrong": [],
+        "depthWeak": []
+      }
+    },
+    {
+      "i": 8,
+      "at": "2026-11-27T16:01:19+09:00",
+      "speaker": "system",
+      "source": "fixed:focus_hold",
+      "stage": "focus",
+      "text": "거기에 주의를 두고 잠시 머물러 보세요. 준비가 되면 지금 알아차려지는 것을 적어 주세요.",
+      "phraseStatus": "spec+draft"
+    },
+    {
+      "i": 9,
+      "at": "2026-11-27T16:01:19+09:00",
+      "speaker": "participant",
+      "source": "typed",
+      "stage": "focus",
+      "text": "그냥 있어요",
+      "guard": "SAFE",
+      "guardDetail": {
+        "level": "safe",
+        "label": "SAFE",
+        "alert": false,
+        "reasons": [],
+        "keywordHits": [],
+        "model": {
+          "name": "hf.co/mradermacher/kanana-safeguard-8b-GGUF:Q4_K_M",
+          "label": "SAFE",
+          "category": null,
+          "raw": "",
+          "latency_ms": 175,
+          "note": "<SAFE> 토큰이 종료 토큰으로 처리됨"
+        }
+      },
+      "crisisKeyword": false,
+      "flags": {
+        "noMore": false,
+        "delegation": false,
+        "depthStrong": [],
+        "depthWeak": []
+      }
+    },
+    {
+      "i": 10,
+      "at": "2026-11-27T16:01:21+09:00",
+      "speaker": "interviewer",
+      "source": "fixed:fallback",
+      "stage": "flesh_out",
+      "text": "방금 말씀하신 것에 대해 더 있나요?",
+      "phraseStatus": "spec",
+      "output": null,
+      "attempts": [
+        {
+          "attempt": 0,
+          "seed": 7,
+          "raw": "{\n  \"stage\": \"flesh_out\",\n  \"risk_signal\": \"none\",\n  \"move\": \"ask\",\n  \"template\": \"what_kind\",\n  \"anchor_quote\": \"덩어리\",\n  \"utterance\": \"그 '덩어리'은(는) 어떤 '덩어리'인가요?\"\n}",
+          "parsed": {
+            "stage": "flesh_out",
+            "risk_signal": "none",
+            "move": "ask",
+            "template": "what_kind",
+            "anchor_quote": "덩어리",
+            "utterance": "그 '덩어리'은(는) 어떤 '덩어리'인가요?"
+          },
+          "passed": false,
+          "reasons": [
+            "V5:novel:늘",
+            "V7:template_literal"
+          ],
+          "reasonsText": [
+            "V5 질문 틀에 없는 새 말을 씀: '늘'",
+            "V7 질문 틀의 '은(는)'·'{X}'를 그대로 씀 — 받침에 맞는 조사 하나만"
+          ],
+          "latencyMs": 636,
+          "meta": {
+            "eval_count": 81,
+            "prompt_eval_count": 1142,
+            "done_reason": "stop",
+            "thinking_chars": 0
+          },
+          "guard": null,
+          "notes": []
+        },
+        {
+          "attempt": 1,
+          "seed": 8,
+          "raw": "{\n  \"stage\": \"flesh_out\",\n  \"risk_signal\": \"none\",\n  \"move\": \"hold\",\n  \"template\": \"what_kind\",\n  \"anchor_quote\": \"덩어리\",\n  \"utterance\": \"그 '덩어리'은(는) 어떤 '덩어리'인가요?\"\n}",
+          "parsed": {
+            "stage": "flesh_out",
+            "risk_signal": "none",
+            "move": "hold",
+            "template": "what_kind",
+            "anchor_quote": "덩어리",
+            "utterance": "그 '덩어리'은(는) 어떤 '덩어리'인가요?"
+          },
+          "passed": false,
+          "reasons": [
+            "V1:hold_without_risk_signal"
+          ],
+          "reasonsText": [
+            "V1 move가 hold인데 risk_signal이 none — 위험 신호가 없으면 ask 또는 ready_to_advance"
+          ],
+          "latencyMs": 590,
+          "meta": {
+            "eval_count": 81,
+            "prompt_eval_count": 1217,
+            "done_reason": "stop",
+            "thinking_chars": 0
+          },
+          "guard": null,
+          "notes": []
+        },
+        {
+          "attempt": 2,
+          "seed": 9,
+          "raw": "{\n  \"stage\": \"flesh_out\",\n  \"risk_signal\": \"none\",\n  \"move\": \"ask\",\n  \"template\": \"what_kind\",\n  \"anchor_quote\": \"덩어리\",\n  \"utterance\": \"그 '덩어리'은(는) 어떤 '덩어리'인가요?\"\n}",
+          "parsed": {
+            "stage": "flesh_out",
+            "risk_signal": "none",
+            "move": "ask",
+            "template": "what_kind",
+            "anchor_quote": "덩어리",
+            "utterance": "그 '덩어리'은(는) 어떤 '덩어리'인가요?"
+          },
+          "passed": false,
+          "reasons": [
+            "V5:novel:늘",
+            "V7:template_literal"
+          ],
+          "reasonsText": [
+            "V5 질문 틀에 없는 새 말을 씀: '늘'",
+            "V7 질문 틀의 '은(는)'·'{X}'를 그대로 씀 — 받침에 맞는 조사 하나만"
+          ],
+          "latencyMs": 509,
+          "meta": {
+            "eval_count": 81,
+            "prompt_eval_count": 1200,
+            "done_reason": "stop",
+            "thinking_chars": 0
+          },
+          "guard": null,
+          "notes": []
+        }
+      ],
+      "checks": {
+        "passed": false,
+        "reasons": [
+          "V5:novel:늘",
+          "V7:template_literal"
+        ],
+        "regenerations": 2,
+        "fallback": true
+      }
+    },
+    {
+      "i": 11,
+      "at": "2026-11-27T16:01:21+09:00",
+      "speaker": "participant",
+      "source": "typed",
+      "stage": "flesh_out",
+      "text": "없어요",
+      "guard": "SAFE",
+      "guardDetail": {
+        "level": "safe",
+        "label": "SAFE",
+        "alert": false,
+        "reasons": [],
+        "keywordHits": [],
+        "model": {
+          "name": "hf.co/mradermacher/kanana-safeguard-8b-GGUF:Q4_K_M",
+          "label": "SAFE",
+          "category": null,
+          "raw": "",
+          "latency_ms": 163,
+          "note": "<SAFE> 토큰이 종료 토큰으로 처리됨"
+        }
+      },
+      "crisisKeyword": false,
+      "flags": {
+        "noMore": true,
+        "delegation": false,
+        "depthStrong": [],
+        "depthWeak": []
+      }
+    },
+    {
+      "i": 12,
+      "at": "2026-11-27T16:01:21+09:00",
+      "speaker": "system",
+      "source": "fixed:probe_size_shape",
+      "stage": "flesh_out",
+      "text": "그것에 크기나 모양이 있나요?",
+      "phraseStatus": "spec",
+      "probe": "size_shape"
+    },
+    {
+      "i": 13,
+      "at": "2026-11-27T16:01:21+09:00",
+      "speaker": "participant",
+      "source": "typed",
+      "stage": "flesh_out",
+      "text": "모르겠어요",
+      "guard": "SAFE",
+      "guardDetail": {
+        "level": "safe",
+        "label": "SAFE",
+        "alert": false,
+        "reasons": [],
+        "keywordHits": [],
+        "model": {
+          "name": "hf.co/mradermacher/kanana-safeguard-8b-GGUF:Q4_K_M",
+          "label": "SAFE",
+          "category": null,
+          "raw": "",
+          "latency_ms": 135,
+          "note": "<SAFE> 토큰이 종료 토큰으로 처리됨"
+        }
+      },
+      "crisisKeyword": false,
+      "flags": {
+        "noMore": true,
+        "delegation": false,
+        "depthStrong": [],
+        "depthWeak": []
+      }
+    },
+    {
+      "i": 14,
+      "at": "2026-11-27T16:01:21+09:00",
+      "speaker": "system",
+      "source": "fixed:probe_color_brightness",
+      "stage": "flesh_out",
+      "text": "그것에 색이나 밝기가 있나요?",
+      "phraseStatus": "spec",
+      "probe": "color_brightness"
+    },
+    {
+      "i": 15,
+      "at": "2026-11-27T16:01:21+09:00",
+      "speaker": "participant",
+      "source": "typed",
+      "stage": "flesh_out",
+      "text": "없어요",
+      "guard": "SAFE",
+      "guardDetail": {
+        "level": "safe",
+        "label": "SAFE",
+        "alert": false,
+        "reasons": [],
+        "keywordHits": [],
+        "model": {
+          "name": "hf.co/mradermacher/kanana-safeguard-8b-GGUF:Q4_K_M",
+          "label": "SAFE",
+          "category": null,
+          "raw": "",
+          "latency_ms": 157,
+          "note": "<SAFE> 토큰이 종료 토큰으로 처리됨"
+        }
+      },
+      "crisisKeyword": false,
+      "flags": {
+        "noMore": true,
+        "delegation": false,
+        "depthStrong": [],
+        "depthWeak": []
+      }
+    },
+    {
+      "i": 16,
+      "at": "2026-11-27T16:01:21+09:00",
+      "speaker": "system",
+      "source": "fixed:probe_movement",
+      "stage": "flesh_out",
+      "text": "그것에 움직임이 있나요?",
+      "phraseStatus": "spec",
+      "probe": "movement"
+    },
+    {
+      "i": 17,
+      "at": "2026-11-27T16:01:21+09:00",
+      "speaker": "participant",
+      "source": "typed",
+      "stage": "flesh_out",
+      "text": "없어요",
+      "guard": "SAFE",
+      "guardDetail": {
+        "level": "safe",
+        "label": "SAFE",
+        "alert": false,
+        "reasons": [],
+        "keywordHits": [],
+        "model": {
+          "name": "hf.co/mradermacher/kanana-safeguard-8b-GGUF:Q4_K_M",
+          "label": "SAFE",
+          "category": null,
+          "raw": "",
+          "latency_ms": 146,
+          "note": "<SAFE> 토큰이 종료 토큰으로 처리됨"
+        }
+      },
+      "crisisKeyword": false,
+      "flags": {
+        "noMore": true,
+        "delegation": false,
+        "depthStrong": [],
+        "depthWeak": []
+      }
+    },
+    {
+      "i": 18,
+      "at": "2026-11-27T16:01:21+09:00",
+      "speaker": "system",
+      "source": "fixed:confirm_intro",
+      "stage": null,
+      "text": "지금까지 적어 주신 말을 그대로 모았어요. 이대로 맞는지 확인해 주세요. 고치고 싶은 곳은 직접 고치셔도 돼요.",
+      "phraseStatus": "draft",
+      "draft": "배 쪽에 뭔가 덩어리가 있어요\n몸 안이요\n그냥 있어요"
+    },
+    {
+      "i": 19,
+      "at": "2026-11-27T16:01:21+09:00",
+      "speaker": "participant",
+      "source": "control:confirm",
+      "stage": null,
+      "text": "[이대로 맞아요]"
+    },
+    {
+      "i": 20,
+      "at": "2026-11-27T16:01:21+09:00",
+      "speaker": "system",
+      "source": "fixed:closing",
+      "stage": null,
+      "text": "확인해 주셔서 고마워요. 면담은 여기까지예요. 다음 단계는 연구자가 안내해 드릴 거예요.",
+      "phraseStatus": "draft"
+    }
+  ],
+  "alerts": [],
+  "capture": {
+    "imageSignal": {
+      "use": "flow_only",
+      "protocolVersion": "1.5.0",
+      "note": "규칙 판정(사전 범주·비유 표지). 다리 질문·find 틀 제한에만 쓰고 장면 값에는 쓰지 않는다(원칙 2).",
+      "timeline": [
+        {
+          "i": 3,
+          "judgedAt": "reply",
+          "kind": "opening",
+          "elicitedBy": "opening",
+          "askedBy": "fixed:opening",
+          "stage": "find",
+          "noMore": false,
+          "present": true,
+          "cumulative": true,
+          "evidence": [
+            {
+              "kind": "lexicon",
+              "category": "form",
+              "lemma": "덩어리",
+              "trigger": "덩어리",
+              "charSpan": [
+                8,
+                11
+              ],
+              "negated": false
+            }
+          ],
+          "excluded": [],
+          "negatedExcluded": false,
+          "negatedInEvidence": false,
+          "negated": false
+        },
+        {
+          "i": 5,
+          "judgedAt": "reply",
+          "kind": "location",
+          "elicitedBy": "opening",
+          "askedBy": "fixed:location",
+          "stage": "find",
+          "noMore": false,
+          "present": false,
+          "cumulative": true,
+          "evidence": [],
+          "excluded": [],
+          "negatedExcluded": false,
+          "negatedInEvidence": false,
+          "negated": false
+        },
+        {
+          "i": 7,
+          "judgedAt": "reply",
+          "kind": "llm:find",
+          "elicitedBy": "llm",
+          "askedBy": "llm",
+          "stage": "find",
+          "noMore": true,
+          "present": false,
+          "cumulative": true,
+          "evidence": [],
+          "excluded": [],
+          "negatedExcluded": false,
+          "negatedInEvidence": false,
+          "negated": false
+        },
+        {
+          "i": 9,
+          "judgedAt": "reply",
+          "kind": "focus_hold",
+          "elicitedBy": "focus_hold",
+          "askedBy": "fixed:focus_hold",
+          "stage": "focus",
+          "noMore": false,
+          "present": false,
+          "cumulative": true,
+          "evidence": [],
+          "excluded": [],
+          "negatedExcluded": false,
+          "negatedInEvidence": false,
+          "negated": false
+        },
+        {
+          "i": 11,
+          "judgedAt": "reply",
+          "kind": "llm:flesh_out",
+          "elicitedBy": "llm",
+          "askedBy": "fixed:fallback",
+          "stage": "flesh_out",
+          "noMore": true,
+          "present": false,
+          "cumulative": true,
+          "evidence": [],
+          "excluded": [],
+          "negatedExcluded": false,
+          "negatedInEvidence": false,
+          "negated": false
+        },
+        {
+          "i": 13,
+          "judgedAt": "reply",
+          "kind": "probe:size_shape",
+          "elicitedBy": "probe",
+          "askedBy": "fixed:probe_size_shape",
+          "stage": "flesh_out",
+          "noMore": true,
+          "present": false,
+          "cumulative": true,
+          "evidence": [],
+          "excluded": [],
+          "negatedExcluded": false,
+          "negatedInEvidence": false,
+          "negated": false
+        },
+        {
+          "i": 15,
+          "judgedAt": "reply",
+          "kind": "probe:color_brightness",
+          "elicitedBy": "probe",
+          "askedBy": "fixed:probe_color_brightness",
+          "stage": "flesh_out",
+          "noMore": true,
+          "present": false,
+          "cumulative": true,
+          "evidence": [],
+          "excluded": [],
+          "negatedExcluded": false,
+          "negatedInEvidence": false,
+          "negated": false
+        },
+        {
+          "i": 17,
+          "judgedAt": "reply",
+          "kind": "probe:movement",
+          "elicitedBy": "probe",
+          "askedBy": "fixed:probe_movement",
+          "stage": "flesh_out",
+          "noMore": true,
+          "present": false,
+          "cumulative": true,
+          "evidence": [],
+          "excluded": [],
+          "negatedExcluded": false,
+          "negatedInEvidence": false,
+          "negated": false
+        }
+      ],
+      "atFind": {
+        "judgedAt": "find_llm",
+        "present": true,
+        "evidence": [
+          {
+            "kind": "lexicon",
+            "category": "form",
+            "lemma": "덩어리",
+            "trigger": "덩어리",
+            "charSpan": [
+              8,
+              11
+            ],
+            "negated": false,
+            "text": "배 쪽에 뭔가 덩어리가 있어요"
+          }
+        ],
+        "excluded": [],
+        "allowedTemplates": [
+          "anything_else",
+          "like_what"
+        ],
+        "turn": 6
+      },
+      "atBridge": {
+        "judgedAt": "bridge",
+        "present": true,
+        "evidence": [
+          {
+            "kind": "lexicon",
+            "category": "form",
+            "lemma": "덩어리",
+            "trigger": "덩어리",
+            "charSpan": [
+              8,
+              11
+            ],
+            "negated": false,
+            "text": "배 쪽에 뭔가 덩어리가 있어요"
+          }
+        ],
+        "excluded": [],
+        "turn": 10
+      },
+      "confirmed": {
+        "judgedAt": "confirmed",
+        "present": true,
+        "evidence": [
+          {
+            "kind": "lexicon",
+            "category": "form",
+            "lemma": "덩어리",
+            "trigger": "덩어리",
+            "charSpan": [
+              8,
+              11
+            ],
+            "negated": false
+          }
+        ],
+        "excluded": [],
+        "edited": false,
+        "turn": 19
+      }
+    },
+    "firstElicitedBy": {
+      "kind": "opening",
+      "detail": "opening",
+      "i": 3,
+      "askedBy": "fixed:opening",
+      "evidence": [
+        "덩어리"
+      ]
+    },
+    "imageless": false,
+    "findModality": {
+      "labels": [
+        "body_sensation",
+        "image_or_scene"
+      ],
+      "categories": [
+        "body_part",
+        "form"
+      ],
+      "method": "heuristic: 1층 사전 범주",
+      "note": "2D 설문의 find.initial_response 6범주와 같은 이름. 참여자에게 보이지 않는다."
+    },
+    "bodyRelation": {
+      "status": "stated",
+      "text": "몸 안이요",
+      "part": "body",
+      "layer": "inner",
+      "_provenance": [
+        {
+          "source": "explicit_lexicon",
+          "trigger": "몸",
+          "charSpan": [
+            0,
+            1
+          ],
+          "rule": "bodyPartLexicon.몸"
+        }
+      ],
+      "ifsLocation": "in"
+    },
+    "bridge": {
+      "asked": false,
+      "skipped": "image_signal_present",
+      "stage": "flesh_out"
+    },
+    "probes": {
+      "asked": [
+        "size_shape",
+        "color_brightness",
+        "movement"
+      ],
+      "skippedAsCovered": []
+    }
+  },
+  "confirmedText": "배 쪽에 뭔가 덩어리가 있어요\n몸 안이요\n그냥 있어요",
+  "confirmation": {
+    "edited": false,
+    "draft": "배 쪽에 뭔가 덩어리가 있어요\n몸 안이요\n그냥 있어요",
+    "at": "2026-11-27T16:01:21+09:00"
+  },
+  "extraction": {
+    "extractorVersion": "0.1.0",
+    "lexicon": {
+      "lexiconId": "layer1-interview-overlay",
+      "lexiconVersion": "layer1-attribute-lexicon@0.1.0 + layer1-interview-overlay@0.1.0",
+      "entries": 380
+    },
+    "analyzer": {
+      "backend": "kiwi",
+      "version": "0.24.1"
+    },
+    "inputText": "배 쪽에 뭔가 덩어리가 있어요\n몸 안이요\n그냥 있어요",
+    "layers": {
+      "layer0": "kiwi",
+      "layer1": "lexicon",
+      "layer2": "simile-marker (prototype: lexicon only)",
+      "layer3": "not-implemented"
+    },
+    "attributes": [
+      {
+        "category": "body_part",
+        "slot": "bodyRelation.part",
+        "lemma": "배",
+        "value": {
+          "part": "belly"
+        },
+        "negated": false,
+        "change": null,
+        "valueSource": "notion",
+        "_provenance": {
+          "source": "explicit_lexicon",
+          "trigger": "배",
+          "charSpan": [
+            0,
+            1
+          ],
+          "rule": "bodyPartLexicon.배"
+        }
+      },
+      {
+        "category": "form",
+        "slot": "form.type",
+        "lemma": "덩어리",
+        "value": {
+          "prototype": "blob"
+        },
+        "negated": false,
+        "change": null,
+        "valueSource": "notion",
+        "_provenance": {
+          "source": "explicit_lexicon",
+          "trigger": "덩어리",
+          "charSpan": [
+            8,
+            11
+          ],
+          "rule": "formLexicon.덩어리"
+        }
+      },
+      {
+        "category": "body_part",
+        "slot": "bodyRelation.part",
+        "lemma": "몸",
+        "value": {
+          "part": "body"
+        },
+        "negated": false,
+        "change": null,
+        "valueSource": "notion",
+        "_provenance": {
+          "source": "explicit_lexicon",
+          "trigger": "몸",
+          "charSpan": [
+            17,
+            18
+          ],
+          "rule": "bodyPartLexicon.몸"
+        }
+      }
+    ],
+    "similes": [],
+    "unmatched": [
+      {
+        "lemma": "안",
+        "tag": "MAG",
+        "surface": "안",
+        "charSpan": [
+          19,
+          20
+        ]
+      }
+    ],
+    "lostInformation": {
+      "contentTokens": 4,
+      "unmatchedTokens": 1,
+      "rate": 0.25,
+      "note": "소실 정보율 근사치: 사전에 걸리지 않은 내용어 비율. 사람 주석(F1·kappa)과 함께 봐야 한다."
+    },
+    "sceneSpecDraft": {
+      "schema": "IFSSceneSpec-draft/0.1 (기존 TS IFSSceneSpec 필드명과 정렬 필요)",
+      "slots": {
+        "form.type": {
+          "value": {
+            "prototype": "blob"
+          },
+          "_provenance": {
+            "source": "explicit_lexicon",
+            "trigger": "덩어리",
+            "charSpan": [
+              8,
+              11
+            ],
+            "rule": "formLexicon.덩어리"
+          },
+          "valueSource": "notion"
+        },
+        "bodyRelation": {
+          "status": "stated",
+          "text": "몸 안이요",
+          "part": "body",
+          "layer": "inner",
+          "_provenance": [
+            {
+              "source": "explicit_lexicon",
+              "trigger": "몸",
+              "charSpan": [
+                0,
+                1
+              ],
+              "rule": "bodyPartLexicon.몸"
+            }
+          ],
+          "ifsLocation": "in"
+        }
+      },
+      "alternatives": {},
+      "negated": [],
+      "unresolved": [],
+      "unspecified": [
+        "form.shape",
+        "material.color",
+        "material.brightness",
+        "material.saturation",
+        "material.opacity",
+        "material.texture",
+        "material.temperature",
+        "physical.weight",
+        "layout.size",
+        "motion",
+        "posture",
+        "sound",
+        "selfReference"
+      ],
+      "note": "참여자가 말한 것만 채웠다. 빈 슬롯은 3층(V/A/D)·설문 슬라이더(안전망)·VR 보정이 채울 몫이다."
+    }
+  },
+  "drift": {
+    "enabled": true,
+    "assessment": {
+      "version": "drift/1.1.0",
+      "params": {
+        "version": "drift-params/1.1.0",
+        "tauNumSoft": 0.25,
+        "tauNumHard": 0.5,
+        "neutral": 0.5,
+        "tauHueDeg": 60.0,
+        "tauL": 0.45,
+        "tauS": 0.4,
+        "chromaticMinS": 0.15,
+        "chromaticL": [
+          0.08,
+          0.92
+        ],
+        "groupWeights": {
+          "identity": 1.0,
+          "color": 1.0,
+          "size": 1.0,
+          "position": 1.0,
+          "shape": 0.5,
+          "surface": 0.5,
+          "motion": 0.0
+        },
+        "theta": 0.2,
+        "translationalMotion": [
+          "moving",
+          "drifting",
+          "rising",
+          "sinking",
+          "settling",
+          "approaching"
+        ],
+        "motionDirection": {
+          "rising": {
+            "vertical": "+"
+          },
+          "sinking": {
+            "vertical": "-"
+          },
+          "settling": {
+            "vertical": "-"
+          },
+          "approaching": {
+            "distance": "-"
+          }
+        },
+        "sizeCrossScale": "hard_only",
+        "selfReportDriftMax": 3
+      },
+      "snapshotBuilder": "v1",
+      "turns": [
+        {
+          "seq": 0,
+          "i": 3,
+          "stage": "find",
+          "slots": {
+            "form.type": "blob",
+            "body.part": "belly"
+          },
+          "evidence": {
+            "form.type": "덩어리",
+            "body.part": "배"
+          },
+          "identity": [
+            {
+              "surface": "덩어리",
+              "head": "덩어리",
+              "class": "덩어리",
+              "position": "subject",
+              "charSpan": [
+                8,
+                11
+              ]
+            }
+          ],
+          "identityDropped": [],
+          "unconfirmed": {},
+          "builder": "v1"
+        },
+        {
+          "seq": 1,
+          "i": 5,
+          "stage": "find",
+          "slots": {
+            "body.part": "body",
+            "body.layer": "inner"
+          },
+          "evidence": {
+            "body.part": "몸",
+            "body.layer": "안"
+          },
+          "identity": [],
+          "identityDropped": [],
+          "unconfirmed": {},
+          "builder": "v1"
+        },
+        {
+          "seq": 2,
+          "i": 9,
+          "stage": "focus",
+          "slots": {},
+          "evidence": {},
+          "identity": [],
+          "identityDropped": [],
+          "unconfirmed": {},
+          "builder": "v1"
+        }
+      ],
+      "stages": [
+        {
+          "stage": "find",
+          "slots": {
+            "form.type": "blob",
+            "body.part": "body",
+            "body.layer": "inner"
+          },
+          "source": {
+            "form.type": {
+              "i": 3,
+              "seq": 0,
+              "stage": "find",
+              "trigger": "덩어리"
+            },
+            "body.part": {
+              "i": 5,
+              "seq": 1,
+              "stage": "find",
+              "trigger": "몸"
+            },
+            "body.layer": {
+              "i": 5,
+              "seq": 1,
+              "stage": "find",
+              "trigger": "안"
+            }
+          },
+          "identity": [
+            {
+              "surface": "덩어리",
+              "head": "덩어리",
+              "class": "덩어리",
+              "position": "subject",
+              "charSpan": [
+                8,
+                11
+              ]
+            }
+          ],
+          "identityTurn": 3,
+          "identitySeq": 0,
+          "turns": [
+            3,
+            5
+          ]
+        },
+        {
+          "stage": "focus",
+          "slots": {},
+          "source": {},
+          "identity": [],
+          "identityTurn": null,
+          "identitySeq": null,
+          "turns": [
+            9
+          ]
+        }
+      ],
+      "confirmationEdited": false,
+      "multipleObjects": {
+        "flag": false,
+        "turns": []
+      },
+      "first": "find",
+      "firstSnapshot": {
+        "slots": {
+          "form.type": "blob",
+          "body.part": "belly",
+          "body.layer": "inner"
+        },
+        "source": {
+          "form.type": {
+            "i": 3,
+            "seq": 0,
+            "stage": "find",
+            "trigger": "덩어리"
+          },
+          "body.part": {
+            "i": 3,
+            "seq": 0,
+            "stage": "find",
+            "trigger": "배"
+          },
+          "body.layer": {
+            "i": 5,
+            "seq": 1,
+            "stage": "find",
+            "trigger": "안"
+          }
+        },
+        "identity": [
+          {
+            "surface": "덩어리",
+            "head": "덩어리",
+            "class": "덩어리",
+            "position": "subject",
+            "charSpan": [
+              8,
+              11
+            ]
+          }
+        ],
+        "identityTurn": 3,
+        "identitySeq": 0,
+        "turns": [
+          3,
+          5
+        ]
+      },
+      "final": {
+        "slots": {},
+        "source": {},
+        "identity": [],
+        "identityTurn": null,
+        "identitySeq": null,
+        "turns": [
+          9
+        ]
+      },
+      "primary": null,
+      "adjacent": [],
+      "maxAdjacentDI": null,
+      "decision": "undecidable",
+      "DI": null,
+      "acknowledged": {
+        "flag": false,
+        "markers": [],
+        "negatedMarkers": []
+      },
+      "reason": "no_later_snapshot"
+    },
+    "summary": {
+      "decision": "undecidable",
+      "DI": null,
+      "identityContradiction": null,
+      "contradicted": [],
+      "comparable": [],
+      "acknowledged": false,
+      "maxAdjacentDI": null,
+      "first": "find",
+      "confirmationEdited": false,
+      "multipleObjects": false
+    },
+    "recallCheck": null,
+    "selfReport": null
+  },
+  "events": [],
+  "endedBy": "completed",
+  "rawSurveyResponseRef": null,
+  "sceneSpec": {
+    "path": "<scratch>\\live\\sessions\\scenes\\g64_d3_lump_sparse__gemma4-e4b__r1.json",
+    "specVersion": "2.1.0",
+    "builder": "scene-spec-builder-v1/1.2.0",
+    "sourceTextHash": "sha256:28bc3e47a9b89a8ab1e20cf41c84530e70bb9d2053fe6f53d582238673851491",
+    "problems": [],
+    "mapping": {
+      "requested": "v1",
+      "used": "v1",
+      "fallbackReason": null
+    },
+    "variants": {
+      "v0": "<scratch>\\live\\sessions\\scenes\\g64_d3_lump_sparse__gemma4-e4b__r1.v0.json",
+      "v1": "<scratch>\\live\\sessions\\scenes\\g64_d3_lump_sparse__gemma4-e4b__r1.v1.json"
+    },
+    "sha256": {
+      "specFile": "g64_d3_lump_sparse__gemma4-e4b__r1.json",
+      "specSha256": "b75583da425572a1105894c2b527d220f9d7836f3dedf18d87f1c361fcb34466",
+      "alt": {
+        "g64_d3_lump_sparse__gemma4-e4b__r1.v0.json": "c5ed3ae852daa7ab702ec4e456d976159eded8a976465e55d9c6971a780023f5",
+        "g64_d3_lump_sparse__gemma4-e4b__r1.v1.json": "b75583da425572a1105894c2b527d220f9d7836f3dedf18d87f1c361fcb34466"
+      }
+    }
+  }
+}

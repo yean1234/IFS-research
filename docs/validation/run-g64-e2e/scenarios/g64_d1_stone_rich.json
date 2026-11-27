@@ -1,0 +1,31 @@
+{
+  "id": "g64_d1_stone_rich",
+  "title": "처음부터 형상(검은 돌덩이) — 다리 건너뜀, 색·온도·질감·크기 여러 개",
+  "source": "run-g64-e2e(2026-11-27) 합성 시나리오. 구성: direct/object/rich",
+  "config": "bridge",
+  "condition": "chatbot",
+  "replyBy": {
+    "opening": "가슴에 검은 돌덩이가 얹혀 있는 느낌이에요",
+    "location": "몸 안이요",
+    "find": [
+      "차갑고 단단해요"
+    ],
+    "focus_hold": "조금씩 커지는 것 같아요",
+    "flesh_out": [
+      "표면이 거칠거칠해요",
+      "없어요"
+    ],
+    "probe_size_shape": "손바닥만 해요",
+    "probe_color_brightness": "검은색이에요",
+    "probe_movement": "없어요"
+  },
+  "defaultReply": "없어요",
+  "expect": {
+    "endedBy": "completed",
+    "sourcesExclude": [
+      "bridge:like_what",
+      "fixed:bridge_like_what_plain"
+    ]
+  },
+  "note": "합성 대사(run-g64-e2e 실험용으로 에이전트가 지은 것). 실제 참여자 응답이 아니다. 위기·자해 내용 없음. replyBy는 질문 종류별 답이다(tools/drive_by_question.py가 읽는다). 차원 프로브 답은 그 프로브가 나올 때만 쓰인다."
+}
