@@ -551,10 +551,13 @@ class SelectionFlow:
         self.data["generation"]["afterNone"] = rec
         job = None
         if pre["blockReason"] is None:
+            # 생성기도 세션 매퍼 spec으로 같은 규칙 프롬프트(G73 후속). 면담 중 세션 확인과 예약은 서비스 잠금 안에서(CP13-2)
             job = self.none_gen.start(self.s.id, text, source_key(self.spec), pre["prompt"]["text"], self._generation_done,
-                                      attempt=n, spec=self.spec)     # 생성기도 세션 매퍼 spec으로 같은 규칙 프롬프트(G73 후속)
-            if job is None:
-                rec.update(blockReason=ng.B_BUSY, blockDetail=None)
+                                      attempt=n, spec=self.spec, other_interviews=self._other_interviews)
+            if isinstance(job, str):
+                rec.update(blockReason=job, blockDetail=",".join(self._other_interviews()) or None
+                           if job == ng.B_INTERVIEW else None)
+                job = None
         if job is None:
             # 만들지 않음: 사유를 남기고 기존 none 경로(0번 후보로 조절, 화면에는 짧은 안내)
             rec.update(status=ng.BLOCKED, endedAt=at, seconds=0.0)
@@ -629,10 +632,10 @@ class SelectionFlow:
             self._require("generating")
             rec = self._after_none()
             rec.update(status=ng.CANCELLED, participantSkippedWait=True, endedAt=now_iso())
-            if self._none_job is not None:
-                self._none_job.cancel("participant_skipped_wait")
             self._log_event("selection:none_gen", {"status": ng.CANCELLED, "participantSkippedWait": True})
-            self._apply_choice(NONE_CHOICE)
+            self._apply_choice(NONE_CHOICE)             # 취소 상태를 먼저 저장하고 응답한다(CP13-4)
+            if self._none_job is not None:
+                self._none_job.cancel("participant_skipped_wait")    # 표시만 하고 곧 돌아옴 — 프로세스 끄기는 백그라운드
             return self.view()
 
     def cancel_generation(self, reason: str) -> None:

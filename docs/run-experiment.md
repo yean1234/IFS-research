@@ -118,6 +118,7 @@ $env:IFS_LIVE=1; .venv\Scripts\python.exe -m pytest tests\test_experiment_config
 - 만든 후보를 고르면 GLB가 `logs/selection/<세션ID>/form-asset-*.glb`로 복사되고 `selection.json`(0.3)의 `form.asset`에 적혀 헤드셋 러너가 그 메시를 씁니다(G62 경로 그대로). 크기·색·재질은 매핑과 참여자 조절 값입니다.
 - 기록: `selection.json`의 `generation.afterNone`(none 시각, 프롬프트와 낱말별 원문 위치, 모델 내림, 시작·끝·초, 결과와 사유, 모델·리비전·가중치 해시·seed, 골랐는지), `selection.afterNoneGeneration`. 생성기 입력·산출물·로그는 `gen3d-out/none-<세션ID>-…/`(저장소 밖).
 - 미리보기가 글 요약(none)으로 내려간 세션에서는 만들지 않습니다(보일 수 없음). 같은 서버에서 다른 세션이 면담 중이면 GPU를 비울 수 없어 만들지 않습니다(`interview_active`).
+- (CP13) 생성이 모델을 내린 때부터 다시 올리기가 끝날 때까지는 새 면담 세션 만들기·시작·답을 받지 않습니다(실험자 화면에 409와 「물체 생성 중이라 …」). 키워드 위기 문장은 막지 않습니다(모델 없이 고정 문구). 모델을 내리지 못하면 만들지 않습니다(`llm_unload_failed`). 다시 올리기에 실패하면 `/api/health`의 `gen3dOnNone.modelsReady`가 false가 되고, 가드 모델이 필수인 이 설정에서는 서버가 백그라운드로 다시 올려 돌아올 때까지 새 세션을 만들지 않습니다(「가드 모델이 준비되지 않았습니다 …」). 오래 이어지면 Ollama 상태를 확인합니다.
 
 ## 7. 아직 사람이 정할 것 (이 문서가 켜지 않은 것)
 

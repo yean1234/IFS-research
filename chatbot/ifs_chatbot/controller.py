@@ -13,6 +13,7 @@
 """
 from __future__ import annotations
 
+import contextlib
 import json
 import logging
 import re
@@ -29,7 +30,7 @@ from .drift import PARAMS as DRIFT_PARAMS
 from .drift import DriftAssessor, participant_turns, summarize
 from .extract import Extractor, find_modality, image_signal, parse_body_relation
 from .form_assets import FormAssetStore
-from .none_gen import NoneGenService
+from .none_gen import InterviewBlocked, NoneGenService
 from .korean import Analyzer, normalize
 from .lexicon import Lexicon
 from .candidates import load_table as load_candidate_table
@@ -291,12 +292,41 @@ class Runtime:
             raise SessionError("세션 ID는 영문·숫자·_·- 1–40자만 됩니다(가명 ID 사용).")
         if participant_id is not None and not SESSION_ID_RE.match(participant_id):
             raise SessionError("참여자 ID는 영문·숫자·_·- 1–40자만 됩니다(가명 ID 사용).")
+        self.check_interview_allowed(creating=True)
         with self._lock:
             if session_id in self.sessions:
                 raise SessionError(f"이미 있는 세션 ID입니다: {session_id}")
             s = Session(self, condition, session_id, participant_id=participant_id)
             self.sessions[session_id] = s
         return s
+
+    # ── (CP13-2) 면담과 [맞는 게 없어요] 생성의 상호 배제. on_none을 켠 설정에서만(none_gen 없으면 아무것도 안 함) ──
+    def check_interview_allowed(self, creating: bool = False) -> None:
+        if self.none_gen is not None:
+            why = self.none_gen.interview_refusal(creating=creating)
+            if why:
+                raise SessionError(why)
+
+    def interview_slot(self, text: str | None = None, creating: bool = False):
+        """면담 LLM·가드 모델을 쓰는 요청 구간. 생성이 모델을 내려 둔 동안에는 막는다(SessionError → 409).
+        키워드 위기 문장은 막지 않는다 — 가드 모델 없이 고정 문구만 낸다(CP12)."""
+        if self.none_gen is None:
+            return contextlib.nullcontext()
+        crisis = bool(text) and self.guard.use_keywords and any(
+            self.guard.lexicon.tiers[h.tier]["action"] == "crisis" for h in self.guard.lexicon.crisis_hits(text))
+        slot = self.none_gen.interview_slot(crisis_ok=crisis, creating=creating)
+
+        class _Wrap:
+            def __enter__(self_):
+                try:
+                    slot.__enter__()
+                except InterviewBlocked as exc:
+                    raise SessionError(str(exc)) from exc
+                return self_
+
+            def __exit__(self_, *exc):
+                return slot.__exit__(*exc)
+        return _Wrap()
 
 
 # ── 세션 ────────────────────────────────────────────────────────────────────
@@ -390,7 +420,7 @@ class Session:
 
     # ── 공개 동작 ───────────────────────────────────────────────────────────
     def start(self) -> dict:
-        with self.lock:
+        with self.lock, self.rt.interview_slot(creating=True):
             if self.awaiting != "start":
                 raise SessionError("이미 시작한 세션입니다.")
             self.log.add_turn(speaker="participant", source="control:start", stage=None, text="[시작]")
@@ -400,7 +430,7 @@ class Session:
             return self.view()
 
     def reply(self, text: str, source: str = "typed") -> dict:
-        with self.lock:
+        with self.lock, self.rt.interview_slot(text):
             if self.awaiting != "reply":
                 raise SessionError("지금은 답을 받을 차례가 아닙니다.")
             text = normalize(text)
@@ -458,7 +488,9 @@ class Session:
 
     def act(self, action: str, text: str | None = None) -> dict:
         """버튼 동작: start | skip | continue | stop | confirm | edit | withdraw"""
-        with self.lock:
+        # (CP13-2) 면담 모델·가드 모델을 부를 수 있는 동작은 생성 중에 받지 않는다(그만·철회·시작은 각자 처리)
+        gated = action in ("continue", "confirm", "edit") or action.startswith(("recall:", "self_report:"))
+        with self.lock, (self.rt.interview_slot(text) if gated else contextlib.nullcontext()):
             if action == "start":
                 return self.start()
             if action == "withdraw":

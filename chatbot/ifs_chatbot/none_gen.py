@@ -62,6 +62,7 @@ B_BUSY = "generator_busy"                       # 다른 세션의 생성이 돌
 B_INTERVIEW = "interview_active"                # 다른 세션이 면담 중 — 면담 모델을 내릴 수 없음
 B_NO_GENERATOR = "generator_unavailable"        # 생성기 python·스크립트가 없음
 B_PROMPT_ERROR = "prompt_error"                 # 규칙 프롬프트를 만들지 못함(Kiwi 없음 등)
+B_UNLOAD = "llm_unload_failed"                  # (CP13-1) 면담·가드 모델을 내리지 못함(요청 실패·제한 시간 뒤 /api/ps에 남음) — 만들지 않음
 # 생성 뒤 차단: 사이드카 blockReason(person_like·gate_failed) 그대로. 같은 GLB가 이미 후보에 있으면 duplicate_of_offered
 B_DUPLICATE = "duplicate_of_offered"
 
@@ -125,13 +126,19 @@ class NoneGenJob:
         self.thread: threading.Thread | None = None
         self.result: dict | None = None
         self.lock = threading.Lock()
+        # (CP13-3) waiting(앞 작업의 모델 재적재를 기다림) → running(내림·생성) → reloading(모델 다시 올림) → done
+        self.phase = "waiting"
+        self.released = threading.Event()     # 재적재까지 끝남(다음 작업이 이것을 기다린다)
 
     def cancel(self, reason: str = "participant_skipped_wait") -> None:
+        """취소 표시만 하고 곧 돌아온다. 프로세스 끄기(Windows taskkill, 최대 15초)는 백그라운드(CP13-4)."""
         with self.lock:
             if self.cancel_reason is None:
                 self.cancel_reason = reason
             self.cancel_ev.set()
-            _kill(self.proc)
+            proc = self.proc
+        if proc is not None and proc.poll() is None:
+            threading.Thread(target=_kill, args=(proc,), name=f"none-gen-kill-{self.session_id}", daemon=True).start()
 
     def wait(self, timeout: float | None = None) -> bool:
         """(시험용) 끝날 때까지 기다린다. 끝났으면 True."""
@@ -139,6 +146,28 @@ class NoneGenJob:
             return True
         self.thread.join(timeout)
         return not self.thread.is_alive()
+
+
+class InterviewBlocked(RuntimeError):
+    """(CP13-2) 생성 중이거나 가드 모델이 준비되지 않아 면담 요청을 받지 않음(서버는 409 + 이 사유)."""
+
+
+class _InterviewSlot:
+    def __init__(self, svc: "NoneGenService", crisis_ok: bool, creating: bool):
+        self.svc, self.crisis_ok, self.creating = svc, crisis_ok, creating
+
+    def __enter__(self):
+        with self.svc.lock:
+            why = self.svc._refusal_locked(self.creating)
+            if why and not self.crisis_ok:
+                raise InterviewBlocked(why)
+            self.svc.inflight += 1
+        return self
+
+    def __exit__(self, *exc):
+        with self.svc.lock:
+            self.svc.inflight -= 1
+        return False
 
 
 def _kill(proc: subprocess.Popen | None) -> None:
@@ -171,8 +200,15 @@ class NoneGenService:
         self.max_regenerations = max(0, int(g.on_none_max_regenerations))
         self.host = cfg.llm.host.rstrip("/")
         self.lock = threading.Lock()
-        self.active: NoneGenJob | None = None
+        self.active: NoneGenJob | None = None      # 내림 ~ 재적재 완료까지 활성(CP13-3)
         self._closed = False
+        # (CP13-2) 면담 LLM·가드 모델을 쓰는 요청 수(interview_slot). 생성은 이것이 0이고 면담 중 세션이 없을 때만 예약한다
+        self.inflight = 0
+        # 재적재 뒤 면담·가드 모델이 /api/ps에 없으면 False. guard.required면 돌아올 때까지 새 면담을 막고 백그라운드로 다시 올린다
+        self.models_ready = True
+        self.models_problem: str | None = None
+        self._retrying = False
+        self.retry_interval_s = 15.0
 
     # ── 정보 ────────────────────────────────────────────────────────────────
     def available(self) -> tuple[bool, str | None]:
@@ -190,8 +226,12 @@ class NoneGenService:
 
     def info(self) -> dict:
         ok, why = self.available()
+        with self.lock:
+            busy = self.active.session_id if self.active is not None else None
+            ready, problem = self.models_ready, self.models_problem
         return {"onNone": True, **self.setting(), "generatorAvailable": ok, "generatorProblem": why,
-                "assetsDirExists": self.root.is_dir()}
+                "assetsDirExists": self.root.is_dir(),
+                "generatingFor": busy, "modelsReady": ready, "modelsProblem": problem}   # CP13-2: 실험자 화면·health
 
     def prewarm(self) -> None:
         """첫 [맞는 게 없어요]의 규칙 프롬프트 판정이 Kiwi·매퍼 적재(수 초)를 기다리지 않게 미리 불러 둔다."""
@@ -233,7 +273,7 @@ class NoneGenService:
         if other_interviews:
             block(B_INTERVIEW, ",".join(other_interviews))
         with self.lock:
-            if self.active is not None:
+            if self.active is not None and self.active.phase != "reloading":
                 block(B_BUSY, self.active.session_id)
         return out
 
@@ -279,7 +319,25 @@ class NoneGenService:
             time.sleep(0.5)
             loaded = self._loaded()
         rec["loadedAfter"] = loaded
+        # (CP13-1) 내렸다고 볼 수 있는가: 요청이 모두 성공하고 /api/ps를 읽었고 우리 모델이 남지 않음
+        left = sorted(names & set(loaded or []))
+        rec["ok"] = all(x["ok"] for x in rec["models"]) and loaded is not None and not left
+        if not rec["ok"]:
+            rec["problem"] = ("unload_request_failed" if not all(x["ok"] for x in rec["models"]) else
+                              "ps_unreadable" if loaded is None else "still_loaded:" + ",".join(left))
         return rec
+
+    def models_loaded(self) -> tuple[bool, str | None]:
+        """면담·가드 모델이 모두 /api/ps에 올라 있는가(Ollama를 쓰지 않으면 늘 True)."""
+        models = self._ollama_models()
+        if not models:
+            return True, None
+        loaded = self._loaded()
+        if loaded is None:
+            return False, "ps_unreadable"
+        have = set(loaded)
+        miss = [m for _, m, _ in models if m not in have and f"{m}:latest" not in have]
+        return (not miss), ("not_loaded:" + ",".join(miss) if miss else None)
 
     def reload_models(self) -> dict:
         """생성이 끝난 뒤(결과와 상관없이) 내린 모델을 다시 올린다(다음 세션의 첫 질문이 적재를 기다리지 않게)."""
@@ -292,37 +350,115 @@ class NoneGenService:
             except Exception as exc:  # noqa: BLE001
                 item["detail"] = f"{type(exc).__name__}: {exc}"[:200]
             rec["models"].append(item)
+        ok, why = self.models_loaded()
+        req_ok = all(x["ok"] for x in rec["models"])
+        rec.update(ok=ok and req_ok, problem=None if ok and req_ok else (why or "reload_request_failed"))
         return rec
+
+    def _after_reload(self, rec: dict) -> None:
+        """(CP13-2) 재적재 결과로 준비 상태를 세운다. 실패면 백그라운드로 다시 올리기를 되풀이한다."""
+        with self.lock:
+            self.models_ready = bool(rec.get("ok"))
+            self.models_problem = None if self.models_ready else rec.get("problem")
+            start_retry = not self.models_ready and not self._retrying and not self._closed
+            if start_retry:
+                self._retrying = True
+        if not self.models_ready:
+            log.warning("none-gen: 면담·가드 모델을 다시 올리지 못함(%s) — 돌아올 때까지 새 면담을 막고 다시 올림",
+                        self.models_problem)
+        if start_retry:
+            threading.Thread(target=self._retry_reload, name="none-gen-reload-retry", daemon=True).start()
+
+    def _retry_reload(self) -> None:
+        try:
+            while True:
+                with self.lock:
+                    if self.models_ready or self._closed:
+                        return
+                    busy = self.active is not None
+                if not busy:
+                    ok, _ = self.models_loaded()            # 다른 경로(사람이 Ollama를 다시 켬 등)로 돌아왔으면 그대로 회복
+                    rec = {"ok": True, "problem": None} if ok else self.reload_models()
+                    with self.lock:
+                        if self.active is None:
+                            self.models_ready = bool(rec.get("ok"))
+                            self.models_problem = None if self.models_ready else rec.get("problem")
+                        ready = self.models_ready
+                    if ready:
+                        log.info("none-gen: 면담·가드 모델 다시 준비됨")
+                        return
+                time.sleep(self.retry_interval_s)
+        finally:
+            with self.lock:
+                self._retrying = False
+
+    # ── 면담과 생성의 상호 배제(CP13-2) ─────────────────────────────────────────
+    def interview_refusal(self, creating: bool = False) -> str | None:
+        """면담 요청을 지금 받으면 안 되는 이유(실험자 화면에 보일 짧은 문장). None이면 받아도 된다."""
+        with self.lock:
+            return self._refusal_locked(creating)
+
+    def _refusal_locked(self, creating: bool) -> str | None:
+        if self.active is not None:
+            return (f"물체 생성 중이라 면담 모델을 내려 두었습니다(세션 {self.active.session_id}). "
+                    "생성과 모델 다시 올리기가 끝난 뒤 다시 시도해 주세요.")
+        if creating and not self.models_ready and self.cfg.guard.required:
+            return (f"가드 모델이 준비되지 않았습니다({self.models_problem}). 다시 올리는 중입니다 — "
+                    "서버 상태(/api/health)를 보고 잠시 뒤 다시 시도해 주세요.")
+        return None
+
+    def interview_slot(self, crisis_ok: bool = False, creating: bool = False) -> "_InterviewSlot":
+        """면담 LLM·가드 모델을 쓸 수 있는 요청 구간. 생성이 예약돼 있으면 막는다(InterviewBlocked). crisis_ok면 통과 —
+        키워드 위기는 모델 없이 고정 문구만 낸다(CP12). 들어가 있는 동안에는 새 생성을 예약하지 않는다(inflight)."""
+        return _InterviewSlot(self, crisis_ok, creating)
 
     # ── 실행 ────────────────────────────────────────────────────────────────
     def seed_for(self, attempt: int) -> int:
         return self.seed + int(attempt)
 
     def start(self, session_id: str, text: str, key: str, prompt_text: str, on_done, attempt: int = 0,
-              spec: dict | None = None) -> NoneGenJob | None:
-        """백그라운드로 시작. 이미 돌고 있으면 None. on_done(result)은 생성 스레드에서 한 번 불린다."""
+              spec: dict | None = None, other_interviews=None) -> "NoneGenJob | str":
+        """백그라운드로 시작 → NoneGenJob, 못 하면 사유 문자열(B_BUSY·B_INTERVIEW). on_done(result)은 생성 스레드에서 한 번.
+        (CP13-2) 면담 중 세션(other_interviews — 목록 또는 호출 가능)과 들어가 있는 면담 요청(inflight)을 같은 잠금 안에서 보고
+        예약한다. (CP13-3) 앞 작업이 모델을 다시 올리는 중(reloading)이면 예약하고, 새 작업은 그 재적재가 끝난 뒤에 시작한다."""
         with self.lock:
-            if self.active is not None or self._closed:
-                return None
+            prev = self.active
+            if self._closed or (prev is not None and prev.phase != "reloading"):
+                return B_BUSY
+            others = list(other_interviews() if callable(other_interviews) else (other_interviews or []))
+            if others or self.inflight:
+                return B_INTERVIEW
             job = NoneGenJob(session_id, text, key, prompt_text, self.seed_for(attempt), attempt, spec)
             self.active = job
 
         def work():
+            if prev is not None:
+                prev.released.wait(600)                 # 앞 작업의 재적재가 끝날 때까지
+            job.phase = "running"
             try:
                 job.result = self._run(job)
             except Exception as exc:  # noqa: BLE001 — 어떤 예외도 세션을 멈추게 하지 않는다(실패로 기록)
                 job.result = {"status": FAILED, "error": f"{type(exc).__name__}: {exc}"[:300], "endedAt": now_iso()}
-            finally:
-                with self.lock:
-                    if self.active is job:
-                        self.active = None
+            job.phase = "reloading"
             try:
                 on_done(job.result)
             except Exception:  # noqa: BLE001
                 log.exception("none-gen on_done 실패")
-            if job.result.get("llmUnload") and job.result["llmUnload"].get("models"):
-                rl = self.reload_models()
-                log.info("none-gen: 모델 다시 올림 %s", rl)
+            try:
+                if job.result.get("llmUnload") and job.result["llmUnload"].get("models"):
+                    rl = self.reload_models()
+                    job.result["llmReload"] = rl
+                    log.info("none-gen: 모델 다시 올림 %s", rl)
+                    self._after_reload(rl)
+            except Exception:  # noqa: BLE001
+                log.exception("none-gen 재적재 실패")
+                self._after_reload({"ok": False, "problem": "reload_exception"})
+            finally:
+                job.phase = "done"
+                job.released.set()
+                with self.lock:
+                    if self.active is job:
+                        self.active = None
 
         job.thread = threading.Thread(target=work, name=f"none-gen-{session_id}", daemon=True)
         job.thread.start()
@@ -366,6 +502,9 @@ class NoneGenService:
         res["timing"]["unloadS"] = round(time.monotonic() - t0, 2)
         if job.cancel_ev.is_set():
             return finish(CANCELLED, error=job.cancel_reason)
+        u = res["llmUnload"]
+        if u.get("models") and not u.get("ok"):            # (CP13-1) 남은 모델과 GPU를 나눠 쓰지 않는다
+            return finish(BLOCKED, blockReason=B_UNLOAD, blockDetail=u.get("problem"))
         logf = open(run_dir / "generator.log", "wb")
         try:
             flags = getattr(subprocess, "CREATE_NO_WINDOW", 0) if os.name == "nt" else 0
