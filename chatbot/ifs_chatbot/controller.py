@@ -29,6 +29,7 @@ from .drift import PARAMS as DRIFT_PARAMS
 from .drift import DriftAssessor, participant_turns, summarize
 from .extract import Extractor, find_modality, image_signal, parse_body_relation
 from .form_assets import FormAssetStore
+from .none_gen import NoneGenService
 from .korean import Analyzer, normalize
 from .lexicon import Lexicon
 from .candidates import load_table as load_candidate_table
@@ -212,6 +213,14 @@ class Runtime:
             if not self.form_assets.root.is_dir():
                 self.warnings.append("[gen3d] 자산 폴더가 없어 생성 형태 후보를 내지 않습니다(절차 메시 후보만): "
                                      f"assets_dir = {cfg.gen3d.assets_dir}")
+        # G73: [맞는 게 없어요] 뒤 형태 생성([gen3d] on_none, 후보 단계를 켰을 때만). 꺼져 있으면 None — none은 예전처럼 바로 조절
+        self.none_gen: NoneGenService | None = None
+        if cfg.gen3d.on_none and cfg.selection.enabled:
+            root = Path(cfg.gen3d.assets_dir)
+            self.none_gen = NoneGenService(cfg, root if root.is_absolute() else (CHATBOT_DIR / root).resolve())
+            ok, why = self.none_gen.available()
+            if not ok:
+                self.warnings.append(f"[gen3d] on_none: {why} — [맞는 게 없어요] 뒤 생성을 하지 못하고 기존 경로로 갑니다(사유 기록).")
 
     def header(self, condition: str) -> dict:
         h = {
@@ -264,6 +273,7 @@ class Runtime:
                           "tableVersion": self.candidate_table["tableVersion"]},
             "preview": self.preview.info(),
             **({"gen3d": self.form_assets.info()} if self.form_assets is not None else {}),   # G62: 켰을 때만(꺼지면 출력 그대로)
+            **({"gen3dOnNone": self.none_gen.info()} if self.none_gen is not None else {}),   # G73: 켰을 때만
             "warnings": self.warnings,
         }
 
@@ -502,6 +512,7 @@ class Session:
             delete_selection_dir(self.cfg.log_dir, self.id)
             if self.selection_flow is not None:
                 self.selection_flow.persist = False
+                self.selection_flow.cancel_generation("withdrawn")     # G73: 돌고 있는 생성이 있으면 끈다
             self.selection_flow = None
             prereport_mod.delete_record(self.cfg.log_dir, self.id)
             self.log.data.update(turns=[], alerts=[], capture={}, confirmedText=None, confirmation=None,

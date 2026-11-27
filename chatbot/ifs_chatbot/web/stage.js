@@ -494,7 +494,9 @@
     const parts = [...banners()];
     WebGL.slot = null;
     if (v.preview && v.preview.mode !== "webgl" && WebGL.host) WebGL.closeFrame();   // 내려간 뒤에는 iframe을 닫는다
+    if (v.stage !== "generating" && S.pollTimer) { clearTimeout(S.pollTimer); S.pollTimer = null; }
     if (v.stage === "selecting") parts.push(...drawSelecting(v));
+    else if (v.stage === "generating") parts.push(...drawGenerating(v));   // WebGL은 내려 두기만(parked) — 돌아오면 다시 씀
     else if (v.stage === "adjusting") parts.push(...drawAdjusting(v));
     else if (v.stage === "premeasure") { WebGL.teardown(); drawPremeasure(box, parts); progress(); return; }
     else if (v.stage === "done") { WebGL.teardown(); parts.push(el("p", { class: "msg bot closing stage-top done-card", tabindex: "-1" }, v.donePhrase || "")); }
@@ -518,13 +520,43 @@
     call("POST", `/api/sessions/${S.sid}/selection`, { candidateId: id }, btn);
   }
 
+  // G73: [맞는 게 없어요] 뒤 생성 대기. 서버가 끝나면(성공 → 다시 후보 화면, 그 밖 → 조절 화면) 단계를 바꾸므로 GET으로 지켜본다.
+  // 다시 그리기는 단계가 바뀔 때만(대기 중에는 같은 화면을 그대로 둔다)
+  const POLL_MS = 1500;
+  function pollGenerating() {
+    if (S.pollTimer) return;
+    S.pollTimer = setTimeout(async () => {
+      S.pollTimer = null;
+      if (!S.view || S.view.stage !== "generating" || S.busy) { if (S.view && S.view.stage === "generating") pollGenerating(); return; }
+      try {
+        const nv = await api("GET", `/api/sessions/${S.sid}/selection`);
+        if (S.view && S.view.stage === "generating" && !S.busy) {
+          S.view = nv;
+          if (nv.stage !== "generating") draw(); else pollGenerating();
+        }
+      } catch (e) { pollGenerating(); }
+    }, POLL_MS);
+  }
+
+  function drawGenerating(v) {
+    pollGenerating();
+    return [intro(phrase("none_gen_waiting")),
+            el("div", { class: "gen-wait", role: "status", "aria-live": "polite" }, el("span", { class: "gen-spinner", "aria-hidden": "true" })),
+            el("div", { class: "buttons stage-actions" },
+              el("button", { type: "button", class: "pick none-gen-skip", "data-fkey": "none-gen-skip",
+                             onclick: (e) => call("POST", `/api/sessions/${S.sid}/selection/none-gen/skip`, undefined, e.currentTarget) },
+                phrase("none_gen_skip_button")))];
+  }
+
   function drawSelecting(v) {
-    const parts = [intro(phrase("figure_intro")), el("p", { class: "msg bot" }, phrase("candidates_intro"))];
+    // G73: [맞는 게 없어요] 뒤 만든 물체를 더했으면 안내 글을 바꾸고 그 칸(맨 앞)을 테두리로 구별한다
+    const ready = !!(v.afterNone && v.afterNone.status === "ok" && v.candidates.some((c) => c.afterNone));
+    const parts = [intro(phrase("figure_intro")), el("p", { class: "msg bot" }, phrase(ready ? "none_gen_ready" : "candidates_intro"))];
     const grid = el("ul", { class: `cand-grid n${v.candidates.length}` });
     v.candidates.forEach((c, i) => {
       // G62: [gen3d] default_form_source = generated(또는 auto가 사물 낱말로 판정, G62-i)면 기본 후보(c.default)가 맨 앞에 오고 테두리로 미리 선택해 보인다.
       // 장면에는 참여자가 [고르기]로 확정해야 쓴다(새 문구 없음). 꺼져 있으면 c.default가 없어 지금과 같다
-      grid.append(el("li", { class: c.default ? "cand is-default" : "cand", "data-id": c.id },
+      grid.append(el("li", { class: `cand${c.default ? " is-default" : ""}${c.afterNone ? " is-after-none" : ""}`, "data-id": c.id },
         Preview.node(c.id, c.summary, c.overrides, c.asset),
         el("button", { type: "button", class: "pick", "aria-label": `${phrase("choose_button")} ${i + 1}`, "data-fkey": `cand:${c.id}`,
                        onclick: (e) => choose(c.id, e.currentTarget) }, phrase("choose_button"))));
@@ -698,7 +730,12 @@
       }
       panel.append(row);
     }
-    return [intro(phrase("figure_intro")), el("p", { class: "msg bot" }, phrase("adjust_intro")),
+    // G73: 만들지 못함·실패·시간 초과 뒤 none 경로로 왔으면 짧은 안내 한 줄(사유는 연구자 보기). 참여자가 기다리지 않고 넘어갔으면 없음
+    const an = v.afterNone;
+    const genNote = an && v.selection && v.selection.none && ["blocked", "failed", "timeout"].includes(an.status)
+      ? [el("p", { class: "msg bot none-gen-note" }, phrase("none_gen_unavailable")),
+         el("p", { class: "warning researcher-only" }, `생성 ${an.status}: ${an.blockReason || an.error || ""}`)] : [];
+    return [intro(phrase("figure_intro")), ...genNote, el("p", { class: "msg bot" }, phrase("adjust_intro")),
             el("div", { class: "adjust" },
               el("div", { class: "adjust-preview" }, Preview.node("current", v.current && v.current.summary, v.current && v.current.overrides,
                                                                        v.currentAsset || null)),
@@ -788,6 +825,9 @@
           ["선택", v.selection ? (v.selection.skipped ? "구별되는 후보가 하나뿐 → 선택 단계 건너뜀(G34)"
                                  : v.selection.none ? "맞는 것이 없다 → 0번으로 진행"
                                  : `${v.selection.selectedCandidateId} (화면 ${v.selection.displayPosition + 1}번째)`) : null],
+          ["맞는 게 없어요 뒤 생성(G73)", v.afterNone ? `${v.afterNone.status}${v.afterNone.blockReason ? ` · ${v.afterNone.blockReason}` : ""}`
+            + `${v.afterNone.error ? ` · ${v.afterNone.error}` : ""}${v.afterNone.seconds != null ? ` · ${v.afterNone.seconds}초` : ""}`
+            + `${v.afterNone.participantSkippedWait ? " · 기다리지 않고 넘어감" : ""}` : null],
           ["조절 횟수", v.adjustCounts ? JSON.stringify(v.adjustCounts) : null],
           ["색 바꿈", v.colorChanged === undefined ? null : (v.colorChanged ? "예" : "아니오")],
           ["finalOverrides", v.finalOverrides ? JSON.stringify(v.finalOverrides) : null],

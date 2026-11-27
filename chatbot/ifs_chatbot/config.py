@@ -150,6 +150,21 @@ class Gen3DConfig:
     # procedural처럼, 그 밖의 사물 낱말이 하나라도 있으면 generated처럼(판정 근거는 generation.defaultFormRule·defaultFormBasis).
     # 기본이어도 참여자가 확정해야 장면에 쓴다(selection 0.3 defaultFormSource·selection.acceptedDefault)
     default_form_source: str = "procedural"
+    # G73: 참여자가 후보 화면에서 [맞는 게 없어요]를 누르면 확정 텍스트로 형태를 하나 만들어 새 후보로 보여 준다(none_gen.py).
+    # 기본 꺼짐 — 끄면 none은 지금처럼 바로 0번 후보로 조절에 들어간다. enabled(G62 생성 기본 후보)와 따로 켠다(experiment.toml만 켬).
+    # 프롬프트는 규칙만(tools/gen3d/prompts.shape_prompt). 형태를 말하지 않았거나 사람·동물·메시로 그릴 수 없는 범주면 만들지 않는다.
+    # 만들기 전에 Ollama 모델(면담·가드)을 내려 GPU를 비우고, 끝나면(성공·실패·시간 초과·취소) 다시 올린다.
+    on_none: bool = False
+    on_none_timeout_s: float = 180.0            # 대기 한도(none을 누른 때부터, 모델 내리기·적재 포함). 넘으면 프로세스를 끄고 기존 none 경로
+    # 생성기 실행: <on_none_python> <on_none_script> --run <이름> --pipeline <on_none_pipeline> --seed <on_none_seed>
+    # (tools/gen3d/generate.py와 같은 인자, 출력은 assets_dir 아래 — 저장소 밖). 상대 경로는 chatbot/ 기준. 모델을 바꾸려면 이 셋을 바꾼다
+    on_none_python: str = "../../gen3d-venv/Scripts/python.exe"
+    on_none_script: str = ""                    # 비우면 <repo>/tools/gen3d/generate.py
+    on_none_pipeline: str = "sdxl-triposg"
+    on_none_seed: int = 0
+    # 만든 후보도 맞지 않다고 [맞는 게 없어요]를 다시 누르면 같은 프롬프트로 seed = on_none_seed + n(n = 1…)으로 이 횟수만큼 더 만든다.
+    # 0이면 다시 만들지 않는다(두 번째 none은 기존 경로). 생성이 막히거나 실패하면 그 자리에서 기존 경로로 가므로 더 만들지 않는다
+    on_none_max_regenerations: int = 1
 
 
 @dataclass(frozen=True)

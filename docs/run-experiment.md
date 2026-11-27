@@ -18,7 +18,7 @@
 | 8 | 헤드셋 벗고 짧은 면담 | PC 브라우저 | `/?view=postinterview&session=<세션ID>` | **손으로 이어야 함**: 주소를 열고 조건을 고름. 서버가 꺼졌으면 같은 설정으로 다시 띄우면 됨 |
 | 9 | 분석 | PC | `python -m ifs_chatbot.eval.placement … --selection-dir …` | 이어짐: 세션 ID(= spec 파일 이름)로 사전 문항·사후 면담을 헤드셋 기록에 붙임 |
 
-생성 메시 후보(G62)는 이 흐름에 **들어가 있지 않습니다**(6절).
+생성 메시를 **기본 후보**로 두는 G62 경로는 이 흐름에 들어가 있지 않습니다(6절). 대신 참여자가 후보 화면에서 [맞는 게 없어요]를 누르면 그 자리에서 형태를 하나 만들어 새 후보로 보여 줍니다(G73, 6절).
 
 ## 1. 준비 (처음 한 번)
 
@@ -42,7 +42,7 @@ cd <repo>\chatbot
 .venv\Scripts\python.exe -m ifs_chatbot.server --config experiment
 ```
 
-1. 서버 창의 경고를 읽습니다: 다리 질문 문구 초안, `[selection] … 문구 29개가 초안`. 가드 모델이 없다는 오류로 멈추면 Ollama를 켭니다.
+1. 서버 창의 경고를 읽습니다: 다리 질문 문구 초안, `[selection] … 문구 36개가 초안`(G73 문구 4개 포함). 가드 모델이 없다는 오류로 멈추면 Ollama를 켭니다.
 2. 브라우저에서 `http://127.0.0.1:8000`(처음은 연구자 보기). 이 설정은 면담 조건을 고정합니다(`[interview] lock_condition = true`): 시작 화면에 조건 고르기가 없고 "면담: 조건 2 · AI 챗봇 면담 (설정으로 고정)" 한 줄만 보입니다. 다른 조건으로 세션을 만들라는 요청은 서버가 거절합니다(409). 그 줄을 확인하고 세션 ID를 적어 [세션 만들기] → 참여자에게는 `http://127.0.0.1:8000/?sid=<세션ID>&view=participant`로 넘깁니다. 화면 조작과 각 단계의 모습은 `docs/internal-trial-guide.md` 2절 3–8번과 같습니다(그 문서의 `--config v4 --backend offline --condition static`만 이 명령으로 바뀝니다).
 3. 면담 → 확정 → [다음 단계로] → 후보 고르기 → 조절 → 사전 측정 [제출]까지 한 화면에서 이어집니다. 생기는 파일은 `docs/internal-trial-guide.md` 3절의 표와 같습니다(`chatbot/logs/`, git 밖).
 
@@ -108,9 +108,16 @@ $env:IFS_LIVE=1; .venv\Scripts\python.exe -m pytest tests\test_experiment_config
 | 미리보기가 정지 그림·글 요약으로 내려감 | 1절 3번 빌드. 내려간 이유는 연구자 화면 "미리보기"와 `selection.json`의 `preview` |
 | 그 밖 | `docs/internal-trial-guide.md` 7절(알려진 한계), `unity/README.md` 「문제 해결」 |
 
-## 6. 생성 메시 후보(G62)는 왜 꺼져 있나
+## 6. 생성 메시: [맞는 게 없어요] 뒤에만 (G73)
 
-`experiment.toml`은 `[gen3d] enabled = false`입니다. 챗봇은 생성 모델을 부르지 않고, 확정 뒤 [다음 단계로]를 누르는 순간에 자산 폴더를 **한 번만** 찾습니다. 그 전에 누군가 확정 텍스트를 생성 도구 입력에 옮기고, 면담 모델을 내려 GPU 메모리를 비우고, `tools/gen3d/generate.py`를 별도 환경에서 돌려야 합니다(모델 적재 포함 약 2분, 생성만 약 30초). 이것을 자동으로 잇는 장치와 대기 화면이 없어 실제 세션에서는 손으로 맞추기 어렵습니다. 켜는 방법과 검증 결과는 `chatbot/config/v4-gen3d.toml`, `docs/gen3d-feasibility.md`, `docs/validation/run-g64-e2e/README.md` 「생성 메시 경로」.
+`experiment.toml`은 `[gen3d] enabled = false`(생성 메시를 기본 후보로 두지 않음, G67-b)이고 `on_none = true`입니다.
+
+- 참여자가 후보 화면에서 처음 [맞는 게 없어요]를 누르면 서버가 확정 텍스트로 규칙 프롬프트를 만듭니다(`tools/gen3d/prompts.py`, 한→영 고정 사전, LLM 없음). 형태를 말하지 않았거나 사람·동물·안개처럼 메시로 만들지 않는 범주면 만들지 않고 "물체를 더 만들지 못했어요. 이어서 진행할게요."를 보인 뒤 예전처럼 조절로 갑니다.
+- 만들 수 있으면 대기 화면(「말씀하신 내용으로 모양을 하나 더 만들고 있어요. …」)이 나오고, 서버가 Ollama의 면담·가드 모델을 내린 뒤 저장소 밖 `gen3d-venv`로 `tools/gen3d/generate.py --pipeline sdxl-triposg`를 돌립니다. 끝나면 만든 물체가 후보 맨 앞(점선 테두리)에 더해지고 다시 고릅니다. 이 후보도 아니라고 하면 같은 프롬프트·seed + 1로 한 번 더 만들고, 그다음 [맞는 게 없어요]는 예전 경로입니다. 끝나면 내렸던 모델을 다시 올립니다.
+- 참여자는 [기다리지 않고 넘어갈게요]로 언제든 건너뛸 수 있습니다. 한도(`on_none_timeout_s`, 180초)를 넘거나 실패하면 생성을 끄고 예전 경로로 갑니다.
+- 만든 후보를 고르면 GLB가 `logs/selection/<세션ID>/form-asset-*.glb`로 복사되고 `selection.json`(0.3)의 `form.asset`에 적혀 헤드셋 러너가 그 메시를 씁니다(G62 경로 그대로). 크기·색·재질은 매핑과 참여자 조절 값입니다.
+- 기록: `selection.json`의 `generation.afterNone`(none 시각, 프롬프트와 낱말별 원문 위치, 모델 내림, 시작·끝·초, 결과와 사유, 모델·리비전·가중치 해시·seed, 골랐는지), `selection.afterNoneGeneration`. 생성기 입력·산출물·로그는 `gen3d-out/none-<세션ID>-…/`(저장소 밖).
+- 미리보기가 글 요약(none)으로 내려간 세션에서는 만들지 않습니다(보일 수 없음). 같은 서버에서 다른 세션이 면담 중이면 GPU를 비울 수 없어 만들지 않습니다(`interview_active`).
 
 ## 7. 아직 사람이 정할 것 (이 문서가 켜지 않은 것)
 

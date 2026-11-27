@@ -47,7 +47,7 @@ function updateProgress() {
   const total = v.selection ? 5 : 2;
   const sel = window.ifsStage ? window.ifsStage.current() : {};
   let pos, done;
-  if (sel.stage === "selecting") { pos = 3; done = 2; }
+  if (sel.stage === "selecting" || sel.stage === "generating") { pos = 3; done = 2; }   // G73: 생성 대기는 후보 단계 안
   else if (sel.stage === "adjusting") { pos = 4; done = 3; }
   else if (sel.stage === "premeasure") { pos = 5; done = 4; }
   else if (sel.stage === "done") { pos = 5; done = 5; }

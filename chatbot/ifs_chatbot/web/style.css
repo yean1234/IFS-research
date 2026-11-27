@@ -247,6 +247,12 @@ th { color: var(--ink-soft); font-weight: 600; }
 .pick:hover:not(:disabled):not([aria-disabled="true"]) { background: var(--accent-soft); }
 .cand.chosen { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
 .cand.is-default { border-color: var(--accent); }   /* G62: 기본(미리 선택) 후보 — 확정은 [고르기] */
+.cand.is-after-none { border: 2px dashed var(--accent); }   /* G73: [맞는 게 없어요] 뒤 만든 물체(맨 앞) — 미리 선택하지 않음 */
+.gen-wait { display: flex; justify-content: center; padding: var(--space-5) 0; }
+.gen-spinner { width: 40px; height: 40px; border: 4px solid var(--accent); border-right-color: transparent; border-radius: 50%;
+  animation: ifs-spin 1s linear infinite; }
+@media (prefers-reduced-motion: reduce) { .gen-spinner { animation-duration: 3s; } }
+.none-gen-skip { max-width: 360px; }
 .cand.chosen .pick, .pick[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); }
 .stage.choosing .cand:not(.chosen) { opacity: .5; }
 .stage.choosing .none-fit-row .none-fit:not([aria-pressed="true"]) { opacity: .5; }
