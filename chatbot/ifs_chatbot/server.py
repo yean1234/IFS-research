@@ -10,15 +10,17 @@
 from __future__ import annotations
 
 import argparse
+import html
 import logging
 import os
+import re
 import sys
 import threading
 from contextlib import asynccontextmanager
 from typing import Any
 
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import FileResponse, JSONResponse, Response
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
@@ -32,6 +34,22 @@ from .form_assets import R_PREVIEW_FAILED
 from .preview import PreviewAssetError
 
 log = logging.getLogger("ifs_chatbot.server")
+
+
+_CONDITIONS_FIELDSET = re.compile(r'<fieldset class="conditions">.*?</fieldset>', re.S)
+
+
+def locked_index_html(rt: Runtime) -> str:
+    """면담 조건 고정 시 시작 화면: 조건 선택 묶음을 설정 조건 한 줄로 바꾼다(문구는 프로토콜의 조건 이름 그대로)."""
+    page = (WEB_DIR / "index.html").read_text(encoding="utf-8")
+    cond = rt.cfg.interview.condition
+    label = rt.protocol.condition(cond)["label"]
+    line = (f'<p id="condition-locked" class="hint" data-condition="{html.escape(cond)}">'
+            f"면담: {html.escape(label)} (설정으로 고정)</p>")
+    page, n = _CONDITIONS_FIELDSET.subn(line, page, count=1)
+    if n != 1:
+        raise RuntimeError("index.html에서 조건 선택 묶음을 찾지 못했습니다(lock_condition).")
+    return page
 
 
 class CreateSession(BaseModel):
@@ -369,7 +387,10 @@ def create_app(cfg: Config | None = None, runtime: Runtime | None = None, warmup
 
         @app.get("/")
         def index():
-            return FileResponse(WEB_DIR / "index.html")
+            if not rt.cfg.interview.lock_condition:
+                return FileResponse(WEB_DIR / "index.html")
+            # [interview] lock_condition: 조건 선택(라디오)을 빼고 설정의 조건을 한 줄로만 보인다. 다른 조건은 서버도 받지 않는다
+            return HTMLResponse(locked_index_html(rt))
 
         @app.get("/prereport")
         def prereport_page():

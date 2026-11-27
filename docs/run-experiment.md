@@ -2,7 +2,7 @@
 
 작성 2026-11-27. 기준은 `docs/design-backbone.md` 2절(진행 순서)과 3절(본 실험 권고 설정)입니다. 이 문서는 순서와 명령만 적고, 자세한 설명은 이미 있는 문서를 가리킵니다.
 
-> **사람을 모집해 자료를 받기 전에 학교 IRB 판정이 필요합니다**(`docs/no-irb-direction.md`, 뼈대 7절). 화면·헤드셋의 고정 문구는 모두 초안(`status: draft`)입니다. 판정 전에는 연구팀 내부 점검(`docs/internal-trial-guide.md` 0절의 규칙)으로만 돌립니다.
+> **이 실험은 지도교수의 결정으로 IRB 심의 없이 참여자를 모집해 진행합니다(결정 G68).** 그래서 세션마다 `docs/participant-protection.md`의 대상 확인·동의서·멈춤과 위기 대응·자료 다루기·디브리핑을 지킵니다. 화면·헤드셋의 고정 문구는 모두 초안(`status: draft`)입니다.
 
 ## 0. 한눈에 보기
 
@@ -43,7 +43,7 @@ cd <repo>\chatbot
 ```
 
 1. 서버 창의 경고를 읽습니다: 다리 질문 문구 초안, `[selection] … 문구 29개가 초안`. 가드 모델이 없다는 오류로 멈추면 Ollama를 켭니다.
-2. 브라우저에서 `http://127.0.0.1:8000`(처음은 연구자 보기). 조건이 "조건 2 · 챗봇"인지 보고 세션 ID를 적어 [세션 만들기] → 참여자에게는 `http://127.0.0.1:8000/?sid=<세션ID>&view=participant`로 넘깁니다. 화면 조작과 각 단계의 모습은 `docs/internal-trial-guide.md` 2절 3–8번과 같습니다(그 문서의 `--config v4 --backend offline --condition static`만 이 명령으로 바뀝니다).
+2. 브라우저에서 `http://127.0.0.1:8000`(처음은 연구자 보기). 이 설정은 면담 조건을 고정합니다(`[interview] lock_condition = true`): 시작 화면에 조건 고르기가 없고 "면담: 조건 2 · AI 챗봇 면담 (설정으로 고정)" 한 줄만 보입니다. 다른 조건으로 세션을 만들라는 요청은 서버가 거절합니다(409). 그 줄을 확인하고 세션 ID를 적어 [세션 만들기] → 참여자에게는 `http://127.0.0.1:8000/?sid=<세션ID>&view=participant`로 넘깁니다. 화면 조작과 각 단계의 모습은 `docs/internal-trial-guide.md` 2절 3–8번과 같습니다(그 문서의 `--config v4 --backend offline --condition static`만 이 명령으로 바뀝니다).
 3. 면담 → 확정 → [다음 단계로] → 후보 고르기 → 조절 → 사전 측정 [제출]까지 한 화면에서 이어집니다. 생기는 파일은 `docs/internal-trial-guide.md` 3절의 표와 같습니다(`chatbot/logs/`, git 밖).
 
 ### 2.2 헤드셋 (Unity 러너)

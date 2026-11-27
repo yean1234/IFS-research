@@ -106,7 +106,12 @@ async function loadHealth() {
     if (!b.ok) badge.classList.add("bad");
     const warn = $("#setup-warning");
     const msgs = [...(h.warnings || [])];
-    if (!b.ok) {
+    if (h.conditionLocked) {
+      // [interview] lock_condition: 서버가 조건 선택을 뺀 화면을 준다. 혹시 남아 있으면 숨기고, 다른 조건으로 넘어가지 않는다
+      const fs = document.querySelector("fieldset.conditions");
+      if (fs) fs.hidden = true;
+      if (!b.ok && h.defaultCondition === "chatbot") msgs.push("LLM을 쓸 수 없어 챗봇 면담을 시작할 수 없습니다(면담 조건이 설정으로 고정됨).");
+    } else if (!b.ok) {
       document.querySelector('input[value="chatbot"]').disabled = true;
       document.querySelector('input[value="static"]').checked = true;
     }
@@ -114,6 +119,7 @@ async function loadHealth() {
       warn.textContent = msgs.join(" / ");
       warn.hidden = false;
     }
+    if (h.conditionLocked) return;
     const def = h.defaultCondition;
     const radio = document.querySelector(`input[name="condition"][value="${def}"]`);
     if (radio && !radio.disabled) radio.checked = true;
@@ -123,7 +129,9 @@ async function loadHealth() {
 }
 
 async function createSession() {
-  const condition = document.querySelector('input[name="condition"]:checked').value;
+  // 조건이 고정이면 보내지 않는다(서버가 설정 조건으로 만든다)
+  const picked = document.querySelector('input[name="condition"]:checked');
+  const condition = state.health && state.health.conditionLocked ? undefined : (picked ? picked.value : undefined);
   const sessionId = $("#session-id").value.trim() || undefined;
   try {
     setBusy(true);
@@ -322,7 +330,7 @@ function renderProgress(r) {
   t.replaceChildren(
     el("h3", {}, "세션"),
     kv([
-      ["세션 ID", v.sessionId], ["조건", v.condition.label], ["상태", `${v.state} (대기: ${v.awaiting})`],
+      ["세션 ID", v.sessionId], ["조건", h.conditionLocked ? `${v.condition.label} (설정으로 고정)` : v.condition.label], ["상태", `${v.state} (대기: ${v.awaiting})`],
       ["IFS 단계", v.stageInfo ? `${v.stageInfo.ifs} — ${v.stageInfo.purposeKo}` : null],
       ["진행", `단계 ${v.progress.step + 1}/${v.progress.steps} · LLM 질문 ${v.progress.llmTurns}회`],
     ]),
