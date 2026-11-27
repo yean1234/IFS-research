@@ -621,6 +621,8 @@ scaleA 0.7-scaleA·기본 파일 0.7(2026-11-27 G65·G66, D10 가독성, 모두 
 - **묶음**: 실험자 화면 Setup의 체크 「헤드셋 UI 개선 묶음(G63)」, 코드 `config.ApplyUiBundle()`, 자동 시행 `-uiBundle true`. 위 여섯 개를 켜고 `hidePanelInDistancePhases`는 켜지 않습니다.
 - **낱개**: Inspector(`PlacementRunner` ▸ Config), 자동 시행 `-uiComfortWrap true` 등. 낱개 인자가 `-uiBundle`을 덮어씁니다. 판 숨김은 Setup의 따로 있는 체크 또는 `-hidePanelInDistancePhases true -hidePanelReadSeconds 8`.
 
+**본 실험 권고 설정 묶음(2026-11-27, 설계 뼈대 3절 · G59-8 + G63)**: Setup 맨 위의 「본 실험 권고 설정 켜기」 단추, 코드 `config.ApplyExperimentPreset()`, 자동 시행 `-experimentPreset true`. 공간 B(`neutral`) + `placementAssist`, `practiceInAllConditions`, `checkBeforeStopDistance`, `hideObjectDuringItems`, UI 묶음 (1)–(6), `stopMode loop`(G60-4), `eyeHeightMode relative`(G60-3 — 헤드셋에서는 H 보정을 통과해야 시작, 자동 시행·데스크톱은 `desktop_fixed`)를 켜고, 단추·자동 시행은 문구 파일도 scaleA(`PlacementConfig.ExperimentTaskTextFile`)로 고릅니다(자동 시행에서 `-taskTextFile`을 주면 그것). `hidePanelInDistancePhases`·조건은 건드리지 않습니다. 기본값은 그대로입니다. 테스트 `PlacementExperimentPresetTests`(4개). 실행 순서는 `docs/run-experiment.md`.
+
 남은 것: 반복 멈춤에서 멈춘 동안의 판(지시문 5줄 + 조작 안내 2줄 = 7줄)은 37.5°입니다. 쪽을 넘길 입력이 없어 나누지 못했습니다(20자일 때 40.9°). 평정 문항 판은 나누지 않습니다. scaleA 18문항 가운데 묶음을 켜도 35°를 넘는 판이 8개 남습니다(기준점 뜻이 3줄인 문항 35.9–36.3°, P1 41.0°). 묶음 때문에 나빠진 문항은 없습니다(A7 38.0 → 36.3°, S5·S6·S8·G13 두 문항 36.3 → 34.5°). 문항 판 폭은 40.6–42.3° → 37.6–39.5°입니다. 햅틱 세기·광선 색·판 색은 조사 문서의 제안값이고 헤드셋에서 확인하지 않았습니다. `_EMISSION` 변형이 빌드에서 빠지면 어두운 판은 검게 보입니다(글 대비는 커짐). 전후 캡처: `docs/validation/ui-g63/`(`PlacementUiCapture.CaptureG63Batch`). 테스트: `PlacementUiG63Tests`(dotnet·Unity 15개), `UnityOnly/PlacementUiG63PanelTests`(6개). 2026-11-27 dotnet 563개, Unity 배치모드 EditMode 643개 모두 통과.
 
 ### 한계와 사람이 할 일

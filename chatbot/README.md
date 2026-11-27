@@ -24,6 +24,7 @@ ollama pull hf.co/mradermacher/kanana-safeguard-8b-GGUF:Q4_K_M   # 안전 분류
 | LLM 없이 흐름만 보기 | `python -m ifs_chatbot.server --backend offline` |
 | 조건 1(정적 프롬프트) | 웹 화면에서 고르거나 `--condition static` |
 | 연구 파일럿 설정 | `python -m ifs_chatbot.server --config pilot` (gemma4:31b, 가드 필수) |
+| 본 실험(v4 흐름 + 다리 질문 + 설계 뼈대 3절 권고값) | `python -m ifs_chatbot.server --config experiment` — 세션 전체 순서는 `docs/run-experiment.md` |
 | 다른 모델로 | `--model qwen3.5:9b` |
 | 위기 안내에 연락처 넣기 | `--researcher-contact "연구자 OOO 010-…"` 또는 config의 `researcher_contact` |
 | 테스트 | `python -m pytest` (오프라인), `$env:IFS_LIVE=1; python -m pytest -m live` (로컬 모델) |

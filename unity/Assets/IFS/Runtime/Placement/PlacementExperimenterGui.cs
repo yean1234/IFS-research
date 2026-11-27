@@ -210,6 +210,15 @@ namespace IFS.SceneSpec.Placement
                     cfg.replayPath = GUILayout.TextField(cfg.replayPath ?? "");
                 }
             }
+            // 설계 뼈대 3절 본 실험 권고 설정(G59-8 + G63 묶음)을 한 번에. 아래 낱개 체크로 다시 바꿀 수 있다
+            bool presetOn = cfg.ExperimentPresetOn && SameTaskText(runner.TaskTextDisplayName, PlacementConfig.ExperimentTaskTextFile);
+            if (GUILayout.Button((presetOn ? "● " : "") + "본 실험 권고 설정 켜기(설계 뼈대 3절: 공간 B + 놓기 도움, 두 조건 연습, 자리 문항 → 멈춤 거리, 평정 중 물체 숨김, UI 묶음 G63, 반복 멈춤, 눈높이 기준 배치, 문구 scaleA)",
+                    _button, GUILayout.ExpandWidth(true), GUILayout.Height(30)))
+            {
+                cfg.ApplyExperimentPreset();
+                runner.SelectTaskText(PlacementConfig.ExperimentTaskTextFile);
+                runner.RefreshSpace();
+            }
             GUILayout.Label("배경 공간(G52 — 후보 B = neutral + 놓기 도움, E = space + 놓기 도움, F = nature + 놓기 도움)", _wrap);
             GUILayout.BeginHorizontal();
             foreach (var env in PlacementConfig.Environments)

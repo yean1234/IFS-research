@@ -114,7 +114,7 @@ namespace IFS.SceneSpec.EditorTools
                 var cfg = ConfigFromArgs(args);
                 int participant = int.Parse(Value(args, "-participant") ?? "1", CultureInfo.InvariantCulture);
                 double dt = double.Parse(Value(args, "-dt") ?? "0.02", CultureInfo.InvariantCulture);
-                string dir = RunAutoTrial(spec, root, participant, cfg, dt, null, Value(args, "-taskTextFile"), Value(args, "-selectionPath"));
+                string dir = RunAutoTrial(spec, root, participant, cfg, dt, null, TaskTextFileFromArgs(args), Value(args, "-selectionPath"));
                 Debug.Log($"[IFS] 배치 실험 자동 시행 완료({cfg.condition}/{cfg.EffectiveControlMode}): {dir}");
                 exit = 0;
             }
@@ -129,6 +129,8 @@ namespace IFS.SceneSpec.EditorTools
         {
             var cfg = new PlacementConfig();
             string v;
+            // 설계 뼈대 3절 권고 설정을 먼저 켜고, 뒤의 낱개 인자가 덮어쓴다(-uiBundle과 같은 규칙). 문구 파일은 ExperimentTaskTextFor
+            if ((v = Value(args, "-experimentPreset")) != null && bool.Parse(v)) cfg.ApplyExperimentPreset();
             if ((v = Value(args, "-condition")) != null) cfg.condition = v;
             if ((v = Value(args, "-controlMode")) != null) cfg.controlMode = v;
             if ((v = Value(args, "-replayPath")) != null) cfg.replayPath = Path.GetFullPath(v);
@@ -161,6 +163,15 @@ namespace IFS.SceneSpec.EditorTools
             if ((v = Value(args, "-hidePanelReadSeconds")) != null) cfg.hidePanelReadSeconds = double.Parse(v, CultureInfo.InvariantCulture);
             if ((v = Value(args, "-participantRatesWithController")) != null) cfg.participantRatesWithController = bool.Parse(v);
             return cfg;
+        }
+
+        /// <summary>자동 시행의 문구 파일: -taskTextFile이 있으면 그것, 없고 -experimentPreset true면 권고 설정의 scaleA(G59-8), 아니면 null(기본 파일).</summary>
+        public static string TaskTextFileFromArgs(string[] args)
+        {
+            string t = Value(args, "-taskTextFile");
+            if (t != null) return t;
+            string p = Value(args, "-experimentPreset");
+            return p != null && bool.Parse(p) ? PlacementConfig.ExperimentTaskTextFile : null;
         }
 
         /// <summary>새 빈 씬에서 spec 하나로 intro → done을 사람 없이 돈다. 기록 폴더 경로를 돌려준다(실패하면 예외).

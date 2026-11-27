@@ -1,0 +1,96 @@
+# 본 실험 단일 설정: v4 흐름(면담 → 확정 → 추출 → 후보 → 조절 → 사전 측정 → 사후 면담 기록) + D9 다리 질문(프로토콜 1.5)
+#   + 설계 뼈대 3절 권고값(docs/design-backbone.md, 결정 G59-8). 실행 순서서: docs/run-experiment.md
+# 실행: python -m ifs_chatbot.server --config experiment
+# 만든 법: 새 값은 없다. 기존 설정에서 가져왔다 — [interview]·[guard] safety_lexicon·[validator] = bridge.toml,
+#   [mapping]·[selection]·[preview] = v4.toml, guard.required·mapping.strict = pilot.toml, participant_draft_banner = G59-8.
+# 기존 설정 파일(default·pilot·v4·v4-gen3d·bridge·mac8gb)과 코드 기본값은 바꾸지 않았다. ◆ = v4.toml과 다른 곳.
+# 헤드셋 쪽 권고값(공간 B + 놓기 도움, 두 조건 연습, 자리 문항 → 멈춤 거리, 평정 중 물체 숨김, UI 묶음 G63, 반복 멈춤 loop,
+#   눈높이 기준 배치 relative, 문구 scaleA)은 이 파일이 아니라 Unity 러너 Setup의 [본 실험 권고 설정 켜기](-experimentPreset true)가 켠다.
+# 문구는 모두 초안(status draft, IRB·팀 검토 전)이다. 초안이어도 시작은 한다(require_spec_phrases = false).
+
+[interview]
+condition = "chatbot"                         # 조건 2 · 챗봇 면담(LLM은 면담 질문만 만든다, 원칙 1). 두 집단 차이는 헤드셋 배치 구간뿐(뼈대 2절)
+protocol = "elicitation_protocol.v1.5.json"   # ◆ D9: bridge 단계 · imageSignal · find 틀 제한(1.5.0, 첫 질문은 1.4.0과 같음 G60)
+prompt_version = "1.1.0"                      # ◆ D9: stage_find·stage_flesh_out 블록 수정(chatbot/prompts/v1.1.0/)
+lexicon_overlay = "layer1_interview.v0.json"  # ◆ D9: 면담용 감정어 '기대'(매퍼 v2의 사전은 바꾸지 않음)
+anchor_doe_root = true                        # ◆ D9: 인용 후보 '-되' 어근 규칙
+
+[llm]
+backend = "ollama"
+model = "gemma4:e4b"       # G64 검증(run-g64-e2e)에 쓴 모델. pilot.toml의 gemma4:31b는 16 GB GPU에 올라가지 않는다 — ⚠ 본 실험 모델은 사람이 정할 것
+host = "http://127.0.0.1:11434"
+timeout_s = 300
+temperature = 0.2
+top_p = 0.9
+seed = 7
+think = false
+num_ctx = 8192
+keep_alive = "30m"
+max_regenerations = 2
+retry_feedback = true
+
+[guard]
+keyword = true
+model_backend = "ollama"
+model = "hf.co/mradermacher/kanana-safeguard-8b-GGUF:Q4_K_M"
+format = "kanana"
+check_output = true
+required = true                               # ◆ pilot.toml과 같음: 가드 모델이 없으면 서버가 시작하지 않는다(참여자 세션). 점검만 할 때는 --no-guard-model
+safety_lexicon = "safety_ko.v0.2.json"        # ◆ D9: 은유 '숨막혀·숨이 막힌'을 잡고 noMore에 '안 보여·안 떠올라'
+
+[validator]
+strict_novel_content = true
+l5_depth = "present_focus"
+max_anchor_eojeol = 3
+predicate_as_noun = true                      # ◆ D9: V7 — what_kind·where·like_what의 X가 활용형이면 막음
+
+[session]
+log_dir = "logs"              # chatbot/logs/ (git에 올리지 않음). spec은 logs/scenes/<세션ID>.json, 후보·조절·측정·사후 면담은 logs/selection/<세션ID>/
+scenes_dir = ""
+researcher_contact = "(연구자 연락처를 config에 입력하세요)"   # ⚠ 실험 전에 반드시 채우거나 --researcher-contact로 넘길 것(위기 고정 문구에 들어감)
+
+[mapping]
+mode = "v2"                   # 매퍼 v2(기본 형상 form.base, 후보·조절 흐름이 쓰는 매퍼). bridge.toml(v1)과 달리 세션 안에서 바로 v2 spec을 만든다
+save_both = true              # v0·v1·v2 비교 파일도 남김
+clarify_loop = false
+clarify_max = 2
+strict = true                 # ◆ pilot.toml과 같음: v2를 불러오지 못하면 v0로 넘어가지 않고 시작을 멈춘다
+ext_lexicon = ""              # G61 끔: 스펙 2.2.0 그대로(헤드셋 러너·WebGL 미리보기가 읽는 버전)
+ext_params = "scene_params.v3.json"
+variant_rules = ""
+
+[drift]
+enabled = true
+recall_check = false
+self_report = false
+allow_draft_phrases = false
+
+[selection]
+enabled = true
+protocol = "selection_protocol.v0.json"
+table = "candidate_values.v2.json"
+require_spec_phrases = false
+participant_draft_banner = false              # ◆ 뼈대 3절·G59-8: 초안 경고 줄을 참여자 보기에서 숨김(연구자 보기·기록에는 남음)
+post_interview = "post_interview.v0.json"     # 사후 면담 기록 화면 /?view=postinterview&session=<세션ID>
+
+[preview]
+mode = "webgl"                                  # 저장소 밖 빌드가 없으면 image → 글 요약으로 내려감(기록에 남음)
+webgl_dir = "../../webgl-build/preview"
+image_player = "../../webgl-build/preview-win/IFSPreview.exe"
+queue_dir = ""
+start_on_launch = false
+width = 320
+height = 240
+start_timeout_s = 60
+request_timeout_s = 20
+webgl_ready_timeout_s = 30
+webgl_request_timeout_s = 15
+
+[gen3d]
+# 생성 메시 후보(G62)는 끈다. 켜도 세션 안에서 자동으로 이어지지 않기 때문이다:
+#  - 챗봇은 생성 모델을 부르지 않고, 후보 단계를 여는 순간(확정 뒤 [다음 단계로]) assets_dir을 한 번만 찾는다(selection.py SelectionFlow.start).
+#  - 그 전에 실험자가 확정 텍스트를 손으로 tools/gen3d 입력 파일에 옮기고, Ollama 모델을 내리고(VRAM), 별도 환경에서 생성기를 돌려야 한다
+#    (모델 적재 포함 약 2분, 생성 약 30초). 이 대기·실패 처리와 화면은 없다.
+#  - 생성 결과 검증(run-g64-e2e)에서 생성 기본 세션 3개 중 맞음 0, 말하지 않은 세부를 더한 것 2.
+# 켜려면 v4-gen3d.toml의 [gen3d]를 옮기고, 위 연결을 어떻게 할지 먼저 정한다(docs/run-experiment.md 6절).
+enabled = false

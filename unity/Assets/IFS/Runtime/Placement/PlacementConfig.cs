@@ -217,6 +217,31 @@ namespace IFS.SceneSpec.Placement
 
         /// <summary>묶음의 여섯 플래그가 모두 켜져 있다.</summary>
         public bool UiBundleOn => uiComfortWrap && uiDarkPanel && uiRayHover && uiHaptics && uiRatingConfirmFlash && uiNarrowScale;
+
+        // ── 본 실험 권고 설정(설계 뼈대 3절, docs/design-backbone.md · 결정 G59-8 · G63) ─────────────
+        // 기본값은 바꾸지 않는다(뼈대 3절 "코드 기본값은 바꾸지 않는다"). 실험을 돌릴 때 실험자 화면 단추 또는 자동 시행 -experimentPreset true로 켠다.
+        /// <summary>권고 설정의 문구 파일(G59-8: scaleA). 설정 값이 아니라 러너가 고르는 파일이라 여기에는 이름만 둔다.</summary>
+        public const string ExperimentTaskTextFile = "IFS/placement_task.scaleA.v0.json";
+
+        /// <summary>뼈대 3절 권고 설정을 켠다: 공간 B(neutral + 놓기 도움), 두 조건 모두 배치 연습, 자리(점검) 문항을 멈춤 거리 앞에,
+        /// 평정 동안 물체 숨김, 헤드셋 UI 개선 묶음 (1)–(6), 멈춤 거리 반복 멈춤(stopMode loop — G60-4가 want_move를 뺀 전제),
+        /// 눈높이 기준 배치(eyeHeightMode relative — G60-3, 헤드셋에서는 보정을 통과해야 시작, 데스크톱·자동 시행은 desktop_fixed).
+        /// 조건·통제 방식과 판 숨김(hidePanelInDistancePhases)은 건드리지 않는다(⚠ 사람이 정할 것). 문구 파일 scaleA는 러너가 고른다.</summary>
+        public void ApplyExperimentPreset()
+        {
+            environment = EnvironmentNeutral;
+            placementAssist = true;
+            practiceInAllConditions = true;
+            checkBeforeStopDistance = true;
+            hideObjectDuringItems = true;
+            ApplyUiBundle();
+            stopMode = StopModeLoop;
+            eyeHeightMode = EyeHeightRelative;
+        }
+
+        /// <summary>뼈대 3절 권고 설정이 모두 켜져 있다(문구 파일은 따로 — 러너가 확인).</summary>
+        public bool ExperimentPresetOn => environment == EnvironmentNeutral && placementAssist && practiceInAllConditions
+                                          && checkBeforeStopDistance && hideObjectDuringItems && UiBundleOn && IsStopLoop && IsEyeRelative;
         /// <summary>G63 UI 플래그가 하나라도 켜져 있다(manifest config에 ui* 키를 더한다).</summary>
         public bool UsesUiOptions => uiComfortWrap || uiDarkPanel || uiRayHover || uiHaptics || uiRatingConfirmFlash || uiNarrowScale || hidePanelInDistancePhases;
 
