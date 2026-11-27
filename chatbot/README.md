@@ -73,7 +73,7 @@ ollama pull hf.co/mradermacher/kanana-safeguard-8b-GGUF:Q4_K_M   # 안전 분류
 | `scene_builder.py` · `scene_spec.py` | 확정 텍스트 → SceneSpec v2(0층 Kiwi · 1층 사전 · 2층 직유 · 3층 V/A/D 제안) → `logs/scenes/{sessionId}.json`. 형식 검사·원칙 검사 |
 | `session_log.py` | elicit-log/0.1 세션 로그(턴마다 저장) |
 | `server.py` · `web/` | FastAPI + 웹 데모(참여자 화면 / 연구자 화면) |
-| `selection.py` · `web/stage.js` | 새 흐름(`--config v4`)의 면담 뒤 단계: 후보 선택 · 조절 · 사전 측정(문구 `shared/protocol/selection_protocol.v0.json` 0.5.0, 사전 측정 10문항, 모두 draft) |
+| `selection.py` · `web/stage.js` | 새 흐름(`--config v4`)의 면담 뒤 단계: 후보 선택 · 조절 · 사전 측정(문구 `shared/protocol/selection_protocol.v0.json` 0.6.0, 사전 측정 10문항, 모두 draft) |
 | `postinterview.py` · `web/postinterview.js` | 사후 면담 기록 화면(G59, 연구자용, `/?view=postinterview&session=<세션 ID>`). 문항 `shared/protocol/post_interview.v0.json`, 대본 `docs/post-interview-guide.md`. LLM 없음 |
 | `cli.py` · `simulate.py` | 터미널 데모, 시나리오 재생·모델 비교 |
 

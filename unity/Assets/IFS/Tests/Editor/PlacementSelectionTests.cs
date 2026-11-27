@@ -40,8 +40,8 @@ namespace IFS.SceneSpec.Tests
 
         const string Sha = "7d42fd56f98a3d75da09f894b41f955a5cd8b534cb83d23e2b2b23244618cf13";
         const string G13Source = "docs/prompts/prototype-v4-build.md G13, 2026-11-22";
-        const string AppearanceText = "이 물체의 모습은 내가 떠올린 것과 비슷하다";   // G57
-        const string RepresentText = "이 물체는 내가 떠올린 그것을 나타낸다";
+        const string AppearanceText = "이 물체의 모습은 내가 떠올린 모습과 비슷하다";   // G57, G65·G66
+        const string RepresentText = "이 물체는 그 느낌을 나타낸다";   // G65·G66
         static string ScaleAPath => Path.Combine(Application.streamingAssetsPath, PlacementXrTests.ScaleARelativePath);
         static string DefaultPath => Path.Combine(Application.streamingAssetsPath, PlacementTaskText.DefaultRelativePath);
 
@@ -682,8 +682,8 @@ namespace IFS.SceneSpec.Tests
                     Assert.That(it.AnchorHigh, Is.Not.Empty);
                 }
             }
-            Assert.That(PlacementTests.LoadText().Version, Is.EqualTo("0.6"), "문항을 더해 0.2로, 놓기 도움 문구(G53)를 더해 0.3으로, 문구 다듬기(G57)로 0.4로, G59 문항으로 0.5로, G60 want_move를 빼 0.6으로 올림");
-            Assert.That(PlacementTaskText.Load(ScaleAPath).Version, Is.EqualTo("0.6-scaleA"));
+            Assert.That(PlacementTests.LoadText().Version, Is.EqualTo("0.7"), "문항을 더해 0.2로, 놓기 도움 문구(G53)를 더해 0.3으로, 문구 다듬기(G57)로 0.4로, G59 문항으로 0.5로, G60 want_move를 빼 0.6으로, G65·G66 문구로 0.7로 올림");
+            Assert.That(PlacementTaskText.Load(ScaleAPath).Version, Is.EqualTo("0.7-scaleA"));
         }
 
         [Test]

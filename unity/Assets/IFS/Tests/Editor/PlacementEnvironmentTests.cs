@@ -412,8 +412,8 @@ namespace IFS.SceneSpec.Tests
                 Assert.That(t[PlacementTaskText.PlacementRangeKey], Is.EqualTo("둥근 바닥 안이면 어디든, 어떤 높이든 괜찮아요."));
                 Assert.That(t[PlacementTaskText.PracticeKey], Is.EqualTo(PlacementTaskText.Load(DefaultPath)[PlacementTaskText.PracticeKey]), "두 파일 같은 문구");
             }
-            Assert.That(PlacementTaskText.Load(DefaultPath).Version, Is.EqualTo("0.6"));
-            Assert.That(PlacementTaskText.Load(ScaleAPath).Version, Is.EqualTo("0.6-scaleA"));
+            Assert.That(PlacementTaskText.Load(DefaultPath).Version, Is.EqualTo("0.7"));
+            Assert.That(PlacementTaskText.Load(ScaleAPath).Version, Is.EqualTo("0.7-scaleA"));
         }
 
         // ── 놓기 도움 화면 규칙 ──────────────────────────────────────────

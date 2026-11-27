@@ -1,7 +1,7 @@
 {
-  "version": "0.6",
+  "version": "0.7",
   "protocol": "placement-task",
-  "note": "0.6(2026-11-26): G60 — 점검 문항 want_move를 뺌(교수님 결정 2026-11-26), 멈춤 거리 반복 멈춤 문구 stop_distance_loop·stop_loop_hint를 더함(G60-2, 설정 stopMode loop일 때만 보임 — 기본 single에서는 draftKeys에 들어가지 않음). 버전은 0.6 그대로.",
+  "note": "0.6(2026-11-26): G60 — 점검 문항 want_move를 뺌(교수님 결정 2026-11-26), 멈춤 거리 반복 멈춤 문구 stop_distance_loop·stop_loop_hint를 더함(G60-2, 설정 stopMode loop일 때만 보임 — 기본 single에서는 draftKeys에 들어가지 않음). 버전은 0.6 그대로. 0.7(2026-11-27): G65·G66(D10 가독성) — 두 평정 문항 G13(appearance_match '떠올린 것' → '떠올린 모습', representativeness '내가 떠올린 그것' → '그 느낌')을 웹 selection_protocol 0.6.0·scaleA 0.7-scaleA와 같은 글로, 내적 경험과의 관계를 묻는 want_to_know·withdraw_attention·distance_feel의 대상을 '이것' → '그 느낌'으로 바꿈. 물체·자리를 묻는 placed_by_me·place_fit, '내 것' 문항 own, 단계 안내의 '이것'(눈앞의 물체)은 그대로. ⚠ 이 파일에는 공통 지시문(items_instruction)이 없어 '그 느낌'이 무엇인지 화면에서 알리지 않음(scaleA에는 있음). draft(IRB 검토 전).",
   "texts": {
     "intro": {
       "text": "이제 물체 하나를 보여 드릴게요. 안내가 나오면 그대로 따라 주세요.",
@@ -71,41 +71,41 @@
       "source": "docs/rq-v4-proposal.md 4.5절 측정 표 문항 초안(2026-11-22), IRB 검토 전. 양 끝 뜻은 ownership_task.v0.json rating과 같음"
     },
     "appearance_match": {
-      "text": "이 물체의 모습은 내가 떠올린 것과 비슷하다",
+      "text": "이 물체의 모습은 내가 떠올린 모습과 비슷하다",
       "when": "post",
       "optionalWhen": "pre",
       "anchors": { "low": "전혀 그렇지 않다", "high": "매우 그렇다" },
       "status": "draft",
-      "source": "docs/prompts/prototype-v4-build.md G13, 2026-11-22 — 모습 일치 문항(두 문항 분리의 하나). 기본은 사후만(when post), 사전은 설정 askOptionalItems(optionalWhen pre — 사전 측정은 데스크톱에서 하므로, G11). IRB 검토 전. G57(2026-11-24) 다듬음"
+      "source": "docs/prompts/prototype-v4-build.md G13, 2026-11-22 — 모습 일치 문항(두 문항 분리의 하나). 기본은 사후만(when post), 사전은 설정 askOptionalItems(optionalWhen pre — 사전 측정은 데스크톱에서 하므로, G11). IRB 검토 전. G57(2026-11-24) 다듬음. G65·G66(2026-11-27) 가독성 다듬음('떠올린 것' → '떠올린 모습', selection 0.6.0·scaleA와 같은 글)"
     },
     "representativeness": {
-      "text": "이 물체는 내가 떠올린 그것을 나타낸다",
+      "text": "이 물체는 그 느낌을 나타낸다",
       "when": "post",
       "optionalWhen": "pre",
       "anchors": { "low": "전혀 그렇지 않다", "high": "매우 그렇다" },
       "status": "draft",
-      "source": "docs/prompts/prototype-v4-build.md G13, 2026-11-22 — 대표성 문항(두 문항 분리의 하나, 하한 점검 기준 문항 — 기준값은 정하지 않음). 기본은 사후만(when post), 사전은 설정 askOptionalItems(optionalWhen pre — 사전 측정은 데스크톱에서 하므로, G11). IRB 검토 전. G57(2026-11-24) 다듬음"
+      "source": "docs/prompts/prototype-v4-build.md G13, 2026-11-22 — 대표성 문항(두 문항 분리의 하나, 하한 점검 기준 문항 — 기준값은 정하지 않음). 기본은 사후만(when post), 사전은 설정 askOptionalItems(optionalWhen pre — 사전 측정은 데스크톱에서 하므로, G11). IRB 검토 전. G57(2026-11-24) 다듬음. G65·G66(2026-11-27) 가독성 다듬음('내가 떠올린 그것' → '그 느낌', selection 0.6.0·scaleA와 같은 글)"
     },
     "want_to_know": {
-      "text": "이것에 대해 더 알고 싶다",
+      "text": "그 느낌에 대해 더 알고 싶다",
       "when": "post",
       "anchors": { "low": "전혀 그렇지 않다", "high": "매우 그렇다" },
       "status": "draft",
-      "source": "docs/rq-v4-proposal.md 4.5절 측정 표 문항 초안(2026-11-22, V3 문항), IRB 검토 전"
+      "source": "docs/rq-v4-proposal.md 4.5절 측정 표 문항 초안(2026-11-22, V3 문항), IRB 검토 전. G65·G66(2026-11-27): 대상을 '이것' → '그 느낌'으로(내적 경험과의 관계를 묻는 문항. scaleA S5와 같은 기준)"
     },
     "withdraw_attention": {
-      "text": "이것에서 주의를 거두고 싶다",
+      "text": "그 느낌에서 주의를 거두고 싶다",
       "when": "post",
       "anchors": { "low": "전혀 그렇지 않다", "high": "매우 그렇다" },
       "status": "draft",
-      "source": "docs/rq-v4-proposal.md 4.5절 측정 표 문항 초안(2026-11-22, V3 문항), IRB 검토 전"
+      "source": "docs/rq-v4-proposal.md 4.5절 측정 표 문항 초안(2026-11-22, V3 문항), IRB 검토 전. G65·G66(2026-11-27): 대상을 '이것' → '그 느낌'으로(내적 경험과의 관계를 묻는 문항. scaleA S6과 같은 기준)"
     },
     "distance_feel": {
-      "text": "지금 이것과 나 사이는 얼마나 멀게 느껴지나요?",
+      "text": "지금 그 느낌과 나 사이는 얼마나 멀게 느껴지나요?",
       "when": ["pre", "post"],
       "anchors": { "low": "매우 가깝다", "high": "매우 멀다" },
       "status": "draft",
-      "source": "docs/decisions.md G59, 2026-11-25 — G59 거리감 1문항 초안 — Kross·Ayduk 계열 자기 거리두기 문항과 Takasawa(2021)의 걱정과의 거리 7점 문항을 물체에 맞게 옮긴 것(원문 대조 전). 사전·사후 문항 목록의 맨 끝. IRB 검토 전"
+      "source": "docs/decisions.md G59, 2026-11-25 — G59 거리감 1문항 초안 — Kross·Ayduk 계열 자기 거리두기 문항과 Takasawa(2021)의 걱정과의 거리 7점 문항을 물체에 맞게 옮긴 것(원문 대조 전). 사전·사후 문항 목록의 맨 끝. IRB 검토 전. G65·G66(2026-11-27): 대상을 '이것' → '그 느낌'으로(scaleA distance_feel과 같은 글)"
     },
     "placed_by_me": {
       "text": "방금 이것이 있던 자리는 내가 정했다",

@@ -107,10 +107,10 @@ namespace IFS.SceneSpec.Tests
             var tall = PlacementPanelMetrics.PanelPlacement(PlacementPanelMetrics.BodyPanelHeightM(8));
             Assert.That(tall.topY, Is.EqualTo(0.85).Within(0.01), "위 가장자리는 maxTopM 근처");
             Assert.That(tall.centerY, Is.LessThan(0.6));
-            // 기본값(20자): 평정 지시문이 8줄이라 아래 가장자리가 35°를 넘는다(조사 문서 2절의 문제)
+            // 기본값(20자): 평정 지시문이 8줄(G65·G66 문구로 9줄)이라 아래 가장자리가 35°를 넘는다(조사 문서 2절의 문제)
             var t = ScaleA();
             int lines = PlacementPanelMetrics.WrapLineCount(t.InstructionFor(PlacementTaskText.WhenPre), PlacementPanelMetrics.DefaultWrapChars);
-            Assert.That(lines, Is.EqualTo(8));
+            Assert.That(lines, Is.EqualTo(9), "scaleA 0.7-scaleA 지시문 173자");
             Assert.That(PlacementPanelMetrics.BottomBelowHorizonDeg(PlacementPanelMetrics.BodyPanelHeightM(lines)), Is.GreaterThan(35));
             Assert.That(PlacementPanelMetrics.MaxBodyLinesWithin(), Is.EqualTo(5), "기본 자리에서 35° 안에 드는 본문 줄 수");
             TestContext.WriteLine($"기본 8줄 판 아래 {PlacementPanelMetrics.BottomBelowHorizonDeg(PlacementPanelMetrics.BodyPanelHeightM(8)):0.00}°, 5줄 {PlacementPanelMetrics.BottomBelowHorizonDeg(PlacementPanelMetrics.BodyPanelHeightM(5)):0.00}°");

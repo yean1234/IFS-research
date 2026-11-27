@@ -339,10 +339,10 @@ namespace IFS.SceneSpec.Tests
             Assert.That(t.ItemsFor("check").Select(i => i.Key), Is.EqualTo(new[] { "place_fit" }), "G59 자리 평정(이 파일에는 placed_by_me가 없다 — 조작 확인은 사후 S7). G60에서 want_move를 뺌");
             Assert.That(t.Items.Count, Is.EqualTo(18), "A 7문항 + S4–S8 5문항 + G13 2문항 + G59 4문항(G60에서 want_move를 뺌)");
             var p1 = t.Items.First(i => i.Key == "P1");
-            Assert.That(p1.Text, Is.EqualTo("지금 나와 이것의 관계는 어느 쪽에 더 가깝나요?"), "구별 프로파일 초안 3.1절 P1 문구 그대로");
+            Assert.That(p1.Text, Is.EqualTo("지금 나와 그 느낌의 관계는 어느 쪽에 더 가깝나요?"), "구별 프로파일 초안 3.1절 P1 문구(G66에서 대상을 '그 느낌'으로)");
             Assert.That(p1.Points.Keys, Is.EqualTo(new[] { 1, 4, 7 }), "P1 양극(가운데 점)");
-            Assert.That((p1.AnchorAt(1), p1.AnchorAt(4), p1.AnchorAt(7)), Is.EqualTo(("이것이 곧 나다", "반반이다", "이것은 나에게 있는 것이지, 나 전체는 아니다")));
-            Assert.That(t.Items.First(i => i.Key == "M2").Text, Is.EqualTo("지금 나는 나 자신을 이것과는 별개로 경험한다."), "구별 프로파일 초안 3.1절 M2 문구 그대로");
+            Assert.That((p1.AnchorAt(1), p1.AnchorAt(4), p1.AnchorAt(7)), Is.EqualTo(("그 느낌이 곧 나다", "반반이다", "그 느낌은 나에게 있는 것이지, 나 전체는 아니다")));
+            Assert.That(t.Items.First(i => i.Key == "M2").Text, Is.EqualTo("지금 나는 나 자신을 그 느낌과는 별개로 경험한다."), "G66 대상 '그 느낌'. 구별 프로파일 초안 3.1절 M2 문구 그대로");
             foreach (var k in new[] { "M2", "P1" })
                 Assert.That((string)JObject.Parse(File.ReadAllText(ScaleAPath, Encoding.UTF8))["texts"][k]["source"], Does.Contain("docs/rq-v4-differentiation-measure.md"), k + ": 출처 = 구별 프로파일 초안");
             var def = PlacementTests.LoadText();
@@ -419,7 +419,7 @@ namespace IFS.SceneSpec.Tests
             Assert.That(ev.Any(l => l.Contains("items_instruction,when=post;keys=items_instruction+items_instruction_post")), Is.True);
             var m = JObject.Parse(File.ReadAllText(Path.Combine(dir, "manifest.json")));
             Assert.That((string)m["taskText"]["file"], Is.EqualTo("placement_task.scaleA.v0.json"));
-            Assert.That((string)m["taskText"]["version"], Is.EqualTo("0.6-scaleA"), "G53 놓기 도움 문구를 더해 0.3, G57 문구 다듬기로 0.4, G59 문항으로 0.5, G60 want_move를 빼 0.6");
+            Assert.That((string)m["taskText"]["version"], Is.EqualTo("0.7-scaleA"), "G53 놓기 도움 문구를 더해 0.3, G57 문구 다듬기로 0.4, G59 문항으로 0.5, G60 want_move를 빼 0.6, G65·G66 문구로 0.7");
             Assert.That((int)m["taskText"]["draftCount"], Is.EqualTo(t.Count));
         }
 

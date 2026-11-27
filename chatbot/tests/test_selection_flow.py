@@ -640,8 +640,8 @@ def test_protocol_all_draft_with_source():
 def test_protocol_texts_match_sources_verbatim():
     p = SelectionProtocol()
     items = {i["id"]: i["text"] for i in p.items()}
-    assert items["G13_appearance"] == "이 물체의 모습은 내가 떠올린 것과 비슷하다"          # G57
-    assert items["G13_representation"] == "이 물체는 내가 떠올린 그것을 나타낸다"
+    assert items["G13_appearance"] == "이 물체의 모습은 내가 떠올린 모습과 비슷하다"        # G57, G65·G66
+    assert items["G13_representation"] == "이 물체는 그 느낌을 나타낸다"                   # G65·G66
     doc = (REPO_ROOT / "docs" / "rq-v4-questionnaire-draft.md").read_text(encoding="utf-8")
     for i in range(1, 8):
         row = next(line for line in doc.splitlines() if line.startswith(f"| A{i}"))
@@ -650,7 +650,7 @@ def test_protocol_texts_match_sources_verbatim():
     assert p.text("none_fit") == "맞는 게 없어요"
     labels = [p.data["adjustItemLabels"][k]["text"] for k in TABLE["adjustItems"]["order"]]
     assert labels == ["색", "형태", "밝기", "투명도", "크기", "질감", "움직임"]          # G31: 색이 맨 앞
-    assert p.version == "0.5.0" and "single_candidate_intro" not in p.data["phrases"]  # G34: 후보 1개 화면 없음
+    assert p.version == "0.6.0" and "single_candidate_intro" not in p.data["phrases"]  # G34: 후보 1개 화면 없음
     assert p.data["changes"][0]["version"] == p.version and p.data["phrases"]["adjust_item_unavailable"]["status"] == "draft"
     assert "proceed_single_button" not in p.data["phrases"]
 
@@ -660,16 +660,55 @@ def test_g59_premeasure_instruction_and_intensity_item():
     p = SelectionProtocol()
     pm = p.data["premeasure"]
     ins = pm["instruction"]["text"]
-    assert "조금 전에 보신 물체는 면담에서 말씀하신 것을 바탕으로 만든 거예요." in ins
-    assert "'이것'은 면담에서 떠올리신 그것을 가리켜요" in ins
-    for gone in ("말씀하신 대로 나타낸", "마음에 걸려 있는", "면담에서 말씀하신, "):
+    assert "면담 처음에 떠올리신 일" in ins                                  # G58 첫 질문의 '일'(G66)
+    for gone in ("말씀하신 대로 나타낸", "마음에 걸려 있는", "면담에서 말씀하신, ", "바탕으로 만든"):
         assert gone not in ins
     first = p.items()[0]
-    assert first["id"] == "W1_intensity" and first["text"] == "지금 그것을 떠올리면 마음이 많이 쓰인다"
+    assert first["id"] == "W1_intensity" and first["text"] == "지금 그 일을 떠올리면 마음이 많이 쓰인다."
     assert [i["id"] for i in p.items()][1:8] == [f"A{i}" for i in range(1, 8)]
-    for entry in (pm["instruction"], first, p.data["changes"][0]):
+    g59 = next(c for c in p.data["changes"] if c["version"] == "0.5.0")
+    for entry in (pm["instruction"], first, g59):
         assert entry["status"] == "draft" and "G59" in entry["source"] and "IRB 검토 전" in entry["source"]
-    assert p.data["changes"][0]["version"] == "0.5.0"
+
+
+def test_g65_g66_premeasure_wording():
+    """G65·G66(D10 가독성): '이것'·'그것' 대신 W1은 '그 일', A1–A7·대표성은 '그 느낌', G13의 물체는 '이 물체'.
+    문구는 결정 그대로(draft). 헤드셋 scaleA의 같은 문항은 같은 글(G65-g)."""
+    p = SelectionProtocol()
+    pm = p.data["premeasure"]
+    assert pm["instruction"]["text"] == (
+        "이제 문장 몇 개를 보여 드릴게요. 문장에 나오는 '그 일'은 면담 처음에 떠올리신 일이고, "
+        "'그 느낌'은 그 일을 떠올렸을 때 든 느낌이에요. '이 물체'는 조금 전에 보신 물체예요. "
+        "평소가 아니라 바로 지금을 기준으로, 문장마다 나에게 얼마나 맞는지 골라 주세요. 맞거나 틀린 답은 없어요.")
+    assert "G65 전 문장" in pm["instruction"]["note"]                      # 직전 문장을 note에 남김
+    want = {
+        "W1_intensity": "지금 그 일을 떠올리면 마음이 많이 쓰인다.",
+        "A1": "그 느낌 때문에 지금 마음이 힘들다.",
+        "A2": "그 느낌에 사로잡혀서 지금은 다른 일에 집중하기 어렵다.",
+        "A3": "그 느낌을 지금 너무 많이 생각하고 있어서, 오히려 나에게 도움이 안 된다.",
+        "A4": "지금 나는 그 느낌과 씨름하고 있다.",
+        "A5": "그 느낌이 든다는 이유로 지금 나 자신을 탓하게 된다.",
+        "A6": "지금 나는 그 느낌과 깊이 얽혀 있다.",
+        "A7": "그 느낌을 그만 생각하는 편이 낫다는 걸 알면서도, 지금은 생각을 멈추기 어렵다.",
+        "G13_appearance": "이 물체의 모습은 내가 떠올린 모습과 비슷하다",
+        "G13_representation": "이 물체는 그 느낌을 나타낸다",
+    }
+    items = {i["id"]: i for i in p.items()}
+    assert {k: items[k]["text"] for k in want} == want and len(items) == 10
+    for k in want:
+        assert items[k]["status"] == "draft" and "G65·G66(2026-11-27)" in items[k]["source"], k
+    for k in ("A1", "A2", "A3", "A4", "A5", "A6", "A7", "G13_representation"):
+        assert "이것" not in items[k]["text"] and "그것" not in items[k]["text"]
+    assert pm["skipLabel"]["text"] == "답하지 않을게요" and pm["scale"]["anchors"]["4"] == "반반이다"
+    ch = p.data["changes"][0]
+    assert ch["version"] == p.version == "0.6.0" and ch["status"] == "draft" and "G65" in ch["source"]
+    # 헤드셋 scaleA의 같은 문항은 같은 글
+    scale_a = json.loads((REPO_ROOT / "unity" / "Assets" / "StreamingAssets" / "IFS" / "placement_task.scaleA.v0.json")
+                         .read_text(encoding="utf-8"))["texts"]
+    for i in range(1, 8):
+        assert scale_a[f"A{i}"]["text"] == want[f"A{i}"], f"A{i}"
+    assert scale_a["appearance_match"]["text"] == want["G13_appearance"]
+    assert scale_a["representativeness"]["text"] == want["G13_representation"]
 
 
 def test_protocol_has_no_therapy_terms():
