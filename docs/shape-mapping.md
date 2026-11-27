@@ -133,7 +133,8 @@ RQ V4 실험 프로토타입(`docs/prompts/prototype-v4-build.md`)에서 두 가
 - **기본 형상(D6)을 말했으면 형태 자리는 '말함'입니다.** 기본 형상은 후보 값으로 내밀지 않습니다. 조절의 "형태" 항목은 form.type 4값 + 기본 형상 5값입니다(`candidate_values.v2.json`). 아래 G32 규칙은 기본 형상이 그려지지 않는 spec에만 걸립니다 — builder 2.1.0까지 모형 없는 모양어였던 '실'·'선'·'끈'·'매듭'·'판'은 이제 기본 형상의 근거라 G32 경로를 타지 않습니다.
 - **모양어를 말했으면 형태 자리를 '말함'으로 봅니다.** 후보 생성기는 `_unmapped`에 category `shape` 항목이 있으면 `form.type`이 null이어도 형태 축을 벌리지 않습니다(`chatbot/tests/test_candidates.py::test_shape_word_counts_as_said_form`). 형태 후보로 mist 등을 내밀면 규칙 4 때문에 말한 모양 모형이 그려지지 않게 되기 때문입니다.
 - 이 규칙은 **표에 없는 모양어**(실·선·판·점 …)에도 똑같이 걸립니다. 그런 말은 모형이 없어 기본 모형으로 그려지는데, 형태 후보도 나오지 않습니다(예: 합성 문장 "가는 실 같은 게 손목에 감겨 있어요" → 후보 축은 크기·투명도). 참여자는 조절 단계의 "형태"에서만 형태를 바꿀 수 있습니다. 내부 시스템 점검에서 볼 항목입니다(`docs/internal-trial-guide.md`).
-- (D6 전) 조절의 "형태" 항목은 `form.type` 네 값뿐이었습니다. 모양 모형을 직접 고르는 항목은 지금도 없고, 챗봇은 덮어쓰기에 `shapeModel` 키를 쓰지 않습니다. 형태 덮어쓰기와 모양 모형 규칙이 Unity에서 어떻게 겹치는지 보는 교차 테스트는 아직 없습니다(`docs/validation/selection-flow/README.md` 10절).
+- (D6 전) 조절의 "형태" 항목은 `form.type` 네 값뿐이었습니다. 모양 모형을 직접 고르는 항목은 지금도 없고, 챗봇은 덮어쓰기에 `shapeModel` 키를 쓰지 않습니다.
+- (G73 후속, 2026-11-28) **덮어쓴 form.type으로 모양어를 다시 판정합니다.** 덮어쓰기(미리보기 준비 그리기·조절의 형태 값·선택 파일 finalOverrides)에 `form.type`이 있으면 `ShapeMapping.Resolve(spec, 덮어쓰기)`가 spec의 form.type 대신 그 값으로 판정합니다. 모양어 '동그란'(Sphere)이 있는 spec에 `form.type = mist`를 얹으면 모양어는 `not_applied_form`이고 안개를 그립니다. 예전에는 `SceneLoader.CheckVariant`·`PlacementSelection.CheckApplicable`이 spec만 보고 정한 모형(Sphere)과 덮어쓴 형태(mist)를 견주어 "모양 모형은 blob에만"으로 거부했습니다 — WebGL 준비 그리기가 형태 값마다 mist를 얹다가 실패해 미리보기가 글 요약으로 내려갔고(G73 시험 R1·R2), 참여자가 조절에서 형태를 안개로 고친 선택 파일은 헤드셋 러너가 시작하지 않았을 것입니다. 기본 형상(form.base) 판정은 spec 값 그대로이고(그림은 예전과 같음), `shapeModel` 강제는 여전히 blob에만 씁니다. 교차 테스트: `ShapeMappingTests.Overridden_form_type_decides_the_shape_model`, `PlacementSelectionTests`(형태를 mist로 고친 선택).
 - 속성 출처 네 가지(말함/고름/고침/기본값)는 spec이 아니라 선택 기록 `selection.json`에 적습니다(G15). 모양 모형은 지금 출처 칸이 없고 Unity 기록의 `shape`에만 남습니다.
 
 ## 한계

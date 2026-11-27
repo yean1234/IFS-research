@@ -300,7 +300,7 @@ namespace IFS.SceneSpec
                 Note($"{key}: 3층 제안(_inferred) {Describe(InitialParams, key)} 사용", false);
             if (variant != null) ApplyVariantParams(variant);
             CurrentParams = InitialParams.Clone();
-            Shape = ShapeMapping.Resolve(spec);
+            Shape = ShapeMapping.Resolve(spec, variant);   // 덮어쓴 form.type으로 판정(mist 덮어쓰기면 모양 모형 없음)
             if (variant?.ShapeModel != null)
             {
                 Shape = ShapeMapping.Forced(Shape, variant.ShapeModel);
@@ -370,7 +370,10 @@ namespace IFS.SceneSpec
             useInferredSuggestions = false;
         }
 
-        // 덮어쓰기를 확인한다(로드 전, 지금 형상을 지우기 전에). 모르는 키·모형, blob이 아닌 형태의 모양 모형은 오류.
+        // 덮어쓰기를 확인한다(로드 전, 지금 형상을 지우기 전에). 모르는 키·모형, blob이 아닌 형태에 모양 모형을 강제하면 오류.
+        // (G73 후속) spec의 모양어가 정한 모형은 덮어쓴 form.type으로 다시 판정한다: 'form.type=mist' 덮어쓰기 + 모양어 '동그란'은
+        // 오류가 아니라 안개를 그린다(모양어는 not_applied_form). 예전에는 오류로 거부해 미리보기가 글 요약으로 내려가고
+        // 헤드셋 러너도 시작하지 않았다.
         bool CheckVariant(SceneSpecV2 spec, SceneOverride variant, string file)
         {
             var errors = variant.Validate();
@@ -378,7 +381,7 @@ namespace IFS.SceneSpec
             {
                 var check = SceneParams.FromSpec(spec, defaults, useInferredSuggestions);
                 variant.ApplyTo(check);
-                string model = variant.ShapeModel ?? ShapeMapping.Resolve(spec).Model;
+                string model = variant.ShapeModel ?? ShapeMapping.Resolve(spec, variant).Model;
                 string form = check.GetCategory("form.type");
                 if (model != null && form != "blob") errors.Add($"모양 모형 {model}은 form.type=blob에만 쓸 수 있음(지금 {form})");
             }

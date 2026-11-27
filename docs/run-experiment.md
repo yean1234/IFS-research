@@ -112,8 +112,8 @@ $env:IFS_LIVE=1; .venv\Scripts\python.exe -m pytest tests\test_experiment_config
 
 `experiment.toml`은 `[gen3d] enabled = false`(생성 메시를 기본 후보로 두지 않음, G67-b)이고 `on_none = true`입니다.
 
-- 참여자가 후보 화면에서 처음 [맞는 게 없어요]를 누르면 서버가 확정 텍스트로 규칙 프롬프트를 만듭니다(`tools/gen3d/prompts.py`, 한→영 고정 사전, LLM 없음). 형태를 말하지 않았거나 사람·동물·안개처럼 메시로 만들지 않는 범주면 만들지 않고 "물체를 더 만들지 못했어요. 이어서 진행할게요."를 보인 뒤 예전처럼 조절로 갑니다.
-- 만들 수 있으면 대기 화면(「말씀하신 내용으로 모양을 하나 더 만들고 있어요. …」)이 나오고, 서버가 Ollama의 면담·가드 모델을 내린 뒤 저장소 밖 `gen3d-venv`로 `tools/gen3d/generate.py --pipeline sdxl-triposg`를 돌립니다. 끝나면 만든 물체가 후보 맨 앞(점선 테두리)에 더해지고 다시 고릅니다. 이 후보도 아니라고 하면 같은 프롬프트·seed + 1로 한 번 더 만들고, 그다음 [맞는 게 없어요]는 예전 경로입니다. 끝나면 내렸던 모델을 다시 올립니다.
+- 참여자가 후보 화면에서 처음 [맞는 게 없어요]를 누르면 서버가 확정 텍스트로 규칙 프롬프트를 만듭니다(`tools/gen3d/prompts.py`, 한→영 고정 사전, LLM 없음). 이 경로는 세션의 매퍼 spec을 함께 넘겨 매퍼 판단을 따릅니다(G73 후속): 매퍼가 형태에서 버린 낱말 — 움직임 비유의 매개어(「천이 펄럭이듯이 … 움직이는」의 '천'), 장소 용법(「안개 속에」), 직접 진술에 밀린 형상 낱말, 부정 — 은 프롬프트에 넣지 않고 `afterNone.prompt.dropped`에 사유(`mapper_action_simile` 등)와 함께 남깁니다(`promptRule: "mapper"`, builder `gen3d-shape-prompt/0.3.0+mapper-v2`). G62 기본 후보 경로와 오프라인 평가는 예전 규칙(0.2.0) 그대로입니다. 형태를 말하지 않았거나 사람·동물·안개처럼 메시로 만들지 않는 범주면 만들지 않고 "물체를 더 만들지 못했어요. 이어서 진행할게요."를 보인 뒤 예전처럼 조절로 갑니다.
+- 만들 수 있으면 대기 화면(「말씀하신 내용으로 모양을 하나 더 만들고 있어요. …」)이 나오고, 서버가 Ollama의 면담·가드 모델을 내린 뒤 저장소 밖 `gen3d-venv`로 `tools/gen3d/generate.py --pipeline sdxl-triposg`를 돌립니다. 끝나면 만든 물체가 후보 맨 앞(점선 테두리)에 더해지고 다시 고릅니다. 이 후보도 아니라고 하면 같은 프롬프트·seed + 1로 한 번 더 만들고, 그다음 [맞는 게 없어요]는 예전 경로입니다. 끝나면 내렸던 모델을 다시 올립니다. 모델을 내리기 전에 생성기 `--cache-probe`(모델 호출 없음, 2초 안팎)로 같은 프롬프트·seed·모델의 자산이 이미 있는지 보고, 있으면 모델을 내리지 않습니다(`afterNone.llmUnload.skipped = "cache_hit_expected"`, `afterNone.cacheProbe`).
 - 참여자는 [기다리지 않고 넘어갈게요]로 언제든 건너뛸 수 있습니다. 한도(`on_none_timeout_s`, 180초)를 넘거나 실패하면 생성을 끄고 예전 경로로 갑니다.
 - 만든 후보를 고르면 GLB가 `logs/selection/<세션ID>/form-asset-*.glb`로 복사되고 `selection.json`(0.3)의 `form.asset`에 적혀 헤드셋 러너가 그 메시를 씁니다(G62 경로 그대로). 크기·색·재질은 매핑과 참여자 조절 값입니다.
 - 기록: `selection.json`의 `generation.afterNone`(none 시각, 프롬프트와 낱말별 원문 위치, 모델 내림, 시작·끝·초, 결과와 사유, 모델·리비전·가중치 해시·seed, 골랐는지), `selection.afterNoneGeneration`. 생성기 입력·산출물·로그는 `gen3d-out/none-<세션ID>-…/`(저장소 밖).

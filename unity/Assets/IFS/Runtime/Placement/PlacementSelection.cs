@@ -325,7 +325,7 @@ namespace IFS.SceneSpec.Placement
             if (Overrides == null || Overrides.IsEmpty || spec == null) return e;
             var p = SceneParams.FromSpec(spec, defaults ?? new SceneDefaults(), false);
             Overrides.ApplyTo(p);
-            string model = Overrides.ShapeModel ?? ShapeMapping.Resolve(spec).Model;
+            string model = Overrides.ShapeModel ?? ShapeMapping.Resolve(spec, Overrides).Model;   // 덮어쓴 form.type으로 판정(G73 후속)
             string form = p.GetCategory("form.type");
             if (model != null && form != "blob")
                 e.Add($"finalOverrides: 모양 모형 {model}은 form.type=blob에만 쓸 수 있는데 덮어쓴 뒤 form.type이 {form}임(적용할 수 없음)");

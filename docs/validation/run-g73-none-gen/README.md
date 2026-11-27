@@ -19,3 +19,5 @@ experiment 설정 서버를 띄우고(면담 LLM `gemma4:e4b`·가드 모델 실
 3. CLIP 사람·동물 관문이 '둥근 천'을 `person_like`로 막았습니다(G62 평가의 관문 오탐과 같은 문제).
 
 원본 기록(`chatbot/logs/`, 생성기 입력·로그 `gen3d-out/none-SYN-G73-R*`)은 git 밖입니다.
+
+고친 뒤 다시 확인한 결과(발견 1·2와 생성 프롬프트의 매개어 결함, 캐시 적중 때 모델 내림): `after-fix/README.md`.

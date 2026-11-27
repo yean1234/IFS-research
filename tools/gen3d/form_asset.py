@@ -430,6 +430,33 @@ def _validator():
     return jsonschema.Draft202012Validator(json.loads(SCHEMA_PATH.read_text(encoding="utf-8")))
 
 
+def probe(rows: list[dict], run_name: str, pipeline: str = "sdxl-triposg", seed: int = 0) -> dict:
+    """(G73 후속) 모델을 부르지 않고 run()이 모델을 부를지 미리 본다: 규칙 프롬프트 → 캐시 키 → 캐시 파일 유무.
+    run()과 같은 키 계산(cache_key)을 쓴다. 결과는 OUT_ROOT/<run>/cache-probe.json. 막힌 프롬프트는 모델을 부르지 않는다."""
+    import prompts
+
+    if pipeline != "sdxl-triposg":
+        raise SystemExit("form-asset 계약은 지금 sdxl-triposg만 구현함")
+    t0 = time.perf_counter()
+    cache = assert_outside_repo(CACHE_ROOT / pipeline)
+    pr = {r["id"]: prompts.shape_prompt_for_row(r) for r in rows}
+    models = models_provenance()
+    out_rows = {}
+    for sid, p in pr.items():
+        if p["status"] != "ok":
+            out_rows[sid] = {"status": p["status"], "promptText": p["text"], "cacheKey": None, "cached": None}
+            continue
+        k = cache_key(p["text"], pipeline, models, seed, p["negativeText"])
+        out_rows[sid] = {"status": "ok", "promptText": p["text"], "cacheKey": k[:16],
+                         "cached": (cache / f"{k[:16]}.gen.json").exists()}
+    res = {"pipeline": pipeline, "seed": seed, "rows": out_rows,
+           "modelCallsExpected": any(r["cached"] is False for r in out_rows.values()),
+           "seconds": round(time.perf_counter() - t0, 2)}
+    write_json(assert_outside_repo(OUT_ROOT / run_name) / "cache-probe.json", res)
+    print("cache-probe:", res["modelCallsExpected"], res["seconds"], flush=True)
+    return res
+
+
 def run(rows: list[dict], run_name: str, pipeline: str = "sdxl-triposg", seed: int = 0, repeat: int = 1,
         no_cache: bool = False) -> Path:
     import prompts
@@ -444,7 +471,7 @@ def run(rows: list[dict], run_name: str, pipeline: str = "sdxl-triposg", seed: i
 
     # 1) 규칙 프롬프트(모델 없음)
     t0 = time.perf_counter()
-    pr = {r["id"]: prompts.shape_prompt(r["text"]) for r in rows}
+    pr = {r["id"]: prompts.shape_prompt_for_row(r) for r in rows}     # promptRule mapper면 세션 매퍼 spec을 따름(G73 후속)
     prompt_seconds = round(time.perf_counter() - t0, 2)
     models = models_provenance()
     keys = {sid: cache_key(p["text"], pipeline, models, seed, p["negativeText"])

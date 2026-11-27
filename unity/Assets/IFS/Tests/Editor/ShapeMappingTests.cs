@@ -212,5 +212,42 @@ namespace IFS.SceneSpec.Tests
             var ex02 = SceneSpecJson.Load(Path.Combine(Application.streamingAssetsPath, "IFS", "examples", "EX02.json"));
             Assert.That(ShapeMapping.Resolve(ex02).Status, Is.EqualTo("none"));
         }
+
+        /// <summary>EX01에 모양어 '동그란'(round, 합성)을 넣고 form.type을 비운 spec — 그대로면 Sphere 모형.</summary>
+        internal static SceneSpecV2 RoundWordSpec()
+        {
+            var o = JObject.Parse(File.ReadAllText(Path.Combine(Application.streamingAssetsPath, "IFS", "examples", "EX01.json")));
+            o["form"]["type"] = null;
+            o["_unmapped"] = new JArray(new JObject
+            {
+                ["lemma"] = "동그랗", ["category"] = "shape", ["value"] = new JObject { ["shape"] = "round" }, ["reason"] = "no_scene_param",
+                ["_provenance"] = new JObject { ["source"] = "explicit_lexicon", ["trigger"] = "동그란", ["charSpan"] = new JArray(0, 3),
+                                                ["rule"] = "shapeLexicon.동그랗" },
+            });
+            return SceneSpecJson.Parse(o.ToString());
+        }
+
+        [Test]
+        public void Overridden_form_type_decides_the_shape_model()
+        {
+            // G73 후속: 미리보기 준비 그리기·조절의 form.type=mist 덮어쓰기 + 모양어 '동그란'이 오류(모형 Sphere는 blob에만)로 거부되어
+            // 글 요약으로 내려가던 결함. 덮어쓴 form.type으로 판정하면 모양어는 not_applied_form이고 안개를 그린다.
+            var spec = RoundWordSpec();
+            Assert.That(ShapeMapping.Resolve(spec).Model, Is.EqualTo("Sphere"));
+            Assert.That(ShapeMapping.Resolve(spec, null).ToJson().ToString(), Is.EqualTo(ShapeMapping.Resolve(spec).ToJson().ToString()));
+
+            var mist = SceneOverrideJson.Parse("{\"form.type\":\"mist\",\"form.base\":\"none\"}", out var e1);
+            Assert.That(e1, Is.Empty);
+            var r = ShapeMapping.Resolve(spec, mist);
+            Assert.That(r.Model, Is.Null);
+            Assert.That(r.Status, Is.EqualTo(ShapeMapping.StatusNotAppliedForm));
+            Assert.That(r.FormType, Is.EqualTo("mist"));
+
+            var blob = SceneOverrideJson.Parse("{\"form.type\":\"blob\",\"form.base\":\"none\"}", out _);
+            Assert.That(ShapeMapping.Resolve(spec, blob).Model, Is.EqualTo("Sphere"), "blob 덮어쓰기는 모양 모형 그대로");
+            var color = SceneOverrideJson.Parse("{\"material.brightness\":0.7}", out _);
+            Assert.That(ShapeMapping.Resolve(spec, color).ToJson().ToString(), Is.EqualTo(ShapeMapping.Resolve(spec).ToJson().ToString()),
+                "form.type을 건드리지 않는 덮어쓰기는 판정이 같다");
+        }
     }
 }

@@ -4,6 +4,7 @@ form-asset.v0 사이드카를 GEN3D_OUT/<run>/g62-<pipeline>/assets/에 쓴다(�
 프롬프트·sourceTextSha256은 실제 규칙(tools/gen3d/prompts.shape_prompt)으로 만든다(서버가 같은지 다시 본다).
 환경 변수: FAKE_GEN3D_MODE = ok(기본) | gate(관문 차단 person_like) | failed(사이드카 status failed) | crash(사이드카 없이 exit 3)
            | hang(끝나지 않음 — 시간 초과·취소 시험) | mismatch(프롬프트를 바꿔 씀), FAKE_GEN3D_DELAY = 초(기본 0.5).
+--cache-probe(G73 후속): FAKE_GEN3D_PROBE = miss(기본, 모델을 부를 것) | hit(캐시로 끝남) | fail(exit 4) — <run>/cache-probe.json.
 연구 자료가 아니다(합성 메시).
 """
 import argparse
@@ -46,6 +47,7 @@ def main():
     ap.add_argument("--run", required=True)
     ap.add_argument("--pipeline", required=True)
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--cache-probe", action="store_true")
     a = ap.parse_args()
     mode = os.environ.get("FAKE_GEN3D_MODE", "ok")
     delay = float(os.environ.get("FAKE_GEN3D_DELAY", "0.5"))
@@ -55,6 +57,20 @@ def main():
     gp = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(gp)
     print("fake gen3d", a.run, mode, flush=True)
+    if a.cache_probe:
+        pm = os.environ.get("FAKE_GEN3D_PROBE", "miss")
+        if pm == "fail":
+            sys.exit(4)
+        out = {}
+        for r in rows:
+            p = gp.shape_prompt_for_row(r)
+            out[r["id"]] = {"status": p["status"], "promptText": p["text"], "cacheKey": None,
+                            "cached": (pm == "hit") if p["status"] == "ok" else None}
+        (out_root / a.run / "cache-probe.json").write_text(json.dumps(
+            {"pipeline": a.pipeline, "seed": a.seed, "rows": out,
+             "modelCallsExpected": any(v["cached"] is False for v in out.values()), "seconds": 0.0},
+            ensure_ascii=False, indent=2), encoding="utf-8")
+        return
     if mode == "hang":
         time.sleep(3600)
     time.sleep(delay)
@@ -64,7 +80,7 @@ def main():
     assets = out_root / a.run / f"g62-{a.pipeline}" / "assets"
     assets.mkdir(parents=True, exist_ok=True)
     for r in rows:
-        p = gp.shape_prompt(r["text"])
+        p = gp.shape_prompt_for_row(r)        # 서버와 같은 규칙(promptRule mapper면 세션 spec)
         key = hashlib.sha256(("fake|" + p["text"] + "|" + str(a.seed)).encode("utf-8")).hexdigest()
         aid = key[:16]
         status = {"ok": "ok", "mismatch": "ok", "gate": "blocked", "failed": "failed"}.get(mode, "ok")

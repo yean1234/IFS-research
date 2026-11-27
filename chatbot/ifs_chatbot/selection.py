@@ -552,7 +552,7 @@ class SelectionFlow:
         job = None
         if pre["blockReason"] is None:
             job = self.none_gen.start(self.s.id, text, source_key(self.spec), pre["prompt"]["text"], self._generation_done,
-                                      attempt=n)
+                                      attempt=n, spec=self.spec)     # 생성기도 세션 매퍼 spec으로 같은 규칙 프롬프트(G73 후속)
             if job is None:
                 rec.update(blockReason=ng.B_BUSY, blockDetail=None)
         if job is None:
@@ -574,7 +574,7 @@ class SelectionFlow:
             rec = self._after_none()
             if rec is None or self.data is None:
                 return
-            for k in ("run", "endedAt", "seconds", "exitCode", "llmUnload", "timing"):
+            for k in ("run", "endedAt", "seconds", "exitCode", "llmUnload", "timing", "cacheProbe"):
                 rec[k] = res.get(k)
             if rec["startedAt"] is None:
                 rec["startedAt"] = res.get("startedAt")

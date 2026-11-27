@@ -4,6 +4,11 @@
 - 프롬프트는 규칙만: tools/gen3d/prompts.shape_prompt(Kiwi + 한→영 고정 사전, 말한 형태 낱말만, 낱말마다 charSpan).
   LLM·번역 모델을 쓰지 않는다. 이 모듈은 그 함수를 같은 프로세스에서 불러 차단을 먼저 판정하고(모델 호출 없음),
   생성기 프로세스가 사이드카에 적은 프롬프트가 같은지 다시 본다(다르면 실패).
+  (G73 후속) 세션의 매퍼 v2 spec을 함께 넘긴다(mapper_spec, 생성기 입력에는 promptRule mapper + mapperSpec).
+  매퍼가 형태에서 버린 낱말(움직임 비유의 매개어 G71, 장소 용법 G74-c, 직접 진술에 밀린 형상 낱말 G71-b, 부정)은 프롬프트에
+  넣지 않고 prompt.dropped에 사유와 함께 남긴다. G62 기본 후보 경로는 텍스트만 넘겨 예전 규칙 그대로다.
+- (G73 후속) 생성기가 캐시로 끝날 것을 미리 알 수 있으면(같은 프롬프트·seed·모델의 자산이 이미 있음 — 생성기 --cache-probe,
+  모델을 부르지 않음) 면담·가드 모델을 내리지 않는다(llmUnload.skipped = cache_hit_expected).
 - 형태를 말하지 않았거나(no_shape_stated) 사람·얼굴·동물·메시로 그릴 수 없는 범주면(excluded_category, G50 형태 막음,
   안개·불꽃) 만들지 않는다. 사유를 기록하고 기존 none 경로(0번 후보로 조절)로 간다.
 - 생성 결과는 '생성' 출처(generated_after_none)의 후보일 뿐이다. 참여자가 고른 경우에만 장면에 쓰고(selection.py),
@@ -81,10 +86,11 @@ def _load_prompts():
     return _prompts_mod
 
 
-def shape_prompt(text: str) -> dict:
-    """규칙 프롬프트(tools/gen3d/prompts.shape_prompt). 같은 텍스트 → 같은 결과. Kiwi 분석기를 함께 쓰므로 잠그고 부른다."""
+def shape_prompt(text: str, spec: dict | None = None) -> dict:
+    """규칙 프롬프트(tools/gen3d/prompts.shape_prompt). 같은 (텍스트, spec) → 같은 결과. Kiwi 분석기를 함께 쓰므로 잠그고 부른다.
+    spec을 주면 매퍼 규칙(그 spec이 형태에서 버린 낱말은 빼고 dropped에 사유)."""
     with _prompts_lock:
-        return _load_prompts().shape_prompt(text)
+        return _load_prompts().shape_prompt(text, mapper_spec=spec)
 
 
 def prompt_record(p: dict) -> dict:
@@ -95,6 +101,7 @@ def prompt_record(p: dict) -> dict:
             "status": p.get("status"), "blockReason": p.get("blockReason"), "blockDetail": p.get("blockDetail"),
             "lexiconVersion": p.get("lexiconVersion"), "builderVersion": p.get("builderVersion"),
             "templateVersion": p.get("templateVersion"), "sourceTextSha256": p.get("sourceTextSha256"),
+            "promptRule": p.get("promptRule"), "mapperBuilder": p.get("mapperBuilder"),
             "pluralStated": p.get("pluralStated"), "thinRisk": p.get("thinRisk"),
             "familiarObjectStated": p.get("familiarObjectStated")}
 
@@ -107,8 +114,10 @@ def _resolve(p: str) -> Path:
 class NoneGenJob:
     """생성 한 번. cancel()은 프로세스를 끈다(참여자가 기다리지 않고 넘어감·철회·서버 종료)."""
 
-    def __init__(self, session_id: str, text: str, key: str, prompt_text: str, seed: int = 0, attempt: int = 0):
+    def __init__(self, session_id: str, text: str, key: str, prompt_text: str, seed: int = 0, attempt: int = 0,
+                 spec: dict | None = None):
         self.session_id, self.text, self.key, self.prompt_text = session_id, text, key, prompt_text
+        self.spec = spec                    # 세션 매퍼 spec(있으면 생성기도 매퍼 규칙으로 프롬프트를 다시 만든다)
         self.seed, self.attempt = int(seed), int(attempt)
         self.cancel_ev = threading.Event()
         self.cancel_reason: str | None = None
@@ -204,7 +213,7 @@ class NoneGenService:
         if not isinstance(confirmed_text, str) or not confirmed_text.strip():
             return block(B_NO_TEXT)
         try:
-            p = shape_prompt(confirmed_text)
+            p = shape_prompt(confirmed_text, spec)          # 세션 매퍼(v2) 판단을 따름(G73 후속)
         except (Exception, SystemExit) as exc:  # noqa: BLE001 — 프롬프트를 못 만들면 만들지 않는다(fail closed)
             return block(B_PROMPT_ERROR, f"{type(exc).__name__}: {exc}"[:300])
         out["prompt"] = prompt_record(p)
@@ -289,12 +298,13 @@ class NoneGenService:
     def seed_for(self, attempt: int) -> int:
         return self.seed + int(attempt)
 
-    def start(self, session_id: str, text: str, key: str, prompt_text: str, on_done, attempt: int = 0) -> NoneGenJob | None:
+    def start(self, session_id: str, text: str, key: str, prompt_text: str, on_done, attempt: int = 0,
+              spec: dict | None = None) -> NoneGenJob | None:
         """백그라운드로 시작. 이미 돌고 있으면 None. on_done(result)은 생성 스레드에서 한 번 불린다."""
         with self.lock:
             if self.active is not None or self._closed:
                 return None
-            job = NoneGenJob(session_id, text, key, prompt_text, self.seed_for(attempt), attempt)
+            job = NoneGenJob(session_id, text, key, prompt_text, self.seed_for(attempt), attempt, spec)
             self.active = job
 
         def work():
@@ -330,20 +340,32 @@ class NoneGenService:
             res.update(status=status, endedAt=now_iso(), seconds=round(time.monotonic() - t0, 2), **kw)
             return res
 
-        # 1) GPU 비우기(면담·가드 모델 내림)
-        res["llmUnload"] = self.unload_models()
-        res["timing"]["unloadS"] = round(time.monotonic() - t0, 2)
-        if job.cancel_ev.is_set():
-            return finish(CANCELLED, error=job.cancel_reason)
-        # 2) 입력(저장소 밖 assets_dir/<run>/inputs/sentences.json — tools/gen3d/inputs.py와 같은 형식)
+        # 1) 입력(저장소 밖 assets_dir/<run>/inputs/sentences.json — tools/gen3d/inputs.py와 같은 형식).
+        #    세션 매퍼 spec이 있으면 promptRule mapper + mapperSpec(생성기도 같은 매퍼 규칙으로 프롬프트를 만든다)
         run_dir = self.root / run
         inputs = run_dir / "inputs"
         inputs.mkdir(parents=True, exist_ok=True)
-        (inputs / "sentences.json").write_text(json.dumps([{"id": INPUT_ID, "text": job.text, "kind": "session_after_none",
-                                                            "source": None}], ensure_ascii=False, indent=2) + "\n",
-                                               encoding="utf-8")
+        row = {"id": INPUT_ID, "text": job.text, "kind": "session_after_none", "source": None}
+        if job.spec is not None:
+            row.update(promptRule="mapper", mapperSpec=job.spec)
+        (inputs / "sentences.json").write_text(json.dumps([row], ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         cmd = [str(self.python), str(self.script), "--run", run, "--pipeline", self.pipeline, "--seed", str(job.seed)]
         env = {**os.environ, "GEN3D_OUT": str(self.root), "PYTHONIOENCODING": "utf-8"}
+        # 2) 캐시로 끝날지 미리 본다(모델 호출 없음). 끝난다면 면담·가드 모델을 내리지 않는다(내렸다 올리는 시간·다음 세션 적재 대기 없음)
+        probe = self._cache_probe(cmd, env, run_dir, job, t0)
+        res["cacheProbe"] = probe
+        res["timing"]["probeS"] = round(time.monotonic() - t0, 2)
+        if job.cancel_ev.is_set():
+            return finish(CANCELLED, error=job.cancel_reason)
+        # 3) GPU 비우기(면담·가드 모델 내림) — 캐시 적중이 확실하지 않으면 늘 내린다
+        if probe.get("modelCallsExpected") is False and probe.get("promptText") == job.prompt_text:
+            res["llmUnload"] = {"at": now_iso(), "skipped": "cache_hit_expected", "models": [],
+                                "loadedBefore": None, "loadedAfter": None}
+        else:
+            res["llmUnload"] = self.unload_models()
+        res["timing"]["unloadS"] = round(time.monotonic() - t0, 2)
+        if job.cancel_ev.is_set():
+            return finish(CANCELLED, error=job.cancel_reason)
         logf = open(run_dir / "generator.log", "wb")
         try:
             flags = getattr(subprocess, "CREATE_NO_WINDOW", 0) if os.name == "nt" else 0
@@ -389,6 +411,51 @@ class NoneGenService:
         why = "; ".join(f"{r['reason']}" for r in lk["rejected"]) or "no_sidecar"
         return finish(FAILED, error=f"exit {code}: {why}; {self._log_tail(run_dir)}"[:300])
 
+    PROBE_TIMEOUT_S = 60.0
+
+    def _cache_probe(self, cmd: list[str], env: dict, run_dir: Path, job: NoneGenJob, t0: float) -> dict:
+        """생성기 --cache-probe(모델을 부르지 않음: 규칙 프롬프트 → 캐시 키 → 캐시 파일 유무) → run_dir/cache-probe.json.
+        → {modelCallsExpected: bool | None, promptText, keys, seconds, error}. 알 수 없으면 modelCallsExpected None(모델을 내림)."""
+        out = {"modelCallsExpected": None, "promptText": None, "seconds": None, "error": None}
+        tp = time.monotonic()
+        limit = min(self.PROBE_TIMEOUT_S, max(1.0, self.timeout_s - (tp - t0) - 5))
+        try:
+            flags = getattr(subprocess, "CREATE_NO_WINDOW", 0) if os.name == "nt" else 0
+            with open(run_dir / "cache-probe.log", "wb") as lf:
+                with job.lock:
+                    if job.cancel_ev.is_set():
+                        out["error"] = "cancelled"
+                        return out
+                    job.proc = subprocess.Popen(cmd + ["--cache-probe"], cwd=str(REPO_ROOT), env=env, stdout=lf,
+                                                stderr=subprocess.STDOUT, stdin=subprocess.DEVNULL, creationflags=flags)
+                proc = job.proc
+                while True:
+                    try:
+                        proc.wait(timeout=0.25)
+                        break
+                    except subprocess.TimeoutExpired:
+                        pass
+                    if job.cancel_ev.is_set() or time.monotonic() - tp > limit:
+                        _kill(proc)
+                        proc.wait(timeout=30)
+                        out["error"] = "cancelled" if job.cancel_ev.is_set() else f"probe {limit:g}초를 넘김"
+                        return out
+            with job.lock:
+                job.proc = None
+            pf = run_dir / "cache-probe.json"
+            if proc.returncode != 0 or not pf.is_file():
+                out["error"] = f"exit {proc.returncode}: {self._log_tail(run_dir, name='cache-probe.log')}"[:300]
+                return out
+            d = json.loads(pf.read_text(encoding="utf-8"))
+            row = (d.get("rows") or {}).get(INPUT_ID) or {}
+            out.update(modelCallsExpected=d.get("modelCallsExpected"), promptText=row.get("promptText"),
+                       cacheKey=row.get("cacheKey"), cached=row.get("cached"))
+        except Exception as exc:  # noqa: BLE001 — 미리 보기를 못 하면 예전처럼 내린다
+            out["error"] = f"{type(exc).__name__}: {exc}"[:300]
+        finally:
+            out["seconds"] = round(time.monotonic() - tp, 2)
+        return out
+
     @staticmethod
     def _sidecar(run_dir: Path) -> dict | None:
         for p in sorted(run_dir.rglob(f"{INPUT_ID}.form-asset.json")):
@@ -399,9 +466,9 @@ class NoneGenService:
         return None
 
     @staticmethod
-    def _log_tail(run_dir: Path, n: int = 200) -> str:
+    def _log_tail(run_dir: Path, n: int = 200, name: str = "generator.log") -> str:
         try:
-            raw = (run_dir / "generator.log").read_bytes()[-n:]
+            raw = (run_dir / name).read_bytes()[-n:]
             return raw.decode("utf-8", "replace").replace("\r", " ").replace("\n", " ").strip()
         except OSError:
             return ""
