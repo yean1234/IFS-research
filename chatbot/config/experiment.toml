@@ -10,6 +10,7 @@
 
 [interview]
 condition = "chatbot"                         # 조건 2 · 챗봇 면담(LLM은 면담 질문만 만든다, 원칙 1). 두 집단 차이는 헤드셋 배치 구간뿐(뼈대 2절)
+lock_condition = true                         # ◆ 면담 조건 고정: 시작 화면에 조건 선택 없음, 다른 조건 요청은 서버가 거절(409), 기록 헤더 conditionLocked
 protocol = "elicitation_protocol.v1.5.json"   # ◆ D9: bridge 단계 · imageSignal · find 틀 제한(1.5.0, 첫 질문은 1.4.0과 같음 G60)
 prompt_version = "1.1.0"                      # ◆ D9: stage_find·stage_flesh_out 블록 수정(chatbot/prompts/v1.1.0/)
 lexicon_overlay = "layer1_interview.v0.json"  # ◆ D9: 면담용 감정어 '기대'(매퍼 v2의 사전은 바꾸지 않음)

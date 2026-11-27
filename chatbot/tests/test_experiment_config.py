@@ -30,8 +30,9 @@ def scenario(name: str) -> dict:
 # ── 설정 조합 ────────────────────────────────────────────────────────────────
 def test_experiment_config_is_bridge_plus_v4_plus_backbone_values():
     exp, bridge, v4 = load_config("experiment"), load_config("bridge"), load_config("v4")
-    # 면담·검증기 = bridge(D9, 프로토콜 1.5)
-    assert exp.interview == bridge.interview
+    # 면담·검증기 = bridge(D9, 프로토콜 1.5), 면담 조건 고정만 더함
+    assert exp.interview == replace(bridge.interview, lock_condition=True)
+    assert bridge.interview.lock_condition is False
     assert exp.interview.protocol == "elicitation_protocol.v1.5.json" and exp.interview.prompt_version == "1.1.0"
     assert exp.validator == bridge.validator
     # 가드 = bridge, 가드 모델 필수만 pilot과 같게
@@ -55,6 +56,9 @@ def test_existing_configs_unchanged_by_experiment_profile():
     assert load_config("v4").selection.participant_draft_banner is True
     assert load_config("v4-gen3d").gen3d.enabled is True
     assert load_config().selection.enabled is False
+    # 면담 조건 고정은 experiment.toml만 켠다
+    for name in ("default", "pilot", "v4", "v4-gen3d", "bridge", "mac8gb"):
+        assert load_config(name).interview.lock_condition is False, name
 
 
 # ── 모의 LLM으로 끝까지 ─────────────────────────────────────────────────────
@@ -117,6 +121,44 @@ def test_experiment_participant_view_hides_draft_banner(exp_rt):
     ui = ui_config(exp_rt.selection_protocol, exp_rt.candidate_table, exp_rt.preview.info(), True,
                    exp_rt.cfg.selection.participant_draft_banner)
     assert ui["participantDraftBanner"] is False
+
+
+# ── 면담 조건 고정([interview] lock_condition) ──────────────────────────────
+def test_experiment_locks_condition_screen_server_and_log(exp_rt):
+    from fastapi.testclient import TestClient
+    from ifs_chatbot.server import create_app
+    c = TestClient(create_app(runtime=exp_rt, warmup=False))
+    # 시작 화면: 조건 선택이 없고 설정 조건을 한 줄로만
+    page = c.get("/").text
+    assert 'name="condition"' not in page and 'value="static"' not in page and "조건 1" not in page
+    assert 'id="condition-locked"' in page and 'data-condition="chatbot"' in page
+    assert "면담: 조건 2 · AI 챗봇 면담 (설정으로 고정)" in page
+    h = c.get("/api/health").json()
+    assert h["conditionLocked"] is True and h["defaultCondition"] == "chatbot"
+    # 서버: 다른 조건 요청은 거절(세션을 만들지 않음), 같은 조건·빈 조건은 챗봇으로
+    r = c.post("/api/sessions", json={"condition": "static", "sessionId": "SYN-LOCK-STATIC"})
+    assert r.status_code == 409 and "lock_condition" in r.json()["detail"]
+    assert "SYN-LOCK-STATIC" not in exp_rt.sessions
+    for sid, body in (("SYN-LOCK-EMPTY", {}), ("SYN-LOCK-CHATBOT", {"condition": "chatbot"})):
+        r = c.post("/api/sessions", json={**body, "sessionId": sid})
+        assert r.status_code == 201 and r.json()["condition"]["id"] == "chatbot"
+        log = exp_rt.sessions[sid].log.data
+        assert log["elicitationCondition"] == "chatbot" and log["conditionLocked"] is True
+
+
+def test_unlocked_config_still_offers_both_conditions(tmp_path):
+    from fastapi.testclient import TestClient
+    from ifs_chatbot.server import create_app
+    cfg = load_config("bridge").with_overrides(**{
+        "llm.backend": "offline", "guard.model_backend": "none", "preview.mode": "none", "session.log_dir": str(tmp_path)})
+    rt = Runtime(cfg)
+    c = TestClient(create_app(runtime=rt, warmup=False))
+    page = c.get("/").text
+    assert 'value="static"' in page and 'value="chatbot"' in page and 'id="condition-locked"' not in page
+    assert "conditionLocked" not in c.get("/api/health").json()
+    r = c.post("/api/sessions", json={"condition": "static", "sessionId": "SYN-UNLOCK-STATIC"})
+    assert r.status_code == 201 and r.json()["condition"]["id"] == "static"
+    assert "conditionLocked" not in rt.sessions["SYN-UNLOCK-STATIC"].log.data
 
 
 # ── 실제 로컬 LLM(선택) ──────────────────────────────────────────────────────

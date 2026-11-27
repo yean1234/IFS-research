@@ -18,6 +18,10 @@ class InterviewConfig:
     lexicon_overlay: str = ""
     # anchor_doe_root: 인용 후보에 '-되' 어근 규칙('기대되/VV' → '기대')을 더한다. '-하' 어근 규칙과 같은 꼴
     anchor_doe_root: bool = False
+    # lock_condition: 면담 조건을 위 condition 값으로 고정한다. 켜면 시작 화면에 조건 선택이 없고(설정 조건을 한 줄로만 표시),
+    # 세션 만들기 요청의 condition이 설정과 다르면 받지 않는다(409). 세션 기록 헤더에 conditionLocked: true가 남는다.
+    # 기본 꺼짐 — 끄면 화면·서버·기록이 예전과 같다. 본 실험 설정(experiment.toml)만 켠다
+    lock_condition: bool = False
 
 
 @dataclass(frozen=True)

@@ -9,7 +9,7 @@
 | --- | --- | --- | --- |
 | `GET /api/health` | — | 모델·가드·사전·프롬프트 버전, 경고 | 시작 화면, 상태 표시 |
 | `GET /api/protocol` | — | `shared/protocol/elicitation_protocol.v1.json` 전체 | Unity가 VR 단계 고정 문구를 같은 출처에서 읽기 |
-| `POST /api/sessions` | `{"condition": "chatbot"\|"static", "sessionId": "P07", "participantId": "P07"}` | 세션 화면(아래) · 201 | 세션 만들기. ID를 비우면 자동 생성. `participantId`(선택)는 장면 파일 `meta`에만 쓰인다 |
+| `POST /api/sessions` | `{"condition": "chatbot"\|"static", "sessionId": "P07", "participantId": "P07"}` | 세션 화면(아래) · 201 | 세션 만들기. ID를 비우면 자동 생성. `participantId`(선택)는 장면 파일 `meta`에만 쓰인다. 설정 `[interview] lock_condition = true`(본 실험 `experiment.toml`)이면 설정과 다른 `condition`은 `409`(빈 값은 설정 조건), 세션 기록에 `conditionLocked: true` |
 | `GET /api/sessions` | — | 세션 목록 | 연구자 화면 |
 | `GET /api/sessions/{id}` | — | 세션 화면 | 다시 그리기 |
 | `POST /api/sessions/{id}/start` | — | 세션 화면 | 안내 뒤 [시작] |

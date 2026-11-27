@@ -233,6 +233,9 @@ class Runtime:
             h["validator"]["predicateAsNoun"] = True
         if self.cfg.interview.anchor_doe_root:
             h["protocol"]["anchorDoeRoot"] = True
+        # 면담 조건 고정([interview] lock_condition)을 켰을 때만 키를 더한다(기존 설정의 기록은 그대로)
+        if self.cfg.interview.lock_condition:
+            h["conditionLocked"] = True
         return h
 
     def info(self) -> dict:
@@ -240,6 +243,7 @@ class Runtime:
             "config": self.cfg.source,
             "conditions": {c: self.protocol.condition(c)["label"] for c in self.protocol.conditions()},
             "defaultCondition": self.cfg.interview.condition,
+            **({"conditionLocked": True} if self.cfg.interview.lock_condition else {}),   # 켰을 때만(꺼지면 출력 그대로)
             "backend": {"type": self.cfg.llm.backend, "ok": self.backend_ok, "message": self.backend_msg,
                         **self.backend.info()},
             "guard": self.guard.info(),
@@ -263,6 +267,11 @@ class Runtime:
 
     def new_session(self, condition: str | None = None, session_id: str | None = None,
                     participant_id: str | None = None) -> "Session":
+        locked = self.cfg.interview.condition
+        if self.cfg.interview.lock_condition and condition and condition != locked:
+            # 실험 설정: 면담 조건은 설정값으로 고정. 다른 조건 요청은 덮어쓰지 않고 거절한다(실험자가 바로 알 수 있게)
+            raise SessionError(f"면담 조건이 설정으로 '{locked}'에 고정되어 있어 '{condition}' 조건으로는 세션을 만들 수 없습니다"
+                               "([interview] lock_condition).")
         condition = condition or self.cfg.interview.condition
         if session_id is None:
             session_id = datetime.now().strftime("S%Y%m%d-%H%M%S-") + secrets.token_hex(2)
