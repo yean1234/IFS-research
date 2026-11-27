@@ -20,7 +20,7 @@ from ifs_chatbot.paths import SCENARIO_DIR
 from ifs_chatbot.postinterview import PostInterviewProtocol, PostInterviewStore
 from ifs_chatbot.simulate import check_expect, drive, session_metrics
 
-SCENARIOS = ("emotion_bridge_x", "emotion_bridge_plain")
+SCENARIOS = ("g70_emotion_bridge_x", "g70_emotion_bridge_plain")   # 프로토콜 1.6(G70) 판. 1.5 판은 bridge 설정 시나리오
 
 
 def scenario(name: str) -> dict:
@@ -30,13 +30,15 @@ def scenario(name: str) -> dict:
 # ── 설정 조합 ────────────────────────────────────────────────────────────────
 def test_experiment_config_is_bridge_plus_v4_plus_backbone_values():
     exp, bridge, v4 = load_config("experiment"), load_config("bridge"), load_config("v4")
-    # 면담·검증기 = bridge(D9, 프로토콜 1.5), 면담 조건 고정만 더함
-    assert exp.interview == replace(bridge.interview, lock_condition=True)
+    # 면담·검증기 = bridge(D9) + 면담 조건 고정 + G70(프로토콜 1.6·프롬프트 v1.2.0). bridge는 1.5·v1.1.0 그대로
+    assert exp.interview == replace(bridge.interview, lock_condition=True, protocol="elicitation_protocol.v1.6.json",
+                                    prompt_version="1.2.0")
     assert bridge.interview.lock_condition is False
-    assert exp.interview.protocol == "elicitation_protocol.v1.5.json" and exp.interview.prompt_version == "1.1.0"
+    assert bridge.interview.protocol == "elicitation_protocol.v1.5.json" and bridge.interview.prompt_version == "1.1.0"
     assert exp.validator == bridge.validator
-    # 가드 = bridge, 가드 모델 필수만 pilot과 같게
-    assert exp.guard == replace(bridge.guard, required=True)
+    # 가드 = bridge, 가드 모델 필수만 pilot과 같게, 안전 사전은 G70-f 0.3.0(bridge는 0.2.0 그대로)
+    assert exp.guard == replace(bridge.guard, required=True, safety_lexicon="safety_ko.v0.3.json")
+    assert bridge.guard.safety_lexicon == "safety_ko.v0.2.json"
     assert load_config("pilot").guard.required is True
     # LLM·표류·미리보기 = v4
     assert exp.llm == v4.llm and exp.drift == v4.drift and exp.preview == v4.preview
@@ -94,8 +96,9 @@ def test_experiment_flow_offline_interview_to_postinterview(exp_rt, name, sid):
     # 면담: 시나리오 기대(다리 질문 경로 포함) 그대로
     assert check_expect(sc, session_metrics(s), s) == []
     assert s.log.data["capture"]["bridge"]["asked"] is True
-    assert s.log.data["protocol"]["protocolVersion"] == "1.5.0"
-    assert s.log.data["protocol"]["promptVersion"] == "1.1.0"
+    assert s.log.data["protocol"]["protocolVersion"] == "1.6.0"
+    assert s.log.data["protocol"]["promptVersion"] == "1.2.0"
+    assert s.log.data["capture"]["bodyRelation"] == {"status": "not_asked"}      # G70: location 없음
     # 확정 → 세션 안에서 바로 매퍼 v2 spec(bridge.toml처럼 v1이 아님, 이음매 없이 후보 단계가 v2를 씀)
     spec_path = s.log.data["sceneSpec"]["path"]
     spec_bytes = open(spec_path, "rb").read()

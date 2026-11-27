@@ -401,7 +401,7 @@ function renderExtract(log) {
   const parts = [];
   parts.push(el("h3", {}, "Find 단계 기록"));
   parts.push(kv([
-    ["위치(bodyRelation)", cap.bodyRelation ? `${cap.bodyRelation.text} → ${cap.bodyRelation.part || "?"} · ${cap.bodyRelation.layer || "?"} (${cap.bodyRelation.ifsLocation || cap.bodyRelation.status})` : null],
+    ["위치(bodyRelation)", cap.bodyRelation && cap.bodyRelation.status === "not_asked" ? "묻지 않음(프로토콜 1.6, G70)" : cap.bodyRelation ? `${cap.bodyRelation.text} → ${cap.bodyRelation.part || "?"} · ${cap.bodyRelation.layer || "?"} (${cap.bodyRelation.ifsLocation || cap.bodyRelation.status})` : null],
     ["첫 반응 양식", cap.findModality ? `${cap.findModality.labels.join(", ")} (휴리스틱, 참여자에게 안 보임)` : null],
     ["차원 프로브", cap.probes ? `물음: ${cap.probes.asked.join(", ") || "없음"} / 이미 나와서 건너뜀: ${cap.probes.skippedAsCovered.join(", ") || "없음"}` : null],
   ]));

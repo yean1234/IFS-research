@@ -135,11 +135,12 @@ def anchor_candidates(texts: list[str], lexicon: Lexicon, analyzer: Analyzer, sa
 
 
 # ── 다리 질문의 X (D9, 프로토콜 1.5 imageBridge.xSelection) ─────────────────────
-SURFACE_FALLBACK_POS = {"NNG", "XR"}   # 대체 경로는 명사·어근 표제어만(활용형 용언을 X로 쓰지 않는 규칙과 같게)
+SURFACE_FALLBACK_POS = {"NNG", "XR"}
+HA_SYLLABLES = "하해했한할함합"     # 1.6 일반명사 X 대체 경로에서 '-하' 활용 뒤 글자   # 대체 경로는 명사·어근 표제어만(활용형 용언을 X로 쓰지 않는 규칙과 같게)
 
 
 def _surface_fallback(text: str, cat: str, lexicon: Lexicon, analyzer: Analyzer,
-                      safety: SafetyLexicon) -> tuple[str, int] | None:
+                      safety: SafetyLexicon, pos: set[str] | frozenset[str] = frozenset(SURFACE_FALLBACK_POS)) -> tuple[str, int] | None:
     """분석기가 표제어를 나눠('불안' → '불/NNG + 안/MAG') 인용 후보가 없을 때, 그 범주 명사·어근 표제어가 원문에 글자 그대로
     나오면 그 말. 두 글자 이상이고, 원문 형태소 경계에 맞아야 한다('화분'의 '화'처럼 한 형태소 안쪽 일부는 쓰지 않음)."""
     from .extract import inside_terms   # extract는 anchors를 함수 안에서만 부른다(순환 없음)
@@ -147,9 +148,11 @@ def _surface_fallback(text: str, cat: str, lexicon: Lexicon, analyzer: Analyzer,
     text = normalize(text)
     toks = analyzer.tokens(text)
     starts, ends = {t.start for t in toks}, {t.end for t in toks}
-    for s, e, w in sorted(inside_terms(text, lexicon, {cat}, SURFACE_FALLBACK_POS), key=lambda t: (t[0], -(t[1] - t[0]))):
+    for s, e, w in sorted(inside_terms(text, lexicon, {cat}, set(pos)), key=lambda t: (t[0], -(t[1] - t[0]))):
         if len(w) < 2 or s not in starts or e not in ends or w in ANCHOR_STOP or safety.has_depth_marker(w):
             continue
+        if "XR" not in pos and text[e:e + 1] in HA_SYLLABLES:
+            continue     # 1.6(일반명사만): 원문이 '불안해요'처럼 '-하' 활용이면 어근이라 쓰지 않는다(G70-c)
         return w, s
     return None
 
@@ -158,7 +161,8 @@ BRIDGE_X_KINDS = ("noun", "root")
 
 
 def bridge_anchor(answers: dict[str, str | None], lexicon: Lexicon, analyzer: Analyzer, safety: SafetyLexicon,
-                  order=BRIDGE_X_ORDER, kinds=BRIDGE_X_KINDS, doe_root: bool = False) -> tuple[str, dict]:
+                  order=BRIDGE_X_ORDER, kinds=BRIDGE_X_KINDS, doe_root: bool = False,
+                  surface_pos=SURFACE_FALLBACK_POS) -> tuple[str, dict]:
     """다리 질문 「그 '{X}'은(는) 마치 무엇 같나요?」의 X. 찾지 못하면 ""(X 없는 고정 문장을 쓴다).
 
     차례: focus_hold 답의 감각어(명사·어근) → opening 답의 감정어(명사·어근). 발화 안에서는 앞에 나온 것.
@@ -169,6 +173,9 @@ def bridge_anchor(answers: dict[str, str | None], lexicon: Lexicon, analyzer: An
 
     기록(세션 로그 capture.bridge.xSelection): X가 있으면 basis(고른 근거: 어느 답·범주·종류·원문 위치), 없으면
     noXReason(답마다 왜 없었는지). tried에는 답마다 본 후보와 버린 후보(rejected: 범주가 다른 인용 후보)를 남긴다.
+
+    프로토콜 1.6(G70-c)은 kinds = ("noun",), surface_pos = {"NNG"}로 부른다(일반명사만, '-하'·'-되' 어근 제외).
+    기본값은 1.5와 같다.
     """
     tried: list[dict] = []
     for source, cat in order:
@@ -191,8 +198,10 @@ def bridge_anchor(answers: dict[str, str | None], lexicon: Lexicon, analyzer: An
                      "kind": pick.kind, "charSpan": [start, start + len(pick.text)]}
             return pick.text, {"from": source, "category": cat, "kind": pick.kind, "basis": basis, "tried": tried}
         why = "predicate_only" if any(a.kind == "predicate" for a in cands) else "none_in_category"
+        if why == "none_in_category" and "root" not in kinds and any(a.kind == "root" for a in cands):
+            why = "root_only"     # 1.6(kinds = noun): 어근('답답')만 있음. 일반명사만 X로 쓴다(G70-c). 1.5는 여기에 오지 않는다
         if why == "none_in_category":
-            sx = _surface_fallback(text, cat, lexicon, analyzer, safety)
+            sx = _surface_fallback(text, cat, lexicon, analyzer, safety, surface_pos)
             if sx is not None:
                 word, start = sx
                 tried.append({"from": source, "category": cat, "found": word, "kind": "lexicon_surface",

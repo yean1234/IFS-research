@@ -1,0 +1,2 @@
+# 현재 단계: FOCUS  (최대 3회)
+참여자가 말한 것 하나에 주의를 모읍니다. where, what_kind, anything_else를 씁니다.

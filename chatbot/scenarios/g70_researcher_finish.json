@@ -1,0 +1,39 @@
+{
+  "id": "g70_researcher_finish",
+  "title": "연구 책임자 시험 입력 ② — 첫 답이 바람(빨리 끝내고 싶다). find LLM 건너뜀·'그 느낌' 다리·location 없음 확인용",
+  "source": "연구 책임자 시험 입력(2026-11-27, experiment 설정·프로토콜 1.5 시점에 연구자 본인이 시험 삼아 적은 문장). 참여자 자료가 아니다. G70 대응은 프로토콜 1.6(docs/chatbot-design.md 5-4). config/experiment.toml에서만 돈다",
+  "researcherTestInput": true,
+  "config": "experiment",
+  "condition": "chatbot",
+  "replies": [
+    "빨리 끝내고 싶다",
+    "마음 속에",
+    "빨리 끝내고 싶다는 간절한 마음",
+    "역동적인 형체?",
+    "바람이 불면 천이 펄럭이듯이 물체가 계속 꾸물꾸물 움직이는 느낌",
+    "기본 모형은 구형인 것 같아",
+    "동그란 원?",
+    "크기는 보통 크기고 모양은 구체",
+    "색은 밝은 회색, 밝기는 무광"
+  ],
+  "expect": {
+    "endedBy": "completed",
+    "sourcesInclude": [
+      "fixed:bridge_feeling"
+    ],
+    "sourcesExclude": [
+      "fixed:location",
+      "bridge:like_what"
+    ],
+    "textsExclude": [
+      "그것"
+    ],
+    "maxTemplateCount": {
+      "like_what": 1
+    },
+    "noConsecutiveTemplate": true,
+    "bodyRelationStatus": "not_asked",
+    "findLlmAsked": false
+  },
+  "note": "1.5에서는 「빨리 끝내고 싶다」 뒤 location(몸 안/표면/주변)을 물었고 답은 선택지 밖 「마음 속에」였다. 1.6은 location이 없고, 첫 답에 감정·감각 사전어와 형상 신호가 없어 find LLM을 건너뛴다(G70-e). 다리는 X 없는 「그 느낌이 눈에 보이는 무언가라면, 마치 무엇 같을까요?」. 대사 순서는 1.5 세션 그대로라 1.6에서는 답과 질문의 짝이 다르다(흐름 점검용)."
+}

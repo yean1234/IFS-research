@@ -32,6 +32,9 @@ class PromptContext:
     asked: list[dict] = field(default_factory=list)       # [{"template":..., "utterance":...}]
     feedback: list[str] = field(default_factory=list)     # 사람이 읽을 수 있는 재생성 사유
     anchor_candidates: list = field(default_factory=list) # anchors.Anchor — 참여자 원문의 낱말·짧은 구
+    # 프롬프트 v1.2.0(프로토콜 1.6)의 context.txt만 쓰는 맥락. 예전 context.txt에는 자리가 없어 무시된다(str.format)
+    covered_dims: list = field(default_factory=list)      # [{"dim": "shape", "words": ["안개"]}] 참여자가 이미 말한 차원(매퍼 슬롯 + 형상 신호)
+    used_templates: list = field(default_factory=list)    # [{"template": "like_what", "count": 1, "blocked": "max_per_session:1"}]
 
 
 _ROLE_LABEL = {"guide": "안내(고정)", "interviewer": "면담자", "participant": "참여자"}
@@ -69,7 +72,15 @@ class PromptSet:
                 "\n[다시 쓰기] 바로 앞 시도는 아래 검사에 걸려 참여자에게 보내지 않았습니다. 같은 문제를 피해 다시 쓰세요.\n"
                 + "\n".join(f"- {f}" for f in ctx.feedback) + "\n"
             )
+        covered_lines = "\n".join(
+            f"- {d['dim']}" + (" (" + ", ".join(f"'{w}'" for w in d.get("words", [])) + ")" if d.get("words") else "")
+            for d in ctx.covered_dims) or "(없음)"
+        used_lines = "\n".join(
+            f"- {u['template']} {u.get('count', 0)}회" + (f" — 지금 쓸 수 없음({u['blocked']})" if u.get("blocked") else "")
+            for u in ctx.used_templates) or "(없음)"
         return self.context_template.format(
+            covered_dims=covered_lines,
+            used_templates=used_lines,
             transcript=transcript,
             stage=ctx.stage,
             turn_no=ctx.turn_no,

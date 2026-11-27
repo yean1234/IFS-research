@@ -1,0 +1,36 @@
+{
+  "id": "g70_emotion_bridge_plain",
+  "title": "활용형 감정어로 시작 — X를 고르지 못해 '그 느낌' 다리 질문(1.6), 답이 '모르겠어요'면 더 묻지 않음",
+  "source": "G70-c(docs/chatbot-design.md 5-4). config/experiment.toml에서만 돈다",
+  "config": "experiment",
+  "condition": "chatbot",
+  "replies": [
+    "설레요",
+    "없어요",
+    "가슴이 조여요",
+    "모르겠어요",
+    "없어요",
+    "없어요",
+    "없어요"
+  ],
+  "expect": {
+    "endedBy": "completed",
+    "sourcesInclude": [
+      "fixed:bridge_feeling"
+    ],
+    "sourcesExclude": [
+      "bridge:like_what",
+      "fixed:location"
+    ],
+    "firstElicitedBy": null,
+    "textsExclude": [
+      "그것"
+    ],
+    "maxTemplateCount": {
+      "like_what": 1
+    },
+    "noConsecutiveTemplate": true,
+    "bodyRelationStatus": "not_asked"
+  },
+  "note": "합성 대사. 실제 참여자 응답이 아니다. '설레요'·'조여요'는 활용형뿐이라 X를 넣지 않고 「그 느낌이 눈에 보이는 무언가라면, 마치 무엇 같을까요?」를 낸다. 다리 답이 '모르겠어요'라 flesh_out LLM을 건너뛴다."
+}

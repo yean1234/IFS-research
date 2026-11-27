@@ -130,7 +130,51 @@ def check_expect(sc: dict, m: dict, s: Session) -> list[str]:
         got = (s.log.data["capture"].get("firstElicitedBy") or {}).get("kind")
         if got != exp["firstElicitedBy"]:
             fails.append(f"firstElicitedBy {got} != {exp['firstElicitedBy']}")
+    # ── 프로토콜 1.6(G70 + 연구 책임자 시험 세션 결함 1–5) 기대 ──
+    bot = [t for t in s.log.turns if t.get("speaker") in ("system", "interviewer") and t.get("text")]
+    for w in exp.get("textsExclude", []):
+        hit = [t["text"] for t in bot if w in t["text"]]
+        if hit:
+            fails.append(f"'{w}'가 나감: {hit[0]}")
+    templates = question_templates(s)
+    for tpl, n in (exp.get("maxTemplateCount") or {}).items():
+        if templates.count(tpl) > n:
+            fails.append(f"{tpl} {templates.count(tpl)}회 > {n}")
+    if exp.get("noConsecutiveTemplate"):
+        for a, b in zip(templates, templates[1:]):
+            if a is not None and a == b:
+                fails.append(f"같은 틀 연속: {a}")
+                break
+    for pid in exp.get("probesExclude", []):
+        if pid in ((m["probes"] or {}).get("asked") or []):
+            fails.append(f"프로브 {pid}를 물음")
+    if "bodyRelationStatus" in exp:
+        got = (s.log.data["capture"].get("bodyRelation") or {}).get("status")
+        if got != exp["bodyRelationStatus"]:
+            fails.append(f"bodyRelation.status {got} != {exp['bodyRelationStatus']}")
+    if "findLlmAsked" in exp:
+        got = (s.log.data["capture"].get("findLlm") or {}).get("asked")
+        if got != exp["findLlmAsked"]:
+            fails.append(f"findLlm.asked {got} != {exp['findLlmAsked']}")
     return fails
+
+
+def question_templates(s: Session) -> list[str | None]:
+    """참여자에게 나간 질문의 질문 틀(차례대로). LLM·다리 = 고른 틀, 대체 문구(fallback) = anything_else 꼴,
+    다른 고정 문구 = None. 1.6 templateRules와 같은 셈법(확인 문구·안내는 질문이 아니라 뺀다)."""
+    out: list[str | None] = []
+    for t in s.log.turns:
+        if t.get("speaker") not in ("system", "interviewer") or not t.get("text") or not t.get("stage"):
+            continue
+        src = t.get("source") or ""
+        if src in ("fixed:soft_check", "fixed:crisis", "fixed:stopped"):
+            continue
+        o = t.get("output") or {}
+        tpl = o.get("template") if o.get("move") == "ask" and o.get("template") not in (None, "none") else None
+        if tpl is None and src == "fixed:fallback":
+            tpl = "anything_else"
+        out.append(tpl)
+    return out
 
 
 def run(cfg: Config, scenarios: list[dict], models: list[str | None], runs: int, out_dir: Path, quiet: bool = False) -> dict:
