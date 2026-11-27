@@ -13,6 +13,11 @@ class InterviewConfig:
     condition: str = "chatbot"                     # chatbot(조건 2) | static(조건 1)
     protocol: str = "elicitation_protocol.v1.4.json"  # shared/protocol/ 아래
     prompt_version: str = "1.0.0"                  # chatbot/prompts/v<버전>/
+    # D9(감정어 → 심상 다리, config/bridge.toml). 둘 다 기본 꺼짐 — 켜지 않으면 기존 설정의 동작·기록은 그대로다.
+    # lexicon_overlay: 면담용 1층 사전 v0에 더하는 오버레이(shared/lexicon/ 아래, 예 "layer1_interview.v0.json": 감정어 '기대')
+    lexicon_overlay: str = ""
+    # anchor_doe_root: 인용 후보에 '-되' 어근 규칙('기대되/VV' → '기대')을 더한다. '-하' 어근 규칙과 같은 꼴
+    anchor_doe_root: bool = False
 
 
 @dataclass(frozen=True)
@@ -39,6 +44,8 @@ class GuardConfig:
     format: str = "kanana"         # kanana | qwen3guard
     check_output: bool = True      # V8
     required: bool = False         # True면 가드 모델이 없을 때 시작하지 않는다
+    # L1 키워드 사전 파일(shared/lexicon/ 아래). D9 설정은 safety_ko.v0.2.json(은유 '숨막혀·막힌'을 잡음)을 쓴다
+    safety_lexicon: str = "safety_ko.v0.json"
 
 
 @dataclass(frozen=True)
@@ -46,6 +53,8 @@ class ValidatorConfig:
     strict_novel_content: bool = True
     l5_depth: str = "present_focus"   # present_focus | anchor_block_only | off
     max_anchor_eojeol: int = 3        # (확장) 인용은 3어절 이하, 문장 통째 인용 금지. 0이면 끔
+    # (확장, D9) V7 predicate_as_noun: what_kind·where·like_what 틀의 X가 활용형('설레요')이면 막는다. 기본 꺼짐
+    predicate_as_noun: bool = False
 
 
 @dataclass(frozen=True)

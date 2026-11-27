@@ -241,3 +241,62 @@ def find_modality(text: str, lexicon: Lexicon) -> dict:
         labels.append("thought_or_sentence")
     return {"labels": labels or ["unknown_or_other"], "categories": sorted(cats),
             "method": "heuristic: 1층 사전 범주", "note": "2D 설문의 find.initial_response 6범주와 같은 이름. 참여자에게 보이지 않는다."}
+
+
+# ── 형상 신호 (D9, 프로토콜 1.5 imageSignal) ─────────────────────────────────
+IMAGE_SIGNAL_DEFAULT = {
+    "categories": ["form", "shape", "object", "size", "color", "brightness", "texture", "opacity", "posture"],
+    "excludeIfAlsoIn": ["sensation", "emotion"],
+    "simile": {"predicates": ["같"], "particles": ["처럼", "마냥", "같이"],
+               "nounTags": ["NNG", "NNP"], "nounExcludeCategories": ["emotion", "sensation", "body_part"]},
+}
+
+
+def image_signal(text: str, lexicon: Lexicon, analyzer: Analyzer, spec: dict | None = None) -> dict:
+    """참여자 발화에 형상 신호가 있는지(규칙만, LLM 없음). 흐름(다리 질문·find 틀 제한)에만 쓰고 장면 값에는 쓰지 않는다(원칙 2).
+
+    있음 = (1) 사전 범주 form·shape·object·size·color·brightness·texture·opacity·posture 항목이 부정 없이 나옴.
+             다만 같은 표제어가 sensation·emotion 범주에도 있으면('숨') 근거로 치지 않는다.
+           (2) 일반명사 바로 뒤 '같'(VA)·'처럼'·'마냥'·'같이' 비유 표지. 명사가 ANCHOR_STOP·감정어·감각어·신체부위어면 치지 않는다.
+    """
+    from .anchors import ANCHOR_STOP   # anchors는 extract를 부르지 않는다(순환 없음)
+
+    spec = spec or IMAGE_SIGNAL_DEFAULT
+    text = normalize(text)
+    cats = set(spec.get("categories", IMAGE_SIGNAL_DEFAULT["categories"]))
+    excl_cats = set(spec.get("excludeIfAlsoIn", IMAGE_SIGNAL_DEFAULT["excludeIfAlsoIn"]))
+    sim = {**IMAGE_SIGNAL_DEFAULT["simile"], **(spec.get("simile") or {})}
+    overlap = {e.lemma for e in lexicon.entries if e.category in excl_cats} \
+        | {a for e in lexicon.entries if e.category in excl_cats for a in e.alt}
+    evidence: list[dict] = []
+    excluded: list[dict] = []
+    hits = lexicon.hits(text) if text else []
+    tok_cats: dict[int, set[str]] = {}
+    for h in hits:
+        tok_cats.setdefault(h.token_index, set()).add(h.entry.category)
+        if h.entry.category not in cats:
+            continue
+        rec = {"kind": "lexicon", "category": h.entry.category, "lemma": h.entry.lemma, "trigger": h.trigger,
+               "charSpan": list(h.char_span)}
+        if h.entry.lemma in overlap:
+            excluded.append({**rec, "why": "also_sensation_or_emotion"})
+        elif h.negated:
+            excluded.append({**rec, "why": "negated"})
+        else:
+            evidence.append(rec)
+    toks = analyzer.tokens(text) if text else []
+    noun_excl = set(sim["nounExcludeCategories"])
+    for i, tok in enumerate(toks[:-1]):
+        nxt = toks[i + 1]
+        if tok.base_tag not in sim["nounTags"]:
+            continue
+        marker = (nxt.form in sim["predicates"] and nxt.base_tag in ("VA", "VV")) \
+            or (nxt.base_tag == "JKB" and nxt.form in sim["particles"])
+        if not marker:
+            continue
+        rec = {"kind": "simile", "noun": tok.form, "marker": nxt.form, "charSpan": [tok.start, nxt.end]}
+        if tok.form in ANCHOR_STOP or tok_cats.get(i, set()) & noun_excl:
+            excluded.append({**rec, "why": "noun_is_stop_emotion_sensation_or_body_part"})
+        else:
+            evidence.append(rec)
+    return {"present": bool(evidence), "evidence": evidence, "excluded": excluded}

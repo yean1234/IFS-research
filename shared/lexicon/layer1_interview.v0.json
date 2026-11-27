@@ -1,0 +1,29 @@
+{
+  "lexiconId": "layer1-interview-overlay",
+  "lexiconVersion": "0.1.0",
+  "extends": "layer1_lexicon.v0.json",
+  "status": "draft — D9 면담용 오버레이. 연구팀 검토 전",
+  "description": "면담(검증기 V5·인용 후보·형상 신호·추출 미리보기)에서 쓰는 1층 사전 v0에 더하는 항목. v0 파일은 고치지 않는다(기존 설정의 출력이 바뀌면 안 되기 때문). config [interview] lexicon_overlay로 켤 때만(config/bridge.toml) v0 + 이 파일을 합쳐 쓴다. 매퍼 v1·v2의 오버레이(layer1_lexicon.v1.json·v2.json)와는 따로다.",
+  "howToEdit": [
+    "v0와 같은 꼴. 같은 (범주, 표제어, 품사)는 이 파일이 대신한다.",
+    "emotion 범주는 장면 슬롯을 정하지 않는다(값 추론 없음, G61-a). 감정어를 형상으로 바꾸는 항목은 넣지 않는다."
+  ],
+  "categories": {},
+  "remove": [],
+  "entries": [
+    {
+      "lemma": "기대",
+      "pos": "NNG",
+      "category": "emotion",
+      "value": {
+        "emotion": "anticipation"
+      },
+      "ex": "기대돼요",
+      "src": "draft",
+      "alt": [
+        "기대되"
+      ],
+      "note": "D9: '기대돼요'가 감정어로 잡히지 않아 다리 질문 X·find_modality에서 빠지던 결함. alt '기대되'는 분석기가 '기대되/VV' 한 덩어리로 낼 때를 받는다."
+    }
+  ]
+}

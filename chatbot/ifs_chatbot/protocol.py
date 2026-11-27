@@ -17,7 +17,7 @@ from .paths import shared
 @dataclass(frozen=True)
 class Step:
     index: int
-    type: str                 # fixed | llm | probes | confirm
+    type: str                 # fixed | llm | probes | bridge(1.5, D9) | confirm
     stage: str | None = None  # find | focus | flesh_out
     phrase: str | None = None
     max_turns: int = 0
@@ -59,8 +59,32 @@ class Protocol:
     def max_llm_turns_total(self, condition: str) -> int | None:
         return self.condition(condition).get("maxLlmTurnsTotal")
 
-    def allowed_templates(self, stage: str) -> list[str]:
-        return list(self.stages[stage]["allowedTemplates"])
+    def allowed_templates(self, stage: str, image_present: bool = True) -> list[str]:
+        """image_present=False이고 그 단계에 allowedTemplatesWhenNoImage가 있으면(1.5, D9: find) 그 목록."""
+        info = self.stages[stage]
+        if not image_present and "allowedTemplatesWhenNoImage" in info:
+            return list(info["allowedTemplatesWhenNoImage"])
+        return list(info["allowedTemplates"])
+
+    def restricts_without_image(self, stage: str | None) -> bool:
+        return "allowedTemplatesWhenNoImage" in self.stages.get(stage or "", {})
+
+    # ── 다리 질문·형상 신호 (1.5, D9). 1.4 이하 파일에는 없다 ─────────────────
+    @property
+    def bridge(self) -> dict | None:
+        """imageBridge 절. 없으면 None(다리 질문을 쓰지 않는 프로토콜)."""
+        return self.data.get("imageBridge")
+
+    @property
+    def image_signal_spec(self) -> dict | None:
+        return self.data.get("imageSignal")
+
+    def uses_image_signal(self) -> bool:
+        """형상 신호 판정을 흐름에 쓰는 프로토콜인지(다리 단계나 find 틀 제한이 있을 때)."""
+        has_bridge_step = any(raw.get("type") == "bridge"
+                              for c in self.data["conditions"].values() for raw in c["sequence"])
+        return self.image_signal_spec is not None and (
+            has_bridge_step or any("allowedTemplatesWhenNoImage" in v for v in self.stages.values()))
 
     def stage_info(self, stage: str | None) -> dict:
         return self.stages.get(stage or "", {})

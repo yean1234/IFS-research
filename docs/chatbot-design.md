@@ -105,6 +105,30 @@
 
 **검증기를 거치지 않는 점(기록).** 이 문구는 질문 틀 6개 밖의 고정 문구이고 X는 참여자 원문이라, 검증기 V1–V9를 거치지 않습니다(이전과 같음). 확인 질문 루프처럼 V3·V5·V9 경로를 거치게 하는 방법도 있습니다. 이번에는 분류표 범위(X 고르기)만 고쳤고, 질문 틀 밖 문구에 검증기를 어떻게 걸지는 정하지도 시험하지도 않았습니다. 문구 판단(요구 특성 포함, 검토 T2-F14)은 팀·IRB 결정으로 남깁니다.
 
+## 5-3. 감정어 → 심상 다리 질문 (D9, 프로토콜 1.5 · 기본 꺼짐)
+
+참여자가 첫 답을 '불안해요'·'기대돼요'처럼 감정어나 추상적인 기분으로 했을 때, 형상 없이 면담이 끝나지 않게 다리 질문을 한 번 냅니다. 사양은 `docs/codex-reviews/prompts/D9_rebuttal_prompt.md` 「메인의 판정」 표, 세부는 `docs/codex-reviews/D9_claude.md`입니다. 결정 기록은 `docs/decisions.md`에 메인이 남깁니다.
+
+**켜는 곳.** `config/bridge.toml`에서만 켭니다. 이 설정은 프로토콜 `elicitation_protocol.v1.5.json`, 프롬프트 v1.1.0, 사전 오버레이 `layer1_interview.v0.json`, 안전 사전 `safety_ko.v0.2.json`, `[interview] anchor_doe_root`, `[validator] predicate_as_noun`을 씁니다. 기존 설정(default·pilot·v4·mac8gb)은 v1.4 프로토콜과 v1.0.0 프롬프트, v0 사전을 그대로 쓰고, 그 설정의 흐름과 기록 키는 바뀌지 않습니다(`tests/test_d9_bridge.py`).
+
+| 항목 | 내용 |
+| --- | --- |
+| 흐름 | 모든 참여자에게 같은 순서. 형상 신호가 opening부터 직전 답까지 없을 때만 `bridge` 단계에서 1회 묻는다. 조건 2는 focus_hold(와 LLM 0회인 focus 단계) 뒤·flesh_out LLM 앞, 조건 1은 focus_hold 뒤·fleshout_open 앞. 두 조건에 같은 규칙과 같은 문장이 나간다. 프로브 순서는 바꾸지 않았다 |
+| 문장 | X가 있으면 질문 틀 like_what 「그 '{X}'은(는) 마치 무엇 같나요?」(`protocol.realize`), X가 없으면 새 고정 문구 `bridge_like_what_plain` 「지금 그것은 마치 무엇 같나요?」(status draft). LLM을 부르지 않는다 |
+| X | focus_hold 답의 감각어(명사·'-하'/'-되' 어근)가 먼저, 다음으로 opening 답의 감정어. 활용형 용언('설레요'·'조여요')뿐이면 X를 넣지 않는다. 명사형으로 바꾸면 참여자가 쓰지 않은 말이 되기 때문이다. 기억·외상 서사 발화(L5 strong)의 말은 쓰지 않는다 |
+| 형상 신호 | 사전 범주 form·shape·object·size·color·brightness·texture·opacity·posture(부정되지 않은 것), 또는 일반명사 + '같/처럼/마냥/같이'. 같은 표제어가 sensation·emotion에도 있으면('숨') 근거로 치지 않고, 비유 앞 명사가 감정어·감각어·신체부위어·인용 금지어여도 치지 않는다. **흐름에만 쓰고 장면 값에는 쓰지 않는다(원칙 2)** |
+| find LLM | 형상 신호가 없으면 허용 틀을 anything_else 하나로 줄인다(`stages.find.allowedTemplatesWhenNoImage`). like_what은 질 단계 뒤의 다리 질문이 맡는다 |
+| 압박하지 않기 | focus_hold나 다리 질문에 짧은 '없어요·모르겠어요'가 오면 flesh_out LLM을 건너뛴다. 차원 프로브는 지금처럼 한 번씩 묻는다 |
+| 기록 | `capture.imageSignal`(답마다 `timeline`, find 시점 `atFind`, 다리 시점 `atBridge`, 확정 텍스트 `confirmed`), `capture.firstElicitedBy`(형상이 처음 나온 답을 끌어낸 턴 종류: opening·llm:find·focus_hold·bridge·llm:flesh_out·probe:… ), `capture.imageless`(확정 전까지 형상 신호가 없었는지), `capture.bridge`(물었는지, X와 고른 근거, 검사 결과, 대체 여부). 다리 질문 턴은 `source = bridge:like_what` 또는 `fixed:bridge_like_what_plain` |
+
+**검증기를 약하게 한 점(원칙 3에 따라 이유를 남김).** 다리 문장(X가 있는 것)에는 검증기 V1–V7·V9를 걸고, 하나라도 걸리면 X 없는 고정 문장으로 바꿉니다. **V8(출력 가드 모델)은 걸지 않습니다**(`Runtime.clarify_validator`, `guard=None`). 확인 질문 루프(5-1)와 같은 이유입니다. 문장이 질문 틀과 참여자 원문 인용으로만 되어 있어 새 내용이 들어갈 수 없고, 가드 모델을 부르면 LLM 호출이 생겨 결정론("같은 답 → 같은 다리 문장")이 깨집니다. 참여자 답은 지금처럼 입력 가드(키워드 + 가드 모델)를 거칩니다. X 없는 고정 문장은 다른 고정 문구처럼 검증기를 거치지 않습니다.
+
+**검증기를 강하게 한 점.** V7에 `predicate_as_noun`을 더했습니다(`[validator] predicate_as_noun`, bridge.toml만 켬). what_kind·where·like_what 틀의 X가 종결어미(EF)로 끝나는 활용형이면 막습니다. "그 '설레요'는 어떤 '설레요'인가요?" 같은 어색한 질문이 이전에는 통과했습니다. anything_else("'설레요'에 대해 더 있나요?")는 그대로 허용합니다. find 틀 제한도 허용 범위를 줄이는 쪽입니다.
+
+**부수 수정(모두 bridge.toml에서만).** (1) 인용 후보 '-되' 어근 규칙: 분석기가 '기대되/VV'처럼 한 덩어리로 내면 '기대'를 어근 후보로 쓴다. 어근이 한 글자면('안되'·'잘되') 쓰지 않는다. 지금 Kiwi는 '기대/NNG + 되/XSV'로 나누므로 대부분 명사 경로로 잡힌다. (2) 감정어 사전에 '기대'(alt '기대되')를 오버레이로 더했다. emotion 범주는 슬롯을 정하지 않으므로 값 추론은 생기지 않는다. (3) 안전 사전 0.2.0: 은유 정규식을 `숨이?\s*막(히|힌|힐|혀|혔)`로 넓혀 '숨막혀요'·'숨이 막힌'도 확인 문구로 보낸다. noMore에 '안 보여요·안 떠올라요'를 더했다. (4) 프롬프트 v1.1.0: stage_find·stage_flesh_out 두 블록만 고쳤다(`chatbot/prompts/v1.1.0/README.md`).
+
+**남은 위험(숨기지 않고 적음).** 형상 신호 판정은 사전 범위에 묶입니다. '머리가 하얘져요'(color)·'구름 위에 있는 것 같아요'(object)는 신호가 있다고 보아 다리를 건너뛰고, 사전 밖 명사로만 답하면 다리를 묻습니다(1회뿐). '시험 전날 같아요'·'엄마 같아요'처럼 장면·사람을 쓴 비유도 지금 규칙에서는 형상 신호로 칩니다. 다리 질문이 만든 형상은 함께 만든 것에 가까우므로, RQ 닮음 분석은 `firstElicitedBy`로 나눠 봅니다. 새 고정 문구와 프롬프트는 draft이며 IRB·팀 검토 전입니다.
+
 ## 6. 다음 작업
 
 - 2D 연구 자유 기술 응답으로 1층 사전 v1 만들기(「앞으로 개발 방향」 권고). 미등록어 목록(`extraction.unmatched`)이 출발점.

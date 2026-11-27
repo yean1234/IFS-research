@@ -1,0 +1,58 @@
+# D9 「감정어·추상 서술 → 구체 심상 다리 질문」 설정. default.toml과 같고 아래 표시한 곳만 다르다.
+# 실행: python -m ifs_chatbot.server --config bridge        (LLM 없이: --backend offline, 조건 1만: --condition static)
+# 근거: docs/codex-reviews/prompts/D9_rebuttal_prompt.md 「메인의 판정」, docs/codex-reviews/D9_claude.md, docs/chatbot-design.md 「D9」 절.
+# 새 고정 문구 bridge_like_what_plain과 프롬프트 v1.1.0은 초안(status draft, IRB·팀 검토 전)이다.
+
+[interview]
+condition = "chatbot"
+protocol = "elicitation_protocol.v1.5.json"   # ◆ D9: bridge 단계 · imageSignal · find 틀 제한(1.5.0)
+prompt_version = "1.1.0"                      # ◆ D9: stage_find·stage_flesh_out 블록 수정(chatbot/prompts/v1.1.0/)
+lexicon_overlay = "layer1_interview.v0.json"  # ◆ D9: 감정어 '기대'(shared/lexicon/, v0 파일은 그대로)
+anchor_doe_root = true                        # ◆ D9: 인용 후보 '-되' 어근 규칙('기대되' → '기대')
+
+[llm]
+backend = "ollama"
+model = "gemma4:e4b"
+host = "http://127.0.0.1:11434"
+timeout_s = 300
+temperature = 0.2
+top_p = 0.9
+seed = 7
+think = false
+num_ctx = 8192
+keep_alive = "30m"
+max_regenerations = 2
+retry_feedback = true
+
+[guard]
+keyword = true
+model_backend = "ollama"
+model = "hf.co/mradermacher/kanana-safeguard-8b-GGUF:Q4_K_M"
+format = "kanana"
+check_output = true
+required = false
+safety_lexicon = "safety_ko.v0.2.json"        # ◆ D9: 은유 '숨막혀·숨이 막힌'을 잡고 noMore에 '안 보여·안 떠올라'
+
+[validator]
+strict_novel_content = true
+l5_depth = "present_focus"
+max_anchor_eojeol = 3
+predicate_as_noun = true                      # ◆ D9: V7 — what_kind·where·like_what의 X가 활용형이면 막음
+
+[session]
+log_dir = "logs"
+scenes_dir = ""
+researcher_contact = "(연구자 연락처를 config에 입력하세요)"
+
+[mapping]
+mode = "v1"
+save_both = true
+clarify_loop = false
+clarify_max = 2
+strict = false
+
+[drift]
+enabled = true
+recall_check = false
+self_report = false
+allow_draft_phrases = false

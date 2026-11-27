@@ -100,7 +100,11 @@
       "type": "object",
       "properties": {
         "bodyRelation": { "type": "object", "description": "Find 위치 질문의 답. focus.location (예: chest.inner)" },
-        "findModality": { "type": "object", "description": "연구자용 휴리스틱 표지. 참여자에게 보이지 않는다." }
+        "findModality": { "type": "object", "description": "연구자용 휴리스틱 표지. 참여자에게 보이지 않는다." },
+        "imageSignal": { "type": "object", "description": "D9(프로토콜 1.5만): 형상 신호 규칙 판정. timeline(답마다)·atFind·atBridge·confirmed. 흐름에만 쓰고 장면 값에는 쓰지 않는다." },
+        "firstElicitedBy": { "type": ["object", "null"], "description": "D9: 형상 신호가 처음 나온 답과 그 답을 끌어낸 턴 종류(opening·llm:find·focus_hold·bridge·llm:flesh_out·probe:…). 없으면 null." },
+        "imageless": { "type": ["boolean", "null"], "description": "D9: 확정 전까지 형상 신호가 없었는지. 확정 단계에 닿지 않으면 null." },
+        "bridge": { "type": "object", "description": "D9: 다리 질문(물었는지, X와 고른 근거, 검사 결과, X 없는 고정 문장으로 대체했는지)." }
       }
     },
     "confirmedText": { "type": ["string", "null"], "description": "참여자가 [이대로 맞아요]를 누른 텍스트. 점선 아래(추출)로 넘어가는 유일한 것." },
