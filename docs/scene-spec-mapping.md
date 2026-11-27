@@ -501,7 +501,7 @@ v1까지는 사전에 없는 명사(화분, 물병, 인형)가 기록 없이 사
 
 ## 11. 안개 입자 모양 `form.mistKind` (G74, 2026-11-27)
 
-계기는 연구 책임자의 지적이다. 안개·연기·먼지가 모두 같은 모양(뭉친 구름)으로 그려졌다. 사전은 '안개'·'수증기'·'연기'·'구름'·'먹구름'을 모두 `form.type` mist 하나로 보내고, Unity는 셰이더 하나(`SceneSpecMist.shader`, 덩어리 5개)로 그렸다. 3D 생성 모델은 반투명 입자를 만들지 못하고 안개·불꽃 생성은 막혀 있으므로(G62), 입자 모양은 규칙으로 나눈다. 켜는 법: `[mapping] mist_kinds = "scene_params.v2.json"`(그 파일의 `mistKinds` 표, tableVersion 0.1.0). `[mapping] proportions`도 켜야 한다(스펙 2.4.0). 실험 설정(`experiment.toml`)만 켜고, 다른 설정은 출력·builder 표기가 그대로다. 켜면 builder `scene-spec-builder-v2/2.9.0`, `meta.pipeline.lexicons.mistKindTable`.
+계기는 연구 책임자의 지적이다. 안개·연기·먼지가 모두 같은 모양(뭉친 구름)으로 그려졌다. 사전은 '안개'·'수증기'·'연기'·'구름'·'먹구름'을 모두 `form.type` mist 하나로 보내고, Unity는 셰이더 하나(`SceneSpecMist.shader`, 덩어리 5개)로 그렸다. 3D 생성 모델은 반투명 입자를 만들지 못하고 안개·불꽃 생성은 막혀 있으므로(G62), 입자 모양은 규칙으로 나눈다. 켜는 법: `[mapping] mist_kinds = "scene_params.v2.json"`(그 파일의 `mistKinds` 표, tableVersion 0.2.0). `[mapping] proportions`도 켜야 한다(스펙 2.4.0). 실험 설정(`experiment.toml`)만 켜고, 다른 설정은 출력·builder 표기가 그대로다. 켜면 builder `scene-spec-builder-v2/2.9.0`, `meta.pipeline.lexicons.mistKindTable`.
 
 - **스키마**: `scene-spec.v2.4.json`에 선택 슬롯 `form.mistKind`(fog | smoke | dust | cloud | null)를 더했다(판 번호는 2.4.0 그대로 — 2.3 슬롯을 2.4에서 선택으로 둔 것과 같은 방식). 켠 매핑만 키를 적고(말하지 않았으면 null), 끈 매핑은 키를 적지 않는다. 2.0–2.3 문서에는 없어야 한다. 값이 있으면 근거가 있어야 한다.
 - **매퍼 규칙**(`_mist_kind`, 형상 낱말 D6과 같은 명사구·범위 판정):
@@ -517,7 +517,8 @@ v1까지는 사전에 없는 명사(화분, 물병, 인형)가 기록 없이 사
   - 채우지 않는 것: 장소('안개 속에')·목적어('연기를 내뿜는')·꾸밈('구름의'), 색 비교('먹구름처럼 시커먼'), 다른 뜻('연기됐어요'·'연기해요' — 뒤에 XSV·XSA), 표에 없는 한 토큰 합성어('빵가루'), 회상·상황 문장. '그냥 뿌연'처럼 종류 낱말이 없으면 null.
   - 움직임 비유의 매개어(G71: '연기처럼 피어올라요', '구름이 흘러가듯이 물체가 …')는 채우지 않고 `_alternatives`(lower_priority, rule 끝 `+actionSimile(…)`)에 남긴다. 비유 절 뒤에 따로 주어가 없으면('연기가 춤추듯이 피어올라요') 그대로 채운다(G71-a).
   - 부정·거둬들임('안개는 아니에요', '연기, 아니 구름이에요')은 `_negated`(category `mist_kind`).
-  - **form.type을 정하지 않는다.** '연기가 피어올라요'·'먼지가 흩날려요'는 지금처럼 형태가 비고(후보 단계가 blob·mist를 벌림), '가루가 날려요'는 조각(fragments) 그대로다. 종류는 기록에 남고, 참여자가 후보·조절에서 mist를 고르면 그 종류로 그린다.
+  - **form.type(메인 판정, 표 0.2.0)**: 형상 자리(층 1)에서 말한 '연기·매연·먼지·흙먼지·모래먼지·미세먼지·먼지구름·황사'(`fillFormType`)는 form.type도 mist로 채운다(rule `mistKinds.<낱말>>form.type:mist`, 같은 낱말의 사물 기록은 지움). form.type이 이미 있으면 그대로 두고 대안(lower_priority, `+keptFormType`), 기본 형상이 있으면 그것을 지키고 대안(`+base(…)`). '모래·가루·꽃가루'(알갱이 고체 — 지금처럼 fragments 또는 빈 자리), '구름·먹구름'(G71-e — 후보 단계가 덩어리·안개를 벌림), '김', 비교 원천·움직임 비유 매개어는 form.type을 채우지 않는다. 종류는 기록에 남고, 형태가 mist일 때 그 종류로 그린다.
+  - **장소 용법(메인 판정)**: form.type의 근거가 장소 용법의 표 낱말('안개 속에'·'연기 사이로'·'안개에 싸인' — 뒤가 위치 명사나 처소 조사)뿐이면 form.type을 비운다(대안 lower_priority, `+location(…)`). G72 배경 낱말 규칙과 같은 뜻. 이 기능을 켰을 때만.
   - 값의 근거가 된 사전에 없는 명사 기록(`_unmapped` unlisted_noun, '먼지'·'김')은 지운다(G72와 같음). 사물 기록(`_unmapped` object '구름'·'연기')은 그대로 둔다(G71-e).
 - **Unity 해석**(`MistKinds`·`DustMesh`, 계획 JSON `mistKind`): form.type이 mist일 때만 그린다(아니면 status `not_applied_form`, 그림은 그대로). 값이 null이면 status `none`이고 cloud와 같은 그림, 슬롯이 있는 문서면 defaultsUsed에 `form.mistKind`.
 
@@ -530,4 +531,5 @@ v1까지는 사전에 없는 명사(화분, 물병, 인형)가 기록 없이 사
 
   - G72 비율·가장 긴 변 규칙은 그대로다: fog·smoke는 대리 구에 비균일 배율, dust는 fragments처럼 알갱이 자리만 늘이고(알갱이 모양 그대로) 가장 긴 변을 맞춘다. 생성 메시(GLB)는 dust에도 쓰지 않는다.
   - 덮어쓰기 키 `form.mistKind`(fog·smoke·dust·cloud)는 Unity가 받는다(조절 화면에는 아직 없음).
-- **전후 비교**: 저장소의 합성 문자열 2,958개(시나리오·mock 코퍼스·imagery 코퍼스·테스트 문자열)를 비율만 켠 매퍼(2.8.0)와 비율 + 종류(2.9.0)로 돌렸다. 종류가 채워진 것 82개(fog 35, cloud 20, smoke 19, dust 8), 그 가운데 form.type이 mist인 것 48개(나머지는 형태가 비었거나 blob·fragments라 기록만). 대안 8개(lower_priority 5 — 움직임 비유, later_mention 2, lower_layer 1), 부정 4개. 새 슬롯·기록과 지운 unlisted_noun 기록·어절 기록을 빼면 바뀐 것 0개. 그림: `docs/validation/run-g74-mist-kinds/`.
+- **전후 비교(표 0.2.0)**: G74 시험 문자열을 뺀 합성 문자열 2,921개에서 종류 57개(fog 29, cloud 16, smoke 10, dust 2), form.type이 바뀐 것 3개(모두 빈 자리 → mist: '가슴 앞에 연기가 흩어져요.' 등), 장소 용법으로 비운 것 0개, 그 밖의 변화 0개.
+- **전후 비교(표 0.1.0, 첫 구현)**: 저장소의 합성 문자열 2,958개(시나리오·mock 코퍼스·imagery 코퍼스·테스트 문자열)를 비율만 켠 매퍼(2.8.0)와 비율 + 종류(2.9.0)로 돌렸다. 종류가 채워진 것 82개(fog 35, cloud 20, smoke 19, dust 8), 그 가운데 form.type이 mist인 것 48개(나머지는 형태가 비었거나 blob·fragments라 기록만). 대안 8개(lower_priority 5 — 움직임 비유, later_mention 2, lower_layer 1), 부정 4개. 새 슬롯·기록과 지운 unlisted_noun 기록·어절 기록을 빼면 바뀐 것 0개. 그림: `docs/validation/run-g74-mist-kinds/`.

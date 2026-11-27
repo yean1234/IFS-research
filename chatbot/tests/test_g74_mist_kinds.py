@@ -59,7 +59,7 @@ def test_said_word_sets_kind(on, text, want):
     assert kind(s) == want
     pv = s["_provenance"]["form.mistKind"][0]
     assert pv["source"] == "explicit_lexicon" and pv["rule"].endswith(f">form.mistKind:{want}")
-    assert s["meta"]["pipeline"]["lexicons"]["mistKindTable"].endswith(".mistKinds@0.1.0")
+    assert s["meta"]["pipeline"]["lexicons"]["mistKindTable"].endswith(".mistKinds@0.2.0")
 
 
 @pytest.mark.parametrize("text,want", [("연기 같은 게 있어요", "smoke"), ("먹구름 같아요", "cloud"), ("먼지구름 같아요", "dust")])
@@ -70,11 +70,47 @@ def test_simile_source_sets_kind_at_layer_two(on, text, want):
     assert pv["source"] == "simile_marker" and "+simile(" in pv["rule"]
 
 
-def test_word_does_not_set_form_type(on, prop_only):
-    """종류는 form.type을 정하지 않는다: '연기'·'먼지'는 지금처럼 형태가 비고(후보 단계가 고름), '가루'는 조각 그대로."""
-    for text in ("연기가 피어올라요", "먼지가 흩날려요", "가루가 날려요", "구름이 떠 있어요"):
-        a, b = build(on, text), build(prop_only, text)
-        assert a["form"]["type"] == b["form"]["type"]
+@pytest.mark.parametrize("text,lemma", [("연기가 피어올라요", "연기"), ("먼지가 흩날려요", "먼지"), ("황사예요", "황사"),
+                                        ("흙먼지가 날려요", "흙먼지"), ("매연이 있어요", "매연")])
+def test_gas_and_dust_words_fill_form_type(on, prop_only, text, lemma):
+    """메인 판정 (가): 형상 자리(층 1)의 기체·먼지 낱말은 form.type도 mist로 채운다(출처 기록)."""
+    a, b = build(on, text), build(prop_only, text)
+    assert b["form"]["type"] is None and a["form"]["type"] == "mist"
+    assert a["_provenance"]["form.type"][0]["rule"] == f"mistKinds.{lemma}>form.type:mist"
+    assert not any(u["category"] == "object" and u["lemma"] == lemma for u in a["_unmapped"])
+
+
+@pytest.mark.parametrize("text,want", [("모래가 흩어져 있어요", None), ("가루가 날려요", "fragments"), ("구름이 떠 있어요", None),
+                                       ("먹구름이에요", None), ("김이 모락모락 나요", None)])
+def test_solid_grains_clouds_and_steam_keep_form_type(on, prop_only, text, want):
+    """'모래·가루'(알갱이 고체)·'구름'(G71-e)·'김'은 form.type을 채우지 않는다 — 종류만 기록."""
+    a, b = build(on, text), build(prop_only, text)
+    assert a["form"]["type"] == b["form"]["type"] == want and kind(a) is not None
+
+
+def test_fill_keeps_said_form_and_base(on):
+    s = build(on, "회색 덩어리에서 연기가 나요")
+    assert s["form"]["type"] == "blob" and kind(s) == "smoke"
+    assert any(a["path"] == "form.type" and a["value"] == "mist" and a["_provenance"][0]["rule"].endswith("+keptFormType")
+               for a in s["_alternatives"])
+    s = build(on, "연기가 피어오르는 그릇")
+    assert s["form"]["base"] == "container" and s["form"]["type"] is None
+    assert any(a["path"] == "form.type" and "+base(container)" in a["_provenance"][0]["rule"] for a in s["_alternatives"])
+
+
+def test_simile_and_vehicle_do_not_fill_form_type(on, prop_only):
+    for text in ("연기처럼 피어올라요", "구름이 흘러가듯이 물체가 움직여요"):
+        assert build(on, text)["form"]["type"] == build(prop_only, text)["form"]["type"]
+
+
+@pytest.mark.parametrize("text", ["안개 속에 돌이 있어요", "연기 사이로 돌이 보여요", "안개에 싸인 돌"])
+def test_location_use_does_not_fill_form_type(on, prop_only, text):
+    """메인 판정 (나): 장소 용법의 안개류 낱말은 form.type을 채우지 않는다(내린 근거는 대안 +location)."""
+    a = build(on, text)
+    assert a["form"]["type"] is None and kind(a) is None
+    b = build(prop_only, text)
+    if b["form"]["type"] is not None:
+        assert any(al["path"] == "form.type" and "+location(" in al["_provenance"][0]["rule"] for al in a["_alternatives"])
 
 
 @pytest.mark.parametrize("text", ["뿌연 게 있어요", "그냥 뿌옇게 보여요", "회색 돌이에요", "흐릿한 덩어리예요"])
@@ -160,10 +196,13 @@ def _strip(spec: dict) -> dict:
     s["_negated"] = [n for n in s["_negated"] if n["category"] != "mist_kind"]
     s["meta"]["pipeline"]["lexicons"].pop("mistKindTable", None)
     s["meta"]["pipeline"]["builder"] = None
-    s["_unmapped"] = [u for u in s["_unmapped"] if u["category"] != "unlisted_noun"]
+    s["_unmapped"] = [u for u in s["_unmapped"] if u["category"] not in ("unlisted_noun", "object")]
+    s["form"]["type"] = None                                     # (가)·(나)는 form.type을 바꾼다 — 따로 시험
+    s["_provenance"].pop("form.type", None)
+    s["_alternatives"] = [a for a in s["_alternatives"] if a["path"] != "form.type"]
     s["_unmatched"] = []
     for cl in s.get("_clauses") or []:
-        cl["usedFor"] = [u for u in cl["usedFor"] if u != "form.mistKind"]
+        cl["usedFor"] = [u for u in cl["usedFor"] if u not in ("form.mistKind", "form.type")]
         cl["status"] = None
     s["meta"].pop("createdAt", None)
     return s

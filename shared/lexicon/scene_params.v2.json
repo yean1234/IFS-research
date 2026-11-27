@@ -155,7 +155,7 @@
     "scope": "본 장면 문장만(회상 문장 _context_sentences는 아님). 움직임 비유의 절·매개어(G71 actionSimile region·vehicles) 안의 낱말은 비율을 채우지 않는다. 꾸미는(관형형) 말이면 바로 뒤 명사가, 서술이면 같은 절의 주어가 배경 낱말(backgroundNouns)·신체 부위·자기 지칭이면 형상의 모양이 아니라서 채우지 않는다. 부정('납작하지 않아요')은 _negated(category proportions). 여러 번 말하면 처음 말한 것이 값이고, 다른 profile이면 뒤의 것은 _alternatives(later_mention), 같은 profile이면 근거만 더한다."
   },
   "mistKinds": {
-    "tableVersion": "0.1.0",
+    "tableVersion": "0.2.0",
     "status": "draft",
     "added": "2026-11-27 (결정 G74 — 연구 책임자: 안개·연기·먼지가 모두 같은 모양(뭉친 구름)으로 그려진다)",
     "versionNote": "이 표는 자체 판(tableVersion)을 쓴다(proportions 표와 같은 관례). 파일 lexiconVersion(2.1.0)은 올리지 않았다 — 올리면 [mapping] mist_kinds를 끈 설정의 spec meta(sceneParamsV2)·후보 id까지 바뀐다. 켠 매핑만 meta.pipeline.lexicons.mistKindTable에 'scene-params-v2.mistKinds@<tableVersion>'을 남긴다. 낱말·규칙을 바꾸면 tableVersion을 올린다.",
@@ -175,6 +175,9 @@
     },
     "nounsNote": "명사 연속(띄어쓰기 없이 붙은 명사 토큰들, '모래먼지' = 모래 + 먼지) 전체 글자로 먼저 찾고, 없으면 중심 명사 토큰 하나로 찾는다('미세 먼지'·'담배 연기' → 먼지·연기). 한 토큰 합성어('빵가루')는 표에 없으면 읽지 않는다. 바로 뒤에 동사·형용사 접미사(XSV·XSA)가 붙으면 다른 뜻이라 읽지 않는다('연기됐어요'·'연기해요').",
     "rejectNextTags": ["XSV", "XSA"],
+    "fillFormType": ["연기", "매연", "먼지", "흙먼지", "모래먼지", "미세먼지", "먼지구름", "황사"],
+    "fillFormTypeNote": "0.2.0(메인 판정 G74 (가)): 형상 자리(층 1 — 주어·이름)에서 말한 이 낱말은 form.type도 mist로 채운다(source explicit_lexicon, rule 'mistKinds.<낱말>>form.type:mist'). form.type이 이미 있으면 그대로 두고 _alternatives(lower_priority, +keptFormType), 기본 형상(form.base)이 있으면 그것을 지키고 대안(+base(…)). 같은 낱말의 사물 기록(_unmapped object '연기')은 값의 근거가 되므로 지운다. '모래·가루·꽃가루'는 알갱이 고체라 form.type을 채우지 않는다(1층 사전 '가루' → fragments 그대로, 종류만 기록). '구름·먹구름'은 G71-e대로 형태를 비운다(후보 단계가 덩어리·안개를 벌림). '김'도 채우지 않는다. 비교 원천(층 2)·움직임 비유 매개어도 채우지 않는다.",
+    "locationNote": "0.2.0(메인 판정 G74 (나)): form.type의 근거가 장소 용법의 이 표 낱말('안개 속에'·'연기 사이로'·'안개에' — 바로 뒤가 위치 명사(scene_params.v1 relationalNouns)나 처소 조사)뿐이면 form.type을 비운다. 내린 근거는 _alternatives(lower_priority, rule 끝 +location(…)). G72 배경 낱말 규칙과 같은 뜻(둘레를 말한 것이지 형상이 아님). [mapping] mist_kinds를 켰을 때만.",
     "homonyms": {
       "김": {"predicates": ["나", "피어오르", "피어나", "오르", "올라오", "서리", "솟"], "adverbs": ["모락모락", "뭉게뭉게", "폴폴", "솔솔"], "note": "'김'은 성씨·바다 김과 같은 글자라 같은 절에 김이 나는 모양의 용언(Kiwi 어간)이나 부사가 있을 때만 읽는다('김이 모락모락 나요'). 비교('김처럼 피어올라요')도 같은 규칙"}
     },

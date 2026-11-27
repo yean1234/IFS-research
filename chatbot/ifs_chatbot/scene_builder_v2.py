@@ -1706,6 +1706,67 @@ class SceneSpecBuilderV2(SceneSpecBuilderV1):
                                     key=lambda u: (u["charSpan"][0], u["charSpan"][1]))
 
     # ── G74: 안개 입자 모양 ────────────────────────────────────────────────
+    def _mist_location_form_type(self, doc: Doc, spec: dict) -> list[dict]:
+        """G74 (나): form.type의 근거가 장소 용법('안개 속에'·'연기 사이로'·'안개에') 안개류 낱말(mistKinds 표)뿐이면 form.type을 비운다
+        (G72 배경 낱말 규칙과 같은 뜻 — 둘레를 말한 것이지 형상이 아님). 내린 근거는 _alternatives(lower_priority, rule 끝 +location(…)).
+        장소 용법이 아닌 근거가 남으면 그 근거만 남긴다. 돌려주는 것 = 더할 대안."""
+        ftp = spec["_provenance"].get("form.type") or []
+        if not ftp:
+            return []
+        toks = doc.toks
+        nouns = self.mist["nouns"]
+        keep, dropped = [], []
+        for pv in ftp:
+            ids = [k for k in doc.toks_in(*pv["charSpan"]) if toks[k].base_tag in NOUN_TAGS and toks[k].form in nouns]
+            loc = None
+            for k in ids:
+                if self._noun_role(doc, k) == "location":
+                    nx = k + 1
+                    loc = doc.text[toks[k].start:doc.espan(doc.eoj[nx])[1]] if nx < len(toks) else toks[k].form
+                    break
+            (dropped if loc is not None else keep).append((pv, loc))
+        if not dropped:
+            return []
+        out = [{"path": "form.type", "value": spec["form"]["type"], "reason": "lower_priority",
+                "_provenance": [dict(pv, rule=f"{pv['rule']}+location({loc})") for pv, loc in dropped]}]
+        if keep:
+            spec["_provenance"]["form.type"] = [pv for pv, _ in keep]
+        else:
+            spec["_provenance"].pop("form.type")
+            spec["form"]["type"] = None
+        return out
+
+    def _mist_fill_form_type(self, doc: Doc, spec: dict, live: list[dict], used: list) -> list[dict]:
+        """G74 (가): 형상 자리(층 1)에서 말한 기체·먼지 낱말(mistKinds.fillFormType: 연기·매연·먼지류·황사)은 form.type을 mist로 채운다.
+        form.type이 이미 있으면 그대로 두고 대안으로, 기본 형상(form.base)이 있으면 그것을 지키고 대안으로 남긴다.
+        '모래·가루'(알갱이 고체 — 조각)·'구름'(G71-e — 덩어리/안개 갈림)·'김'은 채우지 않는다. 돌려주는 것 = 더할 대안."""
+        fill = set(self.mist.get("fillFormType", []))
+        text = doc.text
+        out, provs = [], []
+        for m in live:
+            if m["layer"] == 1 and m["lemma"] in fill:
+                provs.append(self._prov("explicit_lexicon", text, m["s"], m["e"], f"mistKinds.{m['lemma']}>form.type:mist"))
+        if not provs:
+            return out
+        ft = spec["form"]["type"]
+        if ft is None and spec["form"]["base"] is None:
+            spec["form"]["type"] = "mist"
+            spec["_provenance"] = _ordered_provenance({**spec["_provenance"], "form.type": provs})
+            spans = [p["charSpan"] for p in provs]
+            used += spans
+            # 이 낱말의 사물 기록(_unmapped object '연기')은 이제 값의 근거다
+            spec["_unmapped"] = [u for u in spec["_unmapped"]
+                                 if not (u["category"] == "object" and any(u["_provenance"]["charSpan"][0] < e and s < u["_provenance"]["charSpan"][1]
+                                                                           for s, e in spans))]
+        elif ft == "mist":
+            spec["_provenance"]["form.type"] = sorted(spec["_provenance"]["form.type"] + provs, key=lambda p: p["charSpan"][0])
+            used += [p["charSpan"] for p in provs]
+        else:
+            tag = "+keptFormType" if ft is not None else f"+base({spec['form']['base']})"
+            out.append({"path": "form.type", "value": "mist", "reason": "lower_priority",
+                        "_provenance": [dict(p, rule=p["rule"] + tag) for p in provs]})
+        return out
+
     def _mist_kind_matches(self, doc: Doc, spec: dict) -> list[dict]:
         """mistKinds 표 낱말이 형상 자리에 나온 곳. 같은 글 → 같은 목록(문서만 본다). 항목: kind · lemma · s·e(글자 구간) ·
         layer(1 직접, 2 비교 원천) · marker(비교 표지) · status(ok | negated | vehicle) · tag(움직임 비유 꼬리표) · retracted."""
@@ -1779,6 +1840,8 @@ class SceneSpecBuilderV2(SceneSpecBuilderV1):
         """G74: form.mistKind(스펙 2.4.0 선택 슬롯). 말하지 않았으면 null. form 묶음 맨 끝에 둔다."""
         text = doc.text
         value, provs, alts, negated = None, [], [], []
+        ft_used: list[list[int]] = []                       # (가) form.type을 채운 근거 구간(기록 정리에 씀)
+        alts += self._mist_location_form_type(doc, spec)    # (나) 장소 용법의 안개류 낱말은 form.type을 채우지 않음
         ms = self._mist_kind_matches(doc, spec)
 
         def prov(m: dict) -> dict:
@@ -1809,6 +1872,7 @@ class SceneSpecBuilderV2(SceneSpecBuilderV1):
                 else:
                     reason = "lower_layer" if m["layer"] > top else "later_mention"
                     alts.append({"path": "form.mistKind", "value": m["kind"], "reason": reason, "_provenance": [prov(m)]})
+            alts += self._mist_fill_form_type(doc, spec, live, ft_used)
         spec["form"] = {**spec["form"], "mistKind": value}
         if value is not None:
             spec["_provenance"] = _ordered_provenance({**spec["_provenance"], "form.mistKind": provs})
@@ -1824,10 +1888,11 @@ class SceneSpecBuilderV2(SceneSpecBuilderV1):
         used = [p["charSpan"] for p in provs]
         for cl in spec.get("_clauses") or []:
             s, e = cl["charSpan"]
-            if any(x < e and s < y for x, y in used):
-                cl["usedFor"] = sorted(set(cl["usedFor"]) | {"form.mistKind"}, key=lambda q: (_PATH_ORDER.get(q, 99), q))
-                if cl["status"] == "unused":
-                    cl["status"] = "partly_used"
+            for path, spans in (("form.mistKind", used), ("form.type", ft_used)):
+                if any(x < e and s < y for x, y in spans):
+                    cl["usedFor"] = sorted(set(cl["usedFor"]) | {path}, key=lambda q: (_PATH_ORDER.get(q, 99), q))
+                    if cl["status"] == "unused":
+                        cl["status"] = "partly_used"
         covered: set[int] = set()
         _span_chars({"p": provs, "a": alts, "n": negated}, covered)
         spec["_unmapped"] = [u for u in spec["_unmapped"]

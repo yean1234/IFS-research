@@ -36,6 +36,10 @@ cloud의 후 그림은 전 그림, G72의 `H-mist.22.png`와 PNG가 바이트까
 4. 미리보기 플레이어: 같은 복사본에서 `PreviewBuild.BuildWebGLPreview`(→ `<repo 밖>/webgl-build/preview`, 오류 0·경고 0)와 `PreviewBuild.BuildWindowsPreview`(→ `preview-win`, 오류 0)로 다시 빌드했고, 두 빌드에 새 코드 문자열(`dust520/1`·`fog5/1`)이 들어 있음을 확인했습니다. 헤드셋(Android) 빌드는 만들지 않았습니다.
 5. 수치는 두 번 고쳤습니다(첫 그림에서 smoke가 끊긴 점처럼 흐리고, fog가 납작한 구름처럼 보여서). fog + 비율에서 얇은 층에 걸음 무늬가 생겨, 눌린 덩어리는 타원체 구간으로 걸음을 모으게 했습니다(cloud는 이전 식 그대로).
 
+## 표 0.2.0(메인 판정 뒤)
+
+형상 자리의 '연기·먼지'류가 form.type도 mist로 채우고, 장소 용법('안개 속에')은 form.type을 채우지 않게 됐습니다(`docs/scene-spec-mapping.md` 11절). 위 그림의 spec은 모두 형태가 이미 mist인 문장이라 그림은 같습니다(다시 찍지 않음).
+
 ## 확인하지 못한 것
 
 - 헤드셋 안에서 본 모습(입체·가까운 거리). dust 알갱이 크기(물체 좌표 반지름 0.010–0.024)가 헤드셋 해상도에서 보이는지.
