@@ -116,7 +116,7 @@ A·B만으로 분위기·재질 8개 대부분을 덮을 수 있고, 이 8개는
 
 ```bash
 # 0) 환경: 시스템 Python 3.11.7(torch 2.11.0+cu128, diffusers 0.40.0.dev0, transformers 4.57.6)을 재사용하는 venv
-cd "D:/Seoyeon/IFS -HCI Korea"
+cd "<repo>/.."
 python -m venv --system-site-packages gen3d-venv
 gen3d-venv/Scripts/python -m pip install "trimesh==4.*" pygltflib kiwipiepy==0.24.1 kiwipiepy_model==0.24.0 jsonschema
 #    (rembg 2.0.57·onnxruntime 1.18.1·scikit-image 0.26.0·omegaconf·einops는 시스템에 이미 있음)
@@ -204,9 +204,9 @@ RTX 5080 16 GB, Windows 11, Unity 6000.0.85f2(에디터 배치모드). 문장 30
 
 **입력.** 합성 dev.json 앞 10개(D01–D10, held-out은 열지 않음)와, 노션에서 모은 답변 중 "실제 응답" 12개 + "연구자 예시" 8개. 노션 원문은 이 문서에 넣지 않았습니다. 비교 시트(문장 id만)와 판정표, id↔원문 대응표는 저장소 밖에 있습니다:
 
-- 비교 시트: `D:\Seoyeon\IFS -HCI Korea\gen3d-out\compare\dev10_sheet_{1,2}.png`, `notion20_sheet_{1..4}.png` — 열: 규칙 경로(BatchCapture 상세 크롭) · Shap-E[rules] · SDXL 이미지[rules] · TripoSR[rules] · Shap-E[llm] · SDXL 이미지[llm] · TripoSR[llm](Unity 사선 보기)
-- 판정표: `D:\Seoyeon\IFS -HCI Korea\gen3d-out\compare\judgments.md`
-- 대응표: `D:\Seoyeon\IFS -HCI Korea\gen3d-out\<run>\inputs\id_text_table.md`
+- 비교 시트: `<repo>/../gen3d-out\compare\dev10_sheet_{1,2}.png`, `notion20_sheet_{1..4}.png` — 열: 규칙 경로(BatchCapture 상세 크롭) · Shap-E[rules] · SDXL 이미지[rules] · TripoSR[rules] · Shap-E[llm] · SDXL 이미지[llm] · TripoSR[llm](Unity 사선 보기)
+- 판정표: `<repo>/../gen3d-out\compare\judgments.md`
+- 대응표: `<repo>/../gen3d-out\<run>\inputs\id_text_table.md`
 
 **판정 방법.** AI 에이전트가 시트를 보고 결과마다 하나를 붙였습니다(사람 판정 아님. 합성 10개는 문장 작성도 AI 에이전트). 맞음 = 말한 외형 대부분 반영, 큰 지어냄 없음. 부분 = 일부 반영. 어긋남 = 말한 것과 다름. 지어냄 = 문장에 외형 서술이 없는데 형상이 나옴(생성형은 이 경우에도 반드시 무언가를 만듦). 규칙 경로는 '기본값만'(읽은 슬롯 없음)과 '왜곡'을 따로 셌습니다.
 
@@ -315,7 +315,7 @@ RTX 5080 16 GB, Windows 11, Unity 6000.0.85f2(에디터 배치모드). 문장 30
 ### 설치(저장소 밖, 한 번만)
 
 ```bash
-cd "D:/Seoyeon/IFS -HCI Korea"
+cd "<repo>/.."
 git clone https://github.com/VAST-AI-Research/TripoSG.git gen3d-models/TripoSG        # fc5c40990181e2a756c4e0b1c2f4d6b5202faf8c
 gen3d-venv/Scripts/python -m pip install jaxtyping typeguard pymeshlab               # 0.3.11 · 4.6.1 · 2025.7.post1
 gen3d-venv/Scripts/python -c "from huggingface_hub import snapshot_download as s; \
@@ -364,7 +364,7 @@ cd IFS-research
 | 공변량 | thinRisk 11/40, familiarObjectStated 26/40 |
 | 스키마 | 사이드카 60개 모두 `form-asset.v0` 검증 통과 |
 
-- 비교 시트(문장 id·프롬프트 문구·상태 | SDXL 이미지 | TripoSG 렌더 3시점 | D01–D10만 11-22 Shap-E·TripoSR): `D:\Seoyeon\IFS -HCI Korea\gen3d-out\g62eval\compare\g62_sheet_{1..4}.png`. **사람 판정은 하지 않았습니다**(연구팀 몫).
+- 비교 시트(문장 id·프롬프트 문구·상태 | SDXL 이미지 | TripoSG 렌더 3시점 | D01–D10만 11-22 Shap-E·TripoSR): `<repo>/../gen3d-out\g62eval\compare\g62_sheet_{1..4}.png`. **사람 판정은 하지 않았습니다**(연구팀 몫).
 - 수치 원본: `gen3d-out\g62eval\g62_report.json`, `g62-sdxl-triposg\run.json`(모델 호출 수·결정성·스키마 문제), 사이드카 `assets\*.form-asset.json`.
 
 ### 실패·한계
