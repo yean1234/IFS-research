@@ -1133,3 +1133,4 @@ Codex 원문 `docs/codex-reviews/CP13.md`, 프롬프트 `prompts/CP13_prompt.md`
 | 4 (중간) | 넘어가기가 taskkill을 기다려 최대 15초 늦다 | 수용 | 취소를 먼저 저장·응답, 프로세스 종료는 백그라운드 |
 
 - 문제없다고 확인된 것(Codex): 매퍼를 따르는 프롬프트와 해시 확인, 생성 후보는 고른 뒤에만 반영, 러너 계약 유지, `ShapeMapping.Resolve`는 덮어쓰기가 없으면 예전 판정, 먼지 메시 결정성, G74 장소·부정·'김'·움직임 비유 시험.
+- 재검토(`docs/codex-reviews/CP13_recheck.md`): 1–4 고쳐짐, 잠금 교착·재시도 스레드·다른 설정 영향 없음. 새 지적("`action=edit`에 위기 문구를 보내면 409")은 반박: `act()`가 `edit`의 `text`를 `interview_slot(text)`에 넘겨 같은 키워드 위기 예외를 적용한다(`controller.py` act 첫머리). Codex가 인용한 줄은 다른 경로(`chatbot/controller.py`)였다.
