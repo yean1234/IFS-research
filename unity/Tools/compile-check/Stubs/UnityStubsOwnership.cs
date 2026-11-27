@@ -167,6 +167,7 @@ namespace UnityEngine.XR
         public bool TryGetFeatureValue(InputFeatureUsage<Vector2> usage, out Vector2 value) { value = default; return false; }
         public bool TryGetFeatureValue(InputFeatureUsage<Vector3> usage, out Vector3 value) { value = default; return false; }
         public bool TryGetFeatureValue(InputFeatureUsage<Quaternion> usage, out Quaternion value) { value = default; return false; }
+        public bool SendHapticImpulse(uint channel, float amplitude, float duration = 1f) => false;
     }
 
     public static class InputDevices

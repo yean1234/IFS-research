@@ -277,3 +277,125 @@ RTX 5080 16 GB, Windows 11, Unity 6000.0.85f2(에디터 배치모드). 문장 30
 3. glTFast 패키지를 그대로 둘지. 헤드셋 빌드에 쓰려면 ProjectSettings(Always Included Shaders 또는 Preloaded Shaders)를 바꿔야 합니다. 쓰지 않는다면 `manifest.json`에서 빼고 `Runtime/Experimental/`을 지우면 됩니다.
 4. SF3D를 쓰려면 HF에서 Stability Community License 약관 동의(계정 소유자)가 필요합니다.
 5. 판정은 AI 에이전트 한 명이 했습니다. 연구 근거로 쓰려면 사람 2명 이상의 독립 판정이 필요합니다.
+
+## 2026-11-27 추가: G62 형태 후보 생성기
+
+결정 G62(형태 메시 후보를 로컬 생성 모델로 만든다)의 **생성기 쪽**입니다. 설계 바탕은 `docs/codex-reviews/D8_claude.md`. 위 1–11절의 실험 경로와 달리 **형태만** 만들고(색·재질은 매핑이 정함), 프롬프트는 규칙만 씁니다(LLM 없음). 생성 결과는 SceneSpec 슬롯 값이 아니라 '생성' 출처의 후보입니다.
+
+### 무엇을 만들었나
+
+```text
+확정 텍스트 ─► shape_prompt()(Kiwi + 고정 사전, 차단 판정) ─┬─ 차단: 사이드카만(모델 호출 없음)
+                                                         └─ ok: SDXL base 1.0 → rembg(u2net) → TripoSG(형태만)
+                                                                 → 후처리(면 ≤ 2만 → 중심 → 가장 긴 변 1.0 → 바닥 y=0)
+                                                                 → GLB(회색 단일 머티리얼) → 6시점 렌더 → CLIP 관문
+                                                                 → <assetId>.glb + <id>.form-asset.json
+```
+
+| 파일 | 내용 |
+| --- | --- |
+| `shared/schemas/form-asset.v0.json` | 사이드카 계약(`schema`·`assetId`·`status`·`blockReason`·`glb`·`glbSha256`·`pipeline`·`models[]`·`seed`·`prompt{text, lexiconVersion, tokens[{en, ko, charSpan, slot}]}`·`sourceTextSha256`·`normalization`·`covariates`·`gate`). `sourceTextSha256`는 `normalize_confirmed(text)`의 sha256이라 SceneSpec `meta.sourceTextHash`(접두어 `sha256:` 뺀 값)와 같음(확인함) |
+| `shared/lexicon/shape_prompt_en.v0.json` | 한→영 고정 사전 0.1.0: 형태 명사 90·형태 꾸밈말 49(명사 꼴 '구멍' 포함), 틀 문구, 자리 규칙(장소·크기 비교·비유·부정), 보충 차단 목록(메시 불가·사람/얼굴·동물). dev.json과 일반 어휘로만 만듦 |
+| `tools/gen3d/prompts.py` `shape_prompt()` | 사전 맞춤(명사 연속 전체), 회상 문장 제외(기존 `_context_sentences`), 부정 제외(기존 `_negated` + 아니·않·없·못), 크기 비교·장소 제외, 차단 판정, charSpan 감사(fail closed) |
+| `tools/gen3d/form_asset.py` | 모델 단계·결정적 후처리·캐시·렌더러·CLIP 관문·사이드카 쓰기(jsonschema 검증) |
+| `tools/gen3d/generate.py` | `--pipeline sdxl-triposg`, `--no-cache` 추가(기존 shap-e·sdxl-triposr 경로는 그대로) |
+| `tools/gen3d/eval_g62.py` | 합성 60문장 입력·수치·비교 시트 |
+| `tools/gen3d/tests/test_g62.py` | 모델 없는 단위 테스트 30개(프롬프트·차단·후처리 결정성·스키마) |
+
+**차단 규칙(모델을 부르지 않음).** ① 기존 제외 판정을 코드 수정 없이 호출(`SceneSpecBuilderV2`, G45–G51: `_unmapped` reason excluded_shape·no_asset 중 `formSaid` 또는 `formBlock`), ② 기존 빌더가 `form.type = mist`·`form.base = flame`으로 읽음, ③ 보충 목록: 안개·연기·구름·빛·불꽃 등은 명사 꾸밈('빛 덩어리')·비유 원천이면 막고, 주어 자리면 텍스트에 형태 명사가 따로 없을 때만 막음(배경 햇빛·'빛이 나요'는 통과). 얼굴·인형·동물 보충 낱말은 G45처럼 중심 명사일 때만. → `excluded_category`. 형태 낱말이 없으면 `no_shape_stated`, 근거 없는 내용 토큰이면 `untraceable_token`. 얇은 것(선·종이·천·잎·깃털 등)은 생성하되 `thinRisk: true`.
+
+**틀 문구**(slot `template`, 분석에서 뺌): `a single {꾸밈말} {…-like} {명사|object}, one solid object, matte gray clay, plain white background`. 부정 틀(안전 제약): `person, human, face, eyes, figure, animal, hands, …`.
+
+**결정적 후처리**(`g62-post/0.1.0`): 정점 병합 → 면 > 20,000이면 pymeshlab quadric 축소 → (닫힌 메시면) 감기 방향만 맞춤 → 경계 상자 x·z 중심과 바닥을 원점 → 가장 긴 변 1.0. **주축 정렬은 하지 않음**(고유벡터 부호·순서가 결정적이라는 보장이 없음). 모델의 y-up 그대로.
+
+**캐시**: 키 = sha256(프롬프트 텍스트 + 파이프라인 + 네 모델의 repo@리비전 + seed + 후처리 판), `assetId` = 앞 16자. 저장소 밖 `gen3d-out/form-assets/sdxl-triposg/`(GLB·`.gen.json`·중간 이미지·렌더). 같은 키면 다시 만들지 않음. 실행 폴더 `gen3d-out/<run>/g62-sdxl-triposg/assets/`에 `<assetId>.glb`와 문장마다 `<id>.form-asset.json`. 관문 차단 GLB는 실행 폴더로 복사하지 않음.
+
+**출력 관문**: 자체 점 찍기 렌더러(표면 점 20만 개, seed 0 표본, 정사영 z-버퍼, 6시점) → CLIP ViT-L/14 영점 분류. 라벨 14개(사람 쪽 7: person·human figure·human face·head with eyes and a mouth·animal·animal figurine·doll / 물체 쪽 7), 사람 쪽 확률 합의 시점 최댓값 = `personLikeScore`, **문턱 0.5(평가 전에 정함, 고치지 않음)**. `matchScore` = 'a single …' 문구 대 렌더 CLIP 코사인(6시점 평균).
+
+### 설치(저장소 밖, 한 번만)
+
+```bash
+cd "D:/Seoyeon/IFS -HCI Korea"
+git clone https://github.com/VAST-AI-Research/TripoSG.git gen3d-models/TripoSG        # fc5c40990181e2a756c4e0b1c2f4d6b5202faf8c
+gen3d-venv/Scripts/python -m pip install jaxtyping typeguard pymeshlab               # 0.3.11 · 4.6.1 · 2025.7.post1
+gen3d-venv/Scripts/python -c "from huggingface_hub import snapshot_download as s; \
+  s('VAST-AI/TripoSG', revision='2c1c516d22d58db486a058d98d31bb6177344e06'); \
+  s('openai/clip-vit-large-patch14', revision='32bd64288804d66eefd0ccbe215aa642df71cc41', allow_patterns=['*.json','*.txt','model.safetensors'])"
+```
+
+- **diso는 설치하지 않음**: PyPI에 소스(sdist, CUDA 확장 빌드)만 있음. TripoSG의 flash 디코더만 쓰므로 빈 모듈로 막고 `use_flash_decoder=False`(계층 옥트리 + skimage 마칭 큐브)로 돌림. 그 밖에 Windows에서 막힌 곳 없음(설치·첫 GLB까지 약 30분).
+- **briaai/RMBG-1.4는 받지 않음**(라이선스 조건, D8 3절). 이미 쓰던 rembg u2net으로 RGBA를 만들어 넘기면 TripoSG `prepare_image`가 RMBG 경로를 건너뜀.
+- 게이트(약관 동의) 모델 없음. 상용 API·외부 추론 없음.
+
+| 역할 | 저장소 | 리비전 | 가중치 sha256(앞 12자) | 라이선스 |
+| --- | --- | --- | --- | --- |
+| 이미지 | stabilityai/stable-diffusion-xl-base-1.0 | 462165984030… | unet 357650fbfb3c · vae 1598f3d24932 · te 5c3d6454dd2d · te2 3a6032f63d37 | CreativeML Open RAIL++-M |
+| 배경 제거 | rembg u2net.onnx | — | 8d10d2f3bb75 | MIT / Apache-2.0 |
+| 형태 | VAST-AI/TripoSG | 2c1c516d22d5… (코드 fc5c40990181) | transformer 9192b5923f7b · vae a2e667c24927 · dinov2 399fba97a95f | MIT |
+| 관문 | openai/clip-vit-large-patch14 | 32bd64288804… | a2bf730a0c7d | MIT |
+
+설정: SDXL 30단계·cfg 7·1024², TripoSG 50단계·cfg 7·dense/hierarchical 옥트리 8·fp16, seed 0. 환경: Python 3.11.7, torch 2.11.0+cu128, diffusers 0.40.0.dev0, transformers 4.57.6, trimesh 4.12.2, kiwipiepy 0.24.1, 드라이버 610.88, RTX 5080 16 GB.
+
+### 실행
+
+```bash
+cd IFS-research
+../gen3d-venv/Scripts/python tools/gen3d/eval_g62.py prepare --run g62eval
+../gen3d-venv/Scripts/python tools/gen3d/generate.py --run g62eval --pipeline sdxl-triposg --repeat 2
+../gen3d-venv/Scripts/python tools/gen3d/eval_g62.py prepare --run g62eval_rerun
+../gen3d-venv/Scripts/python tools/gen3d/generate.py --run g62eval_rerun --pipeline sdxl-triposg --no-cache   # 다른 프로세스
+../gen3d-venv/Scripts/python tools/gen3d/eval_g62.py report --run g62eval --rerun g62eval_rerun
+../gen3d-venv/Scripts/python -m pytest tools/gen3d/tests -q
+```
+
+### 합성 60문장 평가(2026-11-27)
+
+**입력.** dev.json 30 + heldout.json 30 + chatbot 테스트의 합성 예문 8. 라벨은 사전·규칙을 얼린 뒤(사전 sha256 `695390a9…`) AI 에이전트가 기준(`eval_g62.py` `LABEL_RULE`)대로 붙였습니다. **should_block 20** = 메시 불가 범주가 주된 것인 말뭉치 12(D02·D06·D09·D14·D20·D21·H02·H07·H09·H18·H24·H28) + 제외 범주 6(사람·고양이·뱀·귀신·칼·올가미) + 형태 서술 없음 2. **shape 40** = 나머지 말뭉치에서 id 순 40(dev 24 + H01–H20 중 16). held-out으로 규칙을 고치지 않았습니다.
+
+| 항목 | 결과 |
+| --- | --- |
+| (a) 차단 대상 20개의 모델 호출 | **0** (20/20 규칙 단계에서 차단: excluded_category 17, no_shape_stated 3) |
+| (b) 형태 40개 중 GLB 저장 | **34/40**. 규칙 단계 오차단 2(D19 '솜사탕' — 기존 빌더가 mist로 읽음, H19 '크리스탈' — 사전에 없는 명사 + '빛이 퍼져 나와요' 주어), 관문 차단 4, 생성 실패 0 |
+| (c) GLB sha256 일치 | 같은 프로세스 **34/34**, 다른 프로세스(`--no-cache` 재실행) **34/34** (38개 프롬프트 → 고유 키 34; '공' 문장 3개 등 같은 문구는 키 하나) |
+| (d) 후보당 시간(모델 적재 제외) | 중앙값 **29.8 s**, 범위 25.2–39.9 s = 이미지 6.4 + 배경 제거 0.3 + TripoSG 17.7(확산 약 9 + 표면 추출 약 9) + 후처리 0.4–13.8(면 수 축소, 원본 5만–89만 면) + 관문 0.3. **30 s 기준을 넘는 것이 절반 가까이** |
+| (d) VRAM 최대(torch reserved) | 이미지 **12.5 GiB**, TripoSG **5.8 GiB**(단계를 나눠 동시에 올리지 않음) |
+| (e) 관문 차단(person_like) | **4**: D23(꽃), D29(깃털), H01(구슬), H06(실). 모두 사람·동물 명사 없는 문장. 차단 점수 0.61–0.66, 통과 중 최고 0.43(D25 나뭇잎). 오탐인지는 사람이 시트로 볼 것 |
+| (f) 일치 점수(CLIP 코사인) | TripoSG 38개 중앙값 **0.244**(0.187–0.305). 같은 7문장(D01·D03·D04·D05·D07·D08·D10, 같은 문구·같은 렌더러): TripoSG 0.235 · Shap-E(11-22) 0.227 · TripoSR(11-22) 0.210(중앙값). 차이가 작고 자동 지표일 뿐이라 질 판단 근거로 쓰지 않음 |
+| 공변량 | thinRisk 11/40, familiarObjectStated 26/40 |
+| 스키마 | 사이드카 60개 모두 `form-asset.v0` 검증 통과 |
+
+- 비교 시트(문장 id·프롬프트 문구·상태 | SDXL 이미지 | TripoSG 렌더 3시점 | D01–D10만 11-22 Shap-E·TripoSR): `D:\Seoyeon\IFS -HCI Korea\gen3d-out\g62eval\compare\g62_sheet_{1..4}.png`. **사람 판정은 하지 않았습니다**(연구팀 몫).
+- 수치 원본: `gen3d-out\g62eval\g62_report.json`, `g62-sdxl-triposg\run.json`(모델 호출 수·결정성·스키마 문제), 사이드카 `assets\*.form-asset.json`.
+
+### 실패·한계
+
+1. **오차단 2건(b)**: 기존 빌더의 mist 판정을 그대로 따르므로 '몽실몽실한 솜사탕'도 막힘. 사전에 없는 명사(크리스탈)를 말하고 빛을 주어로 말하면 형태 명사가 없다고 보고 막음. 막는 쪽 오차라 안전하지만 생성 후보가 없어짐.
+2. **관문 오탐 의심 4건(e)**: 얇거나 작은 사물(꽃·깃털·구슬·실)이 'animal figurine'·'doll' 라벨로 넘어감. 문턱·라벨은 평가 전에 정한 값이라 고치지 않았음. 바꾸려면 dev 렌더로만 다시 정하고 기록할 것.
+3. **시간(d)**: 30 s 기준을 자주 넘음. 주된 원인은 dense 옥트리 질의(256³)와 큰 메시의 quadric 축소. flash 디코더(diso 빌드)나 옥트리 깊이 7, 추출 단계 축소 순서 변경이 후보이나 시도하지 않음.
+4. **얇은 것**: SDF 계열이라 천·종이·잎은 두께 있는 판이 됨(thinRisk로만 표시).
+5. **SDXL 이미지가 프롬프트에 없는 것을 더함**: 'a single ball' → 구멍 난 공(D05), 'a single bottle' → 병 두 개(D12), 'a single square box' → 열린 틀(D03). 틀 문구 'one solid object'로 막지 못함 — 원칙 2의 '생성' 출처 표시 근거.
+6. **sdxl-triposr 대체 경로**는 TripoSG가 돌아서 이 계약으로 감싸지 않음(스키마 enum에만 남김).
+7. 결정성은 이 PC·이 소프트웨어 판에서만 확인(6절과 같은 한계).
+
+### 조정 0.2.0: 지어냄 줄이기(같은 60문장의 1차 비교 시트를 본 뒤)
+
+**위 수치는 모두 조정 전(사전 0.1.0·틀 0.1.0·관문 0.1)입니다.** 1차 비교 시트에서 TripoSG는 SDXL 이미지를 충실히 옮기지만 SDXL이 말하지 않은 것을 더하는 것이 보였습니다(병 2개 D12, 구슬 2개 D16, 고리 2개 D24, 풍선의 줄과 추 D17, 꽃병 D23, 구멍 난 공 D05·D26). 그래서 아래를 바꿨습니다. **같은 문장을 보고 조정했으므로, 이 문장들로 다시 잰 수치는 조정 뒤 수치이며 독립 검증이 아닙니다.**
+
+| 바꾼 것 | 내용 |
+| --- | --- |
+| 출력 관문 `g62-gate/0.2.0` — 여러 물체 검사 | 후처리 뒤 메시의 연결 성분(면 인접) 중 표면적 비율 **5% 이상**인 것이 2개 이상이면 `status blocked`, `blockReason gate_failed`, `blockDetail multi_object`(사이드카 `gate.multiObject`에 성분 수·상위 비율). 문턱 5%는 2차 실행 전에 정했고 결과를 보고 고치지 않는다. 복수 명사(사전 `plural`: 조각·파편·알갱이, 또는 형태 명사 + '-들')를 말했으면 적용하지 않음(`covariates.pluralStated`) |
+| 틀 `g62-template/0.2.0`·사전 0.2.0 | 일반 부속물 부정 틀 `negativeAccessories`: two objects, pair, duplicate, group of objects, stand, pedestal, base plate, plinth, string, rope, chain, strap, holder, container, bowl, vase, tray, plate. 프롬프트 내용 토큰의 영어 낱말과 겹치는 항목은 뺌(말한 끈·그릇·접시를 부정하지 않음). 개별 문장에 맞춘 항목 없음. 형태 낱말 항목·차단 목록은 그대로 |
+| 캐시 키 | 부정 틀 문자열과 관문 판을 키에 넣음 → 0.1.0 결과와 키가 모두 달라져 다시 만듦 |
+| 그대로 둔 것 | 사람·동물 관문의 문턱 0.5·라벨(오탐 의심 4건 — 꽃·깃털·구슬·실 — 그대로), 후처리 `g62-post/0.1.0` |
+
+**2차 실행 상태(2026-11-27): 끝내지 못함.** 같은 60문장을 새 실행 이름 `g62eval_v2`(`--repeat 2`)로 돌리던 중, 이미지 단계(34개)를 마치고 TripoSG를 올리는 사이에 시스템 메모리 부족으로 작업 관리자(Claude Code)가 프로세스를 멈췄습니다. GLB·사이드카·수치는 나오지 않았고, 조정 뒤 수치는 아직 없습니다. 다시 돌리는 명령:
+
+```bash
+../gen3d-venv/Scripts/python tools/gen3d/eval_g62.py prepare --run g62eval_v2
+../gen3d-venv/Scripts/python tools/gen3d/generate.py --run g62eval_v2 --pipeline sdxl-triposg --repeat 2
+../gen3d-venv/Scripts/python tools/gen3d/eval_g62.py prepare --run g62eval_v2_rerun
+../gen3d-venv/Scripts/python tools/gen3d/generate.py --run g62eval_v2_rerun --pipeline sdxl-triposg --no-cache
+../gen3d-venv/Scripts/python tools/gen3d/eval_g62.py report --run g62eval_v2 --rerun g62eval_v2_rerun --prev g62eval
+```
+
+(`report --prev`가 1차 수치를 `g62_report.json`의 `previous`에 나란히 넣고, 새 비교 시트를 `gen3d-out\g62eval_v2\compare\`에 만듭니다. 이미 만든 SDXL 이미지는 캐시 폴더에 남아 있으나 생성기는 키마다 이미지부터 다시 만듭니다.)

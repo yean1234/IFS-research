@@ -1,0 +1,153 @@
+{
+  "tool": "PlacementUiCapture.CapturePanels",
+  "unityVersion": "6000.0.85f2",
+  "eyeFovDeg": 28.8,
+  "imageSize": "1280x720",
+  "note": "합성 spec EX02·문구 파일만. 시야각 = 2·atan(높이 / (2·눈–판 중심 거리)). 글자 높이는 한 글자 TextMesh의 localBounds(잉크 높이에 가까움). 대비비는 이 렌더의 화소(sRGB)로 WCAG 2.x 식.",
+  "shots": [
+    {
+      "file": "g63_panel_instruction.png",
+      "view": "eye(0,1.6,0) → 판 중심, 세로 시야 28.8°",
+      "panelText": "이제 문장 몇 개를 보여 드릴게요. 문장 속 '이것'은 면담에서 떠올리신 그것을 가리켜요. 조금 전에 보신 물체는 면담에서 말씀하신 것을 바탕으로 만든 거예요.",
+      "panelSizeM": [
+        1.2698,
+        0.487
+      ],
+      "eyeToPanelCenterM": 2.2361,
+      "panelWidthDeg": 31.7,
+      "panelBottomBelowHorizonDeg": 32.78,
+      "wrapChars": 24,
+      "darkTheme": true,
+      "contrast": {
+        "panelScreenRect": "243,207,793x305",
+        "panelBackgroundSrgb": "#2A2B30",
+        "bodyTextSrgb": "#E6E6E8",
+        "bodyContrast": 11.33
+      },
+      "instructionPage": "1/2"
+    },
+    {
+      "file": "g63_panel_item7_cursor.png",
+      "view": "eye(0,1.6,0) → 판 중심, 세로 시야 28.8°",
+      "panelText": "지금 이것 때문에 마음이 힘들다.",
+      "panelSizeM": [
+        1.56,
+        0.5953
+      ],
+      "eyeToPanelCenterM": 2.2434,
+      "panelWidthDeg": 38.34,
+      "panelBottomBelowHorizonDeg": 34.49,
+      "wrapChars": 24,
+      "darkTheme": true,
+      "contrast": {
+        "panelScreenRect": "154,174,971x371",
+        "panelBackgroundSrgb": "#2A2B30",
+        "bodyTextSrgb": "#E6E6E8",
+        "bodyContrast": 11.33,
+        "firstLabelSrgb": "#E6E6E8",
+        "firstLabelContrast": 11.33,
+        "firstNumberSrgb": "#E6E6E8",
+        "firstNumberContrast": 11.33,
+        "selectedNumberSrgb": "#9EC3FF",
+        "selectedCellBackgroundSrgb": "#576F97",
+        "selectedNumberContrast": 2.84,
+        "selectedCellFillSrgb": "#1F3050",
+        "selectedNumberSrgbVsFill": "#9EC3FF",
+        "selectedNumberContrastVsFill": 7.33,
+        "selectedLabelSrgb": "#9EC3FF",
+        "selectedLabelContrast": 2.84
+      }
+    },
+    {
+      "file": "g63_panel_item7_confirm_flash.png",
+      "view": "eye(0,1.6,0) → 판 중심, 세로 시야 28.8°",
+      "panelText": "지금 이것 때문에 마음이 힘들다.",
+      "panelSizeM": [
+        1.56,
+        0.5953
+      ],
+      "eyeToPanelCenterM": 2.2434,
+      "panelWidthDeg": 38.34,
+      "panelBottomBelowHorizonDeg": 34.49,
+      "wrapChars": 24,
+      "darkTheme": true,
+      "contrast": {
+        "panelScreenRect": "154,174,971x371",
+        "panelBackgroundSrgb": "#2A2B30",
+        "bodyTextSrgb": "#E6E6E8",
+        "bodyContrast": 11.33,
+        "firstLabelSrgb": "#E6E6E8",
+        "firstLabelContrast": 11.33,
+        "firstNumberSrgb": "#E6E6E8",
+        "firstNumberContrast": 11.33,
+        "selectedNumberSrgb": "#1F3050",
+        "selectedCellBackgroundSrgb": "#9EC3FF",
+        "selectedNumberContrast": 7.33,
+        "selectedCellFillSrgb": "#1F3050",
+        "selectedNumberSrgbVsFill": "#9EC3FF",
+        "selectedNumberContrastVsFill": 7.33,
+        "selectedLabelSrgb": "#1F3050",
+        "selectedLabelContrast": 7.33
+      }
+    },
+    {
+      "file": "g63_scene_item.png",
+      "view": "desktop(0,1.6,0) 18° 아래, 세로 시야 60°",
+      "panelText": "지금 이것 때문에 마음이 힘들다."
+    }
+  ],
+  "uiFlags": {
+    "uiComfortWrap": true,
+    "uiDarkPanel": true,
+    "uiRayHover": true,
+    "uiHaptics": true,
+    "uiRatingConfirmFlash": true,
+    "uiNarrowScale": true
+  },
+  "glyph": {
+    "font": "Malgun Gothic",
+    "fontSize": 64,
+    "eyeToPanelCenterM": 2.2361,
+    "bodyTextMeshLineSpacing": 1.13,
+    "body": {
+      "characterSize": 0.0085,
+      "nominalEmM": 0.0544,
+      "nominalEmDeg": 1.394,
+      "inkHeightM_가": 0.0513,
+      "inkHeightDeg_가": 1.314,
+      "inkHeightM_7": 0.039,
+      "inkHeightDeg_7": 1.0,
+      "linePitchM": 0.0818,
+      "linePitchEm": 1.503
+    },
+    "number": {
+      "characterSize": 0.01,
+      "nominalEmM": 0.064,
+      "nominalEmDeg": 1.64,
+      "inkHeightM_가": 0.0604,
+      "inkHeightDeg_가": 1.548,
+      "inkHeightM_7": 0.046,
+      "inkHeightDeg_7": 1.18,
+      "linePitchM": 0.0851,
+      "linePitchEm": 1.33
+    },
+    "label": {
+      "characterSize": 0.0075,
+      "nominalEmM": 0.048,
+      "nominalEmDeg": 1.23,
+      "inkHeightM_가": 0.0455,
+      "inkHeightDeg_가": 1.165,
+      "inkHeightM_7": 0.0344,
+      "inkHeightDeg_7": 0.881,
+      "linePitchM": 0.0638,
+      "linePitchEm": 1.33
+    }
+  },
+  "backgroundLighting": {
+    "shader": "Standard",
+    "materialColor": "#000000",
+    "emissionColor": "#2A2B30",
+    "rendered": "#2A2B30",
+    "renderedEmissionOff": "#000000"
+  }
+}

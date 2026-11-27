@@ -83,6 +83,8 @@ namespace IFS.SceneSpec.Placement
         public string SelectionPathText { get; set; } = "";
         /// <summary>확인(Check)에서 읽은 선택 파일. 없으면 null.</summary>
         public PlacementSelection Selection { get; private set; }
+        /// <summary>G62: 이 세션에서 생성 형태 메시를 적용한 결과(선택 파일에 form.asset이 없으면 null).</summary>
+        public IFS.SceneSpec.FormAsset.FormAssetResult FormAssetResult { get; private set; }
         /// <summary>마지막으로 시작한 세션에 실제로 적용된 덮어쓰기(키 → 그려지는 값).</summary>
         public Newtonsoft.Json.Linq.JObject AppliedOverrides { get; private set; }
         public List<string> Errors { get; } = new List<string>();
@@ -492,6 +494,50 @@ namespace IFS.SceneSpec.Placement
             foreach (var w in sel.Warnings) Warnings.Add(w);
             Selection = sel;
             _selectionSha = sel.Sha256;
+            // G62: 고른 생성 형태 메시 — GLB가 없거나 sha256이 다르면 시작은 하되 절차 메시로 돌아간다(미리 알림, 기록은 시작 때)
+            if (sel.FormAsset != null)
+            {
+                string why = FormAssetPrecheck(sel.FormAsset, _selectionFullPath);
+                if (why != null) Warnings.Add($"생성 형태 메시 {sel.FormAsset.AssetId}: {why} — 절차 메시로 표시합니다(G62)");
+            }
+        }
+
+        /// <summary>G62: 생성 형태 GLB 파일 확인(있는지·sha256). 문제가 없으면 null, 있으면 이유.</summary>
+        static string FormAssetPrecheck(IFS.SceneSpec.FormAsset.FormAssetRef r, string selectionPath)
+        {
+            string path = r.ResolveGlbPath(selectionPath);
+            if (path == null) return IFS.SceneSpec.FormAsset.FormAssetResult.GlbNull;
+            if (!File.Exists(path)) return IFS.SceneSpec.FormAsset.FormAssetResult.GlbMissing;
+            try { return OwnershipManifest.Sha256OfFile(path) == r.GlbSha256 ? null : IFS.SceneSpec.FormAsset.FormAssetResult.GlbSha; }
+            catch (Exception e) { return IFS.SceneSpec.FormAsset.FormAssetResult.GlbMissing + ": " + e.Message; }
+        }
+
+        /// <summary>G62: 선택 파일의 생성 형태 메시를 로드한 형상에 적용한다. GLB가 없거나·sha256이 다르거나·읽지 못하면
+        /// 절차 메시를 그대로 두고 그 이유를 결과에 담는다(시작은 막지 않음 — manifest formAsset·events form_asset·경고로 남김).</summary>
+        IFS.SceneSpec.FormAsset.FormAssetResult ApplyFormAsset(IFS.SceneSpec.FormAsset.FormAssetRef r)
+        {
+            string path = r.ResolveGlbPath(_selectionFullPath);
+            if (path == null) return _loader.ApplyFormAssetFallback(r, IFS.SceneSpec.FormAsset.FormAssetResult.GlbNull, "선택 파일 form.asset.glb가 null");
+            byte[] bytes;
+            try { bytes = File.ReadAllBytes(path); }
+            catch (Exception e) { return _loader.ApplyFormAssetFallback(r, IFS.SceneSpec.FormAsset.FormAssetResult.GlbMissing, e.Message); }
+            string sha = OwnershipManifest.Sha256Hex(bytes);
+            if (sha != r.GlbSha256)
+            {
+                var bad = _loader.ApplyFormAssetFallback(r, IFS.SceneSpec.FormAsset.FormAssetResult.GlbSha, null);
+                bad.GlbSha256Actual = sha;
+                return bad;
+            }
+            var mesh = IFS.SceneSpec.FormAsset.GlbMeshReader.Read(bytes, out string err);
+            if (mesh == null)
+            {
+                var bad = _loader.ApplyFormAssetFallback(r, IFS.SceneSpec.FormAsset.FormAssetResult.GlbParse, err);
+                bad.GlbSha256Actual = sha;
+                return bad;
+            }
+            var res = _loader.ApplyFormAsset(r, mesh);
+            res.GlbSha256Actual = sha;
+            return res;
         }
 
         void CheckReplay()
@@ -601,6 +647,15 @@ namespace IFS.SceneSpec.Placement
                 return false;
             }
 
+            // G62: 고른 생성 형태 메시(선택 파일 0.3 form.asset)가 있으면 절차 모형의 메시를 바꾼다(크기·재질은 절차 모형 규칙)
+            FormAssetResult = null;
+            if (Selection?.FormAsset != null)
+            {
+                FormAssetResult = ApplyFormAsset(Selection.FormAsset);
+                if (!FormAssetResult.Applied)
+                    Warnings.Add($"생성 형태 메시 {Selection.FormAsset.AssetId}를 쓰지 못해 절차 메시로 표시합니다({FormAssetResult.FallbackReason})");
+            }
+
             double objectRadius = ObjectRadius();   // 물체 렌더 경계(AABB 가장 큰 반폭). 없으면 0 → manifest null
             _objectRadius = objectRadius;
             if (_auto != null && headProvider != null) headProvider.BeginScripted();
@@ -627,6 +682,7 @@ namespace IFS.SceneSpec.Placement
                 LayoutIgnored = _layoutWarning != null,
                 Selection = Selection,
                 AppliedOverrides = AppliedOverrides,
+                FormAsset = FormAssetResult,   // G62: 선택 파일에 form.asset이 있을 때만(없으면 manifest에 키 없음)
                 EyeHeight = eyeHeight,   // G60-3: relative일 때만(아니면 null)
             };
             try
@@ -641,10 +697,12 @@ namespace IFS.SceneSpec.Placement
                 return false;
             }
             Session.GrabRadiusM = Math.Max(config.grabRadiusMinM, objectRadius);
+            ApplyUiOptions();   // G63: 헤드셋 UI 플래그(기본 꺼짐이면 판은 Inspector 값 그대로)
             if (Selection != null)   // events.csv에 선택 파일 한 줄(경고가 아님 — manifest selection·appliedOverrides가 정본)
                 Session.Note("selection", $"file={Clean(Selection.FileName)};none={(Selection.None ? 1 : 0)};candidate={Clean(Selection.SelectedCandidateId)};" +
                                           $"skipped={(Selection.Skipped ? 1 : 0)};colorChanged={(Selection.ColorChanged.HasValue ? (Selection.ColorChanged.Value ? "1" : "0") : "")};" +
                                           $"applied={AppliedOverrides?.Count ?? 0}");
+            if (FormAssetResult != null) Session.Note("form_asset", FormAssetResult.EventDetail());
             if (_auto == null && XrHeadActive)
                 Session.Note("xr_status", $"device={Clean(PlacementXrRig.LoadedDeviceName)};head={Clean(PlacementXrRig.HeadDeviceName)};" +
                                           $"controller={Clean(xrInput?.DeviceName)};hand={config.xrHand};trackingOrigin={Clean(xrRig?.TrackingOrigin)}");
@@ -655,6 +713,19 @@ namespace IFS.SceneSpec.Placement
             Stage = PlacementRunnerStage.Running;
             ApplyVisuals();
             return true;
+        }
+
+        /// <summary>G63: 설정의 헤드셋 UI 플래그를 판에 적용하고, 평정 지시문 한 쪽의 최대 줄 수를 판의 실제 자리로 정한다.
+        /// 두 조건이 같은 판·같은 규칙을 쓴다(조건을 보지 않는다).</summary>
+        void ApplyUiOptions()
+        {
+            if (panel == null) return;
+            panel.ApplyUiOptions(config.uiComfortWrap, config.uiDarkPanel, config.uiNarrowScale);
+            if (config.uiComfortWrap && Session != null)
+            {
+                float eyeOffset = (float)Session.EyeOffsetM;
+                Session.InstructionPageMaxLines = panel.MaxBodyLinesWithin(new Vector3(0f, textHeightM + eyeOffset, textForwardM), new Vector3(0f, PanelEyeHeightM, 0f));
+            }
         }
 
         /// <summary>events.csv 상세(key=value;…)에 넣을 값: 비면 "-", 구분자(;·=·줄바꿈)는 공백으로.</summary>
@@ -755,9 +826,29 @@ namespace IFS.SceneSpec.Placement
                 _auto.Experimenter(Session);
             }
             else Session.Tick(dt, inp != null ? inp.Read() : new PlacementInputFrame(), head);
+            SendHaptics();
             ApplyVisuals();
             AfterSession();
         }
+
+        /// <summary>G63 (4): 세션이 쌓은 햅틱 펄스를 XR 컨트롤러로 보낸다(XR 입력을 쓰는 중일 때만 — events.csv haptic은 세션이 이미 남겼다).
+        /// 마지막으로 보낸 수·보내지 못한 수는 점검용.</summary>
+        void SendHaptics()
+        {
+            if (Session == null) return;
+            var pulses = Session.TakeHaptics();
+            if (pulses.Count == 0) return;
+            bool xrActive = _auto == null && xrInput != null && ReferenceEquals(_activeInput, xrInput);
+            foreach (var p in pulses)
+            {
+                if (xrActive && xrInput.SendHaptic(p)) HapticsSent++;
+                else HapticsNotSent++;
+            }
+        }
+
+        /// <summary>G63 (4): 이 러너가 컨트롤러로 보낸 햅틱 펄스 수 · 보내지 못한 수(데스크톱·자동 시행·장치 없음). 점검용.</summary>
+        public int HapticsSent { get; private set; }
+        public int HapticsNotSent { get; private set; }
 
         void AfterSession()
         {
@@ -787,13 +878,14 @@ namespace IFS.SceneSpec.Placement
             {
                 // 헤드셋 안 판: 평정 문항이면 문항 + 1–7 기준점(참여자가 고르는 중인 값 강조), 아니면 안내 글
                 var item = Session.CurrentItem;
-                if (item != null) panel.ShowItem(item, Session.RatingCursor, textAt, eye);
+                if (Session.PanelHidden) panel.Hide();   // G63 (7): 조건·멈춤 거리 단계에서 읽을 시간 뒤 숨김(hidePanelInDistancePhases)
+                else if (item != null) panel.ShowItem(item, Session.RatingCursor, textAt, eye, Session.RatingConfirmFlash);
                 else if (Session.ParticipantText == null) panel.Hide();
                 else panel.ShowText(Session.ParticipantText, textAt, eye);
             }
-            else if (textDisplay != null && Session.ParticipantText != _shownText)
+            else if (textDisplay != null && (Session.PanelHidden ? null : Session.ParticipantText) != _shownText)
             {
-                _shownText = Session.ParticipantText;
+                _shownText = Session.PanelHidden ? null : Session.ParticipantText;
                 if (_shownText == null) textDisplay.Hide();
                 else textDisplay.Show(_shownText, textAt, eye);
             }
@@ -832,14 +924,22 @@ namespace IFS.SceneSpec.Placement
                           && (s.Config.IsPlace || s.Config.controlMode == PlacementConfig.ModePointSelect)) || s.Phase == PlacementPhase.Practice);
             bool show = xrActive && s != null && !s.Finished && (usable || !rayOnlyWhenUsable);
             double end = 0;
+            var state = XrRayState.Idle;
             if (show)
             {
                 var smp = xrInput.LastSample;
-                end = s.Phase == PlacementPhase.Practice
+                bool practice = s.Phase == PlacementPhase.Practice;
+                end = practice
                     ? XrRayVisual.EndDistance(smp.RayOrigin, smp.RayDirection, s.PracticeHeld, s.PracticePosition, true, s.PracticeGrabRadiusM, xrInput.RayMaxLengthM)
                     : XrRayVisual.EndDistance(smp.RayOrigin, smp.RayDirection, s.Held, s.ObjectPosition, s.ObjectVisible, s.GrabRadiusM, xrInput.RayMaxLengthM);
+                // G63 (3): 겨눔·잡음 상태(uiRayHover). 가리켜 지정은 물체를 잡지 않으므로 늘 기본 상태
+                bool grabbable = practice || (s.Phase == PlacementPhase.Condition && s.Config.IsPlace);
+                if (grabbable)
+                    state = practice
+                        ? XrRayStyle.State(s.Config.uiRayHover, smp.RayOrigin, smp.RayDirection, s.PracticeHeld, s.PracticePosition, true, s.PracticeGrabRadiusM)
+                        : XrRayStyle.State(s.Config.uiRayHover, smp.RayOrigin, smp.RayDirection, s.Held, s.ObjectPosition, s.ObjectVisible, s.GrabRadiusM);
             }
-            xrInput.ShowRay(show, end);
+            xrInput.ShowRay(show, end, state);
         }
 
         /// <summary>바닥 거리 고리를 숨기거나 다시 보인다(showRings로 만든 고리만, 바뀔 때만 건드림).</summary>

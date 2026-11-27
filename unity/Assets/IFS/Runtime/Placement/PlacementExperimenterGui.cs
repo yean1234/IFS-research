@@ -252,6 +252,16 @@ namespace IFS.SceneSpec.Placement
             bool eyeRel = GUILayout.Toggle(cfg.IsEyeRelative,
                 " 눈높이 기준 배치(G60-3, eyeHeightMode relative — Check 뒤 H로 눈높이를 재고 물체 높이를 E − 1.60 m만큼 옮김. 기본: 절대 높이. 팀 결정 전)", _toggle);
             cfg.eyeHeightMode = eyeRel ? PlacementConfig.EyeHeightRelative : PlacementConfig.EyeHeightNone;
+            // G63 헤드셋 UI 개선 묶음: (1) 판 35° 안(줄 24자·지시문 쪽 나누기) (2) 어두운 판 (3) 광선 겨눔 (4) 햅틱 (5) 평정 확정 표시 (6) 평정 칸 0.20 m
+            bool bundle = GUILayout.Toggle(cfg.UiBundleOn,
+                " 헤드셋 UI 개선 묶음(G63 — 판 35° 안·어두운 판·광선 겨눔·햅틱·평정 확정 표시·평정 칸 0.20 m. 문구·문항·평정 방식은 그대로. 기본 꺼짐)", _toggle);
+            if (bundle != cfg.UiBundleOn)
+            {
+                if (bundle) cfg.ApplyUiBundle();
+                else cfg.uiComfortWrap = cfg.uiDarkPanel = cfg.uiRayHover = cfg.uiHaptics = cfg.uiRatingConfirmFlash = cfg.uiNarrowScale = false;
+            }
+            cfg.hidePanelInDistancePhases = GUILayout.Toggle(cfg.hidePanelInDistancePhases,
+                $" 조건·멈춤 거리 단계에서 안내 판을 {cfg.hidePanelReadSeconds:0.#}초 뒤 숨기기(G63 (7), 판이 거리 기준점이 되지 않게 — RQ2에 닿아 묶음에서 빠짐. 팀 결정 전)", _toggle);
             cfg.askOptionalItems = GUILayout.Toggle(cfg.askOptionalItems, " 선택 단계 문항도 묻기(optionalWhen — 두 평정 문항 모습 일치·대표성을 사전에도. 기본 꺼짐: 사전 측정은 데스크톱)", _toggle);
             GUILayout.Label("묻지 않을 평정 문항 키(쉼표로, 예: own 또는 S4 — 기존 '내 것 같다' 문항 끄기)", _wrap);
             string disabled = GUILayout.TextField(string.Join(",", cfg.disabledItems ?? new string[0]));

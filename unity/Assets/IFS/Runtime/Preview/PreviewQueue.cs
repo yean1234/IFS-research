@@ -3,6 +3,8 @@
 //   실행: <플레이어>.exe -ifsPreviewQueue <폴더> [-screen-width 320 -screen-height 240 -screen-fullscreen 0]
 //   요청: <폴더>/<이름>.req.json = {"spec": "<spec 파일 절대 경로>" 또는 "specJson": "<문자열>", "overrides": {…}(선택),
 //          "width": 800, "height": 600, "backgrounds": ["scene", "black", "white"](선택, 기본 scene), "out": "<출력 접두 절대 경로>"(선택, 기본 <폴더>/<이름>)}
+//          "formAsset": {"assetId","glb"(GLB 절대 경로),"glbSha256"}(선택, G62 — 그 GLB 메시로 그림. 받지 못하거나 적용하지 못하면
+//          그리지 않고 done의 formAssetError에 이유 → 챗봇이 그 생성 후보를 뺌)
 //   응답: <out>_<배경>.png + <폴더>/<이름>.done.json(로드·렌더 시간, 오류). 요청 파일은 지운다. <이름>.req.json 대신 quit.req.json이면 종료.
 // 같은 PreviewStage를 쓰므로 WebGL·에디터 캡처와 같은 카메라·조명·로더다. 참여자 기록은 남기지 않는다.
 #if !UNITY_WEBGL || UNITY_EDITOR
@@ -81,10 +83,27 @@ namespace IFS.SceneSpec
                 string outPrefix = (string)r["out"] ?? Path.Combine(_dir, name);
 
                 var stage = _bridge.Stage;
+                // G62: "formAsset": {"assetId","glb"(파일 경로),"glbSha256"} — 그 GLB 메시로 그린다(받지 못하면 그리지 않고 formAssetError)
+                stage.ClearFormAsset();
+                if (r["formAsset"] is JObject fa)
+                {
+                    var mesh = FormAsset.FormAssetPayload.Decode(fa, File.ReadAllBytes, out var assetRef, out var assetErr);
+                    if (mesh == null) { done["formAssetError"] = assetErr; throw new InvalidOperationException("생성 형태: " + assetErr); }
+                    stage.SetFormAsset(assetRef, mesh);
+                }
                 var sw = Stopwatch.StartNew();
                 bool ok = stage.Load(specJson, specPath != null ? Path.GetFileName(specPath) : "preview.json", ov);
                 done["loadMs"] = Math.Round(sw.Elapsed.TotalMilliseconds, 2);
                 if (!ok) throw new InvalidOperationException("spec을 로드하지 못했습니다(로그 확인)");
+                if (stage.AssetMesh != null)
+                {
+                    done["formAsset"] = stage.LastFormAsset?.ManifestJson();
+                    if (stage.LastFormAsset == null || !stage.LastFormAsset.Applied)
+                    {
+                        done["formAssetError"] = stage.LastFormAsset?.FallbackReason ?? "적용하지 못함";
+                        throw new InvalidOperationException("생성 형태를 적용하지 못함: " + done["formAssetError"]);
+                    }
+                }
                 stage.FreezeMotion();
                 var renders = new JObject();
                 foreach (var b in bgs)
@@ -106,6 +125,7 @@ namespace IFS.SceneSpec
                 done["ok"] = false;
                 done["error"] = e.GetType().Name + ": " + e.Message;
             }
+            _bridge.Stage?.ClearFormAsset();   // 다음 요청에 남지 않게(얹은 것은 요청 하나에만)
             done["totalMs"] = Math.Round(total.Elapsed.TotalMilliseconds, 2);
             TryDelete(reqPath);
             string tmp = Path.Combine(_dir, name + ".done.tmp");

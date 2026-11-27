@@ -987,9 +987,9 @@ def test_stage_js_webgl_adapter_contract():
     web = (REPO_ROOT / "chatbot" / "ifs_chatbot" / "web" / "stage.js").read_text(encoding="utf-8")
     assert "document.body.append(this.host)" in web and "holder.append(this.frame)" not in web
     assert "enqueue(" in web and "r.id !== id" in web and "덮어쓰기 응답이 요청과 다름" in web
-    cand = web[web.index("candidateNode(target, overrides) {"):web.index("liveSlot(overrides) {")]
+    cand = web[web.index("candidateNode(target, overrides, asset) {"):web.index("liveSlot(overrides, asset) {")]
     assert cand.index("setFrozen(true)") < cand.index("this.capture(target)")
-    live = web[web.index("liveSlot(overrides) {"):web.index("place() {")]
+    live = web[web.index("liveSlot(overrides, asset) {"):web.index("place() {")]
     assert "setFrozen(false)" in live
     assert "/preview/client" in web and '"fallback"' in web and "previewWarmup" in web
     tpl = (REPO_ROOT / "unity" / "Assets" / "WebGLTemplates" / "IFSPreview" / "index.html").read_text(encoding="utf-8")
@@ -1060,7 +1060,8 @@ def test_runner_slot_and_source_lists_match_csharp():
     from ifs_chatbot.selection import SOURCES
     assert set(SOURCES) == SIX_SOURCES
     known = re.search(r"KnownFormatVersions\s*=\s*\{([^}]*)\}", src).group(1)
-    assert set(re.findall(r'"([^"]+)"', known)) == {"ifs-selection/0.1", "ifs-selection/0.2"}
+    # G62: 러너는 0.3(생성 형태 메시, 챗봇 [gen3d] enabled일 때만 씀)도 읽는다 — tests/test_g62_gen3d.py
+    assert set(re.findall(r'"([^"]+)"', known)) == {"ifs-selection/0.1", "ifs-selection/0.2", "ifs-selection/0.3"}
 
 
 @pytest.mark.parametrize("name", ["sel_chosen_adjusted.json", "sel_none_of_these.json", "sel_no_overrides.json"])

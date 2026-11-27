@@ -87,5 +87,164 @@ namespace IFS.SceneSpec.Placement
 
         /// <summary>평정 칸 v가 지금 고른 값인지(참여자 컨트롤러 커서). 고른 칸은 색·굵기·테두리 셋으로 표시한다.</summary>
         public static bool IsSelected(int? cursor, int v) => cursor.HasValue && cursor.Value == v;
+
+        // ── 헤드셋 UI 개선(G63, 2026-11-27, research_notes/VR UI 가독성 기준/vr_ui_guidelines.md) ──────────────
+        // 모두 설정 플래그(PlacementConfig ui*)를 켰을 때만 쓴다. 꺼져 있으면 위의 값·식 그대로(G52: 기본 화면·기록 보존).
+        /// <summary>판 기본값(PlacementTextPanel Inspector 기본값과 같다).</summary>
+        public const int DefaultWrapChars = 20;
+        public const double DefaultBodyLineSpacing = 1.13;
+        public const double DefaultMarginM = 0.08;
+        public const double DefaultColumnWidthM = 0.22;
+        public const double DefaultMaxTopM = 0.85;
+        public const double DefaultMinBottomM = 0.05;
+        public const double CellPadM = 0.018;
+        public const double DefaultSelectionFrameM = 0.012;
+
+        /// <summary>(1) 편한 시선 영역 줄바꿈: 본문 한 줄 24자. 판이 여전히 아래 한계를 넘으면 ComfortWrapMaxChars까지 넓혀 본다.</summary>
+        public const int ComfortWrapChars = 24;
+        /// <summary>넓혀 볼 최대 줄 길이(26자 = 판 폭 약 1.57 m, 2.24 m에서 약 39° — 주 내용 41° 안).</summary>
+        public const int ComfortWrapMaxChars = 26;
+        /// <summary>판 아래 가장자리의 한계(수평 아래, 도). Microsoft Comfort의 최적 시선 영역 0–35° 아래.</summary>
+        public const double ComfortBottomLimitDeg = 35.0;
+        /// <summary>(6) 7칸 평정 줄의 칸 너비(0.22 → 0.20 m).</summary>
+        public const double NarrowColumnWidthM = 0.20;
+        /// <summary>(5) 평정 확정 표시: 확정한 칸 테두리를 이만큼 굵게(m), 이 시간(초) 동안.</summary>
+        public const double ConfirmFlashFrameM = 0.02;
+        public const double ConfirmFlashSeconds = 0.4;
+        /// <summary>주 내용 가로 시야 한계(도, Android XR 41°). 평정 줄 폭 점검용.</summary>
+        public const double MainContentWidthLimitDeg = 41.0;
+
+        // (2) 어두운 판 테마(안 A): 판 #2A2B30, 글 #E6E6E8(약 11:1), 고른 칸 글·테두리 #9EC3FF, 고른 칸 바탕 #1F3050.
+        // 판·고른 칸은 조명을 받지 않게(알베도 검정 + 금속도 1 → 반사 0) 방출만으로 그린다 — 렌더 화소 = 이 색.
+        public static readonly double[] DarkBackgroundSrgb = { 42 / 255.0, 43 / 255.0, 48 / 255.0 };
+        public static readonly double[] DarkTextSrgb = { 230 / 255.0, 230 / 255.0, 232 / 255.0 };
+        public static readonly double[] DarkHighlightSrgb = { 158 / 255.0, 195 / 255.0, 255 / 255.0 };
+        public static readonly double[] DarkSelectionFillSrgb = { 31 / 255.0, 48 / 255.0, 80 / 255.0 };
+        /// <summary>어두운 판 본문 대비의 허용 범위(하한 7:1, 상한 15:1 — 사용자 선호 8.7–11.9:1, 21:1은 '최악'으로 자주 뽑힘).</summary>
+        public const double DarkContrastMin = 7.0, DarkContrastMax = 15.0;
+
+        /// <summary>본문만 있는 판의 높이(m): 줄 수 × 줄 높이 + 위아래 여백(PlacementTextPanel.Layout과 같은 식).</summary>
+        public static double BodyPanelHeightM(int lines, double characterSize = BodyCharacterSize, int fontSize = FontSize,
+            double lineSpacing = DefaultBodyLineSpacing, double marginM = DefaultMarginM)
+            => lines * EmHeightM(characterSize, fontSize) * FontLinePitchEm * lineSpacing + 2 * marginM;
+
+        /// <summary>평정 문항 판의 높이(m): 본문 줄 + 반 줄 간격 + 칸(안쪽 여백 · 숫자 줄 · 뜻 줄) + 여백(PlacementTextPanel.Layout과 같은 식).</summary>
+        public static double ItemPanelHeightM(int bodyLines, int labelLines, double lineSpacing = DefaultBodyLineSpacing, double marginM = DefaultMarginM)
+        {
+            double bodyPitch = EmHeightM(BodyCharacterSize, FontSize) * FontLinePitchEm * lineSpacing;
+            double numLine = EmHeightM(NumberCharacterSize, FontSize) * FontLinePitchEm;
+            double labelPitch = EmHeightM(LabelCharacterSize, FontSize) * FontLinePitchEm;
+            return bodyLines * bodyPitch + bodyPitch * 0.5 + (CellPadM + numLine + labelLines * labelPitch + CellPadM) + 2 * marginM;
+        }
+
+        /// <summary>판 자리(PlacementTextPanel.Place와 같은 규칙): 판 중심을 (0, centerY, forward)에 두고 눈 (0, eyeY, 0)을 보게 돌린다.
+        /// 위 가장자리가 maxTopM을 넘으면 아래 가장자리가 minBottomM에 닿을 때까지 중심을 내린다.
+        /// 돌려주는 값: 실제 중심 높이, 아래 가장자리의 수평 아래 각(도, 눈 기준), 위 가장자리 높이(m).</summary>
+        public static (double centerY, double bottomBelowHorizonDeg, double topY) PanelPlacement(double panelHeightM,
+            double forwardM = DefaultForwardM, double centerY = DefaultPanelHeightM, double eyeY = DefaultEyeHeightM,
+            double maxTopM = DefaultMaxTopM, double minBottomM = DefaultMinBottomM)
+        {
+            // 판의 위 방향(LookRotation(중심 − 눈, 위)) = (0, 수평 성분, −수직 성분) / 거리
+            (double uy, double uz) Up(double cy)
+            {
+                double dy = cy - eyeY, len = Math.Sqrt(dy * dy + forwardM * forwardM);
+                return len > 1e-9 ? (forwardM / len, -dy / len) : (1, 0);
+            }
+            double c = centerY;
+            if (maxTopM > 0)
+            {
+                double halfUp = panelHeightM * 0.5 * Math.Abs(Up(c).uy);
+                if (c + halfUp > maxTopM) c = Math.Max(maxTopM - halfUp, minBottomM + halfUp);
+            }
+            var (y, z) = Up(c);
+            double bottomY = c - panelHeightM * 0.5 * y, bottomZ = forwardM - panelHeightM * 0.5 * z;
+            double topY = c + panelHeightM * 0.5 * y;
+            return (c, Math.Atan2(eyeY - bottomY, bottomZ) * 180.0 / Math.PI, topY);
+        }
+
+        public static double BottomBelowHorizonDeg(double panelHeightM, double forwardM = DefaultForwardM, double centerY = DefaultPanelHeightM,
+            double eyeY = DefaultEyeHeightM, double maxTopM = DefaultMaxTopM, double minBottomM = DefaultMinBottomM)
+            => PanelPlacement(panelHeightM, forwardM, centerY, eyeY, maxTopM, minBottomM).bottomBelowHorizonDeg;
+
+        /// <summary>본문만 있는 판이 아래 한계(limitDeg)를 넘지 않는 최대 줄 수(1 미만이면 1).</summary>
+        public static int MaxBodyLinesWithin(double limitDeg = ComfortBottomLimitDeg, double forwardM = DefaultForwardM, double centerY = DefaultPanelHeightM,
+            double eyeY = DefaultEyeHeightM, double maxTopM = DefaultMaxTopM, double minBottomM = DefaultMinBottomM,
+            double characterSize = BodyCharacterSize, double lineSpacing = DefaultBodyLineSpacing, double marginM = DefaultMarginM)
+        {
+            int best = 1;
+            for (int n = 1; n <= 40; n++)
+            {
+                double h = BodyPanelHeightM(n, characterSize, FontSize, lineSpacing, marginM);
+                if (BottomBelowHorizonDeg(h, forwardM, centerY, eyeY, maxTopM, minBottomM) <= limitDeg + 1e-9) best = n;
+                else break;
+            }
+            return best;
+        }
+
+        /// <summary>띄어쓰기에서 줄을 바꾼 줄 수(ParticipantTextDisplay.Wrap과 같은 규칙: 문단은 '\n', 낱말이 maxChars보다 길면 한 줄).</summary>
+        public static int WrapLineCount(string text, int maxChars)
+        {
+            if (string.IsNullOrEmpty(text)) return 0;
+            if (maxChars <= 0) return text.Replace("\r\n", "\n").Split('\n').Length;
+            int lines = 0;
+            foreach (var para in text.Replace("\r\n", "\n").Split('\n'))
+            {
+                lines++;
+                int line = 0;
+                foreach (var word in para.Split(' '))
+                {
+                    if (word.Length == 0) continue;
+                    if (line > 0 && line + 1 + word.Length > maxChars) { lines++; line = 0; }
+                    else if (line > 0) line++;
+                    line += word.Length;
+                }
+            }
+            return lines;
+        }
+
+        /// <summary>(1) 긴 안내를 문장 경계에서 여러 쪽으로 나눈다(글자는 그대로 — 쪽을 잘린 자리의 구분자(' ' 또는 '\n')로 다시 이으면 원문).
+        /// 한 쪽은 wrapChars로 줄을 바꿨을 때 maxLines 줄 이하가 되게 문장을 앞에서부터 채운다. 한 문장이 maxLines를 넘으면 그 문장 혼자 한 쪽.
+        /// 문장 경계 = '.', '?', '!' 다음의 띄어쓰기, 또는 줄바꿈('\n'). 나눌 필요가 없으면 한 쪽(원문).</summary>
+        public static System.Collections.Generic.List<string> SentencePages(string text, int wrapChars, int maxLines)
+        {
+            var pages = new System.Collections.Generic.List<string>();
+            if (string.IsNullOrEmpty(text)) { pages.Add(text ?? ""); return pages; }
+            if (maxLines < 1 || WrapLineCount(text, wrapChars) <= maxLines) { pages.Add(text); return pages; }
+            // 문장 조각: (조각 글, 조각 뒤 구분자 — 마지막 조각은 "")
+            var pieces = new System.Collections.Generic.List<(string piece, string sep)>();
+            int start = 0;
+            for (int i = 0; i < text.Length; i++)
+            {
+                bool newline = text[i] == '\n';
+                bool sentenceSpace = text[i] == ' ' && i > 0 && (text[i - 1] == '.' || text[i - 1] == '?' || text[i - 1] == '!');
+                if (!newline && !sentenceSpace) continue;
+                pieces.Add((text.Substring(start, i - start), text[i].ToString()));
+                start = i + 1;
+            }
+            pieces.Add((text.Substring(start), ""));
+            string cur = null;
+            foreach (var (piece, sep) in pieces)
+            {
+                string joined = cur == null ? piece : cur + piece;
+                if (cur != null && WrapLineCount(joined, wrapChars) > maxLines)
+                {
+                    pages.Add(cur.Substring(0, cur.Length - 1));   // 앞 조각 뒤 구분자는 쪽 경계가 된다
+                    joined = piece;
+                }
+                cur = joined + sep;
+            }
+            if (cur != null) pages.Add(cur);
+            return pages;
+        }
+
+        /// <summary>판 가로 시야각(도): 너비 widthM을 거리 distanceM에서.</summary>
+        public static double PanelWidthDeg(double widthM, double distanceM = -1) => VisualAngleDeg(widthM, distanceM > 0 ? distanceM : DefaultViewDistanceM);
+
+        /// <summary>n칸 평정 줄의 판 너비(m, 근사): 칸 중심 범위 + 양 끝 칸 반폭(뜻이 칸보다 넓지 않을 때) + 여백.</summary>
+        public static double ScaleRowPanelWidthM(int n, double columnWidthM, double marginM = DefaultMarginM)
+        {
+            double col = ColumnWidth(n, columnWidthM);
+            return (n - 1) * col + col + 2 * marginM;
+        }
     }
 }

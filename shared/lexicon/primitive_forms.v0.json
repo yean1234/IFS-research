@@ -1,0 +1,44 @@
+{
+  "lexiconId": "primitive-forms-v0",
+  "lexiconVersion": "0.1.0",
+  "status": "draft",
+  "date": "2026-11-27",
+  "decision": "G62-i",
+  "description": "단순 도형 목록: 형태 후보의 기본값을 정하는 규칙([gen3d] default_form_source = \"auto\")만 읽는다(chatbot/ifs_chatbot/form_assets.py judge_default_form). 말한 형태 낱말이 모두 이 목록에 있고 절차 사전이 그 문장에서 실제로 그 형상으로 옮겼으면 절차 메시가 기본 후보, 하나라도 아니면 생성 메시가 기본 후보다. 사전·규칙만 쓴다(LLM 없음, AGENTS.md 원칙 1). 장면 슬롯 값은 바꾸지 않는다. 모든 항목은 연구자가 보탠 초안이다(source added). 실제 참여자 응답 문장을 넣지 않는다(원칙 6).",
+  "keyedTo": {
+    "lexicon": "shape_prompt_en.v0.json",
+    "lexiconVersion": "0.2.0",
+    "key": "사이드카 prompt.tokens[].lexiconKey(= 형태 사전 항목 ko를 '+'로 이은 것). 형태 사전 낱말이 바뀌면 이 목록도 다시 본다."
+  },
+  "howToEdit": [
+    "절차 메시가 말한 그대로 그릴 수 있는 기하 도형 낱말만 넣는다. 절차 사전(layer1_lexicon·base_shapes·docs/shape-mapping.md 모양 모형 표)이 그 낱말을 형상으로 옮기지 않으면 넣지 않는다(절차 메시가 기본 덩어리를 그리므로 '그대로'가 아니다). 그런 낱말은 notIncluded에 이유와 함께 둔다.",
+    "procedural은 그 낱말을 절차 사전이 옮긴 결과다. check = form.type | form.base | shape(_unmapped category shape의 value.shape). 판정은 spec에서 이 값이 그 낱말의 charSpan과 겹치는 근거(_provenance)로 실제로 나왔는지, 렌더러 규칙(docs/shape-mapping.md 규칙 1·2·4·9)으로 실제로 그려지는지까지 본다.",
+    "낱말을 넣거나 빼면 lexiconVersion을 올린다. 선택 기록 generation.defaultFormBasis.listVersion에 버전과 파일 sha256이 남는다.",
+    "chatbot/tests/test_g62_primitive_default.py가 항목마다 합성 문장으로 절차 사전 결과(procedural)가 맞는지 확인한다."
+  ],
+  "rule": {
+    "allStatedWords": "말한 형태 낱말(사이드카 prompt.tokens 가운데 slot이 template이 아닌 것: 중심 명사·비유 원천·꾸밈말)이 모두 단순 도형이어야 primitive_stated다. 하나라도 목록 밖이거나 절차 메시가 그 문장에서 그리지 않으면 non_primitive_stated(생성 메시 기본).",
+    "mixedNote": "단순 도형 + 사물 낱말이 함께 있으면('동그란 조개껍데기', '조개껍데기 같은 공', '울퉁불퉁한 공') 생성 메시가 기본이다. 절차 메시는 사물 낱말을 빠뜨리고(말한 것을 그리지 못함), 생성 메시는 말한 낱말을 모두 받은 프롬프트로 만들었기 때문이다. 절차 메시는 대안 후보로 남는다.",
+    "failClosed": "형태 낱말을 확정 텍스트로 거슬러 갈 수 없으면(사이드카 charSpan의 글자가 확정 텍스트와 다르거나 확정 텍스트를 찾지 못함) 절차 메시를 기본으로 한다(form_words_untraceable)."
+  },
+  "entries": [
+    {"lexiconKey": "공", "pos": "noun", "shape": "ball", "procedural": {"check": "form.type", "value": "blob"}, "draws": "blob(둥근 덩어리)", "source": "added"},
+    {"lexiconKey": "볼링+공", "pos": "noun", "shape": "ball", "procedural": {"check": "form.type", "value": "blob"}, "draws": "blob(둥근 덩어리)", "source": "added"},
+    {"lexiconKey": "상자", "pos": "noun", "shape": "box", "procedural": {"check": "form.base", "value": "container", "variant": {"profile": "square"}}, "draws": "container/1 네모 단면(열린 상자)", "source": "added"},
+    {"lexiconKey": "네모", "pos": "noun", "shape": "square", "procedural": {"check": "shape", "value": "square"}, "draws": "Cube", "source": "added"},
+    {"lexiconKey": "동그랗", "pos": "pred", "shape": "round", "procedural": {"check": "shape", "value": "round"}, "draws": "Sphere", "source": "added"},
+    {"lexiconKey": "둥글", "pos": "pred", "shape": "round", "procedural": {"check": "shape", "value": "round"}, "draws": "Sphere", "source": "added"},
+    {"lexiconKey": "네모나", "pos": "pred", "shape": "square", "procedural": {"check": "shape", "value": "square"}, "draws": "Cube", "source": "added"},
+    {"lexiconKey": "납작", "pos": "pred", "shape": "flat", "procedural": {"check": "shape", "value": "flat"}, "draws": "FlatCylinder", "source": "added"},
+    {"lexiconKey": "뾰족", "pos": "pred", "shape": "pointed", "procedural": {"check": "shape", "value": "pointed"}, "draws": "Cone", "source": "added"}
+  ],
+  "notIncluded": [
+    {"lexiconKey": "구슬·축구공·농구공·탁구공", "reason": "기하 도형(구)이지만 절차 사전이 형상으로 옮기지 않는다(scene_builder v2: 형태 슬롯 없음). 절차 메시는 말하지 않은 기본 덩어리를 그린다 → 생성 메시 기본. 절차 사전에 넣으면 이 목록으로 옮긴다 ⚠ 사람이 정할 것"},
+    {"lexiconKey": "큐브·박스", "reason": "기하 도형(정육면체·상자)이지만 절차 사전이 옮기지 않는다(같은 이유). 정육면체는 형태 사전(shape_prompt_en)에도 없다"},
+    {"lexiconKey": "원기둥·원뿔·고리·기둥·막대", "reason": "기하 도형이지만 절차 사전이 명사를 형상으로 옮기지 않는다(원뿔 모형 Cone은 '뾰족'으로만 나온다). 고리(원환)는 절차 모형 자체가 없다"},
+    {"lexiconKey": "사각+형·삼각+형·육각+형·세모·동그라미", "reason": "평면 도형 이름. 세모(triangle)·동그라미(circle)는 spec에 모양 값으로 남지만 모양 모형 표(round·square·flat·pointed)에 없어 그리지 않는다(docs/shape-mapping.md 규칙 3)"},
+    {"lexiconKey": "둥그렇·동글동글·둥글둥글·네모지", "reason": "형태 사전에는 있으나 절차 사전(1층 모양어)이 옮기지 않는다(합성 문장으로 확인). 절차 사전에 넣으면 이 목록으로 옮긴다"},
+    {"lexiconKey": "덩어리·덩이", "reason": "절차 메시의 기본 형상(blob)과 같지만 기하 도형이 아니라 넣지 않았다 → 생성 메시 기본. 단순 도형으로 볼지 ⚠ 사람이 정할 것"},
+    {"lexiconKey": "그릇·컵·통·천·종이·물방울 등 절차 사전의 다른 기본 형상", "reason": "절차 사전(base_shapes)이 그리지만 단순 도형이 아니라 사물이다(G62-i: 천은 사물로 보고 생성 메시 기본)"}
+  ]
+}

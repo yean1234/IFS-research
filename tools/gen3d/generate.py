@@ -1,6 +1,6 @@
 """한국어 문장 → (영어 프롬프트) → 로컬 3D 생성 모델 → GLB + 메타데이터 JSON.
 
-  <venv>/python tools/gen3d/generate.py --run <이름> --pipeline shap-e|sdxl-triposr \
+  <venv>/python tools/gen3d/generate.py --run <이름> --pipeline shap-e|sdxl-triposr|sdxl-triposg \
       [--prompt-mode rules|llm] [--seed 0] [--ids D01,D02] [--repeat 2]
 
 입력: OUT_ROOT/<run>/inputs/sentences.json (inputs.py가 만든다).
@@ -259,11 +259,14 @@ def make_prompts(rows, mode: str, seed: int, specs_dir: Path) -> dict:
 def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("--run", required=True)
-    ap.add_argument("--pipeline", choices=["shap-e", "sdxl-triposr"], required=True)
+    ap.add_argument("--pipeline", choices=["shap-e", "sdxl-triposr", "sdxl-triposg"], required=True,
+                    help="sdxl-triposg = G62 형태 후보 생성기(form_asset.py, form-asset.v0 사이드카, 규칙 프롬프트만)")
     ap.add_argument("--prompt-mode", choices=["rules", "llm"], default="rules")
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--ids", default="")
     ap.add_argument("--repeat", type=int, default=1, help="2면 같은 조건으로 한 번 더 만들어 결정성을 본다")
+    ap.add_argument("--no-cache", action="store_true",
+                    help="(sdxl-triposg) 캐시가 있어도 다시 만들고, 앞 프로세스의 GLB sha256과 비교해 run.json에 적는다")
     a = ap.parse_args(argv)
 
     run_dir = assert_outside_repo(OUT_ROOT / a.run)
@@ -271,6 +274,13 @@ def main(argv=None):
     if a.ids:
         keep = set(a.ids.split(","))
         rows = [r for r in rows if r["id"] in keep]
+    if a.pipeline == "sdxl-triposg":
+        import form_asset
+
+        if a.prompt_mode != "rules":
+            raise SystemExit("sdxl-triposg는 규칙 프롬프트(shape_prompt)만 쓴다(원칙 1)")
+        form_asset.run(rows, a.run, pipeline=a.pipeline, seed=a.seed, repeat=a.repeat, no_cache=a.no_cache)
+        return
     out_dir = run_dir / f"{a.pipeline}-{a.prompt_mode}"
     t_start = time.perf_counter()
 

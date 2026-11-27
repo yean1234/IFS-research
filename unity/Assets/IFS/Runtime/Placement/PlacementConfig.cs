@@ -186,6 +186,40 @@ namespace IFS.SceneSpec.Placement
         public double eyeCalibMaxSdM = 0.02;
         public double eyeCalibMaxPitchDeg = 15;
 
+        // ── 헤드셋 UI 개선(G63, 2026-11-27 — research_notes/VR UI 가독성 기준/vr_ui_guidelines.md) ─────────
+        // 모두 기본 꺼짐: 기본값에서는 화면·기록이 G63 전과 바이트 단위로 같다(하나라도 켰을 때만 config 맨 끝에 ui* 키를 남긴다).
+        // 두 조건(직접 배치·보기만)이 같이 쓰는 요소(판·평정 UI·멈춤 거리)는 조건과 상관없이 똑같이 바뀐다. 문구 글자·문항·단계 순서·
+        // 평정 방식(점 수·앵커·확정 방식)·물체 겉모습·공간(B/E/F)은 건드리지 않는다. 묶음으로 켜려면 ApplyUiBundle()(-uiBundle true, 실험자 화면).
+        /// <summary>(1) 판 아래 가장자리를 수평 아래 35° 안으로: 본문 줄바꿈 20 → 24자(넘치면 26자까지), 평정 지시문은 문장 경계에서 쪽을 나눠
+        /// 실험자 Enter로 넘긴다(글자는 그대로, events items_instruction_page).</summary>
+        public bool uiComfortWrap = false;
+        /// <summary>(2) 어두운 판 테마: 판 #2A2B30 + 글 #E6E6E8(대비 약 11:1, 흰 판 18:1 대신). 공간·물체는 그대로.</summary>
+        public bool uiDarkPanel = false;
+        /// <summary>(3) 광선 겨눔(hover) 상태: 광선이 잡기 판정 구에 닿으면 광선·끝점 색과 끝점 크기, 잡는 동안 광선 굵기만 바꾼다(물체는 그대로).</summary>
+        public bool uiRayHover = false;
+        /// <summary>(4) 햅틱: 잡기·놓기·평정 한 칸·평정 확정·확인·멈춤에 짧은 펄스(events haptic, 추가만). 두 조건 공통 사건은 같은 세기.</summary>
+        public bool uiHaptics = false;
+        /// <summary>(5) 평정 확정 표시: 참여자 컨트롤러로 확정한 칸의 테두리를 0.4초 굵게(0.012 → 0.02 m) 보인 뒤 다음 문항. rt_ms에는 넣지 않는다.</summary>
+        public bool uiRatingConfirmFlash = false;
+        /// <summary>(6) 7칸 평정 줄 칸 너비 0.22 → 0.20 m(줄 폭 약 41.6° → 38°).</summary>
+        public bool uiNarrowScale = false;
+        /// <summary>(7) 조건 단계·멈춤 거리 단계에서 안내 판을 hidePanelReadSeconds 뒤 숨긴다(판이 거리 기준점이 되지 않게).
+        /// RQ2 결과변수에 닿는 절차 변경이라 묶음(ApplyUiBundle)에서도 켜지 않는다 — ⚠ 사람이 정할 것.</summary>
+        public bool hidePanelInDistancePhases = false;
+        /// <summary>(7) 판을 숨기기 전 읽을 시간(초, 그 단계 시작부터).</summary>
+        public double hidePanelReadSeconds = 8;
+
+        /// <summary>G63 "UI 개선 묶음"을 켠다: (1)–(6). (7) hidePanelInDistancePhases는 켜지 않는다(연구자 결정 필요).</summary>
+        public void ApplyUiBundle()
+        {
+            uiComfortWrap = uiDarkPanel = uiRayHover = uiHaptics = uiRatingConfirmFlash = uiNarrowScale = true;
+        }
+
+        /// <summary>묶음의 여섯 플래그가 모두 켜져 있다.</summary>
+        public bool UiBundleOn => uiComfortWrap && uiDarkPanel && uiRayHover && uiHaptics && uiRatingConfirmFlash && uiNarrowScale;
+        /// <summary>G63 UI 플래그가 하나라도 켜져 있다(manifest config에 ui* 키를 더한다).</summary>
+        public bool UsesUiOptions => uiComfortWrap || uiDarkPanel || uiRayHover || uiHaptics || uiRatingConfirmFlash || uiNarrowScale || hidePanelInDistancePhases;
+
         public const string StopModeSingle = "single";
         public const string StopModeLoop = "loop";
         public static readonly string[] StopModes = { StopModeSingle, StopModeLoop };
@@ -327,6 +361,8 @@ namespace IFS.SceneSpec.Placement
                 if (condition == ConditionView && controlMode == ModeSystemMove) Shifted("systemMoveTargetHeightM", systemMoveTargetHeightM);
                 if (HasPractice) Shifted("practiceTargetHeightM", practiceTargetHeightM);
             }
+            if (hidePanelInDistancePhases && !(Finite(hidePanelReadSeconds) && hidePanelReadSeconds > 0 && hidePanelReadSeconds <= 120))
+                e.Add($"hidePanelReadSeconds {hidePanelReadSeconds}: (0, 120] 밖");
             return e;
         }
 
@@ -372,6 +408,18 @@ namespace IFS.SceneSpec.Placement
                 j["eyeCalibSeconds"] = eyeCalibSeconds;
                 j["eyeCalibMaxSdM"] = eyeCalibMaxSdM;
                 j["eyeCalibMaxPitchDeg"] = eyeCalibMaxPitchDeg;
+            }
+            // 2026-11-27 추가(G63 헤드셋 UI). 하나라도 켰을 때만 넣는다(기본값이면 기존 기록과 바이트 단위로 같게).
+            if (UsesUiOptions)
+            {
+                j["uiComfortWrap"] = uiComfortWrap;
+                j["uiDarkPanel"] = uiDarkPanel;
+                j["uiRayHover"] = uiRayHover;
+                j["uiHaptics"] = uiHaptics;
+                j["uiRatingConfirmFlash"] = uiRatingConfirmFlash;
+                j["uiNarrowScale"] = uiNarrowScale;
+                j["hidePanelInDistancePhases"] = hidePanelInDistancePhases;
+                if (hidePanelInDistancePhases) j["hidePanelReadSeconds"] = hidePanelReadSeconds;
             }
             return j;
         }

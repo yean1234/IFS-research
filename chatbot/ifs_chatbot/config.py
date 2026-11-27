@@ -126,6 +126,23 @@ class PreviewConfig:
 
 
 @dataclass(frozen=True)
+class Gen3DConfig:
+    """G62: 형태 메시 후보를 로컬 생성 모델 산출물에서 더한다(form_assets.py). 기본은 꺼 둔다 — 꺼져 있으면 후보·selection.json·
+    화면 출력이 G62 전과 바이트 단위로 같다. 챗봇은 모델을 부르지 않고, 생성 도구(tools/gen3d)가 assets_dir에 둔 GLB + 사이드카
+    (form-asset.v0)를 확정 텍스트의 sha256으로 찾기만 한다. 켜는 설정: config/v4-gen3d.toml."""
+    enabled: bool = False
+    # 사이드카·GLB 폴더(저장소 밖 gen3d-out 관례, docs/gen3d-feasibility.md). 상대 경로는 chatbot/ 기준. 하위 폴더까지 찾는다
+    assets_dir: str = "../../gen3d-out"
+    max_candidates: int = 2        # 절차 메시 후보에 더할 생성 후보 최대 수(status ok + gate.passed만)
+    # 어느 형태 후보가 기본(맨 앞에 보이고 미리 선택됨)인가. "procedural"(키가 없을 때) = 지금처럼 순환 순서·미리 선택 없음.
+    # "generated" = 쓸 수 있는 생성 후보가 있으면 그 첫 후보가 기본(절차 후보는 대안으로 남김), 없으면 절차 메시가 기본(사유 기록).
+    # "auto"(G62-i) = 말한 형태 낱말이 모두 단순 도형(shared/lexicon/primitive_forms.v0.json)이고 절차 메시가 그대로 그리면
+    # procedural처럼, 그 밖의 사물 낱말이 하나라도 있으면 generated처럼(판정 근거는 generation.defaultFormRule·defaultFormBasis).
+    # 기본이어도 참여자가 확정해야 장면에 쓴다(selection 0.3 defaultFormSource·selection.acceptedDefault)
+    default_form_source: str = "procedural"
+
+
+@dataclass(frozen=True)
 class Config:
     interview: InterviewConfig = field(default_factory=InterviewConfig)
     llm: LLMConfig = field(default_factory=LLMConfig)
@@ -136,6 +153,7 @@ class Config:
     drift: DriftConfig = field(default_factory=DriftConfig)
     selection: SelectionConfig = field(default_factory=SelectionConfig)
     preview: PreviewConfig = field(default_factory=PreviewConfig)
+    gen3d: Gen3DConfig = field(default_factory=Gen3DConfig)
     source: str = "defaults"
 
     @property
@@ -169,7 +187,7 @@ class Config:
 _SECTIONS = {
     "interview": InterviewConfig, "llm": LLMConfig, "guard": GuardConfig,
     "validator": ValidatorConfig, "session": SessionConfig, "mapping": MappingConfig,
-    "drift": DriftConfig, "selection": SelectionConfig, "preview": PreviewConfig,
+    "drift": DriftConfig, "selection": SelectionConfig, "preview": PreviewConfig, "gen3d": Gen3DConfig,
 }
 
 

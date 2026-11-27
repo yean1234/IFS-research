@@ -1,0 +1,221 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ifs-research.local/shared/schemas/form-asset.v0.json",
+  "title": "형태 메시 후보 사이드카 (form-asset.v0)",
+  "description": "결정 G62: 로컬 형태 생성 모델이 만든 형태 후보 하나(GLB)마다 GLB 옆에 쓰는 JSON. 생성기 tools/gen3d/generate.py --pipeline sdxl-triposg(대체: sdxl-triposr)가 쓴다. 출력은 저장소 밖(gen3d-out/) 또는 세션 폴더(git 밖)에만 둔다. 생성 결과는 SceneSpec 슬롯 값이 아니며 '생성' 출처로만 쓴다(원칙 1·2). status가 blocked이면 모델을 부르지 않았고 glb는 null이다. 캐시 키 = sha256(prompt.text + pipeline + 모델 리비전들 + seed + 후처리 판), assetId는 그 앞 16자.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "assetId", "status", "blockReason", "glb", "glbSha256", "pipeline", "models", "seed",
+    "prompt", "sourceTextSha256", "normalization", "covariates", "gate"
+  ],
+  "properties": {
+    "schema": { "const": "form-asset.v0" },
+    "assetId": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{16}$",
+      "description": "cacheKey(sha256 hex)의 앞 16자."
+    },
+    "cacheKey": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "(선택) 전체 캐시 키."
+    },
+    "status": {
+      "enum": ["ok", "blocked", "failed"],
+      "description": "ok = GLB 저장·관문 통과. blocked = 규칙(프롬프트 단계) 또는 출력 관문이 막음. failed = 생성·후처리 중 오류(error에 사유)."
+    },
+    "blockReason": {
+      "enum": [null, "no_shape_stated", "excluded_category", "person_like", "untraceable_token", "gate_failed"],
+      "description": "status가 blocked일 때만 값이 있다. no_shape_stated = 확정 텍스트에 사전의 형태 낱말이 없음. excluded_category = 메시로 만들지 않는 범주(안개·연기·불꽃·빛) 또는 사람·아이·얼굴·동물·무기. untraceable_token = 원문 charSpan으로 거슬러 갈 수 없는 내용 토큰(fail closed). person_like = 출력 관문이 사람·얼굴·동물로 판정. gate_failed = 관문을 평가하지 못함(blockDetail gate_not_evaluated, fail closed) 또는 여러 물체 검사에 걸림(blockDetail multi_object, gate.multiObject). 앞의 셋은 모델을 부르지 않는다."
+    },
+    "blockDetail": {
+      "type": ["string", "null"],
+      "description": "(선택) 차단 근거 낱말·범주 등. 원문 문장은 넣지 않는다."
+    },
+    "error": { "type": ["string", "null"], "description": "(선택) status가 failed일 때 오류 요약." },
+    "glb": {
+      "type": ["string", "null"],
+      "description": "사이드카 파일 기준 상대 파일명(예: 3f2a….glb). blocked·failed이면 null. 관문 차단(person_like)이면 null — 세션·실행 폴더에 GLB를 복사하지 않는다(생성기 캐시에만 남고 참여자에게 보이지 않음)."
+    },
+    "glbSha256": { "type": ["string", "null"], "pattern": "^[0-9a-f]{64}$" },
+    "pipeline": {
+      "enum": ["sdxl-triposg", "sdxl-triposr"],
+      "description": "sdxl-triposg = SDXL base 1.0 → 배경 제거 → TripoSG(형태만). sdxl-triposr = 대체 경로(정점 색은 버리고 형태만)."
+    },
+    "postprocessVersion": { "type": "string", "description": "(선택) 후처리 판(캐시 키에 들어감)." },
+    "models": {
+      "type": "array",
+      "description": "파이프라인을 이루는 모델(앞단 이미지, 배경 제거, 형태, 관문). blocked여도 설정된 모델을 적는다(캐시 키 재현용).",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "repo", "revision", "weightsSha256"],
+        "properties": {
+          "name": { "type": "string", "description": "역할 이름(예: image, rembg, shape, gate)." },
+          "repo": { "type": "string", "description": "HF 저장소 ID 또는 코드 저장소 URL." },
+          "revision": { "type": ["string", "null"], "description": "HF 커밋 해시 또는 git 커밋." },
+          "weightsSha256": {
+            "type": ["object", "string", "null"],
+            "description": "가중치 파일 sha256. 파일이 여럿이면 {상대경로: sha256}.",
+            "additionalProperties": { "type": "string" }
+          },
+          "codeCommit": { "type": ["string", "null"], "description": "(선택) 추론 코드 저장소 커밋." },
+          "license": { "type": ["string", "null"] }
+        }
+      }
+    },
+    "seed": { "type": "integer", "minimum": 0 },
+    "prompt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["text", "lexiconVersion", "tokens"],
+      "properties": {
+        "text": { "type": "string", "description": "모델에 넣은(넣을) 영어 프롬프트 전체. 형태 낱말이 없으면 빈 문자열." },
+        "negativeText": { "type": ["string", "null"], "description": "(선택) 고정 부정 틀(안전 제약, 모든 프롬프트에 같음)." },
+        "lexiconVersion": { "type": "string", "description": "shared/lexicon/shape_prompt_en.v*.json의 version." },
+        "builderVersion": { "type": "string", "description": "(선택) 프롬프트 빌더 판." },
+        "tokens": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["en", "ko", "charSpan", "slot"],
+            "properties": {
+              "en": { "type": "string" },
+              "ko": { "type": ["string", "null"], "description": "원문에서 맞은 한국어 표면형. 틀 낱말이면 null." },
+              "charSpan": {
+                "type": ["array", "null"],
+                "items": { "type": "integer", "minimum": 0 },
+                "minItems": 2,
+                "maxItems": 2,
+                "description": "확정 텍스트에서의 [시작, 끝) 문자 위치. 틀 낱말이면 null."
+              },
+              "slot": {
+                "enum": ["shape_noun", "shape_modifier", "template"],
+                "description": "shape_noun = 형태 명사, shape_modifier = 형태 꾸밈말, template = 고정 틀 문구(분석에서 뺀다)."
+              },
+              "lexiconKey": { "type": ["string", "null"], "description": "(선택) 맞은 사전 항목의 키." }
+            }
+          }
+        },
+        "dropped": {
+          "type": "array",
+          "description": "(선택) 사전에 맞았으나 뺀 낱말과 이유(negated 등). 원문 문장은 넣지 않는다.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["ko", "charSpan", "reason"],
+            "properties": {
+              "ko": { "type": "string" },
+              "charSpan": { "type": "array", "items": { "type": "integer" }, "minItems": 2, "maxItems": 2 },
+              "reason": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "sourceTextSha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "확정 텍스트(UTF-8)의 sha256. 원문 자체는 사이드카에 넣지 않는다."
+    },
+    "normalization": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["longestEdge", "pivot", "bboxBefore", "bboxAfter", "scaleApplied"],
+      "description": "blocked(프롬프트 단계)·failed이면 null.",
+      "properties": {
+        "longestEdge": { "const": 1.0 },
+        "pivot": { "const": "bottom-center" },
+        "bboxBefore": { "$ref": "#/$defs/bbox" },
+        "bboxAfter": { "$ref": "#/$defs/bbox" },
+        "scaleApplied": { "type": "number", "exclusiveMinimum": 0 },
+        "axisAligned": { "type": "boolean", "description": "(선택) 주축 정렬을 했는지. 이 판은 하지 않음(false)." },
+        "facesBefore": { "type": "integer", "minimum": 0 },
+        "facesAfter": { "type": "integer", "minimum": 0 },
+        "faceLimit": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "covariates": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["axisRatios", "thinRisk", "familiarObjectStated"],
+      "properties": {
+        "axisRatios": {
+          "type": ["array", "null"],
+          "items": { "type": "number" },
+          "minItems": 3,
+          "maxItems": 3,
+          "description": "정규화 뒤 경계 상자 [x, y, z] / 가장 긴 변. 메시가 없으면 null."
+        },
+        "thinRisk": { "type": "boolean", "description": "얇은 것(선·종이·천 등) 낱말을 말했음 — SDF 계열 알려진 실패 유형." },
+        "familiarObjectStated": { "type": "boolean", "description": "익숙한 사물 명사(공·상자·병 등)를 말했음 — 익숙한 크기 단서는 정규화로 없앨 수 없음." },
+        "pluralStated": { "type": "boolean", "description": "(선택, 2026-11-27 추가) 복수 명사(조각·알갱이, 또는 '-들')를 말했음 — 여러 물체 검사를 적용하지 않음." }
+      }
+    },
+    "gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["personLikeScore", "passed"],
+      "properties": {
+        "personLikeScore": {
+          "type": ["number", "null"],
+          "description": "6시점 무텍스처 렌더의 영점 분류에서 '사람·얼굴·동물' 쪽 확률의 시점 최댓값(0–1). 관문을 돌리지 않았으면 null."
+        },
+        "passed": { "type": ["boolean", "null"], "description": "관문 통과. 관문을 돌리지 않았으면(프롬프트 단계 차단) null." },
+        "threshold": { "type": ["number", "null"] },
+        "model": { "type": ["string", "null"], "description": "관문 모델 repo@revision." },
+        "views": { "type": ["integer", "null"] },
+        "matchScore": {
+          "type": ["number", "null"],
+          "description": "(선택) 프롬프트 텍스트 대 렌더 이미지 유사도(코사인, 시점 평균). 문장↔형태 일치의 자동 지표일 뿐 사람 판정이 아님."
+        },
+        "multiObject": {
+          "type": ["object", "null"],
+          "description": "(선택, 2026-11-27 추가, 관문 g62-gate/0.2.0) 후처리 뒤 연결 성분 검사. 표면적 비율이 minFraction 이상인 성분(significant)이 2개 이상이고 applied(복수 명사를 말하지 않음)이면 blocked → status blocked, blockReason gate_failed, blockDetail multi_object.",
+          "properties": {
+            "components": { "type": "integer", "minimum": 0 },
+            "significant": { "type": "integer", "minimum": 0 },
+            "topFractions": { "type": "array", "items": { "type": "number" } },
+            "minFraction": { "type": "number" },
+            "applied": { "type": "boolean" },
+            "blocked": { "type": "boolean" }
+          }
+        },
+        "labelScores": {
+          "type": ["object", "null"],
+          "description": "(선택) 라벨별 확률(시점 최댓값).",
+          "additionalProperties": { "type": "number" }
+        }
+      }
+    },
+    "timing": {
+      "type": ["object", "null"],
+      "description": "(선택) 초 단위 시간·최대 VRAM. 재실행마다 다르므로 결정성 비교에서 뺀다.",
+      "additionalProperties": { "type": ["number", "null"] }
+    },
+    "cacheHit": { "type": "boolean", "description": "(선택) 이번 호출이 캐시에서 왔는지." }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "status": { "const": "ok" } } },
+      "then": { "properties": { "blockReason": { "const": null }, "glb": { "type": "string" }, "glbSha256": { "type": "string" } } }
+    },
+    {
+      "if": { "properties": { "status": { "const": "blocked" } } },
+      "then": { "properties": { "blockReason": { "type": "string" }, "glb": { "const": null } } }
+    }
+  ],
+  "$defs": {
+    "bbox": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["min", "max"],
+      "properties": {
+        "min": { "type": "array", "items": { "type": "number" }, "minItems": 3, "maxItems": 3 },
+        "max": { "type": "array", "items": { "type": "number" }, "minItems": 3, "maxItems": 3 }
+      }
+    }
+  }
+}

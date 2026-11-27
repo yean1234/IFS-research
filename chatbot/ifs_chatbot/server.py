@@ -28,6 +28,8 @@ from .controller import SESSION_ID_RE, Runtime, Session, SessionError
 from .paths import WEB_DIR
 from .postinterview import PostInterviewProtocol, PostInterviewStore
 from .selection import SelectionError, SelectionInvalid, selection_dir, ui_config
+from .form_assets import R_PREVIEW_FAILED
+from .preview import PreviewAssetError
 
 log = logging.getLogger("ifs_chatbot.server")
 
@@ -70,7 +72,8 @@ class AdjustStep(BaseModel):
 
 
 class PreviewReport(BaseModel):
-    event: str = Field(..., max_length=16, description="shown(그 단계에서 실제로 그림) | fallback(그 방식으로 그리지 못함)")
+    event: str = Field(..., max_length=16, description="shown(그 단계에서 실제로 그림) | fallback(그 방식으로 그리지 못함) | "
+                                                         "asset_failed(G62: 생성 형태 GLB 하나를 그리지 못함, webgl.candidateId)")
     mode: str = Field(..., max_length=8, description="webgl | image | none")
     stage: str | None = Field(None, max_length=16, description="selecting | adjusting")
     reason: str | None = Field(None, max_length=300)
@@ -273,14 +276,31 @@ def create_app(cfg: Config | None = None, runtime: Runtime | None = None, warmup
     def preview_png(sid: str, target: str):
         """image 모드: 후보 id 또는 current(조절 중 지금 상태)의 미리보기 PNG. 플레이어가 실패하면 none으로 바뀌고 503."""
         f = flow(sid)
-        overrides = sel_run(f.overrides_for, target)
+        overrides, asset = sel_run(f.preview_target, target)
         if f.preview_mode != "image":
             raise HTTPException(409, f"이 세션의 미리보기 방식이 image가 아닙니다(지금 {f.preview_mode}: {f.preview_reason}).")
-        data = rt.preview.render(f.spec, overrides)
+        if asset is not None:
+            # G62: 생성 후보·고른 생성 메시는 그 GLB로 그린다. 그 GLB만 그리지 못하면 후보에서 빼고(사유 기록) 410 — 화면은 다시 그린다
+            try:
+                data = rt.preview.render(f.spec, overrides, asset)
+            except PreviewAssetError as exc:
+                f.drop_generated(target, R_PREVIEW_FAILED, str(exc), "server:image")
+                raise HTTPException(410, f"생성 형태를 그리지 못해 후보에서 뺐습니다: {exc}") from exc
+        else:
+            data = rt.preview.render(f.spec, overrides)
         if data is None:
             f.note_preview_fallback()
             raise HTTPException(503, f"미리보기를 그리지 못해 글 요약으로 바꿉니다: {rt.preview.reason}")
         return Response(content=data, media_type="image/png", headers={"Cache-Control": "no-store"})
+
+    @app.get("/api/sessions/{sid}/candidates/{cid}/asset.glb")
+    def candidate_asset_glb(sid: str, cid: str):
+        """G62: 생성 형태 후보의 GLB(미리보기용, sha256을 다시 확인). [gen3d] enabled가 아니면 409."""
+        f = flow(sid)
+        if not f.gen3d:
+            raise HTTPException(409, "생성 형태 후보가 꺼져 있습니다([gen3d] enabled = false).")
+        data = sel_run(f.asset_glb, cid)
+        return Response(content=data, media_type="model/gltf-binary", headers={"Cache-Control": "no-store"})
 
     @app.get("/api/sessions/{sid}/adjust/samples/{item}")
     def adjust_samples(sid: str, item: str):

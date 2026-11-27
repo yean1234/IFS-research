@@ -116,6 +116,14 @@ namespace IFS.SceneSpec.Placement
         // 눈높이(G60-3)
         readonly double _eyeOffset;
 
+        // 헤드셋 UI 개선(G63) — 설정 ui*·hidePanelInDistancePhases를 켰을 때만 쓴다(꺼져 있으면 흐름·기록이 G63 전과 같다)
+        List<string> _instrPages;   // (1) 평정 지시문을 문장 경계에서 나눈 쪽(한 쪽이면 null)
+        int _instrPage;
+        double _flashUntil = double.NegativeInfinity;   // (5) 확정 표시가 끝나는 시각(그 전에는 다음 문항으로 가지 않는다)
+        bool _flashing;
+        bool _panelHiddenLogged;   // (7) 이 단계에서 panel_hidden을 남겼나
+        readonly List<PlacementHapticPulse> _haptics = new List<PlacementHapticPulse>();   // (4) 러너가 가져가 컨트롤러로 보낸다
+
         public PlacementSession(PlacementConfig cfg, PlacementTaskText text, PlacementSessionInfo info, string recordRoot,
             PlacementTrajectory replay = null, IEnumerable<string> warnings = null)
         {
@@ -246,6 +254,35 @@ namespace IFS.SceneSpec.Placement
         // ── 눈높이(G60-3) ───────────────────────────────────────────
         /// <summary>물체 높이를 옮긴 양(E − 기준, m). none이면 0.</summary>
         public double EyeOffsetM => _eyeOffset;
+        // ── 헤드셋 UI 개선(G63) ─────────────────────────────────────────
+        /// <summary>(1) 평정 지시문 한 쪽의 최대 줄 수(uiComfortWrap일 때만 쓴다). 러너가 판의 실제 자리로 다시 정한다
+        /// (기본: 판 기본 자리에서 아래 가장자리가 35° 안인 줄 수).</summary>
+        public int InstructionPageMaxLines { get; set; } = PlacementPanelMetrics.MaxBodyLinesWithin();
+        /// <summary>(1) 지금 보이는 지시문 쪽 번호(1부터)와 쪽 수. 나누지 않았으면 (0, 0).</summary>
+        public int InstructionPage => _instruction && _instrPages != null ? _instrPage + 1 : 0;
+        public int InstructionPageCount => _instruction && _instrPages != null ? _instrPages.Count : 0;
+        /// <summary>(5) 참여자가 방금 확정한 칸을 굵은 테두리로 보이는 중(uiRatingConfirmFlash). 이 동안 입력은 받지 않는다.</summary>
+        public bool RatingConfirmFlash => _flashing;
+        /// <summary>(7) 조건·멈춤 거리 단계에서 읽을 시간이 지나 안내 판을 숨기는 중(hidePanelInDistancePhases).</summary>
+        public bool PanelHidden => _cfg.hidePanelInDistancePhases && !Finished
+            && (Phase == PlacementPhase.Condition || Phase == PlacementPhase.StopDistance) && SecondsInPhase >= _cfg.hidePanelReadSeconds - Eps;
+
+        /// <summary>(4) 이번 프레임까지 쌓인 햅틱 펄스를 가져간다(러너가 XR 컨트롤러로 보낸다). events.csv haptic은 세션이 이미 남겼다.</summary>
+        public List<PlacementHapticPulse> TakeHaptics()
+        {
+            var list = new List<PlacementHapticPulse>(_haptics);
+            _haptics.Clear();
+            return list;
+        }
+
+        /// <summary>(4) 햅틱 사건: uiHaptics를 켰을 때만 펄스를 쌓고 events.csv에 haptic 행을 더한다(기존 행은 그대로).</summary>
+        void Haptic(string kind)
+        {
+            if (!_cfg.uiHaptics || Finished) return;
+            var p = PlacementHaptics.For(kind);
+            _haptics.Add(p);
+            Event("haptic", p.EventDetail());
+        }
         /// <summary>이 세션의 눈높이 E(relative일 때 보정값, 아니면 null).</summary>
         public double? EyeHeightM => _cfg.IsEyeRelative ? _info.EyeHeight?.MeasuredM : null;
         public int GrabCount => _grabCount;
@@ -332,6 +369,9 @@ namespace IFS.SceneSpec.Placement
             _clock.Reset();   // 새 단계의 첫 표본은 다음 프레임에 바로
             _pending = null;
             _digits = "";
+            _panelHiddenLogged = false;
+            _flashing = false;
+            _instrPages = null;
             Event("phase", PhaseName(p));
         }
 
@@ -388,6 +428,18 @@ namespace IFS.SceneSpec.Placement
                         ParticipantTextKey = string.Join("+", instructionKeys);
                         ParticipantText = _text.InstructionFor(when);
                         Event("items_instruction", $"when={when};keys={string.Join("+", instructionKeys)}");
+                        if (_cfg.uiComfortWrap)
+                        {
+                            // G63 (1): 판 아래 가장자리가 35° 안에 들게 문장 경계에서 쪽을 나눈다(글자는 그대로, 실험자 Enter로 다음 쪽)
+                            var pages = PlacementPanelMetrics.SentencePages(ParticipantText, PlacementPanelMetrics.ComfortWrapChars, InstructionPageMaxLines);
+                            if (pages.Count > 1)
+                            {
+                                _instrPages = pages;
+                                _instrPage = 0;
+                                ParticipantText = pages[0];
+                                Event("items_instruction_page", $"when={when};page=1;pages={pages.Count}");
+                            }
+                        }
                     }
                     else AskItem();
                     break;
@@ -420,6 +472,7 @@ namespace IFS.SceneSpec.Placement
         void AskItem()
         {
             _instruction = false;
+            _instrPages = null;
             var item = _items[_itemIndex];
             ParticipantTextKey = item.Key;
             ParticipantText = PlacementTaskText.ItemDisplay(item);
@@ -434,29 +487,48 @@ namespace IFS.SceneSpec.Placement
         void StepItems(PlacementInputFrame input)
         {
             if (!_cfg.participantRatesWithController) return;
+            if (_flashing) return;   // G63 (5): 확정 표시 동안은 다음 문항 전이라 입력을 받지 않는다
             var item = CurrentItem;
             if (item == null) return;
             if (input.RateStep != 0)
             {
                 int mid = (item.Min + item.Max) / 2;
+                int? before = _cursor;
                 _cursor = _cursor == null ? mid : Math.Min(item.Max, Math.Max(item.Min, _cursor.Value + Math.Sign(input.RateStep)));
+                if (_cursor != before) Haptic(PlacementHaptics.RateStep);   // G63 (4): 칸이 바뀔 때만(끝에서 더 젖히면 없음)
             }
             if (input.RateSubmitDown && _cursor != null && _pending == null)
             {
                 _pending = _cursor.Value;
                 _pendingAt = _now;
-                RecordPending("controller");
+                Haptic(PlacementHaptics.RateConfirm);
+                RecordPending("controller", _cfg.uiRatingConfirmFlash);
             }
         }
 
-        /// <summary>확정 전 평정(_pending)을 ratings.csv에 쓰고 다음 문항(또는 다음 단계)으로 간다.</summary>
-        void RecordPending(string by)
+        /// <summary>확정 전 평정(_pending)을 ratings.csv에 쓰고 다음 문항(또는 다음 단계)으로 간다.
+        /// flash(G63 (5))면 기록은 지금 하고, 확정한 칸을 ConfirmFlashSeconds 동안 굵은 테두리로 보인 뒤 넘어간다
+        /// (rt_ms는 확정 순간까지 — 다음 문항의 rt는 그 문항이 보인 때부터라 이 시간이 들어가지 않는다).</summary>
+        void RecordPending(string by, bool flash = false)
         {
             var item = CurrentItem;
             int v = _pending.Value;
             long rt = Ms(_pendingAt - _askedAt);
             _writer.Rating(item.Key, _itemsWhen, v, rt);
             Event("rating", $"item={item.Key};when={_itemsWhen};rating={v};rt_ms={rt}" + (by != null ? ";by=" + by : ""));
+            if (flash)
+            {
+                _flashing = true;
+                _flashUntil = _now + PlacementPanelMetrics.ConfirmFlashSeconds;
+                Event("rating_confirm_flash", $"item={item.Key};when={_itemsWhen};rating={v};duration_ms={Ms(PlacementPanelMetrics.ConfirmFlashSeconds)}");
+                return;
+            }
+            NextItem();
+        }
+
+        void NextItem()
+        {
+            _flashing = false;
             _itemIndex++;
             if (_itemIndex < _items.Count) AskItem();
             else GoTo(Next(Phase));
@@ -548,6 +620,7 @@ namespace IFS.SceneSpec.Placement
             _grabOffset = _obj - (input.RayOrigin + dir * _hold);   // 잡은 순간 물체가 튀지 않도록
             _state = StateHeld;
             Event("grab", $"count={_grabCount};{Where(_obj)};hold_m={F(_hold)}");
+            Haptic(PlacementHaptics.Grab);
         }
 
         void Release(string reason)
@@ -557,6 +630,7 @@ namespace IFS.SceneSpec.Placement
             _heldSeconds += _now - _grabStart;
             _state = StateIdle;
             Event("release", $"count={_grabCount};{Where(_obj)};held_ms={Ms(_now - _grabStart)};reason={reason}");
+            if (reason == "button") Haptic(PlacementHaptics.Release);   // 참여자가 뗀 때만(확인·단계 끝의 자동 놓기는 확인 펄스 하나)
         }
 
         void ConfirmPlace()
@@ -565,6 +639,7 @@ namespace IFS.SceneSpec.Placement
             _confirmed = true;
             _confirmMs = CondMs;
             Event("confirm", $"{Where(_obj)};t_ms={_confirmMs}");
+            Haptic(PlacementHaptics.Confirm);
             if (_cfg.conditionEndsOnConfirm) EndCondition();
         }
 
@@ -615,6 +690,7 @@ namespace IFS.SceneSpec.Placement
                 _confirmed = true;
                 _confirmMs = CondMs;
                 var target = new PVec3(pt.X, _obj.Y, pt.Z);   // 높이는 지금 높이를 지킨다(바닥의 점만 고른다)
+                Haptic(PlacementHaptics.Confirm);
                 StartMove(target, "point_select", $"x={F(pt.X)};z={F(pt.Z)};distance_m={F(PlacementGeometry.HorizontalDistance(pt))};" +
                                                   $"azimuth_deg={F(PlacementGeometry.AzimuthDeg(pt), "0.00")};t_ms={_confirmMs}");
                 return;
@@ -720,6 +796,7 @@ namespace IFS.SceneSpec.Placement
                     _pracHold = Math.Min(_cfg.holdMaxM, Math.Max(_cfg.holdMinM, along));
                     _pracGrabOffset = _pracPos - (input.RayOrigin + dir * _pracHold);
                     Event("practice_grab", $"count={_pracGrabCount};{Where(_pracPos)}");
+                    Haptic(PlacementHaptics.Grab);
                 }
             }
             else if (_pracHeld && !input.GrabHeld) PracticeRelease("button");
@@ -730,7 +807,11 @@ namespace IFS.SceneSpec.Placement
                 _pracHold = Math.Min(_cfg.holdMaxM, Math.Max(_cfg.holdMinM, _pracHold));
                 _pracPos = ClampSpace(input.RayOrigin + input.RayDirection.Normalized * _pracHold + _pracGrabOffset);
             }
-            if (input.ConfirmDown) EndPractice("participant_confirm");
+            if (input.ConfirmDown)
+            {
+                Haptic(PlacementHaptics.Confirm);
+                EndPractice("participant_confirm");
+            }
         }
 
         void PracticeRelease(string reason)
@@ -739,6 +820,7 @@ namespace IFS.SceneSpec.Placement
             _pracHeld = false;
             _pracHeldSeconds += _now - _pracGrabStart;
             Event("practice_release", $"count={_pracGrabCount};{Where(_pracPos)};held_ms={Ms(_now - _pracGrabStart)};reason={reason}");
+            if (reason == "button") Haptic(PlacementHaptics.Release);
         }
 
         /// <summary>연습을 끝내고 practice.json을 쓴다. by: participant_confirm | experimenter | abort. advance면 제시 단계로.</summary>
@@ -810,6 +892,7 @@ namespace IFS.SceneSpec.Placement
             {
                 _writer.Stop(plan.Trial, plan.Practice, plan.Direction, plan.StartM, _cfg.stopSpeedMps, _stopD, rt, false);
                 Event("stop_press", $"trial={plan.Trial};distance_m={F(_stopD)};rt_ms={rt}");
+                Haptic(PlacementHaptics.Stop);
                 EndTrial();
                 return;
             }
@@ -889,6 +972,7 @@ namespace IFS.SceneSpec.Placement
                 if (!_loopMoving)
                 {
                     Adjust("confirm", _stopD, _loopLastStopDir, false);
+                    Haptic(PlacementHaptics.Confirm);
                     EndRound(StopLoopEnd.Confirmed);
                     return;
                 }
@@ -906,6 +990,7 @@ namespace IFS.SceneSpec.Placement
                     _loopPoints.Add(_stopD);
                     _loopLastStopDir = DirName(_loopDir);
                     Adjust("stop", _stopD, _loopLastStopDir, true);
+                    Haptic(PlacementHaptics.Stop);
                     _lastToggle = _now;
                     _state = StatePaused;
                     ShowStopLoopText();
@@ -915,6 +1000,7 @@ namespace IFS.SceneSpec.Placement
                     _loopMoving = true;
                     _loopResumes++;
                     Adjust("resume", _stopD, DirName(_loopDir), true);
+                    Haptic(PlacementHaptics.Resume);
                     _lastToggle = _now;
                     _state = StateStop;
                     ShowStopLoopText();
@@ -1033,7 +1119,7 @@ namespace IFS.SceneSpec.Placement
         /// 붙인 값이 min 이상이면 확정 대기(PendingRating), 아니면 아직 입력 중.</summary>
         public void PressDigit(int d)
         {
-            if (Finished || !InItems) return;
+            if (Finished || !InItems || _flashing) return;   // G63 (5): 확정 표시 중인 문항은 이미 기록됨
             var item = CurrentItem;
             if (item == null || d < 0 || d > 9) return;
             if (item.Max <= 9)
@@ -1059,7 +1145,7 @@ namespace IFS.SceneSpec.Placement
 
         public void PressBackspace()
         {
-            if (Finished || !InItems) return;
+            if (Finished || !InItems || _flashing) return;
             if (_pending == null)
             {
                 _digits = "";   // 범위에 아직 닿지 않은 입력은 기록 없이 지운다
@@ -1098,7 +1184,20 @@ namespace IFS.SceneSpec.Placement
                 case PlacementPhase.PreItems:
                 case PlacementPhase.PostItems:
                 case PlacementPhase.CheckItems:
-                    if (_instruction) { AskItem(); return; }   // 지시문 → 첫 문항(rt는 문항이 보인 때부터)
+                    if (_instruction)
+                    {
+                        if (_instrPages != null && _instrPage + 1 < _instrPages.Count)
+                        {
+                            // G63 (1): 나눈 지시문의 다음 쪽
+                            _instrPage++;
+                            ParticipantText = _instrPages[_instrPage];
+                            Event("items_instruction_page", $"when={_itemsWhen};page={_instrPage + 1};pages={_instrPages.Count}");
+                            return;
+                        }
+                        AskItem();   // 지시문 → 첫 문항(rt는 문항이 보인 때부터)
+                        return;
+                    }
+                    if (_flashing) return;   // G63 (5): 확정 표시 중(이미 기록됨)
                     if (_pending == null) return;
                     RecordPending(null);   // 실험자 입력: events.csv rating 상세는 예전 형식 그대로
                     break;
@@ -1127,6 +1226,7 @@ namespace IFS.SceneSpec.Placement
             _head = head;
             bool stopPress = input.StopDown && !_stopPrevHeld;   // 내려가는 순간만(미리 누르고 있던 버튼은 떼었다 다시 눌러야 함)
             _stopPrevHeld = input.StopHeld || input.StopDown;
+            if (_flashing && InItems && _now >= _flashUntil - Eps) NextItem();   // G63 (5): 확정 표시가 끝나면 다음 문항
             if (InItems) StepItems(input);
             switch (Phase)
             {
@@ -1143,6 +1243,12 @@ namespace IFS.SceneSpec.Placement
                 case PlacementPhase.StopDistance:
                     StepStop(dt, stopPress, input.ConfirmDown);   // 확정(ConfirmDown)은 loop에서만 쓴다(G60-2)
                     break;
+            }
+            if (!_panelHiddenLogged && PanelHidden)
+            {
+                // G63 (7): 읽을 시간이 지나 안내 판을 숨김(한 단계에 한 번)
+                _panelHiddenLogged = true;
+                Event("panel_hidden", $"phase={PhaseLabel};after_ms={Ms(SecondsInPhase)}");
             }
             Sample();
         }

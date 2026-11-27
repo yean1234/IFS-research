@@ -36,6 +36,8 @@ namespace IFS.SceneSpec
         public const string OpaqueShaderResource = "IFS/SceneSpecOpaque";
         public const string FadeShaderResource = "IFS/SceneSpecFade";
         public const string DisplacementProperty = "_Displacement";
+        /// <summary>껍질 열림(shell 프리셋). G62 생성 메시에는 0으로 둔다(SceneLoader.ApplyMaterial).</summary>
+        public const string ShellOpenProperty = "_ShellOpen";
         /// <summary>(2.3) IFS 셰이더 발광 항(선형 RGB, 기본 검정 = 0). 명세(8.4절 4번)의 `_EmissionColor` 대신 이 이름을 쓴다:
         /// `_EmissionColor`는 Built-in Standard의 예약 이름(키워드 _EMISSION·GI 발광 플래그)이고 SceneLoader의 밝기 대체 경로
         /// (ShaderParamNames.emissionFallback)와 golden 지문(LoaderNoVariantGoldenTests.ColorProps)이 그 이름의 유무를 읽어

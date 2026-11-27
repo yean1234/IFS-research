@@ -14,6 +14,13 @@
 //   2026-11-25(G59, 형식 버전 0.2 유지 — 추가만): config의 checkBeforeStopDistance·practiceInAllConditions는 켰을 때만(true) 맨 끝에 남는다.
 //   checkBeforeStopDistance면 events phase 순서가 post_items → check_items → post_wait → stop_distance → done. practiceInAllConditions면
 //   보기만 조건에도 practice.json·practice_* 사건·environment.practice가 생긴다.
+//   2026-11-27(G62, 형식 버전 0.2 유지 — 추가만): 선택 파일(ifs-selection/0.3)에 form.asset이 있을 때만 manifest 맨 끝 formAsset
+//   {assetId, glbSha256(·Actual), pipeline, seed, models, promptText, status applied|fallback_procedural, fallbackReason, renderedLongestEdgeM,
+//   proceduralLongestEdgeM, longestEdgeRelError, renderedSizeM, covariates …}과 events form_asset. selection에 defaultFormSource·acceptedDefault·
+//   formAssetId(0.3 파일에 값이 있을 때만). object.boundingRadiusM은 실제로 그린 메시(생성 메시면 그것) 기준.
+//   2026-11-27(G63 헤드셋 UI, 형식 버전 0.2 유지 — 추가만, 플래그가 모두 꺼져 있으면 G63 전과 바이트 단위로 같다): config 끝에 ui*·hidePanel* 키
+//   (하나라도 켰을 때만). events에 새 사건만 더한다 — haptic(kind;amplitude;duration_ms), items_instruction_page(when;page;pages),
+//   rating_confirm_flash(item;when;rating;duration_ms), panel_hidden(phase;after_ms). 기존 열·사건의 형식은 그대로.
 //   2026-11-26(G60-2·G60-3, 형식 버전 0.2 유지 — 추가만, 기본값에서는 G60 전과 바이트 단위로 같다):
 //   · stopMode loop일 때만 stoprounds.csv(라운드 1행)·stopadjust.csv(멈춤·재개·확정·무시된 입력·끝점 반사마다 1행)를 더 만들고,
 //     manifest stopDistance에 mode·loop{…, plan}을 더한다. stopdistance.csv는 헤더만 남는다. config 끝에 stopMode·stopLoop* 키.
@@ -303,6 +310,9 @@ namespace IFS.SceneSpec.Placement
         public JObject AppliedOverrides;
         /// <summary>눈높이(G60-3). 설정 eyeHeightMode relative면 필수(보정 결과 또는 데스크톱 고정값), none이면 쓰지 않는다.</summary>
         public EyeHeightInfo EyeHeight;
+        /// <summary>G62: 생성 형태 메시 적용 결과(assetId·glbSha256·실제 렌더 크기·공변량, 또는 절차 메시로 돌아간 이유).
+        /// 선택 파일에 form.asset이 없으면 null(그때는 manifest에 키를 넣지 않는다 — 이전 기록 바이트 그대로).</summary>
+        public IFS.SceneSpec.FormAsset.FormAssetResult FormAsset;
     }
 
     public static class PlacementManifest
@@ -395,6 +405,7 @@ namespace IFS.SceneSpec.Placement
                 sd["loop"] = StopLoopJson(cfg, info?.ParticipantNumber ?? 0);
             }
             if (cfg.IsEyeRelative && info?.EyeHeight != null) m["eyeHeight"] = info.EyeHeight.ManifestJson(cfg);   // G60-3, relative일 때만
+            if (info?.FormAsset != null) m["formAsset"] = info.FormAsset.ManifestJson();   // G62, 생성 형태 메시를 골랐을 때만
             return m;
         }
 

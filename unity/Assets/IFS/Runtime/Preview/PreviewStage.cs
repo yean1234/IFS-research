@@ -36,6 +36,15 @@ namespace IFS.SceneSpec
         public string SourceName { get; private set; }
         public SceneOverride Overrides { get; private set; }
         public float Yaw { get; private set; }
+        /// <summary>G62: 얹은 생성 형태 메시(없으면 null). 로드할 때마다(덮어쓰기를 바꿔도) 절차 모형의 메시를 이것으로 바꾼다
+        /// (SceneLoader.ApplyFormAsset — 러너와 같은 크기·재질 규칙).</summary>
+        public FormAsset.FormAssetRef AssetRef { get; private set; }
+        public FormAsset.GlbMesh AssetMesh { get; private set; }
+        /// <summary>마지막 로드에서 생성 메시를 적용한 결과(얹은 것이 없으면 null).</summary>
+        public FormAsset.FormAssetResult LastFormAsset { get; private set; }
+
+        public void SetFormAsset(FormAsset.FormAssetRef asset, FormAsset.GlbMesh mesh) { AssetRef = asset; AssetMesh = mesh; }
+        public void ClearFormAsset() { AssetRef = null; AssetMesh = null; LastFormAsset = null; }
 
         GameObject _camGo, _loaderGo;
         Quaternion _rootBaseRotation = Quaternion.identity;
@@ -99,6 +108,7 @@ namespace IFS.SceneSpec
             var ov = overrides != null && overrides.IsEmpty ? null : overrides;
             bool ok = Loader.LoadJson(json, sourceName, ov);
             if (!ok) return false;
+            LastFormAsset = AssetMesh != null ? Loader.ApplyFormAsset(AssetRef, AssetMesh) : null;
             SpecJson = json;
             SourceName = sourceName;
             Overrides = ov;

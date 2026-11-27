@@ -178,3 +178,292 @@ def build_spec(text: str, sid: str) -> dict:
             raise SystemExit("kiwipiepy가 없어 규칙 추출이 대체 분석기로 돕니다. venv에 kiwipiepy를 설치하세요.")
         _builder = SceneSpecBuilderV1(an)
     return _builder.build(text, session_id=sid)
+
+
+# ── G62: 형태 후보 생성기용 규칙 프롬프트(shape_prompt) ───────────────────────────────
+# 확정 텍스트에서 '말한 형태 낱말'만 고정 사전(shared/lexicon/shape_prompt_en.v0.json)으로 옮긴다.
+# LLM·번역기 없음(원칙 1). 색·재질·크기·감정 낱말은 사전에 없어 프롬프트에 들어가지 않는다.
+# 모든 내용 토큰은 원문 charSpan을 단다. 거슬러 갈 수 없는 토큰이 하나라도 있으면 막는다(fail closed).
+# 막는 경우 모델을 부르지 않는다: no_shape_stated, excluded_category, untraceable_token.
+# charSpan은 normalize_confirmed(text) 기준이고 sourceTextSha256도 그 문자열의 해시다(세션 confirmedText와 같은 정규화).
+SHAPE_BUILDER_VERSION = "gen3d-shape-prompt/0.2.0"     # 0.2.0: 부속물 부정 틀, pluralStated
+SHAPE_LEXICON = CHATBOT.parent / "shared" / "lexicon" / "shape_prompt_en.v0.json"
+_NOUNISH = {"NNG", "NNP", "XSN"}
+_PRED_TAGS = {"VA", "VV", "MAG", "XR"}
+_shape_rt = None
+
+
+class _ShapeRuntime:
+    def __init__(self, lexicon_path: Path = SHAPE_LEXICON):
+        sys.path.insert(0, str(CHATBOT))
+        from ifs_chatbot.korean import Analyzer
+        from ifs_chatbot.scene_builder import normalize_confirmed
+        from ifs_chatbot.scene_builder_v1 import Doc
+        from ifs_chatbot.scene_builder_v2 import SceneSpecBuilderV2
+
+        raw = Path(lexicon_path).read_text(encoding="utf-8")
+        self.lex = json.loads(raw)
+        self.lexicon_sha256 = sha256_text(raw)
+        self.analyzer = Analyzer()
+        if not self.analyzer.available:
+            raise SystemExit("kiwipiepy가 없습니다. 형태 프롬프트는 Kiwi 분석이 있어야 결정적으로 같습니다.")
+        self.normalize = normalize_confirmed
+        self.Doc = Doc
+        # 기존 제외 판정(G45–G51, base_shapes.v1 excluded·noAsset)을 그대로 쓴다(코드 무수정 호출)
+        self.excluder = SceneSpecBuilderV2(self.analyzer)
+        pr = self.lex["positionRules"]
+        self.loc_nouns = frozenset(pr["locationNouns"])
+        self.size_nouns = frozenset(pr["sizeNouns"])
+        self.generic = frozenset(pr["genericFormNouns"])
+        self.light_heads = frozenset(self.excluder.bs["rules"]["lightHeads"]) | self.generic
+        self.by_first: dict[str, list[dict]] = {}
+        for e in self.lex["entries"]:
+            self.by_first.setdefault(e["ko"][0], []).append(e)
+        for v in self.by_first.values():
+            v.sort(key=lambda e: -len(e["ko"]))
+        b = self.lex["blocked"]
+        self.block_kind = {w: "nonMeshable" for w in b["nonMeshable"]}
+        self.block_kind.update({w: "person" for w in b["person"]})
+        self.block_kind.update({w: "animal" for w in b["animal"]})
+
+
+def _shape_runtime() -> _ShapeRuntime:
+    global _shape_rt
+    if _shape_rt is None:
+        _shape_rt = _ShapeRuntime()
+    return _shape_rt
+
+
+def _noun_run_bounds(toks, i: int, j: int) -> bool:
+    """toks[i..j]가 붙어 쓴 명사 연속 전체와 같은가(뒷부분·앞부분만 맞추지 않음: '비눗방울'≠'방울')."""
+    if i > 0 and toks[i - 1].base_tag in _NOUNISH and toks[i - 1].end == toks[i].start:
+        return False
+    if j + 1 < len(toks) and toks[j + 1].base_tag in _NOUNISH and toks[j + 1].start == toks[j].end \
+            and not (toks[j + 1].form == "들" and toks[j + 1].base_tag == "XSN"):     # 복수 '조각들'은 같은 낱말
+        return False
+    return True
+
+
+def _position(rt: _ShapeRuntime, doc, j: int) -> str:
+    """명사 토큰(끝 j)의 자리: head | simile | noun_modifier | object | genitive | location | size."""
+    toks = doc.toks
+    k = j + 1
+    if k < len(toks) and toks[k].form == "들" and toks[k].base_tag == "XSN":
+        k += 1
+    if k >= len(toks) or doc.sent[k] != doc.sent[j]:
+        return "head"
+    nt = toks[k]
+    if nt.form == "만큼":
+        return "size"
+    if nt.form == "만" and nt.base_tag == "JX" and k + 1 < len(toks) and toks[k + 1].form == "하":
+        return "size"                                # 'N만 하다'(크기 비교). '꽃만'(뿐)은 크기가 아님
+    if nt.base_tag in ("NNG", "NNP", "NNB") and nt.form in rt.size_nouns:
+        return "size"
+    if nt.form in ("처럼", "같이") or (nt.form == "같" and nt.base_tag == "VA"):
+        return "simile"
+    if nt.base_tag in ("NNG", "NNP") and nt.form in rt.loc_nouns:
+        return "location"
+    if nt.base_tag == "JKB":
+        return "location"
+    if nt.base_tag == "JKO":
+        return "object"
+    if nt.base_tag == "JKG":
+        return "genitive"
+    if nt.base_tag in ("NNG", "NNP"):
+        return "noun_modifier"
+    return "head"
+
+
+def _next_noun(doc, j: int, skip: int = 4):
+    """j 뒤 같은 문장에서 처음 나오는 명사(NNG·NNP·NNB) 토큰 번호."""
+    toks = doc.toks
+    for k in range(j + 1, min(len(toks), j + 1 + skip)):
+        if doc.sent[k] != doc.sent[j]:
+            return None
+        if toks[k].base_tag in ("NNG", "NNP", "NNB"):
+            return k
+    return None
+
+
+def _negated(doc, i: int, j: int, lexical_starts: set, neg_spans) -> bool:
+    """부정·정정: 기존 추출기의 _negated 구간과 겹치거나, 바로 앞 '안', 또는 같은 문장에서 다른 사전 낱말이 나오기 전
+    3어절 안에 아니·않·없·못이 온다('공은 아니고', '동그랗지는 않고', '끈, 아니 귀신이에요')."""
+    toks = doc.toks
+    s0, s1 = toks[i].start, toks[j].end
+    if any(a < s1 and s0 < b for a, b in neg_spans):
+        return True
+    if i > 0 and toks[i - 1].form == "안" and toks[i - 1].base_tag == "MAG" and doc.sent[i - 1] == doc.sent[i]:
+        return True
+    eoj_limit = doc.eoj[j] + 3
+    for k in range(j + 1, len(toks)):
+        t = toks[k]
+        if doc.sent[k] != doc.sent[j] or doc.eoj[k] > eoj_limit or k in lexical_starts:
+            return False
+        if (t.form == "아니" and t.base_tag in ("VCN", "MAG", "IC")) or (t.form == "않" and t.base_tag == "VX") \
+                or (t.form == "없" and t.base_tag == "VA") or (t.form == "못" and t.base_tag in ("MAG", "VX")):
+            return True
+        if t.form == "안" and t.base_tag == "MAG":
+            return True
+    return False
+
+
+def shape_prompt(text: str) -> dict:
+    """확정 텍스트 → 형태 프롬프트와 차단 판정. 같은 텍스트 → 언제나 같은 결과(사전·규칙만)."""
+    rt = _shape_runtime()
+    norm = rt.normalize(text)
+    toks = rt.analyzer.tokens(norm)
+    doc = rt.Doc(norm, toks)
+    context = rt.excluder._context_sentences(doc)
+    spec = rt.excluder.build(norm)
+    neg_spans = [tuple(n["_provenance"]["charSpan"]) for n in spec.get("_negated") or []
+                 if (n.get("_provenance") or {}).get("charSpan")]
+    tmpl = rt.lex["template"]
+
+    # 1) 사전 맞춤(가장 긴 항목 먼저). 명사는 붙어 쓴 명사 연속 전체와 같을 때만.
+    matches = []
+    i = 0
+    while i < len(toks):
+        t = toks[i]
+        hit = None
+        for e in rt.by_first.get(t.form, []):
+            n = len(e["ko"])
+            seg = toks[i:i + n]
+            if len(seg) < n or [x.form for x in seg] != e["ko"]:
+                continue
+            if any(seg[m].start != seg[m - 1].end for m in range(1, n)):
+                continue
+            if e["pos"] == "noun":
+                if not all(x.base_tag in _NOUNISH for x in seg) or not _noun_run_bounds(toks, i, i + n - 1):
+                    continue
+            elif not (n == 1 and t.base_tag in _PRED_TAGS):
+                continue
+            hit = (i, i + n - 1, e)
+            break
+        if hit:
+            matches.append(hit)
+            i = hit[1] + 1
+        else:
+            i += 1
+    lexical_starts = {m[0] for m in matches}
+
+    accepted, dropped = [], []
+    for i, j, e in matches:
+        s, en_ = toks[i].start, toks[j].end
+        ko = norm[s:en_]
+        if doc.sent[i] in context:
+            dropped.append({"ko": ko, "charSpan": [s, en_], "reason": "context_sentence"})
+            continue
+        if _negated(doc, i, j, lexical_starts, neg_spans):
+            dropped.append({"ko": ko, "charSpan": [s, en_], "reason": "negated"})
+            continue
+        pos = _position(rt, doc, j) if e["pos"] == "noun" else "pred"
+        if pos in ("location", "size"):
+            dropped.append({"ko": ko, "charSpan": [s, en_], "reason": pos})
+            continue
+        accepted.append({"i": i, "j": j, "e": e, "ko": ko, "span": [s, en_], "pos": pos})
+
+    # 2) 차단 판정: 기존 제외 판정(G45–G51) → 메시로 안 되는 범주(form.type mist·form.base flame) → 보충 목록
+    detail = []
+    for u in spec.get("_unmapped") or []:
+        v = u.get("value") if isinstance(u.get("value"), dict) else {}
+        if u.get("reason") in ("excluded_shape", "no_asset") and (v.get("formSaid") is True or v.get("formBlock") is True):
+            detail.append(f"{v.get('excluded') or v.get('noAsset')}:{u.get('lemma')}")
+    form = spec.get("form") or {}
+    if form.get("type") == "mist":
+        detail.append("nonMeshable:form.type=mist")
+    if form.get("base") == "flame":
+        detail.append("nonMeshable:form.base=flame")
+    shape_nouns_here = any(a["e"]["pos"] == "noun" and a["e"]["slot"] == "shape_noun" for a in accepted)
+    for k, t in enumerate(toks):
+        kind = rt.block_kind.get(t.form)
+        if not kind or t.base_tag not in ("NNG", "NNP") or not _noun_run_bounds(toks, k, k):
+            continue
+        if doc.sent[k] in context or _negated(doc, k, k, lexical_starts, neg_spans):
+            continue
+        pos = _position(rt, doc, k)
+        if pos in ("location", "size", "object", "genitive"):
+            continue
+        nxt = _next_noun(doc, k)
+        nxt_form = toks[nxt].form if nxt is not None else None
+        if kind == "nonMeshable":
+            hit = pos in ("noun_modifier", "simile") or (pos == "head" and not shape_nouns_here)
+            if pos == "simile" and nxt_form in rt.excluder.bs_color_nouns:
+                hit = False                         # '불꽃 같은 색' = 색 비교
+        elif pos == "head":
+            hit = True
+        elif pos == "noun_modifier":
+            hit = nxt_form in rt.light_heads         # '얼굴 모양'·'고양이 형상'
+        else:                                        # 비유 원천: 대상이 형태 명사면 그 명사를 그림(G45)
+            hit = not (nxt_form and nxt_form in rt.by_first and nxt_form not in rt.generic)
+        if hit:
+            detail.append(f"{kind}:{t.form}")
+    block = "excluded_category" if detail else None
+
+    # 3) 프롬프트 조립: 꾸밈말(나온 차례) + 비유·명사 꾸밈('…-like') + 중심 명사(처음 나온 것)
+    mods, likes, head, later = [], [], None, []
+    for a in accepted:
+        e = a["e"]
+        if e["slot"] == "shape_modifier":
+            if e["en"] not in [m["en"] for m in mods]:
+                mods.append({**a, "en": e["en"]})
+        elif a["pos"] in ("simile", "noun_modifier"):
+            like = e["en"].replace(" ", "-") + "-like"
+            if like not in [m["en"] for m in likes]:
+                likes.append({**a, "en": like})
+        elif head is None:
+            head = {**a, "en": e["en"]}
+        else:
+            later.append(a)
+    if head is None and likes:                      # '깃털 같은 게' — 비유 원천이 곧 형상(형식 명사 대상)
+        first = likes.pop(0)
+        head = {**first, "en": first["e"]["en"]}
+    if head is not None:                            # '상자 같은 게 … 네모난 상자예요' — 같은 낱말의 비유는 중심 명사와 겹침
+        for a in [x for x in likes if x["e"]["en"] == head["en"]]:
+            likes.remove(a)
+            dropped.append({"ko": a["ko"], "charSpan": a["span"], "reason": "same_as_head"})
+    for a in later:
+        dropped.append({"ko": a["ko"], "charSpan": a["span"], "reason": "later_mention"})
+
+    content = mods + likes + ([head] if head else [])
+    tokens = [{"en": tmpl["prefix"], "ko": None, "charSpan": None, "slot": "template", "lexiconKey": None}]
+    for c in content:
+        tokens.append({"en": c["en"], "ko": c["ko"], "charSpan": c["span"], "slot": c["e"]["slot"],
+                       "lexiconKey": "+".join(c["e"]["ko"])})
+    if head is None:
+        tokens.append({"en": tmpl["defaultNoun"], "ko": None, "charSpan": None, "slot": "template", "lexiconKey": None})
+    phrase = " ".join(t["en"] for t in tokens)
+    tokens += [{"en": s, "ko": None, "charSpan": None, "slot": "template", "lexiconKey": None} for s in tmpl["suffix"]]
+    prompt_text = ", ".join([phrase, *tmpl["suffix"]]) if content else ""
+
+    # 4) 감사: 모든 내용 토큰이 원문 글자로 거슬러 가야 한다(fail closed)
+    untraceable = [t["en"] for t in tokens if t["slot"] != "template" and not (
+        t["ko"] and t["charSpan"] and 0 <= t["charSpan"][0] < t["charSpan"][1] <= len(norm)
+        and norm[t["charSpan"][0]:t["charSpan"][1]] == t["ko"])]
+    if block is None and untraceable:
+        block, detail = "untraceable_token", [f"untraceable:{u}" for u in untraceable]
+    if block is None and not content:
+        block = "no_shape_stated"
+    # 부정 틀: 안전 제약(언제나 같음) + 부속물(말한 낱말과 한 낱말이라도 겹치면 뺌)
+    said_words = {w for c in content for w in c["en"].replace("-", " ").split()}
+    acc = [a for a in tmpl.get("negativeAccessories", []) if not (set(a.split()) & said_words)]
+    negative = ", ".join([tmpl["negative"], *acc])
+    toks_ = doc.toks
+    plural = any(c["e"].get("plural") or (c["j"] + 1 < len(toks_) and toks_[c["j"] + 1].form == "들"
+                                            and toks_[c["j"] + 1].base_tag == "XSN")
+                 for c in content if c["e"]["pos"] == "noun")
+    return {
+        "status": "blocked" if block else "ok",
+        "blockReason": block,
+        "blockDetail": ";".join(sorted(set(detail))) or None,
+        "text": "" if block else prompt_text,
+        "negativeText": negative,
+        "pluralStated": bool(plural),
+        "lexiconVersion": rt.lex["lexiconVersion"],
+        "builderVersion": SHAPE_BUILDER_VERSION,
+        "templateVersion": tmpl["version"],
+        "tokens": tokens if content else [],
+        "dropped": dropped,
+        "thinRisk": any(c["e"].get("thin") for c in content),
+        "familiarObjectStated": any(c["e"].get("familiar") for c in content if c["e"]["pos"] == "noun"),
+        "sourceTextSha256": sha256_text(norm),
+    }

@@ -12,6 +12,11 @@
 //   본문 줄 간격 약 1.5 em, 여백, 고른 칸 테두리·바탕, 키가 큰 판(긴 지시문)은 위 가장자리가 maxTopM을 넘지 않게 아래로 내림.
 //   수치·계산식은 PlacementPanelMetrics, 실측은 Editor/PlacementUiCapture.cs(docs/validation/ui/). 문구·문항 순서·평정 방식은 그대로.
 // 자리·크기는 러너 설정값(PlacementRunner textForwardM·textHeightM, 이 컴포넌트의 글자 크기). 실기 미검증(docs/headset-checklist.md).
+// 2026-11-27 G63 헤드셋 UI 개선(설정 ui* 플래그, 기본 꺼짐 — 꺼져 있으면 Inspector 값 그대로라 화면이 G63 전과 같다). ApplyUiOptions로 켠다:
+//   · uiComfortWrap: 본문 줄바꿈 24자, 판 아래 가장자리가 수평 아래 35°를 넘으면 26자까지 넓혀 본다(글자는 그대로). 평정 지시문의 쪽 나누기는 세션이 한다.
+//   · uiDarkPanel: 판 #2A2B30 · 글 #E6E6E8(약 11:1) · 고른 칸 글·테두리 #9EC3FF · 바탕 #1F3050. 판·칸은 알베도 검정 + 금속도 1(반사 0) + 방출 = 그 색이라
+//     조명과 상관없이 렌더 화소가 그 색이다(_EMISSION 변형이 빌드에서 빠지면 검은 판 — 글 대비는 오히려 커진다).
+//   · uiNarrowScale: 기준점 칸 너비 0.22 → 0.20 m. 확정 표시(uiRatingConfirmFlash): ShowItem(…, confirmFlash: true)면 고른 칸 테두리 0.02 m.
 using System.Collections.Generic;
 using IFS.SceneSpec.Ownership;
 using UnityEngine;
@@ -67,6 +72,12 @@ namespace IFS.SceneSpec.Placement
 
         Font _font;
         Material _textMat, _bgMat, _selFillMat, _selFrameMat;
+        // G63: Inspector 값(처음 ApplyUiOptions 때 저장 — 플래그를 끄면 이 값으로 돌아간다)
+        bool _defaultsSaved, _comfortWrap, _darkTheme;
+        int _defaultWrapChars;
+        float _defaultColumnWidthM;
+        Color _defaultText, _defaultHighlight, _defaultBackground, _defaultSelectionFill;
+        float _frameShownM;
         Transform _root;
         TextMesh _body;
         readonly List<TextMesh> _numbers = new List<TextMesh>();
@@ -83,6 +94,57 @@ namespace IFS.SceneSpec.Placement
         public Vector3 PanelCenter => _root != null ? _root.position : Vector3.zero;
         /// <summary>지금 테두리로 표시한 칸의 값(없으면 null). 테스트·점검용.</summary>
         public int? SelectedValue { get; private set; }
+        /// <summary>G63: 판 아래 가장자리의 수평 아래 각(도, 마지막으로 놓은 눈 기준). 테스트·점검용.</summary>
+        public float BottomBelowHorizonDeg { get; private set; }
+        /// <summary>G63: 마지막 본문 줄바꿈 글자 수, 고른 칸 테두리 두께(m), 어두운 판인가, 칸 너비(m). 테스트·점검용.</summary>
+        public int WrapCharsShown { get; private set; }
+        public float SelectionFrameShownM => _frameShownM > 0f ? _frameShownM : selectionFrameM;
+        public bool DarkTheme => _darkTheme;
+        public float ColumnWidthM => columnWidthM;
+
+        /// <summary>G63 헤드셋 UI 플래그를 적용한다(설정 uiComfortWrap · uiDarkPanel · uiNarrowScale). 모두 false면 Inspector 값 그대로.
+        /// 두 조건이 같은 판을 쓰므로 조건과 상관없이 같은 값이다.</summary>
+        public void ApplyUiOptions(bool comfortWrap, bool darkTheme, bool narrowScale)
+        {
+            if (!_defaultsSaved)
+            {
+                _defaultsSaved = true;
+                _defaultWrapChars = wrapChars;
+                _defaultColumnWidthM = columnWidthM;
+                _defaultText = textColor;
+                _defaultHighlight = highlightColor;
+                _defaultBackground = backgroundColor;
+                _defaultSelectionFill = selectionFillColor;
+            }
+            _comfortWrap = comfortWrap;
+            wrapChars = comfortWrap ? PlacementPanelMetrics.ComfortWrapChars : _defaultWrapChars;
+            columnWidthM = narrowScale ? (float)PlacementPanelMetrics.NarrowColumnWidthM : _defaultColumnWidthM;
+            if (darkTheme != _darkTheme)
+            {
+                _darkTheme = darkTheme;
+                textColor = darkTheme ? Srgb(PlacementPanelMetrics.DarkTextSrgb) : _defaultText;
+                highlightColor = darkTheme ? Srgb(PlacementPanelMetrics.DarkHighlightSrgb) : _defaultHighlight;
+                backgroundColor = darkTheme ? Srgb(PlacementPanelMetrics.DarkBackgroundSrgb) : _defaultBackground;
+                selectionFillColor = darkTheme ? Srgb(PlacementPanelMetrics.DarkSelectionFillSrgb) : _defaultSelectionFill;
+                Rebuild();   // 판·칸 재질과 글 색을 새로 만든다
+            }
+            _shownKey = null;   // 다음 Show에서 다시 배치
+        }
+
+        static Color Srgb(double[] c) => new Color((float)c[0], (float)c[1], (float)c[2], 1f);
+
+        /// <summary>G63: 본문만 있는 판이 아래 한계(기본 35°)를 넘지 않는 최대 줄 수(이 판의 글자 크기·줄 간격·여백·자리 규칙, center·eye 기준).</summary>
+        public int MaxBodyLinesWithin(Vector3 center, Vector3 eye, double limitDeg = PlacementPanelMetrics.ComfortBottomLimitDeg)
+        {
+            float fwd = (float)System.Math.Sqrt((center.x - eye.x) * (center.x - eye.x) + (center.z - eye.z) * (center.z - eye.z));
+            return PlacementPanelMetrics.MaxBodyLinesWithin(limitDeg, fwd, center.y, eye.y, maxTopM, minBottomM, characterSize, bodyLineSpacing, marginM);
+        }
+
+        float BottomDegAt(Vector3 center, Vector3 eye)
+        {
+            float fwd = (float)System.Math.Sqrt((center.x - eye.x) * (center.x - eye.x) + (center.z - eye.z) * (center.z - eye.z));
+            return (float)PlacementPanelMetrics.BottomBelowHorizonDeg(PanelSizeM.y, fwd, center.y, eye.y, maxTopM, minBottomM);
+        }
 
         /// <summary>쓸 글꼴(ParticipantTextDisplay.EnsureFont가 OS에서 찾은 것). null이면 내장 폰트.</summary>
         public void SetFont(Font font)
@@ -118,22 +180,45 @@ namespace IFS.SceneSpec.Placement
             if (_shownKey == key && Visible) { Place(center, eye); return; }
             Ensure();
             _body.text = ParticipantTextDisplay.Wrap(text ?? "", wrapChars);
+            WrapCharsShown = wrapChars;
             CurrentText = text;
             SetScale(0, null, null);
             Layout(_body.text, 0, 0);
+            if (_comfortWrap && BottomDegAt(center, eye) > PlacementPanelMetrics.ComfortBottomLimitDeg)
+            {
+                // G63 (1): 아래 가장자리가 한계를 넘으면 줄을 조금 넓혀 본다(24 → 26자). 한계 안에 드는 가장 좁은 폭을 쓰고,
+                // 어느 폭도 들지 않으면 24자 그대로(폭만 커지므로)
+                for (int w = wrapChars + 1; w <= PlacementPanelMetrics.ComfortWrapMaxChars; w++)
+                {
+                    if (PlacementPanelMetrics.WrapLineCount(text, w) >= PlacementPanelMetrics.WrapLineCount(text, wrapChars)) continue;
+                    _body.text = ParticipantTextDisplay.Wrap(text ?? "", w);
+                    WrapCharsShown = w;
+                    Layout(_body.text, 0, 0);
+                    if (BottomDegAt(center, eye) <= PlacementPanelMetrics.ComfortBottomLimitDeg) break;
+                }
+                if (BottomDegAt(center, eye) > PlacementPanelMetrics.ComfortBottomLimitDeg && WrapCharsShown != wrapChars)
+                {
+                    _body.text = ParticipantTextDisplay.Wrap(text ?? "", wrapChars);
+                    WrapCharsShown = wrapChars;
+                    Layout(_body.text, 0, 0);
+                }
+            }
             Place(center, eye);
             _root.gameObject.SetActive(true);
             _shownKey = key;
         }
 
-        /// <summary>평정 문항: 문항 글 + 기준점 줄(cursor = 참여자가 고르는 중인 값, 없으면 null).</summary>
-        public void ShowItem(PlacementItem item, int? cursor, Vector3 center, Vector3 eye)
+        /// <summary>평정 문항: 문항 글 + 기준점 줄(cursor = 참여자가 고르는 중인 값, 없으면 null).
+        /// confirmFlash(G63 (5))면 고른 칸 테두리를 굵게(확정 표시).</summary>
+        public void ShowItem(PlacementItem item, int? cursor, Vector3 center, Vector3 eye, bool confirmFlash = false)
         {
             if (item == null) { Hide(); return; }
-            string key = "I|" + item.Key + "|" + item.Min + "-" + item.Max + "|" + (cursor?.ToString() ?? "-");
+            string key = "I|" + item.Key + "|" + item.Min + "-" + item.Max + "|" + (cursor?.ToString() ?? "-") + (confirmFlash ? "|flash" : "");
             if (_shownKey == key && Visible) { Place(center, eye); return; }
             Ensure();
+            _frameShownM = confirmFlash ? (float)PlacementPanelMetrics.ConfirmFlashFrameM : 0f;
             _body.text = ParticipantTextDisplay.Wrap(item.Text ?? "", wrapChars);
+            WrapCharsShown = wrapChars;
             CurrentText = item.Text;
             int n = item.Max - item.Min + 1;
             int labelLines = SetScale(n, item, cursor);
@@ -185,7 +270,16 @@ namespace IFS.SceneSpec.Placement
             {
                 mat = new Material(r.sharedMaterial) { name = "IFS placement panel " + name };
                 mat.color = color;
-                if (emission > 0f)
+                if (_darkTheme)
+                {
+                    // G63 (2): 조명을 받지 않는 판 — 알베도 검정 + 금속도 1(확산·정반사 0) + 방출 = 색(렌더 화소가 그 색)
+                    mat.color = Color.black;
+                    mat.SetFloat("_Metallic", 1f);
+                    mat.SetFloat("_Glossiness", 0f);
+                    mat.EnableKeyword("_EMISSION");
+                    mat.SetColor("_EmissionColor", color);
+                }
+                else if (emission > 0f)
                 {
                     mat.EnableKeyword("_EMISSION");
                     mat.SetColor("_EmissionColor", color * emission);
@@ -360,7 +454,8 @@ namespace IFS.SceneSpec.Placement
                 _selFrame.transform.localScale = new Vector3(boxW, cellH, 1f);
                 _selFill.transform.localPosition = new Vector3(x, y, 0.003f);
                 _selFill.transform.localRotation = Quaternion.identity;
-                _selFill.transform.localScale = new Vector3(Mathf.Max(0.001f, boxW - 2f * selectionFrameM), Mathf.Max(0.001f, cellH - 2f * selectionFrameM), 1f);
+                float frame = SelectionFrameShownM;   // G63 (5): 확정 표시면 굵게, 아니면 selectionFrameM 그대로
+                _selFill.transform.localScale = new Vector3(Mathf.Max(0.001f, boxW - 2f * frame), Mathf.Max(0.001f, cellH - 2f * frame), 1f);
             }
         }
 
@@ -376,6 +471,10 @@ namespace IFS.SceneSpec.Placement
                 if (c.y + halfUp > maxTopM) c.y = Mathf.Max(maxTopM - halfUp, minBottomM + halfUp);
             }
             _root.SetPositionAndRotation(c, LookAt(c, eye));
+            // G63: 아래 가장자리의 수평 아래 각(점검·테스트용 — 배치에는 쓰지 않는다)
+            var bottom = c - (LookAt(c, eye) * Vector3.up) * (PanelSizeM.y * 0.5f);
+            float horiz = (float)System.Math.Sqrt((bottom.x - eye.x) * (bottom.x - eye.x) + (bottom.z - eye.z) * (bottom.z - eye.z));
+            BottomBelowHorizonDeg = Mathf.Atan2(eye.y - bottom.y, horiz) * Mathf.Rad2Deg;
         }
 
         static Quaternion LookAt(Vector3 center, Vector3 eye)

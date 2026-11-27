@@ -15,6 +15,9 @@
 // 참여자 조정은 SetNumber/SetCategory로 → events.csv 한 줄씩, SaveFinal()로 finalScene.json.
 // 소유감 실험 변형본은 Load(path, SceneOverride): 해석값 덮어쓰기·모양 모형 강제, 기록(RecordChange) 없음. Load(path)는 그대로.
 // 파일을 읽을 수 없는 곳(WebGL 미리보기)은 LoadJson(json, 이름, 덮어쓰기): 파일 로드와 같은 파싱·해석·렌더 경로(LoadParsed)를 탄다.
+// G62 생성 형태 메시: 로드한 뒤 ApplyFormAsset(GLB 메시)으로 절차 모형의 메시만 바꾼다. 크기는 같은 layout.size에서 절차 모형의
+//                    가장 긴 변과 같게(FormAssetFit), 중심은 절차 모형의 중심에. 머티리얼·그림자·움직임은 절차 모형의 것(스펙 값)을 그대로 쓴다.
+//                    형상을 다시 만들면(form.type 조정 등) 생성 메시는 버리고 절차 모형으로 돌아간다.
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -163,6 +166,15 @@ namespace IFS.SceneSpec
         readonly List<string> _notes = new List<string>();
         // 로더가 만든 머티리얼 사본(Unload 때 정리). renderer.materials는 에디트 모드에서 누수 오류를 내므로 직접 복제한다.
         readonly HashSet<Material> _ownedMaterials = new HashSet<Material>();
+        // G62: 생성 형태 메시(없으면 null = 절차 모형). 맞춤 계산과 만든 메시(정리용)
+        FormAsset.FormAssetFit _assetFit;
+        Mesh _assetMesh;
+        /// <summary>G62: 지금 생성 형태 메시를 그리고 있는가.</summary>
+        public bool ShowingFormAsset => _assetFit != null;
+        /// <summary>G62: 마지막 배치에서 생성 메시의 균일 배율·가장 긴 변(m)과 같은 배율의 절차 모형 가장 긴 변(m). 생성 메시가 없으면 null.</summary>
+        public double? FormAssetScale { get; private set; }
+        public double? FormAssetLongestEdgeM { get; private set; }
+        public double? FormAssetProceduralLongestEdgeM { get; private set; }
 
         // ── 수명 ─────────────────────────────────────────────────────────────
         void OnEnable()
@@ -312,6 +324,9 @@ namespace IFS.SceneSpec
         public void Unload()
         {
             CloseRecorder();
+            _assetFit = null;
+            FormAssetScale = FormAssetLongestEdgeM = FormAssetProceduralLongestEdgeM = null;
+            if (_assetMesh != null) { DestroySafe(_assetMesh); _assetMesh = null; }
             DestroySafe(_root);
             foreach (var m in _ownedMaterials) DestroySafe(m);
             _ownedMaterials.Clear();
@@ -696,6 +711,9 @@ namespace IFS.SceneSpec
         // 지우지 않으면 _ownedMaterials에 남아 Unload·OnDestroy 때까지 쌓인다.
         void ReleaseModel()
         {
+            _assetFit = null;
+            FormAssetScale = FormAssetLongestEdgeM = FormAssetProceduralLongestEdgeM = null;
+            if (_assetMesh != null) { DestroySafe(_assetMesh); _assetMesh = null; }
             if (_model == null) return;
             foreach (var r in _model.GetComponentsInChildren<Renderer>(true))
                 foreach (var m in r.sharedMaterials)
@@ -794,7 +812,141 @@ namespace IFS.SceneSpec
             // (2.3) form.aspect: 축 비율 (x, y, z)를 형상 국소 배율에 곱한다(긴 축 = 1, layout.size 뜻 그대로). 적용하지 않으면 곱하지 않는다
             var axis = RenderPlan?.AxisRatios;
             if (axis != null) local = Vector3.Scale(local, new Vector3((float)axis[0], (float)axis[1], (float)axis[2]));
+            if (_assetFit != null)
+            {
+                // G62: 생성 메시는 같은 배율의 절차 모형과 가장 긴 변이 같도록 균일 배율, 중심은 절차 모형의 중심(자세·축 비율로 늘이지 않음)
+                _assetFit.Place(new double[] { local.x, local.y, local.z }, out double u, out double[] at, out double lp, out double lr);
+                _model.transform.localScale = Vector3.one * (float)u;
+                _model.transform.localPosition = new Vector3((float)at[0], (float)at[1], (float)at[2]);
+                FormAssetScale = u;
+                FormAssetLongestEdgeM = lr;
+                FormAssetProceduralLongestEdgeM = lp;
+                return;
+            }
             _model.transform.localScale = local;
+        }
+
+        /// <summary>G62: 로드한 형상(절차 모형)의 메시를 생성 형태 메시로 바꾼다. 머티리얼(스펙 값으로 만든 것)·그림자·움직임은 절차 모형의 것을
+        /// 그대로 쓰고 GLB의 머티리얼은 쓰지 않는다(읽지도 않음). 바꾸지 못하면 절차 모형을 그대로 두고 이유를 돌려준다.
+        /// 크기 기록(가장 긴 변·배율)은 결과에 담는다. 렌더 경로(RenderPath)는 "generated(assetId)"가 된다.</summary>
+        public FormAsset.FormAssetResult ApplyFormAsset(FormAsset.FormAssetRef asset, FormAsset.GlbMesh mesh)
+        {
+            var res = new FormAsset.FormAssetResult { Ref = asset, ProceduralRenderPath = RenderPath, RenderPath = RenderPath };
+            if (_model == null || CurrentParams == null || RenderPlan == null)
+                return Fail(res, FormAsset.FormAssetResult.NotLoaded, null);
+            if (RenderPlan.Renderer == FormRenderPlan.RendererMist)
+                return Fail(res, FormAsset.FormAssetResult.MistForm, "안개(부피 셰이더)는 메시로 그리지 않음");
+            if (!ProceduralLocalBounds(out double[] pc, out double[] ps))
+                return Fail(res, FormAsset.FormAssetResult.NoProcedural, "절차 모형에 메시가 없음");
+            Material mat = null;
+            foreach (var r in _model.GetComponentsInChildren<Renderer>())
+            {
+                foreach (var m in r.sharedMaterials) if (m != null) { mat = m; break; }
+                if (mat != null) break;
+            }
+            if (mat == null) return Fail(res, FormAsset.FormAssetResult.NoProcedural, "절차 모형에 머티리얼이 없음");
+
+            // 메시 만들기(정점이 65535개를 넘으면 32비트 번호)
+            int n = mesh.VertexCount;
+            var verts = new Vector3[n];
+            var normals = new Vector3[n];
+            for (int i = 0; i < n; i++)
+            {
+                verts[i] = new Vector3(mesh.Positions[i * 3], mesh.Positions[i * 3 + 1], mesh.Positions[i * 3 + 2]);
+                normals[i] = new Vector3(mesh.Normals[i * 3], mesh.Normals[i * 3 + 1], mesh.Normals[i * 3 + 2]);
+            }
+            var um = new Mesh { name = "IFS generated " + asset.AssetId };
+            if (n > 65535) um.indexFormat = IndexFormat.UInt32;
+            um.vertices = verts;
+            um.normals = normals;
+            um.triangles = mesh.Triangles;
+            um.RecalculateBounds();
+
+            // 절차 모형을 지우되 그 머티리얼 하나는 남겨 새 메시에 입힌다(나머지 사본은 지움)
+            foreach (var r in _model.GetComponentsInChildren<Renderer>(true))
+                foreach (var m in r.sharedMaterials)
+                    if (m != null && m != mat && _ownedMaterials.Remove(m)) DestroySafe(m);
+            DestroySafe(_model);
+            var go = new GameObject("model (generated " + asset.AssetId + ")");
+            go.AddComponent<MeshFilter>().sharedMesh = um;
+            go.AddComponent<MeshRenderer>().sharedMaterial = mat;
+            go.transform.SetParent(_motion.transform, false);
+            _model = go;
+            _assetMesh = um;
+            _isShapeModel = false;
+            _assetFit = new FormAsset.FormAssetFit(pc, ps, mesh.Center, mesh.Size);
+            RenderPath = "generated(" + asset.AssetId + ")";
+            ApplyAll();
+
+            res.RenderPath = RenderPath;
+            res.Vertices = n;
+            res.Triangles = mesh.TriangleCount;
+            res.LayoutSize = CurrentParams.GetNumber("layout.size");
+            res.UniformScale = FormAssetScale;
+            res.AssetLongestEdge = mesh.LongestEdge;
+            res.RenderedLongestEdgeM = FormAssetLongestEdgeM;
+            res.ProceduralLongestEdgeM = FormAssetProceduralLongestEdgeM;
+            var sz = mesh.Size;
+            double u = FormAssetScale ?? 0;
+            res.RenderedSizeM = new[] { sz[0] * u, sz[1] * u, sz[2] * u };
+            double rel = FormAsset.FormAssetFit.RelativeError(FormAssetLongestEdgeM ?? 0, FormAssetProceduralLongestEdgeM ?? 0);
+            if (double.IsNaN(rel) || rel > FormAsset.FormAssetFit.Tolerance)
+            {
+                // 크기 규칙을 지키지 못하면 절차 모형으로 되돌린다(거리 결과변수 보호)
+                BuildHierarchy();
+                ApplyAll();
+                res.RenderPath = RenderPath;
+                return Fail(res, FormAsset.FormAssetResult.SizeMismatch, "가장 긴 변 상대 오차 " + rel);
+            }
+            res.Status = FormAsset.FormAssetResult.StatusApplied;
+            Note($"생성 형태 메시 {asset.AssetId}: 절차 모형({res.ProceduralRenderPath}) 대신 표시 — 가장 긴 변 {FormAssetLongestEdgeM:0.####} m" +
+                 $"(같은 layout.size의 절차 모형과 같음), 머티리얼·그림자는 절차 모형 규칙", false);
+            return res;
+        }
+
+        /// <summary>G62: GLB를 쓰지 못할 때(파일 없음·sha256 다름·읽기 실패) 절차 모형을 그대로 두고 그 사실을 notes와 결과에 남긴다.</summary>
+        public FormAsset.FormAssetResult ApplyFormAssetFallback(FormAsset.FormAssetRef asset, string reason, string detail)
+        {
+            var res = new FormAsset.FormAssetResult { Ref = asset, ProceduralRenderPath = RenderPath, RenderPath = RenderPath,
+                                                       LayoutSize = CurrentParams?.GetNumber("layout.size") };
+            return Fail(res, reason, detail);
+        }
+
+        FormAsset.FormAssetResult Fail(FormAsset.FormAssetResult res, string reason, string detail)
+        {
+            res.Status = FormAsset.FormAssetResult.StatusFallback;
+            res.FallbackReason = reason;
+            res.Detail = detail;
+            Note($"생성 형태 메시 {res.Ref?.AssetId}: 절차 모형으로 표시({reason}{(detail != null ? " — " + detail : "")})", true);
+            return res;
+        }
+
+        // 절차 모형의 경계(모형 국소 좌표, 모형 배율 곱하기 전). 메시 필터가 모형 자신에 있거나, 회전 없는 한 단계 자식(모양 모형)에 있다.
+        // mesh.bounds가 아니라 정점으로 잰다: 기본 덩어리(IcoMesh)는 셰이더 변위 때문에 bounds를 1.6으로 넉넉히 잡아 두어(지름은 1.0),
+        // bounds로 재면 생성 메시가 1.6배 크게 그려졌다(2026-11-27 실제 자산 캡처에서 확인).
+        bool ProceduralLocalBounds(out double[] center, out double[] size)
+        {
+            center = size = null;
+            double[] mn = { double.MaxValue, double.MaxValue, double.MaxValue }, mx = { double.MinValue, double.MinValue, double.MinValue };
+            bool any = false;
+            foreach (var mf in _model.GetComponentsInChildren<MeshFilter>())
+            {
+                if (mf == null || mf.sharedMesh == null) continue;
+                var verts = mf.sharedMesh.vertices;
+                if (verts == null || verts.Length == 0) continue;
+                Vector3 s = Vector3.one, p = Vector3.zero;
+                if (mf.transform != _model.transform) { s = mf.transform.localScale; p = mf.transform.localPosition; }
+                foreach (var v in verts)
+                {
+                    double[] w = { v.x * s.x + p.x, v.y * s.y + p.y, v.z * s.z + p.z };
+                    for (int k = 0; k < 3; k++) { if (w[k] < mn[k]) mn[k] = w[k]; if (w[k] > mx[k]) mx[k] = w[k]; }
+                }
+                any = true;
+            }
+            if (!any) return false;
+            center = new[] { (mn[0] + mx[0]) / 2, (mn[1] + mx[1]) / 2, (mn[2] + mx[2]) / 2 };
+            size = new[] { mx[0] - mn[0], mx[1] - mn[1], mx[2] - mn[2] };
+            return true;
         }
 
         void ApplyMaterial()
@@ -813,6 +965,13 @@ namespace IFS.SceneSpec
                 {
                     // IFS 셰이더면 형상별 렌더러가 셰이더 선택·형상 프리셋을 넣는다
                     if (formRenderer.ApplyShader(m, plan)) anyIfs = true;
+                    // G62: 생성 메시에는 형태 프리셋(재질이 아니라 절차 형상의 모양)을 걸지 않는다 — 정점 변위 0(모양 모형과 같이),
+                    // 껍질 열림 0(shell 프리셋의 _ShellOpen은 물체 좌표 높이로 위쪽을 잘라 생성 메시에 구멍을 냈다 — 2026-11-27 실제 자산 캡처)
+                    if (_assetFit != null)
+                    {
+                        if (m.HasProperty(FormRenderResources.DisplacementProperty)) m.SetFloat(FormRenderResources.DisplacementProperty, 0f);
+                        if (m.HasProperty(FormRenderResources.ShellOpenProperty)) m.SetFloat(FormRenderResources.ShellOpenProperty, 0f);
+                    }
                     // 안개 셰이더: 바닥 높이(배치 설정) 아래의 밀도를 0으로(광선이 바닥을 뚫고 땅속 안개를 쌓지 않게)
                     if (m.HasProperty(MistFloorProperty)) m.SetFloat(MistFloorProperty, placement.floorY);
                     if (m.HasProperty(sp.baseColor)) m.SetColor(sp.baseColor, color);

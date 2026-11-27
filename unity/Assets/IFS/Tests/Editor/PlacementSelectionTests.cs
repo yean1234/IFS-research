@@ -505,7 +505,7 @@ namespace IFS.SceneSpec.Tests
         [Test]
         public void Manifest_0_2_records_selection_and_applied_overrides()
         {
-            var sel = ParseOk(Selection(format: "ifs-selection/0.3"));
+            var sel = ParseOk(Selection(format: "ifs-selection/0.9"));
             var applied = new JObject { ["form.type"] = "fragments", ["material.brightness"] = 0.35 };
             string dir;
             using (var s = NewSession(PlacementTests.ShortConfig("view"), selection: sel, applied: applied))
@@ -519,12 +519,12 @@ namespace IFS.SceneSpec.Tests
             Assert.That(((JObject)m["selection"]).Properties().Select(p => p.Name),
                 Is.EqualTo(new[] { "file", "sha256", "formatVersion", "none", "selectedCandidateId", "finalOverrides", "sources", "skipped", "colorChanged" }));
             Assert.That((string)m["selection"]["file"], Is.EqualTo("selection.json"));
-            Assert.That((string)m["selection"]["formatVersion"], Is.EqualTo("ifs-selection/0.3"));
+            Assert.That((string)m["selection"]["formatVersion"], Is.EqualTo("ifs-selection/0.9"));
             Assert.That((string)m["selection"]["sources"]["material.brightness"], Is.EqualTo("edited"));
             Assert.That(JToken.DeepEquals(m["appliedOverrides"], applied), Is.True);
             Assert.That(File.ReadAllText(Path.Combine(dir, "manifest.json")), Does.Not.Contain("someone"));
             var warn = File.ReadAllLines(Path.Combine(dir, "events.csv")).Where(l => l.Contains(",warning,")).ToList();
-            Assert.That(warn.Any(l => l.Contains("formatVersion ifs-selection/0.3")), Is.True, "모르는 버전 경고가 events.csv에");
+            Assert.That(warn.Any(l => l.Contains("formatVersion ifs-selection/0.9")), Is.True, "모르는 버전 경고가 events.csv에");
         }
 
         // ── 평정 범위 ────────────────────────────────────────────────────
