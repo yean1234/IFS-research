@@ -20,6 +20,9 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from common import CHATBOT, sha256_text  # noqa: E402
 
+sys.path.insert(0, str(CHATBOT))
+from ifs_chatbot.form_words import form_position, negated_near, next_noun, noun_run_bounds  # noqa: E402
+
 RULES_VERSION = "gen3d-prompt-rules/0.1.0"
 
 # form.type → 명사구
@@ -188,7 +191,7 @@ def build_spec(text: str, sid: str) -> dict:
 # charSpan은 normalize_confirmed(text) 기준이고 sourceTextSha256도 그 문자열의 해시다(세션 confirmedText와 같은 정규화).
 SHAPE_BUILDER_VERSION = "gen3d-shape-prompt/0.2.0"     # 0.2.0: 부속물 부정 틀, pluralStated
 SHAPE_LEXICON = CHATBOT.parent / "shared" / "lexicon" / "shape_prompt_en.v0.json"
-_NOUNISH = {"NNG", "NNP", "XSN"}
+_NOUNISH = {"NNG", "NNP", "XSN"}            # form_words.NOUNISH와 같음
 _PRED_TAGS = {"VA", "VV", "MAG", "XR"}
 _shape_rt = None
 
@@ -234,81 +237,32 @@ def _shape_runtime() -> _ShapeRuntime:
     return _shape_rt
 
 
+# 자리·부정 판정은 chatbot/ifs_chatbot/form_words.py로 옮겼다(G73 재진술 매핑과 같이 씀, 동작 불변). 이름은 그대로 둔다.
 def _noun_run_bounds(toks, i: int, j: int) -> bool:
-    """toks[i..j]가 붙어 쓴 명사 연속 전체와 같은가(뒷부분·앞부분만 맞추지 않음: '비눗방울'≠'방울')."""
-    if i > 0 and toks[i - 1].base_tag in _NOUNISH and toks[i - 1].end == toks[i].start:
-        return False
-    if j + 1 < len(toks) and toks[j + 1].base_tag in _NOUNISH and toks[j + 1].start == toks[j].end \
-            and not (toks[j + 1].form == "들" and toks[j + 1].base_tag == "XSN"):     # 복수 '조각들'은 같은 낱말
-        return False
-    return True
+    return noun_run_bounds(toks, i, j)
 
 
 def _position(rt: _ShapeRuntime, doc, j: int) -> str:
     """명사 토큰(끝 j)의 자리: head | simile | noun_modifier | object | genitive | location | size."""
-    toks = doc.toks
-    k = j + 1
-    if k < len(toks) and toks[k].form == "들" and toks[k].base_tag == "XSN":
-        k += 1
-    if k >= len(toks) or doc.sent[k] != doc.sent[j]:
-        return "head"
-    nt = toks[k]
-    if nt.form == "만큼":
-        return "size"
-    if nt.form == "만" and nt.base_tag == "JX" and k + 1 < len(toks) and toks[k + 1].form == "하":
-        return "size"                                # 'N만 하다'(크기 비교). '꽃만'(뿐)은 크기가 아님
-    if nt.base_tag in ("NNG", "NNP", "NNB") and nt.form in rt.size_nouns:
-        return "size"
-    if nt.form in ("처럼", "같이") or (nt.form == "같" and nt.base_tag == "VA"):
-        return "simile"
-    if nt.base_tag in ("NNG", "NNP") and nt.form in rt.loc_nouns:
-        return "location"
-    if nt.base_tag == "JKB":
-        return "location"
-    if nt.base_tag == "JKO":
-        return "object"
-    if nt.base_tag == "JKG":
-        return "genitive"
-    if nt.base_tag in ("NNG", "NNP"):
-        return "noun_modifier"
-    return "head"
+    return form_position(doc, j, rt.loc_nouns, rt.size_nouns)
 
 
 def _next_noun(doc, j: int, skip: int = 4):
-    """j 뒤 같은 문장에서 처음 나오는 명사(NNG·NNP·NNB) 토큰 번호."""
-    toks = doc.toks
-    for k in range(j + 1, min(len(toks), j + 1 + skip)):
-        if doc.sent[k] != doc.sent[j]:
-            return None
-        if toks[k].base_tag in ("NNG", "NNP", "NNB"):
-            return k
-    return None
+    return next_noun(doc, j, skip)
 
 
 def _negated(doc, i: int, j: int, lexical_starts: set, neg_spans) -> bool:
-    """부정·정정: 기존 추출기의 _negated 구간과 겹치거나, 바로 앞 '안', 또는 같은 문장에서 다른 사전 낱말이 나오기 전
-    3어절 안에 아니·않·없·못이 온다('공은 아니고', '동그랗지는 않고', '끈, 아니 귀신이에요')."""
-    toks = doc.toks
-    s0, s1 = toks[i].start, toks[j].end
-    if any(a < s1 and s0 < b for a, b in neg_spans):
-        return True
-    if i > 0 and toks[i - 1].form == "안" and toks[i - 1].base_tag == "MAG" and doc.sent[i - 1] == doc.sent[i]:
-        return True
-    eoj_limit = doc.eoj[j] + 3
-    for k in range(j + 1, len(toks)):
-        t = toks[k]
-        if doc.sent[k] != doc.sent[j] or doc.eoj[k] > eoj_limit or k in lexical_starts:
-            return False
-        if (t.form == "아니" and t.base_tag in ("VCN", "MAG", "IC")) or (t.form == "않" and t.base_tag == "VX") \
-                or (t.form == "없" and t.base_tag == "VA") or (t.form == "못" and t.base_tag in ("MAG", "VX")):
-            return True
-        if t.form == "안" and t.base_tag == "MAG":
-            return True
-    return False
+    return negated_near(doc, i, j, lexical_starts, neg_spans)
 
 
 def shape_prompt(text: str) -> dict:
     """확정 텍스트 → 형태 프롬프트와 차단 판정. 같은 텍스트 → 언제나 같은 결과(사전·규칙만)."""
+    core = _shape_core(text)
+    return _assemble(core, core["accepted"], core["dropped"], core["detail"])
+
+
+def _shape_core(text: str) -> dict:
+    """1)–2) 사전 맞춤·자리·부정·차단 판정까지. shape_prompt와 G73 재진술 프롬프트(resay.py)가 같이 쓴다."""
     rt = _shape_runtime()
     norm = rt.normalize(text)
     toks = rt.analyzer.tokens(norm)
@@ -317,7 +271,6 @@ def shape_prompt(text: str) -> dict:
     spec = rt.excluder.build(norm)
     neg_spans = [tuple(n["_provenance"]["charSpan"]) for n in spec.get("_negated") or []
                  if (n.get("_provenance") or {}).get("charSpan")]
-    tmpl = rt.lex["template"]
 
     # 1) 사전 맞춤(가장 긴 항목 먼저). 명사는 붙어 쓴 명사 연속 전체와 같을 때만.
     matches = []
@@ -397,6 +350,16 @@ def shape_prompt(text: str) -> dict:
             hit = not (nxt_form and nxt_form in rt.by_first and nxt_form not in rt.generic)
         if hit:
             detail.append(f"{kind}:{t.form}")
+    return {"rt": rt, "norm": norm, "toks": toks, "doc": doc, "context": context, "spec": spec, "neg_spans": neg_spans,
+            "lexical_starts": lexical_starts, "accepted": accepted, "dropped": dropped, "detail": detail}
+
+
+def _assemble(core: dict, accepted: list, dropped: list, detail: list, limits: dict | None = None) -> dict:
+    """3)–4) 프롬프트 조립과 감사. limits(G73 재진술만): {"modifiers": n, "likes": n} — 넘치면 나온 차례로 자르고 dropped에 남긴다.
+    limits가 없으면(G62 shape_prompt) 예전과 같은 결과."""
+    rt, norm, doc = core["rt"], core["norm"], core["doc"]
+    tmpl = rt.lex["template"]
+    dropped = list(dropped)
     block = "excluded_category" if detail else None
 
     # 3) 프롬프트 조립: 꾸밈말(나온 차례) + 비유·명사 꾸밈('…-like') + 중심 명사(처음 나온 것)
@@ -423,12 +386,22 @@ def shape_prompt(text: str) -> dict:
             dropped.append({"ko": a["ko"], "charSpan": a["span"], "reason": "same_as_head"})
     for a in later:
         dropped.append({"ko": a["ko"], "charSpan": a["span"], "reason": "later_mention"})
+    if limits:
+        for group, n in ((mods, limits.get("modifiers")), (likes, limits.get("likes"))):
+            if n is None:
+                continue
+            for a in group[n:]:
+                dropped.append({"ko": a["ko"], "charSpan": a["span"], "reason": "prompt_limit"})
+            del group[n:]
 
     content = mods + likes + ([head] if head else [])
     tokens = [{"en": tmpl["prefix"], "ko": None, "charSpan": None, "slot": "template", "lexiconKey": None}]
     for c in content:
-        tokens.append({"en": c["en"], "ko": c["ko"], "charSpan": c["span"], "slot": c["e"]["slot"],
-                       "lexiconKey": "+".join(c["e"]["ko"])})
+        tok = {"en": c["en"], "ko": c["ko"], "charSpan": c["span"], "slot": c["e"]["slot"],
+               "lexiconKey": "+".join(c["e"]["ko"])}
+        if "source" in c["e"]:                      # G73 재진술: 대역 사전에서 온 낱말(G62 출력에는 이 키가 없다)
+            tok.update({k: c["e"][k] for k in ("source", "dictEntryId", "wordnet") if k in c["e"]})
+        tokens.append(tok)
     if head is None:
         tokens.append({"en": tmpl["defaultNoun"], "ko": None, "charSpan": None, "slot": "template", "lexiconKey": None})
     phrase = " ".join(t["en"] for t in tokens)

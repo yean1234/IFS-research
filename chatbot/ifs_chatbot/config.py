@@ -147,6 +147,15 @@ class Gen3DConfig:
     # procedural처럼, 그 밖의 사물 낱말이 하나라도 있으면 generated처럼(판정 근거는 generation.defaultFormRule·defaultFormBasis).
     # 기본이어도 참여자가 확정해야 장면에 쓴다(selection 0.3 defaultFormSource·selection.acceptedDefault)
     default_form_source: str = "procedural"
+    # G73(CP13a): [맞는 게 없어요] 뒤 '다시 적기'. 기본 끔(G73-g: 본 실험 12-02에는 넣지 않음) — 꺼져 있으면 아무것도 하지 않고
+    # 출력이 그대로다. 켜면 다시 적은 글 → 재진술 매핑(ifs_chatbot/resay.py: 갈래 + 허용 슬롯 처음 값) → 갈래 solid일 때만
+    # 형태 프롬프트·생성기(tools/gen3d/resay.py). 화면·문구·selection 0.4·서버 연결은 CP13b
+    resay: bool = False
+    resay_max_rounds: int = 2      # 다시 적기 최대 횟수(G73-d 잠정값, 실측 뒤 정함)
+    resay_candidates: int = 2      # 회당 생성 후보 최대 수(G73-d 잠정값)
+    # 한·영 대역 사전 파생 표(tools/gen3d/bilingual.py 형식, 저장소 밖 경로). 비우면 대역 사전을 쓰지 않는다(사전 밖 낱말은 버림).
+    # ⚠ 한국어기초사전 라이선스·형식 확인 전(G73 '켜기 전에 사람이 할 것')
+    resay_bilingual_dict: str = ""
 
 
 @dataclass(frozen=True)

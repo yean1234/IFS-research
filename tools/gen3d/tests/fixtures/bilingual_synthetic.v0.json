@@ -1,0 +1,21 @@
+{
+  "dictId": "bilingual-synthetic-test",
+  "dictVersion": "0.1.0",
+  "status": "synthetic-test-only",
+  "license": "none (연구자가 만든 합성 시험 표. 실제 대역 사전 데이터가 아님)",
+  "source": "G73 CP13a 시험용. 한국어기초사전 등 실제 사전의 항목을 옮기지 않았다. 뜻·대역어는 인터페이스 시험을 위해 고른 값이다",
+  "entries": [
+    {"id": "syn-0001", "ko": "조약돌", "translations": [{"en": "pebble"}]},
+    {"id": "syn-0002", "ko": "솔방울", "translations": [{"en": "pinecone"}, {"en": "pine cone"}]},
+    {"id": "syn-0003", "ko": "주전자", "translations": [{"en": "kettle"}]},
+    {"id": "syn-0004", "ko": "종", "translations": [{"en": "bell"}, {"en": "gong"}]},
+    {"id": "syn-0005", "ko": "차", "translations": [{"en": "car"}, {"en": "cart"}, {"en": "tea"}]},
+    {"id": "syn-0006", "ko": "북", "translations": [{"en": "drum"}, {"en": "north"}]},
+    {"id": "syn-0007", "ko": "향수", "translations": [{"en": "perfume"}, {"en": "nostalgia"}]},
+    {"id": "syn-0008", "ko": "목각상", "translations": [{"en": "wooden figure"}]},
+    {"id": "syn-0009", "ko": "방울새", "translations": [{"en": "finch"}]},
+    {"id": "syn-0010", "ko": "불안", "translations": [{"en": "anxiety"}]},
+    {"id": "syn-0011", "ko": "고깔", "translations": [{"en": "cone (paper hat worn at festivals)"}]},
+    {"id": "syn-0012", "ko": "인형", "translations": [{"en": "doll"}]}
+  ]
+}

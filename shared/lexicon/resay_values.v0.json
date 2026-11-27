@@ -1,0 +1,81 @@
+{
+  "lexiconId": "resay-values-v0",
+  "tableVersion": "0.1.0",
+  "status": "draft",
+  "date": "2026-11-28",
+  "decision": "G73-b, G73-c",
+  "description": "[맞는 게 없어요] 뒤 참여자가 다시 적은 글 → 형태 갈래와 허용 슬롯의 처음 값(재진술 전용 매핑, chatbot/ifs_chatbot/resay.py만 읽는다). 확정 스펙은 바꾸지 않는다. 값은 조절 화면의 처음 값으로만 쓰이고 참여자가 그 화면에서 확인·수정한다(G73-c). 갈래는 이 표의 낱말이 정한다(LLM·번역 모델 없음, 원칙 1). 말하지 않은 값은 만들지 않는다(원칙 2). 모든 낱말·수치는 연구자가 보탠 초안이다(문헌 근거 없음, 실제 참여자 문장을 넣지 않음, 원칙 6).",
+  "howToEdit": [
+    "낱말·수치를 바꾸면 tableVersion을 올린다. 매핑 출력의 tables.resayValues에 이 판이 남는다.",
+    "갈래 명사는 Kiwi 형태소 목록(ko)으로 적는다. 붙어 쓴 명사 연속 전체와 같을 때만 맞춘다('물안개'에서 '안개'만 맞추지 않음).",
+    "허용 슬롯(allowedSlots) 밖의 값은 매핑이 버린다. 슬롯을 늘리려면 결정 기록(G73-c)을 먼저 고친다."
+  ],
+  "allowedSlots": ["form.type", "mist.density", "layout.proportions", "material.opacity", "material.emission"],
+  "allowedSlotsNote": "G73-c. form.type은 갈래가 mist일 때 'mist'만 낸다(조절 화면 형태 항목의 값). mist.density는 새 덮어쓰기 키(스펙 슬롯 아님, 조절 화면·렌더러 연결은 CP13b). layout.proportions·material.opacity·material.emission은 매퍼 v2(builder 2.8.0 + 1층 사전 v2)가 읽은 값 그대로. 색·크기·위치·거리·움직임·자세·질감·밝기는 읽지 않는다(notRead에 경로와 글자 위치만 남김).",
+  "branches": {
+    "order": ["mist", "light", "flame"],
+    "note": "G73-b 형태 갈래. 형태 자리(주어·이름·비유 원천·명사 꾸밈)의 명사로 정한다. 중심 명사(head)가 먼저, 없으면 글에서 먼저 나온 비유 원천·명사 꾸밈. 움직임 비유의 매개어(G71)·부정·회상 문장은 갈래를 정하지 않는다. 사람·동물·사람 닮은 사물은 blocked, 손 형태 사전(shape_prompt_en)의 형태 낱말이나 사전 밖 사물 명사는 solid, 아무것도 없으면 none.",
+    "mist": {
+      "render": "레이마칭 안개 렌더 값(생성하지 않음)",
+      "formType": "mist",
+      "nouns": [["안개"], ["물안개"], ["연기"], ["수증기"], ["증기"], ["구름"], ["먹구름"], ["비구름"], ["뭉게구름"], ["먹장구름"], ["아지랑이"], ["연무"], ["운무"], ["매연"], ["스모그"]],
+      "nounsNote": "'구름'·'먹구름'은 매퍼 v2에서 형태 슬롯을 비우지만(G71-e) 다시 적기 화면에서는 갈래를 안개로 둔다(G73-b '안개·구름·연기'). '먹구름'의 '먹'(검은색)은 색이라 읽지 않는다. 동음어가 많은 '김'은 넣지 않았다."
+    },
+    "light": {
+      "render": "material.emission",
+      "nouns": [["빛"], ["햇빛"], ["햇살"], ["빛", "줄기"], ["광선"], ["섬광"], ["불빛"], ["달빛"], ["별빛"], ["후광"], ["오로라"]],
+      "impliedEmission": "glowing",
+      "impliedEmissionNote": "갈래가 빛이고 발광어(빛나·반짝이 등)를 따로 말하지 않았으면 material.emission = glowing을 낱말 뜻에서 온 값(source lexicon_implied, G38 선례)으로 적는다. 발광어를 말했으면 그 값이 앞선다."
+    },
+    "flame": {
+      "render": "파티클(CP13b)",
+      "nouns": [["불꽃"], ["불길"], ["불씨"], ["촛불"], ["모닥불"], ["불"], ["화염"], ["횃불"]]
+    }
+  },
+  "density": {
+    "path": "mist.density",
+    "branchOnly": "mist",
+    "scale": "0–1(0 = 아주 성김, 1 = 아주 빽빽함). 렌더러가 입자 수·흡수 계수로 옮긴다(CP13b). 말하지 않았으면 null",
+    "terms": [
+      {"form": "빽빽", "tag": "XR", "level": "high"},
+      {"form": "빽빽하", "tag": "VA", "level": "high"},
+      {"form": "뺵뺵", "tag": "NNG", "level": "high", "note": "자판 오타형(ㅐ→ㅒ, Shift). 연구 책임자 시험 문장의 표기. Kiwi가 명사로 자른다"},
+      {"form": "뺵뺵", "tag": "XR", "level": "high", "note": "같은 오타형"},
+      {"form": "촘촘", "tag": "XR", "level": "high"},
+      {"form": "촘촘하", "tag": "VA", "level": "high"},
+      {"form": "자욱", "tag": "XR", "level": "high"},
+      {"form": "자욱하", "tag": "VA", "level": "high"},
+      {"form": "짙", "tag": "VA", "level": "high"},
+      {"form": "옅", "tag": "VA", "level": "low"},
+      {"form": "엷", "tag": "VA", "level": "low"},
+      {"form": "성기", "tag": "VA", "level": "low"},
+      {"form": "성글", "tag": "VA", "level": "low"},
+      {"form": "듬성듬성", "tag": "MAG", "level": "low"},
+      {"form": "희박", "tag": "XR", "level": "low"},
+      {"form": "희박하", "tag": "VA", "level": "low"}
+    ],
+    "termsNote": "'진하'는 색('진한 회색')과 겹쳐 넣지 않았다. '흐릿'·'희미'는 매퍼 v2가 밝기로 읽고(허용 슬롯 아님), 뿌옇다는 투명도·색과 겹쳐 넣지 않았다.",
+    "modifiers": {
+      "less": ["덜"],
+      "more": ["더", "아주", "매우", "엄청", "너무", "정말", "진짜", "꽤", "되게", "무척"],
+      "soft": ["조금", "약간", "살짝", "좀"],
+      "window": 2,
+      "note": "같은 문장에서 밀도어 바로 앞 두 어절 안의 부사(MAG). '구름보다는 덜 빽빽하고'의 '덜'. 여럿이면 밀도어에 가장 가까운 것."
+    },
+    "values": {
+      "high": 0.8, "low": 0.25,
+      "high+less": 0.4, "low+less": 0.6,
+      "high+more": 0.9, "low+more": 0.15,
+      "high+soft": 0.65, "low+soft": 0.35,
+      "high+negated": 0.35, "low+negated": 0.65
+    },
+    "valuesNote": "초안 수치(화면 확인 전). '덜 빽빽'은 빽빽함 쪽에서 내려온 값이라 성김(low)보다 높게 둔다. 부정('빽빽하지 않은')은 반대 끝이 아니라 가운데 쪽 값."
+  },
+  "visibility": {
+    "path": "material.opacity",
+    "rules": [
+      {"id": "notVisible", "pattern": "보이(VV) + -지(EC) + 않(VX), 또는 안(MAG) + 보이(VV)", "value": 0.15,
+       "note": "'보이지 않는 안개'·'안 보이는'. 0이 아니라 scene_params.v2 opacity.nearlyTransparent(0.15)와 같은 값 — 화면에서 사라지지 않게(D2(a)와 같은 이유). 매퍼 v2가 투명도를 따로 읽었으면 그 값이 앞선다(이 규칙은 lower_priority로 남음)."}
+    ]
+  }
+}

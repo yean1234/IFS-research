@@ -1,0 +1,40 @@
+{
+  "lexiconId": "resay-prompt-filter-v0",
+  "tableVersion": "0.1.0",
+  "status": "draft",
+  "date": "2026-11-28",
+  "decision": "G73-a",
+  "description": "다시 적은 글의 형태 프롬프트(갈래 solid일 때만, tools/gen3d/resay.py)를 거르는 고정 표. 순서: 손 형태 사전(shape_prompt_en) → 대역 사전(판·sha256 고정, 저장소 밖) → WordNet 거르개 → 사람 닮은 사물 차단 목록. 통과 판정을 못 하면 그 낱말은 프롬프트에 들어가지 않고, 중심 명사가 판정되지 않으면 생성 전체를 막는다(fail closed). LLM·번역 모델 없음(원칙 1). 모든 낱말은 연구자가 보탠 초안이다.",
+  "humanlike": {
+    "note": "사람·얼굴을 닮은 사물(Codex 반박 5). 한국어는 형태 자리 명사, 영어는 대역어의 낱말 하나라도 맞으면 생성 전체를 막는다. 기존 차단(G45–G51 person·animal, shape_prompt_en blocked)과 출력 관문(CLIP 사람·동물)은 그대로 함께 돈다.",
+    "ko": ["인형", "곰인형", "봉제인형", "마네킹", "마스코트", "캐릭터", "조각상", "동상", "석상", "흉상", "로봇", "허수아비", "피규어", "꼭두각시", "가면", "눈사람", "해골", "미라", "괴물", "귀신", "유령", "요정", "천사", "악마", "외계인", "좀비", "장승"],
+    "en": ["doll", "dolls", "mannequin", "mascot", "character", "statue", "figurine", "figure", "robot", "android", "humanoid", "scarecrow", "puppet", "marionette", "mask", "snowman", "effigy", "idol", "bust", "sculpture", "teddy", "skeleton", "skull", "ghost", "monster", "angel", "demon", "alien", "zombie", "mummy", "cartoon", "avatar", "toy soldier", "face", "head", "person", "human", "man", "woman", "child", "baby", "body"]
+  },
+  "wordnet": {
+    "senseScope": "dominant",
+    "senseScopeNote": "dominant = 영어 명사의 첫 뜻(WordNet이 빈도순으로 둔 synsets[0])만 본다. all = 모든 명사 뜻 가운데 하나라도 차단 범주면 막는다(D12_claude 3절 원안). WordNet 3.0으로 확인한 결과 all은 ball(testis·사람 뜻)·bell(사람 뜻)·pear(배나무 = organism)까지 막아 대역 사전 경로가 거의 쓰이지 않는다. 그래서 초안은 dominant로 두고, 사람 닮은 사물은 위 humanlike 목록이, 생성 결과는 출력 관문이 따로 막는다. ⚠ 메인 판정 필요.",
+    "block": {
+      "person": ["person.n.01"],
+      "animal": ["animal.n.01"],
+      "organism": ["organism.n.01"],
+      "body_part": ["body_part.n.01"],
+      "humanlike": ["doll.n.01", "effigy.n.01", "figure.n.04", "sculpture.n.01", "statue.n.01"],
+      "nonMeshable": ["atmospheric_phenomenon.n.01", "cloud.n.01", "cloud.n.02", "fire.n.01", "fire.n.03", "light.n.01", "gas.n.02", "vapor.n.01"]
+    },
+    "drop": {
+      "psychological": ["psychological_feature.n.01", "feeling.n.01"]
+    },
+    "requirePhysical": "physical_entity.n.01",
+    "note": "차단 범주가 상위어(hypernym·instance hypernym 닫힘)에 있으면 생성 전체를 막는다. physical_entity 아래가 아니거나 감정·심리 범주면 그 대역어만 버린다. WordNet에 없는 대역어는 판정 불가라 버린다."
+  },
+  "bilingual": {
+    "maxWords": 3,
+    "pattern": "^[a-z]+(?:[ -][a-z]+){0,2}$",
+    "maxSenses": 2,
+    "note": "대역어는 3낱말 이하 영어 명사구만 받는다(괄호·설명 문장은 버림). 거르개를 통과한 서로 다른 대역어가 1개면 쓰고, 2개면 뜻마다 프롬프트 하나, 3개 이상이면 그 낱말을 버린다(ambiguous_sense). 뜻이 갈리는 낱말은 글 하나에 하나만(둘째부터 second_ambiguity로 버림)."
+  },
+  "emotionCategories": ["emotion", "sensation"],
+  "emotionNote": "1층 사전(layer1_lexicon v0·v1)의 이 범주 낱말과 VAD 사전(vad_ko) 낱말은 대역 사전에서 찾지 않는다(감정·감각어가 프롬프트에 들어가지 않게).",
+  "promptLimits": {"modifiers": 2, "likes": 1},
+  "promptLimitsNote": "중심 명사 1 + 비유·명사 꾸밈 최대 1 + 꾸밈말 최대 2(D12_claude 2절). 넘치면 나온 차례로 자른다(prompt_limit)."
+}
