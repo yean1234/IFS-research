@@ -121,6 +121,7 @@ def create_app(cfg: Config | None = None, runtime: Runtime | None = None, warmup
     @asynccontextmanager
     async def lifespan(_app):
         yield
+        rt.close()                  # 진행 중 다시 적기 생성 취소(G73, CP13b 지적 3)
         rt.preview.close()          # 상주 미리보기 플레이어 끄기
 
     app = FastAPI(title="IFS 심상화 면담 서버", version="0.1.0", lifespan=lifespan,

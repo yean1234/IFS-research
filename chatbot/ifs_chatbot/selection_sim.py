@@ -63,7 +63,7 @@ def choose(view: dict, how: str) -> str:
 def run_one(rt: Runtime, sc: dict) -> dict:
     """1–6단계. 결과 dict(세션·흐름 객체 포함)."""
     sid = sc.get("sessionId") or sc["id"]
-    rt.sessions.pop(sid, None)
+    rt.end_session(sid)
     s = rt.new_session(sc.get("condition", "static"), sid, sc.get("participantId"))
     drive(s, sc)
     f = s.selection()

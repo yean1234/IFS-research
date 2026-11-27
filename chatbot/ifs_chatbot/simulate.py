@@ -201,7 +201,7 @@ def run(cfg: Config, scenarios: list[dict], models: list[str | None], runs: int,
                     continue
                 sid = f"{sc['id']}__{label.replace(':', '-').replace('/', '-')}__r{r + 1}"[:40]
                 sid = "".join(ch if ch.isalnum() or ch in "_-" else "-" for ch in sid)
-                rt.sessions.pop(sid, None)
+                rt.end_session(sid)
                 s = rt.new_session(cond, sid)
                 try:
                     drive(s, sc)

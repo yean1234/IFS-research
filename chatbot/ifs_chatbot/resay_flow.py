@@ -179,13 +179,16 @@ class ResayService:
 
     @property
     def pipeline(self):
+        """처음 부를 때 만든다(Kiwi·매퍼 초기화). 백그라운드 작업 안에서 부르므로 회당 제한 시간에 들어간다(CP13b 지적 1)."""
         with self._lock:
             if self._pipeline is None:
-                rs = _gen3d_resay()
-                from .resay import ResayMapper
-                self._pipeline = rs.ResayPipeline(self.rt.cfg.gen3d, mapper=ResayMapper(self.rt.analyzer),
-                                                  safety=self.rt.safety)
+                self._pipeline = self._build_pipeline()
             return self._pipeline
+
+    def _build_pipeline(self):
+        rs = _gen3d_resay()
+        from .resay import ResayMapper
+        return rs.ResayPipeline(self.rt.cfg.gen3d, mapper=ResayMapper(self.rt.analyzer), safety=self.rt.safety)
 
     def setting(self) -> dict:
         gen = self.generator
@@ -344,6 +347,8 @@ class ResayState:
         self._end(OUT_SKIPPED, reason=f"phase_{self.phase}")
 
     def _submit(self, text: str) -> None:
+        # 회당 제한 시간은 제출 시각에 시작한다. 위기 판정·파이프라인 초기화(Kiwi·매퍼)·매핑·생성이 모두 그 안에 든다(CP13b 지적 1)
+        submitted = time.monotonic()
         r = self._round_rec()
         r.update(submittedAt=now_iso(), textSha256=sha256_text(text), chars=len(text))
         self._event("submitted", textSha256=r["textSha256"], chars=len(text))
@@ -356,18 +361,17 @@ class ResayState:
         if v.level == "crisis":
             self._crisis(r, "guard")
             return
-        pipeline = self.svc.pipeline                    # 매퍼(Kiwi)는 요청 스레드에서 만든다
         self.phase = "waiting"
         self.token += 1
         self.cancel = threading.Event()
-        self.started = time.monotonic()
-        self.deadline = self.started + max(0.0, min(self.svc.round_timeout_s, self.time_left()))
+        self.started = submitted
+        self.deadline = submitted + max(0.0, min(self.svc.round_timeout_s, self.time_left()))
         self.f._save()
         self._log("submitted", {"round": self.round, "textSha256": r["textSha256"], "chars": len(text),
                                 "safety": r["safety"]["level"]})
         token, round_no, cancel, deadline = self.token, self.round, self.cancel, self.deadline
         out_dir = self._asset_dir(round_no)
-        self.thread = threading.Thread(target=self._work, args=(pipeline, text, token, round_no, cancel, deadline, out_dir),
+        self.thread = threading.Thread(target=self._work, args=(text, token, round_no, cancel, deadline, out_dir),
                                        name=f"resay-{self.f.s.id}-{round_no}", daemon=True)
         self.thread.start()
 
@@ -388,7 +392,7 @@ class ResayState:
         self._log("crisis", {"round": self.round, "by": by})
 
     # ── 백그라운드 ──────────────────────────────────────────────────────────
-    def _work(self, pipeline, text, token, round_no, cancel, deadline, out_dir) -> None:
+    def _work(self, text, token, round_no, cancel, deadline, out_dir) -> None:
         calls: list[dict] = []
 
         def generator(prompt_text, negative_text, seed):
@@ -406,14 +410,18 @@ class ResayState:
             return res
 
         try:
+            pipeline = self.svc.pipeline                 # 첫 회차면 여기서 초기화(제한 시간 안)
             out = pipeline.run(text, round_no=round_no,
-                                        generator=generator if self.svc.generator is not None else None)
+                               generator=generator if self.svc.generator is not None else None)
             err = None
         except Exception as exc:
             out, err = None, f"{type(exc).__name__}: {exc}"[:300]
         with self.f.lock:
             if token != self.token or self.f.data is None:
-                return                                   # 건너뛰기·시간 초과 뒤에 온 결과는 버린다
+                return                                   # 건너뛰기·시간 초과·철회 뒤에 온 결과는 버린다
+            self.check_timeout()                         # 제한 시간을 넘겨 끝났으면 결과를 쓰지 않고 지금 경로로
+            if token != self.token:
+                return
             self._finish(out, err, calls, text)
 
     def join(self, timeout: float | None = None) -> None:
@@ -421,6 +429,12 @@ class ResayState:
         t = self.thread
         if t is not None:
             t.join(timeout)
+
+    def cancel_work(self) -> None:
+        """철회·세션 종료·서버 종료(CP13b 지적 3): 진행 중 회차의 토큰을 무효화하고 생성기에 취소를 알린다.
+        늦게 온 결과는 _work가 버린다. 기록은 고치지 않는다(철회면 폴더째 지우고, 종료면 끝나지 않은 회차로 남는다)."""
+        self.token += 1
+        self.cancel.set()
 
     def _stop_wait(self) -> None:
         self.token += 1
@@ -626,7 +640,8 @@ class ResayState:
         return out
 
     def _apply(self, entries: list[dict]) -> None:
-        """기준 덮어쓰기(self.f.current) 위에 얹는다. 바뀐 슬롯(처음 값과 다른 것)만 resaid 출처 대상."""
+        """기준 덮어쓰기(self.f.current) 위에 얹는다. slotsChanged는 기록용(처음 값과 달라진 슬롯)이고, resaid 출처는
+        값이 바뀌었는지와 따로 적용된 재진술 슬롯(_resaid_slots)에 단다(CP13b 지적 2)."""
         before = effective_params(self.f.spec, self.f.defaults, self.f.current)
         for e in entries:
             changed = sorted({_slot_of(k) for k, val in e["keys"].items() if before.get(k) != val})
@@ -729,7 +744,7 @@ class ResayState:
             # 이 값의 조절 항목을 처음 값과 다른 값으로 끝냈으면 참여자가 고친 것(edited). 처음 값이 spec과 달라서, 바꿨다가
             # spec 값으로 돌아온 경우도 SelectionFlow 규칙(spec 기준)으로는 '고침'이 아니게 보이므로 여기서 바로잡는다
             item_edited = any(i in summ and not _same(summ[i]["last"], summ[i]["first"]) for i in e["items"])
-            for slot in e["slotsChanged"]:
+            for slot in _resaid_slots(e):
                 if slot not in out or slot in edited:
                     continue
                 rec = out[slot]
@@ -785,6 +800,12 @@ def _same(a, b) -> bool:
     if isinstance(a, float) or isinstance(b, float):
         return isinstance(a, (int, float)) and isinstance(b, (int, float)) and abs(a - b) < 1e-9
     return a == b
+
+
+def _resaid_slots(e: dict) -> list[str]:
+    """출처 resaid를 다는 슬롯: 다시 적은 글이 정한 슬롯(e.slot)은 값이 기존과 같아도 늘 넣는다(확정 스펙 form.type mist +
+    다시 적은 글 mist → resaid). 같은 조절 값이 함께 정하는 다른 슬롯(형태 항목의 form.type·form.base)은 값이 바뀐 것만."""
+    return sorted({e["slot"], *e["slotsChanged"]})
 
 
 def _slot_final(slot: str, p: dict, e: dict):

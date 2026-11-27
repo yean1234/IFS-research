@@ -129,6 +129,33 @@ def test_double_negation_leaves_value_empty_with_reason(m, text, path, ko):
     assert [norm[s:e] for s, e in nr["charSpans"]] == [ko]
 
 
+# 메인 지적(CP13b 판정 '—'): 부정은 서술어의 것이다. 부정된 서술어의 주어 명사는 갈래를 세운다(재진술 매핑에서만)
+@pytest.mark.parametrize("text,expect,pred_ko", [
+    ("안개가 안 보여요", {"form.type": "mist", "material.opacity": 0.15}, "안 보여"),        # 표 visibility.notVisible
+    ("안개가 짙지 않아요", {"form.type": "mist", "mist.density": 0.35}, "짙지 않"),         # 표 density high+negated
+    ("안개가 보이지 않아요", {"form.type": "mist", "material.opacity": 0.15}, "보이지 않"),
+    ("안개가 잘 안 보여요", {"form.type": "mist", "material.opacity": 0.15}, "안 보여"),
+    ("연기는 빽빽하지 않아요", {"form.type": "mist", "mist.density": 0.35}, "빽빽하지 않"),
+])
+def test_negated_predicate_keeps_subject_branch(m, text, expect, pred_ko):
+    r = m.map(text)
+    assert r["branch"] == "mist" and vals(r) == expect, text
+    assert not any(d["reason"] == "negated" for d in r["dropped"])
+    (w,) = [x for x in r["formWords"] if x["kind"] == "branch"]
+    pn = w["predicateNegation"]
+    s, e = pn["charSpan"]
+    assert normalize_confirmed(text)[s:e] == pred_ko and pn["rule"] == "resay.negation.predicate_scope"
+    assert r["mappingVersion"] == "resay-mapping/0.3.0"
+
+
+@pytest.mark.parametrize("text", ["안개가 없어요", "안개는 있지 않아요", "안개가 아니에요", "안개, 아니 그냥 그래요"])
+def test_existence_or_copula_negation_still_negates_noun(m, text):
+    r = m.map(text)
+    assert r["branch"] == "none" and r["values"]["form.type"] is None, text
+    assert any(d["reason"] == "negated" and d["ko"] == "안개" for d in r["dropped"])
+    assert not any("predicateNegation" in w for w in r["formWords"])
+
+
 def test_density_outside_mist_is_dropped(m):
     r = m.map("빽빽한 덩어리가 있어요")
     assert r["branch"] == "solid" and r["values"]["mist.density"] is None

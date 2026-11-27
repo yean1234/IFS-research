@@ -306,6 +306,21 @@ class Runtime:
             self.sessions[session_id] = s
         return s
 
+    def end_session(self, session_id: str) -> "Session | None":
+        """세션을 런타임에서 내린다. 진행 중인 다시 적기 작업(G73)이 있으면 취소한다(CP13b 지적 3)."""
+        with self._lock:
+            s = self.sessions.pop(session_id, None)
+        if s is not None:
+            s.cancel_background()
+        return s
+
+    def close(self) -> None:
+        """서버 종료: 모든 세션의 다시 적기 작업을 취소한다(CP13b 지적 3). 세션 기록은 그대로 둔다."""
+        with self._lock:
+            sessions = list(self.sessions.values())
+        for s in sessions:
+            s.cancel_background()
+
 
 # ── 세션 ────────────────────────────────────────────────────────────────────
 class Session:
@@ -514,6 +529,7 @@ class Session:
         with self.lock:
             if self.state not in ("done", "stopped"):
                 raise SessionError("면담이 끝난 뒤에 폐기할 수 있습니다. 위기 대응으로 멈춘 세션은 안전 기록을 위해 연구자가 처리합니다.")
+            self.cancel_background()                    # G73: 진행 중 다시 적기 생성을 먼저 멈추고 지운다(CP13b 지적 3)
             self.log.delete()
             self.log.persist = False
             self._delete_scene()
@@ -528,6 +544,13 @@ class Session:
             self.messages = [{"speaker": "bot", "text": self.p.phrase("withdrawn"), "kind": "info", "source": "fixed:withdrawn"}]
             self.state, self.awaiting = "withdrawn", "none"
             return self.view()
+
+    def cancel_background(self) -> None:
+        """후보 단계의 백그라운드 작업(G73 다시 적기 생성)을 취소한다. 꺼져 있거나 작업이 없으면 아무 일도 하지 않는다."""
+        flow = self.selection_flow
+        if flow is not None and flow.resay is not None:
+            with flow.lock:
+                flow.resay.cancel_work()
 
     def selection(self, create: bool = True) -> SelectionFlow | None:
         """면담 뒤 단계(selection.py). 확정까지 마친 세션(endedBy = completed)에서만 연다."""

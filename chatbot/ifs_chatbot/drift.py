@@ -884,7 +884,7 @@ def evaluate_cases(path: str | Path, mapper: str = "v0") -> dict:
         rt, _ = make_runtime(Path(tmp), mapper, base)
         for item in data["items"]:
             sid = "".join(ch if ch.isalnum() or ch in "_-" else "-" for ch in str(item["id"]))[:40]
-            rt.sessions.pop(sid, None)
+            rt.end_session(sid)
             s = rt.new_session(CONDITION, sid)
             drive_item(s, item)
             a = (s.log.data.get("drift") or {}).get("assessment") or {}

@@ -141,7 +141,7 @@ def run_items(rt: Runtime, items: list[dict]) -> list[dict]:
     out = []
     for item in items:
         sid = "".join(ch if ch.isalnum() or ch in "_-" else "-" for ch in str(item["id"]))[:40]
-        rt.sessions.pop(sid, None)
+        rt.end_session(sid)
         s = rt.new_session(CONDITION, sid)
         drive = drive_item(s, item)
         out.append({"id": item["id"], "style": item.get("style"),

@@ -6,6 +6,10 @@
 - 색·크기·위치·거리·움직임 등 허용 슬롯 밖의 값은 읽은 경로와 글자 위치만 notRead에 남기고 값은 버린다.
 - 형태소 분석·부정·회상 문장·움직임 비유(G71)는 매퍼 v2(SceneSpecBuilderV2 + 1층 사전 v2 + 비율 표)를 그대로 쓴다.
 - 갈래는 사전이 정한다(LLM·번역 모델 없음, 원칙 1). 같은 글 → 같은 dict, 같은 바이트(mapping_bytes).
+- 부정은 서술어의 것이다(0.3.0): '안개가 안 보여요'·'안개가 짙지 않아요'에서 부정된 것은 서술어(보이·짙)이고 주어 '안개'는
+  부정되지 않는다 → 갈래 mist를 세우고, 서술어 부정은 표의 규칙(투명도·밀도)으로만 값에 든다. 존재 부정('안개가 없어요'·
+  '있지 않아요')과 지정 부정('안개가 아니에요')은 지금처럼 명사 부정이다. 이 예외는 재진술 매핑에만 있다 — 공유
+  form_words.negated_near와 G62 shape_prompt는 그대로(바꾸면 G62 출력이 바뀐다).
 
 이 모듈은 생성기를 부르지 않는다. 형태 프롬프트(갈래 solid)는 tools/gen3d/resay.py가 이 결과로 만든다.
 """
@@ -22,11 +26,16 @@ from .scene_builder import normalize_confirmed
 from .scene_builder_v1 import Doc
 from .scene_builder_v2 import SceneSpecBuilderV2
 
-RESAY_MAPPING_VERSION = "resay-mapping/0.2.0"
+RESAY_MAPPING_VERSION = "resay-mapping/0.3.0"
 BRANCHES = ("solid", "mist", "light", "flame", "blocked", "none")
 _PRED_TAGS = {"VA", "VV", "MAG", "XR"}
 _FORM_POSITIONS = ("head", "simile", "noun_modifier")
 _SKIP_POSITIONS = ("location", "size", "object", "genitive")
+_PRED_HEAD_TAGS = {"VV", "VA", "XR"}
+# 존재 서술어: 이것이 부정되면('없어요'·'있지 않아요') 주어가 없다는 뜻이라 주어 명사 부정으로 본다
+_EXIST_PREDS = frozenset({"있", "없"})
+# 주어 표지(같은 어절, 명사 바로 뒤): 주격 조사(이·가·께서) · 보조사(은·는·도·만). 표지가 없는 맨 명사도 주어로 본다
+_SUBJECT_TAGS = frozenset({"JKS", "JX"})
 # 1층 사전에서 형태 명사로 볼 수 있는 범주(그 밖 범주 낱말은 사물 이름이 아니다: 감정·색·몸 부위 …)
 _OBJECT_CATEGORIES = frozenset({"object", "form", "shape"})
 
@@ -199,10 +208,13 @@ class ResayMapper:
             elif e["kind"] == "listed":
                 base["listed"] = e["listed"]
             reason = None
+            pred_neg = None
             if doc.sent[a] in context:
                 reason = "context_sentence"
             elif negated_near(doc, a, b, lexical_starts, neg_spans):
-                reason = "negated"
+                pred_neg = self._predicate_negation(doc, b) if e["pos"] == "noun" else None
+                if pred_neg is None:
+                    reason = "negated"
             elif any(k in mediators for k in range(a, b + 1)):
                 reason = "action_simile"
             pos = form_position(doc, b, self.loc_nouns, self.size_nouns) if e["pos"] == "noun" else "pred"
@@ -213,9 +225,46 @@ class ResayMapper:
                     dropped.append({"ko": ko, "charSpan": [s, en_], "reason": reason, "kind": e["kind"]})
                 continue
             nxt = next_noun(doc, b)
+            if pred_neg is not None:                   # 부정은 서술어의 것: 근거(서술어·부정 표지 글자 위치)를 남긴다
+                base["predicateNegation"] = {"charSpan": pred_neg, "rule": "resay.negation.predicate_scope"}
             out.append({**base, "position": pos, "tokens": [a, b],
                         "nextNoun": toks[nxt].form if nxt is not None else None})
         return out
+
+    def _predicate_negation(self, doc: Doc, b: int) -> list[int] | None:
+        """명사(끝 토큰 b)가 바로 뒤 서술어의 주어이고, 그 서술어가 부정됐으며(안·못 + 용언, 용언-지 않·못, -ㄴ 게 아니다),
+        그 서술어가 존재(있·없)가 아니면 [서술어(앞 '안'부터)–마지막 부정 표지] 글자 위치. 아니면 None(공유 판정 그대로).
+        - 주어: 명사 바로 뒤가 같은 어절의 주격 조사·보조사 하나로 어절이 끝나거나, 표지 없이 어절이 끝난다.
+        - 주어와 서술어 사이에는 부사 한 낱말짜리 어절(MAG, '안'·'못' 말고)만 올 수 있다('안개가 잘 안 보여요').
+        - 지정 부정('안개가 아니에요')·쉼표 정정('안개, 아니 연기')·비유('안개 같은 게 안 보여요')는 여기 걸리지 않는다."""
+        toks = doc.toks
+        n = len(toks)
+        m = b + 1
+        if m < n and doc.eoj[m] == doc.eoj[b]:
+            if toks[m].base_tag not in _SUBJECT_TAGS:
+                return None
+            m += 1
+            if m < n and doc.eoj[m] == doc.eoj[b]:
+                return None
+        while m < n and doc.sent[m] == doc.sent[b] and toks[m].base_tag == "MAG" and toks[m].form not in ("안", "못") \
+                and (m + 1 >= n or doc.eoj[m + 1] != doc.eoj[m]):
+            m += 1
+        if m >= n or doc.sent[m] != doc.sent[b]:
+            return None
+        if toks[m].form in ("안", "못") and toks[m].base_tag == "MAG":
+            k = m + 1
+            if k >= n or doc.sent[k] != doc.sent[b] or toks[k].base_tag not in _PRED_HEAD_TAGS:
+                return None
+        elif toks[m].base_tag in _PRED_HEAD_TAGS:
+            k = m
+        else:
+            return None
+        if toks[k].form in _EXIST_PREDS:
+            return None
+        negs = self._negators(doc, k)
+        if not negs:
+            return None
+        return [toks[min(k, negs[0])].start, toks[max(k, negs[-1])].end]
 
     def _blocked(self, doc: Doc, spec: dict, words: list[dict]) -> list[dict]:
         """사람·동물·사람 닮은 사물이 형태 자리에 오면 갈래 blocked. 규칙은 G45·G62 형태 프롬프트와 같다:

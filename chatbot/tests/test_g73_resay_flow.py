@@ -39,19 +39,28 @@ T_FLAME = "촛불 같은 게 있어요"
 T_BLOCKED = "고양이가 있어요"
 T_NOTHING = "그냥 그래요"
 T_CRISIS = "죽고 싶은 마음이 둥근 공처럼 있어요"
+T_SPEC_MIST = "가슴 안쪽에 옅은 안개가 있어요."       # 확정 스펙 form.type = mist
 
 
 # ── 가짜 생성기 ──────────────────────────────────────────────────────────────
 class FakeGen:
-    """generator(prompt, negative, seed, *, out_dir, timeout_s, cancel) → 합성 GLB + 사이드카. mode = ok | failed | slow | block."""
+    """generator(prompt, negative, seed, *, out_dir, timeout_s, cancel) → 합성 GLB + 사이드카.
+    mode = ok | failed | timeout | block(취소도 무시) | until_cancel(취소를 지키는 상주 생성기: 취소되면 바로 timeout)."""
     info = {"kind": "fake-test"}
 
     def __init__(self, mode="ok", delay=0.0):
         self.mode, self.delay, self.calls = mode, delay, []
         self.release = threading.Event()
+        self.started = threading.Event()
+        self.cancelled = None
 
     def __call__(self, prompt, negative, seed, *, out_dir, timeout_s, cancel):
         self.calls.append({"prompt": prompt, "seed": seed, "timeout": timeout_s})
+        self.started.set()
+        if self.mode == "until_cancel":
+            cancel.wait(5)
+            self.cancelled = cancel.is_set()
+            return {"status": "timeout", "sidecar": None, "detail": "cancelled"}
         if self.mode == "block":                     # 시간 제한을 지키지 않는 생성기(서버 쪽 감시가 끊어야 함)
             self.release.wait(5)
         elif self.delay:
@@ -512,6 +521,168 @@ def test_no_persist_writes_no_raw_text(tmp_path, pipeline):
     v = none_then(f, T_SOLID)
     assert v["stage"] == "selecting"
     assert not (tmp_path / "logs" / "selection").exists() or not any((tmp_path / "logs" / "selection").rglob("resay.json"))
+
+
+# ── CP13b 지적 1: 회당 제한 시간은 제출 시각에 시작하고 파이프라인 초기화도 그 안에 든다 ────────────
+def test_round_timeout_starts_at_submit_and_includes_pipeline_init(rt, pipeline):
+    gen = FakeGen()
+    svc = ResayService(rt, generator=gen, pipeline=None)         # 파이프라인을 아직 만들지 않음(첫 회차에 초기화)
+    svc.round_timeout_s = 0.3
+    built = []
+
+    def slow_init():                                              # Kiwi·매퍼 초기화가 0.6초 걸린다고 가정
+        time.sleep(0.6)
+        built.append(time.monotonic())
+        return Spy(pipeline)
+
+    svc._build_pipeline = slow_init
+    rt.resay = svc
+    s, f = session(rt)
+    f.select("none")
+    t0 = time.monotonic()
+    v = f.resay_action("submit", T_MIST)                          # 매핑만으로 끝나는 글(생성 없음): 늦어도 결과를 쓰면 안 된다
+    assert time.monotonic() - t0 < 0.3 and v["resay"]["phase"] == "waiting"   # 초기화는 요청을 막지 않는다
+    f.resay.join(10)
+    assert len(built) == 1
+    v = f.view()
+    assert v["stage"] == "adjusting" and gen.calls == []
+    assert v["current"]["overrides"] == dict(f.cands["candidates"][0]["overrides"])   # 기준 후보 0번, 다시 적은 값 없음
+    assert "extraAdjustItems" not in v or v["extraAdjustItems"] == []
+    d = valid(f)
+    assert d["resay"]["outcome"] == "timeout" and d["resay"]["rounds"][0]["outcome"] == "timeout"
+    assert d["resay"]["rounds"][0]["waitMs"] >= 600 and d["resay"]["overrides"] == []
+    assert d["selection"]["none"] is True and d["selection"]["operationalIndex"] == f.cands["candidates"][0]["index"]
+
+
+# ── CP13b 지적 2: 다시 적은 값이 확정 스펙 값과 같아도 출처는 resaid ─────────────────────────────
+def test_same_value_as_confirmed_spec_is_still_resaid(rt, pipeline):
+    service(rt, pipeline, FakeGen())
+    s, f = session(rt, text=T_SPEC_MIST)
+    assert f.spec["form"]["type"] == "mist"
+    v = none_then(f, T_MIST)
+    assert v["stage"] == "adjusting" and v["current"]["overrides"]["form.type"] == "mist"
+    f.finish()
+    d = valid(f)
+    ft = next(o for o in d["resay"]["overrides"] if o["slot"] == "form.type")
+    assert "form.type" not in ft["slotsChanged"]                   # 값은 바뀌지 않았다(기록용)
+    assert d["sources"]["form.type"] == "resaid"                   # 그래도 다시 적은 글이 정한 값(G73-e)
+    assert d["sourceDetails"]["form.type"]["resay"]["round"] == 1
+    assert d["sources"]["form.base"] != "resaid"                   # 같이 정해졌지만 바뀌지 않은 슬롯은 그대로
+
+
+# ── CP13b 지적 3: 철회·세션 종료·서버 종료에서 진행 중 생성을 취소하고 토큰을 무효화 ─────────────────
+def _waiting(rt, pipeline):
+    gen = FakeGen(mode="until_cancel")
+    service(rt, pipeline, gen)
+    s, f = session(rt)
+    f.select("none")
+    v = f.resay_action("submit", T_SOLID)
+    assert v["resay"]["phase"] == "waiting" and gen.started.wait(10)
+    return gen, s, f
+
+
+def test_withdraw_cancels_running_generation(rt, pipeline):
+    gen, s, f = _waiting(rt, pipeline)
+    st, token = f.resay, f.resay.token
+    s.withdraw()
+    assert st.cancel.is_set() and st.token == token + 1
+    st.join(10)
+    assert gen.cancelled is True and not st.thread.is_alive()
+    assert not f.dir.exists()                                      # 늦게 온 결과가 폴더를 다시 만들지 않는다
+    assert not any(c.get("origin") == "generated_resaid" for c in f.cands["candidates"])
+
+
+def test_end_session_cancels_running_generation(rt, pipeline):
+    gen, s, f = _waiting(rt, pipeline)
+    st, token = f.resay, f.resay.token
+    assert rt.end_session(s.id) is s and s.id not in rt.sessions
+    assert st.cancel.is_set() and st.token == token + 1
+    st.join(10)
+    assert gen.cancelled is True
+    assert f.stage == STAGE and st.phase == "waiting"              # 결과를 쓰지 않는다(끝나지 않은 회차로 남음)
+    assert sel_json(f)["resay"]["rounds"][0]["outcome"] is None
+
+
+def test_server_shutdown_cancels_running_generation(tmp_path, pipeline):
+    r = Runtime(resay_cfg(tmp_path))
+    gen, s, f = _waiting(r, pipeline)
+    with TestClient(create_app(r.cfg, runtime=r, warmup=False)):
+        pass                                                       # 앱 종료(lifespan) → rt.close()
+    assert f.resay.cancel.is_set()
+    f.resay.join(10)
+    assert gen.cancelled is True and f.stage == STAGE
+    r.close()                                                      # 두 번 불러도 괜찮다
+
+
+# ── CP13b 지적 4: 두 면담 조건에서 종료·실패 경로도 같다 ───────────────────────────────────────
+def _end_path(rt, pipeline, cond, path):
+    if path == "crisis":
+        gen = FakeGen()
+        service(rt, pipeline, gen)
+        s, f = session(rt, cond)
+        f.select("none")
+        f.resay_action("submit", T_CRISIS)
+    elif path == "skip_input":
+        gen = FakeGen()
+        service(rt, pipeline, gen)
+        s, f = session(rt, cond)
+        f.select("none")
+        f.resay_action("skip", None)
+    elif path == "skip_waiting":
+        gen = FakeGen(mode="block")
+        service(rt, pipeline, gen)
+        s, f = session(rt, cond)
+        f.select("none")
+        f.resay_action("submit", T_SOLID)
+        f.resay_action("skip", None)
+        gen.release.set()
+        f.resay.join(10)
+    elif path == "timeout":
+        gen = FakeGen(mode="block")
+        service(rt, pipeline, gen, round_timeout_s=0.3)
+        s, f = session(rt, cond)
+        f.select("none")
+        f.resay_action("submit", T_SOLID)
+        time.sleep(0.5)
+        f.view()
+        gen.release.set()
+        f.resay.join(10)
+    elif path == "generator_failed":
+        gen = FakeGen(mode="failed")
+        service(rt, pipeline, gen)
+        s, f = session(rt, cond)
+        none_then(f, T_SOLID)
+    else:   # round_cap
+        gen = FakeGen()
+        service(rt, pipeline, gen, max_rounds=1)
+        s, f = session(rt, cond)
+        none_then(f, T_SOLID)
+        f.select("none")
+    v = f.view()
+    d = valid(f)
+    r = d["resay"]
+    base = dict(f.cands["candidates"][0]["overrides"])
+    return {"stage": v["stage"], "phase": v["resay"]["phase"], "crisisPhrase": v["resay"]["crisisPhrase"],
+            "outcome": r["outcome"], "rounds": [(x["branch"], x["outcome"], x["status"]) for x in r["rounds"]],
+            "events": [(e["event"], e.get("outcome"), e.get("reason"), e.get("status")) for e in r["events"]],
+            "generation": [[(g["seed"], g["status"], g["called"]) for g in x["generation"]] for x in r["rounds"]],
+            "selection": None if d["selection"] is None else
+            {k: d["selection"][k] for k in ("none", "operationalIndex", "resayRound", "selectedCandidateId")},
+            "baseRestored": v.get("current", {}).get("overrides") == base if v["stage"] == "adjusting" else None,
+            "overrides": r["overrides"], "genSeeds": [c["seed"] for c in gen.calls], "runnerReady": d["runnerReady"]}
+
+
+@pytest.mark.parametrize("path", ["crisis", "skip_input", "skip_waiting", "timeout", "generator_failed", "round_cap"])
+def test_end_paths_same_in_both_interview_conditions(rt, pipeline, path):
+    static, chatbot = (_end_path(rt, pipeline, cond, path) for cond in ("static", "chatbot"))
+    assert static == chatbot
+    if path == "crisis":
+        assert static["stage"] == STAGE_CRISIS and static["crisisPhrase"] and static["genSeeds"] == []
+    else:
+        assert static["stage"] == "adjusting" and static["baseRestored"] is True and static["overrides"] == []
+    expect = {"crisis": "crisis", "skip_input": "skipped", "skip_waiting": "skipped", "timeout": "timeout",
+              "generator_failed": "generator_failed", "round_cap": "exhausted"}[path]
+    assert static["outcome"] == expect
 
 
 @pytest.mark.parametrize("text", [T_SOLID, T_MIST, T_BLOCKED])
