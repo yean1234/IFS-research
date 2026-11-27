@@ -71,6 +71,7 @@ REASON_TEXT = {
     "V2": "단계나 질문 틀이 컨트롤러와 맞지 않음",
     "V2:stage_mismatch": "단계(stage)가 컨트롤러의 현재 단계와 다름",
     "V2:template_not_allowed": "이 단계에서 쓸 수 없는 질문 틀",
+    "V2:image_x": "이미 모양·사물 이름으로 말한 표현에 쓸 수 없는 질문 틀(프로토콜 1.6 templateRules.notOnImageX)",
     "V3": "인용이 참여자 말과 글자까지 같지 않음",
     "V3:anchor_not_in_utterance": "anchor_quote가 질문 문장 안에 없음",
     "V3:relationship_needs_two_quotes": "relationship 틀은 참여자 표현 두 개를 작은따옴표로 인용해야 함",
@@ -111,6 +112,8 @@ class TurnContext:
     participant_texts: list[str]
     last_participant_text: str
     last_participant_guard_model: dict | None = None   # 입력 검사 때의 가드 모델 판정(V8 비교용)
+    # 프로토콜 1.6 templateRules.notOnImageX(예: like_what). X(인용)가 이미 형상 신호면 V2로 막는다. 비어 있으면 예전 그대로
+    image_x_templates: tuple[str, ...] = ()
 
 
 @dataclass
@@ -143,8 +146,11 @@ class Validator:
         self.max_anchor_eojeol = max_anchor_eojeol
         self.predicate_as_noun = predicate_as_noun
 
-    def check(self, raw: str, ctx: TurnContext, require_quote: bool = True) -> CheckResult:
-        """require_quote=False는 고정 문구 전용 경로(D9 다리 질문의 X 없는 문장 bridge_like_what_plain)에만 쓴다.
+    def check(self, raw: str, ctx: TurnContext, require_quote: bool = True,
+              extra_allow: frozenset[str] | set[str] = frozenset()) -> CheckResult:
+        """extra_allow(1.6 다리 문장만, imageBridge.validation.v5Allow): 틀 말('눈·보이·무언가·느낌')을 V5 leak·novel에서 뺀다.
+        기본값은 비어 있어 다른 경로는 바뀌지 않는다. 이유는 docs/chatbot-design.md 5-4(원칙 3).
+        require_quote=False는 고정 문구 전용 경로(D9 다리 질문의 X 없는 문장 bridge_like_what_plain)에만 쓴다.
         참여자 말을 인용하지 않게 만든 고정 문장이라 인용 요구(V1 anchor_required·V3 전부)만 빼고 나머지는 그대로 건다.
         기본값 True — 기존 경로(LLM 질문·확인 질문·X 있는 다리 문장)는 바뀌지 않는다. 이유는 docs/chatbot-design.md 5-3."""
         # ── V1 ──
@@ -181,6 +187,13 @@ class Validator:
             reasons.append(f"V2:stage_mismatch:{out['stage']}")
         if move == "ask" and template not in ctx.allowed_templates:
             reasons.append(f"V2:template_not_allowed:{template}")
+        if move == "ask" and template in ctx.image_x_templates and not reasons:
+            # 1.6 결함 2: '검은 안개'·'먹구름'처럼 이미 형상인 말에 비유(like_what)를 또 묻지 않는다. 판정은 imageSignal과 같은 함수
+            from .extract import image_signal   # extract는 validator를 부르지 않는다(순환 없음)
+            for q in dict.fromkeys([out["anchor_quote"], *quoted_spans(out["utterance"])]):
+                if q and image_signal(q, self.lexicon, self.analyzer, self.protocol.image_signal_spec)["present"]:
+                    reasons.append(f"V2:image_x:{template}:{q}")
+                    break
 
         if move != "ask" or reasons:
             return CheckResult(not reasons, reasons, parsed=out, notes=notes)
@@ -230,13 +243,15 @@ class Validator:
         # ── V5 ──
         p_keys = self.lexicon.keys(participant_all)
         for h in self.lexicon.hits(utt):
+            if h.entry.lemma in extra_allow:
+                continue
             if h.entry.key not in p_keys:
                 reasons.append(f"V5:leak:{h.entry.lemma}")
         if self.strict:
             p_lemmas = self.analyzer.content_lemmas(participant_all)
             outside = mask_quoted(utt)
             for lemma in sorted(self.analyzer.content_lemmas(outside)):
-                if lemma in TEMPLATE_ALLOW or lemma in p_lemmas:
+                if lemma in TEMPLATE_ALLOW or lemma in p_lemmas or lemma in extra_allow:
                     continue
                 if any(r.endswith(f":{lemma}") for r in reasons):
                     continue

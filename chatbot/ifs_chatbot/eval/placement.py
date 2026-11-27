@@ -50,6 +50,10 @@ LLM 없음, 표준 라이브러리만, 결정론적(같은 기록 → 같은 출
   머리 행동) 칸을 비운다(원자료 파일은 그대로라 필요하면 다시 계산할 수 있다). 이런 세션은 요약 통계에서 뺀다.
 - object_radius_m: manifest object.boundingRadiusM(물체 렌더 경계 반지름, 없으면 빈칸). 거리 지표는 모두 물체 중심
   기준이고, 보이는 가장자리까지의 거리는 대략 이만큼 짧다.
+- 물체 크기·모양 공변량(G72, 2026-11-27 — manifest object.boundsM·object.proportions가 있는 세션이 하나라도 있을 때만 OBJECT_COLUMNS):
+  object_width_m·object_height_m·object_depth_m = object.boundsM x·y·z(불러온 직후 물체 자기 축의 경계 상자, m. 안개는 레이마칭
+  구라 위쪽 한계), proportions_x·y·z = object.proportions의 그리는 비율(가장 큰 값 = 1, 비율이 없던 세션은 빈칸),
+  proportions_source = said | edited | default(선택 파일 sources, 없으면 spec 값 유무), proportions_axis_said = 방향을 말했는지.
 - 설정 일치 점검: 요약에 넣은 세션들 사이에서 manifest config의 baselineSeconds·conditionSeconds·conditionEndsOnConfirm,
   manifest space·stopDistance가 다르면 요약 warnings에 config_mismatch:<키>를 넣는다(빠진 값도 하나의 값으로 본다).
 
@@ -174,6 +178,8 @@ LOOP_ROUND_COLUMNS = ["participant", "session_id", "condition", "control_mode", 
 LOOP_METRICS = ("stop_final_mean_m", "stop_final_approach_mean_m", "stop_final_recede_mean_m",
                 "stop_first_minus_final_mean_m", "stop_minus_condition_final_m", "eye_object_distance_m")
 # G60-3 눈높이(manifest eyeHeight가 있는 세션이 하나라도 있을 때만)
+OBJECT_COLUMNS = ["object_width_m", "object_height_m", "object_depth_m", "proportions_x", "proportions_y", "proportions_z",
+                  "proportions_source", "proportions_axis_said"]
 EYE_COLUMNS = ["eye_height_m", "eye_height_source", "final_height_rel_eye_m", "final_height_ratio_eye", "head_y_drift_m"]
 EYE_METRICS = ("eye_height_m", "final_height_rel_eye_m", "final_height_ratio_eye", "head_y_drift_m")
 
@@ -579,6 +585,8 @@ def load_session(cand: dict, facing_deg: float = DEFAULT_FACING_DEG) -> tuple[di
     if not cond_complete:
         flags.append("partial_condition")
     radius = _num(_dict(man.get("object")).get("boundingRadiusM"))
+    bounds = _dict(_dict(man.get("object")).get("boundsM"))
+    props = _dict(_dict(man.get("object")).get("proportions"))
     sel = _dict(man.get("selection"))
     srow = {
         "participant": participant, "session_id": sid, "record_folder": rel,
@@ -629,6 +637,14 @@ def load_session(cand: dict, facing_deg: float = DEFAULT_FACING_DEG) -> tuple[di
         "_loop_rounds": loop_rows,
         "_has_loop": is_loop,
         "_has_eye": bool(eye_block),
+        "_has_object": bool(bounds or props),
+        # G72: 물체 크기·모양 공변량(RQ2)
+        "object_width_m": _r(_num(bounds.get("x"))), "object_height_m": _r(_num(bounds.get("y"))),
+        "object_depth_m": _r(_num(bounds.get("z"))),
+        "proportions_x": _r(_num(props.get("x"))), "proportions_y": _r(_num(props.get("y"))),
+        "proportions_z": _r(_num(props.get("z"))),
+        "proportions_source": props.get("source") if isinstance(props.get("source"), str) else None,
+        "proportions_axis_said": props.get("axisSaid") if isinstance(props.get("axisSaid"), bool) else None,
     }
     # G60-2 반복 멈춤 열(loop 세션이 하나라도 있을 때만 표에 나간다 — analyze가 정함)
     srow["stop_mode"] = "loop" if is_loop else "single"
@@ -864,7 +880,8 @@ def analyze(records: str | Path, out_dir: str | Path | None = None, facing_deg: 
     # G60-2·G60-3: 해당 세션이 하나라도 있을 때만 붙는 열(없으면 출력이 G60 전과 같다)
     has_loop = any(s["_has_loop"] for s in sessions)
     has_eye = any(s["_has_eye"] for s in sessions)
-    extra_cols = (LOOP_COLUMNS if has_loop else []) + (EYE_COLUMNS if has_eye else [])
+    has_object = any(s["_has_object"] for s in sessions)      # G72: 경계 상자·비율이 있는 기록이 하나라도 있을 때만
+    extra_cols = (LOOP_COLUMNS if has_loop else []) + (EYE_COLUMNS if has_eye else []) + (OBJECT_COLUMNS if has_object else [])
     loop_rounds: list[dict] = []
     for s in sessions:
         ident = {"participant": s["participant"], "session_id": s["session_id"], "condition": s["condition"],
@@ -875,6 +892,9 @@ def analyze(records: str | Path, out_dir: str | Path | None = None, facing_deg: 
                 s.pop(k, None)
         if not has_eye:
             for k in EYE_COLUMNS:
+                s.pop(k, None)
+        if not has_object:
+            for k in OBJECT_COLUMNS:
                 s.pop(k, None)
     if has_loop:
         summary["stopLoop"] = loop_summary(included, loop_rounds)
@@ -892,7 +912,7 @@ def analyze(records: str | Path, out_dir: str | Path | None = None, facing_deg: 
         (out / "placement_summary.json").write_text(json.dumps(summary, ensure_ascii=False, indent=2) + "\n",
                                                     encoding="utf-8")
     for s in sessions:
-        for k in ("_space", "_manifest", "_loop_rounds", "_has_loop", "_has_eye"):
+        for k in ("_space", "_manifest", "_loop_rounds", "_has_loop", "_has_eye", "_has_object"):
             s.pop(k, None)
     res = {"sessions": sessions, "stop_trials": stops, "summary": summary, "columns": columns}
     if has_loop:

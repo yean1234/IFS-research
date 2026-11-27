@@ -1,6 +1,6 @@
 {
   "lexiconId": "scene-params-v2",
-  "lexiconVersion": "2.0.0",
+  "lexiconVersion": "2.1.0",
   "status": "draft",
   "description": "개선 매핑 v2(chatbot/ifs_chatbot/scene_builder_v2.py) 전용 규칙·수치. v2는 scene_params.v1.json을 그대로 읽고, 이 파일에는 v2가 v1과 다르게 하는 부분만 담는다. v0·v1 파일은 고치지 않는다(v0·v1 출력 불변). 수치는 모두 초안이며 Unity 화면으로 확인하지 않았다.",
   "howToEdit": [
@@ -62,5 +62,96 @@
     "unambiguousRecallVerbs": ["생각나", "기억나", "떠올리"],
     "scopeNote": "value.scope = context: ① v1 회상 문장(_context_sentences) ② 관형형 + 상황 명사(v1 situationNouns)로 끝나는 문장('연락이 끊긴 일이요') ③ '생각나다'·'기억나다'·'떠올리다'가 있는 문장('떠오르다'는 '위로 떠오르다'와 같은 꼴이라 넣지 않음) ④ 상황 명사·장면 시간 명사(sceneTimeNouns)가 있고 그 문장에서 슬롯 값이 하나도 나오지 않은 문장('주말 아침 산책이요') ⑤ 같은 절에서 상황 표지(관형형 + 때·적·순간·동안) 앞, 가장 가까운 어미·문장부호 뒤에 있는 명사('소파에 누웠을 때'). 조건 어미 -면은 형상의 행동('빛을 받으면 반짝여요')에 자주 쓰여 명사 표시에는 쓰지 않고 자세 규칙에만 쓴다. 그 밖은 main. 표지 없이 상황을 이름만 말한 답('출근길이요'는 sceneTimeNouns로 잡지만 '할머니 댁 마당이 떠올라요'는 못 잡음)은 main으로 남는다.",
     "note": "D1. 확정 텍스트의 일반·고유 명사(Kiwi NNG·NNP) 중 ① 1층 사전(v0 + v1 오버레이, 모든 범주의 표제어·이형)에 없고 ② 슬롯 값의 근거(_provenance)와 다른 보존 기록(_unmapped·_negated·_alternatives·_context·_parts·_measurements·_direction·_needsConfirmation)이 덮지 않았고 ③ 불용 명사(noun_stoplist.v2.json + alsoExclude 표)가 아니고 ④ 바로 뒤에 -하다 접미사(XSV·XSA)가 붙은 서술성 명사('퇴근하고')가 아닌 것을 _unmapped에 남긴다. 띄어쓰기 없이 붙은 명사 연속('빵가루')은 하나로 묶는다. value.role(subject·named·location·object·modifier·other)과 value.scope(main·context)는 조사·절 규칙으로 정한다. 스키마 2.1의 reason 값에 '사전에 없음'이 없어 가장 가까운 no_scene_param을 쓴다."
+  },
+  "shapePriority": {
+    "added": "2.1.0 (2026-11-27, builder 2.6.0). 연구자 시험 입력(합성으로 표기)에서 '천이 펄럭이듯이 물체가 … 움직이는'의 '천'이 form.base sheet가 되고, 직접 말한 '모양은 구체'·'기본 모형은 구형'·'동그란'은 지는 문제를 고침. 원칙 2: 말한 것(직접 진술)이 비유에서 끌어온 것보다 앞선다. 낱말은 Kiwi 형태(용언은 어간), 명사는 명사 연속의 글자.",
+    "actionSimile": {
+      "clauseEndings": ["듯이", "듯"],
+      "formalNouns": ["것", "거"],
+      "formalMarkers": ["처럼", "같이", "마냥"],
+      "adverbialMarkers": ["처럼", "같이", "마냥"],
+      "predicateCategories": ["movement"],
+      "resultativeETM": ["ᆫ", "은"],
+      "resultativeAux": ["있"],
+      "demoteFormType": true,
+      "demoteFormTypeNote": "true면 움직임 비유 매개어가 1층 직유 원형(form.type: '구름처럼 떠다녀요' → mist)도 채우지 않는다(대안 lower_priority, 후보 단계가 형태 축을 벌려 참여자가 고름). 2.4.0까지는 mist로 그렸다. ⚠ 메인 판정 대상 — false면 form.base만 막고 form.type은 예전처럼 둔다.",
+      "note": "움직임 비유의 매개어는 형태 슬롯(form.base·form.type)을 채우지 않고 _alternatives(reason lower_priority, rule 끝 +actionSimile(…))에 남긴다. 그 매개어는 움직임 값의 근거(_provenance motion.type, rule actionSimile.<낱말>>motion.type)에 더한다. (A) 절 비유: 연결 어미 '-듯이'(EC)나 '-는 것처럼'(관형형 + 것/거 + 처럼·같이·마냥)으로 끝나는 절의 명사는, 같은 문장의 그 뒤에 따로 주어가 있을 때만('천이 펄럭이듯이 물체가 움직여요') 매개어로 본다. 뒤에 주어가 없으면('종이가 춤추듯이 날아다녀요' — 종이가 물체일 수 있음) 지금처럼 둔다. 이 절 안의 색·크기·질감 등(움직임·형태 말고) 값은 층 2(비유)로 내려 직접 진술에 진다. (B) 부사 비유: 'N처럼 V'에서 비교 표지가 관형형이 아니고, 같은 절의 처음 용언이 움직임 범주 사전 낱말이면('천처럼 펄럭여요', '구름처럼 떠다녀요') N을 매개어로 본다. 그 용언이 결과 상태 꼴(완료 관형형 resultativeETM '안개처럼 퍼진 빛', '-어 있-' '구름처럼 퍼져 있어요')이면 움직임이 아니라 퍼진 모양이라 형상 비유로 둔다. 'N 같은 게', 'N처럼 생긴'은 형상 비유라 그대로다."
+    },
+    "directShape": {
+      "frameNouns": ["모양", "형태", "모형", "형체", "생김새", "외형", "겉모양", "꼴"],
+      "statementShapes": ["round", "square", "flat", "pointed"],
+      "adverbialVerbs": ["생기", "보이"],
+      "compatibleBase": {"container": ["round", "square"], "drop": ["round", "pointed"], "sheet": ["flat"], "flame": ["pointed"], "line": []},
+      "demotesFormType": ["mist", "shell", "fragments"],
+      "note": "직접 형태 진술 = 모양어(_unmapped category shape, 값이 statementShapes) 가운데 형상 낱말(base_shapes)이나 움직임 비유 매개어를 꾸미거나 서술하지 않는 것('모양은 동그래요', '동그란 원', '동그란 것', 아래 shapeNouns). 부사형 '-게'는 생김새 동사(adverbialVerbs: '둥글게 생겼어요') 앞에서만 진술로 센다('저를 둥글게 감싸고'는 감싸는 모양새). 이것이 있으면 그 모양과 맞지 않는 형상 낱말(compatibleBase에 없는 조합)은 그리지 않고 _alternatives(form.base, reason lower_priority, rule 끝 +directShape(낱말))에 남기며, 비유 원천에서 온 form.type(mist·shell·fragments)도 _alternatives로 내린다. 형상 낱말을 꾸미는 모양어('동그란 천', '천은 동그래요'), 회상·상황 문장의 모양어는 직접 진술로 세지 않는다. 맞는 조합(container + round 등)은 지금처럼 기본 형상을 그린다. ⚠ 직접 진술끼리 갈릴 때(form.type을 직접 말한 '안개가 있어요. 모양은 동그래요')는 바꾸지 않는다."
+    },
+    "shapeNouns": {
+      "구형": {"shape": "round", "note": "球形. 동음이의 舊型('구형 핸드폰')·求刑을 막으려고 다른 명사(형태 틀 명사 말고)를 꾸미는 자리면 쓰지 않는다"},
+      "구체": {"shape": "round", "note": "球體. 具體('구체적으로'·'구체화')를 막으려고 바로 뒤에 접미사 rejectNextXSN이 붙으면 쓰지 않는다. 다른 명사를 꾸미는 자리도 쓰지 않는다. Kiwi가 줄 끝의 '구체'를 '구 + 체'로 자를 때가 있어 명사 연속의 글자로 맞춘다"}
+    },
+    "rejectNextXSN": ["적", "화"],
+    "homonymGuards": {"구체": {"rejectNextXSN": ["적", "화"], "note": "1층 사전 v1의 '구체'(form blob)가 '구체적으로'에도 걸리던 것을 v2에서 막는다(사전 파일은 고치지 않음 — v1 출력 불변)"}},
+    "shapeNounNote": "모양 명사는 _unmapped(category shape, value.shape, reason no_scene_param, provenance phrase_rule 'shapeNoun.<낱말>>shape:<값>')에 남긴다 — 모양어와 같은 자리라 Unity 모양 모형(docs/shape-mapping.md 규칙 1, round → Sphere)이 읽는다. '원'(2차원 원)은 넣지 않았다: '동그라미'(circle)처럼 모형이 없는 값이 되고 '원'은 동음이의가 많다(원래·원하다·화폐 단위). '동그란 원'은 '동그랗'이 round로 잡는다."
+  },
+  "neutralSize": {
+    "added": "2.1.0 (2026-11-27)",
+    "words": ["보통", "중간", "적당"],
+    "topics": ["크기"],
+    "value": 0.5,
+    "note": "'보통 크기' · '크기는 보통이에요' · '중간 크기'. 참여자가 크기를 '보통'이라고 말했으면 layout.size = 0.5(에셋 기본 크기 ×1)를 값으로 넣는다(근거 phrase_rule 'neutralSize.<낱말>>layout.size:0.5'). 말하지 않은 크기(null, 후보 단계가 크기 축을 벌림)와 가른다 — 원칙 2 '기본값과 미지정을 섞지 않는다'. 낱말이 크기 주제 명사 바로 앞이거나('보통 크기'), 같은 절에 크기 주제 명사가 앞서고 낱말 어절이 절의 끝일 때('크기는 보통이에요')만. '크기는 보통 주먹만 해요'의 '보통'(대개)은 잡지 않는다."
+  },
+  "surfaceTerms": {
+    "added": "2.1.0 (2026-11-27)",
+    "terms": {"무광": {"path": "material.roughness", "value": 0.7, "label": "matte"},
+              "유광": {"path": "material.roughness", "value": 0.1, "label": "glossy"}},
+    "note": "어절 표면형(어절이 이 글자로 시작). Kiwi가 '무광'을 무(XPN) + 광(NNG)으로 잘라 1층 사전으로 맞출 수 없어 표면형으로 읽는다. material.roughness는 표면 광택(0 매끈·반들 – 1 거칠, 셰이더 _Roughness)이라 '무광'(광택 없음)은 거칠기 쪽 0.7(1층 표의 crisp와 같은 값, 초안 — 연구팀 확인 필요), '유광'은 1층 '광택'(glossy)과 같은 0.1. 부정('무광은 아니에요')이면 쓰지 않는다. '밝기는 무광'처럼 밝기 주제 아래 말해도 낱말 뜻대로 거칠기에 넣는다(밝기 값은 만들지 않음)."
+  },
+  "speedWish": {
+    "added": "2.1.0 (2026-11-27)",
+    "auxiliaries": ["싶"],
+    "note": "빠르기 부사(1층 movement speed: 빨리·천천히 …)가 꾸미는 같은 절의 첫 용언이 '-고 싶-'(보조 용언, Kiwi 형태)이면 바람을 꾸미는 말이라('빨리 끝내고 싶다') motion.speed를 채우지 않고 _alternatives(reason lower_priority, rule 끝 +wish(…))에 남긴다. 연구자 시험 입력에서 면담 첫 답 '빨리 끝내고 싶다'가 움직임 빠르기 0.8이 된 문제."
+  },
+  "proportions": {
+    "tableVersion": "0.1.0",
+    "status": "draft",
+    "added": "2026-11-27 (결정 G72 — 연구 책임자 시험 세션에서 「넓게 펼쳐진 안개가 떠오른다」가 뭉친 구름처럼 그려짐)",
+    "versionNote": "이 표는 자체 판(tableVersion)을 쓴다. 파일 lexiconVersion(2.1.0)은 올리지 않았다 — 이 표만 더했고 다른 표의 값은 그대로라, 올리면 [mapping] proportions를 끈 설정의 spec meta(sceneParamsV2)·후보 id까지 바뀌기 때문이다(출력 불변 요구). 켠 매핑만 meta.pipeline.lexicons.proportionsTable에 'scene-params-v2.proportions@<tableVersion>'을 남긴다. 이 표의 수치·낱말을 바꾸면 tableVersion을 올린다.",
+    "slot": "layout.proportions",
+    "note": "[mapping] proportions를 켠 매핑 v2만 읽는다(스펙 2.4.0). 참여자가 너비·높이·깊이 가운데 어느 축을 말했을 때만 채운다(원칙 2). 값 = profiles의 {x 너비, y 높이, z 깊이, axisSaid}. 가장 큰 값 = 1이고 layout.size는 그대로 '가장 긴 변'이다(G62-e). axisSaid = false면 긴(짧은) 축의 방향을 말하지 않은 것: 값은 렌더러 기본 방향(길쭉함 = 세로가 김, 납작함 = 세로가 짧음, scene_params.v3 render.contour.aspectAxisDefault와 같은 규칙)으로 적고 Unity가 defaultsUsed에 layout.proportions.axis를 남긴다. 근거 provenance source = phrase_rule, rule 'proportions.<profile>(<규칙>)>layout.proportions:<profile>'. 수치는 모두 초안(Unity 화면으로 한 번 본 값, 문헌 근거 없음).",
+    "profiles": {
+      "spread": {"x": 1.0, "y": 0.3, "z": 1.0, "axisSaid": true, "note": "넓게·옆으로 펼쳐진/퍼진, 넓적한 — 가로·깊이가 크고 높이가 낮다. '넓다'·'옆으로'가 수평으로 퍼짐을 말하므로 방향을 말한 것으로 본다"},
+      "flat": {"x": 1.0, "y": 0.3, "z": 1.0, "axisSaid": false, "note": "납작·평평 — 한 축이 짧다. 어느 축인지는 말하지 않았다 → 기본 세로가 짧음"},
+      "elongated": {"x": 0.4, "y": 1.0, "z": 0.4, "axisSaid": false, "note": "길쭉·기다랗·길게 늘어진 — 한 축이 길다. 방향을 말하지 않았다 → 기본 세로가 김"},
+      "tall": {"x": 0.5, "y": 1.0, "z": 0.5, "axisSaid": true, "note": "높이·우뚝 솟은, 키가 큰, 높다란 — 높이가 크다"},
+      "vertical": {"x": 0.4, "y": 1.0, "z": 0.4, "axisSaid": true, "note": "세로로·위아래로 긴(길쭉한) — 세로가 길다(방향을 말함)"},
+      "wide": {"x": 1.0, "y": 0.4, "z": 0.4, "axisSaid": true, "note": "가로로·옆으로 긴(길쭉한) — 너비가 길다"},
+      "deep": {"x": 0.4, "y": 0.4, "z": 1.0, "axisSaid": true, "note": "앞뒤로 긴(길쭉한) — 깊이가 길다"}
+    },
+    "stems": [
+      {"form": "넓적", "tag": "XR", "profile": "spread"},
+      {"form": "납작", "tag": "XR", "profile": "flat", "shapeModel": "flat"},
+      {"form": "평평", "tag": "XR", "profile": "flat", "shapeModel": "flat"},
+      {"form": "길쭉", "tag": "XR", "profile": "elongated", "directional": true},
+      {"form": "기다랗", "tag": "VA", "profile": "elongated", "directional": true},
+      {"form": "높다랗", "tag": "VA", "profile": "tall"}
+    ],
+    "stemsNote": "형용사 어근(Kiwi 형태·품사). 활용형 무엇이든(관형형 '넓적한', 서술 '납작해요'). XR 어근은 Kiwi가 '<어근>하/VA' 한 토큰으로 자르는 때도 같게 읽는다('납작한 안개예요' → 납작하/VA). shapeModel = 1층 v0 사전이 같은 낱말을 모양어(_unmapped shape)로도 남기고 Unity가 그 모양 모형(납작 원기둥)을 그리는 경우: form.type이 비었거나 blob이고 form.base가 없으면(모양 모형이 그려짐) 비율을 채우지 않고 _alternatives(lower_priority, rule 끝 '+shapeModel(flat)')에 남긴다 — 이미 납작한 모형을 한 번 더 납작하게 그리지 않으려고. directional = 바로 앞 어절이 방향 부사(directionAdverbs)면 그 방향의 profile로 바꾼다('가로로 길쭉해요' → wide).",
+    "longStem": {"form": "길", "tag": "VA", "note": "'길다'는 시간에도 쓴다('시간이 길어요', layer1_lexicon.v2 제외 목록과 같은 이유). 그래서 바로 앞에 방향 부사가 있을 때('가로로 긴')와 '길게 늘어진'(longPredicates)일 때만 읽는다"},
+    "directionAdverbs": {"가로로": "wide", "옆으로": "wide", "세로로": "vertical", "위아래로": "vertical", "앞뒤로": "deep"},
+    "directionNote": "어절 표면형. 길쭉함 낱말(directional 어근·longStem) 바로 앞 어절(같은 절)일 때만.",
+    "resultativePredicates": [
+      {"form": "펼쳐지", "profile": "spread", "modifiers": ["넓게", "옆으로", "넓적하게", "평평하게"], "bare": true},
+      {"form": "퍼지", "profile": "spread", "modifiers": ["넓게", "옆으로", "넓적하게", "평평하게"], "bare": false},
+      {"form": "깔리", "profile": "spread", "modifiers": ["넓게", "옆으로", "넓적하게", "평평하게"], "bare": false},
+      {"form": "솟", "profile": "tall", "modifiers": ["높이", "높게", "우뚝"], "bare": false},
+      {"form": "늘어지", "profile": "elongated", "modifiers": ["길게"], "bare": false}
+    ],
+    "resultativeNote": "용언(Kiwi 어간) + 결과 상태 꼴일 때만: 완료 관형형(shapePriority.actionSimile.resultativeETM — '펼쳐진'·'솟은') 또는 '-어 있-'('펼쳐져 있어요'). 이것은 퍼짐·솟음이 끝난 모양(형태 비율)이다. 진행·현재 꼴('펼쳐져요'·'펼쳐지고 있어요'·'퍼지는')은 지금처럼 움직임(motion spreading 등)으로 둔다 — 둘을 가르는 것은 어미뿐이라 결정론 규칙이다(같은 글 → 같은 결과). 결과 상태 꼴로 비율을 채우면 같은 용언 토큰은 움직임 값을 만들지 않는다(움직임이 아니라 퍼진 상태). 근거: 매퍼 v2 2.6.0이 같은 구분을 비유에 이미 쓴다('구름처럼 퍼져 있어요'는 형상 비유, shapePriority.actionSimile note). modifiers = 바로 앞 어절(같은 절) 표면형. bare = 꾸미는 말 없이도 읽는가('펼쳐진 안개'는 펼쳐진 모양, '퍼진'만으로는 '라면이 퍼지다'처럼 부푼 뜻도 있어 꾸미는 말이 있을 때만). '늘어지'는 1층 v0 사전이 자세(sagging)로도 읽는다 — 자세는 그대로 둔다.",
+    "postureDirection": {"elongated": {"lying": "wide", "prone": "wide", "standing": "vertical", "hanging": "vertical"}},
+    "postureDirectionNote": "방향을 말하지 않은 길쭉함(elongated, axisSaid false)은 같은 글에서 참여자가 말한 자세(form.posture)가 방향을 정하면 그 방향의 profile로 읽는다('길쭉한 게 누워 있어요' → wide, '서 있어요' → vertical, axisSaid true, rule 끝 '+posture(<자세>)'). 기본 세로로 두면 Unity 자세 배율(lying = 가로로 늘이고 세로를 줄임)과 서로 지워져 짧은 덩어리가 된다. '솟'은 bare false — '뾰족하게 솟아 있고'(끝이 솟음)는 물체 전체의 높이가 아니다.",
+    "extraBackgroundNouns": ["들판", "벌판", "평야", "초원", "광야", "사막", "운동장", "마당"],
+    "extraBackgroundNote": "scope의 배경 낱말에 더하는 것(매퍼 v1 backgroundNouns는 고치지 않음 — 다른 슬롯 출력 불변). '넓게 펼쳐진 들판 위에 작은 돌이 있어요'의 '넓게 펼쳐진'은 형상이 아니라 배경의 모양이다.",
+        "heightNoun": {"noun": "키", "particles": ["가", "이"], "predicate": "크", "profile": "tall", "note": "'키가 큰'·'키가 커요'(같은 절, 명사 + 주격 조사 + 크/VA). 사람 낱말은 형태 단계에서 따로 막힌다(G45)"},
+    "scope": "본 장면 문장만(회상 문장 _context_sentences는 아님). 움직임 비유의 절·매개어(G71 actionSimile region·vehicles) 안의 낱말은 비율을 채우지 않는다. 꾸미는(관형형) 말이면 바로 뒤 명사가, 서술이면 같은 절의 주어가 배경 낱말(backgroundNouns)·신체 부위·자기 지칭이면 형상의 모양이 아니라서 채우지 않는다. 부정('납작하지 않아요')은 _negated(category proportions). 여러 번 말하면 처음 말한 것이 값이고, 다른 profile이면 뒤의 것은 _alternatives(later_mention), 같은 profile이면 근거만 더한다."
   }
 }

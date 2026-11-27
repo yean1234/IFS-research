@@ -89,10 +89,46 @@ class Protocol:
     def stage_info(self, stage: str | None) -> dict:
         return self.stages.get(stage or "", {})
 
+    # ── 1.6 (G70 + 연구 책임자 시험 세션 결함 1–5). 1.5 이하 파일에는 없고, 없으면 빈 값이라 흐름이 예전 그대로다 ──
+    @property
+    def capture_defaults(self) -> dict:
+        """세션 시작 때 capture에 둘 값(1.6: bodyRelation = not_asked). note 키는 뺀다."""
+        return {k: v for k, v in (self.data.get("captureDefaults") or {}).items() if k != "note"}
+
+    @property
+    def template_rules(self) -> dict:
+        """세션 안 질문 틀 규칙(1.6 templateRules): like_what 횟수·직전 틀 반복·형상 X 금지."""
+        return self.data.get("templateRules") or {}
+
+    @property
+    def probe_coverage(self) -> dict | None:
+        """차원 프로브의 '이미 말함' 판정 규칙(1.6 dimensionProbes.coverage). None이면 1.5 규칙(사전 범주)."""
+        return self.data["dimensionProbes"].get("coverage")
+
+    @property
+    def referent(self) -> dict | None:
+        """고정 문구의 호칭 규칙(1.6 referent). None이면 문구 text를 그대로 쓴다."""
+        return self.data.get("referent")
+
+    def find_signal_rule(self) -> dict | None:
+        """find LLM을 묻는 조건(1.6 stages.find.askOnlyIfSignal, G70-e). None이면 예전처럼 늘 묻는다."""
+        return self.stages.get("find", {}).get("askOnlyIfSignal")
+
     # ── 문구 ────────────────────────────────────────────────────────────────
     def phrase(self, key: str, **fmt: str) -> str:
         text = self.phrases[key]["text"]
         return text.format(**fmt) if fmt else text
+
+    def has_ref_form(self, key: str) -> bool:
+        """X를 인용하는 형(withX)이 있는 문구인지(1.6)."""
+        return "withX" in self.phrases.get(key, {})
+
+    def phrase_ref(self, key: str, x: str = "") -> str:
+        """X가 있고 문구에 withX가 있으면 X를 넣고 조사를 맞춘 문장, 아니면 text('그 느낌' 형)."""
+        p = self.phrases[key]
+        if x and "withX" in p:
+            return self.realize_text(p["withX"], x)
+        return p["text"]
 
     def phrase_meta(self, key: str) -> dict:
         p = self.phrases[key]
@@ -107,8 +143,11 @@ class Protocol:
 
     def realize(self, template: str, x: str = "", y: str = "") -> str:
         """조사까지 맞춘 질문 문장. 오프라인 대역 백엔드와 테스트에서 쓴다."""
-        pattern = self.templates[template]["realize"]
+        return self.realize_text(self.templates[template]["realize"], x, y)
 
+    @staticmethod
+    def realize_text(pattern: str, x: str = "", y: str = "") -> str:
+        """'{X|이/가}'처럼 조사 자리를 X의 받침으로 맞추고 '{X}'를 X로 바꾼다(질문 틀과 1.6 withX 문구가 같이 쓴다)."""
         def sub(m: re.Match) -> str:
             slot, kind = m.group(1), m.group(2)
             word = x if slot == "X" else y

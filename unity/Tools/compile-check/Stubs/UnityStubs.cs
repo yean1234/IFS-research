@@ -56,6 +56,7 @@ namespace UnityEngine
         public Vector3 localPosition { get; set; }
         public Quaternion localRotation { get; set; }
         public Vector3 localScale { get; set; }
+        public Vector3 lossyScale => localScale;
         public Vector3 eulerAngles { get; set; }
         public Vector3 forward => Vector3.forward;
         public Vector3 right => new Vector3(1, 0, 0);

@@ -57,3 +57,35 @@ def test_depth_markers():
     assert {x["id"] for x in d["strong"]} >= {"childhood", "abuse"}
     assert s.depth("회색 덩어리") == {"strong": [], "weak": []}
     assert s.has_depth_marker("엄마 목소리")
+
+
+def test_keyword_crisis_skips_guard_model():
+    """원칙 4(CP12): 키워드가 위기로 판정하면 가드 모델(LLM)을 부르지 않는다."""
+    from ifs_chatbot.safety import Guard
+
+    class CountingModel:
+        calls = 0
+
+        def classify(self, text):
+            CountingModel.calls += 1
+            raise AssertionError("가드 모델이 불렸다")
+
+    import ifs_chatbot.safety as safety_mod
+    lex = _load_lexicon_for_guard_test(safety_mod)
+    g = Guard(lex, model=CountingModel())
+    for text in ("죽고 싶어요", "그냥 죽고 싶다는 생각만 들어요"):
+        v = g.check_input(text)
+        assert v.level == "crisis", text
+        assert "model:skipped_after_keyword_crisis" in v.reasons
+    assert CountingModel.calls == 0
+
+
+def _load_lexicon_for_guard_test(safety_mod):
+    import inspect
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2] / "shared" / "lexicon"
+    cls = safety_mod.SafetyLexicon
+    for name in ("load", "from_file", "from_path"):
+        if hasattr(cls, name):
+            return getattr(cls, name)(root / "safety_ko.v0.3.json")
+    return cls(root / "safety_ko.v0.3.json")

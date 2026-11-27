@@ -1,0 +1,41 @@
+{
+  "id": "g70_emotion_bridge_x",
+  "title": "감정어 명사로 시작 — 형상 신호가 없어 focus_hold 뒤 다리 질문 1회(X = 첫 답의 일반명사 '걱정', 1.6 문장)",
+  "source": "G70-c(docs/chatbot-design.md 5-4). config/experiment.toml에서만 돈다",
+  "config": "experiment",
+  "condition": "chatbot",
+  "replies": [
+    "걱정이 많아요",
+    "그냥 그래요",
+    "가슴이 답답해요",
+    "차가운 물 같아요",
+    "없어요",
+    "없어요",
+    "없어요",
+    "없어요"
+  ],
+  "expect": {
+    "endedBy": "completed",
+    "findModalityIncludes": [
+      "emotion"
+    ],
+    "sourcesInclude": [
+      "bridge:like_what"
+    ],
+    "sourcesExclude": [
+      "fixed:bridge_feeling",
+      "fixed:location"
+    ],
+    "firstElicitedBy": "bridge",
+    "textsExclude": [
+      "그것"
+    ],
+    "maxTemplateCount": {
+      "like_what": 1
+    },
+    "noConsecutiveTemplate": true,
+    "bodyRelationStatus": "not_asked",
+    "findLlmAsked": true
+  },
+  "note": "합성 대사. 실제 참여자 응답이 아니다. focus_hold 답의 감각어 '답답'은 '-하' 어근이라 X가 되지 않고(G70-c), opening 답의 일반명사 '걱정'으로 「그 '걱정'이 눈에 보이는 무언가라면, 마치 무엇 같을까요?」를 낸다. 그 답에서 처음 형상 신호가 나온다."
+}

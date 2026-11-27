@@ -457,3 +457,44 @@ v1까지는 사전에 없는 명사(화분, 물병, 인형)가 기록 없이 사
 - 검증기 V5는 계속 v0 사전만 봅니다. 면담자가 새 윤곽어('갸름한')를 먼저 꺼내는 경우는 V5 사전 검사가 아니라 `strict_novel_content`에만 걸립니다.
 - 변이 규칙층은 dev에서 값을 하나도 내지 않았습니다. 이득은 변이형이 실제로 얼마나 나오는지에 달렸고, 새 평가 문장(X13)으로 재야 합니다.
 - 연구자 승인형 사전 확장으로 더한 항목은 `ext_lexicon` 사슬(v0 + v1 + 새 파일)로만 쓰입니다. 스펙 2.3 없이 1층 사전만 넓히는 설정은 아직 없습니다.
+
+## 9. 매퍼 v2 builder 2.6.0: 형태 슬롯 우선순위 (2026-11-27)
+
+계기는 연구 책임자의 `--config experiment` 시험 세션이다. 「기본 모형은 구형」·「동그란 원?」·「모양은 구체」라고 말했는데 물체가 직사각형 천으로 나왔다. '천'은 「바람이 불면 천이 펄럭이듯이 물체가 계속 꾸물꾸물 움직이는 느낌」의 움직임 비유 안 낱말이었다. 규칙과 수치는 `shared/lexicon/scene_params.v2.json` 2.1.0(`shapePriority`·`neutralSize`·`surfaceTerms`·`speedWish`), 시험은 `chatbot/tests/test_g69_shape_priority.py`다. v0·v1 출력은 그대로이고 스펙 판도 2.2.0 그대로다(스키마에 있는 값·사유만 씀).
+
+| 고친 것 | 규칙 | 기록 |
+| --- | --- | --- |
+| 움직임 비유 매개어가 형태를 채움 | (A) '-듯이'·'-는 것처럼' 절의 명사는 같은 문장 뒤에 따로 주어가 있을 때 매개어. (B) 'N처럼 V'에서 V가 움직임 사전 낱말이면(결과 상태 '퍼진'·'퍼져 있어요'는 빼고) N이 매개어. 매개어는 `form.base`·`form.type`을 채우지 않는다 | `_alternatives`(lower_priority, rule `+actionSimile(…)`), 움직임 값 근거에 `actionSimile.<낱말>>motion.type:<값>` |
+| 직접 형태 진술이 형상 낱말에 짐 | 모양어(round·square·flat·pointed)가 형상 낱말·매개어를 꾸미거나 서술하지 않으면 직접 진술. 맞지 않는 형상 낱말(`compatibleBase` 밖)과 비유에서 온 mist·shell·fragments를 내린다. 형태 틀 안 형상 낱말끼리('모양은 그릇 같아요')는 기존 규칙 | `_alternatives`(lower_priority, rule `+directShape(…)`) |
+| '구형'·'구체'가 형태로 안 잡힘 | 모양 명사 → 모양어 round(Unity Sphere). 다른 명사를 꾸미면('구형 핸드폰') 안 씀, '구체적'·'구체화'도 안 씀(사전 '구체' blob도 v2에서 막음) | `_unmapped` category shape, rule `shapeNoun.<낱말>>shape:round` |
+| 줄 끝 명사가 다음 줄 명사를 꾸민 것으로 읽힘 | `_noun_role`: 줄이 바뀌면 이름만 말한 것(named) | — |
+| '보통 크기'가 비어 있음 | 크기 주제 명사와 함께 쓴 '보통·중간·적당' → `layout.size` 0.5(말함) | `neutralSize.보통>layout.size:0.5` |
+| '무광' | 어절 표면형 → `material.roughness` 0.7(초안), '유광' 0.1 | `surfaceTerm.무광>material.roughness:matte` |
+| '빨리 끝내고 싶다' → 빠르기 0.8 | 빠르기 부사가 '-고 싶-'을 꾸미면 쓰지 않음 | `_alternatives`(lower_priority, rule `+wish(…)`) |
+
+- '-듯이' 절 안의 색·크기·질감 값은 층 2(비유)로 내려 직접 진술에 진다(「빨간 천이 펄럭이듯이 파란 물체가」 → 파랑). 비유 절의 움직임 동사는 물체가 움직이는 모양새라 그대로 둔다.
+- 「천이 펄럭이듯이 움직여요」처럼 비유 절 뒤에 주어가 없으면 천이 물체일 수도 있어 지금처럼 그린다(보수적).
+- `actionSimile.demoteFormType`(기본 true)을 false로 하면 form.type은 2.4.0처럼 둔다(「구름처럼 떠다녀요」 → mist). 기본 true에서는 형태가 빈 자리가 되어 후보 단계가 형태 축(blob·mist)을 벌린다.
+- 물음표·'것 같아'(「역동적인 형체?」, 「동그란 원?」)는 '모른다'(`_uncertain`)가 아니라 말한 것으로 둔다(지금과 같음).
+
+## 10. 스펙 2.4: 너비·높이·깊이 비율 `layout.proportions` (G72, 2026-11-27)
+
+계기는 연구 책임자 시험 세션 test03이다. 「넓게 펼쳐진 안개가 떠오른다」가 뭉친 구름으로 그려졌다('펼쳐지'가 움직임 spreading으로만 읽혔고, 크기는 `layout.size` 하나뿐이었다). 켜는 법: `[mapping] proportions = "scene_params.v2.json"`(그 파일의 `proportions` 표, tableVersion 0.1.0). 실험 설정(`experiment.toml`)만 켜고, 다른 설정은 출력·builder 표기(2.6.0/2.7.0)·스펙 판(2.2.0/2.3.0)이 그대로다. 켜면 builder `scene-spec-builder-v2/2.8.0`, 스펙 2.4.0, `meta.pipeline.lexicons.proportionsTable`.
+
+- **스키마 2.4.0**(`shared/schemas/scene-spec.v2.4.json`): `layout.proportions`는 반드시 있고(null 허용) 값은 `{x 너비, y 높이, z 깊이, axisSaid}`, 각 0.2–1, 가장 큰 값 = 1(이 규칙은 `scene_spec.proportion_problems`·Unity `Validate`). 2.0–2.3 문서에는 없어야 한다. 2.3 윤곽·발광 슬롯은 2.4.0에서 선택이다(ext를 켠 매핑만 셋을 함께 적음 — 읽지 않은 것을 '말하지 않음'으로 적지 않으려고). `layout.size`의 뜻은 그대로 '가장 긴 변'이다(G62-e).
+- **매퍼 규칙**(참여자가 축을 말했을 때만, `phrase_rule`, rule `proportions.<profile>(<규칙>)>layout.proportions:<profile>`):
+
+| 말 | profile (x, y, z) | axisSaid |
+| --- | --- | --- |
+| 넓게·옆으로 + 펼쳐진/퍼진/깔린(결과 상태), 펼쳐진(꾸미는 말 없이도), 넓적한 | spread (1, 0.3, 1) | 예 |
+| 납작·평평 | flat (1, 0.3, 1) | 아니오(기본: 세로가 짧음) |
+| 길쭉·기다란, 길게 늘어진 | elongated (0.4, 1, 0.4) | 아니오(기본: 세로가 김) |
+| 높이·높게·우뚝 + 솟은, 키가 큰, 높다란 | tall (0.5, 1, 0.5) | 예 |
+| 세로로·위아래로 / 가로로·옆으로 / 앞뒤로 + 긴·길쭉한 | vertical / wide / deep | 예 |
+
+- **결과 상태 대 진행**: 용언 + 완료 관형형('펼쳐진')이나 '-어 있-'('펼쳐져 있어요')이면 퍼진 모양(비율)이고 그 용언은 움직임 값을 만들지 않는다. 진행·현재 꼴('펼쳐져요'·'펼쳐지고 있어요'·'퍼지는')은 지금처럼 움직임이다. 어미만 보는 결정론 규칙이고, builder 2.6.0이 비유에 이미 쓰는 구분(`actionSimile.resultativeETM`)과 같다.
+- **범위**: 회상 문장, 움직임 비유의 절·매개어(G71) 안, 배경 낱말·신체 부위·자기 지칭을 꾸미거나 서술하는 말('넓게 펼쳐진 들판 위에 …')은 채우지 않는다. 부정은 `_negated`(category proportions). 처음 말한 것이 값, 다른 profile은 `_alternatives` later_mention. '납작·평평'이 모양 모형(납작 원기둥)으로 그려지는 자리면 비율로 한 번 더 납작하게 하지 않고 `_alternatives` lower_priority(`+shapeModel(flat)`). 방향을 말하지 않은 길쭉함은 같은 글의 자세가 방향을 정한다(lying·prone → wide, standing·hanging → vertical, `+posture(…)`).
+- **2.3 `form.aspect`와의 관계**: ext와 함께 켜면 aspect는 그대로 기록되지만, 비율이 있으면(spec 값이나 조절) Unity는 aspect 축 배율을 쓰지 않고 비율만 쓴다(계획 JSON `aspectSupersededBy`).
+- **Unity 해석**: 그리는 비율 p = clamp(원값 / 최대, 0.2, 1). 메시 형상과 안개(물체 좌표 레이마칭)는 비균일 배율, 조각은 조각 중심 분포만 늘림, 생성 메시(GLB)도 같은 비율 뒤 가장 긴 변 맞춤. 어느 경우든 가장 긴 변 = `layout.size`가 정한 길이(L0/L1 정규화). 비율이 null이면 2.2와 같은 그림·기록이고 2.4 문서면 defaultsUsed에 `layout.proportions`, axisSaid = false면 `layout.proportions.axis`.
+- **조절 화면**(값 표 `candidate_values.v3.json`, 문구 `selection_protocol.v0.7.json`): 너비·높이·깊이 단계 [0.25, 0.35, 0.5, 0.7, 1.0, 1.4, 2.0](원값, 덮어쓰기 키 `layout.proportions.x·y·z`). 한 축을 올리면 그 축이 가장 길어지고 나머지가 상대적으로 줄어 보인다. 기록: `selection.json` 맨 위 `proportions`(축별 처음·최종 원값, 고쳤는지, 처음·최종 그리는 비율), `sources`·`sourceDetails`의 `layout.proportions`.
+- **전후 비교**: 저장소의 합성 자료(시나리오·코퍼스·테스트 문자열) 4,640개를 켬/끔으로 돌려, 새 슬롯과 2.4 표기를 빼고 비교했다. 비율이 채워진 것 23개(길쭉 14, 넓게 퍼진·펼쳐진 8, 납작 1), 그 밖에 바뀐 것 20개는 모두 새 근거가 덮은 말의 기록 정리(`_clauses` usedFor·`_unmatched`·옛 움직임 대안)와 결과 상태 '넓게 퍼져 있어요'류 5개의 motion spreading → null뿐이다. 그림: `docs/validation/run-g72-proportions/`.

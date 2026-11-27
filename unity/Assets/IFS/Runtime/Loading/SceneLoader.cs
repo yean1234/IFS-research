@@ -7,6 +7,8 @@
 //                    판정은 initialScene.json·report.json의 "shape"(docs/shape-mapping.md)
 //   (2.3) form.roundness → 슈퍼쿼드릭 메시(기본 덩어리 경로만), form.aspect → 국소 축 배율, material.emission → _IfsEmission
 //                    (적용 순서·기록은 FormRenderPlan, docs/scene-spec-mapping.md 8.4절. 세 값이 모두 null이면 2.2와 같은 경로)
+//   (2.4) layout.proportions → x·y·z 비율(G72, ProportionsRender): 메시 형상은 국소 배율, fragments는 조각 배치, 생성 메시는 늘인 뒤 균일 맞춤.
+//                    가장 긴 변은 layout.size가 정한다(비율을 바꿔도 그대로). 비율이 주어지면 form.aspect 축 비율을 쓰지 않는다(기록에는 남김)
 //   material.*     → Shader Graph 파라미터(_BaseColor, _Brightness, _Roughness, _Opacity, _Erosion)
 //   layout.*       → Transform(거리·높이·크기), form.posture → 크기 변형 프리셋
 //   motion.*       → SpecMotion(절차적 움직임)
@@ -175,6 +177,13 @@ namespace IFS.SceneSpec
         public double? FormAssetScale { get; private set; }
         public double? FormAssetLongestEdgeM { get; private set; }
         public double? FormAssetProceduralLongestEdgeM { get; private set; }
+        /// <summary>(2.4) 생성 메시의 국소 배율(x, y, z) = 비율 × 균일 배율(비율이 없으면 셋 다 FormAssetScale). 생성 메시가 없으면 null.</summary>
+        public double[] FormAssetScaleVector { get; private set; }
+        /// <summary>(2.4) 마지막 배치에서 비율을 넣기 전 가장 긴 변(m, 모형 국소 경계 × 국소 배율). 비율이 주어지지 않으면 null.
+        /// 가장 긴 변 규칙으로 비율을 넣은 뒤의 가장 긴 변도 이 값이다.</summary>
+        public double? ProportionsLongestEdgeM { get; private set; }
+        // (2.4) 가장 긴 변 규칙에 쓰는 모형 국소 경계: 0 = 비율을 넣지 않은 메시, 1 = 지금 메시(형상을 다시 만들면 비움)
+        double[] _propSize0, _propSize1;
 
         // ── 수명 ─────────────────────────────────────────────────────────────
         void OnEnable()
@@ -299,6 +308,7 @@ namespace IFS.SceneSpec
             }
             NoteShapeWords(fileName, spec.Meta.SessionId);
             NoteContourDefaults();
+            NoteProportions();
 
             CaptureAnchor();
             BuildHierarchy();
@@ -405,6 +415,8 @@ namespace IFS.SceneSpec
             if (CurrentParams == null) return false;
             double from = CurrentParams.GetNumber(key);
             if (!CurrentParams.SetNumber(key, value)) return false;
+            // (2.4) fragments 절차 메시는 조각 배치에 비율이 들어 있다 → 비율을 바꾸면 메시를 다시 만든다(생성 메시는 배율로만)
+            if (ProportionsRender.IsAxisKey(key) && RenderPath == FormRenderPlan.RendererFragments && _assetFit == null) BuildHierarchy();
             ApplyAll();
             _recorder?.RecordChange(key, ExperimentRecorder.FormatNumber(from),
                 ExperimentRecorder.FormatNumber(CurrentParams.GetNumber(key)), CurrentDistance());
@@ -707,12 +719,37 @@ namespace IFS.SceneSpec
                       $" — form.type={plan.FormType}의 형태 모형을 지킴") + ")", false);
         }
 
+        // (2.4) x·y·z 비율을 defaultsUsed·notes에 남긴다(처음 값 기준). 긴 축 방향을 말하지 않았으면(axisSaid = false) layout.proportions.axis.
+        // 비율 슬롯이 없거나(2.0–2.3 spec, 덮어쓰기 없음) 비율이 주어지지 않으면(2.4 spec null — 기본값 메모만) 아무것도 더하지 않는다.
+        void NoteProportions()
+        {
+            if (!InitialParams.HasProportionsSlot || !InitialParams.ProportionsGiven) return;
+            var plan = FormRenderPlan.Build(InitialParams, InitialParams.GetCategory("form.type"), Shape);
+            var inv = System.Globalization.CultureInfo.InvariantCulture;
+            string V(double[] v) => "(" + string.Join(", ", Array.ConvertAll(v, x => Math.Round(x, 4).ToString(inv))) + ")";
+            if (InitialParams.SpecProportionsAxisSaid == false)
+            {
+                foreach (var p in new[] { InitialParams, CurrentParams })
+                    if (!p.DefaultsUsed.Contains(ProportionsRender.AxisKey)) p.DefaultsUsed.Add(ProportionsRender.AxisKey);
+                Note($"{ProportionsRender.AxisKey}: 긴 축·짧은 축 방향을 말하지 않음 → 기준 틀(길쭉하면 세로 y가 긺, 납작하면 세로 y가 짧음)로 그림", false);
+            }
+            Note($"{ProportionsRender.Key}: x·y·z 비율 {V(plan.Proportions)}(원값 {V(plan.ProportionsRaw)}) — " +
+                 (plan.ProportionsMethod == ProportionsRender.MethodFragmentDistribution ? "조각 배치를 늘임" : "국소 배율") +
+                 $", 가장 긴 변은 layout.size가 정함(규칙 {ProportionsRender.RuleVersion})", false);
+            if (plan.ProportionsClamped)
+                Note($"{ProportionsRender.Key}: 원값 / 가장 큰 원값이 {ProportionsRender.Min.ToString(inv)} 아래인 축을 {ProportionsRender.Min.ToString(inv)}로 올림", true);
+            if (plan.AspectSuperseded)
+                Note($"form.aspect={plan.Aspect}: x·y·z 비율(layout.proportions)이 앞서 축 비율을 쓰지 않음(값은 기록에 남김)", false);
+        }
+
         // 형상만 바꿀 때(조정 중 form.type 변경): 이전 형상이 쓰던 머티리얼 사본도 함께 지운다.
         // 지우지 않으면 _ownedMaterials에 남아 Unload·OnDestroy 때까지 쌓인다.
         void ReleaseModel()
         {
             _assetFit = null;
             FormAssetScale = FormAssetLongestEdgeM = FormAssetProceduralLongestEdgeM = null;
+            FormAssetScaleVector = null;
+            _propSize0 = _propSize1 = null;
             if (_assetMesh != null) { DestroySafe(_assetMesh); _assetMesh = null; }
             if (_model == null) return;
             foreach (var r in _model.GetComponentsInChildren<Renderer>(true))
@@ -812,18 +849,56 @@ namespace IFS.SceneSpec
             // (2.3) form.aspect: 축 비율 (x, y, z)를 형상 국소 배율에 곱한다(긴 축 = 1, layout.size 뜻 그대로). 적용하지 않으면 곱하지 않는다
             var axis = RenderPlan?.AxisRatios;
             if (axis != null) local = Vector3.Scale(local, new Vector3((float)axis[0], (float)axis[1], (float)axis[2]));
+            // (2.4) x·y·z 비율(유효 값, 가장 큰 값 = 1). 주어지지 않으면 null → 아래는 2.3과 같은 경로
+            var prop = RenderPlan?.Proportions;
+            ProportionsLongestEdgeM = null;
             if (_assetFit != null)
             {
-                // G62: 생성 메시는 같은 배율의 절차 모형과 가장 긴 변이 같도록 균일 배율, 중심은 절차 모형의 중심(자세·축 비율로 늘이지 않음)
-                _assetFit.Place(new double[] { local.x, local.y, local.z }, out double u, out double[] at, out double lp, out double lr);
-                _model.transform.localScale = Vector3.one * (float)u;
+                // G62: 생성 메시는 같은 배율의 절차 모형과 가장 긴 변이 같도록 균일 배율, 중심은 절차 모형의 중심(자세·축 비율로 늘이지 않음).
+                // (2.4) 비율이 있으면 생성 메시를 비율로 늘인 뒤 균일 배율로 같은 가장 긴 변에 맞춘다(비율은 가장 긴 변을 바꾸지 않음)
+                _assetFit.Place(new double[] { local.x, local.y, local.z }, prop, out double[] g, out double u, out double[] at, out double lp, out double lr);
+                _model.transform.localScale = prop == null ? Vector3.one * (float)u : new Vector3((float)g[0], (float)g[1], (float)g[2]);
                 _model.transform.localPosition = new Vector3((float)at[0], (float)at[1], (float)at[2]);
                 FormAssetScale = u;
+                FormAssetScaleVector = g;
                 FormAssetLongestEdgeM = lr;
                 FormAssetProceduralLongestEdgeM = lp;
+                if (prop != null) ProportionsLongestEdgeM = lp;
                 return;
             }
+            if (prop != null) local = FitProportions(local, prop);
             _model.transform.localScale = local;
+        }
+
+        /// <summary>(2.4) 가장 긴 변 규칙(ProportionsRender.FitLocalScale): 비율 전 국소 배율 local0 → 비율을 넣은 국소 배율.
+        /// 메시 형상은 국소 배율에 p를 곱하고(q = p), fragments 절차 메시는 조각 배치에 이미 p가 들어 있어 q = (1, 1, 1).
+        /// 어느 쪽이든 균일 배율 L0 / L1로 가장 긴 변을 비율 전과 같게 둔다. 경계는 정점으로 잰다(ProceduralLocalBounds).</summary>
+        Vector3 FitProportions(Vector3 local0, double[] p)
+        {
+            bool stretchedMesh = RenderPath == FormRenderPlan.RendererFragments;
+            if (_propSize1 == null) _propSize1 = ProceduralLocalBounds(out _, out double[] s1) ? s1 : new[] { 1.0, 1.0, 1.0 };
+            if (_propSize0 == null)
+            {
+                if (stretchedMesh) FragmentMesh.Bounds(RenderPlan.FragmentSeed, RenderPlan.FragmentPieces, null, out _, out _propSize0);
+                else _propSize0 = _propSize1;
+            }
+            var q = stretchedMesh ? new[] { 1.0, 1.0, 1.0 } : p;
+            var r = ProportionsRender.FitLocalScale(_propSize0, _propSize1, new double[] { local0.x, local0.y, local0.z }, q, out double l0, out _);
+            ProportionsLongestEdgeM = l0;
+            return new Vector3((float)r[0], (float)r[1], (float)r[2]);
+        }
+
+        /// <summary>물체 자기 틀(모형 국소 축: 너비 x · 높이 y · 깊이 z)의 경계 상자 크기(m). 정점 경계(셰이더 정점 변위 전) × 모형의 세계 배율.
+        /// 안개(부피 셰이더)는 레이마칭 구(지름 2 × MistRadius) × 배율 — 밀도는 그 안쪽에서 풀리므로 상한. 움직임을 적용하기 전(로드 직후)에 부른다.
+        /// 모형이 없거나 메시가 없으면 null.</summary>
+        public double[] ObjectLocalBoundsM()
+        {
+            if (_model == null) return null;
+            double[] size;
+            if (RenderPath == FormRenderPlan.RendererMist) size = new double[] { 2 * FormRenderResources.MistRadius, 2 * FormRenderResources.MistRadius, 2 * FormRenderResources.MistRadius };
+            else if (!ProceduralLocalBounds(out _, out size)) return null;
+            var s = _model.transform.lossyScale;
+            return new[] { size[0] * Math.Abs(s.x), size[1] * Math.Abs(s.y), size[2] * Math.Abs(s.z) };
         }
 
         /// <summary>G62: 로드한 형상(절차 모형)의 메시를 생성 형태 메시로 바꾼다. 머티리얼(스펙 값으로 만든 것)·그림자·움직임은 절차 모형의 것을
@@ -838,6 +913,9 @@ namespace IFS.SceneSpec
                 return Fail(res, FormAsset.FormAssetResult.MistForm, "안개(부피 셰이더)는 메시로 그리지 않음");
             if (!ProceduralLocalBounds(out double[] pc, out double[] ps))
                 return Fail(res, FormAsset.FormAssetResult.NoProcedural, "절차 모형에 메시가 없음");
+            // (2.4) fragments 절차 메시는 조각 배치에 비율이 들어 있다 → 비율을 넣지 않은 경계로 맞춘다(가장 긴 변 L0는 비율로 바뀌지 않음)
+            if (RenderPath == FormRenderPlan.RendererFragments && RenderPlan.Proportions != null)
+                FragmentMesh.Bounds(RenderPlan.FragmentSeed, RenderPlan.FragmentPieces, null, out pc, out ps);
             Material mat = null;
             foreach (var r in _model.GetComponentsInChildren<Renderer>())
             {
@@ -888,7 +966,8 @@ namespace IFS.SceneSpec
             res.ProceduralLongestEdgeM = FormAssetProceduralLongestEdgeM;
             var sz = mesh.Size;
             double u = FormAssetScale ?? 0;
-            res.RenderedSizeM = new[] { sz[0] * u, sz[1] * u, sz[2] * u };
+            var g = FormAssetScaleVector ?? new[] { u, u, u };   // (2.4) 비율이 있으면 축마다 다르다
+            res.RenderedSizeM = new[] { sz[0] * g[0], sz[1] * g[1], sz[2] * g[2] };
             double rel = FormAsset.FormAssetFit.RelativeError(FormAssetLongestEdgeM ?? 0, FormAssetProceduralLongestEdgeM ?? 0);
             if (double.IsNaN(rel) || rel > FormAsset.FormAssetFit.Tolerance)
             {
@@ -1060,6 +1139,7 @@ namespace IFS.SceneSpec
         }
 
         static string Describe(SceneParams p, string key) =>
-            p.IsNumeric(key) ? ExperimentRecorder.FormatNumber(p.GetNumber(key)) : p.GetCategory(key);
+            key == ProportionsRender.Key ? "(1, 1, 1)"   // (2.4) 비율 슬롯 전체(축별 수치 키와 따로 기본값 기록)
+            : p.IsNumeric(key) ? ExperimentRecorder.FormatNumber(p.GetNumber(key)) : p.GetCategory(key);
     }
 }

@@ -535,6 +535,25 @@ def test_object_radius_column(tmp_path):
     assert "object_radius_m" in res["columns"]
 
 
+def test_object_shape_columns_only_when_present(tmp_path):
+    """G72: manifest object.boundsM·object.proportions → 크기·모양 공변량 열. 그런 기록이 없으면 열 자체가 없다(출력 불변)."""
+    make_placement_session(tmp_path, 1, "old")
+    res = analyze(tmp_path)
+    assert "object_width_m" not in res["columns"] and "proportions_x" not in row(res, "old")
+    make_placement_session(tmp_path, 2, "wide", manifest_extra={"object": {
+        "boundingRadiusM": 0.3, "boundsM": {"x": 0.6, "y": 0.18, "z": 0.6},
+        "proportions": {"x": 1.0, "y": 0.3, "z": 1.0, "raw": {"x": 1.0, "y": 0.3, "z": 1.0}, "source": "said", "axisSaid": True}}})
+    make_placement_session(tmp_path, 3, "plain", manifest_extra={"object": {"boundingRadiusM": 0.2, "boundsM": {"x": 0.4, "y": 0.4, "z": 0.4}}})
+    res = analyze(tmp_path)
+    w, pl, old = row(res, "wide"), row(res, "plain"), row(res, "old")
+    assert (w["object_width_m"], w["object_height_m"], w["object_depth_m"]) == (0.6, 0.18, 0.6)
+    assert (w["proportions_x"], w["proportions_y"], w["proportions_z"]) == (1.0, 0.3, 1.0)
+    assert w["proportions_source"] == "said" and w["proportions_axis_said"] is True
+    assert pl["object_height_m"] == 0.4 and pl["proportions_x"] is None and pl["proportions_source"] is None
+    assert old["object_width_m"] is None
+    assert res["columns"][-len(res["columns"]):].count("proportions_source") == 1
+
+
 def test_config_mismatch_between_included_sessions(tmp_path):
     cfg = {"baselineSeconds": 30, "conditionSeconds": 90, "conditionEndsOnConfirm": False, "headSampleHz": 20}
     make_placement_session(tmp_path, 1, "a", manifest_extra={"config": cfg})

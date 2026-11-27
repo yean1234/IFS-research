@@ -144,7 +144,8 @@ class Runtime:
                     self.analyzer,
                     ext_lexicon_path=shared("lexicon", m.ext_lexicon) if m.ext_lexicon else None,
                     ext_params_path=shared("lexicon", m.ext_params) if m.ext_lexicon else None,
-                    variant_rules_path=shared("lexicon", m.variant_rules) if m.variant_rules else None)
+                    variant_rules_path=shared("lexicon", m.variant_rules) if m.variant_rules else None,
+                    proportions_path=shared("lexicon", m.proportions) if m.proportions else None)   # G72(기본 끔)
             except Exception as exc:  # noqa: BLE001
                 self.mapping_load_error = f"{type(exc).__name__}: {exc}"
                 if cfg.mapping.strict:
@@ -322,8 +323,13 @@ class Session:
         self.image_on = self.p.uses_image_signal()
         self.answers: dict[str, str] = {}          # 고정 문구 id → 참여자 답(없어요 제외). 다리 X 고르기에 쓴다
         self._img_cache: dict[str, dict] = {}
+        # 나간 질문마다 질문 틀(LLM·다리 = 고른 틀, 고정 문구 = 1.6 templateRules.fixedPhraseTemplates에 있으면 그 틀, 아니면 None).
+        # 1.6 templateRules(like_what 세션 1회·직전 틀 반복 금지)가 쓴다. 1.5 이하에서는 세기만 하고 흐름·기록에 쓰지 않는다
+        self.tpl_history: list[str | None] = []
         self.lock = threading.RLock()
         self.log = SessionLog(session_id, condition, rt.header(condition), self.cfg.log_dir, persist=rt.persist_logs)
+        for key, val in self.p.capture_defaults.items():   # 1.6(G70): bodyRelation = {"status": "not_asked"}
+            self.log.data["capture"][key] = json.loads(json.dumps(val))
         self._say_fixed("intro", stage=None, kind="info")
         self._save()
 
@@ -342,12 +348,24 @@ class Session:
         self.messages.append({"speaker": "bot", "text": text, "kind": kind, "source": source, "i": turn["i"]})
         if kind in ("question", "check") and stage:
             self.transcript.append(TranscriptLine("interviewer" if speaker == "interviewer" else "guide", text))
+        if kind == "question" and stage:
+            out = turn_fields.get("output") or {}
+            tpl = out.get("template") if out.get("move") == "ask" and out.get("template") in self.p.templates else None
+            if tpl is None and source.startswith("fixed:"):
+                tpl = (self.p.template_rules.get("fixedPhraseTemplates") or {}).get(source[len("fixed:"):])
+            self.tpl_history.append(tpl)
         return turn
 
     def _say_fixed(self, phrase_id: str, *, stage: str | None, kind: str = "question",
-                   speaker: str = "system", **turn_fields) -> dict:
+                   speaker: str = "system", ref_x: str | None = None, **turn_fields) -> dict:
+        """ref_x: X를 인용하는 형(1.6 withX)이 있는 문구에서 None이면 호칭 규칙(_referent)으로 X를 고르고, ""면 '그 느낌' 형."""
         fmt = {"researcher_contact": self.cfg.session.researcher_contact} if phrase_id == "crisis" else {}
-        text = self.p.phrase(phrase_id, **fmt)
+        if self.p.has_ref_form(phrase_id):
+            ref = self._referent() if ref_x is None else {"x": ref_x, "rule": "given"}
+            text = self.p.phrase_ref(phrase_id, ref["x"])
+            turn_fields["referent"] = ref
+        else:
+            text = self.p.phrase(phrase_id, **fmt)
         return self._say(text, speaker=speaker, source=f"fixed:{phrase_id}", stage=stage, kind=kind,
                          phraseStatus=self.p.phrase_meta(phrase_id)["status"], **turn_fields)
 
@@ -593,6 +611,212 @@ class Session:
         ex = [{**e, "text": t} for t in self.participant_texts for e in self._img(t)["excluded"]]
         return {"present": bool(ev), "evidence": ev, "excluded": ex}
 
+    # ── 1.6: 호칭(referent) · 차원 판정(coverage) · find 조건(G70-e) · 틀 규칙(templateRules) ──────────
+    def _referent(self) -> dict:
+        """고정 문구의 호칭 X(1.6 referent). 형상 신호의 일반명사(사전 form·object 항목이거나 비유 표지 앞 명사)를
+        가장 최근 답부터 찾는다(한 답 안에서는 앞에 나온 것). 'N 모양'의 N, 인용 금지어, 깊이 표지어, 기억 서사 답의 말은 뺀다.
+        없으면 x = ""('그 느낌'). X는 늘 참여자 원문의 부분 문자열이다."""
+        from .anchors import ANCHOR_STOP
+        rule = self.p.referent or {}
+        if not rule:
+            return {"x": "", "rule": "none"}
+        name = rule.get("rule", "image_noun_or_feeling")
+        cats = set(rule.get("imageNounCategories", ["form", "object"]))
+        tags = set(rule.get("nounTags", ["NNG"]))
+        skip_next = set(rule.get("skipIfFollowedBy", []))
+        safety = self.rt.safety
+        skipped: list[dict] = []
+        for age, text in enumerate(reversed(self.participant_texts)):
+            if safety.depth(text)["strong"]:
+                skipped.append({"age": age, "why": "depth_strong"})
+                continue
+            sig = self._img(text)
+            spans = [tuple(e["charSpan"]) for e in sig["evidence"]
+                     if (e["kind"] == "lexicon" and e.get("category") in cats)
+                     or (e["kind"] == "simile" and rule.get("simileNoun", True))]
+            if not spans:
+                continue
+            toks = self.rt.analyzer.tokens(text)
+            for k, tok in enumerate(toks):
+                if tok.base_tag not in tags or text[tok.start:tok.end] != tok.form:
+                    continue
+                if not any(a <= tok.start and tok.end <= b for a, b in spans):
+                    continue
+                nxt = toks[k + 1] if k + 1 < len(toks) else None
+                if nxt is not None and nxt.form in skip_next:
+                    skipped.append({"age": age, "noun": tok.form, "why": "followed_by:" + nxt.form})
+                    continue
+                if tok.form in ANCHOR_STOP or safety.has_depth_marker(tok.form):
+                    skipped.append({"age": age, "noun": tok.form, "why": "stop_or_depth"})
+                    continue
+                out = {"x": tok.form, "rule": name, "fromText": len(self.participant_texts) - 1 - age,
+                       "charSpan": [tok.start, tok.end]}
+                if skipped:
+                    out["skipped"] = skipped
+                return out
+        out = {"x": "", "rule": name, "why": "no_image_noun"}
+        if skipped:
+            out["skipped"] = skipped
+        return out
+
+    @staticmethod
+    def _slot(spec, path: str):
+        cur = spec
+        for part in path.split("."):
+            if not isinstance(cur, dict):
+                return None
+            cur = cur.get(part)
+        return cur
+
+    def _coverage(self) -> dict:
+        """참여자가 이미 말한 차원(1.6 dimensionProbes.coverage). 지금까지의 참여자 발화로 매퍼가 실제로 채운 슬롯 +
+        모양은 형상 신호(사전 form·shape·object·posture, 비유 표지, 'N 모양'). 매퍼가 예외를 내면 1.5 규칙(사전 범주).
+        흐름(프로브·프롬프트 맥락)에만 쓰고 장면 값에는 쓰지 않는다(원칙 2)."""
+        cov = self.p.probe_coverage or {}
+        text = "\n".join(self.participant_texts)
+        lex_cats = self.rt.lexicon.categories_in(text) if text else set()
+        builder = self.rt.scene_builder
+        bid = getattr(builder, "builder_id", None)
+        rec: dict = {"rule": cov.get("rule", "lexicon_categories"), "turn": len(self.log.turns),
+                     "builder": bid if isinstance(bid, str) else type(builder).__name__,
+                     "mappingMode": self.cfg.mapping.mode}
+        spec = None
+        if text:
+            try:
+                spec = builder.build(text)
+            except Exception as exc:  # noqa: BLE001 — 매퍼가 죽어도 면담은 1.5 규칙으로 이어 간다
+                rec["mapperError"] = type(exc).__name__ + ": " + str(exc)[:160]
+        shape_cats = set(cov.get("imageShapeCategories", ["form", "shape", "object", "posture"]))
+        before = cov.get("shapeNounBefore")
+        shape_ev = []
+        for t in self.participant_texts:
+            for e in self._img(t)["evidence"]:
+                if (e["kind"] == "lexicon" and e.get("category") in shape_cats) or \
+                        (e["kind"] == "simile" and cov.get("imageShapeSimile", True)):
+                    shape_ev.append({"kind": e["kind"], "category": e.get("category"), "trigger": e["trigger"]})
+            if before:
+                toks = self.rt.analyzer.tokens(t)
+                for k in range(len(toks) - 1):
+                    if toks[k].base_tag in ("NNG", "NNP") and toks[k + 1].form == before and toks[k + 1].base_tag == "NNG":
+                        shape_ev.append({"kind": "noun_before_shape", "trigger": t[toks[k].start:toks[k + 1].end]})
+        filled: dict = {}
+        dims: dict = {}
+
+        def judge(dim_id: str, entry: dict) -> None:
+            hit = []
+            for path in entry.get("slots", []):
+                v = self._slot(spec, path)
+                if v is not None:
+                    prov = ((spec or {}).get("_provenance") or {}).get(path) or []
+                    prov = prov if isinstance(prov, list) else [prov]
+                    trig = [pv.get("trigger") for pv in prov if isinstance(pv, dict) and pv.get("trigger")]
+                    filled[path] = {"value": v, "triggers": trig}
+                    hit.append(path)
+            img = bool(shape_ev) if entry.get("imageShape") else False
+            if spec is None:      # 매퍼 없음(예외·빈 발화) → 1.5 규칙: 사전 범주
+                by_lex = sorted(set(entry.get("coveredByCategories", [])) & lex_cats)
+                dims[dim_id] = {"covered": bool(by_lex) or img, "byLexicon": by_lex, "byImageSignal": img}
+            else:
+                dims[dim_id] = {"covered": bool(hit) or img, "bySlots": hit, "byImageSignal": img}
+
+        for pr in self.p.probes:
+            if pr.get("parts"):
+                for part in pr["parts"]:
+                    lex = pr.get("coveredByCategories", []) if part["id"] == "size" else []
+                    judge(part["id"], {**part, "coveredByCategories": lex})
+            else:
+                judge(pr["id"], pr)
+        rec["dims"] = dims
+        rec["filledSlots"] = filled
+        rec["imageShape"] = shape_ev
+        rec["fallback"] = spec is None
+        return rec
+
+    def _covered_dims_for_prompt(self, cov: dict) -> list[dict]:
+        """프롬프트 맥락용: 이미 말한 차원 id와 참여자 원문 낱말(원문에 그대로 있는 것만)."""
+        out = []
+        for dim, d in cov.get("dims", {}).items():
+            if not d.get("covered"):
+                continue
+            words: list[str] = []
+            for path in d.get("bySlots", []):
+                words += cov["filledSlots"].get(path, {}).get("triggers", [])
+            if d.get("byImageSignal"):
+                words += [e["trigger"] for e in cov.get("imageShape", [])]
+            words = [w for w in dict.fromkeys(words) if w and any(w in t for t in self.participant_texts)]
+            out.append({"dim": dim, "words": words[:4]})
+        return out
+
+    def _find_signal(self) -> tuple[bool, dict]:
+        """G70-e: 첫 답(opening)에 감정·감각 사전어(부정 아님)나 형상 신호가 있는가."""
+        rule = self.p.find_signal_rule() or {}
+        src = rule.get("from", "opening")
+        text = self.answers.get(src) or ""
+        cats = set(rule.get("lexiconCategories", ["emotion", "sensation"]))
+        lex = [{"lemma": h.entry.lemma, "category": h.entry.category, "trigger": h.trigger}
+               for h in (self.rt.lexicon.hits(text) if text else []) if h.entry.category in cats and not h.negated]
+        img = self._img(text) if text and rule.get("orImageSignal", True) else {"present": False, "evidence": []}
+        ok = bool(lex) or bool(img["present"])
+        return ok, {"from": src, "hasAnswer": bool(text), "lexicon": lex,
+                    "imageSignal": [{"kind": e["kind"], "trigger": e["trigger"]} for e in img.get("evidence", [])]}
+
+    def _template_rules(self, allowed: list[str], cands: list) -> tuple[list[str], dict]:
+        """1.6 templateRules: 허용 목록에서 뺄 틀과 이유. 검증(V2)이 같은 목록을 쓰므로 둘 다 막힌다."""
+        rules = self.p.template_rules
+        blocked: dict = {}
+        if not rules:
+            return allowed, blocked
+        used = [t for t in self.tpl_history if t]
+        for tpl, n in (rules.get("maxPerSession") or {}).items():
+            if tpl in allowed and used.count(tpl) >= n:
+                blocked[tpl] = "max_per_session:" + str(n)
+        last = self.tpl_history[-1] if self.tpl_history else None
+        if rules.get("noImmediateRepeat") and last in allowed and last not in blocked:
+            blocked[last] = "immediate_repeat"
+        for tpl in rules.get("notOnImageX") or []:
+            if tpl in allowed and tpl not in blocked and cands and all(self._img(a.text)["present"] for a in cands):
+                blocked[tpl] = "all_anchor_candidates_are_image"
+        return [t for t in allowed if t not in blocked], blocked
+
+    def _probe_v16(self, step: Step, st: dict) -> bool:
+        """1.6 차원 프로브: '이미 말함' = 매퍼가 채운 슬롯 + 형상 신호(_coverage). 크기·모양은 둘 다 아직이면 합친 문구,
+        하나만 아직이면 그 하나(probe_size·probe_shape). 물었으면 True. 판정 근거는 프로브 턴의 coverage와 capture.probes."""
+        done = st.setdefault("doneEntries", [])
+        asked = st.setdefault("asked", [])
+        log = st.setdefault("coverage", [])
+        cov = self._coverage()
+        dims = cov["dims"]
+        for pr in self.p.probes:
+            if pr["id"] in done:
+                continue
+            done.append(pr["id"])
+            if pr.get("parts"):
+                open_parts = [pt for pt in pr["parts"] if not dims[pt["id"]]["covered"]]
+                if not open_parts:
+                    continue
+                pick = pr if len(open_parts) == len(pr["parts"]) else open_parts[0]
+            else:
+                if dims[pr["id"]]["covered"]:
+                    continue
+                pick = pr
+            decision = {"entry": pr["id"], "asked": pick["id"], "phrase": pick["phrase"]}
+            log.append({**cov, "decision": decision})
+            asked.append(pick["id"])
+            st["current"] = pick["id"]
+            self._say_fixed(pick["phrase"], stage=step.stage, probe=pick["id"], coverage={**cov, "decision": decision})
+            self._write_probe_capture(st)
+            return True
+        log.append({**cov, "decision": {"asked": None}})
+        st["skipped"] = [pr["id"] for pr in self.p.probes if pr["id"] not in asked
+                         and not any(pt["id"] in asked for pt in pr.get("parts", []))]
+        self._write_probe_capture(st)
+        return False
+
+    def _write_probe_capture(self, st: dict) -> None:
+        self.log.data["capture"]["probes"] = {
+            "asked": list(st.get("asked", [])), "skippedAsCovered": list(st.get("skipped", [])),
+            "rule": (self.p.probe_coverage or {}).get("rule"), "coverage": list(st.get("coverage", []))}
+
     def _image_capture(self) -> dict:
         cap = self.log.data["capture"]
         if "imageSignal" not in cap:
@@ -663,18 +887,32 @@ class Session:
             st["skipped"] = True
             return False
         doe = self.cfg.interview.anchor_doe_root
-        x, xinfo = bridge_anchor(self.answers, self.rt.lexicon, self.rt.analyzer, self.rt.safety, doe_root=doe)
+        xs = br.get("xSelection") or {}
+        # 1.6(G70-c): kinds = noun(일반명사만), surfaceFallbackPos = NNG. 1.5 파일의 값은 코드 기본값과 같다
+        xkw = {}
+        if xs.get("order"):
+            xkw["order"] = tuple((o["from"], o["category"]) for o in xs["order"])
+        if xs.get("kinds"):
+            xkw["kinds"] = tuple(xs["kinds"])
+        if xs.get("surfaceFallbackPos"):
+            xkw["surface_pos"] = set(xs["surfaceFallbackPos"])
+        x, xinfo = bridge_anchor(self.answers, self.rt.lexicon, self.rt.analyzer, self.rt.safety, doe_root=doe, **xkw)
         template = br.get("template", "like_what")
         plain = br.get("plainPhrase", "bridge_like_what_plain")
+        x_form = br.get("xForm")                       # 1.6: X 문장도 고정 문구의 withX 형(「그 '{X}'이/가 눈에 보이는 무언가라면…」)
+        v5_allow = frozenset((br.get("validation") or {}).get("v5Allow") or ())   # 1.6: 틀 말 '눈·보이·무언가·느낌'
         rec = {"asked": True, "stage": step.stage, "x": x or None, "xSelection": xinfo, "template": template,
                "validation": "V1–V7·V9 (V8 가드 모델은 걸지 않음: 틀 + 참여자 원문 인용뿐인 결정론 문장)"}
+        vkw = {"extra_allow": v5_allow} if v5_allow else {}   # 1.5 이하는 예전 호출 그대로
+        if v5_allow:
+            rec["v5Allow"] = sorted(v5_allow)
         last = self.participant_texts[-1] if self.participant_texts else ""
         vctx = TurnContext(step.stage, [template], list(self.participant_texts), last, None)
         if x:
-            utt = self.p.realize(template, x)
+            utt = self.p.phrase_ref(plain, x) if x_form and self.p.has_ref_form(plain) else self.p.realize(template, x)
             out = {"stage": step.stage, "risk_signal": "none", "move": "ask", "template": template,
                    "anchor_quote": x, "utterance": utt}
-            r = self.rt.clarify_validator.check(json.dumps(out, ensure_ascii=False), vctx)
+            r = self.rt.clarify_validator.check(json.dumps(out, ensure_ascii=False), vctx, **vkw)
             rec["checks"] = {"passed": r.passed, "reasons": r.reasons}
             if r.passed:
                 rec["phrase"] = "template:" + template
@@ -693,7 +931,7 @@ class Session:
         plain_text = self.p.phrase(plain)
         pout = {"stage": step.stage, "risk_signal": "none", "move": "ask", "template": template,
                 "anchor_quote": "", "utterance": plain_text}
-        pr = self.rt.clarify_validator.check(json.dumps(pout, ensure_ascii=False), vctx, require_quote=False)
+        pr = self.rt.clarify_validator.check(json.dumps(pout, ensure_ascii=False), vctx, require_quote=False, **vkw)
         rec["plainChecks"] = {"path": "fixed_phrase", "applied": "V1·V2·V4·V5·V6·V7·V9",
                               "notApplied": ["V1:anchor_required", "V3", "V8"], "passed": pr.passed, "reasons": pr.reasons}
         if not pr.passed:
@@ -706,7 +944,7 @@ class Session:
                         len(self.log.turns) - 1)
             return False
         cap["bridge"] = rec
-        self._say_fixed(plain, stage=step.stage, output=pout,
+        self._say_fixed(plain, stage=step.stage, output=pout, ref_x="",
                         checks={"passed": True, "reasons": [], "regenerations": 0, "fallback": bool(x),
                                 "fallbackReason": rec["fallbackReason"],
                                 "xSentenceReasons": rec.get("checks", {}).get("reasons", []),
@@ -731,6 +969,13 @@ class Session:
                 skip = (self.condition != "chatbot" or step.max_turns <= 0 or st.get("done") or used >= step.max_turns
                         or (self.max_total is not None and self.llm_total >= self.max_total)
                         or not self.participant_texts or self.last_no_more)
+                if not skip and step.stage == "find" and self.p.find_signal_rule() and not st.get("signalChecked"):
+                    # G70-e(1.6): 첫 답에 감정·감각 사전어나 형상 신호가 없으면(상황·생각·바람) find LLM을 건너뛴다
+                    ok, basis = self._find_signal()
+                    st["signalChecked"] = True
+                    self.log.data["capture"]["findLlm"] = {"asked": ok, "rule": "askOnlyIfSignal", **basis,
+                                                           **({} if ok else {"skipped": "no_emotion_sensation_or_image"})}
+                    skip = not ok
                 if skip:
                     st["done"] = True
                     self.idx += 1
@@ -751,6 +996,12 @@ class Session:
                 self.awaiting = "reply"
                 return
             if step.type == "probes":
+                if self.p.probe_coverage:
+                    if self._probe_v16(step, st):
+                        self.awaiting = "reply"
+                        return
+                    self.idx += 1
+                    continue
                 covered = self.rt.lexicon.categories_in("\n".join(self.participant_texts))
                 asked = st.setdefault("asked", [])
                 nxt = next((pr for pr in self.p.probes
@@ -784,9 +1035,9 @@ class Session:
                 self._alert("depth", "기억·과거 장면 서술이 반복됨(L5) — 확인 문구로 전환", len(self.log.turns) - 1)
                 self._soft_check(["depth:repeated"])
                 return "soft_check"
-            self._say_fixed("depth_present", stage=stage, speaker="interviewer",
-                            checks={"passed": True, "reasons": ["L5:present_focus"], "regenerations": 0, "fallback": False})
-            self.asked.append({"template": "depth_present", "utterance": self.p.phrase("depth_present"), "anchor": ""})
+            said = self._say_fixed("depth_present", stage=stage, speaker="interviewer",
+                                   checks={"passed": True, "reasons": ["L5:present_focus"], "regenerations": 0, "fallback": False})
+            self.asked.append({"template": "depth_present", "utterance": said["text"], "anchor": ""})
             st["turns"] = turn_no
             self.llm_total += 1
             return "asked"
@@ -809,12 +1060,33 @@ class Session:
         cands = anchor_candidates(self.participant_texts, self.rt.lexicon, self.rt.analyzer, self.rt.safety,
                                   used={a.get("anchor", "") for a in self.asked},
                                   doe_root=self.cfg.interview.anchor_doe_root)
+        rules = self.p.template_rules
+        covered_dims: list[dict] = []
+        used_templates: list[dict] = []
+        if rules:
+            # 1.6 결함 1·2: like_what 세션 1회(다리 포함)·직전 틀 반복 금지·형상 X에 like_what 금지 → 허용 목록에서 빼고 V2도 같은 목록
+            before = list(allowed)
+            allowed, blocked = self._template_rules(allowed, cands)
+            hist = [t for t in self.tpl_history if t]
+            used_templates = [{"template": t, "count": hist.count(t), "blocked": blocked.get(t)}
+                              for t in dict.fromkeys(hist + list(blocked))]
+            # 결함 3·5: 이미 말한 차원(프로브와 같은 출처)을 프롬프트 맥락으로
+            cov = self._coverage() if self.p.probe_coverage else None
+            covered_dims = self._covered_dims_for_prompt(cov) if cov else []
+            self.log.data["capture"].setdefault("templateRules", []).append({
+                "turn": len(self.log.turns), "stage": stage, "allowedBefore": before, "allowed": allowed,
+                "blocked": blocked, "history": list(self.tpl_history), "coveredDims": covered_dims,
+                **({"mapperError": cov["mapperError"]} if cov and cov.get("mapperError") else {})})
+            if not allowed:      # 쓸 틀이 없으면 LLM을 부르지 않고 다음 단계로
+                return "advance"
         pctx = PromptContext(stage=stage, turn_no=turn_no, max_turns=step.max_turns, allowed_templates=allowed,
                              transcript=list(self.transcript), participant_texts=list(self.participant_texts),
-                             asked=[dict(a) for a in self.asked], anchor_candidates=cands)
+                             asked=[dict(a) for a in self.asked], anchor_candidates=cands,
+                             covered_dims=covered_dims, used_templates=used_templates)
         last_p = next((t for t in reversed(self.log.turns) if t.get("speaker") == "participant" and t.get("guardDetail")), None)
         vctx = TurnContext(stage, allowed, list(self.participant_texts), self.participant_texts[-1],
-                           ((last_p or {}).get("guardDetail") or {}).get("model"))
+                           ((last_p or {}).get("guardDetail") or {}).get("model"),
+                           image_x_templates=tuple(rules.get("notOnImageX") or ()))
         attempts: list[dict] = []
         feedback: list[str] = []
         for attempt in range(cfg.llm.max_regenerations + 1):
@@ -866,13 +1138,25 @@ class Session:
                 break
             feedback = [describe(x) for x in r.reasons]
         last_reasons = attempts[-1]["reasons"] if attempts else []
+        fb_tpl = (rules.get("fixedPhraseTemplates") or {}).get("fallback") if rules else None
+        if rules.get("noImmediateRepeat") and fb_tpl and self.tpl_history and self.tpl_history[-1] == fb_tpl \
+                and not any(r.startswith("V9") for a in attempts for r in a["reasons"]) \
+                and not self.rt.safety.depth(self.participant_texts[-1])["strong"]:
+            # 1.6 결함 1: 대체 문구(= anything_else 꼴)가 바로 앞 질문과 같은 틀이 되면 내지 않고 이 LLM 단계를 끝낸다
+            self.log.add_turn(speaker="interviewer", source="llm", stage=stage, text="", output=None, attempts=attempts,
+                              checks={"passed": False, "reasons": last_reasons,
+                                      "regenerations": max(0, len(attempts) - 1), "fallback": False,
+                                      "fallbackSuppressed": "immediate_repeat:" + fb_tpl},
+                              note="대체 문구가 직전 질문과 같은 틀이라 내지 않고 다음 단계로 — 참여자에게 나가지 않음")
+            self.log.data["capture"]["templateRules"][-1]["fallbackSuppressed"] = "immediate_repeat:" + fb_tpl
+            return "advance"
         # '방금 말씀하신 것에 대해 더 있나요?'는 직전 발화가 기억 서사이면 그 장면으로 더 들어가게 한다.
         # 그럴 때는 L5 고정 문구로 지금 떠오른 것에 머물게 한다.
         depth_related = any(r.startswith("V9") for a in attempts for r in a["reasons"])             or bool(self.rt.safety.depth(self.participant_texts[-1])["strong"])
         phrase = "depth_present" if depth_related and cfg.validator.l5_depth != "off" else "fallback"
-        self._say_fixed(phrase, stage=stage, speaker="interviewer", output=None, attempts=attempts,
-                        checks={"passed": False, "reasons": last_reasons, "regenerations": max(0, len(attempts) - 1), "fallback": True})
-        self.asked.append({"template": phrase, "utterance": self.p.phrase(phrase), "anchor": ""})
+        said = self._say_fixed(phrase, stage=stage, speaker="interviewer", output=None, attempts=attempts,
+                               checks={"passed": False, "reasons": last_reasons, "regenerations": max(0, len(attempts) - 1), "fallback": True})
+        self.asked.append({"template": phrase, "utterance": said["text"], "anchor": ""})
         st["turns"] = turn_no
         self.llm_total += 1
         return "asked"

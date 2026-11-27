@@ -1,0 +1,41 @@
+{
+  "id": "g70_researcher_fog",
+  "title": "연구 책임자 시험 입력 ① — 첫 답이 이미 심상(검은 안개). like_what 반복·형상 X 비유·이미 말한 모양 되묻기·'그것' 결함 재현용",
+  "source": "연구 책임자 시험 입력(2026-11-27, experiment 설정·조건 2·프로토콜 1.5 시점에 연구자 본인이 시험 삼아 적은 문장). 참여자 자료가 아니다. 결함 1–5 대응은 프로토콜 1.6(docs/chatbot-design.md 5-4). config/experiment.toml에서만 돈다",
+  "researcherTestInput": true,
+  "config": "experiment",
+  "condition": "chatbot",
+  "replies": [
+    "검은 안개가 있는 느낌",
+    "구름 같은데 구름 보다는 덜 뺵뺵하고 보이지 않는 안개같은?",
+    "먹구름",
+    "구름 모양인데 검정색이고 흐린 하늘 위에 있을 것 같아",
+    "없어요",
+    "없어요",
+    "없어요",
+    "없어요"
+  ],
+  "expect": {
+    "endedBy": "completed",
+    "sourcesExclude": [
+      "fixed:location",
+      "fixed:probe_size_shape",
+      "fixed:probe_shape",
+      "fixed:bridge_feeling",
+      "bridge:like_what"
+    ],
+    "probesExclude": [
+      "size_shape",
+      "shape"
+    ],
+    "textsExclude": [
+      "그것"
+    ],
+    "maxTemplateCount": {
+      "like_what": 1
+    },
+    "noConsecutiveTemplate": true,
+    "bodyRelationStatus": "not_asked"
+  },
+  "note": "1.5에서는 flesh_out LLM이 「그 '검은 안개'는 마치 무엇 같나요?」→「그 '안개'는…」→「그 '먹구름'은…」(like_what 세 번 연달아)을 냈고, 「구름 모양」·「먹구름」으로 형태를 말한 뒤에도 「그것에 크기나 모양이 있나요?」가 나갔다. 1.6에서는 like_what 세션 1회·직전 틀 반복 금지·형상 X에 like_what 금지, 모양은 매퍼 슬롯(form.type '안개')과 형상 신호로 이미 말함, 크기만 「그 '먹구름'에 크기가 있나요?」로 묻는다."
+}

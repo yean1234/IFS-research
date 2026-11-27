@@ -31,6 +31,12 @@ EXT_SLOT_PATHS: tuple[str, ...] = ("form.roundness", "form.aspect", "material.em
 ROUNDNESS_LEVELS: tuple[str, ...] = ("angular", "slightly_angular", "neutral", "slightly_rounded", "rounded")
 ASPECT_LEVELS: tuple[str, ...] = ("elongated", "slightly_elongated", "neutral", "slightly_flattened", "flattened")
 EMISSION_LEVELS: tuple[str, ...] = ("none", "faint", "glowing")
+SPEC_VERSION_V24 = "2.4.0"                 # 너비·높이·깊이 비율(layout.proportions, 결정 G72). 매핑 v2 + [mapping] proportions만
+SCHEMA_FILE_V24 = "scene-spec.v2.4.json"
+# 2.4.0에서 더한 슬롯. 다른 목록에는 넣지 않는다(그 목록을 쓰는 코드의 출력이 바뀌지 않게). 2.4.0에서 2.3 슬롯은 선택(ext를 켠 매핑만 적음)
+PROPORTION_SLOT_PATHS: tuple[str, ...] = ("layout.proportions",)
+PROPORTION_AXES: tuple[str, ...] = ("x", "y", "z")
+PROPORTION_RANGE: tuple[float, float] = (0.2, 1.0)
 V21_FIELDS: tuple[str, ...] = ("_context", "_parts", "_uncertain", "_measurements", "_direction",
                                "_needsConfirmation", "_clauses")
 SLOT_PATHS: tuple[str, ...] = (
@@ -64,27 +70,41 @@ def is_mapping_fallback(mp) -> bool:
     return mp.get("used") != MAPPING_USED_FOR.get(req, req) or bool(mp.get("fallbackReason"))
 
 
-_SCHEMA_FILES = {SPEC_VERSION_V21: SCHEMA_FILE_V21, SPEC_VERSION_V22: SCHEMA_FILE_V22, SPEC_VERSION_V23: SCHEMA_FILE_V23}
+_SCHEMA_FILES = {SPEC_VERSION_V21: SCHEMA_FILE_V21, SPEC_VERSION_V22: SCHEMA_FILE_V22, SPEC_VERSION_V23: SCHEMA_FILE_V23,
+                 SPEC_VERSION_V24: SCHEMA_FILE_V24}
 
 
-@lru_cache(maxsize=4)
+@lru_cache(maxsize=8)
 def schema(version: str = SPEC_VERSION) -> dict:
     name = _SCHEMA_FILES.get(version, SCHEMA_FILE)
     return json.loads(shared("schemas", name).read_text(encoding="utf-8"))
 
 
-@lru_cache(maxsize=4)
+@lru_cache(maxsize=8)
 def _validator(version: str = SPEC_VERSION):
     from jsonschema import Draft202012Validator
     return Draft202012Validator(schema(version))
 
 
 def schema_errors(spec: dict) -> list[str]:
-    """스키마 위반 목록(없으면 빈 목록). meta.specVersion이 2.1.0이면 v2.1 스키마, 2.2.0이면 v2.2, 2.3.0이면 v2.3, 아니면 v2.0 스키마로 검사한다."""
+    """스키마 위반 목록(없으면 빈 목록). meta.specVersion이 2.1.0이면 v2.1 스키마, 2.2.0이면 v2.2, 2.3.0이면 v2.3, 2.4.0이면 v2.4,
+    아니면 v2.0 스키마로 검사한다."""
     sv = (spec.get("meta") or {}).get("specVersion")
     version = sv if sv in _SCHEMA_FILES else SPEC_VERSION
     return [f"{'/'.join(map(str, e.absolute_path)) or '(root)'}: {e.message}"
             for e in sorted(_validator(version).iter_errors(spec), key=lambda e: list(map(str, e.absolute_path)))]
+
+
+def proportion_problems(value, where: str = "layout.proportions") -> list[str]:
+    """(2.4) 비율 값 규칙: x·y·z가 각 0.2–1이고 가장 큰 값이 1(스키마로 못 보는 '가장 큰 값 = 1'까지)."""
+    if not isinstance(value, dict) or any(not isinstance(value.get(a), (int, float)) or isinstance(value.get(a), bool)
+                                          for a in PROPORTION_AXES):
+        return [f"{where}: x·y·z가 수가 아니다"]
+    lo, hi = PROPORTION_RANGE
+    out = [f"{where}.{a}: {value[a]}이 {lo}–{hi} 밖이다" for a in PROPORTION_AXES if not lo - 1e-9 <= value[a] <= hi + 1e-9]
+    if abs(max(value[a] for a in PROPORTION_AXES) - 1.0) > 1e-9:
+        out.append(f"{where}: 가장 큰 값이 1이 아니다({[value[a] for a in PROPORTION_AXES]})")
+    return out
 
 
 def get_slot(spec: dict, path: str):
@@ -113,15 +133,20 @@ def check_principles(spec: dict, text: str) -> list[str]:
     if spec.get("meta", {}).get("sourceTextHash") != text_hash(text):
         problems.append("meta.sourceTextHash가 확정 텍스트의 해시와 다르다")
     sv = (spec.get("meta") or {}).get("specVersion")
-    for path in SLOT_PATHS + BASE_SLOT_PATHS + EXT_SLOT_PATHS:  # 스키마와 같은 규칙을 코드로도 확인(스키마를 고칠 때 안전망). 2.2·2.3 슬롯은 없으면 건너뜀
+    for path in SLOT_PATHS + BASE_SLOT_PATHS + EXT_SLOT_PATHS + PROPORTION_SLOT_PATHS:  # 스키마와 같은 규칙을 코드로도 확인(스키마를 고칠 때 안전망). 2.2–2.4 슬롯은 없으면 건너뜀
         try:
             value = get_slot(spec, path)
         except (KeyError, TypeError):
             continue
-        if path in BASE_SLOT_PATHS and sv not in (SPEC_VERSION_V22, SPEC_VERSION_V23):
+        if path in BASE_SLOT_PATHS and sv not in (SPEC_VERSION_V22, SPEC_VERSION_V23, SPEC_VERSION_V24):
             problems.append(f"{path}: specVersion {sv} 문서에는 없어야 한다(2.2.0 이상 전용)")
-        if path in EXT_SLOT_PATHS and sv != SPEC_VERSION_V23:
-            problems.append(f"{path}: specVersion {sv} 문서에는 없어야 한다(2.3.0 전용)")
+        if path in EXT_SLOT_PATHS and sv not in (SPEC_VERSION_V23, SPEC_VERSION_V24):
+            problems.append(f"{path}: specVersion {sv} 문서에는 없어야 한다(2.3.0 전용 슬롯 — 2.4.0에서는 선택)")
+        if path in PROPORTION_SLOT_PATHS:
+            if sv != SPEC_VERSION_V24:
+                problems.append(f"{path}: specVersion {sv} 문서에는 없어야 한다(2.4.0 전용)")
+            elif value is not None:
+                problems += proportion_problems(value, path)
         has_prov = path in spec.get("_provenance", {})
         if value is None and has_prov:
             problems.append(f"{path}: 값이 null인데 _provenance가 있다")

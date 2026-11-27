@@ -49,7 +49,8 @@ def excluded(spec):
 
 def test_builder_and_lexicon_versions():
     # G45–G51에서 올림(builder 2.3.0 → 2.4.0, 사전 0.6.0 → 0.7.0). G37 판정 테스트는 tests/test_g45_exclusion.py로 옮겨 새 결정에 맞게 고침
-    assert BUILDER_ID == "scene-spec-builder-v2/2.4.0"
+    # 2026-11-27: 2.4.0 → 2.6.0(형태 슬롯 우선순위·모양 명사 — tests/test_g69_shape_priority.py). 기본 형상 사전은 그대로 0.7.0
+    assert BUILDER_ID == "scene-spec-builder-v2/2.6.0"
     assert LEX["lexiconVersion"] == "0.7.0" and LEX["status"] == "draft"
 
 

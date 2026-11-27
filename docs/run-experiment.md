@@ -23,7 +23,7 @@
 ## 1. 준비 (처음 한 번)
 
 1. **파이썬 환경과 로컬 모델**: `chatbot/README.md` 「실행」의 venv·`ollama pull` 두 줄(면담 모델 `gemma4:e4b`, 가드 `kanana-safeguard-8b`). `experiment.toml`은 가드 모델이 **있어야** 시작합니다(`guard.required = true`). 세션 기록에 모델 digest가 남습니다.
-2. **설정 확인**: `chatbot/config/experiment.toml`을 엽니다. 이것 하나가 v4 흐름 + 감정어 다리 질문(프로토콜 1.5, G64) + 뼈대 3절의 웹 쪽 권고값(초안 경고 줄을 참여자 보기에서 숨김)입니다. 어느 설정에서 무엇을 가져왔는지는 파일 머리말에 있습니다.
+2. **설정 확인**: `chatbot/config/experiment.toml`을 엽니다. 이것 하나가 v4 흐름 + 감정어 다리 질문(G64) + 면담 앞부분 G70(프로토콜 1.6: 위치 질문 없음, '그 느낌' 호칭, 질문 틀 규칙, 안전 사전 0.3.0 — docs/chatbot-design.md 5-4) + 뼈대 3절의 웹 쪽 권고값(초안 경고 줄을 참여자 보기에서 숨김)입니다. 어느 설정에서 무엇을 가져왔는지는 파일 머리말에 있습니다.
    - `researcher_contact`를 채웁니다(위기 고정 문구에 들어감). 파일을 고치지 않으려면 서버를 띄울 때 `--researcher-contact "…"`.
 3. **미리보기 빌드**(후보·조절 화면의 형상 그림): `docs/internal-trial-guide.md` 1절의 robocopy + WebGL·Windows 미리보기 빌드 명령. 빌드가 없으면 정지 그림 → 글 요약으로 내려갑니다(기록에 남음).
 4. **헤드셋 러너**: Unity 6000.0.85f2로 `<repo>/unity`를 열고 `Assets/IFS/Scenes/PlacementExperiment.unity`를 엽니다(없으면 메뉴 IFS ▸ Experiment ▸ Create Placement Experiment Scene). 헤드셋 연결은 `unity/README.md` 「헤드셋 연결 (Quest 3 + Quest Link, OpenXR)」, 처음 쓸 때 점검은 `docs/headset-checklist.md`.
@@ -74,6 +74,7 @@ cd <repo>\chatbot
 ```
 
 - 결과: `placement_sessions.csv`(세션 1행: 놓은 자리, 반복 멈춤 확정 거리 `stop_final_*`, 눈높이 기준 열 `eye_height_m`·`final_height_rel_eye_m` 등, 헤드셋 평정 `rating_<문항>_<pre|post|check>`, 사전 측정 `pre_*`, 사후 면담 `pi_*`), `stop_loop_rounds.csv`(라운드 1행), `stop_trials.csv`, `placement_summary.json`.
+- 물체 크기·모양 공변량(G72, RQ2): `object_width_m`·`object_height_m`·`object_depth_m`(불러온 직후 물체 자기 축의 경계 상자, m — manifest `object.boundsM`)과 `proportions_x·y·z`(그리는 너비·높이·깊이 비율, 가장 큰 값 = 1)·`proportions_source`(said | edited | default)·`proportions_axis_said`(manifest `object.proportions`). 그런 기록이 하나도 없으면 열이 붙지 않습니다.
 - 주 분석의 사전 점수는 헤드셋 `pre_items`(`rating_A1_pre` 등), 컴퓨터 사전 측정(`pre_A1` 등)은 보조입니다(G67). 열의 뜻은 `chatbot/ifs_chatbot/eval/placement.py`와 `eval/self_report.py` 머리말.
 - 미리 정한 분석 규칙(민감도 분석)은 뼈대 6절과 `docs/decisions.md` G59-11. 분석기는 기술 통계만 내고 유의성 판정은 하지 않습니다.
 

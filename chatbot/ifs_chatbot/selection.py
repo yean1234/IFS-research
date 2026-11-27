@@ -23,7 +23,8 @@ import shutil
 import threading
 from pathlib import Path
 
-from .candidates import (SLOTS, base_drawn, candidates_bytes, effective_params, form_blocks, form_said_unrendered, generate,
+from .candidates import (PROPORTION_KEYS, SLOTS, base_drawn, candidates_bytes, effective_params, form_blocks, form_said_unrendered, generate,
+                         proportions_effective,
                          rendered_shape_words, safety_flags, said_words, slot_value, spec_sha256, unrendered_said_words)
 from .form_assets import DEFAULT_PROCEDURAL, R_NO_SHAPE_PREVIEW, R_PREVIEW_FAILED, _rej, add_generated
 from .paths import shared
@@ -43,6 +44,12 @@ FORMAT_VERSION_GEN3D = "ifs-selection/0.3"
 GENERATED_CHOSEN = "generated_chosen"
 PREMEASURE_VERSION = "ifs-premeasure/0.1"
 ITEMS = ("color", "form", "brightness", "opacity", "size", "texture", "motion")   # G31: 색이 맨 앞(표 adjustItems.order와 같음)
+# G72: 너비·높이·깊이(값 표 3.0.0에만 있음 — 표에 없는 항목은 화면·기록에 나오지 않는다). 항목 → 축
+PROPORTION_ITEMS = {"width": "x", "height": "y", "depth": "z"}
+ITEMS_ALL = ITEMS[:5] + tuple(PROPORTION_ITEMS) + ITEMS[5:]
+PROPORTION_SLOT = "layout.proportions"
+PROPORTION_RULE = ("그리는 비율 = clamp(원값 / 세 원값의 최대, 0.2, 1) — 가장 큰 축 = 1. 가장 긴 변의 길이는 layout.size가 정한다"
+                   "(G62-e, G72). 원값은 조절 단계(0.25–2.0), 시작 값은 말한 비율(spec layout.proportions) 또는 1.0")
 NONE_CHOICE = "none"
 SKIP_REASON = "single_distinct_candidate"      # G34: 구별되는 후보가 하나뿐이라 선택 단계를 건너뜀
 # 슬롯 출처(G15 네 가지 + G32 두 가지). 러너(PlacementSelection.cs SourceValues)와 스키마 $defs.source가 같은 목록이다.
@@ -249,6 +256,16 @@ class SelectionFlow:
     def stage(self) -> str | None:
         return None if self.data is None else self.data["stage"]
 
+    @property
+    def items(self) -> tuple:
+        """이 표의 조절 항목(ITEMS_ALL 순서 가운데 표에 있는 것). 값 표 2.0.0이면 ITEMS 일곱 개 그대로."""
+        have = self.table["adjustItems"]["items"]
+        return tuple(i for i in ITEMS_ALL if i in have)
+
+    @property
+    def has_proportions(self) -> bool:
+        return any(i in self.table["adjustItems"]["items"] for i in PROPORTION_ITEMS)
+
     def _cand(self, cid: str) -> dict | None:
         return next((c for c in self.cands["candidates"] if c["id"] == cid), None) if self.cands else None
 
@@ -391,6 +408,9 @@ class SelectionFlow:
                 "safetyFlags": safety_flags(self.spec),                # G50 (4): 넷째 범주 표시(실험자용, 진행은 막지 않음)
                 "runnerReady": False, "runnerBlockers": [],
             }
+            if self.has_proportions:
+                # G72: 축별 처음 값·최종 값·고쳤는지(값 표 3.0.0일 때만 키를 넣는다 — 2.0.0 표의 기록은 그대로)
+                self.data["proportions"] = self._proportions_record(final=False)
             if self.gen3d:
                 # G62(0.3): 고른 생성 메시(form.asset)와 생성 후보 기록. 꺼져 있으면 키 자체를 넣지 않는다(0.2 그대로)
                 self.data["formatVersion"] = FORMAT_VERSION_GEN3D
@@ -619,8 +639,8 @@ class SelectionFlow:
     def _validate(self, item: str, value) -> dict:
         """(항목, 값) → 덮어쓰기 키:값. 표 밖이면 SelectionInvalid."""
         items = self.table["adjustItems"]["items"]
-        if item not in ITEMS or item not in items:
-            raise SelectionInvalid(f"조절 항목이 아닙니다: {item} (가능: {', '.join(ITEMS)}). 위치·거리는 조절하지 않습니다(G10).")
+        if item not in self.items:
+            raise SelectionInvalid(f"조절 항목이 아닙니다: {item} (가능: {', '.join(self.items)}). 위치·거리는 조절하지 않습니다(G10).")
         it = items[item]
         if it["kind"] == "swatch":
             sw = next((s for s in it["swatches"] if s["id"] == value), None) if isinstance(value, str) else None
@@ -676,6 +696,26 @@ class SelectionFlow:
         return {"form.type": params["form.type"], "form.base": base,
                 "form.baseVariant": copy.deepcopy(variant_for(self.spec, base))}
 
+    def _proportions_record(self, final: bool) -> dict:
+        """G72: 너비·높이·깊이 조절 기록. axes = 축별 {item, first, final, edited, count}(원값), first·final = 그리는 비율
+        (가장 큰 값 = 1). said = 말한 비율(spec, 없으면 null). final = False(조절 전)면 final 값은 null."""
+        start = effective_params(self.spec, self.defaults)
+        now = effective_params(self.spec, self.defaults, self.current)
+        summ = self.data["adjustments"]["items"] if self.data else {}
+        axes = {}
+        for item, ax in PROPORTION_ITEMS.items():
+            if item not in self.table["adjustItems"]["items"]:
+                continue
+            key = self.table["adjustItems"]["items"][item]["key"]
+            s = summ.get(item)
+            f0, f1 = round(float(start[key]), 4), round(float(now[key]), 4)
+            axes[ax] = {"item": item, "first": f0, "final": f1 if final else None,
+                        "edited": bool(final and s and not _same_value(s["last"], s["first"])),
+                        "count": s["count"] if s else 0}
+        return {"said": copy.deepcopy(slot_value(self.spec, PROPORTION_SLOT)), "rule": PROPORTION_RULE, "axes": axes,
+                "first": proportions_effective(start), "final": proportions_effective(now) if final else None,
+                "edited": any(a["edited"] for a in axes.values())}
+
     def _color_changed(self) -> bool:
         """G31: 조절 기록에서 색의 처음 값과 마지막 값이 다른가(만졌다가 되돌리면 false, 횟수는 adjustments.items.color)."""
         c = self.data["adjustments"]["items"].get("color")
@@ -718,6 +758,10 @@ class SelectionFlow:
                 if v1 != v0:
                     edited["form.baseVariant"] = copy.deepcopy(v1)
             for slot in items[item]["slots"]:
+                if slot == PROPORTION_SLOT:
+                    eff = proportions_effective(final)
+                    edited[slot] = {**eff, "axisSaid": True}     # 참여자가 화면에서 축을 정함(방향 포함)
+                    continue
                 if slot == "material.color":
                     edited[slot] = {k: round(final[f"material.color.{k}"], 4) for k in ("h", "s", "l")}
                 elif slot == "material.saturation":
@@ -738,7 +782,7 @@ class SelectionFlow:
         asset = (self.data.get("form") or {}).get("asset") if self.gen3d else None
         generated = asset is not None and form_item is None
         basis = variant_key_basis(self.spec)
-        for slot in SLOTS:
+        for slot in (SLOTS + (PROPORTION_SLOT,) if self.has_proportions else SLOTS):
             slot_val = slot_value(self.spec, slot)
             said = slot_val
             if slot == "layout.distance" and floor and floor.get("said") is not None:
@@ -787,6 +831,8 @@ class SelectionFlow:
             self.data["finalOverrides"] = self._final_overrides()
             self.data["sourceDetails"], self.data["sourceCounts"] = self._slot_sources()
             self.data["sources"] = {k: v["source"] for k, v in self.data["sourceDetails"].items()}   # 러너 계약 필드
+            if self.has_proportions:
+                self.data["proportions"] = self._proportions_record(final=True)
             self.data["stage"] = "premeasure"
             self._save()
             self._log_event("selection:adjusted", {
@@ -886,7 +932,7 @@ class SelectionFlow:
         with self.lock:
             self._require("adjusting")
             it = self.table["adjustItems"]["items"].get(item)
-            if item not in ITEMS or it is None or it["kind"] != "category":
+            if item not in self.items or it is None or it["kind"] != "category":
                 raise SelectionInvalid(f"견본은 범주 항목만 그립니다: {item}")
             out = []
             for v in self.item_values(item):
@@ -1019,7 +1065,11 @@ class SelectionFlow:
         p = effective_params(self.spec, self.defaults, overrides)
         keys = ["form.type", "form.base", "layout.size", "material.opacity", "material.brightness", "material.roughness",
                 "motion.type", "material.color.h", "material.color.s", "material.color.l"]
-        return [f"{k} = {round(p[k], 4) if isinstance(p[k], float) else p[k]}" + (" *" if k in overrides else "")
+        if PROPORTION_KEYS[0] in p:
+            keys.insert(3, "layout.proportions")
+        eff = proportions_effective(p)
+        return [(f"{k} = {eff}" + (" *" if any(x in overrides for x in PROPORTION_KEYS) else "")) if k == "layout.proportions" else
+                f"{k} = {round(p[k], 4) if isinstance(p[k], float) else p[k]}" + (" *" if k in overrides else "")
                 for k in keys]
 
     def preview_info(self) -> dict:
@@ -1073,7 +1123,7 @@ class SelectionFlow:
             if self.stage in ("adjusting", "premeasure", "done"):
                 params = effective_params(self.spec, self.defaults, self.current)
                 out["current"] = {"overrides": dict(self.current), "summary": self.summary(self.current),
-                                  "items": {i: self._item_value(i, params) for i in ITEMS}}
+                                  "items": {i: self._item_value(i, params) for i in self.items}}
                 out["adjustCounts"] = {k: v["count"] for k, v in self.data["adjustments"]["items"].items()}
                 out["colorChanged"] = self.data["colorChanged"]
             if self.stage in ("premeasure", "done"):

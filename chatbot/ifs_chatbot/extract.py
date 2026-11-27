@@ -173,7 +173,8 @@ class Extractor:
             elif not s["formPrototype"]:
                 unresolved.append({"slot": "form.type", "sourceNoun": s["sourceNoun"], "reason": "prototype_pending"})
 
-        if body_relation and body_relation.get("status") != "unspecified":
+        # not_asked(프로토콜 1.6, G70: 위치를 묻지 않음)도 슬롯에 넣지 않는다 — unspecified(물었는데 특정 안 함)와 따로 기록만
+        if body_relation and body_relation.get("status") not in ("unspecified", "not_asked"):
             slots["bodyRelation"] = body_relation
 
         return {

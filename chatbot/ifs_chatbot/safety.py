@@ -245,6 +245,10 @@ class Guard:
     def check_input(self, text: str) -> GuardVerdict:
         v = GuardVerdict()
         self._keyword_part(text, v)
+        if v.level == "crisis":
+            # 원칙 4: 키워드가 위기로 판정하면 가드 모델(LLM)도 부르지 않고 바로 돌려준다(CP12, 2026-11-27).
+            v.reasons.append("model:skipped_after_keyword_crisis")
+            return v
         if self.model is not None:
             mv = self.model.classify(text)
             v.model = asdict(mv)

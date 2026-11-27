@@ -1,0 +1,59 @@
+{
+  "meta": {
+    "specVersion": "2.2.0",
+    "participantId": null,
+    "sessionId": "SYN-G72-H-frag.22",
+    "condition": null,
+    "sourceTextHash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+    "pipeline": {
+      "builder": "hand-written (G72 capture)",
+      "analyzer": "none",
+      "lexicons": {}
+    }
+  },
+  "form": {
+    "type": "fragments",
+    "posture": null,
+    "base": null,
+    "baseVariant": null
+  },
+  "material": {
+    "color": null,
+    "brightness": null,
+    "saturation": null,
+    "roughness": null,
+    "opacity": null,
+    "erosion": null
+  },
+  "layout": {
+    "size": null,
+    "distance": null,
+    "verticalOffset": null
+  },
+  "motion": {
+    "type": null,
+    "speed": null
+  },
+  "body": {
+    "part": null,
+    "layer": null
+  },
+  "_provenance": {
+    "form.type": [
+      {
+        "source": "explicit_lexicon",
+        "trigger": "합성",
+        "charSpan": [
+          0,
+          2
+        ],
+        "rule": "synthetic.form"
+      }
+    ]
+  },
+  "_unmatched": [],
+  "_unmapped": [],
+  "_negated": [],
+  "_alternatives": [],
+  "_inferred": {}
+}

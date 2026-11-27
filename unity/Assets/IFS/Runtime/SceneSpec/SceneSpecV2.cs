@@ -1,8 +1,10 @@
 // SceneSpec v2 데이터 클래스 — shared/schemas/scene-spec.v2.json(2.0.0)·scene-spec.v2.1.json(2.1.0)·scene-spec.v2.2.json(2.2.0)·
-// scene-spec.v2.3.json(2.3.0)과 1:1.
+// scene-spec.v2.3.json(2.3.0)·scene-spec.v2.4.json(2.4.0)과 1:1.
 // 2.2.0(매핑 v2 builder 2.2.0, D6)은 form.base·form.baseVariant(기본 형상)를 더한다. 2.0·2.1 문서에는 키가 없다.
 // 2.3.0(G61 ①)은 form.roundness·form.aspect·material.emission(서수 단계 이름, null 허용)과 선택 필드 _provenance[].variant를 더한다.
 // 2.0–2.2 문서에는 세 키가 없다. 원문에 키가 있었는지는 SceneSpecJson.Parse가 따로 본다(왕복 직렬화·golden 지문이 그대로이도록).
+// 2.4.0(G72)은 layout.proportions(x·y·z 비율, null 허용 — ProportionsRender)를 더한다. 2.4.0 문서에는 키가 반드시 있고 2.0–2.3 문서에는 없다.
+// 2.4.0에서 2.3 확장 슬롯(form.roundness·form.aspect·material.emission)은 선택이다(매퍼 확장 사전을 켰을 때만 셋 다 있음).
 // UnityEngine에 의존하지 않는다(유닛 테스트·dotnet 컴파일 검사에서 그대로 쓴다). 파싱은 Newtonsoft JSON.
 // null = 참여자가 말하지 않은 값. 기본값을 채우는 일은 SceneParams가 하고, 무엇을 채웠는지 기록한다.
 // 2.1.0(개선 매핑 v1)은 보존 필드(_context … _clauses)와 meta.mapping을 더한다. 2.0.0 문서에는 없으므로
@@ -23,7 +25,9 @@ namespace IFS.SceneSpec
         public const string SpecVersionV22 = "2.2.0";
         /// <summary>v2.3 형식(G61 ①: form.roundness·form.aspect·material.emission, 선택 provenance.variant — docs/scene-spec-mapping.md 8절).</summary>
         public const string SpecVersionV23 = "2.3.0";
-        public static readonly string[] SupportedSpecVersions = { SupportedSpecVersion, SpecVersionV21, SpecVersionV22, SpecVersionV23 };
+        /// <summary>v2.4 형식(G72: layout.proportions x·y·z 비율. 2.2·2.3 상위 호환, 2.3 확장 슬롯은 선택).</summary>
+        public const string SpecVersionV24 = "2.4.0";
+        public static readonly string[] SupportedSpecVersions = { SupportedSpecVersion, SpecVersionV21, SpecVersionV22, SpecVersionV23, SpecVersionV24 };
 
         [JsonProperty("meta", Required = Required.Always)] public SpecMeta Meta;
         [JsonProperty("form", Required = Required.Always)] public FormSpec Form;
@@ -244,6 +248,24 @@ namespace IFS.SceneSpec
         [JsonProperty("size", Required = Required.AllowNull)] public double? Size;
         [JsonProperty("distance", Required = Required.AllowNull)] public double? Distance;
         [JsonProperty("verticalOffset", Required = Required.AllowNull)] public double? VerticalOffset;
+        /// <summary>(2.4, G72) x·y·z 비율. null = 말하지 않음. 2.0–2.3 문서에는 키가 없다.</summary>
+        [JsonProperty("proportions")] public ProportionsSpec Proportions;
+
+        /// <summary>원문 layout 객체에 proportions 키가 있었는가(SceneSpecJson.Parse가 채운다). 2.4.0 문서는 있어야 하고 2.0–2.3 문서에는 없어야 한다.
+        /// 다시 쓸 때도 키가 있던 문서만 쓴다(2.0–2.3 왕복이 그대로).</summary>
+        [JsonIgnore] public bool ProportionsKeyPresent;
+
+        public bool ShouldSerializeProportions() => ProportionsKeyPresent || Proportions != null;
+    }
+
+    /// <summary>(2.4, G72) x = 너비(물체 국소 x), y = 높이(국소 y), z = 깊이(국소 z). 각 0.2–1, 가장 큰 값 = 1(SceneSpecJson.Validate가 확인).
+    /// axisSaid = false면 긴 축·짧은 축 방향을 말하지 않음(값은 기준 틀: 길쭉 → y가 긺, 납작 → y가 짧음).</summary>
+    public sealed class ProportionsSpec
+    {
+        [JsonProperty("x", Required = Required.Always)] public double X;
+        [JsonProperty("y", Required = Required.Always)] public double Y;
+        [JsonProperty("z", Required = Required.Always)] public double Z;
+        [JsonProperty("axisSaid", Required = Required.Always)] public bool AxisSaid;
     }
 
     public sealed class MotionSpec

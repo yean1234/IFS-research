@@ -84,6 +84,9 @@ class MappingConfig:
     ext_params: str = "scene_params.v3.json"     # ext_lexicon을 켰을 때 읽는 대응표(서수 단계·정도·렌더 수치)
     # variant_rules: 형태 변이 규칙층(예 "variant_rules.v0.json"). 사전에 직접 없는 의태어 변이형의 뿌리를 규칙으로 찾는다
     variant_rules: str = ""
+    # G72: 너비·높이·깊이 비율(layout.proportions, 스펙 2.4.0). 비율 표가 든 파일(shared/lexicon/ 아래, 예 "scene_params.v2.json" —
+    #   그 proportions 표). 비우면 끔 — 출력은 그대로(스펙 2.2.0·2.3.0). Unity 러너·미리보기가 2.4.0을 읽는 빌드에서만 켠다
+    proportions: str = ""
 
 
 @dataclass(frozen=True)

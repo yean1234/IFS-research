@@ -3,6 +3,7 @@
 //   { "material.brightness": 0.7, "form.type": "mist", "shapeModel": "Cube" }
 //   숫자 값 = 수치 키(SceneParams.NumericKeys, 0–1), 문자열 값 = 범주 키(SceneParams.CategoricalKeys, form.base,
 //   (2.3) form.roundness·form.aspect·material.emission — 서수 단계 이름, "none"은 발광 끔),
+//   (2.4, G72) layout.proportions.x·y·z = x·y·z 비율 원값(0.2–2.0, 밖이면 오류),
 //   "shapeModel" = 모양 모형 강제(ShapeMapping.Models). 빈 문자열·{} = 덮어쓰기 없음.
 // 모르는 키·0–1 밖 값·null·다른 형식은 조용히 넘기지 않고 오류 목록으로 돌려준다(SceneOverride.Validate와 같은 검사).
 // UnityEngine에 의존하지 않는다.

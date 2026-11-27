@@ -58,7 +58,7 @@ from .scene_builder_v1 import (EOJEOL_TAG, NOUN_TAGS, PUNCT_TAGS, SIMILE_SKIP_TA
                                TOPIC_PARTICLES, Cand, Doc, SceneSpecBuilderV1,
                                fallback_spec)  # noqa: F401 (fallback_spec: 컨트롤러가 같은 대체 경로를 씀)
 from .scene_spec import (EXT_SLOT_PATHS, MAPPING_USED_FOR, SPEC_VERSION_V22,  # noqa: F401 (v2 meta.mapping 규칙을 함께 내보냄)
-                         SPEC_VERSION_V23, is_mapping_fallback)
+                         SPEC_VERSION_V23, SPEC_VERSION_V24, is_mapping_fallback)
 from .variants import VariantMatch, VariantRules, parse_tag
 
 # 2.1.0(2026-11-23, G33): 거리 하한 꼬리표에 말한 값(said=…)을 더함
@@ -70,14 +70,27 @@ from .variants import VariantMatch, VariantRules, parse_tag
 #       않고 value.formSaid), 넷째 범주(죽음·자해·외상)는 어디에 나와도 형태를 막음(색 비교 빼고, value.formBlock), 동물은 reason
 #       no_asset, 목록 낱말이 나온 자리마다 기록(위치·문장 번호·역할), '그릇처럼 생긴 거예요'가 그려지지 않던 문제(상황 문장 ②) 고침,
 #       '같이'(JKB) 비교 표지. 출력 specVersion은 그대로 2.2.0(스키마 2.2.0 _unmapped.reason에 no_asset을 더함)
-BUILDER_VERSION = "2.4.0"
+# 2.6.0(2026-11-27, 연구자 시험 입력 '구형·천' — scene_params.v2 2.1.0 shapePriority·neutralSize·surfaceTerms):
+#       직접 형태 진술('모양은 구체'·'모형은 구형'·'동그란 원')이 형상 낱말·비유 원천보다 형태 슬롯에서 앞섬, 움직임 비유의
+#       매개어('천이 펄럭이듯이 물체가 …', '천처럼 펄럭여요')는 형태 슬롯(form.base·form.type)을 채우지 않고 움직임 근거로,
+#       모양 명사 '구형'·'구체'(球) → 모양어 round, '구체적'의 '구체'는 형태로 읽지 않음, '보통 크기' → layout.size 0.5,
+#       '무광'·'유광' → material.roughness, 줄 끝 명사가 다음 줄 첫 명사를 꾸미는 것으로 읽히던 문장 성분 오류(_noun_role) 고침.
+#       출력 specVersion은 그대로 2.2.0(스키마에 이미 있는 값·사유만 씀)
+BUILDER_VERSION = "2.6.0"
 BUILDER_ID = f"scene-spec-builder-v2/{BUILDER_VERSION}"
 # 2.5.0(2026-11-26, G61 ①②): 선택 기능 두 가지. 둘 다 꺼져 있으면(기본) 출력과 builder 표기가 2.4.0과 바이트 단위로 같다
 #       (G52와 같은 관례: 기본값이 아닐 때만 새 표기·새 키). 켰을 때만 builder = …/2.5.0.
 #   ① ext_lexicon: 1층 사전 v2 오버레이(윤곽 contour·발광 emission) → 스펙 2.3.0(form.roundness·form.aspect·material.emission)
 #   ② variant_rules: 형태 변이 규칙층(어미·파생 접사·겹친 꼴·의태어 모음·자음 교체, 뿌리가 사전에 있을 때만)
-BUILDER_VERSION_EXT = "2.5.0"
+# 2.7.0(2026-11-27): 2.6.0의 고침 + G61 ①② 선택 기능(켰을 때만 이 표기)
+BUILDER_VERSION_EXT = "2.7.0"
 BUILDER_ID_EXT = f"scene-spec-builder-v2/{BUILDER_VERSION_EXT}"
+# 2.8.0(2026-11-27, G72): [mapping] proportions를 켰을 때만 이 표기 — 너비·높이·깊이 비율(layout.proportions, 스펙 2.4.0).
+#       참여자가 축을 말했을 때만 채운다('넓게 펼쳐진'·'넓적한'·'납작한'·'길쭉한'·'높이 솟은'·'가로로 긴' …, scene_params.v2 proportions 표).
+#       결과 상태 꼴('펼쳐진'·'펼쳐져 있어요')은 형태 비율이고 그 용언은 움직임 값을 만들지 않는다. 진행 꼴('펼쳐져요')은 지금처럼 움직임.
+#       G61 ①②를 함께 켜도 이 표기(2.7.0의 내용 포함). 꺼져 있으면 출력·표기는 2.6.0/2.7.0 그대로다
+BUILDER_VERSION_PROP = "2.8.0"
+BUILDER_ID_PROP = f"scene-spec-builder-v2/{BUILDER_VERSION_PROP}"
 MAPPER_ID = "v2"
 # 1층 사전 v2 오버레이의 새 범주. 매퍼 v1 경로(_lexicon_cands)에는 넣지 않고 _extension이 따로 읽는다
 EXT_CATEGORIES = frozenset({"contour", "emission"})
@@ -111,7 +124,7 @@ class SceneSpecBuilderV2(SceneSpecBuilderV1):
                  vad_path: str | Path | None = None, v2_params_path: str | Path | None = None,
                  stoplist_path: str | Path | None = None, base_shapes_path: str | Path | None = None,
                  ext_lexicon_path: str | Path | None = None, ext_params_path: str | Path | None = None,
-                 variant_rules_path: str | Path | None = None):
+                 variant_rules_path: str | Path | None = None, proportions_path: str | Path | None = None):
         """ext_lexicon_path(1층 사전 v2 오버레이)를 주면 스펙 2.3(윤곽·발광)을 내고, variant_rules_path를 주면 형태 변이
         규칙층을 켠다(G61). 둘 다 없으면(기본) 출력은 builder 2.4.0과 바이트 단위로 같다."""
         if ext_lexicon_path and lexicon is None:
@@ -127,6 +140,18 @@ class SceneSpecBuilderV2(SceneSpecBuilderV1):
                                                                 for path, d in p3["ordinal"].items()}
             self.ext_negation: dict[str, str | None] = {k: v for k, v in p3["negation"].items() if k != "note"}
         self.variants: VariantRules | None = VariantRules(variant_rules_path) if variant_rules_path else None
+        # G72: 너비·높이·깊이 비율 표(scene_params.v2.json proportions). 주지 않으면(기본) 출력은 그대로
+        self.prop: dict | None = None
+        if proportions_path:
+            pf = json.loads(Path(proportions_path).read_text(encoding="utf-8"))
+            self.prop = pf["proportions"]
+            self.prop_info = f"{pf['lexiconId']}.proportions@{self.prop['tableVersion']}"
+            self.prop_stems = {(s["form"], s["tag"]): s for s in self.prop["stems"]}
+            for s in self.prop["stems"]:             # Kiwi가 XR 어근 + 하를 '<어근>하/VA' 한 토큰으로 자르는 때('납작한 안개예요')
+                if s["tag"] == "XR":
+                    self.prop_stems.setdefault((s["form"] + "하", "VA"), s)
+            self.prop_background = frozenset(self.prop.get("extraBackgroundNouns", []))
+            self.prop_preds = {r["form"]: r for r in self.prop["resultativePredicates"]}
         self.p2 = json.loads(Path(v2_params_path or shared("lexicon", "scene_params.v2.json")).read_text(encoding="utf-8"))
         stop = json.loads(Path(stoplist_path or shared("lexicon", "noun_stoplist.v2.json")).read_text(encoding="utf-8"))
         self.stop_info = f"{stop['lexiconId']}@{stop['lexiconVersion']}"
@@ -188,6 +213,17 @@ class SceneSpecBuilderV2(SceneSpecBuilderV1):
         self.bs_similes = bool(bs["rules"]["similes"])
         self.bs_numerals = frozenset(bs["rules"]["numeralDeterminers"])
         self.bs_cues: dict[str, dict] = {k: v for k, v in bs["variantCues"].items() if not k.startswith("_")}
+        # 2.6.0: 형태 슬롯 우선순위(직접 형태 진술 > 비유 매개어)·모양 명사·보통 크기·광택 표면형(scene_params.v2 2.1.0)
+        sp = self.p2["shapePriority"]
+        self.act = sp["actionSimile"]
+        self.dshape = sp["directShape"]
+        self.frame_nouns = frozenset(self.dshape["frameNouns"])
+        self.shape_nouns: dict[str, dict] = sp["shapeNouns"]
+        self.shape_noun_reject = frozenset(sp["rejectNextXSN"])
+        self.homonym_guards: dict[str, dict] = sp["homonymGuards"]
+        self.neutral_size = self.p2["neutralSize"]
+        self.surface_terms: dict[str, dict] = self.p2["surfaceTerms"]["terms"]
+        self.speed_wish_aux = frozenset(self.p2["speedWish"]["auxiliaries"])
 
     # ── 외부 정보 ───────────────────────────────────────────────────────────────
     @classmethod
@@ -196,10 +232,14 @@ class SceneSpecBuilderV2(SceneSpecBuilderV1):
 
     @property
     def builder_id(self) -> str:
+        if self.prop is not None:
+            return BUILDER_ID_PROP
         return BUILDER_ID_EXT if (self.ext is not None or self.variants is not None) else BUILDER_ID
 
     @property
     def spec_version(self) -> str:
+        if self.prop is not None:
+            return SPEC_VERSION_V24
         return SPEC_VERSION_V23 if self.ext is not None else SPEC_VERSION_V22
 
     def info(self) -> dict:
@@ -216,6 +256,8 @@ class SceneSpecBuilderV2(SceneSpecBuilderV1):
             out["sceneParamsV3"] = f"{self.ext['lexiconId']}@{self.ext['lexiconVersion']}"
         if self.variants is not None:
             out["variantRules"] = self.variants.info
+        if self.prop is not None:
+            out["proportionsTable"] = self.prop_info
         return out
 
     # ── 진입점 ─────────────────────────────────────────────────────────────────
@@ -228,12 +270,17 @@ class SceneSpecBuilderV2(SceneSpecBuilderV1):
         norm = normalize_confirmed(text)
         doc = Doc(norm, self.analyzer.tokens(norm))
         hits = list(self.lexicon.hits(norm))
+        # 2.6.0: 모양 명사('구형'·'구체') → _unmapped shape. D1보다 먼저 넣어 사전에 없는 명사로 다시 남지 않게 한다
+        shape_nouns = self._shape_noun_records(doc, spec)
+        if shape_nouns:
+            spec["_unmapped"] = spec["_unmapped"] + shape_nouns
+        spec["_negated"].sort(key=lambda x: (x["_provenance"]["charSpan"][0], x["lemma"], x["category"]))
         added = self._unlisted_nouns(doc, hits, spec)
-        if added:
+        if added or shape_nouns:
             spec["_unmapped"] = sorted(spec["_unmapped"] + added,
                                        key=lambda u: (u["_provenance"]["charSpan"][0], u["lemma"], u["category"]))
             # 기록한 명사는 '읽지 못한 말'이 아니다(사전 낱말이 _unmatched에 안 남는 것과 같게). 어절 항목은 다시 계산한다
-            spans = sorted({tuple(u["_provenance"]["charSpan"]) for u in added})
+            spans = sorted({tuple(u["_provenance"]["charSpan"]) for u in added + shape_nouns})
             tok_level = [u for u in spec["_unmatched"] if u["tag"] != EOJEOL_TAG
                          and not any(s <= u["charSpan"][0] and u["charSpan"][1] <= e for s, e in spans)]
             spec["_unmatched"] = tok_level
@@ -249,10 +296,15 @@ class SceneSpecBuilderV2(SceneSpecBuilderV1):
             spec["_unmatched"] = sorted(tok_level + self._unmatched_eojeols(doc, spec),
                                         key=lambda u: (u["charSpan"][0], u["charSpan"][1]))
         # G61 ①: 윤곽·발광(스펙 2.3.0). 다른 슬롯·기록을 다 정한 뒤 따로 읽는다(2.2 슬롯의 결과는 바뀌지 않음)
+        # G72: 너비·높이·깊이 비율(스펙 2.4.0). 형태 슬롯을 정한 뒤 읽는다(모양 모형이 그려지는지 봄)
+        if self.prop is not None:
+            self._proportions(doc, spec)
         if self.ext is not None:
             self._extension(doc, spec, hits)
             spec["meta"]["specVersion"] = SPEC_VERSION_V23
             _attach_variant_records(spec)
+        if self.prop is not None:
+            spec["meta"]["specVersion"] = SPEC_VERSION_V24
         return spec
 
     # ── D6: 기본 형상 ─────────────────────────────────────────────────────────
@@ -749,16 +801,88 @@ class SceneSpecBuilderV2(SceneSpecBuilderV1):
             spec["_negated"].sort(key=lambda x: (x["_provenance"]["charSpan"][0], x["lemma"], x["category"]))
             unmapped.sort(key=lambda u: (u["_provenance"]["charSpan"][0], u["lemma"], u["category"]))
 
-        base_hits = sorted((h for h in hits if not h["negated"] and h["blockedBy"] is None), key=lambda h: h["s"])
-        if not base_hits:
-            return None, None, changed
-        changed = True
-
         def prov(h: dict, rule: str) -> dict:
             sim = h["simile"]
             src = "simile_marker" if sim is not None else "explicit_lexicon"
             tail = f"+simile({sim['marker']})" if sim is not None else ""
             return self._prov(src, text, h["s"], h["e"], rule + tail)
+
+        def drop_records(h: dict) -> None:
+            # 이 명사의 다른 기록(사물·모양어·사전에 없는 명사, 직유 원형 대기 포함)은 이제 값·대안의 근거이므로 지운다.
+            # 같은 낱말이고 구간이 겹치는 것만(직유 기록의 구간은 '상자 같'처럼 표지까지 덮는다)
+            unmapped[:] = [u for u in unmapped if not (u["lemma"] == h["lemma"]
+                                                       and u["category"] in ("object", "shape", "unlisted_noun")
+                                                       and u["_provenance"]["charSpan"][0] < h["e"]
+                                                       and h["s"] < u["_provenance"]["charSpan"][1])]
+
+        # 2.6.0: 움직임 비유의 매개어('천이 펄럭이듯이 물체가 …', '천처럼 펄럭여요')와, 직접 형태 진술('모양은 구체',
+        # '동그란 원')과 맞지 않는 형상 낱말은 그리지 않고 _alternatives(form.base, lower_priority)에 남긴다
+        acts = self._action_similes(doc)
+        veh = {k: a for a in acts for k in a["vehicles"]}
+        live = [h for h in hits if not h["negated"] and h["blockedBy"] is None]
+        sim_markers = [h["simile"]["markerIndex"] for h in live if h["simile"] is not None]
+        dss = self._direct_shapes(doc, spec, phrase_of, color_toks, veh, context_sents, sim_markers)
+        compat = self.dshape["compatibleBase"]
+        vehicle_spans: list[tuple[dict, list[int]]] = []          # (움직임 비유, 매개어 구간) — 움직임 근거로 더함
+        for h in live:
+            p = h["p"]
+            a = next((veh[x] for x in p["nouns"] if x in veh), None)
+            if a is not None:
+                tag = a["tag"]
+                vehicle_spans.append((a, [h["s"], h["e"]]))
+            else:
+                d = next((d for d in dss if d["shape"] not in compat.get(h["entry"]["base"], [])), None)
+                if d is None or self._in_shape_frame(doc, p):
+                    continue                  # 형태 틀 안의 형상 낱말('모양은 그릇 같아요')끼리는 기존 규칙(먼저 나온 것)
+                tag = f"directShape({d['lemma']})"
+            h["demotedBy"] = tag
+            changed = True
+            spec["_alternatives"].append({"path": "form.base", "value": h["entry"]["base"], "reason": "lower_priority",
+                                          "_provenance": [prov(h, f"baseShapes.{h['lemma']}>form.base:"
+                                                                  f"{h['entry']['base']}+{tag}")]})
+            drop_records(h)
+        # 직접 형태 진술은 비유 원천에서 온 form.type(안개·껍질·조각 — 모양 모형을 막는 형태)보다 앞선다
+        ft = spec["form"]["type"]
+        ftp = spec["_provenance"].get("form.type") or []
+        if dss and ft in self.dshape["demotesFormType"] and ftp and all(pv["source"] == "simile_marker" for pv in ftp):
+            changed = True
+            tag = f"directShape({dss[0]['lemma']})"
+            spec["_alternatives"].append({"path": "form.type", "value": ft, "reason": "lower_priority",
+                                          "_provenance": [dict(pv, rule=f"{pv['rule']}+{tag}") for pv in ftp]})
+            spec["_provenance"].pop("form.type")
+            spec["form"]["type"] = None
+        # 형태에서 내린 움직임 비유 매개어는 그 비유의 움직임 값의 근거로 더한다
+        for al in spec["_alternatives"]:
+            if al["path"] == "form.type" and "+actionSimile(" in al["_provenance"][0]["rule"]:
+                cs = al["_provenance"][0]["charSpan"]
+                a = next((veh[k] for k in doc.toks_in(cs[0], cs[1]) if k in veh), None)
+                if a is not None:
+                    vehicle_spans.append((a, cs))
+        for a, (vs, ve) in vehicle_spans:
+            pspans = [(toks[k].start, toks[k].end) for k in a["preds"]]
+            noun = text[vs:ve]
+            if doc.toks_in(vs, ve) and toks[doc.toks_in(vs, ve)[0]].base_tag in NOUN_TAGS:
+                ids = [k for k in doc.toks_in(vs, ve) if toks[k].base_tag in NOUN_TAGS]
+                noun = text[toks[ids[0]].start:toks[ids[-1]].end]
+                vs, ve = toks[ids[0]].start, toks[ids[-1]].end
+            targets = [(spec["motion"]["type"], spec["_provenance"].get("motion.type") or [])] + \
+                      [(al["value"], al["_provenance"]) for al in spec["_alternatives"] if al["path"] == "motion.type"]
+            for mv, plist in targets:
+                if plist and any(ps < pv["charSpan"][1] and pv["charSpan"][0] < pe for pv in plist for ps, pe in pspans):
+                    entry = self._prov("simile_marker", text, vs, ve, f"actionSimile.{noun}>motion.type:{mv}")
+                    if not any(pv["charSpan"] == entry["charSpan"] and pv["rule"] == entry["rule"] for pv in plist):
+                        plist.append(entry)
+                        changed = True
+                    break
+        if changed:
+            spec["_alternatives"].sort(key=lambda al: (_PATH_ORDER.get(al["path"], 99), al["_provenance"][0]["charSpan"][0],
+                                                       al["reason"]))
+            spec["_provenance"] = _ordered_provenance(spec["_provenance"])
+
+        base_hits = sorted((h for h in live if "demotedBy" not in h), key=lambda h: h["s"])
+        if not base_hits:
+            return None, None, changed
+        changed = True
 
         win = base_hits[0]
         key = win["entry"]["base"]
@@ -1229,6 +1353,8 @@ class SceneSpecBuilderV2(SceneSpecBuilderV1):
             return "named"
         nt = toks[k]
         if doc.eoj[k] != doc.eoj[j]:
+            if doc.line[k] != doc.line[j]:
+                return "named"           # (2.6.0) 줄 끝 명사('모양은 구체⏎색은') — 줄은 답 하나라 다음 줄 명사를 꾸미지 않음
             if nt.base_tag in PUNCT_TAGS:
                 return "named"           # '얇은 막.' — 이름만 말함
             if nt.base_tag in NOUN_TAGS:
@@ -1301,12 +1427,384 @@ class SceneSpecBuilderV2(SceneSpecBuilderV1):
         # 형상으로 판정한 배경 사물 낱말은 v1 _scope가 직유 원천 명사를 다루는 것과 같은 경로(sim_src)로 배경·자리 표지
         # 판정에서 뺀다. similes 목록 자체는 바꾸지 않고 _scope에 넘기는 사본에만 srcIndex를 더한다
         promoted = self._figure_background_tokens(doc, context_sents)
+        cands.extend(self._said_phrase_cands(doc))          # 2.6.0: '보통 크기'·'무광' (범위 규칙을 같이 받게 먼저 넣음)
         super()._scope(doc, cands, context_sents, list(similes) + [{"srcIndex": k} for k in sorted(promoted)])
         for c in cands:
             if c.path == "form.posture" and c.status == "ok":
                 why = self._self_posture(doc, c.tok)
                 if why is not None:
                     c.status, c.reason = "context", why
+        # 2.6.0: '빨리 끝내고 싶다'의 '빨리'는 바람(-고 싶-)을 꾸미는 말이라 물체의 움직임 빠르기가 아니다(대안 lower_priority)
+        for c in cands:
+            if c.status == "ok" and c.path == "motion.speed":
+                w = self._wish_host(doc, c.tok)
+                if w is not None:
+                    c.status, c.reason = "corrected", "lower_priority"
+                    c.provs = [dict(c.provs[0], rule=f"{c.provs[0]['rule']}+wish({w})"), *c.provs[1:]]
+        # 2.6.0: 움직임 비유의 매개어는 형태(form.type)를 채우지 않고(대안 lower_priority), 절 비유 안의 다른 값은 층 2(비유)로
+        acts = self._action_similes(doc)
+        if not acts:
+            return
+        veh = {k: a for a in acts for k in a["vehicles"]}
+        regions = [a for a in acts if a["kind"] == "clause"]
+        for c in cands:
+            if c.status != "ok":
+                continue
+            ks = doc.toks_in(*c.provs[0]["charSpan"]) or [c.tok]
+            if c.path == "form.type":
+                if not self.act["demoteFormType"]:
+                    continue
+                a = next((veh[k] for k in ks if k in veh), None)
+                if a is not None:
+                    c.status, c.reason = "corrected", "lower_priority"
+                    c.provs = [dict(c.provs[0], rule=f"{c.provs[0]['rule']}+{a['tag']}"), *c.provs[1:]]
+                continue
+            if c.path.startswith(("motion.", "form.")):
+                continue                      # 절 비유의 동사('펄럭이듯이')는 물체가 움직이는 모양새라 그대로 둔다
+            a = next((a for a in regions if c.tok in a["region"]), None)
+            if a is not None and c.layer < 2:
+                c.layer = 2
+                c.provs = [dict(c.provs[0], rule=f"{c.provs[0]['rule']}+{a['tag']}"), *c.provs[1:]]
+
+    # ── 2.6.0: 움직임 비유 · 직접 형태 진술 · 모양 명사 · 보통 크기 · 광택 표면형 ─────────
+    def _homonym_blocked(self, doc: Doc, h: Hit) -> bool:
+        g = self.homonym_guards.get(h.entry.lemma)
+        if g is None:
+            return False
+        k = h.token_index + 1
+        toks = doc.toks
+        return (k < len(toks) and doc.eoj[k] == doc.eoj[h.token_index] and toks[k].base_tag == "XSN"
+                and toks[k].form in g["rejectNextXSN"])
+
+    def _action_similes(self, doc: Doc) -> list[dict]:
+        """움직임 비유(scene_params.v2 shapePriority.actionSimile). 항목: kind(clause | adverbial), vehicles(매개어 명사 토큰),
+        region(절 비유의 토큰), preds(비유 쪽 움직임 용언 토큰), tag(provenance rule 꼬리표)."""
+        toks = doc.toks
+        n = len(toks)
+        cats = set(self.act["predicateCategories"])
+        move = {h.token_index for h in self.lexicon.hits(doc.text) if h.entry.category in cats}
+        out: list[dict] = []
+        # (A) 절 비유: '-듯이'(EC) · 관형형 + 것 + 처럼
+        for i, t in enumerate(toks):
+            end = pred = None
+            if t.base_tag == "EC" and t.form in self.act["clauseEndings"] and i > 0 \
+                    and toks[i - 1].base_tag in ("VV", "VA", "XSV", "XSA", "VX"):
+                end, pred = i, i - 1
+            elif (t.base_tag == "NNB" and t.form in self.act["formalNouns"] and i > 1 and toks[i - 1].base_tag == "ETM"
+                  and i + 1 < n and doc.eoj[i + 1] == doc.eoj[i] and toks[i + 1].form in self.act["formalMarkers"]
+                  and toks[i + 1].base_tag in ("JKB", "MAG")):
+                end, pred = i + 1, i - 2
+            if end is None:
+                continue
+            region = [k for k in doc.clause_toks(doc.clause[i]) if k < i and doc.sent[k] == doc.sent[i]]
+            after = [k for k in range(end + 1, n) if doc.sent[k] == doc.sent[i]]
+            if self._subject_in(doc, after) is None:
+                continue                      # 뒤에 따로 주어가 없으면 비유 절의 주어가 물체일 수 있다('종이가 춤추듯이 날아다녀요')
+            vehicles = {k for k in region if toks[k].base_tag in NOUN_TAGS}
+            if not vehicles:
+                continue
+            s0 = doc.espan(doc.eoj[pred])[0]
+            out.append({"kind": "clause", "region": set(region), "vehicles": vehicles,
+                        "preds": {k for k in region if k in move}, "tag": f"actionSimile({doc.text[s0:toks[end].end]})"})
+        # (B) 부사 비유: 'N처럼 V(움직임)'
+        for sm in self._simile_markers(doc):
+            mi = sm["markerIndex"]
+            if sm["marker"] not in self.act["adverbialMarkers"] or toks[mi].base_tag not in ("JKB", "MAG"):
+                continue
+            last = doc.eojeols[doc.eoj[mi]][1]
+            if toks[last].base_tag == "ETM":
+                continue
+            pred = next((k for k in range(last + 1, n) if doc.clause[k] == doc.clause[mi]
+                         and toks[k].base_tag in ("VV", "VA")), None)
+            if pred is None or pred not in move or self._resultative(doc, pred):
+                continue                      # '안개처럼 퍼진 빛'·'구름처럼 퍼져 있어요' — 움직임이 아니라 퍼진 상태(형상 비유)
+            src = sm["srcIndex"]
+            vehicles = {k for k in doc.etoks(doc.eoj[src]) if k <= src and toks[k].base_tag in NOUN_TAGS}
+            s0, e0 = doc.espan(doc.eoj[mi])[0], doc.espan(doc.eoj[pred])[1]
+            out.append({"kind": "adverbial", "region": set(), "vehicles": vehicles, "preds": {pred},
+                        "tag": f"actionSimile({doc.text[s0:e0]})"})
+        return out
+
+    def _wish_host(self, doc: Doc, i: int) -> str | None:
+        """부사 i가 꾸미는 같은 절의 첫 용언이 '-고 싶-'(바람)이면 그 원문('끝내고 싶다'), 아니면 None."""
+        toks = doc.toks
+        n = len(toks)
+        if toks[i].base_tag != "MAG":
+            return None
+        host = next((k for k in range(i + 1, n) if doc.clause[k] == doc.clause[i] and toks[k].base_tag in ("VV", "VA")), None)
+        if host is None or host + 2 >= n:
+            return None
+        ec, aux = toks[host + 1], toks[host + 2]
+        if ec.base_tag == "EC" and ec.form == "고" and aux.base_tag == "VX" and aux.form in self.speed_wish_aux:
+            s = doc.espan(doc.eoj[host])[0]
+            return doc.text[s:doc.espan(doc.eoj[host + 2])[1]]
+        return None
+
+    # ── G72: 너비·높이·깊이 비율 ──────────────────────────────────────────────
+    def _proportion_matches(self, doc: Doc) -> list[dict]:
+        """비율 표(scene_params.v2 proportions)에 맞는 자리. 같은 글 → 같은 목록(문서만 본다).
+        항목: profile · a(시작 토큰) · head(어근·용언 토큰) · s·e(글자 구간) · tag(규칙 꼬리표) · resultative(결과 상태 용언) ·
+        shapeModel · lemma · status(ok | negated | out_of_scope)."""
+        toks, pr = doc.toks, self.prop
+        n = len(toks)
+        dirs = pr["directionAdverbs"]
+        long_stem = (pr["longStem"]["form"], pr["longStem"]["tag"])
+        hn = pr["heightNoun"]
+        out: list[dict] = []
+
+        def prev_eoj(i: int) -> int | None:
+            pe = doc.eoj[i] - 1
+            if pe < 0 or doc.eoj_clause(pe) != doc.clause[i] or doc.is_punct_eoj(pe):
+                return None
+            return pe
+
+        for i, t in enumerate(toks):
+            m = None
+            key = (t.form, t.base_tag)
+            if key in self.prop_stems or key == long_stem:
+                st = self.prop_stems.get(key)
+                pe = prev_eoj(i)
+                d = dirs.get(doc.etext(pe)) if pe is not None and (st is None or st.get("directional")) else None
+                if d is not None:
+                    m = {"profile": d, "a": doc.eojeols[pe][0], "tag": f"direction:{doc.etext(pe)}+{t.form}"}
+                elif st is not None:
+                    m = {"profile": st["profile"], "a": doc.eojeols[doc.eoj[i]][0], "tag": f"stem:{t.form}",
+                         "shapeModel": st.get("shapeModel")}
+            elif t.form in self.prop_preds and t.base_tag in ("VV", "VA") and self._resultative(doc, i):
+                rp = self.prop_preds[t.form]
+                pe = prev_eoj(i)
+                mod = doc.etext(pe) if pe is not None and doc.etext(pe) in rp["modifiers"] else None
+                if mod is not None:
+                    m = {"profile": rp["profile"], "a": doc.eojeols[pe][0], "tag": f"resultative:{mod}+{t.form}",
+                         "resultative": True}
+                elif rp["bare"]:
+                    m = {"profile": rp["profile"], "a": doc.eojeols[doc.eoj[i]][0], "tag": f"resultative:{t.form}",
+                         "resultative": True}
+            elif t.form == hn["predicate"] and t.base_tag == "VA" and doc.eoj[i] > 0:
+                k = next((x for x in doc.etoks(doc.eoj[i] - 1)
+                          if toks[x].form == hn["noun"] and toks[x].base_tag in NOUN_TAGS), None)
+                if k is not None and k + 1 < n and toks[k + 1].form in hn["particles"] and toks[k + 1].base_tag == "JKS" \
+                        and doc.clause[k] == doc.clause[i]:
+                    m = {"profile": hn["profile"], "a": k, "tag": f"heightNoun:{hn['noun']}+{t.form}"}
+            if m is None:
+                continue
+            m.setdefault("resultative", False)
+            m.setdefault("shapeModel", None)
+            m["head"], m["lemma"] = i, t.form
+            m["s"], m["e"] = toks[m["a"]].start, doc.espan(doc.eoj[i])[1]
+            m["status"] = "negated" if Lexicon._negated(toks, i) else "ok"
+            out.append(m)
+        # 범위: 회상 문장, 움직임 비유의 절·매개어, 배경·몸·자기 지칭을 꾸미거나 서술하는 말은 형상의 비율이 아니다
+        ctx = self._context_sentences(doc)
+        sim_toks: set[int] = set()
+        for sm in self._action_similes(doc):
+            sim_toks |= set(sm["region"]) | set(sm["vehicles"])
+        for m in out:
+            if m["status"] != "ok":
+                continue
+            ids = range(m["a"], m["head"] + 1)
+            if doc.sent[m["head"]] in ctx or any(x in sim_toks for x in ids):
+                m["status"] = "out_of_scope"
+                continue
+            last = doc.eojeols[doc.eoj[m["head"]]][1]
+            if toks[last].base_tag == "ETM":
+                ne = doc.eoj[m["head"]] + 1
+                target = next((x for x in doc.etoks(ne) if toks[x].base_tag in NOUN_TAGS | {"NP"}), None) \
+                    if ne < len(doc.eojeols) else None
+            else:
+                target = self._subject_in(doc, [x for x in doc.clause_toks(doc.clause[m["head"]]) if x < m["a"]])
+            if target is not None:
+                f = toks[target].form
+                if self._is_background(f) or f in self.prop_background or f in self.body_forms or f in self.self_words:
+                    m["status"] = "out_of_scope"
+        return out
+
+    def _proportions(self, doc: Doc, spec: dict) -> None:
+        """G72: layout.proportions(스펙 2.4.0). 말하지 않았으면 null. 키 순서: layout = size · distance · verticalOffset · proportions."""
+        pr = self.prop
+        text = doc.text
+        shape_model_drawn = spec["form"]["type"] in (None, "blob") and spec["form"]["base"] is None
+        value, provs, alts, negated = None, [], [], []
+        win = None
+        for m in sorted(self._proportion_matches(doc), key=lambda m: (m["s"], m["e"])):
+            if m["status"] == "out_of_scope":
+                continue
+            prof = pr["profiles"][m["profile"]]
+            v = {"x": prof["x"], "y": prof["y"], "z": prof["z"], "axisSaid": prof["axisSaid"]}
+            rule = f"proportions.{m['profile']}({m['tag']})>layout.proportions:{m['profile']}"
+            p = self._prov("phrase_rule", text, m["s"], m["e"], rule)
+            if m["status"] == "negated":
+                negated.append({"lemma": m["lemma"], "category": "proportions", "_provenance": p})
+                continue
+            if m["shapeModel"] and shape_model_drawn:
+                # 같은 낱말의 모양 모형(납작 원기둥)이 그려진다 → 한 번 더 납작하게 하지 않는다
+                alts.append({"path": "layout.proportions", "value": v, "reason": "lower_priority",
+                             "_provenance": [dict(p, rule=f"{rule}+shapeModel({m['shapeModel']})")]})
+                continue
+            if win is None:
+                win, value, provs = m["profile"], v, [p]
+            elif m["profile"] == win:
+                provs.append(p)
+            else:
+                alts.append({"path": "layout.proportions", "value": v, "reason": "later_mention", "_provenance": [p]})
+        pd = (pr.get("postureDirection") or {}).get(win or "", {}).get(spec["form"]["posture"])
+        if value is not None and not value["axisSaid"] and pd is not None:
+            # 방향을 말하지 않은 길쭉함 + 말한 자세가 방향을 정함('길쭉한 게 누워 있어요' → 가로가 김)
+            prof = pr["profiles"][pd]
+            value = {"x": prof["x"], "y": prof["y"], "z": prof["z"], "axisSaid": True}
+            tag = f"+posture({spec['form']['posture']})"
+            provs = [dict(p, rule=p["rule"] + tag) for p in provs]
+        spec["layout"] = {**spec["layout"], "proportions": value}
+        if value is not None:
+            spec["_provenance"] = _ordered_provenance({**spec["_provenance"], "layout.proportions": provs})
+        if alts:
+            spec["_alternatives"] = sorted(spec["_alternatives"] + alts,
+                                           key=lambda al: (_PATH_ORDER.get(al["path"], 99), al["_provenance"][0]["charSpan"][0],
+                                                           al["reason"]))
+        if negated:
+            spec["_negated"] = sorted(spec["_negated"] + negated,
+                                      key=lambda x: (x["_provenance"]["charSpan"][0], x["lemma"], x["category"]))
+        if not (provs or alts or negated):
+            return
+        used = [p["charSpan"] for p in provs]
+        for cl in spec.get("_clauses") or []:
+            s, e = cl["charSpan"]
+            if any(x < e and s < y for x, y in used):
+                cl["usedFor"] = sorted(set(cl["usedFor"]) | {"layout.proportions"}, key=lambda q: (_PATH_ORDER.get(q, 99), q))
+                if cl["status"] == "unused":
+                    cl["status"] = "partly_used"
+        covered: set[int] = set()
+        _span_chars({"p": provs, "a": alts, "n": negated}, covered)
+        spec["_unmapped"] = [u for u in spec["_unmapped"]
+                             if not (u["category"] == "unlisted_noun"
+                                     and all(ch in covered for ch in range(*u["_provenance"]["charSpan"])))]
+        tok_level = [u for u in spec["_unmatched"] if u["tag"] != EOJEOL_TAG
+                     and not all(ch in covered for ch in range(u["charSpan"][0], u["charSpan"][1]))]
+        spec["_unmatched"] = tok_level
+        spec["_unmatched"] = sorted(tok_level + self._unmatched_eojeols(doc, spec),
+                                    key=lambda u: (u["charSpan"][0], u["charSpan"][1]))
+
+    def _resultative(self, doc: Doc, k: int) -> bool:
+        """용언 k가 결과 상태 꼴인가: 완료 관형형('퍼진')이나 '-어 있-'('퍼져 있어요')."""
+        toks = doc.toks
+        n = len(toks)
+        nx = toks[k + 1] if k + 1 < n and doc.eoj[k + 1] == doc.eoj[k] else None
+        if nx is None:
+            return False
+        if nx.base_tag == "ETM" and nx.form in self.act["resultativeETM"]:
+            return True
+        return (nx.base_tag == "EC" and nx.form in ("어", "아", "여") and k + 2 < n
+                and toks[k + 2].form in self.act["resultativeAux"] and toks[k + 2].base_tag == "VX")
+
+    def _said_phrase_cands(self, doc: Doc) -> list[Cand]:
+        """'보통 크기'·'크기는 보통이에요' → layout.size(neutralSize), '무광'·'유광' → material.roughness(surfaceTerms)."""
+        toks = doc.toks
+        n = len(toks)
+        out: list[Cand] = []
+        ns = self.neutral_size
+        words, topics = set(ns["words"]), set(ns["topics"])
+        for i, t in enumerate(toks):
+            if t.form not in words or t.base_tag not in ("NNG", "MAG", "XR") or Lexicon._negated(toks, i):
+                continue
+            c = doc.clause[i]
+            before = i + 1 < n and toks[i + 1].form in topics and toks[i + 1].base_tag in NOUN_TAGS \
+                and doc.clause[i + 1] == c and doc.eoj[i + 1] == doc.eoj[i] + 1
+            last = doc.eojeols[doc.eoj[i]][1]
+            tail_ok = all(toks[k].base_tag in PUNCT_TAGS or toks[k].base_tag.startswith(("J", "E"))
+                          or toks[k].base_tag in ("VCP", "XSN", "XSA") for k in range(i + 1, last + 1)) \
+                and all(toks[k].base_tag in PUNCT_TAGS for k in doc.clause_toks(c) if k > last)
+            topic_first = any(toks[k].form in topics and toks[k].base_tag in NOUN_TAGS
+                              for k in doc.clause_toks(c) if k < i)
+            if not (before or (topic_first and tail_ok)):
+                continue
+            rule = f"neutralSize.{t.form}>layout.size:{_num_text(ns['value'])}"
+            out.append(Cand("layout.size", ns["value"], i, t.start, [self._eoj_prov(doc, i, rule, source="phrase_rule")],
+                            klass=1, dim_topic=before))
+        for e in range(len(doc.eojeols)):
+            w = doc.etext(e)
+            term = next((k for k in self.surface_terms if w.startswith(k)), None)
+            if term is None:
+                continue
+            ids = list(doc.etoks(e))
+            s = doc.espan(e)[0]
+            covering = [k for k in ids if toks[k].start < s + len(term)]
+            if Lexicon._negated(toks, covering[-1]):
+                continue
+            d = self.surface_terms[term]
+            out.append(Cand(d["path"], d["value"], ids[0], s,
+                            [self._prov("phrase_rule", doc.text, s, s + len(term),
+                                        f"surfaceTerm.{term}>{d['path']}:{d['label']}")]))
+        return out
+
+    def _shape_noun_records(self, doc: Doc, spec: dict) -> list[dict]:
+        """모양 명사(shapeNouns: '구형'·'구체') → _unmapped category shape(모양어와 같은 자리). 부정되면 _negated에 남긴다.
+        다른 명사(형태 틀 명사 말고)를 꾸미는 자리('구형 핸드폰')·접미사가 붙은 것('구체적')은 쓰지 않는다."""
+        toks, text = doc.toks, doc.text
+        n = len(toks)
+        have = {tuple(u["_provenance"]["charSpan"]) for u in spec["_unmapped"] if u["category"] == "shape"}
+        out = []
+        for a, b in self._noun_runs(doc):
+            s, e = toks[a].start, toks[b].end
+            word = text[s:e]
+            d = self.shape_nouns.get(word)
+            if d is None or (s, e) in have:
+                continue
+            k = b + 1
+            if k < n and doc.eoj[k] == doc.eoj[b] and toks[k].base_tag == "XSN" and toks[k].form in self.shape_noun_reject:
+                continue
+            if self._noun_role(doc, b) == "modifier" and not (k < n and toks[k].form in self.frame_nouns):
+                continue
+            prov = self._prov("phrase_rule", text, s, e, f"shapeNoun.{word}>shape:{d['shape']}")
+            if Lexicon._negated(toks, b) or self._noun_negated(doc, b):
+                spec["_negated"].append({"lemma": word, "category": "shape", "_provenance": prov})
+                continue
+            out.append({"lemma": word, "category": "shape", "value": {"shape": d["shape"]}, "reason": "no_scene_param",
+                        "_provenance": prov})
+        return out
+
+    def _in_shape_frame(self, doc: Doc, p: dict) -> bool:
+        """명사구 p가 형태 틀 안의 말인가('모양은 그릇 같아요', '그릇 모양이에요')."""
+        toks = doc.toks
+        if any(toks[x].form in self.frame_nouns for x in p["nouns"]):
+            return True
+        c = doc.clause[p["a"]]
+        return any(toks[k].form in self.frame_nouns and toks[k].base_tag in NOUN_TAGS
+                   and self._noun_role(doc, k) == "subject" for k in doc.clause_toks(c) if k < p["a"])
+
+    def _direct_shapes(self, doc: Doc, spec: dict, phrase_of: dict, color_toks: set[int], veh: dict,
+                       context_sents: set[int], sim_markers: list[int]) -> list[dict]:
+        """직접 형태 진술(shapePriority.directShape): 형상 낱말·움직임 비유 매개어를 꾸미거나 서술하지 않는 모양어."""
+        toks = doc.toks
+        stmt = set(self.dshape["statementShapes"])
+        out = []
+        for u in spec["_unmapped"]:
+            if u["category"] != "shape" or u["reason"] in ("excluded_shape", "no_asset"):
+                continue
+            shape = (u["value"] or {}).get("shape")
+            cs = u["_provenance"]["charSpan"]
+            ids = doc.toks_in(cs[0], cs[1])
+            if shape not in stmt or not ids or doc.sent[ids[0]] in context_sents or any(x in veh for x in ids):
+                continue
+            x0 = ids[0]
+            pq = phrase_of.get(x0)
+            if pq is not None:
+                tgt = pq if x0 != pq["head"] else None
+            else:
+                kind, tgt = self._attach(doc, ids[-1], ids[0], phrase_of, color_toks)
+                if kind != "phrase":
+                    tgt = None
+            if tgt is not None and (tgt["entry"] is not None or any(x in veh for x in tgt["nouns"])):
+                continue                      # '동그란 천' · '천은 동그래요' — 형상 낱말을 말한 것
+            if any(doc.clause[m] == doc.clause[x0] and m < x0 for m in sim_markers):
+                continue                      # '종이처럼 납작해요' — 비유가 꾸미는 서술
+            xe = doc.eojeols[doc.eoj[ids[-1]]][1]
+            if toks[xe].base_tag == "EC" and toks[xe].form in ("게", "케"):
+                nv = next((k for k in range(xe + 1, len(toks)) if doc.clause[k] == doc.clause[x0]
+                           and toks[k].base_tag in ("VV", "VA")), None)
+                if nv is None or toks[nv].form not in self.dshape["adverbialVerbs"]:
+                    continue                  # '저를 둥글게 감싸고' — 움직임·모양새를 꾸미는 부사형('둥글게 생겼어요'만 진술)
+            out.append({"lemma": u["lemma"], "shape": shape, "s": cs[0]})
+        return sorted(out, key=lambda d: d["s"])
 
     def _subject_in(self, doc: Doc, ids: list[int]) -> int | None:
         """토큰 목록에서 마지막 주어(체언 + 이/가/은/는/도)의 토큰 번호."""
@@ -1388,6 +1886,12 @@ class SceneSpecBuilderV2(SceneSpecBuilderV1):
         by_tok: dict[int, list[Hit]] = {}
         for h in hits:
             by_tok.setdefault(h.token_index, []).append(h)
+        # 2.6.0: 동음이의 막기 — '구체적으로'·'구체화'의 '구체'(具體)는 1층 사전의 '구체'(球體, form blob)로 읽지 않는다
+        hits = [h for h in hits if not self._homonym_blocked(doc, h)]
+        if self.prop is not None:
+            # G72: 결과 상태 꼴로 비율을 채운 용언('넓게 펼쳐진')은 움직임 값을 만들지 않는다(퍼진 상태이지 움직임이 아님)
+            still = {m["head"] for m in self._proportion_matches(doc) if m["status"] == "ok" and m["resultative"]}
+            hits = [h for h in hits if not (h.entry.category == "movement" and h.token_index in still)]
         out = super()._lexicon_cands(doc, hits, consumed, similes, body_any, unmapped, negated, records)
         keep = []
         for c in out:
@@ -1497,7 +2001,8 @@ class SceneSpecBuilderV2(SceneSpecBuilderV1):
 _PATH_ORDER = {p: k for k, p in enumerate((
     "form.type", "form.posture", "form.base", "form.baseVariant", "form.roundness", "form.aspect",
     "material.color", "material.brightness", "material.saturation", "material.roughness", "material.opacity",
-    "material.erosion", "material.emission", "layout.size", "layout.distance", "layout.verticalOffset", "motion.type",
+    "material.erosion", "material.emission", "layout.size", "layout.distance", "layout.verticalOffset", "layout.proportions",
+    "motion.type",
     "motion.speed", "body.part", "body.layer"))}
 
 

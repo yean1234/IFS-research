@@ -50,8 +50,8 @@ namespace IFS.SceneSpec
                 throw new JsonSerializationException($"{path}: 모르는 값 {value}(가능: {string.Join(", ", levels)}, null)");
         }
 
-        /// <summary>원문에 2.2·2.3 키가 있는가(값이 null이어도). 역직렬화로는 '없음'과 'null'을 가를 수 없어 따로 본다.
-        /// (2.2) form.base·form.baseVariant, (2.3) form.roundness·form.aspect, material.emission.</summary>
+        /// <summary>원문에 2.2·2.3·2.4 키가 있는가(값이 null이어도). 역직렬화로는 '없음'과 'null'을 가를 수 없어 따로 본다.
+        /// (2.2) form.base·form.baseVariant, (2.3) form.roundness·form.aspect, material.emission, (2.4) layout.proportions.</summary>
         static void ReadKeyPresence(string json, SceneSpecV2 spec)
         {
             using var reader = new JsonTextReader(new StringReader(json)) { DateParseHandling = DateParseHandling.None, FloatParseHandling = FloatParseHandling.Double };
@@ -61,6 +61,8 @@ namespace IFS.SceneSpec
             spec.Form.BaseKeysPresent = form != null && (form.ContainsKey("base") || form.ContainsKey("baseVariant"));
             spec.Form.ContourKeysPresent = form != null && (form.ContainsKey("roundness") || form.ContainsKey("aspect"));
             spec.Material.EmissionKeyPresent = material != null && material.ContainsKey("emission");
+            var layout = root["layout"] as Newtonsoft.Json.Linq.JObject;
+            spec.Layout.ProportionsKeyPresent = layout != null && layout.ContainsKey("proportions");
         }
 
         /// <summary>(2.3) 원문에 윤곽·발광 키가 하나라도 있는가(2.3.0 문서).</summary>
@@ -98,11 +100,12 @@ namespace IFS.SceneSpec
                 case ContourRender.RoundnessKey: return s.Form.Roundness;
                 case ContourRender.AspectKey: return s.Form.Aspect;
                 case ContourRender.EmissionKey: return s.Material.Emission;
+                case ProportionsRender.Key: return s.Layout.Proportions;
                 default: throw new ArgumentException("모르는 슬롯 경로: " + path);
             }
         }
 
-        /// <summary>스키마의 원칙 규칙을 다시 확인한다(버전, 0–1 범위, 값 ⇔ _provenance, _inferred는 빈 슬롯만).
+        /// <summary>스키마의 원칙 규칙을 다시 확인한다(버전, 0–1 범위(2.4 비율은 0.2–1·가장 큰 값 1), 값 ⇔ _provenance, _inferred는 빈 슬롯만).
         /// 문제가 있어도 예외를 내지 않고 목록을 돌려준다 — SceneLoader가 경고로 남긴다.</summary>
         public static List<string> Validate(SceneSpecV2 s)
         {
@@ -122,17 +125,44 @@ namespace IFS.SceneSpec
                 if (value is HslColor c && (c.H < 0 || c.H > 1 || c.S < 0 || c.S > 1 || c.L < 0 || c.L > 1))
                     problems.Add(path + ": HSL이 0–1 밖");
             }
-            // (2.2) 기본 형상: 2.2.0 문서(와 그 상위 2.3.0 문서)에만 키가 있고, 값 ⇔ _provenance 규칙은 다른 슬롯과 같다
+            // (2.2) 기본 형상: 2.2.0 문서(와 그 상위 2.3.0·2.4.0 문서)에만 키가 있고, 값 ⇔ _provenance 규칙은 다른 슬롯과 같다
+            bool v24 = s.Meta.SpecVersion == SceneSpecV2.SpecVersionV24;
             bool v23 = s.Meta.SpecVersion == SceneSpecV2.SpecVersionV23;
-            bool v22 = s.Meta.SpecVersion == SceneSpecV2.SpecVersionV22 || v23;
+            bool v22 = s.Meta.SpecVersion == SceneSpecV2.SpecVersionV22 || v23 || v24;
             if (v22 && !s.Form.BaseKeysPresent) problems.Add($"specVersion {s.Meta.SpecVersion} 문서에 form.base·form.baseVariant가 없다");
             if (!v22 && (s.Form.BaseKeysPresent || s.Form.Base != null || s.Form.BaseVariant != null))
                 problems.Add($"specVersion {s.Meta.SpecVersion} 문서에 2.2 전용 필드(form.base·form.baseVariant)가 있다");
             // (2.3) 윤곽·발광: 2.3.0 문서는 세 키를 반드시 가지고(값이 null이어도), 2.0–2.2 문서에는 없어야 한다
             if (v23 && !(s.Form.ContourKeysPresent && s.Material.EmissionKeyPresent))
                 problems.Add("specVersion 2.3.0 문서에 form.roundness·form.aspect·material.emission이 없다");
-            if (!v23 && (HasContourKeys(s) || s.Form.Roundness != null || s.Form.Aspect != null || s.Material.Emission != null))
+            // (2.4) 세 키는 선택이다(매퍼 확장 사전을 켰을 때만) — 있으면 셋 다 있어야 한다
+            bool anyContour = HasContourKeys(s) || s.Form.Roundness != null || s.Form.Aspect != null || s.Material.Emission != null;
+            if (v24 && anyContour && !(s.Form.ContourKeysPresent && s.Material.EmissionKeyPresent))
+                problems.Add("specVersion 2.4.0 문서에 form.roundness·form.aspect·material.emission 중 일부만 있다(있으면 셋 다)");
+            if (!v23 && !v24 && anyContour)
                 problems.Add($"specVersion {s.Meta.SpecVersion} 문서에 2.3 전용 필드(form.roundness·form.aspect·material.emission)가 있다");
+            // (2.4, G72) x·y·z 비율: 2.4.0 문서는 키를 반드시 가지고(값이 null이어도), 2.0–2.3 문서에는 없어야 한다.
+            // 값은 축마다 0.2–1, 가장 큰 값 = 1. 값 ⇔ _provenance 규칙은 다른 슬롯과 같다
+            var pr = s.Layout.Proportions;
+            if (v24 && !s.Layout.ProportionsKeyPresent) problems.Add("specVersion 2.4.0 문서에 layout.proportions가 없다");
+            if (!v24 && (s.Layout.ProportionsKeyPresent || pr != null))
+                problems.Add($"specVersion {s.Meta.SpecVersion} 문서에 2.4 전용 필드(layout.proportions)가 있다");
+            if (pr != null)
+            {
+                var inv = CultureInfo.InvariantCulture;
+                foreach (var (axis, v) in new[] { ("x", pr.X), ("y", pr.Y), ("z", pr.Z) })
+                    if (!ProportionsRender.InRange(v))
+                        problems.Add($"{ProportionsRender.Key}.{axis}: {v.ToString(inv)}가 {ProportionsRender.Min.ToString(inv)}–{ProportionsRender.Max.ToString(inv)} 밖");
+                double max = Math.Max(pr.X, Math.Max(pr.Y, pr.Z));
+                if (Math.Abs(max - 1.0) > ProportionsRender.MaxTolerance)
+                    problems.Add($"{ProportionsRender.Key}: 가장 큰 값이 1이 아니다({max.ToString(inv)}) — 렌더러는 가장 큰 값으로 나눠 그림");
+            }
+            {
+                bool hasProv = s.Provenance.TryGetValue(ProportionsRender.Key, out var provs) && provs != null && provs.Count > 0;
+                if (pr == null && hasProv) problems.Add(ProportionsRender.Key + ": null인데 _provenance가 있다");
+                if (pr != null && !hasProv) problems.Add(ProportionsRender.Key + ": 값이 있는데 _provenance가 없다");
+                if (pr != null && s.Inferred.ContainsKey(ProportionsRender.Key)) problems.Add(ProportionsRender.Key + ": 값이 있는데 _inferred도 있다");
+            }
             foreach (var path in ContourRender.SlotPaths)
             {
                 var value = GetSlot(s, path);
@@ -153,7 +183,8 @@ namespace IFS.SceneSpec
             if (s.Form.Base == null && s.Form.BaseVariant != null) problems.Add("form.baseVariant: form.base가 null인데 변형값이 있다");
             if (BaseShapes.IsBase(s.Form.Base)) BaseShapes.Resolve(s.Form.Base, s.Form.BaseVariant, null, problems);
             foreach (var key in s.Provenance.Keys)
-                if (Array.IndexOf(SlotPaths, key) < 0 && Array.IndexOf(BaseSlotPaths, key) < 0 && Array.IndexOf(ContourRender.SlotPaths, key) < 0)
+                if (Array.IndexOf(SlotPaths, key) < 0 && Array.IndexOf(BaseSlotPaths, key) < 0 && Array.IndexOf(ContourRender.SlotPaths, key) < 0
+                    && key != ProportionsRender.Key)
                     problems.Add("_provenance에 모르는 경로: " + key);
             return problems;
         }
