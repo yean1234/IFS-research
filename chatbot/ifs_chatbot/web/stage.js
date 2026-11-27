@@ -1,6 +1,9 @@
 // 면담 뒤 데스크톱 단계 — 4 후보 선택 · 5 조절 · 6 사전 측정 (D5, 결정 G10·G13·G22·G23, G31·G34).
 // G34: 구별되는 후보가 하나뿐이면 서버가 선택 단계를 건너뛰고 바로 adjusting으로 준다(후보 1개 화면은 없음).
 // G31: 조절 항목은 서버가 준 순서(값 표 adjustItems.order, 색이 맨 앞) 그대로 그린다.
+// G73(CP13b): [맞는 게 없어요] 뒤 '다시 적기'(서버 [gen3d] resay일 때만 stage resay가 온다). 글칸·[이 글로 만들어 주세요]·[건너뛸게요],
+//   기다리는 동안은 고정 문구 + 진행 막대(글 없음)만 보이고 1초마다 서버 상태를 다시 읽는다. 만들지 못한 이유는 연구자 보기에만.
+//   위기 판정(stage resay_crisis)이면 서버가 준 고정 위기 문구만 보이고 단추가 없다. 꺼져 있으면 이 경로가 쓰이지 않는다.
 // 외부 라이브러리·CDN·글꼴 없음(원칙 5). 문구는 서버가 shared/protocol/selection_protocol.v0.json에서 준 것만 쓴다(모두 초안).
 // 미리보기 어댑터: preview.mode = webgl(같은 출처 Unity WebGL 빌드, G12) | image(서버가 Unity 미리보기 플레이어로 그린 PNG, G25)
 //                 | none(속성 요약 글). mode는 세션마다 서버가 정한다. webgl이 안 되면 이 화면이 서버에 알리고(POST …/preview/client)
@@ -9,7 +12,8 @@
 
 (function () {
   const S = { cfg: null, view: null, sid: null, imgSeq: 0, busy: false, answers: {}, reported: new Set(),
-              drawnStage: null, focusKey: null, samples: new Map(), lastThumb: {} };
+              drawnStage: null, focusKey: null, samples: new Map(), lastThumb: {}, resayTimer: null, resayDraft: "" };
+  const RESAY_POLL_MS = 1000;
 
   // G44 화면 표현 설정(기록과 무관).
   // 형태 버튼: 낱말·번호 대신 Unity가 그린 견본(지금 상태에서 형태만 바꾼 정지 그림). 글 요약(none)에서는 번호 그대로.
@@ -486,8 +490,10 @@
     const ae = document.activeElement;
     const fkey = S.focusKey || (ae && box.contains(ae) && ae.dataset ? ae.dataset.fkey : null) || null;
     S.focusKey = null;
-    const stageChanged = S.drawnStage !== v.stage;
-    S.drawnStage = v.stage;
+    const drawKey = v.stage === "resay" ? `resay:${v.resay && v.resay.phase}:${v.resay && v.resay.round}` : v.stage;
+    const stageChanged = S.drawnStage !== drawKey;
+    S.drawnStage = drawKey;
+    if (S.resayTimer) { clearTimeout(S.resayTimer); S.resayTimer = null; }
     box.dataset.stage = v.stage;
     box.dataset.previewMode = (v.preview && v.preview.mode) || "none";
     box.classList.remove("choosing");
@@ -495,6 +501,11 @@
     WebGL.slot = null;
     if (v.preview && v.preview.mode !== "webgl" && WebGL.host) WebGL.closeFrame();   // 내려간 뒤에는 iframe을 닫는다
     if (v.stage === "selecting") parts.push(...drawSelecting(v));
+    else if (v.stage === "resay") { WebGL.teardown(); parts.push(...drawResay(v)); }
+    else if (v.stage === "resay_crisis") {
+      WebGL.teardown();
+      parts.push(el("p", { class: "msg bot crisis stage-top", tabindex: "-1", role: "alert" }, (v.resay && v.resay.crisisPhrase) || ""));
+    }
     else if (v.stage === "adjusting") parts.push(...drawAdjusting(v));
     else if (v.stage === "premeasure") { WebGL.teardown(); drawPremeasure(box, parts); progress(); return; }
     else if (v.stage === "done") { WebGL.teardown(); parts.push(el("p", { class: "msg bot closing stage-top done-card", tabindex: "-1" }, v.donePhrase || "")); }
@@ -520,11 +531,15 @@
 
   function drawSelecting(v) {
     const parts = [intro(phrase("figure_intro")), el("p", { class: "msg bot" }, phrase("candidates_intro"))];
+    // G73: 다시 적은 글로 새 후보를 만들었으면 그 위에 고정 안내(적지 않은 부분이 들어 있을 수 있음). 꺼져 있으면 v.resay가 없다
+    if (v.resay && v.resay.newCandidateIds && v.resay.newCandidateIds.length)
+      parts.push(el("p", { class: "msg bot resay-notice" }, phrase("resay_notice_generated")));
     const grid = el("ul", { class: `cand-grid n${v.candidates.length}` });
     v.candidates.forEach((c, i) => {
       // G62: [gen3d] default_form_source = generated(또는 auto가 사물 낱말로 판정, G62-i)면 기본 후보(c.default)가 맨 앞에 오고 테두리로 미리 선택해 보인다.
       // 장면에는 참여자가 [고르기]로 확정해야 쓴다(새 문구 없음). 꺼져 있으면 c.default가 없어 지금과 같다
-      grid.append(el("li", { class: c.default ? "cand is-default" : "cand", "data-id": c.id },
+      const cls = ["cand", c.default ? "is-default" : "", c.new ? "is-new" : ""].filter(Boolean).join(" ");
+      grid.append(el("li", { class: cls, "data-id": c.id },
         Preview.node(c.id, c.summary, c.overrides, c.asset),
         el("button", { type: "button", class: "pick", "aria-label": `${phrase("choose_button")} ${i + 1}`, "data-fkey": `cand:${c.id}`,
                        onclick: (e) => choose(c.id, e.currentTarget) }, phrase("choose_button"))));
@@ -535,6 +550,51 @@
       el("button", { type: "button", class: "pick none-fit", "data-fkey": "none", onclick: (e) => choose("none", e.currentTarget) },
         phrase("none_fit"))));
     return parts;
+  }
+
+  // G73 다시 적기 화면. phase = input(글칸) | waiting(기다림, 1초마다 다시 읽음) | notice(만들지 못함 — 이유는 말하지 않음)
+  function resayAct(action, btn, text) {
+    return call("POST", `/api/sessions/${S.sid}/resay`, text === undefined ? { action } : { action, text }, btn);
+  }
+
+  function drawResay(v) {
+    const r = v.resay || {};
+    const skip = el("button", { type: "button", class: "ghost", "data-fkey": "resay-skip",
+                                onclick: (e) => resayAct("skip", e.currentTarget) }, phrase("resay_skip_button"));
+    if (r.phase === "waiting") {
+      S.resayTimer = setTimeout(() => refresh(true), RESAY_POLL_MS);
+      return [el("p", { class: "msg bot stage-top", tabindex: "-1", id: "resay-wait" }, phrase("resay_wait")),
+              el("progress", { class: "resay-progress", "aria-labelledby": "resay-wait" }),
+              el("div", { class: "buttons stage-actions" }, skip)];
+    }
+    if (r.phase === "notice") {
+      const parts = [el("p", { class: "msg bot stage-top", tabindex: "-1" }, phrase("resay_blocked"))];
+      if (r.canRetry) {
+        parts.push(el("p", { class: "msg bot" }, phrase("resay_blocked_retry")),
+          el("div", { class: "buttons stage-actions" },
+            el("button", { type: "button", class: "primary", "data-fkey": "resay-retry",
+                           onclick: (e) => resayAct("retry", e.currentTarget) }, phrase("resay_retry_button")), skip));
+      } else {
+        parts.push(el("div", { class: "buttons stage-actions" },
+          el("button", { type: "button", class: "primary", "data-fkey": "resay-continue",
+                         onclick: (e) => resayAct("continue", e.currentTarget) }, phrase("resay_continue_button"))));
+      }
+      return parts;
+    }
+    // input: 글칸은 비어 있다(예시·자리표시 글 없음, 원칙 3). 다시 그려도 적던 글을 잃지 않게 S.resayDraft에 둔다
+    const ta = el("textarea", { id: "resay-text", class: "resay-text", rows: "4", maxlength: "1000",
+                                "aria-labelledby": "resay-intro" });
+    ta.value = S.resayDraft;
+    ta.addEventListener("input", () => { S.resayDraft = ta.value; });
+    const submit = el("button", { type: "button", class: "primary", "data-fkey": "resay-submit",
+                                  onclick: (e) => {
+                                    const t = ta.value;
+                                    if (!t.trim()) { ta.focus(); return; }
+                                    S.resayDraft = "";
+                                    resayAct("submit", e.currentTarget, t);
+                                  } }, phrase("resay_submit_button"));
+    return [el("p", { class: "msg bot stage-top", tabindex: "-1", id: "resay-intro" }, phrase("resay_intro")), ta,
+            el("div", { class: "buttons stage-actions" }, submit, skip)];
   }
 
   // 범주 항목(형태·움직임). 화면에 값 이름을 쓰지 않는다. 형태는 견본 그림, 견본이 없으면(글 요약) 번호.
@@ -650,7 +710,8 @@
     const off = v.unavailableItems || {};
     const panel = el("div", { class: "adjust-panel" });
     const send = (item, value, btn) => call("POST", `/api/sessions/${S.sid}/adjust`, { item, value }, btn);
-    for (const it of S.cfg.adjustItems) {
+    // G73: 다시 적은 글의 값이 쓰인 세션에만 서버가 더한 항목(짙기·빛)을 값 표 항목 뒤에 그린다
+    for (const it of [...S.cfg.adjustItems, ...(v.extraAdjustItems || [])]) {
       const lid = `adj-label-${it.id}`;
       const row = el("div", { class: `adjust-row${off[it.id] ? " off" : ""}`, "data-item": it.id },
         el("span", { class: "adjust-label", id: lid }, it.label));
@@ -791,7 +852,13 @@
           ["조절 횟수", v.adjustCounts ? JSON.stringify(v.adjustCounts) : null],
           ["색 바꿈", v.colorChanged === undefined ? null : (v.colorChanged ? "예" : "아니오")],
           ["finalOverrides", v.finalOverrides ? JSON.stringify(v.finalOverrides) : null],
-          ["출처 분포", v.sourceCounts ? JSON.stringify(v.sourceCounts) : null]]));
+          ["출처 분포", v.sourceCounts ? JSON.stringify(v.sourceCounts) : null],
+          // G73 다시 적기(연구자 보기에만): 갈래·결과·만들지 못한 이유·쓴 값. 참여자 화면에는 이유를 보이지 않는다
+          ["다시 적기", v.resay ? `${v.resay.round}/${v.resay.maxRounds}회 · ${v.resay.phase || v.resay.stage} · 결과 ${v.resay.researcher.outcome || "-"}` : null],
+          ["다시 적기 갈래", v.resay && v.resay.researcher.branch ? `${v.resay.researcher.branch} (${v.resay.researcher.roundOutcome || "-"})` : null],
+          ["만들지 못한 이유", v.resay && (v.resay.researcher.blockReason || v.resay.researcher.blockDetail)
+            ? `${v.resay.researcher.blockReason || ""} ${JSON.stringify(v.resay.researcher.blockDetail || [])}` : null],
+          ["다시 적은 값", v.resay && v.resay.researcher.applied.length ? v.resay.researcher.applied.join(", ") : null]]));
   }
 
   // 진행 표시(app.js updateProgress)가 읽는 지금 단계

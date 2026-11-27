@@ -47,7 +47,7 @@ function updateProgress() {
   const total = v.selection ? 5 : 2;
   const sel = window.ifsStage ? window.ifsStage.current() : {};
   let pos, done;
-  if (sel.stage === "selecting") { pos = 3; done = 2; }
+  if (sel.stage === "selecting" || sel.stage === "resay" || sel.stage === "resay_crisis") { pos = 3; done = 2; }   // G73: 다시 적기는 고르기 단계 안
   else if (sel.stage === "adjusting") { pos = 4; done = 3; }
   else if (sel.stage === "premeasure") { pos = 5; done = 4; }
   else if (sel.stage === "done") { pos = 5; done = 5; }

@@ -156,6 +156,14 @@ class Gen3DConfig:
     # 한·영 대역 사전 파생 표(tools/gen3d/bilingual.py 형식, 저장소 밖 경로). 비우면 대역 사전을 쓰지 않는다(사전 밖 낱말은 버림).
     # ⚠ 한국어기초사전 라이선스·형식 확인 전(G73 '켜기 전에 사람이 할 것')
     resay_bilingual_dict: str = ""
+    # CP13b(G73-d, 잠정값 — Windows PC 실측 뒤 정함). 회당 시간 제한: 제출부터 그 회차의 생성이 끝날 때까지. 전체 대기 상한:
+    # 모든 회차의 기다림 합(넘으면 새 회차·생성 요청을 받지 않음). 넘으면 지금처럼 기준 후보 0번 → 조절(기록 outcome timeout)
+    resay_round_timeout_s: float = 240.0
+    resay_total_wait_s: float = 420.0
+    # 생성기: "" = 없음(갈래 solid는 만들지 못함 안내 → 다시 적기 또는 건너뛰기), "queue" = 저장소 밖 상주 생성 프로세스와 파일 큐로
+    # 주고받음(resay_queue_dir, 외부 전송 없음 — 챗봇은 모델을 부르지 않는다, G62-b). 시험은 가짜 생성기를 주입한다
+    resay_generator: str = ""
+    resay_queue_dir: str = ""      # 비우면 <log_dir>/gen3d-queue
 
 
 @dataclass(frozen=True)

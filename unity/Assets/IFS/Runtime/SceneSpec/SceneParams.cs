@@ -49,6 +49,23 @@ namespace IFS.SceneSpec
         public const string BaseKey = BaseShapes.Key;
         public const string NoBase = BaseShapes.None;
 
+        /// <summary>(G73 CP13b) 안개 밀도 덮어쓰기 키. spec 슬롯이 아니다 — 챗봇 다시 적기([gen3d] resay)가 다시 적은 글에서 읽은 값을
+        /// 조절 화면 처음 값으로 쓰고 참여자가 확인·수정한 것만 선택 파일 finalOverrides·미리보기 덮어쓰기로 온다(0–1, 0 = 아주 성김).
+        /// NumericKeys·ToRecord에는 넣지 않는다(기존 기록·golden 지문이 그대로). 값이 있으면 form.type mist의 렌더 계획 프리셋 밀도
+        /// (FormRenderPlan.FormPresets["mist"].Density, 기본 0.5)를 대신한다. 다른 형태에서는 쓰이지 않는다.</summary>
+        public const string MistDensityKey = "mist.density";
+        /// <summary>안개 밀도 덮어쓰기 값(없으면 null = 프리셋 밀도).</summary>
+        public double? MistDensity { get; private set; }
+
+        /// <summary>안개 밀도 덮어쓰기를 정한다(0–1로 자름). 값이 실제로 바뀌면 true.</summary>
+        public bool SetMistDensity(double value)
+        {
+            value = Clamp01(value);
+            if (MistDensity.HasValue && Math.Abs(MistDensity.Value - value) < 1e-9) return false;
+            MistDensity = value;
+            return true;
+        }
+
         readonly Dictionary<string, double> _num = new Dictionary<string, double>();
         readonly Dictionary<string, string> _cat = new Dictionary<string, string>();
 
@@ -200,6 +217,7 @@ namespace IFS.SceneSpec
             p.HasProportionsSlot = HasProportionsSlot;
             p.ProportionsGiven = ProportionsGiven;
             p.SpecProportionsAxisSaid = SpecProportionsAxisSaid;
+            p.MistDensity = MistDensity;
             return p;
         }
 

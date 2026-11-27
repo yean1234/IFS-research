@@ -93,9 +93,10 @@ def content(p):
 
 # ── 설정: 기본 끔, 꺼지면 아무것도 하지 않음 ─────────────────────────────────────────
 def test_resay_off_by_default_in_code_and_every_config_file():
+    """기본 끔. CP13b(G73-g)부터 v4-gen3d.toml 하나만 켠다(본 실험 experiment.toml은 끔)."""
     assert Gen3DConfig().resay is False
     for f in sorted((CHATBOT / "config").glob("*.toml")):
-        assert load_config(f).gen3d.resay is False, f.name
+        assert load_config(f).gen3d.resay is (f.name == "v4-gen3d.toml"), f.name
 
 
 def test_disabled_does_nothing_not_even_mapping():

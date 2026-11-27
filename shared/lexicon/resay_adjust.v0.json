@@ -1,0 +1,45 @@
+{
+  "lexiconId": "resay-adjust-v0",
+  "tableVersion": "0.1.0",
+  "status": "draft",
+  "date": "2026-11-28",
+  "decision": "G73-c, G73-k (CP13b)",
+  "description": "[맞는 게 없어요] 뒤 다시 적은 글에서 재진술 매핑(chatbot/ifs_chatbot/resay.py)이 읽은 허용 슬롯 값을 조절 화면의 처음 값으로 옮기는 표(chatbot/ifs_chatbot/resay_flow.py만 읽는다). 값 표(candidate_values)에 조절 항목이 없는 두 덮어쓰기 키(mist.density, material.emission)는 이 표의 조절 항목으로 그 세션에만 더해 참여자가 확인·수정하게 한다(G73-c: 값은 조절 화면의 처음 값으로만 쓰인다). 조절 항목이 없어 참여자가 고칠 수 없는 값은 쓰지 않고 버린 이유를 기록한다. 모든 수치는 연구자가 보탠 초안이다(문헌 근거 없음).",
+  "howToEdit": [
+    "값을 바꾸면 tableVersion을 올린다. selection.json(0.4) resay.tables.adjust에 이 판과 sha256이 남는다.",
+    "항목 이름(화면 글)은 selection_protocol의 adjustItemLabels에 둔다(이 표에는 글을 두지 않는다)."
+  ],
+  "items": {
+    "density": {
+      "slots": ["mist.density"],
+      "kind": "step",
+      "key": "mist.density",
+      "values": [0.15, 0.25, 0.4, 0.5, 0.65, 0.8, 0.9],
+      "valuesNote": "resay_values.v0.json density.values의 값과 Unity mist 프리셋 기본 밀도 0.5를 단계로 둔다(말한 값이 단계 위에 오게). 0–1, 0 = 아주 성김.",
+      "showWhen": {"formType": "mist"},
+      "showWhenNote": "이 세션에 다시 적은 글의 밀도 값이 쓰였을 때만 항목을 더한다. 형태를 안개가 아닌 것으로 바꾸면 화면에서 숨기고(그려지지 않는 값), 덮어쓰기에서 빼지 않는다(러너는 안개가 아니면 밀도를 쓰지 않음).",
+      "unityDefault": 0.5,
+      "unityDefaultNote": "Unity FormRenderPlan.FormPresets[\"mist\"].Density. 덮어쓰기 mist.density가 있으면 그 값이 프리셋 밀도를 대신한다(CP13b)."
+    },
+    "emission": {
+      "slots": ["material.emission"],
+      "kind": "category",
+      "key": "material.emission",
+      "values": ["none", "faint", "glowing"],
+      "valuesNote": "Unity ContourRender.EmissionLevels와 같은 순서. none = 발광 끔."
+    }
+  },
+  "slotItems": {
+    "mist.density": "density",
+    "material.emission": "emission",
+    "material.opacity": "opacity",
+    "layout.proportions": ["width", "height", "depth"]
+  },
+  "branchForm": {
+    "mist": "mist",
+    "flame": "flame",
+    "note": "갈래 → 조절 화면 '형태' 항목의 값(값 표 form.valueOverrides). 안개는 form.type mist, 불꽃은 기본 형상 flame(form.type blob + form.base flame). 빛·단단한 사물·none은 형태 값을 바꾸지 않는다. 근거 글자 위치는 매핑의 branchBasis."
+  },
+  "extraOverrideKeys": ["mist.density", "material.emission"],
+  "extraOverrideKeysNote": "값 표 overrideKeys에 없지만 이 표의 항목이 정하는 덮어쓰기 키. finalOverrides에는 처음 값이 쓰였을 때만 넣는다(resay가 꺼진 세션의 기록은 그대로)."
+}

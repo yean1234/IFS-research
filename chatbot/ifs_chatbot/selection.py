@@ -28,6 +28,7 @@ from .candidates import (PROPORTION_KEYS, SLOTS, base_drawn, candidates_bytes, e
                          rendered_shape_words, safety_flags, said_words, slot_value, spec_sha256, unrendered_said_words)
 from .form_assets import DEFAULT_PROCEDURAL, R_NO_SHAPE_PREVIEW, R_PREVIEW_FAILED, _rej, add_generated
 from .paths import shared
+from .resay_flow import FORMAT_VERSION_RESAY, GENERATED_RESAID_CHOSEN, RESAID, ResayState
 from .scene_builder import normalize_confirmed
 from .scene_builder_v2 import floor_record
 from .session_log import now_iso
@@ -41,6 +42,9 @@ FORMAT_VERSION = "ifs-selection/0.2"
 # (고른 생성 메시: assetId·glb·glbSha256·pipeline·seed·models·promptText …, 아니면 null), generation(조회 키, 제시한 생성 후보,
 # 차단·실패·관문 탈락 등 거부 사유, 고른 결과·고르지 않은 생성 후보, 형태를 고쳐 버린 자산). 후보 sources 값 generated, 후보 origin·asset.
 FORMAT_VERSION_GEN3D = "ifs-selection/0.3"
+# 0.4(G73 CP13b, [gen3d] enabled + resay일 때만 — 아니면 0.3·0.2 그대로): 맨 위 resay(노출 단계별 기록·회차·덮어쓰기 값 상세·렌더 변수,
+# 원문 없음 — 원문은 같은 폴더 resay.json), 출처 값 generated_resaid_chosen·resaid, 후보 r<회차>-…(origin generated_resaid),
+# 덮어쓰기 키 mist.density·material.emission, stage resay·resay_crisis. 흐름은 resay_flow.py(FORMAT_VERSION_RESAY)
 GENERATED_CHOSEN = "generated_chosen"
 PREMEASURE_VERSION = "ifs-premeasure/0.1"
 ITEMS = ("color", "form", "brightness", "opacity", "size", "texture", "motion")   # G31: 색이 맨 앞(표 adjustItems.order와 같음)
@@ -55,6 +59,7 @@ SKIP_REASON = "single_distinct_candidate"      # G34: 구별되는 후보가 하
 # 슬롯 출처(G15 네 가지 + G32 두 가지). 러너(PlacementSelection.cs SourceValues)와 스키마 $defs.source가 같은 목록이다.
 SOURCES = ("said", "chosen", "edited", "default", "said_unrendered_chosen", "said_unrendered_default")
 SOURCES_GEN3D = SOURCES + (GENERATED_CHOSEN,)      # 0.3(G62)
+SOURCES_RESAY = SOURCES_GEN3D + (GENERATED_RESAID_CHOSEN, RESAID)   # 0.4(G73, [gen3d] resay일 때만)
 SAID_NOT_IN_TABLE = "said_value_not_in_table"
 
 # 러너에 넘길 수 없는 이유(runnerBlockers). 러너(PlacementSelection.cs)도 runnerReady = false면 이 글을 붙여 시작을 거부한다.
@@ -242,6 +247,9 @@ class SelectionFlow:
         self.form_assets = getattr(rt, "form_assets", None)
         self._asset_paths: dict[str, Path] = {}          # 생성 후보 id → GLB 경로(기록에 쓰지 않음)
         self._sidecar_paths: dict[str, Path] = {}
+        # G73(CP13b): [맞는 게 없어요] 뒤 다시 적기([gen3d] enabled + resay일 때만, 아니면 None — 출력은 G73 전과 같다)
+        svc = getattr(rt, "resay", None)
+        self.resay: ResayState | None = ResayState(self, svc) if svc is not None and self.gen3d else None
 
     @property
     def gen3d(self) -> bool:
@@ -249,7 +257,17 @@ class SelectionFlow:
 
     @property
     def sources_list(self) -> tuple:
+        if self.resay is not None:
+            return SOURCES_RESAY
         return SOURCES_GEN3D if self.gen3d else SOURCES
+
+    @property
+    def item_defs(self) -> dict:
+        """조절 항목 정의: 값 표 adjustItems.items + (다시 적기) 이 세션에 더한 항목(짙기·빛). 더한 것이 없으면 표 그대로."""
+        base = self.table["adjustItems"]["items"]
+        if self.resay is None or not self.resay.extra_items:
+            return base
+        return {**base, **self.resay.extra_items}
 
     # ── 도우미 ──────────────────────────────────────────────────────────────
     @property
@@ -260,7 +278,10 @@ class SelectionFlow:
     def items(self) -> tuple:
         """이 표의 조절 항목(ITEMS_ALL 순서 가운데 표에 있는 것). 값 표 2.0.0이면 ITEMS 일곱 개 그대로."""
         have = self.table["adjustItems"]["items"]
-        return tuple(i for i in ITEMS_ALL if i in have)
+        out = tuple(i for i in ITEMS_ALL if i in have)
+        if self.resay is not None and self.resay.extra_items:
+            out += tuple(i for i in self.resay.extra_items if i not in out)
+        return out
 
     @property
     def has_proportions(self) -> bool:
@@ -273,7 +294,7 @@ class SelectionFlow:
         return effective_params(self.spec, self.defaults)
 
     def _item_value(self, item: str, params: dict):
-        it = self.table["adjustItems"]["items"][item]
+        it = self.item_defs[item]
         if "valueOverrides" in it:
             # D6 형태 항목: 기본 형상이 그려지면(form.base 있음 + form.type blob) 그 기본 형상, 아니면 form.type
             base = params.get("form.base", "none")
@@ -303,7 +324,7 @@ class SelectionFlow:
 
     def item_values(self, item: str) -> list:
         """이 세션의 조절 값 목록(표의 값 + 표에 없던 말한 값)."""
-        it = self.table["adjustItems"]["items"][item]
+        it = self.item_defs[item]
         vals = list(it["values"]) if it["kind"] != "swatch" else [s["id"] for s in it["swatches"]]
         if item in self.extras:
             vals.append(self.extras[item]["value"])
@@ -419,6 +440,10 @@ class SelectionFlow:
                 self.data["generation"] = {**copy.deepcopy(self.cands["generation"]),
                                            "shownOrder": [cid for cid in self.cands["displayOrder"] if cid in self._asset_paths],
                                            "outcome": None, "acceptedDefault": None, "declined": [], "assetDropped": None}
+            if self.resay is not None:
+                # G73(0.4, [gen3d] resay일 때만 — 꺼져 있으면 키 자체를 넣지 않는다(0.3 그대로)): 다시 적기 노출·제출·생성·제시·선택 기록
+                self.data["formatVersion"] = FORMAT_VERSION_RESAY
+                self.data["resay"] = self.resay.init_record()
             skip = self.cands["selectionStep"] == "skip"
             if skip:
                 self._enter_skip(now)
@@ -450,6 +475,8 @@ class SelectionFlow:
         """후보 id 하나 또는 "none"(맞는 것이 없다, G23: 기준 후보 0번으로 진행)."""
         with self.lock:
             self._require("selecting")
+            if choice == NONE_CHOICE and self.resay is not None and self.resay.on_none():
+                return self.view()                      # G73: 다시 적기 화면(또는 회차를 다 써서 기준 후보 0번 → 조절)
             order = self.cands["displayOrder"]
             if choice == NONE_CHOICE:
                 op = self.cands["candidates"][0]
@@ -468,6 +495,8 @@ class SelectionFlow:
             self.current = dict(op["overrides"])
             if self.gen3d:
                 self._record_generation_choice(op if choice != NONE_CHOICE else None)
+            if self.resay is not None:
+                self.resay.after_select(op, choice)
             self._save()
             self._log_event("selection:selected", {k: sel[k] for k in ("selectedCandidateId", "none", "displayPosition",
                                                                       "operationalId", "operationalIndex")})
@@ -505,7 +534,7 @@ class SelectionFlow:
         rec = self.data["form"]["asset"]
         if rec is None:
             return None
-        items = self.table["adjustItems"]["items"]
+        items = self.item_defs
         for item, summ in self.data["adjustments"]["items"].items():
             if "valueOverrides" in items[item] and not _same_value(summ["last"], summ["first"]):
                 return None
@@ -588,6 +617,12 @@ class SelectionFlow:
         if cid not in offered:
             self.data["form"]["asset"] = None
             return
+        self.data["form"]["asset"] = self._asset_record(chosen)
+
+    def _asset_record(self, chosen: dict) -> dict:
+        """고른 생성 후보의 form.asset 기록. GLB·사이드카를 세션 폴더로 복사(persist일 때)."""
+        gen = self.data["generation"]
+        cid = chosen["id"]
         a = chosen["asset"]
         rec = {"candidateId": cid, **{k: copy.deepcopy(a[k]) for k in (
             "assetId", "glb", "glbSha256", "sidecarSha256", "pipeline", "seed", "models", "promptText", "lexiconVersion",
@@ -608,14 +643,14 @@ class SelectionFlow:
                 rec["sidecar"] = stem + ".json"
             except OSError as exc:
                 gen.setdefault("copyErrors", []).append({"assetId": a["assetId"], "reason": f"copy_failed: {type(exc).__name__}"})
-        self.data["form"]["asset"] = rec
+        return rec
 
     def _drop_asset_if_form_edited(self) -> None:
         """생성 후보를 고른 뒤 형태 조절을 처음과 다른 값으로 끝냈으면 생성 메시를 쓰지 않는다(참여자가 고친 형태가 그려짐)."""
         asset = self.data["form"]["asset"]
         if asset is None:
             return
-        items = self.table["adjustItems"]["items"]
+        items = self.item_defs
         for item, summ in self.data["adjustments"]["items"].items():
             if "valueOverrides" in items[item] and not _same_value(summ["last"], summ["first"]):
                 self.data["form"]["asset"] = None
@@ -638,7 +673,7 @@ class SelectionFlow:
     # ── 5 조절 ──────────────────────────────────────────────────────────────
     def _validate(self, item: str, value) -> dict:
         """(항목, 값) → 덮어쓰기 키:값. 표 밖이면 SelectionInvalid."""
-        items = self.table["adjustItems"]["items"]
+        items = self.item_defs
         if item not in self.items:
             raise SelectionInvalid(f"조절 항목이 아닙니다: {item} (가능: {', '.join(self.items)}). 위치·거리는 조절하지 않습니다(G10).")
         it = items[item]
@@ -678,7 +713,7 @@ class SelectionFlow:
             at = now_iso()
             ev = self.data["adjustments"]["events"]
             event = {"i": len(ev), "item": item, "value": after, "previous": before, "at": at}
-            if "valueOverrides" in self.table["adjustItems"]["items"][item]:
+            if "valueOverrides" in self.item_defs[item]:
                 # G39: 형태 조작 한 번 = 고른 값 하나(value). 그 조작으로 정해진 세 슬롯을 함께 남긴다(변형값은 base가 spec의
                 # base와 다르면 null — 이전 base의 변형값은 지워짐)
                 event["formSlots"] = self._form_slots(params)
@@ -730,6 +765,13 @@ class SelectionFlow:
             if final[k] != base[k]:
                 v = final[k]
                 out[k] = round(v, 4) if isinstance(v, float) else v
+        if self.resay is not None:
+            # G73: 다시 적은 글로 처음 값을 정한 키 가운데 값 표에 없는 것(mist.density·material.emission)
+            for k in self.resay.svc.adjust["extraOverrideKeys"]:
+                if k in self.current:
+                    v = self.current[k]
+                    out[k] = round(v, 4) if isinstance(v, float) else v
+            out = dict(sorted(out.items()))
         return out
 
     def _slot_sources(self) -> tuple[dict, dict]:
@@ -743,7 +785,7 @@ class SelectionFlow:
                  else said_words(rendered_shape_words(self.spec, self.table)) if rendered else [])
         blocks = form_blocks(self.spec)                                 # G50 (1): 넷째 범주 — 형태 후보를 내지 않았음
         floor = self.data.get("distanceFloor")
-        items = self.table["adjustItems"]["items"]
+        items = self.item_defs
         final = effective_params(self.spec, self.defaults, self.current)
         start = effective_params(self.spec, self.defaults)
         edited: dict[str, object] = {}
@@ -820,6 +862,8 @@ class SelectionFlow:
                 rec["formItem"] = form_item                            # G39: 세 슬롯을 정한 형태 조작(처음·마지막 값·횟수)
             counts[rec["source"]] += 1
             out[slot] = rec
+        if self.resay is not None:
+            self.resay.slot_sources(out, counts, edited, final)        # G73: generated_resaid_chosen · resaid
         return out, counts
 
     def finish(self) -> dict:
@@ -831,6 +875,8 @@ class SelectionFlow:
             self.data["finalOverrides"] = self._final_overrides()
             self.data["sourceDetails"], self.data["sourceCounts"] = self._slot_sources()
             self.data["sources"] = {k: v["source"] for k, v in self.data["sourceDetails"].items()}   # 러너 계약 필드
+            if self.resay is not None:
+                self.resay.on_finish(effective_params(self.spec, self.defaults, self.current))
             if self.has_proportions:
                 self.data["proportions"] = self._proportions_record(final=True)
             self.data["stage"] = "premeasure"
@@ -931,7 +977,7 @@ class SelectionFlow:
         읽기만 한다: 조절 기록·selection.json·현재 상태를 바꾸지 않는다. 값 목록·검사는 adjust와 같다(_validate)."""
         with self.lock:
             self._require("adjusting")
-            it = self.table["adjustItems"]["items"].get(item)
+            it = self.item_defs.get(item)
             if item not in self.items or it is None or it["kind"] != "category":
                 raise SelectionInvalid(f"견본은 범주 항목만 그립니다: {item}")
             out = []
@@ -1067,6 +1113,9 @@ class SelectionFlow:
                 "motion.type", "material.color.h", "material.color.s", "material.color.l"]
         if PROPORTION_KEYS[0] in p:
             keys.insert(3, "layout.proportions")
+        for k in ("mist.density", "material.emission"):       # G73: 다시 적은 글의 처음 값이 쓰인 세션에만 있음
+            if k in overrides:
+                keys.append(k)
         eff = proportions_effective(p)
         return [(f"{k} = {eff}" + (" *" if any(x in overrides for x in PROPORTION_KEYS) else "")) if k == "layout.proportions" else
                 f"{k} = {round(p[k], 4) if isinstance(p[k], float) else p[k]}" + (" *" if k in overrides else "")
@@ -1083,8 +1132,20 @@ class SelectionFlow:
         info["fallback"] = self.rt.preview.fallback_target(self.preview_mode) if self.preview_mode == "webgl" else None
         return info
 
+    def resay_action(self, action: str, text: str | None) -> dict:
+        """G73 다시 적기 화면의 동작(submit·skip·retry·continue)."""
+        with self.lock:
+            if self.resay is None:
+                raise SelectionError("다시 적기가 꺼져 있습니다([gen3d] resay = false).")
+            if self.data is None:
+                raise SelectionError("후보가 아직 없습니다.")
+            self.resay.action(action, text)
+            return self.view()
+
     def view(self) -> dict:
         with self.lock:
+            if self.resay is not None:
+                self.resay.check_timeout()
             pinfo = self.protocol.info()
             out = {"sessionId": self.s.id, "stage": self.stage, "preview": self.preview_info(),
                    "draftCount": pinfo["draftCount"], "draftKeys": pinfo["draftKeys"],
@@ -1104,6 +1165,8 @@ class SelectionFlow:
                         c["asset"] = {"assetId": a["assetId"], "glbSha256": a["glbSha256"],
                                       "glbUrl": f"/api/sessions/{self.s.id}/candidates/{c['id']}/asset.glb"}
                 default_id = self.cands["generation"]["defaultCandidateId"]
+                if self.resay is not None and self.resay.round:
+                    default_id = None                   # G73: 다시 적은 뒤의 후보 화면은 미리 고르지 않는다
                 for c in out["candidates"]:
                     c["default"] = c["id"] == default_id
                 out["defaultCandidateId"] = default_id          # 미리 선택할 후보(없으면 null). 확정은 참여자가 한다
@@ -1114,6 +1177,12 @@ class SelectionFlow:
                 out["currentAsset"] = None if ca is None else {
                     "assetId": ca["assetId"], "glbSha256": ca["glbSha256"],
                     "glbUrl": f"/api/sessions/{self.s.id}/candidates/{self.data['form']['asset']['candidateId']}/asset.glb"}
+            if self.resay is not None:
+                rv = self.resay.view()
+                for c in out["candidates"]:
+                    c["resaid"] = by_id[c["id"]].get("origin") == "generated_resaid"
+                    c["new"] = c["id"] in rv["newCandidateIds"]
+                out["resay"] = rv
             out["skipped"] = bool(self.data["selection"] and self.data["selection"].get("skipped"))
             out["axes"] = self.cands["axes"]
             out["note"] = self.cands["note"]
@@ -1124,6 +1193,13 @@ class SelectionFlow:
                 params = effective_params(self.spec, self.defaults, self.current)
                 out["current"] = {"overrides": dict(self.current), "summary": self.summary(self.current),
                                   "items": {i: self._item_value(i, params) for i in self.items}}
+                if self.resay is not None and self.resay.extra_items:
+                    # G73: 이 세션에만 더한 조절 항목(값 표에 없음). 화면은 값 표 항목 뒤에 그린다(짙기는 안개일 때만)
+                    labels = self.protocol.data["adjustItemLabels"]
+                    out["extraAdjustItems"] = [
+                        {"id": i, "label": labels[i]["text"], "kind": self.resay.extra_items[i]["kind"],
+                         "values": list(self.resay.extra_items[i]["values"])}
+                        for i in self.resay.visible_extra_items(params)]
                 out["adjustCounts"] = {k: v["count"] for k, v in self.data["adjustments"]["items"].items()}
                 out["colorChanged"] = self.data["colorChanged"]
             if self.stage in ("premeasure", "done"):

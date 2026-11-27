@@ -1,4 +1,6 @@
 # G62 생성 형태 메시 후보 프로필: v4.toml과 같고 [gen3d]만 켠다(설계 docs/codex-reviews/D8_claude.md, 결정 G62).
+# G73(CP13b, 2026-11-28): 다시 적기([gen3d] resay)도 이 프로필에서만 켠다. 그래서 [selection] protocol·table도 v4와 다르다
+# (다시 적기 문구 0.8.0, 값 표 3.0.0). selection.json은 ifs-selection/0.4.
 # 실행: python -m ifs_chatbot.server --config v4-gen3d
 # 챗봇은 형태 생성 모델을 부르지 않는다. 생성 도구(tools/gen3d)가 assets_dir에 둔 GLB + 사이드카(form-asset.v0)를 확정 텍스트의
 # sha256으로 찾아 절차 메시 후보 뒤에 최대 max_candidates개를 더한다. selection.json은 ifs-selection/0.3.
@@ -62,8 +64,8 @@ allow_draft_phrases = false
 
 [selection]
 enabled = true                                  # 확정 뒤 후보 선택 · 조절 · 사전 측정 단계를 연다
-protocol = "selection_protocol.v0.json"         # shared/protocol/ (모든 문구 status draft)
-table = "candidate_values.v2.json"              # shared/lexicon/ (후보·조절 값 표, 2.0.0 — D6 기본 형상. 1.0.0 = v1 파일)
+protocol = "selection_protocol.v0.8.json"       # ◆ G73(CP13b): 0.7.0 + 다시 적기 문구(0.8.0, 모두 draft). v4.toml은 v0.json(0.6.0) 그대로
+table = "candidate_values.v3.json"              # ◆ G73(CP13b): 너비·높이·깊이 항목(3.0.0, G72) — 다시 적은 글의 비율 값을 참여자가 조절 화면에서 고칠 수 있게
 require_spec_phrases = false                    # true면 초안 문구가 있을 때 후보 단계를 시작하지 않음(X35)
 participant_draft_banner = true                 # false면 초안 문구 경고 줄을 참여자 보기에서 숨김(연구자 보기·기록에는 남음, G59). ⚠ 사람이 정할 것
 post_interview = "post_interview.v0.json"       # 사후 면담 기록 화면 /?view=postinterview&session=<ID>의 문항(shared/protocol/, 모두 draft, G59)
@@ -87,4 +89,12 @@ enabled = true                                  # G62: 생성 형태 메시 후�
 assets_dir = "../../gen3d-out"                  # 저장소 밖(chatbot/ 기준 상대 경로). 하위 폴더까지 사이드카를 찾는다
 max_candidates = 2                              # 절차 후보에 더할 생성 후보 최대 수(status ok + gate.passed)
 default_form_source = "auto"                    # G62-i: 말한 형태 낱말이 모두 단순 도형(primitive_forms.v0.json)이면 절차 메시가 기본, 그 밖의 사물이면 쓸 수 있는 생성 후보가 기본(맨 앞·미리 선택, 참여자가 확정해야 씀). "generated"·"procedural"은 고정
-
+# ◆ G73(CP13b): [맞는 게 없어요] 뒤 '다시 적기'. 본 실험(experiment.toml)에는 넣지 않는다(G73-g). 값은 모두 잠정(G73-d, Windows 실측 뒤 정함)
+resay = true
+resay_max_rounds = 2                            # 다시 적기 최대 횟수
+resay_candidates = 2                            # 회당 생성 후보 최대 수
+resay_round_timeout_s = 240.0                   # 회당 시간 제한(제출 → 생성 끝)
+resay_total_wait_s = 420.0                      # 모든 회차 기다림 합의 상한
+resay_generator = ""                            # "" = 생성기 없음(단단한 사물은 '만들지 못했어요' → 다시 적기·건너뛰기). "queue" = 상주 생성 프로세스(⚠ 생성 쪽 작업자 미구현)
+resay_queue_dir = ""                            # 비우면 logs/gen3d-queue
+resay_bilingual_dict = ""                       # ⚠ 한국어기초사전 라이선스·형식 확인 전(G73 켜기 전에 사람이 할 것)

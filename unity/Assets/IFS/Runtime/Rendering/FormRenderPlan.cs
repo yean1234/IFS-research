@@ -310,6 +310,10 @@ namespace IFS.SceneSpec
             string renderer = shapeModel ? RendererShapeModel : RendererFor(form);
             bool fragments = renderer == RendererFragments;
             bool mist = renderer == RendererMist;
+            // (G73 CP13b) 안개 밀도 덮어쓰기(mist.density, 0–1): 안개 렌더러일 때만 프리셋 밀도(기본 0.5)를 그 값으로 바꾼다
+            bool densityOverride = mist && current.MistDensity.HasValue;
+            if (densityOverride)
+                preset = new FormPreset(preset.Lumpiness, preset.NoiseScale, preset.Fuzz, (float)current.MistDensity.Value, preset.ShellOpen);
             var inv = System.Globalization.CultureInfo.InvariantCulture;
             return new FormRenderPlan
             {
@@ -340,7 +344,7 @@ namespace IFS.SceneSpec
                     : renderer == RendererMist
                     ? $"form.type=mist: 형상 프리셋 기본값 — 구 대리 메시 + 레이마칭 {MistSteps}걸음, 둥근 덩어리 {MistLumps.Count}개(배치 규칙 {MistLumps.RuleVersion}, " +
                       $"seed {MistLumps.DefaultSeed}) + 중간 주파수 노이즈(겉면 흔들림 {preset.Lumpiness.ToString(inv)}, 노이즈 크기 {preset.NoiseScale.ToString(inv)}), " +
-                      $"밀도 {preset.Density.ToString(inv)}(광학 두께 배율. 덩어리 속 알파는 opacity 가까이까지 차고 opacity를 넘지 않음). " +
+                      $"밀도 {preset.Density.ToString(inv)}{(densityOverride ? "(덮어쓰기 mist.density, G73)" : "")}(광학 두께 배율. 덩어리 속 알파는 opacity 가까이까지 차고 opacity를 넘지 않음). " +
                       "mist에서 material.roughness는 표면 반사(광택)가 아니라 밀도 노이즈 크기 배율(0.7–1.3)과 색 얼룩 세기를 정함"
                     : null,
             };

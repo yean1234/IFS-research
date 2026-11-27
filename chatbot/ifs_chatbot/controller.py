@@ -44,6 +44,8 @@ from .scene_builder import SceneSpecBuilder, normalize_confirmed, write_spec
 from .scene_builder_v1 import SceneSpecBuilderV1, fallback_spec
 from .scene_builder_v2 import SceneSpecBuilderV2, load_lexicon_chain
 from .scene_spec import check_principles
+from .resay_flow import ResayService
+from .resay_flow import missing_phrases as resay_missing_phrases
 from .selection import SelectionError, SelectionFlow, SelectionProtocol, delete_selection_dir
 from .session_log import SessionLog, now_iso
 from .validator import TurnContext, Validator, describe
@@ -211,6 +213,22 @@ class Runtime:
             if not self.form_assets.root.is_dir():
                 self.warnings.append("[gen3d] 자산 폴더가 없어 생성 형태 후보를 내지 않습니다(절차 메시 후보만): "
                                      f"assets_dir = {cfg.gen3d.assets_dir}")
+        # G73(CP13b): [맞는 게 없어요] 뒤 다시 적기([gen3d] enabled + resay + 다시 적기 문구가 있는 후보 문구 판일 때만).
+        # 꺼져 있으면 None — 후보·기록·화면 출력이 G73 전과 같다
+        self.resay: ResayService | None = None
+        if cfg.gen3d.resay:
+            missing = resay_missing_phrases(self.selection_protocol)
+            if not cfg.gen3d.enabled:
+                self.warnings.append("[gen3d] resay = true지만 [gen3d] enabled = false라 다시 적기를 끕니다.")
+            elif not cfg.selection.enabled:
+                self.warnings.append("[gen3d] resay = true지만 [selection] enabled = false라 다시 적기를 끕니다.")
+            elif missing:
+                self.warnings.append(f"[gen3d] resay = true지만 후보 문구 판 {self.selection_protocol.version}에 다시 적기 문구가 "
+                                     f"없어 끕니다(없는 것: {', '.join(missing)}). selection_protocol.v0.8.json 이상을 쓰세요.")
+            else:
+                self.resay = ResayService(self)
+                self.warnings.append("[gen3d] 다시 적기(G73)를 켰습니다 — 본 실험(12-02)에는 넣지 않는 기능입니다(G73-g). "
+                                     f"생성기: {self.resay.setting()['generator']['kind']}")
 
     def header(self, condition: str) -> dict:
         h = {
@@ -263,6 +281,7 @@ class Runtime:
                           "tableVersion": self.candidate_table["tableVersion"]},
             "preview": self.preview.info(),
             **({"gen3d": self.form_assets.info()} if self.form_assets is not None else {}),   # G62: 켰을 때만(꺼지면 출력 그대로)
+            **({"resay": self.resay.setting()} if self.resay is not None else {}),           # G73: 켰을 때만
             "warnings": self.warnings,
         }
 

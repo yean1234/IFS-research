@@ -153,9 +153,12 @@ def test_gen3d_off_by_default_and_on_only_in_gen3d_profile():
     on = load_config("v4-gen3d")
     assert on.gen3d.enabled is True and on.gen3d.max_candidates == 2
     assert on.gen3d.default_form_source == "auto" and Gen3DConfig().default_form_source == "procedural"   # G62-i
-    # v4-gen3d는 v4와 [gen3d]만 다르다
+    # v4-gen3d는 v4와 [gen3d]만 다르다 — G73(CP13b)부터 다시 적기 때문에 [selection] protocol(0.8.0)·table(3.0.0)도 다르다
     a, b = load_config("v4").to_dict(), on.to_dict()
     a.pop("source"), b.pop("source"), a.pop("gen3d"), b.pop("gen3d")
+    assert (b["selection"].pop("protocol"), b["selection"].pop("table")) == ("selection_protocol.v0.8.json",
+                                                                             "candidate_values.v3.json")
+    a["selection"].pop("protocol"), a["selection"].pop("table")
     assert a == b
 
 
@@ -377,7 +380,8 @@ def test_02_files_still_validate_and_runner_reads_all_three_versions():
     test_flag_off_output_identical_even_with_matching_assets, 0.2 파일의 러너 읽기는 FormAssetTests(C#)가 본다."""
     src = (REPO_ROOT / "unity/Assets/IFS/Runtime/Placement/PlacementSelection.cs").read_text(encoding="utf-8")
     known = re.search(r"KnownFormatVersions\s*=\s*\{([^}]*)\}", src).group(1)
-    assert set(re.findall(r'"([^"]+)"', known)) == {"ifs-selection/0.1", "ifs-selection/0.2", "ifs-selection/0.3"}
+    assert set(re.findall(r'"([^"]+)"', known)) == {"ifs-selection/0.1", "ifs-selection/0.2", "ifs-selection/0.3",
+                                                    "ifs-selection/0.4"}       # 0.4 = G73 다시 적기(test_g73_resay_flow.py)
     s03 = re.search(r"SourceValues03\s*=\s*\{([^}]*)\}", src).group(1)
     assert re.findall(r'"([^"]+)"', s03) == SCHEMA03["$defs"]["source"]["enum"]
 

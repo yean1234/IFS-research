@@ -1,6 +1,7 @@
 // 해석된 SceneParams 위에 얹는 덮어쓰기(소유감 실험의 변형본). 원본 spec 파일은 고치지 않는다.
 //   Numbers·Categories = SceneParams 키 → 값(SetNumber·SetCategory와 같은 뜻, 0–1 조정 포함)
 //   (2.4, G72) layout.proportions.x·y·z = x·y·z 비율의 원값(참여자 조절 화면 값, 0.2–2.0). 렌더러가 셋의 가장 큰 값으로 나누고 0.2–1로 자른다.
+//   (G73 CP13b) mist.density = 안개 밀도(0–1, spec 슬롯 아님 — SceneParams.MistDensity). form.type mist의 프리셋 밀도를 대신한다.
 //              일부 축만 주면 나머지는 spec 값(spec이 null이면 1.0). 위치·거리 키와 달리 선택 파일 덮어쓰기에 넣을 수 있다.
 //   ShapeModel = 모양 모형 강제(Sphere·Cube·FlatCylinder·Cone). null이면 spec의 모양어 판정을 그대로 쓴다.
 //                form.type 덮어쓰기와 별개 필드다. 해석된 form.type이 blob일 때만 쓸 수 있다.
@@ -32,6 +33,11 @@ namespace IFS.SceneSpec
                 {
                     if (!ProportionsRender.InRawRange(kv.Value)) errors.Add($"{kv.Key}: {kv.Value}가 0.2–2 밖");
                 }
+                else if (kv.Key == SceneParams.MistDensityKey)
+                {
+                    // (G73 CP13b) 안개 밀도(spec 슬롯 아님, 0–1)
+                    if (double.IsNaN(kv.Value) || kv.Value < 0 || kv.Value > 1) errors.Add($"{kv.Key}: {kv.Value}가 0–1 밖");
+                }
                 else if (Array.IndexOf(SceneParams.NumericKeys, kv.Key) < 0) errors.Add("수치 키가 아님: " + kv.Key);
                 else if (double.IsNaN(kv.Value) || kv.Value < 0 || kv.Value > 1) errors.Add($"{kv.Key}: {kv.Value}가 0–1 밖");
             }
@@ -56,7 +62,11 @@ namespace IFS.SceneSpec
         public List<string> ApplyTo(SceneParams p)
         {
             var changed = new List<string>();
-            foreach (var kv in Numbers) if (p.SetNumber(kv.Key, kv.Value)) changed.Add(kv.Key);
+            foreach (var kv in Numbers)
+            {
+                if (kv.Key == SceneParams.MistDensityKey) { if (p.SetMistDensity(kv.Value)) changed.Add(kv.Key); }
+                else if (p.SetNumber(kv.Key, kv.Value)) changed.Add(kv.Key);
+            }
             foreach (var kv in Categories) if (p.SetCategory(kv.Key, kv.Value)) changed.Add(kv.Key);
             return changed;
         }

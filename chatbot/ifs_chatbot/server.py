@@ -84,6 +84,12 @@ class SelectionChoice(BaseModel):
     candidateId: str = Field(..., max_length=64, description="보여 준 후보 id 또는 \"none\"(맞는 것이 없다, G23)")
 
 
+class ResayAction(BaseModel):
+    """G73 다시 적기 화면 동작. text는 submit에만(원문은 git 밖 logs/selection/<sessionId>/resay.json에만 쓴다)."""
+    action: str = Field(..., max_length=16, description="submit | skip | retry | continue")
+    text: str | None = Field(None, max_length=4000)
+
+
 class AdjustStep(BaseModel):
     item: str = Field(..., max_length=32, description="form | color | brightness | opacity | size | texture | motion (G10)")
     value: Any = Field(..., description="표의 값(색은 견본 id, 형태·움직임은 이름, 나머지는 정해진 단계의 숫자)")
@@ -267,6 +273,11 @@ def create_app(cfg: Config | None = None, runtime: Runtime | None = None, warmup
     @app.post("/api/sessions/{sid}/selection")
     def select(sid: str, body: SelectionChoice):
         return sel_run(flow(sid).select, body.candidateId)
+
+    @app.post("/api/sessions/{sid}/resay")
+    def resay(sid: str, body: ResayAction):
+        """G73: [맞는 게 없어요] 뒤 다시 적기(켜져 있을 때만). 제출은 바로 돌아오고(생성은 백그라운드) 화면은 GET …/selection으로 기다린다."""
+        return sel_run(flow(sid).resay_action, body.action, body.text)
 
     @app.post("/api/sessions/{sid}/adjust")
     def adjust(sid: str, body: AdjustStep):

@@ -77,6 +77,29 @@ namespace IFS.SceneSpec.Tests
         public void Background_names(string name, PreviewBackground expected) =>
             Assert.That(PreviewBridge.ParseBackground(name), Is.EqualTo(expected));
 
+        // G73(CP13b): 다시 적기의 안개 밀도 덮어쓰기(spec 슬롯 아님, 0–1)
+        [Test]
+        public void Mist_density_is_accepted_and_applied_outside_numeric_keys()
+        {
+            var o = SceneOverrideJson.Parse("{\"form.type\":\"mist\",\"mist.density\":0.8}", out var errors);
+            Assert.That(errors, Is.Empty);
+            var p = SceneParams.FromSpec(OwnershipTestSpecs.Empty("G73D").Parse(), new SceneDefaults());
+            Assert.That(p.MistDensity, Is.Null);
+            var changed = o.ApplyTo(p);
+            Assert.That(changed, Does.Contain(SceneParams.MistDensityKey));
+            Assert.That(p.MistDensity, Is.EqualTo(0.8).Within(1e-9));
+            Assert.That(p.Clone().MistDensity, Is.EqualTo(0.8).Within(1e-9));
+            Assert.That(p.ToRecord().ContainsKey(SceneParams.MistDensityKey), Is.False);   // 기록·golden 지문은 그대로
+        }
+
+        [TestCase("{\"mist.density\":1.5}")]
+        [TestCase("{\"mist.density\":-0.1}")]
+        public void Mist_density_out_of_range_is_an_error(string json)
+        {
+            Assert.That(SceneOverrideJson.Parse(json, out var errors), Is.Null);
+            Assert.That(string.Join(";", errors), Does.Contain("0–1 밖"));
+        }
+
         [Test]
         public void Unknown_background_is_an_error() =>
             Assert.Throws<ArgumentException>(() => PreviewBridge.ParseBackground("grey"));

@@ -16,6 +16,21 @@ namespace IFS.SceneSpec.Tests
 
         static string PlanJson(JObject o) => Plan(o).ToJson().ToString(Formatting.None);
 
+        // G73(CP13b): 덮어쓰기 mist.density는 안개 렌더러의 프리셋 밀도를 대신하고, 다른 형태에는 쓰이지 않는다
+        [Test]
+        public void Mist_density_override_replaces_mist_preset_density_only()
+        {
+            var spec = Mist("G73MIST").Parse();
+            var p = SceneParams.FromSpec(spec, new SceneDefaults());
+            Assert.That(FormRenderPlan.Build(p, "mist", null).Preset.Density, Is.EqualTo(0.5f));
+            p.SetMistDensity(0.25);
+            var plan = FormRenderPlan.Build(p, "mist", null);
+            Assert.That(plan.Preset.Density, Is.EqualTo(0.25f).Within(1e-6));
+            Assert.That((double)plan.ToJson()["preset"]["density"], Is.EqualTo(0.25).Within(1e-4));
+            p.SetCategory("form.type", "blob");
+            Assert.That(FormRenderPlan.Build(p, "mist", null).Preset.Density, Is.EqualTo(1f));   // 안개가 아니면 쓰지 않음
+        }
+
         static JObject Mist(string id) =>
             OwnershipTestSpecs.Empty(id).Slot("form.type", "mist", "안개").Slot("material.opacity", 0.6, "흐릿")
                 .Hsl(0.6, 0.45, 0.6, "파란").Slot("layout.size", 0.7, "큰");
