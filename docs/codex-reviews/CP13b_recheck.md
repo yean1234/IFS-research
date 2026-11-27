@@ -1,0 +1,11 @@
+- **1 — 고쳐짐.** 제출 시각을 제한 시간 시작으로 잡고, 첫 파이프라인 초기화도 작업 스레드 안에서 합니다([resay_flow.py](<repo>/chatbot/ifs_chatbot/resay_flow.py:350), [resay_flow.py](<repo>/chatbot/ifs_chatbot/resay_flow.py:412)). 재현 시험은 0.6초 초기화에 0.3초 제한을 걸어 결과가 반영되지 않고 기준 후보로 돌아가는지 확인합니다([test_g73_resay_flow.py](<repo>/chatbot/tests/test_g73_resay_flow.py:525)).
+
+- **2 — 고쳐짐.** 재진술이 정한 슬롯은 값이 같아도 출처를 `resaid`로 처리합니다([resay_flow.py](<repo>/chatbot/ifs_chatbot/resay_flow.py:797), [resay_flow.py](<repo>/chatbot/ifs_chatbot/resay_flow.py:739)). 확정 스펙이 이미 `mist`인 경우에도 `form.type`은 `resaid`, 값이 바뀌지 않은 `form.base`는 기존 출처로 남는 시험이 있습니다([test_g73_resay_flow.py](<repo>/chatbot/tests/test_g73_resay_flow.py:553)).
+
+- **3 — 덜 고쳐짐.** 철회·세션 종료·서버 종료에서 취소 이벤트와 토큰 무효화가 연결됐고, 늦은 결과는 버립니다([controller.py](<repo>/chatbot/ifs_chatbot/controller.py:309), [controller.py](<repo>/chatbot/ifs_chatbot/controller.py:548), [server.py](<repo>/chatbot/ifs_chatbot/server.py:119), [resay_flow.py](<repo>/chatbot/ifs_chatbot/resay_flow.py:433)). 다만 취소가 파이프라인 초기화·매핑 자체를 중단하지는 않고 생성기에 이벤트를 전달할 뿐입니다. 생성기가 취소를 무시하면 작업은 계속될 수 있습니다(사용자가 알려준 경쟁 상황). 관련 시험도 취소를 지키는 가짜 생성기만으로 확인합니다([test_g73_resay_flow.py](<repo>/chatbot/tests/test_g73_resay_flow.py:570)). `Runtime.close()`는 세션 목록을 한 번 복사해 취소하므로, 종료 중 새 세션이 추가되는 경쟁도 막지 않습니다([controller.py](<repo>/chatbot/ifs_chatbot/controller.py:317)).
+
+- **4 — 고쳐짐.** 위기·입력/대기 중 건너뛰기·시간 초과·생성 실패·회차 상한을 두 조건에서 비교하고 기준 후보 복귀·출력 기록도 검사합니다([test_g73_resay_flow.py](<repo>/chatbot/tests/test_g73_resay_flow.py:624)).
+
+- **주어 부정 — 덜 고쳐짐.** 재진술 매퍼에 한해 부정 서술어의 주어 명사를 살리는 규칙이 추가됐고, 존재·지정 부정 시험도 있습니다([resay.py](<repo>/chatbot/ifs_chatbot/resay.py:231), [test_g73_resay_mapping.py](<repo>/chatbot/tests/test_g73_resay_mapping.py:132)). 다만 알려준 「안개 같은 게 안 보여요」는 비유 명사라 갈래 `none`으로 남습니다. 「공이 둥글지 않아요」도 공유 G62 프롬프트의 부정 판정으로 차단됩니다. G62 출력 보존 범위에서는 전자만 재진술 규칙으로 해결됐습니다.
+
+- **`resay=false` — 새 문제 없음(커밋 범위에서).** 네 세션 종료 경로 교체는 `sessions.pop`을 `end_session`으로 바꾼 것입니다([simulate.py](<repo>/chatbot/ifs_chatbot/simulate.py:203), [selection_sim.py](<repo>/chatbot/ifs_chatbot/selection_sim.py:65), [drift.py](<repo>/chatbot/ifs_chatbot/drift.py:889), [corpus_run.py](<repo>/chatbot/ifs_chatbot/eval/corpus_run.py:145)). `resay`가 없으면 `cancel_background()`는 흐름 없이 끝납니다([controller.py](<repo>/chatbot/ifs_chatbot/controller.py:548)).다만 이번 재검토에서는 30개 흐름 바이트 동일 주장을 별도로 재실행하지 않았습니다.
