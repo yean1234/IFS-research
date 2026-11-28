@@ -211,7 +211,8 @@ def test_sidecar_blocked_and_ok_validate():
 # ── 0.2.0: 부속물 부정 틀·복수 표시·여러 물체 검사 ───────────────────────────────────
 def test_versions_bumped():
     p = sp("동그란 공이 있어요.")
-    assert p["lexiconVersion"] == "0.2.0" and p["templateVersion"] == "g62-template/0.2.0"
+    # 사전 판은 0.2.1(G82 A3 동물 낱말)·0.3.0(G84 형태 명사)으로 올랐다. 틀 판은 0.2.0 그대로
+    assert p["lexiconVersion"] == "0.3.0" and p["templateVersion"] == "g62-template/0.2.0"
 
 
 def test_negative_accessories_skip_said_words():

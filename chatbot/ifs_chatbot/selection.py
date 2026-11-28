@@ -856,7 +856,7 @@ class SelectionFlow:
             self.data["generation"].setdefault("afterNoneEarlier", []).append(prev)
         at = now_iso()
         text = self.s.log.data.get("confirmedText")
-        pre = self.none_gen.precheck(self.spec, text, self.preview_mode, self._other_interviews(),
+        pre = self.none_gen.precheck(self.spec, text, self.preview_mode, self._other_interviews(), stage_rule=self._stage_rule(),
                                      llm_items=self.llm_shape_items or None)
         rec = {"version": ng.NONE_GEN_VERSION, "origin": ng.ORIGIN, "setting": self.none_gen.setting(), "noneAt": at,
                "shownOrderBefore": list(self.cands["displayOrder"]), "status": ng.RUNNING,
@@ -872,7 +872,7 @@ class SelectionFlow:
             # 생성기도 세션 매퍼 spec으로 같은 규칙 프롬프트(G73 후속). 면담 중 세션 확인과 예약은 서비스 잠금 안에서(CP13-2)
             job = self.none_gen.start(self.s.id, text, source_key(self.spec), pre["prompt"]["text"], self._generation_done,
                                       attempt=n, spec=self.spec, other_interviews=self._other_interviews,
-                                      llm_items=self.llm_shape_items or None)
+                                      llm_items=self.llm_shape_items or None, stage_rule=self._stage_rule())
             if isinstance(job, str):
                 rec.update(blockReason=job, blockDetail=",".join(self._other_interviews()) or None
                            if job == ng.B_INTERVIEW else None)
@@ -975,7 +975,7 @@ class SelectionFlow:
         at = at or now_iso()
         text = self.s.log.data.get("confirmedText")
         need_llm = self.shape_llm_on and self.shape_llm is None and self._shape_llm_route()
-        pre = self.none_gen.precheck(self.spec, text, self.preview_mode, self._other_interviews(),
+        pre = self.none_gen.precheck(self.spec, text, self.preview_mode, self._other_interviews(), stage_rule=self._stage_rule(),
                                      llm_items=self.llm_shape_items or None, llm_shape_items=self._shape_items() or None)
         rec = self._image_rec(r, at, pre)
         self.data["generation"]["afterNone"] = rec
@@ -1020,7 +1020,8 @@ class SelectionFlow:
             job = self.none_gen.start(self.s.id, text, source_key(self.spec), p["text"],
                                       lambda res, rec=rec: self._image_round_done(res, rec), attempt=r, spec=self.spec,
                                       other_interviews=self._other_interviews, kind="image", seeds=ip["seeds"],
-                                      llm_items=self.llm_shape_items or None, llm_shape_items=self._shape_items() or None)
+                                      llm_items=self.llm_shape_items or None, llm_shape_items=self._shape_items() or None,
+                                      stage_rule=self._stage_rule())
             if isinstance(job, str):
                 rec.update(blockReason=job, blockDetail=",".join(self._other_interviews()) or None
                            if job == ng.B_INTERVIEW else None)
@@ -1041,15 +1042,23 @@ class SelectionFlow:
         return self.view()
 
     # ── G82 LLM 형태 이름([gen3d] on_none_llm_shape) ─────────────────────────────
+    def _stage_rule(self) -> dict | None:
+        """(G84 후속) 규칙 그림 프롬프트의 단계 규칙(확정 텍스트 줄 = 면담 답 1:1일 때만, llm_shape.session_stage_rule). 설정과 무관하게 건다."""
+        try:
+            return llm_shape_mod.session_stage_rule(self.s, self._confirmed_norm() or "")
+        except Exception:  # noqa: BLE001 — 단계 표지를 못 얻으면 단계 규칙 없이(다른 문맥 규칙은 그대로)
+            return None
+
     def _shape_llm_route(self) -> bool:
         """(G82) 처음 [맞는 게 없어요]: 규칙 프롬프트에 중심 형태 명사가 없고 막을 사유가 없고 위기·확인 판정이 없으면 참(LLM을 부름).
         아니면 경로(rule = 규칙이 중심 명사를 잡음, none = 그 밖)를 적고 거짓. lock 안에서 부른다."""
         norm = self._confirmed_norm() or ""
         flag = llm_fill_mod.session_flag(self.s)
+        srule = self._stage_rule()                       # (G84 후속) 잠그기 전에
         with ng._prompts_lock:
             pm = ng._load_prompts()
             try:
-                call, why = llm_shape_mod.rule_route(pm, pm.shape_prompt(norm, mapper_spec=self.spec))
+                call, why = llm_shape_mod.rule_route(pm, pm.shape_prompt(norm, mapper_spec=self.spec, stage_rule=srule))
             except (Exception, SystemExit) as exc:  # noqa: BLE001 — 판정을 못 하면 부르지 않음(fail closed)
                 call, why = False, f"prompt_error:{type(exc).__name__}"
         if call and not flag:
@@ -1109,7 +1118,7 @@ class SelectionFlow:
                 self._save()
                 return
             text = self.s.log.data.get("confirmedText")
-            pre = self.none_gen.precheck(self.spec, text, self.preview_mode, self._other_interviews(),
+            pre = self.none_gen.precheck(self.spec, text, self.preview_mode, self._other_interviews(), stage_rule=self._stage_rule(),
                                          llm_items=self.llm_shape_items or None, llm_shape_items=self._shape_items() or None)
             p = pre["prompt"] or {}
             rec.update(blockReason=pre["blockReason"], blockDetail=pre["blockDetail"], prompt=pre["prompt"])
@@ -1256,7 +1265,7 @@ class SelectionFlow:
                                           attempt=rec["attempt"], spec=self.spec, other_interviews=self._other_interviews,
                                           kind="mesh", image=(path, sha), seed=img["seed"],
                                           llm_items=self.llm_shape_items or None,
-                                          llm_shape_items=self._shape_items() or None)
+                                          llm_shape_items=self._shape_items() or None, stage_rule=self._stage_rule())
             if isinstance(job, str):
                 rec.update(status=ng.BLOCKED, blockReason=job, endedAt=at, seconds=0.0,
                            blockDetail=",".join(self._other_interviews()) or None if job == ng.B_INTERVIEW else None)

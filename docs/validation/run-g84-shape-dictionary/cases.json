@@ -1,0 +1,6 @@
+[
+  {"id": "S1", "kind": "E4는 LLM null", "text": "돌덩이예요.", "reject": false},
+  {"id": "S2", "kind": "E3은 LLM null", "text": "돌덩이 같은 게 있어요.", "reject": false},
+  {"id": "S3", "kind": "E1은 LLM이 메움", "text": "조약돌이 하나 있어요.", "reject": false},
+  {"id": "S4", "kind": "재질+덩이", "text": "쇳덩이가 있어요.", "reject": false}
+]

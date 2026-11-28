@@ -161,6 +161,41 @@ def _line_of(norm: str, pos: int) -> int:
     return norm.count("\n", 0, max(0, pos))
 
 
+def line_stage_reason(norm: str, pos: int, stage_list: list, allowed) -> tuple[str | None, bool]:
+    """글자 위치 pos가 든 줄의 면담 단계와, 형태를 묻는 단계(allowed) 밖인가(→ non_shape_stage_line).
+    G82 검증기(validate)와 규칙 그림 프롬프트(tools/gen3d/prompts.shape_prompt, G84 후속)가 같이 쓴다."""
+    ln = _line_of(norm, pos)
+    st = stage_list[ln] if ln < len(stage_list) else None
+    return st, st not in tuple(allowed)
+
+
+def stage_rule(stages: dict | None, allowed) -> dict | None:
+    """(G84 후속) 규칙 그림 프롬프트에 넘길 단계 규칙. 단계 표지가 applied이고 허용 단계가 있을 때만(아니면 None — 단계 규칙을 걸지 않음)."""
+    if stages and stages.get("status") == "applied" and stages.get("stages") is not None and allowed:
+        return {"stages": list(stages["stages"]), "allowedStages": list(allowed)}
+    return None
+
+
+_ALLOWED_CACHE: dict = {}
+
+
+def allowed_stages_for(rt) -> tuple:
+    """형태를 묻는 면담 단계. G82가 켜져 있으면 그 프롬프트의 allowedStages, 꺼져 있어도 설정의 G82 프롬프트 파일 것을 쓴다
+    (규칙 그림 프롬프트의 단계 규칙은 설정 플래그 없이 항상 건다 — 차단을 세게 하는 방향)."""
+    p = getattr(rt, "llm_shape_prompt", None)
+    if p is not None:
+        return p.allowed_stages
+    name = rt.cfg.gen3d.on_none_llm_shape_prompt
+    if name not in _ALLOWED_CACHE:
+        _ALLOWED_CACHE[name] = ShapePrompt(name).allowed_stages
+    return _ALLOWED_CACHE[name]
+
+
+def session_stage_rule(session, norm: str) -> dict | None:
+    """세션 → 규칙 그림 프롬프트의 단계 규칙(line_stages가 applied일 때만)."""
+    return stage_rule(line_stages(session, norm), allowed_stages_for(session.rt))
+
+
 # ── LLM 입력 ─────────────────────────────────────────────────────────────────
 def build_user(prompt: ShapePrompt, norm: str, doc, spans: dict) -> str | None:
     eoj = []
@@ -276,10 +311,8 @@ def validate(ctx, raw, stages: dict | None = None, allowed_stages: tuple = ()) -
         if ctx.toks[head].form in ctx.pm.english_modifier_block().korean_non_shape_heads:
             why.append("non_shape_noun")                          # 느낌·마음 같은 추상 명사
     if aligned and stages and stages.get("status") == "applied" and allowed_stages:
-        st = stages["stages"]
-        ln = _line_of(ctx.norm, out["charSpan"][0])
-        out["lineStage"] = st[ln] if ln < len(st) else None
-        if out["lineStage"] not in allowed_stages:
+        out["lineStage"], outside = line_stage_reason(ctx.norm, out["charSpan"][0], stages["stages"], allowed_stages)
+        if outside:
             why.append("non_shape_stage_line")                    # 걱정한 일(찾기 단계) 줄의 사물
     if "simile_of_predicate" in why and _simile_of_shape_verb(ctx, out):
         why.remove("simile_of_predicate")
@@ -335,7 +368,8 @@ def propose(prompt: ShapePrompt, backend, norm: str, spec: dict, *, seed: int, t
     t0 = time.monotonic()
     with ng._prompts_lock:
         pm = ng._load_prompts()
-        shape = pm.shape_prompt(norm, mapper_spec=spec)
+        srule = stage_rule(stages, prompt.allowed_stages)     # (G84 후속) 규칙 그림 프롬프트도 같은 단계 규칙
+        shape = pm.shape_prompt(norm, mapper_spec=spec, stage_rule=srule)
         call, why = rule_route(pm, shape)
         route = {"call": call, "reason": why, "status": shape.get("status"), "blockReason": shape.get("blockReason")}
         rule = {"builderVersion": shape.get("builderVersion"), "lexiconVersion": shape.get("lexiconVersion"),
@@ -402,7 +436,8 @@ def propose(prompt: ShapePrompt, backend, norm: str, spec: dict, *, seed: int, t
         if why:
             return done("rejected", seconds=round(time.monotonic() - t0, 2))
         adopted = {"quote": item["quote"], "charSpan": list(item["charSpan"]), "en": item["en"], "origin": ORIGIN}
-        composed = pm.shape_prompt(norm, mapper_spec=spec, llm_shape_items=[adopted])   # 생성 직전 재검증과 같은 조립
+        composed = pm.shape_prompt(norm, mapper_spec=spec, llm_shape_items=[adopted],
+                                   stage_rule=stage_rule(stages, prompt.allowed_stages))   # 생성 직전 재검증과 같은 조립
     if composed.get("shapeSource") != ORIGIN:            # 재검증에서 떨어지면 채택하지 않음(fail closed)
         rec["rejectReasons"] = ["recheck_failed"]
         return done("rejected", seconds=round(time.monotonic() - t0, 2))

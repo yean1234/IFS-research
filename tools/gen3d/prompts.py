@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import json
 import sys
+import types
 import urllib.request
 from pathlib import Path
 
@@ -186,10 +187,14 @@ def build_spec(text: str, sid: str) -> dict:
 # 모든 내용 토큰은 원문 charSpan을 단다. 거슬러 갈 수 없는 토큰이 하나라도 있으면 막는다(fail closed).
 # 막는 경우 모델을 부르지 않는다: no_shape_stated, excluded_category, untraceable_token.
 # charSpan은 normalize_confirmed(text) 기준이고 sourceTextSha256도 그 문자열의 해시다(세션 confirmedText와 같은 정규화).
-SHAPE_BUILDER_VERSION = "gen3d-shape-prompt/0.2.0"     # 0.2.0: 부속물 부정 틀, pluralStated
+SHAPE_BUILDER_VERSION = "gen3d-shape-prompt/0.5.0"     # 0.2.0: 부속물 부정 틀, pluralStated
+# 0.5.0(G84 후속, 2026-11-28): 문맥 규칙 — 사전 낱말이 든 문장이 과거·이전·전언·가정이거나(llm_fill.frame_reasons),
+# 비유 원천이 속성 비유('X처럼 단단해요', llm_fill.simile_of_predicate — '처럼 생겼어요'는 형태 진술로 둠, llm_shape._simile_of_shape_verb)이거나,
+# 단계 규칙(stage_rule)을 받았을 때 형태를 묻는 단계 밖 줄이면(llm_shape.line_stage_reason) 그 낱말을 쓰지 않는다. G82·G77 검증기와 같은 함수.
+# 매퍼(IFSSceneSpec)는 건드리지 않는다. 설정 플래그 없이 항상(세 판 모두 0.5.0으로 올림).
 # (G73 후속) 매퍼 판단을 따르는 규칙: shape_prompt(text, mapper_spec=세션 spec)일 때만. 텍스트만 넘기면 0.2.0 그대로
 # (G62 기본 후보 경로·eval_g62 재현성). 판 이름에 규칙을 붙여 사이드카 builderVersion만 보고도 가를 수 있게 한다.
-SHAPE_BUILDER_VERSION_MAPPER = "gen3d-shape-prompt/0.3.0+mapper-v2"
+SHAPE_BUILDER_VERSION_MAPPER = "gen3d-shape-prompt/0.5.0+mapper-v2"
 PROMPT_RULE_TEXT, PROMPT_RULE_MAPPER = "text", "mapper"
 SHAPE_LEXICON = CHATBOT.parent / "shared" / "lexicon" / "shape_prompt_en.v0.json"
 _NOUNISH = {"NNG", "NNP", "XSN"}
@@ -322,7 +327,7 @@ def shape_prompt_for_row(row: dict) -> dict:
         # (G77) 서버가 검증해 채택한 LLM 형태 낱말(있을 때만 키가 있다). 규칙이 형태를 못 만들었을 때만 쓰인다
         # (G82) 서버가 검증해 채택한 LLM 형태 이름(llmTranslatedShapeItems, 있을 때만). 규칙에 중심 형태 명사가 없을 때만 쓰인다
         p = shape_prompt(row["text"], mapper_spec=spec, llm_items=row.get("llmShapeItems"),
-                         llm_shape_items=row.get("llmTranslatedShapeItems"))
+                         llm_shape_items=row.get("llmTranslatedShapeItems"), stage_rule=row.get("lineStageRule"))
     else:
         p = shape_prompt(row["text"])
     style = row.get("imageStyle")
@@ -343,7 +348,7 @@ IMAGE_PICK_SUFFIX = ("untextured monochrome gray clay sculpture", "single unifor
                      "centered", "entire object in view")
 IMAGE_PICK_NEGATIVE = ("colorful", "multicolored", "painted", "patterned", "glossy", "metallic", "reflections",
                        "background objects")
-SHAPE_BUILDER_VERSION_IMAGE_PICK = "gen3d-shape-prompt/0.4.0+imagepick"
+SHAPE_BUILDER_VERSION_IMAGE_PICK = "gen3d-shape-prompt/0.5.0+imagepick"
 
 
 def image_pick_prompt(p: dict) -> dict:
@@ -620,8 +625,37 @@ def _llm_shape_head(norm: str, items) -> dict | None:
     return None
 
 
+_frame_mods = None
+
+
+def _frame_modules():
+    """(G84 후속) 문맥 규칙 함수가 있는 챗봇 모듈(G77·G82 검증기와 같은 함수를 쓴다 — 복사하지 않음)."""
+    global _frame_mods
+    if _frame_mods is None:
+        sys.path.insert(0, str(CHATBOT))
+        from ifs_chatbot import llm_fill, llm_shape
+        _frame_mods = (llm_fill, llm_shape)
+    return _frame_mods
+
+
+def _frame_drop(fctx, norm: str, i: int, j: int, e: dict, pos: str, stage_rule: dict | None) -> list[str]:
+    """사전에 맞은 낱말 toks[i..j] → 쓰지 않을 문맥 사유(비면 씀). G77·G82 검증기와 같은 규칙:
+    past_or_former · reported_speech · hypothetical(문장 전체) · simile_of_predicate(비유 원천 명사, '처럼 생겼어요'는 뺌)
+    · non_shape_stage_line(단계 규칙이 있을 때). 부정·회상 문장·장소·크기는 앞에서 따로 본다."""
+    lf, ls = _frame_modules()
+    why = list(lf.frame_reasons(fctx, list(range(i, j + 1))))
+    if (e["pos"] == "noun" and pos == "simile" and lf.simile_of_predicate(fctx.doc, fctx.toks, j)
+            and not ls._simile_of_shape_verb(fctx, {"charSpan": [fctx.toks[i].start, fctx.toks[j].end]})):
+        why.append("simile_of_predicate")
+    if stage_rule:
+        _st, outside = ls.line_stage_reason(norm, fctx.toks[i].start, stage_rule["stages"], stage_rule["allowedStages"])
+        if outside:
+            why.append("non_shape_stage_line")
+    return why
+
+
 def shape_prompt(text: str, mapper_spec: dict | None = None, llm_items: list | None = None,
-                 llm_shape_items: list | None = None) -> dict:
+                 llm_shape_items: list | None = None, stage_rule: dict | None = None) -> dict:
     """확정 텍스트 → 형태 프롬프트와 차단 판정. 같은 텍스트 → 언제나 같은 결과(사전·규칙만).
 
     mapper_spec(G73 후속, 실험 설정의 [맞는 게 없어요] 생성만): 같은 확정 텍스트로 세션이 만든 매퍼 v2 spec.
@@ -630,13 +664,16 @@ def shape_prompt(text: str, mapper_spec: dict | None = None, llm_items: list | N
     사유와 함께 남긴다. spec의 sourceTextHash가 이 텍스트와 다르면 막는다(mapper_spec_mismatch). 같은 (텍스트, spec) → 같은 결과.
     주지 않으면 0.2.0 그대로(G62 기본 후보 경로·오프라인 평가).
     (G82) llm_shape_items: 서버 검증기를 통과한 LLM 형태 이름 [{quote, charSpan, en}]. 규칙이 중심 형태 명사를 못 잡았고(꾸밈말만
-    잡은 경우 포함) 막을 사유가 없을 때만 중심 명사 자리를 메운다(문장·꾸밈말·부정 틀은 규칙 그대로). llm_items(G77)와 함께 주면 오류."""
+    잡은 경우 포함) 막을 사유가 없을 때만 중심 명사 자리를 메운다(문장·꾸밈말·부정 틀은 규칙 그대로). llm_items(G77)와 함께 주면 오류.
+    (G84 후속, 0.5.0) 사전 낱말마다 문맥 규칙(_frame_drop)을 건다. stage_rule = {stages, allowedStages}(llm_shape.stage_rule —
+    단계 표지가 applied일 때만)이면 형태를 묻는 단계 밖 줄의 낱말도 뺀다. 뺀 낱말은 dropped에 reason(첫 사유)·frameReasons."""
     if llm_items and llm_shape_items:
         raise ValueError("G77 llm_items와 G82 llm_shape_items를 함께 줄 수 없음(형태 낱말 자리는 한 경로만)")
     rt = _shape_runtime()
     norm = rt.normalize(text)
     toks = rt.analyzer.tokens(norm)
     doc = rt.Doc(norm, toks)
+    fctx = types.SimpleNamespace(toks=toks, doc=doc)         # (G84 후속) 검증기 문맥 함수가 보는 두 값
     context = rt.excluder._context_sentences(doc)
     use_mapper = mapper_spec is not None
     spec = mapper_spec if use_mapper else rt.excluder.build(norm)
@@ -695,6 +732,11 @@ def shape_prompt(text: str, mapper_spec: dict | None = None, llm_items: list | N
             if why:
                 dropped.append({"ko": ko, "charSpan": [s, en_], "reason": why})
                 continue
+        # (G84 후속) 문맥 규칙은 매퍼 판단 뒤에(매퍼가 이미 뺀 낱말의 사유 기록은 예전 그대로)
+        fwhy = _frame_drop(fctx, norm, i, j, e, pos, stage_rule)
+        if fwhy:
+            dropped.append({"ko": ko, "charSpan": [s, en_], "reason": fwhy[0], "frameReasons": fwhy})
+            continue
         accepted.append({"i": i, "j": j, "e": e, "ko": ko, "span": [s, en_], "pos": pos})
 
     # 2) 차단 판정: 기존 제외 판정(G45–G51) → 메시로 안 되는 범주(form.type mist·form.base flame) → 보충 목록

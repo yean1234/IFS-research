@@ -417,6 +417,22 @@ def frame_reasons(ctx, idx: list[int]) -> list[str]:
     return why
 
 
+def simile_of_predicate(doc, toks, head: int) -> bool:
+    """비유 자리(처럼·같이·같) 명사 head 뒤를 본다. 명사가 오거나 문장이 끝나면 형상('돌덩이 같은 게', '돌덩이 같아요') → 거짓,
+    용언·부사·어근이 오면 속성 비유('돌덩이처럼 무거워요') → 참. G77·G82 검증기와 규칙 그림 프롬프트(G84 후속)가 같이 쓴다."""
+    for k in range(head + 1, len(toks)):
+        if doc.sent[k] != doc.sent[head]:
+            return False
+        t = toks[k]
+        if t.form in _SIMILE_FORMS or t.form == "같" or t.base_tag.startswith(("E", "J", "S")) or t.base_tag in _AFFIX_TAGS \
+                or t.base_tag == "VCP":                     # 0.4.0: 어근 XR은 건너뛰지 않음(속성 비유로 판정)
+            continue
+        if t.base_tag in ("NNG", "NNP", "NNB", "NP"):
+            return False
+        return t.base_tag in ("VA", "VV", "MAG", "XR")
+    return False
+
+
 def has_attribute_word(ctx, slot: str, idx: list[int], j: int) -> bool:
     """속성 슬롯: 인용 안에 그 슬롯의 속성을 직접 말한 낱말이 있는가(0.3.0: 슬롯별로 좁힘, 규칙·사전만).
     ① 그 슬롯 범주의 사전 어근(layer1_lexicon) ② 그 슬롯에 고유한 어근(_SLOT_ROOTS, 내용 품사만) ③ 색은 '색 이름 + 색·빛'
@@ -529,20 +545,8 @@ def _check_item(ctx: _Ctx, raw) -> tuple[dict, list[str]]:
         why.append("position_location")
     elif pos == "size":
         why.append("position_size")
-    elif pos == "simile":
-        # 비유 뒤에 명사가 오거나 문장이 끝나면 형상('돌덩이 같은 게', '돌덩이 같아요'), 용언이 오면 속성 비유('돌덩이처럼 무거워요')
-        for k in range(head + 1, len(toks)):
-            if doc.sent[k] != doc.sent[head]:
-                break
-            t = toks[k]
-            if t.form in _SIMILE_FORMS or t.form == "같" or t.base_tag.startswith(("E", "J", "S")) or t.base_tag in _AFFIX_TAGS \
-                    or t.base_tag == "VCP":                 # 0.4.0: 어근 XR은 건너뛰지 않음(속성 비유로 판정)
-                continue
-            if t.base_tag in ("NNG", "NNP", "NNB", "NP"):
-                break
-            if t.base_tag in ("VA", "VV", "MAG", "XR"):
-                why.append("simile_of_predicate")
-            break
+    elif pos == "simile" and simile_of_predicate(doc, toks, head):
+        why.append("simile_of_predicate")
     for k in nouns:
         kind = ctx.rt.block_kind.get(toks[k].form)
         if kind == "nonMeshable":
@@ -620,7 +624,16 @@ def run(session, spec: dict, norm: str) -> dict:
     backend = rt.backend
     binfo = backend.info() if hasattr(backend, "info") else {}
     digest = binfo.get("digest")
-    key = f"{sha256_text(norm)}|{digest}|{prompt.version}|{prompt.sha256}|{prompt.english_block['sha256']}|{VALIDATOR_RULES}"
+    from . import llm_shape as ls                        # (G84 후속) 규칙 그림 프롬프트의 단계 규칙·판(순환 import를 피해 여기서)
+    from . import none_gen as ng
+    try:
+        srule = ls.session_stage_rule(session, norm)
+    except Exception:  # noqa: BLE001 — 단계 표지를 못 얻으면 단계 규칙 없이
+        srule = None
+    with ng._prompts_lock:
+        shape_rule_ver = ng._load_prompts().SHAPE_BUILDER_VERSION_MAPPER
+    key = (f"{sha256_text(norm)}|{digest}|{prompt.version}|{prompt.sha256}|{prompt.english_block['sha256']}|{VALIDATOR_RULES}"
+           f"|{shape_rule_ver}|{json.dumps(srule, sort_keys=True)}")
     cache = session.llm_fill_cache
     # 위기·확인 판정은 캐시보다 먼저 본다(CP15-2): 앞서 성공한 결과가 캐시에 있어도 판정이 서면 채택값을 돌려주지 않고 부르지도 않는다
     flag = session_flag(session)
@@ -652,11 +665,10 @@ def run(session, spec: dict, norm: str) -> dict:
         return rec
     if not hasattr(backend, "structured") or not getattr(rt, "backend_ok", True):
         return done("skipped", skipReason="backend_unsupported", error=getattr(backend, "name", None))
-    from . import none_gen as ng                         # tools/gen3d/prompts.py(Kiwi·매퍼 판단 함수)를 같은 잠금으로
-    t0 = time.monotonic()
+    t0 = time.monotonic()                                # tools/gen3d/prompts.py(Kiwi·매퍼 판단 함수)를 같은 잠금으로
     with ng._prompts_lock:
         pm = ng._load_prompts()
-        shape = pm.shape_prompt(norm, mapper_spec=spec)
+        shape = pm.shape_prompt(norm, mapper_spec=spec, stage_rule=srule)
         # G82([gen3d] on_none_llm_shape)가 켜지면 형태 낱말 칸(shape_noun)만 내밀지 않는다(다른 빈 슬롯은 그대로). 끄면 예전 그대로
         g82_on = bool(getattr(getattr(rt.cfg, "gen3d", None), "on_none_llm_shape", False))
         slots = open_slots(spec, rt.candidate_table, prompt, shape.get("blockReason") == "no_shape_stated" and not g82_on)

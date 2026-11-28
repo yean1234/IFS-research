@@ -1,0 +1,864 @@
+{
+ "what": "G84 shape dictionary check (synthetic texts only)",
+ "lexicon": {
+  "before": "0.2.1",
+  "after": "0.3.0"
+ },
+ "beforeCommit": "8d0fa03",
+ "addedEntries": 129,
+ "addedWords": 117,
+ "positive": {
+  "sentences": 351,
+  "ok": 350,
+  "beforeStarts": 0,
+  "afterStarts": 350,
+  "beforeG82Calls": 351,
+  "afterG82Calls": 1,
+  "afterG77ShapeSlotOpen": 1,
+  "fail": [
+   {
+    "text": "양동이예요.",
+    "after": {
+     "status": "blocked",
+     "blockReason": "no_shape_stated",
+     "text": "",
+     "starts": false,
+     "g82Call": true,
+     "g82Route": "no_shape_stated",
+     "g77ShapeSlotOpen": true,
+     "tokens": [],
+     "newTokens": [],
+     "dropped": []
+    }
+   }
+  ]
+ },
+ "positivePastNarration": {
+  "sentences": 234,
+  "beforeStarts": 0,
+  "afterStarts": 0,
+  "afterDroppedReasons": {
+   "past_or_former": 233
+  }
+ },
+ "shouldNotStart": {
+  "negated": {
+   "sentences": 234,
+   "beforeStarts": 0,
+   "afterStarts": 0,
+   "afterStartsWithNewWord": 0,
+   "beforeG82Calls": 234,
+   "afterG82Calls": 234,
+   "afterDroppedReasons": {
+    "negated": 232
+   },
+   "examplesStarted": [],
+   "examplesBlocked": [
+    [
+     "돌덩이는 아니에요.",
+     [
+      [
+       "돌덩이",
+       "negated"
+      ]
+     ]
+    ],
+    [
+     "돌덩이 같은 건 없어요.",
+     [
+      [
+       "돌덩이",
+       "negated"
+      ]
+     ]
+    ],
+    [
+     "돌덩어리는 아니에요.",
+     [
+      [
+       "돌덩어리",
+       "negated"
+      ]
+     ]
+    ]
+   ]
+  },
+  "past": {
+   "sentences": 234,
+   "beforeStarts": 0,
+   "afterStarts": 0,
+   "afterStartsWithNewWord": 0,
+   "beforeG82Calls": 234,
+   "afterG82Calls": 234,
+   "afterDroppedReasons": {
+    "past_or_former": 228
+   },
+   "examplesStarted": [],
+   "examplesBlocked": [
+    [
+     "예전에는 돌덩이였어요.",
+     [
+      [
+       "돌덩이",
+       "past_or_former"
+      ]
+     ]
+    ],
+    [
+     "처음엔 돌덩이 같았어요.",
+     [
+      [
+       "돌덩이",
+       "past_or_former"
+      ]
+     ]
+    ],
+    [
+     "예전에는 돌덩어리였어요.",
+     [
+      [
+       "돌덩어리",
+       "past_or_former"
+      ]
+     ]
+    ]
+   ]
+  },
+  "other": {
+   "sentences": 234,
+   "beforeStarts": 0,
+   "afterStarts": 0,
+   "afterStartsWithNewWord": 0,
+   "beforeG82Calls": 234,
+   "afterG82Calls": 234,
+   "afterDroppedReasons": {
+    "reported_speech": 115,
+    "past_or_former": 111
+   },
+   "examplesStarted": [],
+   "examplesBlocked": [
+    [
+     "친구가 돌덩이 같대요.",
+     [
+      [
+       "돌덩이",
+       "reported_speech"
+      ]
+     ]
+    ],
+    [
+     "다들 그게 돌덩이라고 했어요.",
+     [
+      [
+       "돌덩이",
+       "past_or_former"
+      ]
+     ]
+    ],
+    [
+     "친구가 돌덩어리 같대요.",
+     [
+      [
+       "돌덩어리",
+       "reported_speech"
+      ]
+     ]
+    ]
+   ]
+  },
+  "hypothetical": {
+   "sentences": 234,
+   "beforeStarts": 0,
+   "afterStarts": 0,
+   "afterStartsWithNewWord": 0,
+   "beforeG82Calls": 234,
+   "afterG82Calls": 234,
+   "afterDroppedReasons": {
+    "hypothetical": 229
+   },
+   "examplesStarted": [],
+   "examplesBlocked": [
+    [
+     "돌덩이면 좋겠어요.",
+     [
+      [
+       "돌덩이",
+       "hypothetical"
+      ]
+     ]
+    ],
+    [
+     "아마 돌덩이일 거예요.",
+     [
+      [
+       "돌덩이",
+       "hypothetical"
+      ]
+     ]
+    ],
+    [
+     "돌덩어리면 좋겠어요.",
+     [
+      [
+       "돌덩어리",
+       "hypothetical"
+      ]
+     ]
+    ]
+   ]
+  },
+  "predicate_simile": {
+   "sentences": 234,
+   "beforeStarts": 0,
+   "afterStarts": 0,
+   "afterStartsWithNewWord": 0,
+   "beforeG82Calls": 234,
+   "afterG82Calls": 234,
+   "afterDroppedReasons": {
+    "simile_of_predicate": 234
+   },
+   "examplesStarted": [],
+   "examplesBlocked": [
+    [
+     "돌덩이처럼 단단해요.",
+     [
+      [
+       "돌덩이",
+       "simile_of_predicate"
+      ]
+     ]
+    ],
+    [
+     "돌덩이처럼 무거워요.",
+     [
+      [
+       "돌덩이",
+       "simile_of_predicate"
+      ]
+     ]
+    ],
+    [
+     "돌덩어리처럼 단단해요.",
+     [
+      [
+       "돌덩어리",
+       "simile_of_predicate"
+      ]
+     ]
+    ]
+   ]
+  },
+  "worry": {
+   "sentences": 234,
+   "beforeStarts": 0,
+   "afterStarts": 230,
+   "afterStartsWithNewWord": 230,
+   "beforeG82Calls": 234,
+   "afterG82Calls": 4,
+   "afterDroppedReasons": {},
+   "examplesStarted": [
+    "돌덩이 때문에 걱정이에요.",
+    "어제 돌덩이를 잃어버려서 속상해요.",
+    "돌덩어리 때문에 걱정이에요.",
+    "어제 돌덩어리를 잃어버려서 속상해요.",
+    "바윗덩이 때문에 걱정이에요.",
+    "어제 바윗덩이를 잃어버려서 속상해요."
+   ],
+   "examplesBlocked": [
+    [
+     "어제 장독을 잃어버려서 속상해요.",
+     []
+    ],
+    [
+     "그물 때문에 걱정이에요.",
+     []
+    ],
+    [
+     "어제 그물을 잃어버려서 속상해요.",
+     []
+    ]
+   ]
+  }
+ },
+ "worryThenShape": {
+  "sentences": 117,
+  "beforeHeadBall": 117,
+  "afterHeadBall": 117,
+  "afterHeadNewWord": 0,
+  "examples": [
+   {
+    "text": "돌덩이 때문에 요즘 신경 쓰여요.\n가슴이 답답해요.\n공 같은 게 있어요.",
+    "beforeHead": "ball",
+    "afterHead": "ball"
+   },
+   {
+    "text": "돌덩어리 때문에 요즘 신경 쓰여요.\n가슴이 답답해요.\n공 같은 게 있어요.",
+    "beforeHead": "ball",
+    "afterHead": "ball"
+   },
+   {
+    "text": "바윗덩이 때문에 요즘 신경 쓰여요.\n가슴이 답답해요.\n공 같은 게 있어요.",
+    "beforeHead": "ball",
+    "afterHead": "ball"
+   }
+  ]
+ },
+ "specified": [
+  {
+   "text": "돌덩이는 아니에요.",
+   "before": {
+    "status": "blocked",
+    "blockReason": "no_shape_stated",
+    "text": "",
+    "starts": false,
+    "g82Call": true,
+    "g82Route": "no_shape_stated",
+    "g77ShapeSlotOpen": true,
+    "tokens": [],
+    "newTokens": [],
+    "dropped": []
+   },
+   "after": {
+    "status": "blocked",
+    "blockReason": "no_shape_stated",
+    "text": "",
+    "starts": false,
+    "g82Call": true,
+    "g82Route": "no_shape_stated",
+    "g77ShapeSlotOpen": true,
+    "tokens": [],
+    "newTokens": [],
+    "dropped": [
+     [
+      "돌덩이",
+      "negated"
+     ]
+    ]
+   }
+  },
+  {
+   "text": "예전에는 돌덩이였어요.",
+   "before": {
+    "status": "blocked",
+    "blockReason": "no_shape_stated",
+    "text": "",
+    "starts": false,
+    "g82Call": true,
+    "g82Route": "no_shape_stated",
+    "g77ShapeSlotOpen": true,
+    "tokens": [],
+    "newTokens": [],
+    "dropped": []
+   },
+   "after": {
+    "status": "blocked",
+    "blockReason": "no_shape_stated",
+    "text": "",
+    "starts": false,
+    "g82Call": true,
+    "g82Route": "no_shape_stated",
+    "g77ShapeSlotOpen": true,
+    "tokens": [],
+    "newTokens": [],
+    "dropped": [
+     [
+      "돌덩이",
+      "past_or_former"
+     ]
+    ]
+   }
+  },
+  {
+   "text": "돌덩이처럼 단단해요.",
+   "before": {
+    "status": "blocked",
+    "blockReason": "no_shape_stated",
+    "text": "",
+    "starts": false,
+    "g82Call": true,
+    "g82Route": "no_shape_stated",
+    "g77ShapeSlotOpen": true,
+    "tokens": [],
+    "newTokens": [],
+    "dropped": []
+   },
+   "after": {
+    "status": "blocked",
+    "blockReason": "no_shape_stated",
+    "text": "",
+    "starts": false,
+    "g82Call": true,
+    "g82Route": "no_shape_stated",
+    "g77ShapeSlotOpen": true,
+    "tokens": [],
+    "newTokens": [],
+    "dropped": [
+     [
+      "돌덩이",
+      "simile_of_predicate"
+     ]
+    ]
+   }
+  }
+ ],
+ "evalSets": {
+  "eval2:P:fill": {
+   "cases": 48,
+   "beforeStarts": 0,
+   "afterStarts": 32,
+   "beforeG82Calls": 48,
+   "afterG82Calls": 16,
+   "examplesAfterStarts": []
+  },
+  "eval2:NEG:none": {
+   "cases": 100,
+   "beforeStarts": 0,
+   "afterStarts": 0,
+   "beforeG82Calls": 100,
+   "afterG82Calls": 100,
+   "examplesAfterStarts": []
+  },
+  "eval2:PAST:none": {
+   "cases": 100,
+   "beforeStarts": 0,
+   "afterStarts": 0,
+   "beforeG82Calls": 100,
+   "afterG82Calls": 100,
+   "examplesAfterStarts": []
+  },
+  "eval2:OTHER:none": {
+   "cases": 100,
+   "beforeStarts": 0,
+   "afterStarts": 0,
+   "beforeG82Calls": 74,
+   "afterG82Calls": 74,
+   "examplesAfterStarts": []
+  },
+  "eval2:HYPO:none": {
+   "cases": 100,
+   "beforeStarts": 0,
+   "afterStarts": 0,
+   "beforeG82Calls": 100,
+   "afterG82Calls": 100,
+   "examplesAfterStarts": []
+  },
+  "eval2:SIMILE:none": {
+   "cases": 100,
+   "beforeStarts": 0,
+   "afterStarts": 0,
+   "beforeG82Calls": 100,
+   "afterG82Calls": 100,
+   "examplesAfterStarts": []
+  },
+  "eval2:PERSON:none": {
+   "cases": 100,
+   "beforeStarts": 0,
+   "afterStarts": 0,
+   "beforeG82Calls": 18,
+   "afterG82Calls": 18,
+   "examplesAfterStarts": []
+  },
+  "eval2:ANIMAL:none": {
+   "cases": 100,
+   "beforeStarts": 0,
+   "afterStarts": 0,
+   "beforeG82Calls": 3,
+   "afterG82Calls": 3,
+   "examplesAfterStarts": []
+  },
+  "eval2:MIST:none": {
+   "cases": 100,
+   "beforeStarts": 0,
+   "afterStarts": 0,
+   "beforeG82Calls": 11,
+   "afterG82Calls": 11,
+   "examplesAfterStarts": []
+  },
+  "eval2:NONE:none": {
+   "cases": 100,
+   "beforeStarts": 0,
+   "afterStarts": 0,
+   "beforeG82Calls": 100,
+   "afterG82Calls": 100,
+   "examplesAfterStarts": []
+  },
+  "eval2:WORRY:none": {
+   "cases": 100,
+   "beforeStarts": 0,
+   "afterStarts": 0,
+   "beforeG82Calls": 93,
+   "afterG82Calls": 93,
+   "examplesAfterStarts": []
+  },
+  "eval3:P:fill": {
+   "cases": 50,
+   "beforeStarts": 0,
+   "afterStarts": 27,
+   "beforeG82Calls": 50,
+   "afterG82Calls": 23,
+   "examplesAfterStarts": []
+  },
+  "eval3:SIMILE:none": {
+   "cases": 200,
+   "beforeStarts": 0,
+   "afterStarts": 0,
+   "beforeG82Calls": 200,
+   "afterG82Calls": 200,
+   "examplesAfterStarts": []
+  },
+  "eval3:NEG:none": {
+   "cases": 50,
+   "beforeStarts": 0,
+   "afterStarts": 0,
+   "beforeG82Calls": 50,
+   "afterG82Calls": 50,
+   "examplesAfterStarts": []
+  },
+  "eval3:PAST:none": {
+   "cases": 50,
+   "beforeStarts": 0,
+   "afterStarts": 0,
+   "beforeG82Calls": 50,
+   "afterG82Calls": 50,
+   "examplesAfterStarts": []
+  },
+  "eval3:OTHER:none": {
+   "cases": 50,
+   "beforeStarts": 0,
+   "afterStarts": 0,
+   "beforeG82Calls": 38,
+   "afterG82Calls": 38,
+   "examplesAfterStarts": []
+  },
+  "eval3:HYPO:none": {
+   "cases": 50,
+   "beforeStarts": 0,
+   "afterStarts": 0,
+   "beforeG82Calls": 50,
+   "afterG82Calls": 50,
+   "examplesAfterStarts": []
+  },
+  "eval3:PERSON:none": {
+   "cases": 50,
+   "beforeStarts": 0,
+   "afterStarts": 0,
+   "beforeG82Calls": 20,
+   "afterG82Calls": 20,
+   "examplesAfterStarts": []
+  },
+  "eval3:ANIMAL:none": {
+   "cases": 50,
+   "beforeStarts": 0,
+   "afterStarts": 0,
+   "beforeG82Calls": 9,
+   "afterG82Calls": 9,
+   "examplesAfterStarts": []
+  },
+  "eval3:MIST:none": {
+   "cases": 50,
+   "beforeStarts": 0,
+   "afterStarts": 0,
+   "beforeG82Calls": 9,
+   "afterG82Calls": 9,
+   "examplesAfterStarts": []
+  },
+  "eval3:NONE:none": {
+   "cases": 50,
+   "beforeStarts": 0,
+   "afterStarts": 0,
+   "beforeG82Calls": 50,
+   "afterG82Calls": 50,
+   "examplesAfterStarts": []
+  },
+  "eval3:WORRY:none": {
+   "cases": 50,
+   "beforeStarts": 0,
+   "afterStarts": 0,
+   "beforeG82Calls": 50,
+   "afterG82Calls": 50,
+   "examplesAfterStarts": []
+  },
+  "offline:P:fill": {
+   "cases": 19,
+   "beforeStarts": 3,
+   "afterStarts": 18,
+   "beforeG82Calls": 19,
+   "afterG82Calls": 3,
+   "examplesAfterStarts": []
+  },
+  "offline:R:rule": {
+   "cases": 1,
+   "beforeStarts": 0,
+   "afterStarts": 1,
+   "beforeG82Calls": 1,
+   "afterG82Calls": 0,
+   "examplesAfterStarts": [
+    "예전엔 공이었는데 지금은 조약돌 같아요."
+   ]
+  },
+  "offline:N:none": {
+   "cases": 6,
+   "beforeStarts": 0,
+   "afterStarts": 0,
+   "beforeG82Calls": 6,
+   "afterG82Calls": 6,
+   "examplesAfterStarts": []
+  },
+  "offline:F:none": {
+   "cases": 8,
+   "beforeStarts": 0,
+   "afterStarts": 0,
+   "beforeG82Calls": 8,
+   "afterG82Calls": 8,
+   "examplesAfterStarts": []
+  },
+  "offline:B:none": {
+   "cases": 7,
+   "beforeStarts": 0,
+   "afterStarts": 0,
+   "beforeG82Calls": 3,
+   "afterG82Calls": 3,
+   "examplesAfterStarts": []
+  },
+  "offline:W:none": {
+   "cases": 4,
+   "beforeStarts": 0,
+   "afterStarts": 0,
+   "beforeG82Calls": 4,
+   "afterG82Calls": 4,
+   "examplesAfterStarts": []
+  }
+ },
+ "homonym": {
+  "sentences": 22,
+  "caughtNewWord": 1,
+  "rows": [
+   {
+    "text": "다리가 붓고 아파요.",
+    "what": "붓(용언 붓다)",
+    "newTokensAfter": [],
+    "startsBefore": false,
+    "startsAfter": false,
+    "dropped": []
+   },
+   {
+    "text": "얼굴이 부어 있어요.",
+    "what": "붓(용언 붓다)",
+    "newTokensAfter": [],
+    "startsBefore": false,
+    "startsAfter": false,
+    "dropped": []
+   },
+   {
+    "text": "모자 사이가 좋아요.",
+    "what": "모자(어머니와 아들)",
+    "newTokensAfter": [],
+    "startsBefore": false,
+    "startsAfter": false,
+    "dropped": [
+     [
+      "모자",
+      "location"
+     ]
+    ]
+   },
+   {
+    "text": "동생이 나사에서 일해요.",
+    "what": "나사(NASA)",
+    "newTokensAfter": [],
+    "startsBefore": false,
+    "startsAfter": false,
+    "dropped": [
+     [
+      "나사",
+      "location"
+     ]
+    ]
+   },
+   {
+    "text": "유튜브를 오래 봐서 눈이 아파요.",
+    "what": "튜브(유튜브)",
+    "newTokensAfter": [],
+    "startsBefore": false,
+    "startsAfter": false,
+    "dropped": []
+   },
+   {
+    "text": "먹이사슬 맨 위에 있는 느낌이에요.",
+    "what": "사슬(먹이사슬)",
+    "newTokensAfter": [],
+    "startsBefore": false,
+    "startsAfter": false,
+    "dropped": []
+   },
+   {
+    "text": "블록체인 공부가 걱정이에요.",
+    "what": "블록(블록체인)",
+    "newTokensAfter": [],
+    "startsBefore": false,
+    "startsAfter": false,
+    "dropped": []
+   },
+   {
+    "text": "일이 모자라요.",
+    "what": "모자(모자라다)",
+    "newTokensAfter": [],
+    "startsBefore": false,
+    "startsAfter": false,
+    "dropped": []
+   },
+   {
+    "text": "시계 방향으로 돌아요.",
+    "what": "시계(방향 표현)",
+    "newTokensAfter": [],
+    "startsBefore": false,
+    "startsAfter": false,
+    "dropped": []
+   },
+   {
+    "text": "동전 세 개 크기 정도요.",
+    "what": "동전(크기 비교)",
+    "newTokensAfter": [
+     [
+      "동전",
+      "coin"
+     ]
+    ],
+    "startsBefore": false,
+    "startsAfter": true,
+    "dropped": []
+   },
+   {
+    "text": "동전만 해요.",
+    "what": "동전(크기 비교 'N만 하다')",
+    "newTokensAfter": [],
+    "startsBefore": false,
+    "startsAfter": false,
+    "dropped": [
+     [
+      "동전",
+      "size"
+     ]
+    ]
+   },
+   {
+    "text": "수박만 한 크기예요.",
+    "what": "수박(크기 비교)",
+    "newTokensAfter": [],
+    "startsBefore": false,
+    "startsAfter": false,
+    "dropped": [
+     [
+      "수박",
+      "size"
+     ]
+    ]
+   },
+   {
+    "text": "의자에 앉아 있는 느낌이에요.",
+    "what": "의자(장소)",
+    "newTokensAfter": [],
+    "startsBefore": false,
+    "startsAfter": false,
+    "dropped": [
+     [
+      "의자",
+      "location"
+     ]
+    ]
+   },
+   {
+    "text": "이불 속에 들어가 있는 것 같아요.",
+    "what": "이불(장소)",
+    "newTokensAfter": [],
+    "startsBefore": false,
+    "startsAfter": false,
+    "dropped": [
+     [
+      "이불",
+      "location"
+     ]
+    ]
+   },
+   {
+    "text": "텐트 안에 있는 것 같아요.",
+    "what": "텐트(장소)",
+    "newTokensAfter": [],
+    "startsBefore": false,
+    "startsAfter": false,
+    "dropped": [
+     [
+      "텐트",
+      "location"
+     ]
+    ]
+   },
+   {
+    "text": "울타리 밖에 있는 느낌이에요.",
+    "what": "울타리(장소)",
+    "newTokensAfter": [],
+    "startsBefore": false,
+    "startsAfter": false,
+    "dropped": [
+     [
+      "울타리",
+      "location"
+     ]
+    ]
+   },
+   {
+    "text": "첫 단추를 잘못 끼운 느낌이에요.",
+    "what": "단추(관용 표현)",
+    "newTokensAfter": [],
+    "startsBefore": false,
+    "startsAfter": false,
+    "dropped": []
+   },
+   {
+    "text": "깡통 전세 때문에 걱정이에요.",
+    "what": "깡통(관용 표현 깡통 전세)",
+    "newTokensAfter": [],
+    "startsBefore": false,
+    "startsAfter": false,
+    "dropped": []
+   },
+   {
+    "text": "주사위는 던져졌어요.",
+    "what": "주사위(관용 표현)",
+    "newTokensAfter": [],
+    "startsBefore": false,
+    "startsAfter": false,
+    "dropped": [
+     [
+      "주사위",
+      "past_or_former"
+     ]
+    ]
+   },
+   {
+    "text": "눈이 와요.",
+    "what": "눈덩이의 '눈' 단독",
+    "newTokensAfter": [],
+    "startsBefore": false,
+    "startsAfter": false,
+    "dropped": []
+   },
+   {
+    "text": "양동작전 같아요.",
+    "what": "양동이의 앞부분",
+    "newTokensAfter": [],
+    "startsBefore": false,
+    "startsAfter": false,
+    "dropped": []
+   },
+   {
+    "text": "판단이 안 서요.",
+    "what": "판·판때기 앞부분",
+    "newTokensAfter": [],
+    "startsBefore": false,
+    "startsAfter": false,
+    "dropped": []
+   }
+  ]
+ }
+}

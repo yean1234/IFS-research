@@ -139,14 +139,14 @@ def test_selection_records_llm_quote_and_shown_span(tmp_path, fake):
     rt, s, f, llm = start(tmp_path, T_PEBBLE, sid="SYN-G83-B")
     v = none_until_settled(f)
     assert v["stage"] == "picking"
-    assert v["llmShapeBasis"] == {"quote": "조약돌", "text": "'조약돌'이라고 하신 말을 바탕으로 모양을 만들어 볼게요."}
+    assert v["llmShapeBasis"] == {"quote": "디딤돌", "text": "'디딤돌'이라고 하신 말을 바탕으로 모양을 만들어 볼게요."}
     d = valid5(f)
     bs = d["generation"]["shapeLlm"]["basisShown"]
-    assert bs["llmQuote"] == "조약돌이" and bs["llmCharSpan"] == [0, 4]
-    assert bs["shownText"] == "조약돌" and bs["shownSpan"] == [0, 3] and bs["particle"] == "이라고" and bs["trimmed"] is True
+    assert bs["llmQuote"] == "디딤돌이" and bs["llmCharSpan"] == [0, 4]
+    assert bs["shownText"] == "디딤돌" and bs["shownSpan"] == [0, 3] and bs["particle"] == "이라고" and bs["trimmed"] is True
     assert bs["version"] == ls.BASIS_DISPLAY_VERSION
     assert d["generation"]["afterNone"]["shapeLlmBasisShown"] == bs
-    assert d["generation"]["shapeLlm"]["adopted"]["quote"] == "조약돌이"       # LLM 인용은 그대로 남음
+    assert d["generation"]["shapeLlm"]["adopted"]["quote"] == "디딤돌이"       # LLM 인용은 그대로 남음
     assert "pebble" not in json.dumps(v["llmShapeBasis"], ensure_ascii=False)
 
 

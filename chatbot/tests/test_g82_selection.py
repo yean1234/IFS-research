@@ -20,8 +20,9 @@ from test_g75_image_pick import calls, fake, pcfg  # noqa: E402,F401
 from test_g77_llm_fill import FakeLLM  # noqa: E402
 
 V05 = Draft202012Validator(json.loads(shared("schemas", "selection.v0.5.json").read_text(encoding="utf-8")))
-T_PEBBLE = "조약돌이 하나 있어요."
-ITEM = {"item": {"quote": "조약돌이", "charSpan": [0, 4], "en": "pebble"}}
+T_PEBBLE = "디딤돌이 하나 있어요."
+# G84(형태 사전 0.3.0): 조약돌이 규칙 사전에 들어가 사전 밖 낱말 예를 디딤돌(0.3.0에 없음)로 바꿈
+ITEM = {"item": {"quote": "디딤돌이", "charSpan": [0, 4], "en": "pebble"}}
 
 
 def gcfg(tmp_path, on=True, **over):
@@ -119,7 +120,7 @@ def test_llm_shape_fills_prompt_basis_line_then_mesh(tmp_path, fake):
     assert v["stage"] == "picking" and len(llm.calls) == 1
     b = v["llmShapeBasis"]
     # G83-b: 화면 낱말은 인용 구간 안의 명사 부분(원문 글자 그대로), 조사는 받침에 맞게
-    assert b["quote"] == "조약돌" and b["text"] == "'조약돌'이라고 하신 말을 바탕으로 모양을 만들어 볼게요."
+    assert b["quote"] == "디딤돌" and b["text"] == "'디딤돌'이라고 하신 말을 바탕으로 모양을 만들어 볼게요."
     assert "pebble" not in json.dumps(b, ensure_ascii=False)                     # 영어 이름은 화면에 보이지 않음
     c0 = calls(tmp_path)[0]
     assert c0["imagePick"]
@@ -164,7 +165,7 @@ def test_second_round_reuses_without_recall(tmp_path, fake):
     assert v["stage"] == "generating"
     wait_stage(f)
     v = f.view()
-    assert v["stage"] == "picking" and v["afterNone"]["round"] == 1 and v["llmShapeBasis"]["quote"] == "조약돌"
+    assert v["stage"] == "picking" and v["afterNone"]["round"] == 1 and v["llmShapeBasis"]["quote"] == "디딤돌"
     assert len(llm.calls) == 1 and len(calls(tmp_path)) == 2
 
 
@@ -218,7 +219,7 @@ def test_api_reject_endpoint_and_web_wiring(tmp_path, fake):
     c.post(f"/api/sessions/{s.id}/selection", json={"candidateId": "none"})
     wait_stage(s.selection_flow)
     v = c.get(f"/api/sessions/{s.id}/selection").json()
-    assert v["stage"] == "picking" and v["llmShapeBasis"]["quote"] == "조약돌"
+    assert v["stage"] == "picking" and v["llmShapeBasis"]["quote"] == "디딤돌"
     assert c.get("/api/selection/config").json()["phrases"]["llm_shape_basis_wrong_button"] == "그 말이 아니에요"
     r = c.post(f"/api/sessions/{s.id}/selection/shape-basis/reject")
     assert r.status_code == 200 and r.json()["stage"] == "adjusting"

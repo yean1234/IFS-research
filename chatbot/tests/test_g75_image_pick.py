@@ -119,7 +119,7 @@ def test_image_pick_prompt_adds_fixed_gray_style_only():
     assert [(t["en"], t["ko"], t["charSpan"]) for t in q["tokens"] if t["slot"] != "template"] == content   # 말한 낱말 그대로
     assert q["text"].startswith(p["text"] + ", ") and "monochrome gray clay" in q["text"]
     assert q["negativeText"].startswith(p["negativeText"]) and "colorful" in q["negativeText"]
-    assert q["builderVersion"] == "gen3d-shape-prompt/0.4.0+imagepick" and q["imageStyle"] == "g75-shape-only-gray"
+    assert q["builderVersion"] == "gen3d-shape-prompt/0.5.0+imagepick" and q["imageStyle"] == "g75-shape-only-gray"
     assert ng.image_pick_prompt(p) == q                                              # 결정적
     assert p == ng.shape_prompt(T_SHAPE) and "imageStyle" not in p                   # 원래 규칙(G62·G73)은 그대로
     b = ng.image_pick_prompt(ng.shape_prompt(T_NOSHAPE))
@@ -140,7 +140,7 @@ def test_flag_off_is_g73_unchanged(tmp_path, fake):
     assert d["formatVersion"] == "ifs-selection/0.3" and d["stage"] == "selecting"
     an = d["generation"]["afterNone"]
     assert set(an) == G73_KEYS and "imagePickExposed" not in d["generation"]
-    assert an["prompt"]["builderVersion"] == "gen3d-shape-prompt/0.3.0+mapper-v2" and "imageStyle" not in an["prompt"]
+    assert an["prompt"]["builderVersion"] == "gen3d-shape-prompt/0.5.0+mapper-v2" and "imageStyle" not in an["prompt"]
     assert not any(c["imagePick"] or c["fromImage"] for c in calls(tmp_path))     # 생성기도 예전 인자만
     assert "imagePick" not in f.view()
     assert not [e for e in V03.iter_errors(d)]

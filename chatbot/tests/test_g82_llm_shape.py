@@ -17,12 +17,14 @@ sys.path.insert(0, str(Path(__file__).parent))
 from test_g73_none_gen import cfg, done_session  # noqa: E402
 from test_g77_llm_fill import FakeLLM  # noqa: E402
 
-T_PEBBLE = "조약돌이 하나 있어요."              # 사전 밖 형태 낱말 → 규칙 no_shape_stated
-T_TWICE = "조약돌 옆에 또 조약돌이 있어요."     # 같은 낱말이 두 번(위치 고치기를 하지 않음)
-T_CUSHION = "방석 같은 거예요. 납작하고 푹신해요."  # 규칙은 꾸밈말만('flat') → 중심 명사 자리만 LLM
+T_PEBBLE = "디딤돌이 하나 있어요."              # 사전 밖 형태 낱말 → 규칙 no_shape_stated
+T_TWICE = "디딤돌 옆에 또 디딤돌이 있어요."     # 같은 낱말이 두 번(위치 고치기를 하지 않음)
+T_CUSHION = "쿠션 같은 거예요. 납작하고 푹신해요."  # 규칙은 꾸밈말만('flat') → 중심 명사 자리만 LLM
 T_RULE = "엉킨 실타래 같아요. 가슴 앞에 있어요."    # 규칙이 형태를 잡음 → 부르지 않음
 T_NOSHAPE = "쑥색이고 차가워요."
 T_CAT = "고양이 같아요."                         # 규칙 차단(excluded_category) → 부르지 않음
+# G84(형태 사전 0.3.0): 조약돌·돌덩이·자갈·벽돌·방석·베개·주전자가 규칙 사전에 들어가, 사전 밖 낱말 예를
+# 디딤돌·고구마·몽돌·차돌·쿠션·바가지(0.3.0에 없음)로 바꿨다. 영어 이름은 가짜 LLM의 답이라 그대로 둔다.
 
 
 def gcfg(tmp_path, on=True, **over):
@@ -75,7 +77,7 @@ def test_startup_refuses_missing_settings(tmp_path, over, needle):
 
 def test_g82_on_turns_off_only_g77_shape_slot(tmp_path):
     """G82가 켜지면 G77은 형태 낱말 칸만 내밀지 않는다(색 등 다른 빈 슬롯은 그대로)."""
-    text = "쑥색 돌덩이 같은 게 있어요."
+    text = "쑥색 고구마 같은 게 있어요."
     offered = {}
     for on in (False, True):
         llm = FakeLLM({"items": []})
@@ -89,7 +91,7 @@ def test_g82_on_turns_off_only_g77_shape_slot(tmp_path):
 
 
 def test_flag_off_outputs_and_records_unchanged(tmp_path):
-    llm = FakeLLM(it(T_PEBBLE, "조약돌이", "pebble"))
+    llm = FakeLLM(it(T_PEBBLE, "디딤돌이", "pebble"))
     rt = Runtime(gcfg(tmp_path, on=False), backend=llm)
     assert rt.llm_shape_prompt is None
     s = done_session(rt, "SYN-G82-OFF", T_PEBBLE)
@@ -106,11 +108,11 @@ def test_flag_off_outputs_and_records_unchanged(tmp_path):
 
 # ── 채택 ─────────────────────────────────────────────────────────────────────
 def test_adopted_shape_word_fills_head_and_records(tmp_path):
-    rt, s, llm = sess(tmp_path, T_PEBBLE, it(T_PEBBLE, "조약돌이", "pebble"))
+    rt, s, llm = sess(tmp_path, T_PEBBLE, it(T_PEBBLE, "디딤돌이", "pebble"))
     rec = run(s)
     norm = s.log.data["confirmedText"]
     assert rec["status"] == "ok" and rec["called"] and rec["candidate"] and rec["rejectReasons"] == []
-    assert rec["adopted"] == {"quote": "조약돌이", "charSpan": [0, 4], "en": "pebble", "origin": "llm_translated"}
+    assert rec["adopted"] == {"quote": "디딤돌이", "charSpan": [0, 4], "en": "pebble", "origin": "llm_translated"}
     assert rec["shapePromptText"].startswith("a single pebble, one solid object")
     # 입력 해시: LLM에 넣은 확정 텍스트 = 검증기 텍스트 = 세션 확정 텍스트, 사용자 메시지 안 구분 표시 사이에 그대로
     assert rec["inputTextSha256"] == rec["validatorTextSha256"] == ls.sha256_text(norm)
@@ -128,40 +130,40 @@ def test_adopted_shape_word_fills_head_and_records(tmp_path):
         p = pm.shape_prompt(norm, mapper_spec=s.scene_spec, llm_shape_items=ls.shape_items_from(rec))
         q = pm.image_pick_prompt(p)
     assert p["shapeSource"] == "llm_translated" and p["builderVersion"].endswith("+llmshape-0.1.0")
-    assert [t for t in p["tokens"] if t.get("provenance") == "llm_translated"][0]["ko"] == "조약돌이"
+    assert [t for t in p["tokens"] if t.get("provenance") == "llm_translated"][0]["ko"] == "디딤돌이"
     assert q["builderVersion"].endswith("+llmshape-0.1.0")
 
 
 def test_modifier_only_rule_keeps_modifier_and_fills_head(tmp_path):
-    rt, s, llm = sess(tmp_path, T_CUSHION, it(T_CUSHION, "방석", "cushion"))
+    rt, s, llm = sess(tmp_path, T_CUSHION, it(T_CUSHION, "쿠션", "cushion"))
     rec = run(s)
     assert rec["ruleRoute"]["reason"] == "modifier_only" and rec["status"] == "ok"
     assert rec["shapePromptText"].startswith("a single flat cushion,")
 
 
 def test_span_repaired_only_when_quote_unique(tmp_path):
-    rt, s, llm = sess(tmp_path, T_PEBBLE, it(T_PEBBLE, "조약돌이", "pebble", span=[0, 3]))
+    rt, s, llm = sess(tmp_path, T_PEBBLE, it(T_PEBBLE, "디딤돌이", "pebble", span=[0, 3]))
     rec = run(s)
     assert rec["status"] == "ok" and rec["item"]["spanRepaired"] == {"llmCharSpan": [0, 3], "to": [0, 4]}
-    rt, s, llm = sess(tmp_path / "b", T_TWICE, it(T_TWICE, "조약돌", "pebble", span=[1, 4]), sid="SYN-G82-TW")
+    rt, s, llm = sess(tmp_path / "b", T_TWICE, it(T_TWICE, "디딤돌", "pebble", span=[1, 4]), sid="SYN-G82-TW")
     rec = run(s)
     assert rec["status"] == "rejected" and "quote_mismatch" in rec["rejectReasons"]
 
 
 def test_quote_not_in_text_rejected(tmp_path):
-    rt, s, llm = sess(tmp_path, T_PEBBLE, {"item": {"quote": "자갈이", "charSpan": [0, 3], "en": "gravel"}})
+    rt, s, llm = sess(tmp_path, T_PEBBLE, {"item": {"quote": "몽돌이", "charSpan": [0, 3], "en": "gravel"}})
     rec = run(s)
     assert rec["status"] == "rejected" and rec["rejectReasons"][0] == "quote_mismatch" and rec["adopted"] is None
 
 
 @pytest.mark.parametrize("text,quote,why", [
-    ("조약돌은 아니에요.", "조약돌은", "negated"),
-    ("예전에는 돌덩이였어요.", "돌덩이", "past_or_former"),
-    ("친구가 조약돌 같대요.", "조약돌", "reported_speech"),
-    ("벽돌이면 좋겠어요.", "벽돌", "hypothetical"),
-    ("아마 자갈일 거예요.", "자갈", "hypothetical"),
-    ("친구가 조약돌 같대요.", "조약돌", "korean_banned"),        # 문장 안 사람 명사(한국어 금지)
-    ("돌덩이처럼 무거워요.", "돌덩이", "simile_of_predicate"),     # 속성 비유(그대로 막음)
+    ("디딤돌은 아니에요.", "디딤돌은", "negated"),
+    ("예전에는 고구마였어요.", "고구마", "past_or_former"),
+    ("친구가 디딤돌 같대요.", "디딤돌", "reported_speech"),
+    ("차돌이면 좋겠어요.", "차돌", "hypothetical"),
+    ("아마 몽돌일 거예요.", "몽돌", "hypothetical"),
+    ("친구가 디딤돌 같대요.", "디딤돌", "korean_banned"),        # 문장 안 사람 명사(한국어 금지)
+    ("고구마처럼 무거워요.", "고구마", "simile_of_predicate"),     # 속성 비유(그대로 막음)
     ("쑥색이고 차가워요.", "쑥색", "color_word"),
     ("그냥 답답하고 무거운 느낌이에요.", "느낌", "non_shape_noun"),
 ])
@@ -172,8 +174,8 @@ def test_validator_rejects_frames_and_korean_words(tmp_path, text, quote, why):
 
 
 def test_shape_verb_simile_passes(tmp_path):
-    t = "베개처럼 생겼어요."
-    rt, s, llm = sess(tmp_path, t, it(t, "베개", "pillow"))
+    t = "쿠션처럼 생겼어요."
+    rt, s, llm = sess(tmp_path, t, it(t, "쿠션", "pillow"))
     rec = run(s)
     assert rec["status"] == "ok" and rec["item"]["exempted"] == ["simile_of_predicate:shape_verb"]
 
@@ -188,11 +190,11 @@ def test_shape_verb_simile_passes(tmp_path):
     ("sad stone", "english_non_shape"), ("ball of yarn", "two_words"), ("Pebble", "english_format"),
     ("perfect pebble", "two_words"), ("yarn ball", "two_words"), ("pine cone", "two_words"),   # CP19-1: 한 낱말만
     ("smooth", "english_modifier"), ("round", "english_modifier"),
-    ("pebble!", "english_format"), ("조약돌", "english_format"),
+    ("pebble!", "english_format"), ("디딤돌", "english_format"),
 ])
 def test_english_name_rules(tmp_path, en, why):
     assert why in ng._load_prompts().llm_shape_english_reasons(en)
-    rt, s, llm = sess(tmp_path, T_PEBBLE, it(T_PEBBLE, "조약돌이", en))
+    rt, s, llm = sess(tmp_path, T_PEBBLE, it(T_PEBBLE, "디딤돌이", en))
     rec = run(s)
     assert rec["status"] == "rejected" and why in rec["rejectReasons"]
 
@@ -206,13 +208,13 @@ def test_generator_recheck_fail_closed():
     pm = ng._load_prompts()
     norm = T_PEBBLE
     with ng._prompts_lock:
-        good = pm.shape_prompt(norm, llm_shape_items=[{"quote": "조약돌이", "charSpan": [0, 4], "en": "pebble"}])
-        bad_q = pm.shape_prompt(norm, llm_shape_items=[{"quote": "조약돌이", "charSpan": [0, 3], "en": "pebble"}])
-        bad_en = pm.shape_prompt(norm, llm_shape_items=[{"quote": "조약돌이", "charSpan": [0, 4], "en": "round pebble"}])
-        two = pm.shape_prompt(norm, llm_shape_items=[{"quote": "조약돌이", "charSpan": [0, 4], "en": "perfect pebble"}])
+        good = pm.shape_prompt(norm, llm_shape_items=[{"quote": "디딤돌이", "charSpan": [0, 4], "en": "pebble"}])
+        bad_q = pm.shape_prompt(norm, llm_shape_items=[{"quote": "디딤돌이", "charSpan": [0, 3], "en": "pebble"}])
+        bad_en = pm.shape_prompt(norm, llm_shape_items=[{"quote": "디딤돌이", "charSpan": [0, 4], "en": "round pebble"}])
+        two = pm.shape_prompt(norm, llm_shape_items=[{"quote": "디딤돌이", "charSpan": [0, 4], "en": "perfect pebble"}])
         with pytest.raises(ValueError, match="함께"):
-            pm.shape_prompt(norm, llm_items=[{"quote": "조약돌이", "charSpan": [0, 4], "english": "pebble"}],
-                            llm_shape_items=[{"quote": "조약돌이", "charSpan": [0, 4], "en": "pebble"}])
+            pm.shape_prompt(norm, llm_items=[{"quote": "디딤돌이", "charSpan": [0, 4], "english": "pebble"}],
+                            llm_shape_items=[{"quote": "디딤돌이", "charSpan": [0, 4], "en": "pebble"}])
     assert good["status"] == "ok" and good["shapeSource"] == "llm_translated"
     assert bad_q["blockReason"] == bad_en["blockReason"] == two["blockReason"] == "no_shape_stated" and "shapeSource" not in bad_en
 
@@ -252,7 +254,7 @@ class SpyCache(dict):
 
 @pytest.mark.parametrize("mut", ["alert", "turn", "message"])
 def test_flagged_session_no_call_and_no_cache_lookup(tmp_path, mut):
-    rt, s, llm = sess(tmp_path, T_PEBBLE, it(T_PEBBLE, "조약돌이", "pebble"))
+    rt, s, llm = sess(tmp_path, T_PEBBLE, it(T_PEBBLE, "디딤돌이", "pebble"))
     first = run(s)
     assert first["status"] == "ok" and len(llm.calls) == 1
     s.llm_shape_cache = SpyCache(s.llm_shape_cache)           # 앞 성공 결과가 캐시에 있음
@@ -269,7 +271,7 @@ def test_flagged_session_no_call_and_no_cache_lookup(tmp_path, mut):
 
 
 def test_cache_hit_no_second_call_and_key_parts(tmp_path):
-    rt, s, llm = sess(tmp_path, T_PEBBLE, it(T_PEBBLE, "조약돌이", "pebble"))
+    rt, s, llm = sess(tmp_path, T_PEBBLE, it(T_PEBBLE, "디딤돌이", "pebble"))
     a = run(s)
     b = run(s)
     assert b["cached"] is True and b["adopted"] == a["adopted"] and len(llm.calls) == 1
@@ -303,11 +305,11 @@ def test_offline_backend_skips(tmp_path):
 # ── 검증기 0.4.0(G82 다음 단계·CP19) ─────────────────────────────────────────
 def test_same_text_different_spec_misses_cache(tmp_path):
     """CP19-2: 같은 확정 텍스트라도 검증에 쓰는 spec 부분(뺀 구간 등)이 다르면 캐시를 쓰지 않고 다시 부른다."""
-    rt, s, llm = sess(tmp_path, T_PEBBLE, it(T_PEBBLE, "조약돌이", "pebble"))
+    rt, s, llm = sess(tmp_path, T_PEBBLE, it(T_PEBBLE, "디딤돌이", "pebble"))
     norm = s.log.data["confirmedText"]
     a = run(s)
     spec2 = json.loads(json.dumps(s.scene_spec))
-    spec2.setdefault("_negated", []).append({"lemma": "조약돌", "_provenance": {"charSpan": [0, 3]}})
+    spec2.setdefault("_negated", []).append({"lemma": "디딤돌", "_provenance": {"charSpan": [0, 3]}})
     b = ls.propose(rt.llm_shape_prompt, llm, norm, spec2, seed=0, timeout_s=5.0, cache=s.llm_shape_cache, flag=None)
     assert a["status"] == "ok" and b["cached"] is False and len(llm.calls) == 2
     assert a["validationInputSha256"] != b["validationInputSha256"] and a["cacheKey"] != b["cacheKey"]
@@ -318,11 +320,11 @@ def test_same_text_different_spec_misses_cache(tmp_path):
 
 
 def test_form_span_used_by_mapper_is_open_when_rule_has_no_head(tmp_path):
-    t = "벽돌 같은 게 박혀 있어요."
-    rt, s, llm = sess(tmp_path, t, it(t, "벽돌", "brick"))
+    t = "차돌 같은 게 박혀 있어요."
+    rt, s, llm = sess(tmp_path, t, it(t, "차돌", "brick"))
     assert any(str(p).startswith("form.") for p in (s.scene_spec.get("_provenance") or {}))   # 매퍼가 form.*에 씀
     rec = run(s)
-    assert rec["status"] == "ok" and rec["formSpansOpened"] and rec["formSpansOpened"][0]["text"].startswith("벽돌")
+    assert rec["status"] == "ok" and rec["formSpansOpened"] and rec["formSpansOpened"][0]["text"].startswith("차돌")
     assert "span_covered" not in rec["rejectReasons"]
 
 
@@ -359,9 +361,9 @@ def test_stage_rule_rejects_quote_from_worry_line(tmp_path):
 
 
 def test_stage_rule_keeps_shape_line(tmp_path):
-    lines = ["회사 일이 걱정이에요", "가슴이 답답해요", "조약돌 같은 게 있어요"]
+    lines = ["회사 일이 걱정이에요", "가슴이 답답해요", "디딤돌 같은 게 있어요"]
     norm = "\n".join(lines)
-    rt, s, llm = interview_session(tmp_path, lines, it(norm, "조약돌", "pebble"), sid="SYN-G82-ST2")
+    rt, s, llm = interview_session(tmp_path, lines, it(norm, "디딤돌", "pebble"), sid="SYN-G82-ST2")
     rec = run(s)
     assert rec["lineStages"]["status"] == "applied" and rec["status"] == "ok"
     assert rec["item"]["lineStage"] in ("focus", "flesh_out")
@@ -383,10 +385,10 @@ def test_korean_animal_words_blocked_by_rule(tmp_path, text):
     assert rec["status"] == "skipped" and rec["skipReason"] == "rule_blocked:excluded_category" and llm.calls == []
 
 
-@pytest.mark.parametrize("text", ["주전자처럼 단단해요.", "주전자처럼 묵직해요.", "주전자처럼 딱딱해요.", "주전자같이 싸늘해요.",
-                                  "주전자처럼 답답해요.", "주전자처럼 무거워요.", "주전자처럼 차가워요.", "주전자처럼 단단하게 생겼어요."])
+@pytest.mark.parametrize("text", ["바가지처럼 단단해요.", "바가지처럼 묵직해요.", "바가지처럼 딱딱해요.", "바가지같이 싸늘해요.",
+                                  "바가지처럼 답답해요.", "바가지처럼 무거워요.", "바가지처럼 차가워요.", "바가지처럼 단단하게 생겼어요."])
 def test_simile_of_root_predicate_rejected(tmp_path, text):
     """검증기 0.5.0(G77 0.4.0): 2차 평가 오통과 17건의 꼴. XR 서술어와 VA 서술어 모두 속성 비유로 막는다."""
-    rt, s, llm = sess(tmp_path, text, it(text, "주전자", "kettle"))
+    rt, s, llm = sess(tmp_path, text, it(text, "바가지", "kettle"))
     rec = run(s)
     assert rec["status"] == "rejected" and "simile_of_predicate" in rec["rejectReasons"], rec["rejectReasons"]

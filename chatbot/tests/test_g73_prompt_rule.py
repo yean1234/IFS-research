@@ -47,12 +47,13 @@ def test_action_simile_medium_is_dropped_researcher_session(mapper):
     alts = [a for a in spec["_alternatives"] if a["path"].startswith("form.")
             and any(p["trigger"] == "천" and "actionSimile" in p["rule"] for p in a["_provenance"])]
     assert alts
-    assert "cloth" in old["text"]                                        # 예전 규칙(텍스트만)은 '천'을 넣었다 — G73 시험 결함
+    # 예전 규칙(텍스트만, 0.2.0)은 '천'을 넣었다 — G73 시험 결함. 0.5.0(G84 후속)부터는 텍스트 규칙도 '바람이 불면'의 가정 표지로 뺀다
+    assert "cloth" not in old["text"] and any(d["ko"] == "천" and d["reason"] == "hypothetical" for d in old["dropped"])
     assert new["status"] == "ok" and "cloth" not in new["text"]
     assert {"ko": "천", "charSpan": alts[0]["_provenance"][0]["charSpan"], "reason": "mapper_action_simile"} in new["dropped"]
     assert ("동그란", "round") in content(new)                            # 직접 말한 모양어는 그대로
     assert new["promptRule"] == "mapper" and new["builderVersion"].endswith("+mapper-v2")
-    assert old["promptRule"] == "text" and old["builderVersion"] == "gen3d-shape-prompt/0.2.0"
+    assert old["promptRule"] == "text" and old["builderVersion"] == "gen3d-shape-prompt/0.5.0"
 
 
 def test_simile_medium_with_its_own_subject_keeps_the_subject(mapper):

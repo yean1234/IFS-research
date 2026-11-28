@@ -1,0 +1,5020 @@
+{
+ "cases": {
+  "S1": {
+   "id": "S1",
+   "kind": "E4는 LLM null",
+   "text": "돌덩이예요.",
+   "reject": false,
+   "sessionId": "SYN-G84-S1-1",
+   "steps": [
+    {
+     "at": "after_next",
+     "stage": "selecting",
+     "previewMode": "webgl",
+     "previewReason": null,
+     "afterNone": null,
+     "skipped": false,
+     "llmShapeBasis": null,
+     "basisShown": null,
+     "wrongButton": null,
+     "candidates": [
+      {
+       "id": "c-c7f466ad4eae",
+       "afterNone": false,
+       "hasAsset": false
+      },
+      {
+       "id": "c-e46a81f92816",
+       "afterNone": false,
+       "hasAsset": false
+      },
+      {
+       "id": "c-e0c729e71a28",
+       "afterNone": false,
+       "hasAsset": false
+      },
+      {
+       "id": "c-5896dfd87fad",
+       "afterNone": false,
+       "hasAsset": false
+      }
+     ],
+     "imagePick": null,
+     "msgs": [
+      "면담에서 말씀하신 것을 바탕으로, 떠올리신 그것을 대신할 물체를 만들었어요.",
+      "아래 물체 가운데 떠올리신 그것과 가장 가까운 것을 하나 골라 주세요. 맞는 게 없으면 [맞는 게 없어요]를 눌러 주세요."
+     ],
+     "scrollH": 1134,
+     "buttons": {
+      "wrong": null,
+      "choose": null
+     },
+     "genNote": null
+    },
+    {
+     "at": "after_none",
+     "stage": "picking",
+     "previewMode": "webgl",
+     "previewReason": null,
+     "afterNone": {
+      "status": "running",
+      "blockReason": null,
+      "error": null,
+      "candidateId": null,
+      "noneAt": "2026-11-28T22:46:26+09:00",
+      "startedAt": null,
+      "endedAt": null,
+      "seconds": null,
+      "participantSkippedWait": false,
+      "attempt": 0,
+      "seed": null,
+      "basisRejected": null,
+      "timeoutS": 180,
+      "phase": "pick",
+      "round": 0,
+      "rounds": 2,
+      "imagePickStatus": "shown"
+     },
+     "skipped": false,
+     "llmShapeBasis": null,
+     "basisShown": null,
+     "wrongButton": null,
+     "candidates": [
+      {
+       "id": "c-c7f466ad4eae",
+       "afterNone": false,
+       "hasAsset": false
+      },
+      {
+       "id": "c-e46a81f92816",
+       "afterNone": false,
+       "hasAsset": false
+      },
+      {
+       "id": "c-e0c729e71a28",
+       "afterNone": false,
+       "hasAsset": false
+      },
+      {
+       "id": "c-5896dfd87fad",
+       "afterNone": false,
+       "hasAsset": false
+      }
+     ],
+     "imagePick": {
+      "round": 0,
+      "images": [
+       {
+        "position": 0
+       },
+       {
+        "position": 1
+       },
+       {
+        "position": 2
+       }
+      ]
+     },
+     "msgs": [
+      "말씀하신 모양으로 그림을 그려 봤어요. 떠올리신 모양과 가장 가까운 그림을 골라 주세요. 색은 보지 말고 모양만 봐 주세요."
+     ],
+     "scrollH": 1100,
+     "buttons": {
+      "wrong": null,
+      "choose": {
+       "w": 240,
+       "h": 48
+      }
+     },
+     "genNote": null
+    },
+    {
+     "at": "after_pick",
+     "stage": "adjusting",
+     "previewMode": "webgl",
+     "previewReason": null,
+     "afterNone": {
+      "status": "blocked",
+      "blockReason": "person_like",
+      "error": null,
+      "candidateId": null,
+      "noneAt": "2026-11-28T22:46:26+09:00",
+      "startedAt": "2026-11-28T22:47:15+09:00",
+      "endedAt": "2026-11-28T22:48:03+09:00",
+      "seconds": 43.58,
+      "participantSkippedWait": false,
+      "attempt": 0,
+      "seed": 0,
+      "basisRejected": null,
+      "timeoutS": 180,
+      "phase": "mesh",
+      "round": 0,
+      "rounds": 2,
+      "imagePickStatus": "picked"
+     },
+     "skipped": false,
+     "llmShapeBasis": null,
+     "basisShown": null,
+     "wrongButton": null,
+     "candidates": [
+      {
+       "id": "c-c7f466ad4eae",
+       "afterNone": false,
+       "hasAsset": false
+      },
+      {
+       "id": "c-e46a81f92816",
+       "afterNone": false,
+       "hasAsset": false
+      },
+      {
+       "id": "c-e0c729e71a28",
+       "afterNone": false,
+       "hasAsset": false
+      },
+      {
+       "id": "c-5896dfd87fad",
+       "afterNone": false,
+       "hasAsset": false
+      }
+     ],
+     "imagePick": null,
+     "msgs": [
+      "면담에서 말씀하신 것을 바탕으로, 떠올리신 그것을 대신할 물체를 만들었어요.",
+      "물체를 더 만들지 못했어요. 이어서 진행할게요.",
+      "아래 항목으로 물체를 고칠 수 있어요. 떠올리신 그것에 맞게 고친 뒤 [다 고쳤어요]를 눌러 주세요. 고칠 게 없으면 그대로 눌러도 돼요."
+     ],
+     "scrollH": 1542,
+     "buttons": {
+      "wrong": null,
+      "choose": null
+     },
+     "genNote": "물체를 더 만들지 못했어요. 이어서 진행할게요."
+    }
+   ],
+   "shots": {
+    "a": "shots/S1_a_candidates.png",
+    "wait_llm_image": "shots/S1_wait_llm_image.png",
+    "b": "shots/S1_b_images.png",
+    "wait_mesh": "shots/S1_wait_mesh.png",
+    "c": "shots/S1_c_no_mesh_adjusting.png"
+   },
+   "timings": {
+    "interviewS": 4.9,
+    "nextToCandidatesS": 3.8,
+    "noneToNextScreenS": 47.4,
+    "pickToNextScreenS": 49.1,
+    "caseTotalS": 110.3
+   },
+   "privacy": {
+    "S1_a_candidates": [],
+    "S1_wait_llm_image": [],
+    "S1_b_images": [],
+    "S1_wait_mesh": [],
+    "S1_c_no_mesh_adjusting": []
+   },
+   "reachedEnd": true,
+   "interview": {
+    "waitedForModelsS": 0.0,
+    "turns": 6,
+    "beforeConfirm": {
+     "awaiting": "confirm",
+     "state": "confirm"
+    },
+    "state": "done",
+    "awaiting": "none",
+    "selectionAvailable": true,
+    "seconds": 4.9
+   },
+   "basisShown": null,
+   "pickedPosition": 0,
+   "result": "mesh_not_shown:adjusting",
+   "endStage": "premeasure",
+   "console": [
+    {
+     "type": "warning",
+     "text": "Manual synchronization of Unity Application.persistentDataPath via JS_FileSystem_Sync() is deprecated and will be later removed in a future Unity version. The persistent data directory will be automatically synchronized instead on file modification. Pass config.autoSyncPersistentDataPath = true; to configuration in createUnityInstance() to opt in to the new behavior."
+    }
+   ],
+   "collected": {
+    "spec": {
+     "form": {
+      "type": null,
+      "posture": null,
+      "base": null,
+      "baseVariant": null,
+      "mistKind": null
+     },
+     "material": {
+      "color": null,
+      "brightness": null,
+      "saturation": null,
+      "roughness": null,
+      "opacity": null,
+      "erosion": null
+     },
+     "formProvenance": {},
+     "_unmapped": [
+      {
+       "lemma": "돌덩이",
+       "category": "unlisted_noun",
+       "value": {
+        "noun": "돌덩이",
+        "role": "named",
+        "scope": "main"
+       },
+       "reason": "no_scene_param",
+       "_provenance": {
+        "source": "phrase_rule",
+        "trigger": "돌덩이",
+        "charSpan": [
+         0,
+         3
+        ],
+        "rule": "unlistedNoun.돌덩이"
+       }
+      }
+     ],
+     "_negated": [],
+     "_context": [],
+     "_uncertain": [],
+     "_needsConfirmation": [],
+     "metaMapping": {
+      "requested": "v2",
+      "used": "v1",
+      "fallbackReason": null
+     }
+    },
+    "summary": {
+     "shapeLlm": {
+      "route": "rule",
+      "routeReason": "rule_has_shape",
+      "called": false,
+      "candidate": false,
+      "status": null,
+      "skipReason": null,
+      "rawItem": null,
+      "adopted": null,
+      "rejectReasons": [],
+      "exposed": false,
+      "imageChosen": false,
+      "candidateChosen": null,
+      "rejected": false,
+      "participantLeftBeforeResult": null,
+      "llmSeconds": null,
+      "seconds": null,
+      "cached": null,
+      "promptVersion": null,
+      "seed": null,
+      "model": null,
+      "ruleRoute": null,
+      "candidateExposed": false,
+      "basisShown": null
+     },
+     "afterNone": {
+      "status": "blocked",
+      "blockReason": "person_like",
+      "blockDetail": null,
+      "shapeLlmUsed": false,
+      "shapeLlmItems": [],
+      "basisRejected": null,
+      "chosen": null,
+      "seconds": 43.58,
+      "prompt": "a single rock, one solid object, matte gray clay, plain white background, untextured monochrome gray clay sculpture, single uniform color, soft even studio lighting, centered, entire object in view",
+      "shapeSource": null,
+      "shapeNoun": null,
+      "imagePrompt": "a single rock, one solid object, matte gray clay, plain white background, untextured monochrome gray clay sculpture, single uniform color, soft even studio lighting, centered, entire object in view",
+      "imagePick": {
+       "status": "picked",
+       "outcome": "picked",
+       "seconds": 46.23,
+       "shownOrder": [
+        0,
+        1,
+        2
+       ],
+       "pickedSeed": 0,
+       "images": [
+        {
+         "seed": 0,
+         "shown": true,
+         "position": 0,
+         "problem": null,
+         "gate": {
+          "personLikeScore": 0.0011,
+          "passed": true,
+          "threshold": 0.5,
+          "labelScores": {
+           "a person": 0.0003,
+           "a human figure": 0.0001,
+           "a human face": 0.0002,
+           "a head with eyes and a mouth": 0.0002,
+           "an animal": 0.0002,
+           "an animal figurine": 0.0,
+           "a doll": 0.0001,
+           "an inanimate object": 0.02,
+           "an abstract shape": 0.0113,
+           "a rock": 0.1516,
+           "a geometric solid": 0.0058,
+           "a household object": 0.0126,
+           "a lump of clay": 0.7973,
+           "a piece of cloth": 0.0003
+          },
+          "matchScore": 0.2441,
+          "model": "openai/clip-vit-large-patch14@32bd64288804d66eefd0ccbe215aa642df71cc41"
+         }
+        },
+        {
+         "seed": 1,
+         "shown": true,
+         "position": 1,
+         "problem": null,
+         "gate": {
+          "personLikeScore": 0.0013,
+          "passed": true,
+          "threshold": 0.5,
+          "labelScores": {
+           "a person": 0.0002,
+           "a human figure": 0.0,
+           "a human face": 0.0001,
+           "a head with eyes and a mouth": 0.0001,
+           "an animal": 0.0008,
+           "an animal figurine": 0.0,
+           "a doll": 0.0,
+           "an inanimate object": 0.0792,
+           "an abstract shape": 0.0548,
+           "a rock": 0.3141,
+           "a geometric solid": 0.0057,
+           "a household object": 0.015,
+           "a lump of clay": 0.5297,
+           "a piece of cloth": 0.0003
+          },
+          "matchScore": 0.2547,
+          "model": "openai/clip-vit-large-patch14@32bd64288804d66eefd0ccbe215aa642df71cc41"
+         }
+        },
+        {
+         "seed": 2,
+         "shown": true,
+         "position": 2,
+         "problem": null,
+         "gate": {
+          "personLikeScore": 0.0006,
+          "passed": true,
+          "threshold": 0.5,
+          "labelScores": {
+           "a person": 0.0002,
+           "a human figure": 0.0,
+           "a human face": 0.0001,
+           "a head with eyes and a mouth": 0.0001,
+           "an animal": 0.0001,
+           "an animal figurine": 0.0,
+           "a doll": 0.0,
+           "an inanimate object": 0.0041,
+           "an abstract shape": 0.0101,
+           "a rock": 0.196,
+           "a geometric solid": 0.0016,
+           "a household object": 0.0051,
+           "a lump of clay": 0.7823,
+           "a piece of cloth": 0.0002
+          },
+          "matchScore": 0.2478,
+          "model": "openai/clip-vit-large-patch14@32bd64288804d66eefd0ccbe215aa642df71cc41"
+         }
+        }
+       ]
+      },
+      "meshGate": null,
+      "meshCandidateId": null,
+      "gateWhenBlocked": {
+       "personLikeScore": 0.7757,
+       "passed": false,
+       "threshold": 0.5,
+       "views": 6,
+       "labelScores": {
+        "a person": 0.1815,
+        "a human figure": 0.0179,
+        "a human face": 0.4251,
+        "a head with eyes and a mouth": 0.146,
+        "an animal": 0.0067,
+        "an animal figurine": 0.0012,
+        "a doll": 0.0079,
+        "an inanimate object": 0.0177,
+        "an abstract shape": 0.0904,
+        "a rock": 0.1763,
+        "a geometric solid": 0.0108,
+        "a household object": 0.0262,
+        "a lump of clay": 0.8618,
+        "a piece of cloth": 0.0429
+       },
+       "matchScore": 0.2125,
+       "model": "openai/clip-vit-large-patch14@32bd64288804d66eefd0ccbe215aa642df71cc41",
+       "multiObject": {
+        "components": 1,
+        "significant": 1,
+        "topFractions": [
+         1.0
+        ],
+        "minFraction": 0.05,
+        "applied": true,
+        "blocked": false
+       }
+      },
+      "shapeLlmBasisShown": null
+     },
+     "earlierRounds": 0,
+     "runnerReady": true,
+     "runnerBlockers": [],
+     "formTypeSource": "llm_quoted",
+     "formAsset": null
+    },
+    "selection": {
+     "runnerReady": true,
+     "runnerBlockers": [],
+     "sources": {
+      "form.type": "llm_quoted",
+      "form.posture": "default",
+      "form.base": "llm_quoted",
+      "form.baseVariant": "default",
+      "material.color": "default",
+      "material.brightness": "default",
+      "material.saturation": "default",
+      "material.roughness": "default",
+      "material.opacity": "default",
+      "material.erosion": "default",
+      "layout.size": "default",
+      "layout.distance": "default",
+      "layout.verticalOffset": "default",
+      "motion.type": "default",
+      "motion.speed": "default",
+      "body.part": "default",
+      "body.layer": "default",
+      "layout.proportions": "default"
+     },
+     "form": {
+      "asset": null
+     },
+     "selection": {
+      "selectedCandidateId": null,
+      "selectedIndex": null,
+      "none": true,
+      "skipped": false,
+      "displayPosition": null,
+      "operationalId": "c-5896dfd87fad",
+      "operationalIndex": 0,
+      "at": "2026-11-28T22:48:03+09:00",
+      "afterNoneGeneration": "blocked",
+      "acceptedDefault": null
+     },
+     "llmFillExposed": true,
+     "generation": {
+      "version": "ifs-form-assets/0.1.0",
+      "lookupKey": "ad549eb8cc57ed5740e047067617d1e54764cdf85229e0a59b2f2ac38459e5b4",
+      "limit": 0,
+      "offered": [],
+      "rejected": [],
+      "proceduralSelectionStep": "choose",
+      "defaultFormSourceSetting": "procedural",
+      "defaultFormSource": "procedural",
+      "defaultCandidateId": null,
+      "defaultFallbackReason": null,
+      "defaultFormRule": "setting_procedural",
+      "defaultFormBasis": null,
+      "shownOrder": [],
+      "outcome": "none",
+      "acceptedDefault": null,
+      "declined": [],
+      "assetDropped": null,
+      "imagePickExposed": true,
+      "shapeLlm": {
+       "version": "ifs-shape-llm-record/0.1.0",
+       "route": "rule",
+       "routeReason": "rule_has_shape",
+       "called": false,
+       "candidate": false,
+       "adopted": null,
+       "status": null,
+       "skipReason": null,
+       "rejectReasons": [],
+       "rawText": null,
+       "inputTextSha256": null,
+       "validatorTextSha256": null,
+       "model": null,
+       "promptVersion": null,
+       "promptSha256": null,
+       "validatorRules": null,
+       "seed": null,
+       "lineStages": null,
+       "exposed": false,
+       "imageChosen": false,
+       "candidateExposed": false,
+       "candidateChosen": null,
+       "rejected": false,
+       "rejectedAt": null,
+       "basisShown": null,
+       "call": null
+      },
+      "llmPromptUsed": false,
+      "afterNone": {
+       "version": "ifs-none-gen/0.1.0",
+       "origin": "generated_after_none",
+       "setting": {
+        "version": "ifs-none-gen/0.1.0",
+        "timeoutS": 180.0,
+        "pipeline": "sdxl-triposg",
+        "seed": 0,
+        "maxRegenerations": 1,
+        "seedRule": "seed = on_none_seed + n (n = 0 첫 생성, 1… 다시 만들기)",
+        "script": "generate.py",
+        "python": "python.exe",
+        "unloadModels": [
+         "gemma4:e4b",
+         "hf.co/mradermacher/kanana-safeguard-8b-GGUF:Q4_K_M"
+        ],
+        "imagePick": {
+         "version": "ifs-image-pick/0.1.0",
+         "rounds": 2,
+         "imagesPerRound": 3,
+         "imageTimeoutS": 180.0,
+         "meshTimeoutS": 180.0,
+         "seedRule": "회차 r(0부터)의 이미지 seed = on_none_seed + 3r + k (k = 0…2), 형태 seed = 고른 이미지의 seed",
+         "maxRegenerationsUsed": false
+        }
+       },
+       "noneAt": "2026-11-28T22:46:26+09:00",
+       "shownOrderBefore": [
+        "c-c7f466ad4eae",
+        "c-e46a81f92816",
+        "c-e0c729e71a28",
+        "c-5896dfd87fad"
+       ],
+       "status": "blocked",
+       "blockReason": "person_like",
+       "blockDetail": null,
+       "prompt": {
+        "text": "a single rock, one solid object, matte gray clay, plain white background, untextured monochrome gray clay sculpture, single uniform color, soft even studio lighting, centered, entire object in view",
+        "negativeText": "person, human, face, eyes, figure, animal, hands, text, watermark, multiple objects, cropped, scenery, floor, shadow, color, two objects, pair, duplicate, group of objects, stand, pedestal, base plate, plinth, string, rope, chain, strap, holder, container, bowl, vase, tray, plate, colorful, multicolored, painted, patterned, glossy, metallic, reflections, background objects",
+        "tokens": [
+         {
+          "en": "a single",
+          "ko": null,
+          "charSpan": null,
+          "slot": "template",
+          "lexiconKey": null
+         },
+         {
+          "en": "rock",
+          "ko": "돌덩이",
+          "charSpan": [
+           0,
+           3
+          ],
+          "slot": "shape_noun",
+          "lexiconKey": "돌덩이"
+         },
+         {
+          "en": "one solid object",
+          "ko": null,
+          "charSpan": null,
+          "slot": "template",
+          "lexiconKey": null
+         },
+         {
+          "en": "matte gray clay",
+          "ko": null,
+          "charSpan": null,
+          "slot": "template",
+          "lexiconKey": null
+         },
+         {
+          "en": "plain white background",
+          "ko": null,
+          "charSpan": null,
+          "slot": "template",
+          "lexiconKey": null
+         },
+         {
+          "en": "untextured monochrome gray clay sculpture",
+          "ko": null,
+          "charSpan": null,
+          "slot": "template",
+          "lexiconKey": null
+         },
+         {
+          "en": "single uniform color",
+          "ko": null,
+          "charSpan": null,
+          "slot": "template",
+          "lexiconKey": null
+         },
+         {
+          "en": "soft even studio lighting",
+          "ko": null,
+          "charSpan": null,
+          "slot": "template",
+          "lexiconKey": null
+         },
+         {
+          "en": "centered",
+          "ko": null,
+          "charSpan": null,
+          "slot": "template",
+          "lexiconKey": null
+         },
+         {
+          "en": "entire object in view",
+          "ko": null,
+          "charSpan": null,
+          "slot": "template",
+          "lexiconKey": null
+         }
+        ],
+        "dropped": [],
+        "status": "ok",
+        "blockReason": null,
+        "blockDetail": null,
+        "lexiconVersion": "0.3.0",
+        "builderVersion": "gen3d-shape-prompt/0.4.0+imagepick+mapper-v2",
+        "templateVersion": "g62-template/0.2.0",
+        "sourceTextSha256": "ad549eb8cc57ed5740e047067617d1e54764cdf85229e0a59b2f2ac38459e5b4",
+        "promptRule": "mapper",
+        "mapperBuilder": "scene-spec-builder-v2/2.9.0",
+        "pluralStated": false,
+        "thinRisk": false,
+        "familiarObjectStated": true,
+        "imageStyle": "g75-shape-only-gray",
+        "imageStyleVersion": "g75-image-style/0.1.0"
+       },
+       "run": "none-SYN-G84-S1-1-20261128-224719-r0-mesh",
+       "startedAt": "2026-11-28T22:47:15+09:00",
+       "endedAt": "2026-11-28T22:48:03+09:00",
+       "seconds": 43.58,
+       "exitCode": 0,
+       "error": null,
+       "llmUnload": {
+        "at": "2026-11-28T22:47:19+09:00",
+        "models": [
+         {
+          "role": "interview",
+          "model": "gemma4:e4b",
+          "ok": true,
+          "detail": null
+         },
+         {
+          "role": "guard",
+          "model": "hf.co/mradermacher/kanana-safeguard-8b-GGUF:Q4_K_M",
+          "ok": true,
+          "detail": null
+         }
+        ],
+        "loadedBefore": [
+         "gemma4:e4b",
+         "hf.co/mradermacher/kanana-safeguard-8b-GGUF:Q4_K_M"
+        ],
+        "loadedAfter": [],
+        "ok": true
+       },
+       "timing": {
+        "unloadS": 0.62,
+        "generatorS": 42.94
+       },
+       "asset": null,
+       "candidateId": null,
+       "displayPosition": null,
+       "participantSkippedWait": false,
+       "chosen": null,
+       "attempt": 0,
+       "seed": 0,
+       "imagePick": {
+        "version": "ifs-image-pick/0.1.0",
+        "round": 0,
+        "seeds": [
+         0,
+         1,
+         2
+        ],
+        "promptText": "a single rock, one solid object, matte gray clay, plain white background, untextured monochrome gray clay sculpture, single uniform color, soft even studio lighting, centered, entire object in view",
+        "builderVersion": "gen3d-shape-prompt/0.4.0+imagepick+mapper-v2",
+        "imageStyle": "g75-shape-only-gray",
+        "imageStyleVersion": "g75-image-style/0.1.0",
+        "status": "picked",
+        "run": "none-SYN-G84-S1-1-20261128-224626-r0-img",
+        "startedAt": "2026-11-28T22:46:26+09:00",
+        "endedAt": "2026-11-28T22:47:12+09:00",
+        "seconds": 46.23,
+        "exitCode": 0,
+        "error": null,
+        "blockReason": null,
+        "llmUnload": {
+         "at": "2026-11-28T22:46:26+09:00",
+         "models": [
+          {
+           "role": "interview",
+           "model": "gemma4:e4b",
+           "ok": true,
+           "detail": null
+          },
+          {
+           "role": "guard",
+           "model": "hf.co/mradermacher/kanana-safeguard-8b-GGUF:Q4_K_M",
+           "ok": true,
+           "detail": null
+          }
+         ],
+         "loadedBefore": [
+          "gemma4:e4b",
+          "hf.co/mradermacher/kanana-safeguard-8b-GGUF:Q4_K_M"
+         ],
+         "loadedAfter": [],
+         "ok": true
+        },
+        "timing": {
+         "unloadS": 1.34,
+         "generatorS": 44.89
+        },
+        "models": [
+         {
+          "name": "image",
+          "repo": "stabilityai/stable-diffusion-xl-base-1.0",
+          "revision": "462165984030d82259a11f4367a4eed129e94a7b",
+          "weightsSha256": {
+           "text_encoder/model.safetensors": "5c3d6454dd2d23414b56aa1b5858a72487a656937847b6fea8d0606d7a42cdbc",
+           "text_encoder_2/model.safetensors": "3a6032f63d37ae02bbc74ccd6a27440578cd71701f96532229d0154f55a8d3ff",
+           "unet/diffusion_pytorch_model.safetensors": "357650fbfb3c7b4d94c1f5fd7664da819ad1ff5a839430484b4ec422d03f710a",
+           "vae/diffusion_pytorch_model.safetensors": "1598f3d24932bcfe6634e8b618ea1e30ab1d57f5aad13a6d2de446d2199f2341"
+          },
+          "license": "CreativeML Open RAIL++-M"
+         },
+         {
+          "name": "gate",
+          "repo": "openai/clip-vit-large-patch14",
+          "revision": "32bd64288804d66eefd0ccbe215aa642df71cc41",
+          "weightsSha256": {
+           "model.safetensors": "a2bf730a0c7debf160f7a6b50b3aaf3703e7e88ac73de7a314903141db026dcb"
+          },
+          "license": "MIT"
+         }
+        ],
+        "images": [
+         {
+          "seed": 0,
+          "file": "images/after-none-s0.png",
+          "sha256": "1615c5f84f7777acd6267784bec7399286349673a2d6aafb25bd112c67387b33",
+          "seconds": 7.33,
+          "gate": {
+           "personLikeScore": 0.0011,
+           "passed": true,
+           "threshold": 0.5,
+           "labelScores": {
+            "a person": 0.0003,
+            "a human figure": 0.0001,
+            "a human face": 0.0002,
+            "a head with eyes and a mouth": 0.0002,
+            "an animal": 0.0002,
+            "an animal figurine": 0.0,
+            "a doll": 0.0001,
+            "an inanimate object": 0.02,
+            "an abstract shape": 0.0113,
+            "a rock": 0.1516,
+            "a geometric solid": 0.0058,
+            "a household object": 0.0126,
+            "a lump of clay": 0.7973,
+            "a piece of cloth": 0.0003
+           },
+           "matchScore": 0.2441,
+           "model": "openai/clip-vit-large-patch14@32bd64288804d66eefd0ccbe215aa642df71cc41"
+          },
+          "problem": null,
+          "shown": true,
+          "position": 0
+         },
+         {
+          "seed": 1,
+          "file": "images/after-none-s1.png",
+          "sha256": "7e2b9909d500199cbc807b40fecf2bfe7a6314ad1c187bf9ed94a17f0f90d40f",
+          "seconds": 6.79,
+          "gate": {
+           "personLikeScore": 0.0013,
+           "passed": true,
+           "threshold": 0.5,
+           "labelScores": {
+            "a person": 0.0002,
+            "a human figure": 0.0,
+            "a human face": 0.0001,
+            "a head with eyes and a mouth": 0.0001,
+            "an animal": 0.0008,
+            "an animal figurine": 0.0,
+            "a doll": 0.0,
+            "an inanimate object": 0.0792,
+            "an abstract shape": 0.0548,
+            "a rock": 0.3141,
+            "a geometric solid": 0.0057,
+            "a household object": 0.015,
+            "a lump of clay": 0.5297,
+            "a piece of cloth": 0.0003
+           },
+           "matchScore": 0.2547,
+           "model": "openai/clip-vit-large-patch14@32bd64288804d66eefd0ccbe215aa642df71cc41"
+          },
+          "problem": null,
+          "shown": true,
+          "position": 1
+         },
+         {
+          "seed": 2,
+          "file": "images/after-none-s2.png",
+          "sha256": "cdab40b0bc06252d5710c8047d70c110a33b0024ee075aa230425ef5f54ddc8f",
+          "seconds": 6.63,
+          "gate": {
+           "personLikeScore": 0.0006,
+           "passed": true,
+           "threshold": 0.5,
+           "labelScores": {
+            "a person": 0.0002,
+            "a human figure": 0.0,
+            "a human face": 0.0001,
+            "a head with eyes and a mouth": 0.0001,
+            "an animal": 0.0001,
+            "an animal figurine": 0.0,
+            "a doll": 0.0,
+            "an inanimate object": 0.0041,
+            "an abstract shape": 0.0101,
+            "a rock": 0.196,
+            "a geometric solid": 0.0016,
+            "a household object": 0.0051,
+            "a lump of clay": 0.7823,
+            "a piece of cloth": 0.0002
+           },
+           "matchScore": 0.2478,
+           "model": "openai/clip-vit-large-patch14@32bd64288804d66eefd0ccbe215aa642df71cc41"
+          },
+          "problem": null,
+          "shown": true,
+          "position": 2
+         }
+        ],
+        "shownOrder": [
+         0,
+         1,
+         2
+        ],
+        "shownAt": "2026-11-28T22:47:12+09:00",
+        "outcome": "picked",
+        "pickedPosition": 0,
+        "pickedSeed": 0,
+        "pickedImageSha256": "1615c5f84f7777acd6267784bec7399286349673a2d6aafb25bd112c67387b33",
+        "decidedAt": "2026-11-28T22:47:15+09:00",
+        "generatorTiming": {
+         "imageLoad": 11.25,
+         "gateLoad": 1.62,
+         "total": 43.27
+        }
+       },
+       "shapeLlmUsed": false,
+       "shapeLlmItems": [],
+       "llmPromptUsed": false,
+       "llmShapeItems": [],
+       "cacheProbe": null,
+       "gate": {
+        "personLikeScore": 0.7757,
+        "passed": false,
+        "threshold": 0.5,
+        "views": 6,
+        "labelScores": {
+         "a person": 0.1815,
+         "a human figure": 0.0179,
+         "a human face": 0.4251,
+         "a head with eyes and a mouth": 0.146,
+         "an animal": 0.0067,
+         "an animal figurine": 0.0012,
+         "a doll": 0.0079,
+         "an inanimate object": 0.0177,
+         "an abstract shape": 0.0904,
+         "a rock": 0.1763,
+         "a geometric solid": 0.0108,
+         "a household object": 0.0262,
+         "a lump of clay": 0.8618,
+         "a piece of cloth": 0.0429
+        },
+        "matchScore": 0.2125,
+        "model": "openai/clip-vit-large-patch14@32bd64288804d66eefd0ccbe215aa642df71cc41",
+        "multiObject": {
+         "components": 1,
+         "significant": 1,
+         "topFractions": [
+          1.0
+         ],
+         "minFraction": 0.05,
+         "applied": true,
+         "blocked": false
+        }
+       }
+      }
+     }
+    },
+    "llmFillEvent": {
+     "status": "ok",
+     "skipReason": null,
+     "cached": false,
+     "offeredSlots": [
+      "color",
+      "brightness",
+      "opacity",
+      "size",
+      "texture",
+      "motion",
+      "form"
+     ],
+     "rawCount": 1,
+     "adopted": [
+      "form"
+     ],
+     "rejected": [],
+     "seconds": 0.58
+    },
+    "shapeLlmEvents": [],
+    "guardLabels": [
+     null,
+     "SAFE",
+     "SAFE",
+     "SAFE",
+     "SAFE",
+     "SAFE",
+     "SAFE",
+     "SAFE"
+    ],
+    "alerts": [],
+    "llmFill": {
+     "version": "ifs-llm-fill/0.1.0",
+     "validatorRules": "ifs-llm-fill-validator/0.4.0",
+     "status": "ok",
+     "skipReason": null,
+     "error": null,
+     "prompt": {
+      "promptId": "ifs-llm-fill",
+      "promptVersion": "0.1.1",
+      "file": "llm_fill.v0.1.1.json",
+      "promptSha256": "85258dd0b3b9238b9b706e6e04fe772578ae2a2b796bf356981efad2a12141e0",
+      "status": "draft",
+      "englishBlock": {
+       "file": "shape_english_block.v0.json",
+       "sha256": "45e1f2901f78bb075d6d8ce93203ff81309f993270cd5426ab9a35a266be0acc",
+       "version": "0.1.1"
+      }
+     },
+     "model": {
+      "name": "gemma4:e4b",
+      "digest": "sha256:dc35e8d9c6061baa6f0fa870975ab6932e2542b579b13ea0f199fa4bb7300c9c",
+      "runtime": "ollama 0.40.17"
+     },
+     "options": {
+      "temperature": 0,
+      "seed": 0,
+      "numPredict": 400,
+      "think": false
+     },
+     "timeoutS": 20.0,
+     "maxItems": 4,
+     "cacheKey": "bd0463523c55d2bd",
+     "cached": false,
+     "sourceTextSha256": "ad549eb8cc57ed5740e047067617d1e54764cdf85229e0a59b2f2ac38459e5b4",
+     "at": "2026-11-28T22:46:19+09:00",
+     "seconds": 0.58,
+     "offeredSlots": [
+      "color",
+      "brightness",
+      "opacity",
+      "size",
+      "texture",
+      "motion",
+      "form"
+     ],
+     "rawText": "{\"items\": [{\"slot\": \"form\", \"value\": \"blob\", \"quote\": \"돌덩이\", \"charSpan\": [0, 3], \"evidenceType\": \"shape_noun\"}]}",
+     "rawItems": [
+      {
+       "slot": "form",
+       "value": "blob",
+       "quote": "돌덩이",
+       "charSpan": [
+        0,
+        3
+       ],
+       "evidenceType": "shape_noun"
+      }
+     ],
+     "items": [
+      {
+       "i": 0,
+       "slot": "form",
+       "value": "blob",
+       "quote": "돌덩이",
+       "charSpan": [
+        0,
+        3
+       ],
+       "evidenceType": "shape_noun",
+       "ok": true,
+       "reasons": []
+      }
+     ],
+     "adopted": [
+      {
+       "slot": "form",
+       "value": "blob",
+       "quote": "돌덩이",
+       "charSpan": [
+        0,
+        3
+       ],
+       "evidenceType": "shape_noun",
+       "origin": "llm_quoted",
+       "item": "form",
+       "overrides": {
+        "form.type": "blob",
+        "form.base": "none"
+       }
+      }
+     ],
+     "userSha256": "9534742fd00099794658980b4b16a49eb19266d73bf6d4564f7bc749b4483cfd",
+     "llmSeconds": 0.58,
+     "applied": {
+      "form": {
+       "slot": "form",
+       "value": "blob",
+       "quote": "돌덩이",
+       "charSpan": [
+        0,
+        3
+       ],
+       "overrides": {
+        "form.type": "blob",
+        "form.base": "none"
+       },
+       "specSlots": [
+        "form.type",
+        "form.base"
+       ]
+      }
+     },
+     "notApplied": {},
+     "participant": {
+      "form": {
+       "first": "blob",
+       "final": "blob",
+       "kept": true,
+       "edited": false,
+       "adjustCount": 0
+      }
+     }
+    }
+   }
+  },
+  "S2": {
+   "id": "S2",
+   "kind": "E3은 LLM null",
+   "text": "돌덩이 같은 게 있어요.",
+   "reject": false,
+   "sessionId": "SYN-G84-S2-1",
+   "steps": [
+    {
+     "at": "after_next",
+     "stage": "selecting",
+     "previewMode": "webgl",
+     "previewReason": null,
+     "afterNone": null,
+     "skipped": false,
+     "llmShapeBasis": null,
+     "basisShown": null,
+     "wrongButton": null,
+     "candidates": [
+      {
+       "id": "c-5c1727185d0a",
+       "afterNone": false,
+       "hasAsset": false
+      },
+      {
+       "id": "c-c1fa1e933052",
+       "afterNone": false,
+       "hasAsset": false
+      },
+      {
+       "id": "c-962c94f8f0ac",
+       "afterNone": false,
+       "hasAsset": false
+      },
+      {
+       "id": "c-77441be1baf2",
+       "afterNone": false,
+       "hasAsset": false
+      }
+     ],
+     "imagePick": null,
+     "msgs": [
+      "면담에서 말씀하신 것을 바탕으로, 떠올리신 그것을 대신할 물체를 만들었어요.",
+      "아래 물체 가운데 떠올리신 그것과 가장 가까운 것을 하나 골라 주세요. 맞는 게 없으면 [맞는 게 없어요]를 눌러 주세요."
+     ],
+     "scrollH": 1134,
+     "buttons": {
+      "wrong": null,
+      "choose": null
+     },
+     "genNote": null
+    },
+    {
+     "at": "after_none",
+     "stage": "picking",
+     "previewMode": "webgl",
+     "previewReason": null,
+     "afterNone": {
+      "status": "running",
+      "blockReason": null,
+      "error": null,
+      "candidateId": null,
+      "noneAt": "2026-11-28T22:48:19+09:00",
+      "startedAt": null,
+      "endedAt": null,
+      "seconds": null,
+      "participantSkippedWait": false,
+      "attempt": 0,
+      "seed": null,
+      "basisRejected": null,
+      "timeoutS": 180,
+      "phase": "pick",
+      "round": 0,
+      "rounds": 2,
+      "imagePickStatus": "shown"
+     },
+     "skipped": false,
+     "llmShapeBasis": null,
+     "basisShown": null,
+     "wrongButton": null,
+     "candidates": [
+      {
+       "id": "c-5c1727185d0a",
+       "afterNone": false,
+       "hasAsset": false
+      },
+      {
+       "id": "c-c1fa1e933052",
+       "afterNone": false,
+       "hasAsset": false
+      },
+      {
+       "id": "c-962c94f8f0ac",
+       "afterNone": false,
+       "hasAsset": false
+      },
+      {
+       "id": "c-77441be1baf2",
+       "afterNone": false,
+       "hasAsset": false
+      }
+     ],
+     "imagePick": {
+      "round": 0,
+      "images": [
+       {
+        "position": 0
+       },
+       {
+        "position": 1
+       },
+       {
+        "position": 2
+       }
+      ]
+     },
+     "msgs": [
+      "말씀하신 모양으로 그림을 그려 봤어요. 떠올리신 모양과 가장 가까운 그림을 골라 주세요. 색은 보지 말고 모양만 봐 주세요."
+     ],
+     "scrollH": 1100,
+     "buttons": {
+      "wrong": null,
+      "choose": {
+       "w": 240,
+       "h": 48
+      }
+     },
+     "genNote": null
+    },
+    {
+     "at": "after_pick",
+     "stage": "adjusting",
+     "previewMode": "webgl",
+     "previewReason": null,
+     "afterNone": {
+      "status": "blocked",
+      "blockReason": "person_like",
+      "error": null,
+      "candidateId": null,
+      "noneAt": "2026-11-28T22:48:19+09:00",
+      "startedAt": "2026-11-28T22:48:59+09:00",
+      "endedAt": "2026-11-28T22:49:09+09:00",
+      "seconds": 7.36,
+      "participantSkippedWait": false,
+      "attempt": 0,
+      "seed": 0,
+      "basisRejected": null,
+      "timeoutS": 180,
+      "phase": "mesh",
+      "round": 0,
+      "rounds": 2,
+      "imagePickStatus": "picked"
+     },
+     "skipped": false,
+     "llmShapeBasis": null,
+     "basisShown": null,
+     "wrongButton": null,
+     "candidates": [
+      {
+       "id": "c-5c1727185d0a",
+       "afterNone": false,
+       "hasAsset": false
+      },
+      {
+       "id": "c-c1fa1e933052",
+       "afterNone": false,
+       "hasAsset": false
+      },
+      {
+       "id": "c-962c94f8f0ac",
+       "afterNone": false,
+       "hasAsset": false
+      },
+      {
+       "id": "c-77441be1baf2",
+       "afterNone": false,
+       "hasAsset": false
+      }
+     ],
+     "imagePick": null,
+     "msgs": [
+      "면담에서 말씀하신 것을 바탕으로, 떠올리신 그것을 대신할 물체를 만들었어요.",
+      "물체를 더 만들지 못했어요. 이어서 진행할게요.",
+      "아래 항목으로 물체를 고칠 수 있어요. 떠올리신 그것에 맞게 고친 뒤 [다 고쳤어요]를 눌러 주세요. 고칠 게 없으면 그대로 눌러도 돼요."
+     ],
+     "scrollH": 1489,
+     "buttons": {
+      "wrong": null,
+      "choose": null
+     },
+     "genNote": "물체를 더 만들지 못했어요. 이어서 진행할게요."
+    }
+   ],
+   "shots": {
+    "a": "shots/S2_a_candidates.png",
+    "wait_llm_image": "shots/S2_wait_llm_image.png",
+    "b": "shots/S2_b_images.png",
+    "wait_mesh": "shots/S2_wait_mesh.png",
+    "c": "shots/S2_c_no_mesh_adjusting.png"
+   },
+   "timings": {
+    "interviewS": 6.0,
+    "nextToCandidatesS": 1.3,
+    "noneToNextScreenS": 38.4,
+    "pickToNextScreenS": 11.3,
+    "caseTotalS": 66.0
+   },
+   "privacy": {
+    "S2_a_candidates": [],
+    "S2_wait_llm_image": [],
+    "S2_b_images": [],
+    "S2_wait_mesh": [],
+    "S2_c_no_mesh_adjusting": []
+   },
+   "reachedEnd": true,
+   "interview": {
+    "waitedForModelsS": 4.0,
+    "turns": 6,
+    "beforeConfirm": {
+     "awaiting": "confirm",
+     "state": "confirm"
+    },
+    "state": "done",
+    "awaiting": "none",
+    "selectionAvailable": true,
+    "seconds": 6.0
+   },
+   "basisShown": null,
+   "pickedPosition": 0,
+   "result": "mesh_not_shown:adjusting",
+   "endStage": "premeasure",
+   "console": [
+    {
+     "type": "warning",
+     "text": "Manual synchronization of Unity Application.persistentDataPath via JS_FileSystem_Sync() is deprecated and will be later removed in a future Unity version. The persistent data directory will be automatically synchronized instead on file modification. Pass config.autoSyncPersistentDataPath = true; to configuration in createUnityInstance() to opt in to the new behavior."
+    }
+   ],
+   "collected": {
+    "spec": {
+     "form": {
+      "type": null,
+      "posture": null,
+      "base": null,
+      "baseVariant": null,
+      "mistKind": null
+     },
+     "material": {
+      "color": null,
+      "brightness": null,
+      "saturation": null,
+      "roughness": null,
+      "opacity": null,
+      "erosion": null
+     },
+     "formProvenance": {},
+     "_unmapped": [
+      {
+       "lemma": "돌덩이",
+       "category": "unlisted_noun",
+       "value": {
+        "noun": "돌덩이",
+        "role": "other",
+        "scope": "main"
+       },
+       "reason": "no_scene_param",
+       "_provenance": {
+        "source": "phrase_rule",
+        "trigger": "돌덩이",
+        "charSpan": [
+         0,
+         3
+        ],
+        "rule": "unlistedNoun.돌덩이"
+       }
+      }
+     ],
+     "_negated": [],
+     "_context": [],
+     "_uncertain": [],
+     "_needsConfirmation": [],
+     "metaMapping": {
+      "requested": "v2",
+      "used": "v1",
+      "fallbackReason": null
+     }
+    },
+    "summary": {
+     "shapeLlm": {
+      "route": "rule",
+      "routeReason": "rule_has_shape",
+      "called": false,
+      "candidate": false,
+      "status": null,
+      "skipReason": null,
+      "rawItem": null,
+      "adopted": null,
+      "rejectReasons": [],
+      "exposed": false,
+      "imageChosen": false,
+      "candidateChosen": null,
+      "rejected": false,
+      "participantLeftBeforeResult": null,
+      "llmSeconds": null,
+      "seconds": null,
+      "cached": null,
+      "promptVersion": null,
+      "seed": null,
+      "model": null,
+      "ruleRoute": null,
+      "candidateExposed": false,
+      "basisShown": null
+     },
+     "afterNone": {
+      "status": "blocked",
+      "blockReason": "person_like",
+      "blockDetail": null,
+      "shapeLlmUsed": false,
+      "shapeLlmItems": [],
+      "basisRejected": null,
+      "chosen": null,
+      "seconds": 7.36,
+      "prompt": "a single rock, one solid object, matte gray clay, plain white background, untextured monochrome gray clay sculpture, single uniform color, soft even studio lighting, centered, entire object in view",
+      "shapeSource": null,
+      "shapeNoun": null,
+      "imagePrompt": "a single rock, one solid object, matte gray clay, plain white background, untextured monochrome gray clay sculpture, single uniform color, soft even studio lighting, centered, entire object in view",
+      "imagePick": {
+       "status": "picked",
+       "outcome": "picked",
+       "seconds": 37.02,
+       "shownOrder": [
+        0,
+        1,
+        2
+       ],
+       "pickedSeed": 0,
+       "images": [
+        {
+         "seed": 0,
+         "shown": true,
+         "position": 0,
+         "problem": null,
+         "gate": {
+          "personLikeScore": 0.0011,
+          "passed": true,
+          "threshold": 0.5,
+          "labelScores": {
+           "a person": 0.0003,
+           "a human figure": 0.0001,
+           "a human face": 0.0002,
+           "a head with eyes and a mouth": 0.0002,
+           "an animal": 0.0002,
+           "an animal figurine": 0.0,
+           "a doll": 0.0001,
+           "an inanimate object": 0.02,
+           "an abstract shape": 0.0113,
+           "a rock": 0.1516,
+           "a geometric solid": 0.0058,
+           "a household object": 0.0126,
+           "a lump of clay": 0.7973,
+           "a piece of cloth": 0.0003
+          },
+          "matchScore": 0.2441,
+          "model": "openai/clip-vit-large-patch14@32bd64288804d66eefd0ccbe215aa642df71cc41"
+         }
+        },
+        {
+         "seed": 1,
+         "shown": true,
+         "position": 1,
+         "problem": null,
+         "gate": {
+          "personLikeScore": 0.0013,
+          "passed": true,
+          "threshold": 0.5,
+          "labelScores": {
+           "a person": 0.0002,
+           "a human figure": 0.0,
+           "a human face": 0.0001,
+           "a head with eyes and a mouth": 0.0001,
+           "an animal": 0.0008,
+           "an animal figurine": 0.0,
+           "a doll": 0.0,
+           "an inanimate object": 0.0792,
+           "an abstract shape": 0.0548,
+           "a rock": 0.3141,
+           "a geometric solid": 0.0057,
+           "a household object": 0.015,
+           "a lump of clay": 0.5297,
+           "a piece of cloth": 0.0003
+          },
+          "matchScore": 0.2547,
+          "model": "openai/clip-vit-large-patch14@32bd64288804d66eefd0ccbe215aa642df71cc41"
+         }
+        },
+        {
+         "seed": 2,
+         "shown": true,
+         "position": 2,
+         "problem": null,
+         "gate": {
+          "personLikeScore": 0.0006,
+          "passed": true,
+          "threshold": 0.5,
+          "labelScores": {
+           "a person": 0.0002,
+           "a human figure": 0.0,
+           "a human face": 0.0001,
+           "a head with eyes and a mouth": 0.0001,
+           "an animal": 0.0001,
+           "an animal figurine": 0.0,
+           "a doll": 0.0,
+           "an inanimate object": 0.0041,
+           "an abstract shape": 0.0101,
+           "a rock": 0.196,
+           "a geometric solid": 0.0016,
+           "a household object": 0.0051,
+           "a lump of clay": 0.7823,
+           "a piece of cloth": 0.0002
+          },
+          "matchScore": 0.2478,
+          "model": "openai/clip-vit-large-patch14@32bd64288804d66eefd0ccbe215aa642df71cc41"
+         }
+        }
+       ]
+      },
+      "meshGate": null,
+      "meshCandidateId": null,
+      "gateWhenBlocked": {
+       "personLikeScore": 0.7757,
+       "passed": false,
+       "threshold": 0.5,
+       "views": 6,
+       "labelScores": {
+        "a person": 0.1815,
+        "a human figure": 0.0179,
+        "a human face": 0.4251,
+        "a head with eyes and a mouth": 0.146,
+        "an animal": 0.0067,
+        "an animal figurine": 0.0012,
+        "a doll": 0.0079,
+        "an inanimate object": 0.0177,
+        "an abstract shape": 0.0904,
+        "a rock": 0.1763,
+        "a geometric solid": 0.0108,
+        "a household object": 0.0262,
+        "a lump of clay": 0.8618,
+        "a piece of cloth": 0.0429
+       },
+       "matchScore": 0.2125,
+       "model": "openai/clip-vit-large-patch14@32bd64288804d66eefd0ccbe215aa642df71cc41",
+       "multiObject": {
+        "components": 1,
+        "significant": 1,
+        "topFractions": [
+         1.0
+        ],
+        "minFraction": 0.05,
+        "applied": true,
+        "blocked": false
+       }
+      },
+      "shapeLlmBasisShown": null
+     },
+     "earlierRounds": 0,
+     "runnerReady": true,
+     "runnerBlockers": [],
+     "formTypeSource": "default",
+     "formAsset": null
+    },
+    "selection": {
+     "runnerReady": true,
+     "runnerBlockers": [],
+     "sources": {
+      "form.type": "default",
+      "form.posture": "default",
+      "form.base": "default",
+      "form.baseVariant": "default",
+      "material.color": "default",
+      "material.brightness": "default",
+      "material.saturation": "default",
+      "material.roughness": "default",
+      "material.opacity": "default",
+      "material.erosion": "default",
+      "layout.size": "default",
+      "layout.distance": "default",
+      "layout.verticalOffset": "default",
+      "motion.type": "default",
+      "motion.speed": "default",
+      "body.part": "default",
+      "body.layer": "default",
+      "layout.proportions": "default"
+     },
+     "form": {
+      "asset": null
+     },
+     "selection": {
+      "selectedCandidateId": null,
+      "selectedIndex": null,
+      "none": true,
+      "skipped": false,
+      "displayPosition": null,
+      "operationalId": "c-962c94f8f0ac",
+      "operationalIndex": 0,
+      "at": "2026-11-28T22:49:09+09:00",
+      "afterNoneGeneration": "blocked",
+      "acceptedDefault": null
+     },
+     "llmFillExposed": false,
+     "generation": {
+      "version": "ifs-form-assets/0.1.0",
+      "lookupKey": "d66248ff5556478f72a8f174b58858e99f341dfffc8b58e39c484899874e6efd",
+      "limit": 0,
+      "offered": [],
+      "rejected": [],
+      "proceduralSelectionStep": "choose",
+      "defaultFormSourceSetting": "procedural",
+      "defaultFormSource": "procedural",
+      "defaultCandidateId": null,
+      "defaultFallbackReason": null,
+      "defaultFormRule": "setting_procedural",
+      "defaultFormBasis": null,
+      "shownOrder": [],
+      "outcome": "none",
+      "acceptedDefault": null,
+      "declined": [],
+      "assetDropped": null,
+      "imagePickExposed": true,
+      "shapeLlm": {
+       "version": "ifs-shape-llm-record/0.1.0",
+       "route": "rule",
+       "routeReason": "rule_has_shape",
+       "called": false,
+       "candidate": false,
+       "adopted": null,
+       "status": null,
+       "skipReason": null,
+       "rejectReasons": [],
+       "rawText": null,
+       "inputTextSha256": null,
+       "validatorTextSha256": null,
+       "model": null,
+       "promptVersion": null,
+       "promptSha256": null,
+       "validatorRules": null,
+       "seed": null,
+       "lineStages": null,
+       "exposed": false,
+       "imageChosen": false,
+       "candidateExposed": false,
+       "candidateChosen": null,
+       "rejected": false,
+       "rejectedAt": null,
+       "basisShown": null,
+       "call": null
+      },
+      "llmPromptUsed": false,
+      "afterNone": {
+       "version": "ifs-none-gen/0.1.0",
+       "origin": "generated_after_none",
+       "setting": {
+        "version": "ifs-none-gen/0.1.0",
+        "timeoutS": 180.0,
+        "pipeline": "sdxl-triposg",
+        "seed": 0,
+        "maxRegenerations": 1,
+        "seedRule": "seed = on_none_seed + n (n = 0 첫 생성, 1… 다시 만들기)",
+        "script": "generate.py",
+        "python": "python.exe",
+        "unloadModels": [
+         "gemma4:e4b",
+         "hf.co/mradermacher/kanana-safeguard-8b-GGUF:Q4_K_M"
+        ],
+        "imagePick": {
+         "version": "ifs-image-pick/0.1.0",
+         "rounds": 2,
+         "imagesPerRound": 3,
+         "imageTimeoutS": 180.0,
+         "meshTimeoutS": 180.0,
+         "seedRule": "회차 r(0부터)의 이미지 seed = on_none_seed + 3r + k (k = 0…2), 형태 seed = 고른 이미지의 seed",
+         "maxRegenerationsUsed": false
+        }
+       },
+       "noneAt": "2026-11-28T22:48:19+09:00",
+       "shownOrderBefore": [
+        "c-5c1727185d0a",
+        "c-c1fa1e933052",
+        "c-962c94f8f0ac",
+        "c-77441be1baf2"
+       ],
+       "status": "blocked",
+       "blockReason": "person_like",
+       "blockDetail": null,
+       "prompt": {
+        "text": "a single rock, one solid object, matte gray clay, plain white background, untextured monochrome gray clay sculpture, single uniform color, soft even studio lighting, centered, entire object in view",
+        "negativeText": "person, human, face, eyes, figure, animal, hands, text, watermark, multiple objects, cropped, scenery, floor, shadow, color, two objects, pair, duplicate, group of objects, stand, pedestal, base plate, plinth, string, rope, chain, strap, holder, container, bowl, vase, tray, plate, colorful, multicolored, painted, patterned, glossy, metallic, reflections, background objects",
+        "tokens": [
+         {
+          "en": "a single",
+          "ko": null,
+          "charSpan": null,
+          "slot": "template",
+          "lexiconKey": null
+         },
+         {
+          "en": "rock",
+          "ko": "돌덩이",
+          "charSpan": [
+           0,
+           3
+          ],
+          "slot": "shape_noun",
+          "lexiconKey": "돌덩이"
+         },
+         {
+          "en": "one solid object",
+          "ko": null,
+          "charSpan": null,
+          "slot": "template",
+          "lexiconKey": null
+         },
+         {
+          "en": "matte gray clay",
+          "ko": null,
+          "charSpan": null,
+          "slot": "template",
+          "lexiconKey": null
+         },
+         {
+          "en": "plain white background",
+          "ko": null,
+          "charSpan": null,
+          "slot": "template",
+          "lexiconKey": null
+         },
+         {
+          "en": "untextured monochrome gray clay sculpture",
+          "ko": null,
+          "charSpan": null,
+          "slot": "template",
+          "lexiconKey": null
+         },
+         {
+          "en": "single uniform color",
+          "ko": null,
+          "charSpan": null,
+          "slot": "template",
+          "lexiconKey": null
+         },
+         {
+          "en": "soft even studio lighting",
+          "ko": null,
+          "charSpan": null,
+          "slot": "template",
+          "lexiconKey": null
+         },
+         {
+          "en": "centered",
+          "ko": null,
+          "charSpan": null,
+          "slot": "template",
+          "lexiconKey": null
+         },
+         {
+          "en": "entire object in view",
+          "ko": null,
+          "charSpan": null,
+          "slot": "template",
+          "lexiconKey": null
+         }
+        ],
+        "dropped": [],
+        "status": "ok",
+        "blockReason": null,
+        "blockDetail": null,
+        "lexiconVersion": "0.3.0",
+        "builderVersion": "gen3d-shape-prompt/0.4.0+imagepick+mapper-v2",
+        "templateVersion": "g62-template/0.2.0",
+        "sourceTextSha256": "d66248ff5556478f72a8f174b58858e99f341dfffc8b58e39c484899874e6efd",
+        "promptRule": "mapper",
+        "mapperBuilder": "scene-spec-builder-v2/2.9.0",
+        "pluralStated": false,
+        "thinRisk": false,
+        "familiarObjectStated": true,
+        "imageStyle": "g75-shape-only-gray",
+        "imageStyleVersion": "g75-image-style/0.1.0"
+       },
+       "run": "none-SYN-G84-S2-1-20261128-224902-r0-mesh",
+       "startedAt": "2026-11-28T22:48:59+09:00",
+       "endedAt": "2026-11-28T22:49:09+09:00",
+       "seconds": 7.36,
+       "exitCode": 0,
+       "error": null,
+       "llmUnload": {
+        "at": "2026-11-28T22:49:02+09:00",
+        "models": [
+         {
+          "role": "interview",
+          "model": "gemma4:e4b",
+          "ok": true,
+          "detail": null
+         },
+         {
+          "role": "guard",
+          "model": "hf.co/mradermacher/kanana-safeguard-8b-GGUF:Q4_K_M",
+          "ok": true,
+          "detail": null
+         }
+        ],
+        "loadedBefore": [
+         "gemma4:e4b",
+         "hf.co/mradermacher/kanana-safeguard-8b-GGUF:Q4_K_M"
+        ],
+        "loadedAfter": [],
+        "ok": true
+       },
+       "timing": {
+        "unloadS": 0.62,
+        "generatorS": 6.72
+       },
+       "asset": null,
+       "candidateId": null,
+       "displayPosition": null,
+       "participantSkippedWait": false,
+       "chosen": null,
+       "attempt": 0,
+       "seed": 0,
+       "imagePick": {
+        "version": "ifs-image-pick/0.1.0",
+        "round": 0,
+        "seeds": [
+         0,
+         1,
+         2
+        ],
+        "promptText": "a single rock, one solid object, matte gray clay, plain white background, untextured monochrome gray clay sculpture, single uniform color, soft even studio lighting, centered, entire object in view",
+        "builderVersion": "gen3d-shape-prompt/0.4.0+imagepick+mapper-v2",
+        "imageStyle": "g75-shape-only-gray",
+        "imageStyleVersion": "g75-image-style/0.1.0",
+        "status": "picked",
+        "run": "none-SYN-G84-S2-1-20261128-224819-r0-img",
+        "startedAt": "2026-11-28T22:48:19+09:00",
+        "endedAt": "2026-11-28T22:48:56+09:00",
+        "seconds": 37.02,
+        "exitCode": 0,
+        "error": null,
+        "blockReason": null,
+        "llmUnload": {
+         "at": "2026-11-28T22:48:20+09:00",
+         "models": [
+          {
+           "role": "interview",
+           "model": "gemma4:e4b",
+           "ok": true,
+           "detail": null
+          },
+          {
+           "role": "guard",
+           "model": "hf.co/mradermacher/kanana-safeguard-8b-GGUF:Q4_K_M",
+           "ok": true,
+           "detail": null
+          }
+         ],
+         "loadedBefore": [
+          "gemma4:e4b",
+          "hf.co/mradermacher/kanana-safeguard-8b-GGUF:Q4_K_M"
+         ],
+         "loadedAfter": [],
+         "ok": true
+        },
+        "timing": {
+         "unloadS": 1.02,
+         "generatorS": 35.98
+        },
+        "models": [
+         {
+          "name": "image",
+          "repo": "stabilityai/stable-diffusion-xl-base-1.0",
+          "revision": "462165984030d82259a11f4367a4eed129e94a7b",
+          "weightsSha256": {
+           "text_encoder/model.safetensors": "5c3d6454dd2d23414b56aa1b5858a72487a656937847b6fea8d0606d7a42cdbc",
+           "text_encoder_2/model.safetensors": "3a6032f63d37ae02bbc74ccd6a27440578cd71701f96532229d0154f55a8d3ff",
+           "unet/diffusion_pytorch_model.safetensors": "357650fbfb3c7b4d94c1f5fd7664da819ad1ff5a839430484b4ec422d03f710a",
+           "vae/diffusion_pytorch_model.safetensors": "1598f3d24932bcfe6634e8b618ea1e30ab1d57f5aad13a6d2de446d2199f2341"
+          },
+          "license": "CreativeML Open RAIL++-M"
+         },
+         {
+          "name": "gate",
+          "repo": "openai/clip-vit-large-patch14",
+          "revision": "32bd64288804d66eefd0ccbe215aa642df71cc41",
+          "weightsSha256": {
+           "model.safetensors": "a2bf730a0c7debf160f7a6b50b3aaf3703e7e88ac73de7a314903141db026dcb"
+          },
+          "license": "MIT"
+         }
+        ],
+        "images": [
+         {
+          "seed": 0,
+          "file": "images/after-none-s0.png",
+          "sha256": "1615c5f84f7777acd6267784bec7399286349673a2d6aafb25bd112c67387b33",
+          "seconds": 6.81,
+          "gate": {
+           "personLikeScore": 0.0011,
+           "passed": true,
+           "threshold": 0.5,
+           "labelScores": {
+            "a person": 0.0003,
+            "a human figure": 0.0001,
+            "a human face": 0.0002,
+            "a head with eyes and a mouth": 0.0002,
+            "an animal": 0.0002,
+            "an animal figurine": 0.0,
+            "a doll": 0.0001,
+            "an inanimate object": 0.02,
+            "an abstract shape": 0.0113,
+            "a rock": 0.1516,
+            "a geometric solid": 0.0058,
+            "a household object": 0.0126,
+            "a lump of clay": 0.7973,
+            "a piece of cloth": 0.0003
+           },
+           "matchScore": 0.2441,
+           "model": "openai/clip-vit-large-patch14@32bd64288804d66eefd0ccbe215aa642df71cc41"
+          },
+          "problem": null,
+          "shown": true,
+          "position": 0
+         },
+         {
+          "seed": 1,
+          "file": "images/after-none-s1.png",
+          "sha256": "7e2b9909d500199cbc807b40fecf2bfe7a6314ad1c187bf9ed94a17f0f90d40f",
+          "seconds": 6.67,
+          "gate": {
+           "personLikeScore": 0.0013,
+           "passed": true,
+           "threshold": 0.5,
+           "labelScores": {
+            "a person": 0.0002,
+            "a human figure": 0.0,
+            "a human face": 0.0001,
+            "a head with eyes and a mouth": 0.0001,
+            "an animal": 0.0008,
+            "an animal figurine": 0.0,
+            "a doll": 0.0,
+            "an inanimate object": 0.0792,
+            "an abstract shape": 0.0548,
+            "a rock": 0.3141,
+            "a geometric solid": 0.0057,
+            "a household object": 0.015,
+            "a lump of clay": 0.5297,
+            "a piece of cloth": 0.0003
+           },
+           "matchScore": 0.2547,
+           "model": "openai/clip-vit-large-patch14@32bd64288804d66eefd0ccbe215aa642df71cc41"
+          },
+          "problem": null,
+          "shown": true,
+          "position": 1
+         },
+         {
+          "seed": 2,
+          "file": "images/after-none-s2.png",
+          "sha256": "cdab40b0bc06252d5710c8047d70c110a33b0024ee075aa230425ef5f54ddc8f",
+          "seconds": 6.67,
+          "gate": {
+           "personLikeScore": 0.0006,
+           "passed": true,
+           "threshold": 0.5,
+           "labelScores": {
+            "a person": 0.0002,
+            "a human figure": 0.0,
+            "a human face": 0.0001,
+            "a head with eyes and a mouth": 0.0001,
+            "an animal": 0.0001,
+            "an animal figurine": 0.0,
+            "a doll": 0.0,
+            "an inanimate object": 0.0041,
+            "an abstract shape": 0.0101,
+            "a rock": 0.196,
+            "a geometric solid": 0.0016,
+            "a household object": 0.0051,
+            "a lump of clay": 0.7823,
+            "a piece of cloth": 0.0002
+           },
+           "matchScore": 0.2478,
+           "model": "openai/clip-vit-large-patch14@32bd64288804d66eefd0ccbe215aa642df71cc41"
+          },
+          "problem": null,
+          "shown": true,
+          "position": 2
+         }
+        ],
+        "shownOrder": [
+         0,
+         1,
+         2
+        ],
+        "shownAt": "2026-11-28T22:48:56+09:00",
+        "outcome": "picked",
+        "pickedPosition": 0,
+        "pickedSeed": 0,
+        "pickedImageSha256": "1615c5f84f7777acd6267784bec7399286349673a2d6aafb25bd112c67387b33",
+        "decidedAt": "2026-11-28T22:48:59+09:00",
+        "generatorTiming": {
+         "imageLoad": 7.49,
+         "gateLoad": 0.81,
+         "total": 35.02
+        }
+       },
+       "shapeLlmUsed": false,
+       "shapeLlmItems": [],
+       "llmPromptUsed": false,
+       "llmShapeItems": [],
+       "cacheProbe": null,
+       "gate": {
+        "personLikeScore": 0.7757,
+        "passed": false,
+        "threshold": 0.5,
+        "views": 6,
+        "labelScores": {
+         "a person": 0.1815,
+         "a human figure": 0.0179,
+         "a human face": 0.4251,
+         "a head with eyes and a mouth": 0.146,
+         "an animal": 0.0067,
+         "an animal figurine": 0.0012,
+         "a doll": 0.0079,
+         "an inanimate object": 0.0177,
+         "an abstract shape": 0.0904,
+         "a rock": 0.1763,
+         "a geometric solid": 0.0108,
+         "a household object": 0.0262,
+         "a lump of clay": 0.8618,
+         "a piece of cloth": 0.0429
+        },
+        "matchScore": 0.2125,
+        "model": "openai/clip-vit-large-patch14@32bd64288804d66eefd0ccbe215aa642df71cc41",
+        "multiObject": {
+         "components": 1,
+         "significant": 1,
+         "topFractions": [
+          1.0
+         ],
+         "minFraction": 0.05,
+         "applied": true,
+         "blocked": false
+        }
+       }
+      }
+     }
+    },
+    "llmFillEvent": {
+     "status": "ok",
+     "skipReason": null,
+     "cached": false,
+     "offeredSlots": [
+      "color",
+      "brightness",
+      "opacity",
+      "size",
+      "texture",
+      "motion",
+      "form"
+     ],
+     "rawCount": 0,
+     "adopted": [],
+     "rejected": [],
+     "seconds": 0.33
+    },
+    "shapeLlmEvents": [],
+    "guardLabels": [
+     null,
+     "SAFE",
+     "SAFE",
+     "SAFE",
+     "SAFE",
+     "SAFE",
+     "SAFE",
+     "SAFE"
+    ],
+    "alerts": [],
+    "llmFill": {
+     "version": "ifs-llm-fill/0.1.0",
+     "validatorRules": "ifs-llm-fill-validator/0.4.0",
+     "status": "ok",
+     "skipReason": null,
+     "error": null,
+     "prompt": {
+      "promptId": "ifs-llm-fill",
+      "promptVersion": "0.1.1",
+      "file": "llm_fill.v0.1.1.json",
+      "promptSha256": "85258dd0b3b9238b9b706e6e04fe772578ae2a2b796bf356981efad2a12141e0",
+      "status": "draft",
+      "englishBlock": {
+       "file": "shape_english_block.v0.json",
+       "sha256": "45e1f2901f78bb075d6d8ce93203ff81309f993270cd5426ab9a35a266be0acc",
+       "version": "0.1.1"
+      }
+     },
+     "model": {
+      "name": "gemma4:e4b",
+      "digest": "sha256:dc35e8d9c6061baa6f0fa870975ab6932e2542b579b13ea0f199fa4bb7300c9c",
+      "runtime": "ollama 0.40.17"
+     },
+     "options": {
+      "temperature": 0,
+      "seed": 0,
+      "numPredict": 400,
+      "think": false
+     },
+     "timeoutS": 20.0,
+     "maxItems": 4,
+     "cacheKey": "1d6b026aad960443",
+     "cached": false,
+     "sourceTextSha256": "d66248ff5556478f72a8f174b58858e99f341dfffc8b58e39c484899874e6efd",
+     "at": "2026-11-28T22:48:15+09:00",
+     "seconds": 0.33,
+     "offeredSlots": [
+      "color",
+      "brightness",
+      "opacity",
+      "size",
+      "texture",
+      "motion",
+      "form"
+     ],
+     "rawText": "{\"items\": []}",
+     "rawItems": [],
+     "items": [],
+     "adopted": [],
+     "userSha256": "05bf7a7891dff384355d9f7650fb54737721d538a640fb959a272bd9c96fe806",
+     "llmSeconds": 0.33,
+     "applied": {},
+     "notApplied": {},
+     "participant": {}
+    }
+   }
+  },
+  "S3": {
+   "id": "S3",
+   "kind": "E1은 LLM이 메움",
+   "text": "조약돌이 하나 있어요.",
+   "reject": false,
+   "sessionId": "SYN-G84-S3-1",
+   "steps": [
+    {
+     "at": "after_next",
+     "stage": "selecting",
+     "previewMode": "webgl",
+     "previewReason": null,
+     "afterNone": null,
+     "skipped": false,
+     "llmShapeBasis": null,
+     "basisShown": null,
+     "wrongButton": null,
+     "candidates": [
+      {
+       "id": "c-72d322e5761e",
+       "afterNone": false,
+       "hasAsset": false
+      },
+      {
+       "id": "c-e9ef39765ab3",
+       "afterNone": false,
+       "hasAsset": false
+      },
+      {
+       "id": "c-388dc9edabe3",
+       "afterNone": false,
+       "hasAsset": false
+      },
+      {
+       "id": "c-4f1246e2f8a7",
+       "afterNone": false,
+       "hasAsset": false
+      }
+     ],
+     "imagePick": null,
+     "msgs": [
+      "면담에서 말씀하신 것을 바탕으로, 떠올리신 그것을 대신할 물체를 만들었어요.",
+      "아래 물체 가운데 떠올리신 그것과 가장 가까운 것을 하나 골라 주세요. 맞는 게 없으면 [맞는 게 없어요]를 눌러 주세요."
+     ],
+     "scrollH": 1134,
+     "buttons": {
+      "wrong": null,
+      "choose": null
+     },
+     "genNote": null
+    },
+    {
+     "at": "after_none",
+     "stage": "picking",
+     "previewMode": "webgl",
+     "previewReason": null,
+     "afterNone": {
+      "status": "running",
+      "blockReason": null,
+      "error": null,
+      "candidateId": null,
+      "noneAt": "2026-11-28T22:49:24+09:00",
+      "startedAt": null,
+      "endedAt": null,
+      "seconds": null,
+      "participantSkippedWait": false,
+      "attempt": 0,
+      "seed": null,
+      "basisRejected": null,
+      "timeoutS": 180,
+      "phase": "pick",
+      "round": 0,
+      "rounds": 2,
+      "imagePickStatus": "shown"
+     },
+     "skipped": false,
+     "llmShapeBasis": null,
+     "basisShown": null,
+     "wrongButton": null,
+     "candidates": [
+      {
+       "id": "c-72d322e5761e",
+       "afterNone": false,
+       "hasAsset": false
+      },
+      {
+       "id": "c-e9ef39765ab3",
+       "afterNone": false,
+       "hasAsset": false
+      },
+      {
+       "id": "c-388dc9edabe3",
+       "afterNone": false,
+       "hasAsset": false
+      },
+      {
+       "id": "c-4f1246e2f8a7",
+       "afterNone": false,
+       "hasAsset": false
+      }
+     ],
+     "imagePick": {
+      "round": 0,
+      "images": [
+       {
+        "position": 0
+       },
+       {
+        "position": 1
+       },
+       {
+        "position": 2
+       }
+      ]
+     },
+     "msgs": [
+      "말씀하신 모양으로 그림을 그려 봤어요. 떠올리신 모양과 가장 가까운 그림을 골라 주세요. 색은 보지 말고 모양만 봐 주세요."
+     ],
+     "scrollH": 1100,
+     "buttons": {
+      "wrong": null,
+      "choose": {
+       "w": 240,
+       "h": 48
+      }
+     },
+     "genNote": null
+    },
+    {
+     "at": "after_pick",
+     "stage": "selecting",
+     "previewMode": "webgl",
+     "previewReason": null,
+     "afterNone": {
+      "status": "ok",
+      "blockReason": null,
+      "error": null,
+      "candidateId": "g-6d4ea8f2d14e",
+      "noneAt": "2026-11-28T22:49:24+09:00",
+      "startedAt": "2026-11-28T22:50:04+09:00",
+      "endedAt": "2026-11-28T22:50:14+09:00",
+      "seconds": 7.34,
+      "participantSkippedWait": false,
+      "attempt": 0,
+      "seed": 0,
+      "basisRejected": null,
+      "timeoutS": 180,
+      "phase": "mesh",
+      "round": 0,
+      "rounds": 2,
+      "imagePickStatus": "picked"
+     },
+     "skipped": false,
+     "llmShapeBasis": null,
+     "basisShown": null,
+     "wrongButton": null,
+     "candidates": [
+      {
+       "id": "g-6d4ea8f2d14e",
+       "afterNone": true,
+       "hasAsset": true
+      },
+      {
+       "id": "c-72d322e5761e",
+       "afterNone": false,
+       "hasAsset": false
+      },
+      {
+       "id": "c-e9ef39765ab3",
+       "afterNone": false,
+       "hasAsset": false
+      },
+      {
+       "id": "c-388dc9edabe3",
+       "afterNone": false,
+       "hasAsset": false
+      },
+      {
+       "id": "c-4f1246e2f8a7",
+       "afterNone": false,
+       "hasAsset": false
+      }
+     ],
+     "imagePick": null,
+     "msgs": [
+      "면담에서 말씀하신 것을 바탕으로, 떠올리신 그것을 대신할 물체를 만들었어요.",
+      "말씀하신 내용으로 만든 물체를 맨 앞에 더했어요. 가장 가까운 것을 하나 골라 주세요. 맞는 게 없으면 [맞는 게 없어요]를 눌러 주세요."
+     ],
+     "scrollH": 1548,
+     "buttons": {
+      "wrong": null,
+      "choose": null
+     },
+     "genNote": null
+    },
+    {
+     "at": "after_choose_generated",
+     "stage": "adjusting",
+     "previewMode": "webgl",
+     "previewReason": null,
+     "afterNone": {
+      "status": "ok",
+      "blockReason": null,
+      "error": null,
+      "candidateId": "g-6d4ea8f2d14e",
+      "noneAt": "2026-11-28T22:49:24+09:00",
+      "startedAt": "2026-11-28T22:50:04+09:00",
+      "endedAt": "2026-11-28T22:50:14+09:00",
+      "seconds": 7.34,
+      "participantSkippedWait": false,
+      "attempt": 0,
+      "seed": 0,
+      "basisRejected": null,
+      "timeoutS": 180,
+      "phase": "mesh",
+      "round": 0,
+      "rounds": 2,
+      "imagePickStatus": "picked"
+     },
+     "skipped": false,
+     "llmShapeBasis": null,
+     "basisShown": null,
+     "wrongButton": null,
+     "candidates": [
+      {
+       "id": "g-6d4ea8f2d14e",
+       "afterNone": true,
+       "hasAsset": true
+      },
+      {
+       "id": "c-72d322e5761e",
+       "afterNone": false,
+       "hasAsset": false
+      },
+      {
+       "id": "c-e9ef39765ab3",
+       "afterNone": false,
+       "hasAsset": false
+      },
+      {
+       "id": "c-388dc9edabe3",
+       "afterNone": false,
+       "hasAsset": false
+      },
+      {
+       "id": "c-4f1246e2f8a7",
+       "afterNone": false,
+       "hasAsset": false
+      }
+     ],
+     "imagePick": null,
+     "msgs": [
+      "면담에서 말씀하신 것을 바탕으로, 떠올리신 그것을 대신할 물체를 만들었어요.",
+      "아래 항목으로 물체를 고칠 수 있어요. 떠올리신 그것에 맞게 고친 뒤 [다 고쳤어요]를 눌러 주세요. 고칠 게 없으면 그대로 눌러도 돼요."
+     ],
+     "scrollH": 1423,
+     "buttons": {
+      "wrong": null,
+      "choose": null
+     },
+     "genNote": null
+    }
+   ],
+   "shots": {
+    "a": "shots/S3_a_candidates.png",
+    "wait_llm_image": "shots/S3_wait_llm_image.png",
+    "b": "shots/S3_b_images.png",
+    "wait_mesh": "shots/S3_wait_mesh.png",
+    "c": "shots/S3_c_mesh.png",
+    "d": "shots/S3_d_adjust.png"
+   },
+   "timings": {
+    "interviewS": 5.2,
+    "nextToCandidatesS": 1.2,
+    "noneToNextScreenS": 38.4,
+    "pickToNextScreenS": 11.3,
+    "caseTotalS": 67.5
+   },
+   "privacy": {
+    "S3_a_candidates": [],
+    "S3_wait_llm_image": [],
+    "S3_b_images": [],
+    "S3_wait_mesh": [],
+    "S3_c_mesh": [],
+    "S3_d_adjust": []
+   },
+   "reachedEnd": true,
+   "interview": {
+    "waitedForModelsS": 4.0,
+    "turns": 6,
+    "beforeConfirm": {
+     "awaiting": "confirm",
+     "state": "confirm"
+    },
+    "state": "done",
+    "awaiting": "none",
+    "selectionAvailable": true,
+    "seconds": 5.2
+   },
+   "basisShown": null,
+   "pickedPosition": 0,
+   "result": "generated_and_chosen",
+   "endStage": "premeasure",
+   "console": [
+    {
+     "type": "warning",
+     "text": "Manual synchronization of Unity Application.persistentDataPath via JS_FileSystem_Sync() is deprecated and will be later removed in a future Unity version. The persistent data directory will be automatically synchronized instead on file modification. Pass config.autoSyncPersistentDataPath = true; to configuration in createUnityInstance() to opt in to the new behavior."
+    }
+   ],
+   "collected": {
+    "spec": {
+     "form": {
+      "type": null,
+      "posture": null,
+      "base": null,
+      "baseVariant": null,
+      "mistKind": null
+     },
+     "material": {
+      "color": null,
+      "brightness": null,
+      "saturation": null,
+      "roughness": null,
+      "opacity": null,
+      "erosion": null
+     },
+     "formProvenance": {},
+     "_unmapped": [
+      {
+       "lemma": "조약돌",
+       "category": "unlisted_noun",
+       "value": {
+        "noun": "조약돌",
+        "role": "subject",
+        "scope": "main"
+       },
+       "reason": "no_scene_param",
+       "_provenance": {
+        "source": "phrase_rule",
+        "trigger": "조약돌",
+        "charSpan": [
+         0,
+         3
+        ],
+        "rule": "unlistedNoun.조약돌"
+       }
+      }
+     ],
+     "_negated": [],
+     "_context": [],
+     "_uncertain": [],
+     "_needsConfirmation": [],
+     "metaMapping": {
+      "requested": "v2",
+      "used": "v1",
+      "fallbackReason": null
+     }
+    },
+    "summary": {
+     "shapeLlm": {
+      "route": "rule",
+      "routeReason": "rule_has_shape",
+      "called": false,
+      "candidate": false,
+      "status": null,
+      "skipReason": null,
+      "rawItem": null,
+      "adopted": null,
+      "rejectReasons": [],
+      "exposed": false,
+      "imageChosen": false,
+      "candidateChosen": null,
+      "rejected": false,
+      "participantLeftBeforeResult": null,
+      "llmSeconds": null,
+      "seconds": null,
+      "cached": null,
+      "promptVersion": null,
+      "seed": null,
+      "model": null,
+      "ruleRoute": null,
+      "candidateExposed": false,
+      "basisShown": null
+     },
+     "afterNone": {
+      "status": "ok",
+      "blockReason": null,
+      "blockDetail": null,
+      "shapeLlmUsed": false,
+      "shapeLlmItems": [],
+      "basisRejected": null,
+      "chosen": true,
+      "seconds": 7.34,
+      "prompt": "a single pebble, one solid object, matte gray clay, plain white background, untextured monochrome gray clay sculpture, single uniform color, soft even studio lighting, centered, entire object in view",
+      "shapeSource": null,
+      "shapeNoun": null,
+      "imagePrompt": "a single pebble, one solid object, matte gray clay, plain white background, untextured monochrome gray clay sculpture, single uniform color, soft even studio lighting, centered, entire object in view",
+      "imagePick": {
+       "status": "picked",
+       "outcome": "picked",
+       "seconds": 36.95,
+       "shownOrder": [
+        0,
+        1,
+        2
+       ],
+       "pickedSeed": 0,
+       "images": [
+        {
+         "seed": 0,
+         "shown": true,
+         "position": 0,
+         "problem": null,
+         "gate": {
+          "personLikeScore": 0.0048,
+          "passed": true,
+          "threshold": 0.5,
+          "labelScores": {
+           "a person": 0.0005,
+           "a human figure": 0.0004,
+           "a human face": 0.0003,
+           "a head with eyes and a mouth": 0.0012,
+           "an animal": 0.0011,
+           "an animal figurine": 0.0003,
+           "a doll": 0.0011,
+           "an inanimate object": 0.0157,
+           "an abstract shape": 0.9393,
+           "a rock": 0.0023,
+           "a geometric solid": 0.0099,
+           "a household object": 0.0099,
+           "a lump of clay": 0.0154,
+           "a piece of cloth": 0.0028
+          },
+          "matchScore": 0.2077,
+          "model": "openai/clip-vit-large-patch14@32bd64288804d66eefd0ccbe215aa642df71cc41"
+         }
+        },
+        {
+         "seed": 1,
+         "shown": true,
+         "position": 1,
+         "problem": null,
+         "gate": {
+          "personLikeScore": 0.0178,
+          "passed": true,
+          "threshold": 0.5,
+          "labelScores": {
+           "a person": 0.0014,
+           "a human figure": 0.0009,
+           "a human face": 0.0006,
+           "a head with eyes and a mouth": 0.0007,
+           "an animal": 0.0127,
+           "an animal figurine": 0.0005,
+           "a doll": 0.0009,
+           "an inanimate object": 0.1136,
+           "an abstract shape": 0.5075,
+           "a rock": 0.1177,
+           "a geometric solid": 0.0422,
+           "a household object": 0.0913,
+           "a lump of clay": 0.1076,
+           "a piece of cloth": 0.0022
+          },
+          "matchScore": 0.2177,
+          "model": "openai/clip-vit-large-patch14@32bd64288804d66eefd0ccbe215aa642df71cc41"
+         }
+        },
+        {
+         "seed": 2,
+         "shown": true,
+         "position": 2,
+         "problem": null,
+         "gate": {
+          "personLikeScore": 0.2542,
+          "passed": true,
+          "threshold": 0.5,
+          "labelScores": {
+           "a person": 0.0188,
+           "a human figure": 0.0504,
+           "a human face": 0.005,
+           "a head with eyes and a mouth": 0.0811,
+           "an animal": 0.0093,
+           "an animal figurine": 0.0022,
+           "a doll": 0.0875,
+           "an inanimate object": 0.2621,
+           "an abstract shape": 0.1212,
+           "a rock": 0.0806,
+           "a geometric solid": 0.0396,
+           "a household object": 0.131,
+           "a lump of clay": 0.1101,
+           "a piece of cloth": 0.0012
+          },
+          "matchScore": 0.1989,
+          "model": "openai/clip-vit-large-patch14@32bd64288804d66eefd0ccbe215aa642df71cc41"
+         }
+        }
+       ]
+      },
+      "meshGate": {
+       "personLikeScore": 0.0313,
+       "passed": true,
+       "threshold": 0.5,
+       "views": 6,
+       "labelScores": {
+        "a person": 0.0142,
+        "a human figure": 0.0023,
+        "a human face": 0.0031,
+        "a head with eyes and a mouth": 0.0066,
+        "an animal": 0.0054,
+        "an animal figurine": 0.0007,
+        "a doll": 0.0068,
+        "an inanimate object": 0.0119,
+        "an abstract shape": 0.5604,
+        "a rock": 0.201,
+        "a geometric solid": 0.2646,
+        "a household object": 0.0237,
+        "a lump of clay": 0.7347,
+        "a piece of cloth": 0.1421
+       },
+       "matchScore": 0.2185,
+       "model": "openai/clip-vit-large-patch14@32bd64288804d66eefd0ccbe215aa642df71cc41",
+       "multiObject": {
+        "components": 1,
+        "significant": 1,
+        "topFractions": [
+         1.0
+        ],
+        "minFraction": 0.05,
+        "applied": true,
+        "blocked": false
+       }
+      },
+      "meshCandidateId": "g-6d4ea8f2d14e",
+      "gateWhenBlocked": null,
+      "shapeLlmBasisShown": null
+     },
+     "earlierRounds": 0,
+     "runnerReady": true,
+     "runnerBlockers": [],
+     "formTypeSource": "generated_chosen",
+     "formAsset": {
+      "candidateId": "g-6d4ea8f2d14e",
+      "assetId": "0c033c28c393b1da",
+      "glb": "form-asset-59394c5255010600.glb",
+      "glbSha256": "59394c5255010600214903b3a1c34dc8a5e1da87e4038eda7c89bef06f680bcd",
+      "sidecarSha256": "a0c00ec532e4c401ee5351677eec61a71abc0520aae41aad347c844cd444b866",
+      "pipeline": "sdxl-triposg",
+      "seed": 0,
+      "models": [
+       {
+        "name": "image",
+        "repo": "stabilityai/stable-diffusion-xl-base-1.0",
+        "revision": "462165984030d82259a11f4367a4eed129e94a7b",
+        "weightsSha256": {
+         "text_encoder/model.safetensors": "5c3d6454dd2d23414b56aa1b5858a72487a656937847b6fea8d0606d7a42cdbc",
+         "text_encoder_2/model.safetensors": "3a6032f63d37ae02bbc74ccd6a27440578cd71701f96532229d0154f55a8d3ff",
+         "unet/diffusion_pytorch_model.safetensors": "357650fbfb3c7b4d94c1f5fd7664da819ad1ff5a839430484b4ec422d03f710a",
+         "vae/diffusion_pytorch_model.safetensors": "1598f3d24932bcfe6634e8b618ea1e30ab1d57f5aad13a6d2de446d2199f2341"
+        },
+        "license": "CreativeML Open RAIL++-M"
+       },
+       {
+        "name": "rembg",
+        "repo": "github.com/danielgatis/rembg u2net.onnx",
+        "revision": null,
+        "weightsSha256": "8d10d2f3bb75ae3b6d527c77944fc5e7dcd94b29809d47a739a7a728a912b491",
+        "license": "MIT (rembg) / Apache-2.0 (U^2-Net)"
+       },
+       {
+        "name": "shape",
+        "repo": "VAST-AI/TripoSG",
+        "revision": "2c1c516d22d58db486a058d98d31bb6177344e06",
+        "weightsSha256": {
+         "image_encoder_dinov2/model.safetensors": "399fba97a95f22c36834418bc69373364a99af3a1153da1c0fb31db567c92e23",
+         "transformer/diffusion_pytorch_model.safetensors": "9192b5923f7b605b394192809aa2ceb73bf0f4009674d8e3b999b45bb97d4bf2",
+         "vae/diffusion_pytorch_model.safetensors": "a2e667c24927a5a35e5f19fcb4c75890e9399aa966b6db8131d7df733a750c8b"
+        },
+        "codeCommit": "fc5c40990181e2a756c4e0b1c2f4d6b5202faf8c",
+        "license": "MIT"
+       },
+       {
+        "name": "gate",
+        "repo": "openai/clip-vit-large-patch14",
+        "revision": "32bd64288804d66eefd0ccbe215aa642df71cc41",
+        "weightsSha256": {
+         "model.safetensors": "a2bf730a0c7debf160f7a6b50b3aaf3703e7e88ac73de7a314903141db026dcb"
+        },
+        "license": "MIT"
+       }
+      ],
+      "promptText": "a single pebble, one solid object, matte gray clay, plain white background, untextured monochrome gray clay sculpture, single uniform color, soft even studio lighting, centered, entire object in view",
+      "lexiconVersion": "0.3.0",
+      "covariates": {
+       "axisRatios": [
+        1.0,
+        0.9398,
+        0.9943
+       ],
+       "thinRisk": false,
+       "familiarObjectStated": true,
+       "pluralStated": false
+      },
+      "normalization": {
+       "longestEdge": 1.0,
+       "pivot": "bottom-center"
+      },
+      "gate": {
+       "personLikeScore": 0.0313,
+       "passed": true,
+       "threshold": 0.5,
+       "views": 6,
+       "labelScores": {
+        "a person": 0.0142,
+        "a human figure": 0.0023,
+        "a human face": 0.0031,
+        "a head with eyes and a mouth": 0.0066,
+        "an animal": 0.0054,
+        "an animal figurine": 0.0007,
+        "a doll": 0.0068,
+        "an inanimate object": 0.0119,
+        "an abstract shape": 0.5604,
+        "a rock": 0.201,
+        "a geometric solid": 0.2646,
+        "a household object": 0.0237,
+        "a lump of clay": 0.7347,
+        "a piece of cloth": 0.1421
+       },
+       "matchScore": 0.2185,
+       "model": "openai/clip-vit-large-patch14@32bd64288804d66eefd0ccbe215aa642df71cc41",
+       "multiObject": {
+        "components": 1,
+        "significant": 1,
+        "topFractions": [
+         1.0
+        ],
+        "minFraction": 0.05,
+        "applied": true,
+        "blocked": false
+       }
+      },
+      "sidecar": "form-asset-59394c5255010600.json",
+      "origin": "generated_after_none"
+     }
+    },
+    "selection": {
+     "runnerReady": true,
+     "runnerBlockers": [],
+     "sources": {
+      "form.type": "generated_chosen",
+      "form.posture": "default",
+      "form.base": "default",
+      "form.baseVariant": "default",
+      "material.color": "default",
+      "material.brightness": "default",
+      "material.saturation": "default",
+      "material.roughness": "default",
+      "material.opacity": "default",
+      "material.erosion": "default",
+      "layout.size": "default",
+      "layout.distance": "default",
+      "layout.verticalOffset": "default",
+      "motion.type": "default",
+      "motion.speed": "default",
+      "body.part": "default",
+      "body.layer": "default",
+      "layout.proportions": "default"
+     },
+     "form": {
+      "asset": {
+       "candidateId": "g-6d4ea8f2d14e",
+       "assetId": "0c033c28c393b1da",
+       "glb": "form-asset-59394c5255010600.glb",
+       "glbSha256": "59394c5255010600214903b3a1c34dc8a5e1da87e4038eda7c89bef06f680bcd",
+       "sidecarSha256": "a0c00ec532e4c401ee5351677eec61a71abc0520aae41aad347c844cd444b866",
+       "pipeline": "sdxl-triposg",
+       "seed": 0,
+       "models": [
+        {
+         "name": "image",
+         "repo": "stabilityai/stable-diffusion-xl-base-1.0",
+         "revision": "462165984030d82259a11f4367a4eed129e94a7b",
+         "weightsSha256": {
+          "text_encoder/model.safetensors": "5c3d6454dd2d23414b56aa1b5858a72487a656937847b6fea8d0606d7a42cdbc",
+          "text_encoder_2/model.safetensors": "3a6032f63d37ae02bbc74ccd6a27440578cd71701f96532229d0154f55a8d3ff",
+          "unet/diffusion_pytorch_model.safetensors": "357650fbfb3c7b4d94c1f5fd7664da819ad1ff5a839430484b4ec422d03f710a",
+          "vae/diffusion_pytorch_model.safetensors": "1598f3d24932bcfe6634e8b618ea1e30ab1d57f5aad13a6d2de446d2199f2341"
+         },
+         "license": "CreativeML Open RAIL++-M"
+        },
+        {
+         "name": "rembg",
+         "repo": "github.com/danielgatis/rembg u2net.onnx",
+         "revision": null,
+         "weightsSha256": "8d10d2f3bb75ae3b6d527c77944fc5e7dcd94b29809d47a739a7a728a912b491",
+         "license": "MIT (rembg) / Apache-2.0 (U^2-Net)"
+        },
+        {
+         "name": "shape",
+         "repo": "VAST-AI/TripoSG",
+         "revision": "2c1c516d22d58db486a058d98d31bb6177344e06",
+         "weightsSha256": {
+          "image_encoder_dinov2/model.safetensors": "399fba97a95f22c36834418bc69373364a99af3a1153da1c0fb31db567c92e23",
+          "transformer/diffusion_pytorch_model.safetensors": "9192b5923f7b605b394192809aa2ceb73bf0f4009674d8e3b999b45bb97d4bf2",
+          "vae/diffusion_pytorch_model.safetensors": "a2e667c24927a5a35e5f19fcb4c75890e9399aa966b6db8131d7df733a750c8b"
+         },
+         "codeCommit": "fc5c40990181e2a756c4e0b1c2f4d6b5202faf8c",
+         "license": "MIT"
+        },
+        {
+         "name": "gate",
+         "repo": "openai/clip-vit-large-patch14",
+         "revision": "32bd64288804d66eefd0ccbe215aa642df71cc41",
+         "weightsSha256": {
+          "model.safetensors": "a2bf730a0c7debf160f7a6b50b3aaf3703e7e88ac73de7a314903141db026dcb"
+         },
+         "license": "MIT"
+        }
+       ],
+       "promptText": "a single pebble, one solid object, matte gray clay, plain white background, untextured monochrome gray clay sculpture, single uniform color, soft even studio lighting, centered, entire object in view",
+       "lexiconVersion": "0.3.0",
+       "covariates": {
+        "axisRatios": [
+         1.0,
+         0.9398,
+         0.9943
+        ],
+        "thinRisk": false,
+        "familiarObjectStated": true,
+        "pluralStated": false
+       },
+       "normalization": {
+        "longestEdge": 1.0,
+        "pivot": "bottom-center"
+       },
+       "gate": {
+        "personLikeScore": 0.0313,
+        "passed": true,
+        "threshold": 0.5,
+        "views": 6,
+        "labelScores": {
+         "a person": 0.0142,
+         "a human figure": 0.0023,
+         "a human face": 0.0031,
+         "a head with eyes and a mouth": 0.0066,
+         "an animal": 0.0054,
+         "an animal figurine": 0.0007,
+         "a doll": 0.0068,
+         "an inanimate object": 0.0119,
+         "an abstract shape": 0.5604,
+         "a rock": 0.201,
+         "a geometric solid": 0.2646,
+         "a household object": 0.0237,
+         "a lump of clay": 0.7347,
+         "a piece of cloth": 0.1421
+        },
+        "matchScore": 0.2185,
+        "model": "openai/clip-vit-large-patch14@32bd64288804d66eefd0ccbe215aa642df71cc41",
+        "multiObject": {
+         "components": 1,
+         "significant": 1,
+         "topFractions": [
+          1.0
+         ],
+         "minFraction": 0.05,
+         "applied": true,
+         "blocked": false
+        }
+       },
+       "sidecar": "form-asset-59394c5255010600.json",
+       "origin": "generated_after_none"
+      }
+     },
+     "selection": {
+      "selectedCandidateId": "g-6d4ea8f2d14e",
+      "selectedIndex": 4,
+      "none": false,
+      "skipped": false,
+      "displayPosition": 0,
+      "operationalId": "g-6d4ea8f2d14e",
+      "operationalIndex": 4,
+      "at": "2026-11-28T22:50:17+09:00",
+      "afterNoneGeneration": "ok",
+      "acceptedDefault": null
+     },
+     "llmFillExposed": false,
+     "generation": {
+      "version": "ifs-form-assets/0.1.0",
+      "lookupKey": "36b903f8241523a3f3f1e223ff40d62f20203f365b5c035dbd084f672e3d8d7f",
+      "limit": 0,
+      "offered": [
+       {
+        "candidateId": "g-6d4ea8f2d14e",
+        "assetId": "0c033c28c393b1da",
+        "origin": "generated_after_none"
+       }
+      ],
+      "rejected": [],
+      "proceduralSelectionStep": "choose",
+      "defaultFormSourceSetting": "procedural",
+      "defaultFormSource": "procedural",
+      "defaultCandidateId": null,
+      "defaultFallbackReason": null,
+      "defaultFormRule": "setting_procedural",
+      "defaultFormBasis": null,
+      "shownOrder": [
+       "g-6d4ea8f2d14e"
+      ],
+      "outcome": "generated_chosen",
+      "acceptedDefault": null,
+      "declined": [],
+      "assetDropped": null,
+      "imagePickExposed": true,
+      "shapeLlm": {
+       "version": "ifs-shape-llm-record/0.1.0",
+       "route": "rule",
+       "routeReason": "rule_has_shape",
+       "called": false,
+       "candidate": false,
+       "adopted": null,
+       "status": null,
+       "skipReason": null,
+       "rejectReasons": [],
+       "rawText": null,
+       "inputTextSha256": null,
+       "validatorTextSha256": null,
+       "model": null,
+       "promptVersion": null,
+       "promptSha256": null,
+       "validatorRules": null,
+       "seed": null,
+       "lineStages": null,
+       "exposed": false,
+       "imageChosen": false,
+       "candidateExposed": false,
+       "candidateChosen": null,
+       "rejected": false,
+       "rejectedAt": null,
+       "basisShown": null,
+       "call": null
+      },
+      "llmPromptUsed": false,
+      "afterNone": {
+       "version": "ifs-none-gen/0.1.0",
+       "origin": "generated_after_none",
+       "setting": {
+        "version": "ifs-none-gen/0.1.0",
+        "timeoutS": 180.0,
+        "pipeline": "sdxl-triposg",
+        "seed": 0,
+        "maxRegenerations": 1,
+        "seedRule": "seed = on_none_seed + n (n = 0 첫 생성, 1… 다시 만들기)",
+        "script": "generate.py",
+        "python": "python.exe",
+        "unloadModels": [
+         "gemma4:e4b",
+         "hf.co/mradermacher/kanana-safeguard-8b-GGUF:Q4_K_M"
+        ],
+        "imagePick": {
+         "version": "ifs-image-pick/0.1.0",
+         "rounds": 2,
+         "imagesPerRound": 3,
+         "imageTimeoutS": 180.0,
+         "meshTimeoutS": 180.0,
+         "seedRule": "회차 r(0부터)의 이미지 seed = on_none_seed + 3r + k (k = 0…2), 형태 seed = 고른 이미지의 seed",
+         "maxRegenerationsUsed": false
+        }
+       },
+       "noneAt": "2026-11-28T22:49:24+09:00",
+       "shownOrderBefore": [
+        "c-72d322e5761e",
+        "c-e9ef39765ab3",
+        "c-388dc9edabe3",
+        "c-4f1246e2f8a7"
+       ],
+       "status": "ok",
+       "blockReason": null,
+       "blockDetail": null,
+       "prompt": {
+        "text": "a single pebble, one solid object, matte gray clay, plain white background, untextured monochrome gray clay sculpture, single uniform color, soft even studio lighting, centered, entire object in view",
+        "negativeText": "person, human, face, eyes, figure, animal, hands, text, watermark, multiple objects, cropped, scenery, floor, shadow, color, two objects, pair, duplicate, group of objects, stand, pedestal, base plate, plinth, string, rope, chain, strap, holder, container, bowl, vase, tray, plate, colorful, multicolored, painted, patterned, glossy, metallic, reflections, background objects",
+        "tokens": [
+         {
+          "en": "a single",
+          "ko": null,
+          "charSpan": null,
+          "slot": "template",
+          "lexiconKey": null
+         },
+         {
+          "en": "pebble",
+          "ko": "조약돌",
+          "charSpan": [
+           0,
+           3
+          ],
+          "slot": "shape_noun",
+          "lexiconKey": "조약돌"
+         },
+         {
+          "en": "one solid object",
+          "ko": null,
+          "charSpan": null,
+          "slot": "template",
+          "lexiconKey": null
+         },
+         {
+          "en": "matte gray clay",
+          "ko": null,
+          "charSpan": null,
+          "slot": "template",
+          "lexiconKey": null
+         },
+         {
+          "en": "plain white background",
+          "ko": null,
+          "charSpan": null,
+          "slot": "template",
+          "lexiconKey": null
+         },
+         {
+          "en": "untextured monochrome gray clay sculpture",
+          "ko": null,
+          "charSpan": null,
+          "slot": "template",
+          "lexiconKey": null
+         },
+         {
+          "en": "single uniform color",
+          "ko": null,
+          "charSpan": null,
+          "slot": "template",
+          "lexiconKey": null
+         },
+         {
+          "en": "soft even studio lighting",
+          "ko": null,
+          "charSpan": null,
+          "slot": "template",
+          "lexiconKey": null
+         },
+         {
+          "en": "centered",
+          "ko": null,
+          "charSpan": null,
+          "slot": "template",
+          "lexiconKey": null
+         },
+         {
+          "en": "entire object in view",
+          "ko": null,
+          "charSpan": null,
+          "slot": "template",
+          "lexiconKey": null
+         }
+        ],
+        "dropped": [],
+        "status": "ok",
+        "blockReason": null,
+        "blockDetail": null,
+        "lexiconVersion": "0.3.0",
+        "builderVersion": "gen3d-shape-prompt/0.4.0+imagepick+mapper-v2",
+        "templateVersion": "g62-template/0.2.0",
+        "sourceTextSha256": "36b903f8241523a3f3f1e223ff40d62f20203f365b5c035dbd084f672e3d8d7f",
+        "promptRule": "mapper",
+        "mapperBuilder": "scene-spec-builder-v2/2.9.0",
+        "pluralStated": false,
+        "thinRisk": false,
+        "familiarObjectStated": true,
+        "imageStyle": "g75-shape-only-gray",
+        "imageStyleVersion": "g75-image-style/0.1.0"
+       },
+       "run": "none-SYN-G84-S3-1-20261128-225006-r0-mesh",
+       "startedAt": "2026-11-28T22:50:04+09:00",
+       "endedAt": "2026-11-28T22:50:14+09:00",
+       "seconds": 7.34,
+       "exitCode": 0,
+       "error": null,
+       "llmUnload": {
+        "at": "2026-11-28T22:50:06+09:00",
+        "models": [
+         {
+          "role": "interview",
+          "model": "gemma4:e4b",
+          "ok": true,
+          "detail": null
+         },
+         {
+          "role": "guard",
+          "model": "hf.co/mradermacher/kanana-safeguard-8b-GGUF:Q4_K_M",
+          "ok": true,
+          "detail": null
+         }
+        ],
+        "loadedBefore": [
+         "gemma4:e4b",
+         "hf.co/mradermacher/kanana-safeguard-8b-GGUF:Q4_K_M"
+        ],
+        "loadedAfter": [],
+        "ok": true
+       },
+       "timing": {
+        "unloadS": 0.64,
+        "generatorS": 6.67
+       },
+       "asset": {
+        "assetId": "0c033c28c393b1da",
+        "glb": "0c033c28c393b1da.glb",
+        "glbSha256": "59394c5255010600214903b3a1c34dc8a5e1da87e4038eda7c89bef06f680bcd",
+        "sidecarSha256": "a0c00ec532e4c401ee5351677eec61a71abc0520aae41aad347c844cd444b866",
+        "pipeline": "sdxl-triposg",
+        "seed": 0,
+        "models": [
+         {
+          "name": "image",
+          "repo": "stabilityai/stable-diffusion-xl-base-1.0",
+          "revision": "462165984030d82259a11f4367a4eed129e94a7b",
+          "weightsSha256": {
+           "text_encoder/model.safetensors": "5c3d6454dd2d23414b56aa1b5858a72487a656937847b6fea8d0606d7a42cdbc",
+           "text_encoder_2/model.safetensors": "3a6032f63d37ae02bbc74ccd6a27440578cd71701f96532229d0154f55a8d3ff",
+           "unet/diffusion_pytorch_model.safetensors": "357650fbfb3c7b4d94c1f5fd7664da819ad1ff5a839430484b4ec422d03f710a",
+           "vae/diffusion_pytorch_model.safetensors": "1598f3d24932bcfe6634e8b618ea1e30ab1d57f5aad13a6d2de446d2199f2341"
+          },
+          "license": "CreativeML Open RAIL++-M"
+         },
+         {
+          "name": "rembg",
+          "repo": "github.com/danielgatis/rembg u2net.onnx",
+          "revision": null,
+          "weightsSha256": "8d10d2f3bb75ae3b6d527c77944fc5e7dcd94b29809d47a739a7a728a912b491",
+          "license": "MIT (rembg) / Apache-2.0 (U^2-Net)"
+         },
+         {
+          "name": "shape",
+          "repo": "VAST-AI/TripoSG",
+          "revision": "2c1c516d22d58db486a058d98d31bb6177344e06",
+          "weightsSha256": {
+           "image_encoder_dinov2/model.safetensors": "399fba97a95f22c36834418bc69373364a99af3a1153da1c0fb31db567c92e23",
+           "transformer/diffusion_pytorch_model.safetensors": "9192b5923f7b605b394192809aa2ceb73bf0f4009674d8e3b999b45bb97d4bf2",
+           "vae/diffusion_pytorch_model.safetensors": "a2e667c24927a5a35e5f19fcb4c75890e9399aa966b6db8131d7df733a750c8b"
+          },
+          "codeCommit": "fc5c40990181e2a756c4e0b1c2f4d6b5202faf8c",
+          "license": "MIT"
+         },
+         {
+          "name": "gate",
+          "repo": "openai/clip-vit-large-patch14",
+          "revision": "32bd64288804d66eefd0ccbe215aa642df71cc41",
+          "weightsSha256": {
+           "model.safetensors": "a2bf730a0c7debf160f7a6b50b3aaf3703e7e88ac73de7a314903141db026dcb"
+          },
+          "license": "MIT"
+         }
+        ],
+        "promptText": "a single pebble, one solid object, matte gray clay, plain white background, untextured monochrome gray clay sculpture, single uniform color, soft even studio lighting, centered, entire object in view",
+        "lexiconVersion": "0.3.0",
+        "covariates": {
+         "axisRatios": [
+          1.0,
+          0.9398,
+          0.9943
+         ],
+         "thinRisk": false,
+         "familiarObjectStated": true,
+         "pluralStated": false
+        },
+        "normalization": {
+         "longestEdge": 1.0,
+         "pivot": "bottom-center"
+        },
+        "gate": {
+         "personLikeScore": 0.0313,
+         "passed": true,
+         "threshold": 0.5,
+         "views": 6,
+         "labelScores": {
+          "a person": 0.0142,
+          "a human figure": 0.0023,
+          "a human face": 0.0031,
+          "a head with eyes and a mouth": 0.0066,
+          "an animal": 0.0054,
+          "an animal figurine": 0.0007,
+          "a doll": 0.0068,
+          "an inanimate object": 0.0119,
+          "an abstract shape": 0.5604,
+          "a rock": 0.201,
+          "a geometric solid": 0.2646,
+          "a household object": 0.0237,
+          "a lump of clay": 0.7347,
+          "a piece of cloth": 0.1421
+         },
+         "matchScore": 0.2185,
+         "model": "openai/clip-vit-large-patch14@32bd64288804d66eefd0ccbe215aa642df71cc41",
+         "multiObject": {
+          "components": 1,
+          "significant": 1,
+          "topFractions": [
+           1.0
+          ],
+          "minFraction": 0.05,
+          "applied": true,
+          "blocked": false
+         }
+        },
+        "origin": "generated_after_none"
+       },
+       "candidateId": "g-6d4ea8f2d14e",
+       "displayPosition": 0,
+       "participantSkippedWait": false,
+       "chosen": true,
+       "attempt": 0,
+       "seed": 0,
+       "imagePick": {
+        "version": "ifs-image-pick/0.1.0",
+        "round": 0,
+        "seeds": [
+         0,
+         1,
+         2
+        ],
+        "promptText": "a single pebble, one solid object, matte gray clay, plain white background, untextured monochrome gray clay sculpture, single uniform color, soft even studio lighting, centered, entire object in view",
+        "builderVersion": "gen3d-shape-prompt/0.4.0+imagepick+mapper-v2",
+        "imageStyle": "g75-shape-only-gray",
+        "imageStyleVersion": "g75-image-style/0.1.0",
+        "status": "picked",
+        "run": "none-SYN-G84-S3-1-20261128-224924-r0-img",
+        "startedAt": "2026-11-28T22:49:24+09:00",
+        "endedAt": "2026-11-28T22:50:01+09:00",
+        "seconds": 36.95,
+        "exitCode": 0,
+        "error": null,
+        "blockReason": null,
+        "llmUnload": {
+         "at": "2026-11-28T22:49:24+09:00",
+         "models": [
+          {
+           "role": "interview",
+           "model": "gemma4:e4b",
+           "ok": true,
+           "detail": null
+          },
+          {
+           "role": "guard",
+           "model": "hf.co/mradermacher/kanana-safeguard-8b-GGUF:Q4_K_M",
+           "ok": true,
+           "detail": null
+          }
+         ],
+         "loadedBefore": [
+          "gemma4:e4b",
+          "hf.co/mradermacher/kanana-safeguard-8b-GGUF:Q4_K_M"
+         ],
+         "loadedAfter": [],
+         "ok": true
+        },
+        "timing": {
+         "unloadS": 0.62,
+         "generatorS": 36.33
+        },
+        "models": [
+         {
+          "name": "image",
+          "repo": "stabilityai/stable-diffusion-xl-base-1.0",
+          "revision": "462165984030d82259a11f4367a4eed129e94a7b",
+          "weightsSha256": {
+           "text_encoder/model.safetensors": "5c3d6454dd2d23414b56aa1b5858a72487a656937847b6fea8d0606d7a42cdbc",
+           "text_encoder_2/model.safetensors": "3a6032f63d37ae02bbc74ccd6a27440578cd71701f96532229d0154f55a8d3ff",
+           "unet/diffusion_pytorch_model.safetensors": "357650fbfb3c7b4d94c1f5fd7664da819ad1ff5a839430484b4ec422d03f710a",
+           "vae/diffusion_pytorch_model.safetensors": "1598f3d24932bcfe6634e8b618ea1e30ab1d57f5aad13a6d2de446d2199f2341"
+          },
+          "license": "CreativeML Open RAIL++-M"
+         },
+         {
+          "name": "gate",
+          "repo": "openai/clip-vit-large-patch14",
+          "revision": "32bd64288804d66eefd0ccbe215aa642df71cc41",
+          "weightsSha256": {
+           "model.safetensors": "a2bf730a0c7debf160f7a6b50b3aaf3703e7e88ac73de7a314903141db026dcb"
+          },
+          "license": "MIT"
+         }
+        ],
+        "images": [
+         {
+          "seed": 0,
+          "file": "images/after-none-s0.png",
+          "sha256": "0e72d025c6d9c18a74192a9771184f826274b893f48cb0bc545be88e6201651b",
+          "seconds": 6.95,
+          "gate": {
+           "personLikeScore": 0.0048,
+           "passed": true,
+           "threshold": 0.5,
+           "labelScores": {
+            "a person": 0.0005,
+            "a human figure": 0.0004,
+            "a human face": 0.0003,
+            "a head with eyes and a mouth": 0.0012,
+            "an animal": 0.0011,
+            "an animal figurine": 0.0003,
+            "a doll": 0.0011,
+            "an inanimate object": 0.0157,
+            "an abstract shape": 0.9393,
+            "a rock": 0.0023,
+            "a geometric solid": 0.0099,
+            "a household object": 0.0099,
+            "a lump of clay": 0.0154,
+            "a piece of cloth": 0.0028
+           },
+           "matchScore": 0.2077,
+           "model": "openai/clip-vit-large-patch14@32bd64288804d66eefd0ccbe215aa642df71cc41"
+          },
+          "problem": null,
+          "shown": true,
+          "position": 0
+         },
+         {
+          "seed": 1,
+          "file": "images/after-none-s1.png",
+          "sha256": "01d4c3cddf8d2815a09b2efe408c3dba98e6a0d50047b038d70bce3f83f1f41c",
+          "seconds": 6.64,
+          "gate": {
+           "personLikeScore": 0.0178,
+           "passed": true,
+           "threshold": 0.5,
+           "labelScores": {
+            "a person": 0.0014,
+            "a human figure": 0.0009,
+            "a human face": 0.0006,
+            "a head with eyes and a mouth": 0.0007,
+            "an animal": 0.0127,
+            "an animal figurine": 0.0005,
+            "a doll": 0.0009,
+            "an inanimate object": 0.1136,
+            "an abstract shape": 0.5075,
+            "a rock": 0.1177,
+            "a geometric solid": 0.0422,
+            "a household object": 0.0913,
+            "a lump of clay": 0.1076,
+            "a piece of cloth": 0.0022
+           },
+           "matchScore": 0.2177,
+           "model": "openai/clip-vit-large-patch14@32bd64288804d66eefd0ccbe215aa642df71cc41"
+          },
+          "problem": null,
+          "shown": true,
+          "position": 1
+         },
+         {
+          "seed": 2,
+          "file": "images/after-none-s2.png",
+          "sha256": "8e42a4b6e1167ecfe0246cd1bab2d739b409aa0131277210a0e158ca634874ca",
+          "seconds": 6.62,
+          "gate": {
+           "personLikeScore": 0.2542,
+           "passed": true,
+           "threshold": 0.5,
+           "labelScores": {
+            "a person": 0.0188,
+            "a human figure": 0.0504,
+            "a human face": 0.005,
+            "a head with eyes and a mouth": 0.0811,
+            "an animal": 0.0093,
+            "an animal figurine": 0.0022,
+            "a doll": 0.0875,
+            "an inanimate object": 0.2621,
+            "an abstract shape": 0.1212,
+            "a rock": 0.0806,
+            "a geometric solid": 0.0396,
+            "a household object": 0.131,
+            "a lump of clay": 0.1101,
+            "a piece of cloth": 0.0012
+           },
+           "matchScore": 0.1989,
+           "model": "openai/clip-vit-large-patch14@32bd64288804d66eefd0ccbe215aa642df71cc41"
+          },
+          "problem": null,
+          "shown": true,
+          "position": 2
+         }
+        ],
+        "shownOrder": [
+         0,
+         1,
+         2
+        ],
+        "shownAt": "2026-11-28T22:50:01+09:00",
+        "outcome": "picked",
+        "pickedPosition": 0,
+        "pickedSeed": 0,
+        "pickedImageSha256": "0e72d025c6d9c18a74192a9771184f826274b893f48cb0bc545be88e6201651b",
+        "decidedAt": "2026-11-28T22:50:04+09:00",
+        "generatorTiming": {
+         "imageLoad": 7.77,
+         "gateLoad": 0.85,
+         "total": 35.36
+        }
+       },
+       "shapeLlmUsed": false,
+       "shapeLlmItems": [],
+       "llmPromptUsed": false,
+       "llmShapeItems": [],
+       "cacheProbe": null
+      }
+     }
+    },
+    "llmFillEvent": {
+     "status": "ok",
+     "skipReason": null,
+     "cached": false,
+     "offeredSlots": [
+      "color",
+      "brightness",
+      "opacity",
+      "size",
+      "texture",
+      "motion",
+      "form"
+     ],
+     "rawCount": 0,
+     "adopted": [],
+     "rejected": [],
+     "seconds": 3.77
+    },
+    "shapeLlmEvents": [],
+    "guardLabels": [
+     null,
+     "SAFE",
+     "SAFE",
+     "SAFE",
+     "SAFE",
+     "SAFE",
+     "SAFE",
+     "SAFE"
+    ],
+    "alerts": [],
+    "llmFill": {
+     "version": "ifs-llm-fill/0.1.0",
+     "validatorRules": "ifs-llm-fill-validator/0.4.0",
+     "status": "ok",
+     "skipReason": null,
+     "error": null,
+     "prompt": {
+      "promptId": "ifs-llm-fill",
+      "promptVersion": "0.1.1",
+      "file": "llm_fill.v0.1.1.json",
+      "promptSha256": "85258dd0b3b9238b9b706e6e04fe772578ae2a2b796bf356981efad2a12141e0",
+      "status": "draft",
+      "englishBlock": {
+       "file": "shape_english_block.v0.json",
+       "sha256": "45e1f2901f78bb075d6d8ce93203ff81309f993270cd5426ab9a35a266be0acc",
+       "version": "0.1.1"
+      }
+     },
+     "model": {
+      "name": "gemma4:e4b",
+      "digest": "sha256:dc35e8d9c6061baa6f0fa870975ab6932e2542b579b13ea0f199fa4bb7300c9c",
+      "runtime": "ollama 0.40.17"
+     },
+     "options": {
+      "temperature": 0,
+      "seed": 0,
+      "numPredict": 400,
+      "think": false
+     },
+     "timeoutS": 20.0,
+     "maxItems": 4,
+     "cacheKey": "10024e4549021330",
+     "cached": false,
+     "sourceTextSha256": "36b903f8241523a3f3f1e223ff40d62f20203f365b5c035dbd084f672e3d8d7f",
+     "at": "2026-11-28T22:49:17+09:00",
+     "seconds": 3.77,
+     "offeredSlots": [
+      "color",
+      "brightness",
+      "opacity",
+      "size",
+      "texture",
+      "motion",
+      "form"
+     ],
+     "rawText": "{\"items\": []}",
+     "rawItems": [],
+     "items": [],
+     "adopted": [],
+     "userSha256": "3199c78b13b6156102de4c3ec059a24b5f9e8c78b35dd9cd1f053a15fcb1ec0a",
+     "llmSeconds": 3.77,
+     "applied": {},
+     "notApplied": {},
+     "participant": {}
+    }
+   }
+  },
+  "S4": {
+   "id": "S4",
+   "kind": "재질+덩이",
+   "text": "쇳덩이가 있어요.",
+   "reject": false,
+   "sessionId": "SYN-G84-S4-1",
+   "steps": [
+    {
+     "at": "after_next",
+     "stage": "selecting",
+     "previewMode": "webgl",
+     "previewReason": null,
+     "afterNone": null,
+     "skipped": false,
+     "llmShapeBasis": null,
+     "basisShown": null,
+     "wrongButton": null,
+     "candidates": [
+      {
+       "id": "c-4512d4ad6cc7",
+       "afterNone": false,
+       "hasAsset": false
+      },
+      {
+       "id": "c-341d77140233",
+       "afterNone": false,
+       "hasAsset": false
+      },
+      {
+       "id": "c-d95a5eb19a35",
+       "afterNone": false,
+       "hasAsset": false
+      },
+      {
+       "id": "c-ec9900be1cc1",
+       "afterNone": false,
+       "hasAsset": false
+      }
+     ],
+     "imagePick": null,
+     "msgs": [
+      "면담에서 말씀하신 것을 바탕으로, 떠올리신 그것을 대신할 물체를 만들었어요.",
+      "아래 물체 가운데 떠올리신 그것과 가장 가까운 것을 하나 골라 주세요. 맞는 게 없으면 [맞는 게 없어요]를 눌러 주세요."
+     ],
+     "scrollH": 1134,
+     "buttons": {
+      "wrong": null,
+      "choose": null
+     },
+     "genNote": null
+    },
+    {
+     "at": "after_none",
+     "stage": "picking",
+     "previewMode": "webgl",
+     "previewReason": null,
+     "afterNone": {
+      "status": "running",
+      "blockReason": null,
+      "error": null,
+      "candidateId": null,
+      "noneAt": "2026-11-28T22:50:27+09:00",
+      "startedAt": null,
+      "endedAt": null,
+      "seconds": null,
+      "participantSkippedWait": false,
+      "attempt": 0,
+      "seed": null,
+      "basisRejected": null,
+      "timeoutS": 180,
+      "phase": "pick",
+      "round": 0,
+      "rounds": 2,
+      "imagePickStatus": "shown"
+     },
+     "skipped": false,
+     "llmShapeBasis": null,
+     "basisShown": null,
+     "wrongButton": null,
+     "candidates": [
+      {
+       "id": "c-4512d4ad6cc7",
+       "afterNone": false,
+       "hasAsset": false
+      },
+      {
+       "id": "c-341d77140233",
+       "afterNone": false,
+       "hasAsset": false
+      },
+      {
+       "id": "c-d95a5eb19a35",
+       "afterNone": false,
+       "hasAsset": false
+      },
+      {
+       "id": "c-ec9900be1cc1",
+       "afterNone": false,
+       "hasAsset": false
+      }
+     ],
+     "imagePick": {
+      "round": 0,
+      "images": [
+       {
+        "position": 0
+       },
+       {
+        "position": 1
+       }
+      ]
+     },
+     "msgs": [
+      "말씀하신 모양으로 그림을 그려 봤어요. 떠올리신 모양과 가장 가까운 그림을 골라 주세요. 색은 보지 말고 모양만 봐 주세요."
+     ],
+     "scrollH": 1100,
+     "buttons": {
+      "wrong": null,
+      "choose": {
+       "w": 381,
+       "h": 48
+      }
+     },
+     "genNote": null
+    },
+    {
+     "at": "after_pick",
+     "stage": "selecting",
+     "previewMode": "webgl",
+     "previewReason": null,
+     "afterNone": {
+      "status": "ok",
+      "blockReason": null,
+      "error": null,
+      "candidateId": "g-e135e17d521a",
+      "noneAt": "2026-11-28T22:50:27+09:00",
+      "startedAt": "2026-11-28T22:51:16+09:00",
+      "endedAt": "2026-11-28T22:52:05+09:00",
+      "seconds": 46.31,
+      "participantSkippedWait": false,
+      "attempt": 0,
+      "seed": 0,
+      "basisRejected": null,
+      "timeoutS": 180,
+      "phase": "mesh",
+      "round": 0,
+      "rounds": 2,
+      "imagePickStatus": "picked"
+     },
+     "skipped": false,
+     "llmShapeBasis": null,
+     "basisShown": null,
+     "wrongButton": null,
+     "candidates": [
+      {
+       "id": "g-e135e17d521a",
+       "afterNone": true,
+       "hasAsset": true
+      },
+      {
+       "id": "c-4512d4ad6cc7",
+       "afterNone": false,
+       "hasAsset": false
+      },
+      {
+       "id": "c-341d77140233",
+       "afterNone": false,
+       "hasAsset": false
+      },
+      {
+       "id": "c-d95a5eb19a35",
+       "afterNone": false,
+       "hasAsset": false
+      },
+      {
+       "id": "c-ec9900be1cc1",
+       "afterNone": false,
+       "hasAsset": false
+      }
+     ],
+     "imagePick": null,
+     "msgs": [
+      "면담에서 말씀하신 것을 바탕으로, 떠올리신 그것을 대신할 물체를 만들었어요.",
+      "말씀하신 내용으로 만든 물체를 맨 앞에 더했어요. 가장 가까운 것을 하나 골라 주세요. 맞는 게 없으면 [맞는 게 없어요]를 눌러 주세요."
+     ],
+     "scrollH": 1548,
+     "buttons": {
+      "wrong": null,
+      "choose": null
+     },
+     "genNote": null
+    },
+    {
+     "at": "after_choose_generated",
+     "stage": "adjusting",
+     "previewMode": "webgl",
+     "previewReason": null,
+     "afterNone": {
+      "status": "ok",
+      "blockReason": null,
+      "error": null,
+      "candidateId": "g-e135e17d521a",
+      "noneAt": "2026-11-28T22:50:27+09:00",
+      "startedAt": "2026-11-28T22:51:16+09:00",
+      "endedAt": "2026-11-28T22:52:05+09:00",
+      "seconds": 46.31,
+      "participantSkippedWait": false,
+      "attempt": 0,
+      "seed": 0,
+      "basisRejected": null,
+      "timeoutS": 180,
+      "phase": "mesh",
+      "round": 0,
+      "rounds": 2,
+      "imagePickStatus": "picked"
+     },
+     "skipped": false,
+     "llmShapeBasis": null,
+     "basisShown": null,
+     "wrongButton": null,
+     "candidates": [
+      {
+       "id": "g-e135e17d521a",
+       "afterNone": true,
+       "hasAsset": true
+      },
+      {
+       "id": "c-4512d4ad6cc7",
+       "afterNone": false,
+       "hasAsset": false
+      },
+      {
+       "id": "c-341d77140233",
+       "afterNone": false,
+       "hasAsset": false
+      },
+      {
+       "id": "c-d95a5eb19a35",
+       "afterNone": false,
+       "hasAsset": false
+      },
+      {
+       "id": "c-ec9900be1cc1",
+       "afterNone": false,
+       "hasAsset": false
+      }
+     ],
+     "imagePick": null,
+     "msgs": [
+      "면담에서 말씀하신 것을 바탕으로, 떠올리신 그것을 대신할 물체를 만들었어요.",
+      "아래 항목으로 물체를 고칠 수 있어요. 떠올리신 그것에 맞게 고친 뒤 [다 고쳤어요]를 눌러 주세요. 고칠 게 없으면 그대로 눌러도 돼요."
+     ],
+     "scrollH": 1476,
+     "buttons": {
+      "wrong": null,
+      "choose": null
+     },
+     "genNote": null
+    }
+   ],
+   "shots": {
+    "a": "shots/S4_a_candidates.png",
+    "wait_llm_image": "shots/S4_wait_llm_image.png",
+    "b": "shots/S4_b_images.png",
+    "wait_mesh": "shots/S4_wait_mesh.png",
+    "c": "shots/S4_c_mesh.png",
+    "d": "shots/S4_d_adjust.png"
+   },
+   "timings": {
+    "interviewS": 4.6,
+    "nextToCandidatesS": 1.2,
+    "noneToNextScreenS": 47.4,
+    "pickToNextScreenS": 50.4,
+    "caseTotalS": 111.2
+   },
+   "privacy": {
+    "S4_a_candidates": [],
+    "S4_wait_llm_image": [],
+    "S4_b_images": [],
+    "S4_wait_mesh": [],
+    "S4_c_mesh": [],
+    "S4_d_adjust": []
+   },
+   "reachedEnd": true,
+   "interview": {
+    "waitedForModelsS": 0.0,
+    "turns": 6,
+    "beforeConfirm": {
+     "awaiting": "confirm",
+     "state": "confirm"
+    },
+    "state": "done",
+    "awaiting": "none",
+    "selectionAvailable": true,
+    "seconds": 4.6
+   },
+   "basisShown": null,
+   "pickedPosition": 0,
+   "result": "generated_and_chosen",
+   "endStage": "premeasure",
+   "console": [
+    {
+     "type": "warning",
+     "text": "Manual synchronization of Unity Application.persistentDataPath via JS_FileSystem_Sync() is deprecated and will be later removed in a future Unity version. The persistent data directory will be automatically synchronized instead on file modification. Pass config.autoSyncPersistentDataPath = true; to configuration in createUnityInstance() to opt in to the new behavior."
+    }
+   ],
+   "collected": {
+    "spec": {
+     "form": {
+      "type": null,
+      "posture": null,
+      "base": null,
+      "baseVariant": null,
+      "mistKind": null
+     },
+     "material": {
+      "color": null,
+      "brightness": null,
+      "saturation": null,
+      "roughness": null,
+      "opacity": null,
+      "erosion": null
+     },
+     "formProvenance": {},
+     "_unmapped": [
+      {
+       "lemma": "쇳덩이",
+       "category": "unlisted_noun",
+       "value": {
+        "noun": "쇳덩이",
+        "role": "subject",
+        "scope": "main"
+       },
+       "reason": "no_scene_param",
+       "_provenance": {
+        "source": "phrase_rule",
+        "trigger": "쇳덩이",
+        "charSpan": [
+         0,
+         3
+        ],
+        "rule": "unlistedNoun.쇳덩이"
+       }
+      }
+     ],
+     "_negated": [],
+     "_context": [],
+     "_uncertain": [],
+     "_needsConfirmation": [],
+     "metaMapping": {
+      "requested": "v2",
+      "used": "v1",
+      "fallbackReason": null
+     }
+    },
+    "summary": {
+     "shapeLlm": {
+      "route": "rule",
+      "routeReason": "rule_has_shape",
+      "called": false,
+      "candidate": false,
+      "status": null,
+      "skipReason": null,
+      "rawItem": null,
+      "adopted": null,
+      "rejectReasons": [],
+      "exposed": false,
+      "imageChosen": false,
+      "candidateChosen": null,
+      "rejected": false,
+      "participantLeftBeforeResult": null,
+      "llmSeconds": null,
+      "seconds": null,
+      "cached": null,
+      "promptVersion": null,
+      "seed": null,
+      "model": null,
+      "ruleRoute": null,
+      "candidateExposed": false,
+      "basisShown": null
+     },
+     "afterNone": {
+      "status": "ok",
+      "blockReason": null,
+      "blockDetail": null,
+      "shapeLlmUsed": false,
+      "shapeLlmItems": [],
+      "basisRejected": null,
+      "chosen": true,
+      "seconds": 46.31,
+      "prompt": "a single lump, one solid object, matte gray clay, plain white background, untextured monochrome gray clay sculpture, single uniform color, soft even studio lighting, centered, entire object in view",
+      "shapeSource": null,
+      "shapeNoun": null,
+      "imagePrompt": "a single lump, one solid object, matte gray clay, plain white background, untextured monochrome gray clay sculpture, single uniform color, soft even studio lighting, centered, entire object in view",
+      "imagePick": {
+       "status": "picked",
+       "outcome": "picked",
+       "seconds": 45.66,
+       "shownOrder": [
+        0,
+        1
+       ],
+       "pickedSeed": 0,
+       "images": [
+        {
+         "seed": 0,
+         "shown": true,
+         "position": 0,
+         "problem": null,
+         "gate": {
+          "personLikeScore": 0.0013,
+          "passed": true,
+          "threshold": 0.5,
+          "labelScores": {
+           "a person": 0.0003,
+           "a human figure": 0.0002,
+           "a human face": 0.0005,
+           "a head with eyes and a mouth": 0.0002,
+           "an animal": 0.0001,
+           "an animal figurine": 0.0,
+           "a doll": 0.0,
+           "an inanimate object": 0.0211,
+           "an abstract shape": 0.2985,
+           "a rock": 0.0177,
+           "a geometric solid": 0.3487,
+           "a household object": 0.0072,
+           "a lump of clay": 0.3037,
+           "a piece of cloth": 0.0018
+          },
+          "matchScore": 0.2284,
+          "model": "openai/clip-vit-large-patch14@32bd64288804d66eefd0ccbe215aa642df71cc41"
+         }
+        },
+        {
+         "seed": 1,
+         "shown": true,
+         "position": 1,
+         "problem": null,
+         "gate": {
+          "personLikeScore": 0.0089,
+          "passed": true,
+          "threshold": 0.5,
+          "labelScores": {
+           "a person": 0.0011,
+           "a human figure": 0.001,
+           "a human face": 0.0009,
+           "a head with eyes and a mouth": 0.0024,
+           "an animal": 0.0018,
+           "an animal figurine": 0.0001,
+           "a doll": 0.0015,
+           "an inanimate object": 0.1209,
+           "an abstract shape": 0.1769,
+           "a rock": 0.0718,
+           "a geometric solid": 0.0177,
+           "a household object": 0.0674,
+           "a lump of clay": 0.5331,
+           "a piece of cloth": 0.0034
+          },
+          "matchScore": 0.2172,
+          "model": "openai/clip-vit-large-patch14@32bd64288804d66eefd0ccbe215aa642df71cc41"
+         }
+        },
+        {
+         "seed": 2,
+         "shown": false,
+         "position": null,
+         "problem": "gate_not_passed",
+         "gate": {
+          "personLikeScore": 0.9866,
+          "passed": false,
+          "threshold": 0.5,
+          "labelScores": {
+           "a person": 0.0401,
+           "a human figure": 0.0135,
+           "a human face": 0.4803,
+           "a head with eyes and a mouth": 0.4444,
+           "an animal": 0.0001,
+           "an animal figurine": 0.0,
+           "a doll": 0.0083,
+           "an inanimate object": 0.0031,
+           "an abstract shape": 0.0078,
+           "a rock": 0.0,
+           "a geometric solid": 0.0003,
+           "a household object": 0.0013,
+           "a lump of clay": 0.0008,
+           "a piece of cloth": 0.0
+          },
+          "matchScore": 0.172,
+          "model": "openai/clip-vit-large-patch14@32bd64288804d66eefd0ccbe215aa642df71cc41"
+         }
+        }
+       ]
+      },
+      "meshGate": {
+       "personLikeScore": 0.0176,
+       "passed": true,
+       "threshold": 0.5,
+       "views": 6,
+       "labelScores": {
+        "a person": 0.006,
+        "a human figure": 0.0012,
+        "a human face": 0.0057,
+        "a head with eyes and a mouth": 0.0016,
+        "an animal": 0.001,
+        "an animal figurine": 0.0005,
+        "a doll": 0.0016,
+        "an inanimate object": 0.0531,
+        "an abstract shape": 0.0379,
+        "a rock": 0.5431,
+        "a geometric solid": 0.0991,
+        "a household object": 0.0103,
+        "a lump of clay": 0.8214,
+        "a piece of cloth": 0.001
+       },
+       "matchScore": 0.2132,
+       "model": "openai/clip-vit-large-patch14@32bd64288804d66eefd0ccbe215aa642df71cc41",
+       "multiObject": {
+        "components": 11,
+        "significant": 1,
+        "topFractions": [
+         0.9975,
+         0.0009,
+         0.0007,
+         0.0003,
+         0.0002
+        ],
+        "minFraction": 0.05,
+        "applied": true,
+        "blocked": false
+       }
+      },
+      "meshCandidateId": "g-e135e17d521a",
+      "gateWhenBlocked": null,
+      "shapeLlmBasisShown": null
+     },
+     "earlierRounds": 0,
+     "runnerReady": true,
+     "runnerBlockers": [],
+     "formTypeSource": "generated_chosen",
+     "formAsset": {
+      "candidateId": "g-e135e17d521a",
+      "assetId": "ec39ece85ba539ad",
+      "glb": "form-asset-df8c6cd990dbc7c7.glb",
+      "glbSha256": "df8c6cd990dbc7c7269e4055290ad33b7df51537b8fde242f40a820794b0e5a9",
+      "sidecarSha256": "ca44ea8e1523d75b6ab955df13044dcd024c44fe60f536a7a4ac06201366d169",
+      "pipeline": "sdxl-triposg",
+      "seed": 0,
+      "models": [
+       {
+        "name": "image",
+        "repo": "stabilityai/stable-diffusion-xl-base-1.0",
+        "revision": "462165984030d82259a11f4367a4eed129e94a7b",
+        "weightsSha256": {
+         "text_encoder/model.safetensors": "5c3d6454dd2d23414b56aa1b5858a72487a656937847b6fea8d0606d7a42cdbc",
+         "text_encoder_2/model.safetensors": "3a6032f63d37ae02bbc74ccd6a27440578cd71701f96532229d0154f55a8d3ff",
+         "unet/diffusion_pytorch_model.safetensors": "357650fbfb3c7b4d94c1f5fd7664da819ad1ff5a839430484b4ec422d03f710a",
+         "vae/diffusion_pytorch_model.safetensors": "1598f3d24932bcfe6634e8b618ea1e30ab1d57f5aad13a6d2de446d2199f2341"
+        },
+        "license": "CreativeML Open RAIL++-M"
+       },
+       {
+        "name": "rembg",
+        "repo": "github.com/danielgatis/rembg u2net.onnx",
+        "revision": null,
+        "weightsSha256": "8d10d2f3bb75ae3b6d527c77944fc5e7dcd94b29809d47a739a7a728a912b491",
+        "license": "MIT (rembg) / Apache-2.0 (U^2-Net)"
+       },
+       {
+        "name": "shape",
+        "repo": "VAST-AI/TripoSG",
+        "revision": "2c1c516d22d58db486a058d98d31bb6177344e06",
+        "weightsSha256": {
+         "image_encoder_dinov2/model.safetensors": "399fba97a95f22c36834418bc69373364a99af3a1153da1c0fb31db567c92e23",
+         "transformer/diffusion_pytorch_model.safetensors": "9192b5923f7b605b394192809aa2ceb73bf0f4009674d8e3b999b45bb97d4bf2",
+         "vae/diffusion_pytorch_model.safetensors": "a2e667c24927a5a35e5f19fcb4c75890e9399aa966b6db8131d7df733a750c8b"
+        },
+        "codeCommit": "fc5c40990181e2a756c4e0b1c2f4d6b5202faf8c",
+        "license": "MIT"
+       },
+       {
+        "name": "gate",
+        "repo": "openai/clip-vit-large-patch14",
+        "revision": "32bd64288804d66eefd0ccbe215aa642df71cc41",
+        "weightsSha256": {
+         "model.safetensors": "a2bf730a0c7debf160f7a6b50b3aaf3703e7e88ac73de7a314903141db026dcb"
+        },
+        "license": "MIT"
+       }
+      ],
+      "promptText": "a single lump, one solid object, matte gray clay, plain white background, untextured monochrome gray clay sculpture, single uniform color, soft even studio lighting, centered, entire object in view",
+      "lexiconVersion": "0.3.0",
+      "covariates": {
+       "axisRatios": [
+        0.9419,
+        0.869,
+        1.0
+       ],
+       "thinRisk": false,
+       "familiarObjectStated": false,
+       "pluralStated": false
+      },
+      "normalization": {
+       "longestEdge": 1.0,
+       "pivot": "bottom-center"
+      },
+      "gate": {
+       "personLikeScore": 0.0176,
+       "passed": true,
+       "threshold": 0.5,
+       "views": 6,
+       "labelScores": {
+        "a person": 0.006,
+        "a human figure": 0.0012,
+        "a human face": 0.0057,
+        "a head with eyes and a mouth": 0.0016,
+        "an animal": 0.001,
+        "an animal figurine": 0.0005,
+        "a doll": 0.0016,
+        "an inanimate object": 0.0531,
+        "an abstract shape": 0.0379,
+        "a rock": 0.5431,
+        "a geometric solid": 0.0991,
+        "a household object": 0.0103,
+        "a lump of clay": 0.8214,
+        "a piece of cloth": 0.001
+       },
+       "matchScore": 0.2132,
+       "model": "openai/clip-vit-large-patch14@32bd64288804d66eefd0ccbe215aa642df71cc41",
+       "multiObject": {
+        "components": 11,
+        "significant": 1,
+        "topFractions": [
+         0.9975,
+         0.0009,
+         0.0007,
+         0.0003,
+         0.0002
+        ],
+        "minFraction": 0.05,
+        "applied": true,
+        "blocked": false
+       }
+      },
+      "sidecar": "form-asset-df8c6cd990dbc7c7.json",
+      "origin": "generated_after_none"
+     }
+    },
+    "selection": {
+     "runnerReady": true,
+     "runnerBlockers": [],
+     "sources": {
+      "form.type": "generated_chosen",
+      "form.posture": "default",
+      "form.base": "llm_quoted",
+      "form.baseVariant": "default",
+      "material.color": "default",
+      "material.brightness": "default",
+      "material.saturation": "default",
+      "material.roughness": "default",
+      "material.opacity": "default",
+      "material.erosion": "default",
+      "layout.size": "default",
+      "layout.distance": "default",
+      "layout.verticalOffset": "default",
+      "motion.type": "default",
+      "motion.speed": "default",
+      "body.part": "default",
+      "body.layer": "default",
+      "layout.proportions": "default"
+     },
+     "form": {
+      "asset": {
+       "candidateId": "g-e135e17d521a",
+       "assetId": "ec39ece85ba539ad",
+       "glb": "form-asset-df8c6cd990dbc7c7.glb",
+       "glbSha256": "df8c6cd990dbc7c7269e4055290ad33b7df51537b8fde242f40a820794b0e5a9",
+       "sidecarSha256": "ca44ea8e1523d75b6ab955df13044dcd024c44fe60f536a7a4ac06201366d169",
+       "pipeline": "sdxl-triposg",
+       "seed": 0,
+       "models": [
+        {
+         "name": "image",
+         "repo": "stabilityai/stable-diffusion-xl-base-1.0",
+         "revision": "462165984030d82259a11f4367a4eed129e94a7b",
+         "weightsSha256": {
+          "text_encoder/model.safetensors": "5c3d6454dd2d23414b56aa1b5858a72487a656937847b6fea8d0606d7a42cdbc",
+          "text_encoder_2/model.safetensors": "3a6032f63d37ae02bbc74ccd6a27440578cd71701f96532229d0154f55a8d3ff",
+          "unet/diffusion_pytorch_model.safetensors": "357650fbfb3c7b4d94c1f5fd7664da819ad1ff5a839430484b4ec422d03f710a",
+          "vae/diffusion_pytorch_model.safetensors": "1598f3d24932bcfe6634e8b618ea1e30ab1d57f5aad13a6d2de446d2199f2341"
+         },
+         "license": "CreativeML Open RAIL++-M"
+        },
+        {
+         "name": "rembg",
+         "repo": "github.com/danielgatis/rembg u2net.onnx",
+         "revision": null,
+         "weightsSha256": "8d10d2f3bb75ae3b6d527c77944fc5e7dcd94b29809d47a739a7a728a912b491",
+         "license": "MIT (rembg) / Apache-2.0 (U^2-Net)"
+        },
+        {
+         "name": "shape",
+         "repo": "VAST-AI/TripoSG",
+         "revision": "2c1c516d22d58db486a058d98d31bb6177344e06",
+         "weightsSha256": {
+          "image_encoder_dinov2/model.safetensors": "399fba97a95f22c36834418bc69373364a99af3a1153da1c0fb31db567c92e23",
+          "transformer/diffusion_pytorch_model.safetensors": "9192b5923f7b605b394192809aa2ceb73bf0f4009674d8e3b999b45bb97d4bf2",
+          "vae/diffusion_pytorch_model.safetensors": "a2e667c24927a5a35e5f19fcb4c75890e9399aa966b6db8131d7df733a750c8b"
+         },
+         "codeCommit": "fc5c40990181e2a756c4e0b1c2f4d6b5202faf8c",
+         "license": "MIT"
+        },
+        {
+         "name": "gate",
+         "repo": "openai/clip-vit-large-patch14",
+         "revision": "32bd64288804d66eefd0ccbe215aa642df71cc41",
+         "weightsSha256": {
+          "model.safetensors": "a2bf730a0c7debf160f7a6b50b3aaf3703e7e88ac73de7a314903141db026dcb"
+         },
+         "license": "MIT"
+        }
+       ],
+       "promptText": "a single lump, one solid object, matte gray clay, plain white background, untextured monochrome gray clay sculpture, single uniform color, soft even studio lighting, centered, entire object in view",
+       "lexiconVersion": "0.3.0",
+       "covariates": {
+        "axisRatios": [
+         0.9419,
+         0.869,
+         1.0
+        ],
+        "thinRisk": false,
+        "familiarObjectStated": false,
+        "pluralStated": false
+       },
+       "normalization": {
+        "longestEdge": 1.0,
+        "pivot": "bottom-center"
+       },
+       "gate": {
+        "personLikeScore": 0.0176,
+        "passed": true,
+        "threshold": 0.5,
+        "views": 6,
+        "labelScores": {
+         "a person": 0.006,
+         "a human figure": 0.0012,
+         "a human face": 0.0057,
+         "a head with eyes and a mouth": 0.0016,
+         "an animal": 0.001,
+         "an animal figurine": 0.0005,
+         "a doll": 0.0016,
+         "an inanimate object": 0.0531,
+         "an abstract shape": 0.0379,
+         "a rock": 0.5431,
+         "a geometric solid": 0.0991,
+         "a household object": 0.0103,
+         "a lump of clay": 0.8214,
+         "a piece of cloth": 0.001
+        },
+        "matchScore": 0.2132,
+        "model": "openai/clip-vit-large-patch14@32bd64288804d66eefd0ccbe215aa642df71cc41",
+        "multiObject": {
+         "components": 11,
+         "significant": 1,
+         "topFractions": [
+          0.9975,
+          0.0009,
+          0.0007,
+          0.0003,
+          0.0002
+         ],
+         "minFraction": 0.05,
+         "applied": true,
+         "blocked": false
+        }
+       },
+       "sidecar": "form-asset-df8c6cd990dbc7c7.json",
+       "origin": "generated_after_none"
+      }
+     },
+     "selection": {
+      "selectedCandidateId": "g-e135e17d521a",
+      "selectedIndex": 4,
+      "none": false,
+      "skipped": false,
+      "displayPosition": 0,
+      "operationalId": "g-e135e17d521a",
+      "operationalIndex": 4,
+      "at": "2026-11-28T22:52:08+09:00",
+      "afterNoneGeneration": "ok",
+      "acceptedDefault": null
+     },
+     "llmFillExposed": true,
+     "generation": {
+      "version": "ifs-form-assets/0.1.0",
+      "lookupKey": "32bfe88756513ccbc2611e19889ad15b36314116aa495c010d867c4df5160b08",
+      "limit": 0,
+      "offered": [
+       {
+        "candidateId": "g-e135e17d521a",
+        "assetId": "ec39ece85ba539ad",
+        "origin": "generated_after_none"
+       }
+      ],
+      "rejected": [],
+      "proceduralSelectionStep": "choose",
+      "defaultFormSourceSetting": "procedural",
+      "defaultFormSource": "procedural",
+      "defaultCandidateId": null,
+      "defaultFallbackReason": null,
+      "defaultFormRule": "setting_procedural",
+      "defaultFormBasis": null,
+      "shownOrder": [
+       "g-e135e17d521a"
+      ],
+      "outcome": "generated_chosen",
+      "acceptedDefault": null,
+      "declined": [],
+      "assetDropped": null,
+      "imagePickExposed": true,
+      "shapeLlm": {
+       "version": "ifs-shape-llm-record/0.1.0",
+       "route": "rule",
+       "routeReason": "rule_has_shape",
+       "called": false,
+       "candidate": false,
+       "adopted": null,
+       "status": null,
+       "skipReason": null,
+       "rejectReasons": [],
+       "rawText": null,
+       "inputTextSha256": null,
+       "validatorTextSha256": null,
+       "model": null,
+       "promptVersion": null,
+       "promptSha256": null,
+       "validatorRules": null,
+       "seed": null,
+       "lineStages": null,
+       "exposed": false,
+       "imageChosen": false,
+       "candidateExposed": false,
+       "candidateChosen": null,
+       "rejected": false,
+       "rejectedAt": null,
+       "basisShown": null,
+       "call": null
+      },
+      "llmPromptUsed": false,
+      "afterNone": {
+       "version": "ifs-none-gen/0.1.0",
+       "origin": "generated_after_none",
+       "setting": {
+        "version": "ifs-none-gen/0.1.0",
+        "timeoutS": 180.0,
+        "pipeline": "sdxl-triposg",
+        "seed": 0,
+        "maxRegenerations": 1,
+        "seedRule": "seed = on_none_seed + n (n = 0 첫 생성, 1… 다시 만들기)",
+        "script": "generate.py",
+        "python": "python.exe",
+        "unloadModels": [
+         "gemma4:e4b",
+         "hf.co/mradermacher/kanana-safeguard-8b-GGUF:Q4_K_M"
+        ],
+        "imagePick": {
+         "version": "ifs-image-pick/0.1.0",
+         "rounds": 2,
+         "imagesPerRound": 3,
+         "imageTimeoutS": 180.0,
+         "meshTimeoutS": 180.0,
+         "seedRule": "회차 r(0부터)의 이미지 seed = on_none_seed + 3r + k (k = 0…2), 형태 seed = 고른 이미지의 seed",
+         "maxRegenerationsUsed": false
+        }
+       },
+       "noneAt": "2026-11-28T22:50:27+09:00",
+       "shownOrderBefore": [
+        "c-4512d4ad6cc7",
+        "c-341d77140233",
+        "c-d95a5eb19a35",
+        "c-ec9900be1cc1"
+       ],
+       "status": "ok",
+       "blockReason": null,
+       "blockDetail": null,
+       "prompt": {
+        "text": "a single lump, one solid object, matte gray clay, plain white background, untextured monochrome gray clay sculpture, single uniform color, soft even studio lighting, centered, entire object in view",
+        "negativeText": "person, human, face, eyes, figure, animal, hands, text, watermark, multiple objects, cropped, scenery, floor, shadow, color, two objects, pair, duplicate, group of objects, stand, pedestal, base plate, plinth, string, rope, chain, strap, holder, container, bowl, vase, tray, plate, colorful, multicolored, painted, patterned, glossy, metallic, reflections, background objects",
+        "tokens": [
+         {
+          "en": "a single",
+          "ko": null,
+          "charSpan": null,
+          "slot": "template",
+          "lexiconKey": null
+         },
+         {
+          "en": "lump",
+          "ko": "쇳덩이",
+          "charSpan": [
+           0,
+           3
+          ],
+          "slot": "shape_noun",
+          "lexiconKey": "쇳덩이"
+         },
+         {
+          "en": "one solid object",
+          "ko": null,
+          "charSpan": null,
+          "slot": "template",
+          "lexiconKey": null
+         },
+         {
+          "en": "matte gray clay",
+          "ko": null,
+          "charSpan": null,
+          "slot": "template",
+          "lexiconKey": null
+         },
+         {
+          "en": "plain white background",
+          "ko": null,
+          "charSpan": null,
+          "slot": "template",
+          "lexiconKey": null
+         },
+         {
+          "en": "untextured monochrome gray clay sculpture",
+          "ko": null,
+          "charSpan": null,
+          "slot": "template",
+          "lexiconKey": null
+         },
+         {
+          "en": "single uniform color",
+          "ko": null,
+          "charSpan": null,
+          "slot": "template",
+          "lexiconKey": null
+         },
+         {
+          "en": "soft even studio lighting",
+          "ko": null,
+          "charSpan": null,
+          "slot": "template",
+          "lexiconKey": null
+         },
+         {
+          "en": "centered",
+          "ko": null,
+          "charSpan": null,
+          "slot": "template",
+          "lexiconKey": null
+         },
+         {
+          "en": "entire object in view",
+          "ko": null,
+          "charSpan": null,
+          "slot": "template",
+          "lexiconKey": null
+         }
+        ],
+        "dropped": [],
+        "status": "ok",
+        "blockReason": null,
+        "blockDetail": null,
+        "lexiconVersion": "0.3.0",
+        "builderVersion": "gen3d-shape-prompt/0.4.0+imagepick+mapper-v2",
+        "templateVersion": "g62-template/0.2.0",
+        "sourceTextSha256": "32bfe88756513ccbc2611e19889ad15b36314116aa495c010d867c4df5160b08",
+        "promptRule": "mapper",
+        "mapperBuilder": "scene-spec-builder-v2/2.9.0",
+        "pluralStated": false,
+        "thinRisk": false,
+        "familiarObjectStated": false,
+        "imageStyle": "g75-shape-only-gray",
+        "imageStyleVersion": "g75-image-style/0.1.0"
+       },
+       "run": "none-SYN-G84-S4-1-20261128-225119-r0-mesh",
+       "startedAt": "2026-11-28T22:51:16+09:00",
+       "endedAt": "2026-11-28T22:52:05+09:00",
+       "seconds": 46.31,
+       "exitCode": 0,
+       "error": null,
+       "llmUnload": {
+        "at": "2026-11-28T22:51:19+09:00",
+        "models": [
+         {
+          "role": "interview",
+          "model": "gemma4:e4b",
+          "ok": true,
+          "detail": null
+         },
+         {
+          "role": "guard",
+          "model": "hf.co/mradermacher/kanana-safeguard-8b-GGUF:Q4_K_M",
+          "ok": true,
+          "detail": null
+         }
+        ],
+        "loadedBefore": [
+         "gemma4:e4b",
+         "hf.co/mradermacher/kanana-safeguard-8b-GGUF:Q4_K_M"
+        ],
+        "loadedAfter": [],
+        "ok": true
+       },
+       "timing": {
+        "unloadS": 0.61,
+        "generatorS": 45.67
+       },
+       "asset": {
+        "assetId": "ec39ece85ba539ad",
+        "glb": "ec39ece85ba539ad.glb",
+        "glbSha256": "df8c6cd990dbc7c7269e4055290ad33b7df51537b8fde242f40a820794b0e5a9",
+        "sidecarSha256": "ca44ea8e1523d75b6ab955df13044dcd024c44fe60f536a7a4ac06201366d169",
+        "pipeline": "sdxl-triposg",
+        "seed": 0,
+        "models": [
+         {
+          "name": "image",
+          "repo": "stabilityai/stable-diffusion-xl-base-1.0",
+          "revision": "462165984030d82259a11f4367a4eed129e94a7b",
+          "weightsSha256": {
+           "text_encoder/model.safetensors": "5c3d6454dd2d23414b56aa1b5858a72487a656937847b6fea8d0606d7a42cdbc",
+           "text_encoder_2/model.safetensors": "3a6032f63d37ae02bbc74ccd6a27440578cd71701f96532229d0154f55a8d3ff",
+           "unet/diffusion_pytorch_model.safetensors": "357650fbfb3c7b4d94c1f5fd7664da819ad1ff5a839430484b4ec422d03f710a",
+           "vae/diffusion_pytorch_model.safetensors": "1598f3d24932bcfe6634e8b618ea1e30ab1d57f5aad13a6d2de446d2199f2341"
+          },
+          "license": "CreativeML Open RAIL++-M"
+         },
+         {
+          "name": "rembg",
+          "repo": "github.com/danielgatis/rembg u2net.onnx",
+          "revision": null,
+          "weightsSha256": "8d10d2f3bb75ae3b6d527c77944fc5e7dcd94b29809d47a739a7a728a912b491",
+          "license": "MIT (rembg) / Apache-2.0 (U^2-Net)"
+         },
+         {
+          "name": "shape",
+          "repo": "VAST-AI/TripoSG",
+          "revision": "2c1c516d22d58db486a058d98d31bb6177344e06",
+          "weightsSha256": {
+           "image_encoder_dinov2/model.safetensors": "399fba97a95f22c36834418bc69373364a99af3a1153da1c0fb31db567c92e23",
+           "transformer/diffusion_pytorch_model.safetensors": "9192b5923f7b605b394192809aa2ceb73bf0f4009674d8e3b999b45bb97d4bf2",
+           "vae/diffusion_pytorch_model.safetensors": "a2e667c24927a5a35e5f19fcb4c75890e9399aa966b6db8131d7df733a750c8b"
+          },
+          "codeCommit": "fc5c40990181e2a756c4e0b1c2f4d6b5202faf8c",
+          "license": "MIT"
+         },
+         {
+          "name": "gate",
+          "repo": "openai/clip-vit-large-patch14",
+          "revision": "32bd64288804d66eefd0ccbe215aa642df71cc41",
+          "weightsSha256": {
+           "model.safetensors": "a2bf730a0c7debf160f7a6b50b3aaf3703e7e88ac73de7a314903141db026dcb"
+          },
+          "license": "MIT"
+         }
+        ],
+        "promptText": "a single lump, one solid object, matte gray clay, plain white background, untextured monochrome gray clay sculpture, single uniform color, soft even studio lighting, centered, entire object in view",
+        "lexiconVersion": "0.3.0",
+        "covariates": {
+         "axisRatios": [
+          0.9419,
+          0.869,
+          1.0
+         ],
+         "thinRisk": false,
+         "familiarObjectStated": false,
+         "pluralStated": false
+        },
+        "normalization": {
+         "longestEdge": 1.0,
+         "pivot": "bottom-center"
+        },
+        "gate": {
+         "personLikeScore": 0.0176,
+         "passed": true,
+         "threshold": 0.5,
+         "views": 6,
+         "labelScores": {
+          "a person": 0.006,
+          "a human figure": 0.0012,
+          "a human face": 0.0057,
+          "a head with eyes and a mouth": 0.0016,
+          "an animal": 0.001,
+          "an animal figurine": 0.0005,
+          "a doll": 0.0016,
+          "an inanimate object": 0.0531,
+          "an abstract shape": 0.0379,
+          "a rock": 0.5431,
+          "a geometric solid": 0.0991,
+          "a household object": 0.0103,
+          "a lump of clay": 0.8214,
+          "a piece of cloth": 0.001
+         },
+         "matchScore": 0.2132,
+         "model": "openai/clip-vit-large-patch14@32bd64288804d66eefd0ccbe215aa642df71cc41",
+         "multiObject": {
+          "components": 11,
+          "significant": 1,
+          "topFractions": [
+           0.9975,
+           0.0009,
+           0.0007,
+           0.0003,
+           0.0002
+          ],
+          "minFraction": 0.05,
+          "applied": true,
+          "blocked": false
+         }
+        },
+        "origin": "generated_after_none"
+       },
+       "candidateId": "g-e135e17d521a",
+       "displayPosition": 0,
+       "participantSkippedWait": false,
+       "chosen": true,
+       "attempt": 0,
+       "seed": 0,
+       "imagePick": {
+        "version": "ifs-image-pick/0.1.0",
+        "round": 0,
+        "seeds": [
+         0,
+         1,
+         2
+        ],
+        "promptText": "a single lump, one solid object, matte gray clay, plain white background, untextured monochrome gray clay sculpture, single uniform color, soft even studio lighting, centered, entire object in view",
+        "builderVersion": "gen3d-shape-prompt/0.4.0+imagepick+mapper-v2",
+        "imageStyle": "g75-shape-only-gray",
+        "imageStyleVersion": "g75-image-style/0.1.0",
+        "status": "picked",
+        "run": "none-SYN-G84-S4-1-20261128-225027-r0-img",
+        "startedAt": "2026-11-28T22:50:27+09:00",
+        "endedAt": "2026-11-28T22:51:13+09:00",
+        "seconds": 45.66,
+        "exitCode": 0,
+        "error": null,
+        "blockReason": null,
+        "llmUnload": {
+         "at": "2026-11-28T22:50:27+09:00",
+         "models": [
+          {
+           "role": "interview",
+           "model": "gemma4:e4b",
+           "ok": true,
+           "detail": null
+          },
+          {
+           "role": "guard",
+           "model": "hf.co/mradermacher/kanana-safeguard-8b-GGUF:Q4_K_M",
+           "ok": true,
+           "detail": null
+          }
+         ],
+         "loadedBefore": [
+          "gemma4:e4b",
+          "hf.co/mradermacher/kanana-safeguard-8b-GGUF:Q4_K_M"
+         ],
+         "loadedAfter": [],
+         "ok": true
+        },
+        "timing": {
+         "unloadS": 0.61,
+         "generatorS": 45.03
+        },
+        "models": [
+         {
+          "name": "image",
+          "repo": "stabilityai/stable-diffusion-xl-base-1.0",
+          "revision": "462165984030d82259a11f4367a4eed129e94a7b",
+          "weightsSha256": {
+           "text_encoder/model.safetensors": "5c3d6454dd2d23414b56aa1b5858a72487a656937847b6fea8d0606d7a42cdbc",
+           "text_encoder_2/model.safetensors": "3a6032f63d37ae02bbc74ccd6a27440578cd71701f96532229d0154f55a8d3ff",
+           "unet/diffusion_pytorch_model.safetensors": "357650fbfb3c7b4d94c1f5fd7664da819ad1ff5a839430484b4ec422d03f710a",
+           "vae/diffusion_pytorch_model.safetensors": "1598f3d24932bcfe6634e8b618ea1e30ab1d57f5aad13a6d2de446d2199f2341"
+          },
+          "license": "CreativeML Open RAIL++-M"
+         },
+         {
+          "name": "gate",
+          "repo": "openai/clip-vit-large-patch14",
+          "revision": "32bd64288804d66eefd0ccbe215aa642df71cc41",
+          "weightsSha256": {
+           "model.safetensors": "a2bf730a0c7debf160f7a6b50b3aaf3703e7e88ac73de7a314903141db026dcb"
+          },
+          "license": "MIT"
+         }
+        ],
+        "images": [
+         {
+          "seed": 0,
+          "file": "images/after-none-s0.png",
+          "sha256": "432be999f907ee30e81846a56780237c5b851ec4003225e238a08ad4335e283e",
+          "seconds": 6.91,
+          "gate": {
+           "personLikeScore": 0.0013,
+           "passed": true,
+           "threshold": 0.5,
+           "labelScores": {
+            "a person": 0.0003,
+            "a human figure": 0.0002,
+            "a human face": 0.0005,
+            "a head with eyes and a mouth": 0.0002,
+            "an animal": 0.0001,
+            "an animal figurine": 0.0,
+            "a doll": 0.0,
+            "an inanimate object": 0.0211,
+            "an abstract shape": 0.2985,
+            "a rock": 0.0177,
+            "a geometric solid": 0.3487,
+            "a household object": 0.0072,
+            "a lump of clay": 0.3037,
+            "a piece of cloth": 0.0018
+           },
+           "matchScore": 0.2284,
+           "model": "openai/clip-vit-large-patch14@32bd64288804d66eefd0ccbe215aa642df71cc41"
+          },
+          "problem": null,
+          "shown": true,
+          "position": 0
+         },
+         {
+          "seed": 1,
+          "file": "images/after-none-s1.png",
+          "sha256": "ef1f2b723077c78d8127dc4888713b5bcfd3f5f9ed9343ffc9c1fb3bce1a7227",
+          "seconds": 6.82,
+          "gate": {
+           "personLikeScore": 0.0089,
+           "passed": true,
+           "threshold": 0.5,
+           "labelScores": {
+            "a person": 0.0011,
+            "a human figure": 0.001,
+            "a human face": 0.0009,
+            "a head with eyes and a mouth": 0.0024,
+            "an animal": 0.0018,
+            "an animal figurine": 0.0001,
+            "a doll": 0.0015,
+            "an inanimate object": 0.1209,
+            "an abstract shape": 0.1769,
+            "a rock": 0.0718,
+            "a geometric solid": 0.0177,
+            "a household object": 0.0674,
+            "a lump of clay": 0.5331,
+            "a piece of cloth": 0.0034
+           },
+           "matchScore": 0.2172,
+           "model": "openai/clip-vit-large-patch14@32bd64288804d66eefd0ccbe215aa642df71cc41"
+          },
+          "problem": null,
+          "shown": true,
+          "position": 1
+         },
+         {
+          "seed": 2,
+          "file": "images/after-none-s2.png",
+          "sha256": "45c285affae6a76a19dba967a010ab676713dc1507c5f35d9d266f5c4ce449cd",
+          "seconds": 13.27,
+          "gate": {
+           "personLikeScore": 0.9866,
+           "passed": false,
+           "threshold": 0.5,
+           "labelScores": {
+            "a person": 0.0401,
+            "a human figure": 0.0135,
+            "a human face": 0.4803,
+            "a head with eyes and a mouth": 0.4444,
+            "an animal": 0.0001,
+            "an animal figurine": 0.0,
+            "a doll": 0.0083,
+            "an inanimate object": 0.0031,
+            "an abstract shape": 0.0078,
+            "a rock": 0.0,
+            "a geometric solid": 0.0003,
+            "a household object": 0.0013,
+            "a lump of clay": 0.0008,
+            "a piece of cloth": 0.0
+           },
+           "matchScore": 0.172,
+           "model": "openai/clip-vit-large-patch14@32bd64288804d66eefd0ccbe215aa642df71cc41"
+          },
+          "problem": "gate_not_passed",
+          "shown": false,
+          "position": null
+         }
+        ],
+        "shownOrder": [
+         0,
+         1
+        ],
+        "shownAt": "2026-11-28T22:51:13+09:00",
+        "outcome": "picked",
+        "pickedPosition": 0,
+        "pickedSeed": 0,
+        "pickedImageSha256": "432be999f907ee30e81846a56780237c5b851ec4003225e238a08ad4335e283e",
+        "decidedAt": "2026-11-28T22:51:16+09:00",
+        "generatorTiming": {
+         "imageLoad": 7.69,
+         "gateLoad": 1.88,
+         "total": 43.6
+        }
+       },
+       "shapeLlmUsed": false,
+       "shapeLlmItems": [],
+       "llmPromptUsed": false,
+       "llmShapeItems": [],
+       "cacheProbe": null
+      }
+     }
+    },
+    "llmFillEvent": {
+     "status": "ok",
+     "skipReason": null,
+     "cached": false,
+     "offeredSlots": [
+      "color",
+      "brightness",
+      "opacity",
+      "size",
+      "texture",
+      "motion",
+      "form"
+     ],
+     "rawCount": 1,
+     "adopted": [
+      "form"
+     ],
+     "rejected": [],
+     "seconds": 3.11
+    },
+    "shapeLlmEvents": [],
+    "guardLabels": [
+     null,
+     "SAFE",
+     "SAFE",
+     "SAFE",
+     "SAFE",
+     "SAFE",
+     "SAFE",
+     "SAFE"
+    ],
+    "alerts": [],
+    "llmFill": {
+     "version": "ifs-llm-fill/0.1.0",
+     "validatorRules": "ifs-llm-fill-validator/0.4.0",
+     "status": "ok",
+     "skipReason": null,
+     "error": null,
+     "prompt": {
+      "promptId": "ifs-llm-fill",
+      "promptVersion": "0.1.1",
+      "file": "llm_fill.v0.1.1.json",
+      "promptSha256": "85258dd0b3b9238b9b706e6e04fe772578ae2a2b796bf356981efad2a12141e0",
+      "status": "draft",
+      "englishBlock": {
+       "file": "shape_english_block.v0.json",
+       "sha256": "45e1f2901f78bb075d6d8ce93203ff81309f993270cd5426ab9a35a266be0acc",
+       "version": "0.1.1"
+      }
+     },
+     "model": {
+      "name": "gemma4:e4b",
+      "digest": "sha256:dc35e8d9c6061baa6f0fa870975ab6932e2542b579b13ea0f199fa4bb7300c9c",
+      "runtime": "ollama 0.40.17"
+     },
+     "options": {
+      "temperature": 0,
+      "seed": 0,
+      "numPredict": 400,
+      "think": false
+     },
+     "timeoutS": 20.0,
+     "maxItems": 4,
+     "cacheKey": "a38ef204de36b1eb",
+     "cached": false,
+     "sourceTextSha256": "32bfe88756513ccbc2611e19889ad15b36314116aa495c010d867c4df5160b08",
+     "at": "2026-11-28T22:50:21+09:00",
+     "seconds": 3.11,
+     "offeredSlots": [
+      "color",
+      "brightness",
+      "opacity",
+      "size",
+      "texture",
+      "motion",
+      "form"
+     ],
+     "rawText": "{\"items\": [{\"slot\": \"form\", \"value\": \"blob\", \"quote\": \"쇳덩이가\", \"charSpan\": [0, 4], \"evidenceType\": \"shape_noun\"}]}",
+     "rawItems": [
+      {
+       "slot": "form",
+       "value": "blob",
+       "quote": "쇳덩이가",
+       "charSpan": [
+        0,
+        4
+       ],
+       "evidenceType": "shape_noun"
+      }
+     ],
+     "items": [
+      {
+       "i": 0,
+       "slot": "form",
+       "value": "blob",
+       "quote": "쇳덩이가",
+       "charSpan": [
+        0,
+        4
+       ],
+       "evidenceType": "shape_noun",
+       "ok": true,
+       "reasons": []
+      }
+     ],
+     "adopted": [
+      {
+       "slot": "form",
+       "value": "blob",
+       "quote": "쇳덩이가",
+       "charSpan": [
+        0,
+        4
+       ],
+       "evidenceType": "shape_noun",
+       "origin": "llm_quoted",
+       "item": "form",
+       "overrides": {
+        "form.type": "blob",
+        "form.base": "none"
+       }
+      }
+     ],
+     "userSha256": "7e25cfb5d28ac649d96b6a89f49812df5dd43a4356ca5900f867dab62f1b9c75",
+     "llmSeconds": 3.11,
+     "applied": {
+      "form": {
+       "slot": "form",
+       "value": "blob",
+       "quote": "쇳덩이가",
+       "charSpan": [
+        0,
+        4
+       ],
+       "overrides": {
+        "form.type": "blob",
+        "form.base": "none"
+       },
+       "specSlots": [
+        "form.type",
+        "form.base"
+       ]
+      }
+     },
+     "notApplied": {},
+     "participant": {
+      "form": {
+       "first": "blob",
+       "final": "blob",
+       "kept": true,
+       "edited": false,
+       "adjustCount": 0
+      }
+     }
+    }
+   }
+  }
+ },
+ "run": {
+  "sidPrefix": "SYN-G84",
+  "tag": "1",
+  "base": "http://127.0.0.1:8011",
+  "startedAt": "2026-11-28T22:46:15",
+  "endedAt": "2026-11-28T22:52:10"
+ }
+}
