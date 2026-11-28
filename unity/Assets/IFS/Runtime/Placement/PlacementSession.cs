@@ -1301,10 +1301,15 @@ namespace IFS.SceneSpec.Placement
             if (_loopXrPaused)
             {
                 _loopXrPaused = false;
+                // 다시 잡힌 프레임도 멈춘 시간으로 센다(CP20_recheck 1): 이 프레임의 dt는 끊긴 동안의 시간을 품을 수 있어(복귀 직후 큰 dt)
+                // 물체를 움직이지 않고 제한 시간·간격에서도 뺀다. 다음 프레임부터 이어 간다.
+                if (_roundActive) _roundXrPausedS += dt;
+                else _itiUntil += dt;
                 if (_roundActive) Adjust("xr_resume", _stopD, _loopMoving ? DirName(_loopDir) : _loopLastStopDir, false);
                 Event("stop_xr_resume", $"round={(_roundActive ? _loopPlan[_roundIndex].Round.ToString(Inv) : "")};in_round={(_roundActive ? 1 : 0)};" +
-                                        $"paused_ms={Ms(_now - dt - _loopXrPauseAt)};round_paused_ms={Ms(_roundActive ? _roundXrPausedS : 0)}");
+                                        $"paused_ms={Ms(_now - _loopXrPauseAt)};round_paused_ms={Ms(_roundActive ? _roundXrPausedS : 0)}");
                 stopPress = confirmPress = false;   // 다시 잡힌 프레임의 누름은 버린다(끊긴 동안 눌린 것이 넘어오지 않게)
+                dt = 0;
             }
             if (!_roundActive)
             {

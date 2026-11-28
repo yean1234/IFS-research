@@ -351,6 +351,165 @@ namespace IFS.SceneSpec.Tests
             Assert.That(ev.Single(e => e[1] == "stop_round_end")[2], Does.Contain(";xr_paused_ms="));
         }
 
+        /// <summary>XR로 시작한 세션(XrMonitored) 한 바퀴. step은 Tick 직전에 불린다: 자동 입력 f를 받아 (보낼 입력, 이 프레임 dt)를 돌려주고,
+        /// 그 안에서 ReportXrHead·PressNext·Abort를 부를 수 있다. 끝나면 기록 폴더.</summary>
+        string RunXr(PlacementConfig cfg, Func<PlacementSession, PlacementInputFrame, (PlacementInputFrame f, double dt)> step)
+        {
+            var text = PlacementTests.LoadText();
+            var info = new PlacementSessionInfo
+            {
+                ParticipantNumber = 1, SessionId = "SYN-LOOP-XR2", SpecFile = "synthetic.json", SpecSha256 = "00",
+                StartedUtc = new DateTime(2026, 11, 28, 1, 2, 3, DateTimeKind.Utc), InputSource = "auto", AutoMode = true,
+                TaskTextFile = text.FileName, TaskTextVersion = text.Version, TaskTextDraftKeys = text.DraftKeysFor(cfg).ToArray(), XrMonitored = true,
+            };
+            var script = new PlacementAutoScript();
+            using (var s = new PlacementSession(cfg, text, info, Path.Combine(_tmp, "records", Guid.NewGuid().ToString("N")), null, null))
+            {
+                for (int i = 0; i < 400000 && !s.Finished; i++)
+                {
+                    var (f, dt) = step(s, script.Participant(s, 0.02));
+                    if (s.Finished) break;   // step 안에서 중단
+                    s.Tick(dt, f, PlacementAutoScript.ScriptedHead(s.Now));
+                    script.Experimenter(s);
+                }
+                Assert.That(s.Finished, Is.True);
+                return s.RecordDirectory;
+            }
+        }
+
+        static bool At(double now, double t, double dt = 0.02) => now >= t - 1e-9 && now < t + dt - 1e-9;
+
+        [Test]
+        public void Reconnect_frame_with_a_large_dt_does_not_move_the_object_or_use_up_time()
+        {
+            // CP20_recheck 1: 다시 잡힌 프레임의 dt(여기서는 2 s)는 끊긴 동안의 시간이라 물체를 움직이지 않고 제한 시간에서도 뺀다
+            double lostAt = double.NaN, dLoss = double.NaN, leftLoss = double.NaN;
+            bool regained = false, checkedAfter = false;
+            RunXr(OneRound(10), (s, auto) =>
+            {
+                if (!(s.Phase == PlacementPhase.StopDistance && s.StopRoundActive)) return (auto, 0.02);
+                if (regained && !checkedAfter)
+                {
+                    checkedAfter = true;
+                    Assert.That(s.StopDistanceNow, Is.EqualTo(dLoss).Within(1e-9), "복귀 프레임(dt 2 s)에서 물체 자리 그대로");
+                    Assert.That(s.StopLoopSecondsLeft, Is.EqualTo(leftLoss).Within(0.02 + 1e-6), "복귀 프레임의 dt도 남은 시간에서 빼지 않는다");
+                    Assert.That(s.StopLoopMoving, Is.True, "움직이던 상태 그대로");
+                }
+                if (double.IsNaN(lostAt) && s.StopLoopRoundElapsed >= 3.0)
+                {
+                    lostAt = s.Now; dLoss = s.StopDistanceNow; leftLoss = s.StopLoopSecondsLeft;
+                    s.ReportXrHead(false);
+                }
+                else if (!double.IsNaN(lostAt) && !regained && s.Now - lostAt >= 1.0)
+                {
+                    regained = true;
+                    s.ReportXrHead(true);
+                    return (new PlacementInputFrame { StopDown = true, StopHeld = true, ConfirmDown = true }, 2.0);   // 큰 dt + 누름(버려짐)
+                }
+                return (new PlacementInputFrame(), 0.02);
+            });
+            Assert.That(checkedAfter, Is.True);
+        }
+
+        [Test]
+        public void Xr_loss_in_the_gap_keeps_the_remaining_gap_and_the_next_round_starts_normally()
+        {
+            var cfg = Loop();   // 연습 1 + 본 1
+            cfg.stopLoopStartMinM = cfg.stopLoopStartMaxM = 2.0;
+            cfg.stopItiSeconds = 2.0;
+            var input = PerRound(new Dictionary<int, (double, double)> { [1] = (1.0, 2.0), [2] = (1.0, 2.0) });
+            double gapStart = double.NaN, lostAt = double.NaN, regainAt = double.NaN, mainStart = double.NaN;
+            bool wasActive = false;
+            string dir = RunXr(cfg, (s, auto) =>
+            {
+                var f = auto;
+                if (s.Phase == PlacementPhase.StopDistance)
+                {
+                    if (wasActive && !s.StopRoundActive && double.IsNaN(gapStart)) gapStart = s.Now;
+                    if (!wasActive && s.StopRoundActive && !double.IsNaN(gapStart) && double.IsNaN(mainStart)) mainStart = s.Now;
+                    wasActive = s.StopRoundActive;
+                    if (s.StopRoundActive) f = input(s, s.StopLoopRoundElapsed);
+                    if (!double.IsNaN(gapStart) && double.IsNaN(lostAt) && s.Now - gapStart >= 0.5) { lostAt = s.Now; s.ReportXrHead(false); }
+                    else if (!double.IsNaN(lostAt) && double.IsNaN(regainAt) && s.Now - lostAt >= 10.0)
+                    {
+                        Assert.That(s.StopRoundActive, Is.False, "끊긴 동안 다음 라운드를 시작하지 않는다");
+                        regainAt = s.Now; s.ReportXrHead(true);
+                    }
+                }
+                return (f, 0.02);
+            });
+            Assert.That(mainStart - regainAt, Is.EqualTo(1.5).Within(0.05), "틈의 남은 시간(2 − 0.5 s)만큼 기다린 뒤 본 라운드");
+            var rounds = Table(dir, PlacementRecordWriter.StopRoundsFile);
+            Assert.That(rounds.Select(r => (r["practice"], r["end_reason"])), Is.EqualTo(new[] { ("1", "confirmed"), ("0", "confirmed") }));
+            Assert.That(Table(dir, PlacementRecordWriter.StopAdjustFile).Where(a => a["round"] == "2").Select(a => a["event"]), Is.EqualTo(new[] { "start", "stop", "confirm" }),
+                "틈의 끊김은 라운드 행에 들어가지 않는다");
+            var ev = File.ReadAllLines(Path.Combine(dir, "events.csv")).Skip(1).Select(l => l.Split(',')).ToList();
+            Assert.That(ev.Single(e => e[1] == "stop_xr_pause")[2], Is.EqualTo("round=;in_round=0"));
+            Assert.That(ev.Single(e => e[1] == "stop_xr_resume")[2], Does.StartWith("round=;in_round=0;paused_ms="));
+        }
+
+        [Test]
+        public void Xr_loss_while_stopped_keeps_the_stop_and_direction_and_confirm_works_after_reconnect()
+        {
+            double lostAt = double.NaN, regainAt = double.NaN, stopD = double.NaN;
+            string dir = RunXr(OneRound(20), (s, auto) =>
+            {
+                if (!(s.Phase == PlacementPhase.StopDistance && s.StopRoundActive)) return (auto, 0.02);
+                var f = new PlacementInputFrame();
+                double e = s.StopLoopRoundElapsed;
+                if (double.IsNaN(lostAt))
+                {
+                    if (At(e, 1.0)) f.StopDown = f.StopHeld = true;
+                    else if (e >= 2.0) { Assert.That(s.StopLoopMoving, Is.False); stopD = s.StopDistanceNow; lostAt = s.Now; s.ReportXrHead(false); }
+                }
+                else if (double.IsNaN(regainAt))
+                {
+                    if (s.Now - lostAt >= 30.0) { regainAt = s.Now; s.ReportXrHead(true); }
+                    else if (At(s.Now - lostAt, 5.0)) f.StopDown = f.StopHeld = true;   // 끊긴 동안 토글 — 받지 않음
+                }
+                else
+                {
+                    Assert.That(s.StopLoopMoving, Is.False, "다시 잡혀도 멈춘 상태 그대로");
+                    Assert.That(s.StopDistanceNow, Is.EqualTo(stopD).Within(1e-9));
+                    if (At(s.Now - regainAt, 0.5)) f.ConfirmDown = true;
+                }
+                return (f, 0.02);
+            });
+            var r = Table(dir, PlacementRecordWriter.StopRoundsFile).Single();
+            Assert.That((r["end_reason"], r["n_stops"], r["n_resumes"], r["final_motion_dir"]), Is.EqualTo(("confirmed", "1", "0", "approach")), "방향 보존, 멈춘 자리로 확정");
+            Assert.That(D(r["final_distance_m"]), Is.EqualTo(stopD).Within(1e-4));
+            Assert.That(Table(dir, PlacementRecordWriter.StopAdjustFile).Select(a => a["event"]), Is.EqualTo(new[] { "start", "stop", "xr_pause", "xr_resume", "confirm" }));
+        }
+
+        [Test]
+        public void Experimenter_keys_during_xr_loss_do_not_skip_the_round_and_abort_writes_clean_rows()
+        {
+            // 지금 동작 고정: 반복 멈춤 라운드가 시작된 뒤 실험자 '다음'(Enter)은 라운드를 넘기지 않는다(끊긴 동안도 같음). 넘기려면 중단.
+            double lostAt = double.NaN;
+            int nexts = 0;
+            string dir = RunXr(OneRound(10), (s, auto) =>
+            {
+                if (!(s.Phase == PlacementPhase.StopDistance && s.StopRoundActive)) return (auto, 0.02);
+                if (double.IsNaN(lostAt) && s.StopLoopRoundElapsed >= 3.0) { lostAt = s.Now; s.ReportXrHead(false); }
+                else if (!double.IsNaN(lostAt))
+                {
+                    if (s.Now - lostAt >= 20.0) { s.Abort(); return (new PlacementInputFrame(), 0.02); }
+                    if (At(s.Now - lostAt, 2.0) || At(s.Now - lostAt, 4.0)) { s.PressNext(); nexts++; }
+                    Assert.That((s.Phase, s.StopRoundActive, s.StopLoopXrPaused), Is.EqualTo((PlacementPhase.StopDistance, true, true)), "다음 키로 넘어가지 않고 멈춘 채");
+                }
+                return (new PlacementInputFrame(), 0.02);
+            });
+            Assert.That(nexts, Is.EqualTo(2));
+            var r = Table(dir, PlacementRecordWriter.StopRoundsFile).Single();
+            Assert.That((r["end_reason"], r["final_distance_m"]), Is.EqualTo(("aborted", "")));
+            Assert.That(Table(dir, PlacementRecordWriter.StopAdjustFile).Select(a => a["event"]), Is.EqualTo(new[] { "start", "xr_pause", "abort" }));
+            var ev = File.ReadAllLines(Path.Combine(dir, "events.csv")).Skip(1).Select(l => l.Split(',')).ToList();
+            Assert.That(ev.Single(e => e[1] == "stop_round_end")[2], Does.Contain("end_reason=aborted").And.Contain(";xr_paused_ms="));
+            Assert.That((bool)Json(dir, "summary.json")["completed"], Is.False);
+            var x = (JObject)Json(dir, "manifest.json")["xrConnection"];
+            Assert.That(((int)x["lostCount"], (bool)x["lostNow"]), Is.EqualTo((1, true)));
+        }
+
         // ── 한 바퀴(자동 시행) ──────────────────────────────────────────
         [Test]
         public void Auto_loop_session_writes_rounds_adjust_rows_and_manifest()
