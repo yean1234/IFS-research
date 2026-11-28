@@ -1,0 +1,10926 @@
+{
+ "what": "G82 eval3 fixed synthetic case set (written before the run; do not edit after results)",
+ "built": "build_set3.py",
+ "groupCounts": {
+  "P": 50,
+  "SIMILE": 200,
+  "NEG": 50,
+  "PAST": 50,
+  "OTHER": 50,
+  "HYPO": 50,
+  "PERSON": 50,
+  "ANIMAL": 50,
+  "MIST": 50,
+  "NONE": 50,
+  "WORRY": 50
+ },
+ "framesPerGroup": {
+  "P": 14,
+  "SIMILE": 10,
+  "NEG": 11,
+  "PAST": 11,
+  "OTHER": 11,
+  "HYPO": 11,
+  "PERSON": 11,
+  "ANIMAL": 11,
+  "MIST": 11,
+  "NONE": 11,
+  "WORRY": 11
+ },
+ "similePredicatePos": {
+  "VA": 50,
+  "XR": 50,
+  "VV": 50,
+  "MAG": 50
+ },
+ "cases": [
+  {
+   "id": "P0000",
+   "group": "P",
+   "frame": 0,
+   "word": "프라이팬",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "프라이팬이 보여요"
+   ],
+   "expect": "fill",
+   "expectKo": "프라이팬",
+   "enOk": [
+    "pan",
+    "frypan",
+    "skillet"
+   ]
+  },
+  {
+   "id": "P0001",
+   "group": "P",
+   "frame": 1,
+   "word": "도마",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "목 뒤가 뻐근해요",
+    "제 앞에 도마가 하나 있어요"
+   ],
+   "expect": "fill",
+   "expectKo": "도마",
+   "enOk": [
+    "cuttingboard",
+    "board",
+    "chopboard"
+   ]
+  },
+  {
+   "id": "P0002",
+   "group": "P",
+   "frame": 2,
+   "word": "물통",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "배 아래쪽이 싸해요",
+    "물통이 가슴께에 놓인 것 같아요"
+   ],
+   "expect": "fill",
+   "expectKo": "물통",
+   "enOk": [
+    "bottle",
+    "canteen",
+    "jug",
+    "flask"
+   ]
+  },
+  {
+   "id": "P0003",
+   "group": "P",
+   "frame": 3,
+   "word": "돋보기",
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "어깨가 축 처져요",
+    "잘 보면 돋보기예요"
+   ],
+   "expect": "fill",
+   "expectKo": "돋보기",
+   "enOk": [
+    "magnifier"
+   ]
+  },
+  {
+   "id": "P0004",
+   "group": "P",
+   "frame": 4,
+   "word": "저금통",
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "명치 쪽이 답답해요",
+    "저금통처럼 생긴 게 있어요"
+   ],
+   "expect": "fill",
+   "expectKo": "저금통",
+   "enOk": [
+    "piggybank",
+    "moneybox",
+    "bank"
+   ]
+  },
+  {
+   "id": "P0005",
+   "group": "P",
+   "frame": 5,
+   "word": "액자",
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "액자가 둥둥 떠 있어요"
+   ],
+   "expect": "fill",
+   "expectKo": "액자",
+   "enOk": [
+    "frame",
+    "pictureframe"
+   ]
+  },
+  {
+   "id": "P0006",
+   "group": "P",
+   "frame": 6,
+   "word": "거울",
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "관자놀이가 지끈거려요",
+    "거울 하나가 보이는데요"
+   ],
+   "expect": "fill",
+   "expectKo": "거울",
+   "enOk": [
+    "mirror"
+   ]
+  },
+  {
+   "id": "P0007",
+   "group": "P",
+   "frame": 7,
+   "word": "빗",
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "손바닥이 축축해요",
+    "아무래도 빗 같아요"
+   ],
+   "expect": "fill",
+   "expectKo": "빗",
+   "enOk": [
+    "comb"
+   ]
+  },
+  {
+   "id": "P0008",
+   "group": "P",
+   "frame": 8,
+   "word": "가위",
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "가슴 왼쪽이 저릿해요",
+    "가위가 거기 있어요"
+   ],
+   "expect": "fill",
+   "expectKo": "가위",
+   "enOk": [
+    "scissors"
+   ]
+  },
+  {
+   "id": "P0009",
+   "group": "P",
+   "frame": 9,
+   "word": "집게",
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "속이 울렁거려요",
+    "집게가 조용히 있어요"
+   ],
+   "expect": "fill",
+   "expectKo": "집게",
+   "enOk": [
+    "clip",
+    "tongs",
+    "clamp",
+    "peg",
+    "clothespin"
+   ]
+  },
+  {
+   "id": "P0010",
+   "group": "P",
+   "frame": 10,
+   "word": "옷걸이",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "머릿속에 옷걸이가 있어요"
+   ],
+   "expect": "fill",
+   "expectKo": "옷걸이",
+   "enOk": [
+    "hanger"
+   ]
+  },
+  {
+   "id": "P0011",
+   "group": "P",
+   "frame": 11,
+   "word": "단풍잎",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "목 뒤가 뻐근해요",
+    "단풍잎이 딱 그려져요"
+   ],
+   "expect": "fill",
+   "expectKo": "단풍잎",
+   "enOk": [
+    "leaf",
+    "mapleleaf"
+   ]
+  },
+  {
+   "id": "P0012",
+   "group": "P",
+   "frame": 12,
+   "word": "붓",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "배 아래쪽이 싸해요",
+    "그건 붓이에요"
+   ],
+   "expect": "fill",
+   "expectKo": "붓",
+   "enOk": [
+    "brush",
+    "paintbrush"
+   ]
+  },
+  {
+   "id": "P0013",
+   "group": "P",
+   "frame": 13,
+   "word": "책",
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "어깨가 축 처져요",
+    "책이 한가운데 있어요"
+   ],
+   "expect": "fill",
+   "expectKo": "책",
+   "enOk": [
+    "book"
+   ]
+  },
+  {
+   "id": "P0014",
+   "group": "P",
+   "frame": 0,
+   "word": "공책",
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "명치 쪽이 답답해요",
+    "공책이 보여요"
+   ],
+   "expect": "fill",
+   "expectKo": "공책",
+   "enOk": [
+    "notebook"
+   ]
+  },
+  {
+   "id": "P0015",
+   "group": "P",
+   "frame": 1,
+   "word": "봉투",
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "제 앞에 봉투가 하나 있어요"
+   ],
+   "expect": "fill",
+   "expectKo": "봉투",
+   "enOk": [
+    "envelope",
+    "bag"
+   ]
+  },
+  {
+   "id": "P0016",
+   "group": "P",
+   "frame": 2,
+   "word": "리모컨",
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "관자놀이가 지끈거려요",
+    "리모컨이 가슴께에 놓인 것 같아요"
+   ],
+   "expect": "fill",
+   "expectKo": "리모컨",
+   "enOk": [
+    "remote",
+    "controller"
+   ]
+  },
+  {
+   "id": "P0017",
+   "group": "P",
+   "frame": 3,
+   "word": "시계",
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "손바닥이 축축해요",
+    "잘 보면 시계예요"
+   ],
+   "expect": "fill",
+   "expectKo": "시계",
+   "enOk": [
+    "clock",
+    "watch"
+   ]
+  },
+  {
+   "id": "P0018",
+   "group": "P",
+   "frame": 4,
+   "word": "나침반",
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "가슴 왼쪽이 저릿해요",
+    "나침반처럼 생긴 게 있어요"
+   ],
+   "expect": "fill",
+   "expectKo": "나침반",
+   "enOk": [
+    "compass"
+   ]
+  },
+  {
+   "id": "P0019",
+   "group": "P",
+   "frame": 5,
+   "word": "밥그릇",
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "속이 울렁거려요",
+    "밥그릇이 둥둥 떠 있어요"
+   ],
+   "expect": "fill",
+   "expectKo": "밥그릇",
+   "enOk": [
+    "bowl",
+    "ricebowl"
+   ]
+  },
+  {
+   "id": "P0020",
+   "group": "P",
+   "frame": 6,
+   "word": "장독",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "장독 하나가 보이는데요"
+   ],
+   "expect": "fill",
+   "expectKo": "장독",
+   "enOk": [
+    "jar",
+    "crock",
+    "pot"
+   ]
+  },
+  {
+   "id": "P0021",
+   "group": "P",
+   "frame": 7,
+   "word": "바가지",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "목 뒤가 뻐근해요",
+    "아무래도 바가지 같아요"
+   ],
+   "expect": "fill",
+   "expectKo": "바가지",
+   "enOk": [
+    "gourd",
+    "scoop",
+    "dipper",
+    "bowl"
+   ]
+  },
+  {
+   "id": "P0022",
+   "group": "P",
+   "frame": 8,
+   "word": "뚝배기",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "배 아래쪽이 싸해요",
+    "뚝배기가 거기 있어요"
+   ],
+   "expect": "fill",
+   "expectKo": "뚝배기",
+   "enOk": [
+    "pot",
+    "bowl"
+   ]
+  },
+  {
+   "id": "P0023",
+   "group": "P",
+   "frame": 9,
+   "word": "절구",
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "어깨가 축 처져요",
+    "절구가 조용히 있어요"
+   ],
+   "expect": "fill",
+   "expectKo": "절구",
+   "enOk": [
+    "mortar"
+   ]
+  },
+  {
+   "id": "P0024",
+   "group": "P",
+   "frame": 10,
+   "word": "삽",
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "명치 쪽이 답답해요",
+    "머릿속에 삽이 있어요"
+   ],
+   "expect": "fill",
+   "expectKo": "삽",
+   "enOk": [
+    "shovel",
+    "spade"
+   ]
+  },
+  {
+   "id": "P0025",
+   "group": "P",
+   "frame": 11,
+   "word": "갈퀴",
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "갈퀴가 딱 그려져요"
+   ],
+   "expect": "fill",
+   "expectKo": "갈퀴",
+   "enOk": [
+    "rake"
+   ]
+  },
+  {
+   "id": "P0026",
+   "group": "P",
+   "frame": 12,
+   "word": "물뿌리개",
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "관자놀이가 지끈거려요",
+    "그건 물뿌리개예요"
+   ],
+   "expect": "fill",
+   "expectKo": "물뿌리개",
+   "enOk": [
+    "wateringcan",
+    "sprinkler"
+   ]
+  },
+  {
+   "id": "P0027",
+   "group": "P",
+   "frame": 13,
+   "word": "주판",
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "손바닥이 축축해요",
+    "주판이 한가운데 있어요"
+   ],
+   "expect": "fill",
+   "expectKo": "주판",
+   "enOk": [
+    "abacus"
+   ]
+  },
+  {
+   "id": "P0028",
+   "group": "P",
+   "frame": 0,
+   "word": "골무",
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "가슴 왼쪽이 저릿해요",
+    "골무가 보여요"
+   ],
+   "expect": "fill",
+   "expectKo": "골무",
+   "enOk": [
+    "thimble"
+   ]
+  },
+  {
+   "id": "P0029",
+   "group": "P",
+   "frame": 1,
+   "word": "바늘",
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "속이 울렁거려요",
+    "제 앞에 바늘이 하나 있어요"
+   ],
+   "expect": "fill",
+   "expectKo": "바늘",
+   "enOk": [
+    "needle"
+   ]
+  },
+  {
+   "id": "P0030",
+   "group": "P",
+   "frame": 2,
+   "word": "땅콩",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "땅콩이 가슴께에 놓인 것 같아요"
+   ],
+   "expect": "fill",
+   "expectKo": "땅콩",
+   "enOk": [
+    "peanut"
+   ]
+  },
+  {
+   "id": "P0031",
+   "group": "P",
+   "frame": 3,
+   "word": "옥수수",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "목 뒤가 뻐근해요",
+    "잘 보면 옥수수예요"
+   ],
+   "expect": "fill",
+   "expectKo": "옥수수",
+   "enOk": [
+    "corn",
+    "maize",
+    "cob"
+   ]
+  },
+  {
+   "id": "P0032",
+   "group": "P",
+   "frame": 4,
+   "word": "당근",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "배 아래쪽이 싸해요",
+    "당근처럼 생긴 게 있어요"
+   ],
+   "expect": "fill",
+   "expectKo": "당근",
+   "enOk": [
+    "carrot"
+   ]
+  },
+  {
+   "id": "P0033",
+   "group": "P",
+   "frame": 5,
+   "word": "양파",
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "어깨가 축 처져요",
+    "양파가 둥둥 떠 있어요"
+   ],
+   "expect": "fill",
+   "expectKo": "양파",
+   "enOk": [
+    "onion"
+   ]
+  },
+  {
+   "id": "P0034",
+   "group": "P",
+   "frame": 6,
+   "word": "배추",
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "명치 쪽이 답답해요",
+    "배추 하나가 보이는데요"
+   ],
+   "expect": "fill",
+   "expectKo": "배추",
+   "enOk": [
+    "cabbage"
+   ]
+  },
+  {
+   "id": "P0035",
+   "group": "P",
+   "frame": 7,
+   "word": "사과",
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "아무래도 사과 같아요"
+   ],
+   "expect": "fill",
+   "expectKo": "사과",
+   "enOk": [
+    "apple"
+   ]
+  },
+  {
+   "id": "P0036",
+   "group": "P",
+   "frame": 8,
+   "word": "귤",
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "관자놀이가 지끈거려요",
+    "귤이 거기 있어요"
+   ],
+   "expect": "fill",
+   "expectKo": "귤",
+   "enOk": [
+    "tangerine",
+    "mandarin"
+   ]
+  },
+  {
+   "id": "P0037",
+   "group": "P",
+   "frame": 9,
+   "word": "레몬",
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "손바닥이 축축해요",
+    "레몬이 조용히 있어요"
+   ],
+   "expect": "fill",
+   "expectKo": "레몬",
+   "enOk": [
+    "lemon"
+   ]
+  },
+  {
+   "id": "P0038",
+   "group": "P",
+   "frame": 10,
+   "word": "만두",
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "가슴 왼쪽이 저릿해요",
+    "머릿속에 만두가 있어요"
+   ],
+   "expect": "fill",
+   "expectKo": "만두",
+   "enOk": [
+    "dumpling"
+   ]
+  },
+  {
+   "id": "P0039",
+   "group": "P",
+   "frame": 11,
+   "word": "빵",
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "속이 울렁거려요",
+    "빵이 딱 그려져요"
+   ],
+   "expect": "fill",
+   "expectKo": "빵",
+   "enOk": [
+    "bread",
+    "bun",
+    "loaf"
+   ]
+  },
+  {
+   "id": "P0040",
+   "group": "P",
+   "frame": 12,
+   "word": "트로피",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "그건 트로피예요"
+   ],
+   "expect": "fill",
+   "expectKo": "트로피",
+   "enOk": [
+    "trophy"
+   ]
+  },
+  {
+   "id": "P0041",
+   "group": "P",
+   "frame": 13,
+   "word": "왕관",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "목 뒤가 뻐근해요",
+    "왕관이 한가운데 있어요"
+   ],
+   "expect": "fill",
+   "expectKo": "왕관",
+   "enOk": [
+    "crown"
+   ]
+  },
+  {
+   "id": "P0042",
+   "group": "P",
+   "frame": 0,
+   "word": "반지",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "배 아래쪽이 싸해요",
+    "반지가 보여요"
+   ],
+   "expect": "fill",
+   "expectKo": "반지",
+   "enOk": [
+    "ring"
+   ]
+  },
+  {
+   "id": "P0043",
+   "group": "P",
+   "frame": 1,
+   "word": "목걸이",
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "어깨가 축 처져요",
+    "제 앞에 목걸이가 하나 있어요"
+   ],
+   "expect": "fill",
+   "expectKo": "목걸이",
+   "enOk": [
+    "necklace"
+   ]
+  },
+  {
+   "id": "P0044",
+   "group": "P",
+   "frame": 2,
+   "word": "텐트",
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "명치 쪽이 답답해요",
+    "텐트가 가슴께에 놓인 것 같아요"
+   ],
+   "expect": "fill",
+   "expectKo": "텐트",
+   "enOk": [
+    "tent"
+   ]
+  },
+  {
+   "id": "P0045",
+   "group": "P",
+   "frame": 3,
+   "word": "우체통",
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "잘 보면 우체통이에요"
+   ],
+   "expect": "fill",
+   "expectKo": "우체통",
+   "enOk": [
+    "mailbox",
+    "postbox"
+   ]
+  },
+  {
+   "id": "P0046",
+   "group": "P",
+   "frame": 4,
+   "word": "계단",
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "관자놀이가 지끈거려요",
+    "계단처럼 생긴 게 있어요"
+   ],
+   "expect": "fill",
+   "expectKo": "계단",
+   "enOk": [
+    "stairs",
+    "staircase",
+    "steps"
+   ]
+  },
+  {
+   "id": "P0047",
+   "group": "P",
+   "frame": 5,
+   "word": "울타리",
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "손바닥이 축축해요",
+    "울타리가 둥둥 떠 있어요"
+   ],
+   "expect": "fill",
+   "expectKo": "울타리",
+   "enOk": [
+    "fence"
+   ]
+  },
+  {
+   "id": "P0048",
+   "group": "P",
+   "frame": 6,
+   "word": "문",
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "가슴 왼쪽이 저릿해요",
+    "문 하나가 보이는데요"
+   ],
+   "expect": "fill",
+   "expectKo": "문",
+   "enOk": [
+    "door"
+   ]
+  },
+  {
+   "id": "P0049",
+   "group": "P",
+   "frame": 7,
+   "word": "지팡이",
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "속이 울렁거려요",
+    "아무래도 지팡이 같아요"
+   ],
+   "expect": "fill",
+   "expectKo": "지팡이",
+   "enOk": [
+    "cane",
+    "stick",
+    "staff"
+   ]
+  },
+  {
+   "id": "SIMILE0050",
+   "group": "SIMILE",
+   "frame": 0,
+   "word": [
+    "프라이팬",
+    "무거워요"
+   ],
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "프라이팬처럼 무거워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VA"
+  },
+  {
+   "id": "SIMILE0051",
+   "group": "SIMILE",
+   "frame": 1,
+   "word": [
+    "프라이팬",
+    "무거워요"
+   ],
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "프라이팬같이 무거워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VA"
+  },
+  {
+   "id": "SIMILE0052",
+   "group": "SIMILE",
+   "frame": 2,
+   "word": [
+    "프라이팬",
+    "무거워요"
+   ],
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "꼭 프라이팬처럼 무거워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VA"
+  },
+  {
+   "id": "SIMILE0053",
+   "group": "SIMILE",
+   "frame": 0,
+   "word": [
+    "프라이팬",
+    "차가워요"
+   ],
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "프라이팬처럼 차가워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VA"
+  },
+  {
+   "id": "SIMILE0054",
+   "group": "SIMILE",
+   "frame": 3,
+   "word": [
+    "프라이팬",
+    "무거워요"
+   ],
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "마치 프라이팬처럼 무거워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VA"
+  },
+  {
+   "id": "SIMILE0055",
+   "group": "SIMILE",
+   "frame": 1,
+   "word": [
+    "프라이팬",
+    "차가워요"
+   ],
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "프라이팬같이 차가워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VA"
+  },
+  {
+   "id": "SIMILE0056",
+   "group": "SIMILE",
+   "frame": 4,
+   "word": [
+    "프라이팬",
+    "무거워요"
+   ],
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "가슴이 프라이팬처럼 무거워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VA"
+  },
+  {
+   "id": "SIMILE0057",
+   "group": "SIMILE",
+   "frame": 2,
+   "word": [
+    "프라이팬",
+    "차가워요"
+   ],
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "꼭 프라이팬처럼 차가워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VA"
+  },
+  {
+   "id": "SIMILE0058",
+   "group": "SIMILE",
+   "frame": 0,
+   "word": [
+    "프라이팬",
+    "뜨거워요"
+   ],
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "프라이팬처럼 뜨거워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VA"
+  },
+  {
+   "id": "SIMILE0059",
+   "group": "SIMILE",
+   "frame": 5,
+   "word": [
+    "프라이팬",
+    "무거워요"
+   ],
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "속이 프라이팬같이 무거워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VA"
+  },
+  {
+   "id": "SIMILE0060",
+   "group": "SIMILE",
+   "frame": 3,
+   "word": [
+    "프라이팬",
+    "차가워요"
+   ],
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "마치 프라이팬처럼 차가워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VA"
+  },
+  {
+   "id": "SIMILE0061",
+   "group": "SIMILE",
+   "frame": 1,
+   "word": [
+    "프라이팬",
+    "뜨거워요"
+   ],
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "프라이팬같이 뜨거워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VA"
+  },
+  {
+   "id": "SIMILE0062",
+   "group": "SIMILE",
+   "frame": 6,
+   "word": [
+    "프라이팬",
+    "무거워요"
+   ],
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "어깨가 프라이팬처럼 무거워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VA"
+  },
+  {
+   "id": "SIMILE0063",
+   "group": "SIMILE",
+   "frame": 4,
+   "word": [
+    "프라이팬",
+    "차가워요"
+   ],
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "가슴이 프라이팬처럼 차가워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VA"
+  },
+  {
+   "id": "SIMILE0064",
+   "group": "SIMILE",
+   "frame": 2,
+   "word": [
+    "프라이팬",
+    "뜨거워요"
+   ],
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "꼭 프라이팬처럼 뜨거워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VA"
+  },
+  {
+   "id": "SIMILE0065",
+   "group": "SIMILE",
+   "frame": 0,
+   "word": [
+    "프라이팬",
+    "날카로워요"
+   ],
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "프라이팬처럼 날카로워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VA"
+  },
+  {
+   "id": "SIMILE0066",
+   "group": "SIMILE",
+   "frame": 7,
+   "word": [
+    "프라이팬",
+    "무거워요"
+   ],
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "그게 프라이팬처럼 무거워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VA"
+  },
+  {
+   "id": "SIMILE0067",
+   "group": "SIMILE",
+   "frame": 5,
+   "word": [
+    "프라이팬",
+    "차가워요"
+   ],
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "속이 프라이팬같이 차가워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VA"
+  },
+  {
+   "id": "SIMILE0068",
+   "group": "SIMILE",
+   "frame": 3,
+   "word": [
+    "프라이팬",
+    "뜨거워요"
+   ],
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "마치 프라이팬처럼 뜨거워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VA"
+  },
+  {
+   "id": "SIMILE0069",
+   "group": "SIMILE",
+   "frame": 1,
+   "word": [
+    "프라이팬",
+    "날카로워요"
+   ],
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "프라이팬같이 날카로워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VA"
+  },
+  {
+   "id": "SIMILE0070",
+   "group": "SIMILE",
+   "frame": 8,
+   "word": [
+    "프라이팬",
+    "무거워요"
+   ],
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "몸이 프라이팬같이 무거워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VA"
+  },
+  {
+   "id": "SIMILE0071",
+   "group": "SIMILE",
+   "frame": 6,
+   "word": [
+    "프라이팬",
+    "차가워요"
+   ],
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "어깨가 프라이팬처럼 차가워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VA"
+  },
+  {
+   "id": "SIMILE0072",
+   "group": "SIMILE",
+   "frame": 4,
+   "word": [
+    "프라이팬",
+    "뜨거워요"
+   ],
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "가슴이 프라이팬처럼 뜨거워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VA"
+  },
+  {
+   "id": "SIMILE0073",
+   "group": "SIMILE",
+   "frame": 2,
+   "word": [
+    "프라이팬",
+    "날카로워요"
+   ],
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "꼭 프라이팬처럼 날카로워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VA"
+  },
+  {
+   "id": "SIMILE0074",
+   "group": "SIMILE",
+   "frame": 9,
+   "word": [
+    "프라이팬",
+    "무거워요"
+   ],
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "등이 프라이팬처럼 무거워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VA"
+  },
+  {
+   "id": "SIMILE0075",
+   "group": "SIMILE",
+   "frame": 0,
+   "word": [
+    "프라이팬",
+    "가벼워요"
+   ],
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "프라이팬처럼 가벼워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VA"
+  },
+  {
+   "id": "SIMILE0076",
+   "group": "SIMILE",
+   "frame": 7,
+   "word": [
+    "프라이팬",
+    "차가워요"
+   ],
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "그게 프라이팬처럼 차가워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VA"
+  },
+  {
+   "id": "SIMILE0077",
+   "group": "SIMILE",
+   "frame": 5,
+   "word": [
+    "프라이팬",
+    "뜨거워요"
+   ],
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "속이 프라이팬같이 뜨거워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VA"
+  },
+  {
+   "id": "SIMILE0078",
+   "group": "SIMILE",
+   "frame": 3,
+   "word": [
+    "프라이팬",
+    "날카로워요"
+   ],
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "마치 프라이팬처럼 날카로워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VA"
+  },
+  {
+   "id": "SIMILE0079",
+   "group": "SIMILE",
+   "frame": 1,
+   "word": [
+    "프라이팬",
+    "가벼워요"
+   ],
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "프라이팬같이 가벼워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VA"
+  },
+  {
+   "id": "SIMILE0080",
+   "group": "SIMILE",
+   "frame": 8,
+   "word": [
+    "프라이팬",
+    "차가워요"
+   ],
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "몸이 프라이팬같이 차가워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VA"
+  },
+  {
+   "id": "SIMILE0081",
+   "group": "SIMILE",
+   "frame": 6,
+   "word": [
+    "프라이팬",
+    "뜨거워요"
+   ],
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "어깨가 프라이팬처럼 뜨거워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VA"
+  },
+  {
+   "id": "SIMILE0082",
+   "group": "SIMILE",
+   "frame": 4,
+   "word": [
+    "프라이팬",
+    "날카로워요"
+   ],
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "가슴이 프라이팬처럼 날카로워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VA"
+  },
+  {
+   "id": "SIMILE0083",
+   "group": "SIMILE",
+   "frame": 2,
+   "word": [
+    "프라이팬",
+    "가벼워요"
+   ],
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "꼭 프라이팬처럼 가벼워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VA"
+  },
+  {
+   "id": "SIMILE0084",
+   "group": "SIMILE",
+   "frame": 9,
+   "word": [
+    "프라이팬",
+    "차가워요"
+   ],
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "등이 프라이팬처럼 차가워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VA"
+  },
+  {
+   "id": "SIMILE0085",
+   "group": "SIMILE",
+   "frame": 0,
+   "word": [
+    "프라이팬",
+    "따가워요"
+   ],
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "프라이팬처럼 따가워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VA"
+  },
+  {
+   "id": "SIMILE0086",
+   "group": "SIMILE",
+   "frame": 7,
+   "word": [
+    "프라이팬",
+    "뜨거워요"
+   ],
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "그게 프라이팬처럼 뜨거워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VA"
+  },
+  {
+   "id": "SIMILE0087",
+   "group": "SIMILE",
+   "frame": 5,
+   "word": [
+    "프라이팬",
+    "날카로워요"
+   ],
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "속이 프라이팬같이 날카로워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VA"
+  },
+  {
+   "id": "SIMILE0088",
+   "group": "SIMILE",
+   "frame": 3,
+   "word": [
+    "프라이팬",
+    "가벼워요"
+   ],
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "마치 프라이팬처럼 가벼워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VA"
+  },
+  {
+   "id": "SIMILE0089",
+   "group": "SIMILE",
+   "frame": 1,
+   "word": [
+    "프라이팬",
+    "따가워요"
+   ],
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "프라이팬같이 따가워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VA"
+  },
+  {
+   "id": "SIMILE0090",
+   "group": "SIMILE",
+   "frame": 8,
+   "word": [
+    "프라이팬",
+    "뜨거워요"
+   ],
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "몸이 프라이팬같이 뜨거워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VA"
+  },
+  {
+   "id": "SIMILE0091",
+   "group": "SIMILE",
+   "frame": 6,
+   "word": [
+    "프라이팬",
+    "날카로워요"
+   ],
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "어깨가 프라이팬처럼 날카로워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VA"
+  },
+  {
+   "id": "SIMILE0092",
+   "group": "SIMILE",
+   "frame": 4,
+   "word": [
+    "프라이팬",
+    "가벼워요"
+   ],
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "가슴이 프라이팬처럼 가벼워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VA"
+  },
+  {
+   "id": "SIMILE0093",
+   "group": "SIMILE",
+   "frame": 2,
+   "word": [
+    "프라이팬",
+    "따가워요"
+   ],
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "꼭 프라이팬처럼 따가워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VA"
+  },
+  {
+   "id": "SIMILE0094",
+   "group": "SIMILE",
+   "frame": 9,
+   "word": [
+    "프라이팬",
+    "뜨거워요"
+   ],
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "등이 프라이팬처럼 뜨거워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VA"
+  },
+  {
+   "id": "SIMILE0095",
+   "group": "SIMILE",
+   "frame": 0,
+   "word": [
+    "도마",
+    "무거워요"
+   ],
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "도마처럼 무거워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VA"
+  },
+  {
+   "id": "SIMILE0096",
+   "group": "SIMILE",
+   "frame": 7,
+   "word": [
+    "프라이팬",
+    "날카로워요"
+   ],
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "그게 프라이팬처럼 날카로워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VA"
+  },
+  {
+   "id": "SIMILE0097",
+   "group": "SIMILE",
+   "frame": 5,
+   "word": [
+    "프라이팬",
+    "가벼워요"
+   ],
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "속이 프라이팬같이 가벼워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VA"
+  },
+  {
+   "id": "SIMILE0098",
+   "group": "SIMILE",
+   "frame": 3,
+   "word": [
+    "프라이팬",
+    "따가워요"
+   ],
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "마치 프라이팬처럼 따가워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VA"
+  },
+  {
+   "id": "SIMILE0099",
+   "group": "SIMILE",
+   "frame": 1,
+   "word": [
+    "도마",
+    "무거워요"
+   ],
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "도마같이 무거워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VA"
+  },
+  {
+   "id": "SIMILE0100",
+   "group": "SIMILE",
+   "frame": 0,
+   "word": [
+    "프라이팬",
+    "단단해요"
+   ],
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "프라이팬처럼 단단해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "XR"
+  },
+  {
+   "id": "SIMILE0101",
+   "group": "SIMILE",
+   "frame": 1,
+   "word": [
+    "프라이팬",
+    "단단해요"
+   ],
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "프라이팬같이 단단해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "XR"
+  },
+  {
+   "id": "SIMILE0102",
+   "group": "SIMILE",
+   "frame": 2,
+   "word": [
+    "프라이팬",
+    "단단해요"
+   ],
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "꼭 프라이팬처럼 단단해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "XR"
+  },
+  {
+   "id": "SIMILE0103",
+   "group": "SIMILE",
+   "frame": 0,
+   "word": [
+    "프라이팬",
+    "묵직해요"
+   ],
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "프라이팬처럼 묵직해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "XR"
+  },
+  {
+   "id": "SIMILE0104",
+   "group": "SIMILE",
+   "frame": 3,
+   "word": [
+    "프라이팬",
+    "단단해요"
+   ],
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "마치 프라이팬처럼 단단해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "XR"
+  },
+  {
+   "id": "SIMILE0105",
+   "group": "SIMILE",
+   "frame": 1,
+   "word": [
+    "프라이팬",
+    "묵직해요"
+   ],
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "프라이팬같이 묵직해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "XR"
+  },
+  {
+   "id": "SIMILE0106",
+   "group": "SIMILE",
+   "frame": 4,
+   "word": [
+    "프라이팬",
+    "단단해요"
+   ],
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "가슴이 프라이팬처럼 단단해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "XR"
+  },
+  {
+   "id": "SIMILE0107",
+   "group": "SIMILE",
+   "frame": 2,
+   "word": [
+    "프라이팬",
+    "묵직해요"
+   ],
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "꼭 프라이팬처럼 묵직해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "XR"
+  },
+  {
+   "id": "SIMILE0108",
+   "group": "SIMILE",
+   "frame": 0,
+   "word": [
+    "프라이팬",
+    "딱딱해요"
+   ],
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "프라이팬처럼 딱딱해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "XR"
+  },
+  {
+   "id": "SIMILE0109",
+   "group": "SIMILE",
+   "frame": 5,
+   "word": [
+    "프라이팬",
+    "단단해요"
+   ],
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "속이 프라이팬같이 단단해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "XR"
+  },
+  {
+   "id": "SIMILE0110",
+   "group": "SIMILE",
+   "frame": 3,
+   "word": [
+    "프라이팬",
+    "묵직해요"
+   ],
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "마치 프라이팬처럼 묵직해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "XR"
+  },
+  {
+   "id": "SIMILE0111",
+   "group": "SIMILE",
+   "frame": 1,
+   "word": [
+    "프라이팬",
+    "딱딱해요"
+   ],
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "프라이팬같이 딱딱해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "XR"
+  },
+  {
+   "id": "SIMILE0112",
+   "group": "SIMILE",
+   "frame": 6,
+   "word": [
+    "프라이팬",
+    "단단해요"
+   ],
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "어깨가 프라이팬처럼 단단해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "XR"
+  },
+  {
+   "id": "SIMILE0113",
+   "group": "SIMILE",
+   "frame": 4,
+   "word": [
+    "프라이팬",
+    "묵직해요"
+   ],
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "가슴이 프라이팬처럼 묵직해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "XR"
+  },
+  {
+   "id": "SIMILE0114",
+   "group": "SIMILE",
+   "frame": 2,
+   "word": [
+    "프라이팬",
+    "딱딱해요"
+   ],
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "꼭 프라이팬처럼 딱딱해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "XR"
+  },
+  {
+   "id": "SIMILE0115",
+   "group": "SIMILE",
+   "frame": 0,
+   "word": [
+    "프라이팬",
+    "싸늘해요"
+   ],
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "프라이팬처럼 싸늘해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "XR"
+  },
+  {
+   "id": "SIMILE0116",
+   "group": "SIMILE",
+   "frame": 7,
+   "word": [
+    "프라이팬",
+    "단단해요"
+   ],
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "그게 프라이팬처럼 단단해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "XR"
+  },
+  {
+   "id": "SIMILE0117",
+   "group": "SIMILE",
+   "frame": 5,
+   "word": [
+    "프라이팬",
+    "묵직해요"
+   ],
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "속이 프라이팬같이 묵직해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "XR"
+  },
+  {
+   "id": "SIMILE0118",
+   "group": "SIMILE",
+   "frame": 3,
+   "word": [
+    "프라이팬",
+    "딱딱해요"
+   ],
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "마치 프라이팬처럼 딱딱해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "XR"
+  },
+  {
+   "id": "SIMILE0119",
+   "group": "SIMILE",
+   "frame": 1,
+   "word": [
+    "프라이팬",
+    "싸늘해요"
+   ],
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "프라이팬같이 싸늘해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "XR"
+  },
+  {
+   "id": "SIMILE0120",
+   "group": "SIMILE",
+   "frame": 8,
+   "word": [
+    "프라이팬",
+    "단단해요"
+   ],
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "몸이 프라이팬같이 단단해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "XR"
+  },
+  {
+   "id": "SIMILE0121",
+   "group": "SIMILE",
+   "frame": 6,
+   "word": [
+    "프라이팬",
+    "묵직해요"
+   ],
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "어깨가 프라이팬처럼 묵직해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "XR"
+  },
+  {
+   "id": "SIMILE0122",
+   "group": "SIMILE",
+   "frame": 4,
+   "word": [
+    "프라이팬",
+    "딱딱해요"
+   ],
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "가슴이 프라이팬처럼 딱딱해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "XR"
+  },
+  {
+   "id": "SIMILE0123",
+   "group": "SIMILE",
+   "frame": 2,
+   "word": [
+    "프라이팬",
+    "싸늘해요"
+   ],
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "꼭 프라이팬처럼 싸늘해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "XR"
+  },
+  {
+   "id": "SIMILE0124",
+   "group": "SIMILE",
+   "frame": 9,
+   "word": [
+    "프라이팬",
+    "단단해요"
+   ],
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "등이 프라이팬처럼 단단해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "XR"
+  },
+  {
+   "id": "SIMILE0125",
+   "group": "SIMILE",
+   "frame": 0,
+   "word": [
+    "프라이팬",
+    "답답해요"
+   ],
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "프라이팬처럼 답답해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "XR"
+  },
+  {
+   "id": "SIMILE0126",
+   "group": "SIMILE",
+   "frame": 7,
+   "word": [
+    "프라이팬",
+    "묵직해요"
+   ],
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "그게 프라이팬처럼 묵직해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "XR"
+  },
+  {
+   "id": "SIMILE0127",
+   "group": "SIMILE",
+   "frame": 5,
+   "word": [
+    "프라이팬",
+    "딱딱해요"
+   ],
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "속이 프라이팬같이 딱딱해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "XR"
+  },
+  {
+   "id": "SIMILE0128",
+   "group": "SIMILE",
+   "frame": 3,
+   "word": [
+    "프라이팬",
+    "싸늘해요"
+   ],
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "마치 프라이팬처럼 싸늘해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "XR"
+  },
+  {
+   "id": "SIMILE0129",
+   "group": "SIMILE",
+   "frame": 1,
+   "word": [
+    "프라이팬",
+    "답답해요"
+   ],
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "프라이팬같이 답답해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "XR"
+  },
+  {
+   "id": "SIMILE0130",
+   "group": "SIMILE",
+   "frame": 8,
+   "word": [
+    "프라이팬",
+    "묵직해요"
+   ],
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "몸이 프라이팬같이 묵직해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "XR"
+  },
+  {
+   "id": "SIMILE0131",
+   "group": "SIMILE",
+   "frame": 6,
+   "word": [
+    "프라이팬",
+    "딱딱해요"
+   ],
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "어깨가 프라이팬처럼 딱딱해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "XR"
+  },
+  {
+   "id": "SIMILE0132",
+   "group": "SIMILE",
+   "frame": 4,
+   "word": [
+    "프라이팬",
+    "싸늘해요"
+   ],
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "가슴이 프라이팬처럼 싸늘해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "XR"
+  },
+  {
+   "id": "SIMILE0133",
+   "group": "SIMILE",
+   "frame": 2,
+   "word": [
+    "프라이팬",
+    "답답해요"
+   ],
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "꼭 프라이팬처럼 답답해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "XR"
+  },
+  {
+   "id": "SIMILE0134",
+   "group": "SIMILE",
+   "frame": 9,
+   "word": [
+    "프라이팬",
+    "묵직해요"
+   ],
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "등이 프라이팬처럼 묵직해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "XR"
+  },
+  {
+   "id": "SIMILE0135",
+   "group": "SIMILE",
+   "frame": 0,
+   "word": [
+    "프라이팬",
+    "뻣뻣해요"
+   ],
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "프라이팬처럼 뻣뻣해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "XR"
+  },
+  {
+   "id": "SIMILE0136",
+   "group": "SIMILE",
+   "frame": 7,
+   "word": [
+    "프라이팬",
+    "딱딱해요"
+   ],
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "그게 프라이팬처럼 딱딱해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "XR"
+  },
+  {
+   "id": "SIMILE0137",
+   "group": "SIMILE",
+   "frame": 5,
+   "word": [
+    "프라이팬",
+    "싸늘해요"
+   ],
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "속이 프라이팬같이 싸늘해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "XR"
+  },
+  {
+   "id": "SIMILE0138",
+   "group": "SIMILE",
+   "frame": 3,
+   "word": [
+    "프라이팬",
+    "답답해요"
+   ],
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "마치 프라이팬처럼 답답해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "XR"
+  },
+  {
+   "id": "SIMILE0139",
+   "group": "SIMILE",
+   "frame": 1,
+   "word": [
+    "프라이팬",
+    "뻣뻣해요"
+   ],
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "프라이팬같이 뻣뻣해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "XR"
+  },
+  {
+   "id": "SIMILE0140",
+   "group": "SIMILE",
+   "frame": 8,
+   "word": [
+    "프라이팬",
+    "딱딱해요"
+   ],
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "몸이 프라이팬같이 딱딱해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "XR"
+  },
+  {
+   "id": "SIMILE0141",
+   "group": "SIMILE",
+   "frame": 6,
+   "word": [
+    "프라이팬",
+    "싸늘해요"
+   ],
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "어깨가 프라이팬처럼 싸늘해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "XR"
+  },
+  {
+   "id": "SIMILE0142",
+   "group": "SIMILE",
+   "frame": 4,
+   "word": [
+    "프라이팬",
+    "답답해요"
+   ],
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "가슴이 프라이팬처럼 답답해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "XR"
+  },
+  {
+   "id": "SIMILE0143",
+   "group": "SIMILE",
+   "frame": 2,
+   "word": [
+    "프라이팬",
+    "뻣뻣해요"
+   ],
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "꼭 프라이팬처럼 뻣뻣해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "XR"
+  },
+  {
+   "id": "SIMILE0144",
+   "group": "SIMILE",
+   "frame": 9,
+   "word": [
+    "프라이팬",
+    "딱딱해요"
+   ],
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "등이 프라이팬처럼 딱딱해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "XR"
+  },
+  {
+   "id": "SIMILE0145",
+   "group": "SIMILE",
+   "frame": 0,
+   "word": [
+    "프라이팬",
+    "축축해요"
+   ],
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "프라이팬처럼 축축해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "XR"
+  },
+  {
+   "id": "SIMILE0146",
+   "group": "SIMILE",
+   "frame": 7,
+   "word": [
+    "프라이팬",
+    "싸늘해요"
+   ],
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "그게 프라이팬처럼 싸늘해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "XR"
+  },
+  {
+   "id": "SIMILE0147",
+   "group": "SIMILE",
+   "frame": 5,
+   "word": [
+    "프라이팬",
+    "답답해요"
+   ],
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "속이 프라이팬같이 답답해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "XR"
+  },
+  {
+   "id": "SIMILE0148",
+   "group": "SIMILE",
+   "frame": 3,
+   "word": [
+    "프라이팬",
+    "뻣뻣해요"
+   ],
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "마치 프라이팬처럼 뻣뻣해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "XR"
+  },
+  {
+   "id": "SIMILE0149",
+   "group": "SIMILE",
+   "frame": 1,
+   "word": [
+    "프라이팬",
+    "축축해요"
+   ],
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "프라이팬같이 축축해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "XR"
+  },
+  {
+   "id": "SIMILE0150",
+   "group": "SIMILE",
+   "frame": 0,
+   "word": [
+    "프라이팬",
+    "짓눌러요"
+   ],
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "프라이팬처럼 짓눌러요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VV"
+  },
+  {
+   "id": "SIMILE0151",
+   "group": "SIMILE",
+   "frame": 1,
+   "word": [
+    "프라이팬",
+    "짓눌러요"
+   ],
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "프라이팬같이 짓눌러요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VV"
+  },
+  {
+   "id": "SIMILE0152",
+   "group": "SIMILE",
+   "frame": 2,
+   "word": [
+    "프라이팬",
+    "짓눌러요"
+   ],
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "꼭 프라이팬처럼 짓눌러요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VV"
+  },
+  {
+   "id": "SIMILE0153",
+   "group": "SIMILE",
+   "frame": 0,
+   "word": [
+    "프라이팬",
+    "조여 와요"
+   ],
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "프라이팬처럼 조여 와요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VV"
+  },
+  {
+   "id": "SIMILE0154",
+   "group": "SIMILE",
+   "frame": 3,
+   "word": [
+    "프라이팬",
+    "짓눌러요"
+   ],
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "마치 프라이팬처럼 짓눌러요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VV"
+  },
+  {
+   "id": "SIMILE0155",
+   "group": "SIMILE",
+   "frame": 1,
+   "word": [
+    "프라이팬",
+    "조여 와요"
+   ],
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "프라이팬같이 조여 와요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VV"
+  },
+  {
+   "id": "SIMILE0156",
+   "group": "SIMILE",
+   "frame": 4,
+   "word": [
+    "프라이팬",
+    "짓눌러요"
+   ],
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "가슴이 프라이팬처럼 짓눌러요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VV"
+  },
+  {
+   "id": "SIMILE0157",
+   "group": "SIMILE",
+   "frame": 2,
+   "word": [
+    "프라이팬",
+    "조여 와요"
+   ],
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "꼭 프라이팬처럼 조여 와요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VV"
+  },
+  {
+   "id": "SIMILE0158",
+   "group": "SIMILE",
+   "frame": 0,
+   "word": [
+    "프라이팬",
+    "막혀요"
+   ],
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "프라이팬처럼 막혀요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VV"
+  },
+  {
+   "id": "SIMILE0159",
+   "group": "SIMILE",
+   "frame": 5,
+   "word": [
+    "프라이팬",
+    "짓눌러요"
+   ],
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "속이 프라이팬같이 짓눌러요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VV"
+  },
+  {
+   "id": "SIMILE0160",
+   "group": "SIMILE",
+   "frame": 3,
+   "word": [
+    "프라이팬",
+    "조여 와요"
+   ],
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "마치 프라이팬처럼 조여 와요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VV"
+  },
+  {
+   "id": "SIMILE0161",
+   "group": "SIMILE",
+   "frame": 1,
+   "word": [
+    "프라이팬",
+    "막혀요"
+   ],
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "프라이팬같이 막혀요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VV"
+  },
+  {
+   "id": "SIMILE0162",
+   "group": "SIMILE",
+   "frame": 6,
+   "word": [
+    "프라이팬",
+    "짓눌러요"
+   ],
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "어깨가 프라이팬처럼 짓눌러요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VV"
+  },
+  {
+   "id": "SIMILE0163",
+   "group": "SIMILE",
+   "frame": 4,
+   "word": [
+    "프라이팬",
+    "조여 와요"
+   ],
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "가슴이 프라이팬처럼 조여 와요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VV"
+  },
+  {
+   "id": "SIMILE0164",
+   "group": "SIMILE",
+   "frame": 2,
+   "word": [
+    "프라이팬",
+    "막혀요"
+   ],
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "꼭 프라이팬처럼 막혀요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VV"
+  },
+  {
+   "id": "SIMILE0165",
+   "group": "SIMILE",
+   "frame": 0,
+   "word": [
+    "프라이팬",
+    "흔들려요"
+   ],
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "프라이팬처럼 흔들려요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VV"
+  },
+  {
+   "id": "SIMILE0166",
+   "group": "SIMILE",
+   "frame": 7,
+   "word": [
+    "프라이팬",
+    "짓눌러요"
+   ],
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "그게 프라이팬처럼 짓눌러요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VV"
+  },
+  {
+   "id": "SIMILE0167",
+   "group": "SIMILE",
+   "frame": 5,
+   "word": [
+    "프라이팬",
+    "조여 와요"
+   ],
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "속이 프라이팬같이 조여 와요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VV"
+  },
+  {
+   "id": "SIMILE0168",
+   "group": "SIMILE",
+   "frame": 3,
+   "word": [
+    "프라이팬",
+    "막혀요"
+   ],
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "마치 프라이팬처럼 막혀요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VV"
+  },
+  {
+   "id": "SIMILE0169",
+   "group": "SIMILE",
+   "frame": 1,
+   "word": [
+    "프라이팬",
+    "흔들려요"
+   ],
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "프라이팬같이 흔들려요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VV"
+  },
+  {
+   "id": "SIMILE0170",
+   "group": "SIMILE",
+   "frame": 8,
+   "word": [
+    "프라이팬",
+    "짓눌러요"
+   ],
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "몸이 프라이팬같이 짓눌러요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VV"
+  },
+  {
+   "id": "SIMILE0171",
+   "group": "SIMILE",
+   "frame": 6,
+   "word": [
+    "프라이팬",
+    "조여 와요"
+   ],
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "어깨가 프라이팬처럼 조여 와요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VV"
+  },
+  {
+   "id": "SIMILE0172",
+   "group": "SIMILE",
+   "frame": 4,
+   "word": [
+    "프라이팬",
+    "막혀요"
+   ],
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "가슴이 프라이팬처럼 막혀요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VV"
+  },
+  {
+   "id": "SIMILE0173",
+   "group": "SIMILE",
+   "frame": 2,
+   "word": [
+    "프라이팬",
+    "흔들려요"
+   ],
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "꼭 프라이팬처럼 흔들려요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VV"
+  },
+  {
+   "id": "SIMILE0174",
+   "group": "SIMILE",
+   "frame": 9,
+   "word": [
+    "프라이팬",
+    "짓눌러요"
+   ],
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "등이 프라이팬처럼 짓눌러요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VV"
+  },
+  {
+   "id": "SIMILE0175",
+   "group": "SIMILE",
+   "frame": 0,
+   "word": [
+    "프라이팬",
+    "떨려요"
+   ],
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "프라이팬처럼 떨려요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VV"
+  },
+  {
+   "id": "SIMILE0176",
+   "group": "SIMILE",
+   "frame": 7,
+   "word": [
+    "프라이팬",
+    "조여 와요"
+   ],
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "그게 프라이팬처럼 조여 와요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VV"
+  },
+  {
+   "id": "SIMILE0177",
+   "group": "SIMILE",
+   "frame": 5,
+   "word": [
+    "프라이팬",
+    "막혀요"
+   ],
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "속이 프라이팬같이 막혀요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VV"
+  },
+  {
+   "id": "SIMILE0178",
+   "group": "SIMILE",
+   "frame": 3,
+   "word": [
+    "프라이팬",
+    "흔들려요"
+   ],
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "마치 프라이팬처럼 흔들려요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VV"
+  },
+  {
+   "id": "SIMILE0179",
+   "group": "SIMILE",
+   "frame": 1,
+   "word": [
+    "프라이팬",
+    "떨려요"
+   ],
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "프라이팬같이 떨려요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VV"
+  },
+  {
+   "id": "SIMILE0180",
+   "group": "SIMILE",
+   "frame": 8,
+   "word": [
+    "프라이팬",
+    "조여 와요"
+   ],
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "몸이 프라이팬같이 조여 와요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VV"
+  },
+  {
+   "id": "SIMILE0181",
+   "group": "SIMILE",
+   "frame": 6,
+   "word": [
+    "프라이팬",
+    "막혀요"
+   ],
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "어깨가 프라이팬처럼 막혀요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VV"
+  },
+  {
+   "id": "SIMILE0182",
+   "group": "SIMILE",
+   "frame": 4,
+   "word": [
+    "프라이팬",
+    "흔들려요"
+   ],
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "가슴이 프라이팬처럼 흔들려요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VV"
+  },
+  {
+   "id": "SIMILE0183",
+   "group": "SIMILE",
+   "frame": 2,
+   "word": [
+    "프라이팬",
+    "떨려요"
+   ],
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "꼭 프라이팬처럼 떨려요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VV"
+  },
+  {
+   "id": "SIMILE0184",
+   "group": "SIMILE",
+   "frame": 9,
+   "word": [
+    "프라이팬",
+    "조여 와요"
+   ],
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "등이 프라이팬처럼 조여 와요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VV"
+  },
+  {
+   "id": "SIMILE0185",
+   "group": "SIMILE",
+   "frame": 0,
+   "word": [
+    "프라이팬",
+    "가라앉아요"
+   ],
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "프라이팬처럼 가라앉아요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VV"
+  },
+  {
+   "id": "SIMILE0186",
+   "group": "SIMILE",
+   "frame": 7,
+   "word": [
+    "프라이팬",
+    "막혀요"
+   ],
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "그게 프라이팬처럼 막혀요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VV"
+  },
+  {
+   "id": "SIMILE0187",
+   "group": "SIMILE",
+   "frame": 5,
+   "word": [
+    "프라이팬",
+    "흔들려요"
+   ],
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "속이 프라이팬같이 흔들려요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VV"
+  },
+  {
+   "id": "SIMILE0188",
+   "group": "SIMILE",
+   "frame": 3,
+   "word": [
+    "프라이팬",
+    "떨려요"
+   ],
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "마치 프라이팬처럼 떨려요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VV"
+  },
+  {
+   "id": "SIMILE0189",
+   "group": "SIMILE",
+   "frame": 1,
+   "word": [
+    "프라이팬",
+    "가라앉아요"
+   ],
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "프라이팬같이 가라앉아요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VV"
+  },
+  {
+   "id": "SIMILE0190",
+   "group": "SIMILE",
+   "frame": 8,
+   "word": [
+    "프라이팬",
+    "막혀요"
+   ],
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "몸이 프라이팬같이 막혀요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VV"
+  },
+  {
+   "id": "SIMILE0191",
+   "group": "SIMILE",
+   "frame": 6,
+   "word": [
+    "프라이팬",
+    "흔들려요"
+   ],
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "어깨가 프라이팬처럼 흔들려요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VV"
+  },
+  {
+   "id": "SIMILE0192",
+   "group": "SIMILE",
+   "frame": 4,
+   "word": [
+    "프라이팬",
+    "떨려요"
+   ],
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "가슴이 프라이팬처럼 떨려요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VV"
+  },
+  {
+   "id": "SIMILE0193",
+   "group": "SIMILE",
+   "frame": 2,
+   "word": [
+    "프라이팬",
+    "가라앉아요"
+   ],
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "꼭 프라이팬처럼 가라앉아요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VV"
+  },
+  {
+   "id": "SIMILE0194",
+   "group": "SIMILE",
+   "frame": 9,
+   "word": [
+    "프라이팬",
+    "막혀요"
+   ],
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "등이 프라이팬처럼 막혀요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VV"
+  },
+  {
+   "id": "SIMILE0195",
+   "group": "SIMILE",
+   "frame": 0,
+   "word": [
+    "도마",
+    "짓눌러요"
+   ],
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "도마처럼 짓눌러요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VV"
+  },
+  {
+   "id": "SIMILE0196",
+   "group": "SIMILE",
+   "frame": 7,
+   "word": [
+    "프라이팬",
+    "흔들려요"
+   ],
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "그게 프라이팬처럼 흔들려요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VV"
+  },
+  {
+   "id": "SIMILE0197",
+   "group": "SIMILE",
+   "frame": 5,
+   "word": [
+    "프라이팬",
+    "떨려요"
+   ],
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "속이 프라이팬같이 떨려요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VV"
+  },
+  {
+   "id": "SIMILE0198",
+   "group": "SIMILE",
+   "frame": 3,
+   "word": [
+    "프라이팬",
+    "가라앉아요"
+   ],
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "마치 프라이팬처럼 가라앉아요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VV"
+  },
+  {
+   "id": "SIMILE0199",
+   "group": "SIMILE",
+   "frame": 1,
+   "word": [
+    "도마",
+    "짓눌러요"
+   ],
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "도마같이 짓눌러요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "VV"
+  },
+  {
+   "id": "SIMILE0200",
+   "group": "SIMILE",
+   "frame": 0,
+   "word": [
+    "프라이팬",
+    "꽉 막혀요"
+   ],
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "프라이팬처럼 꽉 막혀요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "MAG"
+  },
+  {
+   "id": "SIMILE0201",
+   "group": "SIMILE",
+   "frame": 1,
+   "word": [
+    "프라이팬",
+    "꽉 막혀요"
+   ],
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "프라이팬같이 꽉 막혀요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "MAG"
+  },
+  {
+   "id": "SIMILE0202",
+   "group": "SIMILE",
+   "frame": 2,
+   "word": [
+    "프라이팬",
+    "꽉 막혀요"
+   ],
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "꼭 프라이팬처럼 꽉 막혀요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "MAG"
+  },
+  {
+   "id": "SIMILE0203",
+   "group": "SIMILE",
+   "frame": 0,
+   "word": [
+    "프라이팬",
+    "콕콕 찔러요"
+   ],
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "프라이팬처럼 콕콕 찔러요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "MAG"
+  },
+  {
+   "id": "SIMILE0204",
+   "group": "SIMILE",
+   "frame": 3,
+   "word": [
+    "프라이팬",
+    "꽉 막혀요"
+   ],
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "마치 프라이팬처럼 꽉 막혀요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "MAG"
+  },
+  {
+   "id": "SIMILE0205",
+   "group": "SIMILE",
+   "frame": 1,
+   "word": [
+    "프라이팬",
+    "콕콕 찔러요"
+   ],
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "프라이팬같이 콕콕 찔러요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "MAG"
+  },
+  {
+   "id": "SIMILE0206",
+   "group": "SIMILE",
+   "frame": 4,
+   "word": [
+    "프라이팬",
+    "꽉 막혀요"
+   ],
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "가슴이 프라이팬처럼 꽉 막혀요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "MAG"
+  },
+  {
+   "id": "SIMILE0207",
+   "group": "SIMILE",
+   "frame": 2,
+   "word": [
+    "프라이팬",
+    "콕콕 찔러요"
+   ],
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "꼭 프라이팬처럼 콕콕 찔러요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "MAG"
+  },
+  {
+   "id": "SIMILE0208",
+   "group": "SIMILE",
+   "frame": 0,
+   "word": [
+    "프라이팬",
+    "쿡쿡 쑤셔요"
+   ],
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "프라이팬처럼 쿡쿡 쑤셔요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "MAG"
+  },
+  {
+   "id": "SIMILE0209",
+   "group": "SIMILE",
+   "frame": 5,
+   "word": [
+    "프라이팬",
+    "꽉 막혀요"
+   ],
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "속이 프라이팬같이 꽉 막혀요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "MAG"
+  },
+  {
+   "id": "SIMILE0210",
+   "group": "SIMILE",
+   "frame": 3,
+   "word": [
+    "프라이팬",
+    "콕콕 찔러요"
+   ],
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "마치 프라이팬처럼 콕콕 찔러요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "MAG"
+  },
+  {
+   "id": "SIMILE0211",
+   "group": "SIMILE",
+   "frame": 1,
+   "word": [
+    "프라이팬",
+    "쿡쿡 쑤셔요"
+   ],
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "프라이팬같이 쿡쿡 쑤셔요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "MAG"
+  },
+  {
+   "id": "SIMILE0212",
+   "group": "SIMILE",
+   "frame": 6,
+   "word": [
+    "프라이팬",
+    "꽉 막혀요"
+   ],
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "어깨가 프라이팬처럼 꽉 막혀요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "MAG"
+  },
+  {
+   "id": "SIMILE0213",
+   "group": "SIMILE",
+   "frame": 4,
+   "word": [
+    "프라이팬",
+    "콕콕 찔러요"
+   ],
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "가슴이 프라이팬처럼 콕콕 찔러요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "MAG"
+  },
+  {
+   "id": "SIMILE0214",
+   "group": "SIMILE",
+   "frame": 2,
+   "word": [
+    "프라이팬",
+    "쿡쿡 쑤셔요"
+   ],
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "꼭 프라이팬처럼 쿡쿡 쑤셔요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "MAG"
+  },
+  {
+   "id": "SIMILE0215",
+   "group": "SIMILE",
+   "frame": 0,
+   "word": [
+    "프라이팬",
+    "꾹 눌러요"
+   ],
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "프라이팬처럼 꾹 눌러요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "MAG"
+  },
+  {
+   "id": "SIMILE0216",
+   "group": "SIMILE",
+   "frame": 7,
+   "word": [
+    "프라이팬",
+    "꽉 막혀요"
+   ],
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "그게 프라이팬처럼 꽉 막혀요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "MAG"
+  },
+  {
+   "id": "SIMILE0217",
+   "group": "SIMILE",
+   "frame": 5,
+   "word": [
+    "프라이팬",
+    "콕콕 찔러요"
+   ],
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "속이 프라이팬같이 콕콕 찔러요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "MAG"
+  },
+  {
+   "id": "SIMILE0218",
+   "group": "SIMILE",
+   "frame": 3,
+   "word": [
+    "프라이팬",
+    "쿡쿡 쑤셔요"
+   ],
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "마치 프라이팬처럼 쿡쿡 쑤셔요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "MAG"
+  },
+  {
+   "id": "SIMILE0219",
+   "group": "SIMILE",
+   "frame": 1,
+   "word": [
+    "프라이팬",
+    "꾹 눌러요"
+   ],
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "프라이팬같이 꾹 눌러요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "MAG"
+  },
+  {
+   "id": "SIMILE0220",
+   "group": "SIMILE",
+   "frame": 8,
+   "word": [
+    "프라이팬",
+    "꽉 막혀요"
+   ],
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "몸이 프라이팬같이 꽉 막혀요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "MAG"
+  },
+  {
+   "id": "SIMILE0221",
+   "group": "SIMILE",
+   "frame": 6,
+   "word": [
+    "프라이팬",
+    "콕콕 찔러요"
+   ],
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "어깨가 프라이팬처럼 콕콕 찔러요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "MAG"
+  },
+  {
+   "id": "SIMILE0222",
+   "group": "SIMILE",
+   "frame": 4,
+   "word": [
+    "프라이팬",
+    "쿡쿡 쑤셔요"
+   ],
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "가슴이 프라이팬처럼 쿡쿡 쑤셔요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "MAG"
+  },
+  {
+   "id": "SIMILE0223",
+   "group": "SIMILE",
+   "frame": 2,
+   "word": [
+    "프라이팬",
+    "꾹 눌러요"
+   ],
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "꼭 프라이팬처럼 꾹 눌러요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "MAG"
+  },
+  {
+   "id": "SIMILE0224",
+   "group": "SIMILE",
+   "frame": 9,
+   "word": [
+    "프라이팬",
+    "꽉 막혀요"
+   ],
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "등이 프라이팬처럼 꽉 막혀요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "MAG"
+  },
+  {
+   "id": "SIMILE0225",
+   "group": "SIMILE",
+   "frame": 0,
+   "word": [
+    "프라이팬",
+    "착 가라앉아요"
+   ],
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "프라이팬처럼 착 가라앉아요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "MAG"
+  },
+  {
+   "id": "SIMILE0226",
+   "group": "SIMILE",
+   "frame": 7,
+   "word": [
+    "프라이팬",
+    "콕콕 찔러요"
+   ],
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "그게 프라이팬처럼 콕콕 찔러요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "MAG"
+  },
+  {
+   "id": "SIMILE0227",
+   "group": "SIMILE",
+   "frame": 5,
+   "word": [
+    "프라이팬",
+    "쿡쿡 쑤셔요"
+   ],
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "속이 프라이팬같이 쿡쿡 쑤셔요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "MAG"
+  },
+  {
+   "id": "SIMILE0228",
+   "group": "SIMILE",
+   "frame": 3,
+   "word": [
+    "프라이팬",
+    "꾹 눌러요"
+   ],
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "마치 프라이팬처럼 꾹 눌러요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "MAG"
+  },
+  {
+   "id": "SIMILE0229",
+   "group": "SIMILE",
+   "frame": 1,
+   "word": [
+    "프라이팬",
+    "착 가라앉아요"
+   ],
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "프라이팬같이 착 가라앉아요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "MAG"
+  },
+  {
+   "id": "SIMILE0230",
+   "group": "SIMILE",
+   "frame": 8,
+   "word": [
+    "프라이팬",
+    "콕콕 찔러요"
+   ],
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "몸이 프라이팬같이 콕콕 찔러요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "MAG"
+  },
+  {
+   "id": "SIMILE0231",
+   "group": "SIMILE",
+   "frame": 6,
+   "word": [
+    "프라이팬",
+    "쿡쿡 쑤셔요"
+   ],
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "어깨가 프라이팬처럼 쿡쿡 쑤셔요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "MAG"
+  },
+  {
+   "id": "SIMILE0232",
+   "group": "SIMILE",
+   "frame": 4,
+   "word": [
+    "프라이팬",
+    "꾹 눌러요"
+   ],
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "가슴이 프라이팬처럼 꾹 눌러요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "MAG"
+  },
+  {
+   "id": "SIMILE0233",
+   "group": "SIMILE",
+   "frame": 2,
+   "word": [
+    "프라이팬",
+    "착 가라앉아요"
+   ],
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "꼭 프라이팬처럼 착 가라앉아요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "MAG"
+  },
+  {
+   "id": "SIMILE0234",
+   "group": "SIMILE",
+   "frame": 9,
+   "word": [
+    "프라이팬",
+    "콕콕 찔러요"
+   ],
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "등이 프라이팬처럼 콕콕 찔러요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "MAG"
+  },
+  {
+   "id": "SIMILE0235",
+   "group": "SIMILE",
+   "frame": 0,
+   "word": [
+    "프라이팬",
+    "꽁꽁 묶여요"
+   ],
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "프라이팬처럼 꽁꽁 묶여요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "MAG"
+  },
+  {
+   "id": "SIMILE0236",
+   "group": "SIMILE",
+   "frame": 7,
+   "word": [
+    "프라이팬",
+    "쿡쿡 쑤셔요"
+   ],
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "그게 프라이팬처럼 쿡쿡 쑤셔요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "MAG"
+  },
+  {
+   "id": "SIMILE0237",
+   "group": "SIMILE",
+   "frame": 5,
+   "word": [
+    "프라이팬",
+    "꾹 눌러요"
+   ],
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "속이 프라이팬같이 꾹 눌러요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "MAG"
+  },
+  {
+   "id": "SIMILE0238",
+   "group": "SIMILE",
+   "frame": 3,
+   "word": [
+    "프라이팬",
+    "착 가라앉아요"
+   ],
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "마치 프라이팬처럼 착 가라앉아요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "MAG"
+  },
+  {
+   "id": "SIMILE0239",
+   "group": "SIMILE",
+   "frame": 1,
+   "word": [
+    "프라이팬",
+    "꽁꽁 묶여요"
+   ],
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "프라이팬같이 꽁꽁 묶여요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "MAG"
+  },
+  {
+   "id": "SIMILE0240",
+   "group": "SIMILE",
+   "frame": 8,
+   "word": [
+    "프라이팬",
+    "쿡쿡 쑤셔요"
+   ],
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "몸이 프라이팬같이 쿡쿡 쑤셔요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "MAG"
+  },
+  {
+   "id": "SIMILE0241",
+   "group": "SIMILE",
+   "frame": 6,
+   "word": [
+    "프라이팬",
+    "꾹 눌러요"
+   ],
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "어깨가 프라이팬처럼 꾹 눌러요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "MAG"
+  },
+  {
+   "id": "SIMILE0242",
+   "group": "SIMILE",
+   "frame": 4,
+   "word": [
+    "프라이팬",
+    "착 가라앉아요"
+   ],
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "가슴이 프라이팬처럼 착 가라앉아요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "MAG"
+  },
+  {
+   "id": "SIMILE0243",
+   "group": "SIMILE",
+   "frame": 2,
+   "word": [
+    "프라이팬",
+    "꽁꽁 묶여요"
+   ],
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "꼭 프라이팬처럼 꽁꽁 묶여요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "MAG"
+  },
+  {
+   "id": "SIMILE0244",
+   "group": "SIMILE",
+   "frame": 9,
+   "word": [
+    "프라이팬",
+    "쿡쿡 쑤셔요"
+   ],
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "등이 프라이팬처럼 쿡쿡 쑤셔요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "MAG"
+  },
+  {
+   "id": "SIMILE0245",
+   "group": "SIMILE",
+   "frame": 0,
+   "word": [
+    "도마",
+    "꽉 막혀요"
+   ],
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "도마처럼 꽉 막혀요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "MAG"
+  },
+  {
+   "id": "SIMILE0246",
+   "group": "SIMILE",
+   "frame": 7,
+   "word": [
+    "프라이팬",
+    "꾹 눌러요"
+   ],
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "그게 프라이팬처럼 꾹 눌러요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "MAG"
+  },
+  {
+   "id": "SIMILE0247",
+   "group": "SIMILE",
+   "frame": 5,
+   "word": [
+    "프라이팬",
+    "착 가라앉아요"
+   ],
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "속이 프라이팬같이 착 가라앉아요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "MAG"
+  },
+  {
+   "id": "SIMILE0248",
+   "group": "SIMILE",
+   "frame": 3,
+   "word": [
+    "프라이팬",
+    "꽁꽁 묶여요"
+   ],
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "마치 프라이팬처럼 꽁꽁 묶여요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "MAG"
+  },
+  {
+   "id": "SIMILE0249",
+   "group": "SIMILE",
+   "frame": 1,
+   "word": [
+    "도마",
+    "꽉 막혀요"
+   ],
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "도마같이 꽉 막혀요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "predicatePos": "MAG"
+  },
+  {
+   "id": "NEG0250",
+   "group": "NEG",
+   "frame": 0,
+   "word": "프라이팬",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "프라이팬은 아니에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NEG0251",
+   "group": "NEG",
+   "frame": 1,
+   "word": "프라이팬",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "프라이팬 같은 건 없어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NEG0252",
+   "group": "NEG",
+   "frame": 2,
+   "word": "프라이팬",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "프라이팬이 아니라 그냥 느낌만 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NEG0253",
+   "group": "NEG",
+   "frame": 0,
+   "word": "도마",
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "도마는 아니에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NEG0254",
+   "group": "NEG",
+   "frame": 3,
+   "word": "프라이팬",
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "프라이팬처럼 생기지는 않았어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NEG0255",
+   "group": "NEG",
+   "frame": 1,
+   "word": "도마",
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "도마 같은 건 없어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NEG0256",
+   "group": "NEG",
+   "frame": 4,
+   "word": "프라이팬",
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "프라이팬은 전혀 아니고요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NEG0257",
+   "group": "NEG",
+   "frame": 2,
+   "word": "도마",
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "도마가 아니라 그냥 느낌만 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NEG0258",
+   "group": "NEG",
+   "frame": 0,
+   "word": "물통",
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "물통은 아니에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NEG0259",
+   "group": "NEG",
+   "frame": 5,
+   "word": "프라이팬",
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "프라이팬이 있는 건 아니에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NEG0260",
+   "group": "NEG",
+   "frame": 3,
+   "word": "도마",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "도마처럼 생기지는 않았어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NEG0261",
+   "group": "NEG",
+   "frame": 1,
+   "word": "물통",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "물통 같은 건 없어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NEG0262",
+   "group": "NEG",
+   "frame": 6,
+   "word": "프라이팬",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "프라이팬 모양은 아니에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NEG0263",
+   "group": "NEG",
+   "frame": 4,
+   "word": "도마",
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "도마는 전혀 아니고요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NEG0264",
+   "group": "NEG",
+   "frame": 2,
+   "word": "물통",
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "물통이 아니라 그냥 느낌만 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NEG0265",
+   "group": "NEG",
+   "frame": 0,
+   "word": "돋보기",
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "돋보기는 아니에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NEG0266",
+   "group": "NEG",
+   "frame": 7,
+   "word": "프라이팬",
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "프라이팬은 안 보여요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NEG0267",
+   "group": "NEG",
+   "frame": 5,
+   "word": "도마",
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "도마가 있는 건 아니에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NEG0268",
+   "group": "NEG",
+   "frame": 3,
+   "word": "물통",
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "물통처럼 생기지는 않았어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NEG0269",
+   "group": "NEG",
+   "frame": 1,
+   "word": "돋보기",
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "돋보기 같은 건 없어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NEG0270",
+   "group": "NEG",
+   "frame": 8,
+   "word": "프라이팬",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "프라이팬이 떠오르지는 않아요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NEG0271",
+   "group": "NEG",
+   "frame": 6,
+   "word": "도마",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "도마 모양은 아니에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NEG0272",
+   "group": "NEG",
+   "frame": 4,
+   "word": "물통",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "물통은 전혀 아니고요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NEG0273",
+   "group": "NEG",
+   "frame": 2,
+   "word": "돋보기",
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "돋보기가 아니라 그냥 느낌만 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NEG0274",
+   "group": "NEG",
+   "frame": 9,
+   "word": "프라이팬",
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "프라이팬 같지는 않아요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NEG0275",
+   "group": "NEG",
+   "frame": 0,
+   "word": "저금통",
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "저금통은 아니에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NEG0276",
+   "group": "NEG",
+   "frame": 7,
+   "word": "도마",
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "도마는 안 보여요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NEG0277",
+   "group": "NEG",
+   "frame": 5,
+   "word": "물통",
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "물통이 있는 건 아니에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NEG0278",
+   "group": "NEG",
+   "frame": 3,
+   "word": "돋보기",
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "돋보기처럼 생기지는 않았어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NEG0279",
+   "group": "NEG",
+   "frame": 10,
+   "word": "프라이팬",
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "프라이팬을 떠올린 건 아니에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NEG0280",
+   "group": "NEG",
+   "frame": 1,
+   "word": "저금통",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "저금통 같은 건 없어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NEG0281",
+   "group": "NEG",
+   "frame": 8,
+   "word": "도마",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "도마가 떠오르지는 않아요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NEG0282",
+   "group": "NEG",
+   "frame": 6,
+   "word": "물통",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "물통 모양은 아니에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NEG0283",
+   "group": "NEG",
+   "frame": 4,
+   "word": "돋보기",
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "돋보기는 전혀 아니고요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NEG0284",
+   "group": "NEG",
+   "frame": 2,
+   "word": "저금통",
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "저금통이 아니라 그냥 느낌만 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NEG0285",
+   "group": "NEG",
+   "frame": 9,
+   "word": "도마",
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "도마 같지는 않아요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NEG0286",
+   "group": "NEG",
+   "frame": 0,
+   "word": "액자",
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "액자는 아니에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NEG0287",
+   "group": "NEG",
+   "frame": 7,
+   "word": "물통",
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "물통은 안 보여요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NEG0288",
+   "group": "NEG",
+   "frame": 5,
+   "word": "돋보기",
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "돋보기가 있는 건 아니에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NEG0289",
+   "group": "NEG",
+   "frame": 3,
+   "word": "저금통",
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "저금통처럼 생기지는 않았어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NEG0290",
+   "group": "NEG",
+   "frame": 10,
+   "word": "도마",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "도마를 떠올린 건 아니에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NEG0291",
+   "group": "NEG",
+   "frame": 1,
+   "word": "액자",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "액자 같은 건 없어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NEG0292",
+   "group": "NEG",
+   "frame": 8,
+   "word": "물통",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "물통이 떠오르지는 않아요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NEG0293",
+   "group": "NEG",
+   "frame": 6,
+   "word": "돋보기",
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "돋보기 모양은 아니에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NEG0294",
+   "group": "NEG",
+   "frame": 4,
+   "word": "저금통",
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "저금통은 전혀 아니고요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NEG0295",
+   "group": "NEG",
+   "frame": 2,
+   "word": "액자",
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "액자가 아니라 그냥 느낌만 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NEG0296",
+   "group": "NEG",
+   "frame": 9,
+   "word": "물통",
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "물통 같지는 않아요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NEG0297",
+   "group": "NEG",
+   "frame": 0,
+   "word": "거울",
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "거울은 아니에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NEG0298",
+   "group": "NEG",
+   "frame": 7,
+   "word": "돋보기",
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "돋보기는 안 보여요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NEG0299",
+   "group": "NEG",
+   "frame": 5,
+   "word": "저금통",
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "저금통이 있는 건 아니에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PAST0300",
+   "group": "PAST",
+   "frame": 0,
+   "word": "옷걸이",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "예전에는 옷걸이였어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PAST0301",
+   "group": "PAST",
+   "frame": 1,
+   "word": "옷걸이",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "처음엔 옷걸이 같았어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PAST0302",
+   "group": "PAST",
+   "frame": 2,
+   "word": "옷걸이",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "어릴 때는 옷걸이였어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PAST0303",
+   "group": "PAST",
+   "frame": 0,
+   "word": "단풍잎",
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "예전에는 단풍잎이었어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PAST0304",
+   "group": "PAST",
+   "frame": 3,
+   "word": "옷걸이",
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "아까는 옷걸이가 있었어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PAST0305",
+   "group": "PAST",
+   "frame": 1,
+   "word": "단풍잎",
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "처음엔 단풍잎 같았어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PAST0306",
+   "group": "PAST",
+   "frame": 4,
+   "word": "옷걸이",
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "옛날엔 옷걸이처럼 보였어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PAST0307",
+   "group": "PAST",
+   "frame": 2,
+   "word": "단풍잎",
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "어릴 때는 단풍잎이었어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PAST0308",
+   "group": "PAST",
+   "frame": 0,
+   "word": "붓",
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "예전에는 붓이었어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PAST0309",
+   "group": "PAST",
+   "frame": 5,
+   "word": "옷걸이",
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "그때는 옷걸이 같았는데요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PAST0310",
+   "group": "PAST",
+   "frame": 3,
+   "word": "단풍잎",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "아까는 단풍잎이 있었어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PAST0311",
+   "group": "PAST",
+   "frame": 1,
+   "word": "붓",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "처음엔 붓 같았어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PAST0312",
+   "group": "PAST",
+   "frame": 6,
+   "word": "옷걸이",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "원래는 옷걸이였어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PAST0313",
+   "group": "PAST",
+   "frame": 4,
+   "word": "단풍잎",
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "옛날엔 단풍잎처럼 보였어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PAST0314",
+   "group": "PAST",
+   "frame": 2,
+   "word": "붓",
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "어릴 때는 붓이었어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PAST0315",
+   "group": "PAST",
+   "frame": 0,
+   "word": "책",
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "예전에는 책이었어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PAST0316",
+   "group": "PAST",
+   "frame": 7,
+   "word": "옷걸이",
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "지난번엔 옷걸이가 떠올랐어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PAST0317",
+   "group": "PAST",
+   "frame": 5,
+   "word": "단풍잎",
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "그때는 단풍잎 같았는데요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PAST0318",
+   "group": "PAST",
+   "frame": 3,
+   "word": "붓",
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "아까는 붓이 있었어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PAST0319",
+   "group": "PAST",
+   "frame": 1,
+   "word": "책",
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "처음엔 책 같았어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PAST0320",
+   "group": "PAST",
+   "frame": 8,
+   "word": "옷걸이",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "전에는 옷걸이 모양이었어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PAST0321",
+   "group": "PAST",
+   "frame": 6,
+   "word": "단풍잎",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "원래는 단풍잎이었어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PAST0322",
+   "group": "PAST",
+   "frame": 4,
+   "word": "붓",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "옛날엔 붓처럼 보였어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PAST0323",
+   "group": "PAST",
+   "frame": 2,
+   "word": "책",
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "어릴 때는 책이었어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PAST0324",
+   "group": "PAST",
+   "frame": 9,
+   "word": "옷걸이",
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "처음 떠올렸을 땐 옷걸이였어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PAST0325",
+   "group": "PAST",
+   "frame": 0,
+   "word": "공책",
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "예전에는 공책이었어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PAST0326",
+   "group": "PAST",
+   "frame": 7,
+   "word": "단풍잎",
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "지난번엔 단풍잎이 떠올랐어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PAST0327",
+   "group": "PAST",
+   "frame": 5,
+   "word": "붓",
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "그때는 붓 같았는데요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PAST0328",
+   "group": "PAST",
+   "frame": 3,
+   "word": "책",
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "아까는 책이 있었어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PAST0329",
+   "group": "PAST",
+   "frame": 10,
+   "word": "옷걸이",
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "작년에는 옷걸이 같은 게 있었어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PAST0330",
+   "group": "PAST",
+   "frame": 1,
+   "word": "공책",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "처음엔 공책 같았어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PAST0331",
+   "group": "PAST",
+   "frame": 8,
+   "word": "단풍잎",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "전에는 단풍잎 모양이었어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PAST0332",
+   "group": "PAST",
+   "frame": 6,
+   "word": "붓",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "원래는 붓이었어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PAST0333",
+   "group": "PAST",
+   "frame": 4,
+   "word": "책",
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "옛날엔 책처럼 보였어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PAST0334",
+   "group": "PAST",
+   "frame": 2,
+   "word": "공책",
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "어릴 때는 공책이었어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PAST0335",
+   "group": "PAST",
+   "frame": 9,
+   "word": "단풍잎",
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "처음 떠올렸을 땐 단풍잎이었어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PAST0336",
+   "group": "PAST",
+   "frame": 0,
+   "word": "봉투",
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "예전에는 봉투였어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PAST0337",
+   "group": "PAST",
+   "frame": 7,
+   "word": "붓",
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "지난번엔 붓이 떠올랐어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PAST0338",
+   "group": "PAST",
+   "frame": 5,
+   "word": "책",
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "그때는 책 같았는데요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PAST0339",
+   "group": "PAST",
+   "frame": 3,
+   "word": "공책",
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "아까는 공책이 있었어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PAST0340",
+   "group": "PAST",
+   "frame": 10,
+   "word": "단풍잎",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "작년에는 단풍잎 같은 게 있었어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PAST0341",
+   "group": "PAST",
+   "frame": 1,
+   "word": "봉투",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "처음엔 봉투 같았어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PAST0342",
+   "group": "PAST",
+   "frame": 8,
+   "word": "붓",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "전에는 붓 모양이었어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PAST0343",
+   "group": "PAST",
+   "frame": 6,
+   "word": "책",
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "원래는 책이었어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PAST0344",
+   "group": "PAST",
+   "frame": 4,
+   "word": "공책",
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "옛날엔 공책처럼 보였어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PAST0345",
+   "group": "PAST",
+   "frame": 2,
+   "word": "봉투",
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "어릴 때는 봉투였어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PAST0346",
+   "group": "PAST",
+   "frame": 9,
+   "word": "붓",
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "처음 떠올렸을 땐 붓이었어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PAST0347",
+   "group": "PAST",
+   "frame": 0,
+   "word": "리모컨",
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "예전에는 리모컨이었어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PAST0348",
+   "group": "PAST",
+   "frame": 7,
+   "word": "책",
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "지난번엔 책이 떠올랐어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PAST0349",
+   "group": "PAST",
+   "frame": 5,
+   "word": "공책",
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "그때는 공책 같았는데요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "OTHER0350",
+   "group": "OTHER",
+   "frame": 0,
+   "word": "장독",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "친구가 장독 같대요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "OTHER0351",
+   "group": "OTHER",
+   "frame": 1,
+   "word": "장독",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "엄마는 그게 장독이라고 했어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "OTHER0352",
+   "group": "OTHER",
+   "frame": 2,
+   "word": "장독",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "선생님이 장독 같다고 하셨어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "OTHER0353",
+   "group": "OTHER",
+   "frame": 0,
+   "word": "바가지",
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "친구가 바가지 같대요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "OTHER0354",
+   "group": "OTHER",
+   "frame": 3,
+   "word": "장독",
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "남들은 장독이라고 해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "OTHER0355",
+   "group": "OTHER",
+   "frame": 1,
+   "word": "바가지",
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "엄마는 그게 바가지라고 했어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "OTHER0356",
+   "group": "OTHER",
+   "frame": 4,
+   "word": "장독",
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "동생이 장독 같다고 그랬어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "OTHER0357",
+   "group": "OTHER",
+   "frame": 2,
+   "word": "바가지",
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "선생님이 바가지 같다고 하셨어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "OTHER0358",
+   "group": "OTHER",
+   "frame": 0,
+   "word": "뚝배기",
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "친구가 뚝배기 같대요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "OTHER0359",
+   "group": "OTHER",
+   "frame": 5,
+   "word": "장독",
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "다들 장독이라고 하더라고요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "OTHER0360",
+   "group": "OTHER",
+   "frame": 3,
+   "word": "바가지",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "남들은 바가지라고 해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "OTHER0361",
+   "group": "OTHER",
+   "frame": 1,
+   "word": "뚝배기",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "엄마는 그게 뚝배기라고 했어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "OTHER0362",
+   "group": "OTHER",
+   "frame": 6,
+   "word": "장독",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "누가 장독 같다고 말했어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "OTHER0363",
+   "group": "OTHER",
+   "frame": 4,
+   "word": "바가지",
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "동생이 바가지 같다고 그랬어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "OTHER0364",
+   "group": "OTHER",
+   "frame": 2,
+   "word": "뚝배기",
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "선생님이 뚝배기 같다고 하셨어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "OTHER0365",
+   "group": "OTHER",
+   "frame": 0,
+   "word": "절구",
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "친구가 절구 같대요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "OTHER0366",
+   "group": "OTHER",
+   "frame": 7,
+   "word": "장독",
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "언니 말로는 장독이래요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "OTHER0367",
+   "group": "OTHER",
+   "frame": 5,
+   "word": "바가지",
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "다들 바가지라고 하더라고요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "OTHER0368",
+   "group": "OTHER",
+   "frame": 3,
+   "word": "뚝배기",
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "남들은 뚝배기라고 해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "OTHER0369",
+   "group": "OTHER",
+   "frame": 1,
+   "word": "절구",
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "엄마는 그게 절구라고 했어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "OTHER0370",
+   "group": "OTHER",
+   "frame": 8,
+   "word": "장독",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "사람들이 장독 같대요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "OTHER0371",
+   "group": "OTHER",
+   "frame": 6,
+   "word": "바가지",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "누가 바가지 같다고 말했어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "OTHER0372",
+   "group": "OTHER",
+   "frame": 4,
+   "word": "뚝배기",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "동생이 뚝배기 같다고 그랬어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "OTHER0373",
+   "group": "OTHER",
+   "frame": 2,
+   "word": "절구",
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "선생님이 절구 같다고 하셨어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "OTHER0374",
+   "group": "OTHER",
+   "frame": 9,
+   "word": "장독",
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "아빠는 장독이라고 부르셨어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "OTHER0375",
+   "group": "OTHER",
+   "frame": 0,
+   "word": "삽",
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "친구가 삽 같대요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "OTHER0376",
+   "group": "OTHER",
+   "frame": 7,
+   "word": "바가지",
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "언니 말로는 바가지래요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "OTHER0377",
+   "group": "OTHER",
+   "frame": 5,
+   "word": "뚝배기",
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "다들 뚝배기라고 하더라고요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "OTHER0378",
+   "group": "OTHER",
+   "frame": 3,
+   "word": "절구",
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "남들은 절구라고 해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "OTHER0379",
+   "group": "OTHER",
+   "frame": 10,
+   "word": "장독",
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "룸메이트가 장독 같다고 하던데요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "OTHER0380",
+   "group": "OTHER",
+   "frame": 1,
+   "word": "삽",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "엄마는 그게 삽이라고 했어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "OTHER0381",
+   "group": "OTHER",
+   "frame": 8,
+   "word": "바가지",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "사람들이 바가지 같대요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "OTHER0382",
+   "group": "OTHER",
+   "frame": 6,
+   "word": "뚝배기",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "누가 뚝배기 같다고 말했어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "OTHER0383",
+   "group": "OTHER",
+   "frame": 4,
+   "word": "절구",
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "동생이 절구 같다고 그랬어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "OTHER0384",
+   "group": "OTHER",
+   "frame": 2,
+   "word": "삽",
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "선생님이 삽 같다고 하셨어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "OTHER0385",
+   "group": "OTHER",
+   "frame": 9,
+   "word": "바가지",
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "아빠는 바가지라고 부르셨어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "OTHER0386",
+   "group": "OTHER",
+   "frame": 0,
+   "word": "갈퀴",
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "친구가 갈퀴 같대요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "OTHER0387",
+   "group": "OTHER",
+   "frame": 7,
+   "word": "뚝배기",
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "언니 말로는 뚝배기래요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "OTHER0388",
+   "group": "OTHER",
+   "frame": 5,
+   "word": "절구",
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "다들 절구라고 하더라고요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "OTHER0389",
+   "group": "OTHER",
+   "frame": 3,
+   "word": "삽",
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "남들은 삽이라고 해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "OTHER0390",
+   "group": "OTHER",
+   "frame": 10,
+   "word": "바가지",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "룸메이트가 바가지 같다고 하던데요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "OTHER0391",
+   "group": "OTHER",
+   "frame": 1,
+   "word": "갈퀴",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "엄마는 그게 갈퀴라고 했어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "OTHER0392",
+   "group": "OTHER",
+   "frame": 8,
+   "word": "뚝배기",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "사람들이 뚝배기 같대요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "OTHER0393",
+   "group": "OTHER",
+   "frame": 6,
+   "word": "절구",
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "누가 절구 같다고 말했어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "OTHER0394",
+   "group": "OTHER",
+   "frame": 4,
+   "word": "삽",
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "동생이 삽 같다고 그랬어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "OTHER0395",
+   "group": "OTHER",
+   "frame": 2,
+   "word": "갈퀴",
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "선생님이 갈퀴 같다고 하셨어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "OTHER0396",
+   "group": "OTHER",
+   "frame": 9,
+   "word": "뚝배기",
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "아빠는 뚝배기라고 부르셨어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "OTHER0397",
+   "group": "OTHER",
+   "frame": 0,
+   "word": "물뿌리개",
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "친구가 물뿌리개 같대요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "OTHER0398",
+   "group": "OTHER",
+   "frame": 7,
+   "word": "절구",
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "언니 말로는 절구래요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "OTHER0399",
+   "group": "OTHER",
+   "frame": 5,
+   "word": "삽",
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "다들 삽이라고 하더라고요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "HYPO0400",
+   "group": "HYPO",
+   "frame": 0,
+   "word": "땅콩",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "땅콩이면 좋겠어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "HYPO0401",
+   "group": "HYPO",
+   "frame": 1,
+   "word": "땅콩",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "아마 땅콩일 거예요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "HYPO0402",
+   "group": "HYPO",
+   "frame": 2,
+   "word": "땅콩",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "땅콩일지도 몰라요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "HYPO0403",
+   "group": "HYPO",
+   "frame": 0,
+   "word": "옥수수",
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "옥수수면 좋겠어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "HYPO0404",
+   "group": "HYPO",
+   "frame": 3,
+   "word": "땅콩",
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "혹시 땅콩일까 싶어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "HYPO0405",
+   "group": "HYPO",
+   "frame": 1,
+   "word": "옥수수",
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "아마 옥수수일 거예요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "HYPO0406",
+   "group": "HYPO",
+   "frame": 4,
+   "word": "땅콩",
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "만약 땅콩이라면 덜 무서울 것 같아요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "HYPO0407",
+   "group": "HYPO",
+   "frame": 2,
+   "word": "옥수수",
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "옥수수일지도 몰라요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "HYPO0408",
+   "group": "HYPO",
+   "frame": 0,
+   "word": "당근",
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "당근이면 좋겠어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "HYPO0409",
+   "group": "HYPO",
+   "frame": 5,
+   "word": "땅콩",
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "땅콩이었으면 해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "HYPO0410",
+   "group": "HYPO",
+   "frame": 3,
+   "word": "옥수수",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "혹시 옥수수일까 싶어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "HYPO0411",
+   "group": "HYPO",
+   "frame": 1,
+   "word": "당근",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "아마 당근일 거예요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "HYPO0412",
+   "group": "HYPO",
+   "frame": 6,
+   "word": "땅콩",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "땅콩 같은 게 있으면 좋겠어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "HYPO0413",
+   "group": "HYPO",
+   "frame": 4,
+   "word": "옥수수",
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "만약 옥수수라면 덜 무서울 것 같아요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "HYPO0414",
+   "group": "HYPO",
+   "frame": 2,
+   "word": "당근",
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "당근일지도 몰라요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "HYPO0415",
+   "group": "HYPO",
+   "frame": 0,
+   "word": "양파",
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "양파면 좋겠어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "HYPO0416",
+   "group": "HYPO",
+   "frame": 7,
+   "word": "땅콩",
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "땅콩이면 어떨까 싶어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "HYPO0417",
+   "group": "HYPO",
+   "frame": 5,
+   "word": "옥수수",
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "옥수수였으면 해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "HYPO0418",
+   "group": "HYPO",
+   "frame": 3,
+   "word": "당근",
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "혹시 당근일까 싶어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "HYPO0419",
+   "group": "HYPO",
+   "frame": 1,
+   "word": "양파",
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "아마 양파일 거예요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "HYPO0420",
+   "group": "HYPO",
+   "frame": 8,
+   "word": "땅콩",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "땅콩을 떠올리고 싶어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "HYPO0421",
+   "group": "HYPO",
+   "frame": 6,
+   "word": "옥수수",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "옥수수 같은 게 있으면 좋겠어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "HYPO0422",
+   "group": "HYPO",
+   "frame": 4,
+   "word": "당근",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "만약 당근이라면 덜 무서울 것 같아요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "HYPO0423",
+   "group": "HYPO",
+   "frame": 2,
+   "word": "양파",
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "양파일지도 몰라요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "HYPO0424",
+   "group": "HYPO",
+   "frame": 9,
+   "word": "땅콩",
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "땅콩이길 바라요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "HYPO0425",
+   "group": "HYPO",
+   "frame": 0,
+   "word": "배추",
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "배추면 좋겠어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "HYPO0426",
+   "group": "HYPO",
+   "frame": 7,
+   "word": "옥수수",
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "옥수수면 어떨까 싶어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "HYPO0427",
+   "group": "HYPO",
+   "frame": 5,
+   "word": "당근",
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "당근이었으면 해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "HYPO0428",
+   "group": "HYPO",
+   "frame": 3,
+   "word": "양파",
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "혹시 양파일까 싶어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "HYPO0429",
+   "group": "HYPO",
+   "frame": 10,
+   "word": "땅콩",
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "아마도 땅콩 같은 거겠죠"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "HYPO0430",
+   "group": "HYPO",
+   "frame": 1,
+   "word": "배추",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "아마 배추일 거예요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "HYPO0431",
+   "group": "HYPO",
+   "frame": 8,
+   "word": "옥수수",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "옥수수를 떠올리고 싶어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "HYPO0432",
+   "group": "HYPO",
+   "frame": 6,
+   "word": "당근",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "당근 같은 게 있으면 좋겠어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "HYPO0433",
+   "group": "HYPO",
+   "frame": 4,
+   "word": "양파",
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "만약 양파라면 덜 무서울 것 같아요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "HYPO0434",
+   "group": "HYPO",
+   "frame": 2,
+   "word": "배추",
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "배추일지도 몰라요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "HYPO0435",
+   "group": "HYPO",
+   "frame": 9,
+   "word": "옥수수",
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "옥수수길 바라요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "HYPO0436",
+   "group": "HYPO",
+   "frame": 0,
+   "word": "사과",
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "사과면 좋겠어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "HYPO0437",
+   "group": "HYPO",
+   "frame": 7,
+   "word": "당근",
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "당근이면 어떨까 싶어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "HYPO0438",
+   "group": "HYPO",
+   "frame": 5,
+   "word": "양파",
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "양파였으면 해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "HYPO0439",
+   "group": "HYPO",
+   "frame": 3,
+   "word": "배추",
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "혹시 배추일까 싶어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "HYPO0440",
+   "group": "HYPO",
+   "frame": 10,
+   "word": "옥수수",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "아마도 옥수수 같은 거겠죠"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "HYPO0441",
+   "group": "HYPO",
+   "frame": 1,
+   "word": "사과",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "아마 사과일 거예요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "HYPO0442",
+   "group": "HYPO",
+   "frame": 8,
+   "word": "당근",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "당근을 떠올리고 싶어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "HYPO0443",
+   "group": "HYPO",
+   "frame": 6,
+   "word": "양파",
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "양파 같은 게 있으면 좋겠어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "HYPO0444",
+   "group": "HYPO",
+   "frame": 4,
+   "word": "배추",
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "만약 배추라면 덜 무서울 것 같아요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "HYPO0445",
+   "group": "HYPO",
+   "frame": 2,
+   "word": "사과",
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "사과일지도 몰라요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "HYPO0446",
+   "group": "HYPO",
+   "frame": 9,
+   "word": "당근",
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "당근이길 바라요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "HYPO0447",
+   "group": "HYPO",
+   "frame": 0,
+   "word": "귤",
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "귤이면 좋겠어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "HYPO0448",
+   "group": "HYPO",
+   "frame": 7,
+   "word": "양파",
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "양파면 어떨까 싶어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "HYPO0449",
+   "group": "HYPO",
+   "frame": 5,
+   "word": "배추",
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "배추였으면 해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PERSON0450",
+   "group": "PERSON",
+   "frame": 0,
+   "word": "어린애",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "어린애가 보여요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PERSON0451",
+   "group": "PERSON",
+   "frame": 1,
+   "word": "어린애",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "제 앞에 어린애가 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PERSON0452",
+   "group": "PERSON",
+   "frame": 2,
+   "word": "어린애",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "잘 보면 어린애예요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PERSON0453",
+   "group": "PERSON",
+   "frame": 0,
+   "word": "아줌마",
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "아줌마가 보여요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PERSON0454",
+   "group": "PERSON",
+   "frame": 3,
+   "word": "어린애",
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "어린애처럼 생긴 게 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PERSON0455",
+   "group": "PERSON",
+   "frame": 1,
+   "word": "아줌마",
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "제 앞에 아줌마가 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PERSON0456",
+   "group": "PERSON",
+   "frame": 4,
+   "word": "어린애",
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "어린애 하나가 보이는데요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PERSON0457",
+   "group": "PERSON",
+   "frame": 2,
+   "word": "아줌마",
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "잘 보면 아줌마예요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PERSON0458",
+   "group": "PERSON",
+   "frame": 0,
+   "word": "할머니",
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "할머니가 보여요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PERSON0459",
+   "group": "PERSON",
+   "frame": 5,
+   "word": "어린애",
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "아무래도 어린애 같아요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PERSON0460",
+   "group": "PERSON",
+   "frame": 3,
+   "word": "아줌마",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "아줌마처럼 생긴 게 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PERSON0461",
+   "group": "PERSON",
+   "frame": 1,
+   "word": "할머니",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "제 앞에 할머니가 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PERSON0462",
+   "group": "PERSON",
+   "frame": 6,
+   "word": "어린애",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "어린애가 웅크린 모습이에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PERSON0463",
+   "group": "PERSON",
+   "frame": 4,
+   "word": "아줌마",
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "아줌마 하나가 보이는데요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PERSON0464",
+   "group": "PERSON",
+   "frame": 2,
+   "word": "할머니",
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "잘 보면 할머니예요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PERSON0465",
+   "group": "PERSON",
+   "frame": 0,
+   "word": "청년",
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "청년이 보여요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PERSON0466",
+   "group": "PERSON",
+   "frame": 7,
+   "word": "어린애",
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "그건 어린애예요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PERSON0467",
+   "group": "PERSON",
+   "frame": 5,
+   "word": "아줌마",
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "아무래도 아줌마 같아요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PERSON0468",
+   "group": "PERSON",
+   "frame": 3,
+   "word": "할머니",
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "할머니처럼 생긴 게 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PERSON0469",
+   "group": "PERSON",
+   "frame": 1,
+   "word": "청년",
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "제 앞에 청년이 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PERSON0470",
+   "group": "PERSON",
+   "frame": 8,
+   "word": "어린애",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "어린애가 한가운데 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PERSON0471",
+   "group": "PERSON",
+   "frame": 6,
+   "word": "아줌마",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "아줌마가 웅크린 모습이에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PERSON0472",
+   "group": "PERSON",
+   "frame": 4,
+   "word": "할머니",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "할머니 하나가 보이는데요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PERSON0473",
+   "group": "PERSON",
+   "frame": 2,
+   "word": "청년",
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "잘 보면 청년이에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PERSON0474",
+   "group": "PERSON",
+   "frame": 9,
+   "word": "어린애",
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "머릿속에 어린애가 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PERSON0475",
+   "group": "PERSON",
+   "frame": 0,
+   "word": "여자",
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "여자가 보여요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PERSON0476",
+   "group": "PERSON",
+   "frame": 7,
+   "word": "아줌마",
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "그건 아줌마예요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PERSON0477",
+   "group": "PERSON",
+   "frame": 5,
+   "word": "할머니",
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "아무래도 할머니 같아요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PERSON0478",
+   "group": "PERSON",
+   "frame": 3,
+   "word": "청년",
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "청년처럼 생긴 게 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PERSON0479",
+   "group": "PERSON",
+   "frame": 10,
+   "word": "어린애",
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "어린애 비슷한 게 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PERSON0480",
+   "group": "PERSON",
+   "frame": 1,
+   "word": "여자",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "제 앞에 여자가 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PERSON0481",
+   "group": "PERSON",
+   "frame": 8,
+   "word": "아줌마",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "아줌마가 한가운데 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PERSON0482",
+   "group": "PERSON",
+   "frame": 6,
+   "word": "할머니",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "할머니가 웅크린 모습이에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PERSON0483",
+   "group": "PERSON",
+   "frame": 4,
+   "word": "청년",
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "청년 하나가 보이는데요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PERSON0484",
+   "group": "PERSON",
+   "frame": 2,
+   "word": "여자",
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "잘 보면 여자예요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PERSON0485",
+   "group": "PERSON",
+   "frame": 9,
+   "word": "아줌마",
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "머릿속에 아줌마가 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PERSON0486",
+   "group": "PERSON",
+   "frame": 0,
+   "word": "남자아이",
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "남자아이가 보여요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PERSON0487",
+   "group": "PERSON",
+   "frame": 7,
+   "word": "할머니",
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "그건 할머니예요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PERSON0488",
+   "group": "PERSON",
+   "frame": 5,
+   "word": "청년",
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "아무래도 청년 같아요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PERSON0489",
+   "group": "PERSON",
+   "frame": 3,
+   "word": "여자",
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "여자처럼 생긴 게 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PERSON0490",
+   "group": "PERSON",
+   "frame": 10,
+   "word": "아줌마",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "아줌마 비슷한 게 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PERSON0491",
+   "group": "PERSON",
+   "frame": 1,
+   "word": "남자아이",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "제 앞에 남자아이가 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PERSON0492",
+   "group": "PERSON",
+   "frame": 8,
+   "word": "할머니",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "할머니가 한가운데 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PERSON0493",
+   "group": "PERSON",
+   "frame": 6,
+   "word": "청년",
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "청년이 웅크린 모습이에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PERSON0494",
+   "group": "PERSON",
+   "frame": 4,
+   "word": "여자",
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "여자 하나가 보이는데요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PERSON0495",
+   "group": "PERSON",
+   "frame": 2,
+   "word": "남자아이",
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "잘 보면 남자아이예요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PERSON0496",
+   "group": "PERSON",
+   "frame": 9,
+   "word": "할머니",
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "머릿속에 할머니가 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PERSON0497",
+   "group": "PERSON",
+   "frame": 0,
+   "word": "꼬맹이",
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "꼬맹이가 보여요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PERSON0498",
+   "group": "PERSON",
+   "frame": 7,
+   "word": "청년",
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "그건 청년이에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "PERSON0499",
+   "group": "PERSON",
+   "frame": 5,
+   "word": "여자",
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "아무래도 여자 같아요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "ANIMAL0500",
+   "group": "ANIMAL",
+   "frame": 0,
+   "word": "비둘기",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "비둘기가 보여요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "ANIMAL0501",
+   "group": "ANIMAL",
+   "frame": 1,
+   "word": "비둘기",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "제 앞에 비둘기가 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "ANIMAL0502",
+   "group": "ANIMAL",
+   "frame": 2,
+   "word": "비둘기",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "잘 보면 비둘기예요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "ANIMAL0503",
+   "group": "ANIMAL",
+   "frame": 0,
+   "word": "까마귀",
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "까마귀가 보여요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "ANIMAL0504",
+   "group": "ANIMAL",
+   "frame": 3,
+   "word": "비둘기",
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "비둘기처럼 생긴 게 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "ANIMAL0505",
+   "group": "ANIMAL",
+   "frame": 1,
+   "word": "까마귀",
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "제 앞에 까마귀가 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "ANIMAL0506",
+   "group": "ANIMAL",
+   "frame": 4,
+   "word": "비둘기",
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "비둘기 하나가 보이는데요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "ANIMAL0507",
+   "group": "ANIMAL",
+   "frame": 2,
+   "word": "까마귀",
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "잘 보면 까마귀예요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "ANIMAL0508",
+   "group": "ANIMAL",
+   "frame": 0,
+   "word": "고양이",
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "고양이가 보여요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "ANIMAL0509",
+   "group": "ANIMAL",
+   "frame": 5,
+   "word": "비둘기",
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "아무래도 비둘기 같아요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "ANIMAL0510",
+   "group": "ANIMAL",
+   "frame": 3,
+   "word": "까마귀",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "까마귀처럼 생긴 게 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "ANIMAL0511",
+   "group": "ANIMAL",
+   "frame": 1,
+   "word": "고양이",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "제 앞에 고양이가 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "ANIMAL0512",
+   "group": "ANIMAL",
+   "frame": 6,
+   "word": "비둘기",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "비둘기가 웅크린 모습이에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "ANIMAL0513",
+   "group": "ANIMAL",
+   "frame": 4,
+   "word": "까마귀",
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "까마귀 하나가 보이는데요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "ANIMAL0514",
+   "group": "ANIMAL",
+   "frame": 2,
+   "word": "고양이",
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "잘 보면 고양이예요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "ANIMAL0515",
+   "group": "ANIMAL",
+   "frame": 0,
+   "word": "강아지",
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "강아지가 보여요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "ANIMAL0516",
+   "group": "ANIMAL",
+   "frame": 7,
+   "word": "비둘기",
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "그건 비둘기예요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "ANIMAL0517",
+   "group": "ANIMAL",
+   "frame": 5,
+   "word": "까마귀",
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "아무래도 까마귀 같아요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "ANIMAL0518",
+   "group": "ANIMAL",
+   "frame": 3,
+   "word": "고양이",
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "고양이처럼 생긴 게 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "ANIMAL0519",
+   "group": "ANIMAL",
+   "frame": 1,
+   "word": "강아지",
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "제 앞에 강아지가 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "ANIMAL0520",
+   "group": "ANIMAL",
+   "frame": 8,
+   "word": "비둘기",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "비둘기가 한가운데 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "ANIMAL0521",
+   "group": "ANIMAL",
+   "frame": 6,
+   "word": "까마귀",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "까마귀가 웅크린 모습이에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "ANIMAL0522",
+   "group": "ANIMAL",
+   "frame": 4,
+   "word": "고양이",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "고양이 하나가 보이는데요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "ANIMAL0523",
+   "group": "ANIMAL",
+   "frame": 2,
+   "word": "강아지",
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "잘 보면 강아지예요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "ANIMAL0524",
+   "group": "ANIMAL",
+   "frame": 9,
+   "word": "비둘기",
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "머릿속에 비둘기가 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "ANIMAL0525",
+   "group": "ANIMAL",
+   "frame": 0,
+   "word": "생쥐",
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "생쥐가 보여요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "ANIMAL0526",
+   "group": "ANIMAL",
+   "frame": 7,
+   "word": "까마귀",
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "그건 까마귀예요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "ANIMAL0527",
+   "group": "ANIMAL",
+   "frame": 5,
+   "word": "고양이",
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "아무래도 고양이 같아요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "ANIMAL0528",
+   "group": "ANIMAL",
+   "frame": 3,
+   "word": "강아지",
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "강아지처럼 생긴 게 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "ANIMAL0529",
+   "group": "ANIMAL",
+   "frame": 10,
+   "word": "비둘기",
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "비둘기 비슷한 게 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "ANIMAL0530",
+   "group": "ANIMAL",
+   "frame": 1,
+   "word": "생쥐",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "제 앞에 생쥐가 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "ANIMAL0531",
+   "group": "ANIMAL",
+   "frame": 8,
+   "word": "까마귀",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "까마귀가 한가운데 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "ANIMAL0532",
+   "group": "ANIMAL",
+   "frame": 6,
+   "word": "고양이",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "고양이가 웅크린 모습이에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "ANIMAL0533",
+   "group": "ANIMAL",
+   "frame": 4,
+   "word": "강아지",
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "강아지 하나가 보이는데요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "ANIMAL0534",
+   "group": "ANIMAL",
+   "frame": 2,
+   "word": "생쥐",
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "잘 보면 생쥐예요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "ANIMAL0535",
+   "group": "ANIMAL",
+   "frame": 9,
+   "word": "까마귀",
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "머릿속에 까마귀가 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "ANIMAL0536",
+   "group": "ANIMAL",
+   "frame": 0,
+   "word": "도롱뇽",
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "도롱뇽이 보여요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "ANIMAL0537",
+   "group": "ANIMAL",
+   "frame": 7,
+   "word": "고양이",
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "그건 고양이예요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "ANIMAL0538",
+   "group": "ANIMAL",
+   "frame": 5,
+   "word": "강아지",
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "아무래도 강아지 같아요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "ANIMAL0539",
+   "group": "ANIMAL",
+   "frame": 3,
+   "word": "생쥐",
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "생쥐처럼 생긴 게 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "ANIMAL0540",
+   "group": "ANIMAL",
+   "frame": 10,
+   "word": "까마귀",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "까마귀 비슷한 게 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "ANIMAL0541",
+   "group": "ANIMAL",
+   "frame": 1,
+   "word": "도롱뇽",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "제 앞에 도롱뇽이 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "ANIMAL0542",
+   "group": "ANIMAL",
+   "frame": 8,
+   "word": "고양이",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "고양이가 한가운데 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "ANIMAL0543",
+   "group": "ANIMAL",
+   "frame": 6,
+   "word": "강아지",
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "강아지가 웅크린 모습이에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "ANIMAL0544",
+   "group": "ANIMAL",
+   "frame": 4,
+   "word": "생쥐",
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "생쥐 하나가 보이는데요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "ANIMAL0545",
+   "group": "ANIMAL",
+   "frame": 2,
+   "word": "도롱뇽",
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "잘 보면 도롱뇽이에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "ANIMAL0546",
+   "group": "ANIMAL",
+   "frame": 9,
+   "word": "고양이",
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "머릿속에 고양이가 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "ANIMAL0547",
+   "group": "ANIMAL",
+   "frame": 0,
+   "word": "올빼미",
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "올빼미가 보여요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "ANIMAL0548",
+   "group": "ANIMAL",
+   "frame": 7,
+   "word": "강아지",
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "그건 강아지예요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "ANIMAL0549",
+   "group": "ANIMAL",
+   "frame": 5,
+   "word": "생쥐",
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "아무래도 생쥐 같아요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "MIST0550",
+   "group": "MIST",
+   "frame": 0,
+   "word": "안개",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "안개가 보여요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "MIST0551",
+   "group": "MIST",
+   "frame": 1,
+   "word": "안개",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "제 앞에 안개가 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "MIST0552",
+   "group": "MIST",
+   "frame": 2,
+   "word": "안개",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "잘 보면 안개예요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "MIST0553",
+   "group": "MIST",
+   "frame": 0,
+   "word": "연기",
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "연기가 보여요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "MIST0554",
+   "group": "MIST",
+   "frame": 3,
+   "word": "안개",
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "안개처럼 생긴 게 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "MIST0555",
+   "group": "MIST",
+   "frame": 1,
+   "word": "연기",
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "제 앞에 연기가 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "MIST0556",
+   "group": "MIST",
+   "frame": 4,
+   "word": "안개",
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "안개 하나가 보이는데요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "MIST0557",
+   "group": "MIST",
+   "frame": 2,
+   "word": "연기",
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "잘 보면 연기예요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "MIST0558",
+   "group": "MIST",
+   "frame": 0,
+   "word": "구름",
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "구름이 보여요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "MIST0559",
+   "group": "MIST",
+   "frame": 5,
+   "word": "안개",
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "아무래도 안개 같아요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "MIST0560",
+   "group": "MIST",
+   "frame": 3,
+   "word": "연기",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "연기처럼 생긴 게 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "MIST0561",
+   "group": "MIST",
+   "frame": 1,
+   "word": "구름",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "제 앞에 구름이 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "MIST0562",
+   "group": "MIST",
+   "frame": 6,
+   "word": "안개",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "안개가 웅크린 모습이에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "MIST0563",
+   "group": "MIST",
+   "frame": 4,
+   "word": "연기",
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "연기 하나가 보이는데요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "MIST0564",
+   "group": "MIST",
+   "frame": 2,
+   "word": "구름",
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "잘 보면 구름이에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "MIST0565",
+   "group": "MIST",
+   "frame": 0,
+   "word": "불꽃",
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "불꽃이 보여요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "MIST0566",
+   "group": "MIST",
+   "frame": 7,
+   "word": "안개",
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "그건 안개예요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "MIST0567",
+   "group": "MIST",
+   "frame": 5,
+   "word": "연기",
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "아무래도 연기 같아요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "MIST0568",
+   "group": "MIST",
+   "frame": 3,
+   "word": "구름",
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "구름처럼 생긴 게 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "MIST0569",
+   "group": "MIST",
+   "frame": 1,
+   "word": "불꽃",
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "제 앞에 불꽃이 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "MIST0570",
+   "group": "MIST",
+   "frame": 8,
+   "word": "안개",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "안개가 한가운데 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "MIST0571",
+   "group": "MIST",
+   "frame": 6,
+   "word": "연기",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "연기가 웅크린 모습이에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "MIST0572",
+   "group": "MIST",
+   "frame": 4,
+   "word": "구름",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "구름 하나가 보이는데요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "MIST0573",
+   "group": "MIST",
+   "frame": 2,
+   "word": "불꽃",
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "잘 보면 불꽃이에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "MIST0574",
+   "group": "MIST",
+   "frame": 9,
+   "word": "안개",
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "머릿속에 안개가 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "MIST0575",
+   "group": "MIST",
+   "frame": 0,
+   "word": "불덩이",
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "불덩이가 보여요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "MIST0576",
+   "group": "MIST",
+   "frame": 7,
+   "word": "연기",
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "그건 연기예요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "MIST0577",
+   "group": "MIST",
+   "frame": 5,
+   "word": "구름",
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "아무래도 구름 같아요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "MIST0578",
+   "group": "MIST",
+   "frame": 3,
+   "word": "불꽃",
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "불꽃처럼 생긴 게 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "MIST0579",
+   "group": "MIST",
+   "frame": 10,
+   "word": "안개",
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "안개 비슷한 게 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "MIST0580",
+   "group": "MIST",
+   "frame": 1,
+   "word": "불덩이",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "제 앞에 불덩이가 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "MIST0581",
+   "group": "MIST",
+   "frame": 8,
+   "word": "연기",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "연기가 한가운데 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "MIST0582",
+   "group": "MIST",
+   "frame": 6,
+   "word": "구름",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "구름이 웅크린 모습이에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "MIST0583",
+   "group": "MIST",
+   "frame": 4,
+   "word": "불꽃",
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "불꽃 하나가 보이는데요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "MIST0584",
+   "group": "MIST",
+   "frame": 2,
+   "word": "불덩이",
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "잘 보면 불덩이예요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "MIST0585",
+   "group": "MIST",
+   "frame": 9,
+   "word": "연기",
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "머릿속에 연기가 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "MIST0586",
+   "group": "MIST",
+   "frame": 0,
+   "word": "김",
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "김이 보여요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "MIST0587",
+   "group": "MIST",
+   "frame": 7,
+   "word": "구름",
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "그건 구름이에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "MIST0588",
+   "group": "MIST",
+   "frame": 5,
+   "word": "불꽃",
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "아무래도 불꽃 같아요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "MIST0589",
+   "group": "MIST",
+   "frame": 3,
+   "word": "불덩이",
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "불덩이처럼 생긴 게 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "MIST0590",
+   "group": "MIST",
+   "frame": 10,
+   "word": "연기",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "연기 비슷한 게 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "MIST0591",
+   "group": "MIST",
+   "frame": 1,
+   "word": "김",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "제 앞에 김이 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "MIST0592",
+   "group": "MIST",
+   "frame": 8,
+   "word": "구름",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "구름이 한가운데 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "MIST0593",
+   "group": "MIST",
+   "frame": 6,
+   "word": "불꽃",
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "불꽃이 웅크린 모습이에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "MIST0594",
+   "group": "MIST",
+   "frame": 4,
+   "word": "불덩이",
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "불덩이 하나가 보이는데요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "MIST0595",
+   "group": "MIST",
+   "frame": 2,
+   "word": "김",
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "잘 보면 김이에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "MIST0596",
+   "group": "MIST",
+   "frame": 9,
+   "word": "구름",
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "머릿속에 구름이 있어요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "MIST0597",
+   "group": "MIST",
+   "frame": 0,
+   "word": "수증기",
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "수증기가 보여요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "MIST0598",
+   "group": "MIST",
+   "frame": 7,
+   "word": "불꽃",
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "그건 불꽃이에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "MIST0599",
+   "group": "MIST",
+   "frame": 5,
+   "word": "불덩이",
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "아무래도 불덩이 같아요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NONE0600",
+   "group": "NONE",
+   "frame": 0,
+   "word": [
+    "청록색",
+    "축축해요"
+   ],
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "청록색이에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NONE0601",
+   "group": "NONE",
+   "frame": 1,
+   "word": [
+    "청록색",
+    "축축해요"
+   ],
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "청록색이 돌고 축축해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NONE0602",
+   "group": "NONE",
+   "frame": 2,
+   "word": [
+    "청록색",
+    "축축해요"
+   ],
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "그저 축축해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NONE0603",
+   "group": "NONE",
+   "frame": 0,
+   "word": [
+    "청록색",
+    "따가워요"
+   ],
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "청록색이에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NONE0604",
+   "group": "NONE",
+   "frame": 3,
+   "word": [
+    "청록색",
+    "축축해요"
+   ],
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "딱히 모양은 없고 축축해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NONE0605",
+   "group": "NONE",
+   "frame": 1,
+   "word": [
+    "청록색",
+    "따가워요"
+   ],
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "청록색이 돌고 따가워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NONE0606",
+   "group": "NONE",
+   "frame": 4,
+   "word": [
+    "청록색",
+    "축축해요"
+   ],
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "은은하게 청록색이에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NONE0607",
+   "group": "NONE",
+   "frame": 2,
+   "word": [
+    "청록색",
+    "따가워요"
+   ],
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "그저 따가워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NONE0608",
+   "group": "NONE",
+   "frame": 0,
+   "word": [
+    "청록색",
+    "뻑뻑해요"
+   ],
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "청록색이에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NONE0609",
+   "group": "NONE",
+   "frame": 5,
+   "word": [
+    "청록색",
+    "축축해요"
+   ],
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "자꾸 축축해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NONE0610",
+   "group": "NONE",
+   "frame": 3,
+   "word": [
+    "청록색",
+    "따가워요"
+   ],
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "딱히 모양은 없고 따가워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NONE0611",
+   "group": "NONE",
+   "frame": 1,
+   "word": [
+    "청록색",
+    "뻑뻑해요"
+   ],
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "청록색이 돌고 뻑뻑해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NONE0612",
+   "group": "NONE",
+   "frame": 6,
+   "word": [
+    "청록색",
+    "축축해요"
+   ],
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "청록색 느낌이 나요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NONE0613",
+   "group": "NONE",
+   "frame": 4,
+   "word": [
+    "청록색",
+    "따가워요"
+   ],
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "은은하게 청록색이에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NONE0614",
+   "group": "NONE",
+   "frame": 2,
+   "word": [
+    "청록색",
+    "뻑뻑해요"
+   ],
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "그저 뻑뻑해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NONE0615",
+   "group": "NONE",
+   "frame": 0,
+   "word": [
+    "청록색",
+    "얼얼해요"
+   ],
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "청록색이에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NONE0616",
+   "group": "NONE",
+   "frame": 7,
+   "word": [
+    "청록색",
+    "축축해요"
+   ],
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "전체가 청록색이에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NONE0617",
+   "group": "NONE",
+   "frame": 5,
+   "word": [
+    "청록색",
+    "따가워요"
+   ],
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "자꾸 따가워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NONE0618",
+   "group": "NONE",
+   "frame": 3,
+   "word": [
+    "청록색",
+    "뻑뻑해요"
+   ],
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "딱히 모양은 없고 뻑뻑해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NONE0619",
+   "group": "NONE",
+   "frame": 1,
+   "word": [
+    "청록색",
+    "얼얼해요"
+   ],
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "청록색이 돌고 얼얼해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NONE0620",
+   "group": "NONE",
+   "frame": 8,
+   "word": [
+    "청록색",
+    "축축해요"
+   ],
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "조금 축축해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NONE0621",
+   "group": "NONE",
+   "frame": 6,
+   "word": [
+    "청록색",
+    "따가워요"
+   ],
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "청록색 느낌이 나요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NONE0622",
+   "group": "NONE",
+   "frame": 4,
+   "word": [
+    "청록색",
+    "뻑뻑해요"
+   ],
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "은은하게 청록색이에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NONE0623",
+   "group": "NONE",
+   "frame": 2,
+   "word": [
+    "청록색",
+    "얼얼해요"
+   ],
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "그저 얼얼해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NONE0624",
+   "group": "NONE",
+   "frame": 9,
+   "word": [
+    "청록색",
+    "축축해요"
+   ],
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "그냥 계속 축축해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NONE0625",
+   "group": "NONE",
+   "frame": 7,
+   "word": [
+    "청록색",
+    "따가워요"
+   ],
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "전체가 청록색이에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NONE0626",
+   "group": "NONE",
+   "frame": 5,
+   "word": [
+    "청록색",
+    "뻑뻑해요"
+   ],
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "자꾸 뻑뻑해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NONE0627",
+   "group": "NONE",
+   "frame": 3,
+   "word": [
+    "청록색",
+    "얼얼해요"
+   ],
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "딱히 모양은 없고 얼얼해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NONE0628",
+   "group": "NONE",
+   "frame": 10,
+   "word": [
+    "청록색",
+    "축축해요"
+   ],
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "색깔만 청록색이에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NONE0629",
+   "group": "NONE",
+   "frame": 1,
+   "word": [
+    "청록색",
+    "시려요"
+   ],
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "청록색이 돌고 시려요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NONE0630",
+   "group": "NONE",
+   "frame": 8,
+   "word": [
+    "청록색",
+    "따가워요"
+   ],
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "조금 따가워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NONE0631",
+   "group": "NONE",
+   "frame": 4,
+   "word": [
+    "청록색",
+    "얼얼해요"
+   ],
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "은은하게 청록색이에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NONE0632",
+   "group": "NONE",
+   "frame": 2,
+   "word": [
+    "청록색",
+    "시려요"
+   ],
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "그저 시려요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NONE0633",
+   "group": "NONE",
+   "frame": 9,
+   "word": [
+    "청록색",
+    "따가워요"
+   ],
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "그냥 계속 따가워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NONE0634",
+   "group": "NONE",
+   "frame": 0,
+   "word": [
+    "청록색",
+    "화끈거려요"
+   ],
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "청록색이에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NONE0635",
+   "group": "NONE",
+   "frame": 5,
+   "word": [
+    "청록색",
+    "얼얼해요"
+   ],
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "자꾸 얼얼해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NONE0636",
+   "group": "NONE",
+   "frame": 3,
+   "word": [
+    "청록색",
+    "시려요"
+   ],
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "딱히 모양은 없고 시려요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NONE0637",
+   "group": "NONE",
+   "frame": 10,
+   "word": [
+    "청록색",
+    "따가워요"
+   ],
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "색깔만 청록색이에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NONE0638",
+   "group": "NONE",
+   "frame": 1,
+   "word": [
+    "청록색",
+    "화끈거려요"
+   ],
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "청록색이 돌고 화끈거려요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NONE0639",
+   "group": "NONE",
+   "frame": 8,
+   "word": [
+    "청록색",
+    "뻑뻑해요"
+   ],
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "조금 뻑뻑해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NONE0640",
+   "group": "NONE",
+   "frame": 6,
+   "word": [
+    "청록색",
+    "얼얼해요"
+   ],
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "청록색 느낌이 나요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NONE0641",
+   "group": "NONE",
+   "frame": 2,
+   "word": [
+    "청록색",
+    "화끈거려요"
+   ],
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "그저 화끈거려요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NONE0642",
+   "group": "NONE",
+   "frame": 9,
+   "word": [
+    "청록색",
+    "뻑뻑해요"
+   ],
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "그냥 계속 뻑뻑해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NONE0643",
+   "group": "NONE",
+   "frame": 7,
+   "word": [
+    "청록색",
+    "얼얼해요"
+   ],
+   "lines": [
+    "시험 결과가 나올 때까지 초조해요",
+    "속이 울렁거려요",
+    "전체가 청록색이에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NONE0644",
+   "group": "NONE",
+   "frame": 5,
+   "word": [
+    "청록색",
+    "시려요"
+   ],
+   "lines": [
+    "연락이 끊긴 친구가 계속 생각나요",
+    "배 아래쪽이 싸해요",
+    "자꾸 시려요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NONE0645",
+   "group": "NONE",
+   "frame": 3,
+   "word": [
+    "청록색",
+    "화끈거려요"
+   ],
+   "lines": [
+    "이번 달 생활비가 빠듯해서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "딱히 모양은 없고 화끈거려요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NONE0646",
+   "group": "NONE",
+   "frame": 10,
+   "word": [
+    "청록색",
+    "뻑뻑해요"
+   ],
+   "lines": [
+    "곧 있을 면접이 제일 신경 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "색깔만 청록색이에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NONE0647",
+   "group": "NONE",
+   "frame": 1,
+   "word": [
+    "청록색",
+    "뻐근해요"
+   ],
+   "lines": [
+    "동아리 일로 사람들과 부딪혀서 마음이 불편해요",
+    "목 뒤가 뻐근해요",
+    "청록색이 돌고 뻐근해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NONE0648",
+   "group": "NONE",
+   "frame": 8,
+   "word": [
+    "청록색",
+    "얼얼해요"
+   ],
+   "lines": [
+    "잠을 잘 못 자서 걱정이에요",
+    "명치 쪽이 답답해요",
+    "조금 얼얼해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "NONE0649",
+   "group": "NONE",
+   "frame": 6,
+   "word": [
+    "청록색",
+    "시려요"
+   ],
+   "lines": [
+    "계획한 일이 자꾸 미뤄져서 답답해요",
+    "손바닥이 축축해요",
+    "청록색 느낌이 나요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "WORRY0650",
+   "group": "WORRY",
+   "frame": 0,
+   "word": "프린터",
+   "lines": [
+    "프린터 때문에 요즘 신경이 쓰여요",
+    "가슴 가운데가 묵직해요",
+    "청록색이에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "WORRY0651",
+   "group": "WORRY",
+   "frame": 1,
+   "word": "프린터",
+   "lines": [
+    "프린터를 아직 못 챙겨서 걱정이에요",
+    "목 뒤가 뻐근해요",
+    "분홍색이 돌고 얼얼해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "WORRY0652",
+   "group": "WORRY",
+   "frame": 2,
+   "word": "프린터",
+   "lines": [
+    "내일 프린터를 꼭 처리해야 해요",
+    "배 아래쪽이 싸해요",
+    "그저 뻐근해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "WORRY0653",
+   "group": "WORRY",
+   "frame": 0,
+   "word": "모니터",
+   "lines": [
+    "모니터 때문에 요즘 신경이 쓰여요",
+    "어깨가 축 처져요",
+    "딱히 모양은 없고 어지러워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "WORRY0654",
+   "group": "WORRY",
+   "frame": 3,
+   "word": "프린터",
+   "lines": [
+    "프린터 문제가 제일 급해요",
+    "명치 쪽이 답답해요",
+    "은은하게 은색이에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "WORRY0655",
+   "group": "WORRY",
+   "frame": 1,
+   "word": "모니터",
+   "lines": [
+    "모니터를 아직 못 챙겨서 걱정이에요",
+    "등 위쪽이 굳어 있어요",
+    "자꾸 화끈거려요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "WORRY0656",
+   "group": "WORRY",
+   "frame": 4,
+   "word": "프린터",
+   "lines": [
+    "프린터가 말썽이라 답답해요",
+    "관자놀이가 지끈거려요",
+    "자주색 느낌이 나요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "WORRY0657",
+   "group": "WORRY",
+   "frame": 2,
+   "word": "모니터",
+   "lines": [
+    "내일 모니터를 꼭 처리해야 해요",
+    "손바닥이 축축해요",
+    "전체가 올리브색이에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "WORRY0658",
+   "group": "WORRY",
+   "frame": 0,
+   "word": "성적표",
+   "lines": [
+    "성적표 때문에 요즘 신경이 쓰여요",
+    "가슴 왼쪽이 저릿해요",
+    "조금 시려요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "WORRY0659",
+   "group": "WORRY",
+   "frame": 5,
+   "word": "프린터",
+   "lines": [
+    "프린터 생각에 잠이 안 와요",
+    "속이 울렁거려요",
+    "그냥 계속 아릿해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "WORRY0660",
+   "group": "WORRY",
+   "frame": 3,
+   "word": "모니터",
+   "lines": [
+    "모니터 문제가 제일 급해요",
+    "가슴 가운데가 묵직해요",
+    "색깔만 청록색이에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "WORRY0661",
+   "group": "WORRY",
+   "frame": 1,
+   "word": "성적표",
+   "lines": [
+    "성적표를 아직 못 챙겨서 걱정이에요",
+    "목 뒤가 뻐근해요",
+    "분홍색이에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "WORRY0662",
+   "group": "WORRY",
+   "frame": 6,
+   "word": "프린터",
+   "lines": [
+    "프린터를 잃어버린 것 같아 불안해요",
+    "배 아래쪽이 싸해요",
+    "황토색이 돌고 뻐근해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "WORRY0663",
+   "group": "WORRY",
+   "frame": 4,
+   "word": "모니터",
+   "lines": [
+    "모니터가 말썽이라 답답해요",
+    "어깨가 축 처져요",
+    "그저 어지러워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "WORRY0664",
+   "group": "WORRY",
+   "frame": 2,
+   "word": "성적표",
+   "lines": [
+    "내일 성적표를 꼭 처리해야 해요",
+    "명치 쪽이 답답해요",
+    "딱히 모양은 없고 뻑뻑해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "WORRY0665",
+   "group": "WORRY",
+   "frame": 0,
+   "word": "면접 서류",
+   "lines": [
+    "면접 서류 때문에 요즘 신경이 쓰여요",
+    "등 위쪽이 굳어 있어요",
+    "은은하게 베이지색이에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "WORRY0666",
+   "group": "WORRY",
+   "frame": 7,
+   "word": "프린터",
+   "lines": [
+    "자꾸 프린터 쪽 일이 꼬여요",
+    "관자놀이가 지끈거려요",
+    "자꾸 멍해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "WORRY0667",
+   "group": "WORRY",
+   "frame": 5,
+   "word": "모니터",
+   "lines": [
+    "모니터 생각에 잠이 안 와요",
+    "손바닥이 축축해요",
+    "올리브색 느낌이 나요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "WORRY0668",
+   "group": "WORRY",
+   "frame": 3,
+   "word": "성적표",
+   "lines": [
+    "성적표 문제가 제일 급해요",
+    "가슴 왼쪽이 저릿해요",
+    "전체가 카키색이에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "WORRY0669",
+   "group": "WORRY",
+   "frame": 1,
+   "word": "면접 서류",
+   "lines": [
+    "면접 서류를 아직 못 챙겨서 걱정이에요",
+    "속이 울렁거려요",
+    "조금 아릿해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "WORRY0670",
+   "group": "WORRY",
+   "frame": 8,
+   "word": "프린터",
+   "lines": [
+    "프린터 앞에서 한숨만 나와요",
+    "가슴 가운데가 묵직해요",
+    "그냥 계속 축축해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "WORRY0671",
+   "group": "WORRY",
+   "frame": 6,
+   "word": "모니터",
+   "lines": [
+    "모니터를 잃어버린 것 같아 불안해요",
+    "목 뒤가 뻐근해요",
+    "색깔만 분홍색이에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "WORRY0672",
+   "group": "WORRY",
+   "frame": 4,
+   "word": "성적표",
+   "lines": [
+    "성적표가 말썽이라 답답해요",
+    "배 아래쪽이 싸해요",
+    "황토색이에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "WORRY0673",
+   "group": "WORRY",
+   "frame": 2,
+   "word": "면접 서류",
+   "lines": [
+    "내일 면접 서류를 꼭 처리해야 해요",
+    "어깨가 축 처져요",
+    "금색이 돌고 어지러워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "WORRY0674",
+   "group": "WORRY",
+   "frame": 9,
+   "word": "프린터",
+   "lines": [
+    "프린터가 계속 마음에 걸려요",
+    "명치 쪽이 답답해요",
+    "그저 뻑뻑해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "WORRY0675",
+   "group": "WORRY",
+   "frame": 0,
+   "word": "카메라",
+   "lines": [
+    "카메라 때문에 요즘 신경이 쓰여요",
+    "등 위쪽이 굳어 있어요",
+    "딱히 모양은 없고 화끈거려요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "WORRY0676",
+   "group": "WORRY",
+   "frame": 7,
+   "word": "모니터",
+   "lines": [
+    "자꾸 모니터 쪽 일이 꼬여요",
+    "관자놀이가 지끈거려요",
+    "은은하게 자주색이에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "WORRY0677",
+   "group": "WORRY",
+   "frame": 5,
+   "word": "성적표",
+   "lines": [
+    "성적표 생각에 잠이 안 와요",
+    "손바닥이 축축해요",
+    "자꾸 따가워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "WORRY0678",
+   "group": "WORRY",
+   "frame": 3,
+   "word": "면접 서류",
+   "lines": [
+    "면접 서류 문제가 제일 급해요",
+    "가슴 왼쪽이 저릿해요",
+    "카키색 느낌이 나요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "WORRY0679",
+   "group": "WORRY",
+   "frame": 10,
+   "word": "프린터",
+   "lines": [
+    "프린터 일로 가족과 다퉜어요",
+    "속이 울렁거려요",
+    "전체가 주황색이에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "WORRY0680",
+   "group": "WORRY",
+   "frame": 1,
+   "word": "카메라",
+   "lines": [
+    "카메라를 아직 못 챙겨서 걱정이에요",
+    "가슴 가운데가 묵직해요",
+    "조금 축축해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "WORRY0681",
+   "group": "WORRY",
+   "frame": 8,
+   "word": "모니터",
+   "lines": [
+    "모니터 앞에서 한숨만 나와요",
+    "목 뒤가 뻐근해요",
+    "그냥 계속 얼얼해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "WORRY0682",
+   "group": "WORRY",
+   "frame": 6,
+   "word": "성적표",
+   "lines": [
+    "성적표를 잃어버린 것 같아 불안해요",
+    "배 아래쪽이 싸해요",
+    "색깔만 황토색이에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "WORRY0683",
+   "group": "WORRY",
+   "frame": 4,
+   "word": "면접 서류",
+   "lines": [
+    "면접 서류가 말썽이라 답답해요",
+    "어깨가 축 처져요",
+    "금색이에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "WORRY0684",
+   "group": "WORRY",
+   "frame": 2,
+   "word": "카메라",
+   "lines": [
+    "내일 카메라를 꼭 처리해야 해요",
+    "명치 쪽이 답답해요",
+    "은색이 돌고 뻑뻑해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "WORRY0685",
+   "group": "WORRY",
+   "frame": 9,
+   "word": "모니터",
+   "lines": [
+    "모니터가 계속 마음에 걸려요",
+    "등 위쪽이 굳어 있어요",
+    "그저 화끈거려요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "WORRY0686",
+   "group": "WORRY",
+   "frame": 0,
+   "word": "노트",
+   "lines": [
+    "노트 때문에 요즘 신경이 쓰여요",
+    "관자놀이가 지끈거려요",
+    "딱히 모양은 없고 멍해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "WORRY0687",
+   "group": "WORRY",
+   "frame": 7,
+   "word": "성적표",
+   "lines": [
+    "자꾸 성적표 쪽 일이 꼬여요",
+    "손바닥이 축축해요",
+    "은은하게 올리브색이에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "WORRY0688",
+   "group": "WORRY",
+   "frame": 5,
+   "word": "면접 서류",
+   "lines": [
+    "면접 서류 생각에 잠이 안 와요",
+    "가슴 왼쪽이 저릿해요",
+    "자꾸 시려요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "WORRY0689",
+   "group": "WORRY",
+   "frame": 3,
+   "word": "카메라",
+   "lines": [
+    "카메라 문제가 제일 급해요",
+    "속이 울렁거려요",
+    "주황색 느낌이 나요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "WORRY0690",
+   "group": "WORRY",
+   "frame": 10,
+   "word": "모니터",
+   "lines": [
+    "모니터 일로 가족과 다퉜어요",
+    "가슴 가운데가 묵직해요",
+    "전체가 청록색이에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "WORRY0691",
+   "group": "WORRY",
+   "frame": 1,
+   "word": "노트",
+   "lines": [
+    "노트를 아직 못 챙겨서 걱정이에요",
+    "목 뒤가 뻐근해요",
+    "조금 얼얼해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "WORRY0692",
+   "group": "WORRY",
+   "frame": 8,
+   "word": "성적표",
+   "lines": [
+    "성적표 앞에서 한숨만 나와요",
+    "배 아래쪽이 싸해요",
+    "그냥 계속 뻐근해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "WORRY0693",
+   "group": "WORRY",
+   "frame": 6,
+   "word": "면접 서류",
+   "lines": [
+    "면접 서류를 잃어버린 것 같아 불안해요",
+    "어깨가 축 처져요",
+    "색깔만 금색이에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "WORRY0694",
+   "group": "WORRY",
+   "frame": 4,
+   "word": "카메라",
+   "lines": [
+    "카메라가 말썽이라 답답해요",
+    "명치 쪽이 답답해요",
+    "은색이에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "WORRY0695",
+   "group": "WORRY",
+   "frame": 2,
+   "word": "노트",
+   "lines": [
+    "내일 노트를 꼭 처리해야 해요",
+    "등 위쪽이 굳어 있어요",
+    "베이지색이 돌고 화끈거려요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "WORRY0696",
+   "group": "WORRY",
+   "frame": 9,
+   "word": "성적표",
+   "lines": [
+    "성적표가 계속 마음에 걸려요",
+    "관자놀이가 지끈거려요",
+    "그저 멍해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "WORRY0697",
+   "group": "WORRY",
+   "frame": 0,
+   "word": "택배",
+   "lines": [
+    "택배 때문에 요즘 신경이 쓰여요",
+    "손바닥이 축축해요",
+    "딱히 모양은 없고 따가워요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "WORRY0698",
+   "group": "WORRY",
+   "frame": 7,
+   "word": "면접 서류",
+   "lines": [
+    "자꾸 면접 서류 쪽 일이 꼬여요",
+    "가슴 왼쪽이 저릿해요",
+    "은은하게 카키색이에요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  },
+  {
+   "id": "WORRY0699",
+   "group": "WORRY",
+   "frame": 5,
+   "word": "카메라",
+   "lines": [
+    "카메라 생각에 잠이 안 와요",
+    "속이 울렁거려요",
+    "자꾸 아릿해요"
+   ],
+   "expect": "none",
+   "expectKo": null,
+   "enOk": []
+  }
+ ]
+}
