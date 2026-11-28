@@ -26,7 +26,9 @@ from pathlib import Path
 from .candidates import (PROPORTION_KEYS, SLOTS, base_drawn, candidates_bytes, effective_params, form_blocks, form_said_unrendered, generate,
                          proportions_effective,
                          rendered_shape_words, safety_flags, said_words, slot_value, spec_sha256, unrendered_said_words)
-from .form_assets import DEFAULT_PROCEDURAL, R_NO_SHAPE_PREVIEW, R_PREVIEW_FAILED, _rej, add_generated
+from .form_assets import (DEFAULT_PROCEDURAL, R_NO_SHAPE_PREVIEW, R_PREVIEW_FAILED, _rej, add_generated,
+                          generated_candidate_id, public_asset, source_key)
+from . import none_gen as ng
 from .paths import shared
 from .scene_builder import normalize_confirmed
 from .scene_builder_v2 import floor_record
@@ -40,6 +42,9 @@ FORMAT_VERSION = "ifs-selection/0.2"
 # 0.3(G62, [gen3d] enabled일 때만 — 꺼져 있으면 0.2 그대로): 출처 값 generated_chosen(생성 형태 후보를 고름), 맨 위 form.asset
 # (고른 생성 메시: assetId·glb·glbSha256·pipeline·seed·models·promptText …, 아니면 null), generation(조회 키, 제시한 생성 후보,
 # 차단·실패·관문 탈락 등 거부 사유, 고른 결과·고르지 않은 생성 후보, 형태를 고쳐 버린 자산). 후보 sources 값 generated, 후보 origin·asset.
+# G73([gen3d] on_none만 켰을 때): 처음 [맞는 게 없어요]를 누르는 순간 0.3으로 올린다(그 전·누르지 않은 세션은 0.2 그대로).
+# 단계 generating(생성 대기), generation.afterNone(none 시각·규칙 프롬프트·모델 내림·생성 시작·끝·결과·사유·만든 후보·골랐는지),
+# 후보 origin·sources form.type 값 generated_after_none, form.asset.origin, sourceDetails.form.type.origin, selection.afterNoneGeneration.
 FORMAT_VERSION_GEN3D = "ifs-selection/0.3"
 GENERATED_CHOSEN = "generated_chosen"
 PREMEASURE_VERSION = "ifs-premeasure/0.1"
@@ -242,10 +247,15 @@ class SelectionFlow:
         self.form_assets = getattr(rt, "form_assets", None)
         self._asset_paths: dict[str, Path] = {}          # 생성 후보 id → GLB 경로(기록에 쓰지 않음)
         self._sidecar_paths: dict[str, Path] = {}
+        # G73: [맞는 게 없어요] 뒤 생성([gen3d] on_none). 처음 none을 누를 때 한 번만. 그때부터 기록이 0.3(form·generation)이 된다
+        self.none_gen = getattr(rt, "none_gen", None)
+        self._g73 = False                # 0.3 기록을 켰는가(none을 눌러 생성 경로에 들어감)
+        self._none_attempts = 0          # 이 세션에서 시작한 생성 수(n = 0 첫 생성, 1… 다시 만들기)
+        self._none_job = None
 
     @property
     def gen3d(self) -> bool:
-        return self.form_assets is not None
+        return self.form_assets is not None or self._g73
 
     @property
     def sources_list(self) -> tuple:
@@ -450,28 +460,189 @@ class SelectionFlow:
         """후보 id 하나 또는 "none"(맞는 것이 없다, G23: 기준 후보 0번으로 진행)."""
         with self.lock:
             self._require("selecting")
-            order = self.cands["displayOrder"]
-            if choice == NONE_CHOICE:
-                op = self.cands["candidates"][0]
-                sel = {"selectedCandidateId": None, "selectedIndex": None, "none": True, "skipped": False,
-                       "displayPosition": None}
-            else:
-                c = self._cand(choice)
-                if c is None:
-                    raise SelectionInvalid(f"보여 준 후보가 아닙니다: {choice}")
-                op = c
-                sel = {"selectedCandidateId": c["id"], "selectedIndex": c["index"], "none": False, "skipped": False,
-                       "displayPosition": order.index(c["id"])}
-            sel.update(operationalId=op["id"], operationalIndex=op["index"], at=now_iso())
-            self.data["selection"] = sel
-            self.data["stage"] = "adjusting"
-            self.current = dict(op["overrides"])
-            if self.gen3d:
-                self._record_generation_choice(op if choice != NONE_CHOICE else None)
-            self._save()
-            self._log_event("selection:selected", {k: sel[k] for k in ("selectedCandidateId", "none", "displayPosition",
-                                                                      "operationalId", "operationalIndex")})
+            if choice == NONE_CHOICE and self._may_generate_after_none():
+                # G73: 처음 [맞는 게 없어요] → 확정 텍스트로 형태를 하나 만들어 새 후보로(못 만들면 사유를 남기고 아래 none 경로).
+                # 만든 후보도 맞지 않다고 하면 같은 프롬프트·seed + n으로 on_none_max_regenerations번까지 더
+                return self._start_none_generation()
+            if choice != NONE_CHOICE and self._cand(choice) is None:
+                raise SelectionInvalid(f"보여 준 후보가 아닙니다: {choice}")
+            self._apply_choice(choice)
             return self.view()
+
+    def _apply_choice(self, choice: str, at: str | None = None) -> None:
+        """선택을 적고 조절 단계로 들어간다. none(G23)이면 0번 후보로 진행. lock 안에서 부른다."""
+        order = self.cands["displayOrder"]
+        if choice == NONE_CHOICE:
+            op = self.cands["candidates"][0]
+            sel = {"selectedCandidateId": None, "selectedIndex": None, "none": True, "skipped": False,
+                   "displayPosition": None}
+        else:
+            c = self._cand(choice)
+            op = c
+            sel = {"selectedCandidateId": c["id"], "selectedIndex": c["index"], "none": False, "skipped": False,
+                   "displayPosition": order.index(c["id"])}
+        sel.update(operationalId=op["id"], operationalIndex=op["index"], at=at or now_iso())
+        an = self._after_none()
+        if an is not None:
+            # G73: 이 선택 전에 [맞는 게 없어요]를 눌러 생성 경로를 거쳤음(생성 결과 status). 처음 none 시각은 generation.afterNone.noneAt
+            sel["afterNoneGeneration"] = an["status"]
+        self.data["selection"] = sel
+        self.data["stage"] = "adjusting"
+        self.current = dict(op["overrides"])
+        if self.gen3d:
+            self._record_generation_choice(op if choice != NONE_CHOICE else None)
+        self._save()
+        self._log_event("selection:selected", {k: sel[k] for k in ("selectedCandidateId", "none", "displayPosition",
+                                                                  "operationalId", "operationalIndex")})
+
+    # ── G73 [맞는 게 없어요] 뒤 생성 ───────────────────────────────────────────
+    def _after_none(self) -> dict | None:
+        return ((self.data or {}).get("generation") or {}).get("afterNone") if self._g73 else None
+
+    def _activate_g73(self) -> None:
+        """기록을 0.3으로 올린다(form.asset·generation). G62(enabled)가 이미 켰으면 그대로 쓴다. lock 안에서 부른다."""
+        if self._g73:
+            return
+        self._g73 = True
+        if self.form_assets is not None:
+            return
+        empty = {"key": source_key(self.spec), "offered": [], "rejected": []}
+        self.cands = add_generated(self.cands, empty, self.s.id, 0, DEFAULT_PROCEDURAL, None)
+        self.data["candidates"] = self.cands
+        self.data["formatVersion"] = FORMAT_VERSION_GEN3D
+        self.data["defaultFormSource"] = self.cands["generation"]["defaultFormSource"]
+        self.data["form"] = {"asset": None}
+        self.data["generation"] = {**copy.deepcopy(self.cands["generation"]), "shownOrder": [],
+                                   "outcome": None, "acceptedDefault": None, "declined": [], "assetDropped": None}
+
+    def _other_interviews(self) -> list[str]:
+        """면담 LLM을 부를 수 있는 다른 세션(이 세션은 확정을 마쳐 면담 LLM을 더 부르지 않는다 — Session.selection 조건)."""
+        return sorted(x.id for x in list(self.rt.sessions.values()) if x is not self.s and x.state in ng.INTERVIEW_STATES)
+
+    def _may_generate_after_none(self) -> bool:
+        if self.none_gen is None:
+            return False
+        if self._none_attempts == 0:
+            return True
+        an = self._after_none()
+        # 다시 만들기는 바로 앞 생성이 후보를 냈고(ok) 그 후보가 아직 화면에 있을 때만(막힘·실패면 이미 조절로 넘어감)
+        return (self._none_attempts <= self.none_gen.max_regenerations and an is not None and an["status"] == ng.OK
+                and self._cand(an.get("candidateId") or "") is not None)
+
+    def _start_none_generation(self) -> dict:
+        n = self._none_attempts
+        self._none_attempts += 1
+        self._activate_g73()
+        prev = self._after_none()
+        if prev is not None:
+            # 다시 만들기: 앞 기록은 afterNoneEarlier로 옮기고(참여자가 그 후보에도 none이라 함) afterNone은 새 시도
+            prev["chosen"] = False
+            self.data["generation"].setdefault("afterNoneEarlier", []).append(prev)
+        at = now_iso()
+        text = self.s.log.data.get("confirmedText")
+        pre = self.none_gen.precheck(self.spec, text, self.preview_mode, self._other_interviews())
+        rec = {"version": ng.NONE_GEN_VERSION, "origin": ng.ORIGIN, "setting": self.none_gen.setting(), "noneAt": at,
+               "shownOrderBefore": list(self.cands["displayOrder"]), "status": ng.RUNNING,
+               "blockReason": pre["blockReason"], "blockDetail": pre["blockDetail"], "prompt": pre["prompt"],
+               "run": None, "startedAt": None, "endedAt": None, "seconds": None, "exitCode": None, "error": None,
+               "llmUnload": None, "timing": None, "asset": None, "candidateId": None, "displayPosition": None,
+               "participantSkippedWait": False, "chosen": None,
+               "attempt": n, "seed": self.none_gen.seed_for(n)}      # 다시 만들기 n번째(0 = 첫 생성), seed = 기준 seed + n
+        self.data["generation"]["afterNone"] = rec
+        job = None
+        if pre["blockReason"] is None:
+            # 생성기도 세션 매퍼 spec으로 같은 규칙 프롬프트(G73 후속). 면담 중 세션 확인과 예약은 서비스 잠금 안에서(CP13-2)
+            job = self.none_gen.start(self.s.id, text, source_key(self.spec), pre["prompt"]["text"], self._generation_done,
+                                      attempt=n, spec=self.spec, other_interviews=self._other_interviews)
+            if isinstance(job, str):
+                rec.update(blockReason=job, blockDetail=",".join(self._other_interviews()) or None
+                           if job == ng.B_INTERVIEW else None)
+                job = None
+        if job is None:
+            # 만들지 않음: 사유를 남기고 기존 none 경로(0번 후보로 조절, 화면에는 짧은 안내)
+            rec.update(status=ng.BLOCKED, endedAt=at, seconds=0.0)
+            self._log_event("selection:none_gen", {"status": ng.BLOCKED, "blockReason": rec["blockReason"]})
+            self._apply_choice(NONE_CHOICE, at)
+            return self.view()
+        self._none_job = job
+        rec["startedAt"] = at
+        self.data["stage"] = "generating"
+        self._save()
+        self._log_event("selection:none_gen", {"status": ng.RUNNING, "promptText": pre["prompt"]["text"]})
+        return self.view()
+
+    def _generation_done(self, res: dict) -> None:
+        """생성 스레드에서 한 번. 기다리는 중이면 성공 → 새 후보를 맨 앞에 더해 다시 고르기, 그 밖 → 기존 none 경로."""
+        with self.lock:
+            rec = self._after_none()
+            if rec is None or self.data is None:
+                return
+            for k in ("run", "endedAt", "seconds", "exitCode", "llmUnload", "timing", "cacheProbe"):
+                rec[k] = res.get(k)
+            if rec["startedAt"] is None:
+                rec["startedAt"] = res.get("startedAt")
+            status = res.get("status") or ng.FAILED
+            if self.stage != "generating":
+                # 이미 넘어감(참여자가 기다리지 않음·철회): 기록만 채운다
+                rec["generatorStatus"] = status
+                self._save()
+                return
+            a = res.get("asset")
+            if status == ng.OK and self.preview_mode == "none":
+                status, res = ng.BLOCKED, {**res, "blockReason": ng.B_PREVIEW_NONE, "blockDetail": "preview mode none"}
+            if status == ng.OK and any((c.get("asset") or {}).get("glbSha256") == a["glbSha256"] for c in self.cands["candidates"]):
+                status, res = ng.BLOCKED, {**res, "blockReason": ng.B_DUPLICATE, "blockDetail": a["assetId"]}
+            rec["status"] = status
+            if status != ng.OK:
+                rec.update(blockReason=res.get("blockReason"), blockDetail=res.get("blockDetail"), error=res.get("error"))
+                self._log_event("selection:none_gen", {"status": status, "blockReason": rec["blockReason"],
+                                                       "seconds": rec["seconds"]})
+                self._apply_choice(NONE_CHOICE)
+                return
+            cid = self._add_after_none_candidate(a)
+            rec.update(asset={**public_asset(a), "origin": ng.ORIGIN}, candidateId=cid, displayPosition=0)
+            self.data["stage"] = "selecting"
+            self._save()
+            self._log_event("selection:none_gen", {"status": ng.OK, "assetId": a["assetId"], "candidateId": cid,
+                                                   "seconds": rec["seconds"]})
+
+    def _add_after_none_candidate(self, a: dict) -> str:
+        """생성 자산 하나를 후보로 더한다: 다른 값(색·크기 등)은 0번 후보(덮어쓰기 없음)와 같고, 화면 맨 앞(나머지 순서는 그대로)."""
+        base = self.cands["candidates"][0]
+        sources = dict(base["sources"])
+        sources["form.type"] = ng.ORIGIN
+        cid = generated_candidate_id(self.cands["specSha256"], a)
+        index = max(c["index"] for c in self.cands["candidates"]) + 1
+        self.cands["candidates"].append({"id": cid, "index": index, "overrides": dict(base["overrides"]), "axisValues": {},
+                                         "sources": sources, "origin": ng.ORIGIN, "asset": public_asset(a)})
+        self.cands["displayOrder"] = [cid] + [x for x in self.cands["displayOrder"] if x != cid]
+        self.data["candidatesShown"] = list(self.cands["displayOrder"])
+        self.data["candidatesShownAt"] = now_iso()
+        for g in (self.cands["generation"], self.data["generation"]):
+            g["offered"] = g["offered"] + [{"candidateId": cid, "assetId": a["assetId"], "origin": ng.ORIGIN}]
+        self.data["generation"]["shownOrder"] = [x for x in self.cands["displayOrder"]
+                                                 if x in self._asset_paths or x == cid]
+        self._asset_paths[cid] = a["_glbPath"]
+        self._sidecar_paths[cid] = a["_sidecarPath"]
+        return cid
+
+    def skip_generation(self) -> dict:
+        """[기다리지 않고 넘어갈게요]: 생성을 끄고 기존 none 경로로."""
+        with self.lock:
+            self._require("generating")
+            rec = self._after_none()
+            rec.update(status=ng.CANCELLED, participantSkippedWait=True, endedAt=now_iso())
+            self._log_event("selection:none_gen", {"status": ng.CANCELLED, "participantSkippedWait": True})
+            self._apply_choice(NONE_CHOICE)             # 취소 상태를 먼저 저장하고 응답한다(CP13-4)
+            if self._none_job is not None:
+                self._none_job.cancel("participant_skipped_wait")    # 표시만 하고 곧 돌아옴 — 프로세스 끄기는 백그라운드
+            return self.view()
+
+    def cancel_generation(self, reason: str) -> None:
+        """철회·종료: 돌고 있는 생성을 끈다(기록은 그대로)."""
+        job = self._none_job
+        if job is not None:
+            job.cancel(reason)
 
     def _enter_skip(self, now: str) -> None:
         """G34: 구별되는 후보가 하나뿐 → 선택 화면을 보이지 않고 그 후보(언제나 0번)로 조절에 들어간다.
@@ -571,6 +742,12 @@ class SelectionFlow:
             self._save()
             self._log_event("selection:generated_dropped", {"candidateId": cid, "assetId": drop["assetId"],
                                                             "reason": reason, "source": source})
+            an = self._after_none()
+            if (c.get("origin") == ng.ORIGIN and an is not None and self.stage == "selecting"
+                    and not any(x.get("origin") == ng.ORIGIN for x in self.cands["candidates"])):
+                # G73: 참여자는 이미 나머지 후보에 [맞는 게 없어요]라고 했다 → 만든 후보를 보일 수 없으면 기존 none 경로
+                an["previewDropped"] = {"reason": reason, "source": source, "at": at}
+                self._apply_choice(NONE_CHOICE, at)
             return True
 
     def _record_generation_choice(self, chosen: dict | None) -> None:
@@ -585,6 +762,10 @@ class SelectionFlow:
         default_id = gen.get("defaultCandidateId")
         gen["acceptedDefault"] = None if default_id is None else (cid == default_id)
         self.data["selection"]["acceptedDefault"] = gen["acceptedDefault"]
+        an = self._after_none()
+        for rec in ([an] + list(gen.get("afterNoneEarlier") or [])) if an is not None else []:
+            if rec.get("candidateId") is not None:
+                rec["chosen"] = cid == rec["candidateId"]     # G73: [맞는 게 없어요] 뒤 만든 후보(그 시도의 것)를 골랐는가
         if cid not in offered:
             self.data["form"]["asset"] = None
             return
@@ -592,6 +773,8 @@ class SelectionFlow:
         rec = {"candidateId": cid, **{k: copy.deepcopy(a[k]) for k in (
             "assetId", "glb", "glbSha256", "sidecarSha256", "pipeline", "seed", "models", "promptText", "lexiconVersion",
             "covariates", "normalization", "gate")}, "sidecar": None}
+        if chosen.get("origin") == ng.ORIGIN:
+            rec["origin"] = ng.ORIGIN                            # G73: [맞는 게 없어요] 뒤 만든 후보(G62 기본·대안 후보와 구분)
         rec["glb"] = None
         if self.persist:
             self.dir.mkdir(parents=True, exist_ok=True)
@@ -796,6 +979,9 @@ class SelectionFlow:
                                           "candidateId": asset["candidateId"]},
                        # 기본(미리 선택된) 생성 후보를 그대로 확정했으면 true, 다른 후보 가운데서 골랐으면 false
                        "acceptedDefault": self.data["generation"].get("acceptedDefault") is True}
+                if asset.get("origin") == ng.ORIGIN:
+                    # G73: 러너 계약 값은 generated_chosen 그대로(PlacementSelection.SourceValues03), 어디서 온 후보인지는 여기에
+                    rec["origin"] = ng.ORIGIN
             elif slot in edited:
                 rec = {"source": "edited", "value": edited[slot], **rec}
             elif slot in chosen:
@@ -1103,6 +1289,8 @@ class SelectionFlow:
                     if a is not None:
                         c["asset"] = {"assetId": a["assetId"], "glbSha256": a["glbSha256"],
                                       "glbUrl": f"/api/sessions/{self.s.id}/candidates/{c['id']}/asset.glb"}
+                    if by_id[c["id"]].get("origin") == ng.ORIGIN:
+                        c["afterNone"] = True              # G73: [맞는 게 없어요] 뒤 만든 후보(화면이 표시)
                 default_id = self.cands["generation"]["defaultCandidateId"]
                 for c in out["candidates"]:
                     c["default"] = c["id"] == default_id
@@ -1114,6 +1302,13 @@ class SelectionFlow:
                 out["currentAsset"] = None if ca is None else {
                     "assetId": ca["assetId"], "glbSha256": ca["glbSha256"],
                     "glbUrl": f"/api/sessions/{self.s.id}/candidates/{self.data['form']['asset']['candidateId']}/asset.glb"}
+            an = self._after_none()
+            if an is not None:
+                # G73: 생성 경로 상태(화면: 대기·완료 안내·못 만듦 안내. 사유는 연구자 보기)
+                out["afterNone"] = {k: an.get(k) for k in ("status", "blockReason", "error", "candidateId", "noneAt",
+                                                            "startedAt", "endedAt", "seconds", "participantSkippedWait",
+                                                            "attempt", "seed")}
+                out["afterNone"]["timeoutS"] = an["setting"]["timeoutS"]
             out["skipped"] = bool(self.data["selection"] and self.data["selection"].get("skipped"))
             out["axes"] = self.cands["axes"]
             out["note"] = self.cands["note"]

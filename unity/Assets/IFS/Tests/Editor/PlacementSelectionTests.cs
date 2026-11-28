@@ -475,6 +475,11 @@ namespace IFS.SceneSpec.Tests
 
             var shape = ParseOk(Selection(new JObject { ["form.type"] = "mist", ["shapeModel"] = "Cube" }));
             Assert.That(shape.CheckApplicable(spec, new SceneDefaults()).Single(), Does.Contain("form.type=blob에만"), "SceneLoader.CheckVariant와 같은 규칙");
+            // G73 후속: 모양어(동그란 → Sphere)가 있는 spec에서 참여자가 형태를 안개로 고친 선택은 적용할 수 있다(모양어는 그리지 않음)
+            var round = ShapeMappingTests.RoundWordSpec();
+            var toMist = ParseOk(Selection(new JObject { ["form.type"] = "mist", ["form.base"] = "none" }));
+            Assert.That(toMist.CheckApplicable(round, new SceneDefaults()), Is.Empty);
+            Assert.That(shape.CheckApplicable(round, new SceneDefaults()).Single(), Does.Contain("form.type=blob에만"), "강제 모형은 여전히 blob에만");
             var cube = ParseOk(Selection(new JObject { ["shapeModel"] = "Cube" }));
             PlacementSelection.AppliedOverrides(cube.Overrides, drawn, "Sphere", out var wrongModel);
             Assert.That(wrongModel.Single(), Does.Contain("shapeModel"));

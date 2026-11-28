@@ -6,6 +6,8 @@
 #   G70(2026-11-27)부터 [interview] protocol·prompt_version과 [guard] safety_lexicon 세 값만 bridge.toml과 다르다(1.6 · v1.2.0 · 0.3.0).
 #   G72(2026-11-27)부터 [mapping] proportions와 [selection] protocol·table 세 값이 v4.toml과 다르다(너비·높이·깊이 비율 — 스펙 2.4.0,
 #   조절 항목 너비·높이·깊이, selection_protocol 0.7.0, 값 표 3.0.0). 다른 설정 파일은 그대로라 출력·조절 항목이 예전과 같다.
+#   G73(2026-11-27)부터 [gen3d] on_none = true(맞는 게 없어요 뒤 형태 생성)와 [selection] protocol 0.8.0(그 화면 문구 4개). [gen3d] enabled는 계속 끔.
+#   G74(2026-11-27)부터 [mapping] mist_kinds도 v4.toml과 다르다(안개 입자 모양 form.mistKind — 스펙 2.4.0의 선택 슬롯, builder 2.9.0).
 # 기존 설정 파일(default·pilot·v4·v4-gen3d·bridge·mac8gb)과 코드 기본값은 바꾸지 않았다. ◆ = v4.toml과 다른 곳.
 # 헤드셋 쪽 권고값(공간 B + 놓기 도움, 두 조건 연습, 자리 문항 → 멈춤 거리, 평정 중 물체 숨김, UI 묶음 G63, 반복 멈춤 loop,
 #   눈높이 기준 배치 relative, 문구 scaleA)은 이 파일이 아니라 Unity 러너 Setup의 [본 실험 권고 설정 켜기](-experimentPreset true)가 켠다.
@@ -65,6 +67,8 @@ ext_params = "scene_params.v3.json"
 variant_rules = ""
 proportions = "scene_params.v2.json"   # ◆ G72: 너비·높이·깊이 비율(layout.proportions, 스펙 2.4.0, builder 2.8.0 — 그 파일의 proportions 표).
                                         #   Unity 러너·미리보기가 2.4.0을 읽는 빌드여야 한다(헤드셋 빌드를 다시 만들기 전에는 러너가 2.4.0을 거부할 수 있음)
+mist_kinds = "scene_params.v2.json"    # ◆ G74: 안개 입자 모양(form.mistKind — 안개·연기·먼지·구름, 스펙 2.4.0의 선택 슬롯, builder 2.9.0 — 그 파일의 mistKinds 표).
+                                        #   form.type이 mist일 때 종류별로 그린다. Unity 러너·미리보기가 form.mistKind를 읽는 빌드여야 한다(옛 러너는 모르는 필드로 거부)
 
 [drift]
 enabled = true
@@ -74,7 +78,7 @@ allow_draft_phrases = false
 
 [selection]
 enabled = true
-protocol = "selection_protocol.v0.7.json"   # ◆ G72: 조절 항목 이름 너비·높이·깊이를 더한 판(0.7.0). 다른 문구는 0.6.0과 같음
+protocol = "selection_protocol.v0.8.json"   # ◆ G73(0.8.0): 0.7.0(G72 너비·높이·깊이) + [맞는 게 없어요] 뒤 생성 대기·완료·못 만듦 문구 4개
 table = "candidate_values.v3.json"           # ◆ G72: 조절 항목 너비·높이·깊이(3.0.0). 후보 규칙·다른 항목은 2.0.0과 같음
 require_spec_phrases = false
 participant_draft_banner = false              # ◆ 뼈대 3절·G59-8: 초안 경고 줄을 참여자 보기에서 숨김(연구자 보기·기록에는 남음)
@@ -94,10 +98,12 @@ webgl_ready_timeout_s = 30
 webgl_request_timeout_s = 15
 
 [gen3d]
-# 생성 메시 후보(G62)는 끈다. 켜도 세션 안에서 자동으로 이어지지 않기 때문이다:
-#  - 챗봇은 생성 모델을 부르지 않고, 후보 단계를 여는 순간(확정 뒤 [다음 단계로]) assets_dir을 한 번만 찾는다(selection.py SelectionFlow.start).
-#  - 그 전에 실험자가 확정 텍스트를 손으로 tools/gen3d 입력 파일에 옮기고, Ollama 모델을 내리고(VRAM), 별도 환경에서 생성기를 돌려야 한다
-#    (모델 적재 포함 약 2분, 생성 약 30초). 이 대기·실패 처리와 화면은 없다.
-#  - 생성 결과 검증(run-g64-e2e)에서 생성 기본 세션 3개 중 맞음 0, 말하지 않은 세부를 더한 것 2.
-# 켜려면 v4-gen3d.toml의 [gen3d]를 옮기고, 위 연결을 어떻게 할지 먼저 정한다(docs/run-experiment.md 6절).
+# 생성 메시를 기본 후보로 두는 G62 경로(enabled·default_form_source)는 끈다(G67-b: 기본 후보 3세션 중 맞음 0).
 enabled = false
+# ◆ G73: 후보 화면에서 처음 [맞는 게 없어요]를 누르면 확정 텍스트로 형태를 하나 만들어 새 후보로 맨 앞에 보여 준다(none_gen.py).
+#  - 프롬프트는 규칙만(tools/gen3d/prompts.shape_prompt). 형태를 말하지 않았거나 사람·동물·메시로 그릴 수 없는 범주면 만들지 않고
+#    사유를 기록한 뒤 기존 none 경로(0번 후보로 조절)로 간다. 참여자가 그 후보를 골라야만 장면에 쓴다(selection.json 0.3 form.asset).
+#  - 만들기 전에 Ollama 모델(면담·가드)을 내려 GPU를 비우고 끝나면 다시 올린다. 대기 화면에서 [기다리지 않고 넘어갈게요]로 건너뛸 수 있다.
+#  - 생성기는 저장소 밖 gen3d-venv(docs/gen3d-feasibility.md G62 절). 없으면 서버 경고 후 none은 기존 경로(사유 generator_unavailable).
+on_none = true
+on_none_timeout_s = 180                         # none을 누른 때부터(모델 내리기·적재 포함). 넘으면 생성 프로세스를 끄고 기존 경로

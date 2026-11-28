@@ -164,6 +164,17 @@ namespace IFS.SceneSpec
 
         public static ShapeResolution Resolve(SceneSpecV2 spec) => Resolve(ExtractWords(spec), spec?.Form?.Type, spec?.Form?.Base);
 
+        /// <summary>(G73 후속) 덮어쓰기를 얹은 판정: 덮어쓰기에 form.type이 있으면 spec이 말한 form.type 대신 그 값으로 판정한다
+        /// (form.type을 mist·shell·fragments로 덮어쓰면 모양어는 not_applied_form — 모양 모형을 그리지 않고 그 형태를 그린다).
+        /// 기본 형상(form.base)은 spec 값 그대로(덮어쓴 기본 형상은 FormRenderPlan이 정함 — 이전과 같은 그림).
+        /// 덮어쓰기가 없거나 form.type을 건드리지 않으면 Resolve(spec)와 같다. 모양 모형 강제(ShapeModel)는 여기서 보지 않는다.</summary>
+        public static ShapeResolution Resolve(SceneSpecV2 spec, SceneOverride variant)
+        {
+            string form = spec?.Form?.Type;
+            if (variant != null && variant.Categories.TryGetValue("form.type", out var f)) form = f;
+            return Resolve(ExtractWords(spec), form, spec?.Form?.Base);
+        }
+
         /// <summary>모양어 목록(순서 무관)과 spec이 말한 form.type → 판정. 입력 객체는 바꾸지 않는다.
         /// statedBase(2.2, form.base)가 승인된 기본 형상이고 form.type이 null·blob이면 기본 형상이 윤곽을 정하므로 표에 있는 모양어도
         /// 모형으로 바꾸지 않고 not_applied_base로 기록한다(docs/asset-plan.md 2-5절. container 단면처럼 모양어가 변형값이 되는 경우는

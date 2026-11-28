@@ -24,6 +24,15 @@
 //   _IfsEmission (2.3) 발광 항(선형 RGB, 기본 0) — 표본 색에 더한다(IFSSceneSpecCommon.cginc와 같은 값)
 //   _Erosion    밀도 결손(노이즈가 기준보다 낮은 곳의 밀도를 0으로, 기존 Opaque의 침식과 같은 문턱 erosion × 0.62)
 // 형상 프리셋(로더가 넣음): _Lump0…_Lump4, _Lumpiness(겉면 노이즈 진폭 배율), _NoiseScale, _Density(0.5), _Seed. _Fuzz·_ShellOpen·_Displacement는 쓰지 않는다.
+// (2.4 선택, G74) 안개 입자 모양(form.mistKind, C# MistKinds) — 종류별 형상 프리셋. 기본값(곱하기 1·더하기 0)이면 위 식 그대로(cloud·null = 2.4 이전 화소):
+//   _EdgeRampMul  가장자리 폭 배율(IFS_MIST_EDGE_RAMP × 이 값). fog 3(부드럽게), smoke 1.3
+//   _Squash       밀도장 좌표 배율(xyz, 각 1 이상): 덩어리 거리를 p ⊙ squash에서 잰다(fog y 2 = 납작한 덩어리). 음영 법선도 같은 배율(타원체 법선)
+//   _NoiseStretch 노이즈 좌표 배율(xyz): smoke y 0.35 = 세로로 늘인 결(가닥), fog y 2.2 = 가로 결(층)
+//   _Twist        높이에 따른 노이즈 비틀림(라디안/물체 좌표 길이, smoke 6) — 꼬인 가닥
+//   _Strands      가닥 세기(0–1, smoke 0.45): 가닥 노이즈가 낮은 곳의 밀도를 줄인다
+//   _HeightFade   (y0, y1): y0 위로 옅어져 y1에서 0(smoke 0.30–0.66 — 위로 갈수록 흩어짐). y1 ≤ y0이면 감쇠 없음
+//   덩어리 배치(_Lump0…)는 C# MistKinds.BuildLumps가 종류별로 정한다(fog: 옆으로 넓고 낮게, smoke: 세로로 쌓인 기둥).
+//   dust(먼지·모래·가루)는 이 셰이더를 쓰지 않는다(알갱이 메시 DustMesh + IFS 반투명 셰이더).
 // 그림자 없음(U5): ShadowCaster 패스가 없고 FallBack도 없다. 투명 겹침 1층(ZWrite Off), 드로콜 1.
 // 한계: 카메라가 구 안에 있고 구 뒤쪽이 바닥 아래면, 바닥을 내려다보는 화소의 안개가 빠진다. 걸음 사이 간격 때문에 덩어리 가장자리에 옅은 층 무늬가 남을 수 있다.
 // Quest(GLES3/Vulkan 모바일)에서 컴파일되도록 고정 횟수 루프·텍스처 없는 해시 노이즈(공통 cginc)만 쓴다.
@@ -48,6 +57,13 @@ Shader "IFS/SceneSpec Mist"
         _Lump2 ("Lump 2", Vector) = (0, -0.07, 0.29, 0.24)
         _Lump3 ("Lump 3", Vector) = (-0.29, 0.15, 0, 0.24)
         _Lump4 ("Lump 4", Vector) = (0, -0.04, -0.29, 0.24)
+        // (G74) 종류별 형상 프리셋(로더가 MistKinds로 넣음). 기본값 = cloud(2.4 이전 그림)
+        _EdgeRampMul ("Edge Ramp Mul", Range(0.2, 4)) = 1
+        _Squash ("Squash", Vector) = (1, 1, 1, 0)
+        _NoiseStretch ("Noise Stretch", Vector) = (1, 1, 1, 0)
+        _Twist ("Twist", Float) = 0
+        _Strands ("Strands", Range(0, 1)) = 0
+        _HeightFade ("Height Fade", Vector) = (0, 0, 0, 0)
     }
     SubShader
     {
@@ -87,6 +103,8 @@ Shader "IFS/SceneSpec Mist"
 
             float _FloorY;
             float4 _Lump0, _Lump1, _Lump2, _Lump3, _Lump4;
+            float _EdgeRampMul, _Twist, _Strands;
+            float4 _Squash, _NoiseStretch, _HeightFade;
 
             struct appdata
             {
@@ -135,6 +153,18 @@ Shader "IFS/SceneSpec Mist"
                 return float2(-b - s, -b + s);
             }
 
+            // (G74) 광선 ro' + t·rd'(rd'는 단위 길이가 아님 — 물체 좌표 광선을 밀도장 공간으로 옮긴 것)과 원점 중심 구(반지름 r)의 교차 구간.
+            // t는 물체 좌표 광선의 t와 같다. 닿지 않으면 (1e5, −1e5).
+            float2 mistEllipsoid(float3 ro, float3 rd, float r)
+            {
+                float a = dot(rd, rd);
+                float b = dot(ro, rd);
+                float h = b * b - a * (dot(ro, ro) - r * r);
+                if (h <= 0.0) return float2(1e5, -1e5);
+                float s = sqrt(h);
+                return float2((-b - s) / a, (-b + s) / a);
+            }
+
             // 덩어리 음영의 부드러운 가중치: w_k = exp(IFS_MIST_SHADE_SOFT × (f_k − f_max)). 덩이 사이 이음매에서 법선·자기 그림자가 갑자기 바뀌지 않게
             #define IFS_MIST_SHADE_SOFT 30.0
 
@@ -144,13 +174,15 @@ Shader "IFS/SceneSpec Mist"
             //   밀도 = saturate(f / 가장자리 폭) × 속 얼룩(0.75–1.2)
             float mistDensity(float3 p, float noiseMul, float3 lightObj, out float mottle, out float3 nObj, out float thick)
             {
+                // (G74) 밀도장 공간: 덩어리 거리는 p ⊙ _Squash에서 잰다(기본 (1, 1, 1) — 2.4 이전과 같은 값)
+                float3 ps = p * _Squash.xyz;
                 float fk[IFS_MIST_LUMPS];
                 float f = -1e5;
                 [unroll]
                 for (int k = 0; k < IFS_MIST_LUMPS; k++)
                 {
                     float4 L = mistLump(k);
-                    fk[k] = L.w - length(p - L.xyz);
+                    fk[k] = L.w - length(ps - L.xyz);
                     f = max(f, fk[k]);
                 }
                 // 음영: 가장 깊이 들어간 덩어리 쪽으로 기운 가중 평균(덩이마다 위가 밝고 아래가 어둡다)
@@ -162,18 +194,39 @@ Shader "IFS/SceneSpec Mist"
                 {
                     float4 L = mistLump(j);
                     float w = exp(IFS_MIST_SHADE_SOFT * (fk[j] - f));
-                    nObj += w * normalize(p - L.xyz + 1e-5);
-                    thick += w * max(mistSphere(p, lightObj, L.xyz, L.w).y, 0.0);
+                    nObj += w * normalize(ps - L.xyz + 1e-5);
+                    thick += w * max(mistSphere(ps, lightObj, L.xyz, L.w).y, 0.0);
                     wsum += w;
                 }
                 thick /= wsum;
-                float3 q = (p * _NoiseScale + _Seed * 13.7) * noiseMul;
+                nObj *= _Squash.xyz;   // (G74) 눌린 덩어리(타원체)의 법선. 기본 (1, 1, 1)이면 그대로
+                // (G74) 노이즈 좌표: 높이에 따라 비틀고(_Twist) 축마다 늘인다(_NoiseStretch). 기본값이면 p 그대로
+                float3 pn = p;
+                if (_Twist != 0.0)
+                {
+                    float a = _Twist * p.y;
+                    float ca = cos(a), sa = sin(a);
+                    pn.xz = float2(ca * p.x - sa * p.z, sa * p.x + ca * p.z);
+                }
+                float3 q = (pn * _NoiseStretch.xyz * _NoiseScale + _Seed * 13.7) * noiseMul;
                 // 중간 주파수: 덩어리 지름(약 0.5)에 노이즈 격자 약 3칸
                 float n = mistFbm2(q * 5.5);
                 f += (n - 0.375) * _Lumpiness * IFS_MIST_EDGE_NOISE * 2.0;
                 float inner = ifsNoise(q * 9.0 + 9.3);
                 mottle = inner;
-                float d = saturate(f / IFS_MIST_EDGE_RAMP) * lerp(0.75, 1.2, inner);
+                float d = saturate(f / (IFS_MIST_EDGE_RAMP * _EdgeRampMul)) * lerp(0.75, 1.2, inner);
+                // (G74) 가닥: 비튼·늘인 노이즈가 낮은 곳의 밀도를 줄인다(smoke). 0이면 건너뜀
+                if (_Strands > 0.001)
+                {
+                    float sn = ifsNoise(q * 4.5 + 3.1);
+                    d *= lerp(1.0, saturate((sn - 0.3) * 2.5), _Strands);
+                }
+                // (G74) 높이 감쇠: y0 위로 옅어져 y1에서 0(smoke). y1 ≤ y0이면 건너뜀
+                if (_HeightFade.y > _HeightFade.x)
+                {
+                    float ht = saturate((p.y - _HeightFade.x) / (_HeightFade.y - _HeightFade.x));
+                    d *= 1.0 - ht * ht * (3.0 - 2.0 * ht);
+                }
                 // 침식: 노이즈가 기준보다 낮은 곳의 밀도를 없앤다(Opaque의 clip과 같은 문턱)
                 if (_Erosion > 0.001)
                 {
@@ -201,7 +254,8 @@ Shader "IFS/SceneSpec Mist"
                 float sq = sqrt(h);
                 float t0 = max(-b - sq, 0.0);   // 카메라가 구 안이면 카메라에서 시작
                 float t1 = -b + sq;
-                // 덩어리 전체(노이즈 여유 포함)를 감싼 구 하나로 구간을 줄인다. 덩어리마다 구간을 따로 자르면 그 구의 윤곽에서 걸음 자리가
+                // 덩어리 전체(노이즈 여유 포함)를 감싼 구 하나로 구간을 줄인다. (G74) 덩어리는 밀도장 공간(p ⊙ _Squash, 각 1 이상)에 있으므로
+                // 그 공간의 반지름이 물체 좌표에서도 상한이다(|p| ≤ |p ⊙ squash|). 덩어리마다 구간을 따로 자르면 그 구의 윤곽에서 걸음 자리가
                 // 갑자기 바뀌어 구름 안에 둥근 금이 보였다(첫 시도). 감싼 구의 윤곽은 덩어리 밖(밀도 0)이라 보이지 않는다.
                 float extent = 0;
                 [unroll]
@@ -210,7 +264,12 @@ Shader "IFS/SceneSpec Mist"
                     float4 L = mistLump(k);
                     extent = max(extent, length(L.xyz) + L.w);
                 }
-                float2 span = mistSphere(ro, rd, float3(0, 0, 0), extent + _Lumpiness * IFS_MIST_EDGE_NOISE * 0.75 + 0.01);
+                float bound = extent + _Lumpiness * IFS_MIST_EDGE_NOISE * 0.75 + 0.01;
+                float2 span;
+                // (G74) 덩어리를 눌렀으면(_Squash ≠ 1) 밀도장 공간의 구 = 물체 좌표의 타원체로 구간을 자른다 — 얇은 층(fog)에 걸음을 모아 층 무늬를 줄인다.
+                // 누르지 않았으면 이전 식 그대로(cloud·null = 2.4 이전 화소)
+                if (all(_Squash.xyz == float3(1.0, 1.0, 1.0))) span = mistSphere(ro, rd, float3(0, 0, 0), bound);
+                else span = mistEllipsoid(ro * _Squash.xyz, rd * _Squash.xyz, bound);
                 t0 = max(t0, span.x);
                 t1 = min(t1, span.y);
                 if (t1 <= t0) discard;

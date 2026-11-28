@@ -39,6 +39,9 @@ namespace IFS.SceneSpec
             CheckLevel(ContourRender.RoundnessKey, spec.Form.Roundness);
             CheckLevel(ContourRender.AspectKey, spec.Form.Aspect);
             CheckLevel(ContourRender.EmissionKey, spec.Material.Emission);
+            // (2.4 선택, G74) 안개 입자 모양도 닫힌 목록
+            if (spec.Form.MistKind != null && !MistKinds.IsKind(spec.Form.MistKind))
+                throw new JsonSerializationException($"{MistKinds.Key}: 모르는 값 {spec.Form.MistKind}(가능: {string.Join(", ", MistKinds.Values)}, null)");
             return spec;
         }
 
@@ -60,6 +63,7 @@ namespace IFS.SceneSpec
             var material = root["material"] as Newtonsoft.Json.Linq.JObject;
             spec.Form.BaseKeysPresent = form != null && (form.ContainsKey("base") || form.ContainsKey("baseVariant"));
             spec.Form.ContourKeysPresent = form != null && (form.ContainsKey("roundness") || form.ContainsKey("aspect"));
+            spec.Form.MistKindKeyPresent = form != null && form.ContainsKey("mistKind");
             spec.Material.EmissionKeyPresent = material != null && material.ContainsKey("emission");
             var layout = root["layout"] as Newtonsoft.Json.Linq.JObject;
             spec.Layout.ProportionsKeyPresent = layout != null && layout.ContainsKey("proportions");
@@ -182,9 +186,17 @@ namespace IFS.SceneSpec
                 problems.Add($"form.base: 모르는 기본 형상 {s.Form.Base}(가능: {string.Join(", ", BaseShapes.All)}) — 그리지 않음");
             if (s.Form.Base == null && s.Form.BaseVariant != null) problems.Add("form.baseVariant: form.base가 null인데 변형값이 있다");
             if (BaseShapes.IsBase(s.Form.Base)) BaseShapes.Resolve(s.Form.Base, s.Form.BaseVariant, null, problems);
+            // (2.4 선택, G74) 안개 입자 모양: 2.4.0 문서에만(선택), 값 ⇔ _provenance 규칙은 다른 슬롯과 같다
+            if (!v24 && (s.Form.MistKindKeyPresent || s.Form.MistKind != null))
+                problems.Add($"specVersion {s.Meta.SpecVersion} 문서에 2.4 선택 필드({MistKinds.Key})가 있다");
+            {
+                bool hasProv = s.Provenance.TryGetValue(MistKinds.Key, out var provs) && provs != null && provs.Count > 0;
+                if (s.Form.MistKind == null && hasProv) problems.Add(MistKinds.Key + ": null인데 _provenance가 있다");
+                if (s.Form.MistKind != null && !hasProv) problems.Add(MistKinds.Key + ": 값이 있는데 _provenance가 없다");
+            }
             foreach (var key in s.Provenance.Keys)
                 if (Array.IndexOf(SlotPaths, key) < 0 && Array.IndexOf(BaseSlotPaths, key) < 0 && Array.IndexOf(ContourRender.SlotPaths, key) < 0
-                    && key != ProportionsRender.Key)
+                    && key != ProportionsRender.Key && key != MistKinds.Key)
                     problems.Add("_provenance에 모르는 경로: " + key);
             return problems;
         }

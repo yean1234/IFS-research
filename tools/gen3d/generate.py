@@ -267,6 +267,8 @@ def main(argv=None):
     ap.add_argument("--repeat", type=int, default=1, help="2면 같은 조건으로 한 번 더 만들어 결정성을 본다")
     ap.add_argument("--no-cache", action="store_true",
                     help="(sdxl-triposg) 캐시가 있어도 다시 만들고, 앞 프로세스의 GLB sha256과 비교해 run.json에 적는다")
+    ap.add_argument("--cache-probe", action="store_true",
+                    help="(sdxl-triposg) 모델을 부르지 않고 캐시로 끝날지만 보고 <run>/cache-probe.json에 적는다(G73 후속)")
     a = ap.parse_args(argv)
 
     run_dir = assert_outside_repo(OUT_ROOT / a.run)
@@ -279,6 +281,9 @@ def main(argv=None):
 
         if a.prompt_mode != "rules":
             raise SystemExit("sdxl-triposg는 규칙 프롬프트(shape_prompt)만 쓴다(원칙 1)")
+        if a.cache_probe:
+            form_asset.probe(rows, a.run, pipeline=a.pipeline, seed=a.seed)
+            return
         form_asset.run(rows, a.run, pipeline=a.pipeline, seed=a.seed, repeat=a.repeat, no_cache=a.no_cache)
         return
     out_dir = run_dir / f"{a.pipeline}-{a.prompt_mode}"

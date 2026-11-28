@@ -1,0 +1,93 @@
+{
+  "meta": {
+    "specVersion": "2.4.0",
+    "participantId": null,
+    "sessionId": "SYN-G74-4-cloud",
+    "condition": null,
+    "sourceTextHash": "sha256:f4ccc175f96ec2f30d40d2649dcf8cc0bc47ef746227ef587afcdf200e8f9334",
+    "pipeline": {
+      "builder": "scene-spec-builder-v2/2.8.0",
+      "analyzer": "kiwi",
+      "lexicons": {
+        "layer1": "layer1-attribute-lexicon@1.0.0",
+        "layer1Base": "layer1-attribute-lexicon@0.1.0",
+        "sceneParams": "scene-params@1.0.0",
+        "vad": "vad-ko@0.1.0",
+        "sceneParamsV2": "scene-params-v2@2.1.0",
+        "nounStoplist": "noun-stoplist-v2@1.0.0",
+        "baseShapes": "base-shapes-v1@0.7.0",
+        "proportionsTable": "scene-params-v2.proportions@0.1.0"
+      }
+    },
+    "mapping": {
+      "requested": "v2",
+      "used": "v1",
+      "fallbackReason": null
+    }
+  },
+  "form": {
+    "type": "mist",
+    "posture": null,
+    "base": null,
+    "baseVariant": null
+  },
+  "material": {
+    "color": null,
+    "brightness": null,
+    "saturation": null,
+    "roughness": null,
+    "opacity": null,
+    "erosion": null
+  },
+  "layout": {
+    "size": null,
+    "distance": null,
+    "verticalOffset": null,
+    "proportions": null
+  },
+  "motion": {
+    "type": null,
+    "speed": null
+  },
+  "body": {
+    "part": null,
+    "layer": null
+  },
+  "_provenance": {
+    "form.type": [
+      {
+        "source": "simile_marker",
+        "trigger": "먹구름 같",
+        "charSpan": [
+          0,
+          5
+        ],
+        "rule": "simile.같은>prototype.먹구름>form.type:mist"
+      }
+    ]
+  },
+  "_unmatched": [],
+  "_unmapped": [],
+  "_negated": [],
+  "_alternatives": [],
+  "_inferred": {},
+  "_context": [],
+  "_parts": [],
+  "_uncertain": [],
+  "_measurements": [],
+  "_direction": [],
+  "_needsConfirmation": [],
+  "_clauses": [
+    {
+      "charSpan": [
+        0,
+        7
+      ],
+      "text": "먹구름 같아요",
+      "usedFor": [
+        "form.type"
+      ],
+      "status": "used"
+    }
+  ]
+}

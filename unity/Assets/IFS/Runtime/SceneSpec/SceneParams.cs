@@ -87,6 +87,11 @@ namespace IFS.SceneSpec
         /// <summary>(2.4) 지금 비율의 유효 값(clamp(원값 / 가장 큰 값, 0.2, 1), 가장 큰 값 = 1). 새 배열.</summary>
         public double[] ProportionsEffective => ProportionsRender.Normalize(_num[ProportionsRender.XKey], _num[ProportionsRender.YKey], _num[ProportionsRender.ZKey]);
 
+        /// <summary>(2.4 선택, G74) 안개 입자 모양 슬롯이 있는 값 집합인가(키가 있는 2.4 spec, 또는 덮어쓰기로 form.mistKind를 정함).
+        /// 이때만 ToRecord·ChangedCategories·렌더 계획에 form.mistKind가 나온다. 값은 범주 값으로 들고 있지만(null = 말하지 않음)
+        /// CategoricalKeys에는 넣지 않는다(키가 없는 문서의 기록·golden 지문이 그대로).</summary>
+        public bool HasMistKindSlot { get; private set; }
+
         SceneParams() { }
 
         public static SceneParams FromSpec(SceneSpecV2 s, SceneDefaults d, bool useInferred = false)
@@ -123,6 +128,10 @@ namespace IFS.SceneSpec
             p._cat[ContourRender.RoundnessKey] = ContourRender.IsRoundness(s.Form.Roundness) ? s.Form.Roundness : null;
             p._cat[ContourRender.AspectKey] = ContourRender.IsAspect(s.Form.Aspect) ? s.Form.Aspect : null;
             p._cat[ContourRender.EmissionKey] = ContourRender.IsEmission(s.Material.Emission) ? s.Material.Emission : null;
+            // (2.4 선택, G74) 안개 입자 모양: 말한 값 그대로(null = 말하지 않음 → cloud와 같은 그림). 기본값 기록은 슬롯이 있는 문서일 때만
+            p.HasMistKindSlot = s.Form.MistKindKeyPresent || s.Form.MistKind != null;
+            p._cat[MistKinds.Key] = MistKinds.IsKind(s.Form.MistKind) ? s.Form.MistKind : null;
+            if (p.HasMistKindSlot && p._cat[MistKinds.Key] == null) p.DefaultsUsed.Add(MistKinds.Key);
             var c = s.Material.Color;
             Num("material.color.h", c?.H, null, d.colorH);
             Num("material.color.s", s.Material.Saturation ?? c?.S, null, d.colorS);   // 채도어가 있으면 그 값
@@ -181,6 +190,11 @@ namespace IFS.SceneSpec
                     throw new ArgumentException($"모르는 {key}: {value}(가능: {string.Join(", ", levels)})");
                 HasContourSlots = true;
             }
+            if (key == MistKinds.Key)
+            {
+                if (!MistKinds.IsKind(value)) throw new ArgumentException($"모르는 {key}: {value}(가능: {string.Join(", ", MistKinds.Values)})");
+                HasMistKindSlot = true;
+            }
             if (_cat[key] == value) return false;
             _cat[key] = value;
             return true;
@@ -197,6 +211,7 @@ namespace IFS.SceneSpec
             p.SpecBase = SpecBase;
             p.SpecBaseVariant = SpecBaseVariant?.Clone();
             p.HasContourSlots = HasContourSlots;
+            p.HasMistKindSlot = HasMistKindSlot;
             p.HasProportionsSlot = HasProportionsSlot;
             p.ProportionsGiven = ProportionsGiven;
             p.SpecProportionsAxisSaid = SpecProportionsAxisSaid;
@@ -210,6 +225,7 @@ namespace IFS.SceneSpec
             foreach (var k in NumericKeys) r[k] = Math.Round(_num[k], 4);
             foreach (var k in CategoricalKeys) r[k] = _cat[k];
             if (HasBaseSlot) r[BaseKey] = _cat[BaseKey];
+            if (HasMistKindSlot) r[MistKinds.Key] = _cat[MistKinds.Key];   // (2.4 선택, G74) 키가 있을 때만(null = 말하지 않음)
             // (2.4) 비율 슬롯이 있을 때만 유효 비율(가장 큰 값 = 1)
             if (HasProportionsSlot)
             {
@@ -257,6 +273,7 @@ namespace IFS.SceneSpec
             if ((initial.HasBaseSlot || final.HasBaseSlot) && initial._cat[BaseKey] != final._cat[BaseKey]) r.Add(BaseKey);
             foreach (var k in ContourRender.SlotPaths)
                 if (initial._cat[k] != final._cat[k]) r.Add(k);
+            if ((initial.HasMistKindSlot || final.HasMistKindSlot) && initial._cat[MistKinds.Key] != final._cat[MistKinds.Key]) r.Add(MistKinds.Key);
             return r;
         }
 

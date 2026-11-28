@@ -187,6 +187,10 @@ def build_spec(text: str, sid: str) -> dict:
 # 막는 경우 모델을 부르지 않는다: no_shape_stated, excluded_category, untraceable_token.
 # charSpan은 normalize_confirmed(text) 기준이고 sourceTextSha256도 그 문자열의 해시다(세션 confirmedText와 같은 정규화).
 SHAPE_BUILDER_VERSION = "gen3d-shape-prompt/0.2.0"     # 0.2.0: 부속물 부정 틀, pluralStated
+# (G73 후속) 매퍼 판단을 따르는 규칙: shape_prompt(text, mapper_spec=세션 spec)일 때만. 텍스트만 넘기면 0.2.0 그대로
+# (G62 기본 후보 경로·eval_g62 재현성). 판 이름에 규칙을 붙여 사이드카 builderVersion만 보고도 가를 수 있게 한다.
+SHAPE_BUILDER_VERSION_MAPPER = "gen3d-shape-prompt/0.3.0+mapper-v2"
+PROMPT_RULE_TEXT, PROMPT_RULE_MAPPER = "text", "mapper"
 SHAPE_LEXICON = CHATBOT.parent / "shared" / "lexicon" / "shape_prompt_en.v0.json"
 _NOUNISH = {"NNG", "NNP", "XSN"}
 _PRED_TAGS = {"VA", "VV", "MAG", "XR"}
@@ -307,14 +311,108 @@ def _negated(doc, i: int, j: int, lexical_starts: set, neg_spans) -> bool:
     return False
 
 
-def shape_prompt(text: str) -> dict:
-    """확정 텍스트 → 형태 프롬프트와 차단 판정. 같은 텍스트 → 언제나 같은 결과(사전·규칙만)."""
+def shape_prompt_for_row(row: dict) -> dict:
+    """생성기 입력 sentences.json의 한 줄 → shape_prompt. promptRule = "mapper"이고 mapperSpec이 있으면 매퍼 규칙
+    (G73 [맞는 게 없어요] 생성 — none_gen.py가 세션 spec을 함께 적음), 아니면 텍스트만(G62 기본 후보·평가 입력)."""
+    if row.get("promptRule") == PROMPT_RULE_MAPPER:
+        spec = row.get("mapperSpec")
+        if not isinstance(spec, dict):
+            raise SystemExit(f"{row.get('id')}: promptRule mapper인데 mapperSpec이 없음")
+        return shape_prompt(row["text"], mapper_spec=spec)
+    return shape_prompt(row["text"])
+
+
+def _overlaps(a, b) -> bool:
+    return bool(a and b) and a[0] < b[1] and b[0] < a[1]
+
+
+def _mapper_evidence(spec: dict) -> dict:
+    """(G73 후속) 세션 매퍼(v2) spec에서 형태 낱말 판단을 모은다. 값은 [시작, 끝) 목록.
+    - form: form.* 슬롯의 근거(_provenance) — 매퍼가 형태로 받아들인 낱말
+    - discard: 매퍼가 형태에서 버린 낱말과 사유 — 움직임 비유의 매개어(G71 actionSimile), 장소 용법(G74-c location),
+      직접 형태 진술에 밀린 형상 낱말(G71-b lower_priority), 부정·정정(_negated), 형태 슬롯의 맥락 낱말(_context)
+    - recorded: 매퍼가 어떤 식으로든 적은 낱말(_unmapped의 사물·모양어·사전 밖 명사, form.* 대안 등)"""
+    ev = {"form": [], "discard": [], "recorded": []}
+
+    def span(p):
+        cs = (p or {}).get("charSpan")
+        return tuple(cs) if isinstance(cs, (list, tuple)) and len(cs) == 2 else None
+
+    for path, plist in (spec.get("_provenance") or {}).items():
+        for p in plist if isinstance(plist, list) else [plist]:
+            s = span(p)
+            if s:
+                (ev["form"] if path.startswith("form.") else ev["recorded"]).append(s)
+    for a in spec.get("_alternatives") or []:
+        path, why = a.get("path") or "", a.get("reason") or ""
+        for p in a.get("_provenance") or []:
+            s = span(p)
+            if not s:
+                continue
+            rule = p.get("rule") or ""
+            reason = None
+            if path.startswith("form."):
+                if "actionSimile" in rule:
+                    reason = "mapper_action_simile"
+                elif "+location(" in rule or why == "location":
+                    reason = "mapper_location"
+                elif why == "lower_priority":
+                    reason = "mapper_lower_priority"
+            if reason:
+                ev["discard"].append((s, reason))
+            else:
+                ev["recorded"].append(s)
+    for n in spec.get("_negated") or []:
+        s = span(n.get("_provenance"))
+        if s:
+            ev["discard"].append((s, "mapper_negated"))
+    for c in spec.get("_context") or []:
+        s = span(c)
+        if s and (c.get("path") or "").startswith("form."):
+            ev["discard"].append((s, "mapper_context"))
+        elif s:
+            ev["recorded"].append(s)
+    for u in spec.get("_unmapped") or []:
+        s = span(u.get("_provenance"))
+        if s:
+            ev["recorded"].append(s)
+    return ev
+
+
+def _mapper_verdict(ev: dict, span, is_noun: bool) -> str | None:
+    """사전에 맞은 낱말 하나 → None(프롬프트 후보로 둠) 또는 뺀 사유.
+    형태 슬롯 근거면 둔다. 매퍼가 버렸으면 그 사유. 형태 명사인데 매퍼가 전혀 적지 않았으면 mapper_unrecorded.
+    형태 꾸밈말(동그란·엉킨·오돌토돌 등)은 매퍼가 다른 슬롯(질감·침식)에 적거나 적지 않아도, 버리지 않았으면 둔다."""
+    if any(_overlaps(span, f) for f in ev["form"]):
+        return None
+    for s, reason in ev["discard"]:
+        if _overlaps(span, s):
+            return reason
+    if is_noun and not any(_overlaps(span, r) for r in ev["recorded"]):
+        return "mapper_unrecorded"
+    return None
+
+
+def shape_prompt(text: str, mapper_spec: dict | None = None) -> dict:
+    """확정 텍스트 → 형태 프롬프트와 차단 판정. 같은 텍스트 → 언제나 같은 결과(사전·규칙만).
+
+    mapper_spec(G73 후속, 실험 설정의 [맞는 게 없어요] 생성만): 같은 확정 텍스트로 세션이 만든 매퍼 v2 spec.
+    주면 ① 차단 판정(제외 범주·안개·부정)을 기본 매퍼가 아니라 이 spec으로 하고, ② 사전에 맞은 낱말 가운데 매퍼가 형태에서
+    버린 것(움직임 비유의 매개어·장소 용법·직접 진술에 밀린 형상 낱말·부정)과 매퍼가 적지 않은 형태 명사를 빼고 dropped에
+    사유와 함께 남긴다. spec의 sourceTextHash가 이 텍스트와 다르면 막는다(mapper_spec_mismatch). 같은 (텍스트, spec) → 같은 결과.
+    주지 않으면 0.2.0 그대로(G62 기본 후보 경로·오프라인 평가)."""
     rt = _shape_runtime()
     norm = rt.normalize(text)
     toks = rt.analyzer.tokens(norm)
     doc = rt.Doc(norm, toks)
     context = rt.excluder._context_sentences(doc)
-    spec = rt.excluder.build(norm)
+    use_mapper = mapper_spec is not None
+    spec = mapper_spec if use_mapper else rt.excluder.build(norm)
+    ev = _mapper_evidence(mapper_spec) if use_mapper else None
+    mapper_mismatch = False
+    if use_mapper:
+        h = str((mapper_spec.get("meta") or {}).get("sourceTextHash") or "")
+        mapper_mismatch = h.split(":", 1)[-1] != sha256_text(norm)
     neg_spans = [tuple(n["_provenance"]["charSpan"]) for n in spec.get("_negated") or []
                  if (n.get("_provenance") or {}).get("charSpan")]
     tmpl = rt.lex["template"]
@@ -360,6 +458,11 @@ def shape_prompt(text: str) -> dict:
         if pos in ("location", "size"):
             dropped.append({"ko": ko, "charSpan": [s, en_], "reason": pos})
             continue
+        if ev is not None:
+            why = _mapper_verdict(ev, (s, en_), e["pos"] == "noun" and e["slot"] == "shape_noun")
+            if why:
+                dropped.append({"ko": ko, "charSpan": [s, en_], "reason": why})
+                continue
         accepted.append({"i": i, "j": j, "e": e, "ko": ko, "span": [s, en_], "pos": pos})
 
     # 2) 차단 판정: 기존 제외 판정(G45–G51) → 메시로 안 되는 범주(form.type mist·form.base flame) → 보충 목록
@@ -385,6 +488,9 @@ def shape_prompt(text: str) -> dict:
             continue
         nxt = _next_noun(doc, k)
         nxt_form = toks[nxt].form if nxt is not None else None
+        if kind == "nonMeshable" and ev is not None and \
+                any(_overlaps((t.start, t.end), s) for s, _ in ev["discard"]):
+            continue                                 # 매퍼가 형태에서 버린 안개·구름(장소 용법·움직임 비유). 사람·동물은 그대로 막음
         if kind == "nonMeshable":
             hit = pos in ("noun_modifier", "simile") or (pos == "head" and not shape_nouns_here)
             if pos == "simile" and nxt_form in rt.excluder.bs_color_nouns:
@@ -398,6 +504,8 @@ def shape_prompt(text: str) -> dict:
         if hit:
             detail.append(f"{kind}:{t.form}")
     block = "excluded_category" if detail else None
+    if mapper_mismatch:                              # 다른 텍스트의 spec — 매퍼 판단을 믿을 수 없음(fail closed)
+        block, detail = "mapper_spec_mismatch", ["mapper_spec_mismatch:meta.sourceTextHash"]
 
     # 3) 프롬프트 조립: 꾸밈말(나온 차례) + 비유·명사 꾸밈('…-like') + 중심 명사(처음 나온 것)
     mods, likes, head, later = [], [], None, []
@@ -459,7 +567,9 @@ def shape_prompt(text: str) -> dict:
         "negativeText": negative,
         "pluralStated": bool(plural),
         "lexiconVersion": rt.lex["lexiconVersion"],
-        "builderVersion": SHAPE_BUILDER_VERSION,
+        "builderVersion": SHAPE_BUILDER_VERSION_MAPPER if use_mapper else SHAPE_BUILDER_VERSION,
+        "promptRule": PROMPT_RULE_MAPPER if use_mapper else PROMPT_RULE_TEXT,
+        "mapperBuilder": (((mapper_spec.get("meta") or {}).get("pipeline") or {}).get("builder")) if use_mapper else None,
         "templateVersion": tmpl["version"],
         "tokens": tokens if content else [],
         "dropped": dropped,

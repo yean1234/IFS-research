@@ -116,6 +116,8 @@ def create_app(cfg: Config | None = None, runtime: Runtime | None = None, warmup
     async def lifespan(_app):
         yield
         rt.preview.close()          # 상주 미리보기 플레이어 끄기
+        if getattr(rt, "none_gen", None) is not None:
+            rt.none_gen.close()     # G73: 돌고 있는 생성 프로세스 끄기
 
     app = FastAPI(title="IFS 심상화 면담 서버", version="0.1.0", lifespan=lifespan,
                   description="IFS 6F(Find·Focus·Flesh out) 유도 면담 — 고정 문구 + 로컬 LLM clean 질문 + 검증기 + 안전 계층")
@@ -123,6 +125,8 @@ def create_app(cfg: Config | None = None, runtime: Runtime | None = None, warmup
 
     if warmup and rt.backend_ok:
         threading.Thread(target=rt.backend.warmup, daemon=True).start()
+    if warmup and getattr(rt, "none_gen", None) is not None:
+        threading.Thread(target=rt.none_gen.prewarm, daemon=True).start()   # G73: 규칙 프롬프트(Kiwi·매퍼) 미리 적재
 
     def get_session(sid: str) -> Session:
         s = rt.sessions.get(sid)
@@ -267,6 +271,12 @@ def create_app(cfg: Config | None = None, runtime: Runtime | None = None, warmup
     @app.post("/api/sessions/{sid}/selection")
     def select(sid: str, body: SelectionChoice):
         return sel_run(flow(sid).select, body.candidateId)
+
+    @app.post("/api/sessions/{sid}/selection/none-gen/skip")
+    def none_gen_skip(sid: str):
+        """G73: [맞는 게 없어요] 뒤 생성 대기 중 [기다리지 않고 넘어갈게요] — 생성을 끄고 기존 none 경로(0번 후보로 조절).
+        생성 대기(stage generating)가 아니면 409. 대기 중에는 GET …/selection을 다시 불러 끝났는지 본다."""
+        return sel_run(flow(sid).skip_generation)
 
     @app.post("/api/sessions/{sid}/adjust")
     def adjust(sid: str, body: AdjustStep):

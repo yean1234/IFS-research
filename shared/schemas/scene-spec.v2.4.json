@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://ifs-research.local/shared/schemas/scene-spec.v2.4.json",
   "title": "IFSSceneSpec v2.4",
-  "description": "SceneSpec v2.3의 상위 호환 확장(너비·높이·깊이 비율 layout.proportions, 결정 G72, 2026-11-27). v2.0–v2.3 문서는 그대로 유효하다(파이썬 validate는 specVersion에 맞는 스키마 파일로 검사한다). 2.4.0 문서는 2.2 슬롯(form.base·form.baseVariant)과 layout.proportions를 반드시 가진다(말하지 않았으면 null). 2.3 윤곽·발광 슬롯(form.roundness·form.aspect·material.emission)은 2.4.0에서 선택이다: [mapping] ext_lexicon을 켠 매핑만 셋을 함께 적고(말하지 않았으면 null), 끈 매핑은 키를 적지 않는다(읽지 않은 것을 '말하지 않음'으로 적지 않기 위함). layout.proportions는 {x 너비, y 높이, z 깊이, axisSaid} — 각 0.2–1, 가장 큰 값 = 1(이 규칙은 파이썬 check_principles·Unity Validate가 본다). layout.size는 그대로 '가장 긴 변'의 크기다(G62-e): 비율을 바꿔도 가장 긴 변은 size가 정한다. axisSaid = false면 참여자가 긴(짧은) 축의 방향을 말하지 않았다는 뜻이고 값은 렌더러 기본 방향(길쭉함 = 세로 y가 김, 납작함 = 세로 y가 짧음)으로 적는다 — 렌더러는 defaultsUsed에 layout.proportions.axis를 남긴다. 수치는 shared/lexicon/scene_params.v2.json proportions 표(초안). 2.4.0을 내는 것은 [mapping] proportions를 켠 매핑 v2뿐이다. 근거: docs/scene-spec-mapping.md 10절, AGENTS.md 1·2.",
+  "description": "SceneSpec v2.3의 상위 호환 확장(너비·높이·깊이 비율 layout.proportions, 결정 G72, 2026-11-27). v2.0–v2.3 문서는 그대로 유효하다(파이썬 validate는 specVersion에 맞는 스키마 파일로 검사한다). 2.4.0 문서는 2.2 슬롯(form.base·form.baseVariant)과 layout.proportions를 반드시 가진다(말하지 않았으면 null). 2.3 윤곽·발광 슬롯(form.roundness·form.aspect·material.emission)은 2.4.0에서 선택이다: [mapping] ext_lexicon을 켠 매핑만 셋을 함께 적고(말하지 않았으면 null), 끈 매핑은 키를 적지 않는다(읽지 않은 것을 '말하지 않음'으로 적지 않기 위함). layout.proportions는 {x 너비, y 높이, z 깊이, axisSaid} — 각 0.2–1, 가장 큰 값 = 1(이 규칙은 파이썬 check_principles·Unity Validate가 본다). layout.size는 그대로 '가장 긴 변'의 크기다(G62-e): 비율을 바꿔도 가장 긴 변은 size가 정한다. axisSaid = false면 참여자가 긴(짧은) 축의 방향을 말하지 않았다는 뜻이고 값은 렌더러 기본 방향(길쭉함 = 세로 y가 김, 납작함 = 세로 y가 짧음)으로 적는다 — 렌더러는 defaultsUsed에 layout.proportions.axis를 남긴다. 수치는 shared/lexicon/scene_params.v2.json proportions 표(초안). 2.4.0을 내는 것은 [mapping] proportions를 켠 매핑 v2뿐이다. 근거: docs/scene-spec-mapping.md 10절, AGENTS.md 1·2. (G74, 2026-11-27 — 판 번호는 올리지 않음) 선택 슬롯 form.mistKind(fog | smoke | dust | cloud | null): [mapping] mist_kinds를 켠 매핑만 적는다. 근거: docs/scene-spec-mapping.md 11절.",
   "x-schemaVersion": "2.4.0",
   "type": "object",
   "additionalProperties": false,
@@ -208,6 +208,16 @@
             "flattened",
             null
           ]
+        },
+        "mistKind": {
+          "description": "(2.4 선택, G74) 안개 입자 모양 — form.type이 mist일 때 그리는 종류. fog(안개·수증기·아지랑이: 넓고 낮게 깔린 옅은 층) | smoke(연기·김: 위로 피어오르는 기둥, 꼬인 가닥) | dust(먼지·모래·가루: 작은 알갱이가 흩어짐) | cloud(구름·먹구름: 뭉친 덩어리 — 2.4 이전 안개 그림). 참여자가 그 낱말을 형상 자리에서 말했을 때만 채운다(shared/lexicon/scene_params.v2.json mistKinds 표). 말하지 않았으면 null(Unity는 cloud와 같은 그림, defaultsUsed에 form.mistKind). form.type을 정하지 않는다: form.type이 mist가 아니면 기록만 하고 그리지 않는다. [mapping] mist_kinds를 켠 매핑만 키를 적고(말하지 않았으면 null), 끈 매핑은 키를 적지 않는다(읽지 않은 것을 '말하지 않음'으로 적지 않기 위함). 2.0.0–2.3.0 문서에는 없어야 한다.",
+          "enum": [
+            "fog",
+            "smoke",
+            "dust",
+            "cloud",
+            null
+          ]
         }
       }
     },
@@ -404,6 +414,7 @@
           "form.baseVariant",
           "form.roundness",
           "form.aspect",
+          "form.mistKind",
           "material.color",
           "material.brightness",
           "material.saturation",
@@ -537,6 +548,7 @@
               "form.base",
               "form.roundness",
               "form.aspect",
+              "form.mistKind",
               "material.color",
               "material.brightness",
               "material.saturation",
@@ -2200,6 +2212,70 @@
           }
         }
       }
+    },
+    {
+      "$comment": "(2.4 선택, G74) form.mistKind는 2.4.0 문서에만 있을 수 있다",
+      "if": {
+        "properties": {
+          "meta": {
+            "properties": {
+              "specVersion": {
+                "enum": [
+                  "2.0.0",
+                  "2.1.0",
+                  "2.2.0",
+                  "2.3.0"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "form": {
+            "not": {
+              "required": [
+                "mistKind"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "$comment": "원칙 3·4: form.mistKind가 null(또는 없음)이면 _provenance에 없어야 하고, 값이 있으면 _provenance가 있어야 한다",
+      "if": {
+        "properties": {
+          "form": {
+            "properties": {
+              "mistKind": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "_provenance": {
+            "not": {
+              "required": [
+                "form.mistKind"
+              ]
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "_provenance": {
+            "required": [
+              "form.mistKind"
+            ]
+          }
+        }
+      }
     }
   ],
   "$defs": {
@@ -2342,6 +2418,7 @@
         "form.baseVariant",
         "form.roundness",
         "form.aspect",
+        "form.mistKind",
         "material.color",
         "material.brightness",
         "material.saturation",
@@ -2367,6 +2444,7 @@
         "form.baseVariant",
         "form.roundness",
         "form.aspect",
+        "form.mistKind",
         "material.color",
         "material.brightness",
         "material.saturation",

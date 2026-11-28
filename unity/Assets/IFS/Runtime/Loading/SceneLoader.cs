@@ -300,7 +300,7 @@ namespace IFS.SceneSpec
                 Note($"{key}: 3층 제안(_inferred) {Describe(InitialParams, key)} 사용", false);
             if (variant != null) ApplyVariantParams(variant);
             CurrentParams = InitialParams.Clone();
-            Shape = ShapeMapping.Resolve(spec);
+            Shape = ShapeMapping.Resolve(spec, variant);   // 덮어쓴 form.type으로 판정(mist 덮어쓰기면 모양 모형 없음)
             if (variant?.ShapeModel != null)
             {
                 Shape = ShapeMapping.Forced(Shape, variant.ShapeModel);
@@ -370,7 +370,10 @@ namespace IFS.SceneSpec
             useInferredSuggestions = false;
         }
 
-        // 덮어쓰기를 확인한다(로드 전, 지금 형상을 지우기 전에). 모르는 키·모형, blob이 아닌 형태의 모양 모형은 오류.
+        // 덮어쓰기를 확인한다(로드 전, 지금 형상을 지우기 전에). 모르는 키·모형, blob이 아닌 형태에 모양 모형을 강제하면 오류.
+        // (G73 후속) spec의 모양어가 정한 모형은 덮어쓴 form.type으로 다시 판정한다: 'form.type=mist' 덮어쓰기 + 모양어 '동그란'은
+        // 오류가 아니라 안개를 그린다(모양어는 not_applied_form). 예전에는 오류로 거부해 미리보기가 글 요약으로 내려가고
+        // 헤드셋 러너도 시작하지 않았다.
         bool CheckVariant(SceneSpecV2 spec, SceneOverride variant, string file)
         {
             var errors = variant.Validate();
@@ -378,7 +381,7 @@ namespace IFS.SceneSpec
             {
                 var check = SceneParams.FromSpec(spec, defaults, useInferredSuggestions);
                 variant.ApplyTo(check);
-                string model = variant.ShapeModel ?? ShapeMapping.Resolve(spec).Model;
+                string model = variant.ShapeModel ?? ShapeMapping.Resolve(spec, variant).Model;
                 string form = check.GetCategory("form.type");
                 if (model != null && form != "blob") errors.Add($"모양 모형 {model}은 form.type=blob에만 쓸 수 있음(지금 {form})");
             }
@@ -416,7 +419,7 @@ namespace IFS.SceneSpec
             double from = CurrentParams.GetNumber(key);
             if (!CurrentParams.SetNumber(key, value)) return false;
             // (2.4) fragments 절차 메시는 조각 배치에 비율이 들어 있다 → 비율을 바꾸면 메시를 다시 만든다(생성 메시는 배율로만)
-            if (ProportionsRender.IsAxisKey(key) && RenderPath == FormRenderPlan.RendererFragments && _assetFit == null) BuildHierarchy();
+            if (ProportionsRender.IsAxisKey(key) && StretchedMeshPath && _assetFit == null) BuildHierarchy();
             ApplyAll();
             _recorder?.RecordChange(key, ExperimentRecorder.FormatNumber(from),
                 ExperimentRecorder.FormatNumber(CurrentParams.GetNumber(key)), CurrentDistance());
@@ -429,7 +432,7 @@ namespace IFS.SceneSpec
             if (CurrentParams == null) return false;
             string from = CurrentParams.GetCategory(key);
             if (!CurrentParams.SetCategory(key, value)) return false;
-            if (key == "form.type" || key == SceneParams.BaseKey || key == ContourRender.RoundnessKey) BuildHierarchy();
+            if (key == "form.type" || key == SceneParams.BaseKey || key == ContourRender.RoundnessKey || key == MistKinds.Key) BuildHierarchy();
             ApplyAll();
             _recorder?.RecordChange(key, from, value, CurrentDistance());
             return true;
@@ -875,11 +878,12 @@ namespace IFS.SceneSpec
         /// 어느 쪽이든 균일 배율 L0 / L1로 가장 긴 변을 비율 전과 같게 둔다. 경계는 정점으로 잰다(ProceduralLocalBounds).</summary>
         Vector3 FitProportions(Vector3 local0, double[] p)
         {
-            bool stretchedMesh = RenderPath == FormRenderPlan.RendererFragments;
+            bool stretchedMesh = StretchedMeshPath;
             if (_propSize1 == null) _propSize1 = ProceduralLocalBounds(out _, out double[] s1) ? s1 : new[] { 1.0, 1.0, 1.0 };
             if (_propSize0 == null)
             {
-                if (stretchedMesh) FragmentMesh.Bounds(RenderPlan.FragmentSeed, RenderPlan.FragmentPieces, null, out _, out _propSize0);
+                if (RenderPath == FormRenderPlan.RendererMistDust) DustMesh.Bounds(RenderPlan.DustSeed, RenderPlan.DustGrains, null, out _, out _propSize0);
+                else if (stretchedMesh) FragmentMesh.Bounds(RenderPlan.FragmentSeed, RenderPlan.FragmentPieces, null, out _, out _propSize0);
                 else _propSize0 = _propSize1;
             }
             var q = stretchedMesh ? new[] { 1.0, 1.0, 1.0 } : p;
@@ -887,6 +891,9 @@ namespace IFS.SceneSpec
             ProportionsLongestEdgeM = l0;
             return new Vector3((float)r[0], (float)r[1], (float)r[2]);
         }
+
+        /// <summary>(2.4) 절차 메시 안에 비율이 들어 있는 경로(fragments 조각 배치, (G74) mistDust 알갱이 자리) — 비율을 바꾸면 메시를 다시 만든다.</summary>
+        bool StretchedMeshPath => RenderPath == FormRenderPlan.RendererFragments || RenderPath == FormRenderPlan.RendererMistDust;
 
         /// <summary>물체 자기 틀(모형 국소 축: 너비 x · 높이 y · 깊이 z)의 경계 상자 크기(m). 정점 경계(셰이더 정점 변위 전) × 모형의 세계 배율.
         /// 안개(부피 셰이더)는 레이마칭 구(지름 2 × MistRadius) × 배율 — 밀도는 그 안쪽에서 풀리므로 상한. 움직임을 적용하기 전(로드 직후)에 부른다.
@@ -909,8 +916,8 @@ namespace IFS.SceneSpec
             var res = new FormAsset.FormAssetResult { Ref = asset, ProceduralRenderPath = RenderPath, RenderPath = RenderPath };
             if (_model == null || CurrentParams == null || RenderPlan == null)
                 return Fail(res, FormAsset.FormAssetResult.NotLoaded, null);
-            if (RenderPlan.Renderer == FormRenderPlan.RendererMist)
-                return Fail(res, FormAsset.FormAssetResult.MistForm, "안개(부피 셰이더)는 메시로 그리지 않음");
+            if (RenderPlan.Renderer == FormRenderPlan.RendererMist || RenderPlan.Renderer == FormRenderPlan.RendererMistDust)
+                return Fail(res, FormAsset.FormAssetResult.MistForm, "안개(부피 셰이더·알갱이)는 생성 메시로 그리지 않음");
             if (!ProceduralLocalBounds(out double[] pc, out double[] ps))
                 return Fail(res, FormAsset.FormAssetResult.NoProcedural, "절차 모형에 메시가 없음");
             // (2.4) fragments 절차 메시는 조각 배치에 비율이 들어 있다 → 비율을 넣지 않은 경계로 맞춘다(가장 긴 변 L0는 비율로 바뀌지 않음)

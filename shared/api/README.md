@@ -74,6 +74,14 @@ POST /api/guard/check   {"text": "숨이 막히는 느낌이 올라와요"}
 - [내 답 지우기]를 누르면 장면 파일도 지웁니다.
 - Unity는 지금 Inspector에 이 경로를 넣어 읽습니다. HTTP로 경로를 받는 방식은 `GET /api/sessions/{id}/scene`을 쓰도록 자리만 있습니다(`unity/README.md`).
 
+## [맞는 게 없어요] 뒤 형태 생성 (G73, `[gen3d] on_none = true` — `--config experiment`만)
+
+후보 화면에서 처음 `POST /api/sessions/{id}/selection {"candidateId": "none"}`을 보내면, 서버가 확정 텍스트로 규칙 프롬프트를 만들고(LLM 없음) 만들 수 있으면 응답의 `stage`가 `generating`입니다(생성기는 별도 프로세스, Ollama 모델은 내림). 화면은 `GET /api/sessions/{id}/selection`을 1–2초마다 불러 `stage`가 바뀌는지 봅니다: 성공이면 `selecting`(만든 후보가 맨 앞, `candidates[].afterNone = true`), 만들지 않음·실패·시간 초과면 `adjusting`(기존 none 경로). 형태를 말하지 않았거나 제외 범주면 처음 응답부터 `adjusting`입니다. 상태·사유는 응답의 `afterNone`(`status`·`blockReason`·`error`·`seconds`)과 `selection.json`의 `generation.afterNone`. 만든 후보에도 none이면 같은 프롬프트·seed + 1로 한 번 더 만듭니다(`on_none_max_regenerations`).
+
+| 메서드 · 경로 | 본문 | 돌려주는 것 |
+| --- | --- | --- |
+| `POST /api/sessions/{id}/selection/none-gen/skip` | — | 생성을 끄고 기존 none 경로로 간 뒤의 화면 상태(`stage: adjusting`, `afterNone.status: cancelled`). 대기 중이 아니면 `409` |
+
 ## 사후 면담 기록 (G59, 새 흐름 `--config v4`에서만)
 
 연구자 화면 `/?view=postinterview&session=<세션 ID>`가 씁니다. LLM을 부르지 않습니다. 기본 설정(`[selection] enabled = false`)에서는 `409`입니다. 문항은 `shared/protocol/post_interview.v0.json`(모두 draft), 대본은 `docs/post-interview-guide.md`.
