@@ -90,6 +90,13 @@ class MappingConfig:
     # G74: 안개 입자 모양(form.mistKind — fog·smoke·dust·cloud, 스펙 2.4.0의 선택 슬롯). 표가 든 파일(예 "scene_params.v2.json" — 그 mistKinds 표).
     #   비우면 끔 — 출력은 그대로. proportions를 함께 켜야 한다(스펙 2.4.0). Unity 러너·미리보기가 form.mistKind를 읽는 빌드에서만 켠다
     mist_kinds: str = ""
+    # G77: 확정 직후 매퍼가 비운 슬롯을 면담 LLM이 원문 인용과 함께 채워 후보·조절의 처음 값(덮어쓰기)으로 넣는다(llm_fill.py).
+    #   확정 스펙과 그 스키마는 바꾸지 않는다. 기본 끔 — 끄면 후보·selection.json·화면 출력이 그대로. experiment.toml에서만 켠다
+    llm_fill: bool = False
+    llm_fill_timeout_s: float = 20.0      # 한 번 부르는 시간 한도(넘으면 결과를 버리고 지금 경로)
+    llm_fill_max_items: int = 4           # 검증을 통과해 채택할 항목 수 상한(형태 낱말 항목 포함)
+    llm_fill_seed: int = 0
+    llm_fill_prompt: str = "llm_fill.v0.1.0.json"   # chatbot/prompts/llm_fill/ 아래 고정 프롬프트(판·status draft)
 
 
 @dataclass(frozen=True)

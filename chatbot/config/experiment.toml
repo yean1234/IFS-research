@@ -9,6 +9,8 @@
 #   G73(2026-11-27)부터 [gen3d] on_none = true(맞는 게 없어요 뒤 형태 생성)와 [selection] protocol 0.8.0(그 화면 문구 4개). [gen3d] enabled는 계속 끔.
 #   G75(2026-11-28)부터 [gen3d] on_none_image_pick = true(3D 모델이 참고할 그림 3장을 참여자가 먼저 고름)와 [selection] protocol 0.9.1(그 화면 문구 4개, 0.9.1은 안내 문구 고침).
 #   G74(2026-11-27)부터 [mapping] mist_kinds도 v4.toml과 다르다(안개 입자 모양 form.mistKind — 스펙 2.4.0의 선택 슬롯, builder 2.9.0).
+#   G77(2026-11-28)부터 [mapping] llm_fill = true(확정 직후 매퍼가 비운 슬롯을 면담 LLM이 원문 인용과 함께 채워 후보·조절의 처음 값으로)와
+#   [selection] protocol 0.10.0(조절 화면의 근거 인용 안내 문구 1개). 선택 기록은 처음부터 ifs-selection/0.5. 다른 설정 파일에서는 꺼져 있다.
 # 기존 설정 파일(default·pilot·v4·v4-gen3d·bridge·mac8gb)과 코드 기본값은 바꾸지 않았다. ◆ = v4.toml과 다른 곳.
 # 헤드셋 쪽 권고값(공간 B + 놓기 도움, 두 조건 연습, 자리 문항 → 멈춤 거리, 평정 중 물체 숨김, UI 묶음 G63, 반복 멈춤 loop,
 #   눈높이 기준 배치 relative, 문구 scaleA)은 이 파일이 아니라 Unity 러너 Setup의 [본 실험 권고 설정 켜기](-experimentPreset true)가 켠다.
@@ -70,6 +72,11 @@ proportions = "scene_params.v2.json"   # ◆ G72: 너비·높이·깊이 비율(
                                         #   Unity 러너·미리보기가 2.4.0을 읽는 빌드여야 한다(헤드셋 빌드를 다시 만들기 전에는 러너가 2.4.0을 거부할 수 있음)
 mist_kinds = "scene_params.v2.json"    # ◆ G74: 안개 입자 모양(form.mistKind — 안개·연기·먼지·구름, 스펙 2.4.0의 선택 슬롯, builder 2.9.0 — 그 파일의 mistKinds 표).
                                         #   form.type이 mist일 때 종류별로 그린다. Unity 러너·미리보기가 form.mistKind를 읽는 빌드여야 한다(옛 러너는 모르는 필드로 거부)
+llm_fill = true                         # ◆ G77: 확정 직후 면담 모델(같은 Ollama 모델·digest)이 매퍼가 비운 슬롯(색·밝기·투명도·질감·크기·움직임·형태 종류)과
+                                        #   그림용 형태 낱말을 참여자 원문 인용과 함께 채운다(온도 0·seed 고정·JSON 스키마, chatbot/prompts/llm_fill/llm_fill.v0.1.0.json, draft).
+                                        #   검증기를 통과한 값만 후보·조절의 처음 값(덮어쓰기)으로 — 확정 스펙은 그대로. 위기·확인 판정이 있었던 세션·실패·시간 초과는 지금 경로
+llm_fill_timeout_s = 20.0
+llm_fill_max_items = 4
 
 [drift]
 enabled = true
@@ -79,7 +86,7 @@ allow_draft_phrases = false
 
 [selection]
 enabled = true
-protocol = "selection_protocol.v0.9.json"   # ◆ G75(0.9.1): 0.8.0(G73 생성 대기·완료·못 만듦 문구 4개) + 참고 그림 고르기 화면 문구 4개
+protocol = "selection_protocol.v0.10.json"  # ◆ G77(0.10.0): 0.9.1(G73·G75 문구) + LLM이 채운 처음 값의 근거 인용 안내(llm_fill_note, draft)
 table = "candidate_values.v3.json"           # ◆ G72: 조절 항목 너비·높이·깊이(3.0.0). 후보 규칙·다른 항목은 2.0.0과 같음
 require_spec_phrases = false
 participant_draft_banner = false              # ◆ 뼈대 3절·G59-8: 초안 경고 줄을 참여자 보기에서 숨김(연구자 보기·기록에는 남음)

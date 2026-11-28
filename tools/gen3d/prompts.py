@@ -319,7 +319,8 @@ def shape_prompt_for_row(row: dict) -> dict:
         spec = row.get("mapperSpec")
         if not isinstance(spec, dict):
             raise SystemExit(f"{row.get('id')}: promptRule mapper인데 mapperSpec이 없음")
-        p = shape_prompt(row["text"], mapper_spec=spec)
+        # (G77) 서버가 검증해 채택한 LLM 형태 낱말(있을 때만 키가 있다). 규칙이 형태를 못 만들었을 때만 쓰인다
+        p = shape_prompt(row["text"], mapper_spec=spec, llm_items=row.get("llmShapeItems"))
     else:
         p = shape_prompt(row["text"])
     style = row.get("imageStyle")
@@ -348,7 +349,8 @@ def image_pick_prompt(p: dict) -> dict:
     부정 틀 항목이 말한 낱말과 한 낱말이라도 겹치면 뺀다(negativeAccessories와 같은 규칙)."""
     q = dict(p)
     rule = p.get("promptRule")
-    q["builderVersion"] = SHAPE_BUILDER_VERSION_IMAGE_PICK + ("+mapper-v2" if rule == PROMPT_RULE_MAPPER else "")
+    q["builderVersion"] = SHAPE_BUILDER_VERSION_IMAGE_PICK + ("+mapper-v2" if rule == PROMPT_RULE_MAPPER else "") \
+        + (SHAPE_BUILDER_LLM_SUFFIX if p.get("shapeSource") == LLM_QUOTED else "")
     q["imageStyle"] = IMAGE_PICK_STYLE_ID
     q["imageStyleVersion"] = IMAGE_PICK_STYLE_VERSION
     if p.get("status") != "ok" or not p.get("text"):
@@ -433,7 +435,31 @@ def _mapper_verdict(ev: dict, span, is_noun: bool) -> str | None:
     return None
 
 
-def shape_prompt(text: str, mapper_spec: dict | None = None) -> dict:
+SHAPE_BUILDER_LLM_SUFFIX = "+llmquote-0.1.0"           # (G77) LLM 인용 형태 낱말로 빈 형태 자리를 메웠을 때 builderVersion 끝에
+LLM_QUOTED = "llm_quoted"
+_LLM_EN_RE = None
+
+
+def _llm_head(norm: str, items) -> dict | None:
+    """(G77) 서버가 채택한 LLM 형태 낱말 항목 가운데 첫 번째를 다시 확인한다(같은 입력 → 같은 결과, 생성기 프로세스도 같은 판정).
+    인용이 확정 텍스트의 charSpan 글자와 같고 영어가 영문자 1–3낱말일 때만. 아니면 None(규칙 결과 그대로 — fail closed)."""
+    global _LLM_EN_RE
+    import re
+    if _LLM_EN_RE is None:
+        _LLM_EN_RE = re.compile(r"^[A-Za-z]+( [A-Za-z]+){0,2}$")
+    for it in items or []:
+        try:
+            q, (s, e), en = it["quote"], it["charSpan"], it["english"]
+        except (KeyError, TypeError, ValueError):
+            continue
+        if isinstance(q, str) and isinstance(en, str) and isinstance(s, int) and isinstance(e, int) \
+                and 0 <= s < e <= len(norm) and norm[s:e] == q and _LLM_EN_RE.match(en):
+            return {"en": en.lower(), "ko": q, "charSpan": [s, e]}
+        return None                                     # 첫 항목만 본다(빈자리 메우기 하나)
+    return None
+
+
+def shape_prompt(text: str, mapper_spec: dict | None = None, llm_items: list | None = None) -> dict:
     """확정 텍스트 → 형태 프롬프트와 차단 판정. 같은 텍스트 → 언제나 같은 결과(사전·규칙만).
 
     mapper_spec(G73 후속, 실험 설정의 [맞는 게 없어요] 생성만): 같은 확정 텍스트로 세션이 만든 매퍼 v2 spec.
@@ -573,15 +599,20 @@ def shape_prompt(text: str, mapper_spec: dict | None = None) -> dict:
         dropped.append({"ko": a["ko"], "charSpan": a["span"], "reason": "later_mention"})
 
     content = mods + likes + ([head] if head else [])
+    # (G77) 규칙이 형태 낱말을 하나도 못 만들었고 막을 사유도 없을 때만, 서버가 채택한 LLM 인용 형태 낱말 하나로 중심 명사 자리를 메운다
+    llm_tok = _llm_head(norm, llm_items) if (not content and llm_items and block is None) else None
     tokens = [{"en": tmpl["prefix"], "ko": None, "charSpan": None, "slot": "template", "lexiconKey": None}]
     for c in content:
         tokens.append({"en": c["en"], "ko": c["ko"], "charSpan": c["span"], "slot": c["e"]["slot"],
                        "lexiconKey": "+".join(c["e"]["ko"])})
-    if head is None:
+    if llm_tok is not None:
+        tokens.append({"en": llm_tok["en"], "ko": llm_tok["ko"], "charSpan": llm_tok["charSpan"], "slot": "shape_noun",
+                       "lexiconKey": None, "provenance": LLM_QUOTED})
+    elif head is None:
         tokens.append({"en": tmpl["defaultNoun"], "ko": None, "charSpan": None, "slot": "template", "lexiconKey": None})
     phrase = " ".join(t["en"] for t in tokens)
     tokens += [{"en": s, "ko": None, "charSpan": None, "slot": "template", "lexiconKey": None} for s in tmpl["suffix"]]
-    prompt_text = ", ".join([phrase, *tmpl["suffix"]]) if content else ""
+    prompt_text = ", ".join([phrase, *tmpl["suffix"]]) if (content or llm_tok) else ""
 
     # 4) 감사: 모든 내용 토큰이 원문 글자로 거슬러 가야 한다(fail closed)
     untraceable = [t["en"] for t in tokens if t["slot"] != "template" and not (
@@ -589,17 +620,19 @@ def shape_prompt(text: str, mapper_spec: dict | None = None) -> dict:
         and norm[t["charSpan"][0]:t["charSpan"][1]] == t["ko"])]
     if block is None and untraceable:
         block, detail = "untraceable_token", [f"untraceable:{u}" for u in untraceable]
-    if block is None and not content:
+    if block is None and not content and llm_tok is None:
         block = "no_shape_stated"
     # 부정 틀: 안전 제약(언제나 같음) + 부속물(말한 낱말과 한 낱말이라도 겹치면 뺌)
     said_words = {w for c in content for w in c["en"].replace("-", " ").split()}
+    if llm_tok is not None:
+        said_words |= set(llm_tok["en"].split())
     acc = [a for a in tmpl.get("negativeAccessories", []) if not (set(a.split()) & said_words)]
     negative = ", ".join([tmpl["negative"], *acc])
     toks_ = doc.toks
     plural = any(c["e"].get("plural") or (c["j"] + 1 < len(toks_) and toks_[c["j"] + 1].form == "들"
                                             and toks_[c["j"] + 1].base_tag == "XSN")
                  for c in content if c["e"]["pos"] == "noun")
-    return {
+    out = {
         "status": "blocked" if block else "ok",
         "blockReason": block,
         "blockDetail": ";".join(sorted(set(detail))) or None,
@@ -611,9 +644,13 @@ def shape_prompt(text: str, mapper_spec: dict | None = None) -> dict:
         "promptRule": PROMPT_RULE_MAPPER if use_mapper else PROMPT_RULE_TEXT,
         "mapperBuilder": (((mapper_spec.get("meta") or {}).get("pipeline") or {}).get("builder")) if use_mapper else None,
         "templateVersion": tmpl["version"],
-        "tokens": tokens if content else [],
+        "tokens": tokens if (content or llm_tok) else [],
         "dropped": dropped,
         "thinRisk": any(c["e"].get("thin") for c in content),
         "familiarObjectStated": any(c["e"].get("familiar") for c in content if c["e"]["pos"] == "noun"),
         "sourceTextSha256": sha256_text(norm),
     }
+    if llm_tok is not None:                          # (G77) 키는 LLM 낱말을 썼을 때만(쓰지 않으면 예전 출력 그대로)
+        out["builderVersion"] += SHAPE_BUILDER_LLM_SUFFIX
+        out["shapeSource"] = LLM_QUOTED
+    return out

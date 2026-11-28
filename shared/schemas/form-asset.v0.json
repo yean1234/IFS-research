@@ -95,7 +95,8 @@
                 "enum": ["shape_noun", "shape_modifier", "template"],
                 "description": "shape_noun = 형태 명사, shape_modifier = 형태 꾸밈말, template = 고정 틀 문구(분석에서 뺀다)."
               },
-              "lexiconKey": { "type": ["string", "null"], "description": "(선택) 맞은 사전 항목의 키." }
+              "lexiconKey": { "type": ["string", "null"], "description": "(선택) 맞은 사전 항목의 키." },
+              "provenance": { "enum": ["llm_quoted"], "description": "(선택, G77) 사전이 아니라 면담 LLM이 참여자 원문 인용(ko·charSpan)과 함께 낸 형태 낱말. 서버 검증기를 통과한 것만. 사전 낱말에는 이 키가 없다." }
             }
           }
         },

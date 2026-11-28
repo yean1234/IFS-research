@@ -130,6 +130,13 @@ $env:IFS_LIVE=1; .venv\Scripts\python.exe -m pytest tests\test_experiment_config
 - 기록: 이 설정에서 [맞는 게 없어요]를 누른 세션의 `selection.json`은 `ifs-selection/0.4`(`shared/schemas/selection.v0.4.json`)입니다. `generation.afterNone.imagePick`에 회차마다 seed, 그림 sha256, 관문 결과, 보여 준 순서, 고른 자리(또는 none·skipped), 시각, 프롬프트·builder·화풍 판이 남고, 앞 회차는 `afterNoneEarlier`에 있습니다. 그림 고르기 화면에 노출된 세션은 `generation.imagePickExposed = true`입니다. 세션 로그 사건은 `selection:image_pick`(running·shown·picked·none)입니다. 그림 파일은 `gen3d-out/none-<세션ID>-…-r<회차>-img/images/`(저장소 밖)에 있습니다. 헤드셋 러너는 0.4를 0.3과 같은 규칙으로 읽습니다.
 - 실측(합성 대사 2개, 이 PC): `docs/validation/run-g75-image-pick/README.md`.
 
+### 6.2 확정 직후 LLM 빈칸 채우기 (G77, `[mapping] llm_fill = true` — experiment.toml에서만 켬, 다른 설정은 기본 끔)
+
+- 참여자가 [이대로 맞아요]로 확정하면 매퍼 v2가 스펙을 만든 직후, 면담 모델(같은 Ollama 모델)을 한 번 더 부릅니다(온도 0, seed 0, JSON 스키마, 한도 `llm_fill_timeout_s` 20초). 매퍼가 비운 슬롯(색·밝기·투명도·질감·크기·움직임·형태 종류)과 그림용 형태 낱말만, 참여자 원문 인용이 있어야 받습니다. 위치·거리는 대상이 아닙니다. 프롬프트 `chatbot/prompts/llm_fill/llm_fill.v0.1.0.json`(draft).
+- 검증기를 통과한 값만 후보·조절의 처음 값이 됩니다(확정 스펙 파일은 그대로). 조절 화면에는 그 항목 아래 「'<인용>'라고 하셔서 이렇게 해 봤어요. 다르면 고쳐 주세요.」가 보입니다(문구 `selection_protocol.v0.10.json` `llm_fill_note`, draft). 형태 낱말은 [맞는 게 없어요] 뒤 규칙이 형태를 못 만들 때만 그림 프롬프트에 들어갑니다.
+- 부르지 않음·버림: 세션에 위기·확인 판정이 있었음, 실패·시간 초과·JSON 깨짐(지금 경로 그대로). 서버 시작 때 Ollama가 없으면 면담도 시작하지 않으므로 별도 점검은 없습니다.
+- 기록: 이 설정의 `selection.json`은 처음부터 `ifs-selection/0.5`(`shared/schemas/selection.v0.5.json`)입니다. `llmFill`(모델 digest·프롬프트 판·원시 항목·항목별 기각 사유·채택 값·`applied`·참여자가 그대로 뒀는지 `participant`), `llmFillExposed`, 출처 값 `llm_quoted`. 세션 로그 사건은 `scene:llm_fill`. 헤드셋 러너는 0.5를 0.3 규칙으로 읽고 `llm_quoted`를 받습니다(헤드셋 빌드를 다시 만들어야 함). 실제 모델로는 아직 돌려 보지 않았습니다(2026-11-28 구현 때 GPU를 다른 실측이 쓰고 있었음) — 본 실험 전에 합성 대사로 돌려 `docs/validation/run-g77-llm-fill/`에 결과를 남겨야 합니다.
+
 ## 7. 아직 사람이 정할 것 (이 문서가 켜지 않은 것)
 
 - 조건·멈춤 거리 단계에서 안내 판 숨기기(G63 (7)): 꺼 둠.

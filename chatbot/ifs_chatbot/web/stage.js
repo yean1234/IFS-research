@@ -762,6 +762,9 @@
         for (const b of btns) b.disabled = true;
         row.append(el("small", { class: "adjust-off-note" }, phrase("adjust_item_unavailable")));
       }
+      // G77: 면담 LLM이 참여자 말(원문 인용)에서 채운 처음 값이면 그 근거를 한 줄로(서버가 인용을 넣은 고정 문구, 값을 바꾸면 사라짐)
+      const lf = v.llmFill && v.llmFill.items && v.llmFill.items[it.id];
+      if (lf) row.append(el("small", { class: "llm-fill-note", "data-llm-fill": it.id }, lf.text));
       panel.append(row);
     }
     // G73: 만들지 못함·실패·시간 초과 뒤 none 경로로 왔으면 짧은 안내 한 줄(사유는 연구자 보기). 참여자가 기다리지 않고 넘어갔으면 없음

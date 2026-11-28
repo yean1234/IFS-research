@@ -196,6 +196,28 @@ namespace IFS.SceneSpec.Tests
         }
 
         [Test]
+        public void Reads_05_with_llm_quoted_source_and_rejects_it_in_04()
+        {
+            // G77: 0.5 = 0.4 + 챗봇 기록 필드(llmFill) + 출처 값 llm_quoted. 러너는 0.3 규칙으로 읽고 llm_quoted를 받는다
+            var o = Selection03(format: "ifs-selection/0.5");
+            o["sources"]["material.color"] = "llm_quoted";
+            o["finalOverrides"] = new JObject { ["material.color.h"] = 0.3333, ["material.color.s"] = 0.6, ["material.color.l"] = 0.5 };
+            o["llmFill"] = new JObject { ["status"] = "ok" };
+            var s = Parse(o, out var errors);
+            Assert.That(errors, Is.Empty);
+            Assert.That(s.Warnings, Is.Empty, "0.5는 아는 버전");
+            Assert.That(s.FormAsset.AssetId, Is.EqualTo("0123456789abcdef"));
+            var old = Selection03(format: "ifs-selection/0.4");
+            old["sources"]["material.color"] = "llm_quoted";
+            Parse(old, out var errors2);
+            Assert.That(errors2.Any(e => e.Contains("llm_quoted")), Is.True, "0.4 파일의 llm_quoted는 거부");
+            var noColor = Selection03(format: "ifs-selection/0.5");
+            noColor.Remove("colorChanged");
+            Parse(noColor, out var errors3);
+            Assert.That(errors3.Any(e => e.Contains("colorChanged")), Is.True, "0.5도 colorChanged 필수(0.3과 같음)");
+        }
+
+        [Test]
         public void Reads_03_form_asset_and_default_choice()
         {
             var s = Parse(Selection03(), out var errors);

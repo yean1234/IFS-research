@@ -36,6 +36,7 @@ from .lexicon import Lexicon
 from .candidates import load_table as load_candidate_table
 from .candidates import safety_flags
 from .llm import GenerationRequest, OfflineTemplateBackend, OllamaBackend
+from . import llm_fill as llm_fill_mod
 from . import prereport as prereport_mod
 from .paths import CHATBOT_DIR, shared
 from .preview import PreviewService
@@ -215,6 +216,18 @@ class Runtime:
                 self.warnings.append("[gen3d] 자산 폴더가 없어 생성 형태 후보를 내지 않습니다(절차 메시 후보만): "
                                      f"assets_dir = {cfg.gen3d.assets_dir}")
         # G73: [맞는 게 없어요] 뒤 형태 생성([gen3d] on_none, 후보 단계를 켰을 때만). 꺼져 있으면 None — none은 예전처럼 바로 조절
+        # G77: 확정 직후 매퍼가 비운 슬롯을 면담 LLM이 인용과 함께 채움([mapping] llm_fill). 꺼져 있으면 None — 출력 그대로
+        self.llm_fill_prompt = None
+        if cfg.mapping.llm_fill:
+            self.llm_fill_prompt = llm_fill_mod.FillPrompt(cfg.mapping.llm_fill_prompt)   # 파일이 없으면 시작을 멈춤
+            if cfg.selection.enabled and "llm_fill_note" not in self.selection_protocol.data["phrases"]:
+                raise RuntimeError("[mapping] llm_fill을 켰는데 선택 단계 문구에 llm_fill_note가 없습니다 — 참여자가 LLM이 채운 값의 "
+                                   "근거를 볼 수 없어 시작을 멈춥니다(selection_protocol.v0.10.json 이상을 쓰세요).")
+            if cfg.mapping.mode != "v2":
+                self.warnings.append("[mapping] llm_fill은 매퍼 v2 spec을 전제로 만든 것입니다(mode = \"v2\"가 아님).")
+            if not hasattr(self.backend, "structured"):
+                self.warnings.append(f"[mapping] llm_fill: 백엔드 {getattr(self.backend, 'name', '?')}는 JSON 호출을 못 해 "
+                                     "부르지 않습니다(사유 backend_unsupported로 기록).")
         self.none_gen: NoneGenService | None = None
         if cfg.gen3d.on_none and cfg.selection.enabled:
             root = Path(cfg.gen3d.assets_dir)
@@ -340,6 +353,8 @@ class Session:
         self.participant_id = participant_id   # 가명. 피험자 내 설계에서 한 사람의 여러 세션을 묶는다(장면 meta에만 씀)
         self.scene_spec: dict | None = None
         self.scene_hashes: dict | None = None      # 확정 시점에 고정한 장면 파일별 sha256(보기 전 보고가 쓴다)
+        self.llm_fill: dict | None = None          # (G77) 확정 직후 LLM 빈칸 채우기 기록([mapping] llm_fill일 때만)
+        self.llm_fill_cache: dict = {}             # (확정 텍스트 해시, 모델 digest, 프롬프트 판·해시) → 기록(다시 부르지 않음)
         self.steps: list[Step] = self.p.sequence(condition)
         self.idx = 0
         self.step_state: dict[int, dict] = defaultdict(dict)
@@ -1497,9 +1512,27 @@ class Session:
                     f"{f['lemma']}[{f['charSpan'][0]}:{f['charSpan'][1]}]" for f in flags)[:300], None)
             if problems:
                 self._alert("scene_spec_invalid", "; ".join(problems[:5]), None)
+            if self.rt.llm_fill_prompt is not None:
+                self._llm_fill(spec, norm)
         except Exception as exc:  # noqa: BLE001 — 장면 생성 실패가 면담 종료를 막으면 안 된다
             self.log.data["sceneSpec"] = {"path": None, "error": f"{type(exc).__name__}: {exc}"}
             self._alert("scene_spec_error", f"{type(exc).__name__}: {exc}", None)
+
+    def _llm_fill(self, spec: dict, norm: str) -> None:
+        """(G77) 확정 스펙을 만든 직후, 후보 화면 전에 한 번. 스펙은 바꾸지 않는다(결과는 선택 단계의 처음 값으로만 쓴다).
+        실패해도 면담 종료·장면 파일을 막지 않는다(기록만)."""
+        try:
+            rec = llm_fill_mod.run(self, spec, norm)
+        except Exception as exc:  # noqa: BLE001
+            rec = {"version": llm_fill_mod.LLM_FILL_VERSION, "status": "failed", "error": f"{type(exc).__name__}: {exc}"[:300],
+                   "adopted": [], "items": []}
+        self.llm_fill = rec
+        self.log.add_event("scene:llm_fill", {
+            "status": rec.get("status"), "skipReason": rec.get("skipReason"), "cached": rec.get("cached"),
+            "offeredSlots": rec.get("offeredSlots"), "rawCount": len(rec.get("rawItems") or []),
+            "adopted": [a["slot"] for a in rec.get("adopted") or []],
+            "rejected": [{"slot": r.get("slot"), "reasons": r.get("reasons")} for r in rec.get("items") or [] if not r.get("ok")],
+            "seconds": rec.get("seconds")})
 
     def _write_variants(self, text: str, spec: dict, mapping: dict, norm: str, problems: list) -> dict:
         kw = {"session_id": self.id, "participant_id": self.participant_id, "condition": self.condition}

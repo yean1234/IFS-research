@@ -28,6 +28,7 @@ from .candidates import (PROPORTION_KEYS, SLOTS, base_drawn, candidates_bytes, e
                          rendered_shape_words, safety_flags, said_words, slot_value, spec_sha256, unrendered_said_words)
 from .form_assets import (DEFAULT_PROCEDURAL, R_NO_SHAPE_PREVIEW, R_PREVIEW_FAILED, _rej, add_generated,
                           generated_candidate_id, public_asset, source_key)
+from . import llm_fill as llm_fill_mod
 from . import none_gen as ng
 from .paths import shared
 from .scene_builder import normalize_confirmed
@@ -51,6 +52,12 @@ FORMAT_VERSION_GEN3D = "ifs-selection/0.3"
 # 보여 준 순서·고른 자리 또는 없음/넘어감·시각·프롬프트 판), generation.imagePickExposed(이미지 화면에 노출됐는가),
 # afterNone.status·selection.afterNoneGeneration 값 declined(모든 회차에서 [이 중에는 없어요]), afterNone.seed null(고르기 전).
 FORMAT_VERSION_IMAGE_PICK = "ifs-selection/0.4"
+# 0.5(G77, [mapping] llm_fill을 켰을 때만 — 끄면 0.2·0.3·0.4 그대로): 후보를 만들 때부터 0.5. 0.4에 선택 필드만 더함: 맨 위 llmFill(확정 직후
+# LLM 빈칸 채우기 기록 — 모델 digest·프롬프트 판·온도·seed·소요 시간·원시 항목·항목별 검증 결과·기각 사유·채택 값·후보에 넣은 처음 값·참여자가
+# 그대로 뒀는지/고쳤는지·최종 값), llmFillExposed(채택 값이 화면에 하나라도 반영됨), 출처 값 llm_quoted(sources·sourceDetails·후보 sources),
+# sourceDetails.*.llmQuote, candidates.prefill, generation.llmPromptUsed·afterNone.llmPromptUsed(그림 프롬프트 형태 자리를 LLM 낱말로 메움).
+# 러너(PlacementSelection.cs)는 0.5를 0.3 규칙으로 읽고 출처 값 llm_quoted를 받는다(SourceValues05).
+FORMAT_VERSION_LLM_FILL = "ifs-selection/0.5"
 GENERATED_CHOSEN = "generated_chosen"
 PREMEASURE_VERSION = "ifs-premeasure/0.1"
 ITEMS = ("color", "form", "brightness", "opacity", "size", "texture", "motion")   # G31: 색이 맨 앞(표 adjustItems.order와 같음)
@@ -65,6 +72,7 @@ SKIP_REASON = "single_distinct_candidate"      # G34: 구별되는 후보가 하
 # 슬롯 출처(G15 네 가지 + G32 두 가지). 러너(PlacementSelection.cs SourceValues)와 스키마 $defs.source가 같은 목록이다.
 SOURCES = ("said", "chosen", "edited", "default", "said_unrendered_chosen", "said_unrendered_default")
 SOURCES_GEN3D = SOURCES + (GENERATED_CHOSEN,)      # 0.3(G62)
+SOURCES_LLM_FILL = SOURCES_GEN3D + (llm_fill_mod.ORIGIN,)   # 0.5(G77)
 SAID_NOT_IN_TABLE = "said_value_not_in_table"
 
 # 러너에 넘길 수 없는 이유(runnerBlockers). 러너(PlacementSelection.cs)도 runnerReady = false면 이 글을 붙여 시작을 거부한다.
@@ -258,6 +266,11 @@ class SelectionFlow:
         self._none_attempts = 0          # 이 세션에서 시작한 생성 수(n = 0 첫 생성, 1… 다시 만들기). G75면 이미지 회차 수
         self._none_job = None
         self._pick_paths: dict[int, tuple[Path, str]] = {}   # (G75) 고르기 화면 자리 → (이미지 경로, sha256). 기록에 쓰지 않음
+        # G77: 확정 직후 LLM 빈칸 채우기([mapping] llm_fill). 꺼져 있으면 llm_on False — 출력은 그대로
+        self.llm_on = getattr(rt, "llm_fill_prompt", None) is not None
+        self.llm_rec = copy.deepcopy(getattr(session, "llm_fill", None)) if self.llm_on else None
+        self.llm_applied: dict = {}      # 조절 항목 → {slot, value, quote, charSpan, overrides, specSlots}(후보에 넣은 처음 값)
+        self.llm_shape_items: list = llm_fill_mod.shape_items_from(self.llm_rec) if self.llm_on else []
 
     @property
     def gen3d(self) -> bool:
@@ -265,7 +278,40 @@ class SelectionFlow:
 
     @property
     def sources_list(self) -> tuple:
+        if self.llm_on:
+            return SOURCES_LLM_FILL
         return SOURCES_GEN3D if self.gen3d else SOURCES
+
+    def _fv(self, version: str) -> str:
+        """(G77) llm_fill을 켰으면 처음부터 끝까지 0.5, 아니면 주어진 판 그대로."""
+        return FORMAT_VERSION_LLM_FILL if self.llm_on else version
+
+    def _llm_prefill(self) -> tuple[dict | None, dict]:
+        """(G77) 채택 값 → candidates.generate prefill. 이 표에 없거나 지금 미리보기에서 보이지 않는 항목(G22)은 넣지 않는다
+        (참여자가 보지 못한 값이 장면에 들어가지 않게). → (prefill | None, 넣지 않은 항목과 사유)."""
+        if not self.llm_on:
+            return None, {}
+        P = self.rt.llm_fill_prompt
+        off = self.unavailable_items()
+        pre, dropped = {}, {}
+        for item, a in llm_fill_mod.prefill_from(self.llm_rec).items():
+            if item not in self.items:
+                dropped[item] = "not_in_table"
+            elif item in off:
+                dropped[item] = f"unavailable:{off[item]}"
+            else:
+                pre[item] = {"slots": list(P.slots[a["slot"]]["specSlots"]), "overrides": dict(a["overrides"])}
+                self.llm_applied[item] = {**a, "specSlots": list(P.slots[a["slot"]]["specSlots"])}
+        return pre, dropped
+
+    def _llm_current(self, item: str) -> bool:
+        """(G77) 그 항목이 지금 LLM 처음 값 그대로인가(조절 화면 안내를 보일지)."""
+        a = self.llm_applied.get(item)
+        if a is None:
+            return False
+        eff = effective_params(self.spec, self.defaults, self.current)
+        return all(_same_value(eff.get(k), v) if not isinstance(v, float) else abs(float(eff.get(k)) - v) < 1e-9
+                   for k, v in a["overrides"].items())
 
     # ── 도우미 ──────────────────────────────────────────────────────────────
     @property
@@ -379,7 +425,11 @@ class SelectionFlow:
             if self.rt.cfg.selection.require_spec_phrases and pinfo["draftCount"]:
                 raise SelectionError(f"[selection] require_spec_phrases = true인데 초안 문구가 {pinfo['draftCount']}개 있어 "
                                      "후보 단계를 시작하지 않습니다.")
-            self.cands = generate(self.spec, self.s.id, self.table)
+            prefill, pre_dropped = self._llm_prefill()
+            self.cands = generate(self.spec, self.s.id, self.table) if prefill is None else                 generate(self.spec, self.s.id, self.table, prefill=prefill, prefill_source=llm_fill_mod.ORIGIN)
+            for item in (self.cands.get("prefill") or {}).get("droppedForSplit") or []:
+                self.llm_applied.pop(item, None)          # 낱말 해석 갈림이 같은 슬롯을 다룸(갈림이 먼저)
+                pre_dropped[item] = "interpretation_split"
             if self.gen3d:
                 # G62: 절차 후보는 그대로 두고 생성 후보(status ok + 관문 통과, 최대 max_candidates)를 뒤에 더한다
                 lookup = self.form_assets.lookup_for_spec(self.spec)
@@ -403,7 +453,7 @@ class SelectionFlow:
             now = now_iso()
             meta = self.spec.get("meta") or {}
             self.data = {
-                "formatVersion": FORMAT_VERSION, "specSha256": file_sha,
+                "formatVersion": self._fv(FORMAT_VERSION), "specSha256": file_sha,
                 "sessionId": self.s.id, "createdAt": now, "updatedAt": now,
                 "stage": "selecting",
                 "spec": {"path": path, "normalizedSha256": spec_sha256(self.spec), "sha256Basis": basis,
@@ -429,12 +479,21 @@ class SelectionFlow:
                 self.data["proportions"] = self._proportions_record(final=False)
             if self.gen3d:
                 # G62(0.3): 고른 생성 메시(form.asset)와 생성 후보 기록. 꺼져 있으면 키 자체를 넣지 않는다(0.2 그대로)
-                self.data["formatVersion"] = FORMAT_VERSION_GEN3D
+                self.data["formatVersion"] = self._fv(FORMAT_VERSION_GEN3D)
                 self.data["defaultFormSource"] = self.cands["generation"]["defaultFormSource"]   # 이 세션에서 기본이었던 것
                 self.data["form"] = {"asset": None}
                 self.data["generation"] = {**copy.deepcopy(self.cands["generation"]),
                                            "shownOrder": [cid for cid in self.cands["displayOrder"] if cid in self._asset_paths],
                                            "outcome": None, "acceptedDefault": None, "declined": [], "assetDropped": None}
+            if self.llm_on:
+                # G77: LLM 빈칸 채우기 기록(확정 직후 세션이 만든 것)과 이 세션 후보에 넣은 처음 값. 참여자 결과는 finish에서 채운다
+                self.data["llmFill"] = {**(copy.deepcopy(self.llm_rec) if self.llm_rec else
+                                           {"version": llm_fill_mod.LLM_FILL_VERSION, "status": "absent", "adopted": []}),
+                                        "applied": {k: {kk: copy.deepcopy(v[kk]) for kk in ("slot", "value", "quote", "charSpan",
+                                                                                            "overrides", "specSlots")}
+                                                    for k, v in sorted(self.llm_applied.items())},
+                                        "notApplied": dict(sorted(pre_dropped.items())), "participant": None}
+                self.data["llmFillExposed"] = bool(self.llm_applied)
             skip = self.cands["selectionStep"] == "skip"
             if skip:
                 self._enter_skip(now)
@@ -515,7 +574,7 @@ class SelectionFlow:
         empty = {"key": source_key(self.spec), "offered": [], "rejected": []}
         self.cands = add_generated(self.cands, empty, self.s.id, 0, DEFAULT_PROCEDURAL, None)
         self.data["candidates"] = self.cands
-        self.data["formatVersion"] = FORMAT_VERSION_GEN3D
+        self.data["formatVersion"] = self._fv(FORMAT_VERSION_GEN3D)
         self.data["defaultFormSource"] = self.cands["generation"]["defaultFormSource"]
         self.data["form"] = {"asset": None}
         self.data["generation"] = {**copy.deepcopy(self.cands["generation"]), "shownOrder": [],
@@ -550,7 +609,8 @@ class SelectionFlow:
             self.data["generation"].setdefault("afterNoneEarlier", []).append(prev)
         at = now_iso()
         text = self.s.log.data.get("confirmedText")
-        pre = self.none_gen.precheck(self.spec, text, self.preview_mode, self._other_interviews())
+        pre = self.none_gen.precheck(self.spec, text, self.preview_mode, self._other_interviews(),
+                                     llm_items=self.llm_shape_items or None)
         rec = {"version": ng.NONE_GEN_VERSION, "origin": ng.ORIGIN, "setting": self.none_gen.setting(), "noneAt": at,
                "shownOrderBefore": list(self.cands["displayOrder"]), "status": ng.RUNNING,
                "blockReason": pre["blockReason"], "blockDetail": pre["blockDetail"], "prompt": pre["prompt"],
@@ -558,12 +618,14 @@ class SelectionFlow:
                "llmUnload": None, "timing": None, "asset": None, "candidateId": None, "displayPosition": None,
                "participantSkippedWait": False, "chosen": None,
                "attempt": n, "seed": self.none_gen.seed_for(n)}      # 다시 만들기 n번째(0 = 첫 생성), seed = 기준 seed + n
+        self._note_llm_prompt(rec)
         self.data["generation"]["afterNone"] = rec
         job = None
         if pre["blockReason"] is None:
             # 생성기도 세션 매퍼 spec으로 같은 규칙 프롬프트(G73 후속). 면담 중 세션 확인과 예약은 서비스 잠금 안에서(CP13-2)
             job = self.none_gen.start(self.s.id, text, source_key(self.spec), pre["prompt"]["text"], self._generation_done,
-                                      attempt=n, spec=self.spec, other_interviews=self._other_interviews)
+                                      attempt=n, spec=self.spec, other_interviews=self._other_interviews,
+                                      llm_items=self.llm_shape_items or None)
             if isinstance(job, str):
                 rec.update(blockReason=job, blockDetail=",".join(self._other_interviews()) or None
                            if job == ng.B_INTERVIEW else None)
@@ -611,6 +673,8 @@ class SelectionFlow:
                 return
             cid = self._add_after_none_candidate(a)
             rec.update(asset={**public_asset(a), "origin": ng.ORIGIN}, candidateId=cid, displayPosition=0)
+            if rec.get("llmPromptUsed"):
+                self.data["llmFillExposed"] = True        # G77: LLM 형태 낱말로 만든 후보가 화면에 나옴
             self.data["stage"] = "selecting"
             self._save()
             self._log_event("selection:none_gen", {"status": ng.OK, "assetId": a["assetId"], "candidateId": cid,
@@ -647,7 +711,7 @@ class SelectionFlow:
         r = self._none_attempts
         self._none_attempts += 1
         self._activate_g73()
-        self.data["formatVersion"] = FORMAT_VERSION_IMAGE_PICK
+        self.data["formatVersion"] = self._fv(FORMAT_VERSION_IMAGE_PICK)
         self.data["generation"].setdefault("imagePickExposed", False)
         prev = self._after_none()
         if prev is not None:
@@ -657,7 +721,8 @@ class SelectionFlow:
             self.data["generation"].setdefault("afterNoneEarlier", []).append(prev)
         at = at or now_iso()
         text = self.s.log.data.get("confirmedText")
-        pre = self.none_gen.precheck(self.spec, text, self.preview_mode, self._other_interviews())
+        pre = self.none_gen.precheck(self.spec, text, self.preview_mode, self._other_interviews(),
+                                     llm_items=self.llm_shape_items or None)
         p = pre["prompt"] or {}
         rec = {"version": ng.NONE_GEN_VERSION, "origin": ng.ORIGIN, "setting": self.none_gen.setting(), "noneAt": at,
                "shownOrderBefore": list(self.cands["displayOrder"]), "status": ng.RUNNING,
@@ -673,6 +738,7 @@ class SelectionFlow:
                              "exitCode": None, "error": None, "blockReason": None, "llmUnload": None, "timing": None,
                              "models": None, "images": [], "shownOrder": [], "shownAt": None, "outcome": None,
                              "pickedPosition": None, "pickedSeed": None, "pickedImageSha256": None, "decidedAt": None}}
+        self._note_llm_prompt(rec)
         self.data["generation"]["afterNone"] = rec
         ip = rec["imagePick"]
         self._pick_paths = {}
@@ -680,7 +746,8 @@ class SelectionFlow:
         if pre["blockReason"] is None:
             job = self.none_gen.start(self.s.id, text, source_key(self.spec), p["text"],
                                       lambda res, rec=rec: self._image_round_done(res, rec), attempt=r, spec=self.spec,
-                                      other_interviews=self._other_interviews, kind="image", seeds=ip["seeds"])
+                                      other_interviews=self._other_interviews, kind="image", seeds=ip["seeds"],
+                                      llm_items=self.llm_shape_items or None)
             if isinstance(job, str):
                 rec.update(blockReason=job, blockDetail=",".join(self._other_interviews()) or None
                            if job == ng.B_INTERVIEW else None)
@@ -699,6 +766,16 @@ class SelectionFlow:
         self._log_event("selection:image_pick", {"status": ng.RUNNING, "round": r, "seeds": ip["seeds"],
                                                  "promptText": p["text"]})
         return self.view()
+
+    def _note_llm_prompt(self, rec: dict) -> None:
+        """(G77) llm_fill을 켰으면 이 생성 기록에 그림 프롬프트의 형태 자리를 LLM 인용 낱말로 메웠는지 남긴다(켜지 않으면 키 없음)."""
+        if not self.llm_on:
+            return
+        used = ((rec.get("prompt") or {}).get("shapeSource") == llm_fill_mod.ORIGIN)
+        rec["llmPromptUsed"] = used
+        rec["llmShapeItems"] = copy.deepcopy(self.llm_shape_items)
+        gen = self.data["generation"]
+        gen["llmPromptUsed"] = bool(gen.get("llmPromptUsed")) or used
 
     def _image_round_done(self, res: dict, rec: dict) -> None:
         """이미지 단계가 끝남(생성 스레드). 관문을 통과한 이미지가 있으면 고르기 화면(seed 순서), 없거나 실패면 기존 none 경로."""
@@ -745,6 +822,8 @@ class SelectionFlow:
             at = now_iso()
             ip.update(status="shown", shownOrder=[x["seed"] for x in shown], shownAt=at)
             self.data["generation"]["imagePickExposed"] = True
+            if rec.get("llmPromptUsed"):
+                self.data["llmFillExposed"] = True        # G77: LLM 형태 낱말로 그린 그림이 화면에 나옴
             self.data["stage"] = "picking"
             self._save()
             self._log_event("selection:image_pick", {"status": "shown", "round": ip["round"],
@@ -784,7 +863,7 @@ class SelectionFlow:
             text = self.s.log.data.get("confirmedText")
             job = self.none_gen.start(self.s.id, text, source_key(self.spec), rec["prompt"]["text"], self._generation_done,
                                       attempt=rec["attempt"], spec=self.spec, other_interviews=self._other_interviews,
-                                      kind="mesh", image=(path, sha), seed=img["seed"])
+                                      kind="mesh", image=(path, sha), seed=img["seed"], llm_items=self.llm_shape_items or None)
             if isinstance(job, str):
                 rec.update(status=ng.BLOCKED, blockReason=job, endedAt=at, seconds=0.0,
                            blockDetail=",".join(self._other_interviews()) or None if job == ng.B_INTERVIEW else None)
@@ -1164,6 +1243,7 @@ class SelectionFlow:
         asset = (self.data.get("form") or {}).get("asset") if self.gen3d else None
         generated = asset is not None and form_item is None
         basis = variant_key_basis(self.spec)
+        llm_slots = {sl: {**a, "item": item} for item, a in self.llm_applied.items() for sl in a["specSlots"]}
         for slot in (SLOTS + (PROPORTION_SLOT,) if self.has_proportions else SLOTS):
             slot_val = slot_value(self.spec, slot)
             said = slot_val
@@ -1183,6 +1263,12 @@ class SelectionFlow:
                     rec["origin"] = ng.ORIGIN
             elif slot in edited:
                 rec = {"source": "edited", "value": edited[slot], **rec}
+            elif slot in llm_slots:
+                # G77: LLM이 원문 인용과 함께 채운 처음 값을 참여자가 바꾸지 않음(바꿨으면 위 edited)
+                a = llm_slots[slot]
+                rec = {"source": llm_fill_mod.ORIGIN, "value": self._slot_final(slot, final), **rec,
+                       "llmQuote": {"item": a["item"], "slot": a["slot"], "value": a["value"], "quote": a["quote"],
+                                    "charSpan": list(a["charSpan"])}}
             elif slot in chosen:
                 rec = {"source": "said_unrendered_chosen" if slot == "form.type" and unrendered else "chosen",
                        "value": chosen[slot], **rec}
@@ -1207,6 +1293,29 @@ class SelectionFlow:
             out[slot] = rec
         return out, counts
 
+    def _slot_final(self, slot: str, final: dict):
+        """슬롯 하나의 최종 값(기록용, edited와 같은 표현)."""
+        if slot == "material.color":
+            return {k: round(final[f"material.color.{k}"], 4) for k in ("h", "s", "l")}
+        if slot == "material.saturation":
+            return round(final["material.color.s"], 4)
+        v = final.get(slot)
+        return round(v, 4) if isinstance(v, float) else v
+
+    def _llm_participant(self) -> dict:
+        """(G77) 채택 값마다 참여자가 그대로 뒀는지·고쳤는지·최종 값(조절 항목 값 표현)."""
+        out = {}
+        start = effective_params(self.spec, self.defaults, self.cands["candidates"][0]["overrides"])
+        final = effective_params(self.spec, self.defaults, self.current)
+        for item, a in sorted(self.llm_applied.items()):
+            summ = self.data["adjustments"]["items"].get(item)
+            first = self._item_value(item, start)
+            last = self._item_value(item, final)
+            kept = _same_value(first, last)
+            out[item] = {"first": first, "final": last, "kept": kept, "edited": not kept,
+                         "adjustCount": summ["count"] if summ else 0}
+        return out
+
     def finish(self) -> dict:
         with self.lock:
             self._require("adjusting")
@@ -1218,6 +1327,8 @@ class SelectionFlow:
             self.data["sources"] = {k: v["source"] for k, v in self.data["sourceDetails"].items()}   # 러너 계약 필드
             if self.has_proportions:
                 self.data["proportions"] = self._proportions_record(final=True)
+            if self.llm_on and self.data.get("llmFill") is not None:
+                self.data["llmFill"]["participant"] = self._llm_participant()
             self.data["stage"] = "premeasure"
             self._save()
             self._log_event("selection:adjusted", {
@@ -1521,6 +1632,12 @@ class SelectionFlow:
                             {"position": x["position"],
                              "url": f"/api/sessions/{self.s.id}/selection/image-pick/{ip['round']}/{x['position']}.png"}
                             for x in shown]}
+            if self.llm_applied:
+                # G77: 조절 화면에서 LLM이 채운 항목마다 근거 인용 안내(참여자 원문 그대로). 참여자가 다른 값으로 바꾸면 보이지 않는다
+                tmpl = self.protocol.text("llm_fill_note")
+                out["llmFill"] = {"items": {item: {"quote": a["quote"], "text": tmpl.replace("{quote}", a["quote"])}
+                                            for item, a in sorted(self.llm_applied.items())
+                                            if self.stage != "adjusting" or self._llm_current(item)}}
             out["skipped"] = bool(self.data["selection"] and self.data["selection"].get("skipped"))
             out["axes"] = self.cands["axes"]
             out["note"] = self.cands["note"]

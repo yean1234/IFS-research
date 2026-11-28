@@ -18,6 +18,8 @@ from ifs_chatbot.selection import SelectionInvalid
 from ifs_chatbot.simulate import drive
 
 SEL_SCHEMA = Draft202012Validator(json.loads(shared("schemas", "selection.v0.2.json").read_text(encoding="utf-8")))
+# G77: experiment 설정(llm_fill 켬)의 선택 기록은 0.5
+SEL_SCHEMA_05 = Draft202012Validator(json.loads(shared("schemas", "selection.v0.5.json").read_text(encoding="utf-8")))
 SPREAD = {"x": 1.0, "y": 0.3, "z": 1.0, "axisSaid": True}
 ELONG = {"x": 0.4, "y": 1.0, "z": 0.4, "axisSaid": False}
 
@@ -212,7 +214,7 @@ def test_adjust_axes_records_and_size_together(tmp_path):
     f.adjust("size", 0.7)
     f.finish()
     d = json.loads((f.dir / "selection.json").read_text(encoding="utf-8"))
-    errs = [e.message for e in SEL_SCHEMA.iter_errors(d)]
+    errs = [e.message for e in (SEL_SCHEMA_05 if d["formatVersion"] == "ifs-selection/0.5" else SEL_SCHEMA).iter_errors(d)]
     assert not errs, errs[:3]
     fo = d["finalOverrides"]
     assert fo["layout.proportions.x"] == 1.4 and fo["layout.proportions.y"] == 0.5 and fo["layout.size"] == 0.7

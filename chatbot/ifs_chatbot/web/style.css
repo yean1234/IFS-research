@@ -286,7 +286,8 @@ th { color: var(--ink-soft); font-weight: 600; }
 .adjust-label { font-size: var(--fs-body); font-weight: 600; color: var(--ink); }
 .adjust-row.off > :not(.adjust-label):not(.adjust-off-note) { opacity: .45; }
 .adjust-off-note { grid-column: 2; font-size: var(--fs-small); color: var(--ink-soft); }
-@container part (max-width: 420px) { .adjust-row { grid-template-columns: minmax(0, 1fr); } .adjust-off-note { grid-column: 1; } }
+.llm-fill-note { grid-column: 2; font-size: var(--fs-small); color: var(--ink-soft); }   /* G77: LLM이 채운 처음 값의 근거 인용 */
+@container part (max-width: 420px) { .adjust-row { grid-template-columns: minmax(0, 1fr); } .adjust-off-note, .llm-fill-note { grid-column: 1; } }
 
 /* 고른 표시(색 견본·형태·움직임): 색만이 아니라 두꺼운 테두리 + 오른쪽 위 체크 */
 .chips, .opts { display: flex; flex-wrap: wrap; gap: var(--space-2); }
