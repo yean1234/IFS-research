@@ -15,9 +15,13 @@
 // 참여자에게 보이는 글은 PlacementTextPanel(세계 고정 판)이 맡는다. F1 = 숨기기/보이기.
 // 2026-11-24(G52–G53): 머리말에 배경 공간(environment)·놓기 도움 상태(후보 B·E·F 이름), Setup에 고르기 단추, 진행 중 배치 연습 상태.
 //   설정 이름은 이 실험자 화면(OnGUI)에만 쓴다 — 참여자 판(PlacementTextPanel)에는 문구 파일의 글만 간다.
+// 2026-11-28(공간 고르기·화면 나누기): 헤드셋에 이 화면이 보인 것은 XR이 켜지지 않아 데스크톱으로 돌 때 Link 데스크톱 보기로 PC 화면을 본 경우다
+//   (Editor.log XR_ERROR_FORM_FACTOR_UNAVAILABLE). 잠금이면 그때 XR 줄을 빨간 글로 보이고 확인에서 시작을 거부한다. 지금 머리 높이 줄, 공간 고르기 상태 줄.
 // 2026-11-28: Setup 맨 위에 최근 세션 자동 채움 결과(세션 ID·참여자 번호·저장 시각, 오래됨·이미 돌림 경고, [최근 세션 다시 찾기]).
-//   러너 lockExperimentPreset이 켜져 있으면 권고 설정 단추·공간·놓기 도움·연습·물체 숨김·점검 순서·반복 멈춤·눈높이·UI 묶음·문구 파일
-//   고르기를 그리지 않고 "본 실험 설정 고정" 요약(PlacementExperimentLock.SummaryLines)만 보인다.
+//   러너 lockExperimentPreset이 켜져 있으면 권고 설정 단추·놓기 도움·연습·물체 숨김·점검 순서·반복 멈춤·눈높이·UI 묶음·문구 파일
+//   고르기를 그리지 않고 "본 실험 설정 고정" 요약(PlacementExperimentLock.SummaryLines)만 보인다. 공간 단추 셋(기본·자연·우주)은 잠금에서도
+//   보인다(2026-11-28 연구 책임자 결정: 공간은 실험자가 고른다). 참여자 고르기 단계 토글은 두지 않는다(꺼 둔 기능 — 인스펙터·명령줄로만).
+// CP17-1: 세션 중 XR이 끊기면 알림 맨 위에 빨간 큰 글(F1 숨기기·[중단…]·Esc 안내). 세션은 그대로 진행한다.
 using System.Linq;
 using UnityEngine;
 
@@ -108,20 +112,38 @@ namespace IFS.SceneSpec.Placement
             string participant = string.IsNullOrWhiteSpace(runner.ParticipantNumberText) ? "-" : runner.ParticipantNumberText.Trim();
             GUILayout.Label($"조건 <b>{cfg.condition} / {cfg.EffectiveControlMode}</b>   참여자 <b>{participant}</b>   " +
                             $"<color={ColMuted}>머리 {runner.HeadSource} · 입력 {runner.ActiveInputSource ?? "(확인 전)"}</color>", _wrap);
-            GUILayout.Label(SpaceLine(cfg, runner.AppliedEnvironment), _wrap);
+            var s = runner.Session;
+            GUILayout.Label(s != null ? SpaceLine(s.Config, s.ShownEnvironment, runner.AppliedEnvironment) : SpaceLine(cfg, runner.AppliedEnvironment), _wrap);
+        }
+
+        /// <summary>공간 고르기 상태 한 줄(2026-11-28, 실험자 화면에만 — 공간 이름은 참여자 판에 쓰지 않는다).</summary>
+        public static string SpaceChoiceLine(PlacementSession s)
+        {
+            if (s == null || s.SpaceChoiceOrder == null) return null;
+            string order = string.Join(" → ", s.SpaceChoiceOrder);
+            if (s.Phase == PlacementPhase.SpaceChoice && !s.SpaceChoiceDecided)
+                return $"<b>공간 고르기</b>: 지금 <b>{s.ShownEnvironment}</b>({s.SpaceChoiceIndex + 1}/{s.SpaceChoiceOrder.Count}) · 본 공간 {s.SpaceChoiceSeenCount}/{s.SpaceChoiceOrder.Count}" +
+                       $"{(s.SpaceChoiceSeenAll ? "" : " — 다 보기 전 확인은 받지 않음")} · 순서 {order} · {s.SecondsInPhase:0} s. 참여자: 방아쇠 = 다음 공간, 확인 버튼 = 정하기. " +
+                       "실험자 Enter = 지금 공간으로 정함(참여자가 말로 고른 때)";
+            return s.SpaceChosenBy == null ? null
+                : $"공간 고름: <b>{s.Config.environment}</b>({(s.SpaceChosenBy == PlacementSpaceChoice.ByParticipant ? "참여자" : s.SpaceChosenBy == PlacementSpaceChoice.ByExperimenter ? "실험자" : "중단")}) · 순서 {order}";
         }
 
         /// <summary>배경 공간·놓기 도움 한 줄(G52). 후보 이름: 도움을 켠 neutral = B, space = E, nature = F.</summary>
-        public static string SpaceLine(PlacementConfig cfg, string applied)
+        public static string SpaceLine(PlacementConfig cfg, string applied) => SpaceLine(cfg, cfg.environment, applied);
+
+        /// <summary>shown: 지금 그려야 할 공간(공간 고르기 중이면 참여자가 보는 공간).</summary>
+        public static string SpaceLine(PlacementConfig cfg, string shown, string applied)
         {
             string candidate = !cfg.placementAssist ? "기본(후보 아님)"
-                : cfg.environment == PlacementConfig.EnvironmentSpace ? "후보 E"
-                : cfg.environment == PlacementConfig.EnvironmentNature ? "후보 F" : "후보 B";
-            string drawn = applied == cfg.environment ? "" : $"  <color={ColError}>화면은 {applied}(그리지 못함 — 확인에서 오류)</color>";
+                : shown == PlacementConfig.EnvironmentSpace ? "후보 E"
+                : shown == PlacementConfig.EnvironmentNature ? "후보 F" : "후보 B";
+            string drawn = applied == shown ? "" : $"  <color={ColError}>화면은 {applied}(그리지 못함 — 확인에서 오류)</color>";
             string practice = !cfg.placementAssist ? ""
                 : cfg.HasPractice ? (cfg.IsPlace ? " · 배치 연습 있음" : " · 배치 연습 있음(보기만 조건도 — practiceInAllConditions)")
                 : " · 배치 연습 없음(보기만 조건)";
-            return $"공간 <b>{cfg.environment}</b> · 놓기 도움 <b>{(cfg.placementAssist ? "켜짐" : "꺼짐")}</b>{practice}   <color={ColMuted}>{candidate}</color>{drawn}";
+            string who = cfg.ParticipantChoosesSpace ? " · 참여자가 고름" : "";
+            return $"공간 <b>{shown}</b>{who} · 놓기 도움 <b>{(cfg.placementAssist ? "켜짐" : "꺼짐")}</b>{practice}   <color={ColMuted}>{candidate}</color>{drawn}";
         }
 
         string StageHeadline()
@@ -145,6 +167,12 @@ namespace IFS.SceneSpec.Placement
 
         void DrawAlerts()
         {
+            // CP17-1: 세션 중 XR이 끊김 — 가장 먼저, 크게(세션은 그대로 진행. 중단은 실험자가 [중단…]·Esc로)
+            var xs = runner.Session;
+            if (xs != null && !xs.Finished && xs.XrLostNow)
+                GUILayout.Label($"<color={ColError}>{PlacementSpaceChoice.XrLostAlert(xs.XrLostCount)}</color>", _stage);
+            else if (xs != null && xs.XrLostCount > 0)
+                GUILayout.Label($"<color={ColWarn}>이 세션에서 헤드셋 연결이 {xs.XrLostCount}번 끊겼다가 다시 잡혔습니다(events xr_lost·xr_regained, manifest xrConnection)</color>", _alert);
             foreach (var e in runner.Errors) GUILayout.Label($"<color={ColError}>오류: {e}</color>", _alert);
             string notice = runner.DraftPhraseNotice;
             if (notice != null) GUILayout.Label($"<color={ColDraft}>[초안 문구] {notice}</color>", _alert);
@@ -164,12 +192,26 @@ namespace IFS.SceneSpec.Placement
             string hand = cfg.xrHand == PlacementConfig.HandLeft ? "왼손" : "오른손";
             string line = head
                 ? $"XR: 헤드셋 켜짐({PlacementXrRig.LoadedDeviceName} / {PlacementXrRig.HeadDeviceName ?? "-"})  컨트롤러({hand}): {(runner.XrControllerPresent || runner.Stage == PlacementRunnerStage.Running ? (runner.XrInput?.DeviceName ?? "연결됨") : $"<color={ColWarn}>안 보임</color>")}  추적 원점: {rig?.TrackingOrigin ?? "-"}"
-                : $"<color={ColMuted}>XR: 헤드셋 없음(데스크톱 모의 조작). Quest Link를 켜고 Play를 다시 누르면 잡힌다</color>";
+                : runner.ExperimentPresetLocked && cfg.inputMode != PlacementConfig.InputModeDesktop
+                    // 2026-11-28: 실험 씬인데 XR이 꺼져 있다 — 이 화면이 Link 데스크톱 보기로 헤드셋에 보일 수 있다(확인에서 시작 거부)
+                    ? $"<color={ColError}>XR: 헤드셋 없음 — 데스크톱으로 도는 중. 참여자가 헤드셋의 Link 데스크톱 보기로 이 화면을 볼 수 있습니다. 헤드셋 안에서 Link를 켜고 Play를 다시 누르세요</color>"
+                    : $"<color={ColMuted}>XR: 헤드셋 없음(데스크톱 모의 조작). Quest Link를 켜고 Play를 다시 누르면 잡힌다</color>";
             GUILayout.BeginHorizontal();
-            GUILayout.Label(line, _small);
+            GUILayout.Label(line, head ? _small : _alert);
             if (head && GUILayout.Button("정면 재설정 (R)", _button, GUILayout.Width(150), GUILayout.Height(30))) runner.Recenter();
             GUILayout.EndHorizontal();
             if (runner.LastRecenterMessage != null) GUILayout.Label(runner.LastRecenterMessage, _small);
+            // 2026-11-28: 지금 머리 높이(추적 바닥 기준)를 늘 보인다 — 바닥(Guardian) 높이가 틀리면 여기서 먼저 드러난다
+            var live = runner.LiveHeadHeightM;
+            if (live.HasValue)
+            {
+                bool rel = cfg.IsEyeRelative;
+                bool outOfRange = rel && (live.Value < cfg.EyeRangeMinM || live.Value > cfg.EyeRangeMaxM);
+                string range = rel ? $" · {(cfg.IsSeated ? "앉은" : "선")} 자세 범위 [{cfg.EyeRangeMinM:0.00}, {cfg.EyeRangeMaxM:0.00}] m" : "";
+                string txt = $"지금 머리 높이 {live.Value:0.000} m(추적 바닥 기준){range}" +
+                             (outOfRange ? " — 범위 밖: 참여자 자세와 Quest 바닥 높이(설정 ▸ 물리적 공간 ▸ 경계/바닥)를 확인" : "");
+                GUILayout.Label(outOfRange ? $"<color={ColWarn}>{txt}</color>" : $"<color={ColMuted}>{txt}</color>", _small);
+            }
             // G60-3 눈높이(relative일 때만): 상태 한 줄 + Check 단계에서 재기 단추
             string eye = runner.EyeHeightStatus;
             if (eye != null)
@@ -215,7 +257,7 @@ namespace IFS.SceneSpec.Placement
                 }
             }
             bool locked = runner.ExperimentPresetLocked;
-            if (locked) DrawLockSummary(cfg);
+            if (locked) { DrawSpaceButtons(cfg, true); DrawLockSummary(cfg); }   // 2026-11-28: 잠금에서도 공간은 실험자가 고른다
             else DrawPresetControls(cfg);
             GUILayout.Label("참여자 입력(auto = 헤드셋이 켜져 있으면 XR 컨트롤러, 없으면 데스크톱)", _wrap);
             GUILayout.BeginHorizontal();
@@ -314,15 +356,7 @@ namespace IFS.SceneSpec.Placement
                 runner.SelectTaskText(PlacementConfig.ExperimentTaskTextFile);
                 runner.RefreshSpace();
             }
-            GUILayout.Label("배경 공간(G52 — 후보 B = neutral + 놓기 도움, E = space + 놓기 도움, F = nature + 놓기 도움)", _wrap);
-            GUILayout.BeginHorizontal();
-            foreach (var env in PlacementConfig.Environments)
-                if (GUILayout.Button((cfg.environment == env ? "● " : "") + env, _button, GUILayout.Width(120), GUILayout.Height(30)) && cfg.environment != env)
-                {
-                    cfg.environment = env;
-                    runner.RefreshSpace();
-                }
-            GUILayout.EndHorizontal();
+            DrawSpaceButtons(cfg, false);
             bool assist = GUILayout.Toggle(cfg.placementAssist, " 놓기 도움(G53): 배치 연습 1회, 든 동안 수직선·바닥 고리, 경계 띠 밝아짐, 범위 안내 문장(초안) — 직접 배치 조건", _toggle);
             if (assist != cfg.placementAssist)
             {
@@ -334,6 +368,34 @@ namespace IFS.SceneSpec.Placement
                 cfg.practiceInAllConditions = GUILayout.Toggle(cfg.practiceInAllConditions,
                     "   └ 배치 연습을 보기만 조건에서도(practiceInAllConditions — 조건 전 컨트롤러 경험을 같게. 본 실험 켬, G59-8)", _toggle);
         }
+
+        /// <summary>배경 공간 단추 세 개(기본 neutral · 자연 nature · 우주 space). 2026-11-28 연구 책임자 결정: 공간은 실험자가 여기서 고른다 —
+        /// 잠금(실험 씬)에서도 보이고 세션마다 고른다(기본으로 눌린 값 neutral). 고른 공간은 manifest config·environment에 남는다.
+        /// 참여자가 헤드셋에서 고르는 단계(environmentChoice participant)는 꺼 둔 기능이라 이 화면에 토글을 두지 않는다(인스펙터·명령줄로만).</summary>
+        void DrawSpaceButtons(PlacementConfig cfg, bool locked)
+        {
+            GUILayout.Label(locked
+                ? "배경 공간 — 실험자가 고른다(세션마다. 기본 neutral). 고른 공간이 이 세션 내내 보이고 기록에 남는다"
+                : "배경 공간(G52 — 후보 B = neutral + 놓기 도움, E = space + 놓기 도움, F = nature + 놓기 도움)", _wrap);
+            GUILayout.BeginHorizontal();
+            foreach (var env in PlacementConfig.Environments)
+                if (GUILayout.Button((cfg.environment == env ? "● " : "") + SpaceButtonLabel(env), _button, GUILayout.Width(150), GUILayout.Height(30)) && cfg.environment != env)
+                {
+                    cfg.environment = env;
+                    runner.RefreshSpace();
+                }
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+            if (cfg.ParticipantChoosesSpace)   // 잠금이면 [확인]이 experimenter로 되돌리고, 아니면(개발) 인스펙터·명령줄로 켠 것
+                GUILayout.Label($"<color={ColWarn}>참여자 공간 고르기 단계가 켜져 있습니다(environmentChoice participant — 꺼 둔 기능, 인스펙터·명령줄로만). " +
+                                (locked ? "본 실험 설정 고정이라 [확인]에서 experimenter로 되돌립니다" : "위 공간은 고르기 전·대기 공간입니다") + "</color>", _small);
+        }
+
+        /// <summary>공간 단추 글: 한국어 이름 + 설정 값(기록과 맞춰 보게).</summary>
+        public static string SpaceButtonLabel(string env) =>
+            env == PlacementConfig.EnvironmentNeutral ? "기본 (neutral)"
+            : env == PlacementConfig.EnvironmentNature ? "자연 (nature)"
+            : env == PlacementConfig.EnvironmentSpace ? "우주 (space)" : env;
 
         /// <summary>잠금이 꺼졌을 때: 절차 토글(물체 숨김·점검 순서·반복 멈춤·눈높이·UI 묶음).</summary>
         void DrawProcedureToggles(PlacementConfig cfg)
@@ -347,6 +409,12 @@ namespace IFS.SceneSpec.Placement
             bool eyeRel = GUILayout.Toggle(cfg.IsEyeRelative,
                 " 눈높이 기준 배치(eyeHeightMode relative — Check 뒤 H로 눈높이를 재고 물체 높이를 E − 1.60 m만큼 옮김. 기본: 절대 높이. 본 실험 relative, G60-3)", _toggle);
             cfg.eyeHeightMode = eyeRel ? PlacementConfig.EyeHeightRelative : PlacementConfig.EyeHeightNone;
+            if (eyeRel)
+            {
+                bool seated = GUILayout.Toggle(cfg.IsSeated,
+                    $"   └ 앉은 자세로 보정·과제(eyeCalibPosture seated — 범위 [{cfg.eyeHeightSeatedMinM:0.00}, {cfg.eyeHeightSeatedMaxM:0.00}] m. 끄면 선 자세 [{cfg.eyeHeightMinM:0.00}, {cfg.eyeHeightMaxM:0.00}] m. 본 실험 앉은 자세, 2026-11-28)", _toggle);
+                cfg.eyeCalibPosture = seated ? PlacementConfig.PostureSeated : PlacementConfig.PostureStanding;
+            }
             // G63 헤드셋 UI 개선 묶음: (1) 판 35° 안(줄 24자·지시문 쪽 나누기) (2) 어두운 판 (3) 광선 겨눔 (4) 햅틱 (5) 평정 확정 표시 (6) 평정 칸 0.20 m
             bool bundle = GUILayout.Toggle(cfg.UiBundleOn,
                 " 헤드셋 UI 개선 묶음(G63 — 판 35° 안·어두운 판·광선 겨눔·햅틱·평정 확정 표시·평정 칸 0.20 m. 문구·문항·평정 방식은 그대로. 기본 꺼짐)", _toggle);
@@ -390,6 +458,8 @@ namespace IFS.SceneSpec.Placement
             var o = s.ObjectPosition;
             GUILayout.Label($"물체: {(s.ObjectVisible ? "보임" : "숨김")} {s.ObjectState}  거리 {PlacementGeometry.HorizontalDistance(o):0.00} m  방위 {PlacementGeometry.AzimuthDeg(o):0} °  높이 {o.Y:0.00} m  잡기 {s.GrabCount}회", _wrap);
             if (s.ParticipantText != null) GUILayout.Label($"<color={ColMuted}>참여자 글:</color> " + s.ParticipantText.Replace("\n", " / "), _wrap);
+            string spaceChoice = SpaceChoiceLine(s);
+            if (spaceChoice != null) GUILayout.Label(spaceChoice, _wrap);
             var item = s.CurrentItem;
             if (s.ItemsInstructionActive)
                 GUILayout.Label($"<b>평정 지시문({s.CurrentItemWhen})</b> — 참여자가 다 읽으면 Enter(다음)로 첫 문항", _wrap);
@@ -422,7 +492,10 @@ namespace IFS.SceneSpec.Placement
                 }
             }
             // 참여자 조작 안내(늘 보이게, 단추 위)
-            string help = runner.ActiveInputSource == XrPlacementInput.Source
+            string help = s.Phase == PlacementPhase.SpaceChoice
+                ? (runner.ActiveInputSource == XrPlacementInput.Source ? "참여자 XR 조작(공간 고르기): 방아쇠 = 다음 공간, A·X = 지금 공간으로 정하기(세 공간을 다 본 뒤)"
+                                                                       : "참여자 데스크톱 조작(공간 고르기): Space = 다음 공간, F = 지금 공간으로 정하기(세 공간을 다 본 뒤)")
+                : runner.ActiveInputSource == XrPlacementInput.Source
                 ? "참여자 XR 조작: 광선으로 가리키고 트리거(또는 그립) 누르고 있기 = 잡기, 썸스틱 앞/뒤 = 밀기/당기기, A·X = 확인, " +
                   (s.Config.IsStopLoop ? "멈춤 거리: 트리거 = 멈춤/다시 움직임, A·X = 이 자리로 확정(멈춘 상태에서만)" : "트리거 = 멈춤 거리 버튼") +
                   (s.Config.participantRatesWithController ? ", 평정: 썸스틱 좌우 고르기·트리거 확정" : "") + ".  실험자 R = 정면 재설정"
@@ -430,7 +503,7 @@ namespace IFS.SceneSpec.Placement
                   (s.Config.IsStopLoop ? "멈춤 거리: Space = 멈춤/다시 움직임, F = 확정(멈춘 상태에서만)" : "Space = 멈춤 거리 버튼") + ". 오른쪽 드래그·WASD = 둘러보기·이동";
             GUILayout.Label($"<color={ColMuted}>{help}</color>", _small);
 
-            bool waits = s.Phase == PlacementPhase.Intro || s.Phase == PlacementPhase.Practice || s.Phase == PlacementPhase.PreWait || s.Phase == PlacementPhase.PostWait
+            bool waits = s.Phase == PlacementPhase.SpaceChoice || s.Phase == PlacementPhase.Intro || s.Phase == PlacementPhase.Practice || s.Phase == PlacementPhase.PreWait || s.Phase == PlacementPhase.PostWait
                          || (s.Phase == PlacementPhase.StopDistance && !s.StopTrialsStarted) || s.ItemsInstructionActive;
             string ctx = AbortContext();
             if (_abortConfirm.ArmedFor != null && !_abortConfirm.IsArmed(ctx)) _abortConfirm.Cancel();   // 단계가 넘어가면 닫음

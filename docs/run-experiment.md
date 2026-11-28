@@ -11,7 +11,7 @@
 | 1 | 면담(떠올리기) | PC 브라우저 | 챗봇 서버 `--config experiment` | — |
 | 2 | 물체 고르고 고치기 | 같은 화면 | 확정 → [다음 단계로] → 후보 → 조절 | **이어짐**(같은 세션, 매퍼 v2 spec이 세션 안에서 바로 만들어짐) |
 | 3 | 사전 문항(컴퓨터) | 같은 화면 | 사전 측정 10문항 | **이어짐** |
-| 4 | 헤드셋 → 직접 배치 / 보기만 | Unity 러너 | Setup에 spec·선택 파일 이름, 조건, [본 실험 권고 설정 켜기] | **손으로 이어야 함**: 세션 ID로 파일 이름을 적고 조건을 고름(배정표는 실험자가 가짐). 파일 복사는 필요 없음(에디터 Play 기준) |
+| 4 | 헤드셋 → 직접 배치 / 보기만 | Unity 러너 | Setup: 자동으로 채운 최근 세션 확인, 참여자 번호, 조건 | **반쯤 이어짐**: spec·선택 파일은 챗봇이 가장 최근에 내보낸 세션으로 자동으로 채워지고(실험자가 세션 ID를 확인), 조건은 배정표대로 고름. 권고 설정은 실험 씬에서 고정. 파일 복사는 필요 없음(에디터 Play 기준) |
 | 5 | 사후 문항 | 헤드셋 | 러너 `post_items` | 이어짐(러너 안) |
 | 6 | 자리 문항 | 헤드셋 | 러너 `check_items` | 이어짐 — 권고 설정이 멈춤 거리 **앞**으로 옮김 |
 | 7 | 멈춤 거리 | 헤드셋 | 러너 `stop_distance`(반복 멈춤 loop) | 이어짐 |
@@ -28,6 +28,7 @@
 3. **미리보기 빌드**(후보·조절 화면의 형상 그림): `docs/internal-trial-guide.md` 1절의 robocopy + WebGL·Windows 미리보기 빌드 명령. 빌드가 없으면 정지 그림 → 글 요약으로 내려갑니다(기록에 남음).
 4. **헤드셋 러너**: Unity 6000.0.85f2로 `<repo>/unity`를 열고 `Assets/IFS/Scenes/PlacementExperiment.unity`를 엽니다(없으면 메뉴 IFS ▸ Experiment ▸ Create Placement Experiment Scene). 헤드셋 연결은 `unity/README.md` 「헤드셋 연결 (Quest 3 + Quest Link, OpenXR)」, 처음 쓸 때 점검은 `docs/headset-checklist.md`.
    - **에디터 Play로 돌리는 것을 권합니다.** 에디터에서는 spec 목록 폴더가 `<repo>/chatbot/logs/scenes`라 챗봇이 쓴 파일을 그대로 읽습니다.
+   - 실험 씬의 `PlacementRunner`는 **본 실험 설정 잠금**(`lockExperimentPreset`)이 켜져 있습니다. 인스펙터의 「본 실험(2026-11-28)」 칸에서 확인합니다(씬을 메뉴로 다시 만들어도 켜짐). 코드 기본값과 자동 시행은 꺼짐입니다.
    - Windows 빌드(`unity/README.md` 같은 절 끝)를 쓰면 spec 목록 폴더가 `%USERPROFILE%\AppData\LocalLow\DefaultCompany\unity\IFS\scenes`로 바뀝니다. 파일을 옮기지 말고 Setup에 **절대 경로**(`<repo>\chatbot\logs\scenes\<세션ID>.json`, `<repo>\chatbot\logs\selection\<세션ID>\selection.json`)를 적습니다. 빌드에 실험 파일을 넣을 필요는 없습니다(러너가 실행 때 디스크에서 읽음).
 5. **조건 배정표**: 직접 배치(`place`) / 보기만(`view` · `static`)을 참여자 번호별로 정해 둡니다. 멈춤 거리 첫 방향의 기본값(`by_participant`)은 번호 홀짝이라, 배정도 홀짝으로 하면 둘이 겹칩니다 — `unity/README.md` 「배치 실험 러너 ▸ 단계」의 "첫 방향과 조건 배정이 얽힐 수 있습니다" 문단대로 균형을 잡습니다.
 
@@ -48,17 +49,22 @@ cd <repo>\chatbot
 
 ### 2.2 헤드셋 (Unity 러너)
 
-1. Unity에서 Play. 참여자를 원판 가운데에 세우고 R(정면 재설정).
+1. **헤드셋 안에서 Link를 먼저 켠 뒤** Unity에서 Play. 실험자 화면 맨 위 XR 줄이 `XR: 헤드셋 켜짐(…) … 추적 원점: Floor`인지 봅니다. 빨간 줄 `XR: 헤드셋 없음 — 데스크톱으로 도는 중`이면 XR이 켜지지 않은 것이고(Link가 꺼져 있었거나 헤드셋이 잠들어 있었음 — 콘솔 `XR_ERROR_FORM_FACTOR_UNAVAILABLE`), 이때 참여자가 헤드셋의 Link 데스크톱 보기로 이 실험자 화면을 볼 수 있습니다. Link를 켜고 Play를 다시 누릅니다(실험 씬에서는 이 상태로 [확인]하면 시작이 거부됩니다. 헤드셋 없이 시험할 때만 참여자 입력을 `desktop`으로). XR이 켜져 있으면 실험자 화면(설정·세션 ID·참여자 번호·조건)은 PC 모니터에만 보이고, 헤드셋에는 빈 공간과 대기 안내 판("잠시 기다려 주세요. 다음 안내가 나올 거예요.", 문구 `wait`)만 보입니다(2026-11-28).
+   참여자를 원판 가운데 의자에 앉히고(본 실험은 앉아서 합니다) R(정면 재설정). 실험자 화면의 `지금 머리 높이 … m` 줄로 바닥 높이를 먼저 봅니다: 앉은 자세에서 0.95–1.45 m 밖이면 노란 줄이 나오고, 그때는 Quest 바닥 높이(설정 ▸ 물리적 공간 ▸ 경계/바닥)를 다시 맞춥니다.
 2. Setup:
-   - 참여자 번호
-   - spec: 목록에서 **`<세션ID>.json`** 단추(`.v0`·`.v1`·`.v2.json`은 비교용이라 고르면 해시가 달라 시작이 거부됩니다)
-   - 선택 파일: `../selection/<세션ID>/selection.json`
+   - **자동으로 고른 세션**(Setup 맨 위, 2026-11-28): Play를 누를 때와 [다음 참여자 준비] 때 러너가 챗봇이 가장 최근에 저장한 `selection/<세션ID>/selection.json`과 짝 `scenes/<세션ID>.json`을 spec·선택 파일 칸에 채웁니다. 짝은 폴더 이름·`sessionId`·spec `meta.sessionId`(없어도 거부)·`specSha256`(spec 파일 바이트)이 모두 맞을 때만이고, 가장 최근 것이 맞지 않으면 더 오래된 세션으로 내려가지 않고 아무것도 채우지 않습니다(이유가 노란 줄로 나옴). 가장 최근 저장 시각이 지금보다 2분(`autoFillFutureToleranceMinutes`) 넘게 미래면 PC 시계 오류로 보고 채우지 않으며 큰 빨간 줄이 나옵니다 — 시계를 확인하고 손으로 고릅니다. 맨 위 줄의 **세션 ID와 저장 시각(몇 분 전)이 지금 참여자 것인지 확인**합니다. 30분보다 오래됐거나(`autoFillStaleMinutes`), 이 세션 ID의 기록 폴더가 이미 있거나, 더 늦게 저장된 spec에 선택 파일이 아직 없으면 노란 줄이 붙습니다. 챗봇 세션이 Play 뒤에 끝났으면 [최근 세션 다시 찾기]. 다른 파일을 쓰려면 아래 칸·목록 단추로 바꾸면 됩니다. 기록 manifest `sessionFiles.source`는 자동으로 채운 그대로면 `auto`, 채운 뒤 바꿨으면 `auto_overridden`이고, 자동 채움이 아무것도 채우지 않은 세션에는 이 키가 없습니다. 자동 채움은 칸만 채우고 시작하지 않습니다.
+   - 참여자 번호: spec `meta.participantId`가 숫자(또는 P+숫자)일 때만 자동으로 채워집니다. 지금 챗봇 웹 화면은 이 값을 보내지 않아 보통 **손으로 넣습니다**. 조건도 챗봇 파일에 없어서 손으로 고릅니다.
+   - spec: 손으로 고를 때는 목록에서 **`<세션ID>.json`** 단추(`.v0`·`.v1`·`.v2.json`은 비교용이라 고르면 해시가 달라 시작이 거부됩니다)
+   - 선택 파일: 손으로 고를 때는 `../selection/<세션ID>/selection.json`
    - 조건: 배정표대로 `place` 또는 `view`(통제 방식 `static`)
-   - **[본 실험 권고 설정 켜기]** 단추를 누릅니다. 한 번에 켜는 것: 공간 B(`neutral`) + 놓기 도움, 두 조건 모두 배치 연습, 자리 문항을 멈춤 거리 앞으로, 평정 동안 물체 숨김, 헤드셋 UI 개선 묶음(G63), 멈춤 거리 반복 멈춤(`stopMode loop`, G60-2·G60-4), 눈높이 기준 배치(`eyeHeightMode relative`, G60-3), 문구 파일 scaleA(뼈대 3절·G59-8). 켜지면 단추 앞에 ●가 붙고 아래 낱개 체크도 따라 바뀝니다. 조건과 안내 판 숨기기는 이 단추가 건드리지 않습니다(7절).
+   - **본 실험 설정 고정**: 실험 씬에서는 권고 설정, 멈춤 거리 절차 값(연습 1 × 상한 30초 + 본 4 × 상한 75초, 라운드 사이 2초, 왕복 0.4–3.6 m · 0.25 m/s 등), 문구 파일 scaleA가 Play·[확인]·다음 참여자 때마다 자동으로 적용되고, 화면에는 낱개 토글 대신 "본 실험 설정 고정" 요약 다섯 줄만 보입니다(manifest `flags.experimentPresetLocked: true`). 2026-11-28 연구 책임자 결정으로 **공간은 실험자가 설정 화면에서 고릅니다**: 잠금 요약 위의 공간 단추 셋(기본 (neutral) · 자연 (nature) · 우주 (space), 처음 눌린 값 neutral)으로 세션마다 고르고, 잠금은 고른 공간을 바꾸지 않습니다(`environmentChoice experimenter`, 고른 공간은 manifest `config.environment`에). [다음 참여자 준비] 뒤에도 앞 참여자의 공간이 남으니 다시 확인합니다. 참여자가 헤드셋에서 고르는 단계(`space_choice`)는 꺼 둔 기능이라 실험 씬에서는 돌지 않습니다(설정 화면에 토글 없음). **눈높이 보정은 앉은 자세**(`eyeCalibPosture seated`, 범위 [0.95, 1.45] m)입니다 — 요약 첫 줄과 넷째 줄에 보입니다. 읽은 문구 파일의 판이 `0.9-scaleA`가 아니거나 G78 문구 네 개(`confirm_button_right/left`, `confirm_done`, `stop_main_start`)가 없으면, 또는 설정이 잠금 값과 다르면 [확인]·[시작]이 거부됩니다(빨간 줄). 고정하지 않고 화면에 남는 것: 공간, 안내 판 숨기기, 선택 단계 문항, 묻지 않을 문항 키, 참여자 컨트롤러 평정, 보기만 통제 방식, 참여자 입력·주 사용 손. 잠금을 끈 씬에서는 아래처럼 **[본 실험 권고 설정 켜기]** 단추를 누릅니다(설정은 저장되지 않아 Play마다 다시). 한 번에 켜는 것: 공간 B(`neutral`) + 놓기 도움, 두 조건 모두 배치 연습, 자리 문항을 멈춤 거리 앞으로, 평정 동안 물체 숨김, 헤드셋 UI 개선 묶음(G63), 멈춤 거리 반복 멈춤(`stopMode loop`, G60-2·G60-4), 눈높이 기준 배치(`eyeHeightMode relative`, G60-3), 문구 파일 scaleA(뼈대 3절·G59-8). 켜지면 단추 앞에 ●가 붙고 아래 낱개 체크도 따라 바뀝니다. 조건과 안내 판 숨기기는 이 단추가 건드리지 않습니다(7절).
    - 참여자 입력 `auto`, 주 사용 손
-3. [확인] → 확인 화면의 선택 파일 요약(고른 후보, 덮어쓰기)과 경고를 읽습니다. 눈높이 기준 배치가 켜져 있으므로 [시작] 전에 눈높이를 잽니다: 참여자를 원판 가운데에 세움 → R → 말로 "편하게 똑바로 서서 앞을 봐 주세요" → H(또는 "눈높이 재기"). 실험자 화면에 `눈높이 E = … m`가 나오면 [시작]. 보정을 통과하지 못하면 시작이 거부되니 이유대로 고쳐 다시 H(`docs/internal-trial-guide.md` 4절 G60-3 항목). 초안 문구 경고는 PC의 실험자 화면에만 나오고 헤드셋에는 나오지 않습니다.
-4. 단계: `intro → practice → baseline → pre_items → pre_wait → condition(90초) → post_items → check_items(자리 문항) → post_wait → stop_distance(반복 멈춤: 연습 1 + 본 4라운드, 트리거 = 멈춤/다시 움직임, A·X = 확정) → done`. 실험자 키는 `unity/README.md` 「데스크톱 조작 키」, 참여자 컨트롤러는 「컨트롤러 조작」.
-5. 끝나면 실험자 화면에 기록 폴더가 나옵니다. 기본 기록 루트는 `%USERPROFILE%\AppData\LocalLow\DefaultCompany\unity\IFS\sessions`(git 밖)입니다.
+   - 멈춤 거리 연습 라운드는 1회, 상한 30초입니다(`stopLoopPracticeRoundSeconds`, 본 라운드는 75초). 넘으면 그 라운드 확정값은 빈칸입니다.
+3. [확인] → 확인 화면의 선택 파일 요약(고른 후보, 덮어쓰기)과 경고를 읽습니다. 눈높이 기준 배치가 켜져 있으므로 [시작] 전에 눈높이를 **과제를 하는 자세(앉은 자세)로** 잽니다: 참여자를 원판 가운데 의자에 앉힘 → R → 말로 "편하게 앉아서 앞을 봐 주세요"(대본 초안 — ⚠ 연구 책임자 확인) → H(또는 "눈높이 재기"). 실험자 화면에 `눈높이 E = … m`가 나오면 [시작]. 서서 재면 앉은 자세 범위를 넘어 실패합니다(서서 잰 값으로 앉아 과제를 하면 물체·안내 판이 그 차이만큼 눈보다 높게 놓입니다). 보정을 통과하지 못하면 시작이 거부되니 이유대로 고쳐 다시 H(`docs/internal-trial-guide.md` 4절 G60-3 항목). 실패 이유가 범위 밖이면 먼저 `지금 머리 높이` 줄과 Quest 바닥 높이를 봅니다(범위를 넓히는 우회 수단은 화면에 없습니다). 초안 문구 경고는 PC의 실험자 화면에만 나오고 헤드셋에는 나오지 않습니다.
+4. (꺼 둔 기능 — 실험 씬에서는 돌지 않음) 잠금을 끄고 인스펙터·명령줄로 `environmentChoice participant`를 켰을 때만 [시작] 뒤 첫 단계가 **참여자 공간 고르기**(`space_choice`)입니다. 실험에서는 공간을 실험자가 2단계 Setup의 공간 단추로 고르고 [시작] 뒤 바로 intro입니다. 켰을 때의 동작: 헤드셋 판에 "과제를 할 공간을 골라 주세요. 방아쇠를 누르면 다음 공간이 보여요. 세 공간을 다 본 뒤 확인 버튼으로 정해 주세요. 확인 버튼은 오른손 A 버튼이에요. / 공간 1 / 3"이 보이고, 참여자는 방아쇠로 세 공간(기본·자연·우주, 순서는 참여자 번호로 돌림 — 1번은 기본부터, 2번은 자연부터, 3번은 우주부터)을 넘겨 보다가 세 공간을 다 본 뒤 A(왼손 X)로 정합니다. 다 보기 전 확인은 받지 않습니다. 실험자 화면에는 지금 공간 이름·본 공간 수·순서가 보이고(공간 이름은 헤드셋 판에 쓰지 않음), 참여자가 말로 고르면 실험자가 그 공간이 보일 때 Enter로 정할 수 있습니다(`chosenBy experimenter`). 정하면 "정했어요."가 2초 보인 뒤 intro. 기록: manifest `environmentChoice`{mode, orderRule, order, environmentBeforeChoice, chosen, chosenBy, durationMs, switches, seenAll, ignoredConfirms, viewMs}, `config.environmentChoice`, 고른 공간이 `config.environment`·`environment.name`, events `space_choice_start/show/confirm_ignored/end`. ⚠ 분석기는 세션 사이 공간이 다르면 `config_mismatch:environment` 플래그를 붙입니다(이 변경에서 분석기는 고치지 않음).
+   - 세션 중 헤드셋 연결이 끊기면(헤드셋을 벗어 잠듦·Link 끊김) 실험자 화면 맨 위에 빨간 큰 경고가 뜹니다 — 그동안 참여자가 Link 데스크톱 보기로 PC 화면을 볼 수 있습니다. 세션 시간은 멈추지 않습니다. F1로 실험자 화면을 숨기거나, 진행할 수 없으면 [중단…](또는 Esc)으로 중단합니다. 기록: `events.csv` `xr_lost`·`xr_regained`, manifest `xrConnection.lostCount`(CP17-1). [확인] 때 XR이 늦게 켜져 "XR 없음" 오류가 났으면 XR이 잡히는 대로 오류가 저절로 사라지고 [시작]이 눌립니다(CP17-4).
+5. 단계: `intro → practice → baseline → pre_items → pre_wait → condition(90초) → post_items → check_items(자리 문항) → post_wait → stop_distance(반복 멈춤: 연습 1 + 본 4라운드, 트리거 = 멈춤/다시 움직임, A·X = 확정) → done`. 실험자 키는 `unity/README.md` 「데스크톱 조작 키」, 참여자 컨트롤러는 「컨트롤러 조작」.
+6. 끝나면 실험자 화면에 기록 폴더가 나옵니다. 기본 기록 루트는 `%USERPROFILE%\AppData\LocalLow\DefaultCompany\unity\IFS\sessions`(git 밖)입니다.
 
 ### 2.3 사후 면담 (PC)
 
@@ -132,10 +138,16 @@ $env:IFS_LIVE=1; .venv\Scripts\python.exe -m pytest tests\test_experiment_config
 
 ### 6.2 확정 직후 LLM 빈칸 채우기 (G77, `[mapping] llm_fill = true` — experiment.toml에서만 켬, 다른 설정은 기본 끔)
 
-- 참여자가 [이대로 맞아요]로 확정하면 매퍼 v2가 스펙을 만든 직후, 면담 모델(같은 Ollama 모델)을 한 번 더 부릅니다(온도 0, seed 0, JSON 스키마, 한도 `llm_fill_timeout_s` 20초). 매퍼가 비운 슬롯(색·밝기·투명도·질감·크기·움직임·형태 종류)과 그림용 형태 낱말만, 참여자 원문 인용이 있어야 받습니다. 위치·거리는 대상이 아닙니다. 프롬프트 `chatbot/prompts/llm_fill/llm_fill.v0.1.0.json`(draft).
+- 참여자가 [이대로 맞아요]로 확정하면 매퍼 v2가 스펙을 만든 직후, 면담 모델(같은 Ollama 모델)을 한 번 더 부릅니다(온도 0, seed 0, JSON 스키마, 한도 `llm_fill_timeout_s` 20초). 매퍼가 비운 슬롯(색·밝기·투명도·질감·크기·움직임·형태 종류)과 그림용 형태 낱말만, 참여자 원문 인용이 있어야 받습니다. 위치·거리는 대상이 아닙니다. 프롬프트 `chatbot/prompts/llm_fill/llm_fill.v0.1.1.json`(draft).
 - 검증기를 통과한 값만 후보·조절의 처음 값이 됩니다(확정 스펙 파일은 그대로). 조절 화면에는 그 항목 아래 「'<인용>'라고 하셔서 이렇게 해 봤어요. 다르면 고쳐 주세요.」가 보입니다(문구 `selection_protocol.v0.10.json` `llm_fill_note`, draft). 형태 낱말은 [맞는 게 없어요] 뒤 규칙이 형태를 못 만들 때만 그림 프롬프트에 들어갑니다.
 - 부르지 않음·버림: 세션에 위기·확인 판정이 있었음, 실패·시간 초과·JSON 깨짐(지금 경로 그대로). 서버 시작 때 Ollama가 없으면 면담도 시작하지 않으므로 별도 점검은 없습니다.
 - 기록: 이 설정의 `selection.json`은 처음부터 `ifs-selection/0.5`(`shared/schemas/selection.v0.5.json`)입니다. `llmFill`(모델 digest·프롬프트 판·원시 항목·항목별 기각 사유·채택 값·`applied`·참여자가 그대로 뒀는지 `participant`), `llmFillExposed`, 출처 값 `llm_quoted`. 세션 로그 사건은 `scene:llm_fill`. 헤드셋 러너는 0.5를 0.3 규칙으로 읽고 `llm_quoted`를 받습니다(헤드셋 빌드를 다시 만들어야 함). 실제 모델로는 아직 돌려 보지 않았습니다(2026-11-28 구현 때 GPU를 다른 실측이 쓰고 있었음) — 본 실험 전에 합성 대사로 돌려 `docs/validation/run-g77-llm-fill/`에 결과를 남겨야 합니다.
+
+### 6.3 조절 화면의 색 고리 (G79, experiment.toml에서만: 값 표 `candidate_values.v4.json`, 프로토콜 0.11)
+- 조절 화면의 색은 고리(72칸)·채도 단추 4개·무채색 견본 5개로 고릅니다. 색을 말한 참여자는 손잡이가 말한 자리에서 시작하고 Home 키나 눈금으로 돌아올 수 있습니다. 색을 말하지 않은 참여자는 손잡이가 없고 회색 견본이 속 빈 테두리로 보입니다.
+- 기록은 `selection.json`의 `colorRing`에서 봅니다(`final.origin`: 말함 / 고름 / `unspecified` = 말하지도 고르지도 않음). 선택 파일 형식은 `ifs-selection/0.5` 그대로라 헤드셋 빌드를 다시 만들지 않습니다.
+- 값 표나 프로토콜을 바꾼 뒤에는 챗봇 서버를 다시 띄워야 합니다. 고리 값 표에 고리 문구가 없는 프로토콜을 묶으면 서버가 시작할 때 설정 오류로 멈춥니다.
+- 사람이 볼 것: 웹 화면의 색과 헤드셋에서 그려진 색의 차이, 채도 단계 차이가 헤드셋에서 보이는지.
 
 ## 7. 아직 사람이 정할 것 (이 문서가 켜지 않은 것)
 

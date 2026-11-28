@@ -13,6 +13,7 @@
 //               [-taskTextFile IFS/placement_task.scaleA.v0.json] [-selectionPath <selection.json>]
 //               [-askOptionalItems true|false] [-disabledItems own,S4] [-dt 0.02]
 //               [-environment neutral|space|nature] [-placementAssist true|false]   (G52, 2026-11-24)
+//               [-environmentChoice experimenter|participant] [-eyeCalibPosture standing|seated]   (2026-11-28)
 //               [-checkBeforeStopDistance true|false] [-practiceInAllConditions true|false] -logFile <로그>   (G59, 2026-11-25)
 //               [-uiBundle true] [-uiComfortWrap|-uiDarkPanel|-uiRayHover|-uiHaptics|-uiRatingConfirmFlash|-uiNarrowScale true|false]
 //               [-hidePanelInDistancePhases true|false] [-hidePanelReadSeconds 8] [-participantRatesWithController true|false]   (G63, 2026-11-27)
@@ -147,12 +148,14 @@ namespace IFS.SceneSpec.EditorTools
             if ((v = Value(args, "-disabledItems")) != null) cfg.disabledItems = v.Split(',').Select(k => k.Trim()).Where(k => k.Length > 0).ToArray();
             if ((v = Value(args, "-environment")) != null) cfg.environment = v;
             if ((v = Value(args, "-placementAssist")) != null) cfg.placementAssist = bool.Parse(v);
+            if ((v = Value(args, "-environmentChoice")) != null) cfg.environmentChoice = v;   // 2026-11-28: experimenter | participant(자동 시행은 스크립트가 고름)
             if ((v = Value(args, "-checkBeforeStopDistance")) != null) cfg.checkBeforeStopDistance = bool.Parse(v);
             if ((v = Value(args, "-practiceInAllConditions")) != null) cfg.practiceInAllConditions = bool.Parse(v);
             if ((v = Value(args, "-stopMode")) != null) cfg.stopMode = v;   // G60-2: single | loop
             if ((v = Value(args, "-stopLoopRoundSeconds")) != null) cfg.stopLoopRoundSeconds = double.Parse(v, CultureInfo.InvariantCulture);
             if ((v = Value(args, "-stopLoopPracticeRoundSeconds")) != null) cfg.stopLoopPracticeRoundSeconds = double.Parse(v, CultureInfo.InvariantCulture);
             if ((v = Value(args, "-eyeHeightMode")) != null) cfg.eyeHeightMode = v;   // G60-3: none | relative(자동 시행은 기준값 고정)
+            if ((v = Value(args, "-eyeCalibPosture")) != null) cfg.eyeCalibPosture = v;   // 2026-11-28: standing | seated
             // G63 헤드셋 UI: -uiBundle true = (1)–(6) 한꺼번에. 낱개 플래그가 뒤에서 덮어쓴다. -hidePanelInDistancePhases는 묶음에 들지 않는다
             if ((v = Value(args, "-uiBundle")) != null && bool.Parse(v)) cfg.ApplyUiBundle();
             if ((v = Value(args, "-uiComfortWrap")) != null) cfg.uiComfortWrap = bool.Parse(v);

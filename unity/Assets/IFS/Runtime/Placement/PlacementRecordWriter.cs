@@ -325,6 +325,15 @@ namespace IFS.SceneSpec.Placement
         public bool ExperimentPresetLocked;
         /// <summary>2026-11-28: spec·선택 파일을 어떻게 골랐나(PlacementManifest.SessionFilesJson). null이면 manifest에 키 없음(자동 시행·시험·자동 채움이 아무것도 채우지 않은 세션).</summary>
         public JObject SessionFiles;
+        /// <summary>2026-11-28: 참여자가 공간을 고른 결과(설정 environmentChoice participant일 때만 — 세션이 채우고 manifest를 다시 쓴다). null이면 키 없음.</summary>
+        public JObject SpaceChoice;
+        /// <summary>CP17-1: 러너가 XR 헤드셋이 켜진 사람 실행으로 세션을 시작했다(세션 중 XR 끊김을 본다). 데스크톱·자동 시행은 false — 그때는
+        /// manifest xrConnection 키가 없다(기존 기록 바이트 그대로).</summary>
+        public bool XrMonitored;
+        /// <summary>CP17-1: XR 끊김 기록(세션이 채우고 끊기거나 다시 잡힐 때·끝날 때 manifest를 다시 쓴다). XrMonitored가 아니면 null.</summary>
+        public JObject XrConnection;
+        /// <summary>CP17-3: 높이 하한(eyeHeightMode relative이고 앉은 자세이거나 하한이 걸렸을 때만 — 세션이 채운다). null이면 키 없음.</summary>
+        public JObject HeightFloor;
     }
 
     public static class PlacementManifest
@@ -451,6 +460,11 @@ namespace IFS.SceneSpec.Placement
             // 2026-11-28: 본 실험 설정 잠금(켰을 때만 — 꺼져 있으면 기존 기록과 같은 바이트)과 spec·선택 파일 고른 방식(자동 채움을 쓴 실행에서만)
             if (info != null && info.ExperimentPresetLocked) ((JObject)m["flags"])["experimentPresetLocked"] = true;
             if (info?.SessionFiles != null) m["sessionFiles"] = info.SessionFiles.DeepClone();
+            // 2026-11-28: 참여자가 헤드셋 안에서 공간을 고른 세션만(없으면 실험자가 설정으로 정한 것 — 기존 기록과 같은 바이트)
+            if (cfg.ParticipantChoosesSpace && info?.SpaceChoice != null) m["environmentChoice"] = info.SpaceChoice.DeepClone();
+            // CP17-3: relative의 높이 하한(물체·연습 목표·안내 판), CP17-1: XR로 시작한 사람 실행의 끊김 수 — 둘 다 해당할 때만(기본 기록은 그대로)
+            if (cfg.IsEyeRelative && info?.HeightFloor != null) m["heightFloor"] = info.HeightFloor.DeepClone();
+            if (info != null && info.XrMonitored && info.XrConnection != null) m["xrConnection"] = info.XrConnection.DeepClone();
             return m;
         }
 

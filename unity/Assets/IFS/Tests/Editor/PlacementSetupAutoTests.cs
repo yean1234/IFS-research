@@ -235,8 +235,10 @@ namespace IFS.SceneSpec.Tests
                 hidePanelInDistancePhases = true, askOptionalItems = true, disabledItems = new[] { "own" }, participantRatesWithController = true,
             };
             PlacementExperimentLock.Apply(cfg);
-            Assert.That(cfg.ExperimentPresetOn, Is.True);
-            Assert.That(cfg.environment, Is.EqualTo(PlacementConfig.EnvironmentNeutral));
+            Assert.That(cfg.ExperimentProcedureOn, Is.True);
+            // 2026-11-28 연구 책임자 결정: 공간은 실험자가 설정 화면에서 고른다 — 잠금은 고른 공간을 건드리지 않는다(세션마다 다른 값)
+            Assert.That(cfg.environment, Is.EqualTo(PlacementConfig.EnvironmentNature));
+            Assert.That(cfg.environmentChoice, Is.EqualTo(PlacementConfig.EnvironmentChoiceExperimenter));
             Assert.That(cfg.placementAssist && cfg.practiceInAllConditions && cfg.hideObjectDuringItems && cfg.checkBeforeStopDistance, Is.True);
             Assert.That(cfg.IsStopLoop && cfg.IsEyeRelative && cfg.UiBundleOn, Is.True);
             // 고정하지 않는 것(연구 책임자 결정 대기 · 세션마다 다른 것 · preset이 정하지 않는 참여자 입력)
@@ -312,12 +314,16 @@ namespace IFS.SceneSpec.Tests
         {
             var cfg = new PlacementConfig();
             PlacementExperimentLock.Apply(cfg);
-            var lines = PlacementExperimentLock.SummaryLines(cfg, PlacementExperimentLock.TaskTextFile, "0.8-scaleA");
+            var lines = PlacementExperimentLock.SummaryLines(cfg, PlacementExperimentLock.TaskTextFile, "0.9-scaleA");
             string all = string.Join("\n", lines);
             Assert.That(lines.Count, Is.EqualTo(5));
-            Assert.That(all, Does.Contain("neutral(후보 B)"));
+            Assert.That(all, Does.Contain("공간 neutral(실험자가 위 단추로 고름 — 세션마다, 처음 값 neutral)"), "2026-11-28: 공간은 실험자가 고른다");
+            Assert.That(all, Does.Not.Contain("참여자가 헤드셋 안에서 고름"));
+            cfg.environment = PlacementConfig.EnvironmentSpace;
+            Assert.That(string.Join(" | ", PlacementExperimentLock.SummaryLines(cfg, PlacementExperimentLock.TaskTextFile)), Does.Contain("공간 space(실험자가"), "요약은 지금 고른 공간을 보인다");
+            Assert.That(all, Does.Contain("보정 자세 앉은 자세 [0.95, 1.45] m"));
             Assert.That(all, Does.Contain("loop: 연습 1 × 상한 30초 + 본 4 × 상한 75초, 라운드 사이 2초, 왕복 0.4–3.6 m · 0.25 m/s"));
-            Assert.That(all, Does.Contain("판 0.8-scaleA"));
+            Assert.That(all, Does.Contain("판 0.9-scaleA"));
             Assert.That(all, Does.Contain("relative(기준 1.60 m)"));
             Assert.That(all, Does.Contain("placement_task.scaleA.v0.json"));
             Assert.That(all, Does.Not.Contain("팀 결정 전"));

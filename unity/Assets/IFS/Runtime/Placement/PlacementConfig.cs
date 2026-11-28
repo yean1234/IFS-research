@@ -130,6 +130,10 @@ namespace IFS.SceneSpec.Placement
         public double practiceTargetHeightM = 0.8;
         /// <summary>연습 상자 한 변(m).</summary>
         public double practiceCubeSizeM = 0.25;
+        /// <summary>공간을 누가 정하나(2026-11-28 연구 책임자 결정): experimenter(기본 — 위 environment 그대로, 예전과 같음) |
+        /// participant(세션 첫 단계 space_choice에서 참여자가 헤드셋 안에서 세 공간을 차례로 보고 확인 버튼으로 고름. environment는
+        /// 고르기 전·대기 동안의 공간이고, 고른 값이 세션의 environment가 된다 — PlacementSpaceChoice). participant일 때만 config 끝에 키를 남긴다.</summary>
+        public string environmentChoice = EnvironmentChoiceExperimenter;
 
         // ── 절차 선택(G59, 2026-11-25) ─────────────────────────────────
         // 논문 심사 관점 검토에서 나온 보완. 둘 다 기본 꺼짐이고, 기본값에서는 화면·기록이 G59 전과 바이트 단위로 같다
@@ -180,9 +184,15 @@ namespace IFS.SceneSpec.Placement
         public string eyeHeightMode = EyeHeightNone;
         /// <summary>기준 눈높이(m). 이 눈높이에서는 none과 같은 자리가 된다.</summary>
         public double eyeHeightReferenceM = 1.6;
-        /// <summary>보정 통과 범위(m).</summary>
+        /// <summary>보정 통과 범위(m) — 선 자세(eyeCalibPosture standing, 기본).</summary>
         public double eyeHeightMinM = 1.30;
         public double eyeHeightMaxM = 1.95;
+        /// <summary>보정·과제 자세(2026-11-28, 연구 책임자: 본 실험은 앉아서 한다): standing(기본, 예전과 같음 — 범위 eyeHeightMinM–MaxM) |
+        /// seated(범위 eyeHeightSeatedMinM–MaxM). 보정은 과제를 하는 자세로 한다. seated일 때만 config 끝에 키를 남긴다.</summary>
+        public string eyeCalibPosture = PostureStanding;
+        /// <summary>앉은 자세 보정 통과 범위(m). 잠정값 — 의자 앉는 면 0.40–0.50 m + 앉은 눈높이 0.69–0.85 m ≈ 1.09–1.35 m에 여유(⚠ 연구 책임자 확인).</summary>
+        public double eyeHeightSeatedMinM = 0.95;
+        public double eyeHeightSeatedMaxM = 1.45;
         /// <summary>보정 표본 시간(초, 20 Hz).</summary>
         public double eyeCalibSeconds = 1.0;
         /// <summary>보정 통과 조건: 표본 표준편차(m) 이하, 머리 pitch 절댓값(도) 이하.</summary>
@@ -243,8 +253,10 @@ namespace IFS.SceneSpec.Placement
         }
 
         /// <summary>뼈대 3절 권고 설정이 모두 켜져 있다(문구 파일은 따로 — 러너가 확인).</summary>
-        public bool ExperimentPresetOn => environment == EnvironmentNeutral && placementAssist && practiceInAllConditions
-                                          && checkBeforeStopDistance && hideObjectDuringItems && UiBundleOn && IsStopLoop && IsEyeRelative;
+        public bool ExperimentPresetOn => environment == EnvironmentNeutral && ExperimentProcedureOn;
+        /// <summary>권고 설정 가운데 공간 이름을 뺀 나머지가 모두 켜져 있다(잠금은 공간을 참여자가 고르게 둔다 — 2026-11-28).</summary>
+        public bool ExperimentProcedureOn => placementAssist && practiceInAllConditions
+                                             && checkBeforeStopDistance && hideObjectDuringItems && UiBundleOn && IsStopLoop && IsEyeRelative;
         /// <summary>G63 UI 플래그가 하나라도 켜져 있다(manifest config에 ui* 키를 더한다).</summary>
         public bool UsesUiOptions => uiComfortWrap || uiDarkPanel || uiRayHover || uiHaptics || uiRatingConfirmFlash || uiNarrowScale || hidePanelInDistancePhases;
 
@@ -254,11 +266,24 @@ namespace IFS.SceneSpec.Placement
         public const string EyeHeightNone = "none";
         public const string EyeHeightRelative = "relative";
         public static readonly string[] EyeHeightModes = { EyeHeightNone, EyeHeightRelative };
+        public const string PostureStanding = "standing";
+        public const string PostureSeated = "seated";
+        public static readonly string[] Postures = { PostureStanding, PostureSeated };
+        public const string EnvironmentChoiceExperimenter = "experimenter";
+        public const string EnvironmentChoiceParticipant = "participant";
+        public static readonly string[] EnvironmentChoices = { EnvironmentChoiceExperimenter, EnvironmentChoiceParticipant };
 
         /// <summary>멈춤 거리가 왕복 반복 멈춤(G60-2)이다.</summary>
         public bool IsStopLoop => stopMode == StopModeLoop;
         /// <summary>눈높이 기준 상대 배치(G60-3)다.</summary>
         public bool IsEyeRelative => eyeHeightMode == EyeHeightRelative;
+        /// <summary>앉은 자세로 보정·과제를 한다(2026-11-28).</summary>
+        public bool IsSeated => eyeCalibPosture == PostureSeated;
+        /// <summary>자세에 맞는 보정 통과 범위(m).</summary>
+        public double EyeRangeMinM => IsSeated ? eyeHeightSeatedMinM : eyeHeightMinM;
+        public double EyeRangeMaxM => IsSeated ? eyeHeightSeatedMaxM : eyeHeightMaxM;
+        /// <summary>참여자가 헤드셋 안에서 공간을 고른다(세션 첫 단계 space_choice, 2026-11-28).</summary>
+        public bool ParticipantChoosesSpace => environmentChoice == EnvironmentChoiceParticipant;
 
         public const string EnvironmentNeutral = "neutral";
         public const string EnvironmentSpace = "space";
@@ -343,6 +368,7 @@ namespace IFS.SceneSpec.Placement
             foreach (var k in disabledItems ?? new string[0])
                 if (string.IsNullOrWhiteSpace(k)) e.Add("disabledItems: 빈 키");
             if (!Environments.Contains(environment)) e.Add($"environment {environment}: neutral | space | nature 중 하나");
+            if (!EnvironmentChoices.Contains(environmentChoice)) e.Add($"environmentChoice {environmentChoice}: experimenter | participant 중 하나");
             if (placementAssist)
             {
                 if (!(Finite(practiceTargetDistanceM) && practiceTargetDistanceM >= 0 && practiceTargetDistanceM <= floorRadiusM))
@@ -376,15 +402,18 @@ namespace IFS.SceneSpec.Placement
                 if (!(Finite(eyeHeightReferenceM) && eyeHeightReferenceM > 0 && eyeHeightReferenceM < 3)) e.Add($"eyeHeightReferenceM {eyeHeightReferenceM}: (0, 3) 밖");
                 if (!(Finite(eyeHeightMinM) && Finite(eyeHeightMaxM) && eyeHeightMinM > 0 && eyeHeightMaxM > eyeHeightMinM))
                     e.Add($"eyeHeightMinM {eyeHeightMinM} / eyeHeightMaxM {eyeHeightMaxM}: 0 < min < max");
+                if (!Postures.Contains(eyeCalibPosture)) e.Add($"eyeCalibPosture {eyeCalibPosture}: standing | seated 중 하나");
+                if (IsSeated && !(Finite(eyeHeightSeatedMinM) && Finite(eyeHeightSeatedMaxM) && eyeHeightSeatedMinM > 0 && eyeHeightSeatedMaxM > eyeHeightSeatedMinM))
+                    e.Add($"eyeHeightSeatedMinM {eyeHeightSeatedMinM} / eyeHeightSeatedMaxM {eyeHeightSeatedMaxM}: 0 < min < max");
                 if (!(Finite(eyeCalibSeconds) && eyeCalibSeconds > 0 && eyeCalibSeconds <= 10)) e.Add($"eyeCalibSeconds {eyeCalibSeconds}: (0, 10] 밖");
                 if (!(Finite(eyeCalibMaxSdM) && eyeCalibMaxSdM > 0)) e.Add($"eyeCalibMaxSdM {eyeCalibMaxSdM}: 0보다 커야 함");
                 if (!(Finite(eyeCalibMaxPitchDeg) && eyeCalibMaxPitchDeg > 0 && eyeCalibMaxPitchDeg <= 90)) e.Add($"eyeCalibMaxPitchDeg {eyeCalibMaxPitchDeg}: (0, 90] 밖");
                 // 통과 범위의 어느 눈높이에서도 옮긴 높이가 [minHeightM, maxHeightM] 안이어야 한다(보정 뒤에 시작을 거부하지 않게 미리 막는다)
                 void Shifted(string name, double h)
                 {
-                    double lo = h + (eyeHeightMinM - eyeHeightReferenceM), hi = h + (eyeHeightMaxM - eyeHeightReferenceM);
+                    double lo = h + (EyeRangeMinM - eyeHeightReferenceM), hi = h + (EyeRangeMaxM - eyeHeightReferenceM);
                     if (!(lo >= minHeightM && hi <= maxHeightM))
-                        e.Add($"{name} {h}: 눈높이 {eyeHeightMinM}–{eyeHeightMaxM} m에서 옮긴 높이 {lo:0.###}–{hi:0.###} m가 [minHeightM, maxHeightM] 밖");
+                        e.Add($"{name} {h}: 눈높이 {EyeRangeMinM}–{EyeRangeMaxM} m에서 옮긴 높이 {lo:0.###}–{hi:0.###} m가 [minHeightM, maxHeightM] 밖");
                 }
                 Shifted("startHeightM", startHeightM);
                 Shifted("stopHeightM", stopHeightM);
@@ -439,6 +468,13 @@ namespace IFS.SceneSpec.Placement
                 j["eyeCalibSeconds"] = eyeCalibSeconds;
                 j["eyeCalibMaxSdM"] = eyeCalibMaxSdM;
                 j["eyeCalibMaxPitchDeg"] = eyeCalibMaxPitchDeg;
+                if (IsSeated)
+                {
+                    // 2026-11-28 추가(앉은 자세). standing(기본)이면 넣지 않는다(기존 기록과 같은 바이트)
+                    j["eyeCalibPosture"] = eyeCalibPosture;
+                    j["eyeHeightSeatedMinM"] = eyeHeightSeatedMinM;
+                    j["eyeHeightSeatedMaxM"] = eyeHeightSeatedMaxM;
+                }
             }
             // 2026-11-27 추가(G63 헤드셋 UI). 하나라도 켰을 때만 넣는다(기본값이면 기존 기록과 바이트 단위로 같게).
             if (UsesUiOptions)
@@ -452,6 +488,8 @@ namespace IFS.SceneSpec.Placement
                 j["hidePanelInDistancePhases"] = hidePanelInDistancePhases;
                 if (hidePanelInDistancePhases) j["hidePanelReadSeconds"] = hidePanelReadSeconds;
             }
+            // 2026-11-28 추가(참여자가 공간을 고름). experimenter(기본)이면 넣지 않는다(기존 기록과 같은 바이트)
+            if (ParticipantChoosesSpace) j["environmentChoice"] = environmentChoice;
             return j;
         }
 

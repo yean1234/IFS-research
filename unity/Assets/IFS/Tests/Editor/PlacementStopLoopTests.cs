@@ -617,7 +617,7 @@ namespace IFS.SceneSpec.Tests
                         Assert.That(t[k], Does.Not.Contain(banned), k + ": 방향 암시·치료 표현·'방금 자리' 금지");
                 }
             }
-            Assert.That(def.Version, Is.EqualTo("0.8"), "G60-2는 0.6 안에 더함, G65·G66 문구로 0.7, 2026-11-28 확인 버튼 안내·확정 알림으로 0.8");
+            Assert.That(def.Version, Is.EqualTo("0.9"), "G60-2는 0.6 안에 더함, G65·G66 문구로 0.7, 2026-11-28 확인 버튼 안내·확정 알림으로 0.8, 공간 고르기 문구로 0.9");
         }
 
         // ── 눈높이 보정 판정 ────────────────────────────────────────────

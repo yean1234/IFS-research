@@ -17,6 +17,13 @@
 // 본 실험 설정 잠금(2026-11-28): lockExperimentPreset(코드 기본 꺼짐, 실험 씬에서 켬)이면 Awake·SetConfig·Check·다음 참여자 때 권고 설정 + scaleA
 //   (PlacementExperimentLock). 최근 세션 자동 채움(autoFillLatestSession, Play 중·자동 시행 아닐 때만): PlacementLatestSession이 고른 짝을
 //   spec·선택 파일 칸(과 비어 있으면 참여자 번호)에 채운다. 시작은 실험자가 한다. manifest flags.experimentPresetLocked·sessionFiles.
+// 2026-11-28: 공간은 실험자가 설정 화면 단추로 고른다(연구 책임자 결정 — 잠금에서도). 참여자가 고르는 세션(environmentChoice participant, 꺼 둔 기능 —
+//   잠금이 꺼져 있을 때 인스펙터·명령줄로만)은 세션의 ShownEnvironment를 그대로 그린다(고르는 동안 바뀜). 세션 전에는
+//   XR 헤드셋이 켜져 있으면 판에 대기 문구(wait)만 보인다. 잠금이면 XR 없이(auto·xr 입력) 시작하지 않는다(참여자가 Link 데스크톱 보기로 실험자 화면을
+//   볼 수 있어서 — PlacementSpaceChoice.HeadsetMissingRefusal). 실험자 화면에 지금 머리 높이(LiveHeadHeightM)를 늘 보인다.
+// CP17(2026-11-28): Checked 단계에서 매 프레임·[시작] 직전에 XR을 다시 본다(RecheckHeadset — 늦게 켜진 XR이면 통과). 세션 중 XR이 끊기면
+//   세션이 events xr_lost·xr_regained와 manifest xrConnection을 남기고 실험자 화면에 빨간 경고(타이머·단계는 그대로). 눈높이 기준 배치면
+//   안내 판 아래 끝이 바닥 위 0.05 m에 남게 판 중심에 하한(PlacementTextPanel.FloorMarginM — manifest heightFloor.panel).
 // 헤드셋 실기는 확인하지 않았다(2026-11-23 — docs/headset-checklist.md).
 using System;
 using System.Collections.Generic;
@@ -133,7 +140,7 @@ namespace IFS.SceneSpec.Placement
         public List<string> TaskTextFiles { get; } = new List<string>();
         public SceneLoader Loader => _loader;
         public PlacementSpaceHandle Space => _space;
-        public string DraftPhraseNotice => PlacementTaskText.DraftNotice(TaskText, config.requireSpecPhrases, config.placementAssist, config.IsStopLoop);
+        public string DraftPhraseNotice => PlacementTaskText.DraftNotice(TaskText, config.requireSpecPhrases, config.placementAssist, config.IsStopLoop, config.ParticipantChoosesSpace);
         // ── 눈높이 보정(G60-3, eyeHeightMode relative) ──────────────────────
         /// <summary>마지막 눈높이 보정 결과(Check 단계 실험자 키 H). 없으면 null. Check·설정으로 돌아가기·다음 참여자에서 지운다.</summary>
         public EyeHeightCalibration.Result EyeCalibration { get; private set; }
@@ -147,13 +154,19 @@ namespace IFS.SceneSpec.Placement
                 if (!config.IsEyeRelative) return null;
                 if (_auto != null || !XrHeadActive) return $"눈높이: 데스크톱·자동 시행이라 기준값 {config.eyeHeightReferenceM:0.00} m 고정(desktop_fixed)";
                 if (_eyeSampler != null) return $"눈높이 재는 중… {_eyeSampler.Count}/{_eyeSampler.Needed}";
-                if (EyeCalibration == null) return "눈높이: 아직 재지 않음 — 참여자를 똑바로 세운 뒤 H(시작하려면 필요)";
+                if (EyeCalibration == null)
+                    return config.IsSeated
+                        ? $"눈높이: 아직 재지 않음 — 참여자를 과제 자세(앉은 자세)로 앉힌 뒤 H(시작하려면 필요, 앉은 자세 범위 [{config.EyeRangeMinM:0.00}, {config.EyeRangeMaxM:0.00}] m)"
+                        : "눈높이: 아직 재지 않음 — 참여자를 똑바로 세운 뒤 H(시작하려면 필요)";
                 var i = EyeCalibration.Info;
                 return EyeCalibration.Ok
                     ? $"눈높이 E = {i.MeasuredM:0.000} m (SD {i.SdM:0.000} m, pitch {i.PitchDeg:0.0}°, 표본 {i.Samples}) — 물체 높이 {config.EyeOffsetFor(i.MeasuredM):+0.000;-0.000;0.000} m"
                     : "눈높이 보정 실패: " + EyeCalibration.Reason + " — 다시 H";
             }
         }
+        /// <summary>지금 머리(카메라) 높이(m, 추적 바닥 기준). XR 헤드셋이 켜져 있고 세션 전일 때만 — 실험자 화면이 늘 보인다(바닥 높이가 틀렸는지 알아채게,
+        /// 2026-11-28: 선 자세에서 1.14 m가 나온 일). 아니면 null.</summary>
+        public double? LiveHeadHeightM => _auto == null && Session == null && XrHeadActive ? CurrentHead().Y : (double?)null;
         /// <summary>문구 판·참여자 글의 눈높이 앵커(m): relative면 이 세션의 E, 아니면 Inspector anchorEyeHeightM.</summary>
         public float PanelEyeHeightM => Session?.EyeHeightM is double e ? (float)e : anchorEyeHeightM;
         /// <summary>지금 화면에 실제로 그려진 배경 공간(EnvironmentStyle.Apply 결과). 실험자 화면이 읽는다.</summary>
@@ -293,10 +306,41 @@ namespace IFS.SceneSpec.Placement
                 if (XrHeadActive) { xrInput.Configure(xrRig != null ? xrRig.transform : null, config.xrHand); XrControllerPresent = xrInput.ControllerPresent; }
                 else XrControllerPresent = false;
             }
+            RecheckHeadset();   // CP17-4: Checked 단계에서 XR이 뒤늦게 켜지거나 꺼지면 시작 거부를 바로 고친다
             StepEyeCalibration();
+            ApplyIdlePanel();
             Tick(Time.unscaledDeltaTime);
             PollKeys();
         }
+
+        string _idlePanelKey;
+
+        /// <summary>세션 전(Setup·Checked) 헤드셋 판: XR 헤드셋이 켜져 있으면 대기 문구(wait)만, 아니면 숨김(데스크톱 전용 실행은 예전 그대로).
+        /// 실험자 화면(IMGUI)은 XR 눈 영상에 들어가지 않으므로 이때 헤드셋에는 빈 공간과 이 판만 보인다(PlacementSpaceChoice.IdlePanelKey).</summary>
+        void ApplyIdlePanel()
+        {
+            if (Session != null) { _idlePanelKey = null; return; }
+            string key = PlacementSpaceChoice.IdlePanelKey(false, XrHeadActive, _auto != null);
+            string text = key != null ? TaskText?[key] : null;
+            if (text == null) key = null;
+            if (key == _idlePanelKey) return;
+            _idlePanelKey = key;
+            var textAt = new Vector3(0f, textHeightM, textForwardM);
+            var eye = new Vector3(0f, anchorEyeHeightM, 0f);
+            if (panel != null)
+            {
+                if (key == null) panel.Hide();
+                else panel.ShowText(text, textAt, eye);
+            }
+            else if (textDisplay != null)
+            {
+                if (key == null) textDisplay.Hide();
+                else textDisplay.Show(text, textAt, eye);
+            }
+        }
+
+        /// <summary>세션 전 헤드셋 판에 보이는 문구 키(대기 문구 wait 또는 null). 점검·시험용.</summary>
+        public string IdlePanelKey => _idlePanelKey;
 
         // ── 눈높이 보정(G60-3) ──────────────────────────────────────────
         /// <summary>눈높이 재기 시작(Check 단계, 실험자 키 H 또는 실험자 화면 단추). relative가 아니거나 헤드셋이 없으면 아무것도 하지 않는다.
@@ -348,7 +392,13 @@ namespace IFS.SceneSpec.Placement
             refusal = null;
             if (!config.IsEyeRelative) return null;
             if (_auto != null || !XrHeadActive) return EyeHeightInfo.DesktopFixed(config.eyeHeightReferenceM);
-            if (EyeCalibration == null) { refusal = "eyeHeightMode relative인데 눈높이를 재지 않았습니다 — 참여자를 똑바로 세우고 정면 재설정(R) 뒤 H로 재세요"; return null; }
+            if (EyeCalibration == null)
+            {
+                refusal = config.IsSeated
+                    ? "eyeHeightMode relative인데 눈높이를 재지 않았습니다 — 참여자를 과제 자세(앉은 자세)로 앉히고 정면 재설정(R) 뒤 H로 재세요"
+                    : "eyeHeightMode relative인데 눈높이를 재지 않았습니다 — 참여자를 똑바로 세우고 정면 재설정(R) 뒤 H로 재세요";
+                return null;
+            }
             if (!EyeCalibration.Ok) { refusal = "눈높이 보정이 통과하지 못했습니다: " + EyeCalibration.Reason + " — 다시 H"; return null; }
             return EyeCalibration.Info;
         }
@@ -535,10 +585,23 @@ namespace IFS.SceneSpec.Placement
                 Errors.Add($"놓기 도움을 켰는데 문구 파일({TaskText.FileName})에 {string.Join(", ", TaskText.AssistKeysMissing())} 문구가 없습니다(문구 파일 0.3 이상)");
             if (TaskText != null && config.IsStopLoop && TaskText.LoopKeysMissing().Count > 0)
                 Errors.Add($"멈춤 거리 반복 멈춤(stopMode loop)을 켰는데 문구 파일({TaskText.FileName})에 {string.Join(", ", TaskText.LoopKeysMissing())} 문구가 없습니다(문구 파일 0.6 이상)");
+            if (TaskText != null && config.ParticipantChoosesSpace && TaskText.SpaceChoiceKeysMissing().Count > 0)
+                Errors.Add($"참여자가 공간을 고르게(environmentChoice participant) 했는데 문구 파일({TaskText.FileName})에 {string.Join(", ", TaskText.SpaceChoiceKeysMissing())} 문구가 없습니다(문구 파일 0.9 이상)");
+            if (config.ParticipantChoosesSpace)
+            {
+                // 참여자가 고를 세 공간을 모두 그릴 수 있어야 시작한다(그리지 못한 공간을 보여 주고 기록만 그 이름으로 남지 않게). 끝나면 대기 공간으로 되돌린다
+                foreach (var env in PlacementSpaceChoice.BaseOrder)
+                    if (!ApplyEnvironment(env)) Errors.Add($"참여자가 고를 공간 {env}을(를) 그리지 못했습니다(셰이더·사진 확인 — 콘솔). 시작하지 않습니다");
+            }
             if (!BuildSpace())
                 Errors.Add($"공간 {config.environment}을(를) 그리지 못했습니다(셰이더·사진 확인 — 콘솔). 기록이 실제 화면과 달라지므로 시작하지 않습니다");
+            string headsetMissing = PlacementSpaceChoice.HeadsetMissingRefusal(lockExperimentPreset, XrHeadActive, config.inputMode, _auto != null);
+            if (headsetMissing != null) Errors.Add(headsetMissing);   // 2026-11-28: 실험 씬에서 XR 없이 돌면 참여자가 Link 데스크톱 보기로 실험자 화면을 본다
+            _headsetRefusal = headsetMissing;   // CP17-4: XR이 뒤늦게 켜지면 Checked 단계에서 지운다(RecheckHeadset)
+            _inputErrors.Clear();
+            _inputWarnings.Clear();
             CheckSelection();
-            string refusal = PlacementTaskText.SpecPhraseRefusal(TaskText, config.requireSpecPhrases, config.placementAssist, config.IsStopLoop);
+            string refusal = PlacementTaskText.SpecPhraseRefusal(TaskText, config.requireSpecPhrases, config.placementAssist, config.IsStopLoop, config.ParticipantChoosesSpace);
             if (refusal != null) Errors.Add(refusal);
             if (config.EffectiveControlMode == PlacementConfig.ModeReplay) CheckReplay();
             AddLockRefusals();   // CP16-1·4: 잠금이면 멈춤 거리 절차 값·문구 파일 판·G78 키까지 맞아야 시작
@@ -554,6 +617,34 @@ namespace IFS.SceneSpec.Placement
 
         /// <summary>참여자 입력을 고른다(설정 inputMode, XR 헤드셋·컨트롤러 유무). 자동 시행은 합성 입력("auto").</summary>
         void SelectInput()
+        {
+            // CP17-4: 다시 고를 때(XR이 뒤늦게 켜짐) 앞에서 더한 입력 오류·경고를 지우고 새로 더한다
+            foreach (var x in _inputErrors) Errors.Remove(x);
+            foreach (var x in _inputWarnings) Warnings.Remove(x);
+            _inputErrors.Clear();
+            _inputWarnings.Clear();
+            int e0 = Errors.Count, w0 = Warnings.Count;
+            SelectInputCore();
+            _inputErrors.AddRange(Errors.Skip(e0));
+            _inputWarnings.AddRange(Warnings.Skip(w0));
+        }
+
+        readonly List<string> _inputErrors = new List<string>(), _inputWarnings = new List<string>();
+        string _headsetRefusal;
+
+        /// <summary>CP17-4: Checked 단계에서 매 프레임과 [시작] 직전에 XR 상태를 다시 본다. 확인 때 "XR 없음"으로 거부했는데 지금 켜져 있으면
+        /// 그 오류를 지우고 참여자 입력을 다시 고른다(auto → xr). 확인 뒤 XR이 꺼지면 거부를 다시 더한다. 잠금이 꺼져 있으면(개발) 거부 자체가 없다.</summary>
+        public void RecheckHeadset()
+        {
+            if (Stage != PlacementRunnerStage.Checked || Session != null || _auto != null) return;
+            string now = PlacementSpaceChoice.HeadsetMissingRefusal(lockExperimentPreset, XrHeadActive, config.inputMode, false);
+            _headsetRefusal = PlacementSpaceChoice.UpdateHeadsetRefusal(Errors, _headsetRefusal, now, out bool cleared);
+            if (!cleared) return;
+            Errors.Remove(StartBlockedError);   // 앞서 [시작]을 눌러 막혔던 표시도 지운다(남은 오류가 있으면 [시작]이 다시 더한다)
+            SelectInput();
+        }
+
+        void SelectInputCore()
         {
             if (_auto != null) { _activeInput = null; _activeSource = "auto"; return; }
             bool head = XrHeadActive;
@@ -701,12 +792,16 @@ namespace IFS.SceneSpec.Placement
         }
 
         // ── 시작 ─────────────────────────────────────────────────────────
+        const string StartBlockedError = "확인 오류가 있어 시작할 수 없습니다";
+
         public bool StartSession()
         {
             if (Stage != PlacementRunnerStage.Checked || Session != null) return false;
+            Errors.Remove(StartBlockedError);   // 앞에서 막힌 표시는 지우고 다시 판단한다(CP17-4: 그 사이 XR 오류가 풀렸을 수 있다)
+            RecheckHeadset();   // CP17-4: [확인] 때 XR이 아직 안 켜졌어도 지금 켜져 있으면 통과(지금 꺼져 있으면 거부)
             if (Spec == null || TaskText == null || Errors.Count > 0)
             {
-                if (!Errors.Contains("확인 오류가 있어 시작할 수 없습니다")) Errors.Add("확인 오류가 있어 시작할 수 없습니다");
+                if (!Errors.Contains(StartBlockedError)) Errors.Add(StartBlockedError);
                 return false;
             }
             string sha;
@@ -806,6 +901,7 @@ namespace IFS.SceneSpec.Placement
                 EyeHeight = eyeHeight,   // G60-3: relative일 때만(아니면 null)
                 ExperimentPresetLocked = lockExperimentPreset,   // 2026-11-28: 켰을 때만 manifest flags.experimentPresetLocked
                 SessionFiles = SessionFilesJson(),        // 2026-11-28: 자동 채움을 켠 Play 실행에서만(auto | manual)
+                XrMonitored = _auto == null && XrHeadActive,   // CP17-1: XR로 시작한 사람 실행만 세션 중 끊김을 본다(데스크톱·자동 시행은 기록 그대로)
             };
             try
             {
@@ -819,6 +915,8 @@ namespace IFS.SceneSpec.Placement
                 return false;
             }
             Session.GrabRadiusM = Math.Max(config.grabRadiusMinM, objectRadius);
+            // CP17-3: 눈높이 기준 배치에서만 안내 판 하한(판 아래 끝이 바닥 위 FloorClearanceM). 아니면 끔(예전 자리 그대로)
+            if (panel != null) panel.FloorMarginM = config.IsEyeRelative ? (float)PlacementSession.FloorClearanceM : -1f;
             ApplyUiOptions();   // G63: 헤드셋 UI 플래그(기본 꺼짐이면 판은 Inspector 값 그대로)
             if (Selection != null)   // events.csv에 선택 파일 한 줄(경고가 아님 — manifest selection·appliedOverrides가 정본)
                 Session.Note("selection", $"file={Clean(Selection.FileName)};none={(Selection.None ? 1 : 0)};candidate={Clean(Selection.SelectedCandidateId)};" +
@@ -833,6 +931,7 @@ namespace IFS.SceneSpec.Placement
             LastCompleted = false;
             LastAbortedAt = null;
             _shownText = null;
+            _envRequested = null;
             Stage = PlacementRunnerStage.Running;
             ApplyVisuals();
             return true;
@@ -878,9 +977,9 @@ namespace IFS.SceneSpec.Placement
 
         /// <summary>씬의 중립 환경(IFSEnvironment)에 배경 공간을 얹는다(G52). neutral이고 얹은 적이 없으면 아무것도 하지 않는다.
         /// 씬에 환경이 없는데 space·nature면 러너가 환경을 하나 만든다.</summary>
-        bool ApplyEnvironment()
+        bool ApplyEnvironment(string environment = null)
         {
-            string style = config.environment ?? PlacementConfig.EnvironmentNeutral;
+            string style = environment ?? config.environment ?? PlacementConfig.EnvironmentNeutral;
             bool ok = true, any = false;
             foreach (var env in FindObjectsByType<IFSEnvironment>(FindObjectsSortMode.None))
             {
@@ -942,6 +1041,8 @@ namespace IFS.SceneSpec.Placement
             var inp = Input;
             if (inp != null) inp.Enabled = !GuiHasKeyboardFocus;
             Session.SetHeadSource(HeadSource);
+            // CP17-1: 세션 중 XR 끊김(XR로 시작한 사람 실행만 — 세션이 거른다). 타이머·단계는 그대로, 실험자 화면에 경고, events·manifest에 기록
+            if (_auto == null) Session.ReportXrHead(XrHeadActive);
             var head = CurrentHead();
             if (_auto != null)
             {
@@ -982,9 +1083,18 @@ namespace IFS.SceneSpec.Placement
             Stage = PlacementRunnerStage.Done;
         }
 
+        string _envRequested;
+
         void ApplyVisuals()
         {
             if (Session == null) return;
+            // 2026-11-28 공간 고르기: 참여자가 보는 공간(고른 뒤에는 고른 공간)을 그린다. 바뀔 때만(실패해도 매 프레임 다시 하지 않음)
+            string want = Session.ShownEnvironment;
+            if (want != null && want != _envRequested)
+            {
+                _envRequested = want;
+                if (want != AppliedEnvironment && !ApplyEnvironment(want)) Debug.LogWarning("[IFS] 공간 " + want + "을(를) 그리지 못했습니다", this);
+            }
             if (_loader != null && _loader.Root != null)
             {
                 var root = _loader.Root;
@@ -1005,6 +1115,7 @@ namespace IFS.SceneSpec.Placement
                 else if (item != null) panel.ShowItem(item, Session.RatingCursor, textAt, eye, Session.RatingConfirmFlash);
                 else if (Session.ParticipantText == null) panel.Hide();
                 else panel.ShowText(Session.ParticipantText, textAt, eye);
+                if (panel.Visible) Session.ReportPanelCenter(textAt.y, panel.PanelCenter.y, panel.LastFloorApplied);   // CP17-3(relative일 때만 모음)
             }
             else if (textDisplay != null && (Session.PanelHidden ? null : Session.ParticipantText) != _shownText)
             {
@@ -1147,7 +1258,7 @@ namespace IFS.SceneSpec.Placement
                 PlacementSpace.SetAssist(_space, false, default, 0, config.floorRadiusM);
             }
             if (textDisplay != null) textDisplay.HideAll();
-            if (panel != null) panel.Hide();
+            if (panel != null) { panel.Hide(); panel.FloorMarginM = -1f; }   // 세션 전 대기 판은 예전 자리 그대로
             if (xrInput != null) xrInput.ShowRay(false, 0);
             _shownText = null;
             _activeInput = null;
@@ -1168,6 +1279,8 @@ namespace IFS.SceneSpec.Placement
             // 자동 채움을 쓰는 Play 실행에서는 spec도 비운다: 최근 세션을 찾지 못하면 이전 참여자의 spec이 남지 않게(자동 시행·시험은 예전 그대로)
             if (autoFillLatestSession && _auto == null && Application.isPlaying) SpecPathText = "";
             EnforceExperimentLock();
+            _envRequested = null;
+            if (AppliedEnvironment != (config.environment ?? PlacementConfig.EnvironmentNeutral)) ApplyEnvironment();   // 앞 참여자가 고른 공간 → 대기 공간
             RefreshSpecList();
             PreloadTaskText();
             AutoFillLatestSession();

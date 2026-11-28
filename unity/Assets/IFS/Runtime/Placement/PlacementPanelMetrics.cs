@@ -142,7 +142,36 @@ namespace IFS.SceneSpec.Placement
         /// 돌려주는 값: 실제 중심 높이, 아래 가장자리의 수평 아래 각(도, 눈 기준), 위 가장자리 높이(m).</summary>
         public static (double centerY, double bottomBelowHorizonDeg, double topY) PanelPlacement(double panelHeightM,
             double forwardM = DefaultForwardM, double centerY = DefaultPanelHeightM, double eyeY = DefaultEyeHeightM,
-            double maxTopM = DefaultMaxTopM, double minBottomM = DefaultMinBottomM)
+            double maxTopM = DefaultMaxTopM, double minBottomM = DefaultMinBottomM, double floorMarginM = -1)
+            => PanelPlacementFloored(panelHeightM, forwardM, centerY, eyeY, maxTopM, minBottomM, floorMarginM, out _);
+
+        /// <summary>판 위 방향의 세로 성분(판 높이 절반 × 이 값 = 판 중심에서 위·아래 끝까지의 세로 거리).</summary>
+        public static double UpY(double centerY, double eyeY, double forwardM)
+        {
+            double dy = centerY - eyeY, len = Math.Sqrt(dy * dy + forwardM * forwardM);
+            return len > 1e-9 ? forwardM / len : 1;
+        }
+
+        /// <summary>CP17-3 판 하한(눈높이 기준 배치에서만 켠다 — floorMarginM ≥ 0): 위 가장자리 규칙 뒤에 판 아래 끝이 바닥에서 floorMarginM 위에 남도록
+        /// 중심을 올린다(중심 ≥ 세로 반높이 + 여유. 올리면 기울기가 줄어 세로 반높이가 조금 커지므로 몇 번 다시 잰다). 걸렸으면 floored true.
+        /// floorMarginM &lt; 0이면 예전 규칙 그대로. 판이 기본 자리(0.6 m)·기본 눈높이(1.6 m)면 위 가장자리 규칙이 이미 아래 끝을 minBottomM 위에 두므로 걸리지 않는다.</summary>
+        public static double FloorCenterY(double centerY, double panelHeightM, double eyeY, double forwardM, double floorMarginM, out bool floored)
+        {
+            floored = false;
+            if (floorMarginM < 0) return centerY;
+            double c = centerY;
+            for (int i = 0; i < 4; i++)
+            {
+                double halfUp = panelHeightM * 0.5 * UpY(c, eyeY, forwardM);
+                if (c >= halfUp + floorMarginM - 1e-6) break;
+                c = halfUp + floorMarginM;
+                floored = true;
+            }
+            return c;
+        }
+
+        public static (double centerY, double bottomBelowHorizonDeg, double topY) PanelPlacementFloored(double panelHeightM,
+            double forwardM, double centerY, double eyeY, double maxTopM, double minBottomM, double floorMarginM, out bool floored)
         {
             // 판의 위 방향(LookRotation(중심 − 눈, 위)) = (0, 수평 성분, −수직 성분) / 거리
             (double uy, double uz) Up(double cy)
@@ -156,6 +185,7 @@ namespace IFS.SceneSpec.Placement
                 double halfUp = panelHeightM * 0.5 * Math.Abs(Up(c).uy);
                 if (c + halfUp > maxTopM) c = Math.Max(maxTopM - halfUp, minBottomM + halfUp);
             }
+            c = FloorCenterY(c, panelHeightM, eyeY, forwardM, floorMarginM, out floored);
             var (y, z) = Up(c);
             double bottomY = c - panelHeightM * 0.5 * y, bottomZ = forwardM - panelHeightM * 0.5 * z;
             double topY = c + panelHeightM * 0.5 * y;

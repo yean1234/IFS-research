@@ -687,8 +687,8 @@ namespace IFS.SceneSpec.Tests
                     Assert.That(it.AnchorHigh, Is.Not.Empty);
                 }
             }
-            Assert.That(PlacementTests.LoadText().Version, Is.EqualTo("0.8"), "문항을 더해 0.2로, 놓기 도움 문구(G53)를 더해 0.3으로, 문구 다듬기(G57)로 0.4로, G59 문항으로 0.5로, G60 want_move를 빼 0.6으로, G65·G66 문구로 0.7로, 2026-11-28 확인 버튼 안내·확정 알림으로 0.8로 올림");
-            Assert.That(PlacementTaskText.Load(ScaleAPath).Version, Is.EqualTo("0.8-scaleA"));
+            Assert.That(PlacementTests.LoadText().Version, Is.EqualTo("0.9"), "문항을 더해 0.2로, 놓기 도움 문구(G53)를 더해 0.3으로, 문구 다듬기(G57)로 0.4로, G59 문항으로 0.5로, G60 want_move를 빼 0.6으로, G65·G66 문구로 0.7로, 2026-11-28 확인 버튼 안내·확정 알림으로 0.8로, 공간 고르기 문구로 0.9로 올림");
+            Assert.That(PlacementTaskText.Load(ScaleAPath).Version, Is.EqualTo("0.9-scaleA"));
         }
 
         [Test]

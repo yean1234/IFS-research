@@ -101,6 +101,10 @@ namespace IFS.SceneSpec.Placement
         public float SelectionFrameShownM => _frameShownM > 0f ? _frameShownM : selectionFrameM;
         public bool DarkTheme => _darkTheme;
         public float ColumnWidthM => columnWidthM;
+        /// <summary>CP17-3 판 하한의 바닥 위 여유(m). 음수면 끔(기본 — 예전 자리 그대로). 러너가 눈높이 기준 배치 세션에서만 켠다.</summary>
+        public float FloorMarginM { get; set; } = -1f;
+        /// <summary>마지막으로 놓을 때 판 하한이 걸렸나(점검·기록용).</summary>
+        public bool LastFloorApplied { get; private set; }
 
         /// <summary>G63 헤드셋 UI 플래그를 적용한다(설정 uiComfortWrap · uiDarkPanel · uiNarrowScale). 모두 false면 Inspector 값 그대로.
         /// 두 조건이 같은 판을 쓰므로 조건과 상관없이 같은 값이다.</summary>
@@ -470,6 +474,10 @@ namespace IFS.SceneSpec.Placement
                 float halfUp = PanelSizeM.y * 0.5f * Mathf.Abs((LookAt(c, eye) * Vector3.up).y);
                 if (c.y + halfUp > maxTopM) c.y = Mathf.Max(maxTopM - halfUp, minBottomM + halfUp);
             }
+            // CP17-3: 눈높이 기준 배치(러너가 FloorMarginM ≥ 0으로 켬)에서 판 아래 끝이 바닥 위 FloorMarginM에 남게 중심을 올린다(PlacementPanelMetrics.FloorCenterY)
+            float fwd = (float)System.Math.Sqrt((c.x - eye.x) * (c.x - eye.x) + (c.z - eye.z) * (c.z - eye.z));
+            c.y = (float)PlacementPanelMetrics.FloorCenterY(c.y, PanelSizeM.y, eye.y, fwd, FloorMarginM, out bool floored);
+            LastFloorApplied = floored;
             _root.SetPositionAndRotation(c, LookAt(c, eye));
             // G63: 아래 가장자리의 수평 아래 각(점검·테스트용 — 배치에는 쓰지 않는다)
             var bottom = c - (LookAt(c, eye) * Vector3.up) * (PanelSizeM.y * 0.5f);

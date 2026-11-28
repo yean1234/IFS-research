@@ -19,6 +19,8 @@
 //   조작 안내). 설정 stopMode loop일 때만 보이고 그때만 필수다. single(기본)이면 draftKeys·초안 경고에서도 뺀다(DraftKeysFor).
 // 2026-11-28 연구 책임자 결정(문구 파일 0.8, 선택 키 — 기존 파일은 그대로 유효): confirm_button_right·_left(확인 버튼 안내, xrHand에 따라 하나),
 //   confirm_done(확정 알림), stop_main_start(반복 멈춤 연습 뒤 본 측정 시작 안내, loop일 때만 draftKeys에).
+// 2026-11-28 연구 책임자 결정(문구 파일 0.9): 공간 고르기 space_choice·space_choice_position({i}/{n}). 설정 environmentChoice participant일 때만
+//   보이고 그때만 필수다(SpaceChoiceKeysMissing). 아니면 draftKeys·초안 경고에서 뺀다.
 // UnityEngine에 의존하지 않는다.
 using System;
 using System.Collections.Generic;
@@ -145,17 +147,39 @@ namespace IFS.SceneSpec.Placement
         /// <summary>주 사용 손(xrHand)에 맞는 확인 버튼 안내 키.</summary>
         public static string ConfirmButtonKeyFor(string hand) => hand == PlacementConfig.HandLeft ? ConfirmButtonLeftKey : ConfirmButtonRightKey;
 
-        /// <summary>이 세션이 보일 수 있는 문구 가운데 draft인 키(이름순). assist가 꺼져 있으면 AssistKeys를, loop가 꺼져 있으면 LoopKeys를 뺀다.</summary>
-        public List<string> DraftKeysFor(bool assist, bool loop = false) => DraftKeys.Where(k => Visible(k, assist, loop)).ToList();
+        // ── 공간 고르기 문구(연구 책임자 결정 2026-11-28, 문구 파일 0.9) ─────────
+        /// <summary>공간 고르기 안내(세션 첫 단계 space_choice). 끝에 확인 버튼 안내를 잇는다.</summary>
+        public const string SpaceChoiceKey = "space_choice";
+        /// <summary>지금 몇 번째 공간인지("{i}"·"{n}"을 숫자로 바꿈). 안내 아래 줄.</summary>
+        public const string SpaceChoicePositionKey = "space_choice_position";
+        /// <summary>설정 environmentChoice participant일 때만 보이고 그때만 필수다. 아니면 draftKeys·초안 경고에서 뺀다(기존 기록과 같게).</summary>
+        public static readonly string[] SpaceChoiceKeys = { SpaceChoiceKey, SpaceChoicePositionKey };
 
-        /// <summary>설정으로: DraftKeysFor(placementAssist, stopMode loop).</summary>
-        public List<string> DraftKeysFor(PlacementConfig cfg) => DraftKeysFor(cfg != null && cfg.placementAssist, cfg != null && cfg.IsStopLoop);
+        /// <summary>파일에 없는 공간 고르기 문구 키(environmentChoice participant 세션은 이것이 비어 있어야 시작한다).</summary>
+        public List<string> SpaceChoiceKeysMissing() => SpaceChoiceKeys.Where(k => !_text.ContainsKey(k)).ToList();
 
-        /// <summary>이 세션이 보일 수 있는 문구 수. assist가 꺼져 있으면 AssistKeys를, loop가 꺼져 있으면 LoopKeys를 뺀다.</summary>
-        public int CountFor(bool assist, bool loop = false) => _text.Keys.Count(k => Visible(k, assist, loop));
+        /// <summary>공간 고르기 위치 줄: space_choice_position의 {i}·{n}을 바꾼다. 키가 없으면 null.</summary>
+        public string SpaceChoicePosition(int index1, int count)
+        {
+            var t = this[SpaceChoicePositionKey];
+            return t?.Replace("{i}", index1.ToString(System.Globalization.CultureInfo.InvariantCulture))
+                    .Replace("{n}", count.ToString(System.Globalization.CultureInfo.InvariantCulture));
+        }
 
-        static bool Visible(string key, bool assist, bool loop) =>
-            (assist || !AssistKeys.Contains(key)) && (loop || (!LoopKeys.Contains(key) && !LoopOptionalKeys.Contains(key)));
+        /// <summary>이 세션이 보일 수 있는 문구 가운데 draft인 키(이름순). assist가 꺼져 있으면 AssistKeys를, loop가 꺼져 있으면 LoopKeys를,
+        /// spaceChoice가 꺼져 있으면 SpaceChoiceKeys를 뺀다.</summary>
+        public List<string> DraftKeysFor(bool assist, bool loop = false, bool spaceChoice = false) => DraftKeys.Where(k => Visible(k, assist, loop, spaceChoice)).ToList();
+
+        /// <summary>설정으로: DraftKeysFor(placementAssist, stopMode loop, environmentChoice participant).</summary>
+        public List<string> DraftKeysFor(PlacementConfig cfg) =>
+            DraftKeysFor(cfg != null && cfg.placementAssist, cfg != null && cfg.IsStopLoop, cfg != null && cfg.ParticipantChoosesSpace);
+
+        /// <summary>이 세션이 보일 수 있는 문구 수. assist가 꺼져 있으면 AssistKeys를, loop가 꺼져 있으면 LoopKeys를, spaceChoice가 꺼져 있으면 SpaceChoiceKeys를 뺀다.</summary>
+        public int CountFor(bool assist, bool loop = false, bool spaceChoice = false) => _text.Keys.Count(k => Visible(k, assist, loop, spaceChoice));
+
+        static bool Visible(string key, bool assist, bool loop, bool spaceChoice) =>
+            (assist || !AssistKeys.Contains(key)) && (loop || (!LoopKeys.Contains(key) && !LoopOptionalKeys.Contains(key)))
+            && (spaceChoice || !SpaceChoiceKeys.Contains(key));
 
         /// <summary>파일에 없는 놓기 도움 문구 키(도움을 켠 세션은 이것이 비어 있어야 시작한다).</summary>
         public List<string> AssistKeysMissing() => AssistKeys.Where(k => !_text.ContainsKey(k)).ToList();
@@ -277,21 +301,21 @@ namespace IFS.SceneSpec.Placement
 
         /// <summary>draft 문구가 있으면 실험자 화면 맨 위·events.csv warning에 남길 한 줄(없으면 null).
         /// assist: 놓기 도움(G53)을 켠 세션이면 true — 꺼져 있으면 도움 문구(AssistKeys)는 보이지 않으니 세지 않는다.</summary>
-        public static string DraftNotice(PlacementTaskText text, bool requireSpec, bool assist = false, bool loop = false)
+        public static string DraftNotice(PlacementTaskText text, bool requireSpec, bool assist = false, bool loop = false, bool spaceChoice = false)
         {
             if (text == null) return null;
-            var keys = text.DraftKeysFor(assist, loop);
+            var keys = text.DraftKeysFor(assist, loop, spaceChoice);
             if (keys.Count == 0) return null;
-            return $"초안 문구 사용 중: {text.FileName ?? "문구 파일"}(version {text.Version})의 문구 {keys.Count}/{text.CountFor(assist, loop)}개가 status draft" +
+            return $"초안 문구 사용 중: {text.FileName ?? "문구 파일"}(version {text.Version})의 문구 {keys.Count}/{text.CountFor(assist, loop, spaceChoice)}개가 status draft" +
                    $"(IRB 확인 전) — {string.Join(", ", keys)}. " +
                    (requireSpec ? "requireSpecPhrases가 켜져 있어 시작할 수 없습니다." : "본 실험 자료로 쓰기 전에 spec 문구로 바꾸세요(manifest에 기록됨).");
         }
 
         /// <summary>requireSpecPhrases가 켜져 있고 draft 문구가 있으면 시작 거부 이유, 아니면 null.
         /// loop: 멈춤 거리 반복 멈춤(G60-2)을 켠 세션이면 true — 꺼져 있으면 LoopKeys는 보이지 않으니 세지 않는다.</summary>
-        public static string SpecPhraseRefusal(PlacementTaskText text, bool requireSpec, bool assist = false, bool loop = false) =>
-            requireSpec && text != null && text.DraftKeysFor(assist, loop).Count > 0
-                ? $"requireSpecPhrases가 켜져 있는데 draft 문구 {text.DraftKeysFor(assist, loop).Count}개({string.Join(", ", text.DraftKeysFor(assist, loop))})가 있어 세션을 시작하지 않습니다"
+        public static string SpecPhraseRefusal(PlacementTaskText text, bool requireSpec, bool assist = false, bool loop = false, bool spaceChoice = false) =>
+            requireSpec && text != null && text.DraftKeysFor(assist, loop, spaceChoice).Count > 0
+                ? $"requireSpecPhrases가 켜져 있는데 draft 문구 {text.DraftKeysFor(assist, loop, spaceChoice).Count}개({string.Join(", ", text.DraftKeysFor(assist, loop, spaceChoice))})가 있어 세션을 시작하지 않습니다"
                 : null;
     }
 }
