@@ -596,7 +596,10 @@ namespace IFS.SceneSpec.EditorTools
                             typeof(HeadPoseProvider).GetField("_yaw", Any)?.SetValue(head, 0f);
                             typeof(HeadPoseProvider).GetField("_desktopInit", Any)?.SetValue(head, true);
                         }
-                        // 화면에 로컬 절대 경로가 찍히지 않게: spec 목록 폴더를 프로젝트 기준 상대 경로(합성 예시)로
+                        // 화면에 로컬 절대 경로·실제 세션이 찍히지 않게: 최근 세션 자동 채움을 끄고(채운 칸도 지움), 설정 잠금을 풀어
+                        // 예전처럼 낱개 토글이 보이게 한 뒤, spec 목록 폴더를 프로젝트 기준 상대 경로(합성 예시)로(2026-11-28)
+                        runner.SetAutoFillLatestSession(false);
+                        runner.SetExperimentPresetLock(false);
                         runner.SpecFolderText = "Assets/StreamingAssets/IFS/examples";
                         typeof(PlacementRunner).GetMethod("RefreshSpecList", Any)?.Invoke(runner, null);
                         Shot(outDir, "unity_gui_setup");

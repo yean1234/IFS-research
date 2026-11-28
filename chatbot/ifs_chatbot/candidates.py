@@ -335,8 +335,14 @@ def visible_signature(spec: dict, defaults: dict, overrides: dict, table: dict) 
     return sig, [ignored[k] for k in dist["compareKeys"] if k in ignored]
 
 
-def generate(spec: dict, session_id: str, table: dict | None = None) -> dict:
-    """spec(dict)과 sessionId로 후보 묶음을 만든다. 출력은 JSON 직렬화 가능한 dict."""
+def generate(spec: dict, session_id: str, table: dict | None = None, prefill: dict | None = None,
+             prefill_source: str | None = None) -> dict:
+    """spec(dict)과 sessionId로 후보 묶음을 만든다. 출력은 JSON 직렬화 가능한 dict.
+    prefill(G77, 실험 설정만): 조절 항목 → {"slots": [spec 슬롯…], "overrides": {덮어쓰기}} — 매퍼가 비운 슬롯에 바깥(selection.py)이
+    원문 인용과 함께 정해 넘긴 처음 값. 이 모듈은 그 값을 고르지 않고 그대로 얹기만 한다(무작위·시각·모델 호출 없음).
+    그 슬롯은 축으로 벌리지 않고, 모든 후보의 덮어쓰기에 같은 값으로 들어가며 후보 sources는 prefill_source다.
+    낱말 해석 갈림(interpretationSplits)이 같은 슬롯을 다루면 갈림이 먼저다(그 prefill 항목은 쓰지 않고 droppedForSplit에 남김).
+    None이면 예전 출력과 바이트 단위로 같다."""
     table = table or load_table()
     defaults = table["defaults"]
     dims = table["candidateAxes"]["dimensions"]
@@ -347,7 +353,15 @@ def generate(spec: dict, session_id: str, table: dict | None = None) -> dict:
     rendered = slot_value(spec, "form.type") is None and bool(rendered_shape_words(spec, table)) and not base_drawn(spec)
 
     split, split_skipped = _split_axis(spec, table)
-    open_dims = [d for d in priority if slot_is_open(spec, dims[d]["slot"], table)]
+    pre_items = dict(prefill or {})
+    dropped_for_split = []
+    if split is not None:
+        for name in [n for n, v in pre_items.items() if split["slot"] in v["slots"]]:
+            pre_items.pop(name)
+            dropped_for_split.append(name)
+    pre_slots = {sl for v in pre_items.values() for sl in v["slots"]}
+    pre_over = {k: _num(x) for v in pre_items.values() for k, x in v["overrides"].items() if base.get(k) != x}
+    open_dims = [d for d in priority if slot_is_open(spec, dims[d]["slot"], table) and dims[d]["slot"] not in pre_slots]
     if split is not None:
         open_dims = [d for d in open_dims if dims[d]["slot"] != split["slot"]]
 
@@ -381,7 +395,7 @@ def generate(spec: dict, session_id: str, table: dict | None = None) -> dict:
     axis_by_slot = {ax["slot"]: ax for ax in axes}
     grid = []
     for i, combo in enumerate(combos):
-        overrides = {}
+        overrides = dict(pre_over)
         for slot, v in combo.items():
             key = axis_by_slot[slot]["key"]
             if base.get(key) != v:
@@ -390,6 +404,8 @@ def generate(spec: dict, session_id: str, table: dict | None = None) -> dict:
         for slot in SLOTS:
             if slot in combo:
                 sources[slot] = "offered"
+            elif slot in pre_slots:
+                sources[slot] = prefill_source         # G77: 원문 인용과 함께 채운 처음 값(모든 후보에 같음)
             elif slot_value(spec, slot) is not None:
                 sources[slot] = "said"
             elif slot == "form.type" and base_drawn(spec):
@@ -400,7 +416,8 @@ def generate(spec: dict, session_id: str, table: dict | None = None) -> dict:
                 sources[slot] = "said_unrendered"      # 축이 아닌 경우(지금 규칙에서는 생기지 않음)
             else:
                 sources[slot] = "default"
-        cid = "c-" + sha256_text(f"{GENERATOR_VERSION}|{s_sha}|{i}")[:12]
+        cid = "c-" + sha256_text(f"{GENERATOR_VERSION}|{s_sha}|{i}" if prefill is None
+                                 else f"{GENERATOR_VERSION}|{s_sha}|{canonical(pre_items)}|{i}")[:12]
         grid.append({"id": cid, "index": i, "overrides": dict(sorted(overrides.items())),
                      "axisValues": {k: _num(v) for k, v in combo.items()}, "sources": sources})
 
@@ -452,7 +469,13 @@ def generate(spec: dict, session_id: str, table: dict | None = None) -> dict:
     note += ". 색상(hue)·밝기는 벌리지 않음(G17·G31·G34)."
 
     dist = table.get("distinctness") or {}
-    return {
+    out_extra = {}
+    if prefill is not None:
+        out_extra["prefill"] = {"items": {k: {"slots": list(v["slots"]), "overrides": dict(v["overrides"])}
+                                             for k, v in sorted(pre_items.items())},
+                                   "overrides": dict(sorted(pre_over.items())), "droppedForSplit": sorted(dropped_for_split)}
+        note += f" 인용 처음 값({', '.join(sorted(pre_items)) or '없음'})은 모든 후보에 같게(G77)."
+    return {**out_extra,
         "generatorVersion": GENERATOR_VERSION,
         "tableVersion": table["tableVersion"],
         "tableSha256": table["_sha256"],

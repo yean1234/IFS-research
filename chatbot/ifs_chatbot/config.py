@@ -90,6 +90,13 @@ class MappingConfig:
     # G74: 안개 입자 모양(form.mistKind — fog·smoke·dust·cloud, 스펙 2.4.0의 선택 슬롯). 표가 든 파일(예 "scene_params.v2.json" — 그 mistKinds 표).
     #   비우면 끔 — 출력은 그대로. proportions를 함께 켜야 한다(스펙 2.4.0). Unity 러너·미리보기가 form.mistKind를 읽는 빌드에서만 켠다
     mist_kinds: str = ""
+    # G77: 확정 직후 매퍼가 비운 슬롯을 면담 LLM이 원문 인용과 함께 채워 후보·조절의 처음 값(덮어쓰기)으로 넣는다(llm_fill.py).
+    #   확정 스펙과 그 스키마는 바꾸지 않는다. 기본 끔 — 끄면 후보·selection.json·화면 출력이 그대로. experiment.toml에서만 켠다
+    llm_fill: bool = False
+    llm_fill_timeout_s: float = 20.0      # 한 번 부르는 시간 한도(넘으면 결과를 버리고 지금 경로)
+    llm_fill_max_items: int = 4           # 검증을 통과해 채택할 항목 수 상한(형태 낱말 항목 포함)
+    llm_fill_seed: int = 0
+    llm_fill_prompt: str = "llm_fill.v0.1.1.json"   # chatbot/prompts/llm_fill/ 아래 고정 프롬프트(판·status draft). 0.1.0은 기록용(CP15)
 
 
 @dataclass(frozen=True)
@@ -165,6 +172,16 @@ class Gen3DConfig:
     # 만든 후보도 맞지 않다고 [맞는 게 없어요]를 다시 누르면 같은 프롬프트로 seed = on_none_seed + n(n = 1…)으로 이 횟수만큼 더 만든다.
     # 0이면 다시 만들지 않는다(두 번째 none은 기존 경로). 생성이 막히거나 실패하면 그 자리에서 기존 경로로 가므로 더 만들지 않는다
     on_none_max_regenerations: int = 1
+    # G75: [맞는 게 없어요] 뒤 생성에서 3D 모델이 참고할 이미지를 참여자가 먼저 고른다(on_none일 때만 뜻이 있음, 기본 끔 —
+    # 끄면 G73 동작·출력·기록 그대로). 켜면: 규칙 프롬프트 + 무채색 화풍 고정 문구(tools/gen3d/prompts.image_pick_prompt)로
+    # SDXL 이미지 3장(seed = on_none_seed + 3r + 0·1·2, r = 회차) → 이미지 관문(CLIP 사람·동물) 통과한 것만 보여 줌 → 고른 이미지로만
+    # TripoSG → 후보 맨 앞. [이 중에는 없어요]·만든 후보에 [맞는 게 없어요]면 다음 회차(on_none_image_rounds까지, 그 뒤는 기존 none 경로).
+    # 켜져 있으면 on_none_max_regenerations(같은 프롬프트 seed + n 다시 만들기)는 쓰지 않는다(이미지 회차가 대신함).
+    on_none_image_pick: bool = False
+    on_none_image_rounds: int = 2
+    # 단계별 대기 한도(모델 내리기 포함, 참여자가 고르는 시간은 넣지 않음). 넘으면 프로세스를 끄고 기존 none 경로
+    on_none_image_timeout_s: float = 180.0
+    on_none_mesh_timeout_s: float = 180.0
 
 
 @dataclass(frozen=True)

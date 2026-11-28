@@ -313,13 +313,55 @@ def _negated(doc, i: int, j: int, lexical_starts: set, neg_spans) -> bool:
 
 def shape_prompt_for_row(row: dict) -> dict:
     """생성기 입력 sentences.json의 한 줄 → shape_prompt. promptRule = "mapper"이고 mapperSpec이 있으면 매퍼 규칙
-    (G73 [맞는 게 없어요] 생성 — none_gen.py가 세션 spec을 함께 적음), 아니면 텍스트만(G62 기본 후보·평가 입력)."""
+    (G73 [맞는 게 없어요] 생성 — none_gen.py가 세션 spec을 함께 적음), 아니면 텍스트만(G62 기본 후보·평가 입력).
+    (G75) imageStyle이 IMAGE_PICK_STYLE_ID면 이미지 고르기 화풍 문구를 더한다(image_pick_prompt). 없으면 예전 그대로."""
     if row.get("promptRule") == PROMPT_RULE_MAPPER:
         spec = row.get("mapperSpec")
         if not isinstance(spec, dict):
             raise SystemExit(f"{row.get('id')}: promptRule mapper인데 mapperSpec이 없음")
-        return shape_prompt(row["text"], mapper_spec=spec)
-    return shape_prompt(row["text"])
+        # (G77) 서버가 검증해 채택한 LLM 형태 낱말(있을 때만 키가 있다). 규칙이 형태를 못 만들었을 때만 쓰인다
+        p = shape_prompt(row["text"], mapper_spec=spec, llm_items=row.get("llmShapeItems"))
+    else:
+        p = shape_prompt(row["text"])
+    style = row.get("imageStyle")
+    if style is None:
+        return p
+    if style != IMAGE_PICK_STYLE_ID:
+        raise SystemExit(f"{row.get('id')}: 모르는 imageStyle {style!r}(아는 값: {IMAGE_PICK_STYLE_ID})")
+    return image_pick_prompt(p)
+
+
+# ── G75: 참여자가 먼저 고르는 참고 이미지의 화풍(형태만 보이는 무채색) ─────────────────────────────
+# 최종 물체는 형태만 쓰고 색·재질은 참여자가 말한 값(매핑)으로 칠한다. 참여자가 이미지의 색을 보고 고르면 어긋나므로
+# 이미지를 흰 배경의 무채색 점토 조형 하나로 고정한다. 아래 문구는 심상 속성이 아니라 시스템 문구다(slot template).
+# 내용 토큰(말한 형태 낱말)은 바꾸지 않는다. 같은 입력 → 같은 출력. 이 함수를 거치지 않는 경로(G62 기본 후보·G73)는 그대로다.
+IMAGE_PICK_STYLE_ID = "g75-shape-only-gray"
+IMAGE_PICK_STYLE_VERSION = "g75-image-style/0.1.0"
+IMAGE_PICK_SUFFIX = ("untextured monochrome gray clay sculpture", "single uniform color", "soft even studio lighting",
+                     "centered", "entire object in view")
+IMAGE_PICK_NEGATIVE = ("colorful", "multicolored", "painted", "patterned", "glossy", "metallic", "reflections",
+                       "background objects")
+SHAPE_BUILDER_VERSION_IMAGE_PICK = "gen3d-shape-prompt/0.4.0+imagepick"
+
+
+def image_pick_prompt(p: dict) -> dict:
+    """shape_prompt 결과 → 이미지 고르기(G75)용 프롬프트. 막힌 결과는 판 이름만 바꿔 그대로(모델을 부르지 않음).
+    부정 틀 항목이 말한 낱말과 한 낱말이라도 겹치면 뺀다(negativeAccessories와 같은 규칙)."""
+    q = dict(p)
+    rule = p.get("promptRule")
+    q["builderVersion"] = SHAPE_BUILDER_VERSION_IMAGE_PICK + ("+mapper-v2" if rule == PROMPT_RULE_MAPPER else "") \
+        + (SHAPE_BUILDER_LLM_SUFFIX if p.get("shapeSource") == LLM_QUOTED else "")
+    q["imageStyle"] = IMAGE_PICK_STYLE_ID
+    q["imageStyleVersion"] = IMAGE_PICK_STYLE_VERSION
+    if p.get("status") != "ok" or not p.get("text"):
+        return q
+    said = {w for t in p.get("tokens") or [] if t.get("slot") != "template" for w in t["en"].replace("-", " ").split()}
+    neg = [n for n in IMAGE_PICK_NEGATIVE if not (set(n.split()) & said)]
+    q["text"] = ", ".join([p["text"], *IMAGE_PICK_SUFFIX])
+    q["negativeText"] = ", ".join([p["negativeText"], *neg]) if p.get("negativeText") else ", ".join(neg)
+    q["tokens"] = list(p.get("tokens") or []) + [{"en": s, "ko": None, "charSpan": None, "slot": "template",
+                                                  "lexiconKey": None} for s in IMAGE_PICK_SUFFIX]
+    return q
 
 
 def _overlaps(a, b) -> bool:
@@ -393,7 +435,103 @@ def _mapper_verdict(ev: dict, span, is_noun: bool) -> str | None:
     return None
 
 
-def shape_prompt(text: str, mapper_spec: dict | None = None) -> dict:
+# (G77) 0.1.1(CP15-1): 생성 직전 재검증이 서버 검증기와 같은 영어 금지 규칙(english_shape_reasons)을 쓴다
+SHAPE_BUILDER_LLM_SUFFIX = "+llmquote-0.1.1"           # (G77) LLM 인용 형태 낱말로 빈 형태 자리를 메웠을 때 builderVersion 끝에
+LLM_QUOTED = "llm_quoted"
+SHAPE_EN_BLOCK = CHATBOT.parent / "shared" / "lexicon" / "shape_english_block.v0.json"
+EN_REASONS = ("english_banned", "english_color_size", "english_non_shape", "non_meshable")   # 기각 사유 순서(형식 다음)
+_EN_SUFFIXES = ("shaped", "esque", "like", "ish", "oid", "ed")   # 붙여 쓴 꼴('catlike'·'horned')을 어간으로 되돌려 exact와 대조
+_en_block = None
+
+
+class _EnglishBlock:
+    def __init__(self, path: Path = SHAPE_EN_BLOCK):
+        import re
+        raw = Path(path).read_text(encoding="utf-8")
+        d = json.loads(raw)
+        self.file, self.sha256, self.version = Path(path).name, sha256_text(raw), d["version"]
+        self.pattern = re.compile(d["englishPattern"])
+        self.irregular = dict(d["irregularPlurals"])
+        self.exact = {k: frozenset(d["categories"][k]["exact"]) for k in EN_REASONS}
+        self.contained = {k: tuple(d["categories"][k]["contained"]) for k in EN_REASONS}
+
+
+def english_block() -> _EnglishBlock:
+    global _en_block
+    if _en_block is None:
+        _en_block = _EnglishBlock()
+    return _en_block
+
+
+def _en_variants(w: str, irregular: dict) -> set[str]:
+    """낱말 → 대조할 꼴(그대로 + 불규칙 복수형 + 단순 복수형 어간 + 붙여 쓴 접미 떼기). 규칙만, 같은 낱말 → 같은 집합."""
+    out = {w}
+    for x in list(out):
+        if x in irregular:
+            out.add(irregular[x])
+        if len(x) > 4 and x.endswith("ies"):
+            out.add(x[:-3] + "y")
+        if len(x) > 4 and x.endswith("ves"):
+            out.update((x[:-3] + "f", x[:-3] + "fe"))
+        if len(x) > 3 and x.endswith("es"):
+            out.add(x[:-2])
+        if len(x) > 2 and x.endswith("s") and not x.endswith("ss"):
+            out.add(x[:-1])
+    for x in list(out):
+        for suf in _EN_SUFFIXES:
+            if x.endswith(suf) and len(x) - len(suf) >= 2:
+                stem = x[:-len(suf)]
+                out.add(stem)
+                if stem in irregular:
+                    out.add(irregular[stem])
+                if len(stem) > 2 and stem.endswith("s") and not stem.endswith("ss"):
+                    out.add(stem[:-1])
+    return out
+
+
+def english_shape_reasons(value: str) -> list[str]:
+    """(G77) LLM 형태 낱말(영어) → 기각 사유 목록(비면 통과). 서버 검증기(llm_fill._check_item)와 생성 직전 재검증(_llm_head)이
+    같은 함수를 쓴다. ASCII·형식(영문자 1–3낱말, 낱말 사이 공백 하나) 밖이면 곧바로 english_format 하나로 버림(글자를 지우고
+    검사하지 않음) → 소문자 낱말로 나눔 → 낱말과 이어 붙인 낱말 묶음마다 복수형·접미 어간을 만든 뒤 exact 목록 일치, contained
+    어근이 안에 들어 있는지. 막는 쪽으로 넉넉하다(handle → hand 등 과차단은 의도, 막히면 형태 자리를 메우지 않음)."""
+    B = english_block()
+    if not isinstance(value, str) or not value.isascii():    # ASCII 밖(소문자화로 ASCII가 되는 'K' U+212A 포함)은 곧바로
+        return ["english_format"]
+    low = value.lower()
+    if not B.pattern.fullmatch(low):
+        # 허용 문자(영소문자·낱말 사이 공백 하나) 밖의 글자가 하나라도 있으면 지우고 검사하지 않고 곧바로 형식 위반으로 버린다
+        # (닮은꼴 문자 'skսll'·숫자 'f0g'·하이픈·소유격 "wolf's"·앞뒤 공백·줄바꿈 — 사유 일관, CP15 재검토)
+        return ["english_format"]
+    why = []
+    words = low.split()
+    grams = {"".join(words[i:j]) for i in range(len(words)) for j in range(i + 1, len(words) + 1)}
+    forms = set()
+    for g in grams:
+        forms |= _en_variants(g, B.irregular)
+    for k in EN_REASONS:
+        if any(f in B.exact[k] for f in forms) or any(r in g for g in grams for r in B.contained[k]):
+            why.append(k)
+    return why
+
+
+def _llm_head(norm: str, items) -> dict | None:
+    """(G77) 서버가 채택한 LLM 형태 낱말 항목 가운데 첫 번째를 다시 확인한다(같은 입력 → 같은 결과, 생성기 프로세스도 같은 판정).
+    인용이 확정 텍스트의 charSpan 글자와 같고 영어가 서버 검증기와 같은 규칙(english_shape_reasons)을 통과할 때만.
+    아니면 None(규칙 결과 그대로 — fail closed)."""
+    for it in items or []:
+        try:
+            q, (s, e), en = it["quote"], it["charSpan"], it["english"]
+        except (KeyError, TypeError, ValueError):
+            continue
+        if isinstance(q, str) and isinstance(en, str) and isinstance(s, int) and isinstance(e, int) \
+                and not isinstance(s, bool) and not isinstance(e, bool) \
+                and 0 <= s < e <= len(norm) and norm[s:e] == q and not english_shape_reasons(en):
+            return {"en": en.lower(), "ko": q, "charSpan": [s, e]}
+        return None                                     # 첫 항목만 본다(빈자리 메우기 하나)
+    return None
+
+
+def shape_prompt(text: str, mapper_spec: dict | None = None, llm_items: list | None = None) -> dict:
     """확정 텍스트 → 형태 프롬프트와 차단 판정. 같은 텍스트 → 언제나 같은 결과(사전·규칙만).
 
     mapper_spec(G73 후속, 실험 설정의 [맞는 게 없어요] 생성만): 같은 확정 텍스트로 세션이 만든 매퍼 v2 spec.
@@ -533,15 +671,20 @@ def shape_prompt(text: str, mapper_spec: dict | None = None) -> dict:
         dropped.append({"ko": a["ko"], "charSpan": a["span"], "reason": "later_mention"})
 
     content = mods + likes + ([head] if head else [])
+    # (G77) 규칙이 형태 낱말을 하나도 못 만들었고 막을 사유도 없을 때만, 서버가 채택한 LLM 인용 형태 낱말 하나로 중심 명사 자리를 메운다
+    llm_tok = _llm_head(norm, llm_items) if (not content and llm_items and block is None) else None
     tokens = [{"en": tmpl["prefix"], "ko": None, "charSpan": None, "slot": "template", "lexiconKey": None}]
     for c in content:
         tokens.append({"en": c["en"], "ko": c["ko"], "charSpan": c["span"], "slot": c["e"]["slot"],
                        "lexiconKey": "+".join(c["e"]["ko"])})
-    if head is None:
+    if llm_tok is not None:
+        tokens.append({"en": llm_tok["en"], "ko": llm_tok["ko"], "charSpan": llm_tok["charSpan"], "slot": "shape_noun",
+                       "lexiconKey": None, "provenance": LLM_QUOTED})
+    elif head is None:
         tokens.append({"en": tmpl["defaultNoun"], "ko": None, "charSpan": None, "slot": "template", "lexiconKey": None})
     phrase = " ".join(t["en"] for t in tokens)
     tokens += [{"en": s, "ko": None, "charSpan": None, "slot": "template", "lexiconKey": None} for s in tmpl["suffix"]]
-    prompt_text = ", ".join([phrase, *tmpl["suffix"]]) if content else ""
+    prompt_text = ", ".join([phrase, *tmpl["suffix"]]) if (content or llm_tok) else ""
 
     # 4) 감사: 모든 내용 토큰이 원문 글자로 거슬러 가야 한다(fail closed)
     untraceable = [t["en"] for t in tokens if t["slot"] != "template" and not (
@@ -549,17 +692,19 @@ def shape_prompt(text: str, mapper_spec: dict | None = None) -> dict:
         and norm[t["charSpan"][0]:t["charSpan"][1]] == t["ko"])]
     if block is None and untraceable:
         block, detail = "untraceable_token", [f"untraceable:{u}" for u in untraceable]
-    if block is None and not content:
+    if block is None and not content and llm_tok is None:
         block = "no_shape_stated"
     # 부정 틀: 안전 제약(언제나 같음) + 부속물(말한 낱말과 한 낱말이라도 겹치면 뺌)
     said_words = {w for c in content for w in c["en"].replace("-", " ").split()}
+    if llm_tok is not None:
+        said_words |= set(llm_tok["en"].split())
     acc = [a for a in tmpl.get("negativeAccessories", []) if not (set(a.split()) & said_words)]
     negative = ", ".join([tmpl["negative"], *acc])
     toks_ = doc.toks
     plural = any(c["e"].get("plural") or (c["j"] + 1 < len(toks_) and toks_[c["j"] + 1].form == "들"
                                             and toks_[c["j"] + 1].base_tag == "XSN")
                  for c in content if c["e"]["pos"] == "noun")
-    return {
+    out = {
         "status": "blocked" if block else "ok",
         "blockReason": block,
         "blockDetail": ";".join(sorted(set(detail))) or None,
@@ -571,9 +716,13 @@ def shape_prompt(text: str, mapper_spec: dict | None = None) -> dict:
         "promptRule": PROMPT_RULE_MAPPER if use_mapper else PROMPT_RULE_TEXT,
         "mapperBuilder": (((mapper_spec.get("meta") or {}).get("pipeline") or {}).get("builder")) if use_mapper else None,
         "templateVersion": tmpl["version"],
-        "tokens": tokens if content else [],
+        "tokens": tokens if (content or llm_tok) else [],
         "dropped": dropped,
         "thinRisk": any(c["e"].get("thin") for c in content),
         "familiarObjectStated": any(c["e"].get("familiar") for c in content if c["e"]["pos"] == "noun"),
         "sourceTextSha256": sha256_text(norm),
     }
+    if llm_tok is not None:                          # (G77) 키는 LLM 낱말을 썼을 때만(쓰지 않으면 예전 출력 그대로)
+        out["builderVersion"] += SHAPE_BUILDER_LLM_SUFFIX
+        out["shapeSource"] = LLM_QUOTED
+    return out

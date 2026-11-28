@@ -497,6 +497,7 @@
     if (v.stage !== "generating" && S.pollTimer) { clearTimeout(S.pollTimer); S.pollTimer = null; }
     if (v.stage === "selecting") parts.push(...drawSelecting(v));
     else if (v.stage === "generating") parts.push(...drawGenerating(v));   // WebGL은 내려 두기만(parked) — 돌아오면 다시 씀
+    else if (v.stage === "picking") parts.push(...drawPicking(v));         // G75: 참고 그림 고르기(WebGL은 내려 둠)
     else if (v.stage === "adjusting") parts.push(...drawAdjusting(v));
     else if (v.stage === "premeasure") { WebGL.teardown(); drawPremeasure(box, parts); progress(); return; }
     else if (v.stage === "done") { WebGL.teardown(); parts.push(el("p", { class: "msg bot closing stage-top done-card", tabindex: "-1" }, v.donePhrase || "")); }
@@ -540,12 +541,45 @@
 
   function drawGenerating(v) {
     pollGenerating();
-    return [intro(phrase("none_gen_waiting")),
+    // G75: 그림을 그리는 동안(phase image)은 그 문구, 고른 그림으로 물체를 만드는 동안(phase mesh)·G73은 기존 대기 문구
+    const imagePhase = !!(v.afterNone && v.afterNone.phase === "image");
+    return [intro(phrase(imagePhase ? "image_pick_waiting" : "none_gen_waiting")),
             el("div", { class: "gen-wait", role: "status", "aria-live": "polite" }, el("span", { class: "gen-spinner", "aria-hidden": "true" })),
             el("div", { class: "buttons stage-actions" },
               el("button", { type: "button", class: "pick none-gen-skip", "data-fkey": "none-gen-skip",
                              onclick: (e) => call("POST", `/api/sessions/${S.sid}/selection/none-gen/skip`, undefined, e.currentTarget) },
                 phrase("none_gen_skip_button")))];
+  }
+
+  // G75: 3D 모델이 참고할 그림 고르기. 관문을 통과한 그림만 서버가 준 순서(seed 순서)로 나란히, 그림마다 [고르기].
+  // 그림에는 이름·설명을 붙이지 않는다(번호만). [이 중에는 없어요] → 다음 회차 또는 기존 경로, [넘어갈게요] → 기존 건너뛰기와 같은 경로
+  function pickImage(choice, btn) {
+    if (S.busy) return;
+    const card = btn.closest(".pick-card");
+    if (card) card.classList.add("chosen");
+    btn.setAttribute("aria-pressed", "true");
+    $("#stage").classList.add("choosing");
+    call("POST", `/api/sessions/${S.sid}/selection/image-pick`, { choice: String(choice) }, btn);
+  }
+
+  function drawPicking(v) {
+    const ip = v.imagePick || { images: [] };
+    const parts = [intro(phrase("image_pick_intro"))];
+    const grid = el("ul", { class: `pick-grid n${ip.images.length}` });
+    ip.images.forEach((im, i) => {
+      grid.append(el("li", { class: "pick-card", "data-pos": String(im.position) },
+        el("img", { class: "pick-img", src: im.url, alt: String(i + 1), width: "256", height: "256", draggable: "false" }),
+        el("button", { type: "button", class: "pick", "aria-label": `${phrase("choose_button")} ${i + 1}`, "data-fkey": `img:${im.position}`,
+                       onclick: (e) => pickImage(im.position, e.currentTarget) }, phrase("choose_button"))));
+    });
+    parts.push(grid);
+    parts.push(el("div", { class: "none-fit-row" },
+      el("button", { type: "button", class: "pick none-fit", "data-fkey": "img:none", onclick: (e) => pickImage("none", e.currentTarget) },
+        phrase("image_pick_none")),
+      el("button", { type: "button", class: "pick none-gen-skip", "data-fkey": "img:skip",
+                     onclick: (e) => call("POST", `/api/sessions/${S.sid}/selection/none-gen/skip`, undefined, e.currentTarget) },
+        phrase("image_pick_skip_button"))));
+    return parts;
   }
 
   function drawSelecting(v) {
@@ -677,6 +711,151 @@
     return group;
   }
 
+  // G79: 색상 고리(값 표 4.0.0, 색 항목 kind hue_ring). 72칸(5°) 고리 + 채도 단계 단추 + 무채색 견본. 외부 라이브러리 없이
+  // CSS conic-gradient와 pointer events. 끄는 동안에는 화면의 손잡이만 움직이고, 손을 놓거나 키를 누를 때만 adjust를 한 번 보낸다.
+  // 낭독기: 고리는 role slider, 값은 "색 k / 72"(adjust_color_ring_value), 채도 단추는 "채도 k / n"(adjust_color_saturation_label).
+  // 색 이름·평가하는 말을 만들지 않는다. 말한 색이 있으면 그 자리에 눈금(칸 사이여도 그 자리), 말하지 않았고 고르지도 않았으면
+  // 손잡이가 없고 지금 그려지는 회색 견본은 속 빈 테두리(G79-d).
+  function fill(t, k, n) { return String(t || "").replace("{k}", String(k)).replace("{n}", String(n)); }
+  function hslCss(h, s, l) { return `hsl(${Math.round(h * 36000) / 100}deg ${Math.round(s * 1000) / 10}% ${Math.round(l * 1000) / 10}%)`; }
+
+  function colorRing(it, v, now, lid, send) {
+    const R = v.colorRing || {};
+    const n = R.hueSteps || (it.ring && it.ring.hueSteps) || 72;
+    const step = 360 / n;
+    const L = R.lightness != null ? R.lightness : 0.5;
+    const cur = now || {};
+    // 고리의 자리: 칸 0…n-1, 말한 색상이 칸 사이면 그 자리("said")를 하나 더(색상 순서)
+    const stops = [];
+    for (let k = 0; k < n; k++) stops.push({ key: k, h: k / n });
+    if (R.saidHueStep === "said" && R.saidHue != null) {
+      stops.push({ key: "said", h: R.saidHue });
+      stops.sort((a, b) => a.h - b.h);
+    }
+    const hasHue = cur.hueStep !== null && cur.hueStep !== undefined;
+    let idx = hasHue ? stops.findIndex((s) => s.key === cur.hueStep) : -1;
+    const satNow = cur.saturationStep !== null && cur.saturationStep !== undefined ? cur.s : R.ringSaturation;
+    const satKey = cur.saturationStep !== null && cur.saturationStep !== undefined ? cur.saturationStep : undefined;
+    const segs = [];
+    for (let k = 0; k < n; k++) segs.push(`${hslCss(k / n, satNow, L)} ${k * step}deg ${(k + 1) * step}deg`);
+    const posText = (i) => {
+      if (i < 0) return { now: null, text: fill(phrase("adjust_color_ring_value"), "–", n) };
+      const s = stops[i];
+      const k = typeof s.key === "number" ? s.key + 1 : Math.round((s.h * n + 1) * 10) / 10;
+      return { now: k, text: fill(phrase("adjust_color_ring_value"), k, n) };
+    };
+    const hintId = `${lid}-ring-hint`;
+    const handle = el("span", { class: "ring-handle", "aria-hidden": "true" });
+    const center = el("span", { class: "ring-center", "aria-hidden": "true" });
+    const slider = el("div", { class: "hue-ring", role: "slider", tabindex: "0", "aria-labelledby": lid, "aria-describedby": hintId,
+                               "aria-valuemin": "1", "aria-valuemax": String(n), "data-fkey": "ring:color",
+                               style: `--ring:conic-gradient(from ${-step / 2}deg, ${segs.join(", ")})` },
+      el("span", { class: "ring-band", "aria-hidden": "true" }));
+    if (R.saidHue != null) slider.append(el("span", { class: "ring-tick", "aria-hidden": "true", style: `--a:${R.saidHue * 360}deg` }));
+    slider.append(handle, center);
+    const show = (i) => {                               // 손잡이·가운데 색·낭독기 값(화면만, 기록하지 않음)
+      const p = posText(i);
+      if (p.now === null) slider.removeAttribute("aria-valuenow"); else slider.setAttribute("aria-valuenow", String(p.now));
+      slider.setAttribute("aria-valuetext", p.text);
+      handle.hidden = i < 0;
+      if (i >= 0) {
+        const c = hslCss(stops[i].h, satNow, L);
+        handle.style.setProperty("--a", `${stops[i].h * 360}deg`);
+        handle.style.setProperty("--swatch", c);
+        center.style.setProperty("--swatch", c);
+        center.classList.add("set");
+      } else if (cur.h !== undefined && !R.unspecified) {
+        center.style.setProperty("--swatch", hslCss(cur.h, cur.s, cur.l));   // 무채색 견본을 골랐을 때
+        center.classList.add("set");
+      }
+    };
+    show(idx);
+    const body = (i) => {
+      const b = { hueStep: stops[i].key };
+      if (satKey !== undefined) b.saturationStep = satKey;
+      return b;
+    };
+    const busy = () => S.busy || slider.getAttribute("aria-disabled") === "true";
+    // 포인터: 고리 띠 위에서 누르면 시작, 끄는 동안 가장 가까운 자리로 손잡이만, 놓을 때 한 번 보냄
+    const nearest = (e) => {
+      const r = slider.getBoundingClientRect();
+      const dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2);
+      const a = ((Math.atan2(dx, -dy) * 180 / Math.PI) + 360) % 360;
+      let best = 0, bd = 1e9;
+      stops.forEach((s, i) => { const d = Math.abs(((a - s.h * 360 + 540) % 360) - 180); if (d < bd) { bd = d; best = i; } });
+      return { i: best, rr: Math.hypot(dx, dy) / (r.width / 2) };
+    };
+    let dragging = false, dragIdx = -1;
+    slider.addEventListener("pointerdown", (e) => {
+      if (busy()) return;
+      const p = nearest(e);
+      if (p.rr < 0.55 || p.rr > 1.08) return;         // 가운데 구멍·바깥은 누름으로 보지 않음
+      e.preventDefault();
+      dragging = true; dragIdx = p.i;
+      slider.setPointerCapture(e.pointerId);
+      slider.focus({ preventScroll: true });
+      show(dragIdx);
+    });
+    slider.addEventListener("pointermove", (e) => { if (!dragging) return; dragIdx = nearest(e).i; show(dragIdx); });
+    const end = (e, commit) => {
+      if (!dragging) return;
+      dragging = false;
+      try { slider.releasePointerCapture(e.pointerId); } catch (_) { /* 이미 풀림 */ }
+      // 놓으면 한 번 보냄 — 지금 손잡이 자리를 눌렀다 놓아도(끌지 않았어도) 보낸다(CP18-2: 견본을 다시 누를 때와 같이 기록·횟수가 남음)
+      if (commit && dragIdx >= 0) { S.focusKey = "ring:color"; send(it.id, body(dragIdx), null); }
+      else show(idx);
+    };
+    slider.addEventListener("pointerup", (e) => end(e, true));
+    slider.addEventListener("pointercancel", (e) => end(e, false));
+    // 키보드: ←↓ 한 칸 뒤, →↑ 한 칸 앞, Shift와 함께 6칸, Home 처음 값. 누를 때마다 한 번 보냄
+    slider.addEventListener("keydown", (e) => {
+      const dir = { ArrowRight: 1, ArrowUp: 1, ArrowLeft: -1, ArrowDown: -1 }[e.key];
+      if (dir === undefined && e.key !== "Home") return;
+      e.preventDefault();
+      if (busy()) return;
+      if (e.key === "Home") {
+        if (R.home === null || R.home === undefined) return;   // 처음에 고른 색이 없었음(말하지도 채우지도 않음)
+        S.focusKey = "ring:color";
+        send(it.id, R.home, null);
+        return;
+      }
+      const m = stops.length;
+      const j = idx < 0 ? (dir > 0 ? 0 : m - 1) : (((idx + dir * (e.shiftKey ? 6 : 1)) % m) + m) % m;
+      S.focusKey = "ring:color";
+      send(it.id, body(j), null);
+    });
+    // 채도 단계 단추(색만 보임). 고리에 고른 색이 없으면 끈다
+    const sats = el("div", { class: "chips sat-steps", role: "toolbar", "aria-labelledby": lid });
+    (R.saturations || []).forEach((x, k, all) => {
+      const active = hasHue && cur.saturationStep === x.step;
+      const said = R.saidSaturationStep !== null && R.saidSaturationStep !== undefined && R.saidSaturationStep === x.step;
+      const b = el("button", { type: "button", class: `chip sat${active ? " active" : ""}`,
+                               style: `--swatch:${hslCss(hasHue ? stops[idx].h : 0, hasHue ? x.s : 0, L)}`,
+                               "aria-pressed": active ? "true" : "false",
+                               "aria-label": fill(phrase("adjust_color_saturation_label"), k + 1, all.length),
+                               "data-fkey": `sat:${x.step}`, onclick: (e) => send(it.id, { saturationStep: x.step }, e.currentTarget) },
+                   said ? el("span", { class: "said-dot", "aria-hidden": "true" }) : null);
+      if (!hasHue) b.disabled = true;
+      sats.append(b);
+    });
+    // 무채색 견본(+ 무채색 견본에 없는 말한 무채색 하나). 말하지도 고르지도 않았으면 지금 그려지는 회색은 속 빈 테두리
+    const chips = el("div", { class: "chips achromatic", role: "toolbar", "aria-labelledby": lid });
+    const list = (it.values || []).concat(R.saidSwatch ? [R.saidSwatch] : []);
+    list.forEach((sw, k) => {
+      const here = !!(now && (sw.id === "said" ? R.atSaid : now.swatch === sw.id));
+      const unset = here && R.unspecified;
+      const active = here && !unset;
+      const b = el("button", { type: "button", class: `chip${active ? " active" : ""}${unset ? " unset" : ""}`,
+                               style: `--swatch:${sw.hex}`, "aria-pressed": active ? "true" : "false", "aria-label": `${it.label} ${k + 1}`,
+                               "data-swatch": sw.id, "data-fkey": `sw:${sw.id}`, onclick: (e) => send(it.id, sw.id, e.currentTarget) },
+                   sw.id === R.saidSwatchId ? el("span", { class: "said-dot", "aria-hidden": "true" }) : null);
+      chips.append(b);
+    });
+    return el("div", { class: "color-ring" }, slider,
+              el("div", { class: "ring-side" }, roving(sats), roving(chips)),
+              el("small", { class: "ring-hint", id: hintId }, phrase("adjust_color_ring_hint")));
+  }
+
   function drawAdjusting(v) {
     const cur = (v.current && v.current.items) || {};
     const off = v.unavailableItems || {};
@@ -699,6 +878,11 @@
           chips.append(b); btns.push(b);
         });
         row.append(roving(chips));
+      } else if (it.kind === "hue_ring") {
+        const ring = colorRing(it, v, now, lid, send);
+        btns.push(...ring.querySelectorAll("button"));
+        if (off[it.id]) ring.querySelector(".hue-ring").setAttribute("aria-disabled", "true");
+        row.append(ring);
       } else if (it.kind === "category") {
         const opts = categoryOpts(it, v, now, !!off[it.id], lid, send);
         btns.push(...opts.querySelectorAll("button"));
@@ -728,6 +912,9 @@
         for (const b of btns) b.disabled = true;
         row.append(el("small", { class: "adjust-off-note" }, phrase("adjust_item_unavailable")));
       }
+      // G77: 면담 LLM이 참여자 말(원문 인용)에서 채운 처음 값이면 그 근거를 한 줄로(서버가 인용을 넣은 고정 문구, 값을 바꾸면 사라짐)
+      const lf = v.llmFill && v.llmFill.items && v.llmFill.items[it.id];
+      if (lf) row.append(el("small", { class: "llm-fill-note", "data-llm-fill": it.id }, lf.text));
       panel.append(row);
     }
     // G73: 만들지 못함·실패·시간 초과 뒤 none 경로로 왔으면 짧은 안내 한 줄(사유는 연구자 보기). 참여자가 기다리지 않고 넘어갔으면 없음
@@ -828,6 +1015,9 @@
           ["맞는 게 없어요 뒤 생성(G73)", v.afterNone ? `${v.afterNone.status}${v.afterNone.blockReason ? ` · ${v.afterNone.blockReason}` : ""}`
             + `${v.afterNone.error ? ` · ${v.afterNone.error}` : ""}${v.afterNone.seconds != null ? ` · ${v.afterNone.seconds}초` : ""}`
             + `${v.afterNone.participantSkippedWait ? " · 기다리지 않고 넘어감" : ""}` : null],
+          ["참고 그림 고르기(G75)", v.afterNone && v.afterNone.round != null
+            ? `회차 ${v.afterNone.round + 1}/${v.afterNone.rounds} · ${v.afterNone.imagePickStatus}${v.afterNone.phase ? ` · ${v.afterNone.phase}` : ""}`
+              + `${v.imagePick ? ` · 보인 그림 ${v.imagePick.images.length}장` : ""}` : null],
           ["조절 횟수", v.adjustCounts ? JSON.stringify(v.adjustCounts) : null],
           ["색 바꿈", v.colorChanged === undefined ? null : (v.colorChanged ? "예" : "아니오")],
           ["finalOverrides", v.finalOverrides ? JSON.stringify(v.finalOverrides) : null],

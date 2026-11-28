@@ -10,6 +10,10 @@
 //   여러 번 하고 확정 버튼으로 정한다(StepStopLoop — stoprounds.csv·stopadjust.csv).
 // 눈높이(2026-11-26 G60-3): 설정 eyeHeightMode relative면 시작·멈춤 경로·system_move 목표·연습 목표 높이에 (E − 기준)을 더한다(Eye()).
 //   E는 PlacementSessionInfo.EyeHeight(러너의 보정 결과). none이면 더하는 값이 0이라 예전과 같다.
+// 공간 고르기(2026-11-28 연구 책임자 결정): 설정 environmentChoice participant면 intro 앞에 space_choice 단계가 있다. 방아쇠(데스크톱 Space)로
+//   세 공간을 차례로 보고(순서 = PlacementSpaceChoice.Order(참여자 번호)), 세 공간을 다 본 뒤 확인 버튼(A·X, 데스크톱 F)으로 정한다.
+//   실험자 Enter = 지금 보이는 공간으로 정함. 정하면 확정 알림(confirm_done)을 ConfirmNoticeSeconds 동안 보인 뒤 intro. 고른 공간이 세션의
+//   environment가 되고 manifest를 다시 쓴다(environmentChoice 블록 — 순서·고른 값·고른 방식·걸린 시간·공간마다 본 시간). 기본(experimenter)이면 단계 없음.
 // 시계: Tick(dt)으로 받은 dt를 더한 시각(사람 실행은 Time.unscaledDeltaTime, 자동 시행은 고정 dt).
 // 물체 위치·보이기·참여자 글은 이 클래스가 정하고, Unity 러너(PlacementRunner)는 그대로 그린다.
 // 기록 형식: 계약 ifs-placement/0.2(PlacementRecordWriter — 0.1에 선택 파일·적용한 덮어쓰기 키만 더함. 2026-11-24 G52–G53: 공간 설정이
@@ -25,7 +29,7 @@ using Newtonsoft.Json.Linq;
 
 namespace IFS.SceneSpec.Placement
 {
-    public enum PlacementPhase { Setup, Intro, Practice, Baseline, PreItems, PreWait, Condition, PostItems, PostWait, StopDistance, CheckItems, Done }
+    public enum PlacementPhase { Setup, SpaceChoice, Intro, Practice, Baseline, PreItems, PreWait, Condition, PostItems, PostWait, StopDistance, CheckItems, Done }
 
     public sealed class PlacementSession : IDisposable
     {
@@ -115,6 +119,28 @@ namespace IFS.SceneSpec.Placement
 
         // 눈높이(G60-3)
         readonly double _eyeOffset;
+        // 높이 하한(CP17-3, 2026-11-28 앉은 자세): relative에서 옮긴 물체 높이가 (물체 경계 반지름 + FloorClearanceM)보다 낮으면 그 값으로 올린다.
+        //   연습 목표는 (연습 상자 한 변 / 2 + FloorClearanceM). 설정 높이·E·반지름으로 시작 때 정해지고 세션 동안 바뀌지 않는다.
+        readonly double _startH, _stopH, _sysMoveH, _pracTargetH, _objFloor, _cubeFloor;
+        readonly List<string> _heightFloored = new List<string>();
+        // 안내 판 하한(러너가 판을 놓을 때마다 알려 준다 — ReportPanelCenter)
+        int _panelReports;
+        bool _panelFloorApplied;
+        double _panelBase = double.NaN, _panelMin = double.PositiveInfinity, _panelMax = double.NegativeInfinity;
+        // 세션 중 XR 끊김(CP17-1): 러너가 매 프레임 알려 준다(ReportXrHead). XR로 시작한 사람 실행(info.XrMonitored)만
+        bool _xrLost;
+        int _xrLostCount;
+        double _xrLostAt, _xrLostTotal;
+
+        // 공간 고르기(2026-11-28, environmentChoice participant)
+        string[] _spaceOrder;
+        int _spaceIndex;
+        readonly HashSet<string> _spaceSeen = new HashSet<string>(StringComparer.Ordinal);
+        readonly Dictionary<string, double> _spaceViewSeconds = new Dictionary<string, double>(StringComparer.Ordinal);
+        double _spaceStart, _spaceShownAt, _spaceAdvanceAt;
+        int _spaceSwitches, _spaceIgnored;
+        bool _spaceDecided;
+        string _spaceBefore;
 
         // 헤드셋 UI 개선(G63) — 설정 ui*·hidePanelInDistancePhases를 켰을 때만 쓴다(꺼져 있으면 흐름·기록이 G63 전과 같다)
         List<string> _instrPages;   // (1) 평정 지시문을 문장 경계에서 나눈 쪽(한 쪽이면 null)
@@ -136,6 +162,8 @@ namespace IFS.SceneSpec.Placement
                 throw new ArgumentException("놓기 도움(placementAssist)을 켰는데 문구 파일에 " + string.Join(", ", _text.AssistKeysMissing()) + " 문구가 없습니다(문구 파일 0.3 이상)");
             if (_cfg.IsStopLoop && _text.LoopKeysMissing().Count > 0)
                 throw new ArgumentException("멈춤 거리 반복 멈춤(stopMode loop)을 켰는데 문구 파일에 " + string.Join(", ", _text.LoopKeysMissing()) + " 문구가 없습니다(문구 파일 0.6 이상)");
+            if (_cfg.ParticipantChoosesSpace && _text.SpaceChoiceKeysMissing().Count > 0)
+                throw new ArgumentException("참여자가 공간을 고르게(environmentChoice participant) 했는데 문구 파일에 " + string.Join(", ", _text.SpaceChoiceKeysMissing()) + " 문구가 없습니다(문구 파일 0.9 이상)");
             _info = info ?? new PlacementSessionInfo();
             if (_cfg.EffectiveControlMode == PlacementConfig.ModeReplay && (replay == null || replay.Samples.Count == 0))
                 throw new ArgumentException("controlMode replay에는 재생할 궤적이 필요합니다");
@@ -144,19 +172,38 @@ namespace IFS.SceneSpec.Placement
                 // G60-3: relative에서는 눈높이(보정 결과 또는 데스크톱 고정값)가 있어야 시작한다
                 var eye = _info.EyeHeight;
                 if (eye == null) throw new ArgumentException("eyeHeightMode relative인데 눈높이 보정이 없습니다(Check 단계에서 H로 재기)");
-                if (eye.Source != EyeHeightInfo.SourceDesktopFixed && (eye.MeasuredM < _cfg.eyeHeightMinM - 1e-9 || eye.MeasuredM > _cfg.eyeHeightMaxM + 1e-9))
-                    throw new ArgumentException($"눈높이 {eye.MeasuredM.ToString("0.000", Inv)} m가 [eyeHeightMinM, eyeHeightMaxM] 밖입니다");
+                if (eye.Source != EyeHeightInfo.SourceDesktopFixed && (eye.MeasuredM < _cfg.EyeRangeMinM - 1e-9 || eye.MeasuredM > _cfg.EyeRangeMaxM + 1e-9))
+                    throw new ArgumentException(_cfg.IsSeated
+                        ? $"눈높이 {eye.MeasuredM.ToString("0.000", Inv)} m가 앉은 자세 범위 [eyeHeightSeatedMinM, eyeHeightSeatedMaxM] 밖입니다"
+                        : $"눈높이 {eye.MeasuredM.ToString("0.000", Inv)} m가 [eyeHeightMinM, eyeHeightMaxM] 밖입니다");
                 _eyeOffset = _cfg.EyeOffsetFor(eye.MeasuredM);
             }
+            // CP17-3: relative에서만 높이 하한(none이면 Eye()가 설정 높이 그대로라 하한을 두지 않는다 — 예전과 같은 값)
+            double objFloor = _objFloor = _cfg.IsEyeRelative && _info.ObjectBoundingRadiusM is double rad && rad > 0 ? rad + FloorClearanceM : 0;
+            double cubeFloor = _cubeFloor = _cfg.IsEyeRelative ? _cfg.practiceCubeSizeM / 2 + FloorClearanceM : 0;
+            _startH = Floored(Eye(_cfg.startHeightM), objFloor, "start");
+            _stopH = Floored(Eye(_cfg.stopHeightM), objFloor, "stop");
+            _sysMoveH = Floored(Eye(_cfg.systemMoveTargetHeightM), objFloor, "system_move_target", _cfg.EffectiveControlMode == PlacementConfig.ModeSystemMove);
+            _pracTargetH = Floored(Eye(_cfg.practiceTargetHeightM), cubeFloor, "practice_target", _cfg.HasPractice);
+            // 앉은 자세이거나 하한이 걸린 세션만 manifest heightFloor(선 자세에서 걸리지 않으면 키 없음 — 기존 relative 기록과 같은 바이트)
+            _info.HeightFloor = _cfg.IsEyeRelative && (_cfg.IsSeated || _heightFloored.Count > 0) ? HeightFloorJson(objFloor, cubeFloor) : null;
+            if (_info.XrMonitored) _info.XrConnection = XrConnectionJson();
             _replay = replay;
             _clock = new HeadSampleClock(_cfg.headSampleHz);
             _headSource = _info.HeadSource;
             GrabRadiusM = _cfg.grabRadiusMinM;
-            StartPosition = PlacementGeometry.FromPolar(_cfg.startDistanceM, 0, Eye(_cfg.startHeightM));
+            StartPosition = PlacementGeometry.FromPolar(_cfg.startDistanceM, 0, _startH);
             _obj = StartPosition;
             _conditionFinal = StartPosition;
             _stopPlan = StopDistanceSchedule.Build(_cfg, _info.ParticipantNumber);
             if (_cfg.IsStopLoop) _loopPlan = StopLoopSchedule.Build(_cfg, _info.ParticipantNumber);
+
+            if (_cfg.ParticipantChoosesSpace)
+            {
+                _spaceOrder = PlacementSpaceChoice.Order(_info.ParticipantNumber);
+                _spaceBefore = _cfg.environment;
+                _info.SpaceChoice = SpaceChoiceJson(null, null);   // 고르기 전 — 정하면(또는 중단하면) manifest를 다시 쓴다
+            }
 
             _writer = new PlacementRecordWriter(recordRoot, _info.ParticipantNumber, _info.SessionId, _info.StartedUtc);
             RecordDirectory = _writer.Directory;
@@ -175,7 +222,7 @@ namespace IFS.SceneSpec.Placement
             if (_info.AutoMode) Event("auto_mode", "scripted inputs (verification only, not participant data)");
             if (_cfg.IsEyeRelative) Event("eye_height_calibrated", _info.EyeHeight.EventDetail(_cfg));
             foreach (var w in warnings ?? Enumerable.Empty<string>()) Event("warning", w);
-            GoTo(PlacementPhase.Intro);
+            GoTo(_cfg.ParticipantChoosesSpace ? PlacementPhase.SpaceChoice : PlacementPhase.Intro);
         }
 
         // ── 읽기 ─────────────────────────────────────────────────────────
@@ -250,7 +297,11 @@ namespace IFS.SceneSpec.Placement
         /// <summary>직전 상태 변화(라운드 시작·멈춤·재개)부터 지난 시간(초).</summary>
         public double StopLoopSecondsSinceChange => _roundActive ? _now - _lastChange : 0;
         /// <summary>이번 라운드 남은 시간(초). 라운드 밖이면 NaN.</summary>
-        public double StopLoopSecondsLeft => _roundActive ? Math.Max(0, _cfg.stopLoopRoundSeconds - (_now - _roundStart)) : double.NaN;
+        public double StopLoopSecondsLeft => _roundActive ? Math.Max(0, RoundLimitSeconds(_loopPlan[_roundIndex]) - (_now - _roundStart)) : double.NaN;
+        /// <summary>이번 라운드가 시작된 뒤 지난 시간(초). 라운드 밖이면 NaN.</summary>
+        public double StopLoopRoundElapsed => _roundActive ? _now - _roundStart : double.NaN;
+        /// <summary>라운드 시간 상한(초): 연습 라운드는 stopLoopPracticeRoundSeconds, 본 라운드는 stopLoopRoundSeconds(2026-11-28).</summary>
+        public double RoundLimitSeconds(StopRoundPlan plan) => plan != null && plan.Practice ? _cfg.stopLoopPracticeRoundSeconds : _cfg.stopLoopRoundSeconds;
         // ── 눈높이(G60-3) ───────────────────────────────────────────
         /// <summary>물체 높이를 옮긴 양(E − 기준, m). none이면 0.</summary>
         public double EyeOffsetM => _eyeOffset;
@@ -265,7 +316,8 @@ namespace IFS.SceneSpec.Placement
         public bool RatingConfirmFlash => _flashing;
         /// <summary>(7) 조건·멈춤 거리 단계에서 읽을 시간이 지나 안내 판을 숨기는 중(hidePanelInDistancePhases).</summary>
         public bool PanelHidden => _cfg.hidePanelInDistancePhases && !Finished
-            && (Phase == PlacementPhase.Condition || Phase == PlacementPhase.StopDistance) && SecondsInPhase >= _cfg.hidePanelReadSeconds - Eps;
+            && (Phase == PlacementPhase.Condition || Phase == PlacementPhase.StopDistance) && SecondsInPhase >= _cfg.hidePanelReadSeconds - Eps
+            && !NoticeOnPanel;   // 2026-11-28: 확정 알림·본 측정 시작 안내가 보이는 동안은 판을 다시 보인다
 
         /// <summary>(4) 이번 프레임까지 쌓인 햅틱 펄스를 가져간다(러너가 XR 컨트롤러로 보낸다). events.csv haptic은 세션이 이미 남겼다.</summary>
         public List<PlacementHapticPulse> TakeHaptics()
@@ -283,6 +335,21 @@ namespace IFS.SceneSpec.Placement
             _haptics.Add(p);
             Event("haptic", p.EventDetail());
         }
+        // ── 공간 고르기(2026-11-28) ───────────────────────────────────
+        /// <summary>지금 그려야 할 배경 공간: 공간 고르기 중(정하기 전)이면 참여자가 보고 있는 공간, 아니면 세션 설정 environment(고른 값).</summary>
+        public string ShownEnvironment => Phase == PlacementPhase.SpaceChoice && !_spaceDecided && _spaceOrder != null ? _spaceOrder[_spaceIndex] : _cfg.environment;
+        /// <summary>공간 고르기 순서(참여자 번호로 돌림). 참여자가 고르지 않는 세션이면 null.</summary>
+        public IReadOnlyList<string> SpaceChoiceOrder => _spaceOrder;
+        /// <summary>지금 보이는 공간의 차례(0부터).</summary>
+        public int SpaceChoiceIndex => _spaceIndex;
+        /// <summary>지금까지 본 공간 수.</summary>
+        public int SpaceChoiceSeenCount => _spaceSeen.Count;
+        /// <summary>세 공간을 모두 봤다(참여자 확인은 이때부터 받는다).</summary>
+        public bool SpaceChoiceSeenAll => _spaceOrder != null && _spaceSeen.Count >= _spaceOrder.Length;
+        /// <summary>공간을 정했다(확정 알림을 보이는 중이거나 그 뒤).</summary>
+        public bool SpaceChoiceDecided => _spaceDecided;
+        /// <summary>정한 공간을 누가 정했나: participant_confirm | experimenter | abort. 정하기 전이면 null.</summary>
+        public string SpaceChosenBy { get; private set; }
         /// <summary>이 세션의 눈높이 E(relative일 때 보정값, 아니면 null).</summary>
         public double? EyeHeightM => _cfg.IsEyeRelative ? _info.EyeHeight?.MeasuredM : null;
         public int GrabCount => _grabCount;
@@ -300,6 +367,7 @@ namespace IFS.SceneSpec.Placement
             switch (p)
             {
                 case PlacementPhase.Setup: return "setup";
+                case PlacementPhase.SpaceChoice: return "space_choice";
                 case PlacementPhase.Intro: return "intro";
                 case PlacementPhase.Practice: return "practice";
                 case PlacementPhase.Baseline: return "baseline";
@@ -340,8 +408,106 @@ namespace IFS.SceneSpec.Placement
 
         static string F(double v, string fmt = "0.0000") => v.ToString(fmt, Inv);
 
-        /// <summary>설정 높이 → 실제 높이(G60-3 relative면 + (E − 기준), none이면 그대로).</summary>
+        /// <summary>설정 높이 → 실제 높이(G60-3 relative면 + (E − 기준), none이면 그대로). 물체·연습 상자 자리에는 Floored를 거친 값을 쓴다.</summary>
         double Eye(double configuredHeightM) => configuredHeightM + _eyeOffset;
+
+        /// <summary>높이 하한의 바닥 위 여유(m, CP17-3): 물체·연습 상자·안내 판의 아래 끝이 바닥에서 이만큼 위에 남게.</summary>
+        public const double FloorClearanceM = 0.05;
+
+        /// <summary>CP17-3: 옮긴 높이 h가 하한 floor(0 이하면 하한 없음)보다 낮으면 floor. 이 세션이 쓰는 자리(used)에서 하한이 걸리면 이름을 남긴다.</summary>
+        double Floored(double h, double floor, string name, bool used = true)
+        {
+            if (floor <= 0 || h >= floor - 1e-9) return h;
+            if (used) _heightFloored.Add(name);
+            return floor;
+        }
+
+        /// <summary>manifest heightFloor(relative이고 앉은 자세이거나 하한이 걸렸을 때만): 하한 규칙, 실제 높이, 하한이 걸린 자리,
+        /// 안내 판 중심(러너가 알려 준 값 — 세션 끝에 다시 쓴다).</summary>
+        JObject HeightFloorJson(double objFloor, double cubeFloor)
+        {
+            var j = new JObject
+            {
+                ["clearanceM"] = FloorClearanceM,
+                ["objectRadiusM"] = _info.ObjectBoundingRadiusM is double r && r > 0 ? Math.Round(r, 5) : (double?)null,
+                ["objectFloorM"] = objFloor > 0 ? Math.Round(objFloor, 5) : (double?)null,
+                ["startHeightM"] = Math.Round(_startH, 5),
+                ["stopHeightM"] = Math.Round(_stopH, 5),
+            };
+            if (_cfg.EffectiveControlMode == PlacementConfig.ModeSystemMove) j["systemMoveTargetHeightM"] = Math.Round(_sysMoveH, 5);
+            if (_cfg.HasPractice) { j["practiceFloorM"] = Math.Round(cubeFloor, 5); j["practiceTargetHeightM"] = Math.Round(_pracTargetH, 5); }
+            j["applied"] = new JArray(_heightFloored.Cast<object>().ToArray());
+            j["panel"] = PanelFloorJson();
+            return j;
+        }
+
+        /// <summary>heightFloor.panel: 러너가 판을 놓은 적이 없으면(판이 없는 씬·자동 시행 전) null.</summary>
+        JToken PanelFloorJson() => _panelReports == 0 ? JValue.CreateNull() : (JToken)new JObject
+        {
+            ["floorMarginM"] = FloorClearanceM,
+            ["baseCenterM"] = Math.Round(_panelBase, 4),
+            ["floorApplied"] = _panelFloorApplied,
+            ["centerMinM"] = Math.Round(_panelMin, 4),
+            ["centerMaxM"] = Math.Round(_panelMax, 4),
+        };
+
+        /// <summary>CP17-3: 러너가 안내 판을 놓을 때마다 부른다 — 하한 전 판 중심 높이(설정 높이 + (E − 기준)), 실제 중심 높이, 하한이 걸렸나.
+        /// relative일 때만 모은다(manifest heightFloor.panel, 세션 끝에 다시 씀). 하한이 처음 걸리면 events panel_floor 한 줄.</summary>
+        public void ReportPanelCenter(double baseCenterM, double centerM, bool floorApplied)
+        {
+            if (!_cfg.IsEyeRelative || Finished) return;
+            _panelReports++;
+            _panelBase = baseCenterM;
+            _panelMin = Math.Min(_panelMin, centerM);
+            _panelMax = Math.Max(_panelMax, centerM);
+            if (floorApplied && !_panelFloorApplied)
+                Event("panel_floor", $"base_center_m={F(baseCenterM)};center_m={F(centerM)};phase={PhaseLabel}");
+            _panelFloorApplied |= floorApplied;
+        }
+
+        /// <summary>안내 판 하한이 이 세션에서 한 번이라도 걸렸다(점검용).</summary>
+        public bool PanelFloorApplied => _panelFloorApplied;
+        /// <summary>물체·연습 상자 높이 하한이 걸린 자리(start | stop | system_move_target | practice_target).</summary>
+        public IReadOnlyList<string> HeightFloored => _heightFloored;
+
+        // ── 세션 중 XR 끊김(CP17-1, 2026-11-28) ─────────────────────────
+        /// <summary>러너가 매 프레임 부른다(XR 헤드셋이 지금 켜져 있나). XR로 시작한 사람 실행(info.XrMonitored)만 본다 — 데스크톱·자동 시행은 무시.
+        /// 켜짐 → 꺼짐이면 events xr_lost, 꺼짐 → 켜짐이면 xr_regained, 그때마다 manifest xrConnection을 다시 쓴다.
+        /// 타이머·단계는 건드리지 않는다(측정 절차 그대로 — 멈출지·되돌릴지는 실험자가 중단으로 정한다).</summary>
+        public void ReportXrHead(bool active)
+        {
+            if (!_info.XrMonitored || Finished) return;
+            string utc = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffZ", Inv);
+            if (!active && !_xrLost)
+            {
+                _xrLost = true;
+                _xrLostCount++;
+                _xrLostAt = _now;
+                Event("xr_lost", $"count={_xrLostCount};phase={PhaseLabel};utc={utc}");
+            }
+            else if (active && _xrLost)
+            {
+                _xrLost = false;
+                _xrLostTotal += _now - _xrLostAt;
+                Event("xr_regained", $"count={_xrLostCount};phase={PhaseLabel};lost_ms={Ms(_now - _xrLostAt)};utc={utc}");
+            }
+            else return;
+            _info.XrConnection = XrConnectionJson();
+            _writer.WriteJson(PlacementRecordWriter.ManifestFile, PlacementManifest.Build(_cfg, _info));
+        }
+
+        /// <summary>XR 헤드셋 연결이 지금 끊겨 있다(XR로 시작한 세션에서만 true가 된다).</summary>
+        public bool XrLostNow => _xrLost;
+        /// <summary>이 세션에서 XR 연결이 끊긴 횟수.</summary>
+        public int XrLostCount => _xrLostCount;
+
+        JObject XrConnectionJson() => new JObject
+        {
+            ["monitored"] = true,
+            ["lostCount"] = _xrLostCount,
+            ["lostMsTotal"] = Ms(_xrLostTotal + (_xrLost ? _now - _xrLostAt : 0)),
+            ["lostNow"] = _xrLost,
+        };
 
         static string Where(PVec3 p) =>
             $"distance_m={F(PlacementGeometry.HorizontalDistance(p))};azimuth_deg={F(PlacementGeometry.AzimuthDeg(p), "0.00")};height_m={F(p.Y)}";
@@ -372,6 +538,8 @@ namespace IFS.SceneSpec.Placement
             _panelHiddenLogged = false;
             _flashing = false;
             _instrPages = null;
+            _noticeUntil = double.NegativeInfinity;   // 확정 알림은 단계를 넘지 않는다
+            _noticeBackKey = _noticeBackText = null;
             Event("phase", PhaseName(p));
         }
 
@@ -381,10 +549,61 @@ namespace IFS.SceneSpec.Placement
             ParticipantText = key != null ? _text[key] : null;
         }
 
+        // ── 확인 버튼 안내·확정 알림(연구 책임자 결정 2026-11-28, 문구 파일 0.8) ─────────
+        // 확인 버튼을 쓰는 안내(배치 연습·직접 배치·가리켜 지정·반복 멈춤) 끝에 주 사용 손(xrHand)의 버튼 안내를 한 칸 띄워 잇는다.
+        // 확인을 받아들이면 확정 알림(confirm_done)을 보인다: 조건 단계는 ConfirmNoticeSeconds 동안 뒤 원래 안내로 돌아가고,
+        // 반복 멈춤은 라운드 사이 간격(stopItiSeconds) 동안 보인다(간격·확정 조건·기록 시각은 그대로). 시간 초과에는 보이지 않는다.
+        // 파일에 키가 없으면(0.7 이전 파일) 예전처럼 붙이지도 보이지도 않는다.
+        /// <summary>조건 단계 확정 알림을 보이는 시간(초).</summary>
+        public const double ConfirmNoticeSeconds = 2.0;
+        double _noticeUntil = double.NegativeInfinity;
+        string _noticeBackKey, _noticeBackText;
+        bool _mainStartShown;
+
+        /// <summary>이 세션의 확인 버튼 안내 키(xrHand에 따라).</summary>
+        public string ConfirmButtonKey => PlacementTaskText.ConfirmButtonKeyFor(_cfg.xrHand);
+        /// <summary>확정 알림이 보이는 중(조건 단계 타이머 또는 반복 멈춤 라운드 사이).</summary>
+        public bool ConfirmNoticeActive => ParticipantTextKey != null && ParticipantTextKey.StartsWith(PlacementTaskText.ConfirmDoneKey, StringComparison.Ordinal);
+        /// <summary>안내 판 숨기기(hidePanelInDistancePhases)를 잠시 풀어야 하는 알림이 보이는 중(확정 알림·본 측정 시작 안내).</summary>
+        bool NoticeOnPanel => ConfirmNoticeActive || ParticipantTextKey == PlacementTaskText.StopMainStartKey;
+
+        void SetTextWithButton(string key, string text)
+        {
+            string bk = ConfirmButtonKey;
+            // 줄을 바꾸지 않고 마지막 문단에 한 칸 띄워 잇는다(줄을 바꾸면 직접 배치 + 범위 안내 판이 6줄이 되어 아래 가장자리가 35°를 넘음, G63 (1))
+            if (_text[bk] != null) { key += "+" + bk; text += " " + _text[bk]; }
+            ParticipantTextKey = key;
+            ParticipantText = text;
+        }
+
+        void ShowTextWithButton(string key) => SetTextWithButton(key, _text[key]);
+
+        /// <summary>조건 단계 확정 알림: 지금 안내를 기억해 두고 ConfirmNoticeSeconds 동안 confirm_done을 보인다.</summary>
+        void ShowConfirmNotice()
+        {
+            if (_text[PlacementTaskText.ConfirmDoneKey] == null) return;
+            if (_noticeBackKey == null) { _noticeBackKey = ParticipantTextKey; _noticeBackText = ParticipantText; }
+            ShowText(PlacementTaskText.ConfirmDoneKey);
+            _noticeUntil = _now + ConfirmNoticeSeconds;   // events.csv에는 새 사건을 더하지 않는다(보인 때 = confirm·point_select 사건 시각)
+        }
+
+        /// <summary>조건 단계 확정 알림 시간이 지나면 원래 안내로 돌린다.</summary>
+        void RestoreNoticeIfDue()
+        {
+            if (_noticeBackKey == null || _now < _noticeUntil - Eps) return;
+            ParticipantTextKey = _noticeBackKey;
+            ParticipantText = _noticeBackText;
+            _noticeBackKey = _noticeBackText = null;
+        }
+
         void GoTo(PlacementPhase p)
         {
             switch (p)
             {
+                case PlacementPhase.SpaceChoice:
+                    if (!_cfg.ParticipantChoosesSpace) { GoTo(PlacementPhase.Intro); return; }   // 기본값: 단계 없음(예전과 같은 흐름)
+                    EnterSpaceChoice();
+                    break;
                 case PlacementPhase.Intro:
                     SetPhase(p);
                     _visible = false;
@@ -461,7 +680,7 @@ namespace IFS.SceneSpec.Placement
                     _stopIndex = -1;
                     _roundActive = false;
                     _roundIndex = -1;
-                    ShowText(_cfg.IsStopLoop ? PlacementTaskText.StopLoopKey : "stop_distance");
+                    ShowText(_cfg.IsStopLoop ? PlacementTaskText.StopLoopKey : "stop_distance");   // 확인 버튼 안내는 멈춘 동안에만(ShowStopLoopText)
                     break;
                 case PlacementPhase.Done:
                     Finish(true, null);
@@ -562,6 +781,8 @@ namespace IFS.SceneSpec.Placement
                 ParticipantTextKey = "condition_place+" + PlacementTaskText.PlacementRangeKey;
                 ParticipantText = _text["condition_place"] + "\n" + _text[PlacementTaskText.PlacementRangeKey];
             }
+            // 2026-11-28: 확인 버튼을 쓰는 조건(직접 배치·가리켜 지정)이면 버튼 안내를 맨 아래에(보기만 static·system_move·replay는 확인 버튼이 없다)
+            if (_cfg.IsPlace || Mode == PlacementConfig.ModePointSelect) SetTextWithButton(ParticipantTextKey, ParticipantText);
             _trajectory = new PlacementTrajectory
             {
                 SourceSessionId = _info.SessionId, SampleHz = _cfg.headSampleHz,
@@ -640,6 +861,7 @@ namespace IFS.SceneSpec.Placement
             _confirmMs = CondMs;
             Event("confirm", $"{Where(_obj)};t_ms={_confirmMs}");
             Haptic(PlacementHaptics.Confirm);
+            ShowConfirmNotice();   // 2026-11-28: 확정 알림(약 2초 뒤 원래 안내). 조건 단계 길이·기록은 그대로
             if (_cfg.conditionEndsOnConfirm) EndCondition();
         }
 
@@ -672,7 +894,7 @@ namespace IFS.SceneSpec.Placement
         {
             if (!_moveStarted && SecondsInPhase >= _cfg.systemMoveDelaySeconds - Eps)
             {
-                var target = PlacementGeometry.FromPolar(_cfg.systemMoveTargetDistanceM, _cfg.systemMoveTargetAzimuthDeg, Eye(_cfg.systemMoveTargetHeightM));
+                var target = PlacementGeometry.FromPolar(_cfg.systemMoveTargetDistanceM, _cfg.systemMoveTargetAzimuthDeg, _sysMoveH);
                 StartMove(target, "system_move_start", $"target_{Where(ClampSpace(target)).Replace(";", ";target_")};speed_mps={F(_cfg.systemMoveSpeedMps)}");
                 return;   // 움직임은 다음 프레임부터
             }
@@ -691,6 +913,7 @@ namespace IFS.SceneSpec.Placement
                 _confirmMs = CondMs;
                 var target = new PVec3(pt.X, _obj.Y, pt.Z);   // 높이는 지금 높이를 지킨다(바닥의 점만 고른다)
                 Haptic(PlacementHaptics.Confirm);
+                ShowConfirmNotice();   // 2026-11-28: 확정 알림
                 StartMove(target, "point_select", $"x={F(pt.X)};z={F(pt.Z)};distance_m={F(PlacementGeometry.HorizontalDistance(pt))};" +
                                                   $"azimuth_deg={F(PlacementGeometry.AzimuthDeg(pt), "0.00")};t_ms={_confirmMs}");
                 return;
@@ -763,6 +986,112 @@ namespace IFS.SceneSpec.Placement
             };
         }
 
+        // ── 공간 고르기(2026-11-28 연구 책임자 결정) ──────────────────────
+        void EnterSpaceChoice()
+        {
+            SetPhase(PlacementPhase.SpaceChoice);
+            _visible = false;
+            _state = StateIdle;
+            _spaceIndex = 0;
+            _spaceSeen.Clear();
+            _spaceViewSeconds.Clear();
+            foreach (var env in _spaceOrder) _spaceViewSeconds[env] = 0;
+            _spaceSeen.Add(_spaceOrder[0]);
+            _spaceStart = _spaceShownAt = _now;
+            _spaceSwitches = _spaceIgnored = 0;
+            _spaceDecided = false;
+            SpaceChosenBy = null;
+            ShowSpaceChoiceText();
+            Event("space_choice_start", $"order={string.Join("|", _spaceOrder)};rule={PlacementSpaceChoice.OrderRule};shown={_spaceOrder[0]};before={_spaceBefore}");
+        }
+
+        /// <summary>공간 고르기 안내 + 확인 버튼 안내(한 칸 띄워 이음) + 줄을 바꿔 위치 줄("공간 i / n").</summary>
+        void ShowSpaceChoiceText()
+        {
+            string key = PlacementTaskText.SpaceChoiceKey, text = _text[PlacementTaskText.SpaceChoiceKey];
+            string bk = ConfirmButtonKey;
+            if (_text[bk] != null) { key += "+" + bk; text += " " + _text[bk]; }
+            string pos = _text.SpaceChoicePosition(_spaceIndex + 1, _spaceOrder.Length);
+            if (pos != null) { key += "+" + PlacementTaskText.SpaceChoicePositionKey; text += "\n" + pos; }
+            ParticipantTextKey = key;
+            ParticipantText = text;
+        }
+
+        void StepSpaceChoice(bool nextPress, bool confirmPress)
+        {
+            if (_spaceDecided)
+            {
+                if (_now >= _spaceAdvanceAt - Eps) GoTo(PlacementPhase.Intro);   // 확정 알림이 끝나면 intro
+                return;
+            }
+            if (confirmPress)
+            {
+                if (SpaceChoiceSeenAll) { Haptic(PlacementHaptics.Confirm); DecideSpace(PlacementSpaceChoice.ByParticipant); return; }
+                _spaceIgnored++;
+                Event("space_choice_confirm_ignored", $"reason=not_all_seen;seen={_spaceSeen.Count};shown={_spaceOrder[_spaceIndex]}");
+            }
+            if (nextPress)
+            {
+                string prev = _spaceOrder[_spaceIndex];
+                double viewed = _now - _spaceShownAt;
+                _spaceViewSeconds[prev] += viewed;
+                _spaceIndex = (_spaceIndex + 1) % _spaceOrder.Length;
+                _spaceSwitches++;
+                _spaceShownAt = _now;
+                _spaceSeen.Add(_spaceOrder[_spaceIndex]);
+                ShowSpaceChoiceText();
+                Event("space_choice_show", $"env={_spaceOrder[_spaceIndex]};index={_spaceIndex + 1};prev={prev};prev_view_ms={Ms(viewed)};seen={_spaceSeen.Count}");
+            }
+        }
+
+        /// <summary>지금 보이는 공간으로 정한다(by: participant_confirm | experimenter | abort). abort가 아니면 세션 environment를 바꾸고 확정 알림 뒤 intro.</summary>
+        void DecideSpace(string by)
+        {
+            if (_spaceDecided) return;
+            string shown = _spaceOrder[_spaceIndex];
+            _spaceViewSeconds[shown] += _now - _spaceShownAt;
+            _spaceShownAt = _now;
+            _spaceDecided = true;
+            SpaceChosenBy = by;
+            bool abort = by == PlacementSpaceChoice.ByAbort;
+            string chosen = abort ? null : shown;
+            if (!abort) _cfg.environment = chosen;
+            _info.SpaceChoice = SpaceChoiceJson(chosen, by);
+            Event("space_choice_end", $"chosen={chosen ?? ""};by={by};duration_ms={Ms(_now - _spaceStart)};switches={_spaceSwitches};" +
+                                      $"seen_all={(SpaceChoiceSeenAll ? 1 : 0)};ignored_confirms={_spaceIgnored};view_ms={ViewMsText()}");
+            _writer.WriteJson(PlacementRecordWriter.ManifestFile, PlacementManifest.Build(_cfg, _info));   // 고른 공간으로 manifest를 다시 쓴다
+            if (abort) return;
+            if (_text[PlacementTaskText.ConfirmDoneKey] != null)
+            {
+                ShowText(PlacementTaskText.ConfirmDoneKey);
+                _spaceAdvanceAt = _now + ConfirmNoticeSeconds;
+            }
+            else GoTo(PlacementPhase.Intro);
+        }
+
+        string ViewMsText() => string.Join("|", _spaceOrder.Select(e => e + ":" + Ms(_spaceViewSeconds[e]).ToString(Inv)));
+
+        /// <summary>manifest environmentChoice(참여자가 고르는 세션만): 순서·고른 값·고른 방식·걸린 시간·공간마다 본 시간.</summary>
+        JObject SpaceChoiceJson(string chosen, string by)
+        {
+            var view = new JObject();
+            foreach (var e in _spaceOrder) view[e] = _spaceViewSeconds.TryGetValue(e, out var v) ? Ms(v) : 0;
+            return new JObject
+            {
+                ["mode"] = _cfg.environmentChoice,
+                ["orderRule"] = PlacementSpaceChoice.OrderRule,
+                ["order"] = new JArray(_spaceOrder.Cast<object>().ToArray()),
+                ["environmentBeforeChoice"] = _spaceBefore,
+                ["chosen"] = chosen,
+                ["chosenBy"] = by,
+                ["durationMs"] = by == null ? (long?)null : Ms(_now - _spaceStart),
+                ["switches"] = _spaceSwitches,
+                ["seenAll"] = SpaceChoiceSeenAll,
+                ["ignoredConfirms"] = _spaceIgnored,
+                ["viewMs"] = view,
+            };
+        }
+
         // ── 배치 연습(G53) ───────────────────────────────────────────────
         // 뜻 없는 회색 상자를 시작 자리(본 물체와 같은 자리)에서 표시된 목표 자리로 옮기고 확인한다. 잡기·밀기/당기기는 직접 배치와 같은 규칙.
         // 참여자 확인 = 연습 끝(목표와의 거리는 기록만 하고 다시 시키지 않음). 실험자 "다음"(Enter)으로 건너뛸 수 있다.
@@ -772,13 +1101,13 @@ namespace IFS.SceneSpec.Placement
             _visible = false;   // 본 물체는 숨긴다(연습 상자는 러너가 따로 그린다)
             _state = StateIdle;
             _pracPos = StartPosition;
-            _pracTarget = PlacementGeometry.FromPolar(_cfg.practiceTargetDistanceM, _cfg.practiceTargetAzimuthDeg, Eye(_cfg.practiceTargetHeightM));
+            _pracTarget = PlacementGeometry.FromPolar(_cfg.practiceTargetDistanceM, _cfg.practiceTargetAzimuthDeg, _pracTargetH);
             _pracHeld = false;
             _pracWritten = false;
             _pracGrabCount = 0;
             _pracHeldSeconds = 0;
             _pracStartTime = _now;
-            ShowText(PlacementTaskText.PracticeKey);
+            ShowTextWithButton(PlacementTaskText.PracticeKey);   // 2026-11-28: 확인 버튼 안내(연습은 확인하면 바로 끝나 확정 알림은 없다)
             Event("practice_start", $"target_{Where(_pracTarget).Replace(";", ";target_")};start_{Where(_pracPos).Replace(";", ";start_")};cube_m={F(_cfg.practiceCubeSizeM)}");
         }
 
@@ -885,7 +1214,7 @@ namespace IFS.SceneSpec.Placement
             bool atLimit = plan.IsApproach ? d <= _cfg.stopMinM + Eps : d >= _cfg.stopMaxM - Eps;
             if (atLimit) d = plan.IsApproach ? _cfg.stopMinM : _cfg.stopMaxM;
             _stopD = d;
-            SetObject(PlacementGeometry.FromPolar(d, 0, Eye(_cfg.stopHeightM)), false);
+            SetObject(PlacementGeometry.FromPolar(d, 0, _stopH), false);
             long rt = Ms(_now - _trialStart);
             // ② 버튼 → ③ 기록
             if (stopPress)
@@ -911,7 +1240,7 @@ namespace IFS.SceneSpec.Placement
             _trialActive = true;
             _trialStart = _now;
             _stopD = plan.StartM;
-            SetObject(PlacementGeometry.FromPolar(_stopD, 0, Eye(_cfg.stopHeightM)), false);
+            SetObject(PlacementGeometry.FromPolar(_stopD, 0, _stopH), false);
             _visible = true;
             _state = StateStop;
             _clock.Reset();
@@ -934,7 +1263,7 @@ namespace IFS.SceneSpec.Placement
         //   확정을 먼저 본다(멈춘 상태에서 둘을 함께 누르면 그 자리로 확정).
         //   토글은 직전에 받아들인 토글부터 stopLoopToggleDebounceMs 안이면 버린다(toggle_ignored 행). 다시 움직이면 멈추기 전 방향 그대로.
         //   라운드를 시작하는 프레임의 누름은 버린다(single과 같은 규칙). 누름은 '내려가는 순간'만 센다(Tick의 stopPress).
-        //   시간 상한(라운드 시작부터 stopLoopRoundSeconds)에 닿으면 확정값은 빈칸으로 두고 end_reason timeout_stopped | timeout_moving
+        //   시간 상한(라운드 시작부터 본 라운드 stopLoopRoundSeconds, 연습 라운드 stopLoopPracticeRoundSeconds)에 닿으면 확정값은 빈칸으로 두고 end_reason timeout_stopped | timeout_moving
         //   (원칙 2: 참여자가 확정하지 않은 값을 시스템이 정하지 않는다). 마지막 멈춤 거리는 last_stop_distance_m에 따로 남는다.
         public const string StatePaused = "stop_paused";
         /// <summary>확정값이 끝점에서 이 거리(m) 안이면 at_bound = 1.</summary>
@@ -964,7 +1293,7 @@ namespace IFS.SceneSpec.Placement
                     Adjust("turn", bound, DirName(_loopDir), false);
                 }
                 _stopD = Math.Min(_cfg.stopLoopMaxM, Math.Max(_cfg.stopLoopMinM, d));
-                SetObject(PlacementGeometry.FromPolar(_stopD, 0, Eye(_cfg.stopHeightM)), false);
+                SetObject(PlacementGeometry.FromPolar(_stopD, 0, _stopH), false);
             }
             // ② 확정(프레임 시작 때의 상태로 판단)
             if (confirmPress)
@@ -1007,7 +1336,7 @@ namespace IFS.SceneSpec.Placement
                 }
             }
             // ④ 시간 상한
-            if (_now - _roundStart >= _cfg.stopLoopRoundSeconds - Eps)
+            if (_now - _roundStart >= RoundLimitSeconds(_loopPlan[_roundIndex]) - Eps)
             {
                 string reason = _loopMoving ? StopLoopEnd.TimeoutMoving : StopLoopEnd.TimeoutStopped;
                 Adjust("timeout", _stopD, _loopMoving ? DirName(_loopDir) : _loopLastStopDir, false);
@@ -1028,11 +1357,11 @@ namespace IFS.SceneSpec.Placement
         void ShowStopLoopText()
         {
             if (_roundActive && !_loopMoving)
-            {
-                ParticipantTextKey = PlacementTaskText.StopLoopKey + "+" + PlacementTaskText.StopLoopHintKey;
-                ParticipantText = _text[PlacementTaskText.StopLoopKey] + "\n" + _text[PlacementTaskText.StopLoopHintKey];
-            }
+                SetTextWithButton(PlacementTaskText.StopLoopKey + "+" + PlacementTaskText.StopLoopHintKey,
+                    _text[PlacementTaskText.StopLoopKey] + "\n" + _text[PlacementTaskText.StopLoopHintKey]);
             else ShowText(PlacementTaskText.StopLoopKey);
+            // 2026-11-28: 확인 버튼 안내는 확정할 수 있는 때(멈춘 동안)에만 조작 안내 끝에 붙인다. 움직이는 동안·라운드 사이에도 붙이면
+            // 지시문 판이 6줄이 되어 아래 가장자리가 35°를 넘고(G63 (1)), 그때는 확인 버튼이 받아들여지지 않는다(G60-2).
         }
 
         /// <summary>stopadjust.csv 한 줄. changeState면 이 사건이 상태 변화(멈춤·재개)라 rt 기준 시각을 지금으로 옮긴다.</summary>
@@ -1058,7 +1387,7 @@ namespace IFS.SceneSpec.Placement
             _loopPoints.Add(plan.StartM);
             _loopResumes = 0;
             _loopLastStopDir = null;
-            SetObject(PlacementGeometry.FromPolar(_stopD, 0, Eye(_cfg.stopHeightM)), false);
+            SetObject(PlacementGeometry.FromPolar(_stopD, 0, _stopH), false);
             _visible = true;
             _state = StateStop;
             _clock.Reset();
@@ -1108,7 +1437,28 @@ namespace IFS.SceneSpec.Placement
             _visible = false;
             _state = StateIdle;
             _itiUntil = _now + _cfg.stopItiSeconds;
-            ShowText(PlacementTaskText.StopLoopKey);
+            if (reason == StopLoopEnd.Aborted) ShowText(PlacementTaskText.StopLoopKey);   // 중단: 알림 없음
+            else ShowStopRoundGapText(plan, confirmed);
+        }
+
+        /// <summary>라운드 사이 간격(stopItiSeconds)의 안내(2026-11-28 연구 책임자 결정). 확정했으면 confirm_done, 연습 뒤 첫 본 라운드 전이면
+        /// stop_main_start(한 번만, 확정했으면 confirm_done 아래에), 둘 다 아니면(시간 초과·중간 본 라운드) 예전처럼 지시문.
+        /// 간격의 길이·다음 라운드 시작 시각은 바꾸지 않는다 — 다음 라운드가 시작되면 지시문으로 돌아간다(StartRound).</summary>
+        void ShowStopRoundGapText(StopRoundPlan plan, bool confirmed)
+        {
+            bool done = confirmed && _text[PlacementTaskText.ConfirmDoneKey] != null;
+            bool mainNext = plan.Practice && _roundIndex + 1 < _loopPlan.Count && !_loopPlan[_roundIndex + 1].Practice;
+            bool start = mainNext && !_mainStartShown && _text[PlacementTaskText.StopMainStartKey] != null;
+            if (start) _mainStartShown = true;
+            if (done && start)
+            {
+                ParticipantTextKey = PlacementTaskText.ConfirmDoneKey + "+" + PlacementTaskText.StopMainStartKey;
+                ParticipantText = _text[PlacementTaskText.ConfirmDoneKey] + "\n" + _text[PlacementTaskText.StopMainStartKey];
+            }
+            else if (done) ShowText(PlacementTaskText.ConfirmDoneKey);
+            else if (start) ShowText(PlacementTaskText.StopMainStartKey);
+            else ShowText(PlacementTaskText.StopLoopKey);
+            // events.csv에는 새 사건을 더하지 않는다(보인 때 = stop_round_end 시각, 길이 = stopItiSeconds)
         }
 
         // ── 실험자 입력 ──────────────────────────────────────────────────
@@ -1164,6 +1514,10 @@ namespace IFS.SceneSpec.Placement
             if (Finished) return;
             switch (Phase)
             {
+                case PlacementPhase.SpaceChoice:
+                    if (!_spaceDecided) DecideSpace(PlacementSpaceChoice.ByExperimenter);   // 참여자가 말로 고른 때 등: 지금 보이는 공간으로
+                    else GoTo(PlacementPhase.Intro);   // 확정 알림을 건너뜀
+                    break;
                 case PlacementPhase.Intro:
                     GoTo(PlacementPhase.Practice);   // 연습이 없으면(기본값) 곧바로 baseline
                     break;
@@ -1224,12 +1578,16 @@ namespace IFS.SceneSpec.Placement
             if (Finished) return;
             _now += Math.Max(0, dt);
             _head = head;
+            RestoreNoticeIfDue();   // 2026-11-28: 조건 단계 확정 알림이 끝나면 원래 안내로
             bool stopPress = input.StopDown && !_stopPrevHeld;   // 내려가는 순간만(미리 누르고 있던 버튼은 떼었다 다시 눌러야 함)
             _stopPrevHeld = input.StopHeld || input.StopDown;
             if (_flashing && InItems && _now >= _flashUntil - Eps) NextItem();   // G63 (5): 확정 표시가 끝나면 다음 문항
             if (InItems) StepItems(input);
             switch (Phase)
             {
+                case PlacementPhase.SpaceChoice:
+                    StepSpaceChoice(stopPress, input.ConfirmDown);   // 방아쇠(데스크톱 Space) = 다음 공간, 확인 버튼 = 정하기
+                    break;
                 case PlacementPhase.Practice:
                     StepPractice(dt, input);
                     break;
@@ -1275,6 +1633,7 @@ namespace IFS.SceneSpec.Placement
             if (Finished) return;
             if (Phase == PlacementPhase.Condition && !_conditionWritten) EndCondition(advance: false);   // 중단해도 조건 단계 자료는 남긴다
             if (Phase == PlacementPhase.Practice && !_pracWritten) EndPractice("abort", advance: false);   // 연습 중 중단도 practice.json에 남긴다
+            if (Phase == PlacementPhase.SpaceChoice && !_spaceDecided) DecideSpace(PlacementSpaceChoice.ByAbort);   // 고르기 전 중단: chosen null로 manifest에
             if (Phase == PlacementPhase.StopDistance && _cfg.IsStopLoop && _roundActive)   // 라운드 중 중단도 stoprounds.csv에 남긴다(확정값 빈칸)
             {
                 Adjust("abort", _stopD, _loopMoving ? DirName(_loopDir) : _loopLastStopDir, false);
@@ -1286,6 +1645,11 @@ namespace IFS.SceneSpec.Placement
             Event("phase", "done");
             _visible = false;
             ShowText("done");
+            // CP17-1·3: XR 끊김 수(끝날 때 끊겨 있었으면 그 시간까지)와 안내 판 중심(러너가 알려 준 값)을 manifest에 다시 쓴다. 둘 다 없으면 쓰지 않는다
+            bool rewrite = false;
+            if (_info.XrMonitored) { _info.XrConnection = XrConnectionJson(); rewrite = true; }
+            if (_cfg.IsEyeRelative && _panelReports > 0 && (_info.HeightFloor != null || _panelFloorApplied)) { _info.HeightFloor = HeightFloorJson(_objFloor, _cubeFloor); rewrite = true; }
+            if (rewrite) _writer.WriteJson(PlacementRecordWriter.ManifestFile, PlacementManifest.Build(_cfg, _info));
             _writer.WriteJson(PlacementRecordWriter.SummaryFile, PlacementRecordWriter.BuildSummary(completed, abortedAt, DateTime.UtcNow));
             _writer.Dispose();
             _writer = null;

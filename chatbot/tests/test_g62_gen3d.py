@@ -377,7 +377,9 @@ def test_02_files_still_validate_and_runner_reads_all_three_versions():
     test_flag_off_output_identical_even_with_matching_assets, 0.2 파일의 러너 읽기는 FormAssetTests(C#)가 본다."""
     src = (REPO_ROOT / "unity/Assets/IFS/Runtime/Placement/PlacementSelection.cs").read_text(encoding="utf-8")
     known = re.search(r"KnownFormatVersions\s*=\s*\{([^}]*)\}", src).group(1)
-    assert set(re.findall(r'"([^"]+)"', known)) == {"ifs-selection/0.1", "ifs-selection/0.2", "ifs-selection/0.3"}
+    # G75: 0.4(참고 그림 고르기 기록 필드만 더함, 러너는 0.3 규칙으로 읽음). G77: 0.5(0.3 규칙 + llm_quoted, tests/test_g77_llm_fill.py)
+    assert set(re.findall(r'"([^"]+)"', known)) == {"ifs-selection/0.1", "ifs-selection/0.2", "ifs-selection/0.3",
+                                                      "ifs-selection/0.4", "ifs-selection/0.5"}
     s03 = re.search(r"SourceValues03\s*=\s*\{([^}]*)\}", src).group(1)
     assert re.findall(r'"([^"]+)"', s03) == SCHEMA03["$defs"]["source"]["enum"]
 

@@ -60,7 +60,14 @@ namespace IFS.SceneSpec.Placement
         /// <summary>이 라운드 번호(1부터)에서는 처음 움직이는 동안 확정을 한 번 눌러 본다(무시되어야 함 — confirm_ignored). 0이면 하지 않음.</summary>
         public int LoopConfirmWhileMovingRound = 2;
 
+        /// <summary>공간 고르기(2026-11-28, environmentChoice participant): SpaceChoiceDwellSeconds마다 방아쇠를 SpaceChoiceSteps번 눌러 다음 공간으로 넘기고
+        /// (3번이면 세 공간을 다 보고 첫 공간으로 돌아옴), 한 번 더 기다린 뒤 확인. 음수 SpaceChoiceSteps면 아무것도 누르지 않는다(실험자가 정해야 끝남).</summary>
+        public int SpaceChoiceSteps = 3;
+        public double SpaceChoiceDwellSeconds = 0.5;
+
         // 진행 상태
+        int _spacePresses;
+        bool _spaceConfirmed;
         int _ratingCount;
         bool _cancelled;
         double _nextKey;
@@ -82,6 +89,7 @@ namespace IFS.SceneSpec.Placement
         {
             var f = new PlacementInputFrame();
             if (s == null || s.Finished) return f;
+            if (s.Phase == PlacementPhase.SpaceChoice) return SpaceChoiceFrame(s);
             if (s.Phase == PlacementPhase.Condition) return s.Config.IsPlace ? PlaceFrame(s) : ViewFrame(s);
             if (s.Phase == PlacementPhase.Practice) return PracticeFrame(s);
             if (s.Phase == PlacementPhase.StopDistance && s.Config.IsStopLoop) return LoopFrame(s, dt);
@@ -128,6 +136,21 @@ namespace IFS.SceneSpec.Placement
                 _confirmed = true;
                 f.ConfirmDown = true;
             }
+            return f;
+        }
+
+        // 공간 고르기: 머문 뒤 방아쇠(다음 공간)를 정해진 수만큼, 그 뒤 확인
+        PlacementInputFrame SpaceChoiceFrame(PlacementSession s)
+        {
+            var f = new PlacementInputFrame();
+            if (SpaceChoiceSteps < 0 || s.SpaceChoiceDecided) return f;
+            double t = s.SecondsInPhase;
+            if (_spacePresses < SpaceChoiceSteps)
+            {
+                if (t >= (_spacePresses + 1) * SpaceChoiceDwellSeconds) { _spacePresses++; f.StopDown = f.StopHeld = true; }
+                return f;
+            }
+            if (!_spaceConfirmed && t >= (SpaceChoiceSteps + 1) * SpaceChoiceDwellSeconds) { _spaceConfirmed = true; f.ConfirmDown = true; }
             return f;
         }
 

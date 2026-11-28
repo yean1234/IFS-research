@@ -1,7 +1,10 @@
 // 눈높이 보정(G60-3, eyeHeightMode relative). 세션 시작 전 Check 단계에서 실험자 키 H(또는 실험자 화면 단추)로 한 번 잰다:
-//   참여자에게 "편하게 똑바로 서서 앞을 봐 주세요"라고 말로 안내(실험자 대본 — 헤드셋 문구 아님) → 20 Hz로 eyeCalibSeconds 동안
+//   참여자에게 과제 자세로 말로 안내(선 자세 "편하게 똑바로 서서 앞을 봐 주세요", 앉은 자세 "편하게 앉아서 앞을 봐 주세요" — 실험자 대본,
+//   헤드셋 문구 아님) → 20 Hz로 eyeCalibSeconds 동안
 //   머리(카메라) 높이와 pitch를 모아 중앙값을 E로 삼는다. 통과 조건: 추적 원점 Floor, 높이 표본 SD ≤ eyeCalibMaxSdM,
-//   |pitch 중앙값| ≤ eyeCalibMaxPitchDeg, E ∈ [eyeHeightMinM, eyeHeightMaxM]. 세션 동안 E는 바꾸지 않는다(다시 재면 물체가 움직이므로).
+//   |pitch 중앙값| ≤ eyeCalibMaxPitchDeg, E ∈ 자세 범위(eyeCalibPosture standing: [eyeHeightMinM, eyeHeightMaxM] 1.30–1.95,
+//   seated: [eyeHeightSeatedMinM, eyeHeightSeatedMaxM] 0.95–1.45 — 2026-11-28, 본 실험은 앉아서 하므로 보정도 앉은 자세로. 대본도 "편하게 앉아").
+//   세션 동안 E는 바꾸지 않는다(다시 재면 물체가 움직이므로).
 //   데스크톱·자동 시행은 E = eyeHeightReferenceM 고정(source desktop_fixed) — 데스크톱 카메라 높이가 기준값이라 none과 같은 자리.
 // UnityEngine에 의존하지 않는다(판정은 dotnet 테스트로 확인).
 using System;
@@ -36,18 +39,29 @@ namespace IFS.SceneSpec.Placement
         };
 
         /// <summary>manifest eyeHeight 블록(relative일 때만 manifest 맨 끝에 넣는다).</summary>
-        public JObject ManifestJson(PlacementConfig cfg) => new JObject
+        public JObject ManifestJson(PlacementConfig cfg)
         {
-            ["mode"] = cfg.eyeHeightMode,
-            ["referenceM"] = cfg.eyeHeightReferenceM,
-            ["measuredM"] = Math.Round(MeasuredM, 4),
-            ["offsetM"] = Math.Round(cfg.EyeOffsetFor(MeasuredM), 4),
-            ["sdM"] = SdM.HasValue ? Math.Round(SdM.Value, 4) : (double?)null,
-            ["pitchDeg"] = PitchDeg.HasValue ? Math.Round(PitchDeg.Value, 2) : (double?)null,
-            ["samples"] = Samples,
-            ["trackingOrigin"] = TrackingOrigin,
-            ["source"] = Source,
-        };
+            var j = new JObject
+            {
+                ["mode"] = cfg.eyeHeightMode,
+                ["referenceM"] = cfg.eyeHeightReferenceM,
+                ["measuredM"] = Math.Round(MeasuredM, 4),
+                ["offsetM"] = Math.Round(cfg.EyeOffsetFor(MeasuredM), 4),
+                ["sdM"] = SdM.HasValue ? Math.Round(SdM.Value, 4) : (double?)null,
+                ["pitchDeg"] = PitchDeg.HasValue ? Math.Round(PitchDeg.Value, 2) : (double?)null,
+                ["samples"] = Samples,
+                ["trackingOrigin"] = TrackingOrigin,
+                ["source"] = Source,
+            };
+            if (cfg.IsSeated)
+            {
+                // 2026-11-28 앉은 자세: 자세와 그 자세의 통과 범위(standing이면 키 없음 — 기존 기록과 같은 바이트, 범위는 config eyeHeightMinM·MaxM)
+                j["posture"] = cfg.eyeCalibPosture;
+                j["rangeMinM"] = cfg.EyeRangeMinM;
+                j["rangeMaxM"] = cfg.EyeRangeMaxM;
+            }
+            return j;
+        }
 
         /// <summary>events.csv eye_height_calibrated 상세.</summary>
         public string EventDetail(PlacementConfig cfg)
@@ -56,7 +70,8 @@ namespace IFS.SceneSpec.Placement
             return $"measured_m={MeasuredM.ToString("0.0000", inv)};reference_m={cfg.eyeHeightReferenceM.ToString("0.0000", inv)};" +
                    $"offset_m={cfg.EyeOffsetFor(MeasuredM).ToString("0.0000", inv)};sd_m={(SdM.HasValue ? SdM.Value.ToString("0.0000", inv) : "")};" +
                    $"pitch_deg={(PitchDeg.HasValue ? PitchDeg.Value.ToString("0.00", inv) : "")};samples={Samples.ToString(inv)};" +
-                   $"origin={(TrackingOrigin ?? "").Replace(';', ' ').Replace('=', ' ')};source={Source}";
+                   $"origin={(TrackingOrigin ?? "").Replace(';', ' ').Replace('=', ' ')};source={Source}" +
+                   (cfg.IsSeated ? ";posture=seated" : "");
         }
     }
 
@@ -108,12 +123,14 @@ namespace IFS.SceneSpec.Placement
             };
             var why = new List<string>();
             if (!floorOrigin) why.Add($"추적 원점이 바닥(Floor)이 아닙니다({r.Info.TrackingOrigin}) — 바닥 기준 높이를 잴 수 없음");
-            if (sd > cfg.eyeCalibMaxSdM + 1e-12) why.Add($"높이가 흔들렸습니다(SD {sd.ToString("0.000", inv)} m > {cfg.eyeCalibMaxSdM.ToString("0.000", inv)} m) — 가만히 선 채로 다시");
+            if (sd > cfg.eyeCalibMaxSdM + 1e-12) why.Add($"높이가 흔들렸습니다(SD {sd.ToString("0.000", inv)} m > {cfg.eyeCalibMaxSdM.ToString("0.000", inv)} m) — 가만히 {(cfg.IsSeated ? "앉은" : "선")} 채로 다시");
             if (double.IsNaN(pitch)) why.Add("머리 기울기(pitch)를 읽지 못했습니다");
             else if (Math.Abs(pitch) > cfg.eyeCalibMaxPitchDeg + 1e-12)
                 why.Add($"고개가 {(pitch > 0 ? "아래" : "위")}로 {Math.Abs(pitch).ToString("0.0", inv)}° 기울었습니다(한계 {cfg.eyeCalibMaxPitchDeg.ToString("0", inv)}°) — 앞을 보고 다시");
-            if (e < cfg.eyeHeightMinM - 1e-12 || e > cfg.eyeHeightMaxM + 1e-12)
-                why.Add($"눈높이 {e.ToString("0.000", inv)} m가 범위 [{cfg.eyeHeightMinM.ToString("0.00", inv)}, {cfg.eyeHeightMaxM.ToString("0.00", inv)}] 밖입니다 — 선 자세·바닥 설정(Guardian) 확인");
+            if (e < cfg.EyeRangeMinM - 1e-12 || e > cfg.EyeRangeMaxM + 1e-12)
+                why.Add(cfg.IsSeated
+                    ? $"눈높이 {e.ToString("0.000", inv)} m가 앉은 자세 범위 [{cfg.EyeRangeMinM.ToString("0.00", inv)}, {cfg.EyeRangeMaxM.ToString("0.00", inv)}] 밖입니다 — 앉은 자세·바닥 설정(Guardian) 확인"
+                    : $"눈높이 {e.ToString("0.000", inv)} m가 범위 [{cfg.eyeHeightMinM.ToString("0.00", inv)}, {cfg.eyeHeightMaxM.ToString("0.00", inv)}] 밖입니다 — 선 자세·바닥 설정(Guardian) 확인");
             r.Ok = why.Count == 0;
             r.Reason = r.Ok ? null : string.Join("; ", why);
             return r;

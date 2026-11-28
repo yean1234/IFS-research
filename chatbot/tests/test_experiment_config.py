@@ -44,16 +44,20 @@ def test_experiment_config_is_bridge_plus_v4_plus_backbone_values():
     assert exp.llm == v4.llm and exp.drift == v4.drift and exp.preview == v4.preview
     # 매핑 = v4(매퍼 v2), strict만 pilot과 같게
     assert exp.mapping == replace(v4.mapping, strict=True, proportions="scene_params.v2.json",   # G72: 비율
-                                  mist_kinds="scene_params.v2.json")                            # G74: 안개 입자 모양
+                                  mist_kinds="scene_params.v2.json",                            # G74: 안개 입자 모양
+                                  llm_fill=True)                                                # G77: LLM 빈칸 채우기
+    assert v4.mapping.llm_fill is False
     assert v4.mapping.proportions == "" and v4.mapping.mist_kinds == ""
     # 선택 단계 = v4, 초안 경고 줄만 참여자 보기에서 숨김(뼈대 3절·G59-8)
     # G72: 조절 항목 너비·높이·깊이(값 표 3.0.0 · 문구 0.7.0)
-    # G73: 문구 0.8.0(0.7.0 + [맞는 게 없어요] 뒤 생성 화면 문구 4개)
-    assert exp.selection == replace(v4.selection, participant_draft_banner=False, protocol="selection_protocol.v0.8.json",
-                                    table="candidate_values.v3.json")
+    # G73: 문구 0.8.0(0.7.0 + [맞는 게 없어요] 뒤 생성 화면 문구 4개). G75: 0.9.0(+ 참고 그림 고르기 화면 문구 4개)
+    # G77: 0.10.0(+ LLM이 채운 처음 값의 근거 인용 안내 1개). G79: 값 표 4.0.0(색상 고리) · 문구 0.11.0(+ 고리 문구 3개)
+    assert exp.selection == replace(v4.selection, participant_draft_banner=False, protocol="selection_protocol.v0.11.json",
+                                    table="candidate_values.v4.json")
     assert v4.selection.table == "candidate_values.v2.json" and v4.selection.protocol == "selection_protocol.v0.json"
     # 생성 메시를 기본 후보로 두는 G62 경로는 끔(G67-b). G73: [맞는 게 없어요] 뒤 생성만 켬
-    assert exp.gen3d.enabled is False and exp.gen3d == replace(v4.gen3d, on_none=True)
+    # G75: 그 생성에서 참고 그림을 먼저 고름(on_none_image_pick, 회차 2, 단계별 한도 180초)
+    assert exp.gen3d.enabled is False and exp.gen3d == replace(v4.gen3d, on_none=True, on_none_image_pick=True)
     assert exp.session == v4.session
 
 
@@ -112,7 +116,8 @@ def test_experiment_flow_offline_interview_to_postinterview(exp_rt, name, sid):
     assert spec["meta"]["pipeline"]["builder"].startswith("scene-spec-builder-v2/")
     # 후보 → 선택 → 조절 → 사전 측정: 러너가 읽는 선택 파일
     sel = json.loads((f.dir / "selection.json").read_text(encoding="utf-8"))
-    assert sel["formatVersion"] == "ifs-selection/0.2"          # gen3d 끔 → 0.3 아님
+    assert sel["formatVersion"] == "ifs-selection/0.5"          # G77: llm_fill 켬 → 처음부터 0.5(gen3d 끔이라도)
+    assert sel["llmFill"]["status"] == "skipped" and sel["llmFill"]["skipReason"] == "backend_unsupported"   # 오프라인 대역
     assert sel["runnerReady"] is True and sel["spec"]["sha256Basis"] == "file"
     assert sel["specSha256"] == hashlib.sha256(spec_bytes).hexdigest()   # 러너의 시작 거부 조건(G26)
     assert sel["colorChanged"] is True

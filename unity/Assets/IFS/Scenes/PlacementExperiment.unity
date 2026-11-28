@@ -344,6 +344,7 @@ MonoBehaviour:
   specFolder: 
   recordRoot: 
   taskTextPath: 
+  lockExperimentPreset: 1
   shapePrefabs:
   - shape: round
     prefab: {fileID: 5205205719194274513, guid: 340eb160792ab954aa8cb01a546b0fec, type: 3}

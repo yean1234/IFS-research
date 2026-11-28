@@ -1,0 +1,83 @@
+{
+  "lexiconId": "ifs-shape-english-block",
+  "version": "0.1.1",
+  "status": "draft",
+  "decision": "G77 (CP15-1 후속)",
+  "date": "2026-11-28",
+  "source": "chatbot/prompts/llm_fill/llm_fill.v0.1.0.json shapeNoun의 네 목록(G62 부정 틀 + 보충)을 옮기고, CP15 지적(복수형·합성어·하이픈·대소문자·동의어 우회)에 맞춰 동의어와 '낱말 안에 들어 있으면 막는 어근'을 더함. 연구팀 검토 전",
+  "description": "G77 LLM 형태 낱말(shape_noun, 영어 명사구)을 막는 규칙 목록. 읽는 곳은 tools/gen3d/prompts.py english_shape_reasons() 하나뿐이다(서버 검증기 chatbot/ifs_chatbot/llm_fill.py와 생성 직전 재검증 _llm_head가 같은 함수를 부른다). 규칙만 쓴다(ASCII·형식 검사 — 영문자와 낱말 사이 공백 하나 밖의 글자가 있으면 지우지 않고 곧바로 형식 위반(0.1.1) → 소문자 낱말로 나눔 → 낱말마다 단순 복수형 어간과 불규칙 복수형을 만든 뒤 exact 목록과 정확 일치 → contained 어근이 낱말 안(또는 공백을 뺀 전체 안)에 들어 있는지). 과하게 막는 것(handle → hand, surface → face, trombone → bone, fireplace → fire)은 의도다. 막히면 형태 자리를 메우지 않고 지금 경로(규칙 결과 그대로)로 떨어진다.",
+  "howToEdit": [
+    "목록을 바꾸면 version을 올린다. 파일 바이트 해시가 llm_fill 기록(prompt.englishBlock.sha256)과 캐시 키에 들어간다.",
+    "contained에는 다른 흔한 형태 낱말 안에 잘 들어가지 않는 어근만 넣는다(예: men은 fragment·segment·filament를 막아 넣지 않고 exact에만 둔다). 세 글자 낱말(cat·dog·arm·leg·air·ray·gas·ant·ear)은 exact에만 둔다.",
+    "규칙 형태 사전(shape_prompt_en.v0.json)이 형태로 옮기는 영어(feather·horn 등)는 막지 않는다(사람·몸에 걸리는 heart shape는 옛 목록대로 막음)."
+  ],
+  "englishPattern": "[a-z]+( [a-z]+){0,2}",
+  "irregularPlurals": {
+    "men": "man", "women": "woman", "people": "person", "children": "child", "feet": "foot", "teeth": "tooth",
+    "mice": "mouse", "geese": "goose", "lice": "louse", "oxen": "ox", "knives": "knife", "wolves": "wolf",
+    "leaves": "leaf", "halves": "half", "calves": "calf", "selves": "self", "elves": "elf", "dwarves": "dwarf",
+    "fungi": "fungus", "larvae": "larva", "phenomena": "phenomenon"
+  },
+  "categories": {
+    "english_banned": {
+      "note": "사람·얼굴·몸·동물·무기·글자(G62 부정 틀 person, human, face, eyes, figure, animal, hands + 보충)",
+      "exact": ["person", "people", "human", "man", "men", "woman", "women", "child", "children", "kid", "baby", "infant",
+                "toddler", "boy", "girl", "lady", "guy", "gentleman", "adult", "teen", "mother", "father", "mom", "dad",
+                "brother", "sister", "friend", "self", "me", "you", "figure", "figurine", "effigy", "idol", "statue",
+                "sculpture", "bust", "torso", "silhouette", "mannequin", "dummy", "puppet", "marionette", "doll", "robot",
+                "android", "humanoid", "golem", "scarecrow", "avatar", "portrait", "mask", "skeleton", "corpse", "ghost",
+                "spirit", "phantom", "specter", "spectre", "soul", "zombie", "demon", "devil", "angel", "fairy", "troll",
+                "elf", "dwarf", "giant", "monster", "embryo", "fetus", "foetus",
+                "face", "head", "skull", "eye", "eyeball", "mouth", "nose", "ear", "lip", "tongue", "tooth", "teeth",
+                "cheek", "chin", "neck", "shoulder", "chest", "breast", "belly", "stomach", "womb", "body", "hip", "knee",
+                "elbow", "wrist", "palm", "fist", "thumb", "toe", "nail", "hair", "skin", "flesh", "brain", "lung", "liver",
+                "kidney", "vein", "muscle", "rib", "spine", "limb", "hand", "arm", "leg", "foot", "feet", "finger",
+                "heart", "organ", "bone", "blood",
+                "animal", "creature", "beast", "mammal", "reptile", "pet", "cat", "kitten", "dog", "puppy", "hound",
+                "wolf", "bear", "lion", "tiger", "horse", "cow", "pig", "sheep", "goat", "rabbit", "bunny", "mouse",
+                "rat", "bat", "frog", "toad", "lizard", "turtle", "snake", "serpent", "dragon", "bird", "owl", "crow",
+                "raven", "duck", "chicken", "chick", "fish", "shark", "whale", "dolphin", "eel", "octopus", "squid",
+                "jellyfish", "crab", "insect", "bug", "ant", "bee", "wasp", "fly", "moth", "butterfly", "beetle",
+                "spider", "worm", "larva", "caterpillar", "snail", "slug", "leech", "monkey", "ape", "cub", "wing",
+                "tail", "paw", "claw", "fur", "beak", "fang",
+                "weapon", "knife", "gun", "pistol", "rifle", "bullet", "bomb", "sword", "blade", "dagger", "spear",
+                "arrow", "axe",
+                "text", "letter", "word", "writing", "number"],
+      "contained": ["person", "people", "human", "woman", "man", "child", "baby", "babies", "face", "head", "skull",
+                    "skelet", "eye", "mouth", "tooth", "teeth", "hand", "finger", "body", "torso", "bone", "blood",
+                    "heart", "brain", "skin", "flesh", "corpse", "ghost", "doll", "statue", "figur", "effig",
+                    "mannequin", "puppet", "marionette", "silhouette", "humanoid", "robot", "zombie", "demon",
+                    "monster", "animal", "creature", "beast", "bird", "fish", "insect", "snake", "serpent", "spider",
+                    "dragon", "weapon", "knife", "knive", "sword", "blade", "dagger"]
+    },
+    "english_color_size": {
+      "note": "tools/gen3d/prompts.py HUE_NAMES·color_name()의 색 이름과 톤 낱말 + 크기 형용사",
+      "exact": ["red", "orange", "amber", "yellow", "green", "teal", "blue", "indigo", "purple", "pink", "brown", "black",
+                "white", "gray", "grey", "dark", "pale", "muted", "colored", "coloured", "colorful", "colourful", "color",
+                "colour", "crimson", "scarlet", "maroon", "beige", "violet", "magenta", "cyan", "navy", "olive", "gold",
+                "golden", "silver", "bright", "dim",
+                "big", "small", "large", "tiny", "huge", "giant", "little", "enormous", "massive", "miniature", "mini",
+                "micro", "jumbo", "colossal", "immense", "vast", "petite", "tall", "short", "long", "wide", "narrow",
+                "thick", "thin", "fat", "slim"],
+      "contained": []
+    },
+    "english_non_shape": {
+      "note": "무게·온도·촉감·광택·재질·감정 낱말(재질은 형태 프롬프트에 넣지 않음, G62-f). 'stone'은 형태 사전(돌 → stone)과 같이 사물 명사로 보고 막지 않는다",
+      "exact": ["heavy", "light", "cold", "hot", "warm", "cool", "soft", "hard", "wet", "dry", "glowing", "shiny", "glossy",
+                "metal", "metallic", "wooden", "glass", "plastic", "transparent", "translucent", "sad", "angry", "scary",
+                "lonely", "painful"],
+      "contained": []
+    },
+    "non_meshable": {
+      "note": "메시로 그릴 수 없는 범주(안개·연기·김·구름·불꽃·빛·그림자 등, G62-e)",
+      "exact": ["mist", "fog", "smoke", "smog", "steam", "vapor", "vapour", "cloud", "haze", "fume", "breath", "aura",
+                "halo", "gas", "air", "wind", "breeze", "dust", "flame", "fire", "blaze", "inferno", "ember", "spark",
+                "sparkle", "flare", "flash", "flicker", "lightning", "light", "beam", "ray", "glow", "glimmer",
+                "shimmer", "glitter", "shadow", "plasma", "torch", "smoky", "smokey", "hazy", "foggy", "misty",
+                "cloudy", "steamy", "fiery", "flaming", "burning", "smoulder", "smolder"],
+      "contained": ["mist", "fog", "smok", "smog", "steam", "vapor", "vapour", "cloud", "haze", "hazy", "fume", "flam",
+                    "fire", "fiery", "blaze", "ember", "spark", "flare", "inferno", "lightning", "glow", "shimmer",
+                    "shadow", "plasma"]
+    }
+  }
+}

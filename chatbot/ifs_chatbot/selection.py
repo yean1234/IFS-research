@@ -28,6 +28,7 @@ from .candidates import (PROPORTION_KEYS, SLOTS, base_drawn, candidates_bytes, e
                          rendered_shape_words, safety_flags, said_words, slot_value, spec_sha256, unrendered_said_words)
 from .form_assets import (DEFAULT_PROCEDURAL, R_NO_SHAPE_PREVIEW, R_PREVIEW_FAILED, _rej, add_generated,
                           generated_candidate_id, public_asset, source_key)
+from . import llm_fill as llm_fill_mod
 from . import none_gen as ng
 from .paths import shared
 from .scene_builder import normalize_confirmed
@@ -46,6 +47,17 @@ FORMAT_VERSION = "ifs-selection/0.2"
 # 단계 generating(생성 대기), generation.afterNone(none 시각·규칙 프롬프트·모델 내림·생성 시작·끝·결과·사유·만든 후보·골랐는지),
 # 후보 origin·sources form.type 값 generated_after_none, form.asset.origin, sourceDetails.form.type.origin, selection.afterNoneGeneration.
 FORMAT_VERSION_GEN3D = "ifs-selection/0.3"
+# 0.4(G75, [gen3d] on_none_image_pick을 켰을 때만 — 끄면 0.3 그대로): 처음 [맞는 게 없어요]를 누르는 순간 0.4로 올린다.
+# 0.3에 선택 필드만 더함: 단계 picking(참고 이미지 고르기), generation.afterNone.imagePick(회차마다 seed·이미지 sha256·관문 결과·
+# 보여 준 순서·고른 자리 또는 없음/넘어감·시각·프롬프트 판), generation.imagePickExposed(이미지 화면에 노출됐는가),
+# afterNone.status·selection.afterNoneGeneration 값 declined(모든 회차에서 [이 중에는 없어요]), afterNone.seed null(고르기 전).
+FORMAT_VERSION_IMAGE_PICK = "ifs-selection/0.4"
+# 0.5(G77, [mapping] llm_fill을 켰을 때만 — 끄면 0.2·0.3·0.4 그대로): 후보를 만들 때부터 0.5. 0.4에 선택 필드만 더함: 맨 위 llmFill(확정 직후
+# LLM 빈칸 채우기 기록 — 모델 digest·프롬프트 판·온도·seed·소요 시간·원시 항목·항목별 검증 결과·기각 사유·채택 값·후보에 넣은 처음 값·참여자가
+# 그대로 뒀는지/고쳤는지·최종 값), llmFillExposed(채택 값이 화면에 하나라도 반영됨), 출처 값 llm_quoted(sources·sourceDetails·후보 sources),
+# sourceDetails.*.llmQuote, candidates.prefill, generation.llmPromptUsed·afterNone.llmPromptUsed(그림 프롬프트 형태 자리를 LLM 낱말로 메움).
+# 러너(PlacementSelection.cs)는 0.5를 0.3 규칙으로 읽고 출처 값 llm_quoted를 받는다(SourceValues05).
+FORMAT_VERSION_LLM_FILL = "ifs-selection/0.5"
 GENERATED_CHOSEN = "generated_chosen"
 PREMEASURE_VERSION = "ifs-premeasure/0.1"
 ITEMS = ("color", "form", "brightness", "opacity", "size", "texture", "motion")   # G31: 색이 맨 앞(표 adjustItems.order와 같음)
@@ -60,7 +72,28 @@ SKIP_REASON = "single_distinct_candidate"      # G34: 구별되는 후보가 하
 # 슬롯 출처(G15 네 가지 + G32 두 가지). 러너(PlacementSelection.cs SourceValues)와 스키마 $defs.source가 같은 목록이다.
 SOURCES = ("said", "chosen", "edited", "default", "said_unrendered_chosen", "said_unrendered_default")
 SOURCES_GEN3D = SOURCES + (GENERATED_CHOSEN,)      # 0.3(G62)
+SOURCES_LLM_FILL = SOURCES_GEN3D + (llm_fill_mod.ORIGIN,)   # 0.5(G77)
 SAID_NOT_IN_TABLE = "said_value_not_in_table"
+
+# G79: 색상 고리(값 표 4.0.0, 색 항목 kind hue_ring). 3.0.0 이하 표(kind swatch)는 아래를 쓰지 않아 출력·기록이 그대로다.
+# 선택 파일 형식은 ifs-selection/0.5 그대로 두고 선택 속성만 더한다: 맨 위 colorRing, 색 값의 hueStep·saturationStep, 색 조작의 input.
+COLOR_RING_VERSION = "ifs-color-ring/0.1.0"
+RING_SAID = "said"          # 말한 색이 칸·단계 사이 값일 때 그 자리(G79-c). 입력 "said" = 말한 색 그대로
+# 색 출처(colorRing.initial·final.origin): 말함 | 면담 LLM이 인용과 함께 채움(G77) | 말하지도 고르지도 않음 | 참여자가 고름
+RING_ORIGINS = ("said", "llm_quoted", "unspecified", "picked")
+RING_ORIGIN_RULE = ("initial: 확정 spec에 색·채도가 있으면 said, 없고 G77 처음 값이 들어갔으면 llm_quoted, 아니면 unspecified. "
+                    "final: 색 조작이 없으면 initial 그대로, initial이 unspecified인데 한 번이라도 눌렀으면 picked(기본 회색 견본을 "
+                    "눌러도 — 기본색과 고른 회색을 가름), 마지막 값이 처음 값과 같으면 initial 그대로, 다르면 picked. "
+                    "sources.material.color(러너 계약)는 이 규칙과 별개로 G15 규칙 그대로다")
+_MISSING = object()
+# 고리 화면이 쓰는 고정 문구(selection_protocol 0.11.0). 값 표가 hue_ring이면 Runtime이 시작할 때 이 키들이 있는지 본다(CP18-1)
+RING_PHRASE_KEYS = ("adjust_color_ring_hint", "adjust_color_ring_value", "adjust_color_saturation_label")
+RING_SNAP = 0.0005          # 말한 h·s가 칸·단계 값과 이만큼 안이면 같은 자리(매퍼 값의 소수 셋째 자리 반올림 폭의 절반, 색상 0.18°)
+
+
+def ring_hue(k: int, steps: int) -> float:
+    """G79-a: 고리 칸 k의 색상 h(0–1). 6k번째 칸은 견본 h0k와 같은 값(round 4자리)."""
+    return round(k / steps, 4)
 
 # 러너에 넘길 수 없는 이유(runnerBlockers). 러너(PlacementSelection.cs)도 runnerReady = false면 이 글을 붙여 시작을 거부한다.
 BLOCK_NO_SPEC_FILE = ("spec 파일이 저장되지 않은 실행입니다(persist_logs = false 또는 spec 저장 실패). 배치 러너는 저장된 spec "
@@ -188,6 +221,11 @@ def ui_config(protocol: SelectionProtocol, table: dict, preview_info: dict, enab
         entry = {"id": name, "label": labels[name]["text"], "kind": it["kind"]}
         if it["kind"] == "swatch":
             entry["values"] = [{"id": s["id"], "hex": swatch_hex(s)} for s in it["swatches"]]
+        elif it["kind"] == "hue_ring":
+            # G79: 화면에는 무채색 견본(screenSwatches)과 고리만. 고리 칸·채도 단계는 세션마다 view().colorRing(말한 명도·말한 자리)
+            by_id = {s["id"]: s for s in it["swatches"]}
+            entry["values"] = [{"id": i, "hex": swatch_hex(by_id[i])} for i in it["screenSwatches"]]
+            entry["ring"] = {"hueSteps": it["hueSteps"], "saturationSteps": list(it["saturationSteps"])}
         else:
             entry["values"] = list(it["values"])
         adjust.append(entry)
@@ -243,6 +281,7 @@ class SelectionFlow:
         self.preview_reason: str | None = rt.preview.reason
         self._spec_blockers: list[str] = []
         self.extras: dict = self._said_value_extras()
+        self.ring: dict | None = self._ring_setup()      # G79: 값 표 4.0.0(색 kind hue_ring)일 때만, 아니면 None
         # G62: 생성 형태 후보 자산 조회([gen3d] enabled일 때만, 아니면 None — 이때 출력은 G62 전과 같다)
         self.form_assets = getattr(rt, "form_assets", None)
         self._asset_paths: dict[str, Path] = {}          # 생성 후보 id → GLB 경로(기록에 쓰지 않음)
@@ -250,8 +289,23 @@ class SelectionFlow:
         # G73: [맞는 게 없어요] 뒤 생성([gen3d] on_none). 처음 none을 누를 때 한 번만. 그때부터 기록이 0.3(form·generation)이 된다
         self.none_gen = getattr(rt, "none_gen", None)
         self._g73 = False                # 0.3 기록을 켰는가(none을 눌러 생성 경로에 들어감)
-        self._none_attempts = 0          # 이 세션에서 시작한 생성 수(n = 0 첫 생성, 1… 다시 만들기)
+        self._none_attempts = 0          # 이 세션에서 시작한 생성 수(n = 0 첫 생성, 1… 다시 만들기). G75면 이미지 회차 수
         self._none_job = None
+        self._pick_paths: dict[int, tuple[Path, str]] = {}   # (G75) 고르기 화면 자리 → (이미지 경로, sha256). 기록에 쓰지 않음
+        # G77: 확정 직후 LLM 빈칸 채우기([mapping] llm_fill). 꺼져 있으면 llm_on False — 출력은 그대로
+        self.llm_on = getattr(rt, "llm_fill_prompt", None) is not None
+        self.llm_rec = copy.deepcopy(getattr(session, "llm_fill", None)) if self.llm_on else None
+        self.llm_applied: dict = {}      # 조절 항목 → {slot, value, quote, charSpan, overrides, specSlots}(후보에 넣은 처음 값)
+        self._llm_shape_items: list = llm_fill_mod.shape_items_from(self.llm_rec) if self.llm_on else []
+
+    def _llm_flag(self) -> str | None:
+        """(G77, CP15-2) 세션에 위기·확인 판정이 있으면 그 사유. 판정 뒤에는 LLM 값을 새 후보·그림 프롬프트에 넣지 않는다."""
+        return llm_fill_mod.session_flag(self.s) if self.llm_on else None
+
+    @property
+    def llm_shape_items(self) -> list:
+        """(G77) 그림 프롬프트용 LLM 형태 낱말. 판정이 선 세션이면 빈 목록(규칙 결과 그대로)."""
+        return [] if self._llm_flag() else self._llm_shape_items
 
     @property
     def gen3d(self) -> bool:
@@ -259,7 +313,43 @@ class SelectionFlow:
 
     @property
     def sources_list(self) -> tuple:
+        if self.llm_on:
+            return SOURCES_LLM_FILL
         return SOURCES_GEN3D if self.gen3d else SOURCES
+
+    def _fv(self, version: str) -> str:
+        """(G77) llm_fill을 켰으면 처음부터 끝까지 0.5, 아니면 주어진 판 그대로."""
+        return FORMAT_VERSION_LLM_FILL if self.llm_on else version
+
+    def _llm_prefill(self) -> tuple[dict | None, dict]:
+        """(G77) 채택 값 → candidates.generate prefill. 이 표에 없거나 지금 미리보기에서 보이지 않는 항목(G22)은 넣지 않는다
+        (참여자가 보지 못한 값이 장면에 들어가지 않게). → (prefill | None, 넣지 않은 항목과 사유)."""
+        if not self.llm_on:
+            return None, {}
+        P = self.rt.llm_fill_prompt
+        off = self.unavailable_items()
+        flag = self._llm_flag()
+        pre, dropped = {}, {}
+        for item, a in llm_fill_mod.prefill_from(self.llm_rec).items():
+            if flag:
+                dropped[item] = "session_flagged"           # 확정 뒤 판정이 섰으면 앞서 채택한 값도 넣지 않음(CP15-2)
+            elif item not in self.items:
+                dropped[item] = "not_in_table"
+            elif item in off:
+                dropped[item] = f"unavailable:{off[item]}"
+            else:
+                pre[item] = {"slots": list(P.slots[a["slot"]]["specSlots"]), "overrides": dict(a["overrides"])}
+                self.llm_applied[item] = {**a, "specSlots": list(P.slots[a["slot"]]["specSlots"])}
+        return pre, dropped
+
+    def _llm_current(self, item: str) -> bool:
+        """(G77) 그 항목이 지금 LLM 처음 값 그대로인가(조절 화면 안내를 보일지)."""
+        a = self.llm_applied.get(item)
+        if a is None:
+            return False
+        eff = effective_params(self.spec, self.defaults, self.current)
+        return all(_same_value(eff.get(k), v) if not isinstance(v, float) else abs(float(eff.get(k)) - v) < 1e-9
+                   for k, v in a["overrides"].items())
 
     # ── 도우미 ──────────────────────────────────────────────────────────────
     @property
@@ -288,12 +378,15 @@ class SelectionFlow:
             # D6 형태 항목: 기본 형상이 그려지면(form.base 있음 + form.type blob) 그 기본 형상, 아니면 form.type
             base = params.get("form.base", "none")
             return base if base != "none" and params["form.type"] == "blob" else params["form.type"]
-        if it["kind"] == "swatch":
+        if it["kind"] in ("swatch", "hue_ring"):
             hsl = {"h": round(params["material.color.h"], 4), "s": round(params["material.color.s"], 4),
                    "l": round(params["material.color.l"], 4)}
             sw = next((s["id"] for s in it["swatches"]
                        if all(abs(s[k] - hsl[k]) < 1e-6 for k in ("h", "s", "l"))), None)
-            return {"swatch": sw, **hsl}
+            if it["kind"] == "swatch":
+                return {"swatch": sw, **hsl}
+            hk, sk = self._ring_pos(hsl)
+            return {"swatch": sw, **hsl, "hueStep": hk, "saturationStep": sk}   # G79-e: 고리 칸·채도 단계(무채색이면 null)
         v = params[it["key"]]
         return round(v, 4) if isinstance(v, float) else v
 
@@ -314,10 +407,195 @@ class SelectionFlow:
     def item_values(self, item: str) -> list:
         """이 세션의 조절 값 목록(표의 값 + 표에 없던 말한 값)."""
         it = self.table["adjustItems"]["items"][item]
-        vals = list(it["values"]) if it["kind"] != "swatch" else [s["id"] for s in it["swatches"]]
+        vals = [s["id"] for s in it["swatches"]] if it["kind"] in ("swatch", "hue_ring") else list(it["values"])
         if item in self.extras:
             vals.append(self.extras[item]["value"])
         return vals
+
+    # ── G79 색상 고리 ───────────────────────────────────────────────────────
+    def _ring_setup(self) -> dict | None:
+        """값 표의 색 항목이 hue_ring이면 이 세션의 고리 설정. 말한 색(spec의 material.color 또는 material.saturation)이 있으면
+        그 값(렌더 규칙 effective_params 그대로)을 처음 자리로 둔다. 유채색(s ≥ achromaticBelow)이면 고리의 명도는 말한 l,
+        아니면 ringLightness(G79-c). 말한 h·s가 칸·단계 사이면 그 값을 이 세션의 허용 자리("said")로 더한다."""
+        it = self.table["adjustItems"]["items"].get("color")
+        if not it or it.get("kind") != "hue_ring":
+            return None
+        n, sats, thr = int(it["hueSteps"]), [float(x) for x in it["saturationSteps"]], float(it["achromaticBelow"])
+        said_raw = None
+        if slot_value(self.spec, "material.color") is not None or slot_value(self.spec, "material.saturation") is not None:
+            b = effective_params(self.spec, self.defaults)
+            said_raw = {k: float(b[f"material.color.{k}"]) for k in ("h", "s", "l")}
+        said = {k: round(v, 4) for k, v in said_raw.items()} if said_raw else None
+        chroma = said is not None and said["s"] >= thr
+        # 매퍼 값은 소수 셋째 자리(215° → 0.597)라 칸 값(0.5972)과 끝자리만 다를 수 있다. RING_SNAP 안이면 그 칸이 이 세션에서는
+        # 말한 값 자체다(칸 하나가 말한 자리 — 겹치는 자리를 두 개 만들지 않고, 그 칸을 누르면 말한 값 그대로 돌아온다)
+        hue_snap = next((k for k in range(n) if chroma and abs(ring_hue(k, n) - said["h"]) <= RING_SNAP), None)
+        sat_snap = next((j for j, x in enumerate(sats) if chroma and abs(x - said["s"]) <= RING_SNAP), None)
+        on_hue, on_sat = hue_snap is not None, sat_snap is not None
+        screen = {s["id"]: s for s in it["swatches"] if s["id"] in it["screenSwatches"]}
+        said_screen = next((i for i, sw in screen.items() if said is not None and not chroma
+                            and all(abs(sw[k] - said[k]) < 1e-6 for k in ("h", "s", "l"))), None)
+        said_chip = said is not None and not chroma and said_screen is None
+        return {"hueSteps": n, "saturationSteps": sats, "achromaticBelow": thr,
+                "defaultSat": sats[int(it["saturationDefaultIndex"])],
+                "lightRaw": said_raw["l"] if chroma else float(it["ringLightness"]),
+                "said": said, "saidRaw": said_raw, "chromatic": chroma,
+                "hueSaid": said["h"] if chroma and not on_hue else None,      # 칸 사이 말한 색상(그 자리를 더함)
+                "satSaid": said["s"] if chroma and not on_sat else None,      # 단계 사이 말한 채도
+                "hueSnap": hue_snap, "satSnap": sat_snap,                     # 말한 값과 같은 칸·단계(끝자리 차이 안)
+                "saidChip": said_chip,                                      # 무채색 견본에 없는 말한 무채색 → 견본 하나 더
+                "saidScreenSwatch": said_screen}                              # 말한 무채색이 견본 하나와 같음(그 견본에 눈금)
+
+    def _ring_pos(self, hsl: dict) -> tuple:
+        """(hueStep, saturationStep): 칸 번호 0–71 | "said"(칸 사이 말한 자리) | None(무채색이거나 고리 밖)."""
+        R = self.ring
+        if hsl["s"] < R["achromaticBelow"]:
+            return None, None
+        n = R["hueSteps"]
+        hk = next((k for k in range(n) if abs(round(self._step_h(k), 4) - hsl["h"]) < 1e-6), None)
+        if hk is None and R["hueSaid"] is not None and abs(R["hueSaid"] - hsl["h"]) < 1e-6:
+            hk = RING_SAID
+        sk = next((j for j in range(len(R["saturationSteps"])) if abs(round(self._step_s(j), 4) - hsl["s"]) < 1e-6), None)
+        if sk is None and R["satSaid"] is not None and abs(R["satSaid"] - hsl["s"]) < 1e-6:
+            sk = RING_SAID
+        return hk, sk
+
+    def _step_h(self, k: int) -> float:
+        """이 세션에서 칸 k의 색상: 말한 색상이 그 칸과 같은 자리(RING_SNAP 안)면 말한 값, 아니면 round(k/72, 4)."""
+        R = self.ring
+        return R["saidRaw"]["h"] if R["hueSnap"] == k else ring_hue(k, R["hueSteps"])
+
+    def _step_s(self, j: int) -> float:
+        R = self.ring
+        return R["saidRaw"]["s"] if R["satSnap"] == j else R["saturationSteps"][j]
+
+    def _validate_ring(self, it: dict, value) -> dict:
+        """G79 색 입력 → 덮어쓰기 h·s·l. 받는 것: 견본 id(17개, G77 제안·옛 화면), "said"(말한 색 그대로 — 말한 색이 있을 때만),
+        {"hueStep": k, "saturationStep": j}(둘 중 하나만 줘도 됨). k = 0–71 정수 | "said", j = 단계 번호 정수 | "said".
+        bool·실수(3.0 포함)·음수·범위 밖·문자열·다른 키는 거부. hueStep이 없으면 지금 고리 위 색상을 그대로(고리 위에 색이 없으면 거부),
+        saturationStep이 없으면 지금 채도가 허용 단계면 그대로, 아니면 말한 채도(유채색일 때) 또는 기본 단계. 명도는 이 세션의 고리 명도."""
+        R = self.ring
+        if isinstance(value, str):
+            if value == RING_SAID:
+                if R["saidRaw"] is None:
+                    raise SelectionInvalid("말한 색이 없는 세션입니다: 'said'")
+                return {f"material.color.{k}": R["saidRaw"][k] for k in ("h", "s", "l")}
+            sw = next((s for s in it["swatches"] if s["id"] == value), None)
+            if sw is None:
+                raise SelectionInvalid(f"색 견본 목록에 없는 값입니다: {value!r}")
+            return {"material.color.h": sw["h"], "material.color.s": sw["s"], "material.color.l": sw["l"]}
+        if not isinstance(value, dict) or not value or set(value) - {"hueStep", "saturationStep"}:
+            raise SelectionInvalid(f"색 값은 견본 id 또는 {{\"hueStep\": 0–{R['hueSteps'] - 1}, \"saturationStep\": "
+                                   f"0–{len(R['saturationSteps']) - 1}}}입니다: {value!r}")
+        cur = effective_params(self.spec, self.defaults, self.current)
+        pos = self._ring_pos({k: round(cur[f"material.color.{k}"], 4) for k in ("h", "s", "l")})
+
+        def pick(v, name, top, said_raw):
+            if v == RING_SAID:
+                if not R["chromatic"]:
+                    raise SelectionInvalid(f"{name}: 말한 유채색이 없는 세션입니다: 'said'")
+                return said_raw
+            if isinstance(v, bool) or not isinstance(v, int) or not 0 <= v < top:
+                raise SelectionInvalid(f"{name}: 0–{top - 1} 정수여야 합니다: {v!r}")
+            return None
+
+        hv = value.get("hueStep", _MISSING)
+        if hv is _MISSING:
+            if pos[0] is None:
+                raise SelectionInvalid("고리 위에 고른 색이 없어 채도만 바꿀 수 없습니다(hueStep 필요)")
+            h = cur["material.color.h"]
+        else:
+            h = pick(hv, "hueStep", R["hueSteps"], R["saidRaw"]["h"] if R["chromatic"] else None)
+            h = self._step_h(hv) if h is None else h
+        sv = value.get("saturationStep", _MISSING)
+        if sv is _MISSING:
+            s = (cur["material.color.s"] if pos[1] is not None
+                 else R["saidRaw"]["s"] if R["chromatic"] else R["defaultSat"])
+        else:
+            s = pick(sv, "saturationStep", len(R["saturationSteps"]), R["saidRaw"]["s"] if R["chromatic"] else None)
+            s = self._step_s(sv) if s is None else s
+        return {"material.color.h": h, "material.color.s": s, "material.color.l": R["lightRaw"]}
+
+    def _ring_initial_origin(self) -> str:
+        if self.ring["said"] is not None:
+            return "said"
+        return llm_fill_mod.ORIGIN if "color" in self.llm_applied else "unspecified"
+
+    def _ring_home(self):
+        """Home 키(처음 값)로 보낼 입력. 처음에 고리·견본에 고른 것이 없었으면(말하지도 채우지도 않음) None."""
+        init = (self.data.get("colorRing") or {}).get("initial") if self.data else None
+        if init is None or init["origin"] == "unspecified":
+            return None
+        if init["origin"] == "said":
+            return RING_SAID
+        v = init["value"]
+        return v["swatch"] or ({"hueStep": v["hueStep"], "saturationStep": v["saturationStep"]}
+                               if v["hueStep"] is not None else None)
+
+    def _ring_record_new(self) -> dict:
+        """selection.json 맨 위 colorRing(G79-d·e). 고리가 화면에 나갔는지(exposed), 처음·최종 색의 출처."""
+        R = self.ring
+        return {"version": COLOR_RING_VERSION, "tableVersion": self.table["tableVersion"],
+                "hueSteps": R["hueSteps"], "saturationSteps": list(R["saturationSteps"]),
+                "lightness": round(R["lightRaw"], 4), "lightnessFrom": "said" if R["chromatic"] else "ringLightness",
+                "said": copy.deepcopy(R["said"]), "saidChromatic": R["chromatic"] if R["said"] is not None else None,
+                "saidPosition": ({"hueStep": p[0], "saturationStep": p[1]} if (p := self._ring_pos(R["said"]))[0] is not None
+                                 else None) if R["said"] is not None else None,
+                "saidSwatchAdded": R["saidChip"],
+                "originRule": RING_ORIGIN_RULE,
+                "exposed": False, "exposedAt": None, "initial": None, "final": None}
+
+    def _ring_enter(self, at: str) -> None:
+        """조절 단계에 들어감(선택·none·건너뜀): 처음 값과 그 출처를 적고, 색 항목이 꺼져 있지 않으면 고리를 내보냈다고 적는다
+        (서버가 고리를 그리는 조절 화면을 냄 — 브라우저가 실제로 그렸는지는 미리보기 알림(preview.shown.adjusting)으로 본다)."""
+        rec = (self.data or {}).get("colorRing")
+        if rec is None:
+            return
+        if rec["initial"] is None:
+            params = effective_params(self.spec, self.defaults, self.current)
+            rec["initial"] = {"origin": self._ring_initial_origin(), "value": self._item_value("color", params), "at": at}
+        if not rec["exposed"] and "color" not in self.unavailable_items():
+            rec.update(exposed=True, exposedAt=at)
+
+    def _ring_final(self) -> dict:
+        rec = self.data["colorRing"]
+        init = rec["initial"]["origin"] if rec["initial"] else self._ring_initial_origin()
+        summ = self.data["adjustments"]["items"].get("color")
+        if not summ:
+            origin = init
+        elif init == "unspecified":
+            origin = "picked"
+        else:
+            origin = init if _same_value(summ["last"], summ["first"]) else "picked"
+        evs = [e for e in self.data["adjustments"]["events"] if e["item"] == "color"]
+        final = effective_params(self.spec, self.defaults, self.current)
+        return {"origin": origin, "value": self._item_value("color", final), "adjustCount": summ["count"] if summ else 0,
+                "ringInputs": sum(1 for e in evs if isinstance(e.get("input"), dict)),
+                "swatchInputs": sum(1 for e in evs if isinstance(e.get("input"), str) and e["input"] != RING_SAID),
+                "saidInputs": sum(1 for e in evs if e.get("input") == RING_SAID)}
+
+    def _ring_view(self) -> dict:
+        """화면용(stage.js): 고리 명도, 채도 단추(단계 + 단계 사이 말한 채도), 말한 자리 눈금, Home 값, 말하지도 고르지도 않은 상태."""
+        R = self.ring
+        sats = [{"step": j, "s": x} for j, x in enumerate(R["saturationSteps"])]
+        if R["satSaid"] is not None:
+            sats = sorted(sats + [{"step": RING_SAID, "s": R["satSaid"]}], key=lambda x: x["s"])
+        said_pos = self._ring_pos(R["said"]) if R["chromatic"] else (None, None)
+        rec = (self.data or {}).get("colorRing") or {}
+        untouched = "color" not in ((self.data or {}).get("adjustments") or {}).get("items", {})
+        init = rec.get("initial")
+        cur = effective_params(self.spec, self.defaults, self.current)
+        at_said = R["said"] is not None and all(abs(round(cur[f"material.color.{k}"], 4) - R["said"][k]) < 1e-6 for k in "hsl")
+        out = {"hueSteps": R["hueSteps"], "lightness": round(R["lightRaw"], 4), "atSaid": at_said,
+               "saturations": sats, "ringSaturation": R["satSaid"] if R["satSaid"] is not None else (
+                   R["said"]["s"] if R["chromatic"] else R["defaultSat"]),
+               "saidHue": R["said"]["h"] if R["chromatic"] else None, "saidHueStep": said_pos[0],
+               "saidSaturationStep": said_pos[1],
+               "saidSwatch": ({"id": RING_SAID, "hex": swatch_hex(R["said"])} if R["saidChip"] else None),
+               "saidSwatchId": RING_SAID if R["saidChip"] else R["saidScreenSwatch"],
+               "home": self._ring_home(),
+               "unspecified": bool(untouched and (init["origin"] if init else self._ring_initial_origin()) == "unspecified")}
+        return out
 
     def _spec_file_hash(self) -> tuple[str | None, str, list[str]]:
         """러너 계약의 specSha256(G26): 저장된 spec 파일 바이트의 sha256만 적는다. (sha | None, sha256Basis, 막는 이유)
@@ -373,7 +651,11 @@ class SelectionFlow:
             if self.rt.cfg.selection.require_spec_phrases and pinfo["draftCount"]:
                 raise SelectionError(f"[selection] require_spec_phrases = true인데 초안 문구가 {pinfo['draftCount']}개 있어 "
                                      "후보 단계를 시작하지 않습니다.")
-            self.cands = generate(self.spec, self.s.id, self.table)
+            prefill, pre_dropped = self._llm_prefill()
+            self.cands = generate(self.spec, self.s.id, self.table) if prefill is None else                 generate(self.spec, self.s.id, self.table, prefill=prefill, prefill_source=llm_fill_mod.ORIGIN)
+            for item in (self.cands.get("prefill") or {}).get("droppedForSplit") or []:
+                self.llm_applied.pop(item, None)          # 낱말 해석 갈림이 같은 슬롯을 다룸(갈림이 먼저)
+                pre_dropped[item] = "interpretation_split"
             if self.gen3d:
                 # G62: 절차 후보는 그대로 두고 생성 후보(status ok + 관문 통과, 최대 max_candidates)를 뒤에 더한다
                 lookup = self.form_assets.lookup_for_spec(self.spec)
@@ -397,7 +679,7 @@ class SelectionFlow:
             now = now_iso()
             meta = self.spec.get("meta") or {}
             self.data = {
-                "formatVersion": FORMAT_VERSION, "specSha256": file_sha,
+                "formatVersion": self._fv(FORMAT_VERSION), "specSha256": file_sha,
                 "sessionId": self.s.id, "createdAt": now, "updatedAt": now,
                 "stage": "selecting",
                 "spec": {"path": path, "normalizedSha256": spec_sha256(self.spec), "sha256Basis": basis,
@@ -421,14 +703,26 @@ class SelectionFlow:
             if self.has_proportions:
                 # G72: 축별 처음 값·최종 값·고쳤는지(값 표 3.0.0일 때만 키를 넣는다 — 2.0.0 표의 기록은 그대로)
                 self.data["proportions"] = self._proportions_record(final=False)
+            if self.ring is not None:
+                # G79: 색상 고리 기록(값 표 4.0.0일 때만 키를 넣는다 — 3.0.0 이하 표의 기록은 그대로)
+                self.data["colorRing"] = self._ring_record_new()
             if self.gen3d:
                 # G62(0.3): 고른 생성 메시(form.asset)와 생성 후보 기록. 꺼져 있으면 키 자체를 넣지 않는다(0.2 그대로)
-                self.data["formatVersion"] = FORMAT_VERSION_GEN3D
+                self.data["formatVersion"] = self._fv(FORMAT_VERSION_GEN3D)
                 self.data["defaultFormSource"] = self.cands["generation"]["defaultFormSource"]   # 이 세션에서 기본이었던 것
                 self.data["form"] = {"asset": None}
                 self.data["generation"] = {**copy.deepcopy(self.cands["generation"]),
                                            "shownOrder": [cid for cid in self.cands["displayOrder"] if cid in self._asset_paths],
                                            "outcome": None, "acceptedDefault": None, "declined": [], "assetDropped": None}
+            if self.llm_on:
+                # G77: LLM 빈칸 채우기 기록(확정 직후 세션이 만든 것)과 이 세션 후보에 넣은 처음 값. 참여자 결과는 finish에서 채운다
+                self.data["llmFill"] = {**(copy.deepcopy(self.llm_rec) if self.llm_rec else
+                                           {"version": llm_fill_mod.LLM_FILL_VERSION, "status": "absent", "adopted": []}),
+                                        "applied": {k: {kk: copy.deepcopy(v[kk]) for kk in ("slot", "value", "quote", "charSpan",
+                                                                                            "overrides", "specSlots")}
+                                                    for k, v in sorted(self.llm_applied.items())},
+                                        "notApplied": dict(sorted(pre_dropped.items())), "participant": None}
+                self.data["llmFillExposed"] = bool(self.llm_applied)
             skip = self.cands["selectionStep"] == "skip"
             if skip:
                 self._enter_skip(now)
@@ -489,6 +783,7 @@ class SelectionFlow:
         self.data["selection"] = sel
         self.data["stage"] = "adjusting"
         self.current = dict(op["overrides"])
+        self._ring_enter(sel["at"])
         if self.gen3d:
             self._record_generation_choice(op if choice != NONE_CHOICE else None)
         self._save()
@@ -509,7 +804,7 @@ class SelectionFlow:
         empty = {"key": source_key(self.spec), "offered": [], "rejected": []}
         self.cands = add_generated(self.cands, empty, self.s.id, 0, DEFAULT_PROCEDURAL, None)
         self.data["candidates"] = self.cands
-        self.data["formatVersion"] = FORMAT_VERSION_GEN3D
+        self.data["formatVersion"] = self._fv(FORMAT_VERSION_GEN3D)
         self.data["defaultFormSource"] = self.cands["generation"]["defaultFormSource"]
         self.data["form"] = {"asset": None}
         self.data["generation"] = {**copy.deepcopy(self.cands["generation"]), "shownOrder": [],
@@ -525,11 +820,15 @@ class SelectionFlow:
         if self._none_attempts == 0:
             return True
         an = self._after_none()
+        # (G75) 이미지 고르기를 켰으면 다시 만들기 대신 다음 이미지 회차(on_none_image_rounds까지)
+        limit = (self.none_gen.image_rounds - 1) if self.none_gen.image_pick else self.none_gen.max_regenerations
         # 다시 만들기는 바로 앞 생성이 후보를 냈고(ok) 그 후보가 아직 화면에 있을 때만(막힘·실패면 이미 조절로 넘어감)
-        return (self._none_attempts <= self.none_gen.max_regenerations and an is not None and an["status"] == ng.OK
+        return (self._none_attempts <= limit and an is not None and an["status"] == ng.OK
                 and self._cand(an.get("candidateId") or "") is not None)
 
     def _start_none_generation(self) -> dict:
+        if self.none_gen.image_pick:
+            return self._start_image_round()
         n = self._none_attempts
         self._none_attempts += 1
         self._activate_g73()
@@ -540,7 +839,8 @@ class SelectionFlow:
             self.data["generation"].setdefault("afterNoneEarlier", []).append(prev)
         at = now_iso()
         text = self.s.log.data.get("confirmedText")
-        pre = self.none_gen.precheck(self.spec, text, self.preview_mode, self._other_interviews())
+        pre = self.none_gen.precheck(self.spec, text, self.preview_mode, self._other_interviews(),
+                                     llm_items=self.llm_shape_items or None)
         rec = {"version": ng.NONE_GEN_VERSION, "origin": ng.ORIGIN, "setting": self.none_gen.setting(), "noneAt": at,
                "shownOrderBefore": list(self.cands["displayOrder"]), "status": ng.RUNNING,
                "blockReason": pre["blockReason"], "blockDetail": pre["blockDetail"], "prompt": pre["prompt"],
@@ -548,12 +848,14 @@ class SelectionFlow:
                "llmUnload": None, "timing": None, "asset": None, "candidateId": None, "displayPosition": None,
                "participantSkippedWait": False, "chosen": None,
                "attempt": n, "seed": self.none_gen.seed_for(n)}      # 다시 만들기 n번째(0 = 첫 생성), seed = 기준 seed + n
+        self._note_llm_prompt(rec)
         self.data["generation"]["afterNone"] = rec
         job = None
         if pre["blockReason"] is None:
             # 생성기도 세션 매퍼 spec으로 같은 규칙 프롬프트(G73 후속). 면담 중 세션 확인과 예약은 서비스 잠금 안에서(CP13-2)
             job = self.none_gen.start(self.s.id, text, source_key(self.spec), pre["prompt"]["text"], self._generation_done,
-                                      attempt=n, spec=self.spec, other_interviews=self._other_interviews)
+                                      attempt=n, spec=self.spec, other_interviews=self._other_interviews,
+                                      llm_items=self.llm_shape_items or None)
             if isinstance(job, str):
                 rec.update(blockReason=job, blockDetail=",".join(self._other_interviews()) or None
                            if job == ng.B_INTERVIEW else None)
@@ -601,6 +903,8 @@ class SelectionFlow:
                 return
             cid = self._add_after_none_candidate(a)
             rec.update(asset={**public_asset(a), "origin": ng.ORIGIN}, candidateId=cid, displayPosition=0)
+            if rec.get("llmPromptUsed"):
+                self.data["llmFillExposed"] = True        # G77: LLM 형태 낱말로 만든 후보가 화면에 나옴
             self.data["stage"] = "selecting"
             self._save()
             self._log_event("selection:none_gen", {"status": ng.OK, "assetId": a["assetId"], "candidateId": cid,
@@ -626,11 +930,219 @@ class SelectionFlow:
         self._sidecar_paths[cid] = a["_sidecarPath"]
         return cid
 
-    def skip_generation(self) -> dict:
-        """[기다리지 않고 넘어갈게요]: 생성을 끄고 기존 none 경로로."""
+    # ── G75 참고 이미지 고르기([gen3d] on_none_image_pick) ─────────────────────────
+    def _image_pick(self) -> dict | None:
+        an = self._after_none()
+        return an.get("imagePick") if an is not None else None
+
+    def _start_image_round(self, at: str | None = None) -> dict:
+        """회차 r: 규칙 프롬프트(+ 무채색 화풍 고정 문구) → 이미지 3장(seed = 기준 + 3r + 0·1·2) → 이미지 관문 → 고르기 화면.
+        만들지 못하면(형태를 말하지 않음·제외 범주 등, G73과 같은 판정) 사유를 남기고 기존 none 경로. lock 안에서 부른다."""
+        r = self._none_attempts
+        self._none_attempts += 1
+        self._activate_g73()
+        self.data["formatVersion"] = self._fv(FORMAT_VERSION_IMAGE_PICK)
+        self.data["generation"].setdefault("imagePickExposed", False)
+        prev = self._after_none()
+        if prev is not None:
+            # 다음 회차: 앞 기록은 afterNoneEarlier로(만든 후보가 있었으면 그 후보에도 none이라 함 → chosen false)
+            if prev.get("candidateId") is not None:
+                prev["chosen"] = False
+            self.data["generation"].setdefault("afterNoneEarlier", []).append(prev)
+        at = at or now_iso()
+        text = self.s.log.data.get("confirmedText")
+        pre = self.none_gen.precheck(self.spec, text, self.preview_mode, self._other_interviews(),
+                                     llm_items=self.llm_shape_items or None)
+        p = pre["prompt"] or {}
+        rec = {"version": ng.NONE_GEN_VERSION, "origin": ng.ORIGIN, "setting": self.none_gen.setting(), "noneAt": at,
+               "shownOrderBefore": list(self.cands["displayOrder"]), "status": ng.RUNNING,
+               "blockReason": pre["blockReason"], "blockDetail": pre["blockDetail"], "prompt": pre["prompt"],
+               "run": None, "startedAt": None, "endedAt": None, "seconds": None, "exitCode": None, "error": None,
+               "llmUnload": None, "timing": None, "asset": None, "candidateId": None, "displayPosition": None,
+               "participantSkippedWait": False, "chosen": None,
+               "attempt": r, "seed": None,                         # 형태 seed = 고른 이미지의 seed(고르기 전 null)
+               "imagePick": {"version": ng.IMAGE_PICK_VERSION, "round": r, "seeds": self.none_gen.seeds_for_round(r),
+                             "promptText": p.get("text"), "builderVersion": p.get("builderVersion"),
+                             "imageStyle": p.get("imageStyle"), "imageStyleVersion": p.get("imageStyleVersion"),
+                             "status": ng.RUNNING, "run": None, "startedAt": None, "endedAt": None, "seconds": None,
+                             "exitCode": None, "error": None, "blockReason": None, "llmUnload": None, "timing": None,
+                             "models": None, "images": [], "shownOrder": [], "shownAt": None, "outcome": None,
+                             "pickedPosition": None, "pickedSeed": None, "pickedImageSha256": None, "decidedAt": None}}
+        self._note_llm_prompt(rec)
+        self.data["generation"]["afterNone"] = rec
+        ip = rec["imagePick"]
+        self._pick_paths = {}
+        job = None
+        if pre["blockReason"] is None:
+            job = self.none_gen.start(self.s.id, text, source_key(self.spec), p["text"],
+                                      lambda res, rec=rec: self._image_round_done(res, rec), attempt=r, spec=self.spec,
+                                      other_interviews=self._other_interviews, kind="image", seeds=ip["seeds"],
+                                      llm_items=self.llm_shape_items or None)
+            if isinstance(job, str):
+                rec.update(blockReason=job, blockDetail=",".join(self._other_interviews()) or None
+                           if job == ng.B_INTERVIEW else None)
+                job = None
+        if job is None:
+            rec.update(status=ng.BLOCKED, endedAt=at, seconds=0.0)
+            ip.update(status=ng.BLOCKED, outcome=ng.BLOCKED, blockReason=rec["blockReason"], endedAt=at)
+            self._log_event("selection:none_gen", {"status": ng.BLOCKED, "blockReason": rec["blockReason"],
+                                                   "phase": "image", "round": r})
+            self._apply_choice(NONE_CHOICE, at)
+            return self.view()
+        self._none_job = job
+        ip["startedAt"] = at
+        self.data["stage"] = "generating"
+        self._save()
+        self._log_event("selection:image_pick", {"status": ng.RUNNING, "round": r, "seeds": ip["seeds"],
+                                                 "promptText": p["text"]})
+        return self.view()
+
+    def _note_llm_prompt(self, rec: dict) -> None:
+        """(G77) llm_fill을 켰으면 이 생성 기록에 그림 프롬프트의 형태 자리를 LLM 인용 낱말로 메웠는지 남긴다(켜지 않으면 키 없음)."""
+        if not self.llm_on:
+            return
+        used = ((rec.get("prompt") or {}).get("shapeSource") == llm_fill_mod.ORIGIN)
+        rec["llmPromptUsed"] = used
+        rec["llmShapeItems"] = copy.deepcopy(self.llm_shape_items)
+        gen = self.data["generation"]
+        gen["llmPromptUsed"] = bool(gen.get("llmPromptUsed")) or used
+
+    def _image_round_done(self, res: dict, rec: dict) -> None:
+        """이미지 단계가 끝남(생성 스레드). 관문을 통과한 이미지가 있으면 고르기 화면(seed 순서), 없거나 실패면 기존 none 경로."""
         with self.lock:
+            if self.data is None or self._after_none() is not rec:
+                return                                   # 다른 회차로 넘어간 뒤 온 결과
+            ip = rec["imagePick"]
+            for k in ("run", "endedAt", "seconds", "exitCode", "llmUnload", "timing", "models"):
+                ip[k] = res.get(k)
+            if ip["startedAt"] is None:
+                ip["startedAt"] = res.get("startedAt")
+            ip["generatorTiming"] = res.get("generatorTiming")
+            imgs = []
+            for x in res.get("images") or []:
+                g = x.get("gate") or {}
+                imgs.append({"seed": x["seed"], "file": x["file"], "sha256": x["sha256"], "seconds": x.get("seconds"),
+                             "gate": {k: g.get(k) for k in ("personLikeScore", "passed", "threshold", "labelScores",
+                                                             "matchScore", "model", "error") if k in g} or None,
+                             "problem": x.get("problem"), "shown": False, "position": None, "_path": x.get("_path")})
+            status = res.get("status") or ng.FAILED
+            if self.stage != "generating":
+                # 참여자가 이미 넘어감(기다리지 않음·철회): 기록만 채운다
+                ip["generatorStatus"] = status
+                ip["images"] = [{k: v for k, v in x.items() if k != "_path"} for x in imgs]
+                self._save()
+                return
+            shown = [x for x in imgs if x["problem"] is None]
+            if status == ng.OK and not shown:
+                status, res = ng.BLOCKED, {**res, "blockReason": ng.B_ALL_IMAGES_GATED,
+                                           "blockDetail": ",".join(f"{x['seed']}:{x['problem']}" for x in imgs) or None}
+            self._pick_paths = {}
+            for pos, x in enumerate(shown if status == ng.OK else []):
+                x["shown"], x["position"] = True, pos
+                self._pick_paths[pos] = (Path(x["_path"]), x["sha256"])
+            ip["images"] = [{k: v for k, v in x.items() if k != "_path"} for x in imgs]
+            if status != ng.OK:
+                ip.update(status=status, outcome=status, error=res.get("error"), blockReason=res.get("blockReason"))
+                rec.update(status=status, blockReason=res.get("blockReason"), blockDetail=res.get("blockDetail"),
+                           error=res.get("error"), endedAt=res.get("endedAt"), seconds=res.get("seconds"))
+                self._log_event("selection:none_gen", {"status": status, "blockReason": rec["blockReason"], "phase": "image",
+                                                       "round": ip["round"], "seconds": ip["seconds"]})
+                self._apply_choice(NONE_CHOICE)
+                return
+            at = now_iso()
+            ip.update(status="shown", shownOrder=[x["seed"] for x in shown], shownAt=at)
+            self.data["generation"]["imagePickExposed"] = True
+            if rec.get("llmPromptUsed"):
+                self.data["llmFillExposed"] = True        # G77: LLM 형태 낱말로 그린 그림이 화면에 나옴
+            self.data["stage"] = "picking"
+            self._save()
+            self._log_event("selection:image_pick", {"status": "shown", "round": ip["round"],
+                                                     "shownSeeds": ip["shownOrder"],
+                                                     "hiddenSeeds": [x["seed"] for x in imgs if not x["shown"]],
+                                                     "seconds": ip["seconds"]})
+
+    def pick_image(self, choice: str) -> dict:
+        """고르기 화면: 보여 준 자리 번호("0"…) 하나 또는 "none"([이 중에는 없어요]). 고르면 그 이미지로만 형태를 만든다.
+        none이면 회차가 남았으면 다음 회차(새 seed 3개), 아니면 기존 none 경로(afterNone.status declined)."""
+        with self.lock:
+            self._require("picking")
+            rec = self._after_none()
+            ip = rec["imagePick"]
+            at = now_iso()
+            if choice == NONE_CHOICE:
+                ip.update(status=ng.DECLINED, outcome="none", decidedAt=at)
+                self._log_event("selection:image_pick", {"status": "none", "round": ip["round"]})
+                if self._none_attempts < self.none_gen.image_rounds:
+                    return self._start_image_round(at)
+                rec.update(status=ng.DECLINED, endedAt=at)
+                self._apply_choice(NONE_CHOICE, at)
+                return self.view()
+            try:
+                pos = int(choice)
+            except (TypeError, ValueError):
+                raise SelectionInvalid(f"보여 준 그림이 아닙니다: {choice}") from None
+            img = next((x for x in ip["images"] if x["shown"] and x["position"] == pos), None)
+            if img is None or pos not in self._pick_paths:
+                raise SelectionInvalid(f"보여 준 그림이 아닙니다: {choice}")
+            path, sha = self._pick_paths[pos]
+            ip.update(status="picked", outcome="picked", pickedPosition=pos, pickedSeed=img["seed"],
+                      pickedImageSha256=sha, decidedAt=at)
+            rec["seed"] = img["seed"]
+            self._log_event("selection:image_pick", {"status": "picked", "round": ip["round"], "position": pos,
+                                                     "seed": img["seed"]})
+            text = self.s.log.data.get("confirmedText")
+            if rec.get("llmPromptUsed") and self._llm_flag():
+                job = "session_flagged"                     # (CP15-2) LLM 낱말로 만든 그림 프롬프트는 판정 뒤 메시로 잇지 않음
+            else:
+                job = self.none_gen.start(self.s.id, text, source_key(self.spec), rec["prompt"]["text"], self._generation_done,
+                                          attempt=rec["attempt"], spec=self.spec, other_interviews=self._other_interviews,
+                                          kind="mesh", image=(path, sha), seed=img["seed"],
+                                          llm_items=self.llm_shape_items or None)
+            if isinstance(job, str):
+                rec.update(status=ng.BLOCKED, blockReason=job, endedAt=at, seconds=0.0,
+                           blockDetail=",".join(self._other_interviews()) or None if job == ng.B_INTERVIEW else None)
+                self._log_event("selection:none_gen", {"status": ng.BLOCKED, "blockReason": job, "phase": "mesh"})
+                self._apply_choice(NONE_CHOICE, at)
+                return self.view()
+            self._none_job = job
+            rec["startedAt"] = at
+            self.data["stage"] = "generating"
+            self._save()
+            self._log_event("selection:none_gen", {"status": ng.RUNNING, "phase": "mesh", "seed": img["seed"],
+                                                   "promptText": rec["prompt"]["text"]})
+            return self.view()
+
+    def image_png(self, round_: int, position: int) -> bytes | None:
+        """고르기 화면의 그림. (CP14-1) 이 세션이 지금 고르기 화면(stage picking)이고, 지금 보여 주는 회차의 보여 준 그림일 때만
+        바이트를 돌려준다. 그 밖(고른 뒤·다른 회차·숨긴 그림)은 None(서버는 404). 파일이 바뀌었으면 SelectionInvalid."""
+        with self.lock:
+            ip = self._image_pick()
+            if (self.stage != "picking" or ip is None or ip["round"] != round_ or position not in self._pick_paths
+                    or not any(x["shown"] and x["position"] == position for x in ip["images"])):
+                return None
+            path, sha = self._pick_paths[position]
+            raw = Path(path).read_bytes()
+            if hashlib.sha256(raw).hexdigest() != sha:
+                raise SelectionInvalid("그림 파일이 보여 준 뒤 바뀌었습니다.")
+            return raw
+
+    def skip_generation(self) -> dict:
+        """[기다리지 않고 넘어갈게요]: 생성을 끄고 기존 none 경로로. (G75) 고르기 화면의 [넘어갈게요]도 같은 경로."""
+        with self.lock:
+            if self.stage == "picking":
+                rec = self._after_none()
+                at = now_iso()
+                rec["imagePick"].update(status=ng.CANCELLED, outcome="skipped", decidedAt=at)
+                rec.update(status=ng.CANCELLED, participantSkippedPick=True, endedAt=at)
+                self._log_event("selection:none_gen", {"status": ng.CANCELLED, "participantSkippedPick": True,
+                                                       "phase": "pick"})
+                self._apply_choice(NONE_CHOICE, at)
+                return self.view()
             self._require("generating")
             rec = self._after_none()
+            ip = rec.get("imagePick")
+            if ip is not None and ip["status"] == ng.RUNNING:
+                ip.update(status=ng.CANCELLED, outcome=ng.CANCELLED, decidedAt=now_iso())   # 이미지 대기 중 넘어감
             rec.update(status=ng.CANCELLED, participantSkippedWait=True, endedAt=now_iso())
             self._log_event("selection:none_gen", {"status": ng.CANCELLED, "participantSkippedWait": True})
             self._apply_choice(NONE_CHOICE)             # 취소 상태를 먼저 저장하고 응답한다(CP13-4)
@@ -654,6 +1166,7 @@ class SelectionFlow:
                                   "operationalId": op["id"], "operationalIndex": op["index"], "at": now}
         self.data["stage"] = "adjusting"
         self.current = dict(op["overrides"])
+        self._ring_enter(now)
         if self.gen3d:
             self.data["generation"]["outcome"] = "skipped"      # 생성 후보가 없을 때만 건너뜀이 생긴다
 
@@ -830,6 +1343,8 @@ class SelectionFlow:
             if sw is None:
                 raise SelectionInvalid(f"색 견본 목록에 없는 값입니다: {value!r}")
             return {"material.color.h": sw["h"], "material.color.s": sw["s"], "material.color.l": sw["l"]}
+        if it["kind"] == "hue_ring":
+            return self._validate_ring(it, value)         # G79
         if it["kind"] == "category":
             allowed = self.item_values(item)          # 표의 값 + 표에 없던 말한 값(있으면)
             if not isinstance(value, str) or value not in allowed:
@@ -865,6 +1380,8 @@ class SelectionFlow:
                 # G39: 형태 조작 한 번 = 고른 값 하나(value). 그 조작으로 정해진 세 슬롯을 함께 남긴다(변형값은 base가 spec의
                 # base와 다르면 null — 이전 base의 변형값은 지워짐)
                 event["formSlots"] = self._form_slots(params)
+            if self.ring is not None and item == "color":
+                event["input"] = copy.deepcopy(value)       # G79: 고리({hueStep…})·견본 id·"said" 가운데 무엇으로 바꿨는지
             ev.append(event)
             summ = self.data["adjustments"]["items"].setdefault(item, {"count": 0, "first": before, "last": before,
                                                                        "firstAt": at, "lastAt": at})
@@ -965,6 +1482,7 @@ class SelectionFlow:
         asset = (self.data.get("form") or {}).get("asset") if self.gen3d else None
         generated = asset is not None and form_item is None
         basis = variant_key_basis(self.spec)
+        llm_slots = {sl: {**a, "item": item} for item, a in self.llm_applied.items() for sl in a["specSlots"]}
         for slot in (SLOTS + (PROPORTION_SLOT,) if self.has_proportions else SLOTS):
             slot_val = slot_value(self.spec, slot)
             said = slot_val
@@ -984,6 +1502,12 @@ class SelectionFlow:
                     rec["origin"] = ng.ORIGIN
             elif slot in edited:
                 rec = {"source": "edited", "value": edited[slot], **rec}
+            elif slot in llm_slots:
+                # G77: LLM이 원문 인용과 함께 채운 처음 값을 참여자가 바꾸지 않음(바꿨으면 위 edited)
+                a = llm_slots[slot]
+                rec = {"source": llm_fill_mod.ORIGIN, "value": self._slot_final(slot, final), **rec,
+                       "llmQuote": {"item": a["item"], "slot": a["slot"], "value": a["value"], "quote": a["quote"],
+                                    "charSpan": list(a["charSpan"])}}
             elif slot in chosen:
                 rec = {"source": "said_unrendered_chosen" if slot == "form.type" and unrendered else "chosen",
                        "value": chosen[slot], **rec}
@@ -1008,6 +1532,29 @@ class SelectionFlow:
             out[slot] = rec
         return out, counts
 
+    def _slot_final(self, slot: str, final: dict):
+        """슬롯 하나의 최종 값(기록용, edited와 같은 표현)."""
+        if slot == "material.color":
+            return {k: round(final[f"material.color.{k}"], 4) for k in ("h", "s", "l")}
+        if slot == "material.saturation":
+            return round(final["material.color.s"], 4)
+        v = final.get(slot)
+        return round(v, 4) if isinstance(v, float) else v
+
+    def _llm_participant(self) -> dict:
+        """(G77) 채택 값마다 참여자가 그대로 뒀는지·고쳤는지·최종 값(조절 항목 값 표현)."""
+        out = {}
+        start = effective_params(self.spec, self.defaults, self.cands["candidates"][0]["overrides"])
+        final = effective_params(self.spec, self.defaults, self.current)
+        for item, a in sorted(self.llm_applied.items()):
+            summ = self.data["adjustments"]["items"].get(item)
+            first = self._item_value(item, start)
+            last = self._item_value(item, final)
+            kept = _same_value(first, last)
+            out[item] = {"first": first, "final": last, "kept": kept, "edited": not kept,
+                         "adjustCount": summ["count"] if summ else 0}
+        return out
+
     def finish(self) -> dict:
         with self.lock:
             self._require("adjusting")
@@ -1019,6 +1566,10 @@ class SelectionFlow:
             self.data["sources"] = {k: v["source"] for k, v in self.data["sourceDetails"].items()}   # 러너 계약 필드
             if self.has_proportions:
                 self.data["proportions"] = self._proportions_record(final=True)
+            if self.llm_on and self.data.get("llmFill") is not None:
+                self.data["llmFill"]["participant"] = self._llm_participant()
+            if self.data.get("colorRing") is not None:
+                self.data["colorRing"]["final"] = self._ring_final()     # G79-d: 말함 | llm_quoted | 말하지도 고르지도 않음 | 고름
             self.data["stage"] = "premeasure"
             self._save()
             self._log_event("selection:adjusted", {
@@ -1309,6 +1860,25 @@ class SelectionFlow:
                                                             "startedAt", "endedAt", "seconds", "participantSkippedWait",
                                                             "attempt", "seed")}
                 out["afterNone"]["timeoutS"] = an["setting"]["timeoutS"]
+                ip = an.get("imagePick")
+                if ip is not None:
+                    # G75: 지금 무엇을 기다리는지(image 그림 그리는 중 · pick 고르는 중 · mesh 고른 그림으로 물체 만드는 중)
+                    phase = ("image" if ip["status"] == ng.RUNNING else "pick" if self.stage == "picking"
+                             else "mesh" if ip["outcome"] == "picked" else None)
+                    out["afterNone"].update(phase=phase, round=ip["round"], rounds=an["setting"]["imagePick"]["rounds"],
+                                            imagePickStatus=ip["status"])
+                    if self.stage == "picking":
+                        shown = sorted((x for x in ip["images"] if x["shown"]), key=lambda x: x["position"])
+                        out["imagePick"] = {"round": ip["round"], "images": [
+                            {"position": x["position"],
+                             "url": f"/api/sessions/{self.s.id}/selection/image-pick/{ip['round']}/{x['position']}.png"}
+                            for x in shown]}
+            if self.llm_applied:
+                # G77: 조절 화면에서 LLM이 채운 항목마다 근거 인용 안내(참여자 원문 그대로). 참여자가 다른 값으로 바꾸면 보이지 않는다
+                tmpl = self.protocol.text("llm_fill_note")
+                out["llmFill"] = {"items": {item: {"quote": a["quote"], "text": tmpl.replace("{quote}", a["quote"])}
+                                            for item, a in sorted(self.llm_applied.items())
+                                            if self.stage != "adjusting" or self._llm_current(item)}}
             out["skipped"] = bool(self.data["selection"] and self.data["selection"].get("skipped"))
             out["axes"] = self.cands["axes"]
             out["note"] = self.cands["note"]
@@ -1321,6 +1891,8 @@ class SelectionFlow:
                                   "items": {i: self._item_value(i, params) for i in self.items}}
                 out["adjustCounts"] = {k: v["count"] for k, v in self.data["adjustments"]["items"].items()}
                 out["colorChanged"] = self.data["colorChanged"]
+                if self.ring is not None:
+                    out["colorRing"] = self._ring_view()          # G79: 고리 그리기(값 표 4.0.0일 때만 키가 있음)
             if self.stage in ("premeasure", "done"):
                 out["finalOverrides"] = self.data["finalOverrides"]
                 out["sourceCounts"] = self.data["sourceCounts"]

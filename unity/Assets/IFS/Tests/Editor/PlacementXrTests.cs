@@ -419,7 +419,7 @@ namespace IFS.SceneSpec.Tests
             Assert.That(ev.Any(l => l.Contains("items_instruction,when=post;keys=items_instruction+items_instruction_post")), Is.True);
             var m = JObject.Parse(File.ReadAllText(Path.Combine(dir, "manifest.json")));
             Assert.That((string)m["taskText"]["file"], Is.EqualTo("placement_task.scaleA.v0.json"));
-            Assert.That((string)m["taskText"]["version"], Is.EqualTo("0.7-scaleA"), "G53 놓기 도움 문구를 더해 0.3, G57 문구 다듬기로 0.4, G59 문항으로 0.5, G60 want_move를 빼 0.6, G65·G66 문구로 0.7");
+            Assert.That((string)m["taskText"]["version"], Is.EqualTo("0.9-scaleA"), "G53 놓기 도움 문구를 더해 0.3, G57 문구 다듬기로 0.4, G59 문항으로 0.5, G60 want_move를 빼 0.6, G65·G66 문구로 0.7, 2026-11-28 확인 버튼 안내·확정 알림으로 0.8, 공간 고르기 문구로 0.9");
             Assert.That((int)m["taskText"]["draftCount"], Is.EqualTo(t.Count));
         }
 

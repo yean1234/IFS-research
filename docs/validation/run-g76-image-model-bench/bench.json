@@ -1,0 +1,4847 @@
+{
+  "version": "g76-image-bench/0.1.0",
+  "seeds": [
+    0,
+    1,
+    2
+  ],
+  "size": 1024,
+  "compareIds": [
+    "A01",
+    "A02",
+    "A03",
+    "A07",
+    "A10",
+    "F01",
+    "F04",
+    "F06"
+  ],
+  "detCases": [
+    [
+      "A01",
+      0
+    ],
+    [
+      "A03",
+      1
+    ],
+    [
+      "F01",
+      2
+    ]
+  ],
+  "prompts": [
+    {
+      "id": "A01",
+      "kind": "abstract",
+      "text": "엉킨 매듭이에요.",
+      "content": [
+        "tangled",
+        "knot"
+      ],
+      "prompt": "a single tangled knot, one solid object, matte gray clay, plain white background, untextured monochrome gray clay sculpture, single uniform color, soft even studio lighting, centered, entire object in view",
+      "negative": "person, human, face, eyes, figure, animal, hands, text, watermark, multiple objects, cropped, scenery, floor, shadow, color, two objects, pair, duplicate, group of objects, stand, pedestal, base plate, plinth, string, rope, chain, strap, holder, container, bowl, vase, tray, plate, colorful, multicolored, painted, patterned, glossy, metallic, reflections, background objects",
+      "builderVersion": "gen3d-shape-prompt/0.4.0+imagepick",
+      "lexiconVersion": "0.2.0",
+      "imageStyleVersion": "g75-image-style/0.1.0",
+      "pluralStated": false
+    },
+    {
+      "id": "A02",
+      "kind": "abstract",
+      "text": "뾰족한 가시가 있어요.",
+      "content": [
+        "pointed",
+        "spike"
+      ],
+      "prompt": "a single pointed spike, one solid object, matte gray clay, plain white background, untextured monochrome gray clay sculpture, single uniform color, soft even studio lighting, centered, entire object in view",
+      "negative": "person, human, face, eyes, figure, animal, hands, text, watermark, multiple objects, cropped, scenery, floor, shadow, color, two objects, pair, duplicate, group of objects, stand, pedestal, base plate, plinth, string, rope, chain, strap, holder, container, bowl, vase, tray, plate, colorful, multicolored, painted, patterned, glossy, metallic, reflections, background objects",
+      "builderVersion": "gen3d-shape-prompt/0.4.0+imagepick",
+      "lexiconVersion": "0.2.0",
+      "imageStyleVersion": "g75-image-style/0.1.0",
+      "pluralStated": false
+    },
+    {
+      "id": "A03",
+      "kind": "abstract",
+      "text": "울퉁불퉁한 덩어리예요.",
+      "content": [
+        "bumpy",
+        "lump"
+      ],
+      "prompt": "a single bumpy lump, one solid object, matte gray clay, plain white background, untextured monochrome gray clay sculpture, single uniform color, soft even studio lighting, centered, entire object in view",
+      "negative": "person, human, face, eyes, figure, animal, hands, text, watermark, multiple objects, cropped, scenery, floor, shadow, color, two objects, pair, duplicate, group of objects, stand, pedestal, base plate, plinth, string, rope, chain, strap, holder, container, bowl, vase, tray, plate, colorful, multicolored, painted, patterned, glossy, metallic, reflections, background objects",
+      "builderVersion": "gen3d-shape-prompt/0.4.0+imagepick",
+      "lexiconVersion": "0.2.0",
+      "imageStyleVersion": "g75-image-style/0.1.0",
+      "pluralStated": false
+    },
+    {
+      "id": "A04",
+      "kind": "abstract",
+      "text": "둥근 고리예요.",
+      "content": [
+        "round",
+        "ring"
+      ],
+      "prompt": "a single round ring, one solid object, matte gray clay, plain white background, untextured monochrome gray clay sculpture, single uniform color, soft even studio lighting, centered, entire object in view",
+      "negative": "person, human, face, eyes, figure, animal, hands, text, watermark, multiple objects, cropped, scenery, floor, shadow, color, two objects, pair, duplicate, group of objects, stand, pedestal, base plate, plinth, string, rope, chain, strap, holder, container, bowl, vase, tray, plate, colorful, multicolored, painted, patterned, glossy, metallic, reflections, background objects",
+      "builderVersion": "gen3d-shape-prompt/0.4.0+imagepick",
+      "lexiconVersion": "0.2.0",
+      "imageStyleVersion": "g75-image-style/0.1.0",
+      "pluralStated": false
+    },
+    {
+      "id": "A05",
+      "kind": "abstract",
+      "text": "뭉툭한 뭉치예요.",
+      "content": [
+        "blunt",
+        "clump"
+      ],
+      "prompt": "a single blunt clump, one solid object, matte gray clay, plain white background, untextured monochrome gray clay sculpture, single uniform color, soft even studio lighting, centered, entire object in view",
+      "negative": "person, human, face, eyes, figure, animal, hands, text, watermark, multiple objects, cropped, scenery, floor, shadow, color, two objects, pair, duplicate, group of objects, stand, pedestal, base plate, plinth, string, rope, chain, strap, holder, container, bowl, vase, tray, plate, colorful, multicolored, painted, patterned, glossy, metallic, reflections, background objects",
+      "builderVersion": "gen3d-shape-prompt/0.4.0+imagepick",
+      "lexiconVersion": "0.2.0",
+      "imageStyleVersion": "g75-image-style/0.1.0",
+      "pluralStated": false
+    },
+    {
+      "id": "A06",
+      "kind": "abstract",
+      "text": "두툼한 혹이에요.",
+      "content": [
+        "thick",
+        "bulge"
+      ],
+      "prompt": "a single thick bulge, one solid object, matte gray clay, plain white background, untextured monochrome gray clay sculpture, single uniform color, soft even studio lighting, centered, entire object in view",
+      "negative": "person, human, face, eyes, figure, animal, hands, text, watermark, multiple objects, cropped, scenery, floor, shadow, color, two objects, pair, duplicate, group of objects, stand, pedestal, base plate, plinth, string, rope, chain, strap, holder, container, bowl, vase, tray, plate, colorful, multicolored, painted, patterned, glossy, metallic, reflections, background objects",
+      "builderVersion": "gen3d-shape-prompt/0.4.0+imagepick",
+      "lexiconVersion": "0.2.0",
+      "imageStyleVersion": "g75-image-style/0.1.0",
+      "pluralStated": false
+    },
+    {
+      "id": "A07",
+      "kind": "abstract",
+      "text": "오돌토돌한 돌기가 있어요.",
+      "content": [
+        "knobbly",
+        "bump"
+      ],
+      "prompt": "a single knobbly bump, one solid object, matte gray clay, plain white background, untextured monochrome gray clay sculpture, single uniform color, soft even studio lighting, centered, entire object in view",
+      "negative": "person, human, face, eyes, figure, animal, hands, text, watermark, multiple objects, cropped, scenery, floor, shadow, color, two objects, pair, duplicate, group of objects, stand, pedestal, base plate, plinth, string, rope, chain, strap, holder, container, bowl, vase, tray, plate, colorful, multicolored, painted, patterned, glossy, metallic, reflections, background objects",
+      "builderVersion": "gen3d-shape-prompt/0.4.0+imagepick",
+      "lexiconVersion": "0.2.0",
+      "imageStyleVersion": "g75-image-style/0.1.0",
+      "pluralStated": false
+    },
+    {
+      "id": "A08",
+      "kind": "abstract",
+      "text": "얇은 막이에요.",
+      "content": [
+        "thin",
+        "membrane"
+      ],
+      "prompt": "a single thin membrane, one solid object, matte gray clay, plain white background, untextured monochrome gray clay sculpture, single uniform color, soft even studio lighting, centered, entire object in view",
+      "negative": "person, human, face, eyes, figure, animal, hands, text, watermark, multiple objects, cropped, scenery, floor, shadow, color, two objects, pair, duplicate, group of objects, stand, pedestal, base plate, plinth, string, rope, chain, strap, holder, container, bowl, vase, tray, plate, colorful, multicolored, painted, patterned, glossy, metallic, reflections, background objects",
+      "builderVersion": "gen3d-shape-prompt/0.4.0+imagepick",
+      "lexiconVersion": "0.2.0",
+      "imageStyleVersion": "g75-image-style/0.1.0",
+      "pluralStated": false
+    },
+    {
+      "id": "A09",
+      "kind": "abstract",
+      "text": "갈라진 껍데기예요.",
+      "content": [
+        "cracked",
+        "shell"
+      ],
+      "prompt": "a single cracked shell, one solid object, matte gray clay, plain white background, untextured monochrome gray clay sculpture, single uniform color, soft even studio lighting, centered, entire object in view",
+      "negative": "person, human, face, eyes, figure, animal, hands, text, watermark, multiple objects, cropped, scenery, floor, shadow, color, two objects, pair, duplicate, group of objects, stand, pedestal, base plate, plinth, string, rope, chain, strap, holder, container, bowl, vase, tray, plate, colorful, multicolored, painted, patterned, glossy, metallic, reflections, background objects",
+      "builderVersion": "gen3d-shape-prompt/0.4.0+imagepick",
+      "lexiconVersion": "0.2.0",
+      "imageStyleVersion": "g75-image-style/0.1.0",
+      "pluralStated": false
+    },
+    {
+      "id": "A10",
+      "kind": "abstract",
+      "text": "꼬인 띠예요.",
+      "content": [
+        "twisted",
+        "band"
+      ],
+      "prompt": "a single twisted band, one solid object, matte gray clay, plain white background, untextured monochrome gray clay sculpture, single uniform color, soft even studio lighting, centered, entire object in view",
+      "negative": "person, human, face, eyes, figure, animal, hands, text, watermark, multiple objects, cropped, scenery, floor, shadow, color, two objects, pair, duplicate, group of objects, stand, pedestal, base plate, plinth, string, rope, chain, strap, holder, container, bowl, vase, tray, plate, colorful, multicolored, painted, patterned, glossy, metallic, reflections, background objects",
+      "builderVersion": "gen3d-shape-prompt/0.4.0+imagepick",
+      "lexiconVersion": "0.2.0",
+      "imageStyleVersion": "g75-image-style/0.1.0",
+      "pluralStated": false
+    },
+    {
+      "id": "A11",
+      "kind": "abstract",
+      "text": "구불구불한 뿔이에요.",
+      "content": [
+        "wavy",
+        "horn"
+      ],
+      "prompt": "a single wavy horn, one solid object, matte gray clay, plain white background, untextured monochrome gray clay sculpture, single uniform color, soft even studio lighting, centered, entire object in view",
+      "negative": "person, human, face, eyes, figure, animal, hands, text, watermark, multiple objects, cropped, scenery, floor, shadow, color, two objects, pair, duplicate, group of objects, stand, pedestal, base plate, plinth, string, rope, chain, strap, holder, container, bowl, vase, tray, plate, colorful, multicolored, painted, patterned, glossy, metallic, reflections, background objects",
+      "builderVersion": "gen3d-shape-prompt/0.4.0+imagepick",
+      "lexiconVersion": "0.2.0",
+      "imageStyleVersion": "g75-image-style/0.1.0",
+      "pluralStated": false
+    },
+    {
+      "id": "F01",
+      "kind": "familiar",
+      "text": "동그란 공이에요.",
+      "content": [
+        "round",
+        "ball"
+      ],
+      "prompt": "a single round ball, one solid object, matte gray clay, plain white background, untextured monochrome gray clay sculpture, single uniform color, soft even studio lighting, centered, entire object in view",
+      "negative": "person, human, face, eyes, figure, animal, hands, text, watermark, multiple objects, cropped, scenery, floor, shadow, color, two objects, pair, duplicate, group of objects, stand, pedestal, base plate, plinth, string, rope, chain, strap, holder, container, bowl, vase, tray, plate, colorful, multicolored, painted, patterned, glossy, metallic, reflections, background objects",
+      "builderVersion": "gen3d-shape-prompt/0.4.0+imagepick",
+      "lexiconVersion": "0.2.0",
+      "imageStyleVersion": "g75-image-style/0.1.0",
+      "pluralStated": false
+    },
+    {
+      "id": "F02",
+      "kind": "familiar",
+      "text": "네모난 상자예요.",
+      "content": [
+        "square",
+        "box"
+      ],
+      "prompt": "a single square box, one solid object, matte gray clay, plain white background, untextured monochrome gray clay sculpture, single uniform color, soft even studio lighting, centered, entire object in view",
+      "negative": "person, human, face, eyes, figure, animal, hands, text, watermark, multiple objects, cropped, scenery, floor, shadow, color, two objects, pair, duplicate, group of objects, stand, pedestal, base plate, plinth, string, rope, chain, strap, holder, container, bowl, vase, tray, plate, colorful, multicolored, painted, patterned, glossy, metallic, reflections, background objects",
+      "builderVersion": "gen3d-shape-prompt/0.4.0+imagepick",
+      "lexiconVersion": "0.2.0",
+      "imageStyleVersion": "g75-image-style/0.1.0",
+      "pluralStated": false
+    },
+    {
+      "id": "F03",
+      "kind": "familiar",
+      "text": "납작한 돌멩이예요.",
+      "content": [
+        "flat",
+        "pebble"
+      ],
+      "prompt": "a single flat pebble, one solid object, matte gray clay, plain white background, untextured monochrome gray clay sculpture, single uniform color, soft even studio lighting, centered, entire object in view",
+      "negative": "person, human, face, eyes, figure, animal, hands, text, watermark, multiple objects, cropped, scenery, floor, shadow, color, two objects, pair, duplicate, group of objects, stand, pedestal, base plate, plinth, string, rope, chain, strap, holder, container, bowl, vase, tray, plate, colorful, multicolored, painted, patterned, glossy, metallic, reflections, background objects",
+      "builderVersion": "gen3d-shape-prompt/0.4.0+imagepick",
+      "lexiconVersion": "0.2.0",
+      "imageStyleVersion": "g75-image-style/0.1.0",
+      "pluralStated": false
+    },
+    {
+      "id": "F04",
+      "kind": "familiar",
+      "text": "찌그러진 컵이에요.",
+      "content": [
+        "dented",
+        "cup"
+      ],
+      "prompt": "a single dented cup, one solid object, matte gray clay, plain white background, untextured monochrome gray clay sculpture, single uniform color, soft even studio lighting, centered, entire object in view",
+      "negative": "person, human, face, eyes, figure, animal, hands, text, watermark, multiple objects, cropped, scenery, floor, shadow, color, two objects, pair, duplicate, group of objects, stand, pedestal, base plate, plinth, string, rope, chain, strap, holder, container, bowl, vase, tray, plate, colorful, multicolored, painted, patterned, glossy, metallic, reflections, background objects",
+      "builderVersion": "gen3d-shape-prompt/0.4.0+imagepick",
+      "lexiconVersion": "0.2.0",
+      "imageStyleVersion": "g75-image-style/0.1.0",
+      "pluralStated": false
+    },
+    {
+      "id": "F05",
+      "kind": "familiar",
+      "text": "달걀이에요.",
+      "content": [
+        "egg"
+      ],
+      "prompt": "a single egg, one solid object, matte gray clay, plain white background, untextured monochrome gray clay sculpture, single uniform color, soft even studio lighting, centered, entire object in view",
+      "negative": "person, human, face, eyes, figure, animal, hands, text, watermark, multiple objects, cropped, scenery, floor, shadow, color, two objects, pair, duplicate, group of objects, stand, pedestal, base plate, plinth, string, rope, chain, strap, holder, container, bowl, vase, tray, plate, colorful, multicolored, painted, patterned, glossy, metallic, reflections, background objects",
+      "builderVersion": "gen3d-shape-prompt/0.4.0+imagepick",
+      "lexiconVersion": "0.2.0",
+      "imageStyleVersion": "g75-image-style/0.1.0",
+      "pluralStated": false
+    },
+    {
+      "id": "F06",
+      "kind": "familiar",
+      "text": "깃털이에요.",
+      "content": [
+        "feather"
+      ],
+      "prompt": "a single feather, one solid object, matte gray clay, plain white background, untextured monochrome gray clay sculpture, single uniform color, soft even studio lighting, centered, entire object in view",
+      "negative": "person, human, face, eyes, figure, animal, hands, text, watermark, multiple objects, cropped, scenery, floor, shadow, color, two objects, pair, duplicate, group of objects, stand, pedestal, base plate, plinth, string, rope, chain, strap, holder, container, bowl, vase, tray, plate, colorful, multicolored, painted, patterned, glossy, metallic, reflections, background objects",
+      "builderVersion": "gen3d-shape-prompt/0.4.0+imagepick",
+      "lexiconVersion": "0.2.0",
+      "imageStyleVersion": "g75-image-style/0.1.0",
+      "pluralStated": false
+    },
+    {
+      "id": "F07",
+      "kind": "familiar",
+      "text": "하트예요.",
+      "content": [
+        "heart shape"
+      ],
+      "prompt": "a single heart shape, one solid object, matte gray clay, plain white background, untextured monochrome gray clay sculpture, single uniform color, soft even studio lighting, centered, entire object in view",
+      "negative": "person, human, face, eyes, figure, animal, hands, text, watermark, multiple objects, cropped, scenery, floor, shadow, color, two objects, pair, duplicate, group of objects, stand, pedestal, base plate, plinth, string, rope, chain, strap, holder, container, bowl, vase, tray, plate, colorful, multicolored, painted, patterned, glossy, metallic, reflections, background objects",
+      "builderVersion": "gen3d-shape-prompt/0.4.0+imagepick",
+      "lexiconVersion": "0.2.0",
+      "imageStyleVersion": "g75-image-style/0.1.0",
+      "pluralStated": false
+    },
+    {
+      "id": "F08",
+      "kind": "familiar",
+      "text": "풍선이에요.",
+      "content": [
+        "balloon"
+      ],
+      "prompt": "a single balloon, one solid object, matte gray clay, plain white background, untextured monochrome gray clay sculpture, single uniform color, soft even studio lighting, centered, entire object in view",
+      "negative": "person, human, face, eyes, figure, animal, hands, text, watermark, multiple objects, cropped, scenery, floor, shadow, color, two objects, pair, duplicate, group of objects, stand, pedestal, base plate, plinth, string, rope, chain, strap, holder, container, bowl, vase, tray, plate, colorful, multicolored, painted, patterned, glossy, metallic, reflections, background objects",
+      "builderVersion": "gen3d-shape-prompt/0.4.0+imagepick",
+      "lexiconVersion": "0.2.0",
+      "imageStyleVersion": "g75-image-style/0.1.0",
+      "pluralStated": false
+    },
+    {
+      "id": "F09",
+      "kind": "familiar",
+      "text": "구겨진 종이예요.",
+      "content": [
+        "crumpled",
+        "sheet of paper"
+      ],
+      "prompt": "a single crumpled sheet of paper, one solid object, matte gray clay, plain white background, untextured monochrome gray clay sculpture, single uniform color, soft even studio lighting, centered, entire object in view",
+      "negative": "person, human, face, eyes, figure, animal, hands, text, watermark, multiple objects, cropped, scenery, floor, shadow, color, two objects, pair, duplicate, stand, pedestal, base plate, plinth, string, rope, chain, strap, holder, container, bowl, vase, tray, plate, colorful, multicolored, painted, patterned, glossy, metallic, reflections, background objects",
+      "builderVersion": "gen3d-shape-prompt/0.4.0+imagepick",
+      "lexiconVersion": "0.2.0",
+      "imageStyleVersion": "g75-image-style/0.1.0",
+      "pluralStated": false
+    }
+  ],
+  "env": {
+    "python": "3.11.7",
+    "platform": "Windows-10-10.0.26300-SP0",
+    "torch": "2.11.0+cu128",
+    "cuda": "12.8",
+    "gpu": "NVIDIA GeForce RTX 5080",
+    "diffusers": "0.40.0.dev0",
+    "transformers": "4.57.6",
+    "trimesh": "4.12.2",
+    "rembg": "2.0.57",
+    "skimage": "0.26.0",
+    "kiwipiepy": "0.24.1"
+  },
+  "models": {
+    "sdxl": {
+      "config": {
+        "model": "sdxl",
+        "repo": "stabilityai/stable-diffusion-xl-base-1.0",
+        "revision": "462165984030d82259a11f4367a4eed129e94a7b",
+        "pipelineClass": "StableDiffusionXLPipeline",
+        "dtype": "float16",
+        "steps": 30,
+        "guidance": 7.0,
+        "extra": {},
+        "negative": "string",
+        "source": "tools/gen3d/form_asset.py CONFIG['image'](G75 현행 30/7.0, fp16)",
+        "license": "CreativeML Open RAIL++-M",
+        "size": 1024,
+        "generator": "cpu",
+        "offload": false,
+        "weightsGiB": 6.46,
+        "fullGpuLimitGiB": 14.0,
+        "attention": "SDPA(기본), flash·torch.compile 끔",
+        "promptRewrite": "없음(파이프라인에 PE·caption upsampling 인자 없음, 부르지 않음)",
+        "determinismFlags": "form_asset.set_determinism: cudnn deterministic, benchmark off, TF32 off"
+      },
+      "loadSeconds": 7.08,
+      "loadPeakAllocGiB": 6.567,
+      "genPeakAllocGiB": 9.734,
+      "genPeakReservedGiB": 12.545,
+      "triple": {
+        "firstSeconds": 18.319,
+        "medianAfterFirst": 17.83,
+        "median2to4": 17.8,
+        "n": 19
+      },
+      "triples": [
+        {
+          "id": "A01",
+          "seconds": 18.319
+        },
+        {
+          "id": "A02",
+          "seconds": 17.784
+        },
+        {
+          "id": "A03",
+          "seconds": 17.798
+        },
+        {
+          "id": "A04",
+          "seconds": 17.825
+        },
+        {
+          "id": "A05",
+          "seconds": 17.765
+        },
+        {
+          "id": "A06",
+          "seconds": 17.833
+        },
+        {
+          "id": "A07",
+          "seconds": 17.835
+        },
+        {
+          "id": "A08",
+          "seconds": 17.786
+        },
+        {
+          "id": "A09",
+          "seconds": 17.847
+        },
+        {
+          "id": "A10",
+          "seconds": 17.793
+        },
+        {
+          "id": "A11",
+          "seconds": 17.795
+        },
+        {
+          "id": "F01",
+          "seconds": 17.841
+        },
+        {
+          "id": "F02",
+          "seconds": 17.814
+        },
+        {
+          "id": "F03",
+          "seconds": 17.84
+        },
+        {
+          "id": "F04",
+          "seconds": 17.853
+        },
+        {
+          "id": "F05",
+          "seconds": 17.8
+        },
+        {
+          "id": "F06",
+          "seconds": 17.854
+        },
+        {
+          "id": "F07",
+          "seconds": 17.856
+        },
+        {
+          "id": "F08",
+          "seconds": 17.831
+        },
+        {
+          "id": "F09",
+          "seconds": 17.877
+        }
+      ],
+      "images": [
+        {
+          "id": "A01",
+          "seed": 0,
+          "seconds": 6.474,
+          "sha256": "bbb8aa61b4a4ef331d78cc99e72d2a83df129f1bcc055f201fd0db122d862573"
+        },
+        {
+          "id": "A01",
+          "seed": 1,
+          "seconds": 5.934,
+          "sha256": "3a4a7e85416ddb017292bdd343fdae50800993b8f61ca11d17b45a5cd4208198"
+        },
+        {
+          "id": "A01",
+          "seed": 2,
+          "seconds": 5.911,
+          "sha256": "f3b478f394bbf2f88ef7d20f1fe47accb85a80d4c6b493e0d30c86cd65aa804f"
+        },
+        {
+          "id": "A02",
+          "seed": 0,
+          "seconds": 5.915,
+          "sha256": "3ec58c8c18647af2f8262a6088356701d0148fda5d44cfd7f6cff3ac032cea83"
+        },
+        {
+          "id": "A02",
+          "seed": 1,
+          "seconds": 5.924,
+          "sha256": "42dc4ac8b1878a5d1be7b07681811a4e39851c902eba1bfdaceb2ac19668be27"
+        },
+        {
+          "id": "A02",
+          "seed": 2,
+          "seconds": 5.945,
+          "sha256": "f3ea16f3037e33b8b71ce12b7606a8eef23e78ad81eaca23458462d35d6b4bd2"
+        },
+        {
+          "id": "A03",
+          "seed": 0,
+          "seconds": 5.943,
+          "sha256": "e4060e6179d06e0dbaf7da46b7be7f50ba8e4df40e5a024779162e69d562bd21"
+        },
+        {
+          "id": "A03",
+          "seed": 1,
+          "seconds": 5.926,
+          "sha256": "44455ae2689710fd0b6d47a89f82b929674a0737c254df19ef0a2eefd067f79b"
+        },
+        {
+          "id": "A03",
+          "seed": 2,
+          "seconds": 5.929,
+          "sha256": "c3fd97478a398b5ce292037f017c2f52e1ea807b8619c15218631881766774f3"
+        },
+        {
+          "id": "A04",
+          "seed": 0,
+          "seconds": 5.921,
+          "sha256": "7d4c76de33c925e5fcf3ba49b8315f3337782dd2d3e162a6a0f73f5c6746f24d"
+        },
+        {
+          "id": "A04",
+          "seed": 1,
+          "seconds": 5.964,
+          "sha256": "f476142dbf0ba7d82ff1ede9cfcf4b741428c59a6ee5afe3b587ffcff315efd2"
+        },
+        {
+          "id": "A04",
+          "seed": 2,
+          "seconds": 5.94,
+          "sha256": "b9f85f34f2a524f72ef66cef18a80c8b602851a2f2824688dfb57543110013a7"
+        },
+        {
+          "id": "A05",
+          "seed": 0,
+          "seconds": 5.92,
+          "sha256": "a5c1118110ce79f721d1c55d0b2309a7cf40839f2dc4d3698e8697ad408afc75"
+        },
+        {
+          "id": "A05",
+          "seed": 1,
+          "seconds": 5.923,
+          "sha256": "0317a9005aa2a2a0732cbb5eee5741a6b10f3c769150a16154c5c0721dd5a9de"
+        },
+        {
+          "id": "A05",
+          "seed": 2,
+          "seconds": 5.922,
+          "sha256": "7b1f37e93568b6e79f7c8398744071dbac8ae7fdfa42f59592ebd4cb33bd758a"
+        },
+        {
+          "id": "A06",
+          "seed": 0,
+          "seconds": 5.97,
+          "sha256": "0d150db5be0a579c00f1e84f64c06953bf9e4e921fc03c97beb9a509c634dba9"
+        },
+        {
+          "id": "A06",
+          "seed": 1,
+          "seconds": 5.936,
+          "sha256": "5839e48ade791fd01dea8ede17f06aeb3e535d34eaeb6516a18e667679410812"
+        },
+        {
+          "id": "A06",
+          "seed": 2,
+          "seconds": 5.927,
+          "sha256": "73879cec242e594c3d2552ae8be2cca88176b22588f26b69c489794bfb7a4eb0"
+        },
+        {
+          "id": "A07",
+          "seed": 0,
+          "seconds": 5.928,
+          "sha256": "82af219545d039273f729f954482c536d731e2ac39084dd92c3591b1a33497a3"
+        },
+        {
+          "id": "A07",
+          "seed": 1,
+          "seconds": 5.936,
+          "sha256": "0c16be97009a6cdd6ccc948a90a05a031c829722d2abf1299f0729ae669b1d43"
+        },
+        {
+          "id": "A07",
+          "seed": 2,
+          "seconds": 5.971,
+          "sha256": "25414b856de7efc4ce7e7dfe3df86082ac5ec5aa7f1f61f3d184c60cc039299a"
+        },
+        {
+          "id": "A08",
+          "seed": 0,
+          "seconds": 5.93,
+          "sha256": "57bae9b0b156c838a4241325c3cdc5a991a840101258ab4c2f1e176b5e1da31e"
+        },
+        {
+          "id": "A08",
+          "seed": 1,
+          "seconds": 5.929,
+          "sha256": "095f018a2f2de73cc4ea092f96e111590f6dbe79cd6a63e06fc1af205b17d20e"
+        },
+        {
+          "id": "A08",
+          "seed": 2,
+          "seconds": 5.927,
+          "sha256": "35cdf4e4cdcbd9ab0a5fae7a1c5837aaecd8b1877a89fb90c3524115448a9ce2"
+        },
+        {
+          "id": "A09",
+          "seed": 0,
+          "seconds": 5.952,
+          "sha256": "f045e741e1a3c12a2538dccdc0cf5eaaeebe41ccf7360eb51d9c6087696a8691"
+        },
+        {
+          "id": "A09",
+          "seed": 1,
+          "seconds": 5.965,
+          "sha256": "a98a83534e1d4ae1603e597d464df11e562ec8cbdcc2c3c13be0e7e797295f34"
+        },
+        {
+          "id": "A09",
+          "seed": 2,
+          "seconds": 5.93,
+          "sha256": "f9d470ad6cc87bb397f50f0f70c3daf0ee15cd0dc66fe35f9c6f80f70f63796b"
+        },
+        {
+          "id": "A10",
+          "seed": 0,
+          "seconds": 5.922,
+          "sha256": "b8cb26233f253ead609a58a676f938948021d7218069336c14b3ff8971869010"
+        },
+        {
+          "id": "A10",
+          "seed": 1,
+          "seconds": 5.92,
+          "sha256": "c6e9a8b755f9f422fb3c5018ebd52f6621a0c5c055d8521393afd862e11002a7"
+        },
+        {
+          "id": "A10",
+          "seed": 2,
+          "seconds": 5.951,
+          "sha256": "4c6de8256df8538962d4aa2d989ab7f11a9e707346d8469962fdb93a1e05cb3c"
+        },
+        {
+          "id": "A11",
+          "seed": 0,
+          "seconds": 5.945,
+          "sha256": "7244465783e00f885fecf43343491d60048e851e0735982b54aba4222d0cab4b"
+        },
+        {
+          "id": "A11",
+          "seed": 1,
+          "seconds": 5.921,
+          "sha256": "484d626ab5759c7f2898b26f430b4c714e3375f3b1d3fbe082114106ee78ee9b"
+        },
+        {
+          "id": "A11",
+          "seed": 2,
+          "seconds": 5.929,
+          "sha256": "eab83258520e0cb75b922ce90b4c7547852d258f4957d85b366bf453f958855f"
+        },
+        {
+          "id": "F01",
+          "seed": 0,
+          "seconds": 5.93,
+          "sha256": "ee32b95d9088264085d97d538d1f761054d98c4059cd3173ac1efbca05f4c840"
+        },
+        {
+          "id": "F01",
+          "seed": 1,
+          "seconds": 5.973,
+          "sha256": "ea72a1c84190b9d5e36dca63f3c94c4e765b7ea854f4bb21d723e10a809b5a1c"
+        },
+        {
+          "id": "F01",
+          "seed": 2,
+          "seconds": 5.938,
+          "sha256": "98024bdf82782ee7344c25bb8ac63f247478ad3f1d9d137c0b93f0e24f0803c1"
+        },
+        {
+          "id": "F02",
+          "seed": 0,
+          "seconds": 5.933,
+          "sha256": "2237caa948f9d24ef301f51584aec315b2a0b593be5f34b6284254961b0871f0"
+        },
+        {
+          "id": "F02",
+          "seed": 1,
+          "seconds": 5.933,
+          "sha256": "508d3c38d49f790d52bf447bbd225ac8dfdc7358619a06a5c1bbe175ca96d511"
+        },
+        {
+          "id": "F02",
+          "seed": 2,
+          "seconds": 5.948,
+          "sha256": "511d9a031b8289706f5e9ebcb295772a1d5b1b21ca86110aa4b70a3089ad5ab0"
+        },
+        {
+          "id": "F03",
+          "seed": 0,
+          "seconds": 5.974,
+          "sha256": "b8d327b4b8f3607c2900fc9958eede822ac7daa17d21a692b0f342160379095c"
+        },
+        {
+          "id": "F03",
+          "seed": 1,
+          "seconds": 5.932,
+          "sha256": "76815fce3f481fddb5208d52c330d831f7f7fd14e231d2a13dacedd35032f32a"
+        },
+        {
+          "id": "F03",
+          "seed": 2,
+          "seconds": 5.934,
+          "sha256": "316ef40eeba795cb31896d85380533d4def6d57620dfc3e36aed139bd6cc5c91"
+        },
+        {
+          "id": "F04",
+          "seed": 0,
+          "seconds": 5.93,
+          "sha256": "42e4aab6a9160939805f45754fbb0717ad67bcfdc2a0dd90207a30105d4c2c61"
+        },
+        {
+          "id": "F04",
+          "seed": 1,
+          "seconds": 5.955,
+          "sha256": "b56df035d8027be677a978b38bf608caf449f28005b1e5a32c5fcd4749a56667"
+        },
+        {
+          "id": "F04",
+          "seed": 2,
+          "seconds": 5.968,
+          "sha256": "2a41a1648c4dc09abf6d9463e1a2837102992eec0193e7af261cf46aac5acf26"
+        },
+        {
+          "id": "F05",
+          "seed": 0,
+          "seconds": 5.934,
+          "sha256": "4cb570e95164c78233fd71e81b9008669600021f830f9e81834e26a3d80435a0"
+        },
+        {
+          "id": "F05",
+          "seed": 1,
+          "seconds": 5.939,
+          "sha256": "33c7ec44050456c76bf53103f285e153d708670fe0e237e23e86666aeae459b0"
+        },
+        {
+          "id": "F05",
+          "seed": 2,
+          "seconds": 5.927,
+          "sha256": "590b2cbd0d852a7917cface673d8439d4603f0e581470f224624e0917a1891d4"
+        },
+        {
+          "id": "F06",
+          "seed": 0,
+          "seconds": 5.975,
+          "sha256": "75329095b3af5a13348afe4dce176ea76ff87163b9807a7f43dc8efbbb8c9919"
+        },
+        {
+          "id": "F06",
+          "seed": 1,
+          "seconds": 5.945,
+          "sha256": "0bca36c85d837f7bee8ce45ef16fca90f910e16bc25915eb430f2bbca722dbad"
+        },
+        {
+          "id": "F06",
+          "seed": 2,
+          "seconds": 5.934,
+          "sha256": "55a94eeee1b4c19be6e108cdc03ec5eeb0e6145ab8de72b7786f01ba7bac4aa0"
+        },
+        {
+          "id": "F07",
+          "seed": 0,
+          "seconds": 5.936,
+          "sha256": "7f2492fce9df35eaad0cd95c171668e8aca06001cac0db5fa733d6204242579c"
+        },
+        {
+          "id": "F07",
+          "seed": 1,
+          "seconds": 5.942,
+          "sha256": "f19aeb236ae78ae84404e46d0d7943b06e77bcb40dc7c2d7e5988fa5942e70a9"
+        },
+        {
+          "id": "F07",
+          "seed": 2,
+          "seconds": 5.978,
+          "sha256": "5e39ea191a038a899044a42fa07e70fc42231199533c6c9c34e32dd344e8f6b1"
+        },
+        {
+          "id": "F08",
+          "seed": 0,
+          "seconds": 5.952,
+          "sha256": "9054ea7af8c6987306384f43d3ff6f796af49e406f28fac4d20a502d9cfd17c5"
+        },
+        {
+          "id": "F08",
+          "seed": 1,
+          "seconds": 5.939,
+          "sha256": "72b3a2092a9a5fa025710c3fba534e2ccd6c0e721e3c8c11fcf4d4f139bfa938"
+        },
+        {
+          "id": "F08",
+          "seed": 2,
+          "seconds": 5.94,
+          "sha256": "cce1490fe2c5bcb73a98bb061c5b3cf6ff21c9919490bad036e3875af61683e3"
+        },
+        {
+          "id": "F09",
+          "seed": 0,
+          "seconds": 5.94,
+          "sha256": "18818addfc76585a34a8f54c38c36b4e979de5cabc2df5cf756b26f133a2723d"
+        },
+        {
+          "id": "F09",
+          "seed": 1,
+          "seconds": 5.996,
+          "sha256": "bbca91db83cf32a60f9089b0d34168e8a110eae712fd2d9be5f67937ddeb84df"
+        },
+        {
+          "id": "F09",
+          "seed": 2,
+          "seconds": 5.941,
+          "sha256": "7aa5f504fd80e8f5f842e12f83cdbf9201fffe44f63200ac10ea46bd4acae963"
+        }
+      ],
+      "weightsSha256": {
+        "text_encoder/model.safetensors": "5c3d6454dd2d23414b56aa1b5858a72487a656937847b6fea8d0606d7a42cdbc",
+        "text_encoder_2/model.safetensors": "3a6032f63d37ae02bbc74ccd6a27440578cd71701f96532229d0154f55a8d3ff",
+        "unet/diffusion_pytorch_model.safetensors": "357650fbfb3c7b4d94c1f5fd7664da819ad1ff5a839430484b4ec422d03f710a",
+        "vae/diffusion_pytorch_model.safetensors": "1598f3d24932bcfe6634e8b618ea1e30ab1d57f5aad13a6d2de446d2199f2341"
+      },
+      "det": {
+        "version": "g76-image-bench/0.1.0",
+        "model": "sdxl",
+        "offload": false,
+        "cases": [
+          {
+            "id": "A01",
+            "seed": 0,
+            "sha256": "bbb8aa61b4a4ef331d78cc99e72d2a83df129f1bcc055f201fd0db122d862573",
+            "refSha256": "bbb8aa61b4a4ef331d78cc99e72d2a83df129f1bcc055f201fd0db122d862573",
+            "identical": true,
+            "maxPixelDiff": 0
+          },
+          {
+            "id": "A03",
+            "seed": 1,
+            "sha256": "44455ae2689710fd0b6d47a89f82b929674a0737c254df19ef0a2eefd067f79b",
+            "refSha256": "44455ae2689710fd0b6d47a89f82b929674a0737c254df19ef0a2eefd067f79b",
+            "identical": true,
+            "maxPixelDiff": 0
+          },
+          {
+            "id": "F01",
+            "seed": 2,
+            "sha256": "98024bdf82782ee7344c25bb8ac63f247478ad3f1d9d137c0b93f0e24f0803c1",
+            "refSha256": "98024bdf82782ee7344c25bb8ac63f247478ad3f1d9d137c0b93f0e24f0803c1",
+            "identical": true,
+            "maxPixelDiff": 0
+          }
+        ],
+        "allIdentical": true
+      },
+      "metrics": {
+        "perImage": [
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.472,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0482,
+            "id": "A01",
+            "seed": 0,
+            "personLikeScore": 0.0111,
+            "gatePassed": true,
+            "matchScore": 0.2361
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.3895,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0523,
+            "id": "A01",
+            "seed": 1,
+            "personLikeScore": 0.0077,
+            "gatePassed": true,
+            "matchScore": 0.2425
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2671,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0453,
+            "id": "A01",
+            "seed": 2,
+            "personLikeScore": 0.0169,
+            "gatePassed": true,
+            "matchScore": 0.261
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.1774,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.064,
+            "id": "A02",
+            "seed": 0,
+            "personLikeScore": 0.0039,
+            "gatePassed": true,
+            "matchScore": 0.2218
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.1274,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0321,
+            "id": "A02",
+            "seed": 1,
+            "personLikeScore": 0.0018,
+            "gatePassed": true,
+            "matchScore": 0.1936
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.1077,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0384,
+            "id": "A02",
+            "seed": 2,
+            "personLikeScore": 0.0013,
+            "gatePassed": true,
+            "matchScore": 0.2524
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.5434,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0451,
+            "id": "A03",
+            "seed": 0,
+            "personLikeScore": 0.0035,
+            "gatePassed": true,
+            "matchScore": 0.2261
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.3921,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0364,
+            "id": "A03",
+            "seed": 1,
+            "personLikeScore": 0.0029,
+            "gatePassed": true,
+            "matchScore": 0.2286
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2866,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0367,
+            "id": "A03",
+            "seed": 2,
+            "personLikeScore": 0.0015,
+            "gatePassed": true,
+            "matchScore": 0.2284
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.4413,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0373,
+            "id": "A04",
+            "seed": 0,
+            "personLikeScore": 0.006,
+            "gatePassed": true,
+            "matchScore": 0.239
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2948,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0162,
+            "id": "A04",
+            "seed": 1,
+            "personLikeScore": 0.0056,
+            "gatePassed": true,
+            "matchScore": 0.2132
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.1768,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0463,
+            "id": "A04",
+            "seed": 2,
+            "personLikeScore": 0.0016,
+            "gatePassed": true,
+            "matchScore": 0.212
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.4472,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0642,
+            "id": "A05",
+            "seed": 0,
+            "personLikeScore": 0.0049,
+            "gatePassed": true,
+            "matchScore": 0.1494
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.3637,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0588,
+            "id": "A05",
+            "seed": 1,
+            "personLikeScore": 0.0122,
+            "gatePassed": true,
+            "matchScore": 0.1483
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2588,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0585,
+            "id": "A05",
+            "seed": 2,
+            "personLikeScore": 0.0056,
+            "gatePassed": true,
+            "matchScore": 0.1524
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.5272,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0674,
+            "id": "A06",
+            "seed": 0,
+            "personLikeScore": 0.0233,
+            "gatePassed": true,
+            "matchScore": 0.1768
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.3339,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0378,
+            "id": "A06",
+            "seed": 1,
+            "personLikeScore": 0.001,
+            "gatePassed": true,
+            "matchScore": 0.1498
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2913,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0432,
+            "id": "A06",
+            "seed": 2,
+            "personLikeScore": 0.0233,
+            "gatePassed": true,
+            "matchScore": 0.2019
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.5435,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0312,
+            "id": "A07",
+            "seed": 0,
+            "personLikeScore": 0.013,
+            "gatePassed": true,
+            "matchScore": 0.1657
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.3942,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0302,
+            "id": "A07",
+            "seed": 1,
+            "personLikeScore": 0.0065,
+            "gatePassed": true,
+            "matchScore": 0.1781
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2929,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.034,
+            "id": "A07",
+            "seed": 2,
+            "personLikeScore": 0.0022,
+            "gatePassed": true,
+            "matchScore": 0.186
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.4351,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0442,
+            "id": "A08",
+            "seed": 0,
+            "personLikeScore": 0.0058,
+            "gatePassed": true,
+            "matchScore": 0.17
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2738,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0108,
+            "id": "A08",
+            "seed": 1,
+            "personLikeScore": 0.1689,
+            "gatePassed": true,
+            "matchScore": 0.1556
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2056,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0577,
+            "id": "A08",
+            "seed": 2,
+            "personLikeScore": 0.0809,
+            "gatePassed": true,
+            "matchScore": 0.199
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.4299,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.041,
+            "id": "A09",
+            "seed": 0,
+            "personLikeScore": 0.0311,
+            "gatePassed": true,
+            "matchScore": 0.211
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.3631,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0198,
+            "id": "A09",
+            "seed": 1,
+            "personLikeScore": 0.0039,
+            "gatePassed": true,
+            "matchScore": 0.2277
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2805,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0319,
+            "id": "A09",
+            "seed": 2,
+            "personLikeScore": 0.006,
+            "gatePassed": true,
+            "matchScore": 0.2228
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.5132,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0406,
+            "id": "A10",
+            "seed": 0,
+            "personLikeScore": 0.0033,
+            "gatePassed": true,
+            "matchScore": 0.2156
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.3925,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0236,
+            "id": "A10",
+            "seed": 1,
+            "personLikeScore": 0.0017,
+            "gatePassed": true,
+            "matchScore": 0.2437
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2674,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0499,
+            "id": "A10",
+            "seed": 2,
+            "personLikeScore": 0.0019,
+            "gatePassed": true,
+            "matchScore": 0.231
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.299,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0436,
+            "id": "A11",
+            "seed": 0,
+            "personLikeScore": 0.0098,
+            "gatePassed": true,
+            "matchScore": 0.1594
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2592,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0575,
+            "id": "A11",
+            "seed": 1,
+            "personLikeScore": 0.9982,
+            "gatePassed": false,
+            "matchScore": 0.194
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.26,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0396,
+            "id": "A11",
+            "seed": 2,
+            "personLikeScore": 0.0079,
+            "gatePassed": true,
+            "matchScore": 0.1784
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.3312,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0383,
+            "id": "F01",
+            "seed": 0,
+            "personLikeScore": 0.0277,
+            "gatePassed": true,
+            "matchScore": 0.2592
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2677,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0347,
+            "id": "F01",
+            "seed": 1,
+            "personLikeScore": 0.0493,
+            "gatePassed": true,
+            "matchScore": 0.2563
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2527,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0413,
+            "id": "F01",
+            "seed": 2,
+            "personLikeScore": 0.0544,
+            "gatePassed": true,
+            "matchScore": 0.257
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.4123,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0333,
+            "id": "F02",
+            "seed": 0,
+            "personLikeScore": 0.001,
+            "gatePassed": true,
+            "matchScore": 0.2662
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.3242,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0178,
+            "id": "F02",
+            "seed": 1,
+            "personLikeScore": 0.0035,
+            "gatePassed": true,
+            "matchScore": 0.2573
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2648,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.042,
+            "id": "F02",
+            "seed": 2,
+            "personLikeScore": 0.0037,
+            "gatePassed": true,
+            "matchScore": 0.2687
+          },
+          {
+            "components": 2,
+            "componentsRaw": 2,
+            "fgFraction": 0.2883,
+            "touchesBorder": false,
+            "maskPass": false,
+            "satMean": 0.0237,
+            "id": "F03",
+            "seed": 0,
+            "personLikeScore": 0.0073,
+            "gatePassed": true,
+            "matchScore": 0.211
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.3453,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0366,
+            "id": "F03",
+            "seed": 1,
+            "personLikeScore": 0.0061,
+            "gatePassed": true,
+            "matchScore": 0.245
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2554,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0378,
+            "id": "F03",
+            "seed": 2,
+            "personLikeScore": 0.1007,
+            "gatePassed": true,
+            "matchScore": 0.1753
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2244,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0356,
+            "id": "F04",
+            "seed": 0,
+            "personLikeScore": 0.0114,
+            "gatePassed": true,
+            "matchScore": 0.2293
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.296,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0144,
+            "id": "F04",
+            "seed": 1,
+            "personLikeScore": 0.0254,
+            "gatePassed": true,
+            "matchScore": 0.2174
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2378,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0329,
+            "id": "F04",
+            "seed": 2,
+            "personLikeScore": 0.0204,
+            "gatePassed": true,
+            "matchScore": 0.2451
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2304,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0464,
+            "id": "F05",
+            "seed": 0,
+            "personLikeScore": 0.0787,
+            "gatePassed": true,
+            "matchScore": 0.2437
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2021,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0405,
+            "id": "F05",
+            "seed": 1,
+            "personLikeScore": 0.2542,
+            "gatePassed": true,
+            "matchScore": 0.2653
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2337,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0413,
+            "id": "F05",
+            "seed": 2,
+            "personLikeScore": 0.2135,
+            "gatePassed": true,
+            "matchScore": 0.2553
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2049,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0757,
+            "id": "F06",
+            "seed": 0,
+            "personLikeScore": 0.0767,
+            "gatePassed": true,
+            "matchScore": 0.2526
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.0966,
+            "touchesBorder": false,
+            "maskPass": false,
+            "satMean": 0.0143,
+            "id": "F06",
+            "seed": 1,
+            "personLikeScore": 0.0342,
+            "gatePassed": true,
+            "matchScore": 0.2705
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.1946,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.05,
+            "id": "F06",
+            "seed": 2,
+            "personLikeScore": 0.0509,
+            "gatePassed": true,
+            "matchScore": 0.26
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.3931,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0643,
+            "id": "F07",
+            "seed": 0,
+            "personLikeScore": 0.0669,
+            "gatePassed": true,
+            "matchScore": 0.2343
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2906,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.025,
+            "id": "F07",
+            "seed": 1,
+            "personLikeScore": 0.0356,
+            "gatePassed": true,
+            "matchScore": 0.2043
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.301,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0267,
+            "id": "F07",
+            "seed": 2,
+            "personLikeScore": 0.031,
+            "gatePassed": true,
+            "matchScore": 0.2239
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2337,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0415,
+            "id": "F08",
+            "seed": 0,
+            "personLikeScore": 0.0796,
+            "gatePassed": true,
+            "matchScore": 0.2712
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2064,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0116,
+            "id": "F08",
+            "seed": 1,
+            "personLikeScore": 0.1433,
+            "gatePassed": true,
+            "matchScore": 0.2589
+          },
+          {
+            "components": 1,
+            "componentsRaw": 2,
+            "fgFraction": 0.1534,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0336,
+            "id": "F08",
+            "seed": 2,
+            "personLikeScore": 0.0879,
+            "gatePassed": true,
+            "matchScore": 0.2774
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.5075,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.025,
+            "id": "F09",
+            "seed": 0,
+            "personLikeScore": 0.0065,
+            "gatePassed": true,
+            "matchScore": 0.2828
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.4008,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0103,
+            "id": "F09",
+            "seed": 1,
+            "personLikeScore": 0.0024,
+            "gatePassed": true,
+            "matchScore": 0.2465
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.3605,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0341,
+            "id": "F09",
+            "seed": 2,
+            "personLikeScore": 0.0084,
+            "gatePassed": true,
+            "matchScore": 0.2758
+          }
+        ],
+        "diversity": [
+          {
+            "id": "A01",
+            "maxIoU": 0.8123,
+            "ious": [
+              0.8123,
+              0.566,
+              0.6817
+            ]
+          },
+          {
+            "id": "A02",
+            "maxIoU": 0.7182,
+            "ious": [
+              0.429,
+              0.4039,
+              0.7182
+            ]
+          },
+          {
+            "id": "A03",
+            "maxIoU": 0.7308,
+            "ious": [
+              0.7217,
+              0.5274,
+              0.7308
+            ]
+          },
+          {
+            "id": "A04",
+            "maxIoU": 0.668,
+            "ious": [
+              0.668,
+              0.4005,
+              0.5996
+            ]
+          },
+          {
+            "id": "A05",
+            "maxIoU": 0.7906,
+            "ious": [
+              0.7906,
+              0.5786,
+              0.7101
+            ]
+          },
+          {
+            "id": "A06",
+            "maxIoU": 0.8272,
+            "ious": [
+              0.6332,
+              0.5525,
+              0.8272
+            ]
+          },
+          {
+            "id": "A07",
+            "maxIoU": 0.7431,
+            "ious": [
+              0.7253,
+              0.539,
+              0.7431
+            ]
+          },
+          {
+            "id": "A08",
+            "maxIoU": 0.5977,
+            "ious": [
+              0.5484,
+              0.4434,
+              0.5977
+            ]
+          },
+          {
+            "id": "A09",
+            "maxIoU": 0.7726,
+            "ious": [
+              0.7726,
+              0.6524,
+              0.7542
+            ]
+          },
+          {
+            "id": "A10",
+            "maxIoU": 0.7649,
+            "ious": [
+              0.7649,
+              0.5211,
+              0.6813
+            ]
+          },
+          {
+            "id": "A11",
+            "maxIoU": 0.6078,
+            "ious": [
+              0.6078,
+              0.4547,
+              0.4623
+            ]
+          },
+          {
+            "id": "F01",
+            "maxIoU": 0.8522,
+            "ious": [
+              0.7726,
+              0.7019,
+              0.8522
+            ]
+          },
+          {
+            "id": "F02",
+            "maxIoU": 0.7855,
+            "ious": [
+              0.7855,
+              0.6277,
+              0.7677
+            ]
+          },
+          {
+            "id": "F03",
+            "maxIoU": 0.7036,
+            "ious": [
+              0.5229,
+              0.521,
+              0.7036
+            ]
+          },
+          {
+            "id": "F04",
+            "maxIoU": 0.8562,
+            "ious": [
+              0.7491,
+              0.8562,
+              0.7624
+            ]
+          },
+          {
+            "id": "F05",
+            "maxIoU": 0.892,
+            "ious": [
+              0.8756,
+              0.892,
+              0.8646
+            ]
+          },
+          {
+            "id": "F06",
+            "maxIoU": 0.6192,
+            "ious": [
+              0.4431,
+              0.6192,
+              0.3501
+            ]
+          },
+          {
+            "id": "F07",
+            "maxIoU": 0.8417,
+            "ious": [
+              0.7391,
+              0.754,
+              0.8417
+            ]
+          },
+          {
+            "id": "F08",
+            "maxIoU": 0.7133,
+            "ious": [
+              0.5996,
+              0.6074,
+              0.7133
+            ]
+          },
+          {
+            "id": "F09",
+            "maxIoU": 0.7782,
+            "ious": [
+              0.7782,
+              0.6855,
+              0.7698
+            ]
+          }
+        ],
+        "seconds": 10.1,
+        "summary": {
+          "n": 60,
+          "maskPassRate": 0.967,
+          "maskPassAbstract": 1.0,
+          "oneComponentRate": 0.983,
+          "fgInRangeRate": 0.983,
+          "borderTouchRate": 0.0,
+          "satMeanMean": 0.0385,
+          "satMeanMedian": 0.0381,
+          "satLowRate": 1.0,
+          "diverseRate": 1.0,
+          "maxIoUMedian": 0.7688,
+          "gatePassRate": 0.983,
+          "personLikeMax": 0.9982,
+          "matchScoreMean": 0.223
+        },
+        "summaryCompare8": {
+          "n": 24,
+          "maskPassRate": 0.958,
+          "maskPassAbstract": 1.0,
+          "oneComponentRate": 1.0,
+          "fgInRangeRate": 0.958,
+          "borderTouchRate": 0.0,
+          "satMeanMean": 0.0394,
+          "satMeanMedian": 0.0375,
+          "satLowRate": 1.0,
+          "diverseRate": 1.0,
+          "maxIoUMedian": 0.754,
+          "gatePassRate": 1.0,
+          "personLikeMax": 0.0767,
+          "matchScoreMean": 0.2316
+        }
+      },
+      "visual": {
+        "note": "하위 에이전트 육안 판정(가리지 않음, 참고용). 기준: 물체 하나만 + 말하지 않은 덧붙임(받침·화분·끈·추) 없음 + 사람·얼굴·동물 형상 없음. 형태 충실도(말한 낱말과 맞는가)는 따로 적고 문제 수에 넣지 않음.",
+        "n": 60,
+        "problems": [
+          {
+            "id": "A02",
+            "seed": 0,
+            "why": "화분에 꽂힌 가시 여러 개(덧붙임·여러 개)"
+          },
+          {
+            "id": "A08",
+            "seed": 1,
+            "why": "올빼미 얼굴처럼 보임"
+          },
+          {
+            "id": "A11",
+            "seed": 1,
+            "why": "숫양 머리(동물)"
+          },
+          {
+            "id": "A11",
+            "seed": 2,
+            "why": "받침 위 뿔(덧붙임)"
+          },
+          {
+            "id": "F01",
+            "seed": 0,
+            "why": "원기둥 받침 위 공(덧붙임)"
+          },
+          {
+            "id": "F03",
+            "seed": 0,
+            "why": "돌멩이 2개"
+          },
+          {
+            "id": "F08",
+            "seed": 0,
+            "why": "풍선 아래 추(덧붙임)"
+          },
+          {
+            "id": "F08",
+            "seed": 2,
+            "why": "풍선 끈(덧붙임)"
+          }
+        ],
+        "fidelityNotes": [
+          "A05 s1·s2 '뭉툭한 뭉치'가 가시 공(말과 반대)",
+          "A03·A07이 꽃·주름 장식 조형",
+          "배경이 흰색이 아니라 회색 그러데이션(전 60장)"
+        ],
+        "problemCount": 8
+      }
+    },
+    "zimage": {
+      "config": {
+        "model": "zimage",
+        "repo": "Tongyi-MAI/Z-Image",
+        "revision": "04cc4abb7c5069926f75c9bfde9ef43d49423021",
+        "pipelineClass": "ZImagePipeline",
+        "dtype": "bfloat16",
+        "steps": 50,
+        "guidance": 4.0,
+        "extra": {
+          "cfg_normalization": false
+        },
+        "negative": "string",
+        "source": "모델 카드 diffusers 예제(50단계, guidance 4, cfg_normalization False, bf16). 카드 권장 28–50 / 3.0–5.0",
+        "license": "Apache-2.0",
+        "size": 1024,
+        "generator": "cpu",
+        "offload": true,
+        "weightsGiB": 19.11,
+        "fullGpuLimitGiB": 14.0,
+        "attention": "SDPA(기본), flash·torch.compile 끔",
+        "promptRewrite": "없음(파이프라인에 PE·caption upsampling 인자 없음, 부르지 않음)",
+        "determinismFlags": "form_asset.set_determinism: cudnn deterministic, benchmark off, TF32 off"
+      },
+      "loadSeconds": 0.73,
+      "loadPeakAllocGiB": 0.0,
+      "genPeakAllocGiB": 12.543,
+      "genPeakReservedGiB": 13.844,
+      "triple": {
+        "firstSeconds": 343.58,
+        "medianAfterFirst": 274.64,
+        "median2to4": 262.55,
+        "n": 7
+      },
+      "triples": [
+        {
+          "id": "A01",
+          "seconds": 343.58
+        },
+        {
+          "id": "A02",
+          "seconds": 262.55
+        },
+        {
+          "id": "A03",
+          "seconds": 262.187
+        },
+        {
+          "id": "A07",
+          "seconds": 459.36
+        },
+        {
+          "id": "A10",
+          "seconds": 1149.878
+        },
+        {
+          "id": "F01",
+          "seconds": 273.434
+        },
+        {
+          "id": "F04",
+          "seconds": 509.0
+        },
+        {
+          "id": "F06",
+          "seconds": 274.645
+        }
+      ],
+      "images": [
+        {
+          "id": "A01",
+          "seed": 0,
+          "seconds": 101.008,
+          "sha256": "2036fe8590545a8233f3b6c30ff0fe62b7f8db3cc00591b5a7dee2619b24af10"
+        },
+        {
+          "id": "A01",
+          "seed": 1,
+          "seconds": 153.607,
+          "sha256": "3d8b8d3b59a5110d15ba867c73af8860c4516ee8756da2bb5fcfe3487c54c11e"
+        },
+        {
+          "id": "A01",
+          "seed": 2,
+          "seconds": 88.965,
+          "sha256": "03e9f6f6ad3723ec7680d8cdaced5a06dab153fe30bbaecd8442577384ccacbe"
+        },
+        {
+          "id": "A02",
+          "seed": 0,
+          "seconds": 87.668,
+          "sha256": "ca333ff3bdacf435cb3c7df7f9fc4399bb58c2eb823c1430bbc2ac7c674b376d"
+        },
+        {
+          "id": "A02",
+          "seed": 1,
+          "seconds": 87.454,
+          "sha256": "3a74ef5a01bd715b067eb388903ad331095a5921bed221ead231586f69713392"
+        },
+        {
+          "id": "A02",
+          "seed": 2,
+          "seconds": 87.428,
+          "sha256": "9aa6b5314bacee3ce5c2c7ab6f41e8d3070a9abc689a65da0dcf0c4ab7c922fa"
+        },
+        {
+          "id": "A03",
+          "seed": 0,
+          "seconds": 87.159,
+          "sha256": "59b8381d86482de36f5b2a8f8656bd6db4cfdcbb18301c0e483bf5db1fb0c365"
+        },
+        {
+          "id": "A03",
+          "seed": 1,
+          "seconds": 87.455,
+          "sha256": "a4abc881170dea61957bedf51cfb37638f5f189d84db5e1d6e154e49b07b84ca"
+        },
+        {
+          "id": "A03",
+          "seed": 2,
+          "seconds": 87.573,
+          "sha256": "52c9c4a47c609b286adb3e706baae08efd02a8faa732a7eae5e6f471360cb048"
+        },
+        {
+          "id": "A07",
+          "seed": 0,
+          "seconds": 90.318,
+          "sha256": "855a1212fd428ed54a2c7f2dd8fda4a5a46285e693441626e4c348741d4c563d"
+        },
+        {
+          "id": "A07",
+          "seed": 1,
+          "seconds": 97.646,
+          "sha256": "54a00813e12e2567700cd6c10b9bbc7c70d7fdb3ac883170889c76edc2dd5936"
+        },
+        {
+          "id": "A07",
+          "seed": 2,
+          "seconds": 271.396,
+          "sha256": "dea5d9a9d04d5fe9c5f104f10590ba5cf8883bf2c4ac28c43ef77dd6d5bd982a"
+        },
+        {
+          "id": "A10",
+          "seed": 0,
+          "seconds": 944.179,
+          "sha256": "b4fe799b395288f3f9d0ad70c916f9e684f15e45e79b9c3433cb4a0c51ffc8e1"
+        },
+        {
+          "id": "A10",
+          "seed": 1,
+          "seconds": 116.948,
+          "sha256": "e7cf9771e6a84fe6f0b68ab134c92245dbf8e0dfdca8f7e5b83b3a5dbceab861"
+        },
+        {
+          "id": "A10",
+          "seed": 2,
+          "seconds": 88.751,
+          "sha256": "5a71dcb81402a3057c3a15badb43bb29e2c3805871b0bdbb540785288d89fcfb"
+        },
+        {
+          "id": "F01",
+          "seed": 0,
+          "seconds": 91.173,
+          "sha256": "de713cbc3a6e862f003a5038682fba2be13312061f34918e5906d24aec7dc1e2"
+        },
+        {
+          "id": "F01",
+          "seed": 1,
+          "seconds": 90.015,
+          "sha256": "8d817ea1b51f09bb6c25c278160ccc8b3867fb155112ae9ff2db23278d7e789c"
+        },
+        {
+          "id": "F01",
+          "seed": 2,
+          "seconds": 92.246,
+          "sha256": "32b7b09e3ca82a87fed668877130bbc072ea0e55cb9c71690d6b8fe4692a8639"
+        },
+        {
+          "id": "F04",
+          "seed": 0,
+          "seconds": 90.87,
+          "sha256": "fe8411bfeef573c70eead9e34e1c677616032a7fcd02cecb339fbd515203d6c0"
+        },
+        {
+          "id": "F04",
+          "seed": 1,
+          "seconds": 311.869,
+          "sha256": "f82abf7a9a159e7186225e139d08715fd7d697e81e6b75995c5e40846f5367e9"
+        },
+        {
+          "id": "F04",
+          "seed": 2,
+          "seconds": 106.261,
+          "sha256": "414ba09e12c62dd3fb47d76e168a898ee00c01ead06e1a567850d133704e9938"
+        },
+        {
+          "id": "F06",
+          "seed": 0,
+          "seconds": 90.782,
+          "sha256": "bb9f2300d521be42692e9dc7cf989f3a0bb7e49092e4b469bb48a3f27b87fe72"
+        },
+        {
+          "id": "F06",
+          "seed": 1,
+          "seconds": 94.088,
+          "sha256": "4c3513da0814d30ac92128970408e66ef9eb12e0f2f50383ecfb765185c26703"
+        },
+        {
+          "id": "F06",
+          "seed": 2,
+          "seconds": 89.775,
+          "sha256": "4791aec2d176ac7479f756f741be0b0e7b0f052278341e6443d4ef326e5e92a5"
+        }
+      ],
+      "weightsSha256": {
+        "text_encoder/model-00001-of-00003.safetensors": "328a91d3122359d5547f9d79521205bc0a46e1f79a792dfe650e99fc2d651223",
+        "text_encoder/model-00002-of-00003.safetensors": "6cd087b316306a68c562436b5492edbcf6e16c6dba3a1308279caa5a58e21ca5",
+        "text_encoder/model-00003-of-00003.safetensors": "7ca841ee75b9c61267c0c6148fd8d096d3d21b6d3e161256a9b878154f91fc52",
+        "transformer/diffusion_pytorch_model-00001-of-00002.safetensors": "ecd5df7768856215812af84d5cc785ba9d84c6d8c84e6939c7ccf30a2e0d2425",
+        "transformer/diffusion_pytorch_model-00002-of-00002.safetensors": "e2d5fb75ca504b2d669a33af9380b68e0c1632ecddbfca85f82631958a4b81b1",
+        "vae/diffusion_pytorch_model.safetensors": "f5b59a26851551b67ae1fe58d32e76486e1e812def4696a4bea97f16604d40a3"
+      },
+      "det": {
+        "version": "g76-image-bench/0.1.0",
+        "model": "zimage",
+        "offload": true,
+        "cases": [
+          {
+            "id": "A01",
+            "seed": 0,
+            "sha256": "2036fe8590545a8233f3b6c30ff0fe62b7f8db3cc00591b5a7dee2619b24af10",
+            "refSha256": "2036fe8590545a8233f3b6c30ff0fe62b7f8db3cc00591b5a7dee2619b24af10",
+            "identical": true,
+            "maxPixelDiff": 0
+          },
+          {
+            "id": "A03",
+            "seed": 1,
+            "sha256": "a4abc881170dea61957bedf51cfb37638f5f189d84db5e1d6e154e49b07b84ca",
+            "refSha256": "a4abc881170dea61957bedf51cfb37638f5f189d84db5e1d6e154e49b07b84ca",
+            "identical": true,
+            "maxPixelDiff": 0
+          },
+          {
+            "id": "F01",
+            "seed": 2,
+            "sha256": "32b7b09e3ca82a87fed668877130bbc072ea0e55cb9c71690d6b8fe4692a8639",
+            "refSha256": "32b7b09e3ca82a87fed668877130bbc072ea0e55cb9c71690d6b8fe4692a8639",
+            "identical": true,
+            "maxPixelDiff": 0
+          }
+        ],
+        "allIdentical": true
+      },
+      "metrics": {
+        "perImage": [
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.4291,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0609,
+            "id": "A01",
+            "seed": 0,
+            "personLikeScore": 0.0041,
+            "gatePassed": true,
+            "matchScore": 0.2538
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.4671,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0747,
+            "id": "A01",
+            "seed": 1,
+            "personLikeScore": 0.0013,
+            "gatePassed": true,
+            "matchScore": 0.2478
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.3523,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0461,
+            "id": "A01",
+            "seed": 2,
+            "personLikeScore": 0.0034,
+            "gatePassed": true,
+            "matchScore": 0.2392
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.1583,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0424,
+            "id": "A02",
+            "seed": 0,
+            "personLikeScore": 0.0545,
+            "gatePassed": true,
+            "matchScore": 0.2205
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.0432,
+            "touchesBorder": false,
+            "maskPass": false,
+            "satMean": 0.036,
+            "id": "A02",
+            "seed": 1,
+            "personLikeScore": 0.0069,
+            "gatePassed": true,
+            "matchScore": 0.2147
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.1455,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0499,
+            "id": "A02",
+            "seed": 2,
+            "personLikeScore": 0.0454,
+            "gatePassed": true,
+            "matchScore": 0.221
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.3965,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0784,
+            "id": "A03",
+            "seed": 0,
+            "personLikeScore": 0.0061,
+            "gatePassed": true,
+            "matchScore": 0.2646
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2443,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0485,
+            "id": "A03",
+            "seed": 1,
+            "personLikeScore": 0.0027,
+            "gatePassed": true,
+            "matchScore": 0.2624
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.3519,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0714,
+            "id": "A03",
+            "seed": 2,
+            "personLikeScore": 0.0031,
+            "gatePassed": true,
+            "matchScore": 0.2658
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.3924,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0659,
+            "id": "A07",
+            "seed": 0,
+            "personLikeScore": 0.039,
+            "gatePassed": true,
+            "matchScore": 0.1932
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2309,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0522,
+            "id": "A07",
+            "seed": 1,
+            "personLikeScore": 0.0117,
+            "gatePassed": true,
+            "matchScore": 0.2412
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.278,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0607,
+            "id": "A07",
+            "seed": 2,
+            "personLikeScore": 0.0015,
+            "gatePassed": true,
+            "matchScore": 0.2183
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.3811,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0552,
+            "id": "A10",
+            "seed": 0,
+            "personLikeScore": 0.0087,
+            "gatePassed": true,
+            "matchScore": 0.2551
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.1812,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0447,
+            "id": "A10",
+            "seed": 1,
+            "personLikeScore": 0.0046,
+            "gatePassed": true,
+            "matchScore": 0.2232
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.3313,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0507,
+            "id": "A10",
+            "seed": 2,
+            "personLikeScore": 0.0015,
+            "gatePassed": true,
+            "matchScore": 0.2455
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.4625,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.08,
+            "id": "F01",
+            "seed": 0,
+            "personLikeScore": 0.009,
+            "gatePassed": true,
+            "matchScore": 0.2628
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.6278,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0856,
+            "id": "F01",
+            "seed": 1,
+            "personLikeScore": 0.0063,
+            "gatePassed": true,
+            "matchScore": 0.2538
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.3389,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0872,
+            "id": "F01",
+            "seed": 2,
+            "personLikeScore": 0.0054,
+            "gatePassed": true,
+            "matchScore": 0.2488
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.3684,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.1292,
+            "id": "F04",
+            "seed": 0,
+            "personLikeScore": 0.027,
+            "gatePassed": true,
+            "matchScore": 0.2421
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2487,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.1182,
+            "id": "F04",
+            "seed": 1,
+            "personLikeScore": 0.0085,
+            "gatePassed": true,
+            "matchScore": 0.2272
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.3606,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.1098,
+            "id": "F04",
+            "seed": 2,
+            "personLikeScore": 0.0106,
+            "gatePassed": true,
+            "matchScore": 0.2199
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2241,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0361,
+            "id": "F06",
+            "seed": 0,
+            "personLikeScore": 0.0939,
+            "gatePassed": true,
+            "matchScore": 0.2026
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.133,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0573,
+            "id": "F06",
+            "seed": 1,
+            "personLikeScore": 0.0249,
+            "gatePassed": true,
+            "matchScore": 0.2396
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.1941,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0107,
+            "id": "F06",
+            "seed": 2,
+            "personLikeScore": 0.0303,
+            "gatePassed": true,
+            "matchScore": 0.2245
+          }
+        ],
+        "diversity": [
+          {
+            "id": "A01",
+            "maxIoU": 0.7847,
+            "ious": [
+              0.75,
+              0.7847,
+              0.6854
+            ]
+          },
+          {
+            "id": "A02",
+            "maxIoU": 0.7812,
+            "ious": [
+              0.2731,
+              0.7812,
+              0.297
+            ]
+          },
+          {
+            "id": "A03",
+            "maxIoU": 0.8406,
+            "ious": [
+              0.616,
+              0.8406,
+              0.694
+            ]
+          },
+          {
+            "id": "A07",
+            "maxIoU": 0.8149,
+            "ious": [
+              0.5883,
+              0.7084,
+              0.8149
+            ]
+          },
+          {
+            "id": "A10",
+            "maxIoU": 0.7561,
+            "ious": [
+              0.2519,
+              0.7561,
+              0.2163
+            ]
+          },
+          {
+            "id": "F01",
+            "maxIoU": 0.7366,
+            "ious": [
+              0.7366,
+              0.7328,
+              0.5398
+            ]
+          },
+          {
+            "id": "F04",
+            "maxIoU": 0.9023,
+            "ious": [
+              0.6751,
+              0.9023,
+              0.6898
+            ]
+          },
+          {
+            "id": "F06",
+            "maxIoU": 0.7813,
+            "ious": [
+              0.514,
+              0.7813,
+              0.5261
+            ]
+          }
+        ],
+        "seconds": 4.8,
+        "summary": {
+          "n": 24,
+          "maskPassRate": 0.958,
+          "maskPassAbstract": 0.933,
+          "oneComponentRate": 1.0,
+          "fgInRangeRate": 0.958,
+          "borderTouchRate": 0.0,
+          "satMeanMean": 0.0647,
+          "satMeanMedian": 0.059,
+          "satLowRate": 1.0,
+          "diverseRate": 0.875,
+          "maxIoUMedian": 0.783,
+          "gatePassRate": 1.0,
+          "personLikeMax": 0.0939,
+          "matchScoreMean": 0.237
+        },
+        "summaryCompare8": {
+          "n": 24,
+          "maskPassRate": 0.958,
+          "maskPassAbstract": 0.933,
+          "oneComponentRate": 1.0,
+          "fgInRangeRate": 0.958,
+          "borderTouchRate": 0.0,
+          "satMeanMean": 0.0647,
+          "satMeanMedian": 0.059,
+          "satLowRate": 1.0,
+          "diverseRate": 0.875,
+          "maxIoUMedian": 0.783,
+          "gatePassRate": 1.0,
+          "personLikeMax": 0.0939,
+          "matchScoreMean": 0.237
+        }
+      },
+      "visual": {
+        "note": "하위 에이전트 육안 판정(가리지 않음, 참고용). 기준: 물체 하나만 + 말하지 않은 덧붙임(받침·화분·끈·추) 없음 + 사람·얼굴·동물 형상 없음. 형태 충실도(말한 낱말과 맞는가)는 따로 적고 문제 수에 넣지 않음.",
+        "n": 24,
+        "problems": [],
+        "problemCount": 0,
+        "fidelityNotes": [
+          "8 프롬프트만 만듦(속도 때문, README 참고)",
+          "말한 꾸밈말을 가장 잘 따름: 'knobbly'에 혹, 'twisted band'에 꼬인 띠, 'dented cup'에 움푹한 자국",
+          "seed 사이 차이 큼",
+          "F06 깃털이 잎처럼 보임",
+          "F01 s1 공이 화면을 거의 채움",
+          "배경 밝은 회색(흰색 아님), 무채색 점토"
+        ]
+      }
+    },
+    "klein": {
+      "config": {
+        "model": "klein",
+        "repo": "black-forest-labs/FLUX.2-klein-4B",
+        "revision": "e7b7dc27f91deacad38e78976d1f2b499d76a294",
+        "pipelineClass": "Flux2KleinPipeline",
+        "dtype": "bfloat16",
+        "steps": 4,
+        "guidance": 1.0,
+        "extra": {},
+        "negative": "none",
+        "source": "모델 카드 diffusers 예제(4단계, guidance 1.0, bf16). model_index is_distilled=true → CFG 꺼짐, negative 안 씀",
+        "license": "Apache-2.0",
+        "size": 1024,
+        "generator": "cpu",
+        "offload": true,
+        "weightsGiB": 14.87,
+        "fullGpuLimitGiB": 14.0,
+        "attention": "SDPA(기본), flash·torch.compile 끔",
+        "promptRewrite": "없음(파이프라인에 PE·caption upsampling 인자 없음, 부르지 않음)",
+        "determinismFlags": "form_asset.set_determinism: cudnn deterministic, benchmark off, TF32 off"
+      },
+      "loadSeconds": 0.62,
+      "loadPeakAllocGiB": 0.0,
+      "genPeakAllocGiB": 7.81,
+      "genPeakReservedGiB": 8.453,
+      "triple": {
+        "firstSeconds": 28.73,
+        "medianAfterFirst": 13.45,
+        "median2to4": 14.47,
+        "n": 19
+      },
+      "triples": [
+        {
+          "id": "A01",
+          "seconds": 28.73
+        },
+        {
+          "id": "A02",
+          "seconds": 14.466
+        },
+        {
+          "id": "A03",
+          "seconds": 14.679
+        },
+        {
+          "id": "A04",
+          "seconds": 13.566
+        },
+        {
+          "id": "A05",
+          "seconds": 13.453
+        },
+        {
+          "id": "A06",
+          "seconds": 13.685
+        },
+        {
+          "id": "A07",
+          "seconds": 14.187
+        },
+        {
+          "id": "A08",
+          "seconds": 14.796
+        },
+        {
+          "id": "A09",
+          "seconds": 13.464
+        },
+        {
+          "id": "A10",
+          "seconds": 13.005
+        },
+        {
+          "id": "A11",
+          "seconds": 13.058
+        },
+        {
+          "id": "F01",
+          "seconds": 13.287
+        },
+        {
+          "id": "F02",
+          "seconds": 13.193
+        },
+        {
+          "id": "F03",
+          "seconds": 13.245
+        },
+        {
+          "id": "F04",
+          "seconds": 13.457
+        },
+        {
+          "id": "F05",
+          "seconds": 13.412
+        },
+        {
+          "id": "F06",
+          "seconds": 13.296
+        },
+        {
+          "id": "F07",
+          "seconds": 13.368
+        },
+        {
+          "id": "F08",
+          "seconds": 13.591
+        },
+        {
+          "id": "F09",
+          "seconds": 13.32
+        }
+      ],
+      "images": [
+        {
+          "id": "A01",
+          "seed": 0,
+          "seconds": 14.806,
+          "sha256": "1456d625a5118d5ef1a7e17c688cb7363f873aba00410a8f38f201bb066f0361"
+        },
+        {
+          "id": "A01",
+          "seed": 1,
+          "seconds": 7.575,
+          "sha256": "c1af8d438b52261d1ab58cfac894a5208333706a4538280c9df097aa23a6975a"
+        },
+        {
+          "id": "A01",
+          "seed": 2,
+          "seconds": 6.349,
+          "sha256": "5cbf474f9ae8fafdc190bafb3562b3c077696bd5bf11b1313c1cf00ffe7fa2ab"
+        },
+        {
+          "id": "A02",
+          "seed": 0,
+          "seconds": 5.126,
+          "sha256": "ae49de11400169a97f35f82016d7815dccc7bdae6b85c3ff08b18bbd9dad10bb"
+        },
+        {
+          "id": "A02",
+          "seed": 1,
+          "seconds": 4.504,
+          "sha256": "356ce4cba25bd9d2b2cd0321465c7390bceb631e5d39af7cd59b3eb44fe47a31"
+        },
+        {
+          "id": "A02",
+          "seed": 2,
+          "seconds": 4.836,
+          "sha256": "39a35e44ba1178ffc16a553f3fa71c36bbe209f1aba0ad66598c238ca26fd426"
+        },
+        {
+          "id": "A03",
+          "seed": 0,
+          "seconds": 4.523,
+          "sha256": "fd0958eee558594565eb787a8e2637abfff2ee2c9540f7779a412c75a24e4a67"
+        },
+        {
+          "id": "A03",
+          "seed": 1,
+          "seconds": 5.554,
+          "sha256": "5535c25912bc652fe5652864eaa4c1ed6790caede72a071cacc58877e2993d10"
+        },
+        {
+          "id": "A03",
+          "seed": 2,
+          "seconds": 4.602,
+          "sha256": "404b4c3213c14bd391a50a4f698a411dafc203cdfa4ac88de9a8937540fe204e"
+        },
+        {
+          "id": "A04",
+          "seed": 0,
+          "seconds": 4.585,
+          "sha256": "b5f19683febc212ce6016cc3a25186a5294f74f8960fe5ef95eee5a87254aa51"
+        },
+        {
+          "id": "A04",
+          "seed": 1,
+          "seconds": 4.437,
+          "sha256": "4207028b37eaaef08e594aed13f0a50f689a0e3819a5a83ffb560a7418a521ab"
+        },
+        {
+          "id": "A04",
+          "seed": 2,
+          "seconds": 4.544,
+          "sha256": "0db89e33d6ef844759807b7eaffaec99a5a3269941afe1c19d31559c705d2d04"
+        },
+        {
+          "id": "A05",
+          "seed": 0,
+          "seconds": 4.51,
+          "sha256": "705dad19d77d123495a1618d75d8d91fd98804a9ed33809e4ed2a29ab874634a"
+        },
+        {
+          "id": "A05",
+          "seed": 1,
+          "seconds": 4.446,
+          "sha256": "1ea2ae3e7c50b363dc49503406e9093470a60217745ee9c550f79dc698121ecf"
+        },
+        {
+          "id": "A05",
+          "seed": 2,
+          "seconds": 4.497,
+          "sha256": "d7894ae534d7d9300992e0e799081215925f9ee858d0f2bff40ec9ef43976f80"
+        },
+        {
+          "id": "A06",
+          "seed": 0,
+          "seconds": 4.527,
+          "sha256": "6e583f02b727d5a948b27627d48ec9cca1d5c8ad1e650f04e774fc7595ccc1ff"
+        },
+        {
+          "id": "A06",
+          "seed": 1,
+          "seconds": 4.507,
+          "sha256": "64c8733b56f8c06730cb63bd590a6c89ed9efa9a585a424a0792fe3ed78dc37b"
+        },
+        {
+          "id": "A06",
+          "seed": 2,
+          "seconds": 4.651,
+          "sha256": "b3dbf9f0de39128ddee16cdf46dd3a9775f380e954a1e95e87e8935cb38ec9de"
+        },
+        {
+          "id": "A07",
+          "seed": 0,
+          "seconds": 5.293,
+          "sha256": "a06c8b6661f356dfc481cfc8686b61597d2d480417d03e2656f0b045cf43e110"
+        },
+        {
+          "id": "A07",
+          "seed": 1,
+          "seconds": 4.434,
+          "sha256": "8a90267630f381e734bcc078922f255116d2306ddfdaaf4dafd54a15ce1aaca6"
+        },
+        {
+          "id": "A07",
+          "seed": 2,
+          "seconds": 4.46,
+          "sha256": "e43cd3144cbd2696e532c1fcdea91f6e1ffec664b2baf796a6627305d99e9c56"
+        },
+        {
+          "id": "A08",
+          "seed": 0,
+          "seconds": 4.791,
+          "sha256": "f090c5e3b525701845fee0c8b5a5ed05c86feed5d152041d86fb88e22cbe678d"
+        },
+        {
+          "id": "A08",
+          "seed": 1,
+          "seconds": 5.55,
+          "sha256": "9039694cd5f95b82f9fc79a4040c963ea068bd28fcaec5e327447c7c8cc6fa19"
+        },
+        {
+          "id": "A08",
+          "seed": 2,
+          "seconds": 4.455,
+          "sha256": "1507aa7951840f22630cb7ca1a775c75d7898c7aa6438a7eedf5d7aa7edd4837"
+        },
+        {
+          "id": "A09",
+          "seed": 0,
+          "seconds": 4.483,
+          "sha256": "402e2c81c84ffc90ec4e13f0453f91c22874ba0886f847e91a720387a33458fa"
+        },
+        {
+          "id": "A09",
+          "seed": 1,
+          "seconds": 4.485,
+          "sha256": "58e1d486c671bd0d8e28e38ba400f51f02d529d6d6b7101ff5a690fc091bdde1"
+        },
+        {
+          "id": "A09",
+          "seed": 2,
+          "seconds": 4.496,
+          "sha256": "6a3d90ba4705988c8b46b1eb422907858078a5e8aa483a7bfcc094fdbee967bb"
+        },
+        {
+          "id": "A10",
+          "seed": 0,
+          "seconds": 4.37,
+          "sha256": "bc3055a343862fad2a66420f468ccbad85d2c8ad41bc932e7399a5adc440edf3"
+        },
+        {
+          "id": "A10",
+          "seed": 1,
+          "seconds": 4.313,
+          "sha256": "be0d29db3dbe3fff8b54e799da3ea016f8b9d3636f4d7be4a675c064de2f499f"
+        },
+        {
+          "id": "A10",
+          "seed": 2,
+          "seconds": 4.322,
+          "sha256": "4861f8db73bf52f519634be3906a58fc7f1a9fd7b91a76725d5b0a633a0b0ba2"
+        },
+        {
+          "id": "A11",
+          "seed": 0,
+          "seconds": 4.302,
+          "sha256": "f995e9a5f00a298c074ec1fe341ba13aa3226b0df6cd95bd30fc2c86a7241e7b"
+        },
+        {
+          "id": "A11",
+          "seed": 1,
+          "seconds": 4.336,
+          "sha256": "6ebbb0b18ff24217ea67b630a766d35f47d79d685307734baa3f62cf695feba1"
+        },
+        {
+          "id": "A11",
+          "seed": 2,
+          "seconds": 4.42,
+          "sha256": "51c48f02441d8f25853ebf53a400da3f72a96b7ea6d477da3924b20de296b27f"
+        },
+        {
+          "id": "F01",
+          "seed": 0,
+          "seconds": 4.513,
+          "sha256": "e4ad757de9cbdaa39d8223a1f95b69ed3e98e5217d4b0628faf046ede7ca816a"
+        },
+        {
+          "id": "F01",
+          "seed": 1,
+          "seconds": 4.42,
+          "sha256": "3504c23598bc6444fb52b8306c2a3fde617479fa86c842424dde98b3ab90f3e0"
+        },
+        {
+          "id": "F01",
+          "seed": 2,
+          "seconds": 4.354,
+          "sha256": "74555aac99ca1b22ba591e5dc6c6c659460d8004cea0e22d0a2d705089dbc45e"
+        },
+        {
+          "id": "F02",
+          "seed": 0,
+          "seconds": 4.363,
+          "sha256": "6526812099e12e010ad2984c2d0cc4439897a9eb2cd385f175aaec16c97c7c81"
+        },
+        {
+          "id": "F02",
+          "seed": 1,
+          "seconds": 4.37,
+          "sha256": "edaa6529a61cd30bc900e6fba02a13af0505f2fe9a64c90f96fe86d3b12b9979"
+        },
+        {
+          "id": "F02",
+          "seed": 2,
+          "seconds": 4.46,
+          "sha256": "2777023b5e9b840ab113cb63584e213c7fa79bd37e36954c5111750a963b1f1b"
+        },
+        {
+          "id": "F03",
+          "seed": 0,
+          "seconds": 4.41,
+          "sha256": "8a26371a88ab8350d12c916da55aea496775bd43f601587a3bdacb550953b132"
+        },
+        {
+          "id": "F03",
+          "seed": 1,
+          "seconds": 4.411,
+          "sha256": "ca8aa35e670c432c0acb5093b75ce2ab2edac5c44a7ed6772d4a30ce290a1fee"
+        },
+        {
+          "id": "F03",
+          "seed": 2,
+          "seconds": 4.424,
+          "sha256": "2c6208d20f38732c49d7b3536db6bcfeac4256de4fcbeb5d2bdb9d9f9b7df4a7"
+        },
+        {
+          "id": "F04",
+          "seed": 0,
+          "seconds": 4.406,
+          "sha256": "2f106b0b4efa5dc90e4c06ccf23a9a4334ab87ce47f13760a680ba1368c5c440"
+        },
+        {
+          "id": "F04",
+          "seed": 1,
+          "seconds": 4.419,
+          "sha256": "c5cfb72034ce5a779a78f6933271e674baeb8df36c829e6e71404d6cad1b1c07"
+        },
+        {
+          "id": "F04",
+          "seed": 2,
+          "seconds": 4.632,
+          "sha256": "c8d2d0b2e1f8dba2e6e2148daf7b1a9c3ce863a236c4d7be3d5ef1717cad1201"
+        },
+        {
+          "id": "F05",
+          "seed": 0,
+          "seconds": 4.538,
+          "sha256": "77aaad8dad42e2384144e564af54d6f10fc1a0b9587cdd662132035d3cd8d0f7"
+        },
+        {
+          "id": "F05",
+          "seed": 1,
+          "seconds": 4.448,
+          "sha256": "907a1e2a67b34a3bbabee3d172b8a7c7ae85eef402572e252c39674f70b69a74"
+        },
+        {
+          "id": "F05",
+          "seed": 2,
+          "seconds": 4.426,
+          "sha256": "5d3dacf537ee41ea3ee1c371d2199d0b2ad026c170b2574cceef549997edf6c6"
+        },
+        {
+          "id": "F06",
+          "seed": 0,
+          "seconds": 4.394,
+          "sha256": "91423b88f73379ef4ef2d3ef7878bf5a010f12f7f805c38d0a81bb740a310169"
+        },
+        {
+          "id": "F06",
+          "seed": 1,
+          "seconds": 4.435,
+          "sha256": "197260b338bd48c29ca81593cd682796f9cf748f22006aa812d9db70b57fd0e8"
+        },
+        {
+          "id": "F06",
+          "seed": 2,
+          "seconds": 4.467,
+          "sha256": "eeff4d27abf2ac763f76bf182e42485d3899d3f283e46c753668522c7b46ed70"
+        },
+        {
+          "id": "F07",
+          "seed": 0,
+          "seconds": 4.449,
+          "sha256": "45aced4e6d0eb4f09fa85517192d388433bc48d447ee964ac0a3c4a48247d45b"
+        },
+        {
+          "id": "F07",
+          "seed": 1,
+          "seconds": 4.476,
+          "sha256": "76f543c8cc4d3187285e542d1d7ae0801e98ad8a131e119fc0ba2de6db379979"
+        },
+        {
+          "id": "F07",
+          "seed": 2,
+          "seconds": 4.443,
+          "sha256": "7819adfcbf8b5e5bcfe723d375e8ff930c95e397ed9d37b44f9468d3085e6eb3"
+        },
+        {
+          "id": "F08",
+          "seed": 0,
+          "seconds": 4.41,
+          "sha256": "ba80bffc899cdb004e07ad30017fe231bb70e88ee109ed04967cc7f01239aecc"
+        },
+        {
+          "id": "F08",
+          "seed": 1,
+          "seconds": 4.422,
+          "sha256": "580955fd06577695e2668d912f9d788dbf1b953db9b9dec8233eca98c41b6dfb"
+        },
+        {
+          "id": "F08",
+          "seed": 2,
+          "seconds": 4.759,
+          "sha256": "93b6fbc9ed9d2c8f279a1679010d56edde40b486b5d34109c4a3b2d0563c396d"
+        },
+        {
+          "id": "F09",
+          "seed": 0,
+          "seconds": 4.501,
+          "sha256": "3734447646da80cd23694604c6956f205ba369c8336496147b730e8c419d0a37"
+        },
+        {
+          "id": "F09",
+          "seed": 1,
+          "seconds": 4.428,
+          "sha256": "bcfe60ef5b60b7bdedffe27ad732056f16f1f349c85bfc4bb874c87c35361f0f"
+        },
+        {
+          "id": "F09",
+          "seed": 2,
+          "seconds": 4.391,
+          "sha256": "ab8a07d0a9ff78bc295b08e2c19f012a40f18421f0a10b612d2b614fdb6559fd"
+        }
+      ],
+      "weightsSha256": {
+        "flux-2-klein-4b.safetensors": "ec3d4e733a771f61c052fb4856c48b336c55eaf2c65487c2a1faeb9bbda7a343",
+        "text_encoder/model-00001-of-00002.safetensors": "8c0506e7f4936fa7e26183a4fd8da4e2bdbc5990ba64ae441f965d51228f36ea",
+        "text_encoder/model-00002-of-00002.safetensors": "82f2bd839378541b0557bfabaf37c7d3d637071fdcb73302dedd7cf61162ce07",
+        "transformer/diffusion_pytorch_model.safetensors": "9f29f9edcfdae452a653ffb51a534ca4decd389952c225724ff3b94042612a6e",
+        "vae/diffusion_pytorch_model.safetensors": "ca70d2202afe6415bdbcb8793ba8cd99fd159cfe6192381504d6c4d3036e0f04"
+      },
+      "det": {
+        "version": "g76-image-bench/0.1.0",
+        "model": "klein",
+        "offload": true,
+        "cases": [
+          {
+            "id": "A01",
+            "seed": 0,
+            "sha256": "1456d625a5118d5ef1a7e17c688cb7363f873aba00410a8f38f201bb066f0361",
+            "refSha256": "1456d625a5118d5ef1a7e17c688cb7363f873aba00410a8f38f201bb066f0361",
+            "identical": true,
+            "maxPixelDiff": 0
+          },
+          {
+            "id": "A03",
+            "seed": 1,
+            "sha256": "5535c25912bc652fe5652864eaa4c1ed6790caede72a071cacc58877e2993d10",
+            "refSha256": "5535c25912bc652fe5652864eaa4c1ed6790caede72a071cacc58877e2993d10",
+            "identical": true,
+            "maxPixelDiff": 0
+          },
+          {
+            "id": "F01",
+            "seed": 2,
+            "sha256": "74555aac99ca1b22ba591e5dc6c6c659460d8004cea0e22d0a2d705089dbc45e",
+            "refSha256": "74555aac99ca1b22ba591e5dc6c6c659460d8004cea0e22d0a2d705089dbc45e",
+            "identical": true,
+            "maxPixelDiff": 0
+          }
+        ],
+        "allIdentical": true
+      },
+      "metrics": {
+        "perImage": [
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2336,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0209,
+            "id": "A01",
+            "seed": 0,
+            "personLikeScore": 0.0048,
+            "gatePassed": true,
+            "matchScore": 0.2422
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2271,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0489,
+            "id": "A01",
+            "seed": 1,
+            "personLikeScore": 0.0021,
+            "gatePassed": true,
+            "matchScore": 0.2426
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2737,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0274,
+            "id": "A01",
+            "seed": 2,
+            "personLikeScore": 0.0013,
+            "gatePassed": true,
+            "matchScore": 0.2306
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.1392,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.018,
+            "id": "A02",
+            "seed": 0,
+            "personLikeScore": 0.0038,
+            "gatePassed": true,
+            "matchScore": 0.221
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.13,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.029,
+            "id": "A02",
+            "seed": 1,
+            "personLikeScore": 0.0035,
+            "gatePassed": true,
+            "matchScore": 0.2217
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.1574,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0248,
+            "id": "A02",
+            "seed": 2,
+            "personLikeScore": 0.0022,
+            "gatePassed": true,
+            "matchScore": 0.2266
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2472,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0104,
+            "id": "A03",
+            "seed": 0,
+            "personLikeScore": 0.0024,
+            "gatePassed": true,
+            "matchScore": 0.2403
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2983,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0278,
+            "id": "A03",
+            "seed": 1,
+            "personLikeScore": 0.0026,
+            "gatePassed": true,
+            "matchScore": 0.2416
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2922,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0172,
+            "id": "A03",
+            "seed": 2,
+            "personLikeScore": 0.0032,
+            "gatePassed": true,
+            "matchScore": 0.2333
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.1705,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0176,
+            "id": "A04",
+            "seed": 0,
+            "personLikeScore": 0.0249,
+            "gatePassed": true,
+            "matchScore": 0.2394
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.1802,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0534,
+            "id": "A04",
+            "seed": 1,
+            "personLikeScore": 0.0393,
+            "gatePassed": true,
+            "matchScore": 0.2369
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2094,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0342,
+            "id": "A04",
+            "seed": 2,
+            "personLikeScore": 0.0363,
+            "gatePassed": true,
+            "matchScore": 0.237
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.235,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0158,
+            "id": "A05",
+            "seed": 0,
+            "personLikeScore": 0.0048,
+            "gatePassed": true,
+            "matchScore": 0.1599
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2281,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0325,
+            "id": "A05",
+            "seed": 1,
+            "personLikeScore": 0.0057,
+            "gatePassed": true,
+            "matchScore": 0.1534
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2882,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0172,
+            "id": "A05",
+            "seed": 2,
+            "personLikeScore": 0.0028,
+            "gatePassed": true,
+            "matchScore": 0.1492
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.3828,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0134,
+            "id": "A06",
+            "seed": 0,
+            "personLikeScore": 0.0373,
+            "gatePassed": true,
+            "matchScore": 0.1735
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.3385,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0231,
+            "id": "A06",
+            "seed": 1,
+            "personLikeScore": 0.0065,
+            "gatePassed": true,
+            "matchScore": 0.1935
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.3328,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0194,
+            "id": "A06",
+            "seed": 2,
+            "personLikeScore": 0.0174,
+            "gatePassed": true,
+            "matchScore": 0.1753
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2097,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0141,
+            "id": "A07",
+            "seed": 0,
+            "personLikeScore": 0.0043,
+            "gatePassed": true,
+            "matchScore": 0.188
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2287,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0316,
+            "id": "A07",
+            "seed": 1,
+            "personLikeScore": 0.011,
+            "gatePassed": true,
+            "matchScore": 0.1802
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2785,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0175,
+            "id": "A07",
+            "seed": 2,
+            "personLikeScore": 0.0022,
+            "gatePassed": true,
+            "matchScore": 0.1788
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.1913,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0111,
+            "id": "A08",
+            "seed": 0,
+            "personLikeScore": 0.0345,
+            "gatePassed": true,
+            "matchScore": 0.2071
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.1899,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0229,
+            "id": "A08",
+            "seed": 1,
+            "personLikeScore": 0.0054,
+            "gatePassed": true,
+            "matchScore": 0.1775
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2553,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0145,
+            "id": "A08",
+            "seed": 2,
+            "personLikeScore": 0.017,
+            "gatePassed": true,
+            "matchScore": 0.2105
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2297,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0164,
+            "id": "A09",
+            "seed": 0,
+            "personLikeScore": 0.0068,
+            "gatePassed": true,
+            "matchScore": 0.2711
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2142,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0223,
+            "id": "A09",
+            "seed": 1,
+            "personLikeScore": 0.006,
+            "gatePassed": true,
+            "matchScore": 0.2539
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2698,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.029,
+            "id": "A09",
+            "seed": 2,
+            "personLikeScore": 0.0063,
+            "gatePassed": true,
+            "matchScore": 0.2741
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.1242,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0178,
+            "id": "A10",
+            "seed": 0,
+            "personLikeScore": 0.0022,
+            "gatePassed": true,
+            "matchScore": 0.2265
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.1815,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0441,
+            "id": "A10",
+            "seed": 1,
+            "personLikeScore": 0.0036,
+            "gatePassed": true,
+            "matchScore": 0.2259
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.211,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0217,
+            "id": "A10",
+            "seed": 2,
+            "personLikeScore": 0.0015,
+            "gatePassed": true,
+            "matchScore": 0.2025
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.1547,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0143,
+            "id": "A11",
+            "seed": 0,
+            "personLikeScore": 0.8478,
+            "gatePassed": false,
+            "matchScore": 0.1964
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.1504,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0255,
+            "id": "A11",
+            "seed": 1,
+            "personLikeScore": 0.974,
+            "gatePassed": false,
+            "matchScore": 0.2086
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.1775,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0199,
+            "id": "A11",
+            "seed": 2,
+            "personLikeScore": 0.7352,
+            "gatePassed": false,
+            "matchScore": 0.2181
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2419,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0132,
+            "id": "F01",
+            "seed": 0,
+            "personLikeScore": 0.0052,
+            "gatePassed": true,
+            "matchScore": 0.2589
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2714,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0367,
+            "id": "F01",
+            "seed": 1,
+            "personLikeScore": 0.0113,
+            "gatePassed": true,
+            "matchScore": 0.2623
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.3002,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0228,
+            "id": "F01",
+            "seed": 2,
+            "personLikeScore": 0.008,
+            "gatePassed": true,
+            "matchScore": 0.2524
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2967,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0153,
+            "id": "F02",
+            "seed": 0,
+            "personLikeScore": 0.0049,
+            "gatePassed": true,
+            "matchScore": 0.2155
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2934,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0209,
+            "id": "F02",
+            "seed": 1,
+            "personLikeScore": 0.0017,
+            "gatePassed": true,
+            "matchScore": 0.2242
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2857,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0201,
+            "id": "F02",
+            "seed": 2,
+            "personLikeScore": 0.001,
+            "gatePassed": true,
+            "matchScore": 0.2206
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2094,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0133,
+            "id": "F03",
+            "seed": 0,
+            "personLikeScore": 0.0181,
+            "gatePassed": true,
+            "matchScore": 0.2633
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2217,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0285,
+            "id": "F03",
+            "seed": 1,
+            "personLikeScore": 0.0174,
+            "gatePassed": true,
+            "matchScore": 0.2692
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2319,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0165,
+            "id": "F03",
+            "seed": 2,
+            "personLikeScore": 0.0106,
+            "gatePassed": true,
+            "matchScore": 0.2679
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2324,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0146,
+            "id": "F04",
+            "seed": 0,
+            "personLikeScore": 0.0067,
+            "gatePassed": true,
+            "matchScore": 0.2158
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.196,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0193,
+            "id": "F04",
+            "seed": 1,
+            "personLikeScore": 0.0086,
+            "gatePassed": true,
+            "matchScore": 0.2165
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.227,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0266,
+            "id": "F04",
+            "seed": 2,
+            "personLikeScore": 0.0068,
+            "gatePassed": true,
+            "matchScore": 0.2056
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2634,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0216,
+            "id": "F05",
+            "seed": 0,
+            "personLikeScore": 0.0788,
+            "gatePassed": true,
+            "matchScore": 0.2488
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2308,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0227,
+            "id": "F05",
+            "seed": 1,
+            "personLikeScore": 0.2805,
+            "gatePassed": true,
+            "matchScore": 0.2524
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.3128,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0258,
+            "id": "F05",
+            "seed": 2,
+            "personLikeScore": 0.0955,
+            "gatePassed": true,
+            "matchScore": 0.2482
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.136,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0106,
+            "id": "F06",
+            "seed": 0,
+            "personLikeScore": 0.0657,
+            "gatePassed": true,
+            "matchScore": 0.2292
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.1246,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0152,
+            "id": "F06",
+            "seed": 1,
+            "personLikeScore": 0.0475,
+            "gatePassed": true,
+            "matchScore": 0.2285
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.1323,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0117,
+            "id": "F06",
+            "seed": 2,
+            "personLikeScore": 0.0783,
+            "gatePassed": true,
+            "matchScore": 0.2227
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2582,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0138,
+            "id": "F07",
+            "seed": 0,
+            "personLikeScore": 0.0158,
+            "gatePassed": true,
+            "matchScore": 0.2346
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2842,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0244,
+            "id": "F07",
+            "seed": 1,
+            "personLikeScore": 0.04,
+            "gatePassed": true,
+            "matchScore": 0.2336
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.3107,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0177,
+            "id": "F07",
+            "seed": 2,
+            "personLikeScore": 0.0109,
+            "gatePassed": true,
+            "matchScore": 0.2232
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.3088,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0164,
+            "id": "F08",
+            "seed": 0,
+            "personLikeScore": 0.0512,
+            "gatePassed": true,
+            "matchScore": 0.2149
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2717,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.016,
+            "id": "F08",
+            "seed": 1,
+            "personLikeScore": 0.1506,
+            "gatePassed": true,
+            "matchScore": 0.2014
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.3402,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.028,
+            "id": "F08",
+            "seed": 2,
+            "personLikeScore": 0.2193,
+            "gatePassed": true,
+            "matchScore": 0.1927
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.308,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0138,
+            "id": "F09",
+            "seed": 0,
+            "personLikeScore": 0.0032,
+            "gatePassed": true,
+            "matchScore": 0.2718
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2917,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0163,
+            "id": "F09",
+            "seed": 1,
+            "personLikeScore": 0.0022,
+            "gatePassed": true,
+            "matchScore": 0.2437
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.3028,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0126,
+            "id": "F09",
+            "seed": 2,
+            "personLikeScore": 0.002,
+            "gatePassed": true,
+            "matchScore": 0.2698
+          }
+        ],
+        "diversity": [
+          {
+            "id": "A01",
+            "maxIoU": 0.8668,
+            "ious": [
+              0.8668,
+              0.8387,
+              0.8169
+            ]
+          },
+          {
+            "id": "A02",
+            "maxIoU": 0.8258,
+            "ious": [
+              0.755,
+              0.808,
+              0.8258
+            ]
+          },
+          {
+            "id": "A03",
+            "maxIoU": 0.8971,
+            "ious": [
+              0.8286,
+              0.8458,
+              0.8971
+            ]
+          },
+          {
+            "id": "A04",
+            "maxIoU": 0.8449,
+            "ious": [
+              0.8449,
+              0.7184,
+              0.7314
+            ]
+          },
+          {
+            "id": "A05",
+            "maxIoU": 0.8847,
+            "ious": [
+              0.8847,
+              0.8154,
+              0.7913
+            ]
+          },
+          {
+            "id": "A06",
+            "maxIoU": 0.8598,
+            "ious": [
+              0.8223,
+              0.8598,
+              0.8321
+            ]
+          },
+          {
+            "id": "A07",
+            "maxIoU": 0.9018,
+            "ious": [
+              0.9018,
+              0.7531,
+              0.8212
+            ]
+          },
+          {
+            "id": "A08",
+            "maxIoU": 0.8389,
+            "ious": [
+              0.8389,
+              0.7493,
+              0.7437
+            ]
+          },
+          {
+            "id": "A09",
+            "maxIoU": 0.9255,
+            "ious": [
+              0.9255,
+              0.8512,
+              0.7937
+            ]
+          },
+          {
+            "id": "A10",
+            "maxIoU": 0.575,
+            "ious": [
+              0.4624,
+              0.575,
+              0.4593
+            ]
+          },
+          {
+            "id": "A11",
+            "maxIoU": 0.8365,
+            "ious": [
+              0.8365,
+              0.7322,
+              0.6993
+            ]
+          },
+          {
+            "id": "F01",
+            "maxIoU": 0.904,
+            "ious": [
+              0.8914,
+              0.8059,
+              0.904
+            ]
+          },
+          {
+            "id": "F02",
+            "maxIoU": 0.9496,
+            "ious": [
+              0.9377,
+              0.9304,
+              0.9496
+            ]
+          },
+          {
+            "id": "F03",
+            "maxIoU": 0.9011,
+            "ious": [
+              0.7734,
+              0.9011,
+              0.754
+            ]
+          },
+          {
+            "id": "F04",
+            "maxIoU": 0.8637,
+            "ious": [
+              0.8111,
+              0.7749,
+              0.8637
+            ]
+          },
+          {
+            "id": "F05",
+            "maxIoU": 0.8762,
+            "ious": [
+              0.8762,
+              0.842,
+              0.7378
+            ]
+          },
+          {
+            "id": "F06",
+            "maxIoU": 0.9207,
+            "ious": [
+              0.9059,
+              0.9207,
+              0.9152
+            ]
+          },
+          {
+            "id": "F07",
+            "maxIoU": 0.9086,
+            "ious": [
+              0.9086,
+              0.829,
+              0.8921
+            ]
+          },
+          {
+            "id": "F08",
+            "maxIoU": 0.8866,
+            "ious": [
+              0.8759,
+              0.8866,
+              0.7987
+            ]
+          },
+          {
+            "id": "F09",
+            "maxIoU": 0.9508,
+            "ious": [
+              0.9099,
+              0.9193,
+              0.9508
+            ]
+          }
+        ],
+        "seconds": 9.5,
+        "summary": {
+          "n": 60,
+          "maskPassRate": 1.0,
+          "maskPassAbstract": 1.0,
+          "oneComponentRate": 1.0,
+          "fgInRangeRate": 1.0,
+          "borderTouchRate": 0.0,
+          "satMeanMean": 0.0215,
+          "satMeanMedian": 0.0193,
+          "satLowRate": 1.0,
+          "diverseRate": 0.6,
+          "maxIoUMedian": 0.8857,
+          "gatePassRate": 0.95,
+          "personLikeMax": 0.974,
+          "matchScoreMean": 0.2237
+        },
+        "summaryCompare8": {
+          "n": 24,
+          "maskPassRate": 1.0,
+          "maskPassAbstract": 1.0,
+          "oneComponentRate": 1.0,
+          "fgInRangeRate": 1.0,
+          "borderTouchRate": 0.0,
+          "satMeanMean": 0.0226,
+          "satMeanMedian": 0.0201,
+          "satLowRate": 1.0,
+          "diverseRate": 0.625,
+          "maxIoUMedian": 0.882,
+          "gatePassRate": 1.0,
+          "personLikeMax": 0.0783,
+          "matchScoreMean": 0.2247
+        }
+      },
+      "visual": {
+        "note": "하위 에이전트 육안 판정(가리지 않음, 참고용). 기준: 물체 하나만 + 말하지 않은 덧붙임(받침·화분·끈·추) 없음 + 사람·얼굴·동물 형상 없음. 형태 충실도(말한 낱말과 맞는가)는 따로 적고 문제 수에 넣지 않음.",
+        "n": 60,
+        "problems": [
+          {
+            "id": "A11",
+            "seed": 0,
+            "why": "소뿔 한 쌍 달린 머리 모양(동물 형상·두 개)"
+          },
+          {
+            "id": "A11",
+            "seed": 1,
+            "why": "같음"
+          },
+          {
+            "id": "A11",
+            "seed": 2,
+            "why": "같음"
+          }
+        ],
+        "fidelityNotes": [
+          "seed 3장이 거의 같은 모양(A03·A05·A06·A07은 서로도 비슷한 둥근 덩어리)",
+          "A08 s1 '얇은 막'이 두꺼운 원판",
+          "A10 s1 '꼬인 띠'가 매듭",
+          "배경 흰색, 무채색 점토 화풍을 가장 잘 지킴"
+        ],
+        "problemCount": 3
+      }
+    },
+    "klein-base": {
+      "config": {
+        "model": "klein-base",
+        "repo": "black-forest-labs/FLUX.2-klein-base-4B",
+        "revision": "a3b4f4849157f664bdbc776fd7453c2783562f4d",
+        "pipelineClass": "Flux2KleinPipeline",
+        "dtype": "bfloat16",
+        "steps": 50,
+        "guidance": 4.0,
+        "extra": {},
+        "negative": "embeds",
+        "source": "모델 카드 diffusers 예제(50단계, guidance 4.0, bf16). negative는 encode_prompt로 만든 negative_prompt_embeds",
+        "license": "Apache-2.0",
+        "size": 1024,
+        "generator": "cpu",
+        "offload": true,
+        "weightsGiB": 14.87,
+        "fullGpuLimitGiB": 14.0,
+        "attention": "SDPA(기본), flash·torch.compile 끔",
+        "promptRewrite": "없음(파이프라인에 PE·caption upsampling 인자 없음, 부르지 않음)",
+        "determinismFlags": "form_asset.set_determinism: cudnn deterministic, benchmark off, TF32 off"
+      },
+      "loadSeconds": 0.93,
+      "loadPeakAllocGiB": 0.0,
+      "genPeakAllocGiB": 7.823,
+      "genPeakReservedGiB": 8.455,
+      "triple": {
+        "firstSeconds": 181.265,
+        "medianAfterFirst": 155.91,
+        "median2to4": 155.89,
+        "n": 7
+      },
+      "triples": [
+        {
+          "id": "A01",
+          "seconds": 181.265
+        },
+        {
+          "id": "A02",
+          "seconds": 156.172
+        },
+        {
+          "id": "A03",
+          "seconds": 155.801
+        },
+        {
+          "id": "A07",
+          "seconds": 155.891
+        },
+        {
+          "id": "A10",
+          "seconds": 155.814
+        },
+        {
+          "id": "F01",
+          "seconds": 156.231
+        },
+        {
+          "id": "F04",
+          "seconds": 156.028
+        },
+        {
+          "id": "F06",
+          "seconds": 155.908
+        }
+      ],
+      "images": [
+        {
+          "id": "A01",
+          "seed": 0,
+          "seconds": 70.314,
+          "sha256": "1e37c872ce9c0233dad8036b5918cca200b45f4484709773868081257dd46a07"
+        },
+        {
+          "id": "A01",
+          "seed": 1,
+          "seconds": 57.088,
+          "sha256": "262463977023ccb84f87a646f64e81da3e2b391f75c7de44b9ad27db35042f89"
+        },
+        {
+          "id": "A01",
+          "seed": 2,
+          "seconds": 53.863,
+          "sha256": "5b719b68a2c3ca666c77003b209392462d107a1ba03c4334505f41716ac49d02"
+        },
+        {
+          "id": "A02",
+          "seed": 0,
+          "seconds": 52.245,
+          "sha256": "f41f89a1e6c3bf1f367e1d4691973bf91966ac3feb559e6b9f9b0d5420822094"
+        },
+        {
+          "id": "A02",
+          "seed": 1,
+          "seconds": 52.015,
+          "sha256": "cd5504c3e2243e53172c9d0ae8acca08b475dc35be28640ad80963f650d05abb"
+        },
+        {
+          "id": "A02",
+          "seed": 2,
+          "seconds": 51.912,
+          "sha256": "bfc503acad5da339af5a4ba197a42754e71ad60f632b3a36d05848d2ac7ab44e"
+        },
+        {
+          "id": "A03",
+          "seed": 0,
+          "seconds": 51.948,
+          "sha256": "80f7c9ea2c55642595f3bfaa8d3afc85c51948c5f4166187c7b578ee00fb9142"
+        },
+        {
+          "id": "A03",
+          "seed": 1,
+          "seconds": 51.945,
+          "sha256": "03cd9fbe15afde0966a25bcbfa0f5b197e12381232778c01976a1b20aa8b4b20"
+        },
+        {
+          "id": "A03",
+          "seed": 2,
+          "seconds": 51.908,
+          "sha256": "0bd6065bcef55245d54a3576f8b367e349cfa2862b2d9c5ed56901e73dac939f"
+        },
+        {
+          "id": "A07",
+          "seed": 0,
+          "seconds": 51.912,
+          "sha256": "0abc3f3b07c92d2f02b21032d32dd48d60389449d413cc55f5fa47c6a7b8d8e3"
+        },
+        {
+          "id": "A07",
+          "seed": 1,
+          "seconds": 52.023,
+          "sha256": "64daa526142fcbf1eb97636518b8ce97ac1f540cf89202f83189c10f59c0501c"
+        },
+        {
+          "id": "A07",
+          "seed": 2,
+          "seconds": 51.956,
+          "sha256": "86823b86f0758e26da1b4f300f2792c6b0a22b50b62262d91ebdd4631a811d73"
+        },
+        {
+          "id": "A10",
+          "seed": 0,
+          "seconds": 51.913,
+          "sha256": "9fbf3b0d47ecc73c3d3a32e5dd5f52a64a2b5416f17a1a28fbd712a9b4df56ac"
+        },
+        {
+          "id": "A10",
+          "seed": 1,
+          "seconds": 51.95,
+          "sha256": "86ae1120ce0d3b9247f4eb4ba675deade796059cd99b3ef5fb8617f096c73b5c"
+        },
+        {
+          "id": "A10",
+          "seed": 2,
+          "seconds": 51.951,
+          "sha256": "a9f4cc816cd4894071312e65232800d301f09cd07aecbb22b617d74b9c977dc3"
+        },
+        {
+          "id": "F01",
+          "seed": 0,
+          "seconds": 52.056,
+          "sha256": "db2ed1222365f29e725b4b9e4ca8e769abe357739d24ddd23da5e1f4db2204aa"
+        },
+        {
+          "id": "F01",
+          "seed": 1,
+          "seconds": 52.082,
+          "sha256": "3a4c74f224af22e6b54bea35bca9e06b29b210029f472b031ec79ce62681df0e"
+        },
+        {
+          "id": "F01",
+          "seed": 2,
+          "seconds": 52.093,
+          "sha256": "b377752e578d28f49c9862b61d7189f29bed733b4ab6822fd1aa1a329f677c14"
+        },
+        {
+          "id": "F04",
+          "seed": 0,
+          "seconds": 51.962,
+          "sha256": "3613292624dad92963e6705eebe48d7ae94cf310a179cfb150774aa4bd680633"
+        },
+        {
+          "id": "F04",
+          "seed": 1,
+          "seconds": 51.996,
+          "sha256": "6a6a803dbf3353a254800e7b5a79233e984270a383987a07bd96bd76245db26e"
+        },
+        {
+          "id": "F04",
+          "seed": 2,
+          "seconds": 52.07,
+          "sha256": "45e08839825bbbb35559737e2ccdef91ce733ab54b77c472496c804b243b5885"
+        },
+        {
+          "id": "F06",
+          "seed": 0,
+          "seconds": 52.015,
+          "sha256": "9bfecaf98a5a57346f04e5ffc9d5034accf98247b636821ed3c9d0fe983b4aef"
+        },
+        {
+          "id": "F06",
+          "seed": 1,
+          "seconds": 51.956,
+          "sha256": "ff07a7781aaff687ceb08fc4c3fab6883b1b612f624c68cbb3281725a0c70238"
+        },
+        {
+          "id": "F06",
+          "seed": 2,
+          "seconds": 51.937,
+          "sha256": "fc7abbd2ba66cce17dd084edac4d45d069622ed2aee8cbf9b2257d0f86f68944"
+        }
+      ],
+      "weightsSha256": {
+        "flux-2-klein-base-4b.safetensors": "9c5fed22b76baea749d88fc2abe3ad53245e7b21a0d353a762665eea00043b92",
+        "text_encoder/model-00001-of-00002.safetensors": "8c0506e7f4936fa7e26183a4fd8da4e2bdbc5990ba64ae441f965d51228f36ea",
+        "text_encoder/model-00002-of-00002.safetensors": "82f2bd839378541b0557bfabaf37c7d3d637071fdcb73302dedd7cf61162ce07",
+        "transformer/diffusion_pytorch_model.safetensors": "e109674697ffa1a3983126e32512f5428a9442bd8df59f9c95566ee90a473bb6",
+        "vae/diffusion_pytorch_model.safetensors": "ca70d2202afe6415bdbcb8793ba8cd99fd159cfe6192381504d6c4d3036e0f04"
+      },
+      "det": {
+        "version": "g76-image-bench/0.1.0",
+        "model": "klein-base",
+        "offload": true,
+        "cases": [
+          {
+            "id": "A01",
+            "seed": 0,
+            "sha256": "1e37c872ce9c0233dad8036b5918cca200b45f4484709773868081257dd46a07",
+            "refSha256": "1e37c872ce9c0233dad8036b5918cca200b45f4484709773868081257dd46a07",
+            "identical": true,
+            "maxPixelDiff": 0
+          },
+          {
+            "id": "A03",
+            "seed": 1,
+            "sha256": "03cd9fbe15afde0966a25bcbfa0f5b197e12381232778c01976a1b20aa8b4b20",
+            "refSha256": "03cd9fbe15afde0966a25bcbfa0f5b197e12381232778c01976a1b20aa8b4b20",
+            "identical": true,
+            "maxPixelDiff": 0
+          },
+          {
+            "id": "F01",
+            "seed": 2,
+            "sha256": "b377752e578d28f49c9862b61d7189f29bed733b4ab6822fd1aa1a329f677c14",
+            "refSha256": "b377752e578d28f49c9862b61d7189f29bed733b4ab6822fd1aa1a329f677c14",
+            "identical": true,
+            "maxPixelDiff": 0
+          }
+        ],
+        "allIdentical": true
+      },
+      "metrics": {
+        "perImage": [
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2443,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0147,
+            "id": "A01",
+            "seed": 0,
+            "personLikeScore": 0.0036,
+            "gatePassed": true,
+            "matchScore": 0.2383
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2233,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0472,
+            "id": "A01",
+            "seed": 1,
+            "personLikeScore": 0.0042,
+            "gatePassed": true,
+            "matchScore": 0.2501
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2672,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0449,
+            "id": "A01",
+            "seed": 2,
+            "personLikeScore": 0.0022,
+            "gatePassed": true,
+            "matchScore": 0.2295
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.1185,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0123,
+            "id": "A02",
+            "seed": 0,
+            "personLikeScore": 0.0042,
+            "gatePassed": true,
+            "matchScore": 0.2552
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.1399,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0285,
+            "id": "A02",
+            "seed": 1,
+            "personLikeScore": 0.0108,
+            "gatePassed": true,
+            "matchScore": 0.2402
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.1441,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0272,
+            "id": "A02",
+            "seed": 2,
+            "personLikeScore": 0.0016,
+            "gatePassed": true,
+            "matchScore": 0.2294
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.3838,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0113,
+            "id": "A03",
+            "seed": 0,
+            "personLikeScore": 0.0037,
+            "gatePassed": true,
+            "matchScore": 0.2473
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.3368,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.029,
+            "id": "A03",
+            "seed": 1,
+            "personLikeScore": 0.0039,
+            "gatePassed": true,
+            "matchScore": 0.2489
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2704,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0148,
+            "id": "A03",
+            "seed": 2,
+            "personLikeScore": 0.0028,
+            "gatePassed": true,
+            "matchScore": 0.2443
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2283,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.008,
+            "id": "A07",
+            "seed": 0,
+            "personLikeScore": 0.0113,
+            "gatePassed": true,
+            "matchScore": 0.1934
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.3349,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0223,
+            "id": "A07",
+            "seed": 1,
+            "personLikeScore": 0.0267,
+            "gatePassed": true,
+            "matchScore": 0.1551
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2652,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.01,
+            "id": "A07",
+            "seed": 2,
+            "personLikeScore": 0.0047,
+            "gatePassed": true,
+            "matchScore": 0.1919
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.1695,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0088,
+            "id": "A10",
+            "seed": 0,
+            "personLikeScore": 0.0079,
+            "gatePassed": true,
+            "matchScore": 0.247
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.193,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0224,
+            "id": "A10",
+            "seed": 1,
+            "personLikeScore": 0.0139,
+            "gatePassed": true,
+            "matchScore": 0.255
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2025,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0164,
+            "id": "A10",
+            "seed": 2,
+            "personLikeScore": 0.0031,
+            "gatePassed": true,
+            "matchScore": 0.1757
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.4336,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0096,
+            "id": "F01",
+            "seed": 0,
+            "personLikeScore": 0.0162,
+            "gatePassed": true,
+            "matchScore": 0.259
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2703,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0228,
+            "id": "F01",
+            "seed": 1,
+            "personLikeScore": 0.0186,
+            "gatePassed": true,
+            "matchScore": 0.2595
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.308,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0153,
+            "id": "F01",
+            "seed": 2,
+            "personLikeScore": 0.0054,
+            "gatePassed": true,
+            "matchScore": 0.2538
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2338,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0115,
+            "id": "F04",
+            "seed": 0,
+            "personLikeScore": 0.0263,
+            "gatePassed": true,
+            "matchScore": 0.1807
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.1717,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0229,
+            "id": "F04",
+            "seed": 1,
+            "personLikeScore": 0.0638,
+            "gatePassed": true,
+            "matchScore": 0.205
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.2197,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0199,
+            "id": "F04",
+            "seed": 2,
+            "personLikeScore": 0.0107,
+            "gatePassed": true,
+            "matchScore": 0.184
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.1474,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.009,
+            "id": "F06",
+            "seed": 0,
+            "personLikeScore": 0.1716,
+            "gatePassed": true,
+            "matchScore": 0.2459
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.1154,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0185,
+            "id": "F06",
+            "seed": 1,
+            "personLikeScore": 0.12,
+            "gatePassed": true,
+            "matchScore": 0.2282
+          },
+          {
+            "components": 1,
+            "componentsRaw": 1,
+            "fgFraction": 0.1359,
+            "touchesBorder": false,
+            "maskPass": true,
+            "satMean": 0.0079,
+            "id": "F06",
+            "seed": 2,
+            "personLikeScore": 0.0484,
+            "gatePassed": true,
+            "matchScore": 0.2314
+          }
+        ],
+        "diversity": [
+          {
+            "id": "A01",
+            "maxIoU": 0.8841,
+            "ious": [
+              0.8758,
+              0.8841,
+              0.8308
+            ]
+          },
+          {
+            "id": "A02",
+            "maxIoU": 0.8456,
+            "ious": [
+              0.8456,
+              0.8047,
+              0.82
+            ]
+          },
+          {
+            "id": "A03",
+            "maxIoU": 0.7668,
+            "ious": [
+              0.7442,
+              0.7043,
+              0.7668
+            ]
+          },
+          {
+            "id": "A07",
+            "maxIoU": 0.7875,
+            "ious": [
+              0.6743,
+              0.7584,
+              0.7875
+            ]
+          },
+          {
+            "id": "A10",
+            "maxIoU": 0.7096,
+            "ious": [
+              0.3422,
+              0.7096,
+              0.4172
+            ]
+          },
+          {
+            "id": "F01",
+            "maxIoU": 0.8777,
+            "ious": [
+              0.6235,
+              0.7104,
+              0.8777
+            ]
+          },
+          {
+            "id": "F04",
+            "maxIoU": 0.7816,
+            "ious": [
+              0.6912,
+              0.7269,
+              0.7816
+            ]
+          },
+          {
+            "id": "F06",
+            "maxIoU": 0.8077,
+            "ious": [
+              0.7679,
+              0.8077,
+              0.7857
+            ]
+          }
+        ],
+        "seconds": 4.4,
+        "summary": {
+          "n": 24,
+          "maskPassRate": 1.0,
+          "maskPassAbstract": 1.0,
+          "oneComponentRate": 1.0,
+          "fgInRangeRate": 1.0,
+          "borderTouchRate": 0.0,
+          "satMeanMean": 0.019,
+          "satMeanMedian": 0.0158,
+          "satLowRate": 1.0,
+          "diverseRate": 1.0,
+          "maxIoUMedian": 0.7976,
+          "gatePassRate": 1.0,
+          "personLikeMax": 0.1716,
+          "matchScoreMean": 0.227
+        },
+        "summaryCompare8": {
+          "n": 24,
+          "maskPassRate": 1.0,
+          "maskPassAbstract": 1.0,
+          "oneComponentRate": 1.0,
+          "fgInRangeRate": 1.0,
+          "borderTouchRate": 0.0,
+          "satMeanMean": 0.019,
+          "satMeanMedian": 0.0158,
+          "satLowRate": 1.0,
+          "diverseRate": 1.0,
+          "maxIoUMedian": 0.7976,
+          "gatePassRate": 1.0,
+          "personLikeMax": 0.1716,
+          "matchScoreMean": 0.227
+        }
+      },
+      "visual": {
+        "note": "하위 에이전트 육안 판정(가리지 않음, 참고용). 기준: 물체 하나만 + 말하지 않은 덧붙임(받침·화분·끈·추) 없음 + 사람·얼굴·동물 형상 없음. 형태 충실도(말한 낱말과 맞는가)는 따로 적고 문제 수에 넣지 않음.",
+        "n": 24,
+        "problems": [],
+        "problemCount": 0,
+        "fidelityNotes": [
+          "8 프롬프트만 만듦(속도 때문, README 참고)",
+          "klein 증류판보다 seed 사이 차이가 조금 큼(A03·A07)",
+          "A10 s1 '꼬인 띠'가 매듭",
+          "배경 흰색, 무채색 점토"
+        ]
+      }
+    }
+  },
+  "metricDefinitions": {
+    "rembg": "u2net(form_asset.ShapeStage와 같은 세션 이름)",
+    "alphaThreshold": 128,
+    "componentMinFraction": 0.01,
+    "fgRange": [
+      0.1,
+      0.7
+    ],
+    "borderPx": 2,
+    "satLow": 0.15,
+    "iouHigh": 0.9,
+    "gate": "form_asset.GateStage.judge([이미지 1장]) — G75 pick_images와 같은 라벨·문턱 0.5"
+  }
+}

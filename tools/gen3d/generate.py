@@ -2,6 +2,8 @@
 
   <venv>/python tools/gen3d/generate.py --run <이름> --pipeline shap-e|sdxl-triposr|sdxl-triposg \
       [--prompt-mode rules|llm] [--seed 0] [--ids D01,D02] [--repeat 2]
+  (G75, sdxl-triposg) --image-pick --seeds 0,1,2   이미지만(+ 이미지 관문) → <run>/image-pick.json
+                      --from-image <png> --image-sha256 <sha> --seed s   고른 이미지로 형태만 → form-asset.v0 사이드카
 
 입력: OUT_ROOT/<run>/inputs/sentences.json (inputs.py가 만든다).
 출력: OUT_ROOT/<run>/<pipeline>-<prompt-mode>/  (저장소 밖, 원칙 6)
@@ -269,6 +271,12 @@ def main(argv=None):
                     help="(sdxl-triposg) 캐시가 있어도 다시 만들고, 앞 프로세스의 GLB sha256과 비교해 run.json에 적는다")
     ap.add_argument("--cache-probe", action="store_true",
                     help="(sdxl-triposg) 모델을 부르지 않고 캐시로 끝날지만 보고 <run>/cache-probe.json에 적는다(G73 후속)")
+    ap.add_argument("--image-pick", action="store_true",
+                    help="(sdxl-triposg, G75) 형태는 만들지 않고 --seeds마다 SDXL 이미지 + 이미지 관문만 → <run>/image-pick.json")
+    ap.add_argument("--seeds", default="", help="(--image-pick) 쉼표로 가른 seed 목록. 비우면 --seed 하나")
+    ap.add_argument("--from-image", default="",
+                    help="(sdxl-triposg, G75) 참여자가 고른 이미지(저장소 밖 경로)로 TripoSG만 → form-asset.v0 사이드카")
+    ap.add_argument("--image-sha256", default="", help="(--from-image) 그 이미지의 sha256. 다르면 만들지 않는다")
     a = ap.parse_args(argv)
 
     run_dir = assert_outside_repo(OUT_ROOT / a.run)
@@ -281,6 +289,17 @@ def main(argv=None):
 
         if a.prompt_mode != "rules":
             raise SystemExit("sdxl-triposg는 규칙 프롬프트(shape_prompt)만 쓴다(원칙 1)")
+        if sum(bool(x) for x in (a.cache_probe, a.image_pick, a.from_image)) > 1:
+            raise SystemExit("--cache-probe·--image-pick·--from-image는 함께 쓰지 않는다")
+        if a.image_pick:
+            seeds = [int(s) for s in a.seeds.split(",") if s.strip()] or [a.seed]
+            form_asset.pick_images(rows, a.run, pipeline=a.pipeline, seeds=seeds)
+            return
+        if a.from_image:
+            if not a.image_sha256:
+                raise SystemExit("--from-image에는 --image-sha256이 필요하다")
+            form_asset.mesh_from_image(rows, a.run, a.from_image, a.image_sha256, pipeline=a.pipeline, seed=a.seed)
+            return
         if a.cache_probe:
             form_asset.probe(rows, a.run, pipeline=a.pipeline, seed=a.seed)
             return

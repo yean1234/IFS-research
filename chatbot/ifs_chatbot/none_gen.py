@@ -21,6 +21,7 @@ selection.py는 LLM·검증기를 부르지 않음). 다른 세션이 면담 중
 """
 from __future__ import annotations
 
+import copy
 import importlib.util
 import json
 import logging
@@ -35,7 +36,7 @@ from pathlib import Path
 import httpx
 
 from .candidates import form_blocks, slot_value
-from .form_assets import NO_MESH_BASES, NO_MESH_FORM_TYPES, FormAssetStore, source_key
+from .form_assets import NO_MESH_BASES, NO_MESH_FORM_TYPES, FormAssetStore, bare_sha, file_sha256, source_key
 from .paths import CHATBOT_DIR, REPO_ROOT
 from .session_log import now_iso
 
@@ -65,6 +66,12 @@ B_PROMPT_ERROR = "prompt_error"                 # 규칙 프롬프트를 만들�
 B_UNLOAD = "llm_unload_failed"                  # (CP13-1) 면담·가드 모델을 내리지 못함(요청 실패·제한 시간 뒤 /api/ps에 남음) — 만들지 않음
 # 생성 뒤 차단: 사이드카 blockReason(person_like·gate_failed) 그대로. 같은 GLB가 이미 후보에 있으면 duplicate_of_offered
 B_DUPLICATE = "duplicate_of_offered"
+# (G75) 참고 이미지 고르기
+IMAGE_PICK_VERSION = "ifs-image-pick/0.1.0"
+IMAGES_PER_ROUND = 3
+B_ALL_IMAGES_GATED = "all_images_gated"         # 이미지 관문을 통과한 이미지가 0장 — 보여 줄 것이 없음
+B_IMAGE_MISSING = "image_missing"               # 고른 이미지 파일이 없거나 sha256이 기록과 다름(fail closed)
+DECLINED = "declined"                           # afterNone.status: 이미지 회차를 모두 [이 중에는 없어요]
 
 _prompts_mod = None
 _prompts_lock = threading.Lock()
@@ -87,17 +94,32 @@ def _load_prompts():
     return _prompts_mod
 
 
-def shape_prompt(text: str, spec: dict | None = None) -> dict:
+def shape_prompt(text: str, spec: dict | None = None, llm_items: list | None = None) -> dict:
     """규칙 프롬프트(tools/gen3d/prompts.shape_prompt). 같은 (텍스트, spec) → 같은 결과. Kiwi 분석기를 함께 쓰므로 잠그고 부른다.
-    spec을 주면 매퍼 규칙(그 spec이 형태에서 버린 낱말은 빼고 dropped에 사유)."""
+    spec을 주면 매퍼 규칙(그 spec이 형태에서 버린 낱말은 빼고 dropped에 사유).
+    (G77) llm_items = 확정 직후 검증을 통과한 LLM 인용 형태 낱말(llm_fill.shape_items_from). 규칙이 형태를 못 만들 때만 쓰인다."""
     with _prompts_lock:
+        if llm_items:
+            return _load_prompts().shape_prompt(text, mapper_spec=spec, llm_items=llm_items)
         return _load_prompts().shape_prompt(text, mapper_spec=spec)
 
 
+def image_pick_prompt(p: dict) -> dict:
+    """(G75) 규칙 프롬프트에 이미지 고르기 화풍(무채색·흰 배경·물체 하나) 고정 문구를 더한다(tools/gen3d/prompts.image_pick_prompt)."""
+    return _load_prompts().image_pick_prompt(p)
+
+
 def prompt_record(p: dict) -> dict:
-    """기록용 프롬프트: 낱말별 원문 근거(ko·charSpan = 정규화한 확정 텍스트 기준)와 사전·규칙 판."""
+    """기록용 프롬프트: 낱말별 원문 근거(ko·charSpan = 정규화한 확정 텍스트 기준)와 사전·규칙 판.
+    (G75) 이미지 고르기 화풍을 더한 프롬프트면 imageStyle·imageStyleVersion을 덧붙인다(G73 기록에는 키가 없다)."""
+    extra = {k: p[k] for k in ("imageStyle", "imageStyleVersion", "shapeSource") if k in p}
+    return {**_prompt_record(p), **extra}
+
+
+def _prompt_record(p: dict) -> dict:
     return {"text": p.get("text") or None, "negativeText": p.get("negativeText"),
-            "tokens": [{k: t.get(k) for k in ("en", "ko", "charSpan", "slot", "lexiconKey")} for t in p.get("tokens") or []],
+            "tokens": [{**{k: t.get(k) for k in ("en", "ko", "charSpan", "slot", "lexiconKey")},
+                        **({"provenance": t["provenance"]} if "provenance" in t else {})} for t in p.get("tokens") or []],
             "dropped": list(p.get("dropped") or []),
             "status": p.get("status"), "blockReason": p.get("blockReason"), "blockDetail": p.get("blockDetail"),
             "lexiconVersion": p.get("lexiconVersion"), "builderVersion": p.get("builderVersion"),
@@ -116,10 +138,17 @@ class NoneGenJob:
     """생성 한 번. cancel()은 프로세스를 끈다(참여자가 기다리지 않고 넘어감·철회·서버 종료)."""
 
     def __init__(self, session_id: str, text: str, key: str, prompt_text: str, seed: int = 0, attempt: int = 0,
-                 spec: dict | None = None):
+                 spec: dict | None = None, kind: str = "full", seeds: list[int] | None = None,
+                 image: tuple[Path, str] | None = None, timeout_s: float | None = None, llm_items: list | None = None):
         self.session_id, self.text, self.key, self.prompt_text = session_id, text, key, prompt_text
+        self.llm_items = llm_items or None     # (G77) 생성기 입력 줄의 llmShapeItems(있을 때만 키를 적는다)
         self.spec = spec                    # 세션 매퍼 spec(있으면 생성기도 매퍼 규칙으로 프롬프트를 다시 만든다)
         self.seed, self.attempt = int(seed), int(attempt)
+        # (G75) kind: full(G73 한 번에 이미지 → 형태) | image(이미지 여러 장 + 이미지 관문만) | mesh(고른 이미지로 형태만)
+        self.kind = kind
+        self.seeds = [int(s) for s in seeds] if seeds else [self.seed]
+        self.image = image                  # mesh: (이미지 경로, sha256)
+        self.timeout_s = timeout_s
         self.cancel_ev = threading.Event()
         self.cancel_reason: str | None = None
         self.proc: subprocess.Popen | None = None
@@ -198,6 +227,11 @@ class NoneGenService:
         self.pipeline, self.seed = g.on_none_pipeline, int(g.on_none_seed)
         # 다시 만들기: 만든 후보도 맞지 않다고 하면 같은 프롬프트로 seed = 기준 seed + n(n = 1, 2, …)까지 이 횟수만큼 더
         self.max_regenerations = max(0, int(g.on_none_max_regenerations))
+        # (G75) 참고 이미지 고르기. 켜면 max_regenerations 대신 이미지 회차(image_rounds)로 다시 만든다
+        self.image_pick = bool(getattr(g, "on_none_image_pick", False))
+        self.image_rounds = max(1, int(getattr(g, "on_none_image_rounds", 2)))
+        self.image_timeout_s = float(getattr(g, "on_none_image_timeout_s", 180.0))
+        self.mesh_timeout_s = float(getattr(g, "on_none_mesh_timeout_s", 180.0))
         self.host = cfg.llm.host.rstrip("/")
         self.lock = threading.Lock()
         self.active: NoneGenJob | None = None      # 내림 ~ 재적재 완료까지 활성(CP13-3)
@@ -219,10 +253,21 @@ class NoneGenService:
         return True, None
 
     def setting(self) -> dict:
-        """기록용 설정(로컬 절대 경로는 넣지 않음 — 파일 이름만)."""
-        return {"version": NONE_GEN_VERSION, "timeoutS": self.timeout_s, "pipeline": self.pipeline, "seed": self.seed,
-                "maxRegenerations": self.max_regenerations, "seedRule": "seed = on_none_seed + n (n = 0 첫 생성, 1… 다시 만들기)",
-                "script": self.script.name, "python": self.python.name, "unloadModels": [m for _, m, _ in self._ollama_models()]}
+        """기록용 설정(로컬 절대 경로는 넣지 않음 — 파일 이름만). (G75) 이미지 고르기를 켰을 때만 imagePick 키를 더한다."""
+        out = {"version": NONE_GEN_VERSION, "timeoutS": self.timeout_s, "pipeline": self.pipeline, "seed": self.seed,
+               "maxRegenerations": self.max_regenerations, "seedRule": "seed = on_none_seed + n (n = 0 첫 생성, 1… 다시 만들기)",
+               "script": self.script.name, "python": self.python.name, "unloadModels": [m for _, m, _ in self._ollama_models()]}
+        if self.image_pick:
+            out["imagePick"] = {"version": IMAGE_PICK_VERSION, "rounds": self.image_rounds, "imagesPerRound": IMAGES_PER_ROUND,
+                                "imageTimeoutS": self.image_timeout_s, "meshTimeoutS": self.mesh_timeout_s,
+                                "seedRule": f"회차 r(0부터)의 이미지 seed = on_none_seed + {IMAGES_PER_ROUND}r + k "
+                                            f"(k = 0…{IMAGES_PER_ROUND - 1}), 형태 seed = 고른 이미지의 seed",
+                                "maxRegenerationsUsed": False}
+        return out
+
+    def seeds_for_round(self, r: int) -> list[int]:
+        """(G75) 회차 r의 이미지 seed: 기준 + 3r, + 1, + 2."""
+        return [self.seed + IMAGES_PER_ROUND * int(r) + k for k in range(IMAGES_PER_ROUND)]
 
     def info(self) -> dict:
         ok, why = self.available()
@@ -241,7 +286,8 @@ class NoneGenService:
             pass
 
     # ── 생성 전 판정(모델 호출 없음) ─────────────────────────────────────────
-    def precheck(self, spec: dict, confirmed_text: str | None, preview_mode: str, other_interviews: list[str]) -> dict:
+    def precheck(self, spec: dict, confirmed_text: str | None, preview_mode: str, other_interviews: list[str],
+                 llm_items: list | None = None) -> dict:
         """→ {prompt(기록용 | None), blockReason, blockDetail}. blockReason이 None이면 만들 수 있다. 같은 입력 → 같은 판정."""
         out = {"prompt": None, "blockReason": None, "blockDetail": None}
 
@@ -253,7 +299,9 @@ class NoneGenService:
         if not isinstance(confirmed_text, str) or not confirmed_text.strip():
             return block(B_NO_TEXT)
         try:
-            p = shape_prompt(confirmed_text, spec)          # 세션 매퍼(v2) 판단을 따름(G73 후속)
+            p = shape_prompt(confirmed_text, spec, llm_items)   # 세션 매퍼(v2) 판단을 따름(G73 후속). (G77) LLM 형태 낱말은 빈자리만
+            if self.image_pick:
+                p = image_pick_prompt(p)                     # (G75) 무채색 화풍 고정 문구(내용 토큰은 그대로)
         except (Exception, SystemExit) as exc:  # noqa: BLE001 — 프롬프트를 못 만들면 만들지 않는다(fail closed)
             return block(B_PROMPT_ERROR, f"{type(exc).__name__}: {exc}"[:300])
         out["prompt"] = prompt_record(p)
@@ -417,10 +465,14 @@ class NoneGenService:
         return self.seed + int(attempt)
 
     def start(self, session_id: str, text: str, key: str, prompt_text: str, on_done, attempt: int = 0,
-              spec: dict | None = None, other_interviews=None) -> "NoneGenJob | str":
+              spec: dict | None = None, other_interviews=None, kind: str = "full", seeds: list[int] | None = None,
+              image: tuple[Path, str] | None = None, seed: int | None = None,
+              llm_items: list | None = None) -> "NoneGenJob | str":
         """백그라운드로 시작 → NoneGenJob, 못 하면 사유 문자열(B_BUSY·B_INTERVIEW). on_done(result)은 생성 스레드에서 한 번.
         (CP13-2) 면담 중 세션(other_interviews — 목록 또는 호출 가능)과 들어가 있는 면담 요청(inflight)을 같은 잠금 안에서 보고
-        예약한다. (CP13-3) 앞 작업이 모델을 다시 올리는 중(reloading)이면 예약하고, 새 작업은 그 재적재가 끝난 뒤에 시작한다."""
+        예약한다. (CP13-3) 앞 작업이 모델을 다시 올리는 중(reloading)이면 예약하고, 새 작업은 그 재적재가 끝난 뒤에 시작한다.
+        (G75) kind = image(seeds의 이미지 + 이미지 관문) | mesh(image = (경로, sha256), seed = 고른 이미지의 seed).
+        두 단계도 각각 이 작업 하나다: 모델 내림 → 생성기 → 모델 다시 올림(참여자가 고르는 동안 면담·가드 모델은 올라가 있다)."""
         with self.lock:
             prev = self.active
             if self._closed or (prev is not None and prev.phase != "reloading"):
@@ -428,7 +480,13 @@ class NoneGenService:
             others = list(other_interviews() if callable(other_interviews) else (other_interviews or []))
             if others or self.inflight:
                 return B_INTERVIEW
-            job = NoneGenJob(session_id, text, key, prompt_text, self.seed_for(attempt), attempt, spec)
+            if kind == "full":
+                job = NoneGenJob(session_id, text, key, prompt_text, self.seed_for(attempt), attempt, spec, llm_items=llm_items)
+            else:
+                job = NoneGenJob(session_id, text, key, prompt_text, seed if seed is not None else (seeds or [self.seed])[0],
+                                 attempt, spec, kind=kind, seeds=seeds, image=image,
+                                 timeout_s=self.image_timeout_s if kind == "image" else self.mesh_timeout_s,
+                                 llm_items=llm_items)
             self.active = job
 
         def work():
@@ -436,7 +494,7 @@ class NoneGenService:
                 prev.released.wait(600)                 # 앞 작업의 재적재가 끝날 때까지
             job.phase = "running"
             try:
-                job.result = self._run(job)
+                job.result = self._run(job) if job.kind == "full" else self._run_phase(job)
             except Exception as exc:  # noqa: BLE001 — 어떤 예외도 세션을 멈추게 하지 않는다(실패로 기록)
                 job.result = {"status": FAILED, "error": f"{type(exc).__name__}: {exc}"[:300], "endedAt": now_iso()}
             job.phase = "reloading"
@@ -484,6 +542,8 @@ class NoneGenService:
         row = {"id": INPUT_ID, "text": job.text, "kind": "session_after_none", "source": None}
         if job.spec is not None:
             row.update(promptRule="mapper", mapperSpec=job.spec)
+            if job.llm_items:
+                row["llmShapeItems"] = job.llm_items
         (inputs / "sentences.json").write_text(json.dumps([row], ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         cmd = [str(self.python), str(self.script), "--run", run, "--pipeline", self.pipeline, "--seed", str(job.seed)]
         env = {**os.environ, "GEN3D_OUT": str(self.root), "PYTHONIOENCODING": "utf-8"}
@@ -549,6 +609,137 @@ class NoneGenService:
             return finish(FAILED, error=(side.get("error") or "failed")[:300])
         why = "; ".join(f"{r['reason']}" for r in lk["rejected"]) or "no_sidecar"
         return finish(FAILED, error=f"exit {code}: {why}; {self._log_tail(run_dir)}"[:300])
+
+    # ── (G75) 이미지 단계·형태 단계 ─────────────────────────────────────────────
+    def _run_phase(self, job: NoneGenJob) -> dict:
+        """image: --image-pick --seeds → <run>/image-pick.json(이미지마다 sha256·관문). mesh: --from-image → form-asset 사이드카.
+        캐시 미리 보기는 하지 않는다(늘 모델을 내림). 대기 한도는 단계마다(job.timeout_s, 모델 내림 포함)."""
+        t0 = time.monotonic()
+        stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+        tag = "img" if job.kind == "image" else "mesh"
+        run = f"none-{job.session_id}-{stamp}-r{job.attempt}-{tag}"
+        res = {"status": None, "kind": job.kind, "run": run, "seed": job.seed, "seeds": list(job.seeds), "attempt": job.attempt,
+               "startedAt": now_iso(), "endedAt": None, "seconds": None, "exitCode": None, "error": None,
+               "blockReason": None, "blockDetail": None, "asset": None, "images": None, "llmUnload": None,
+               "cacheProbe": None, "timing": {}}
+        limit = float(job.timeout_s if job.timeout_s is not None else self.timeout_s)
+
+        def finish(status, **kw):
+            res.update(status=status, endedAt=now_iso(), seconds=round(time.monotonic() - t0, 2), **kw)
+            return res
+
+        run_dir = self.root / run
+        inputs = run_dir / "inputs"
+        inputs.mkdir(parents=True, exist_ok=True)
+        row = {"id": INPUT_ID, "text": job.text, "kind": "session_after_none", "source": None,
+               "imageStyle": _load_prompts().IMAGE_PICK_STYLE_ID}
+        if job.spec is not None:
+            row.update(promptRule="mapper", mapperSpec=job.spec)
+            if job.llm_items:
+                row["llmShapeItems"] = job.llm_items
+        (inputs / "sentences.json").write_text(json.dumps([row], ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        cmd = [str(self.python), str(self.script), "--run", run, "--pipeline", self.pipeline, "--seed", str(job.seed)]
+        if job.kind == "image":
+            cmd += ["--image-pick", "--seeds", ",".join(str(s) for s in job.seeds)]
+        else:
+            img, sha = job.image
+            if not Path(img).is_file() or file_sha256(Path(img)) != sha:
+                return finish(BLOCKED, blockReason=B_IMAGE_MISSING, blockDetail=Path(img).name)
+            cmd += ["--from-image", str(img), "--image-sha256", sha]
+        env = {**os.environ, "GEN3D_OUT": str(self.root), "PYTHONIOENCODING": "utf-8"}
+        if job.cancel_ev.is_set():
+            return finish(CANCELLED, error=job.cancel_reason)
+        res["llmUnload"] = self.unload_models()
+        res["timing"]["unloadS"] = round(time.monotonic() - t0, 2)
+        if job.cancel_ev.is_set():
+            return finish(CANCELLED, error=job.cancel_reason)
+        u = res["llmUnload"]
+        if u.get("models") and not u.get("ok"):            # (CP13-1) 남은 모델과 GPU를 나눠 쓰지 않는다
+            return finish(BLOCKED, blockReason=B_UNLOAD, blockDetail=u.get("problem"))
+        code, stop = self._spawn_wait(cmd, env, run_dir, job, t0, limit)
+        res["exitCode"] = code
+        if stop == CANCELLED:
+            return finish(CANCELLED, error=job.cancel_reason)
+        if stop == TIMEOUT:
+            return finish(TIMEOUT, error=f"{limit:g}초를 넘김")
+        res["timing"]["generatorS"] = round(time.monotonic() - t0 - res["timing"]["unloadS"], 2)
+        if job.kind == "image":
+            return self._image_result(run_dir, job, code, finish)
+        store = FormAssetStore(run_dir, max_candidates=1)
+        lk = store.lookup(job.key)
+        if lk["offered"]:
+            a = lk["offered"][0]
+            if a.get("promptText") != job.prompt_text:
+                return finish(FAILED, error="prompt_mismatch: 생성기 프롬프트가 서버의 규칙 프롬프트와 다름")
+            return finish(OK, asset=a)
+        side = self._sidecar(run_dir)
+        if side is not None and side.get("status") == "blocked":
+            return finish(BLOCKED, blockReason=side.get("blockReason") or "blocked", blockDetail=side.get("blockDetail"))
+        if side is not None and side.get("status") == "failed":
+            return finish(FAILED, error=(side.get("error") or "failed")[:300])
+        why = "; ".join(f"{r['reason']}" for r in lk["rejected"]) or "no_sidecar"
+        return finish(FAILED, error=f"exit {code}: {why}; {self._log_tail(run_dir)}"[:300])
+
+    def _image_result(self, run_dir: Path, job: NoneGenJob, code, finish) -> dict:
+        """image-pick.json → 이미지 목록(seed 순서). 파일 sha256·프롬프트가 다르거나 관문을 못 돌린 이미지는 보이지 않는다(passed false)."""
+        pf = run_dir / "image-pick.json"
+        try:
+            d = json.loads(pf.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            return finish(FAILED, error=f"exit {code}: no image-pick.json; {self._log_tail(run_dir)}"[:300])
+        if d.get("status") == "blocked":
+            return finish(BLOCKED, blockReason=d.get("blockReason") or "blocked", blockDetail=d.get("blockDetail"))
+        if d.get("status") != "ok":
+            return finish(FAILED, error=(d.get("error") or f"exit {code}: status {d.get('status')}")[:300])
+        if (d.get("prompt") or {}).get("text") != job.prompt_text or bare_sha(d.get("sourceTextSha256")) != bare_sha(job.key):
+            return finish(FAILED, error="prompt_mismatch: 생성기 프롬프트가 서버의 규칙 프롬프트와 다름")
+        out = []
+        for im in sorted(d.get("images") or [], key=lambda x: int(x.get("seed", 0))):
+            rel = str(im.get("file") or "")
+            path = (run_dir / rel).resolve()
+            item = {"seed": int(im.get("seed", 0)), "file": rel, "sha256": im.get("sha256"), "seconds": im.get("seconds"),
+                    "gate": copy.deepcopy(im.get("gate")) if isinstance(im.get("gate"), dict) else None,
+                    "problem": None}
+            if not rel or os.path.isabs(rel) or ".." in Path(rel).parts or run_dir.resolve() not in path.parents:
+                # (CP14-2) 검증에 실패한 경로 문자열은 기록·로그에 남기지 않는다(로컬 절대 경로가 참여자 기록에 들어가지 않게)
+                item["problem"] = "file_path_invalid"
+                item["file"] = None
+                path = None
+            elif not path.is_file():
+                item["problem"] = "file_missing"
+            elif file_sha256(path) != im.get("sha256"):
+                item["problem"] = "sha256_mismatch"
+            elif item["gate"] is None or item["gate"].get("passed") is not True:
+                item["problem"] = "gate_not_passed"
+            item["passed"] = item["problem"] is None
+            item["_path"] = path
+            out.append(item)
+        return finish(OK, images=out, models=copy.deepcopy(d.get("models")), generatorTiming=d.get("timing"))
+
+    def _spawn_wait(self, cmd, env, run_dir: Path, job: NoneGenJob, t0: float, limit: float):
+        """생성기 프로세스 하나를 띄우고 끝·취소·시간 초과까지 기다린다 → (exit code | None, None | CANCELLED | TIMEOUT)."""
+        logf = open(run_dir / "generator.log", "wb")
+        try:
+            flags = getattr(subprocess, "CREATE_NO_WINDOW", 0) if os.name == "nt" else 0
+            with job.lock:
+                if job.cancel_ev.is_set():
+                    return None, CANCELLED
+                job.proc = subprocess.Popen(cmd, cwd=str(REPO_ROOT), env=env, stdout=logf, stderr=subprocess.STDOUT,
+                                            stdin=subprocess.DEVNULL, creationflags=flags)
+            while True:
+                try:
+                    code = job.proc.wait(timeout=0.25)
+                    # 취소의 백그라운드 끄기(cancel → _kill)가 먼저 끝냈으면 정상 종료가 아니라 취소다
+                    return code, (CANCELLED if job.cancel_ev.is_set() else None)
+                except subprocess.TimeoutExpired:
+                    pass
+                if job.cancel_ev.is_set() or time.monotonic() - t0 > limit:
+                    stop = CANCELLED if job.cancel_ev.is_set() else TIMEOUT
+                    _kill(job.proc)
+                    job.proc.wait(timeout=30)
+                    return job.proc.returncode, stop
+        finally:
+            logf.close()
 
     PROBE_TIMEOUT_S = 60.0
 

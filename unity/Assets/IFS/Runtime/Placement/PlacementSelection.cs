@@ -1,6 +1,9 @@
 // 배치 러너가 읽는 선택 파일(selection.json, 형식 ifs-selection/0.1·0.2·0.3 — 챗봇 쪽 후보 선택·조절 단계가 쓴다. 결정 G15·G23, D8, G31–G34, G62).
 //   0.3(G62): form.asset(고른 생성 형태 메시 — FormAssetRef, 러너가 GLB를 읽어 절차 메시 대신 씀), 출처 값 generated_chosen,
 //             defaultFormSource·selection.acceptedDefault(기본 후보·그대로 확정했는지 — manifest selection에 옮김). skipped·colorChanged 필수는 0.2와 같다.
+//   0.4(G75): 0.3에 챗봇 쪽 기록 필드만 더한 판(참고 그림 고르기 — generation.afterNone.imagePick 등, 러너는 읽지 않음). 러너가 읽는 필드는 0.3과 같아 0.3 규칙으로 읽는다.
+//   0.5(G77): 0.4에 챗봇 쪽 기록 필드(llmFill 등, 러너는 읽지 않음)와 출처 값 llm_quoted(면담 LLM이 참여자 원문 인용과 함께 채운 처음 값을
+//             참여자가 그대로 둠)를 더한 판. 0.3 규칙으로 읽고 sources는 SourceValues05를 받는다. 값은 finalOverrides에 그대로 있다.
 // 러너가 읽는 필드는 다음으로 고정한다. 그 밖의 필드는 읽지 않는다(무시).
 //   formatVersion      "ifs-selection/0.1" 또는 "ifs-selection/0.2"(KnownFormatVersions). 접두어 "ifs-selection/"이 아니거나 모르는 버전이면
 //                      경고(시작은 함). 모르는 버전은 0.2 규칙으로 읽는다.
@@ -43,8 +46,11 @@ namespace IFS.SceneSpec.Placement
         public const string FormatVersion01 = "ifs-selection/0.1";
         public const string FormatVersion02 = "ifs-selection/0.2";
         public const string FormatVersion03 = "ifs-selection/0.3";
-        /// <summary>러너가 아는 선택 파일 버전(0.1: G27까지, 0.2: G31–G34, 0.3: G62 생성 형태 메시). 모두 읽는다.</summary>
-        public static readonly string[] KnownFormatVersions = { "ifs-selection/0.1", "ifs-selection/0.2", "ifs-selection/0.3" };
+        public const string FormatVersion04 = "ifs-selection/0.4";
+        public const string FormatVersion05 = "ifs-selection/0.5";
+        /// <summary>러너가 아는 선택 파일 버전(0.1: G27까지, 0.2: G31–G34, 0.3: G62 생성 형태 메시, 0.4: G75 — 러너가 읽는 필드는 0.3과 같음,
+        /// 0.5: G77 — 0.3 규칙 + 출처 값 llm_quoted). 모두 읽는다.</summary>
+        public static readonly string[] KnownFormatVersions = { "ifs-selection/0.1", "ifs-selection/0.2", "ifs-selection/0.3", "ifs-selection/0.4", "ifs-selection/0.5" };
         /// <summary>선택 파일 덮어쓰기에 넣을 수 없는 키(위치·거리는 실험 조건 — G10). 러너가 시작 자리를 실험 설정으로 정한다.</summary>
         public static readonly string[] ForbiddenOverrideKeys = { "layout.distance", "layout.verticalOffset" };
         /// <summary>specSha256을 저장된 spec 파일 바이트로 쟀다는 표시(spec.sha256Basis). 러너는 이것만 받는다(G26).</summary>
@@ -67,6 +73,9 @@ namespace IFS.SceneSpec.Placement
         /// <summary>0.3 sources의 출처 값(selection.v0.3.json $defs.source): 0.2의 여섯 가지 + generated_chosen(생성 형태 후보를 고름, G62).
         /// 0.1·0.2 파일에 generated_chosen이 있으면 거부한다.</summary>
         public static readonly string[] SourceValues03 = { "said", "chosen", "edited", "default", "said_unrendered_chosen", "said_unrendered_default", "generated_chosen" };
+        /// <summary>0.5 sources의 출처 값(selection.v0.5.json $defs.source): 0.3의 일곱 가지 + llm_quoted(면담 LLM이 참여자 원문 인용과 함께 채운
+        /// 처음 값을 참여자가 바꾸지 않음, G77). 0.1–0.4 파일에 llm_quoted가 있으면 거부한다.</summary>
+        public static readonly string[] SourceValues05 = { "said", "chosen", "edited", "default", "said_unrendered_chosen", "said_unrendered_default", "generated_chosen", "llm_quoted" };
         public const string GeneratedChosen = "generated_chosen";
 
         /// <summary>파일 이름만(경로는 기록에 남기지 않는다).</summary>
@@ -149,7 +158,8 @@ namespace IFS.SceneSpec.Placement
             // 모르는 버전: 경고만 하고 새 필드는 있으면 읽음(없어도 거부하지 않음), 출처는 여섯 가지까지 받음.
             bool v01 = s.FormatVersion == FormatVersion01;
             bool v02 = s.FormatVersion == FormatVersion02;
-            bool v03 = s.FormatVersion == FormatVersion03;
+            bool v05 = s.FormatVersion == FormatVersion05;                                          // 0.5(G77): 0.3 규칙 + llm_quoted
+            bool v03 = s.FormatVersion == FormatVersion03 || s.FormatVersion == FormatVersion04 || v05;   // 0.4(G75)는 러너가 읽는 필드가 0.3과 같다
 
             // specSha256의 기준(spec.sha256Basis)과 챗봇이 적은 runnerReady(G26). 기준이 파일이 아니면 해시를 비교하지 않고 거부한다.
             if (o["spec"] is JObject specInfo && specInfo.TryGetValue("sha256Basis", out var basis))
@@ -239,7 +249,7 @@ namespace IFS.SceneSpec.Placement
             {
                 int before = errors.Count;
                 // 0.1은 네 값, 0.2는 여섯 값, 0.3·모르는 버전은 generated_chosen까지
-                var allowed = v01 ? SourceValues01 : v02 ? SourceValues : SourceValues03;
+                var allowed = v01 ? SourceValues01 : v02 ? SourceValues : v05 ? SourceValues05 : SourceValues03;
                 foreach (var p in srcObj.Properties())
                 {
                     if (Array.IndexOf(SlotNames, p.Name) < 0)
