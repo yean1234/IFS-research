@@ -65,6 +65,17 @@ def test_experiment_runtime_starts_with_g82_on_and_g77_shape_slot_off(tmp_path):
     ("돌덩이들이 있어요.", "돌덩이들이", "돌덩이들", "이라고"),
     ("판때기 같은 게 있어요.", "판때기 같은 게", "판때기", "라고"),
     ("둥근 조약돌이에요.", "둥근 조약돌이에요", "조약돌", "이라고"),
+    # CP20: 인용 안 명사가 둘이면 마지막 덩어리(명사구의 머리). 수사 '하나'는 덩어리를 시작하지 않음
+    ("머릿속에 톱니바퀴가 있어요.", "머릿속에 톱니바퀴가", "톱니바퀴", "라고"),
+    ("유리 구슬이 있어요.", "유리 구슬이", "구슬", "이라고"),
+    ("돌멩이랑 조약돌이 있어요.", "돌멩이랑 조약돌이", "조약돌", "이라고"),
+    ("조약돌 하나가 있어요.", "조약돌 하나가", "조약돌", "이라고"),
+    ("큐브 3개예요.", "큐브 3개예요", "큐브", "라고"),
+    # CP20: 숫자·영문·기호로 끝나는 낱말의 조사(숫자는 읽는 소리의 받침, 영문은 판단할 수 없어 '라고')
+    ("큐브3이에요.", "큐브3이에요", "큐브3", "이라고"),
+    ("A4용지예요.", "A4용지예요", "A4용지", "라고"),
+    ("USB예요.", "USB예요", "USB", "라고"),
+    ("별★이에요.", "별★이에요", "별", "이라고"),
 ])
 def test_basis_display_noun_part_original_chars(text, quote, shown, particle):
     norm = normalize_confirmed(text)
@@ -82,12 +93,46 @@ def test_basis_display_noun_part_original_chars(text, quote, shown, particle):
 def test_basis_display_falls_back_to_full_quote():
     norm = normalize_confirmed("조약돌이 하나 있어요.")
     old = ls.basis_display(norm, "조약돌이", [0, 4], T12)                    # 0.12 문구: 줄이지 않음(예전 그대로)
-    assert old["shownText"] == "조약돌이" and old["fallback"] == "template_without_particle"
+    assert old["shownText"] == "조약돌이" and old["fallback"] == "template_without_particle" and old["displayable"]
     assert old["text"] == "'조약돌이'라고 하신 말을 바탕으로 모양을 만들어 볼게요."
-    bad = ls.basis_display(norm, "조약돌이", [1, 5], T13)                    # 구간이 인용과 다르면 줄이지 않음
-    assert bad["shownText"] == "조약돌이" and bad["fallback"] == "span_mismatch"
     none = ls.basis_display(normalize_confirmed("하나 있어요."), "있어요", [3, 6], T13)
-    assert none["shownText"] == "있어요" and none["fallback"] == "no_noun"
+    assert none["shownText"] == "있어요" and none["fallback"] == "no_noun" and none["displayable"]
+    assert none["shownSpan"] == [3, 6]
+
+
+@pytest.mark.parametrize("norm,quote,span", [
+    ("조약돌", "없는 물체", [0, 3]),                        # CP20 재현: 인용 글자가 원문에 없음
+    ("조약돌이 하나 있어요.", "조약돌이", [1, 5]),           # 구간이 인용과 어긋남
+    ("조약돌이 하나 있어요.", "조약돌이", None),
+    ("조약돌이 하나 있어요.", "조약돌이", [0, 99]),
+    ("조약돌이 하나 있어요.", "조약돌이", [True, 4]),
+])
+@pytest.mark.parametrize("template", [T13, T12])
+def test_basis_display_span_mismatch_shows_nothing(norm, quote, span, template):
+    # CP20: 어느 문구 분기에서도 원문에 없는 글자를 화면에 내지 않는다 — 보이지 않음(displayable false)
+    r = ls.basis_display(norm, quote, span, template)
+    assert r["fallback"] == "span_mismatch" and r["displayable"] is False
+    assert r["shownText"] is None and r["shownSpan"] is None and r["text"] is None and r["llmQuote"] == quote
+
+
+def test_span_mismatch_item_not_adopted_goes_existing_path(tmp_path, fake, monkeypatch):
+    # CP20: 검증기를 지났다고 기록된 항목이라도 근거 줄을 원문 그대로 보일 수 없으면 채택하지 않음 → LLM 없는 지금 경로
+    from ifs_chatbot import llm_shape as lsm
+    real = lsm.run
+
+    def bad_run(session, spec, norm):
+        rec = real(session, spec, norm)
+        rec["adopted"] = {"quote": "없는 물체", "charSpan": [0, 3], "en": "pebble", "origin": lsm.ORIGIN}
+        return rec
+    monkeypatch.setattr(lsm, "run", bad_run)
+    rt, s, f, llm = start(tmp_path, T_PEBBLE, sid="SYN-G83-SPAN")
+    v = none_until_settled(f)
+    assert v["stage"] == "adjusting" and "llmShapeBasis" not in v and calls(tmp_path) == []
+    d = valid5(f)
+    sl, an = d["generation"]["shapeLlm"], d["generation"]["afterNone"]
+    assert sl["route"] == "none" and sl["routeReason"] == "basis_span_mismatch" and sl["exposed"] is False
+    assert sl["basisShown"]["displayable"] is False and sl["basisShown"]["shownText"] is None
+    assert an["shapeLlmUsed"] is False and an["blockReason"] == "no_shape_stated" and f._shape_items() == []
 
 
 def test_selection_records_llm_quote_and_shown_span(tmp_path, fake):

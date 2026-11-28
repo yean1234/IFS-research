@@ -20,7 +20,7 @@
       "date": "2026-11-28",
       "status": "draft",
       "source": "G83(연구 책임자 결정 2026-11-28 — G82를 실험 설정에서 켬). 실제 흐름 점검(docs/validation/run-g82-end-to-end '찾은 문제' 5)에서 인용에 조사·서술격 조사가 붙어 화면 문장이 어색했던 것을 고침. 메인 세션 지시, 구현 하위 에이전트가 고침. IRB·연구팀 검토 전",
-      "summary": "llm_shape_basis의 글을 「'{quote}'라고 하신 말을…」에서 「'{quote}'{rago} 하신 말을…」로 바꿈. {quote}는 이제 LLM 인용 구간 안의 첫 명사 덩어리(확정 텍스트 글자 그대로의 부분 구간, 예: 인용 '판때기예요' → '판때기')이고, {rago}는 서버가 그 낱말 받침에 맞춰 '이라고'/'라고'를 넣는다. 주석만 고침(글은 그대로): llm_shape_basis_wrong_button(누른 뒤 none_gen_unavailable이 실제로 보임), none_gen_unavailable(그 경우를 적음). 다른 문구는 그대로. 이 판은 [gen3d] on_none_llm_shape를 켠 실험 설정(experiment.toml)이 쓴다.",
+      "summary": "llm_shape_basis의 글을 「'{quote}'라고 하신 말을…」에서 「'{quote}'{rago} 하신 말을…」로 바꿈. {quote}는 이제 LLM 인용 구간 안의 마지막 명사 덩어리(확정 텍스트 글자 그대로의 부분 구간, 예: 인용 '판때기예요' → '판때기')이고, {rago}는 서버가 그 낱말 받침에 맞춰 '이라고'/'라고'를 넣는다. 주석만 고침(글은 그대로): llm_shape_basis_wrong_button(누른 뒤 none_gen_unavailable이 실제로 보임), none_gen_unavailable(그 경우를 적음). 다른 문구는 그대로. 이 판은 [gen3d] on_none_llm_shape를 켠 실험 설정(experiment.toml)이 쓴다.",
       "reason": "원문에 없는 글자를 만들지 않으면서 화면 문장을 자연스럽게 한다. 줄인 낱말도 참여자가 쓴 글자 그대로다(원칙 3). 기록에는 LLM 인용과 화면에 보인 구간을 둘 다 남긴다(generation.shapeLlm.basisShown). 원칙 7에 따라 판을 올림(0.12.0 → 0.13.0)."
     },
     {
@@ -250,7 +250,7 @@
       "text": "'{quote}'{rago} 하신 말을 바탕으로 모양을 만들어 볼게요.",
       "status": "draft",
       "source": "docs/decisions.md G82(연구 책임자 결정, 2026-11-28). 메인 세션 초안 「'{낱말}'이라고 하신 말을 바탕으로 모양을 만들어 볼게요.」에서 직접 인용 조사를 '라고'로 고침(따옴표 인용 뒤에는 받침과 상관없이 '라고', G77 llm_fill_note와 같은 꼴). 자작 초안, IRB·연구팀 검토 전. 0.13.0(G83): {quote}를 인용 구간 안의 명사 부분으로 줄이고 조사 자리 {rago}('이라고'/'라고', 받침에 따라)를 둠 — 메인 세션 지시",
-      "note": "그림 고르기 화면(image_pick_intro 위). LLM 형태 이름으로 그린 회차에만 보인다(규칙 경로 그림에는 없음). {quote}에는 검증기를 통과한 인용 구간 안의 첫 명사 덩어리를 확정 텍스트 글자 그대로 넣는다(서버가 넣음, chatbot/ifs_chatbot/llm_shape.py basis_display — Kiwi 품사로 자르고, 명사를 못 찾거나 원문 글자와 형태가 다르면 인용 전체). {rago}에는 그 낱말 마지막 글자의 받침이 있으면 '이라고', 없으면 '라고'(판단할 수 없으면 '라고'). 원문에 없는 글자를 만들지 않는다. 영어 이름은 넣지 않는다. 기록 generation.shapeLlm.basisShown에 LLM 인용과 보인 구간이 함께 남는다."
+      "note": "그림 고르기 화면(image_pick_intro 위). LLM 형태 이름으로 그린 회차에만 보인다(규칙 경로 그림에는 없음). {quote}에는 검증기를 통과한 인용 구간 안의 마지막 명사 덩어리(명사구의 머리, CP20 — 처음 구현은 첫 덩어리)를 확정 텍스트 글자 그대로 넣는다. 인용 글자가 확정 텍스트의 그 구간과 다르면 이 줄을 보이지 않고 그 LLM 항목을 쓰지 않는다(서버가 넣음, chatbot/ifs_chatbot/llm_shape.py basis_display — Kiwi 품사로 자르고, 명사를 못 찾거나 원문 글자와 형태가 다르면 인용 전체). {rago}에는 그 낱말 마지막 글자의 받침이 있으면 '이라고', 없으면 '라고'(판단할 수 없으면 '라고'). 원문에 없는 글자를 만들지 않는다. 영어 이름은 넣지 않는다. 기록 generation.shapeLlm.basisShown에 LLM 인용과 보인 구간이 함께 남는다."
     },
     "llm_shape_basis_wrong_button": {
       "text": "그 말이 아니에요",

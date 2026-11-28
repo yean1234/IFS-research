@@ -320,8 +320,8 @@ class SelectionFlow:
     def _shape_items(self) -> list:
         """(G82) 그림 프롬프트에 넣을 LLM 형태 이름. 채택 없음·판정이 선 세션·[그 말이 아니에요]를 누른 뒤면 빈 목록."""
         r = self.shape_llm
-        if not r or r.get("rejected") or llm_fill_mod.session_flag(self.s):
-            return []
+        if not r or r.get("route") != "llm" or r.get("rejected") or llm_fill_mod.session_flag(self.s):
+            return []                                    # (CP20) route가 llm이 아니면(근거 줄을 보일 수 없음 등) 쓰지 않음
         return llm_shape_mod.shape_items_from(r.get("call"))
 
     @property
@@ -1091,6 +1091,15 @@ class SelectionFlow:
                 return
             route = "llm" if call.get("status") == "ok" and call.get("adopted") else "none"
             self.shape_llm = self._shape_llm_record(route, call.get("skipReason") or call.get("status"), call)
+            if route == "llm":
+                # (CP20) 근거 줄을 원문 글자 그대로 보일 수 없으면(인용·구간 불일치) 채택하지 않은 것으로 다룬다 → 지금 경로(LLM 없음)
+                ad = call["adopted"]
+                bs = llm_shape_mod.basis_display(self._confirmed_norm() or "", ad.get("quote"), ad.get("charSpan"),
+                                                 self.protocol.text("llm_shape_basis"))
+                self.shape_llm["basisShown"] = bs
+                if not bs["displayable"]:
+                    route = "none"
+                    self.shape_llm.update(route=route, routeReason="basis_" + (bs["fallback"] or "not_displayable"))
             self.data["generation"]["shapeLlm"] = self.shape_llm
             rec.pop("shapeLlmPending", None)
             self._log_event("selection:shape_llm", {"status": call.get("status"), "route": route,
@@ -1190,8 +1199,8 @@ class SelectionFlow:
                 self.shape_llm["exposed"] = True          # G82: LLM 형태 이름으로 그린 그림이 화면에 나옴
                 if isinstance(self.shape_llm.get("call"), dict):
                     self.shape_llm["call"]["exposure"].update(exposed=True, at=now_iso())
-                if self.shape_llm.get("basisShown") is None:
-                    # G83-b: 화면의 근거 낱말 = LLM 인용 구간 안의 첫 명사 덩어리(원문 글자 그대로). LLM 인용과 함께 기록
+                if not (self.shape_llm.get("basisShown") or {}).get("displayable"):
+                    # G83-b: 화면의 근거 낱말 = LLM 인용 구간 안의 마지막 명사 덩어리(원문 글자 그대로). LLM 인용과 함께 기록
                     it = (rec.get("shapeLlmItems") or [{}])[0]
                     self.shape_llm["basisShown"] = llm_shape_mod.basis_display(
                         self._confirmed_norm() or "", it.get("quote"), it.get("charSpan"), self.protocol.text("llm_shape_basis"))
@@ -2026,7 +2035,7 @@ class SelectionFlow:
                         # G82: 그림을 그린 근거 낱말(참여자 원문 그대로, 영어 이름은 보이지 않음)과 [그 말이 아니에요]
                         # G83-b: 보이는 낱말은 인용 구간 안의 명사 부분(shapeLlmBasisShown, 노출 때 정해 기록한 것)
                         bs = an.get("shapeLlmBasisShown") or {}
-                        if bs.get("shownText") and bs.get("text"):
+                        if bs.get("displayable") and bs.get("shownText") and bs.get("text"):
                             out["llmShapeBasis"] = {"quote": bs["shownText"], "text": bs["text"]}
                     if self.stage == "picking":
                         shown = sorted((x for x in ip["images"] if x["shown"]), key=lambda x: x["position"])

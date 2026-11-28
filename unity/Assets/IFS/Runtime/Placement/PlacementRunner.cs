@@ -22,7 +22,7 @@
 //   XR 헤드셋이 켜져 있으면 판에 대기 문구(wait)만 보인다. 잠금이면 XR 없이(auto·xr 입력) 시작하지 않는다(참여자가 Link 데스크톱 보기로 실험자 화면을
 //   볼 수 있어서 — PlacementSpaceChoice.HeadsetMissingRefusal). 실험자 화면에 지금 머리 높이(LiveHeadHeightM)를 늘 보인다.
 // CP17(2026-11-28): Checked 단계에서 매 프레임·[시작] 직전에 XR을 다시 본다(RecheckHeadset — 늦게 켜진 XR이면 통과). 세션 중 XR이 끊기면
-//   세션이 events xr_lost·xr_regained와 manifest xrConnection을 남기고 실험자 화면에 빨간 경고(타이머·단계는 그대로). 눈높이 기준 배치면
+//   세션이 events xr_lost·xr_regained와 manifest xrConnection을 남기고 실험자 화면에 빨간 경고(타이머·단계는 그대로 — 반복 멈춤 라운드만 끊긴 동안 멈춤, CP20). 눈높이 기준 배치면
 //   안내 판 아래 끝이 바닥 위 0.05 m에 남게 판 중심에 하한(PlacementTextPanel.FloorMarginM — manifest heightFloor.panel).
 // 헤드셋 실기는 확인하지 않았다(2026-11-23 — docs/headset-checklist.md).
 using System;
@@ -1041,7 +1041,7 @@ namespace IFS.SceneSpec.Placement
             var inp = Input;
             if (inp != null) inp.Enabled = !GuiHasKeyboardFocus;
             Session.SetHeadSource(HeadSource);
-            // CP17-1: 세션 중 XR 끊김(XR로 시작한 사람 실행만 — 세션이 거른다). 타이머·단계는 그대로, 실험자 화면에 경고, events·manifest에 기록
+            // CP17-1: 세션 중 XR 끊김(XR로 시작한 사람 실행만 — 세션이 거른다). 타이머·단계는 그대로(반복 멈춤 라운드만 멈춤 — CP20), 실험자 화면에 경고, events·manifest에 기록
             if (_auto == null) Session.ReportXrHead(XrHeadActive);
             var head = CurrentHead();
             if (_auto != null)

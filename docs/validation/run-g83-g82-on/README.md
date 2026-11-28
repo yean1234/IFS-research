@@ -5,7 +5,7 @@
 | | 문제(G82 점검) | 고친 방식 |
 | --- | --- | --- |
 | a | [그 말이 아니에요] 뒤 안내 없이 조절 화면으로 감 | 선택 보기 `afterNone`에 `basisRejected`를 넣고, `stage.js` 조절 화면의 안내 줄 조건에 `basisRejected === true`를 더함. 문구는 기존 `none_gen_unavailable` 그대로 씀 |
-| b | 인용에 조사가 붙어 화면 문장이 어색함('판때기예요'라고 하신 말을…) | 화면 낱말 = LLM 인용 구간 안의 첫 명사 덩어리(확정 텍스트 글자 그대로의 부분 구간, Kiwi 품사, `llm_shape.basis_display`). 문구 0.13.0에서 `{rago}` 자리에 받침에 맞춘 '이라고'/'라고'. 기록 `generation.shapeLlm.basisShown`에 LLM 인용·화면 구간 둘 다 남김 |
+| b | 인용에 조사가 붙어 화면 문장이 어색함('판때기예요'라고 하신 말을…) | 화면 낱말 = LLM 인용 구간 안의 첫 명사 덩어리(확정 텍스트 글자 그대로의 부분 구간 — 이 실행 뒤 CP20에서 마지막 덩어리로 바꿈, 아래 참고, Kiwi 품사, `llm_shape.basis_display`). 문구 0.13.0에서 `{rago}` 자리에 받침에 맞춘 '이라고'/'라고'. 기록 `generation.shapeLlm.basisShown`에 LLM 인용·화면 구간 둘 다 남김 |
 | c | [그 말이 아니에요] 단추가 그림 단추보다 큼 | 근거 줄을 `none-fit-row`에서 떼어 자체 배치(`.llm-shape-basis`). 단추 폭 = 그림 칸 하나의 [이걸로 할게요] 폭(그림 3·2·1장 각각) |
 | d | 막힌 메시의 관문 점수가 기록에 없음. 물체가 화면에 나온 적 없어도 `candidateChosen` false | 메시 단계가 막히면 사이드카 `gate`를 `afterNone.gate`로. `shapeLlm.candidateExposed`를 더하고, 만든 물체가 후보 화면에 나온 적이 있을 때만 `candidateChosen` false(아니면 null) |
 
@@ -18,7 +18,7 @@
 - 요약 시트: `make_summary.py`(G82 것을 그대로 돌리고 부제의 설정 이름만 바꿈) → `summary_1.png`.
 - 다시 돌리기: 위처럼 서버를 띄운 뒤 `python run_g83_e2e.py --base http://127.0.0.1:8011 --logs <log_dir> --raw <임시 폴더> --cases cases.json --sid-prefix SYN-G83`, 이어서 `python make_summary.py --raw <임시 폴더> --title "G83 실제 흐름 재확인(G82 켬)"`.
 
-모델은 G82 점검과 같다: 면담·G77·G82 `gemma4:e4b` `sha256:dc35e8d9…c9c`(Ollama 0.40.17), G82 프롬프트 `llm_shape.v0.3.0`, 검증기 `ifs-llm-shape-validator/0.5.0`, 그림 SDXL base 1.0, 형태 TripoSG, 관문 CLIP ViT-L/14(문턱 0.5). 선택 문구 `selection_protocol.v0.13.json`(0.13.0), 화면 낱말 규칙 `ifs-llm-shape-basis-display/0.1.0`. 실행 시각은 21:57–22:05.
+모델은 G82 점검과 같다: 면담·G77·G82 `gemma4:e4b` `sha256:dc35e8d9…c9c`(Ollama 0.40.17), G82 프롬프트 `llm_shape.v0.3.0`, 검증기 `ifs-llm-shape-validator/0.5.0`, 그림 SDXL base 1.0, 형태 TripoSG, 관문 CLIP ViT-L/14(문턱 0.5). 선택 문구 `selection_protocol.v0.13.json`(0.13.0), 화면 낱말 규칙 `ifs-llm-shape-basis-display/0.1.0`(이 실행의 판). 이 실행 뒤 CP20에서 0.2.0으로 고쳤다: 인용·구간이 맞지 않으면 근거 줄을 보이지 않고 그 항목을 채택하지 않음, 덩어리는 마지막 것. 이 실행의 다섯 인용은 명사 덩어리가 하나씩이라 0.2.0에서도 화면 낱말이 같다(단위 시험으로 확인, 실제 흐름은 다시 돌리지 않음). 실행 시각은 21:57–22:05.
 
 ## 결과
 

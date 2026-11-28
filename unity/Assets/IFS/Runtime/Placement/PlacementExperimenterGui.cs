@@ -482,7 +482,8 @@ namespace IFS.SceneSpec.Placement
                     GUILayout.Label(!s.StopTrialsStarted ? "멈춤 거리(반복 멈춤): 안내를 확인한 뒤 '다음'(Enter)으로 시작"
                         : r == null ? "멈춤 거리(반복 멈춤): 라운드 사이"
                         : $"멈춤 거리 라운드 {r.Round}/{s.StopLoopPlan.Count} {(r.Practice ? "(연습)" : "")}  {(s.StopLoopMoving ? (s.StopLoopDirection < 0 ? "가까워지는 중" : "멀어지는 중") : "<b>멈춤</b>")}  " +
-                          $"지금 {s.StopDistanceNow:0.00} m  멈춤 {s.StopLoopStopCount}회  남은 {s.StopLoopSecondsLeft:0} s", _wrap);
+                          $"지금 {s.StopDistanceNow:0.00} m  멈춤 {s.StopLoopStopCount}회  남은 {s.StopLoopSecondsLeft:0} s" +
+                          (s.StopLoopXrPaused ? "  <b>XR 끊김 — 시간·물체 멈춤</b>" : ""), _wrap);
                 }
                 else
                 {
