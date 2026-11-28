@@ -1970,6 +1970,14 @@
             "basisRejected": {
               "type": "boolean",
               "description": "G82: 그림 고르기 화면에서 [그 말이 아니에요]를 눌렀음(LLM을 다시 부르지 않고 기존 none 경로, imagePick.outcome basis_rejected)"
+            },
+            "shapeLlmBasisShown": {
+              "type": "object",
+              "description": "G83(하위 호환 추가): 이 회차 그림 고르기 화면에 보인 근거 줄. generation.shapeLlm.basisShown과 같은 값"
+            },
+            "gate": {
+              "type": ["object", "null"],
+              "description": "G83(하위 호환 추가): 고른 그림으로 만든 메시가 관문에서 막혔을 때 그 관문 결과(생성기 사이드카 gate 그대로 — personLikeScore·passed·threshold·labelScores 등). 막힌 메시가 없으면 키가 없다"
             }
           }
         },
@@ -2013,7 +2021,15 @@
             "lineStages": {"type": ["object", "null"]},
             "exposed": {"type": "boolean", "description": "LLM 형태 이름으로 그린 그림이 화면에 나왔는가"},
             "imageChosen": {"type": "boolean", "description": "그 그림 가운데 하나를 골랐는가"},
-            "candidateChosen": {"type": ["boolean", "null"], "description": "그 그림으로 만든 물체를 후보에서 골랐는가(노출되지 않았으면 null)"},
+            "candidateExposed": {"type": "boolean", "description": "G83: 그 그림으로 만든 물체가 후보 화면에 나왔는가"},
+            "candidateChosen": {"type": ["boolean", "null"], "description": "그 그림으로 만든 물체를 후보에서 골랐는가. 만든 물체가 후보 화면에 나온 적이 없으면(그림 단계에서 끝남·[그 말이 아니에요]·메시 관문 차단) null(G83부터, 그 전에는 그림이 나왔으면 false)"},
+            "basisShown": {"oneOf": [{"type": "null"}, {"type": "object", "required": ["version", "llmQuote", "shownText", "text"],
+              "description": "G83: 그림 고르기 화면의 근거 줄. llmQuote·llmCharSpan = LLM 인용(검증기 통과), shownText·shownSpan = 화면에 보인 낱말(인용 구간 안의 명사 부분, 확정 텍스트 글자 그대로), particle = 받침에 맞춘 '이라고'/'라고', text = 보인 문장, fallback = 줄이지 않은 사유(null이면 줄임 규칙대로)",
+              "properties": {"version": {"type": "string"}, "llmQuote": {"type": ["string", "null"]},
+                             "llmCharSpan": {"type": ["array", "null"]}, "shownText": {"type": ["string", "null"]},
+                             "shownSpan": {"type": ["array", "null"]}, "trimmed": {"type": "boolean"},
+                             "fallback": {"type": ["string", "null"]}, "particle": {"type": ["string", "null"]},
+                             "text": {"type": ["string", "null"]}}}]},
             "rejected": {"type": "boolean", "description": "[그 말이 아니에요]를 눌렀는가"},
             "rejectedAt": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/isoTime"}]},
             "participantLeftBeforeResult": {"type": "boolean"},

@@ -264,7 +264,7 @@ namespace IFS.SceneSpec.Tests
             var d = new PlacementConfig();
             Assert.That(PlacementExperimentLock.StopMismatches(d), Is.Empty, string.Join("; ", PlacementExperimentLock.StopMismatches(d)));
             Assert.That((d.stopLoopRounds, d.stopLoopPracticeRounds, d.stopLoopRoundSeconds, d.stopLoopPracticeRoundSeconds, d.stopItiSeconds),
-                Is.EqualTo((4, 1, 75.0, 30.0, 2.0)), "G60-2 본 4 × 75초, G78-a 연습 1 × 30초, 라운드 사이 2초");
+                Is.EqualTo((1, 1, 75.0, 30.0, 2.0)), "G83 본 1 × 75초(G60-2의 4에서), G78-a 연습 1 × 30초, 라운드 사이 2초");
         }
 
         [Test]
@@ -314,7 +314,7 @@ namespace IFS.SceneSpec.Tests
         {
             var cfg = new PlacementConfig();
             PlacementExperimentLock.Apply(cfg);
-            var lines = PlacementExperimentLock.SummaryLines(cfg, PlacementExperimentLock.TaskTextFile, "0.9-scaleA");
+            var lines = PlacementExperimentLock.SummaryLines(cfg, PlacementExperimentLock.TaskTextFile, "0.10-scaleA");
             string all = string.Join("\n", lines);
             Assert.That(lines.Count, Is.EqualTo(5));
             Assert.That(all, Does.Contain("공간 neutral(실험자가 위 단추로 고름 — 세션마다, 처음 값 neutral)"), "2026-11-28: 공간은 실험자가 고른다");
@@ -322,8 +322,8 @@ namespace IFS.SceneSpec.Tests
             cfg.environment = PlacementConfig.EnvironmentSpace;
             Assert.That(string.Join(" | ", PlacementExperimentLock.SummaryLines(cfg, PlacementExperimentLock.TaskTextFile)), Does.Contain("공간 space(실험자가"), "요약은 지금 고른 공간을 보인다");
             Assert.That(all, Does.Contain("보정 자세 앉은 자세 [0.95, 1.45] m"));
-            Assert.That(all, Does.Contain("loop: 연습 1 × 상한 30초 + 본 4 × 상한 75초, 라운드 사이 2초, 왕복 0.4–3.6 m · 0.25 m/s"));
-            Assert.That(all, Does.Contain("판 0.9-scaleA"));
+            Assert.That(all, Does.Contain("loop: 연습 1 × 상한 30초 + 본 1 × 상한 75초, 라운드 사이 2초, 왕복 0.4–3.6 m · 0.25 m/s"));
+            Assert.That(all, Does.Contain("판 0.10-scaleA"));
             Assert.That(all, Does.Contain("relative(기준 1.60 m)"));
             Assert.That(all, Does.Contain("placement_task.scaleA.v0.json"));
             Assert.That(all, Does.Not.Contain("팀 결정 전"));

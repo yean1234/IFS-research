@@ -52,8 +52,9 @@ def run(s):
 def test_flag_off_by_default_and_in_every_config():
     g = Gen3DConfig()
     assert g.on_none_llm_shape is False and g.on_none_llm_shape_timeout_s == 20.0 and g.on_none_llm_shape_seed == 0
-    for name in ("experiment", "default", "pilot", "v4", "v4-gen3d", "bridge", "mac8gb"):
-        assert load_config(name).gen3d.on_none_llm_shape is False, name     # experiment.toml에서도 켜지 않음
+    for name in ("default", "pilot", "v4", "v4-gen3d", "bridge", "mac8gb"):
+        assert load_config(name).gen3d.on_none_llm_shape is False, name
+    assert load_config("experiment").gen3d.on_none_llm_shape is True        # G83: 실험 설정에서 켬(연구 책임자 결정)
     for name in ("llm_shape.v0.1.0.json", "llm_shape.v0.1.1.json", "llm_shape.v0.2.0.json", "llm_shape.v0.3.0.json"):
         p = ls.ShapePrompt(name)
         assert p.data["status"] == "draft" and p.data["options"]["temperature"] == 0 and p.data["decision"] == "G82"

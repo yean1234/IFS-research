@@ -268,10 +268,19 @@ th { color: var(--ink-soft); font-weight: 600; }
 .pick-card.chosen .pick { background: var(--accent); color: var(--on-accent); }
 .stage.choosing .pick-card:not(.chosen) { opacity: .5; }
 .none-fit-row:has(.none-gen-skip) { gap: var(--space-4); }
+/* G83-c: 근거 인용 줄(G82). 글은 남은 폭, [그 말이 아니에요]는 그림 칸 하나의 [이걸로 할게요]와 같은 폭(3열 칸 폭 − 칸 안 여백·테두리) */
+.llm-shape-basis { display: flex; align-items: center; gap: var(--space-4); margin-bottom: var(--space-2); }
+.llm-shape-basis .msg { flex: 1 1 auto; margin: 0; }
+.llm-shape-basis .shape-basis-wrong { flex: 0 0 auto; width: calc((100% - 2 * var(--space-4)) / 3 - 2 * var(--space-3) - 2px); }
+/* 관문으로 그림이 2장·1장만 보일 때도 그 칸의 단추 폭에 맞춤 */
+.stage:has(.pick-grid.n2) .llm-shape-basis .shape-basis-wrong { width: calc((100% - var(--space-4)) / 2 - 2 * var(--space-3) - 2px); }
+.stage:has(.pick-grid.n1) .llm-shape-basis .shape-basis-wrong { width: calc(min(100%, 360px) - 2 * var(--space-3) - 2px); }
 @container part (max-width: 520px) {
   .cand-grid { grid-template-columns: minmax(0, 1fr); }
   .pick-grid { grid-template-columns: minmax(0, 1fr); }
   .none-fit-row .none-fit { width: 100%; }
+  .llm-shape-basis { flex-wrap: wrap; }
+  .stage .llm-shape-basis .shape-basis-wrong { width: 100% !important; }   /* 한 줄 한 칸일 때 그림 단추도 전체 폭(위 :has 규칙보다 앞섬) */
 }
 
 /* 조절: 왼쪽 미리보기(크게, 스크롤해도 따라옴), 오른쪽 항목 한 열 */

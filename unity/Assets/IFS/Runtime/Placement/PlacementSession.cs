@@ -1303,6 +1303,7 @@ namespace IFS.SceneSpec.Placement
                     Adjust("confirm", _stopD, _loopLastStopDir, false);
                     Haptic(PlacementHaptics.Confirm);
                     EndRound(StopLoopEnd.Confirmed);
+                    LeaveIfLastRoundHasNoGap();
                     return;
                 }
                 Adjust("confirm_ignored", _stopD, DirName(_loopDir), false);
@@ -1341,7 +1342,14 @@ namespace IFS.SceneSpec.Placement
                 string reason = _loopMoving ? StopLoopEnd.TimeoutMoving : StopLoopEnd.TimeoutStopped;
                 Adjust("timeout", _stopD, _loopMoving ? DirName(_loopDir) : _loopLastStopDir, false);
                 EndRound(reason);
+                LeaveIfLastRoundHasNoGap();
             }
+        }
+
+        /// <summary>마지막 라운드를 알림 없이 끝냈으면(EndRound가 간격을 0으로 둠) 같은 프레임에 다음 단계로 간다 — 지시문이 한 프레임도 남지 않게(G83).</summary>
+        void LeaveIfLastRoundHasNoGap()
+        {
+            if (!_roundActive && _roundIndex + 1 >= _loopPlan.Count && _now >= _itiUntil - Eps) GoTo(Next(PlacementPhase.StopDistance));
         }
 
         /// <summary>stoprounds.csv end_reason 값.</summary>
@@ -1436,9 +1444,13 @@ namespace IFS.SceneSpec.Placement
             _loopMoving = false;
             _visible = false;
             _state = StateIdle;
-            _itiUntil = _now + _cfg.stopItiSeconds;
+            // 2026-11-28 G83: 마지막 라운드 뒤에는 다음 라운드가 없다 — 확정했으면 확정 알림을 stopItiSeconds 동안 보이고(G78-d),
+            // 확정하지 않았으면(시간 초과) 기다리지 않고 다음 단계로 간다(라운드 사이 지시문을 보이지 않음).
+            bool last = _roundIndex + 1 >= _loopPlan.Count;
+            bool noticeAfterLast = confirmed && _text[PlacementTaskText.ConfirmDoneKey] != null;
+            _itiUntil = last && reason != StopLoopEnd.Aborted && !noticeAfterLast ? _now : _now + _cfg.stopItiSeconds;
             if (reason == StopLoopEnd.Aborted) ShowText(PlacementTaskText.StopLoopKey);   // 중단: 알림 없음
-            else ShowStopRoundGapText(plan, confirmed);
+            else if (!last || noticeAfterLast) ShowStopRoundGapText(plan, confirmed);
         }
 
         /// <summary>라운드 사이 간격(stopItiSeconds)의 안내(2026-11-28 연구 책임자 결정). 확정했으면 confirm_done, 연습 뒤 첫 본 라운드 전이면

@@ -574,7 +574,8 @@
     // G82: LLM 형태 이름으로 그린 회차만 — 그림을 그린 근거 낱말(참여자 원문 그대로, 서버가 넣은 글)과 [그 말이 아니에요].
     // 누르면 LLM을 다시 부르지 않고 기존 경로(조절)로 간다. 영어 이름은 화면에 보이지 않는다
     if (v.llmShapeBasis && v.llmShapeBasis.text) {
-      parts.push(el("div", { class: "none-fit-row llm-shape-basis" },
+      // G83-c: 이 줄의 단추는 그림마다 붙은 [이걸로 할게요]와 같은 크기(style.css .llm-shape-basis)
+      parts.push(el("div", { class: "llm-shape-basis" },
         el("p", { class: "msg bot", "data-fkey": "shape-basis" }, v.llmShapeBasis.text),
         el("button", { type: "button", class: "pick shape-basis-wrong", "data-fkey": "img:basis-wrong",
                        onclick: (e) => call("POST", `/api/sessions/${S.sid}/selection/shape-basis/reject`, undefined, e.currentTarget) },
@@ -933,10 +934,12 @@
       panel.append(row);
     }
     // G73: 만들지 못함·실패·시간 초과 뒤 none 경로로 왔으면 짧은 안내 한 줄(사유는 연구자 보기). 참여자가 기다리지 않고 넘어갔으면 없음
+    // G83-a: 그림 고르기 화면에서 [그 말이 아니에요]를 눌러 왔을 때도 같은 줄(selection_protocol 0.12부터 그 단추 주석이 정한 대로)
     const an = v.afterNone;
-    const genNote = an && v.selection && v.selection.none && ["blocked", "failed", "timeout"].includes(an.status)
+    const genNote = an && v.selection && v.selection.none && (["blocked", "failed", "timeout"].includes(an.status) || an.basisRejected === true)
       ? [el("p", { class: "msg bot none-gen-note" }, phrase("none_gen_unavailable")),
-         el("p", { class: "warning researcher-only" }, `생성 ${an.status}: ${an.blockReason || an.error || ""}`)] : [];
+         el("p", { class: "warning researcher-only" },
+            `생성 ${an.status}: ${an.basisRejected === true ? "basis_rejected" : (an.blockReason || an.error || "")}`)] : [];
     return [intro(phrase("figure_intro")), ...genNote, el("p", { class: "msg bot" }, phrase("adjust_intro")),
             el("div", { class: "adjust" },
               el("div", { class: "adjust-preview" }, Preview.node("current", v.current && v.current.summary, v.current && v.current.overrides,

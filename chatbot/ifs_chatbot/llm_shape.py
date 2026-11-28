@@ -429,3 +429,68 @@ def shape_items_from(rec: dict | None) -> list[dict]:
     """기록 → 규칙 프롬프트에 넘길 항목(채택된 것만, 0–1개). shape_prompt(..., llm_shape_items=...)"""
     a = (rec or {}).get("adopted")
     return [{"quote": a["quote"], "charSpan": list(a["charSpan"]), "en": a["en"]}] if a else []
+
+
+# ── (G83-b) 그림 고르기 화면에 보이는 근거 낱말 ─────────────────────────────────────
+# LLM 인용 구간(검증기를 통과한 것)에는 조사·서술격 조사가 붙어 있을 수 있다('판때기예요', '톱니바퀴가'). 화면에는 그 구간 안의
+# 첫 명사 덩어리(원문 글자 그대로의 부분 구간)만 보인다. 기록에는 LLM 인용과 화면에 보인 구간을 둘 다 남긴다(basisShown).
+# 원문에 없는 글자를 만들지 않는다: 보이는 글은 늘 확정 텍스트[shownSpan]이고, Kiwi 형태와 원문 글자가 다르면(축약 등) 줄이지 않는다.
+BASIS_DISPLAY_VERSION = "ifs-llm-shape-basis-display/0.1.0"
+_BASIS_HEAD_TAGS = {"NNG", "NNP", "NR", "SL", "SH"}            # 덩어리를 시작하는 품사(의존 명사 '것'은 시작하지 않음)
+_BASIS_RUN_TAGS = _BASIS_HEAD_TAGS | {"XSN", "SN"}              # 이어 붙는 품사(접미사 '들' 등)
+
+
+def basis_display(norm: str, quote: str, char_span, template: str) -> dict:
+    """확정 텍스트(norm)·LLM 인용·charSpan·문구 틀('{quote}'·'{rago}') → 화면 글과 기록.
+    {quote} = 인용 구간 안 첫 명사 덩어리(없거나 판단할 수 없으면 인용 전체), {rago} = 그 낱말 받침에 맞춘 '이라고'/'라고'.
+    같은 입력 → 같은 결과(Kiwi 형태소 분석만, LLM 없음)."""
+    from . import none_gen as ng
+    from .korean import josa, normalize
+
+    s, e = (list(char_span) + [None, None])[:2] if isinstance(char_span, (list, tuple)) else (None, None)
+    out = {"version": BASIS_DISPLAY_VERSION, "llmQuote": quote, "llmCharSpan": [s, e] if s is not None else None,
+           "shownText": quote, "shownSpan": [s, e] if s is not None else None, "trimmed": False, "fallback": None,
+           "particle": None, "text": None}
+    if "{rago}" not in template:
+        out["fallback"] = "template_without_particle"   # 0.12 문구('{quote}'라고)는 인용 전체를 그대로(줄이면 조사가 맞지 않음)
+    elif not (isinstance(s, int) and isinstance(e, int) and 0 <= s < e <= len(norm) and norm[s:e] == quote):
+        out["fallback"] = "span_mismatch"
+    elif normalize(norm) != norm:
+        out["fallback"] = "offset_basis_differs"
+    else:
+        toks = None
+        with ng._prompts_lock:                              # 그림 프롬프트 규칙과 같은 Kiwi(같은 잠금)
+            try:
+                an = ng._load_prompts()._shape_runtime().analyzer
+                toks = an.tokens(norm) if an.available else None
+            except (Exception, SystemExit):                 # noqa: BLE001 — 분석을 못 하면 줄이지 않는다(인용 전체)
+                toks = None
+        if toks is None:
+            out["fallback"] = "no_kiwi"
+        else:
+            inside = [t for t in toks if t.start >= s and t.end <= e and t.end > t.start]
+            run = []
+            for t in inside:
+                tag = t.base_tag
+                if not run:
+                    if tag in _BASIS_HEAD_TAGS:
+                        run = [t]
+                elif tag in _BASIS_RUN_TAGS and t.start == run[-1].end:
+                    run.append(t)
+                else:
+                    break
+            if not run:
+                out["fallback"] = "no_noun"
+            else:
+                a, b = run[0].start, run[-1].end
+                if norm[a:b] != "".join(t.form for t in run):
+                    out["fallback"] = "form_differs"          # 축약 등: 줄이지 않고 인용 전체를 보인다
+                else:
+                    out.update(shownText=norm[a:b], shownSpan=[a, b], trimmed=(a, b) != (s, e))
+    shown = out["shownText"] or ""
+    if "{rago}" in template:
+        out["particle"] = josa(shown, "이라/라") + "고"
+        if "(" in out["particle"]:
+            out["particle"] = "라고"                              # 받침을 판단할 수 없으면(한글·숫자가 아님) 따옴표 인용의 기본 꼴
+    out["text"] = template.replace("{quote}", shown).replace("{rago}", out["particle"] or "")
+    return out

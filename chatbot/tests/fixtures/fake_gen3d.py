@@ -181,7 +181,9 @@ def main():
             "sourceTextSha256": p["sourceTextSha256"],
             "normalization": {"longestEdge": 1.0, "pivot": "bottom-center"} if status == "ok" else None,
             "covariates": {"axisRatios": [1.0, 0.6, 0.5], "thinRisk": False, "familiarObjectStated": False, "pluralStated": False},
-            "gate": {"personLikeScore": 0.9 if mode == "gate" else 0.01, "passed": mode != "gate"} if status != "failed" else
+            "gate": ({"personLikeScore": 0.9, "passed": False, "threshold": 0.5,           # 실제 관문과 같은 꼴(라벨 점수 포함)
+                      "labelScores": {"a head with eyes and a mouth": 0.7, "a plain object": 0.1}} if mode == "gate" else
+                     {"personLikeScore": 0.01, "passed": True}) if status != "failed" else
                     {"personLikeScore": None, "passed": None},
             "timing": {"fake": delay}, "cacheHit": False,
         }

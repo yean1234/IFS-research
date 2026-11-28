@@ -1,7 +1,7 @@
 {
-  "version": "0.9",
+  "version": "0.10",
   "protocol": "placement-task",
-  "note": "0.6(2026-11-26): G60 — 점검 문항 want_move를 뺌(교수님 결정 2026-11-26), 멈춤 거리 반복 멈춤 문구 stop_distance_loop·stop_loop_hint를 더함(G60-2, 설정 stopMode loop일 때만 보임 — 기본 single에서는 draftKeys에 들어가지 않음). 버전은 0.6 그대로. 0.7(2026-11-27): G65·G66(D10 가독성) — 두 평정 문항 G13(appearance_match '떠올린 것' → '떠올린 모습', representativeness '내가 떠올린 그것' → '그 느낌')을 웹 selection_protocol 0.6.0·scaleA 0.7-scaleA와 같은 글로, 내적 경험과의 관계를 묻는 want_to_know·withdraw_attention·distance_feel의 대상을 '이것' → '그 느낌'으로 바꿈. 물체·자리를 묻는 placed_by_me·place_fit, '내 것' 문항 own, 단계 안내의 '이것'(눈앞의 물체)은 그대로. ⚠ 이 파일에는 공통 지시문(items_instruction)이 없어 '그 느낌'이 무엇인지 화면에서 알리지 않음(scaleA에는 있음). draft(IRB 검토 전). 0.8(2026-11-28): 연구 책임자 결정 — 확인 버튼 안내 confirm_button_right·confirm_button_left(xrHand에 따라 하나), 확정 알림 confirm_done, 반복 멈춤 본 측정 시작 안내 stop_main_start를 더함(기존 문구는 그대로). 0.9(2026-11-28): 연구 책임자 결정 — 공간 고르기 문구 space_choice·space_choice_position({i}·{n}은 숫자로 바뀜)을 더함(설정 environmentChoice participant일 때만 세션 첫 단계에 보임, 두 조건 같은 글. 기존 문구는 그대로).",
+  "note": "0.6(2026-11-26): G60 — 점검 문항 want_move를 뺌(교수님 결정 2026-11-26), 멈춤 거리 반복 멈춤 문구 stop_distance_loop·stop_loop_hint를 더함(G60-2, 설정 stopMode loop일 때만 보임 — 기본 single에서는 draftKeys에 들어가지 않음). 버전은 0.6 그대로. 0.7(2026-11-27): G65·G66(D10 가독성) — 두 평정 문항 G13(appearance_match '떠올린 것' → '떠올린 모습', representativeness '내가 떠올린 그것' → '그 느낌')을 웹 selection_protocol 0.6.0·scaleA 0.7-scaleA와 같은 글로, 내적 경험과의 관계를 묻는 want_to_know·withdraw_attention·distance_feel의 대상을 '이것' → '그 느낌'으로 바꿈. 물체·자리를 묻는 placed_by_me·place_fit, '내 것' 문항 own, 단계 안내의 '이것'(눈앞의 물체)은 그대로. ⚠ 이 파일에는 공통 지시문(items_instruction)이 없어 '그 느낌'이 무엇인지 화면에서 알리지 않음(scaleA에는 있음). draft(IRB 검토 전). 0.8(2026-11-28): 연구 책임자 결정 — 확인 버튼 안내 confirm_button_right·confirm_button_left(xrHand에 따라 하나), 확정 알림 confirm_done, 반복 멈춤 본 측정 시작 안내 stop_main_start를 더함(기존 문구는 그대로). 0.9(2026-11-28): 연구 책임자 결정 — 공간 고르기 문구 space_choice·space_choice_position({i}·{n}은 숫자로 바뀜)을 더함(설정 environmentChoice participant일 때만 세션 첫 단계에 보임, 두 조건 같은 글. 기존 문구는 그대로). 0.10(2026-11-28): 연구 책임자 결정(G83) — 반복 멈춤 본 라운드를 4번에서 1번으로 줄이며(설정 stopLoopRounds) 멈춘 동안의 조작 안내 stop_loop_hint를 '방아쇠를 누르면 다시 움직여요. 확인 버튼을 누르면 이 자리로 정해져요.'로 고침(확인 버튼이 자리를 정한다는 것을 분명히, draft). 다른 문구는 그대로.",
   "texts": {
     "intro": {
       "text": "이제 물체 하나를 보여 드릴게요. 안내가 나오면 그대로 따라 주세요.",
@@ -44,9 +44,9 @@
       "source": "교수님 피드백 2026-11-26 / G60-2 — 멈춤 거리 반복 멈춤 지시문 초안(정해진 왕복 경로, 멈춤/다시 움직임 토글, 확정 버튼). 설정 stopMode loop일 때만 stop_distance 대신 보임. IRB 검토 전"
     },
     "stop_loop_hint": {
-      "text": "방아쇠: 다시 움직이기 · 확인 버튼: 이 자리로 정하기",
+      "text": "방아쇠를 누르면 다시 움직여요. 확인 버튼을 누르면 이 자리로 정해져요.",
       "status": "draft",
-      "source": "교수님 피드백 2026-11-26 / G60-2 — 반복 멈춤에서 물체가 멈춘 동안 stop_distance_loop 아래에 줄을 바꿔 붙이는 조작 안내 초안. 설정 stopMode loop일 때만 보임. IRB 검토 전"
+      "source": "2026-11-28 연구 책임자 결정(G83) — 확인 버튼이 멈춘 자리를 정하는 버튼임을 문장으로 알림(앞 글 '방아쇠: 다시 움직이기 · 확인 버튼: 이 자리로 정하기', 교수님 피드백 2026-11-26 / G60-2). 반복 멈춤에서 물체가 멈춘 동안 stop_distance_loop 아래에 줄을 바꿔 붙이고, 끝에 확인 버튼 안내(confirm_button_right/left)가 한 칸 띄워 이어짐. 설정 stopMode loop일 때만 보임. IRB 검토 전"
     },
     "confirm_button_right": {
       "text": "확인 버튼은 오른손 A 버튼이에요.",

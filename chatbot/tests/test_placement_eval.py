@@ -692,10 +692,10 @@ LOOP_ROUNDS_COLS = ["round", "practice", "start_dir", "start_distance_m", "speed
                     "at_bound", "end_reason", "duration_ms", "eye_object_distance_m"]
 
 
-def _loop_block(plan_seed=1):
+def _loop_block(plan_seed=1, main_rounds=4):
     return {"speedMps": 0.25, "approachStartM": 3.0, "recedeStartM": 0.5, "trialsPerDirection": 4, "practiceTrials": 2,
             "minM": 0.2, "maxM": 3.5, "mode": "loop",
-            "loop": {"minM": 0.4, "maxM": 3.6, "rounds": 4, "practiceRounds": 1, "roundSeconds": 75,
+            "loop": {"minM": 0.4, "maxM": 3.6, "rounds": main_rounds, "practiceRounds": 1, "roundSeconds": 75,
                      "plan": [{"round": 1, "practice": True, "startDir": "approach", "startDistanceM": 1.0 + plan_seed / 10}]}}
 
 
@@ -708,8 +708,8 @@ def _round(r, practice, final, first, direction, reason="confirmed", passes=0, a
 
 
 def make_loop_session(root, pnum, sid, rounds, condition="place", control=None, final=(2.05, 30.0, 0.8), eye=None,
-                      plan_seed=1, omit_loop_files=()):
-    extra = {"stopDistance": _loop_block(plan_seed)}
+                      plan_seed=1, omit_loop_files=(), main_rounds=4):
+    extra = {"stopDistance": _loop_block(plan_seed, main_rounds)}
     if eye is not None:
         extra["eyeHeight"] = {"mode": "relative", "referenceM": 1.6, "measuredM": eye, "offsetM": round(eye - 1.6, 4),
                               "sdM": 0.005, "pitchDeg": 1.0, "samples": 20, "trackingOrigin": "Floor", "source": "calibrated"}
@@ -773,6 +773,31 @@ def test_loop_needs_two_confirmed_rounds_and_flags_missing_files(tmp_path):
     s = row(analyze(tmp_path), "few")
     assert s["stop_final_mean_m"] is None and s["stop_final_n"] == 1, "확정 라운드 2개 미만이면 빈칸"
     assert "missing_file:stopadjust.csv" in s["flags"] and "stop_rounds_short" in s["flags"]
+
+
+def test_one_main_round_sessions_use_the_single_confirmed_value_and_old_four_round_records_still_read(tmp_path):
+    # G83(2026-11-28): 연습 1 + 본 1. 본 1라운드를 확정하면 그 값이 주 값, 확정하지 않으면 빈칸(마지막 멈춤으로 채우지 않음)
+    assert [placement.loop_min_confirmed(n) for n in (None, 0, 1, 2, 4)] == [2, 2, 1, 2, 2]
+    make_loop_session(tmp_path, 1, "one", [_round(1, 1, 1.0, 1.0, "approach"), _round(2, 0, 1.6, 1.7, "recede")], main_rounds=1)
+    make_loop_session(tmp_path, 2, "one-timeout", [_round(1, 1, 1.0, 1.0, "recede"),
+                                                   _round(2, 0, None, 1.9, "approach", reason="timeout_stopped")], main_rounds=1)
+    make_loop_session(tmp_path, 3, "old-four", [_round(1, 1, 0.3, 0.3, "approach"), _round(2, 0, 1.6, 1.7, "approach"),
+                                                _round(3, 0, 1.8, 1.75, "recede"), _round(4, 0, 1.2, 1.3, "approach"),
+                                                _round(5, 0, 1.6, 1.5, "recede")])
+    res = analyze(tmp_path, tmp_path / "out")
+    one, to, old = row(res, "one"), row(res, "one-timeout"), row(res, "old-four")
+    assert one["stop_final_mean_m"] == pytest.approx(1.6) and one["stop_final_n"] == 1
+    assert one["stop_final_sd_m"] is None, "한 값이라 SD 없음"
+    assert (one["stop_final_recede_mean_m"], one["stop_final_approach_mean_m"]) == (pytest.approx(1.6), None), "방향별 평균은 한쪽만"
+    assert one["stop_minus_condition_final_m"] == pytest.approx(1.6 - 2.05, abs=1e-4)
+    assert "stop_rounds_short" not in one["flags"] and not any(f.startswith("stop_unconfirmed") for f in one["flags"])
+    assert to["stop_final_mean_m"] is None and to["stop_n_unconfirmed"] == 1 and "stop_unconfirmed:1" in to["flags"]
+    assert old["stop_final_mean_m"] == pytest.approx((1.6 + 1.8 + 1.2 + 1.6) / 4, abs=1e-4) and old["stop_final_n"] == 4
+    assert old["stop_final_sd_m"] is not None and "stop_rounds_short" not in old["flags"]
+    sl = res["summary"]["stopLoop"]
+    assert sl["directionDiff"]["all"]["n"] == 1, "세션 안 방향 차는 예전 4라운드 세션에서만"
+    assert "config_mismatch:stopDistance" in res["summary"]["warnings"], "본 라운드 수가 다른 세션을 섞으면 알린다"
+    assert sl["rounds"]["main"] == 6
 
 
 def test_loop_anchor_in_both_conditions_and_direction_gap_warning(tmp_path):

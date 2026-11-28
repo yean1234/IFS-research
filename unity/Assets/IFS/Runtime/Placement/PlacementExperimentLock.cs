@@ -23,10 +23,11 @@ namespace IFS.SceneSpec.Placement
     {
         /// <summary>잠금이 정하는 문구 파일(G59-8·G67-a: scaleA).</summary>
         public const string TaskTextFile = PlacementConfig.ExperimentTaskTextFile;
-        /// <summary>잠금이 받는 문구 파일 판(G78-e, 2026-11-28 공간 고르기로 0.9). 문구 판을 올리면 여기도 올린다.</summary>
-        public const string ExpectedTaskTextVersion = "0.9-scaleA";
+        /// <summary>잠금이 받는 문구 파일 판(G78-e, 2026-11-28 공간 고르기로 0.9, 반복 멈춤 조작 안내 stop_loop_hint 고침으로 0.10 — G83).
+        /// 문구 판을 올리면 여기도 올린다.</summary>
+        public const string ExpectedTaskTextVersion = "0.10-scaleA";
         /// <summary>잠금 문구 파일에 있어야 하는 G78 새 키. 공간 고르기 키(space_choice·space_choice_position)는 실험에서 그 단계를 쓰지 않아 요구하지 않는다
-        /// (판 0.9-scaleA 파일에는 들어 있다 — 꺼 둔 기능을 켤 때는 러너 Check가 따로 요구한다).</summary>
+        /// (판 0.9-scaleA 뒤 파일에는 들어 있다 — 꺼 둔 기능을 켤 때는 러너 Check가 따로 요구한다).</summary>
         public static readonly string[] RequiredTaskTextKeys =
         {
             PlacementTaskText.ConfirmButtonRightKey, PlacementTaskText.ConfirmButtonLeftKey, PlacementTaskText.ConfirmDoneKey, PlacementTaskText.StopMainStartKey,
@@ -48,7 +49,8 @@ namespace IFS.SceneSpec.Placement
         public const double StopLoopMaxM = 3.6;
         public const double StopLoopStartMinM = 1.0;
         public const double StopLoopStartMaxM = 3.0;
-        public const int StopLoopRounds = 4;
+        /// <summary>본 라운드 1(2026-11-28 연구 책임자 결정 G83 — 이전 G60-2의 4). 연습 1 × 30초 + 본 1 × 75초.</summary>
+        public const int StopLoopRounds = 1;
         public const int StopLoopPracticeRounds = 1;
         public const double StopLoopRoundSeconds = 75;
         public const double StopLoopPracticeRoundSeconds = 30;

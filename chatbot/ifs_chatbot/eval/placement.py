@@ -63,6 +63,9 @@ LLM 없음, 표준 라이브러리만, 결정론적(같은 기록 → 같은 출
   요약에 stopLoop를 더한다(loop 세션이 없으면 출력은 G60 전과 바이트까지 같다).
 - 주 값 stop_final_mean_m = 본 라운드(practice=0) 가운데 확정된(end_reason confirmed) 라운드의 final_distance_m 평균. 확정 라운드가
   LOOP_MIN_CONFIRMED(2)개 미만이면 빈칸. 확정하지 않은 라운드는 결측으로 세고(stop_n_unconfirmed) 마지막 멈춤 거리로 채우지 않는다(원칙 2).
+  2026-11-28 G83: 본 라운드가 1로 설정된 세션(manifest stopDistance.loop.rounds = 1)은 그 1라운드를 확정했을 때 그 값이 주 값이다
+  (loop_min_confirmed = min(2, 설정 수)). 이때 stop_final_sd_m은 빈칸이고, 방향별 평균은 마지막 진행 방향 쪽 하나만 채워지므로
+  세션 안 방향 차(directionDiff·stop_loop_direction_gap 경고)는 계산되지 않는다. 예전 4라운드 기록은 예전 규칙 그대로 읽는다.
 - 방향별 평균 stop_final_approach_mean_m·stop_final_recede_mean_m은 final_motion_dir(마지막 멈춤 직전 진행 방향)로 나눈다.
   요약 stopLoop.directionDiff에서 세션별 차(approach − recede)의 평균 절댓값이 LOOP_DIR_WARN_M(0.15 m)을 넘으면 경고한다(히스테리시스 점검).
 - stop_first_minus_final_mean_m = 확정 라운드마다 first_stop_distance_m − final_distance_m의 평균(예전 단일 누름 지표와 잇는 값).
@@ -166,7 +169,18 @@ STOP_METRICS = ("stop_mean_m", "stop_approach_mean_m", "stop_recede_mean_m")
 
 # G60-2 반복 멈춤(loop 세션이 하나라도 있을 때만 세션 표에 붙는 열)
 LOOP_FILES = ("stoprounds.csv", "stopadjust.csv")
-LOOP_MIN_CONFIRMED = 2           # 확정된 본 라운드가 이보다 적으면 stop_final_mean_m 빈칸
+LOOP_MIN_CONFIRMED = 2           # 확정된 본 라운드가 이보다 적으면 stop_final_mean_m 빈칸(본 라운드가 이보다 적게 설정된 세션은 loop_min_confirmed)
+
+
+def loop_min_confirmed(rounds_cfg: int | None) -> int:
+    """stop_final_mean_m에 필요한 확정 본 라운드 수. 설정된 본 라운드 수(manifest stopDistance.loop.rounds)가 LOOP_MIN_CONFIRMED보다
+    적으면 그 수(G83, 2026-11-28: 본 1라운드면 그 1라운드의 확정값). 설정이 없으면(옛 기록) LOOP_MIN_CONFIRMED."""
+    if rounds_cfg is None or rounds_cfg < 1:
+        return LOOP_MIN_CONFIRMED
+    return min(LOOP_MIN_CONFIRMED, rounds_cfg)
+
+
+
 LOOP_DIR_WARN_M = 0.15           # 방향별 평균 차가 이보다 크면 요약 경고(히스테리시스)
 LOOP_COLUMNS = ["stop_mode", "stop_final_mean_m", "stop_final_sd_m", "stop_final_n", "stop_n_unconfirmed",
                 "stop_final_approach_mean_m", "stop_final_recede_mean_m", "stop_first_minus_final_mean_m",
@@ -527,7 +541,7 @@ def load_session(cand: dict, facing_deg: float = DEFAULT_FACING_DEG) -> tuple[di
             flags.append("stop_rounds_short")
         if n_unconfirmed:
             flags.append(f"stop_unconfirmed:{n_unconfirmed}")
-        mean_final = _mean(finals) if len(finals) >= LOOP_MIN_CONFIRMED else None
+        mean_final = _mean(finals) if len(finals) >= loop_min_confirmed(rounds_cfg) else None
         loop_vals = {
             "stop_final_mean_m": mean_final, "stop_final_sd_m": _sd(finals), "stop_final_n": len(finals),
             "stop_n_unconfirmed": n_unconfirmed,
@@ -944,7 +958,8 @@ def loop_summary(included: list[dict], rounds: list[dict]) -> dict:
         reasons[str(r["end_reason"])] = reasons.get(str(r["end_reason"]), 0) + 1
     return {
         "definition": "stop_final_mean_m = 본 라운드 가운데 확정(confirmed) 라운드의 final_distance_m 평균(확정 라운드 "
-                      f"{LOOP_MIN_CONFIRMED}개 미만이면 빈칸). 확정하지 않은 라운드는 결측(마지막 멈춤 거리로 채우지 않음). "
+                      f"{LOOP_MIN_CONFIRMED}개 미만이면 빈칸 — 본 라운드가 그보다 적게 설정된 세션은 설정 수, 본 1라운드면 그 확정값). "
+                      "확정하지 않은 라운드는 결측(마지막 멈춤 거리로 채우지 않음). "
                       "stop_minus_condition_final_m = stop_final_mean_m − 조건 단계 끝 자리(두 조건 모두, 닻 지표).",
         "nSessions": len(loop),
         "byCondition": {c: {"n": len(rows), **{m: describe(s.get(m) for s in rows) for m in LOOP_METRICS}}

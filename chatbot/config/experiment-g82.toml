@@ -1,6 +1,6 @@
-# G82 시험용 설정(experiment.toml 사본 + G82만 켬). 참여자 세션에 쓰지 않는다 — 실험은 experiment.toml(G82 꺼짐)로 한다.
-# 다른 점 두 곳(◆G82): [selection] protocol 0.12(근거 인용 줄·[그 말이 아니에요] 문구 두 개, draft)와 [gen3d] on_none_llm_shape = true.
-# 켜기 전 조건: docs/decisions.md G82의 오프라인 평가 기준 통과(2차 평가 docs/validation/run-g82-llm-shape-eval2 는 기준 미달).
+# G82 평가 재현용 설정(G83 이전 experiment.toml 사본 + G82 켬 + 선택 문구 0.12). 참여자 세션에 쓰지 않는다 — 실험은 experiment.toml로 한다.
+# G83(2026-11-28)부터 experiment.toml이 G82를 켜고 선택 문구 0.13.0을 쓴다. 이 파일은 그 앞의 3차 오프라인 평가(docs/validation/
+#   run-g82-llm-shape-eval3/run_eval3.py가 이름으로 읽음)와 첫 실제 흐름 점검(run-g82-end-to-end)을 그대로 다시 돌리려고 남긴다(◆G82 두 곳).
 # 본 실험 단일 설정: v4 흐름(면담 → 확정 → 추출 → 후보 → 조절 → 사전 측정 → 사후 면담 기록) + D9 다리 질문 + G70 면담 앞부분(프로토콜 1.6)
 #   + 설계 뼈대 3절 권고값(docs/design-backbone.md, 결정 G59-8). 실행 순서서: docs/run-experiment.md
 # 실행: python -m ifs_chatbot.server --config experiment

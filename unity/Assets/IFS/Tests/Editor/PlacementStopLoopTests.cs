@@ -129,7 +129,7 @@ namespace IFS.SceneSpec.Tests
             Assert.That(c.eyeHeightMode, Is.EqualTo("none"));
             Assert.That((c.stopLoopMinM, c.stopLoopMaxM, c.stopLoopStartMinM, c.stopLoopStartMaxM), Is.EqualTo((0.4, 3.6, 1.0, 3.0)));
             Assert.That((c.stopLoopRounds, c.stopLoopPracticeRounds, c.stopLoopRoundSeconds, c.stopLoopToggleDebounceMs, c.stopLoopHideRings),
-                Is.EqualTo((4, 1, 75.0, 250.0, true)));
+                Is.EqualTo((1, 1, 75.0, 250.0, true)), "본 라운드 1(2026-11-28 G83, 이전 4)");
             Assert.That(c.stopLoopPracticeRoundSeconds, Is.EqualTo(30.0), "연습 라운드는 30초 1번(2026-11-28 연구 책임자 요청), 본 라운드 75초는 그대로");
             Assert.That((c.eyeHeightReferenceM, c.eyeHeightMinM, c.eyeHeightMaxM, c.eyeCalibSeconds, c.eyeCalibMaxSdM, c.eyeCalibMaxPitchDeg),
                 Is.EqualTo((1.6, 1.30, 1.95, 1.0, 0.02, 15.0)));
@@ -184,6 +184,7 @@ namespace IFS.SceneSpec.Tests
             Assert.That(new[] { rng.NextULong(), rng.NextULong(), rng.NextULong() },
                 Is.EqualTo(new[] { 5424204624148110235UL, 15555979849632202484UL, 6851360858507811590UL }));
             var cfg = Loop();
+            cfg.stopLoopRounds = 4;   // 예전(G60-2) 4라운드 계획 — 수열·번갈이 규칙을 그대로 고정해 둔다(기본 1라운드는 아래 시험)
             var p1 = StopLoopSchedule.Build(cfg, 1);
             Assert.That(p1.Select(p => p.StartM), Is.EqualTo(new[] { 1.588, 2.687, 1.743, 1.462, 2.718 }));
             Assert.That(p1.Select(p => p.StartDirection), Is.EqualTo(new[] { "approach", "recede", "approach", "recede", "approach" }), "홀수 번호는 approach 먼저");
@@ -202,11 +203,85 @@ namespace IFS.SceneSpec.Tests
                 }
         }
 
+        [Test]
+        public void Default_plan_is_one_practice_then_one_main_round_in_the_opposite_direction()
+        {
+            // 2026-11-28 G83: 연습 1 + 본 1. 규칙은 그대로라 본 라운드 = 첫 방향의 반대, 출발 거리 = 수열의 두 번째 값(예전 계획의 앞 두 라운드)
+            var cfg = Loop();
+            var old = Loop();
+            old.stopLoopRounds = 4;
+            foreach (int n in Enumerable.Range(1, 40))
+            {
+                var plan = StopLoopSchedule.Build(cfg, n);
+                Assert.That(plan.Select(p => (p.Round, p.Practice)), Is.EqualTo(new[] { (1, true), (2, false) }), "연습 1 + 본 1");
+                Assert.That(plan.Select(p => p.StartM), Is.EqualTo(StopLoopSchedule.Build(old, n).Take(2).Select(p => p.StartM)), "예전 계획의 앞 두 라운드와 같은 출발 거리");
+                Assert.That(plan[1].StartDirection, Is.EqualTo(n % 2 == 1 ? "recede" : "approach"), "홀수 번호: 연습 approach·본 recede, 짝수 번호: 반대");
+                Assert.That(plan[1].StartDirection, Is.Not.EqualTo(plan[0].StartDirection));
+            }
+            Assert.That(StopLoopSchedule.Build(cfg, 1).Select(p => p.StartM), Is.EqualTo(new[] { 1.588, 2.687 }));
+            Assert.That(StopLoopSchedule.Build(cfg, 2).Select(p => p.StartM), Is.EqualTo(new[] { 2.082, 1.169 }));
+            var fixedFirst = Loop();
+            fixedFirst.stopFirstDirection = PlacementConfig.DirectionApproach;
+            Assert.That(StopLoopSchedule.Build(fixedFirst, 2).Select(p => p.StartDirection), Is.EqualTo(new[] { "approach", "recede" }),
+                "첫 방향을 approach로 정하면 본 라운드는 모든 참여자가 recede 출발");
+        }
+
+        [Test]
+        public void Default_loop_session_records_one_practice_and_one_main_round()
+        {
+            var cfg = Loop();
+            string dir = Run(cfg);
+            var rounds = Table(dir, PlacementRecordWriter.StopRoundsFile);
+            Assert.That(rounds.Select(r => (r["round"], r["practice"], r["start_dir"])), Is.EqualTo(new[] { ("1", "1", "approach"), ("2", "0", "recede") }));
+            Assert.That(rounds.Select(r => D(r["start_distance_m"])), Is.EqualTo(new[] { 1.588, 2.687 }), "계획 그대로");
+            Assert.That(rounds[1]["end_reason"], Is.EqualTo("confirmed"));
+            var m = Json(dir, "manifest.json");
+            var loop = m["stopDistance"]["loop"];
+            Assert.That(((int)loop["rounds"], (int)loop["practiceRounds"], loop["plan"].Count()), Is.EqualTo((1, 1, 2)), "기록에 라운드 수 설정이 남는다");
+            Assert.That(((int)m["config"]["stopLoopRounds"], (int)m["config"]["stopLoopPracticeRounds"]), Is.EqualTo((1, 1)));
+            var events = File.ReadAllLines(Path.Combine(dir, "events.csv")).Skip(1).Select(l => l.Split(',')[1]).ToList();
+            Assert.That(events.Count(e => e == "stop_round_start"), Is.EqualTo(2));
+        }
+
+        [Test]
+        public void After_the_only_main_round_no_gap_instruction_or_wait_follows()
+        {
+            // 2026-11-28 G83: 마지막 라운드 뒤에는 다음 라운드가 없다 — 시간 초과면 지시문(라운드 사이 문구)도 기다림도 없이 다음 단계,
+            // 확정했으면 확정 알림만 stopItiSeconds 동안(G78-d)
+            foreach (bool confirm in new[] { false, true })
+            {
+                var cfg = OneRound(4);
+                cfg.stopItiSeconds = 2.0;
+                var after = new List<string>();
+                double endedAt = double.NaN, leftAt = double.NaN;   // endedAt = 라운드가 돌던 마지막 프레임
+                Run(cfg, loopInput: confirm ? Presses((1.0, "t"), (2.0, "c")) : (s, e) => new PlacementInputFrame(), eachFrame: s =>
+                {
+                    if (s.Phase == PlacementPhase.StopDistance)
+                    {
+                        if (s.StopRoundActive) endedAt = s.Now;
+                        else if (!double.IsNaN(endedAt) && (after.Count == 0 || after.Last() != s.ParticipantTextKey)) after.Add(s.ParticipantTextKey);
+                    }
+                    else if (!double.IsNaN(endedAt) && double.IsNaN(leftAt)) leftAt = s.Now;
+                });
+                if (confirm)
+                {
+                    Assert.That(after, Is.EqualTo(new[] { "confirm_done" }), "확정 뒤: 확정 알림만");
+                    Assert.That(leftAt - endedAt, Is.EqualTo(2.0).Within(0.05), "확정 알림은 stopItiSeconds 동안");
+                }
+                else
+                {
+                    Assert.That(after, Is.Empty, "시간 초과 뒤 라운드 사이 지시문이 한 프레임도 보이지 않는다: " + string.Join(", ", after));
+                    Assert.That(leftAt - endedAt, Is.LessThan(0.05), "기다리지 않고 다음 단계");
+                }
+            }
+        }
+
         // ── 한 바퀴(자동 시행) ──────────────────────────────────────────
         [Test]
         public void Auto_loop_session_writes_rounds_adjust_rows_and_manifest()
         {
             var cfg = Loop();
+            cfg.stopLoopRounds = 4;   // 예전(G60-2) 연습 1 + 본 4 — 여러 라운드 경로도 그대로 돈다
             string dir = Run(cfg);
             Assert.That(File.ReadLines(Path.Combine(dir, PlacementRecordWriter.StopRoundsFile)).First(), Is.EqualTo(RoundsCsv));
             Assert.That(File.ReadLines(Path.Combine(dir, PlacementRecordWriter.StopAdjustFile)).First(), Is.EqualTo(AdjustCsv));
@@ -617,7 +692,29 @@ namespace IFS.SceneSpec.Tests
                         Assert.That(t[k], Does.Not.Contain(banned), k + ": 방향 암시·치료 표현·'방금 자리' 금지");
                 }
             }
-            Assert.That(def.Version, Is.EqualTo("0.9"), "G60-2는 0.6 안에 더함, G65·G66 문구로 0.7, 2026-11-28 확인 버튼 안내·확정 알림으로 0.8, 공간 고르기 문구로 0.9");
+            Assert.That(def.Version, Is.EqualTo("0.10"), "G60-2는 0.6 안에 더함, G65·G66 문구로 0.7, 2026-11-28 확인 버튼 안내·확정 알림으로 0.8, 공간 고르기 문구로 0.9, 조작 안내 고침(G83)으로 0.10");
+        }
+
+        [Test]
+        public void Paused_hint_says_the_confirm_button_sets_the_place_and_stays_within_the_old_line_count()
+        {
+            // 2026-11-28 G83: 멈춘 동안의 조작 안내를 문장으로 — 확인 버튼이 자리를 정한다는 것을 분명히 하고, 끝에 붙는 손별 안내가 문장으로 이어진다
+            foreach (var rel in new[] { PlacementTaskText.DefaultRelativePath, PlacementXrTests.ScaleARelativePath })
+            {
+                string path = Path.Combine(Application.streamingAssetsPath, rel);
+                var t = PlacementTaskText.Load(path);
+                Assert.That(t[PlacementTaskText.StopLoopHintKey], Is.EqualTo("방아쇠를 누르면 다시 움직여요. 확인 버튼을 누르면 이 자리로 정해져요."), rel);
+                var src = (string)((JObject)JObject.Parse(File.ReadAllText(path, Encoding.UTF8))["texts"])[PlacementTaskText.StopLoopHintKey]["source"];
+                Assert.That(src, Does.Contain("2026-11-28 연구 책임자 결정(G83)"), rel);
+                foreach (var banned in new[] { "번째", "라운드", "다음", "예를 들어", "치료" })
+                    Assert.That(t[PlacementTaskText.StopLoopKey] + t[PlacementTaskText.StopLoopHintKey], Does.Not.Contain(banned), rel + ": 라운드 수·예시·치료 표현 없음");
+                // 판 줄 수는 예전 글(+ 확인 버튼 안내)과 같다(24·26자 모두 8줄 — G63 (1) 알려진 예외에서 더 나빠지지 않음)
+                string paused = t[PlacementTaskText.StopLoopKey] + "\n" + t[PlacementTaskText.StopLoopHintKey] + " " + t[PlacementTaskText.ConfirmButtonRightKey];
+                string before = t[PlacementTaskText.StopLoopKey] + "\n" + "방아쇠: 다시 움직이기 · 확인 버튼: 이 자리로 정하기" + " " + t[PlacementTaskText.ConfirmButtonRightKey];
+                foreach (int w in new[] { PlacementPanelMetrics.ComfortWrapChars, PlacementPanelMetrics.ComfortWrapMaxChars })
+                    Assert.That(PlacementPanelMetrics.WrapLineCount(paused, w), Is.LessThanOrEqualTo(PlacementPanelMetrics.WrapLineCount(before, w)), rel + " " + w + "자");
+                Assert.That(PlacementPanelMetrics.WrapLineCount(t[PlacementTaskText.StopLoopKey], PlacementPanelMetrics.ComfortWrapChars), Is.EqualTo(5), "움직이는 동안의 판은 그대로 5줄");
+            }
         }
 
         // ── 눈높이 보정 판정 ────────────────────────────────────────────

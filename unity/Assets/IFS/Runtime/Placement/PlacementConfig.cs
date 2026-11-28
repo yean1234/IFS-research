@@ -162,8 +162,10 @@ namespace IFS.SceneSpec.Placement
         /// <summary>loop 출발 거리 범위(m). 라운드마다 이 안에서 의사난수로 고른다.</summary>
         public double stopLoopStartMinM = 1.0;
         public double stopLoopStartMaxM = 3.0;
-        /// <summary>loop 본 라운드 수와 연습 라운드 수.</summary>
-        public int stopLoopRounds = 4;
+        /// <summary>loop 본 라운드 수와 연습 라운드 수. 본 라운드는 2026-11-28 연구 책임자 결정(G83)으로 4 → 1: 라운드를 되풀이하지 않고
+        /// 상한 시간(stopLoopRoundSeconds) 안에 언제든 멈추고 다시 움직이다 확인 버튼으로 한 번 정한다. 연습 1 + 본 1이면 출발 방향은
+        /// 연습 = 첫 방향, 본 = 그 반대(StopLoopSchedule). 2 이상도 그대로 돈다(예전 4라운드 기록·설정).</summary>
+        public int stopLoopRounds = 1;
         public int stopLoopPracticeRounds = 1;
         /// <summary>loop 라운드 시간 상한(초, 움직이기 시작한 때부터). 넘으면 확정값은 빈칸(end_reason timeout_*).</summary>
         public double stopLoopRoundSeconds = 75;

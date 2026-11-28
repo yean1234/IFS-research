@@ -87,7 +87,7 @@ def test_g60_pi1_wording_clarify_and_purposes():
     ids = {i["id"] for i in p.data["items"]}
     assert {i["id"] for k in "BCD" for i in layers[k]["items"]} == ids
     ifs = REPO_ROOT / "unity" / "Assets" / "StreamingAssets" / "IFS"
-    for name, ver in (("placement_task.v0.json", "0.9"), ("placement_task.scaleA.v0.json", "0.9-scaleA")):   # 0.8: 확인 버튼 안내·확정 알림, 0.9: 공간 고르기 문구(2026-11-28)
+    for name, ver in (("placement_task.v0.json", "0.10"), ("placement_task.scaleA.v0.json", "0.10-scaleA")):   # 0.8: 확인 버튼 안내·확정 알림, 0.9: 공간 고르기 문구, 0.10: 반복 멈춤 조작 안내 G83(2026-11-28)
         t = json.loads((ifs / name).read_text(encoding="utf-8"))
         assert t["version"] == ver and "want_move" not in t["texts"], name
         assert t["texts"]["place_fit"]["text"] == layers["A"]["items"][0]["text"], name
