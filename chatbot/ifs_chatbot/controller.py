@@ -355,6 +355,7 @@ class Session:
         self.scene_hashes: dict | None = None      # 확정 시점에 고정한 장면 파일별 sha256(보기 전 보고가 쓴다)
         self.llm_fill: dict | None = None          # (G77) 확정 직후 LLM 빈칸 채우기 기록([mapping] llm_fill일 때만)
         self.llm_fill_cache: dict = {}             # (확정 텍스트 해시, 모델 digest, 프롬프트 판·해시) → 기록(다시 부르지 않음)
+        self.llm_fill_skips: list = []              # (G77, CP15 재검토) 판정 때문에 건너뛴 기록(캐시의 앞 결과를 덮지 않고 따로)
         self.steps: list[Step] = self.p.sequence(condition)
         self.idx = 0
         self.step_state: dict[int, dict] = defaultdict(dict)

@@ -157,14 +157,17 @@ class OllamaBackend:
                                       "done_reason": d.get("done_reason"), "options": body["options"]})
 
     def warmup(self) -> None:
-        """첫 호출의 모델 적재 시간(수십 초)을 세션 밖에서 미리 쓴다."""
+        """첫 호출의 모델 적재 시간(수십 초)을 세션 밖에서 미리 쓴다. num_ctx는 실제 호출(generate·structured)과 같게 준다
+        (다르면 Ollama가 다음 호출에서 모델을 다시 적재한다 — G77 실측)."""
         try:
-            httpx.post(f"{self.host}/api/chat", timeout=self.cfg.timeout_s, json={
-                "model": self.cfg.model, "stream": False, "keep_alive": self.cfg.keep_alive,
-                "messages": [{"role": "user", "content": "."}], "options": {"num_predict": 1}, "think": False,
-            })
+            httpx.post(f"{self.host}/api/chat", timeout=self.cfg.timeout_s, json=self.warmup_body())
         except Exception:
             pass
+
+    def warmup_body(self) -> dict:
+        return {"model": self.cfg.model, "stream": False, "keep_alive": self.cfg.keep_alive,
+                "messages": [{"role": "user", "content": "."}],
+                "options": {"num_predict": 1, "num_ctx": self.cfg.num_ctx}, "think": False}
 
 
 # ── 오프라인 대역 ────────────────────────────────────────────────────────────

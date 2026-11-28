@@ -73,10 +73,11 @@ proportions = "scene_params.v2.json"   # ◆ G72: 너비·높이·깊이 비율(
 mist_kinds = "scene_params.v2.json"    # ◆ G74: 안개 입자 모양(form.mistKind — 안개·연기·먼지·구름, 스펙 2.4.0의 선택 슬롯, builder 2.9.0 — 그 파일의 mistKinds 표).
                                         #   form.type이 mist일 때 종류별로 그린다. Unity 러너·미리보기가 form.mistKind를 읽는 빌드여야 한다(옛 러너는 모르는 필드로 거부)
 llm_fill = true                         # ◆ G77: 확정 직후 면담 모델(같은 Ollama 모델·digest)이 매퍼가 비운 슬롯(색·밝기·투명도·질감·크기·움직임·형태 종류)과
-                                        #   그림용 형태 낱말을 참여자 원문 인용과 함께 채운다(온도 0·seed 고정·JSON 스키마, chatbot/prompts/llm_fill/llm_fill.v0.1.0.json, draft).
+                                        #   그림용 형태 낱말을 참여자 원문 인용과 함께 채운다(온도 0·seed 고정·JSON 스키마, chatbot/prompts/llm_fill/llm_fill.v0.1.1.json, draft).
                                         #   검증기를 통과한 값만 후보·조절의 처음 값(덮어쓰기)으로 — 확정 스펙은 그대로. 위기·확인 판정이 있었던 세션·실패·시간 초과는 지금 경로
 llm_fill_timeout_s = 20.0
 llm_fill_max_items = 4
+llm_fill_seed = 0                       # G77: 빈칸 채우기 호출의 seed(코드 기본값과 같음, 기록 options.seed). 실측 docs/validation/run-g77-llm-fill-live
 
 [drift]
 enabled = true

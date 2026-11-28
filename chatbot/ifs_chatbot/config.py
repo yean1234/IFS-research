@@ -96,7 +96,7 @@ class MappingConfig:
     llm_fill_timeout_s: float = 20.0      # 한 번 부르는 시간 한도(넘으면 결과를 버리고 지금 경로)
     llm_fill_max_items: int = 4           # 검증을 통과해 채택할 항목 수 상한(형태 낱말 항목 포함)
     llm_fill_seed: int = 0
-    llm_fill_prompt: str = "llm_fill.v0.1.0.json"   # chatbot/prompts/llm_fill/ 아래 고정 프롬프트(판·status draft)
+    llm_fill_prompt: str = "llm_fill.v0.1.1.json"   # chatbot/prompts/llm_fill/ 아래 고정 프롬프트(판·status draft). 0.1.0은 기록용(CP15)
 
 
 @dataclass(frozen=True)

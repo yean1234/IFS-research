@@ -270,7 +270,16 @@ class SelectionFlow:
         self.llm_on = getattr(rt, "llm_fill_prompt", None) is not None
         self.llm_rec = copy.deepcopy(getattr(session, "llm_fill", None)) if self.llm_on else None
         self.llm_applied: dict = {}      # 조절 항목 → {slot, value, quote, charSpan, overrides, specSlots}(후보에 넣은 처음 값)
-        self.llm_shape_items: list = llm_fill_mod.shape_items_from(self.llm_rec) if self.llm_on else []
+        self._llm_shape_items: list = llm_fill_mod.shape_items_from(self.llm_rec) if self.llm_on else []
+
+    def _llm_flag(self) -> str | None:
+        """(G77, CP15-2) 세션에 위기·확인 판정이 있으면 그 사유. 판정 뒤에는 LLM 값을 새 후보·그림 프롬프트에 넣지 않는다."""
+        return llm_fill_mod.session_flag(self.s) if self.llm_on else None
+
+    @property
+    def llm_shape_items(self) -> list:
+        """(G77) 그림 프롬프트용 LLM 형태 낱말. 판정이 선 세션이면 빈 목록(규칙 결과 그대로)."""
+        return [] if self._llm_flag() else self._llm_shape_items
 
     @property
     def gen3d(self) -> bool:
@@ -293,9 +302,12 @@ class SelectionFlow:
             return None, {}
         P = self.rt.llm_fill_prompt
         off = self.unavailable_items()
+        flag = self._llm_flag()
         pre, dropped = {}, {}
         for item, a in llm_fill_mod.prefill_from(self.llm_rec).items():
-            if item not in self.items:
+            if flag:
+                dropped[item] = "session_flagged"           # 확정 뒤 판정이 섰으면 앞서 채택한 값도 넣지 않음(CP15-2)
+            elif item not in self.items:
                 dropped[item] = "not_in_table"
             elif item in off:
                 dropped[item] = f"unavailable:{off[item]}"
@@ -861,9 +873,13 @@ class SelectionFlow:
             self._log_event("selection:image_pick", {"status": "picked", "round": ip["round"], "position": pos,
                                                      "seed": img["seed"]})
             text = self.s.log.data.get("confirmedText")
-            job = self.none_gen.start(self.s.id, text, source_key(self.spec), rec["prompt"]["text"], self._generation_done,
-                                      attempt=rec["attempt"], spec=self.spec, other_interviews=self._other_interviews,
-                                      kind="mesh", image=(path, sha), seed=img["seed"], llm_items=self.llm_shape_items or None)
+            if rec.get("llmPromptUsed") and self._llm_flag():
+                job = "session_flagged"                     # (CP15-2) LLM 낱말로 만든 그림 프롬프트는 판정 뒤 메시로 잇지 않음
+            else:
+                job = self.none_gen.start(self.s.id, text, source_key(self.spec), rec["prompt"]["text"], self._generation_done,
+                                          attempt=rec["attempt"], spec=self.spec, other_interviews=self._other_interviews,
+                                          kind="mesh", image=(path, sha), seed=img["seed"],
+                                          llm_items=self.llm_shape_items or None)
             if isinstance(job, str):
                 rec.update(status=ng.BLOCKED, blockReason=job, endedAt=at, seconds=0.0,
                            blockDetail=",".join(self._other_interviews()) or None if job == ng.B_INTERVIEW else None)

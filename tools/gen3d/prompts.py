@@ -435,25 +435,97 @@ def _mapper_verdict(ev: dict, span, is_noun: bool) -> str | None:
     return None
 
 
-SHAPE_BUILDER_LLM_SUFFIX = "+llmquote-0.1.0"           # (G77) LLM 인용 형태 낱말로 빈 형태 자리를 메웠을 때 builderVersion 끝에
+# (G77) 0.1.1(CP15-1): 생성 직전 재검증이 서버 검증기와 같은 영어 금지 규칙(english_shape_reasons)을 쓴다
+SHAPE_BUILDER_LLM_SUFFIX = "+llmquote-0.1.1"           # (G77) LLM 인용 형태 낱말로 빈 형태 자리를 메웠을 때 builderVersion 끝에
 LLM_QUOTED = "llm_quoted"
-_LLM_EN_RE = None
+SHAPE_EN_BLOCK = CHATBOT.parent / "shared" / "lexicon" / "shape_english_block.v0.json"
+EN_REASONS = ("english_banned", "english_color_size", "english_non_shape", "non_meshable")   # 기각 사유 순서(형식 다음)
+_EN_SUFFIXES = ("shaped", "esque", "like", "ish", "oid", "ed")   # 붙여 쓴 꼴('catlike'·'horned')을 어간으로 되돌려 exact와 대조
+_en_block = None
+
+
+class _EnglishBlock:
+    def __init__(self, path: Path = SHAPE_EN_BLOCK):
+        import re
+        raw = Path(path).read_text(encoding="utf-8")
+        d = json.loads(raw)
+        self.file, self.sha256, self.version = Path(path).name, sha256_text(raw), d["version"]
+        self.pattern = re.compile(d["englishPattern"])
+        self.irregular = dict(d["irregularPlurals"])
+        self.exact = {k: frozenset(d["categories"][k]["exact"]) for k in EN_REASONS}
+        self.contained = {k: tuple(d["categories"][k]["contained"]) for k in EN_REASONS}
+
+
+def english_block() -> _EnglishBlock:
+    global _en_block
+    if _en_block is None:
+        _en_block = _EnglishBlock()
+    return _en_block
+
+
+def _en_variants(w: str, irregular: dict) -> set[str]:
+    """낱말 → 대조할 꼴(그대로 + 불규칙 복수형 + 단순 복수형 어간 + 붙여 쓴 접미 떼기). 규칙만, 같은 낱말 → 같은 집합."""
+    out = {w}
+    for x in list(out):
+        if x in irregular:
+            out.add(irregular[x])
+        if len(x) > 4 and x.endswith("ies"):
+            out.add(x[:-3] + "y")
+        if len(x) > 4 and x.endswith("ves"):
+            out.update((x[:-3] + "f", x[:-3] + "fe"))
+        if len(x) > 3 and x.endswith("es"):
+            out.add(x[:-2])
+        if len(x) > 2 and x.endswith("s") and not x.endswith("ss"):
+            out.add(x[:-1])
+    for x in list(out):
+        for suf in _EN_SUFFIXES:
+            if x.endswith(suf) and len(x) - len(suf) >= 2:
+                stem = x[:-len(suf)]
+                out.add(stem)
+                if stem in irregular:
+                    out.add(irregular[stem])
+                if len(stem) > 2 and stem.endswith("s") and not stem.endswith("ss"):
+                    out.add(stem[:-1])
+    return out
+
+
+def english_shape_reasons(value: str) -> list[str]:
+    """(G77) LLM 형태 낱말(영어) → 기각 사유 목록(비면 통과). 서버 검증기(llm_fill._check_item)와 생성 직전 재검증(_llm_head)이
+    같은 함수를 쓴다. ASCII·형식(영문자 1–3낱말, 낱말 사이 공백 하나) 밖이면 곧바로 english_format 하나로 버림(글자를 지우고
+    검사하지 않음) → 소문자 낱말로 나눔 → 낱말과 이어 붙인 낱말 묶음마다 복수형·접미 어간을 만든 뒤 exact 목록 일치, contained
+    어근이 안에 들어 있는지. 막는 쪽으로 넉넉하다(handle → hand 등 과차단은 의도, 막히면 형태 자리를 메우지 않음)."""
+    B = english_block()
+    if not isinstance(value, str) or not value.isascii():    # ASCII 밖(소문자화로 ASCII가 되는 'K' U+212A 포함)은 곧바로
+        return ["english_format"]
+    low = value.lower()
+    if not B.pattern.fullmatch(low):
+        # 허용 문자(영소문자·낱말 사이 공백 하나) 밖의 글자가 하나라도 있으면 지우고 검사하지 않고 곧바로 형식 위반으로 버린다
+        # (닮은꼴 문자 'skսll'·숫자 'f0g'·하이픈·소유격 "wolf's"·앞뒤 공백·줄바꿈 — 사유 일관, CP15 재검토)
+        return ["english_format"]
+    why = []
+    words = low.split()
+    grams = {"".join(words[i:j]) for i in range(len(words)) for j in range(i + 1, len(words) + 1)}
+    forms = set()
+    for g in grams:
+        forms |= _en_variants(g, B.irregular)
+    for k in EN_REASONS:
+        if any(f in B.exact[k] for f in forms) or any(r in g for g in grams for r in B.contained[k]):
+            why.append(k)
+    return why
 
 
 def _llm_head(norm: str, items) -> dict | None:
     """(G77) 서버가 채택한 LLM 형태 낱말 항목 가운데 첫 번째를 다시 확인한다(같은 입력 → 같은 결과, 생성기 프로세스도 같은 판정).
-    인용이 확정 텍스트의 charSpan 글자와 같고 영어가 영문자 1–3낱말일 때만. 아니면 None(규칙 결과 그대로 — fail closed)."""
-    global _LLM_EN_RE
-    import re
-    if _LLM_EN_RE is None:
-        _LLM_EN_RE = re.compile(r"^[A-Za-z]+( [A-Za-z]+){0,2}$")
+    인용이 확정 텍스트의 charSpan 글자와 같고 영어가 서버 검증기와 같은 규칙(english_shape_reasons)을 통과할 때만.
+    아니면 None(규칙 결과 그대로 — fail closed)."""
     for it in items or []:
         try:
             q, (s, e), en = it["quote"], it["charSpan"], it["english"]
         except (KeyError, TypeError, ValueError):
             continue
         if isinstance(q, str) and isinstance(en, str) and isinstance(s, int) and isinstance(e, int) \
-                and 0 <= s < e <= len(norm) and norm[s:e] == q and _LLM_EN_RE.match(en):
+                and not isinstance(s, bool) and not isinstance(e, bool) \
+                and 0 <= s < e <= len(norm) and norm[s:e] == q and not english_shape_reasons(en):
             return {"en": en.lower(), "ko": q, "charSpan": [s, e]}
         return None                                     # 첫 항목만 본다(빈자리 메우기 하나)
     return None
