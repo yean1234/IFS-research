@@ -457,6 +457,192 @@ def probe(rows: list[dict], run_name: str, pipeline: str = "sdxl-triposg", seed:
     return res
 
 
+# ── G75: 참고 이미지를 참여자가 먼저 고른다(이미지 단계와 형태 단계를 두 번의 호출로 나눔) ────────────────
+IMAGE_PICK_SCHEMA = "gen3d-image-pick.v0"      # 'form-asset'이 들어가지 않는 이름(챗봇 FormAssetStore가 사이드카로 읽지 않음)
+IMAGE_PICK_GEN_VERSION = "g75-image-pick/0.1.0"
+
+
+def _single_row(rows: list[dict]) -> dict:
+    if len(rows) != 1:
+        raise SystemExit(f"--image-pick·--from-image는 문장 하나만 받는다(지금 {len(rows)}개)")
+    return rows[0]
+
+
+def pick_images(rows: list[dict], run_name: str, pipeline: str = "sdxl-triposg", seeds: list[int] | None = None) -> dict:
+    """규칙 프롬프트 하나 → seed마다 SDXL 이미지 → 이미지마다 출력 관문(CLIP 사람·얼굴·동물 대 물체, 문턱 GATE_THRESHOLD,
+    run()과 같은 라벨·틀). 형태(TripoSG)는 만들지 않는다. 결과는 OUT_ROOT/<run>/image-pick.json, 이미지는 <run>/images/.
+    막힌 프롬프트는 모델을 부르지 않는다. 관문에 걸린 이미지도 파일은 남기고 gate.passed = false로 적는다(보여 줄지는 챗봇이 정함)."""
+    import prompts
+    from PIL import Image
+
+    if pipeline != "sdxl-triposg":
+        raise SystemExit("이미지 고르기는 지금 sdxl-triposg만 구현함")
+    seeds = [int(s) for s in (seeds or [0])]
+    t_start = time.perf_counter()
+    run_dir = assert_outside_repo(OUT_ROOT / run_name)
+    row = _single_row(rows)
+    p = prompts.shape_prompt_for_row(row)
+    res = {"schema": IMAGE_PICK_SCHEMA, "version": IMAGE_PICK_GEN_VERSION, "id": row["id"], "pipeline": pipeline,
+           "seeds": seeds, "status": None, "blockReason": None, "blockDetail": None, "error": None,
+           "prompt": {k: p.get(k) for k in ("text", "negativeText", "lexiconVersion", "builderVersion", "templateVersion",
+                                            "imageStyle", "imageStyleVersion", "tokens", "dropped", "promptRule")},
+           "sourceTextSha256": p["sourceTextSha256"], "models": None, "config": {"image": CONFIG["image"], "gate": {
+               "version": GATE_VERSION, "threshold": GATE_THRESHOLD, "views": 1, "template": GATE_TEMPLATE,
+               "person": GATE_PERSON, "object": GATE_OBJECT, "note": "이미지 한 장을 그대로 CLIP에 넣음(메시 렌더 6시점 대신)"}},
+           "images": [], "modelCalls": {"image": 0, "gate": 0}, "timing": {}, "env": env_info()}
+    if p["status"] != "ok":
+        res.update(status="blocked", blockReason=p["blockReason"], blockDetail=p["blockDetail"])
+        write_json(run_dir / "image-pick.json", res)
+        print("image-pick: blocked", p["blockReason"], flush=True)
+        return res
+    models = models_provenance()
+    res["models"] = [m for m in models if m["name"] in ("image", "gate")]
+    try:
+        t0 = time.perf_counter()
+        st = ImageStage()
+        res["timing"]["imageLoad"] = round(time.perf_counter() - t0, 2)
+        for s in seeds:
+            png = run_dir / "images" / f"{row['id']}-s{s}.png"
+            info = st.make(p["text"], p["negativeText"], s, png)
+            res["modelCalls"]["image"] += 1
+            res["images"].append({"seed": s, "file": png.relative_to(run_dir).as_posix(), "sha256": info["imageSha256"],
+                                  "seconds": info["seconds"], "vramReservedGiB": info["vramReservedGiB"], "gate": None})
+            print("image", s, info["seconds"], flush=True)
+        del st
+        _free()
+        t1 = time.perf_counter()
+        gs = GateStage()
+        res["timing"]["gateLoad"] = round(time.perf_counter() - t1, 2)
+        for im in res["images"]:
+            tg = time.perf_counter()
+            try:
+                g = gs.judge([Image.open(run_dir / im["file"]).convert("RGB")], _phrase(p["text"]))
+                g["model"] = f"{GATE_REPO}@{models[3]['revision']}"
+            except Exception as ex:  # noqa: BLE001 — 관문을 못 돌리면 그 이미지는 보이지 않는다(fail closed)
+                g = {"personLikeScore": None, "passed": False, "error": f"{type(ex).__name__}: {ex}"[:300]}
+            g["seconds"] = round(time.perf_counter() - tg, 2)
+            im["gate"] = g
+            res["modelCalls"]["gate"] += 1
+            print("gate", im["seed"], g.get("personLikeScore"), g.get("passed"), flush=True)
+        del gs
+        _free()
+        res["status"] = "ok"
+    except Exception as ex:  # noqa: BLE001 — 실패도 기록
+        res.update(status="failed", error=f"{type(ex).__name__}: {ex}"[:300])
+    res["timing"]["total"] = round(time.perf_counter() - t_start, 2)
+    write_json(run_dir / "image-pick.json", res)
+    print("image-pick:", res["status"], [(i["seed"], (i["gate"] or {}).get("passed")) for i in res["images"]], flush=True)
+    return res
+
+
+def mesh_from_image(rows: list[dict], run_name: str, image: str, image_sha256: str, pipeline: str = "sdxl-triposg",
+                    seed: int = 0) -> Path:
+    """참여자가 고른 이미지 한 장 → 배경 제거 → TripoSG → 결정적 후처리 → 출력 관문(run()과 같은 6시점 CLIP + 여러 물체)
+    → GLB + form-asset.v0 사이드카(OUT_ROOT/<run>/g62-<pipeline>/assets/, run()과 같은 자리·형식).
+    캐시 키는 run()의 키에 이미지 sha256을 더한 것(같은 이미지·seed·모델 → 다시 만들지 않음). 이미지 sha256이 다르면 만들지 않는다."""
+    import prompts
+
+    if pipeline != "sdxl-triposg":
+        raise SystemExit("form-asset 계약은 지금 sdxl-triposg만 구현함")
+    t_start = time.perf_counter()
+    out_dir = assert_outside_repo(OUT_ROOT / run_name / f"g62-{pipeline}")
+    cache = assert_outside_repo(CACHE_ROOT / pipeline)
+    (out_dir / "assets").mkdir(parents=True, exist_ok=True)
+    row = _single_row(rows)
+    sid = row["id"]
+    p = prompts.shape_prompt_for_row(row)
+    img = assert_outside_repo(Path(image).resolve())
+    models = models_provenance()
+    calls = {"image": 0, "shape": 0, "gate": 0}
+    src = {"file": img.name, "sha256": image_sha256, "shaMatches": None}
+    if p["status"] != "ok":
+        key = cache_key(p["text"] + "\n" + p["sourceTextSha256"], pipeline, models, seed, p["negativeText"])
+        sc = _sidecar(p, asset_id=key[:16], key=key, status="blocked", block=p["blockReason"], block_detail=p["blockDetail"],
+                      glb_name=None, glb_sha=None, pipeline=pipeline, models=models, seed=seed, norm=None, ratios=None,
+                      gate=None, timing=None, cache_hit=False)
+    else:
+        got = sha256_file(img) if img.is_file() else None
+        src["shaMatches"] = got == image_sha256
+        key = cache_key(p["text"] + "\nfrom-image:" + image_sha256, pipeline, models, seed, p["negativeText"])
+        gen_p = cache / f"{key[:16]}.gen.json"
+        hit = gen_p.exists() and (gen_p.parent / f"{key[:16]}.glb").exists()
+        if not src["shaMatches"]:
+            g = {"status": "failed", "error": "source_image_sha256_mismatch", "glbSha256": None, "normalization": None,
+                 "axisRatios": None, "timing": None}
+        elif hit:
+            g = read_json(gen_p)
+        else:
+            g = {"cacheKey": key, "sourceImageSha256": image_sha256}
+            info = {}
+            try:
+                st = ShapeStage()
+                v, f, sinfo = st.make(img, seed, out_dir / "work")
+                calls["shape"] += 1
+                del st
+                _free()
+                tp = time.perf_counter()
+                mesh, norm = postprocess(v, f)
+                glb = cache / f"{key[:16]}.glb"
+                sha = export_glb(mesh, glb)
+                info.update(removeBackground=sinfo["removeBackground"], shape=sinfo["shape"],
+                            postprocess=round(time.perf_counter() - tp, 2), vramShapeGiB=sinfo["vramReservedGiB"])
+                g.update(status="ok", glbSha256=sha, normalization=norm, axisRatios=axis_ratios(mesh), timing=info)
+                tg = time.perf_counter()
+                try:
+                    gs = GateStage()
+                    views = render_views(mesh, size=CONFIG["gate"]["renderSize"], n_points=CONFIG["gate"]["points"])
+                    rdir = cache / "renders"
+                    rdir.mkdir(parents=True, exist_ok=True)
+                    for vi, im in enumerate(views):
+                        im.save(rdir / f"{key[:16]}_v{vi}.png")
+                    gate = gs.judge(views, _phrase(p["text"]))
+                    gate["model"] = f"{GATE_REPO}@{models[3]['revision']}"
+                    g["gate"] = gate
+                    g["components"] = component_stats(mesh)
+                    del gs
+                    _free()
+                except Exception as ex:  # noqa: BLE001 — 관문을 못 돌리면 막는다(gate_failed, fail closed)
+                    g["gate"] = None
+                    g["gateError"] = f"{type(ex).__name__}: {ex}"[:300]
+                calls["gate"] += 1
+                g["timing"]["gate"] = round(time.perf_counter() - tg, 2)
+            except Exception as ex:  # noqa: BLE001
+                g.update(status="failed", error=f"{type(ex).__name__}: {ex}"[:300], glbSha256=None, normalization=None,
+                         axisRatios=None, timing=info)
+            write_json(gen_p, g)
+        gate = dict(g["gate"]) if g.get("gate") else None
+        status, block, detail, glb_name = g["status"], None, None, None
+        if status == "ok" and (gate is None or g.get("components") is None):
+            status, block, detail = "blocked", "gate_failed", "gate_not_evaluated"
+        elif status == "ok" and not gate["passed"]:
+            status, block = "blocked", "person_like"
+        if gate is not None and g.get("components") is not None:
+            multi = decide_multi_object(g["components"], bool(p.get("pluralStated")))
+            gate["multiObject"] = multi
+            if status == "ok" and multi["blocked"]:
+                gate["passed"] = False
+                status, block, detail = "blocked", "gate_failed", "multi_object"
+        if status == "ok":
+            glb_name = f"{key[:16]}.glb"
+            shutil.copyfile(cache / glb_name, out_dir / "assets" / glb_name)
+        sc = _sidecar(p, asset_id=key[:16], key=key, status=status, block=block, block_detail=detail, glb_name=glb_name,
+                      glb_sha=g.get("glbSha256") if status == "ok" else None, pipeline=pipeline, models=models, seed=seed,
+                      norm=g.get("normalization"), ratios=g.get("axisRatios"), gate=gate, timing=g.get("timing"),
+                      cache_hit=bool(hit) and bool(src["shaMatches"]), error=g.get("error"))
+    problems = []
+    validator = _validator()
+    if validator is not None:
+        problems = [e.message for e in validator.iter_errors(sc)][:3]
+    write_json(out_dir / "assets" / f"{sid}.form-asset.json", sc)
+    write_json(out_dir / "run.json", {
+        "pipeline": pipeline, "seed": seed, "mode": "from-image", "version": IMAGE_PICK_GEN_VERSION, "ids": [sid],
+        "sourceImage": src, "env": env_info(), "models": models, "config": CONFIG, "modelCalls": calls,
+        "schemaProblems": problems, "status": sc["status"], "blockReason": sc["blockReason"],
+        "totalSeconds": round(time.perf_counter() - t_start, 1)})
+    print("끝(from-image):", sc["status"], sc["blockReason"], "모델 호출", calls, flush=True)
+    return out_dir
+
+
 def run(rows: list[dict], run_name: str, pipeline: str = "sdxl-triposg", seed: int = 0, repeat: int = 1,
         no_cache: bool = False) -> Path:
     import prompts

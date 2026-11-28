@@ -313,13 +313,53 @@ def _negated(doc, i: int, j: int, lexical_starts: set, neg_spans) -> bool:
 
 def shape_prompt_for_row(row: dict) -> dict:
     """생성기 입력 sentences.json의 한 줄 → shape_prompt. promptRule = "mapper"이고 mapperSpec이 있으면 매퍼 규칙
-    (G73 [맞는 게 없어요] 생성 — none_gen.py가 세션 spec을 함께 적음), 아니면 텍스트만(G62 기본 후보·평가 입력)."""
+    (G73 [맞는 게 없어요] 생성 — none_gen.py가 세션 spec을 함께 적음), 아니면 텍스트만(G62 기본 후보·평가 입력).
+    (G75) imageStyle이 IMAGE_PICK_STYLE_ID면 이미지 고르기 화풍 문구를 더한다(image_pick_prompt). 없으면 예전 그대로."""
     if row.get("promptRule") == PROMPT_RULE_MAPPER:
         spec = row.get("mapperSpec")
         if not isinstance(spec, dict):
             raise SystemExit(f"{row.get('id')}: promptRule mapper인데 mapperSpec이 없음")
-        return shape_prompt(row["text"], mapper_spec=spec)
-    return shape_prompt(row["text"])
+        p = shape_prompt(row["text"], mapper_spec=spec)
+    else:
+        p = shape_prompt(row["text"])
+    style = row.get("imageStyle")
+    if style is None:
+        return p
+    if style != IMAGE_PICK_STYLE_ID:
+        raise SystemExit(f"{row.get('id')}: 모르는 imageStyle {style!r}(아는 값: {IMAGE_PICK_STYLE_ID})")
+    return image_pick_prompt(p)
+
+
+# ── G75: 참여자가 먼저 고르는 참고 이미지의 화풍(형태만 보이는 무채색) ─────────────────────────────
+# 최종 물체는 형태만 쓰고 색·재질은 참여자가 말한 값(매핑)으로 칠한다. 참여자가 이미지의 색을 보고 고르면 어긋나므로
+# 이미지를 흰 배경의 무채색 점토 조형 하나로 고정한다. 아래 문구는 심상 속성이 아니라 시스템 문구다(slot template).
+# 내용 토큰(말한 형태 낱말)은 바꾸지 않는다. 같은 입력 → 같은 출력. 이 함수를 거치지 않는 경로(G62 기본 후보·G73)는 그대로다.
+IMAGE_PICK_STYLE_ID = "g75-shape-only-gray"
+IMAGE_PICK_STYLE_VERSION = "g75-image-style/0.1.0"
+IMAGE_PICK_SUFFIX = ("untextured monochrome gray clay sculpture", "single uniform color", "soft even studio lighting",
+                     "centered", "entire object in view")
+IMAGE_PICK_NEGATIVE = ("colorful", "multicolored", "painted", "patterned", "glossy", "metallic", "reflections",
+                       "background objects")
+SHAPE_BUILDER_VERSION_IMAGE_PICK = "gen3d-shape-prompt/0.4.0+imagepick"
+
+
+def image_pick_prompt(p: dict) -> dict:
+    """shape_prompt 결과 → 이미지 고르기(G75)용 프롬프트. 막힌 결과는 판 이름만 바꿔 그대로(모델을 부르지 않음).
+    부정 틀 항목이 말한 낱말과 한 낱말이라도 겹치면 뺀다(negativeAccessories와 같은 규칙)."""
+    q = dict(p)
+    rule = p.get("promptRule")
+    q["builderVersion"] = SHAPE_BUILDER_VERSION_IMAGE_PICK + ("+mapper-v2" if rule == PROMPT_RULE_MAPPER else "")
+    q["imageStyle"] = IMAGE_PICK_STYLE_ID
+    q["imageStyleVersion"] = IMAGE_PICK_STYLE_VERSION
+    if p.get("status") != "ok" or not p.get("text"):
+        return q
+    said = {w for t in p.get("tokens") or [] if t.get("slot") != "template" for w in t["en"].replace("-", " ").split()}
+    neg = [n for n in IMAGE_PICK_NEGATIVE if not (set(n.split()) & said)]
+    q["text"] = ", ".join([p["text"], *IMAGE_PICK_SUFFIX])
+    q["negativeText"] = ", ".join([p["negativeText"], *neg]) if p.get("negativeText") else ", ".join(neg)
+    q["tokens"] = list(p.get("tokens") or []) + [{"en": s, "ko": None, "charSpan": None, "slot": "template",
+                                                  "lexiconKey": None} for s in IMAGE_PICK_SUFFIX]
+    return q
 
 
 def _overlaps(a, b) -> bool:
