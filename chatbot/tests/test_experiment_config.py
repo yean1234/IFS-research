@@ -48,12 +48,13 @@ def test_experiment_config_is_bridge_plus_v4_plus_backbone_values():
     assert v4.mapping.proportions == "" and v4.mapping.mist_kinds == ""
     # 선택 단계 = v4, 초안 경고 줄만 참여자 보기에서 숨김(뼈대 3절·G59-8)
     # G72: 조절 항목 너비·높이·깊이(값 표 3.0.0 · 문구 0.7.0)
-    # G73: 문구 0.8.0(0.7.0 + [맞는 게 없어요] 뒤 생성 화면 문구 4개)
-    assert exp.selection == replace(v4.selection, participant_draft_banner=False, protocol="selection_protocol.v0.8.json",
+    # G73: 문구 0.8.0(0.7.0 + [맞는 게 없어요] 뒤 생성 화면 문구 4개). G75: 0.9.0(+ 참고 그림 고르기 화면 문구 4개)
+    assert exp.selection == replace(v4.selection, participant_draft_banner=False, protocol="selection_protocol.v0.9.json",
                                     table="candidate_values.v3.json")
     assert v4.selection.table == "candidate_values.v2.json" and v4.selection.protocol == "selection_protocol.v0.json"
     # 생성 메시를 기본 후보로 두는 G62 경로는 끔(G67-b). G73: [맞는 게 없어요] 뒤 생성만 켬
-    assert exp.gen3d.enabled is False and exp.gen3d == replace(v4.gen3d, on_none=True)
+    # G75: 그 생성에서 참고 그림을 먼저 고름(on_none_image_pick, 회차 2, 단계별 한도 180초)
+    assert exp.gen3d.enabled is False and exp.gen3d == replace(v4.gen3d, on_none=True, on_none_image_pick=True)
     assert exp.session == v4.session
 
 

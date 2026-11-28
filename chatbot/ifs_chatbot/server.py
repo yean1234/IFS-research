@@ -84,6 +84,10 @@ class SelectionChoice(BaseModel):
     candidateId: str = Field(..., max_length=64, description="보여 준 후보 id 또는 \"none\"(맞는 것이 없다, G23)")
 
 
+class ImagePickChoice(BaseModel):
+    choice: str = Field(..., max_length=8, description="G75: 보여 준 그림의 자리 번호(\"0\"…) 또는 \"none\"(이 중에는 없어요)")
+
+
 class AdjustStep(BaseModel):
     item: str = Field(..., max_length=32, description="form | color | brightness | opacity | size | texture | motion (G10)")
     value: Any = Field(..., description="표의 값(색은 견본 id, 형태·움직임은 이름, 나머지는 정해진 단계의 숫자)")
@@ -277,6 +281,18 @@ def create_app(cfg: Config | None = None, runtime: Runtime | None = None, warmup
         """G73: [맞는 게 없어요] 뒤 생성 대기 중 [기다리지 않고 넘어갈게요] — 생성을 끄고 기존 none 경로(0번 후보로 조절).
         생성 대기(stage generating)가 아니면 409. 대기 중에는 GET …/selection을 다시 불러 끝났는지 본다."""
         return sel_run(flow(sid).skip_generation)
+
+    @app.post("/api/sessions/{sid}/selection/image-pick")
+    def image_pick(sid: str, body: ImagePickChoice):
+        """G75: 참고 이미지 고르기 화면 — 보여 준 자리 번호("0"…) 또는 "none"([이 중에는 없어요]). 고르기 화면(stage picking)이
+        아니면 409. [넘어갈게요]는 …/none-gen/skip(기존 건너뛰기와 같은 경로)."""
+        return sel_run(flow(sid).pick_image, body.choice)
+
+    @app.get("/api/sessions/{sid}/selection/image-pick/{round_}/{position}.png")
+    def image_pick_png(sid: str, round_: int, position: int):
+        """G75: 고르기 화면의 그림(지금 회차에 보여 준 것만, sha256을 다시 확인)."""
+        data = sel_run(flow(sid).image_png, round_, position)
+        return Response(content=data, media_type="image/png", headers={"Cache-Control": "no-store"})
 
     @app.post("/api/sessions/{sid}/adjust")
     def adjust(sid: str, body: AdjustStep):

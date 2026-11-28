@@ -1101,7 +1101,9 @@ def test_runner_slot_and_source_lists_match_csharp():
     assert set(SOURCES) == SIX_SOURCES
     known = re.search(r"KnownFormatVersions\s*=\s*\{([^}]*)\}", src).group(1)
     # G62: 러너는 0.3(생성 형태 메시, 챗봇 [gen3d] enabled일 때만 씀)도 읽는다 — tests/test_g62_gen3d.py
-    assert set(re.findall(r'"([^"]+)"', known)) == {"ifs-selection/0.1", "ifs-selection/0.2", "ifs-selection/0.3"}
+    # G75: 0.4(참고 그림 고르기 기록 필드만 더함, 러너가 읽는 필드는 0.3과 같음) — tests/test_g75_image_pick.py
+    assert set(re.findall(r'"([^"]+)"', known)) == {"ifs-selection/0.1", "ifs-selection/0.2", "ifs-selection/0.3",
+                                                      "ifs-selection/0.4"}
 
 
 @pytest.mark.parametrize("name", ["sel_chosen_adjusted.json", "sel_none_of_these.json", "sel_no_overrides.json"])

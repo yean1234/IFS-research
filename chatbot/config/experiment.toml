@@ -7,6 +7,7 @@
 #   G72(2026-11-27)부터 [mapping] proportions와 [selection] protocol·table 세 값이 v4.toml과 다르다(너비·높이·깊이 비율 — 스펙 2.4.0,
 #   조절 항목 너비·높이·깊이, selection_protocol 0.7.0, 값 표 3.0.0). 다른 설정 파일은 그대로라 출력·조절 항목이 예전과 같다.
 #   G73(2026-11-27)부터 [gen3d] on_none = true(맞는 게 없어요 뒤 형태 생성)와 [selection] protocol 0.8.0(그 화면 문구 4개). [gen3d] enabled는 계속 끔.
+#   G75(2026-11-28)부터 [gen3d] on_none_image_pick = true(3D 모델이 참고할 그림 3장을 참여자가 먼저 고름)와 [selection] protocol 0.9.0(그 화면 문구 4개).
 #   G74(2026-11-27)부터 [mapping] mist_kinds도 v4.toml과 다르다(안개 입자 모양 form.mistKind — 스펙 2.4.0의 선택 슬롯, builder 2.9.0).
 # 기존 설정 파일(default·pilot·v4·v4-gen3d·bridge·mac8gb)과 코드 기본값은 바꾸지 않았다. ◆ = v4.toml과 다른 곳.
 # 헤드셋 쪽 권고값(공간 B + 놓기 도움, 두 조건 연습, 자리 문항 → 멈춤 거리, 평정 중 물체 숨김, UI 묶음 G63, 반복 멈춤 loop,
@@ -78,7 +79,7 @@ allow_draft_phrases = false
 
 [selection]
 enabled = true
-protocol = "selection_protocol.v0.8.json"   # ◆ G73(0.8.0): 0.7.0(G72 너비·높이·깊이) + [맞는 게 없어요] 뒤 생성 대기·완료·못 만듦 문구 4개
+protocol = "selection_protocol.v0.9.json"   # ◆ G75(0.9.0): 0.8.0(G73 생성 대기·완료·못 만듦 문구 4개) + 참고 그림 고르기 화면 문구 4개
 table = "candidate_values.v3.json"           # ◆ G72: 조절 항목 너비·높이·깊이(3.0.0). 후보 규칙·다른 항목은 2.0.0과 같음
 require_spec_phrases = false
 participant_draft_banner = false              # ◆ 뼈대 3절·G59-8: 초안 경고 줄을 참여자 보기에서 숨김(연구자 보기·기록에는 남음)
@@ -107,3 +108,13 @@ enabled = false
 #  - 생성기는 저장소 밖 gen3d-venv(docs/gen3d-feasibility.md G62 절). 없으면 서버 경고 후 none은 기존 경로(사유 generator_unavailable).
 on_none = true
 on_none_timeout_s = 180                         # none을 누른 때부터(모델 내리기·적재 포함). 넘으면 생성 프로세스를 끄고 기존 경로
+# ◆ G75: [맞는 게 없어요] 뒤 생성에서 3D 모델이 참고할 그림을 참여자가 먼저 고른다(선행 Refugio, Mora 외 2026의 흐름).
+#  - 형태 낱말 규칙 프롬프트 + 무채색 화풍 고정 문구(tools/gen3d/prompts.image_pick_prompt)로 SDXL 그림 3장(seed = on_none_seed + 3r + 0·1·2).
+#    그림마다 관문(CLIP 사람·동물)을 거쳐 통과한 것만 seed 순서로 보인다(0장이면 기존 none 경로, 사유 all_images_gated).
+#  - 고른 그림으로만 TripoSG → 만든 물체를 후보 맨 앞에(그 뒤는 G73과 같음: 골라야만 장면에 씀). [이 중에는 없어요]나 만든 물체에
+#    다시 [맞는 게 없어요]면 새 seed로 다음 회차(on_none_image_rounds까지), 그다음은 기존 none 경로. on_none_max_regenerations는 쓰지 않는다.
+#  - 그림 단계·물체 단계마다 모델을 내리고 끝나면 다시 올린다(고르는 동안은 올라가 있음). 대기 한도는 단계마다, 고르는 시간은 넣지 않는다.
+on_none_image_pick = true
+on_none_image_rounds = 2
+on_none_image_timeout_s = 180                   # 그림 3장 + 관문(모델 내리기 포함)
+on_none_mesh_timeout_s = 180                    # 고른 그림 → TripoSG → 후처리·관문(모델 내리기 포함)

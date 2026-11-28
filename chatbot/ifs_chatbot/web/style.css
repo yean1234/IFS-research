@@ -258,8 +258,19 @@ th { color: var(--ink-soft); font-weight: 600; }
 .stage.choosing .none-fit-row .none-fit:not([aria-pressed="true"]) { opacity: .5; }
 .none-fit-row { margin-top: var(--space-2); padding-top: var(--space-5); border-top: 1px solid var(--line); display: flex; justify-content: center; }
 .none-fit-row .none-fit { width: calc((100% - var(--space-4)) / 2); }
+/* G75: 참고 그림 고르기 — 그림을 나란히(서버가 준 순서), 그림마다 [고르기]. 그림 아래 단추 두 개는 구분선 아래 */
+.pick-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-4); }
+.pick-grid.n1 { grid-template-columns: minmax(0, 1fr); max-width: 360px; margin: 0 auto; }
+.pick-grid.n2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.pick-card { border: 1px solid var(--line); border-radius: var(--radius); padding: var(--space-3); display: flex; flex-direction: column; gap: var(--space-3); background: var(--panel); }
+.pick-img { width: 100%; height: auto; aspect-ratio: 1 / 1; object-fit: contain; background: #fff; border-radius: calc(var(--radius) / 2); }
+.pick-card.chosen { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+.pick-card.chosen .pick { background: var(--accent); color: var(--on-accent); }
+.stage.choosing .pick-card:not(.chosen) { opacity: .5; }
+.none-fit-row:has(.none-gen-skip) { gap: var(--space-4); }
 @container part (max-width: 520px) {
   .cand-grid { grid-template-columns: minmax(0, 1fr); }
+  .pick-grid { grid-template-columns: minmax(0, 1fr); }
   .none-fit-row .none-fit { width: 100%; }
 }
 

@@ -165,6 +165,16 @@ class Gen3DConfig:
     # 만든 후보도 맞지 않다고 [맞는 게 없어요]를 다시 누르면 같은 프롬프트로 seed = on_none_seed + n(n = 1…)으로 이 횟수만큼 더 만든다.
     # 0이면 다시 만들지 않는다(두 번째 none은 기존 경로). 생성이 막히거나 실패하면 그 자리에서 기존 경로로 가므로 더 만들지 않는다
     on_none_max_regenerations: int = 1
+    # G75: [맞는 게 없어요] 뒤 생성에서 3D 모델이 참고할 이미지를 참여자가 먼저 고른다(on_none일 때만 뜻이 있음, 기본 끔 —
+    # 끄면 G73 동작·출력·기록 그대로). 켜면: 규칙 프롬프트 + 무채색 화풍 고정 문구(tools/gen3d/prompts.image_pick_prompt)로
+    # SDXL 이미지 3장(seed = on_none_seed + 3r + 0·1·2, r = 회차) → 이미지 관문(CLIP 사람·동물) 통과한 것만 보여 줌 → 고른 이미지로만
+    # TripoSG → 후보 맨 앞. [이 중에는 없어요]·만든 후보에 [맞는 게 없어요]면 다음 회차(on_none_image_rounds까지, 그 뒤는 기존 none 경로).
+    # 켜져 있으면 on_none_max_regenerations(같은 프롬프트 seed + n 다시 만들기)는 쓰지 않는다(이미지 회차가 대신함).
+    on_none_image_pick: bool = False
+    on_none_image_rounds: int = 2
+    # 단계별 대기 한도(모델 내리기 포함, 참여자가 고르는 시간은 넣지 않음). 넘으면 프로세스를 끄고 기존 none 경로
+    on_none_image_timeout_s: float = 180.0
+    on_none_mesh_timeout_s: float = 180.0
 
 
 @dataclass(frozen=True)

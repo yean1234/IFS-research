@@ -46,6 +46,11 @@ FORMAT_VERSION = "ifs-selection/0.2"
 # 단계 generating(생성 대기), generation.afterNone(none 시각·규칙 프롬프트·모델 내림·생성 시작·끝·결과·사유·만든 후보·골랐는지),
 # 후보 origin·sources form.type 값 generated_after_none, form.asset.origin, sourceDetails.form.type.origin, selection.afterNoneGeneration.
 FORMAT_VERSION_GEN3D = "ifs-selection/0.3"
+# 0.4(G75, [gen3d] on_none_image_pick을 켰을 때만 — 끄면 0.3 그대로): 처음 [맞는 게 없어요]를 누르는 순간 0.4로 올린다.
+# 0.3에 선택 필드만 더함: 단계 picking(참고 이미지 고르기), generation.afterNone.imagePick(회차마다 seed·이미지 sha256·관문 결과·
+# 보여 준 순서·고른 자리 또는 없음/넘어감·시각·프롬프트 판), generation.imagePickExposed(이미지 화면에 노출됐는가),
+# afterNone.status·selection.afterNoneGeneration 값 declined(모든 회차에서 [이 중에는 없어요]), afterNone.seed null(고르기 전).
+FORMAT_VERSION_IMAGE_PICK = "ifs-selection/0.4"
 GENERATED_CHOSEN = "generated_chosen"
 PREMEASURE_VERSION = "ifs-premeasure/0.1"
 ITEMS = ("color", "form", "brightness", "opacity", "size", "texture", "motion")   # G31: 색이 맨 앞(표 adjustItems.order와 같음)
@@ -250,8 +255,9 @@ class SelectionFlow:
         # G73: [맞는 게 없어요] 뒤 생성([gen3d] on_none). 처음 none을 누를 때 한 번만. 그때부터 기록이 0.3(form·generation)이 된다
         self.none_gen = getattr(rt, "none_gen", None)
         self._g73 = False                # 0.3 기록을 켰는가(none을 눌러 생성 경로에 들어감)
-        self._none_attempts = 0          # 이 세션에서 시작한 생성 수(n = 0 첫 생성, 1… 다시 만들기)
+        self._none_attempts = 0          # 이 세션에서 시작한 생성 수(n = 0 첫 생성, 1… 다시 만들기). G75면 이미지 회차 수
         self._none_job = None
+        self._pick_paths: dict[int, tuple[Path, str]] = {}   # (G75) 고르기 화면 자리 → (이미지 경로, sha256). 기록에 쓰지 않음
 
     @property
     def gen3d(self) -> bool:
@@ -525,11 +531,15 @@ class SelectionFlow:
         if self._none_attempts == 0:
             return True
         an = self._after_none()
+        # (G75) 이미지 고르기를 켰으면 다시 만들기 대신 다음 이미지 회차(on_none_image_rounds까지)
+        limit = (self.none_gen.image_rounds - 1) if self.none_gen.image_pick else self.none_gen.max_regenerations
         # 다시 만들기는 바로 앞 생성이 후보를 냈고(ok) 그 후보가 아직 화면에 있을 때만(막힘·실패면 이미 조절로 넘어감)
-        return (self._none_attempts <= self.none_gen.max_regenerations and an is not None and an["status"] == ng.OK
+        return (self._none_attempts <= limit and an is not None and an["status"] == ng.OK
                 and self._cand(an.get("candidateId") or "") is not None)
 
     def _start_none_generation(self) -> dict:
+        if self.none_gen.image_pick:
+            return self._start_image_round()
         n = self._none_attempts
         self._none_attempts += 1
         self._activate_g73()
@@ -626,11 +636,198 @@ class SelectionFlow:
         self._sidecar_paths[cid] = a["_sidecarPath"]
         return cid
 
-    def skip_generation(self) -> dict:
-        """[기다리지 않고 넘어갈게요]: 생성을 끄고 기존 none 경로로."""
+    # ── G75 참고 이미지 고르기([gen3d] on_none_image_pick) ─────────────────────────
+    def _image_pick(self) -> dict | None:
+        an = self._after_none()
+        return an.get("imagePick") if an is not None else None
+
+    def _start_image_round(self, at: str | None = None) -> dict:
+        """회차 r: 규칙 프롬프트(+ 무채색 화풍 고정 문구) → 이미지 3장(seed = 기준 + 3r + 0·1·2) → 이미지 관문 → 고르기 화면.
+        만들지 못하면(형태를 말하지 않음·제외 범주 등, G73과 같은 판정) 사유를 남기고 기존 none 경로. lock 안에서 부른다."""
+        r = self._none_attempts
+        self._none_attempts += 1
+        self._activate_g73()
+        self.data["formatVersion"] = FORMAT_VERSION_IMAGE_PICK
+        self.data["generation"].setdefault("imagePickExposed", False)
+        prev = self._after_none()
+        if prev is not None:
+            # 다음 회차: 앞 기록은 afterNoneEarlier로(만든 후보가 있었으면 그 후보에도 none이라 함 → chosen false)
+            if prev.get("candidateId") is not None:
+                prev["chosen"] = False
+            self.data["generation"].setdefault("afterNoneEarlier", []).append(prev)
+        at = at or now_iso()
+        text = self.s.log.data.get("confirmedText")
+        pre = self.none_gen.precheck(self.spec, text, self.preview_mode, self._other_interviews())
+        p = pre["prompt"] or {}
+        rec = {"version": ng.NONE_GEN_VERSION, "origin": ng.ORIGIN, "setting": self.none_gen.setting(), "noneAt": at,
+               "shownOrderBefore": list(self.cands["displayOrder"]), "status": ng.RUNNING,
+               "blockReason": pre["blockReason"], "blockDetail": pre["blockDetail"], "prompt": pre["prompt"],
+               "run": None, "startedAt": None, "endedAt": None, "seconds": None, "exitCode": None, "error": None,
+               "llmUnload": None, "timing": None, "asset": None, "candidateId": None, "displayPosition": None,
+               "participantSkippedWait": False, "chosen": None,
+               "attempt": r, "seed": None,                         # 형태 seed = 고른 이미지의 seed(고르기 전 null)
+               "imagePick": {"version": ng.IMAGE_PICK_VERSION, "round": r, "seeds": self.none_gen.seeds_for_round(r),
+                             "promptText": p.get("text"), "builderVersion": p.get("builderVersion"),
+                             "imageStyle": p.get("imageStyle"), "imageStyleVersion": p.get("imageStyleVersion"),
+                             "status": ng.RUNNING, "run": None, "startedAt": None, "endedAt": None, "seconds": None,
+                             "exitCode": None, "error": None, "blockReason": None, "llmUnload": None, "timing": None,
+                             "models": None, "images": [], "shownOrder": [], "shownAt": None, "outcome": None,
+                             "pickedPosition": None, "pickedSeed": None, "pickedImageSha256": None, "decidedAt": None}}
+        self.data["generation"]["afterNone"] = rec
+        ip = rec["imagePick"]
+        self._pick_paths = {}
+        job = None
+        if pre["blockReason"] is None:
+            job = self.none_gen.start(self.s.id, text, source_key(self.spec), p["text"],
+                                      lambda res, rec=rec: self._image_round_done(res, rec), attempt=r, spec=self.spec,
+                                      other_interviews=self._other_interviews, kind="image", seeds=ip["seeds"])
+            if isinstance(job, str):
+                rec.update(blockReason=job, blockDetail=",".join(self._other_interviews()) or None
+                           if job == ng.B_INTERVIEW else None)
+                job = None
+        if job is None:
+            rec.update(status=ng.BLOCKED, endedAt=at, seconds=0.0)
+            ip.update(status=ng.BLOCKED, outcome=ng.BLOCKED, blockReason=rec["blockReason"], endedAt=at)
+            self._log_event("selection:none_gen", {"status": ng.BLOCKED, "blockReason": rec["blockReason"],
+                                                   "phase": "image", "round": r})
+            self._apply_choice(NONE_CHOICE, at)
+            return self.view()
+        self._none_job = job
+        ip["startedAt"] = at
+        self.data["stage"] = "generating"
+        self._save()
+        self._log_event("selection:image_pick", {"status": ng.RUNNING, "round": r, "seeds": ip["seeds"],
+                                                 "promptText": p["text"]})
+        return self.view()
+
+    def _image_round_done(self, res: dict, rec: dict) -> None:
+        """이미지 단계가 끝남(생성 스레드). 관문을 통과한 이미지가 있으면 고르기 화면(seed 순서), 없거나 실패면 기존 none 경로."""
         with self.lock:
+            if self.data is None or self._after_none() is not rec:
+                return                                   # 다른 회차로 넘어간 뒤 온 결과
+            ip = rec["imagePick"]
+            for k in ("run", "endedAt", "seconds", "exitCode", "llmUnload", "timing", "models"):
+                ip[k] = res.get(k)
+            if ip["startedAt"] is None:
+                ip["startedAt"] = res.get("startedAt")
+            ip["generatorTiming"] = res.get("generatorTiming")
+            imgs = []
+            for x in res.get("images") or []:
+                g = x.get("gate") or {}
+                imgs.append({"seed": x["seed"], "file": x["file"], "sha256": x["sha256"], "seconds": x.get("seconds"),
+                             "gate": {k: g.get(k) for k in ("personLikeScore", "passed", "threshold", "labelScores",
+                                                             "matchScore", "model", "error") if k in g} or None,
+                             "problem": x.get("problem"), "shown": False, "position": None, "_path": x.get("_path")})
+            status = res.get("status") or ng.FAILED
+            if self.stage != "generating":
+                # 참여자가 이미 넘어감(기다리지 않음·철회): 기록만 채운다
+                ip["generatorStatus"] = status
+                ip["images"] = [{k: v for k, v in x.items() if k != "_path"} for x in imgs]
+                self._save()
+                return
+            shown = [x for x in imgs if x["problem"] is None]
+            if status == ng.OK and not shown:
+                status, res = ng.BLOCKED, {**res, "blockReason": ng.B_ALL_IMAGES_GATED,
+                                           "blockDetail": ",".join(f"{x['seed']}:{x['problem']}" for x in imgs) or None}
+            self._pick_paths = {}
+            for pos, x in enumerate(shown if status == ng.OK else []):
+                x["shown"], x["position"] = True, pos
+                self._pick_paths[pos] = (Path(x["_path"]), x["sha256"])
+            ip["images"] = [{k: v for k, v in x.items() if k != "_path"} for x in imgs]
+            if status != ng.OK:
+                ip.update(status=status, outcome=status, error=res.get("error"), blockReason=res.get("blockReason"))
+                rec.update(status=status, blockReason=res.get("blockReason"), blockDetail=res.get("blockDetail"),
+                           error=res.get("error"), endedAt=res.get("endedAt"), seconds=res.get("seconds"))
+                self._log_event("selection:none_gen", {"status": status, "blockReason": rec["blockReason"], "phase": "image",
+                                                       "round": ip["round"], "seconds": ip["seconds"]})
+                self._apply_choice(NONE_CHOICE)
+                return
+            at = now_iso()
+            ip.update(status="shown", shownOrder=[x["seed"] for x in shown], shownAt=at)
+            self.data["generation"]["imagePickExposed"] = True
+            self.data["stage"] = "picking"
+            self._save()
+            self._log_event("selection:image_pick", {"status": "shown", "round": ip["round"],
+                                                     "shownSeeds": ip["shownOrder"],
+                                                     "hiddenSeeds": [x["seed"] for x in imgs if not x["shown"]],
+                                                     "seconds": ip["seconds"]})
+
+    def pick_image(self, choice: str) -> dict:
+        """고르기 화면: 보여 준 자리 번호("0"…) 하나 또는 "none"([이 중에는 없어요]). 고르면 그 이미지로만 형태를 만든다.
+        none이면 회차가 남았으면 다음 회차(새 seed 3개), 아니면 기존 none 경로(afterNone.status declined)."""
+        with self.lock:
+            self._require("picking")
+            rec = self._after_none()
+            ip = rec["imagePick"]
+            at = now_iso()
+            if choice == NONE_CHOICE:
+                ip.update(status=ng.DECLINED, outcome="none", decidedAt=at)
+                self._log_event("selection:image_pick", {"status": "none", "round": ip["round"]})
+                if self._none_attempts < self.none_gen.image_rounds:
+                    return self._start_image_round(at)
+                rec.update(status=ng.DECLINED, endedAt=at)
+                self._apply_choice(NONE_CHOICE, at)
+                return self.view()
+            try:
+                pos = int(choice)
+            except (TypeError, ValueError):
+                raise SelectionInvalid(f"보여 준 그림이 아닙니다: {choice}") from None
+            img = next((x for x in ip["images"] if x["shown"] and x["position"] == pos), None)
+            if img is None or pos not in self._pick_paths:
+                raise SelectionInvalid(f"보여 준 그림이 아닙니다: {choice}")
+            path, sha = self._pick_paths[pos]
+            ip.update(status="picked", outcome="picked", pickedPosition=pos, pickedSeed=img["seed"],
+                      pickedImageSha256=sha, decidedAt=at)
+            rec["seed"] = img["seed"]
+            self._log_event("selection:image_pick", {"status": "picked", "round": ip["round"], "position": pos,
+                                                     "seed": img["seed"]})
+            text = self.s.log.data.get("confirmedText")
+            job = self.none_gen.start(self.s.id, text, source_key(self.spec), rec["prompt"]["text"], self._generation_done,
+                                      attempt=rec["attempt"], spec=self.spec, other_interviews=self._other_interviews,
+                                      kind="mesh", image=(path, sha), seed=img["seed"])
+            if isinstance(job, str):
+                rec.update(status=ng.BLOCKED, blockReason=job, endedAt=at, seconds=0.0,
+                           blockDetail=",".join(self._other_interviews()) or None if job == ng.B_INTERVIEW else None)
+                self._log_event("selection:none_gen", {"status": ng.BLOCKED, "blockReason": job, "phase": "mesh"})
+                self._apply_choice(NONE_CHOICE, at)
+                return self.view()
+            self._none_job = job
+            rec["startedAt"] = at
+            self.data["stage"] = "generating"
+            self._save()
+            self._log_event("selection:none_gen", {"status": ng.RUNNING, "phase": "mesh", "seed": img["seed"],
+                                                   "promptText": rec["prompt"]["text"]})
+            return self.view()
+
+    def image_png(self, round_: int, position: int) -> bytes:
+        """고르기 화면의 그림(지금 회차, 보여 준 것만). 파일이 바뀌었으면 SelectionInvalid."""
+        with self.lock:
+            ip = self._image_pick()
+            if ip is None or ip["round"] != round_ or position not in self._pick_paths:
+                raise SelectionInvalid("보여 준 그림이 아닙니다.")
+            path, sha = self._pick_paths[position]
+            raw = Path(path).read_bytes()
+            if hashlib.sha256(raw).hexdigest() != sha:
+                raise SelectionInvalid("그림 파일이 보여 준 뒤 바뀌었습니다.")
+            return raw
+
+    def skip_generation(self) -> dict:
+        """[기다리지 않고 넘어갈게요]: 생성을 끄고 기존 none 경로로. (G75) 고르기 화면의 [넘어갈게요]도 같은 경로."""
+        with self.lock:
+            if self.stage == "picking":
+                rec = self._after_none()
+                at = now_iso()
+                rec["imagePick"].update(status=ng.CANCELLED, outcome="skipped", decidedAt=at)
+                rec.update(status=ng.CANCELLED, participantSkippedPick=True, endedAt=at)
+                self._log_event("selection:none_gen", {"status": ng.CANCELLED, "participantSkippedPick": True,
+                                                       "phase": "pick"})
+                self._apply_choice(NONE_CHOICE, at)
+                return self.view()
             self._require("generating")
             rec = self._after_none()
+            ip = rec.get("imagePick")
+            if ip is not None and ip["status"] == ng.RUNNING:
+                ip.update(status=ng.CANCELLED, outcome=ng.CANCELLED, decidedAt=now_iso())   # 이미지 대기 중 넘어감
             rec.update(status=ng.CANCELLED, participantSkippedWait=True, endedAt=now_iso())
             self._log_event("selection:none_gen", {"status": ng.CANCELLED, "participantSkippedWait": True})
             self._apply_choice(NONE_CHOICE)             # 취소 상태를 먼저 저장하고 응답한다(CP13-4)
@@ -1309,6 +1506,19 @@ class SelectionFlow:
                                                             "startedAt", "endedAt", "seconds", "participantSkippedWait",
                                                             "attempt", "seed")}
                 out["afterNone"]["timeoutS"] = an["setting"]["timeoutS"]
+                ip = an.get("imagePick")
+                if ip is not None:
+                    # G75: 지금 무엇을 기다리는지(image 그림 그리는 중 · pick 고르는 중 · mesh 고른 그림으로 물체 만드는 중)
+                    phase = ("image" if ip["status"] == ng.RUNNING else "pick" if self.stage == "picking"
+                             else "mesh" if ip["outcome"] == "picked" else None)
+                    out["afterNone"].update(phase=phase, round=ip["round"], rounds=an["setting"]["imagePick"]["rounds"],
+                                            imagePickStatus=ip["status"])
+                    if self.stage == "picking":
+                        shown = sorted((x for x in ip["images"] if x["shown"]), key=lambda x: x["position"])
+                        out["imagePick"] = {"round": ip["round"], "images": [
+                            {"position": x["position"],
+                             "url": f"/api/sessions/{self.s.id}/selection/image-pick/{ip['round']}/{x['position']}.png"}
+                            for x in shown]}
             out["skipped"] = bool(self.data["selection"] and self.data["selection"].get("skipped"))
             out["axes"] = self.cands["axes"]
             out["note"] = self.cands["note"]

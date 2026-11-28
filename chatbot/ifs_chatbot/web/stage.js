@@ -497,6 +497,7 @@
     if (v.stage !== "generating" && S.pollTimer) { clearTimeout(S.pollTimer); S.pollTimer = null; }
     if (v.stage === "selecting") parts.push(...drawSelecting(v));
     else if (v.stage === "generating") parts.push(...drawGenerating(v));   // WebGL은 내려 두기만(parked) — 돌아오면 다시 씀
+    else if (v.stage === "picking") parts.push(...drawPicking(v));         // G75: 참고 그림 고르기(WebGL은 내려 둠)
     else if (v.stage === "adjusting") parts.push(...drawAdjusting(v));
     else if (v.stage === "premeasure") { WebGL.teardown(); drawPremeasure(box, parts); progress(); return; }
     else if (v.stage === "done") { WebGL.teardown(); parts.push(el("p", { class: "msg bot closing stage-top done-card", tabindex: "-1" }, v.donePhrase || "")); }
@@ -540,12 +541,45 @@
 
   function drawGenerating(v) {
     pollGenerating();
-    return [intro(phrase("none_gen_waiting")),
+    // G75: 그림을 그리는 동안(phase image)은 그 문구, 고른 그림으로 물체를 만드는 동안(phase mesh)·G73은 기존 대기 문구
+    const imagePhase = !!(v.afterNone && v.afterNone.phase === "image");
+    return [intro(phrase(imagePhase ? "image_pick_waiting" : "none_gen_waiting")),
             el("div", { class: "gen-wait", role: "status", "aria-live": "polite" }, el("span", { class: "gen-spinner", "aria-hidden": "true" })),
             el("div", { class: "buttons stage-actions" },
               el("button", { type: "button", class: "pick none-gen-skip", "data-fkey": "none-gen-skip",
                              onclick: (e) => call("POST", `/api/sessions/${S.sid}/selection/none-gen/skip`, undefined, e.currentTarget) },
                 phrase("none_gen_skip_button")))];
+  }
+
+  // G75: 3D 모델이 참고할 그림 고르기. 관문을 통과한 그림만 서버가 준 순서(seed 순서)로 나란히, 그림마다 [고르기].
+  // 그림에는 이름·설명을 붙이지 않는다(번호만). [이 중에는 없어요] → 다음 회차 또는 기존 경로, [넘어갈게요] → 기존 건너뛰기와 같은 경로
+  function pickImage(choice, btn) {
+    if (S.busy) return;
+    const card = btn.closest(".pick-card");
+    if (card) card.classList.add("chosen");
+    btn.setAttribute("aria-pressed", "true");
+    $("#stage").classList.add("choosing");
+    call("POST", `/api/sessions/${S.sid}/selection/image-pick`, { choice: String(choice) }, btn);
+  }
+
+  function drawPicking(v) {
+    const ip = v.imagePick || { images: [] };
+    const parts = [intro(phrase("image_pick_intro"))];
+    const grid = el("ul", { class: `pick-grid n${ip.images.length}` });
+    ip.images.forEach((im, i) => {
+      grid.append(el("li", { class: "pick-card", "data-pos": String(im.position) },
+        el("img", { class: "pick-img", src: im.url, alt: String(i + 1), width: "256", height: "256", draggable: "false" }),
+        el("button", { type: "button", class: "pick", "aria-label": `${phrase("choose_button")} ${i + 1}`, "data-fkey": `img:${im.position}`,
+                       onclick: (e) => pickImage(im.position, e.currentTarget) }, phrase("choose_button"))));
+    });
+    parts.push(grid);
+    parts.push(el("div", { class: "none-fit-row" },
+      el("button", { type: "button", class: "pick none-fit", "data-fkey": "img:none", onclick: (e) => pickImage("none", e.currentTarget) },
+        phrase("image_pick_none")),
+      el("button", { type: "button", class: "pick none-gen-skip", "data-fkey": "img:skip",
+                     onclick: (e) => call("POST", `/api/sessions/${S.sid}/selection/none-gen/skip`, undefined, e.currentTarget) },
+        phrase("image_pick_skip_button"))));
+    return parts;
   }
 
   function drawSelecting(v) {
@@ -828,6 +862,9 @@
           ["맞는 게 없어요 뒤 생성(G73)", v.afterNone ? `${v.afterNone.status}${v.afterNone.blockReason ? ` · ${v.afterNone.blockReason}` : ""}`
             + `${v.afterNone.error ? ` · ${v.afterNone.error}` : ""}${v.afterNone.seconds != null ? ` · ${v.afterNone.seconds}초` : ""}`
             + `${v.afterNone.participantSkippedWait ? " · 기다리지 않고 넘어감" : ""}` : null],
+          ["참고 그림 고르기(G75)", v.afterNone && v.afterNone.round != null
+            ? `회차 ${v.afterNone.round + 1}/${v.afterNone.rounds} · ${v.afterNone.imagePickStatus}${v.afterNone.phase ? ` · ${v.afterNone.phase}` : ""}`
+              + `${v.imagePick ? ` · 보인 그림 ${v.imagePick.images.length}장` : ""}` : null],
           ["조절 횟수", v.adjustCounts ? JSON.stringify(v.adjustCounts) : null],
           ["색 바꿈", v.colorChanged === undefined ? null : (v.colorChanged ? "예" : "아니오")],
           ["finalOverrides", v.finalOverrides ? JSON.stringify(v.finalOverrides) : null],
