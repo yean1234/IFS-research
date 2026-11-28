@@ -22,6 +22,7 @@ CP15(프롬프트 0.1.1): ① 위기·확인 판정 검사는 캐시보다 먼�
   (CP15 2차, VALIDATOR_RULES 0.2.0) past_or_former · reported_speech · hypothetical(인용이 든 문장 전체) ·
   no_attribute_word(속성 슬롯에 그 속성을 말한 낱말이 없음) · form 슬롯도 korean_banned·non_meshable(문장 안 명사)
   (0.3.0) cross_sentence(두 문장에 걸친 인용) · 어미 변형·사람 표기 보충 · 슬롯별 속성 낱말
+  (0.4.0) simile_of_predicate가 어근(XR) 서술어('X처럼 단단해요')도 잡음
 """
 from __future__ import annotations
 
@@ -47,7 +48,10 @@ _NOUN_TAGS = ("NNG", "NNP")
 _CONTENT_TAGS = ("NNG", "NNP", "VA", "VV", "XR", "MAG")
 
 # ── 검증기 규칙 판(CP15 2차, 2026-11-28). 프롬프트 판과 따로 움직인다. 기록 validatorRules와 캐시 키에 들어간다 ─────
-VALIDATOR_RULES = "ifs-llm-fill-validator/0.3.0"   # 0.3.0: CP15 재검토 2(어미 변형·사람 표기·슬롯별 속성 낱말·두 문장 인용)
+VALIDATOR_RULES = "ifs-llm-fill-validator/0.4.0"   # 0.3.0: CP15 재검토 2(어미 변형·사람 표기·슬롯별 속성 낱말·두 문장 인용)
+# 0.4.0(G82 3단계, 2026-11-28): simile_of_predicate가 비유 표지 뒤 어근(XR)을 접사처럼 건너뛰어 "X처럼 단단해요·묵직해요·딱딱해요·싸늘해요·
+#   답답해요"(Kiwi: XR + XSA + EF)를 놓치던 버그를 고침(G82 2차 평가 오통과 17건). 접사(XSN·XSV·XSA·XPN)만 건너뛴다
+_AFFIX_TAGS = frozenset({"XSN", "XSV", "XSA", "XPN"})
 # 문장 틀(인용 구간이 든 문장 전체를 본다 — 표지가 인용 밖 앞뒤에 있어도). 매퍼의 _context_sentences는 '~던 장면' 같은
 # 회상 문장만 잡아 지난 일·남의 말·가정을 거르지 못한다(G77 실측). 매퍼는 그대로 두고 이 검증기에만 더 엄격하게 얹는다.
 _PAST_EP = ("었", "았", "였", "더")               # 선어말 어미에 이 글자가 있으면 지난 일('이었어요'·'했었어요'·'~더라')
@@ -531,7 +535,8 @@ def _check_item(ctx: _Ctx, raw) -> tuple[dict, list[str]]:
             if doc.sent[k] != doc.sent[head]:
                 break
             t = toks[k]
-            if t.form in _SIMILE_FORMS or t.form == "같" or t.base_tag.startswith(("E", "J", "X", "S")) or t.base_tag == "VCP":
+            if t.form in _SIMILE_FORMS or t.form == "같" or t.base_tag.startswith(("E", "J", "S")) or t.base_tag in _AFFIX_TAGS \
+                    or t.base_tag == "VCP":                 # 0.4.0: 어근 XR은 건너뛰지 않음(속성 비유로 판정)
                 continue
             if t.base_tag in ("NNG", "NNP", "NNB", "NP"):
                 break
@@ -652,7 +657,9 @@ def run(session, spec: dict, norm: str) -> dict:
     with ng._prompts_lock:
         pm = ng._load_prompts()
         shape = pm.shape_prompt(norm, mapper_spec=spec)
-        slots = open_slots(spec, rt.candidate_table, prompt, shape.get("blockReason") == "no_shape_stated")
+        # G82([gen3d] on_none_llm_shape)가 켜지면 형태 낱말 칸(shape_noun)만 내밀지 않는다(다른 빈 슬롯은 그대로). 끄면 예전 그대로
+        g82_on = bool(getattr(getattr(rt.cfg, "gen3d", None), "on_none_llm_shape", False))
+        slots = open_slots(spec, rt.candidate_table, prompt, shape.get("blockReason") == "no_shape_stated" and not g82_on)
         rec["offeredSlots"] = slots
         if not slots:
             return done("skipped", skipReason="no_open_slot", seconds=round(time.monotonic() - t0, 2))

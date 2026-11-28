@@ -264,9 +264,13 @@
       let assetErr = null;
       this.start().then(() => this.enqueue(`후보 캡처 ${target}`, async () => {
         await this.setFrozen(true);
+        // G81 찾은 문제 1: Unity는 GLB를 지금 얹힌 덮어쓰기 위에 씌운다(SetFormAssetJson → Reapply(지금 덮어쓰기)). 생성 후보는 그 후보의
+        // 덮어쓰기를 먼저 얹고 GLB를 씌운다 — 직전 후보가 안개({"form.type":"mist"})면 GLB가 mist_form으로 거부돼 후보에서 빠졌다.
+        // GLB 없는 후보는 전과 같이 GLB를 먼저 걷고 덮어쓰기를 얹는다.
+        if (asset) await this.apply(overrides);
         try { await this.setAsset(asset || null); }
         catch (e) { if (e instanceof AssetError && asset) { assetErr = e.message; return; } throw e; }
-        await this.apply(overrides);
+        if (!asset) await this.apply(overrides);
         const url = await this.capture(target);
         this.caps.set(key, url);
         img.src = url;
@@ -290,6 +294,8 @@
       let assetErr = null;
       started.then(() => this.enqueue("조절 화면 덮어쓰기", async () => {
         await this.setFrozen(false);
+        // G81 찾은 문제 1과 같은 순서 문제: 생성 형태가 있으면 이 화면의 덮어쓰기를 먼저 얹은 뒤 GLB를 씌운다(직전 그림이 안개면 mist_form 거부)
+        if (asset) await this.apply(overrides);
         try { await this.setAsset(asset || null); }
         catch (e) { if (e instanceof AssetError && asset) { assetErr = e.message; return; } throw e; }
         await this.apply(overrides);
@@ -565,6 +571,15 @@
   function drawPicking(v) {
     const ip = v.imagePick || { images: [] };
     const parts = [intro(phrase("image_pick_intro"))];
+    // G82: LLM 형태 이름으로 그린 회차만 — 그림을 그린 근거 낱말(참여자 원문 그대로, 서버가 넣은 글)과 [그 말이 아니에요].
+    // 누르면 LLM을 다시 부르지 않고 기존 경로(조절)로 간다. 영어 이름은 화면에 보이지 않는다
+    if (v.llmShapeBasis && v.llmShapeBasis.text) {
+      parts.push(el("div", { class: "none-fit-row llm-shape-basis" },
+        el("p", { class: "msg bot", "data-fkey": "shape-basis" }, v.llmShapeBasis.text),
+        el("button", { type: "button", class: "pick shape-basis-wrong", "data-fkey": "img:basis-wrong",
+                       onclick: (e) => call("POST", `/api/sessions/${S.sid}/selection/shape-basis/reject`, undefined, e.currentTarget) },
+          phrase("llm_shape_basis_wrong_button"))));
+    }
     const grid = el("ul", { class: `pick-grid n${ip.images.length}` });
     ip.images.forEach((im, i) => {
       grid.append(el("li", { class: "pick-card", "data-pos": String(im.position) },

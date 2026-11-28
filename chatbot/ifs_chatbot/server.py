@@ -289,6 +289,12 @@ def create_app(cfg: Config | None = None, runtime: Runtime | None = None, warmup
         아니면 409. [넘어갈게요]는 …/none-gen/skip(기존 건너뛰기와 같은 경로)."""
         return sel_run(flow(sid).pick_image, body.choice)
 
+    @app.post("/api/sessions/{sid}/selection/shape-basis/reject")
+    def shape_basis_reject(sid: str):
+        """G82: 그림 고르기 화면의 [그 말이 아니에요] — LLM이 인용한 형태 낱말이 아니라고 함. LLM을 다시 부르지 않고 기존 none 경로
+        (0번 후보로 조절). 고르기 화면이 아니거나 그 회차 그림이 LLM 형태 이름으로 그린 것이 아니면 409."""
+        return sel_run(flow(sid).reject_shape_basis)
+
     @app.get("/api/sessions/{sid}/selection/image-pick/{round_}/{position}.png")
     def image_pick_png(sid: str, round_: int, position: int):
         """G75: 고르기 화면의 그림(sha256을 다시 확인). (CP14-1) 그 세션이 지금 고르기 화면이고 지금 회차에 보여 준 그림일 때만.

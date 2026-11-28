@@ -29,6 +29,7 @@ from .candidates import (PROPORTION_KEYS, SLOTS, base_drawn, candidates_bytes, e
 from .form_assets import (DEFAULT_PROCEDURAL, R_NO_SHAPE_PREVIEW, R_PREVIEW_FAILED, _rej, add_generated,
                           generated_candidate_id, public_asset, source_key)
 from . import llm_fill as llm_fill_mod
+from . import llm_shape as llm_shape_mod
 from . import none_gen as ng
 from .paths import shared
 from .scene_builder import normalize_confirmed
@@ -58,6 +59,12 @@ FORMAT_VERSION_IMAGE_PICK = "ifs-selection/0.4"
 # sourceDetails.*.llmQuote, candidates.prefill, generation.llmPromptUsed·afterNone.llmPromptUsed(그림 프롬프트 형태 자리를 LLM 낱말로 메움).
 # 러너(PlacementSelection.cs)는 0.5를 0.3 규칙으로 읽고 출처 값 llm_quoted를 받는다(SourceValues05).
 FORMAT_VERSION_LLM_FILL = "ifs-selection/0.5"
+# (G82, [gen3d] on_none_llm_shape를 켰을 때만 — 끄면 그대로) 0.5에 선택 필드만 더함: generation.shapeLlm(경로 rule|llm|none, 부름·후보·채택·
+# 노출·그림 고름·만든 후보 고름·[그 말이 아니에요], 입력 해시·모델 digest·프롬프트 판·검증기 판·seed·원시 출력·기각 사유, 호출 기록 call),
+# afterNone.shapeLlmUsed·shapeLlmItems·basisRejected, imagePick.outcome 값 basis_rejected. 러너는 generation을 읽지 않는다(무시).
+# G82를 켜면 llm_fill이 꺼져 있어도 처음부터 0.5로 쓴다(출처 값 목록은 0.5 그대로).
+SHAPE_LLM_RECORD_VERSION = "ifs-shape-llm-record/0.1.0"
+SHAPE_BASIS_PHRASE_KEYS = ("llm_shape_basis", "llm_shape_basis_wrong_button")
 GENERATED_CHOSEN = "generated_chosen"
 PREMEASURE_VERSION = "ifs-premeasure/0.1"
 ITEMS = ("color", "form", "brightness", "opacity", "size", "texture", "motion")   # G31: 색이 맨 앞(표 adjustItems.order와 같음)
@@ -297,6 +304,9 @@ class SelectionFlow:
         self.llm_rec = copy.deepcopy(getattr(session, "llm_fill", None)) if self.llm_on else None
         self.llm_applied: dict = {}      # 조절 항목 → {slot, value, quote, charSpan, overrides, specSlots}(후보에 넣은 처음 값)
         self._llm_shape_items: list = llm_fill_mod.shape_items_from(self.llm_rec) if self.llm_on else []
+        # G82: [맞는 게 없어요] 뒤 규칙에 중심 형태 명사가 없을 때 LLM 형태 이름([gen3d] on_none_llm_shape). 꺼져 있으면 shape_llm_on False
+        self.shape_llm_on = getattr(rt, "llm_shape_prompt", None) is not None
+        self.shape_llm: dict | None = None        # 이 세션의 G82 기록(한 번만 부름, 다음 회차는 같은 결과를 씀)
 
     def _llm_flag(self) -> str | None:
         """(G77, CP15-2) 세션에 위기·확인 판정이 있으면 그 사유. 판정 뒤에는 LLM 값을 새 후보·그림 프롬프트에 넣지 않는다."""
@@ -307,19 +317,26 @@ class SelectionFlow:
         """(G77) 그림 프롬프트용 LLM 형태 낱말. 판정이 선 세션이면 빈 목록(규칙 결과 그대로)."""
         return [] if self._llm_flag() else self._llm_shape_items
 
+    def _shape_items(self) -> list:
+        """(G82) 그림 프롬프트에 넣을 LLM 형태 이름. 채택 없음·판정이 선 세션·[그 말이 아니에요]를 누른 뒤면 빈 목록."""
+        r = self.shape_llm
+        if not r or r.get("rejected") or llm_fill_mod.session_flag(self.s):
+            return []
+        return llm_shape_mod.shape_items_from(r.get("call"))
+
     @property
     def gen3d(self) -> bool:
         return self.form_assets is not None or self._g73
 
     @property
     def sources_list(self) -> tuple:
-        if self.llm_on:
+        if self.llm_on or self.shape_llm_on:
             return SOURCES_LLM_FILL
         return SOURCES_GEN3D if self.gen3d else SOURCES
 
     def _fv(self, version: str) -> str:
         """(G77) llm_fill을 켰으면 처음부터 끝까지 0.5, 아니면 주어진 판 그대로."""
-        return FORMAT_VERSION_LLM_FILL if self.llm_on else version
+        return FORMAT_VERSION_LLM_FILL if (self.llm_on or self.shape_llm_on) else version
 
     def _llm_prefill(self) -> tuple[dict | None, dict]:
         """(G77) 채택 값 → candidates.generate prefill. 이 표에 없거나 지금 미리보기에서 보이지 않는 항목(G22)은 넣지 않는다
@@ -937,7 +954,9 @@ class SelectionFlow:
 
     def _start_image_round(self, at: str | None = None) -> dict:
         """회차 r: 규칙 프롬프트(+ 무채색 화풍 고정 문구) → 이미지 3장(seed = 기준 + 3r + 0·1·2) → 이미지 관문 → 고르기 화면.
-        만들지 못하면(형태를 말하지 않음·제외 범주 등, G73과 같은 판정) 사유를 남기고 기존 none 경로. lock 안에서 부른다."""
+        만들지 못하면(형태를 말하지 않음·제외 범주 등, G73과 같은 판정) 사유를 남기고 기존 none 경로. lock 안에서 부른다.
+        (G82) 처음 회차에 규칙 프롬프트에 중심 형태 명사가 없으면 먼저 LLM 형태 이름을 부른다(백그라운드 스레드, 대기 화면은 그림 대기와
+        같음). 채택된 이름으로 규칙 프롬프트의 빈 중심 명사 자리를 메운 뒤 그림 단계로 간다. 다음 회차는 같은 결과를 쓴다(다시 부르지 않음)."""
         r = self._none_attempts
         self._none_attempts += 1
         self._activate_g73()
@@ -951,8 +970,24 @@ class SelectionFlow:
             self.data["generation"].setdefault("afterNoneEarlier", []).append(prev)
         at = at or now_iso()
         text = self.s.log.data.get("confirmedText")
+        need_llm = self.shape_llm_on and self.shape_llm is None and self._shape_llm_route()
         pre = self.none_gen.precheck(self.spec, text, self.preview_mode, self._other_interviews(),
-                                     llm_items=self.llm_shape_items or None)
+                                     llm_items=self.llm_shape_items or None, llm_shape_items=self._shape_items() or None)
+        rec = self._image_rec(r, at, pre)
+        self.data["generation"]["afterNone"] = rec
+        if need_llm:
+            # (G82) LLM 형태 이름을 먼저(잠금 밖 스레드). 끝나면 _shape_llm_done이 같은 회차를 이어 간다
+            rec["shapeLlmPending"] = True
+            rec["imagePick"]["startedAt"] = at
+            self.data["stage"] = "generating"
+            self._save()
+            self._log_event("selection:shape_llm", {"status": "running", "round": r})
+            threading.Thread(target=self._shape_llm_work, args=(rec, r, at), name=f"shape-llm-{self.s.id}",
+                             daemon=True).start()
+            return self.view()
+        return self._launch_image_round(rec, r, at, text, pre)
+
+    def _image_rec(self, r: int, at: str, pre: dict) -> dict:
         p = pre["prompt"] or {}
         rec = {"version": ng.NONE_GEN_VERSION, "origin": ng.ORIGIN, "setting": self.none_gen.setting(), "noneAt": at,
                "shownOrderBefore": list(self.cands["displayOrder"]), "status": ng.RUNNING,
@@ -969,15 +1004,19 @@ class SelectionFlow:
                              "models": None, "images": [], "shownOrder": [], "shownAt": None, "outcome": None,
                              "pickedPosition": None, "pickedSeed": None, "pickedImageSha256": None, "decidedAt": None}}
         self._note_llm_prompt(rec)
-        self.data["generation"]["afterNone"] = rec
+        return rec
+
+    def _launch_image_round(self, rec: dict, r: int, at: str, text, pre: dict) -> dict:
+        """그림 단계 작업을 시작한다(못 하면 사유를 남기고 기존 none 경로). lock 안에서 부른다."""
         ip = rec["imagePick"]
+        p = pre["prompt"] or {}
         self._pick_paths = {}
         job = None
         if pre["blockReason"] is None:
             job = self.none_gen.start(self.s.id, text, source_key(self.spec), p["text"],
                                       lambda res, rec=rec: self._image_round_done(res, rec), attempt=r, spec=self.spec,
                                       other_interviews=self._other_interviews, kind="image", seeds=ip["seeds"],
-                                      llm_items=self.llm_shape_items or None)
+                                      llm_items=self.llm_shape_items or None, llm_shape_items=self._shape_items() or None)
             if isinstance(job, str):
                 rec.update(blockReason=job, blockDetail=",".join(self._other_interviews()) or None
                            if job == ng.B_INTERVIEW else None)
@@ -990,15 +1029,106 @@ class SelectionFlow:
             self._apply_choice(NONE_CHOICE, at)
             return self.view()
         self._none_job = job
-        ip["startedAt"] = at
+        ip["startedAt"] = ip["startedAt"] or at
         self.data["stage"] = "generating"
         self._save()
         self._log_event("selection:image_pick", {"status": ng.RUNNING, "round": r, "seeds": ip["seeds"],
                                                  "promptText": p["text"]})
         return self.view()
 
+    # ── G82 LLM 형태 이름([gen3d] on_none_llm_shape) ─────────────────────────────
+    def _shape_llm_route(self) -> bool:
+        """(G82) 처음 [맞는 게 없어요]: 규칙 프롬프트에 중심 형태 명사가 없고 막을 사유가 없고 위기·확인 판정이 없으면 참(LLM을 부름).
+        아니면 경로(rule = 규칙이 중심 명사를 잡음, none = 그 밖)를 적고 거짓. lock 안에서 부른다."""
+        norm = self._confirmed_norm() or ""
+        flag = llm_fill_mod.session_flag(self.s)
+        with ng._prompts_lock:
+            pm = ng._load_prompts()
+            try:
+                call, why = llm_shape_mod.rule_route(pm, pm.shape_prompt(norm, mapper_spec=self.spec))
+            except (Exception, SystemExit) as exc:  # noqa: BLE001 — 판정을 못 하면 부르지 않음(fail closed)
+                call, why = False, f"prompt_error:{type(exc).__name__}"
+        if call and not flag:
+            return True
+        route = "rule" if why == "rule_has_shape" else "none"
+        self.shape_llm = self._shape_llm_record(route, "session_flagged" if (call and flag) else why, None)
+        self.data["generation"]["shapeLlm"] = self.shape_llm
+        return False
+
+    def _shape_llm_record(self, route: str, reason: str | None, call: dict | None) -> dict:
+        c = call or {}
+        return {"version": SHAPE_LLM_RECORD_VERSION, "route": route, "routeReason": reason,
+                "called": bool(c.get("called")), "candidate": bool(c.get("candidate")),
+                "adopted": copy.deepcopy(c.get("adopted")), "status": c.get("status"), "skipReason": c.get("skipReason"),
+                "rejectReasons": list(c.get("rejectReasons") or []), "rawText": c.get("rawText"),
+                "inputTextSha256": c.get("inputTextSha256"), "validatorTextSha256": c.get("validatorTextSha256"),
+                "model": copy.deepcopy(c.get("model")), "promptVersion": (c.get("prompt") or {}).get("promptVersion"),
+                "promptSha256": (c.get("prompt") or {}).get("promptSha256"), "validatorRules": c.get("validatorRules"),
+                "seed": (c.get("options") or {}).get("seed"), "lineStages": copy.deepcopy(c.get("lineStages")),
+                "exposed": False, "imageChosen": False, "candidateChosen": None, "rejected": False, "rejectedAt": None,
+                "call": copy.deepcopy(call)}
+
+    def _shape_llm_work(self, rec: dict, r: int, at: str) -> None:
+        """(G82) 스레드: LLM 형태 이름 한 번(잠금 밖, 시간 한도는 설정). 끝나면 잠금 안에서 같은 회차를 이어 간다."""
+        norm = self._confirmed_norm() or ""
+        try:
+            call = llm_shape_mod.run(self.s, self.spec, norm)
+        except Exception as exc:  # noqa: BLE001 — 어떤 예외도 세션을 멈추지 않는다(지금 경로)
+            call = {"status": "failed", "error": f"{type(exc).__name__}: {exc}"[:300]}
+        try:
+            self._shape_llm_done(rec, r, at, call)
+        except Exception:  # noqa: BLE001
+            import logging
+            logging.getLogger(__name__).exception("shape-llm 이어 가기 실패")
+
+    def _shape_llm_done(self, rec: dict, r: int, at: str, call: dict) -> None:
+        with self.lock:
+            if self.data is None:
+                return
+            route = "llm" if call.get("status") == "ok" and call.get("adopted") else "none"
+            self.shape_llm = self._shape_llm_record(route, call.get("skipReason") or call.get("status"), call)
+            self.data["generation"]["shapeLlm"] = self.shape_llm
+            rec.pop("shapeLlmPending", None)
+            self._log_event("selection:shape_llm", {"status": call.get("status"), "route": route,
+                                                    "rejectReasons": call.get("rejectReasons")})
+            if self._after_none() is not rec or self.stage != "generating":
+                self.shape_llm["participantLeftBeforeResult"] = True     # 참여자가 기다리지 않고 넘어감·철회 — 기록만
+                self._save()
+                return
+            text = self.s.log.data.get("confirmedText")
+            pre = self.none_gen.precheck(self.spec, text, self.preview_mode, self._other_interviews(),
+                                         llm_items=self.llm_shape_items or None, llm_shape_items=self._shape_items() or None)
+            p = pre["prompt"] or {}
+            rec.update(blockReason=pre["blockReason"], blockDetail=pre["blockDetail"], prompt=pre["prompt"])
+            rec["imagePick"].update(promptText=p.get("text"), builderVersion=p.get("builderVersion"),
+                                    imageStyle=p.get("imageStyle"), imageStyleVersion=p.get("imageStyleVersion"))
+            self._note_llm_prompt(rec)
+            self._launch_image_round(rec, r, at, text, pre)
+
+    def reject_shape_basis(self) -> dict:
+        """(G82) 고르기 화면의 [그 말이 아니에요]: LLM이 인용한 낱말이 아니라고 함 → 다시 부르지 않고 기존 none 경로(0번 후보로 조절)."""
+        with self.lock:
+            self._require("picking")
+            rec = self._after_none()
+            if not (rec and rec.get("shapeLlmUsed")):
+                raise SelectionInvalid("LLM 형태 이름으로 그린 그림이 아닙니다.")
+            at = now_iso()
+            rec["imagePick"].update(status=ng.DECLINED, outcome="basis_rejected", decidedAt=at)
+            rec.update(status=ng.DECLINED, basisRejected=True, endedAt=at)
+            if self.shape_llm is not None:
+                self.shape_llm.update(rejected=True, rejectedAt=at)
+                if isinstance(self.shape_llm.get("call"), dict):
+                    self.shape_llm["call"]["exposure"].update(basisRejected=True, at=at)
+            self._log_event("selection:shape_llm", {"status": "basis_rejected", "round": rec["imagePick"]["round"]})
+            self._apply_choice(NONE_CHOICE, at)
+            return self.view()
+
     def _note_llm_prompt(self, rec: dict) -> None:
-        """(G77) llm_fill을 켰으면 이 생성 기록에 그림 프롬프트의 형태 자리를 LLM 인용 낱말로 메웠는지 남긴다(켜지 않으면 키 없음)."""
+        """(G77) llm_fill을 켰으면 이 생성 기록에 그림 프롬프트의 형태 자리를 LLM 인용 낱말로 메웠는지 남긴다(켜지 않으면 키 없음).
+        (G82) on_none_llm_shape를 켰으면 LLM 형태 이름으로 메웠는지(shapeLlmUsed)와 그 항목을 남긴다(켜지 않으면 키 없음)."""
+        if self.shape_llm_on:
+            rec["shapeLlmUsed"] = (rec.get("prompt") or {}).get("shapeSource") == llm_shape_mod.ORIGIN
+            rec["shapeLlmItems"] = copy.deepcopy(self._shape_items()) if rec["shapeLlmUsed"] else []
         if not self.llm_on:
             return
         used = ((rec.get("prompt") or {}).get("shapeSource") == llm_fill_mod.ORIGIN)
@@ -1052,6 +1182,10 @@ class SelectionFlow:
             at = now_iso()
             ip.update(status="shown", shownOrder=[x["seed"] for x in shown], shownAt=at)
             self.data["generation"]["imagePickExposed"] = True
+            if rec.get("shapeLlmUsed") and self.shape_llm is not None:
+                self.shape_llm["exposed"] = True          # G82: LLM 형태 이름으로 그린 그림이 화면에 나옴
+                if isinstance(self.shape_llm.get("call"), dict):
+                    self.shape_llm["call"]["exposure"].update(exposed=True, at=now_iso())
             if rec.get("llmPromptUsed"):
                 self.data["llmFillExposed"] = True        # G77: LLM 형태 낱말로 그린 그림이 화면에 나옴
             self.data["stage"] = "picking"
@@ -1088,16 +1222,22 @@ class SelectionFlow:
             ip.update(status="picked", outcome="picked", pickedPosition=pos, pickedSeed=img["seed"],
                       pickedImageSha256=sha, decidedAt=at)
             rec["seed"] = img["seed"]
+            if rec.get("shapeLlmUsed") and self.shape_llm is not None:
+                self.shape_llm["imageChosen"] = True
+                if isinstance(self.shape_llm.get("call"), dict):
+                    self.shape_llm["call"]["exposure"]["imageChosen"] = True
             self._log_event("selection:image_pick", {"status": "picked", "round": ip["round"], "position": pos,
                                                      "seed": img["seed"]})
             text = self.s.log.data.get("confirmedText")
-            if rec.get("llmPromptUsed") and self._llm_flag():
-                job = "session_flagged"                     # (CP15-2) LLM 낱말로 만든 그림 프롬프트는 판정 뒤 메시로 잇지 않음
+            if (rec.get("llmPromptUsed") and self._llm_flag()) or \
+                    (rec.get("shapeLlmUsed") and llm_fill_mod.session_flag(self.s)):
+                job = "session_flagged"                     # (CP15-2·G82) LLM 낱말로 만든 그림 프롬프트는 판정 뒤 메시로 잇지 않음
             else:
                 job = self.none_gen.start(self.s.id, text, source_key(self.spec), rec["prompt"]["text"], self._generation_done,
                                           attempt=rec["attempt"], spec=self.spec, other_interviews=self._other_interviews,
                                           kind="mesh", image=(path, sha), seed=img["seed"],
-                                          llm_items=self.llm_shape_items or None)
+                                          llm_items=self.llm_shape_items or None,
+                                          llm_shape_items=self._shape_items() or None)
             if isinstance(job, str):
                 rec.update(status=ng.BLOCKED, blockReason=job, endedAt=at, seconds=0.0,
                            blockDetail=",".join(self._other_interviews()) or None if job == ng.B_INTERVIEW else None)
@@ -1279,6 +1419,10 @@ class SelectionFlow:
         for rec in ([an] + list(gen.get("afterNoneEarlier") or [])) if an is not None else []:
             if rec.get("candidateId") is not None:
                 rec["chosen"] = cid == rec["candidateId"]     # G73: [맞는 게 없어요] 뒤 만든 후보(그 시도의 것)를 골랐는가
+                if rec.get("shapeLlmUsed") and self.shape_llm is not None and rec["chosen"]:
+                    self.shape_llm["candidateChosen"] = True     # G82: LLM 형태 이름으로 만든 물체를 골랐음
+        if self.shape_llm is not None and self.shape_llm.get("exposed") and self.shape_llm.get("candidateChosen") is None:
+            self.shape_llm["candidateChosen"] = False
         if cid not in offered:
             self.data["form"]["asset"] = None
             return
@@ -1867,6 +2011,12 @@ class SelectionFlow:
                              else "mesh" if ip["outcome"] == "picked" else None)
                     out["afterNone"].update(phase=phase, round=ip["round"], rounds=an["setting"]["imagePick"]["rounds"],
                                             imagePickStatus=ip["status"])
+                    if self.stage == "picking" and an.get("shapeLlmUsed"):
+                        # G82: 그림을 그린 근거 낱말(참여자 원문 그대로, 영어 이름은 보이지 않음)과 [그 말이 아니에요]
+                        q = (an.get("shapeLlmItems") or [{}])[0].get("quote")
+                        if q:
+                            out["llmShapeBasis"] = {"quote": q,
+                                                    "text": self.protocol.text("llm_shape_basis").replace("{quote}", q)}
                     if self.stage == "picking":
                         shown = sorted((x for x in ip["images"] if x["shown"]), key=lambda x: x["position"])
                         out["imagePick"] = {"round": ip["round"], "images": [

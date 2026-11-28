@@ -1,0 +1,5047 @@
+{
+ "what": "G82 llm_shape offline evaluation (synthetic texts only)",
+ "at": "2026-11-28T19:40:33+0900",
+ "config": "experiment + gen3d.on_none_llm_shape=true (in-process only), guard model none, preview none, mapping.llm_fill=false, lock_condition=false, persist_logs=false",
+ "model": {
+  "name": "gemma4:e4b",
+  "quant": "Q4_K_M",
+  "parameterSize": "7.5B",
+  "digest": "sha256:dc35e8d9c6061baa6f0fa870975ab6932e2542b579b13ea0f199fa4bb7300c9c",
+  "runtime": "ollama 0.40.17",
+  "sampling": {
+   "temperature": 0.2,
+   "top_p": 0.9,
+   "seed": 7,
+   "thinking": false
+  },
+  "numCtx": 8192
+ },
+ "ollamaVersion": "0.40.17",
+ "prompt": {
+  "promptId": "ifs-llm-shape",
+  "promptVersion": "0.1.0",
+  "file": "llm_shape.v0.1.0.json",
+  "promptSha256": "23b2972cb6a7ba191196ca52ae5dc03fe593fe16d50a4995b7278aa50e28ebdf",
+  "status": "draft",
+  "validatorConfig": {
+   "file": "llm_fill.v0.1.1.json",
+   "sha256": "85258dd0b3b9238b9b706e6e04fe772578ae2a2b796bf356981efad2a12141e0",
+   "version": "0.1.1"
+  },
+  "englishBlock": {
+   "file": "shape_english_block.v0.json",
+   "sha256": "45e1f2901f78bb075d6d8ce93203ff81309f993270cd5426ab9a35a266be0acc",
+   "version": "0.1.1"
+  },
+  "englishModifierBlock": {
+   "file": "shape_english_modifier_block.v0.json",
+   "sha256": "a9835b5bfdd6fd9354d788f036d0e3ec2363f02ca5f3c702f6fb086a18d920b8",
+   "version": "0.1.0"
+  }
+ },
+ "validatorRules": "ifs-llm-shape-validator/0.2.0",
+ "g77ValidatorRules": "ifs-llm-fill-validator/0.3.0",
+ "seed": 0,
+ "timeoutS": 20.0,
+ "gpuBefore": "9606 MiB, 16303 MiB",
+ "ollamaPsBefore": [
+  "gemma4:e4b"
+ ],
+ "cases": [
+  {
+   "id": "P01",
+   "group": "P",
+   "text": "조약돌이 하나 있어요.",
+   "expect": "fill",
+   "expectKo": "조약돌",
+   "enOk": [
+    "pebble",
+    "stone",
+    "small stone",
+    "pebble stone"
+   ],
+   "confirmedTextSha256": "36b903f8241523a3f3f1e223ff40d62f20203f365b5c035dbd084f672e3d8d7f",
+   "sessionFlag": null,
+   "mapperForm": {
+    "type": null,
+    "base": null
+   },
+   "outcome": "adopted",
+   "runsIdentical": true,
+   "runs": [
+    {
+     "status": "ok",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": true,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": {\"quote\": \"조약돌이\", \"charSpan\": [0, 3], \"en\": \"pebble\"}}",
+     "rawItem": {
+      "quote": "조약돌이",
+      "charSpan": [
+       0,
+       3
+      ],
+      "en": "pebble"
+     },
+     "item": {
+      "quote": "조약돌이",
+      "charSpan": [
+       0,
+       4
+      ],
+      "en": "pebble",
+      "spanRepaired": {
+       "llmCharSpan": [
+        0,
+        3
+       ],
+       "to": [
+        0,
+        4
+       ]
+      }
+     },
+     "rejectReasons": [],
+     "adopted": {
+      "quote": "조약돌이",
+      "charSpan": [
+       0,
+       4
+      ],
+      "en": "pebble",
+      "origin": "llm_translated"
+     },
+     "shapePromptText": "a single pebble, one solid object, matte gray clay, plain white background",
+     "llmSeconds": 0.36,
+     "seconds": 1.69,
+     "inputTextSha256": "36b903f8241523a3f3f1e223ff40d62f20203f365b5c035dbd084f672e3d8d7f",
+     "validatorTextSha256": "36b903f8241523a3f3f1e223ff40d62f20203f365b5c035dbd084f672e3d8d7f",
+     "userSha256": "1942087211d5f2113439dca872b606b0d6fdac8d3a416370ca2f2e284b3d8343",
+     "cacheKey": "26041b15c2b32a62",
+     "meaning": {
+      "en": "pebble",
+      "verdict": "맞음",
+      "reason": "미리 정한 이름",
+      "posthoc": false
+     }
+    },
+    {
+     "status": "ok",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": true,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": {\"quote\": \"조약돌이\", \"charSpan\": [0, 3], \"en\": \"pebble\"}}",
+     "rawItem": {
+      "quote": "조약돌이",
+      "charSpan": [
+       0,
+       3
+      ],
+      "en": "pebble"
+     },
+     "item": {
+      "quote": "조약돌이",
+      "charSpan": [
+       0,
+       4
+      ],
+      "en": "pebble",
+      "spanRepaired": {
+       "llmCharSpan": [
+        0,
+        3
+       ],
+       "to": [
+        0,
+        4
+       ]
+      }
+     },
+     "rejectReasons": [],
+     "adopted": {
+      "quote": "조약돌이",
+      "charSpan": [
+       0,
+       4
+      ],
+      "en": "pebble",
+      "origin": "llm_translated"
+     },
+     "shapePromptText": "a single pebble, one solid object, matte gray clay, plain white background",
+     "llmSeconds": 0.33,
+     "seconds": 0.33,
+     "inputTextSha256": "36b903f8241523a3f3f1e223ff40d62f20203f365b5c035dbd084f672e3d8d7f",
+     "validatorTextSha256": "36b903f8241523a3f3f1e223ff40d62f20203f365b5c035dbd084f672e3d8d7f",
+     "userSha256": "1942087211d5f2113439dca872b606b0d6fdac8d3a416370ca2f2e284b3d8343",
+     "cacheKey": "26041b15c2b32a62",
+     "meaning": {
+      "en": "pebble",
+      "verdict": "맞음",
+      "reason": "미리 정한 이름",
+      "posthoc": false
+     }
+    }
+   ]
+  },
+  {
+   "id": "P02",
+   "group": "P",
+   "text": "판때기예요. 겨자색이고 반지르르해요.",
+   "expect": "fill",
+   "expectKo": "판때기",
+   "enOk": [
+    "board",
+    "plank",
+    "slab",
+    "panel",
+    "wooden board"
+   ],
+   "confirmedTextSha256": "604b30ca057da6a541d89481691e5c104803484ee65d7c8b36055c077b060414",
+   "sessionFlag": null,
+   "mapperForm": {
+    "type": null,
+    "base": null
+   },
+   "outcome": "adopted",
+   "runsIdentical": true,
+   "runs": [
+    {
+     "status": "ok",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": true,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": {\"quote\": \"판때기예요\", \"charSpan\": [0, 4], \"en\": \"board\"}}",
+     "rawItem": {
+      "quote": "판때기예요",
+      "charSpan": [
+       0,
+       4
+      ],
+      "en": "board"
+     },
+     "item": {
+      "quote": "판때기예요",
+      "charSpan": [
+       0,
+       5
+      ],
+      "en": "board",
+      "spanRepaired": {
+       "llmCharSpan": [
+        0,
+        4
+       ],
+       "to": [
+        0,
+        5
+       ]
+      }
+     },
+     "rejectReasons": [],
+     "adopted": {
+      "quote": "판때기예요",
+      "charSpan": [
+       0,
+       5
+      ],
+      "en": "board",
+      "origin": "llm_translated"
+     },
+     "shapePromptText": "a single board, one solid object, matte gray clay, plain white background",
+     "llmSeconds": 0.36,
+     "seconds": 0.36,
+     "inputTextSha256": "604b30ca057da6a541d89481691e5c104803484ee65d7c8b36055c077b060414",
+     "validatorTextSha256": "604b30ca057da6a541d89481691e5c104803484ee65d7c8b36055c077b060414",
+     "userSha256": "d665ea75c60e23cf1ca0aaba14e4959c558840decd131ed0752796d325cc5374",
+     "cacheKey": "d901c8eddee936b5",
+     "meaning": {
+      "en": "board",
+      "verdict": "맞음",
+      "reason": "미리 정한 이름",
+      "posthoc": false
+     }
+    },
+    {
+     "status": "ok",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": true,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": {\"quote\": \"판때기예요\", \"charSpan\": [0, 4], \"en\": \"board\"}}",
+     "rawItem": {
+      "quote": "판때기예요",
+      "charSpan": [
+       0,
+       4
+      ],
+      "en": "board"
+     },
+     "item": {
+      "quote": "판때기예요",
+      "charSpan": [
+       0,
+       5
+      ],
+      "en": "board",
+      "spanRepaired": {
+       "llmCharSpan": [
+        0,
+        4
+       ],
+       "to": [
+        0,
+        5
+       ]
+      }
+     },
+     "rejectReasons": [],
+     "adopted": {
+      "quote": "판때기예요",
+      "charSpan": [
+       0,
+       5
+      ],
+      "en": "board",
+      "origin": "llm_translated"
+     },
+     "shapePromptText": "a single board, one solid object, matte gray clay, plain white background",
+     "llmSeconds": 0.36,
+     "seconds": 0.36,
+     "inputTextSha256": "604b30ca057da6a541d89481691e5c104803484ee65d7c8b36055c077b060414",
+     "validatorTextSha256": "604b30ca057da6a541d89481691e5c104803484ee65d7c8b36055c077b060414",
+     "userSha256": "d665ea75c60e23cf1ca0aaba14e4959c558840decd131ed0752796d325cc5374",
+     "cacheKey": "d901c8eddee936b5",
+     "meaning": {
+      "en": "board",
+      "verdict": "맞음",
+      "reason": "미리 정한 이름",
+      "posthoc": false
+     }
+    }
+   ]
+  },
+  {
+   "id": "P03",
+   "group": "P",
+   "text": "돌덩이 같은 게 있어요.",
+   "expect": "fill",
+   "expectKo": "돌덩이",
+   "enOk": [
+    "rock",
+    "stone",
+    "boulder",
+    "lump",
+    "stone lump",
+    "rock lump",
+    "chunk"
+   ],
+   "confirmedTextSha256": "d66248ff5556478f72a8f174b58858e99f341dfffc8b58e39c484899874e6efd",
+   "sessionFlag": null,
+   "mapperForm": {
+    "type": null,
+    "base": null
+   },
+   "outcome": "null",
+   "runsIdentical": true,
+   "runs": [
+    {
+     "status": "null",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": false,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": null}",
+     "rawItem": null,
+     "item": null,
+     "rejectReasons": [],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.25,
+     "seconds": 0.25,
+     "inputTextSha256": "d66248ff5556478f72a8f174b58858e99f341dfffc8b58e39c484899874e6efd",
+     "validatorTextSha256": "d66248ff5556478f72a8f174b58858e99f341dfffc8b58e39c484899874e6efd",
+     "userSha256": "9f69548b909220ef6b6ed593a76eefb61840cea2e4f977a611d5cb4d24a5bb7a",
+     "cacheKey": "e3d0b96387c5e7ac",
+     "meaning": null
+    },
+    {
+     "status": "null",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": false,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": null}",
+     "rawItem": null,
+     "item": null,
+     "rejectReasons": [],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.2,
+     "seconds": 0.2,
+     "inputTextSha256": "d66248ff5556478f72a8f174b58858e99f341dfffc8b58e39c484899874e6efd",
+     "validatorTextSha256": "d66248ff5556478f72a8f174b58858e99f341dfffc8b58e39c484899874e6efd",
+     "userSha256": "9f69548b909220ef6b6ed593a76eefb61840cea2e4f977a611d5cb4d24a5bb7a",
+     "cacheKey": "e3d0b96387c5e7ac",
+     "meaning": null
+    }
+   ]
+  },
+  {
+   "id": "P04",
+   "group": "P",
+   "text": "유리구슬 같은 게 가슴 앞에 있어요.",
+   "expect": "fill",
+   "expectKo": "유리구슬",
+   "enOk": [
+    "marble",
+    "bead",
+    "glass bead",
+    "glass marble",
+    "orb",
+    "sphere"
+   ],
+   "confirmedTextSha256": "6351b328e9fdfa521b9f5aa59dac491b1f9c39fa562a436c3bbf81819718095f",
+   "sessionFlag": null,
+   "mapperForm": {
+    "type": "blob",
+    "base": null
+   },
+   "outcome": "rejected",
+   "runsIdentical": true,
+   "runs": [
+    {
+     "status": "rejected",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": true,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": {\"quote\": \"유리구슬\", \"charSpan\": [0, 3], \"en\": \"glass marble\"}}",
+     "rawItem": {
+      "quote": "유리구슬",
+      "charSpan": [
+       0,
+       3
+      ],
+      "en": "glass marble"
+     },
+     "item": {
+      "quote": "유리구슬",
+      "charSpan": [
+       0,
+       4
+      ],
+      "en": "glass marble",
+      "spanRepaired": {
+       "llmCharSpan": [
+        0,
+        3
+       ],
+       "to": [
+        0,
+        4
+       ]
+      }
+     },
+     "rejectReasons": [
+      "span_covered",
+      "english_non_shape",
+      "english_modifier"
+     ],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.34,
+     "seconds": 0.34,
+     "inputTextSha256": "6351b328e9fdfa521b9f5aa59dac491b1f9c39fa562a436c3bbf81819718095f",
+     "validatorTextSha256": "6351b328e9fdfa521b9f5aa59dac491b1f9c39fa562a436c3bbf81819718095f",
+     "userSha256": "766e7b2855af16a63335bfa1b0674d190bc4370df5162b8782f4f3b649f6023c",
+     "cacheKey": "8884f1cf00810189",
+     "meaning": {
+      "en": "glass marble",
+      "verdict": "맞음",
+      "reason": "미리 정한 이름",
+      "posthoc": false
+     }
+    },
+    {
+     "status": "rejected",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": true,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": {\"quote\": \"유리구슬\", \"charSpan\": [0, 3], \"en\": \"glass marble\"}}",
+     "rawItem": {
+      "quote": "유리구슬",
+      "charSpan": [
+       0,
+       3
+      ],
+      "en": "glass marble"
+     },
+     "item": {
+      "quote": "유리구슬",
+      "charSpan": [
+       0,
+       4
+      ],
+      "en": "glass marble",
+      "spanRepaired": {
+       "llmCharSpan": [
+        0,
+        3
+       ],
+       "to": [
+        0,
+        4
+       ]
+      }
+     },
+     "rejectReasons": [
+      "span_covered",
+      "english_non_shape",
+      "english_modifier"
+     ],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.31,
+     "seconds": 0.31,
+     "inputTextSha256": "6351b328e9fdfa521b9f5aa59dac491b1f9c39fa562a436c3bbf81819718095f",
+     "validatorTextSha256": "6351b328e9fdfa521b9f5aa59dac491b1f9c39fa562a436c3bbf81819718095f",
+     "userSha256": "766e7b2855af16a63335bfa1b0674d190bc4370df5162b8782f4f3b649f6023c",
+     "cacheKey": "8884f1cf00810189",
+     "meaning": {
+      "en": "glass marble",
+      "verdict": "맞음",
+      "reason": "미리 정한 이름",
+      "posthoc": false
+     }
+    }
+   ]
+  },
+  {
+   "id": "P05",
+   "group": "P",
+   "text": "나무상자예요.",
+   "expect": "fill",
+   "expectKo": "나무상자",
+   "enOk": [
+    "box",
+    "crate",
+    "wooden box",
+    "chest",
+    "wood box"
+   ],
+   "confirmedTextSha256": "37f2bd6a409295bb329ea10b0bffe43673c7ad11f3fb9559924e71d7ff404a87",
+   "sessionFlag": null,
+   "mapperForm": {
+    "type": null,
+    "base": null
+   },
+   "outcome": "rejected",
+   "runsIdentical": true,
+   "runs": [
+    {
+     "status": "rejected",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": true,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": {\"quote\": \"나무상자예요\", \"charSpan\": [0, 4], \"en\": \"wooden box\"}}",
+     "rawItem": {
+      "quote": "나무상자예요",
+      "charSpan": [
+       0,
+       4
+      ],
+      "en": "wooden box"
+     },
+     "item": {
+      "quote": "나무상자예요",
+      "charSpan": [
+       0,
+       6
+      ],
+      "en": "wooden box",
+      "spanRepaired": {
+       "llmCharSpan": [
+        0,
+        4
+       ],
+       "to": [
+        0,
+        6
+       ]
+      }
+     },
+     "rejectReasons": [
+      "english_non_shape",
+      "english_modifier"
+     ],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.34,
+     "seconds": 0.34,
+     "inputTextSha256": "37f2bd6a409295bb329ea10b0bffe43673c7ad11f3fb9559924e71d7ff404a87",
+     "validatorTextSha256": "37f2bd6a409295bb329ea10b0bffe43673c7ad11f3fb9559924e71d7ff404a87",
+     "userSha256": "6987e7814c48105257b05754843a0803e18efcb02d4f6716b500fa2b24fba2e9",
+     "cacheKey": "c61c63160845b583",
+     "meaning": {
+      "en": "wooden box",
+      "verdict": "맞음",
+      "reason": "미리 정한 이름",
+      "posthoc": false
+     }
+    },
+    {
+     "status": "rejected",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": true,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": {\"quote\": \"나무상자예요\", \"charSpan\": [0, 4], \"en\": \"wooden box\"}}",
+     "rawItem": {
+      "quote": "나무상자예요",
+      "charSpan": [
+       0,
+       4
+      ],
+      "en": "wooden box"
+     },
+     "item": {
+      "quote": "나무상자예요",
+      "charSpan": [
+       0,
+       6
+      ],
+      "en": "wooden box",
+      "spanRepaired": {
+       "llmCharSpan": [
+        0,
+        4
+       ],
+       "to": [
+        0,
+        6
+       ]
+      }
+     },
+     "rejectReasons": [
+      "english_non_shape",
+      "english_modifier"
+     ],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.31,
+     "seconds": 0.31,
+     "inputTextSha256": "37f2bd6a409295bb329ea10b0bffe43673c7ad11f3fb9559924e71d7ff404a87",
+     "validatorTextSha256": "37f2bd6a409295bb329ea10b0bffe43673c7ad11f3fb9559924e71d7ff404a87",
+     "userSha256": "6987e7814c48105257b05754843a0803e18efcb02d4f6716b500fa2b24fba2e9",
+     "cacheKey": "c61c63160845b583",
+     "meaning": {
+      "en": "wooden box",
+      "verdict": "맞음",
+      "reason": "미리 정한 이름",
+      "posthoc": false
+     }
+    }
+   ]
+  },
+  {
+   "id": "P06",
+   "group": "P",
+   "text": "털실타래 같은 게 뭉쳐 있어요.",
+   "expect": "fill",
+   "expectKo": "털실타래",
+   "enOk": [
+    "yarn ball",
+    "ball of yarn",
+    "yarn",
+    "skein",
+    "wool ball",
+    "yarn skein"
+   ],
+   "confirmedTextSha256": "ac22e213e3ca3b9e0dcad5e8b066dc749d6dddaf66dd83a6066342e35099d7aa",
+   "sessionFlag": null,
+   "mapperForm": {
+    "type": null,
+    "base": null
+   },
+   "outcome": "adopted",
+   "runsIdentical": true,
+   "runs": [
+    {
+     "status": "ok",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": true,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": {\"quote\": \"털실타래\", \"charSpan\": [0, 4], \"en\": \"yarn ball\"}}",
+     "rawItem": {
+      "quote": "털실타래",
+      "charSpan": [
+       0,
+       4
+      ],
+      "en": "yarn ball"
+     },
+     "item": {
+      "quote": "털실타래",
+      "charSpan": [
+       0,
+       4
+      ],
+      "en": "yarn ball"
+     },
+     "rejectReasons": [],
+     "adopted": {
+      "quote": "털실타래",
+      "charSpan": [
+       0,
+       4
+      ],
+      "en": "yarn ball",
+      "origin": "llm_translated"
+     },
+     "shapePromptText": "a single yarn ball, one solid object, matte gray clay, plain white background",
+     "llmSeconds": 0.33,
+     "seconds": 0.33,
+     "inputTextSha256": "ac22e213e3ca3b9e0dcad5e8b066dc749d6dddaf66dd83a6066342e35099d7aa",
+     "validatorTextSha256": "ac22e213e3ca3b9e0dcad5e8b066dc749d6dddaf66dd83a6066342e35099d7aa",
+     "userSha256": "7099c00d5bfb2f8011ab8306bc8ce5982df8850887d14302b7fdee70b7ee35ea",
+     "cacheKey": "ff940f08603c85eb",
+     "meaning": {
+      "en": "yarn ball",
+      "verdict": "맞음",
+      "reason": "미리 정한 이름",
+      "posthoc": false
+     }
+    },
+    {
+     "status": "ok",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": true,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": {\"quote\": \"털실타래\", \"charSpan\": [0, 4], \"en\": \"yarn ball\"}}",
+     "rawItem": {
+      "quote": "털실타래",
+      "charSpan": [
+       0,
+       4
+      ],
+      "en": "yarn ball"
+     },
+     "item": {
+      "quote": "털실타래",
+      "charSpan": [
+       0,
+       4
+      ],
+      "en": "yarn ball"
+     },
+     "rejectReasons": [],
+     "adopted": {
+      "quote": "털실타래",
+      "charSpan": [
+       0,
+       4
+      ],
+      "en": "yarn ball",
+      "origin": "llm_translated"
+     },
+     "shapePromptText": "a single yarn ball, one solid object, matte gray clay, plain white background",
+     "llmSeconds": 0.34,
+     "seconds": 0.34,
+     "inputTextSha256": "ac22e213e3ca3b9e0dcad5e8b066dc749d6dddaf66dd83a6066342e35099d7aa",
+     "validatorTextSha256": "ac22e213e3ca3b9e0dcad5e8b066dc749d6dddaf66dd83a6066342e35099d7aa",
+     "userSha256": "7099c00d5bfb2f8011ab8306bc8ce5982df8850887d14302b7fdee70b7ee35ea",
+     "cacheKey": "ff940f08603c85eb",
+     "meaning": {
+      "en": "yarn ball",
+      "verdict": "맞음",
+      "reason": "미리 정한 이름",
+      "posthoc": false
+     }
+    }
+   ]
+  },
+  {
+   "id": "P07",
+   "group": "P",
+   "text": "자갈이에요. 회색이고 거칠어요.",
+   "expect": "fill",
+   "expectKo": "자갈",
+   "enOk": [
+    "gravel",
+    "pebble",
+    "stone",
+    "pebbles"
+   ],
+   "confirmedTextSha256": "7ac1baef71f3e4709e7ba9d9d8674a639c9b3824db2ab4b1d104e0eb8ca2b7c9",
+   "sessionFlag": null,
+   "mapperForm": {
+    "type": null,
+    "base": null
+   },
+   "outcome": "adopted",
+   "runsIdentical": true,
+   "runs": [
+    {
+     "status": "ok",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": true,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": {\"quote\": \"자갈이에요\", \"charSpan\": [0, 5], \"en\": \"pebble\"}}",
+     "rawItem": {
+      "quote": "자갈이에요",
+      "charSpan": [
+       0,
+       5
+      ],
+      "en": "pebble"
+     },
+     "item": {
+      "quote": "자갈이에요",
+      "charSpan": [
+       0,
+       5
+      ],
+      "en": "pebble"
+     },
+     "rejectReasons": [],
+     "adopted": {
+      "quote": "자갈이에요",
+      "charSpan": [
+       0,
+       5
+      ],
+      "en": "pebble",
+      "origin": "llm_translated"
+     },
+     "shapePromptText": "a single pebble, one solid object, matte gray clay, plain white background",
+     "llmSeconds": 0.34,
+     "seconds": 0.34,
+     "inputTextSha256": "7ac1baef71f3e4709e7ba9d9d8674a639c9b3824db2ab4b1d104e0eb8ca2b7c9",
+     "validatorTextSha256": "7ac1baef71f3e4709e7ba9d9d8674a639c9b3824db2ab4b1d104e0eb8ca2b7c9",
+     "userSha256": "68b8caf87b740b2216b6dddfa958262c1d37d7547713bc2a2493917b9f894206",
+     "cacheKey": "02478ebe3c80ad63",
+     "meaning": {
+      "en": "pebble",
+      "verdict": "맞음",
+      "reason": "미리 정한 이름",
+      "posthoc": false
+     }
+    },
+    {
+     "status": "ok",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": true,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": {\"quote\": \"자갈이에요\", \"charSpan\": [0, 5], \"en\": \"pebble\"}}",
+     "rawItem": {
+      "quote": "자갈이에요",
+      "charSpan": [
+       0,
+       5
+      ],
+      "en": "pebble"
+     },
+     "item": {
+      "quote": "자갈이에요",
+      "charSpan": [
+       0,
+       5
+      ],
+      "en": "pebble"
+     },
+     "rejectReasons": [],
+     "adopted": {
+      "quote": "자갈이에요",
+      "charSpan": [
+       0,
+       5
+      ],
+      "en": "pebble",
+      "origin": "llm_translated"
+     },
+     "shapePromptText": "a single pebble, one solid object, matte gray clay, plain white background",
+     "llmSeconds": 0.33,
+     "seconds": 0.33,
+     "inputTextSha256": "7ac1baef71f3e4709e7ba9d9d8674a639c9b3824db2ab4b1d104e0eb8ca2b7c9",
+     "validatorTextSha256": "7ac1baef71f3e4709e7ba9d9d8674a639c9b3824db2ab4b1d104e0eb8ca2b7c9",
+     "userSha256": "68b8caf87b740b2216b6dddfa958262c1d37d7547713bc2a2493917b9f894206",
+     "cacheKey": "02478ebe3c80ad63",
+     "meaning": {
+      "en": "pebble",
+      "verdict": "맞음",
+      "reason": "미리 정한 이름",
+      "posthoc": false
+     }
+    }
+   ]
+  },
+  {
+   "id": "P08",
+   "group": "P",
+   "text": "가슴 한가운데에 벽돌 같은 게 박혀 있는데 꽤 단단하고 어두운 색이에요.",
+   "expect": "fill",
+   "expectKo": "벽돌",
+   "enOk": [
+    "brick"
+   ],
+   "confirmedTextSha256": "d7f85de8a3dc341781969e5c994efec540ba403b8d36941c7999e63e2a95f5e3",
+   "sessionFlag": null,
+   "mapperForm": {
+    "type": "blob",
+    "base": null
+   },
+   "outcome": "rejected",
+   "runsIdentical": true,
+   "runs": [
+    {
+     "status": "rejected",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": true,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": {\"quote\": \"벽돌\", \"charSpan\": [9, 12], \"en\": \"brick\"}}",
+     "rawItem": {
+      "quote": "벽돌",
+      "charSpan": [
+       9,
+       12
+      ],
+      "en": "brick"
+     },
+     "item": {
+      "quote": "벽돌",
+      "charSpan": [
+       9,
+       11
+      ],
+      "en": "brick",
+      "spanRepaired": {
+       "llmCharSpan": [
+        9,
+        12
+       ],
+       "to": [
+        9,
+        11
+       ]
+      }
+     },
+     "rejectReasons": [
+      "span_covered"
+     ],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.34,
+     "seconds": 0.34,
+     "inputTextSha256": "d7f85de8a3dc341781969e5c994efec540ba403b8d36941c7999e63e2a95f5e3",
+     "validatorTextSha256": "d7f85de8a3dc341781969e5c994efec540ba403b8d36941c7999e63e2a95f5e3",
+     "userSha256": "b883f1a1822f4e93f29b2ead06915eb5c0a29ab4436b4d74b3e0a7f436e456d3",
+     "cacheKey": "6e0de52e88f656be",
+     "meaning": {
+      "en": "brick",
+      "verdict": "맞음",
+      "reason": "미리 정한 이름",
+      "posthoc": false
+     }
+    },
+    {
+     "status": "rejected",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": true,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": {\"quote\": \"벽돌\", \"charSpan\": [9, 12], \"en\": \"brick\"}}",
+     "rawItem": {
+      "quote": "벽돌",
+      "charSpan": [
+       9,
+       12
+      ],
+      "en": "brick"
+     },
+     "item": {
+      "quote": "벽돌",
+      "charSpan": [
+       9,
+       11
+      ],
+      "en": "brick",
+      "spanRepaired": {
+       "llmCharSpan": [
+        9,
+        12
+       ],
+       "to": [
+        9,
+        11
+       ]
+      }
+     },
+     "rejectReasons": [
+      "span_covered"
+     ],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.3,
+     "seconds": 0.3,
+     "inputTextSha256": "d7f85de8a3dc341781969e5c994efec540ba403b8d36941c7999e63e2a95f5e3",
+     "validatorTextSha256": "d7f85de8a3dc341781969e5c994efec540ba403b8d36941c7999e63e2a95f5e3",
+     "userSha256": "b883f1a1822f4e93f29b2ead06915eb5c0a29ab4436b4d74b3e0a7f436e456d3",
+     "cacheKey": "6e0de52e88f656be",
+     "meaning": {
+      "en": "brick",
+      "verdict": "맞음",
+      "reason": "미리 정한 이름",
+      "posthoc": false
+     }
+    }
+   ]
+  },
+  {
+   "id": "P09",
+   "group": "P",
+   "text": "널빤지 같은 게 등에 붙어 있어요.",
+   "expect": "fill",
+   "expectKo": "널빤지",
+   "enOk": [
+    "plank",
+    "board",
+    "wooden board",
+    "slab"
+   ],
+   "confirmedTextSha256": "d07ac7863f450b215443c9f0a6c0040394e139453f5556f632cf4e7e4459bc6b",
+   "sessionFlag": null,
+   "mapperForm": {
+    "type": null,
+    "base": null
+   },
+   "outcome": "adopted",
+   "runsIdentical": true,
+   "runs": [
+    {
+     "status": "ok",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": true,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": {\"quote\": \"널빤지\", \"charSpan\": [0, 3], \"en\": \"plank\"}}",
+     "rawItem": {
+      "quote": "널빤지",
+      "charSpan": [
+       0,
+       3
+      ],
+      "en": "plank"
+     },
+     "item": {
+      "quote": "널빤지",
+      "charSpan": [
+       0,
+       3
+      ],
+      "en": "plank"
+     },
+     "rejectReasons": [],
+     "adopted": {
+      "quote": "널빤지",
+      "charSpan": [
+       0,
+       3
+      ],
+      "en": "plank",
+      "origin": "llm_translated"
+     },
+     "shapePromptText": "a single plank, one solid object, matte gray clay, plain white background",
+     "llmSeconds": 0.36,
+     "seconds": 0.36,
+     "inputTextSha256": "d07ac7863f450b215443c9f0a6c0040394e139453f5556f632cf4e7e4459bc6b",
+     "validatorTextSha256": "d07ac7863f450b215443c9f0a6c0040394e139453f5556f632cf4e7e4459bc6b",
+     "userSha256": "48e619ac1a624bbc609ee6d24e42430b69181e76466321ccf877a6dc237be06f",
+     "cacheKey": "e33f504ab3c70022",
+     "meaning": {
+      "en": "plank",
+      "verdict": "맞음",
+      "reason": "미리 정한 이름",
+      "posthoc": false
+     }
+    },
+    {
+     "status": "ok",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": true,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": {\"quote\": \"널빤지\", \"charSpan\": [0, 3], \"en\": \"plank\"}}",
+     "rawItem": {
+      "quote": "널빤지",
+      "charSpan": [
+       0,
+       3
+      ],
+      "en": "plank"
+     },
+     "item": {
+      "quote": "널빤지",
+      "charSpan": [
+       0,
+       3
+      ],
+      "en": "plank"
+     },
+     "rejectReasons": [],
+     "adopted": {
+      "quote": "널빤지",
+      "charSpan": [
+       0,
+       3
+      ],
+      "en": "plank",
+      "origin": "llm_translated"
+     },
+     "shapePromptText": "a single plank, one solid object, matte gray clay, plain white background",
+     "llmSeconds": 0.34,
+     "seconds": 0.34,
+     "inputTextSha256": "d07ac7863f450b215443c9f0a6c0040394e139453f5556f632cf4e7e4459bc6b",
+     "validatorTextSha256": "d07ac7863f450b215443c9f0a6c0040394e139453f5556f632cf4e7e4459bc6b",
+     "userSha256": "48e619ac1a624bbc609ee6d24e42430b69181e76466321ccf877a6dc237be06f",
+     "cacheKey": "e33f504ab3c70022",
+     "meaning": {
+      "en": "plank",
+      "verdict": "맞음",
+      "reason": "미리 정한 이름",
+      "posthoc": false
+     }
+    }
+   ]
+  },
+  {
+   "id": "P10",
+   "group": "P",
+   "text": "쇳덩이예요. 차갑고 무거워요.",
+   "expect": "fill",
+   "expectKo": "쇳덩이",
+   "enOk": [
+    "iron lump",
+    "lump",
+    "ingot",
+    "chunk",
+    "iron block",
+    "metal lump",
+    "block"
+   ],
+   "confirmedTextSha256": "3891cd02bd5b9150fb98e85763bf6d4af5e7be9563c3304687b675950f7477ae",
+   "sessionFlag": null,
+   "mapperForm": {
+    "type": null,
+    "base": null
+   },
+   "outcome": "rejected",
+   "runsIdentical": true,
+   "runs": [
+    {
+     "status": "rejected",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": true,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": {\"quote\": \"쇳덩이예요\", \"charSpan\": [0, 5], \"en\": \"metal\"}}",
+     "rawItem": {
+      "quote": "쇳덩이예요",
+      "charSpan": [
+       0,
+       5
+      ],
+      "en": "metal"
+     },
+     "item": {
+      "quote": "쇳덩이예요",
+      "charSpan": [
+       0,
+       5
+      ],
+      "en": "metal"
+     },
+     "rejectReasons": [
+      "english_non_shape"
+     ],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.34,
+     "seconds": 0.34,
+     "inputTextSha256": "3891cd02bd5b9150fb98e85763bf6d4af5e7be9563c3304687b675950f7477ae",
+     "validatorTextSha256": "3891cd02bd5b9150fb98e85763bf6d4af5e7be9563c3304687b675950f7477ae",
+     "userSha256": "2998af4f6464092eb35ed34b4849807ee228b40bc9cdef0a79f336c78229dcfa",
+     "cacheKey": "543166de87474a50",
+     "meaning": {
+      "en": "metal",
+      "verdict": "틀림",
+      "reason": "쇳덩이는 쇠 덩어리. 재료 이름만 냄",
+      "posthoc": true
+     }
+    },
+    {
+     "status": "rejected",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": true,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": {\"quote\": \"쇳덩이예요\", \"charSpan\": [0, 5], \"en\": \"metal\"}}",
+     "rawItem": {
+      "quote": "쇳덩이예요",
+      "charSpan": [
+       0,
+       5
+      ],
+      "en": "metal"
+     },
+     "item": {
+      "quote": "쇳덩이예요",
+      "charSpan": [
+       0,
+       5
+      ],
+      "en": "metal"
+     },
+     "rejectReasons": [
+      "english_non_shape"
+     ],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.31,
+     "seconds": 0.31,
+     "inputTextSha256": "3891cd02bd5b9150fb98e85763bf6d4af5e7be9563c3304687b675950f7477ae",
+     "validatorTextSha256": "3891cd02bd5b9150fb98e85763bf6d4af5e7be9563c3304687b675950f7477ae",
+     "userSha256": "2998af4f6464092eb35ed34b4849807ee228b40bc9cdef0a79f336c78229dcfa",
+     "cacheKey": "543166de87474a50",
+     "meaning": {
+      "en": "metal",
+      "verdict": "틀림",
+      "reason": "쇳덩이는 쇠 덩어리. 재료 이름만 냄",
+      "posthoc": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "P11",
+   "group": "P",
+   "text": "베개처럼 생겼어요.",
+   "expect": "fill",
+   "expectKo": "베개",
+   "enOk": [
+    "pillow",
+    "cushion"
+   ],
+   "confirmedTextSha256": "30a97ffa07e05e0a31f1c8c31a7a03f190c6084a78196e85160b386665e77564",
+   "sessionFlag": null,
+   "mapperForm": {
+    "type": null,
+    "base": null
+   },
+   "outcome": "adopted",
+   "runsIdentical": true,
+   "runs": [
+    {
+     "status": "ok",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": true,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": {\"quote\": \"베개\", \"charSpan\": [0, 2], \"en\": \"pillow\"}}",
+     "rawItem": {
+      "quote": "베개",
+      "charSpan": [
+       0,
+       2
+      ],
+      "en": "pillow"
+     },
+     "item": {
+      "quote": "베개",
+      "charSpan": [
+       0,
+       2
+      ],
+      "en": "pillow",
+      "exempted": [
+       "simile_of_predicate:shape_verb"
+      ]
+     },
+     "rejectReasons": [],
+     "adopted": {
+      "quote": "베개",
+      "charSpan": [
+       0,
+       2
+      ],
+      "en": "pillow",
+      "origin": "llm_translated"
+     },
+     "shapePromptText": "a single pillow, one solid object, matte gray clay, plain white background",
+     "llmSeconds": 0.33,
+     "seconds": 0.33,
+     "inputTextSha256": "30a97ffa07e05e0a31f1c8c31a7a03f190c6084a78196e85160b386665e77564",
+     "validatorTextSha256": "30a97ffa07e05e0a31f1c8c31a7a03f190c6084a78196e85160b386665e77564",
+     "userSha256": "0355f647eedaf6f2b97bb20e7bfed46a555110b667c00178e085abd82fb598ad",
+     "cacheKey": "0efdf46ab8106fbc",
+     "meaning": {
+      "en": "pillow",
+      "verdict": "맞음",
+      "reason": "미리 정한 이름",
+      "posthoc": false
+     }
+    },
+    {
+     "status": "ok",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": true,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": {\"quote\": \"베개\", \"charSpan\": [0, 2], \"en\": \"pillow\"}}",
+     "rawItem": {
+      "quote": "베개",
+      "charSpan": [
+       0,
+       2
+      ],
+      "en": "pillow"
+     },
+     "item": {
+      "quote": "베개",
+      "charSpan": [
+       0,
+       2
+      ],
+      "en": "pillow",
+      "exempted": [
+       "simile_of_predicate:shape_verb"
+      ]
+     },
+     "rejectReasons": [],
+     "adopted": {
+      "quote": "베개",
+      "charSpan": [
+       0,
+       2
+      ],
+      "en": "pillow",
+      "origin": "llm_translated"
+     },
+     "shapePromptText": "a single pillow, one solid object, matte gray clay, plain white background",
+     "llmSeconds": 0.28,
+     "seconds": 0.28,
+     "inputTextSha256": "30a97ffa07e05e0a31f1c8c31a7a03f190c6084a78196e85160b386665e77564",
+     "validatorTextSha256": "30a97ffa07e05e0a31f1c8c31a7a03f190c6084a78196e85160b386665e77564",
+     "userSha256": "0355f647eedaf6f2b97bb20e7bfed46a555110b667c00178e085abd82fb598ad",
+     "cacheKey": "0efdf46ab8106fbc",
+     "meaning": {
+      "en": "pillow",
+      "verdict": "맞음",
+      "reason": "미리 정한 이름",
+      "posthoc": false
+     }
+    }
+   ]
+  },
+  {
+   "id": "P12",
+   "group": "P",
+   "text": "찌그러진 깡통 같은 게 굴러다녀요.",
+   "expect": "fill",
+   "expectKo": "깡통",
+   "enOk": [
+    "can",
+    "tin can",
+    "tin"
+   ],
+   "confirmedTextSha256": "c2abde199c6be039442940eda9e0da2f29b7bd17b80a17aef70d20583544aff3",
+   "sessionFlag": null,
+   "mapperForm": {
+    "type": null,
+    "base": null
+   },
+   "outcome": "adopted",
+   "runsIdentical": true,
+   "runs": [
+    {
+     "status": "ok",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": true,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "modifier_only",
+      "status": "ok",
+      "blockReason": null,
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": {\"quote\": \"깡통\", \"charSpan\": [5, 8], \"en\": \"can\"}}",
+     "rawItem": {
+      "quote": "깡통",
+      "charSpan": [
+       5,
+       8
+      ],
+      "en": "can"
+     },
+     "item": {
+      "quote": "깡통",
+      "charSpan": [
+       5,
+       7
+      ],
+      "en": "can",
+      "spanRepaired": {
+       "llmCharSpan": [
+        5,
+        8
+       ],
+       "to": [
+        5,
+        7
+       ]
+      }
+     },
+     "rejectReasons": [],
+     "adopted": {
+      "quote": "깡통",
+      "charSpan": [
+       5,
+       7
+      ],
+      "en": "can",
+      "origin": "llm_translated"
+     },
+     "shapePromptText": "a single dented can, one solid object, matte gray clay, plain white background",
+     "llmSeconds": 0.36,
+     "seconds": 0.36,
+     "inputTextSha256": "c2abde199c6be039442940eda9e0da2f29b7bd17b80a17aef70d20583544aff3",
+     "validatorTextSha256": "c2abde199c6be039442940eda9e0da2f29b7bd17b80a17aef70d20583544aff3",
+     "userSha256": "05c86328b20e86c5d55e15123b285a04183568a0e87e4b786a8d55f4a9f60901",
+     "cacheKey": "6e4f6dbe7770d113",
+     "meaning": {
+      "en": "can",
+      "verdict": "맞음",
+      "reason": "미리 정한 이름",
+      "posthoc": false
+     }
+    },
+    {
+     "status": "ok",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": true,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "modifier_only",
+      "status": "ok",
+      "blockReason": null,
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": {\"quote\": \"깡통\", \"charSpan\": [5, 8], \"en\": \"can\"}}",
+     "rawItem": {
+      "quote": "깡통",
+      "charSpan": [
+       5,
+       8
+      ],
+      "en": "can"
+     },
+     "item": {
+      "quote": "깡통",
+      "charSpan": [
+       5,
+       7
+      ],
+      "en": "can",
+      "spanRepaired": {
+       "llmCharSpan": [
+        5,
+        8
+       ],
+       "to": [
+        5,
+        7
+       ]
+      }
+     },
+     "rejectReasons": [],
+     "adopted": {
+      "quote": "깡통",
+      "charSpan": [
+       5,
+       7
+      ],
+      "en": "can",
+      "origin": "llm_translated"
+     },
+     "shapePromptText": "a single dented can, one solid object, matte gray clay, plain white background",
+     "llmSeconds": 0.31,
+     "seconds": 0.31,
+     "inputTextSha256": "c2abde199c6be039442940eda9e0da2f29b7bd17b80a17aef70d20583544aff3",
+     "validatorTextSha256": "c2abde199c6be039442940eda9e0da2f29b7bd17b80a17aef70d20583544aff3",
+     "userSha256": "05c86328b20e86c5d55e15123b285a04183568a0e87e4b786a8d55f4a9f60901",
+     "cacheKey": "6e4f6dbe7770d113",
+     "meaning": {
+      "en": "can",
+      "verdict": "맞음",
+      "reason": "미리 정한 이름",
+      "posthoc": false
+     }
+    }
+   ]
+  },
+  {
+   "id": "P13",
+   "group": "P",
+   "text": "단추 같은 게 있어요. 동그래요.",
+   "expect": "fill",
+   "expectKo": "단추",
+   "enOk": [
+    "button"
+   ],
+   "confirmedTextSha256": "a6cd8570dda784da4727fa2e9040b6ad191aba68566e1ad97edba1545745fa79",
+   "sessionFlag": null,
+   "mapperForm": {
+    "type": null,
+    "base": null
+   },
+   "outcome": "adopted",
+   "runsIdentical": true,
+   "runs": [
+    {
+     "status": "ok",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": true,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "modifier_only",
+      "status": "ok",
+      "blockReason": null,
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": {\"quote\": \"단추\", \"charSpan\": [0, 3], \"en\": \"button\"}}",
+     "rawItem": {
+      "quote": "단추",
+      "charSpan": [
+       0,
+       3
+      ],
+      "en": "button"
+     },
+     "item": {
+      "quote": "단추",
+      "charSpan": [
+       0,
+       2
+      ],
+      "en": "button",
+      "spanRepaired": {
+       "llmCharSpan": [
+        0,
+        3
+       ],
+       "to": [
+        0,
+        2
+       ]
+      }
+     },
+     "rejectReasons": [],
+     "adopted": {
+      "quote": "단추",
+      "charSpan": [
+       0,
+       2
+      ],
+      "en": "button",
+      "origin": "llm_translated"
+     },
+     "shapePromptText": "a single round button, one solid object, matte gray clay, plain white background",
+     "llmSeconds": 0.34,
+     "seconds": 0.34,
+     "inputTextSha256": "a6cd8570dda784da4727fa2e9040b6ad191aba68566e1ad97edba1545745fa79",
+     "validatorTextSha256": "a6cd8570dda784da4727fa2e9040b6ad191aba68566e1ad97edba1545745fa79",
+     "userSha256": "a5d542a9c8d60ae567e8bc88700a645c08d400d0eb838a0c4569813169fa4daf",
+     "cacheKey": "a5b51719a9d8ad82",
+     "meaning": {
+      "en": "button",
+      "verdict": "맞음",
+      "reason": "미리 정한 이름",
+      "posthoc": false
+     }
+    },
+    {
+     "status": "ok",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": true,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "modifier_only",
+      "status": "ok",
+      "blockReason": null,
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": {\"quote\": \"단추\", \"charSpan\": [0, 3], \"en\": \"button\"}}",
+     "rawItem": {
+      "quote": "단추",
+      "charSpan": [
+       0,
+       3
+      ],
+      "en": "button"
+     },
+     "item": {
+      "quote": "단추",
+      "charSpan": [
+       0,
+       2
+      ],
+      "en": "button",
+      "spanRepaired": {
+       "llmCharSpan": [
+        0,
+        3
+       ],
+       "to": [
+        0,
+        2
+       ]
+      }
+     },
+     "rejectReasons": [],
+     "adopted": {
+      "quote": "단추",
+      "charSpan": [
+       0,
+       2
+      ],
+      "en": "button",
+      "origin": "llm_translated"
+     },
+     "shapePromptText": "a single round button, one solid object, matte gray clay, plain white background",
+     "llmSeconds": 0.31,
+     "seconds": 0.31,
+     "inputTextSha256": "a6cd8570dda784da4727fa2e9040b6ad191aba68566e1ad97edba1545745fa79",
+     "validatorTextSha256": "a6cd8570dda784da4727fa2e9040b6ad191aba68566e1ad97edba1545745fa79",
+     "userSha256": "a5d542a9c8d60ae567e8bc88700a645c08d400d0eb838a0c4569813169fa4daf",
+     "cacheKey": "a5b51719a9d8ad82",
+     "meaning": {
+      "en": "button",
+      "verdict": "맞음",
+      "reason": "미리 정한 이름",
+      "posthoc": false
+     }
+    }
+   ]
+  },
+  {
+   "id": "P14",
+   "group": "P",
+   "text": "동전이 하나 놓여 있는 것 같아요.",
+   "expect": "fill",
+   "expectKo": "동전",
+   "enOk": [
+    "coin"
+   ],
+   "confirmedTextSha256": "8d6a3212c301de5e4828a881e0b2385d16646d4b6222e5fe20160085082b287d",
+   "sessionFlag": null,
+   "mapperForm": {
+    "type": null,
+    "base": null
+   },
+   "outcome": "adopted",
+   "runsIdentical": true,
+   "runs": [
+    {
+     "status": "ok",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": true,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": {\"quote\": \"동전이\", \"charSpan\": [0, 3], \"en\": \"coin\"}}",
+     "rawItem": {
+      "quote": "동전이",
+      "charSpan": [
+       0,
+       3
+      ],
+      "en": "coin"
+     },
+     "item": {
+      "quote": "동전이",
+      "charSpan": [
+       0,
+       3
+      ],
+      "en": "coin"
+     },
+     "rejectReasons": [],
+     "adopted": {
+      "quote": "동전이",
+      "charSpan": [
+       0,
+       3
+      ],
+      "en": "coin",
+      "origin": "llm_translated"
+     },
+     "shapePromptText": "a single coin, one solid object, matte gray clay, plain white background",
+     "llmSeconds": 0.33,
+     "seconds": 0.33,
+     "inputTextSha256": "8d6a3212c301de5e4828a881e0b2385d16646d4b6222e5fe20160085082b287d",
+     "validatorTextSha256": "8d6a3212c301de5e4828a881e0b2385d16646d4b6222e5fe20160085082b287d",
+     "userSha256": "118117a21a17d6d7233677a70fcdef3a0763757311f3bea7de104cf9a3edc6d3",
+     "cacheKey": "b0eaed3ea06289c3",
+     "meaning": {
+      "en": "coin",
+      "verdict": "맞음",
+      "reason": "미리 정한 이름",
+      "posthoc": false
+     }
+    },
+    {
+     "status": "ok",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": true,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": {\"quote\": \"동전이\", \"charSpan\": [0, 3], \"en\": \"coin\"}}",
+     "rawItem": {
+      "quote": "동전이",
+      "charSpan": [
+       0,
+       3
+      ],
+      "en": "coin"
+     },
+     "item": {
+      "quote": "동전이",
+      "charSpan": [
+       0,
+       3
+      ],
+      "en": "coin"
+     },
+     "rejectReasons": [],
+     "adopted": {
+      "quote": "동전이",
+      "charSpan": [
+       0,
+       3
+      ],
+      "en": "coin",
+      "origin": "llm_translated"
+     },
+     "shapePromptText": "a single coin, one solid object, matte gray clay, plain white background",
+     "llmSeconds": 0.34,
+     "seconds": 0.34,
+     "inputTextSha256": "8d6a3212c301de5e4828a881e0b2385d16646d4b6222e5fe20160085082b287d",
+     "validatorTextSha256": "8d6a3212c301de5e4828a881e0b2385d16646d4b6222e5fe20160085082b287d",
+     "userSha256": "118117a21a17d6d7233677a70fcdef3a0763757311f3bea7de104cf9a3edc6d3",
+     "cacheKey": "b0eaed3ea06289c3",
+     "meaning": {
+      "en": "coin",
+      "verdict": "맞음",
+      "reason": "미리 정한 이름",
+      "posthoc": false
+     }
+    }
+   ]
+  },
+  {
+   "id": "P15",
+   "group": "P",
+   "text": "솔방울이에요.",
+   "expect": "fill",
+   "expectKo": "솔방울",
+   "enOk": [
+    "pine cone",
+    "pinecone",
+    "cone"
+   ],
+   "confirmedTextSha256": "a8078e837cc55879047dbfddacc4a7c75d31bbf46f7e3d10f6c37cf16660bbb9",
+   "sessionFlag": null,
+   "mapperForm": {
+    "type": null,
+    "base": null
+   },
+   "outcome": "adopted",
+   "runsIdentical": true,
+   "runs": [
+    {
+     "status": "ok",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": true,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": {\"quote\": \"솔방울이에요\", \"charSpan\": [0, 6], \"en\": \"pinecone\"}}",
+     "rawItem": {
+      "quote": "솔방울이에요",
+      "charSpan": [
+       0,
+       6
+      ],
+      "en": "pinecone"
+     },
+     "item": {
+      "quote": "솔방울이에요",
+      "charSpan": [
+       0,
+       6
+      ],
+      "en": "pinecone"
+     },
+     "rejectReasons": [],
+     "adopted": {
+      "quote": "솔방울이에요",
+      "charSpan": [
+       0,
+       6
+      ],
+      "en": "pinecone",
+      "origin": "llm_translated"
+     },
+     "shapePromptText": "a single pinecone, one solid object, matte gray clay, plain white background",
+     "llmSeconds": 0.34,
+     "seconds": 0.34,
+     "inputTextSha256": "a8078e837cc55879047dbfddacc4a7c75d31bbf46f7e3d10f6c37cf16660bbb9",
+     "validatorTextSha256": "a8078e837cc55879047dbfddacc4a7c75d31bbf46f7e3d10f6c37cf16660bbb9",
+     "userSha256": "27a278164670d77dcfa25c6b44263b6a571d53bd5a119f66ae6c878518761d21",
+     "cacheKey": "75e99d623d49fcef",
+     "meaning": {
+      "en": "pinecone",
+      "verdict": "맞음",
+      "reason": "미리 정한 이름",
+      "posthoc": false
+     }
+    },
+    {
+     "status": "ok",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": true,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": {\"quote\": \"솔방울이에요\", \"charSpan\": [0, 6], \"en\": \"pinecone\"}}",
+     "rawItem": {
+      "quote": "솔방울이에요",
+      "charSpan": [
+       0,
+       6
+      ],
+      "en": "pinecone"
+     },
+     "item": {
+      "quote": "솔방울이에요",
+      "charSpan": [
+       0,
+       6
+      ],
+      "en": "pinecone"
+     },
+     "rejectReasons": [],
+     "adopted": {
+      "quote": "솔방울이에요",
+      "charSpan": [
+       0,
+       6
+      ],
+      "en": "pinecone",
+      "origin": "llm_translated"
+     },
+     "shapePromptText": "a single pinecone, one solid object, matte gray clay, plain white background",
+     "llmSeconds": 0.31,
+     "seconds": 0.31,
+     "inputTextSha256": "a8078e837cc55879047dbfddacc4a7c75d31bbf46f7e3d10f6c37cf16660bbb9",
+     "validatorTextSha256": "a8078e837cc55879047dbfddacc4a7c75d31bbf46f7e3d10f6c37cf16660bbb9",
+     "userSha256": "27a278164670d77dcfa25c6b44263b6a571d53bd5a119f66ae6c878518761d21",
+     "cacheKey": "75e99d623d49fcef",
+     "meaning": {
+      "en": "pinecone",
+      "verdict": "맞음",
+      "reason": "미리 정한 이름",
+      "posthoc": false
+     }
+    }
+   ]
+  },
+  {
+   "id": "P16",
+   "group": "P",
+   "text": "눈덩이 같은 게 점점 커져요.",
+   "expect": "fill",
+   "expectKo": "눈덩이",
+   "enOk": [
+    "snowball",
+    "snow ball",
+    "snow lump"
+   ],
+   "confirmedTextSha256": "400e652e38699e47bb6cc8d344312fe83393392e3d1994f072f6019454e86b4f",
+   "sessionFlag": null,
+   "mapperForm": {
+    "type": "blob",
+    "base": null
+   },
+   "outcome": "null",
+   "runsIdentical": true,
+   "runs": [
+    {
+     "status": "null",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": false,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": null}",
+     "rawItem": null,
+     "item": null,
+     "rejectReasons": [],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.25,
+     "seconds": 0.25,
+     "inputTextSha256": "400e652e38699e47bb6cc8d344312fe83393392e3d1994f072f6019454e86b4f",
+     "validatorTextSha256": "400e652e38699e47bb6cc8d344312fe83393392e3d1994f072f6019454e86b4f",
+     "userSha256": "9df1c2409c2ab05131d26b1be9abe5575c81538b9344898a5cefb5a1c1dfb5c3",
+     "cacheKey": "b4b4a5e53b17fe40",
+     "meaning": null
+    },
+    {
+     "status": "null",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": false,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": null}",
+     "rawItem": null,
+     "item": null,
+     "rejectReasons": [],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.2,
+     "seconds": 0.2,
+     "inputTextSha256": "400e652e38699e47bb6cc8d344312fe83393392e3d1994f072f6019454e86b4f",
+     "validatorTextSha256": "400e652e38699e47bb6cc8d344312fe83393392e3d1994f072f6019454e86b4f",
+     "userSha256": "9df1c2409c2ab05131d26b1be9abe5575c81538b9344898a5cefb5a1c1dfb5c3",
+     "cacheKey": "b4b4a5e53b17fe40",
+     "meaning": null
+    }
+   ]
+  },
+  {
+   "id": "P17",
+   "group": "P",
+   "text": "방석 같은 거예요. 납작하고 푹신해요.",
+   "expect": "fill",
+   "expectKo": "방석",
+   "enOk": [
+    "cushion",
+    "floor cushion",
+    "seat cushion",
+    "mat"
+   ],
+   "confirmedTextSha256": "c44575f2616d555c96d0a75043c19a38e979cbcf4fe637b3eb203bb032ecf5e8",
+   "sessionFlag": null,
+   "mapperForm": {
+    "type": null,
+    "base": null
+   },
+   "outcome": "adopted",
+   "runsIdentical": true,
+   "runs": [
+    {
+     "status": "ok",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": true,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "modifier_only",
+      "status": "ok",
+      "blockReason": null,
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": {\"quote\": \"방석\", \"charSpan\": [0, 3], \"en\": \"cushion\"}}",
+     "rawItem": {
+      "quote": "방석",
+      "charSpan": [
+       0,
+       3
+      ],
+      "en": "cushion"
+     },
+     "item": {
+      "quote": "방석",
+      "charSpan": [
+       0,
+       2
+      ],
+      "en": "cushion",
+      "spanRepaired": {
+       "llmCharSpan": [
+        0,
+        3
+       ],
+       "to": [
+        0,
+        2
+       ]
+      }
+     },
+     "rejectReasons": [],
+     "adopted": {
+      "quote": "방석",
+      "charSpan": [
+       0,
+       2
+      ],
+      "en": "cushion",
+      "origin": "llm_translated"
+     },
+     "shapePromptText": "a single flat cushion, one solid object, matte gray clay, plain white background",
+     "llmSeconds": 0.34,
+     "seconds": 0.34,
+     "inputTextSha256": "c44575f2616d555c96d0a75043c19a38e979cbcf4fe637b3eb203bb032ecf5e8",
+     "validatorTextSha256": "c44575f2616d555c96d0a75043c19a38e979cbcf4fe637b3eb203bb032ecf5e8",
+     "userSha256": "95e84d02421e321e041ab4673ee19420fd93208bf82e1b1e065810a687dcd4ee",
+     "cacheKey": "e497250bb8f5464c",
+     "meaning": {
+      "en": "cushion",
+      "verdict": "맞음",
+      "reason": "미리 정한 이름",
+      "posthoc": false
+     }
+    },
+    {
+     "status": "ok",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": true,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "modifier_only",
+      "status": "ok",
+      "blockReason": null,
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": {\"quote\": \"방석\", \"charSpan\": [0, 3], \"en\": \"cushion\"}}",
+     "rawItem": {
+      "quote": "방석",
+      "charSpan": [
+       0,
+       3
+      ],
+      "en": "cushion"
+     },
+     "item": {
+      "quote": "방석",
+      "charSpan": [
+       0,
+       2
+      ],
+      "en": "cushion",
+      "spanRepaired": {
+       "llmCharSpan": [
+        0,
+        3
+       ],
+       "to": [
+        0,
+        2
+       ]
+      }
+     },
+     "rejectReasons": [],
+     "adopted": {
+      "quote": "방석",
+      "charSpan": [
+       0,
+       2
+      ],
+      "en": "cushion",
+      "origin": "llm_translated"
+     },
+     "shapePromptText": "a single flat cushion, one solid object, matte gray clay, plain white background",
+     "llmSeconds": 0.31,
+     "seconds": 0.31,
+     "inputTextSha256": "c44575f2616d555c96d0a75043c19a38e979cbcf4fe637b3eb203bb032ecf5e8",
+     "validatorTextSha256": "c44575f2616d555c96d0a75043c19a38e979cbcf4fe637b3eb203bb032ecf5e8",
+     "userSha256": "95e84d02421e321e041ab4673ee19420fd93208bf82e1b1e065810a687dcd4ee",
+     "cacheKey": "e497250bb8f5464c",
+     "meaning": {
+      "en": "cushion",
+      "verdict": "맞음",
+      "reason": "미리 정한 이름",
+      "posthoc": false
+     }
+    }
+   ]
+  },
+  {
+   "id": "P18",
+   "group": "P",
+   "text": "양동이예요. 안이 비어 있어요.",
+   "expect": "fill",
+   "expectKo": "양동이",
+   "enOk": [
+    "bucket",
+    "pail"
+   ],
+   "confirmedTextSha256": "d9df43c5929b91e2c67f9b60e715f21c968bfa7f6ec63b6aab88083118d1f1b2",
+   "sessionFlag": null,
+   "mapperForm": {
+    "type": null,
+    "base": null
+   },
+   "outcome": "adopted",
+   "runsIdentical": true,
+   "runs": [
+    {
+     "status": "ok",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": true,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": {\"quote\": \"양동이예요\", \"charSpan\": [0, 5], \"en\": \"bucket\"}}",
+     "rawItem": {
+      "quote": "양동이예요",
+      "charSpan": [
+       0,
+       5
+      ],
+      "en": "bucket"
+     },
+     "item": {
+      "quote": "양동이예요",
+      "charSpan": [
+       0,
+       5
+      ],
+      "en": "bucket"
+     },
+     "rejectReasons": [],
+     "adopted": {
+      "quote": "양동이예요",
+      "charSpan": [
+       0,
+       5
+      ],
+      "en": "bucket",
+      "origin": "llm_translated"
+     },
+     "shapePromptText": "a single bucket, one solid object, matte gray clay, plain white background",
+     "llmSeconds": 0.36,
+     "seconds": 0.36,
+     "inputTextSha256": "d9df43c5929b91e2c67f9b60e715f21c968bfa7f6ec63b6aab88083118d1f1b2",
+     "validatorTextSha256": "d9df43c5929b91e2c67f9b60e715f21c968bfa7f6ec63b6aab88083118d1f1b2",
+     "userSha256": "ee588233815a67db85e24f124e03564f79ec41944550b4eab814e4507c037c75",
+     "cacheKey": "b13131b930331251",
+     "meaning": {
+      "en": "bucket",
+      "verdict": "맞음",
+      "reason": "미리 정한 이름",
+      "posthoc": false
+     }
+    },
+    {
+     "status": "ok",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": true,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": {\"quote\": \"양동이예요\", \"charSpan\": [0, 5], \"en\": \"bucket\"}}",
+     "rawItem": {
+      "quote": "양동이예요",
+      "charSpan": [
+       0,
+       5
+      ],
+      "en": "bucket"
+     },
+     "item": {
+      "quote": "양동이예요",
+      "charSpan": [
+       0,
+       5
+      ],
+      "en": "bucket"
+     },
+     "rejectReasons": [],
+     "adopted": {
+      "quote": "양동이예요",
+      "charSpan": [
+       0,
+       5
+      ],
+      "en": "bucket",
+      "origin": "llm_translated"
+     },
+     "shapePromptText": "a single bucket, one solid object, matte gray clay, plain white background",
+     "llmSeconds": 0.3,
+     "seconds": 0.3,
+     "inputTextSha256": "d9df43c5929b91e2c67f9b60e715f21c968bfa7f6ec63b6aab88083118d1f1b2",
+     "validatorTextSha256": "d9df43c5929b91e2c67f9b60e715f21c968bfa7f6ec63b6aab88083118d1f1b2",
+     "userSha256": "ee588233815a67db85e24f124e03564f79ec41944550b4eab814e4507c037c75",
+     "cacheKey": "b13131b930331251",
+     "meaning": {
+      "en": "bucket",
+      "verdict": "맞음",
+      "reason": "미리 정한 이름",
+      "posthoc": false
+     }
+    }
+   ]
+  },
+  {
+   "id": "P19",
+   "group": "P",
+   "text": "발표 자료 준비가 걱정이에요.\n가슴에 돌덩이 같은 게 있어요.",
+   "expect": "fill",
+   "expectKo": "돌덩이",
+   "enOk": [
+    "rock",
+    "stone",
+    "boulder",
+    "lump",
+    "stone lump",
+    "rock lump",
+    "chunk"
+   ],
+   "confirmedTextSha256": "ba641c2095deafd4796d493623b7c27e1cad5228bb1d6b89f3bb3887165981e5",
+   "sessionFlag": null,
+   "mapperForm": {
+    "type": null,
+    "base": null
+   },
+   "outcome": "null",
+   "runsIdentical": false,
+   "runs": [
+    {
+     "status": "null",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": false,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": null}",
+     "rawItem": null,
+     "item": null,
+     "rejectReasons": [],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.27,
+     "seconds": 0.27,
+     "inputTextSha256": "ba641c2095deafd4796d493623b7c27e1cad5228bb1d6b89f3bb3887165981e5",
+     "validatorTextSha256": "ba641c2095deafd4796d493623b7c27e1cad5228bb1d6b89f3bb3887165981e5",
+     "userSha256": "933eb99aa07a5c3aa6580cb11c6bef1772ec10b508b2c5e9070f8b5362ab2a5c",
+     "cacheKey": "de56b4a9865a93db",
+     "meaning": null
+    },
+    {
+     "status": "ok",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": true,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": {\"quote\": \"돌덩이\", \"charSpan\": [21, 28], \"en\": \"stone\"}}",
+     "rawItem": {
+      "quote": "돌덩이",
+      "charSpan": [
+       21,
+       28
+      ],
+      "en": "stone"
+     },
+     "item": {
+      "quote": "돌덩이",
+      "charSpan": [
+       21,
+       24
+      ],
+      "en": "stone",
+      "spanRepaired": {
+       "llmCharSpan": [
+        21,
+        28
+       ],
+       "to": [
+        21,
+        24
+       ]
+      }
+     },
+     "rejectReasons": [],
+     "adopted": {
+      "quote": "돌덩이",
+      "charSpan": [
+       21,
+       24
+      ],
+      "en": "stone",
+      "origin": "llm_translated"
+     },
+     "shapePromptText": "a single stone, one solid object, matte gray clay, plain white background",
+     "llmSeconds": 0.31,
+     "seconds": 0.31,
+     "inputTextSha256": "ba641c2095deafd4796d493623b7c27e1cad5228bb1d6b89f3bb3887165981e5",
+     "validatorTextSha256": "ba641c2095deafd4796d493623b7c27e1cad5228bb1d6b89f3bb3887165981e5",
+     "userSha256": "933eb99aa07a5c3aa6580cb11c6bef1772ec10b508b2c5e9070f8b5362ab2a5c",
+     "cacheKey": "de56b4a9865a93db",
+     "meaning": {
+      "en": "stone",
+      "verdict": "넓음",
+      "reason": "미리 정한 이름",
+      "posthoc": false
+     }
+    }
+   ]
+  },
+  {
+   "id": "R01",
+   "group": "R",
+   "text": "예전엔 공이었는데 지금은 조약돌 같아요.",
+   "expect": "rule",
+   "expectKo": null,
+   "enOk": [],
+   "confirmedTextSha256": "e0fc173a67ee9653432ff1436e5c83777f08711778db7bb496c3f6c60f56b307",
+   "sessionFlag": null,
+   "mapperForm": {
+    "type": "blob",
+    "base": null
+   },
+   "outcome": "skipped:rule_has_shape",
+   "runsIdentical": true,
+   "runs": [
+    {
+     "status": "skipped",
+     "skipReason": "rule_has_shape",
+     "error": null,
+     "called": false,
+     "candidate": false,
+     "cached": false,
+     "ruleRoute": {
+      "call": false,
+      "reason": "rule_has_shape",
+      "status": "ok",
+      "blockReason": null,
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": null,
+     "rawItem": null,
+     "item": null,
+     "rejectReasons": [],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": null,
+     "seconds": 0.0,
+     "inputTextSha256": "e0fc173a67ee9653432ff1436e5c83777f08711778db7bb496c3f6c60f56b307",
+     "validatorTextSha256": null,
+     "userSha256": null,
+     "cacheKey": "3a6fc31db65e1361",
+     "meaning": null
+    },
+    {
+     "status": "skipped",
+     "skipReason": "rule_has_shape",
+     "error": null,
+     "called": false,
+     "candidate": false,
+     "cached": false,
+     "ruleRoute": {
+      "call": false,
+      "reason": "rule_has_shape",
+      "status": "ok",
+      "blockReason": null,
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": null,
+     "rawItem": null,
+     "item": null,
+     "rejectReasons": [],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": null,
+     "seconds": 0.0,
+     "inputTextSha256": "e0fc173a67ee9653432ff1436e5c83777f08711778db7bb496c3f6c60f56b307",
+     "validatorTextSha256": null,
+     "userSha256": null,
+     "cacheKey": "3a6fc31db65e1361",
+     "meaning": null
+    }
+   ]
+  },
+  {
+   "id": "N01",
+   "group": "N",
+   "text": "쑥색이고 차가워요.",
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "confirmedTextSha256": "32ffe89b8a2a2cff7ab9956e64ebcdb6771cb57e3de224c31f650986ab38f2bc",
+   "sessionFlag": null,
+   "mapperForm": {
+    "type": null,
+    "base": null
+   },
+   "outcome": "null",
+   "runsIdentical": true,
+   "runs": [
+    {
+     "status": "null",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": false,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": null}",
+     "rawItem": null,
+     "item": null,
+     "rejectReasons": [],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.22,
+     "seconds": 0.22,
+     "inputTextSha256": "32ffe89b8a2a2cff7ab9956e64ebcdb6771cb57e3de224c31f650986ab38f2bc",
+     "validatorTextSha256": "32ffe89b8a2a2cff7ab9956e64ebcdb6771cb57e3de224c31f650986ab38f2bc",
+     "userSha256": "fa24a8e695d6d7879537273374c516250213e413e509af00a7642638a7c08a42",
+     "cacheKey": "8496b3338d0451b7",
+     "meaning": null
+    },
+    {
+     "status": "null",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": false,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": null}",
+     "rawItem": null,
+     "item": null,
+     "rejectReasons": [],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.19,
+     "seconds": 0.19,
+     "inputTextSha256": "32ffe89b8a2a2cff7ab9956e64ebcdb6771cb57e3de224c31f650986ab38f2bc",
+     "validatorTextSha256": "32ffe89b8a2a2cff7ab9956e64ebcdb6771cb57e3de224c31f650986ab38f2bc",
+     "userSha256": "fa24a8e695d6d7879537273374c516250213e413e509af00a7642638a7c08a42",
+     "cacheKey": "8496b3338d0451b7",
+     "meaning": null
+    }
+   ]
+  },
+  {
+   "id": "N02",
+   "group": "N",
+   "text": "그냥 답답하고 무거운 느낌이에요.",
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "confirmedTextSha256": "dff1e6ebbcb282ddeca91304664ae8ed7690bcedcc36796e3ffe56745c8fccf6",
+   "sessionFlag": null,
+   "mapperForm": {
+    "type": null,
+    "base": null
+   },
+   "outcome": "null",
+   "runsIdentical": true,
+   "runs": [
+    {
+     "status": "null",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": false,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": null}",
+     "rawItem": null,
+     "item": null,
+     "rejectReasons": [],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.22,
+     "seconds": 0.22,
+     "inputTextSha256": "dff1e6ebbcb282ddeca91304664ae8ed7690bcedcc36796e3ffe56745c8fccf6",
+     "validatorTextSha256": "dff1e6ebbcb282ddeca91304664ae8ed7690bcedcc36796e3ffe56745c8fccf6",
+     "userSha256": "2456f70ad2aa69e82e8edece31538e0eb50575a669bc35facb35ec78196a5b7a",
+     "cacheKey": "e8fa6fe4c525fea2",
+     "meaning": null
+    },
+    {
+     "status": "null",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": false,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": null}",
+     "rawItem": null,
+     "item": null,
+     "rejectReasons": [],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.17,
+     "seconds": 0.17,
+     "inputTextSha256": "dff1e6ebbcb282ddeca91304664ae8ed7690bcedcc36796e3ffe56745c8fccf6",
+     "validatorTextSha256": "dff1e6ebbcb282ddeca91304664ae8ed7690bcedcc36796e3ffe56745c8fccf6",
+     "userSha256": "2456f70ad2aa69e82e8edece31538e0eb50575a669bc35facb35ec78196a5b7a",
+     "cacheKey": "e8fa6fe4c525fea2",
+     "meaning": null
+    }
+   ]
+  },
+  {
+   "id": "N03",
+   "group": "N",
+   "text": "잘 모르겠어요.",
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "confirmedTextSha256": "1f2ad793952adf27356a2c4be0c2612d6b04e0ed79b80c1fcee48166787f1f5b",
+   "sessionFlag": null,
+   "mapperForm": {
+    "type": null,
+    "base": null
+   },
+   "outcome": "null",
+   "runsIdentical": true,
+   "runs": [
+    {
+     "status": "null",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": false,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": null}",
+     "rawItem": null,
+     "item": null,
+     "rejectReasons": [],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.23,
+     "seconds": 0.23,
+     "inputTextSha256": "1f2ad793952adf27356a2c4be0c2612d6b04e0ed79b80c1fcee48166787f1f5b",
+     "validatorTextSha256": "1f2ad793952adf27356a2c4be0c2612d6b04e0ed79b80c1fcee48166787f1f5b",
+     "userSha256": "877c81624e01390319d6a84b373b8c3e0cb611af10025b40eb26233989afb514",
+     "cacheKey": "87f5b8e75738538b",
+     "meaning": null
+    },
+    {
+     "status": "null",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": false,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": null}",
+     "rawItem": null,
+     "item": null,
+     "rejectReasons": [],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.19,
+     "seconds": 0.19,
+     "inputTextSha256": "1f2ad793952adf27356a2c4be0c2612d6b04e0ed79b80c1fcee48166787f1f5b",
+     "validatorTextSha256": "1f2ad793952adf27356a2c4be0c2612d6b04e0ed79b80c1fcee48166787f1f5b",
+     "userSha256": "877c81624e01390319d6a84b373b8c3e0cb611af10025b40eb26233989afb514",
+     "cacheKey": "87f5b8e75738538b",
+     "meaning": null
+    }
+   ]
+  },
+  {
+   "id": "N04",
+   "group": "N",
+   "text": "뭔가 있는데 뭔지 모르겠어요.",
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "confirmedTextSha256": "c93218be57a6c4278a4d2e059d335267b24d49b8436e0ce4569ec62133c52d17",
+   "sessionFlag": null,
+   "mapperForm": {
+    "type": null,
+    "base": null
+   },
+   "outcome": "null",
+   "runsIdentical": true,
+   "runs": [
+    {
+     "status": "null",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": false,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": null}",
+     "rawItem": null,
+     "item": null,
+     "rejectReasons": [],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.23,
+     "seconds": 0.23,
+     "inputTextSha256": "c93218be57a6c4278a4d2e059d335267b24d49b8436e0ce4569ec62133c52d17",
+     "validatorTextSha256": "c93218be57a6c4278a4d2e059d335267b24d49b8436e0ce4569ec62133c52d17",
+     "userSha256": "c19bba2daf4559888f7436d11cfa6bed0a6e21d847a0048a0f3db09a3a489d5a",
+     "cacheKey": "4e149b04d751929c",
+     "meaning": null
+    },
+    {
+     "status": "null",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": false,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": null}",
+     "rawItem": null,
+     "item": null,
+     "rejectReasons": [],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.19,
+     "seconds": 0.19,
+     "inputTextSha256": "c93218be57a6c4278a4d2e059d335267b24d49b8436e0ce4569ec62133c52d17",
+     "validatorTextSha256": "c93218be57a6c4278a4d2e059d335267b24d49b8436e0ce4569ec62133c52d17",
+     "userSha256": "c19bba2daf4559888f7436d11cfa6bed0a6e21d847a0048a0f3db09a3a489d5a",
+     "cacheKey": "4e149b04d751929c",
+     "meaning": null
+    }
+   ]
+  },
+  {
+   "id": "N05",
+   "group": "N",
+   "text": "어둡고 흐릿해요. 조금씩 흔들려요.",
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "confirmedTextSha256": "a1d731369d5570fce25556a34c35957971e00168419bd96bb87e4b1dd3e95fda",
+   "sessionFlag": null,
+   "mapperForm": {
+    "type": null,
+    "base": null
+   },
+   "outcome": "null",
+   "runsIdentical": true,
+   "runs": [
+    {
+     "status": "null",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": false,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": null}",
+     "rawItem": null,
+     "item": null,
+     "rejectReasons": [],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.2,
+     "seconds": 0.2,
+     "inputTextSha256": "a1d731369d5570fce25556a34c35957971e00168419bd96bb87e4b1dd3e95fda",
+     "validatorTextSha256": "a1d731369d5570fce25556a34c35957971e00168419bd96bb87e4b1dd3e95fda",
+     "userSha256": "16937065ff4e2c51d37ea8f3212de99103c974bb722571fef64f429c5de7420f",
+     "cacheKey": "6b872ee381382546",
+     "meaning": null
+    },
+    {
+     "status": "null",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": false,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": null}",
+     "rawItem": null,
+     "item": null,
+     "rejectReasons": [],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.19,
+     "seconds": 0.19,
+     "inputTextSha256": "a1d731369d5570fce25556a34c35957971e00168419bd96bb87e4b1dd3e95fda",
+     "validatorTextSha256": "a1d731369d5570fce25556a34c35957971e00168419bd96bb87e4b1dd3e95fda",
+     "userSha256": "16937065ff4e2c51d37ea8f3212de99103c974bb722571fef64f429c5de7420f",
+     "cacheKey": "6b872ee381382546",
+     "meaning": null
+    }
+   ]
+  },
+  {
+   "id": "N06",
+   "group": "N",
+   "text": "속이 울렁거리고 따끔따끔해요.",
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "confirmedTextSha256": "25682d5d41444ed29ce190cb2328499c06e566f0234bdc9ab23831b53dec6dfb",
+   "sessionFlag": null,
+   "mapperForm": {
+    "type": null,
+    "base": null
+   },
+   "outcome": "null",
+   "runsIdentical": true,
+   "runs": [
+    {
+     "status": "null",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": false,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": null}",
+     "rawItem": null,
+     "item": null,
+     "rejectReasons": [],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.22,
+     "seconds": 0.22,
+     "inputTextSha256": "25682d5d41444ed29ce190cb2328499c06e566f0234bdc9ab23831b53dec6dfb",
+     "validatorTextSha256": "25682d5d41444ed29ce190cb2328499c06e566f0234bdc9ab23831b53dec6dfb",
+     "userSha256": "a88ffaad5f7b4a2abae9d9501180789e40920ff1ed374ec232dc0df0442dfb00",
+     "cacheKey": "7468f1a292703b13",
+     "meaning": null
+    },
+    {
+     "status": "null",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": false,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": null}",
+     "rawItem": null,
+     "item": null,
+     "rejectReasons": [],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.19,
+     "seconds": 0.19,
+     "inputTextSha256": "25682d5d41444ed29ce190cb2328499c06e566f0234bdc9ab23831b53dec6dfb",
+     "validatorTextSha256": "25682d5d41444ed29ce190cb2328499c06e566f0234bdc9ab23831b53dec6dfb",
+     "userSha256": "a88ffaad5f7b4a2abae9d9501180789e40920ff1ed374ec232dc0df0442dfb00",
+     "cacheKey": "7468f1a292703b13",
+     "meaning": null
+    }
+   ]
+  },
+  {
+   "id": "F01",
+   "group": "F",
+   "text": "조약돌은 아니에요.",
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "confirmedTextSha256": "6867936e082656445f334887b01b82e9d805ae24de081e6d9ce1abd568a19fa9",
+   "sessionFlag": null,
+   "mapperForm": {
+    "type": null,
+    "base": null
+   },
+   "outcome": "null",
+   "runsIdentical": true,
+   "runs": [
+    {
+     "status": "null",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": false,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": null}",
+     "rawItem": null,
+     "item": null,
+     "rejectReasons": [],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.2,
+     "seconds": 0.2,
+     "inputTextSha256": "6867936e082656445f334887b01b82e9d805ae24de081e6d9ce1abd568a19fa9",
+     "validatorTextSha256": "6867936e082656445f334887b01b82e9d805ae24de081e6d9ce1abd568a19fa9",
+     "userSha256": "c12049b7cd0e356317b3e3e9f94c99400d7595609fb6fcf0440115c7146caa0a",
+     "cacheKey": "271eaec545c0e702",
+     "meaning": null
+    },
+    {
+     "status": "null",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": false,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": null}",
+     "rawItem": null,
+     "item": null,
+     "rejectReasons": [],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.19,
+     "seconds": 0.19,
+     "inputTextSha256": "6867936e082656445f334887b01b82e9d805ae24de081e6d9ce1abd568a19fa9",
+     "validatorTextSha256": "6867936e082656445f334887b01b82e9d805ae24de081e6d9ce1abd568a19fa9",
+     "userSha256": "c12049b7cd0e356317b3e3e9f94c99400d7595609fb6fcf0440115c7146caa0a",
+     "cacheKey": "271eaec545c0e702",
+     "meaning": null
+    }
+   ]
+  },
+  {
+   "id": "F02",
+   "group": "F",
+   "text": "판때기 같은 건 없어요.",
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "confirmedTextSha256": "62a96a7d7633abd43d3129b2e894a57d52036325025e0ba47e79f5d8b8415374",
+   "sessionFlag": null,
+   "mapperForm": {
+    "type": null,
+    "base": null
+   },
+   "outcome": "null",
+   "runsIdentical": true,
+   "runs": [
+    {
+     "status": "null",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": false,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": null}",
+     "rawItem": null,
+     "item": null,
+     "rejectReasons": [],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.22,
+     "seconds": 0.22,
+     "inputTextSha256": "62a96a7d7633abd43d3129b2e894a57d52036325025e0ba47e79f5d8b8415374",
+     "validatorTextSha256": "62a96a7d7633abd43d3129b2e894a57d52036325025e0ba47e79f5d8b8415374",
+     "userSha256": "cf8fed6e94cd0e685206b24f040704d32dc28f50ea2237c54c3087e780ab132b",
+     "cacheKey": "257bc046f783d489",
+     "meaning": null
+    },
+    {
+     "status": "null",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": false,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": null}",
+     "rawItem": null,
+     "item": null,
+     "rejectReasons": [],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.19,
+     "seconds": 0.19,
+     "inputTextSha256": "62a96a7d7633abd43d3129b2e894a57d52036325025e0ba47e79f5d8b8415374",
+     "validatorTextSha256": "62a96a7d7633abd43d3129b2e894a57d52036325025e0ba47e79f5d8b8415374",
+     "userSha256": "cf8fed6e94cd0e685206b24f040704d32dc28f50ea2237c54c3087e780ab132b",
+     "cacheKey": "257bc046f783d489",
+     "meaning": null
+    }
+   ]
+  },
+  {
+   "id": "F03",
+   "group": "F",
+   "text": "예전에는 돌덩이였어요.",
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "confirmedTextSha256": "22e510ce945985dcd1ac6e9839aa8287c19928c1b211d053e0efd8dbd4571f7f",
+   "sessionFlag": null,
+   "mapperForm": {
+    "type": null,
+    "base": null
+   },
+   "outcome": "rejected",
+   "runsIdentical": true,
+   "runs": [
+    {
+     "status": "rejected",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": true,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": {\"quote\": \"돌덩이\", \"charSpan\": [5, 7], \"en\": \"stone\"}}",
+     "rawItem": {
+      "quote": "돌덩이",
+      "charSpan": [
+       5,
+       7
+      ],
+      "en": "stone"
+     },
+     "item": {
+      "quote": "돌덩이",
+      "charSpan": [
+       5,
+       8
+      ],
+      "en": "stone",
+      "spanRepaired": {
+       "llmCharSpan": [
+        5,
+        7
+       ],
+       "to": [
+        5,
+        8
+       ]
+      }
+     },
+     "rejectReasons": [
+      "past_or_former"
+     ],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.36,
+     "seconds": 0.36,
+     "inputTextSha256": "22e510ce945985dcd1ac6e9839aa8287c19928c1b211d053e0efd8dbd4571f7f",
+     "validatorTextSha256": "22e510ce945985dcd1ac6e9839aa8287c19928c1b211d053e0efd8dbd4571f7f",
+     "userSha256": "c9eb1f349147b6d4d035b6564fea778956e3014bd0b96df840519ae6cd2f50bf",
+     "cacheKey": "e4bceeebba2862f2",
+     "meaning": {
+      "en": "stone",
+      "verdict": "넓음",
+      "reason": "돌덩이→stone(막혀야 할 문장)",
+      "posthoc": true
+     }
+    },
+    {
+     "status": "rejected",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": true,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": {\"quote\": \"돌덩이\", \"charSpan\": [5, 7], \"en\": \"stone\"}}",
+     "rawItem": {
+      "quote": "돌덩이",
+      "charSpan": [
+       5,
+       7
+      ],
+      "en": "stone"
+     },
+     "item": {
+      "quote": "돌덩이",
+      "charSpan": [
+       5,
+       8
+      ],
+      "en": "stone",
+      "spanRepaired": {
+       "llmCharSpan": [
+        5,
+        7
+       ],
+       "to": [
+        5,
+        8
+       ]
+      }
+     },
+     "rejectReasons": [
+      "past_or_former"
+     ],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.33,
+     "seconds": 0.33,
+     "inputTextSha256": "22e510ce945985dcd1ac6e9839aa8287c19928c1b211d053e0efd8dbd4571f7f",
+     "validatorTextSha256": "22e510ce945985dcd1ac6e9839aa8287c19928c1b211d053e0efd8dbd4571f7f",
+     "userSha256": "c9eb1f349147b6d4d035b6564fea778956e3014bd0b96df840519ae6cd2f50bf",
+     "cacheKey": "e4bceeebba2862f2",
+     "meaning": {
+      "en": "stone",
+      "verdict": "넓음",
+      "reason": "돌덩이→stone(막혀야 할 문장)",
+      "posthoc": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "F04",
+   "group": "F",
+   "text": "처음엔 벽돌 같았어요.",
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "confirmedTextSha256": "17831d54771720e37b03d6c8fe848dac22d447f26ccca82a56cd3e29ff2f8b8a",
+   "sessionFlag": null,
+   "mapperForm": {
+    "type": "blob",
+    "base": null
+   },
+   "outcome": "null",
+   "runsIdentical": true,
+   "runs": [
+    {
+     "status": "null",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": false,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": null}",
+     "rawItem": null,
+     "item": null,
+     "rejectReasons": [],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.25,
+     "seconds": 0.25,
+     "inputTextSha256": "17831d54771720e37b03d6c8fe848dac22d447f26ccca82a56cd3e29ff2f8b8a",
+     "validatorTextSha256": "17831d54771720e37b03d6c8fe848dac22d447f26ccca82a56cd3e29ff2f8b8a",
+     "userSha256": "5af18e36f60f7b8c36ce6b24a010850af14b1c641eb15add68be2161ce305556",
+     "cacheKey": "c2479928cc06af18",
+     "meaning": null
+    },
+    {
+     "status": "null",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": false,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": null}",
+     "rawItem": null,
+     "item": null,
+     "rejectReasons": [],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.22,
+     "seconds": 0.22,
+     "inputTextSha256": "17831d54771720e37b03d6c8fe848dac22d447f26ccca82a56cd3e29ff2f8b8a",
+     "validatorTextSha256": "17831d54771720e37b03d6c8fe848dac22d447f26ccca82a56cd3e29ff2f8b8a",
+     "userSha256": "5af18e36f60f7b8c36ce6b24a010850af14b1c641eb15add68be2161ce305556",
+     "cacheKey": "c2479928cc06af18",
+     "meaning": null
+    }
+   ]
+  },
+  {
+   "id": "F05",
+   "group": "F",
+   "text": "친구가 조약돌 같대요.",
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "confirmedTextSha256": "831d9738266a6e2516ac07f7f4c5672ff48a06d3a950dc7a0e82f150eaa842ab",
+   "sessionFlag": null,
+   "mapperForm": {
+    "type": "blob",
+    "base": null
+   },
+   "outcome": "rejected",
+   "runsIdentical": true,
+   "runs": [
+    {
+     "status": "rejected",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": true,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": {\"quote\": \"조약돌\", \"charSpan\": [4, 8], \"en\": \"pebble\"}}",
+     "rawItem": {
+      "quote": "조약돌",
+      "charSpan": [
+       4,
+       8
+      ],
+      "en": "pebble"
+     },
+     "item": {
+      "quote": "조약돌",
+      "charSpan": [
+       4,
+       7
+      ],
+      "en": "pebble",
+      "spanRepaired": {
+       "llmCharSpan": [
+        4,
+        8
+       ],
+       "to": [
+        4,
+        7
+       ]
+      }
+     },
+     "rejectReasons": [
+      "span_covered",
+      "reported_speech",
+      "korean_banned"
+     ],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.34,
+     "seconds": 0.34,
+     "inputTextSha256": "831d9738266a6e2516ac07f7f4c5672ff48a06d3a950dc7a0e82f150eaa842ab",
+     "validatorTextSha256": "831d9738266a6e2516ac07f7f4c5672ff48a06d3a950dc7a0e82f150eaa842ab",
+     "userSha256": "8cbe314382625375e10bbf0eef1db578220079a40cdc7160188730c73b73ed35",
+     "cacheKey": "0702d61bcc0c4456",
+     "meaning": {
+      "en": "pebble",
+      "verdict": "맞음",
+      "reason": "조약돌(막혀야 할 문장)",
+      "posthoc": true
+     }
+    },
+    {
+     "status": "rejected",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": true,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": {\"quote\": \"조약돌\", \"charSpan\": [4, 8], \"en\": \"pebble\"}}",
+     "rawItem": {
+      "quote": "조약돌",
+      "charSpan": [
+       4,
+       8
+      ],
+      "en": "pebble"
+     },
+     "item": {
+      "quote": "조약돌",
+      "charSpan": [
+       4,
+       7
+      ],
+      "en": "pebble",
+      "spanRepaired": {
+       "llmCharSpan": [
+        4,
+        8
+       ],
+       "to": [
+        4,
+        7
+       ]
+      }
+     },
+     "rejectReasons": [
+      "span_covered",
+      "reported_speech",
+      "korean_banned"
+     ],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.33,
+     "seconds": 0.33,
+     "inputTextSha256": "831d9738266a6e2516ac07f7f4c5672ff48a06d3a950dc7a0e82f150eaa842ab",
+     "validatorTextSha256": "831d9738266a6e2516ac07f7f4c5672ff48a06d3a950dc7a0e82f150eaa842ab",
+     "userSha256": "8cbe314382625375e10bbf0eef1db578220079a40cdc7160188730c73b73ed35",
+     "cacheKey": "0702d61bcc0c4456",
+     "meaning": {
+      "en": "pebble",
+      "verdict": "맞음",
+      "reason": "조약돌(막혀야 할 문장)",
+      "posthoc": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "F06",
+   "group": "F",
+   "text": "다들 그게 판때기라고 했어요.",
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "confirmedTextSha256": "33132170a857ca96060a2e2ad0b4172ba6c8b754ff234f57748aa1053801ce08",
+   "sessionFlag": null,
+   "mapperForm": {
+    "type": null,
+    "base": null
+   },
+   "outcome": "rejected",
+   "runsIdentical": true,
+   "runs": [
+    {
+     "status": "rejected",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": true,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": {\"quote\": \"판때기\", \"charSpan\": [6, 12], \"en\": \"board\"}}",
+     "rawItem": {
+      "quote": "판때기",
+      "charSpan": [
+       6,
+       12
+      ],
+      "en": "board"
+     },
+     "item": {
+      "quote": "판때기",
+      "charSpan": [
+       6,
+       9
+      ],
+      "en": "board",
+      "spanRepaired": {
+       "llmCharSpan": [
+        6,
+        12
+       ],
+       "to": [
+        6,
+        9
+       ]
+      }
+     },
+     "rejectReasons": [
+      "past_or_former",
+      "reported_speech"
+     ],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.36,
+     "seconds": 0.36,
+     "inputTextSha256": "33132170a857ca96060a2e2ad0b4172ba6c8b754ff234f57748aa1053801ce08",
+     "validatorTextSha256": "33132170a857ca96060a2e2ad0b4172ba6c8b754ff234f57748aa1053801ce08",
+     "userSha256": "98d962dad5bd9c5bd4747d6b73ea810a6f888979aba398bb3ab2dfba9ffd806a",
+     "cacheKey": "a2ffd2398048f2bb",
+     "meaning": {
+      "en": "board",
+      "verdict": "맞음",
+      "reason": "판때기(막혀야 할 문장)",
+      "posthoc": true
+     }
+    },
+    {
+     "status": "rejected",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": true,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": {\"quote\": \"판때기\", \"charSpan\": [6, 12], \"en\": \"board\"}}",
+     "rawItem": {
+      "quote": "판때기",
+      "charSpan": [
+       6,
+       12
+      ],
+      "en": "board"
+     },
+     "item": {
+      "quote": "판때기",
+      "charSpan": [
+       6,
+       9
+      ],
+      "en": "board",
+      "spanRepaired": {
+       "llmCharSpan": [
+        6,
+        12
+       ],
+       "to": [
+        6,
+        9
+       ]
+      }
+     },
+     "rejectReasons": [
+      "past_or_former",
+      "reported_speech"
+     ],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.33,
+     "seconds": 0.33,
+     "inputTextSha256": "33132170a857ca96060a2e2ad0b4172ba6c8b754ff234f57748aa1053801ce08",
+     "validatorTextSha256": "33132170a857ca96060a2e2ad0b4172ba6c8b754ff234f57748aa1053801ce08",
+     "userSha256": "98d962dad5bd9c5bd4747d6b73ea810a6f888979aba398bb3ab2dfba9ffd806a",
+     "cacheKey": "a2ffd2398048f2bb",
+     "meaning": {
+      "en": "board",
+      "verdict": "맞음",
+      "reason": "판때기(막혀야 할 문장)",
+      "posthoc": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "F07",
+   "group": "F",
+   "text": "벽돌이면 좋겠어요.",
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "confirmedTextSha256": "4830e2f083a0ee79bd3d149c48ce9aa3081d47dd7e513cc1237b5c18c59a356e",
+   "sessionFlag": null,
+   "mapperForm": {
+    "type": null,
+    "base": null
+   },
+   "outcome": "null",
+   "runsIdentical": true,
+   "runs": [
+    {
+     "status": "null",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": false,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": null}",
+     "rawItem": null,
+     "item": null,
+     "rejectReasons": [],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.22,
+     "seconds": 0.22,
+     "inputTextSha256": "4830e2f083a0ee79bd3d149c48ce9aa3081d47dd7e513cc1237b5c18c59a356e",
+     "validatorTextSha256": "4830e2f083a0ee79bd3d149c48ce9aa3081d47dd7e513cc1237b5c18c59a356e",
+     "userSha256": "523765abd8c0842ff53e95b3998e2a669969c763ef0d39946a230d11fac8bf00",
+     "cacheKey": "1f12d8c2636e8685",
+     "meaning": null
+    },
+    {
+     "status": "null",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": false,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": null}",
+     "rawItem": null,
+     "item": null,
+     "rejectReasons": [],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.19,
+     "seconds": 0.19,
+     "inputTextSha256": "4830e2f083a0ee79bd3d149c48ce9aa3081d47dd7e513cc1237b5c18c59a356e",
+     "validatorTextSha256": "4830e2f083a0ee79bd3d149c48ce9aa3081d47dd7e513cc1237b5c18c59a356e",
+     "userSha256": "523765abd8c0842ff53e95b3998e2a669969c763ef0d39946a230d11fac8bf00",
+     "cacheKey": "1f12d8c2636e8685",
+     "meaning": null
+    }
+   ]
+  },
+  {
+   "id": "F08",
+   "group": "F",
+   "text": "아마 자갈일 거예요.",
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "confirmedTextSha256": "78d6afceafb4a111ee05e36e9476f8940557d75b29a9db37edd23ff2593ec772",
+   "sessionFlag": null,
+   "mapperForm": {
+    "type": null,
+    "base": null
+   },
+   "outcome": "rejected",
+   "runsIdentical": true,
+   "runs": [
+    {
+     "status": "rejected",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": true,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": {\"quote\": \"자갈일\", \"charSpan\": [3, 7], \"en\": \"pebble\"}}",
+     "rawItem": {
+      "quote": "자갈일",
+      "charSpan": [
+       3,
+       7
+      ],
+      "en": "pebble"
+     },
+     "item": {
+      "quote": "자갈일",
+      "charSpan": [
+       3,
+       6
+      ],
+      "en": "pebble",
+      "spanRepaired": {
+       "llmCharSpan": [
+        3,
+        7
+       ],
+       "to": [
+        3,
+        6
+       ]
+      }
+     },
+     "rejectReasons": [
+      "hypothetical"
+     ],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.34,
+     "seconds": 0.34,
+     "inputTextSha256": "78d6afceafb4a111ee05e36e9476f8940557d75b29a9db37edd23ff2593ec772",
+     "validatorTextSha256": "78d6afceafb4a111ee05e36e9476f8940557d75b29a9db37edd23ff2593ec772",
+     "userSha256": "2314db60166d3c7f301867dd9de811df28d7a4ab953ba81a630ec68cfe60d2e7",
+     "cacheKey": "b3fce1130828d54a",
+     "meaning": {
+      "en": "pebble",
+      "verdict": "넓음",
+      "reason": "자갈→pebble(막혀야 할 문장)",
+      "posthoc": true
+     }
+    },
+    {
+     "status": "rejected",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": true,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": {\"quote\": \"자갈일\", \"charSpan\": [3, 7], \"en\": \"pebble\"}}",
+     "rawItem": {
+      "quote": "자갈일",
+      "charSpan": [
+       3,
+       7
+      ],
+      "en": "pebble"
+     },
+     "item": {
+      "quote": "자갈일",
+      "charSpan": [
+       3,
+       6
+      ],
+      "en": "pebble",
+      "spanRepaired": {
+       "llmCharSpan": [
+        3,
+        7
+       ],
+       "to": [
+        3,
+        6
+       ]
+      }
+     },
+     "rejectReasons": [
+      "hypothetical"
+     ],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.34,
+     "seconds": 0.34,
+     "inputTextSha256": "78d6afceafb4a111ee05e36e9476f8940557d75b29a9db37edd23ff2593ec772",
+     "validatorTextSha256": "78d6afceafb4a111ee05e36e9476f8940557d75b29a9db37edd23ff2593ec772",
+     "userSha256": "2314db60166d3c7f301867dd9de811df28d7a4ab953ba81a630ec68cfe60d2e7",
+     "cacheKey": "b3fce1130828d54a",
+     "meaning": {
+      "en": "pebble",
+      "verdict": "넓음",
+      "reason": "자갈→pebble(막혀야 할 문장)",
+      "posthoc": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "B01",
+   "group": "B",
+   "text": "참새 같은 게 앉아 있어요.",
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "confirmedTextSha256": "48fefe3e88e041d866b979f424c1bdaf9e1f665a112d10d4f1c127833973a174",
+   "sessionFlag": null,
+   "mapperForm": {
+    "type": null,
+    "base": null
+   },
+   "outcome": "rejected",
+   "runsIdentical": true,
+   "runs": [
+    {
+     "status": "rejected",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": true,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": {\"quote\": \"참새\", \"charSpan\": [0, 3], \"en\": \"sparrow\"}}",
+     "rawItem": {
+      "quote": "참새",
+      "charSpan": [
+       0,
+       3
+      ],
+      "en": "sparrow"
+     },
+     "item": {
+      "quote": "참새",
+      "charSpan": [
+       0,
+       2
+      ],
+      "en": "sparrow",
+      "spanRepaired": {
+       "llmCharSpan": [
+        0,
+        3
+       ],
+       "to": [
+        0,
+        2
+       ]
+      }
+     },
+     "rejectReasons": [
+      "english_banned"
+     ],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.38,
+     "seconds": 0.38,
+     "inputTextSha256": "48fefe3e88e041d866b979f424c1bdaf9e1f665a112d10d4f1c127833973a174",
+     "validatorTextSha256": "48fefe3e88e041d866b979f424c1bdaf9e1f665a112d10d4f1c127833973a174",
+     "userSha256": "0d2a50ec4eb1cd8a8c033a6bdf226ba7b30fd57d2cf352018a8306aa722452db",
+     "cacheKey": "a9a51ca1ef4e41c5",
+     "meaning": {
+      "en": "sparrow",
+      "verdict": "맞음",
+      "reason": "참새. 번역은 맞고 금지 범주",
+      "posthoc": true
+     }
+    },
+    {
+     "status": "rejected",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": true,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": {\"quote\": \"참새\", \"charSpan\": [0, 3], \"en\": \"sparrow\"}}",
+     "rawItem": {
+      "quote": "참새",
+      "charSpan": [
+       0,
+       3
+      ],
+      "en": "sparrow"
+     },
+     "item": {
+      "quote": "참새",
+      "charSpan": [
+       0,
+       2
+      ],
+      "en": "sparrow",
+      "spanRepaired": {
+       "llmCharSpan": [
+        0,
+        3
+       ],
+       "to": [
+        0,
+        2
+       ]
+      }
+     },
+     "rejectReasons": [
+      "english_banned"
+     ],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.33,
+     "seconds": 0.33,
+     "inputTextSha256": "48fefe3e88e041d866b979f424c1bdaf9e1f665a112d10d4f1c127833973a174",
+     "validatorTextSha256": "48fefe3e88e041d866b979f424c1bdaf9e1f665a112d10d4f1c127833973a174",
+     "userSha256": "0d2a50ec4eb1cd8a8c033a6bdf226ba7b30fd57d2cf352018a8306aa722452db",
+     "cacheKey": "a9a51ca1ef4e41c5",
+     "meaning": {
+      "en": "sparrow",
+      "verdict": "맞음",
+      "reason": "참새. 번역은 맞고 금지 범주",
+      "posthoc": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "B02",
+   "group": "B",
+   "text": "다람쥐 같은 게 웅크리고 있어요.",
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "confirmedTextSha256": "83486f5b35958e6426a169f80e5e552d290c476f298a3465f43f5c7986a73df3",
+   "sessionFlag": null,
+   "mapperForm": {
+    "type": null,
+    "base": null
+   },
+   "outcome": "null",
+   "runsIdentical": true,
+   "runs": [
+    {
+     "status": "null",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": false,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": null}",
+     "rawItem": null,
+     "item": null,
+     "rejectReasons": [],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.25,
+     "seconds": 0.25,
+     "inputTextSha256": "83486f5b35958e6426a169f80e5e552d290c476f298a3465f43f5c7986a73df3",
+     "validatorTextSha256": "83486f5b35958e6426a169f80e5e552d290c476f298a3465f43f5c7986a73df3",
+     "userSha256": "b7d64585ad6a02689ab489e25eea41632633335bedcc016f223e8764d5d2aa48",
+     "cacheKey": "6b52822d3f4c6e31",
+     "meaning": null
+    },
+    {
+     "status": "null",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": false,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": null}",
+     "rawItem": null,
+     "item": null,
+     "rejectReasons": [],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.23,
+     "seconds": 0.23,
+     "inputTextSha256": "83486f5b35958e6426a169f80e5e552d290c476f298a3465f43f5c7986a73df3",
+     "validatorTextSha256": "83486f5b35958e6426a169f80e5e552d290c476f298a3465f43f5c7986a73df3",
+     "userSha256": "b7d64585ad6a02689ab489e25eea41632633335bedcc016f223e8764d5d2aa48",
+     "cacheKey": "6b52822d3f4c6e31",
+     "meaning": null
+    }
+   ]
+  },
+  {
+   "id": "B03",
+   "group": "B",
+   "text": "허수아비 같은 게 서 있어요.",
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "confirmedTextSha256": "987887380edb8149ccaf3e1d20127e841df2e53774dc89881ea71a945555b304",
+   "sessionFlag": null,
+   "mapperForm": {
+    "type": null,
+    "base": null
+   },
+   "outcome": "rejected",
+   "runsIdentical": true,
+   "runs": [
+    {
+     "status": "rejected",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": true,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": {\"quote\": \"허수아비\", \"charSpan\": [0, 3], \"en\": \"scarecrow\"}}",
+     "rawItem": {
+      "quote": "허수아비",
+      "charSpan": [
+       0,
+       3
+      ],
+      "en": "scarecrow"
+     },
+     "item": {
+      "quote": "허수아비",
+      "charSpan": [
+       0,
+       4
+      ],
+      "en": "scarecrow",
+      "spanRepaired": {
+       "llmCharSpan": [
+        0,
+        3
+       ],
+       "to": [
+        0,
+        4
+       ]
+      }
+     },
+     "rejectReasons": [
+      "english_banned"
+     ],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.33,
+     "seconds": 0.33,
+     "inputTextSha256": "987887380edb8149ccaf3e1d20127e841df2e53774dc89881ea71a945555b304",
+     "validatorTextSha256": "987887380edb8149ccaf3e1d20127e841df2e53774dc89881ea71a945555b304",
+     "userSha256": "a001a71eaa7f0b2b4d655af482188d1cc8ece77792fdb7c104491a0c169ebfc7",
+     "cacheKey": "920b9e2cee009bd5",
+     "meaning": {
+      "en": "scarecrow",
+      "verdict": "맞음",
+      "reason": "허수아비. 번역은 맞고 사람 형상",
+      "posthoc": true
+     }
+    },
+    {
+     "status": "rejected",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": true,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": {\"quote\": \"허수아비\", \"charSpan\": [0, 3], \"en\": \"scarecrow\"}}",
+     "rawItem": {
+      "quote": "허수아비",
+      "charSpan": [
+       0,
+       3
+      ],
+      "en": "scarecrow"
+     },
+     "item": {
+      "quote": "허수아비",
+      "charSpan": [
+       0,
+       4
+      ],
+      "en": "scarecrow",
+      "spanRepaired": {
+       "llmCharSpan": [
+        0,
+        3
+       ],
+       "to": [
+        0,
+        4
+       ]
+      }
+     },
+     "rejectReasons": [
+      "english_banned"
+     ],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.33,
+     "seconds": 0.33,
+     "inputTextSha256": "987887380edb8149ccaf3e1d20127e841df2e53774dc89881ea71a945555b304",
+     "validatorTextSha256": "987887380edb8149ccaf3e1d20127e841df2e53774dc89881ea71a945555b304",
+     "userSha256": "a001a71eaa7f0b2b4d655af482188d1cc8ece77792fdb7c104491a0c169ebfc7",
+     "cacheKey": "920b9e2cee009bd5",
+     "meaning": {
+      "en": "scarecrow",
+      "verdict": "맞음",
+      "reason": "허수아비. 번역은 맞고 사람 형상",
+      "posthoc": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "B04",
+   "group": "B",
+   "text": "꼬마 같은 게 웅크리고 있어요.",
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "confirmedTextSha256": "24db8381153cb9c1382af33710dc4bd69bf344864e54f7f001df00442378b833",
+   "sessionFlag": null,
+   "mapperForm": {
+    "type": null,
+    "base": null
+   },
+   "outcome": "skipped:rule_blocked:excluded_category",
+   "runsIdentical": true,
+   "runs": [
+    {
+     "status": "skipped",
+     "skipReason": "rule_blocked:excluded_category",
+     "error": null,
+     "called": false,
+     "candidate": false,
+     "cached": false,
+     "ruleRoute": {
+      "call": false,
+      "reason": "rule_blocked:excluded_category",
+      "status": "blocked",
+      "blockReason": "excluded_category",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": null,
+     "rawItem": null,
+     "item": null,
+     "rejectReasons": [],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": null,
+     "seconds": 0.0,
+     "inputTextSha256": "24db8381153cb9c1382af33710dc4bd69bf344864e54f7f001df00442378b833",
+     "validatorTextSha256": null,
+     "userSha256": null,
+     "cacheKey": "d1269ade13fcd521",
+     "meaning": null
+    },
+    {
+     "status": "skipped",
+     "skipReason": "rule_blocked:excluded_category",
+     "error": null,
+     "called": false,
+     "candidate": false,
+     "cached": false,
+     "ruleRoute": {
+      "call": false,
+      "reason": "rule_blocked:excluded_category",
+      "status": "blocked",
+      "blockReason": "excluded_category",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": null,
+     "rawItem": null,
+     "item": null,
+     "rejectReasons": [],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": null,
+     "seconds": 0.0,
+     "inputTextSha256": "24db8381153cb9c1382af33710dc4bd69bf344864e54f7f001df00442378b833",
+     "validatorTextSha256": null,
+     "userSha256": null,
+     "cacheKey": "d1269ade13fcd521",
+     "meaning": null
+    }
+   ]
+  },
+  {
+   "id": "B05",
+   "group": "B",
+   "text": "물안개가 자욱하게 껴 있어요.",
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "confirmedTextSha256": "0847ff68f369e9b48da541885a3dea5a22832582617e24036ead2fca8521f9ca",
+   "sessionFlag": null,
+   "mapperForm": {
+    "type": null,
+    "base": null
+   },
+   "outcome": "null",
+   "runsIdentical": true,
+   "runs": [
+    {
+     "status": "null",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": false,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": null}",
+     "rawItem": null,
+     "item": null,
+     "rejectReasons": [],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.25,
+     "seconds": 0.25,
+     "inputTextSha256": "0847ff68f369e9b48da541885a3dea5a22832582617e24036ead2fca8521f9ca",
+     "validatorTextSha256": "0847ff68f369e9b48da541885a3dea5a22832582617e24036ead2fca8521f9ca",
+     "userSha256": "0dc0e9148d31134de554c6b68b913a82df2e5199d497850daebd74f45fbce035",
+     "cacheKey": "5a2b1d5be9dea9de",
+     "meaning": null
+    },
+    {
+     "status": "null",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": false,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": null}",
+     "rawItem": null,
+     "item": null,
+     "rejectReasons": [],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.2,
+     "seconds": 0.2,
+     "inputTextSha256": "0847ff68f369e9b48da541885a3dea5a22832582617e24036ead2fca8521f9ca",
+     "validatorTextSha256": "0847ff68f369e9b48da541885a3dea5a22832582617e24036ead2fca8521f9ca",
+     "userSha256": "0dc0e9148d31134de554c6b68b913a82df2e5199d497850daebd74f45fbce035",
+     "cacheKey": "5a2b1d5be9dea9de",
+     "meaning": null
+    }
+   ]
+  },
+  {
+   "id": "B06",
+   "group": "B",
+   "text": "횃불 같은 게 타오르고 있어요.",
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "confirmedTextSha256": "e6f2132bd992b4539d984270ec03bd3a83a3141dc00feef5188511b880cba79c",
+   "sessionFlag": null,
+   "mapperForm": {
+    "type": null,
+    "base": null
+   },
+   "outcome": "null",
+   "runsIdentical": true,
+   "runs": [
+    {
+     "status": "null",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": false,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": null}",
+     "rawItem": null,
+     "item": null,
+     "rejectReasons": [],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.25,
+     "seconds": 0.25,
+     "inputTextSha256": "e6f2132bd992b4539d984270ec03bd3a83a3141dc00feef5188511b880cba79c",
+     "validatorTextSha256": "e6f2132bd992b4539d984270ec03bd3a83a3141dc00feef5188511b880cba79c",
+     "userSha256": "02a17fce4467d718413b4791a708ddc5da11f3d4be02a9f42c1751a92ae08a2d",
+     "cacheKey": "a4ff0201ecb3932c",
+     "meaning": null
+    },
+    {
+     "status": "null",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": false,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": null}",
+     "rawItem": null,
+     "item": null,
+     "rejectReasons": [],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.22,
+     "seconds": 0.22,
+     "inputTextSha256": "e6f2132bd992b4539d984270ec03bd3a83a3141dc00feef5188511b880cba79c",
+     "validatorTextSha256": "e6f2132bd992b4539d984270ec03bd3a83a3141dc00feef5188511b880cba79c",
+     "userSha256": "02a17fce4467d718413b4791a708ddc5da11f3d4be02a9f42c1751a92ae08a2d",
+     "cacheKey": "a4ff0201ecb3932c",
+     "meaning": null
+    }
+   ]
+  },
+  {
+   "id": "B07",
+   "group": "B",
+   "text": "해골 같은 게 보여요.",
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "confirmedTextSha256": "f5a1a631387b770209e9bbf74130f5c4c73a159e84a02b9366980f5f0448623b",
+   "sessionFlag": "alert:scene_safety_flag",
+   "mapperForm": {
+    "type": null,
+    "base": null
+   },
+   "outcome": "skipped:session_flagged",
+   "runsIdentical": true,
+   "runs": [
+    {
+     "status": "skipped",
+     "skipReason": "session_flagged",
+     "error": "alert:scene_safety_flag",
+     "called": false,
+     "candidate": false,
+     "cached": false,
+     "ruleRoute": null,
+     "rawText": null,
+     "rawItem": null,
+     "item": null,
+     "rejectReasons": [],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": null,
+     "seconds": null,
+     "inputTextSha256": "f5a1a631387b770209e9bbf74130f5c4c73a159e84a02b9366980f5f0448623b",
+     "validatorTextSha256": null,
+     "userSha256": null,
+     "cacheKey": "36fe9ff78c7ecf94",
+     "meaning": null
+    },
+    {
+     "status": "skipped",
+     "skipReason": "session_flagged",
+     "error": "alert:scene_safety_flag",
+     "called": false,
+     "candidate": false,
+     "cached": false,
+     "ruleRoute": null,
+     "rawText": null,
+     "rawItem": null,
+     "item": null,
+     "rejectReasons": [],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": null,
+     "seconds": null,
+     "inputTextSha256": "f5a1a631387b770209e9bbf74130f5c4c73a159e84a02b9366980f5f0448623b",
+     "validatorTextSha256": null,
+     "userSha256": null,
+     "cacheKey": "36fe9ff78c7ecf94",
+     "meaning": null
+    }
+   ]
+  },
+  {
+   "id": "W01",
+   "group": "W",
+   "text": "회사 보고서 마감 때문에 걱정이에요.\n가슴이 답답해요.\n어둡고 무거워요.",
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "confirmedTextSha256": "2b5a7d7cf49646d645d08bfde0ee8526d2a60749bbd02871778dadfc0ca7be22",
+   "sessionFlag": null,
+   "mapperForm": {
+    "type": null,
+    "base": null
+   },
+   "outcome": "null",
+   "runsIdentical": true,
+   "runs": [
+    {
+     "status": "null",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": false,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": null}",
+     "rawItem": null,
+     "item": null,
+     "rejectReasons": [],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.22,
+     "seconds": 0.22,
+     "inputTextSha256": "2b5a7d7cf49646d645d08bfde0ee8526d2a60749bbd02871778dadfc0ca7be22",
+     "validatorTextSha256": "2b5a7d7cf49646d645d08bfde0ee8526d2a60749bbd02871778dadfc0ca7be22",
+     "userSha256": "8a2c7f8c977ad7e55372301447754c19f1f5451bcebcb3149cb94a7c01d18c0f",
+     "cacheKey": "6c99074b7a6c5395",
+     "meaning": null
+    },
+    {
+     "status": "null",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": false,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": null}",
+     "rawItem": null,
+     "item": null,
+     "rejectReasons": [],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.19,
+     "seconds": 0.19,
+     "inputTextSha256": "2b5a7d7cf49646d645d08bfde0ee8526d2a60749bbd02871778dadfc0ca7be22",
+     "validatorTextSha256": "2b5a7d7cf49646d645d08bfde0ee8526d2a60749bbd02871778dadfc0ca7be22",
+     "userSha256": "8a2c7f8c977ad7e55372301447754c19f1f5451bcebcb3149cb94a7c01d18c0f",
+     "cacheKey": "6c99074b7a6c5395",
+     "meaning": null
+    }
+   ]
+  },
+  {
+   "id": "W02",
+   "group": "W",
+   "text": "휴대폰 알림이 계속 와서 신경 쓰여요.\n배 쪽이 묵직해요.\n쑥색이에요.",
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "confirmedTextSha256": "72f86089b5ec41948936172271a67bc032b30a69503cb1ee9df5f891ce3897aa",
+   "sessionFlag": null,
+   "mapperForm": {
+    "type": null,
+    "base": null
+   },
+   "outcome": "null",
+   "runsIdentical": true,
+   "runs": [
+    {
+     "status": "null",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": false,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": null}",
+     "rawItem": null,
+     "item": null,
+     "rejectReasons": [],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.22,
+     "seconds": 0.22,
+     "inputTextSha256": "72f86089b5ec41948936172271a67bc032b30a69503cb1ee9df5f891ce3897aa",
+     "validatorTextSha256": "72f86089b5ec41948936172271a67bc032b30a69503cb1ee9df5f891ce3897aa",
+     "userSha256": "980ca20a00fc759417a4650496ceef1b0992342164c81f88cbb8d5436a2cd5e4",
+     "cacheKey": "199ba9f40c2ebec5",
+     "meaning": null
+    },
+    {
+     "status": "null",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": false,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": null}",
+     "rawItem": null,
+     "item": null,
+     "rejectReasons": [],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.19,
+     "seconds": 0.19,
+     "inputTextSha256": "72f86089b5ec41948936172271a67bc032b30a69503cb1ee9df5f891ce3897aa",
+     "validatorTextSha256": "72f86089b5ec41948936172271a67bc032b30a69503cb1ee9df5f891ce3897aa",
+     "userSha256": "980ca20a00fc759417a4650496ceef1b0992342164c81f88cbb8d5436a2cd5e4",
+     "cacheKey": "199ba9f40c2ebec5",
+     "meaning": null
+    }
+   ]
+  },
+  {
+   "id": "W03",
+   "group": "W",
+   "text": "시험 공부하느라 책상 앞에 오래 앉아 있어요.\n어깨가 뻐근해요.\n흐릿한 회색이에요.",
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "confirmedTextSha256": "df58a0beb372f5a55919c3886eae8f011902c6f92b9fb2a2dd8e07929a0a01c4",
+   "sessionFlag": null,
+   "mapperForm": {
+    "type": null,
+    "base": null
+   },
+   "outcome": "rejected",
+   "runsIdentical": true,
+   "runs": [
+    {
+     "status": "rejected",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": true,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": {\"quote\": \"책상\", \"charSpan\": [9, 12], \"en\": \"desk\"}}",
+     "rawItem": {
+      "quote": "책상",
+      "charSpan": [
+       9,
+       12
+      ],
+      "en": "desk"
+     },
+     "item": {
+      "quote": "책상",
+      "charSpan": [
+       9,
+       11
+      ],
+      "en": "desk",
+      "spanRepaired": {
+       "llmCharSpan": [
+        9,
+        12
+       ],
+       "to": [
+        9,
+        11
+       ]
+      }
+     },
+     "rejectReasons": [
+      "position_location"
+     ],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.3,
+     "seconds": 0.3,
+     "inputTextSha256": "df58a0beb372f5a55919c3886eae8f011902c6f92b9fb2a2dd8e07929a0a01c4",
+     "validatorTextSha256": "df58a0beb372f5a55919c3886eae8f011902c6f92b9fb2a2dd8e07929a0a01c4",
+     "userSha256": "ee7bd530a2848e1480940de8101c5671988a030fa4011b9faee7f278cbe5fc4a",
+     "cacheKey": "0ae0d38a1dc85549",
+     "meaning": {
+      "en": "desk",
+      "verdict": "맞음",
+      "reason": "책상. 번역은 맞지만 걱정 이야기 속 사물",
+      "posthoc": true
+     }
+    },
+    {
+     "status": "rejected",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": true,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": {\"quote\": \"책상\", \"charSpan\": [9, 12], \"en\": \"desk\"}}",
+     "rawItem": {
+      "quote": "책상",
+      "charSpan": [
+       9,
+       12
+      ],
+      "en": "desk"
+     },
+     "item": {
+      "quote": "책상",
+      "charSpan": [
+       9,
+       11
+      ],
+      "en": "desk",
+      "spanRepaired": {
+       "llmCharSpan": [
+        9,
+        12
+       ],
+       "to": [
+        9,
+        11
+       ]
+      }
+     },
+     "rejectReasons": [
+      "position_location"
+     ],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.27,
+     "seconds": 0.28,
+     "inputTextSha256": "df58a0beb372f5a55919c3886eae8f011902c6f92b9fb2a2dd8e07929a0a01c4",
+     "validatorTextSha256": "df58a0beb372f5a55919c3886eae8f011902c6f92b9fb2a2dd8e07929a0a01c4",
+     "userSha256": "ee7bd530a2848e1480940de8101c5671988a030fa4011b9faee7f278cbe5fc4a",
+     "cacheKey": "0ae0d38a1dc85549",
+     "meaning": {
+      "en": "desk",
+      "verdict": "맞음",
+      "reason": "책상. 번역은 맞지만 걱정 이야기 속 사물",
+      "posthoc": true
+     }
+    }
+   ]
+  },
+  {
+   "id": "W04",
+   "group": "W",
+   "text": "통장 잔고가 줄어서 불안해요.\n목이 꽉 조이는 느낌이에요.",
+   "expect": "none",
+   "expectKo": null,
+   "enOk": [],
+   "confirmedTextSha256": "a1b2c81f5e6a443c5c0dfebc1c03f57e9a39ed4a6bfdde1d50a19ffe2b5684b6",
+   "sessionFlag": null,
+   "mapperForm": {
+    "type": null,
+    "base": null
+   },
+   "outcome": "null",
+   "runsIdentical": true,
+   "runs": [
+    {
+     "status": "null",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": false,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": null}",
+     "rawItem": null,
+     "item": null,
+     "rejectReasons": [],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.22,
+     "seconds": 0.22,
+     "inputTextSha256": "a1b2c81f5e6a443c5c0dfebc1c03f57e9a39ed4a6bfdde1d50a19ffe2b5684b6",
+     "validatorTextSha256": "a1b2c81f5e6a443c5c0dfebc1c03f57e9a39ed4a6bfdde1d50a19ffe2b5684b6",
+     "userSha256": "639b11ff813186e6cd0d6681c8661175add626a95f529bfb1d3fdd12992886d5",
+     "cacheKey": "dc6be59da6c61bcd",
+     "meaning": null
+    },
+    {
+     "status": "null",
+     "skipReason": null,
+     "error": null,
+     "called": true,
+     "candidate": false,
+     "cached": false,
+     "ruleRoute": {
+      "call": true,
+      "reason": "no_shape_stated",
+      "status": "blocked",
+      "blockReason": "no_shape_stated",
+      "builderVersion": "gen3d-shape-prompt/0.3.0+mapper-v2"
+     },
+     "rawText": "{\"item\": null}",
+     "rawItem": null,
+     "item": null,
+     "rejectReasons": [],
+     "adopted": null,
+     "shapePromptText": null,
+     "llmSeconds": 0.17,
+     "seconds": 0.17,
+     "inputTextSha256": "a1b2c81f5e6a443c5c0dfebc1c03f57e9a39ed4a6bfdde1d50a19ffe2b5684b6",
+     "validatorTextSha256": "a1b2c81f5e6a443c5c0dfebc1c03f57e9a39ed4a6bfdde1d50a19ffe2b5684b6",
+     "userSha256": "639b11ff813186e6cd0d6681c8661175add626a95f529bfb1d3fdd12992886d5",
+     "cacheKey": "dc6be59da6c61bcd",
+     "meaning": null
+    }
+   ]
+  }
+ ],
+ "gpuAfter": "9606 MiB, 16303 MiB",
+ "ollamaPsAfter": [
+  "gemma4:e4b"
+ ],
+ "metrics": {
+  "run1": {
+   "pCases": 19,
+   "adopted": 12,
+   "meaningCorrectFill": 12,
+   "fillRate": 0.632,
+   "falsePass": [],
+   "falsePassCount": 0,
+   "criterionPass": false,
+   "byGroup": {
+    "P": {
+     "n": 19,
+     "statuses": {
+      "ok": 12,
+      "null": 3,
+      "rejected": 4
+     }
+    },
+    "N": {
+     "n": 6,
+     "statuses": {
+      "null": 6
+     }
+    },
+    "F": {
+     "n": 8,
+     "statuses": {
+      "null": 4,
+      "rejected": 4
+     }
+    },
+    "B": {
+     "n": 7,
+     "statuses": {
+      "rejected": 2,
+      "null": 3,
+      "skipped:rule_blocked:excluded_category": 1,
+      "skipped:session_flagged": 1
+     }
+    },
+    "W": {
+     "n": 4,
+     "statuses": {
+      "null": 3,
+      "rejected": 1
+     }
+    },
+    "R": {
+     "n": 1,
+     "statuses": {
+      "skipped:rule_has_shape": 1
+     }
+    }
+   }
+  },
+  "run2": {
+   "pCases": 19,
+   "adopted": 13,
+   "meaningCorrectFill": 13,
+   "fillRate": 0.684,
+   "falsePass": [],
+   "falsePassCount": 0,
+   "criterionPass": false,
+   "byGroup": {
+    "P": {
+     "n": 19,
+     "statuses": {
+      "ok": 13,
+      "null": 2,
+      "rejected": 4
+     }
+    },
+    "N": {
+     "n": 6,
+     "statuses": {
+      "null": 6
+     }
+    },
+    "F": {
+     "n": 8,
+     "statuses": {
+      "null": 4,
+      "rejected": 4
+     }
+    },
+    "B": {
+     "n": 7,
+     "statuses": {
+      "rejected": 2,
+      "null": 3,
+      "skipped:rule_blocked:excluded_category": 1,
+      "skipped:session_flagged": 1
+     }
+    },
+    "W": {
+     "n": 4,
+     "statuses": {
+      "null": 3,
+      "rejected": 1
+     }
+    },
+    "R": {
+     "n": 1,
+     "statuses": {
+      "skipped:rule_has_shape": 1
+     }
+    }
+   }
+  },
+  "rawIdentical": 44,
+  "decisionIdentical": 44,
+  "cases": 45,
+  "criterion": "falsePass == 0 (groups N/F/B/W) and meaningCorrectFill / P >= 0.7"
+ }
+}
