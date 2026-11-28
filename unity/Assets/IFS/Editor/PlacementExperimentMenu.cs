@@ -60,7 +60,8 @@ namespace IFS.SceneSpec.EditorTools
         static void Build()
         {
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
-            BuildObjects();
+            // 실험 씬은 본 실험 설정을 잠근다(2026-11-28). 자동 시행은 BuildObjects만 써서 잠그지 않는다(코드 기본 꺼짐 그대로)
+            BuildObjects().SetExperimentPresetLock(true);
             if (!EditorSceneManager.SaveScene(scene, ScenePath)) throw new InvalidOperationException("씬을 저장하지 못했습니다: " + ScenePath);
             Debug.Log("[IFS] 배치 실험 씬을 만들었습니다: " + ScenePath);
         }
@@ -150,6 +151,7 @@ namespace IFS.SceneSpec.EditorTools
             if ((v = Value(args, "-practiceInAllConditions")) != null) cfg.practiceInAllConditions = bool.Parse(v);
             if ((v = Value(args, "-stopMode")) != null) cfg.stopMode = v;   // G60-2: single | loop
             if ((v = Value(args, "-stopLoopRoundSeconds")) != null) cfg.stopLoopRoundSeconds = double.Parse(v, CultureInfo.InvariantCulture);
+            if ((v = Value(args, "-stopLoopPracticeRoundSeconds")) != null) cfg.stopLoopPracticeRoundSeconds = double.Parse(v, CultureInfo.InvariantCulture);
             if ((v = Value(args, "-eyeHeightMode")) != null) cfg.eyeHeightMode = v;   // G60-3: none | relative(자동 시행은 기준값 고정)
             // G63 헤드셋 UI: -uiBundle true = (1)–(6) 한꺼번에. 낱개 플래그가 뒤에서 덮어쓴다. -hidePanelInDistancePhases는 묶음에 들지 않는다
             if ((v = Value(args, "-uiBundle")) != null && bool.Parse(v)) cfg.ApplyUiBundle();

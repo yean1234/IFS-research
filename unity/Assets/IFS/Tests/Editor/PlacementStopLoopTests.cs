@@ -80,7 +80,7 @@ namespace IFS.SceneSpec.Tests
                     if (abortWhen != null && abortWhen(s)) { s.Abort(); break; }
                     var f = script.Participant(s, dt);
                     if (loopInput != null && s.Phase == PlacementPhase.StopDistance && s.StopRoundActive)
-                        f = loopInput(s, s.Config.stopLoopRoundSeconds - s.StopLoopSecondsLeft);
+                        f = loopInput(s, s.StopLoopRoundElapsed);
                     s.Tick(dt, f, PlacementAutoScript.ScriptedHead(s.Now));
                     script.Experimenter(s);
                     eachFrame?.Invoke(s);
@@ -130,6 +130,7 @@ namespace IFS.SceneSpec.Tests
             Assert.That((c.stopLoopMinM, c.stopLoopMaxM, c.stopLoopStartMinM, c.stopLoopStartMaxM), Is.EqualTo((0.4, 3.6, 1.0, 3.0)));
             Assert.That((c.stopLoopRounds, c.stopLoopPracticeRounds, c.stopLoopRoundSeconds, c.stopLoopToggleDebounceMs, c.stopLoopHideRings),
                 Is.EqualTo((4, 1, 75.0, 250.0, true)));
+            Assert.That(c.stopLoopPracticeRoundSeconds, Is.EqualTo(30.0), "연습 라운드는 30초 1번(2026-11-28 연구 책임자 요청), 본 라운드 75초는 그대로");
             Assert.That((c.eyeHeightReferenceM, c.eyeHeightMinM, c.eyeHeightMaxM, c.eyeCalibSeconds, c.eyeCalibMaxSdM, c.eyeCalibMaxPitchDeg),
                 Is.EqualTo((1.6, 1.30, 1.95, 1.0, 0.02, 15.0)));
             var j = c.ToJson();
@@ -157,6 +158,8 @@ namespace IFS.SceneSpec.Tests
             Assert.That(new PlacementConfig { stopMode = "loop", stopLoopStartMaxM = 3.6 }.Validate().Any(e => e.StartsWith("stopLoopStartMinM")), Is.True);
             Assert.That(new PlacementConfig { stopMode = "loop", stopLoopRounds = 0 }.Validate().Any(e => e.StartsWith("stopLoopRounds")), Is.True);
             Assert.That(new PlacementConfig { stopMode = "loop", stopLoopRoundSeconds = 0 }.Validate().Any(e => e.StartsWith("stopLoopRoundSeconds")), Is.True);
+            Assert.That(new PlacementConfig { stopMode = "loop", stopLoopPracticeRoundSeconds = 0 }.Validate().Any(e => e.StartsWith("stopLoopPracticeRoundSeconds")), Is.True);
+            Assert.That(new PlacementConfig { stopMode = "loop", stopLoopPracticeRounds = 0, stopLoopPracticeRoundSeconds = 0 }.Validate(), Is.Empty, "연습이 없으면 연습 상한은 보지 않는다");
             Assert.That(new PlacementConfig { stopMode = "single", stopLoopRounds = 0 }.Validate(), Is.Empty, "single이면 loop 키는 보지 않는다");
             Assert.That(new PlacementConfig { eyeHeightMode = "absolute" }.Validate().Any(e => e.StartsWith("eyeHeightMode")), Is.True);
             Assert.That(new PlacementConfig { eyeHeightMode = "relative" }.Validate(), Is.Empty);
@@ -166,7 +169,7 @@ namespace IFS.SceneSpec.Tests
             Assert.That(json.Properties().Select(p => p.Name).SkipWhile(n => n != "stopMode"), Is.EqualTo(new[]
             {
                 "stopMode", "stopLoopMinM", "stopLoopMaxM", "stopLoopStartMinM", "stopLoopStartMaxM", "stopLoopRounds", "stopLoopPracticeRounds",
-                "stopLoopRoundSeconds", "stopLoopToggleDebounceMs", "stopLoopHideRings",
+                "stopLoopRoundSeconds", "stopLoopPracticeRoundSeconds", "stopLoopToggleDebounceMs", "stopLoopHideRings",
                 "eyeHeightMode", "eyeHeightReferenceM", "eyeHeightMinM", "eyeHeightMaxM", "eyeCalibSeconds", "eyeCalibMaxSdM", "eyeCalibMaxPitchDeg",
             }), "켰을 때만 config 맨 끝에");
         }
@@ -270,7 +273,9 @@ namespace IFS.SceneSpec.Tests
             {
                 if (s.Phase == PlacementPhase.StopDistance) keys.Add(s.ParticipantTextKey + (s.StopLoopMoving ? "|moving" : s.StopRoundActive ? "|stopped" : "|between"));
             });
-            Assert.That(keys, Is.SupersetOf(new[] { "stop_distance_loop|moving", "stop_distance_loop+stop_loop_hint|stopped", "stop_distance_loop|between" }));
+            // 2026-11-28: 멈춘 동안 조작 안내 끝에 확인 버튼 안내(오른손 A), 확정한 뒤 라운드 사이에는 확정 알림
+            Assert.That(keys, Is.SupersetOf(new[] { "stop_distance_loop|moving", "stop_distance_loop+stop_loop_hint+confirm_button_right|stopped",
+                                                    "stop_distance_loop|between", "confirm_done|between" }));
             Assert.That(keys.Any(k => k.StartsWith("stop_distance|")), Is.False, "single 문구는 보이지 않는다");
         }
 
@@ -325,6 +330,188 @@ namespace IFS.SceneSpec.Tests
             Assert.That(adj.Any(a => a["event"] == "confirm"), Is.False);
             var r = Table(dir, PlacementRecordWriter.StopRoundsFile).Single();
             Assert.That((r["end_reason"], r["final_distance_m"]), Is.EqualTo(("timeout_moving", "")), "확정이 받아들여지지 않아 상한까지 감");
+        }
+
+        [Test]
+        public void Practice_round_has_its_own_30_second_limit_and_main_rounds_keep_75()
+        {
+            // 2026-11-28 연구 책임자 요청: 연습은 30초 안 1번. 본 라운드 상한(75 s)·수는 그대로
+            var cfg = Loop();
+            cfg.stopLoopStartMinM = cfg.stopLoopStartMaxM = 2.0;
+            cfg.stopLoopRounds = 1;
+            var left = new List<double>();
+            string dir = Run(cfg, loopInput: (s, e) => new PlacementInputFrame(), eachFrame: s =>
+            {
+                if (s.Phase == PlacementPhase.StopDistance && s.StopRoundActive && s.CurrentStopRound.Practice && s.StopLoopRoundElapsed < 0.05) left.Add(s.StopLoopSecondsLeft);
+            });
+            var rounds = Table(dir, PlacementRecordWriter.StopRoundsFile);
+            Assert.That(rounds.Select(r => r["practice"]), Is.EqualTo(new[] { "1", "0" }), "연습 1 + 본 1");
+            Assert.That(rounds.Select(r => r["end_reason"]), Is.EqualTo(new[] { "timeout_moving", "timeout_moving" }));
+            Assert.That(long.Parse(rounds[0]["duration_ms"], Inv), Is.EqualTo(30000).Within(30), "연습 라운드 상한 30 s");
+            Assert.That(long.Parse(rounds[1]["duration_ms"], Inv), Is.EqualTo(75000).Within(30), "본 라운드 상한 75 s 그대로");
+            Assert.That(left.First(), Is.EqualTo(30.0).Within(0.05), "실험자 화면의 남은 시간도 연습 상한 기준");
+            var loop = Json(dir, "manifest.json")["stopDistance"]["loop"];
+            Assert.That(((double)loop["roundSeconds"], (double)loop["practiceRoundSeconds"], (int)loop["practiceRounds"]), Is.EqualTo((75.0, 30.0, 1)));
+        }
+
+        // ── 확인 버튼 안내·확정 알림·본 측정 시작 안내(연구 책임자 결정 2026-11-28) ─────────
+        /// <summary>라운드마다 (멈춤 시각, 확정 시각) — 음수면 누르지 않는다. 한 프레임만 누른다.</summary>
+        static Func<PlacementSession, double, PlacementInputFrame> PerRound(Dictionary<int, (double stop, double confirm)> plan, double dt = 0.02) => (s, e) =>
+        {
+            var f = new PlacementInputFrame();
+            if (!plan.TryGetValue(s.CurrentStopRound.Round, out var p)) return f;
+            if (p.stop >= 0 && e >= p.stop - 1e-9 && e < p.stop + dt - 1e-9) f.StopDown = f.StopHeld = true;
+            else if (p.confirm >= 0 && e >= p.confirm - 1e-9 && e < p.confirm + dt - 1e-9) f.ConfirmDown = true;
+            return f;
+        };
+
+        /// <summary>멈춤 거리 단계에서 라운드 사이에 보인 안내 키(연달아 같은 것은 하나로)와 라운드 사이 간격(초).</summary>
+        static (List<string> gapKeys, List<double> gaps) Observe(PlacementSession s, List<string> keys, List<double> gaps, ref double endedAt, ref bool wasActive)
+        {
+            if (s.Phase != PlacementPhase.StopDistance) return (keys, gaps);
+            if (!s.StopRoundActive && (keys.Count == 0 || keys[keys.Count - 1] != s.ParticipantTextKey)) keys.Add(s.ParticipantTextKey);
+            if (wasActive && !s.StopRoundActive) endedAt = s.Now;
+            if (!wasActive && s.StopRoundActive && !double.IsNaN(endedAt)) gaps.Add(s.Now - endedAt);
+            wasActive = s.StopRoundActive;
+            return (keys, gaps);
+        }
+
+        [Test]
+        public void Confirm_notice_follows_only_confirmed_rounds_and_main_start_shows_once_within_the_gap()
+        {
+            var cfg = Loop();
+            cfg.stopLoopStartMinM = cfg.stopLoopStartMaxM = 2.0;
+            cfg.stopLoopRounds = 2;
+            cfg.stopItiSeconds = 2.0;
+            var keys = new List<string>();
+            var gaps = new List<double>();
+            double endedAt = double.NaN;
+            bool wasActive = false;
+            bool hiddenDuringNotice = false;
+            cfg.hidePanelInDistancePhases = true;
+            cfg.hidePanelReadSeconds = 1;
+            string dir = Run(cfg, loopInput: PerRound(new Dictionary<int, (double, double)> { [1] = (1.0, 2.0), [2] = (-1, -1), [3] = (1.0, 2.0) }),
+                eachFrame: s =>
+                {
+                    Observe(s, keys, gaps, ref endedAt, ref wasActive);
+                    if (s.Phase == PlacementPhase.StopDistance && !s.StopRoundActive && s.ParticipantTextKey != null
+                        && (s.ParticipantTextKey.StartsWith("confirm_done") || s.ParticipantTextKey == "stop_main_start") && s.PanelHidden) hiddenDuringNotice = true;
+                });
+            var rounds = Table(dir, PlacementRecordWriter.StopRoundsFile);
+            Assert.That(rounds.Select(r => r["end_reason"]), Is.EqualTo(new[] { "confirmed", "timeout_moving", "confirmed" }));
+            Assert.That(long.Parse(rounds[0]["duration_ms"], Inv), Is.EqualTo(2000).Within(30), "연습 라운드도 상한 전에 확정하면 바로 끝남");
+            Assert.That(long.Parse(rounds[2]["duration_ms"], Inv), Is.EqualTo(2000).Within(30), "본 라운드: 75 s 전 확정이 라운드를 끝냄");
+            Assert.That(keys.Skip(1), Is.EqualTo(new[]
+            {
+                "confirm_done+stop_main_start",              // 연습 확정 뒤: 확정 알림 + 본 측정 시작 안내(한 번)
+                "stop_distance_loop",                        // 시간 초과 뒤: 알림 없음, 지시문 그대로
+                "confirm_done",                              // 본 라운드 확정 뒤: 확정 알림만
+            }));
+            Assert.That(keys.Count(k => k.Contains("stop_main_start")), Is.EqualTo(1));
+            Assert.That(gaps, Has.Count.EqualTo(2));
+            Assert.That(gaps.All(g => Math.Abs(g - 2.0) < 0.03), Is.True, "라운드 사이 간격은 stopItiSeconds 그대로: " + string.Join(", ", gaps));
+            Assert.That(hiddenDuringNotice, Is.False, "판 숨기기를 켜도 알림이 보이는 동안은 판을 보인다");
+        }
+
+        [Test]
+        public void Main_start_shows_alone_when_the_practice_round_times_out()
+        {
+            var cfg = Loop();
+            cfg.stopLoopStartMinM = cfg.stopLoopStartMaxM = 2.0;
+            cfg.stopLoopRounds = 1;
+            cfg.stopLoopPracticeRoundSeconds = 3;
+            var keys = new List<string>();
+            var gaps = new List<double>();
+            double endedAt = double.NaN;
+            bool wasActive = false;
+            Run(cfg, loopInput: PerRound(new Dictionary<int, (double, double)> { [2] = (1.0, 2.0) }), eachFrame: s => Observe(s, keys, gaps, ref endedAt, ref wasActive));
+            Assert.That(keys.Skip(1), Is.EqualTo(new[] { "stop_main_start", "confirm_done" }), "확정하지 않은 연습 뒤에는 확정 알림 없이 본 측정 시작 안내만");
+        }
+
+        [Test]
+        public void Confirm_button_line_follows_the_main_hand()
+        {
+            foreach (var (hand, key, letter) in new[] { ("right", "confirm_button_right", "A"), ("left", "confirm_button_left", "X") })
+            {
+                var seen = new HashSet<string>();
+                var texts = new HashSet<string>();
+                var cfg = Loop();
+                cfg.xrHand = hand;
+                cfg.placementAssist = true;   // 배치 연습에도 붙는지
+                var script = new PlacementAutoScript { ConfirmAtSeconds = 3 };
+                Run(cfg, script: script, eachFrame: s =>
+                {
+                    if (s.ParticipantTextKey == null) return;
+                    seen.Add(s.Phase + "|" + s.ParticipantTextKey);
+                    texts.Add(s.ParticipantText);
+                });
+                string other = hand == "right" ? "confirm_button_left" : "confirm_button_right";
+                Assert.That(seen, Does.Contain("Practice|practice+" + key));
+                Assert.That(seen, Does.Contain("Condition|condition_place+placement_range+" + key));
+                Assert.That(seen, Does.Contain("StopDistance|stop_distance_loop+stop_loop_hint+" + key));
+                Assert.That(seen.Any(k => k.Contains(other)), Is.False, hand + ": 다른 손 안내는 보이지 않는다");
+                Assert.That(texts.Any(t => t.EndsWith(letter + " 버튼이에요.")), Is.True, hand + " → " + letter);
+            }
+            // 보기만(static)에는 확인 버튼이 없어 붙이지 않는다
+            var view = new HashSet<string>();
+            Run(Loop("view"), eachFrame: s => { if (s.Phase == PlacementPhase.Condition) view.Add(s.ParticipantTextKey); });
+            Assert.That(view, Is.EqualTo(new[] { "condition_view" }));
+        }
+
+        [Test]
+        public void Confirm_button_line_and_notice_appear_only_on_paths_that_take_a_confirm_input()
+        {
+            // CP16-2(보류, X42 미결): 버튼 안내·확정 알림은 확인 입력을 받는 경로에만 붙는다 — 보기만 조건 가운데 point_select는
+            // 바닥 점을 가리켜 확정하므로 붙고, static·system_move는 확인을 받지 않아 붙지 않는다. 지금 동작을 고정한다(바꾸려면 결정 기록과 함께)
+            var point = new List<string>();
+            Run(Loop("view", PlacementConfig.ModePointSelect), script: new PlacementAutoScript { PointAtSeconds = 2 },
+                eachFrame: s => { if (s.Phase == PlacementPhase.Condition && (point.Count == 0 || point.Last() != s.ParticipantTextKey)) point.Add(s.ParticipantTextKey); });
+            Assert.That(point.First(), Is.EqualTo("condition_point_select+confirm_button_right"));
+            Assert.That(point, Does.Contain("confirm_done"), "가리켜 확정한 뒤 확정 알림");
+            foreach (var mode in new[] { PlacementConfig.ModeStatic, PlacementConfig.ModeSystemMove })
+            {
+                var keys = new HashSet<string>();
+                Run(Loop("view", mode), eachFrame: s => { if (s.Phase == PlacementPhase.Condition) keys.Add(s.ParticipantTextKey); });
+                Assert.That(keys.Any(k => k != null && (k.Contains("confirm_button") || k.StartsWith("confirm_done"))), Is.False, mode + ": 확인을 받지 않으면 붙이지 않는다");
+            }
+        }
+
+        [Test]
+        public void Placement_confirm_shows_the_notice_for_two_seconds_then_the_instruction_returns()
+        {
+            var cfg = Loop();
+            cfg.hidePanelInDistancePhases = true;
+            cfg.hidePanelReadSeconds = 1;
+            var script = new PlacementAutoScript { ConfirmAtSeconds = 5 };
+            var at = new List<(double t, string key, bool hidden)>();
+            Run(cfg, script: script, eachFrame: s => { if (s.Phase == PlacementPhase.Condition) at.Add((s.SecondsInPhase, s.ParticipantTextKey, s.PanelHidden)); });
+            string instr = "condition_place+confirm_button_right";
+            Assert.That(at.First().key, Is.EqualTo(instr));
+            var notice = at.Where(a => a.key == "confirm_done").ToList();
+            Assert.That(notice, Is.Not.Empty);
+            Assert.That(notice.First().t, Is.EqualTo(5.0).Within(0.05));
+            Assert.That(notice.Last().t - notice.First().t, Is.EqualTo(PlacementSession.ConfirmNoticeSeconds).Within(0.05), "약 2초");
+            Assert.That(at.Where(a => a.t > notice.Last().t).All(a => a.key == instr), Is.True, "알림 뒤 원래 안내로");
+            Assert.That(notice.Any(a => a.hidden), Is.False, "판 숨기기를 켜도 알림 동안은 보인다");
+            Assert.That(at.Where(a => a.t > notice.Last().t + 0.1).All(a => a.hidden), Is.True, "알림 뒤에는 다시 숨긴다");
+        }
+
+        [Test]
+        public void New_confirm_phrases_are_draft_with_the_2026_11_28_source_and_same_in_both_files()
+        {
+            var def = PlacementTests.LoadText();
+            var scaleA = PlacementTaskText.Load(Path.Combine(Application.streamingAssetsPath, PlacementConfig.ExperimentTaskTextFile));
+            foreach (var k in new[] { "confirm_button_right", "confirm_button_left", "confirm_done", "stop_main_start" })
+                foreach (var t in new[] { def, scaleA })
+                {
+                    Assert.That(t.Status(k), Is.EqualTo("draft"), k);
+                    Assert.That(t[k], Is.EqualTo(def[k]), k + ": 두 파일 같은 글");
+                    foreach (var banned in new[] { "치료", "진단", "내담자", "잘 ", "좋", "m ", "미터", "거리" })
+                        Assert.That(t[k], Does.Not.Contain(banned), k + ": 평가·치료·거리 표현 금지");
+                }
+            Assert.That(def["confirm_done"], Is.EqualTo("정했어요."));
+            Assert.That(def.DraftKeysFor(false, false), Does.Not.Contain("stop_main_start"), "single이면 본 측정 시작 안내는 보이지 않는다");
+            Assert.That(def.DraftKeysFor(false, true), Does.Contain("stop_main_start"));
         }
 
         [Test]
@@ -391,7 +578,7 @@ namespace IFS.SceneSpec.Tests
         public void Abort_during_a_round_writes_an_aborted_row()
         {
             string dir = Run(OneRound(), loopInput: Presses((1.0, "t")),
-                abortWhen: s => s.Phase == PlacementPhase.StopDistance && s.StopRoundActive && s.Config.stopLoopRoundSeconds - s.StopLoopSecondsLeft > 2.0);
+                abortWhen: s => s.Phase == PlacementPhase.StopDistance && s.StopRoundActive && s.StopLoopRoundElapsed > 2.0);
             var r = Table(dir, PlacementRecordWriter.StopRoundsFile).Single();
             Assert.That((r["end_reason"], r["final_distance_m"], r["n_stops"]), Is.EqualTo(("aborted", "", "1")));
             Assert.That(Table(dir, PlacementRecordWriter.StopAdjustFile).Last()["event"], Is.EqualTo("abort"));
@@ -430,7 +617,7 @@ namespace IFS.SceneSpec.Tests
                         Assert.That(t[k], Does.Not.Contain(banned), k + ": 방향 암시·치료 표현·'방금 자리' 금지");
                 }
             }
-            Assert.That(def.Version, Is.EqualTo("0.7"), "G60-2는 0.6 안에 더함, G65·G66 문구로 0.7");
+            Assert.That(def.Version, Is.EqualTo("0.8"), "G60-2는 0.6 안에 더함, G65·G66 문구로 0.7, 2026-11-28 확인 버튼 안내·확정 알림으로 0.8");
         }
 
         // ── 눈높이 보정 판정 ────────────────────────────────────────────

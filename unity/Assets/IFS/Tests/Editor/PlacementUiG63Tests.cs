@@ -158,6 +158,13 @@ namespace IFS.SceneSpec.Tests
                 if (t.Keys.Contains(k)) yield return (k, t[k]);
             yield return ("condition_place+placement_range", t["condition_place"] + "\n" + t[PlacementTaskText.PlacementRangeKey]);
             yield return ("stop_distance_loop+stop_loop_hint", t[PlacementTaskText.StopLoopKey] + "\n" + t[PlacementTaskText.StopLoopHintKey]);
+            // 2026-11-28: 확인 버튼 안내를 붙인 조합(세션이 붙이는 그대로 — 오른손 기준, 왼손 문구는 글자 수가 같다)
+            string b = " " + t[PlacementTaskText.ConfirmButtonRightKey];   // 마지막 문단에 한 칸 띄워 잇는다(세션과 같게)
+            yield return ("practice+confirm_button_right", t[PlacementTaskText.PracticeKey] + b);
+            yield return ("condition_place+placement_range+confirm_button_right", t["condition_place"] + "\n" + t[PlacementTaskText.PlacementRangeKey] + b);
+            yield return ("condition_point_select+confirm_button_right", t["condition_point_select"] + b);
+            yield return ("stop_distance_loop+stop_loop_hint+confirm_button_right", t[PlacementTaskText.StopLoopKey] + "\n" + t[PlacementTaskText.StopLoopHintKey] + b);
+            yield return ("confirm_done+stop_main_start", t[PlacementTaskText.ConfirmDoneKey] + "\n" + t[PlacementTaskText.StopMainStartKey]);
         }
 
         /// <summary>판의 넓혀 보기 규칙(PlacementTextPanel.ShowText와 같다): 24자, 넘치면 26자까지 줄 수가 줄어드는 가장 좁은 폭, 그래도 넘치면 24자.</summary>
@@ -186,7 +193,7 @@ namespace IFS.SceneSpec.Tests
                 var (wrap, lines, deg) = ComfortLayout(text);
                 TestContext.WriteLine($"{name}: 20자 {before}줄 {degBefore:0.00}° → {wrap}자 {lines}줄 {deg:0.00}°");
                 Assert.That(deg, Is.LessThanOrEqualTo(degBefore + 1e-9), name + ": 나빠지지 않는다");
-                if (name == "stop_distance_loop+stop_loop_hint")
+                if (name == "stop_distance_loop+stop_loop_hint" || name == "stop_distance_loop+stop_loop_hint+confirm_button_right")
                 {
                     // 알려진 예외: 반복 멈춤에서 멈춘 동안(본 지시문 5줄 + 조작 안내 2줄 = 7줄). 쪽을 넘길 입력이 없어 나누지 못한다 — 보고(사람이 정할 것)
                     Assert.That(deg, Is.GreaterThan(35.0));

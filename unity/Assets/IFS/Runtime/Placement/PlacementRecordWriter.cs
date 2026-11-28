@@ -321,6 +321,10 @@ namespace IFS.SceneSpec.Placement
         /// <summary>G62: 생성 형태 메시 적용 결과(assetId·glbSha256·실제 렌더 크기·공변량, 또는 절차 메시로 돌아간 이유).
         /// 선택 파일에 form.asset이 없으면 null(그때는 manifest에 키를 넣지 않는다 — 이전 기록 바이트 그대로).</summary>
         public IFS.SceneSpec.FormAsset.FormAssetResult FormAsset;
+        /// <summary>2026-11-28: 본 실험 설정 잠금(러너 lockExperimentPreset)으로 돌았다. true일 때만 manifest flags.experimentPresetLocked.</summary>
+        public bool ExperimentPresetLocked;
+        /// <summary>2026-11-28: spec·선택 파일을 어떻게 골랐나(PlacementManifest.SessionFilesJson). null이면 manifest에 키 없음(자동 시행·시험·자동 채움이 아무것도 채우지 않은 세션).</summary>
+        public JObject SessionFiles;
     }
 
     public static class PlacementManifest
@@ -444,8 +448,24 @@ namespace IFS.SceneSpec.Placement
             }
             if (cfg.IsEyeRelative && info?.EyeHeight != null) m["eyeHeight"] = info.EyeHeight.ManifestJson(cfg);   // G60-3, relative일 때만
             if (info?.FormAsset != null) m["formAsset"] = info.FormAsset.ManifestJson();   // G62, 생성 형태 메시를 골랐을 때만
+            // 2026-11-28: 본 실험 설정 잠금(켰을 때만 — 꺼져 있으면 기존 기록과 같은 바이트)과 spec·선택 파일 고른 방식(자동 채움을 쓴 실행에서만)
+            if (info != null && info.ExperimentPresetLocked) ((JObject)m["flags"])["experimentPresetLocked"] = true;
+            if (info?.SessionFiles != null) m["sessionFiles"] = info.SessionFiles.DeepClone();
             return m;
         }
+
+        /// <summary>manifest sessionFiles(자동 채움이 이번 세션의 칸을 채웠을 때만 — CP16-5): source auto(채운 짝을 그대로 씀) |
+        /// auto_overridden(채운 뒤 실험자가 spec·선택 파일 칸을 바꿈). 경로는 남기지 않는다(세션 ID와 저장 시각만).</summary>
+        public static JObject SessionFilesJson(string source, string autoSessionId, DateTimeOffset autoSavedAt, bool autoStale, bool autoAlreadyRun,
+            bool participantFromFile) => new JObject
+        {
+            ["source"] = source,
+            ["autoSessionId"] = autoSessionId,
+            ["autoSavedAt"] = autoSavedAt.ToString("yyyy-MM-ddTHH:mm:sszzz", CultureInfo.InvariantCulture),
+            ["autoStale"] = autoStale,
+            ["autoAlreadyRun"] = autoAlreadyRun,
+            ["participantNumberFromFile"] = participantFromFile,
+        };
 
         /// <summary>manifest stopDistance.loop(G60-2): 경로·라운드·입력 규칙과 이 참여자의 라운드 계획.</summary>
         public static JObject StopLoopJson(PlacementConfig cfg, int participantNumber) => new JObject
@@ -460,6 +480,7 @@ namespace IFS.SceneSpec.Placement
             ["rounds"] = cfg.stopLoopRounds,
             ["practiceRounds"] = cfg.stopLoopPracticeRounds,
             ["roundSeconds"] = cfg.stopLoopRoundSeconds,
+            ["practiceRoundSeconds"] = cfg.stopLoopPracticeRoundSeconds,   // 2026-11-28 추가: 연습 라운드 상한
             ["toggleDebounceMs"] = cfg.stopLoopToggleDebounceMs,
             ["hideRings"] = cfg.stopLoopHideRings,
             ["input"] = "toggle=trigger(desktop Space): stop/resume same direction; confirm=A·X(desktop F): only while stopped",

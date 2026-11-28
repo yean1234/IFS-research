@@ -14,6 +14,9 @@
 // 멈춤 거리 반복 멈춤(G60-2, 2026-11-26): 설정 stopMode loop면 멈춤 거리 단계 동안 바닥 고리를 숨긴다(stopLoopHideRings).
 // 눈높이 정규화(G60-3, 2026-11-26): 설정 eyeHeightMode relative면 Check 뒤 실험자 키 H로 눈높이 E를 재야 시작할 수 있고(데스크톱·자동 시행은
 //   기준값 고정), 참여자 판의 높이와 눈 앵커를 E 기준으로 옮긴다. 카메라·리그 높이는 바꾸지 않는다.
+// 본 실험 설정 잠금(2026-11-28): lockExperimentPreset(코드 기본 꺼짐, 실험 씬에서 켬)이면 Awake·SetConfig·Check·다음 참여자 때 권고 설정 + scaleA
+//   (PlacementExperimentLock). 최근 세션 자동 채움(autoFillLatestSession, Play 중·자동 시행 아닐 때만): PlacementLatestSession이 고른 짝을
+//   spec·선택 파일 칸(과 비어 있으면 참여자 번호)에 채운다. 시작은 실험자가 한다. manifest flags.experimentPresetLocked·sessionFiles.
 // 헤드셋 실기는 확인하지 않았다(2026-11-23 — docs/headset-checklist.md).
 using System;
 using System.Collections.Generic;
@@ -43,6 +46,18 @@ namespace IFS.SceneSpec.Placement
         [SerializeField] string recordRoot = "";
         [Tooltip("문구 파일. 비우면 StreamingAssets/IFS/placement_task.v0.json")]
         [SerializeField] string taskTextPath = "";
+
+        [Header("본 실험(2026-11-28)")]
+        [Tooltip("켜면 시작·확인·다음 참여자 때마다 본 실험 권고 설정(ApplyExperimentPreset)과 문구 파일 scaleA를 적용하고, 실험자 화면에는 " +
+                 "고정 항목의 토글 대신 요약만 보인다(챗봇 G69 lock_condition과 같은 취지). 코드 기본 꺼짐 — 실험 씬에서 켠다. manifest flags.experimentPresetLocked")]
+        [SerializeField] bool lockExperimentPreset = false;
+        [Tooltip("켜면 Play 시작과 [다음 참여자 준비] 때 챗봇이 가장 최근에 내보낸 세션의 spec·선택 파일(짝이 맞을 때만)을 채운다. 시작은 실험자가 누른다. " +
+                 "자동 시행(BeginAuto)과 Play가 아닐 때는 하지 않는다. manifest sessionFiles")]
+        [SerializeField] bool autoFillLatestSession = true;
+        [Tooltip("자동으로 고른 세션의 저장 시각이 이보다 오래됐으면(분) 실험자 화면에 경고 색으로 보인다")]
+        [SerializeField] double autoFillStaleMinutes = PlacementLatestSession.DefaultStaleMinutes;
+        [Tooltip("가장 최근 선택 파일의 저장 시각이 지금보다 이만큼(분) 넘게 미래면 시계 오류로 보고 채우지 않는다(CP16-3)")]
+        [SerializeField] double autoFillFutureToleranceMinutes = PlacementLatestSession.DefaultFutureToleranceMinutes;
 
         [Header("모양 프리팹 (메뉴 IFS ▸ Create Shape Prefabs가 연결)")]
         [SerializeField] ShapePrefab[] shapePrefabs =
@@ -144,6 +159,19 @@ namespace IFS.SceneSpec.Placement
         /// <summary>지금 화면에 실제로 그려진 배경 공간(EnvironmentStyle.Apply 결과). 실험자 화면이 읽는다.</summary>
         public string AppliedEnvironment { get; private set; } = PlacementConfig.EnvironmentNeutral;
         public List<SpecFileEntry> SpecFiles { get; } = new List<SpecFileEntry>();
+        // ── 본 실험 설정 잠금·최근 세션 자동 채움(2026-11-28) ──────────────
+        /// <summary>본 실험 설정 잠금(lockExperimentPreset)이 켜져 있다.</summary>
+        public bool ExperimentPresetLocked => lockExperimentPreset;
+        /// <summary>마지막 자동 채움 결과(Play 시작·다음 참여자·실험자 화면 [다시 찾기]). 하지 않았으면 null.</summary>
+        public PlacementLatestSession.Result AutoFill { get; private set; }
+        /// <summary>자동 채움이 고른 세션이 이번 실행(에디터는 도메인을 다시 읽는 Play마다 새로)에서 이미 시작됐다.</summary>
+        public bool AutoFillRunThisProcess => AutoFill?.Pick != null && s_startedSessionIds.Contains(AutoFill.Pick.SessionId);
+        /// <summary>자동 채움이 고른 세션의 배치 기록 폴더가 기록 루트에 이미 있다.</summary>
+        public bool AutoFillHasRecord { get; private set; }
+        public double AutoFillStaleMinutes => autoFillStaleMinutes;
+        /// <summary>자동 채움이 채운 값(실험자가 바꿨는지 보려고 둔다). 채우지 않았으면 null.</summary>
+        string _autoSpecText, _autoSelectionText, _autoParticipantText;
+        static readonly HashSet<string> s_startedSessionIds = new HashSet<string>(StringComparer.Ordinal);
 
         // ── 내부 ───────────────────────────────────────────────────────────
         PlacementAutoScript _auto;
@@ -168,9 +196,93 @@ namespace IFS.SceneSpec.Placement
         void Awake()
         {
             if (SpecFolderText == null) SpecFolderText = specFolder;
+            EnforceExperimentLock();   // 잠금이면 권고 설정 + scaleA(문구를 읽기 전에)
             RefreshSpecList();
             PreloadTaskText();
             BuildSpace();   // 시작 전에도 공간이 보이게(재생 모드)
+            AutoFillLatestSession();
+        }
+
+        // ── 본 실험 설정 잠금(2026-11-28) ───────────────────────────────
+        /// <summary>잠금을 켜거나 끈다(시험·에디터용. Setup에서만). 켜면 바로 적용한다.</summary>
+        public void SetExperimentPresetLock(bool on)
+        {
+            if (Session != null) return;
+            lockExperimentPreset = on;
+            if (EnforceExperimentLock()) PreloadTaskText();
+        }
+
+        /// <summary>잠금이 켜져 있으면 권고 설정과 문구 파일 scaleA를 다시 적용한다. 문구 파일 이름을 바꿨으면 true(읽기는 부른 쪽이).</summary>
+        bool EnforceExperimentLock()
+        {
+            if (!lockExperimentPreset) return false;
+            PlacementExperimentLock.Apply(config);
+            bool changed = !PlacementExperimentLock.SameTaskText(TaskTextDisplayName, PlacementExperimentLock.TaskTextFile);
+            TaskTextPathText = PlacementExperimentLock.TaskTextFile;
+            return changed;
+        }
+
+        // ── 가장 최근 세션 자동 채움(2026-11-28) ──────────────────────────
+        /// <summary>챗봇이 가장 최근에 내보낸 세션의 spec·선택 파일 짝을 채운다(PlacementLatestSession). Setup에서 Play 중일 때만,
+        /// 자동 시행이 아닐 때만. 짝이 맞지 않거나 없으면 칸을 건드리지 않는다. 참여자 번호는 칸이 비어 있고 파일에 숫자 번호가 있을 때만.
+        /// 시작은 하지 않는다(실험자가 [확인]·[시작]).</summary>
+        public void AutoFillLatestSession()
+        {
+            if (!autoFillLatestSession || _auto != null || !Application.isPlaying || Stage != PlacementRunnerStage.Setup || Session != null) return;
+            PlacementLatestSession.Result r;
+            try { r = PlacementLatestSession.FindLatest(ResolvedSpecFolder, null, DateTimeOffset.Now, autoFillFutureToleranceMinutes); }
+            catch (Exception e) { r = new PlacementLatestSession.Result { Rejected = "최근 세션을 찾지 못함: " + e.Message }; }
+            AutoFill = r;
+            AutoFillHasRecord = false;
+            _autoSpecText = _autoSelectionText = _autoParticipantText = null;
+            if (r.Pick == null) return;
+            SpecPathText = _autoSpecText = r.Pick.SpecPath;
+            SelectionPathText = _autoSelectionText = r.Pick.SelectionPath;
+            if (r.Pick.ParticipantNumber.HasValue && string.IsNullOrWhiteSpace(ParticipantNumberText))
+                ParticipantNumberText = _autoParticipantText = r.Pick.ParticipantNumber.Value.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            try { AutoFillHasRecord = PlacementLatestSession.HasRecord(ResolvedRecordRoot, r.Pick.SessionId); }
+            catch (Exception) { AutoFillHasRecord = false; }
+        }
+
+        /// <summary>자동 채움을 켜거나 끈다(캡처 도구·시험용). 끄면 자동 채움이 채운 칸(실험자가 바꾸지 않은 것)과 결과 표시를 지운다.</summary>
+        public void SetAutoFillLatestSession(bool on)
+        {
+            autoFillLatestSession = on;
+            if (on) return;
+            if (_autoSpecText != null && SameText(SpecPathText, _autoSpecText)) SpecPathText = "";
+            if (_autoSelectionText != null && SameText(SelectionPathText, _autoSelectionText)) SelectionPathText = "";
+            if (_autoParticipantText != null && SameText(ParticipantNumberText, _autoParticipantText)) ParticipantNumberText = "";
+            _autoSpecText = _autoSelectionText = _autoParticipantText = null;
+            AutoFill = null;
+            AutoFillHasRecord = false;
+        }
+
+        /// <summary>자동 채움이 채운 spec·선택 파일 칸을 실험자가 그대로 두었다.</summary>
+        public bool SessionFilesAreAutoFilled =>
+            _autoSpecText != null && SameText(SpecPathText, _autoSpecText) && SameText(SelectionPathText, _autoSelectionText);
+
+        static bool SameText(string a, string b) => string.Equals((a ?? "").Trim().Trim('"'), (b ?? "").Trim().Trim('"'), StringComparison.Ordinal);
+
+        /// <summary>manifest sessionFiles: 자동 채움이 이번 세션의 칸을 실제로 채웠을 때만(auto | auto_overridden). 채우지 않았으면
+        /// (자동 시행·Play가 아님·채울 짝이 없었음·거부함) null → 키 없음 — 기록 바이트가 예전과 같다(CP16-5).</summary>
+        Newtonsoft.Json.Linq.JObject SessionFilesJson()
+        {
+            var pick = AutoFill?.Pick;
+            string source = PlacementLatestSession.SessionFilesSource(pick != null && _autoSpecText != null && _auto == null, SessionFilesAreAutoFilled);
+            if (source == null) return null;
+            return PlacementManifest.SessionFilesJson(source, pick.SessionId, pick.SavedAt,
+                PlacementLatestSession.IsStale(pick.SavedAt, DateTimeOffset.Now, autoFillStaleMinutes),
+                AutoFillRunThisProcess || AutoFillHasRecord,
+                _autoParticipantText != null && SameText(ParticipantNumberText, _autoParticipantText));
+        }
+
+        /// <summary>잠금이 켜져 있으면 잠금 위반(설정·문구 파일 판·키)을 오류로 더한다. 더했으면 true.</summary>
+        bool AddLockRefusals()
+        {
+            if (!lockExperimentPreset) return false;
+            var refusals = PlacementExperimentLock.Refusals(config, TaskTextDisplayName, TaskText);
+            foreach (var x in refusals) if (!Errors.Contains(x)) Errors.Add(x);
+            return refusals.Count > 0;
         }
 
         void Update()
@@ -300,6 +412,7 @@ namespace IFS.SceneSpec.Placement
         public void SelectTaskText(string relativePath)
         {
             if (Session != null) return;
+            if (lockExperimentPreset && !PlacementExperimentLock.SameTaskText(relativePath, PlacementExperimentLock.TaskTextFile)) return;   // 잠금: scaleA 고정
             TaskTextPathText = relativePath;
             PreloadTaskText();
         }
@@ -357,6 +470,7 @@ namespace IFS.SceneSpec.Placement
         {
             if (Session != null || cfg == null) return;
             config = cfg.Clone();
+            if (EnforceExperimentLock()) PreloadTaskText();
         }
 
         /// <summary>Setup에서 공간 설정(environment·placementAssist)을 바꾼 뒤 바로 다시 그린다(세션 중에는 무시).</summary>
@@ -371,6 +485,7 @@ namespace IFS.SceneSpec.Placement
         {
             _auto = script ?? new PlacementAutoScript();
             if (cfg != null) config = cfg.Clone();
+            EnforceExperimentLock();   // 잠금(기본 꺼짐)이면 자동 시행도 권고 설정 그대로
         }
 
         // ── Setup → Checked ─────────────────────────────────────────────
@@ -379,6 +494,7 @@ namespace IFS.SceneSpec.Placement
             if (Session != null) return false;
             Errors.Clear();
             Warnings.Clear();
+            EnforceExperimentLock();   // 잠금: 화면 밖에서 바뀐 값이 있어도 확인 때 다시 권고 설정(문구 파일은 아래에서 다시 읽음)
             Spec = null;
             Selection = null;
             _replay = null;
@@ -425,6 +541,7 @@ namespace IFS.SceneSpec.Placement
             string refusal = PlacementTaskText.SpecPhraseRefusal(TaskText, config.requireSpecPhrases, config.placementAssist, config.IsStopLoop);
             if (refusal != null) Errors.Add(refusal);
             if (config.EffectiveControlMode == PlacementConfig.ModeReplay) CheckReplay();
+            AddLockRefusals();   // CP16-1·4: 잠금이면 멈춤 거리 절차 값·문구 파일 판·G78 키까지 맞아야 시작
             if (config.IsEyeRelative && config.EffectiveControlMode == PlacementConfig.ModeReplay)
                 Warnings.Add("eyeHeightMode relative인데 controlMode replay입니다 — 재생 궤적의 높이는 원본 기록의 절대 높이 그대로라 눈높이 기준으로 옮기지 않습니다");
             Font font = null;
@@ -603,6 +720,7 @@ namespace IFS.SceneSpec.Placement
                 catch (Exception e) { Errors.Add("선택 파일을 다시 읽지 못했습니다: " + e.Message); return false; }
                 if (selSha != _selectionSha) { Errors.Add("확인한 뒤 선택 파일이 바뀌었습니다 — 다시 확인하세요"); return false; }
             }
+            if (AddLockRefusals()) return false;   // 확인 뒤 설정·문구가 바뀌었으면 시작 직전에도 거부(CP16-1·4)
             var eyeHeight = EyeHeightForSession(out string eyeRefusal);   // G60-3: relative면 보정(또는 데스크톱 고정값)이 있어야 시작
             if (eyeRefusal != null)
             {
@@ -686,6 +804,8 @@ namespace IFS.SceneSpec.Placement
                 AppliedOverrides = AppliedOverrides,
                 FormAsset = FormAssetResult,   // G62: 선택 파일에 form.asset이 있을 때만(없으면 manifest에 키 없음)
                 EyeHeight = eyeHeight,   // G60-3: relative일 때만(아니면 null)
+                ExperimentPresetLocked = lockExperimentPreset,   // 2026-11-28: 켰을 때만 manifest flags.experimentPresetLocked
+                SessionFiles = SessionFilesJson(),        // 2026-11-28: 자동 채움을 켠 Play 실행에서만(auto | manual)
             };
             try
             {
@@ -709,6 +829,7 @@ namespace IFS.SceneSpec.Placement
                 Session.Note("xr_status", $"device={Clean(PlacementXrRig.LoadedDeviceName)};head={Clean(PlacementXrRig.HeadDeviceName)};" +
                                           $"controller={Clean(xrInput?.DeviceName)};hand={config.xrHand};trackingOrigin={Clean(xrRig?.TrackingOrigin)}");
             LastRecordDirectory = Session.RecordDirectory;
+            s_startedSessionIds.Add(sessionId);   // 이번 실행에서 시작한 세션(자동 채움이 같은 세션을 다시 고르면 표시)
             LastCompleted = false;
             LastAbortedAt = null;
             _shownText = null;
@@ -1044,8 +1165,12 @@ namespace IFS.SceneSpec.Placement
             Errors.Clear();
             Warnings.Clear();
             ParticipantNumberText = "";
+            // 자동 채움을 쓰는 Play 실행에서는 spec도 비운다: 최근 세션을 찾지 못하면 이전 참여자의 spec이 남지 않게(자동 시행·시험은 예전 그대로)
+            if (autoFillLatestSession && _auto == null && Application.isPlaying) SpecPathText = "";
+            EnforceExperimentLock();
             RefreshSpecList();
             PreloadTaskText();
+            AutoFillLatestSession();
         }
     }
 }

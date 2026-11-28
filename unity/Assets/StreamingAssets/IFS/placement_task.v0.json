@@ -1,7 +1,7 @@
 {
-  "version": "0.7",
+  "version": "0.8",
   "protocol": "placement-task",
-  "note": "0.6(2026-11-26): G60 — 점검 문항 want_move를 뺌(교수님 결정 2026-11-26), 멈춤 거리 반복 멈춤 문구 stop_distance_loop·stop_loop_hint를 더함(G60-2, 설정 stopMode loop일 때만 보임 — 기본 single에서는 draftKeys에 들어가지 않음). 버전은 0.6 그대로. 0.7(2026-11-27): G65·G66(D10 가독성) — 두 평정 문항 G13(appearance_match '떠올린 것' → '떠올린 모습', representativeness '내가 떠올린 그것' → '그 느낌')을 웹 selection_protocol 0.6.0·scaleA 0.7-scaleA와 같은 글로, 내적 경험과의 관계를 묻는 want_to_know·withdraw_attention·distance_feel의 대상을 '이것' → '그 느낌'으로 바꿈. 물체·자리를 묻는 placed_by_me·place_fit, '내 것' 문항 own, 단계 안내의 '이것'(눈앞의 물체)은 그대로. ⚠ 이 파일에는 공통 지시문(items_instruction)이 없어 '그 느낌'이 무엇인지 화면에서 알리지 않음(scaleA에는 있음). draft(IRB 검토 전).",
+  "note": "0.6(2026-11-26): G60 — 점검 문항 want_move를 뺌(교수님 결정 2026-11-26), 멈춤 거리 반복 멈춤 문구 stop_distance_loop·stop_loop_hint를 더함(G60-2, 설정 stopMode loop일 때만 보임 — 기본 single에서는 draftKeys에 들어가지 않음). 버전은 0.6 그대로. 0.7(2026-11-27): G65·G66(D10 가독성) — 두 평정 문항 G13(appearance_match '떠올린 것' → '떠올린 모습', representativeness '내가 떠올린 그것' → '그 느낌')을 웹 selection_protocol 0.6.0·scaleA 0.7-scaleA와 같은 글로, 내적 경험과의 관계를 묻는 want_to_know·withdraw_attention·distance_feel의 대상을 '이것' → '그 느낌'으로 바꿈. 물체·자리를 묻는 placed_by_me·place_fit, '내 것' 문항 own, 단계 안내의 '이것'(눈앞의 물체)은 그대로. ⚠ 이 파일에는 공통 지시문(items_instruction)이 없어 '그 느낌'이 무엇인지 화면에서 알리지 않음(scaleA에는 있음). draft(IRB 검토 전). 0.8(2026-11-28): 연구 책임자 결정 — 확인 버튼 안내 confirm_button_right·confirm_button_left(xrHand에 따라 하나), 확정 알림 confirm_done, 반복 멈춤 본 측정 시작 안내 stop_main_start를 더함(기존 문구는 그대로).",
   "texts": {
     "intro": {
       "text": "이제 물체 하나를 보여 드릴게요. 안내가 나오면 그대로 따라 주세요.",
@@ -47,6 +47,26 @@
       "text": "방아쇠: 다시 움직이기 · 확인 버튼: 이 자리로 정하기",
       "status": "draft",
       "source": "교수님 피드백 2026-11-26 / G60-2 — 반복 멈춤에서 물체가 멈춘 동안 stop_distance_loop 아래에 줄을 바꿔 붙이는 조작 안내 초안. 설정 stopMode loop일 때만 보임. IRB 검토 전"
+    },
+    "confirm_button_right": {
+      "text": "확인 버튼은 오른손 A 버튼이에요.",
+      "status": "draft",
+      "source": "연구 책임자 결정 2026-11-28 — 확인 버튼 안내(주 사용 손 xrHand right일 때). 확인 버튼을 쓰는 단계(배치 연습·직접 배치·가리켜 지정·반복 멈춤)의 안내 아래에 줄을 바꿔 붙임. IRB 검토 전"
+    },
+    "confirm_button_left": {
+      "text": "확인 버튼은 왼손 X 버튼이에요.",
+      "status": "draft",
+      "source": "연구 책임자 결정 2026-11-28 — 확인 버튼 안내(주 사용 손 xrHand left일 때). confirm_button_right와 같은 자리에 붙임. IRB 검토 전"
+    },
+    "confirm_done": {
+      "text": "정했어요.",
+      "status": "draft",
+      "source": "연구 책임자 결정 2026-11-28 — 확정 알림. 직접 배치·가리켜 지정에서 확인 버튼을 누른 뒤, 반복 멈춤에서 확정한 뒤(라운드 사이 2초 안) 약 2초 보임. 시간 초과로 끝난 라운드에는 보이지 않음. 거리·평가하는 말은 넣지 않음. IRB 검토 전"
+    },
+    "stop_main_start": {
+      "text": "연습이 끝났어요. 이제 본 측정을 시작할게요.",
+      "status": "draft",
+      "source": "연구 책임자 결정 2026-11-28 — 반복 멈춤(stopMode loop)에서 연습 라운드가 끝나고 첫 본 라운드 전(라운드 사이 2초 안) 한 번 보임. 연습 라운드가 없으면 보이지 않음. IRB 검토 전"
     },
     "done": {
       "text": "이번 과제는 여기까지예요. 고맙습니다.",

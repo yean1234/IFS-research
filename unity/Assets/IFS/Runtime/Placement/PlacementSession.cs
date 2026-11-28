@@ -250,7 +250,11 @@ namespace IFS.SceneSpec.Placement
         /// <summary>직전 상태 변화(라운드 시작·멈춤·재개)부터 지난 시간(초).</summary>
         public double StopLoopSecondsSinceChange => _roundActive ? _now - _lastChange : 0;
         /// <summary>이번 라운드 남은 시간(초). 라운드 밖이면 NaN.</summary>
-        public double StopLoopSecondsLeft => _roundActive ? Math.Max(0, _cfg.stopLoopRoundSeconds - (_now - _roundStart)) : double.NaN;
+        public double StopLoopSecondsLeft => _roundActive ? Math.Max(0, RoundLimitSeconds(_loopPlan[_roundIndex]) - (_now - _roundStart)) : double.NaN;
+        /// <summary>이번 라운드가 시작된 뒤 지난 시간(초). 라운드 밖이면 NaN.</summary>
+        public double StopLoopRoundElapsed => _roundActive ? _now - _roundStart : double.NaN;
+        /// <summary>라운드 시간 상한(초): 연습 라운드는 stopLoopPracticeRoundSeconds, 본 라운드는 stopLoopRoundSeconds(2026-11-28).</summary>
+        public double RoundLimitSeconds(StopRoundPlan plan) => plan != null && plan.Practice ? _cfg.stopLoopPracticeRoundSeconds : _cfg.stopLoopRoundSeconds;
         // ── 눈높이(G60-3) ───────────────────────────────────────────
         /// <summary>물체 높이를 옮긴 양(E − 기준, m). none이면 0.</summary>
         public double EyeOffsetM => _eyeOffset;
@@ -265,7 +269,8 @@ namespace IFS.SceneSpec.Placement
         public bool RatingConfirmFlash => _flashing;
         /// <summary>(7) 조건·멈춤 거리 단계에서 읽을 시간이 지나 안내 판을 숨기는 중(hidePanelInDistancePhases).</summary>
         public bool PanelHidden => _cfg.hidePanelInDistancePhases && !Finished
-            && (Phase == PlacementPhase.Condition || Phase == PlacementPhase.StopDistance) && SecondsInPhase >= _cfg.hidePanelReadSeconds - Eps;
+            && (Phase == PlacementPhase.Condition || Phase == PlacementPhase.StopDistance) && SecondsInPhase >= _cfg.hidePanelReadSeconds - Eps
+            && !NoticeOnPanel;   // 2026-11-28: 확정 알림·본 측정 시작 안내가 보이는 동안은 판을 다시 보인다
 
         /// <summary>(4) 이번 프레임까지 쌓인 햅틱 펄스를 가져간다(러너가 XR 컨트롤러로 보낸다). events.csv haptic은 세션이 이미 남겼다.</summary>
         public List<PlacementHapticPulse> TakeHaptics()
@@ -372,6 +377,8 @@ namespace IFS.SceneSpec.Placement
             _panelHiddenLogged = false;
             _flashing = false;
             _instrPages = null;
+            _noticeUntil = double.NegativeInfinity;   // 확정 알림은 단계를 넘지 않는다
+            _noticeBackKey = _noticeBackText = null;
             Event("phase", PhaseName(p));
         }
 
@@ -379,6 +386,53 @@ namespace IFS.SceneSpec.Placement
         {
             ParticipantTextKey = key;
             ParticipantText = key != null ? _text[key] : null;
+        }
+
+        // ── 확인 버튼 안내·확정 알림(연구 책임자 결정 2026-11-28, 문구 파일 0.8) ─────────
+        // 확인 버튼을 쓰는 안내(배치 연습·직접 배치·가리켜 지정·반복 멈춤) 끝에 주 사용 손(xrHand)의 버튼 안내를 한 칸 띄워 잇는다.
+        // 확인을 받아들이면 확정 알림(confirm_done)을 보인다: 조건 단계는 ConfirmNoticeSeconds 동안 뒤 원래 안내로 돌아가고,
+        // 반복 멈춤은 라운드 사이 간격(stopItiSeconds) 동안 보인다(간격·확정 조건·기록 시각은 그대로). 시간 초과에는 보이지 않는다.
+        // 파일에 키가 없으면(0.7 이전 파일) 예전처럼 붙이지도 보이지도 않는다.
+        /// <summary>조건 단계 확정 알림을 보이는 시간(초).</summary>
+        public const double ConfirmNoticeSeconds = 2.0;
+        double _noticeUntil = double.NegativeInfinity;
+        string _noticeBackKey, _noticeBackText;
+        bool _mainStartShown;
+
+        /// <summary>이 세션의 확인 버튼 안내 키(xrHand에 따라).</summary>
+        public string ConfirmButtonKey => PlacementTaskText.ConfirmButtonKeyFor(_cfg.xrHand);
+        /// <summary>확정 알림이 보이는 중(조건 단계 타이머 또는 반복 멈춤 라운드 사이).</summary>
+        public bool ConfirmNoticeActive => ParticipantTextKey != null && ParticipantTextKey.StartsWith(PlacementTaskText.ConfirmDoneKey, StringComparison.Ordinal);
+        /// <summary>안내 판 숨기기(hidePanelInDistancePhases)를 잠시 풀어야 하는 알림이 보이는 중(확정 알림·본 측정 시작 안내).</summary>
+        bool NoticeOnPanel => ConfirmNoticeActive || ParticipantTextKey == PlacementTaskText.StopMainStartKey;
+
+        void SetTextWithButton(string key, string text)
+        {
+            string bk = ConfirmButtonKey;
+            // 줄을 바꾸지 않고 마지막 문단에 한 칸 띄워 잇는다(줄을 바꾸면 직접 배치 + 범위 안내 판이 6줄이 되어 아래 가장자리가 35°를 넘음, G63 (1))
+            if (_text[bk] != null) { key += "+" + bk; text += " " + _text[bk]; }
+            ParticipantTextKey = key;
+            ParticipantText = text;
+        }
+
+        void ShowTextWithButton(string key) => SetTextWithButton(key, _text[key]);
+
+        /// <summary>조건 단계 확정 알림: 지금 안내를 기억해 두고 ConfirmNoticeSeconds 동안 confirm_done을 보인다.</summary>
+        void ShowConfirmNotice()
+        {
+            if (_text[PlacementTaskText.ConfirmDoneKey] == null) return;
+            if (_noticeBackKey == null) { _noticeBackKey = ParticipantTextKey; _noticeBackText = ParticipantText; }
+            ShowText(PlacementTaskText.ConfirmDoneKey);
+            _noticeUntil = _now + ConfirmNoticeSeconds;   // events.csv에는 새 사건을 더하지 않는다(보인 때 = confirm·point_select 사건 시각)
+        }
+
+        /// <summary>조건 단계 확정 알림 시간이 지나면 원래 안내로 돌린다.</summary>
+        void RestoreNoticeIfDue()
+        {
+            if (_noticeBackKey == null || _now < _noticeUntil - Eps) return;
+            ParticipantTextKey = _noticeBackKey;
+            ParticipantText = _noticeBackText;
+            _noticeBackKey = _noticeBackText = null;
         }
 
         void GoTo(PlacementPhase p)
@@ -461,7 +515,7 @@ namespace IFS.SceneSpec.Placement
                     _stopIndex = -1;
                     _roundActive = false;
                     _roundIndex = -1;
-                    ShowText(_cfg.IsStopLoop ? PlacementTaskText.StopLoopKey : "stop_distance");
+                    ShowText(_cfg.IsStopLoop ? PlacementTaskText.StopLoopKey : "stop_distance");   // 확인 버튼 안내는 멈춘 동안에만(ShowStopLoopText)
                     break;
                 case PlacementPhase.Done:
                     Finish(true, null);
@@ -562,6 +616,8 @@ namespace IFS.SceneSpec.Placement
                 ParticipantTextKey = "condition_place+" + PlacementTaskText.PlacementRangeKey;
                 ParticipantText = _text["condition_place"] + "\n" + _text[PlacementTaskText.PlacementRangeKey];
             }
+            // 2026-11-28: 확인 버튼을 쓰는 조건(직접 배치·가리켜 지정)이면 버튼 안내를 맨 아래에(보기만 static·system_move·replay는 확인 버튼이 없다)
+            if (_cfg.IsPlace || Mode == PlacementConfig.ModePointSelect) SetTextWithButton(ParticipantTextKey, ParticipantText);
             _trajectory = new PlacementTrajectory
             {
                 SourceSessionId = _info.SessionId, SampleHz = _cfg.headSampleHz,
@@ -640,6 +696,7 @@ namespace IFS.SceneSpec.Placement
             _confirmMs = CondMs;
             Event("confirm", $"{Where(_obj)};t_ms={_confirmMs}");
             Haptic(PlacementHaptics.Confirm);
+            ShowConfirmNotice();   // 2026-11-28: 확정 알림(약 2초 뒤 원래 안내). 조건 단계 길이·기록은 그대로
             if (_cfg.conditionEndsOnConfirm) EndCondition();
         }
 
@@ -691,6 +748,7 @@ namespace IFS.SceneSpec.Placement
                 _confirmMs = CondMs;
                 var target = new PVec3(pt.X, _obj.Y, pt.Z);   // 높이는 지금 높이를 지킨다(바닥의 점만 고른다)
                 Haptic(PlacementHaptics.Confirm);
+                ShowConfirmNotice();   // 2026-11-28: 확정 알림
                 StartMove(target, "point_select", $"x={F(pt.X)};z={F(pt.Z)};distance_m={F(PlacementGeometry.HorizontalDistance(pt))};" +
                                                   $"azimuth_deg={F(PlacementGeometry.AzimuthDeg(pt), "0.00")};t_ms={_confirmMs}");
                 return;
@@ -778,7 +836,7 @@ namespace IFS.SceneSpec.Placement
             _pracGrabCount = 0;
             _pracHeldSeconds = 0;
             _pracStartTime = _now;
-            ShowText(PlacementTaskText.PracticeKey);
+            ShowTextWithButton(PlacementTaskText.PracticeKey);   // 2026-11-28: 확인 버튼 안내(연습은 확인하면 바로 끝나 확정 알림은 없다)
             Event("practice_start", $"target_{Where(_pracTarget).Replace(";", ";target_")};start_{Where(_pracPos).Replace(";", ";start_")};cube_m={F(_cfg.practiceCubeSizeM)}");
         }
 
@@ -934,7 +992,7 @@ namespace IFS.SceneSpec.Placement
         //   확정을 먼저 본다(멈춘 상태에서 둘을 함께 누르면 그 자리로 확정).
         //   토글은 직전에 받아들인 토글부터 stopLoopToggleDebounceMs 안이면 버린다(toggle_ignored 행). 다시 움직이면 멈추기 전 방향 그대로.
         //   라운드를 시작하는 프레임의 누름은 버린다(single과 같은 규칙). 누름은 '내려가는 순간'만 센다(Tick의 stopPress).
-        //   시간 상한(라운드 시작부터 stopLoopRoundSeconds)에 닿으면 확정값은 빈칸으로 두고 end_reason timeout_stopped | timeout_moving
+        //   시간 상한(라운드 시작부터 본 라운드 stopLoopRoundSeconds, 연습 라운드 stopLoopPracticeRoundSeconds)에 닿으면 확정값은 빈칸으로 두고 end_reason timeout_stopped | timeout_moving
         //   (원칙 2: 참여자가 확정하지 않은 값을 시스템이 정하지 않는다). 마지막 멈춤 거리는 last_stop_distance_m에 따로 남는다.
         public const string StatePaused = "stop_paused";
         /// <summary>확정값이 끝점에서 이 거리(m) 안이면 at_bound = 1.</summary>
@@ -1007,7 +1065,7 @@ namespace IFS.SceneSpec.Placement
                 }
             }
             // ④ 시간 상한
-            if (_now - _roundStart >= _cfg.stopLoopRoundSeconds - Eps)
+            if (_now - _roundStart >= RoundLimitSeconds(_loopPlan[_roundIndex]) - Eps)
             {
                 string reason = _loopMoving ? StopLoopEnd.TimeoutMoving : StopLoopEnd.TimeoutStopped;
                 Adjust("timeout", _stopD, _loopMoving ? DirName(_loopDir) : _loopLastStopDir, false);
@@ -1028,11 +1086,11 @@ namespace IFS.SceneSpec.Placement
         void ShowStopLoopText()
         {
             if (_roundActive && !_loopMoving)
-            {
-                ParticipantTextKey = PlacementTaskText.StopLoopKey + "+" + PlacementTaskText.StopLoopHintKey;
-                ParticipantText = _text[PlacementTaskText.StopLoopKey] + "\n" + _text[PlacementTaskText.StopLoopHintKey];
-            }
+                SetTextWithButton(PlacementTaskText.StopLoopKey + "+" + PlacementTaskText.StopLoopHintKey,
+                    _text[PlacementTaskText.StopLoopKey] + "\n" + _text[PlacementTaskText.StopLoopHintKey]);
             else ShowText(PlacementTaskText.StopLoopKey);
+            // 2026-11-28: 확인 버튼 안내는 확정할 수 있는 때(멈춘 동안)에만 조작 안내 끝에 붙인다. 움직이는 동안·라운드 사이에도 붙이면
+            // 지시문 판이 6줄이 되어 아래 가장자리가 35°를 넘고(G63 (1)), 그때는 확인 버튼이 받아들여지지 않는다(G60-2).
         }
 
         /// <summary>stopadjust.csv 한 줄. changeState면 이 사건이 상태 변화(멈춤·재개)라 rt 기준 시각을 지금으로 옮긴다.</summary>
@@ -1108,7 +1166,28 @@ namespace IFS.SceneSpec.Placement
             _visible = false;
             _state = StateIdle;
             _itiUntil = _now + _cfg.stopItiSeconds;
-            ShowText(PlacementTaskText.StopLoopKey);
+            if (reason == StopLoopEnd.Aborted) ShowText(PlacementTaskText.StopLoopKey);   // 중단: 알림 없음
+            else ShowStopRoundGapText(plan, confirmed);
+        }
+
+        /// <summary>라운드 사이 간격(stopItiSeconds)의 안내(2026-11-28 연구 책임자 결정). 확정했으면 confirm_done, 연습 뒤 첫 본 라운드 전이면
+        /// stop_main_start(한 번만, 확정했으면 confirm_done 아래에), 둘 다 아니면(시간 초과·중간 본 라운드) 예전처럼 지시문.
+        /// 간격의 길이·다음 라운드 시작 시각은 바꾸지 않는다 — 다음 라운드가 시작되면 지시문으로 돌아간다(StartRound).</summary>
+        void ShowStopRoundGapText(StopRoundPlan plan, bool confirmed)
+        {
+            bool done = confirmed && _text[PlacementTaskText.ConfirmDoneKey] != null;
+            bool mainNext = plan.Practice && _roundIndex + 1 < _loopPlan.Count && !_loopPlan[_roundIndex + 1].Practice;
+            bool start = mainNext && !_mainStartShown && _text[PlacementTaskText.StopMainStartKey] != null;
+            if (start) _mainStartShown = true;
+            if (done && start)
+            {
+                ParticipantTextKey = PlacementTaskText.ConfirmDoneKey + "+" + PlacementTaskText.StopMainStartKey;
+                ParticipantText = _text[PlacementTaskText.ConfirmDoneKey] + "\n" + _text[PlacementTaskText.StopMainStartKey];
+            }
+            else if (done) ShowText(PlacementTaskText.ConfirmDoneKey);
+            else if (start) ShowText(PlacementTaskText.StopMainStartKey);
+            else ShowText(PlacementTaskText.StopLoopKey);
+            // events.csv에는 새 사건을 더하지 않는다(보인 때 = stop_round_end 시각, 길이 = stopItiSeconds)
         }
 
         // ── 실험자 입력 ──────────────────────────────────────────────────
@@ -1224,6 +1303,7 @@ namespace IFS.SceneSpec.Placement
             if (Finished) return;
             _now += Math.Max(0, dt);
             _head = head;
+            RestoreNoticeIfDue();   // 2026-11-28: 조건 단계 확정 알림이 끝나면 원래 안내로
             bool stopPress = input.StopDown && !_stopPrevHeld;   // 내려가는 순간만(미리 누르고 있던 버튼은 떼었다 다시 눌러야 함)
             _stopPrevHeld = input.StopHeld || input.StopDown;
             if (_flashing && InItems && _now >= _flashUntil - Eps) NextItem();   // G63 (5): 확정 표시가 끝나면 다음 문항

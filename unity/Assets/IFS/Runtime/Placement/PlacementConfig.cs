@@ -146,7 +146,7 @@ namespace IFS.SceneSpec.Placement
         // 기본 single = 예전 과제(한 번 누르면 시행 끝, X49) 그대로 — 화면·기록이 G60 전과 바이트 단위로 같다.
         // loop = 정면 직선 위 왕복(stopLoopMinM ↔ stopLoopMaxM, 속도 stopSpeedMps, 끝에서 감속 없이 되돌아감).
         //   트리거(데스크톱 Space) = 멈춤/다시 움직임 토글(다시 움직이면 멈추기 전 방향 그대로), A·X(데스크톱 F) = 확정(멈춘 상태에서만).
-        //   연습 stopLoopPracticeRounds + 본 stopLoopRounds 라운드, 라운드마다 출발 방향을 번갈아 두고(첫 방향 = stopFirstDirection),
+        //   연습 stopLoopPracticeRounds(상한 stopLoopPracticeRoundSeconds) + 본 stopLoopRounds(상한 stopLoopRoundSeconds) 라운드, 라운드마다 출발 방향을 번갈아 두고(첫 방향 = stopFirstDirection),
         //   출발 거리는 [stopLoopStartMinM, stopLoopStartMaxM]에서 참여자 번호를 시드로 한 xorshift64*(StopLoopSchedule)로 정한다.
         //   기록은 stoprounds.csv·stopadjust.csv(새 파일)와 manifest stopDistance.mode·loop. 아래 키는 loop일 때만 config 맨 끝에 남는다.
         //   ⚠ 본 설계로 쓸지는 사람이 정할 것(docs/decisions.md G60).
@@ -163,6 +163,9 @@ namespace IFS.SceneSpec.Placement
         public int stopLoopPracticeRounds = 1;
         /// <summary>loop 라운드 시간 상한(초, 움직이기 시작한 때부터). 넘으면 확정값은 빈칸(end_reason timeout_*).</summary>
         public double stopLoopRoundSeconds = 75;
+        /// <summary>loop 연습 라운드의 시간 상한(초). 본 라운드는 stopLoopRoundSeconds 그대로. 2026-11-28 연구 책임자 요청
+        /// (연습을 30초 안 1번으로 — 연습 라운드 수는 stopLoopPracticeRounds 1). 넘으면 본 라운드와 같이 확정값 빈칸(end_reason timeout_*).</summary>
+        public double stopLoopPracticeRoundSeconds = 30;
         /// <summary>loop 토글(멈춤/다시 움직임) 사이 이 시간(ms) 안의 다시 누름은 버린다(사건으로만 남김).</summary>
         public double stopLoopToggleDebounceMs = 250;
         /// <summary>loop 멈춤 거리 단계 동안 바닥 거리 고리를 숨긴다(고리가 방금 놓은 거리를 맞추는 자가 되지 않게). loop일 때만 쓴다.</summary>
@@ -363,6 +366,8 @@ namespace IFS.SceneSpec.Placement
                 if (stopLoopRounds < 1) e.Add($"stopLoopRounds {stopLoopRounds}: 1 이상");
                 if (stopLoopPracticeRounds < 0) e.Add($"stopLoopPracticeRounds {stopLoopPracticeRounds}: 0 이상");
                 if (!(Finite(stopLoopRoundSeconds) && stopLoopRoundSeconds > 0)) e.Add($"stopLoopRoundSeconds {stopLoopRoundSeconds}: 0보다 커야 함");
+                if (stopLoopPracticeRounds > 0 && !(Finite(stopLoopPracticeRoundSeconds) && stopLoopPracticeRoundSeconds > 0))
+                    e.Add($"stopLoopPracticeRoundSeconds {stopLoopPracticeRoundSeconds}: 0보다 커야 함");
                 if (!(Finite(stopLoopToggleDebounceMs) && stopLoopToggleDebounceMs >= 0)) e.Add($"stopLoopToggleDebounceMs {stopLoopToggleDebounceMs}: 0 이상");
             }
             if (!EyeHeightModes.Contains(eyeHeightMode)) e.Add($"eyeHeightMode {eyeHeightMode}: none | relative 중 하나");
@@ -421,6 +426,7 @@ namespace IFS.SceneSpec.Placement
                 j["stopLoopRounds"] = stopLoopRounds;
                 j["stopLoopPracticeRounds"] = stopLoopPracticeRounds;
                 j["stopLoopRoundSeconds"] = stopLoopRoundSeconds;
+                j["stopLoopPracticeRoundSeconds"] = stopLoopPracticeRoundSeconds;   // 2026-11-28 추가(loop일 때만)
                 j["stopLoopToggleDebounceMs"] = stopLoopToggleDebounceMs;
                 j["stopLoopHideRings"] = stopLoopHideRings;
             }

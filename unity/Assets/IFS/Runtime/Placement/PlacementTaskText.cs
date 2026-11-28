@@ -17,6 +17,8 @@
 //   설정 placementAssist를 켰을 때만 보이고 그때만 필수다. 꺼져 있으면 draftKeys·초안 경고에서도 뺀다(DraftKeysFor).
 // 2026-11-26 G60-2 추가(문구 파일 0.6, 기존 파일은 그대로 유효): 반복 멈춤 문구 stop_distance_loop(왕복 멈춤 지시문)·stop_loop_hint(멈춘 동안
 //   조작 안내). 설정 stopMode loop일 때만 보이고 그때만 필수다. single(기본)이면 draftKeys·초안 경고에서도 뺀다(DraftKeysFor).
+// 2026-11-28 연구 책임자 결정(문구 파일 0.8, 선택 키 — 기존 파일은 그대로 유효): confirm_button_right·_left(확인 버튼 안내, xrHand에 따라 하나),
+//   confirm_done(확정 알림), stop_main_start(반복 멈춤 연습 뒤 본 측정 시작 안내, loop일 때만 draftKeys에).
 // UnityEngine에 의존하지 않는다.
 using System;
 using System.Collections.Generic;
@@ -127,6 +129,22 @@ namespace IFS.SceneSpec.Placement
         /// <summary>설정 stopMode loop일 때만 보이는 문구 키. single(기본)이면 manifest draftKeys·초안 경고에서 뺀다(기본값 기록이 G60 전과 같게).</summary>
         public static readonly string[] LoopKeys = { StopLoopKey, StopLoopHintKey };
 
+        // ── 확인 버튼 안내·확정 알림·본 측정 시작 안내(연구 책임자 결정 2026-11-28, 문구 파일 0.8) ─────────
+        // 모두 선택 키: 파일에 없으면 예전처럼 붙이지 않는다(기존 파일은 그대로 유효).
+        /// <summary>확인 버튼 안내(주 사용 손 오른손 — A). 확인 버튼을 쓰는 단계의 안내 아래에 줄을 바꿔 붙인다.</summary>
+        public const string ConfirmButtonRightKey = "confirm_button_right";
+        /// <summary>확인 버튼 안내(주 사용 손 왼손 — X).</summary>
+        public const string ConfirmButtonLeftKey = "confirm_button_left";
+        /// <summary>확정 알림(확인 버튼을 받아들인 뒤 약 2초). 거리·평가하는 말은 넣지 않는다.</summary>
+        public const string ConfirmDoneKey = "confirm_done";
+        /// <summary>반복 멈춤에서 연습 라운드 뒤 첫 본 라운드 전 안내(loop일 때만 보임).</summary>
+        public const string StopMainStartKey = "stop_main_start";
+        /// <summary>loop일 때만 보이지만 없어도 되는 키(LoopKeysMissing에는 들지 않는다).</summary>
+        public static readonly string[] LoopOptionalKeys = { StopMainStartKey };
+
+        /// <summary>주 사용 손(xrHand)에 맞는 확인 버튼 안내 키.</summary>
+        public static string ConfirmButtonKeyFor(string hand) => hand == PlacementConfig.HandLeft ? ConfirmButtonLeftKey : ConfirmButtonRightKey;
+
         /// <summary>이 세션이 보일 수 있는 문구 가운데 draft인 키(이름순). assist가 꺼져 있으면 AssistKeys를, loop가 꺼져 있으면 LoopKeys를 뺀다.</summary>
         public List<string> DraftKeysFor(bool assist, bool loop = false) => DraftKeys.Where(k => Visible(k, assist, loop)).ToList();
 
@@ -136,7 +154,8 @@ namespace IFS.SceneSpec.Placement
         /// <summary>이 세션이 보일 수 있는 문구 수. assist가 꺼져 있으면 AssistKeys를, loop가 꺼져 있으면 LoopKeys를 뺀다.</summary>
         public int CountFor(bool assist, bool loop = false) => _text.Keys.Count(k => Visible(k, assist, loop));
 
-        static bool Visible(string key, bool assist, bool loop) => (assist || !AssistKeys.Contains(key)) && (loop || !LoopKeys.Contains(key));
+        static bool Visible(string key, bool assist, bool loop) =>
+            (assist || !AssistKeys.Contains(key)) && (loop || (!LoopKeys.Contains(key) && !LoopOptionalKeys.Contains(key)));
 
         /// <summary>파일에 없는 놓기 도움 문구 키(도움을 켠 세션은 이것이 비어 있어야 시작한다).</summary>
         public List<string> AssistKeysMissing() => AssistKeys.Where(k => !_text.ContainsKey(k)).ToList();

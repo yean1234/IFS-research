@@ -15,6 +15,9 @@
 // 참여자에게 보이는 글은 PlacementTextPanel(세계 고정 판)이 맡는다. F1 = 숨기기/보이기.
 // 2026-11-24(G52–G53): 머리말에 배경 공간(environment)·놓기 도움 상태(후보 B·E·F 이름), Setup에 고르기 단추, 진행 중 배치 연습 상태.
 //   설정 이름은 이 실험자 화면(OnGUI)에만 쓴다 — 참여자 판(PlacementTextPanel)에는 문구 파일의 글만 간다.
+// 2026-11-28: Setup 맨 위에 최근 세션 자동 채움 결과(세션 ID·참여자 번호·저장 시각, 오래됨·이미 돌림 경고, [최근 세션 다시 찾기]).
+//   러너 lockExperimentPreset이 켜져 있으면 권고 설정 단추·공간·놓기 도움·연습·물체 숨김·점검 순서·반복 멈춤·눈높이·UI 묶음·문구 파일
+//   고르기를 그리지 않고 "본 실험 설정 고정" 요약(PlacementExperimentLock.SummaryLines)만 보인다.
 using System.Linq;
 using UnityEngine;
 
@@ -184,6 +187,7 @@ namespace IFS.SceneSpec.Placement
         // ── 단계별 ───────────────────────────────────────────────────────
         void DrawSetup(PlacementConfig cfg)
         {
+            DrawAutoFill();
             GUILayout.Label("참여자 번호(1 이상)", _wrap);
             runner.ParticipantNumberText = GUILayout.TextField(runner.ParticipantNumberText ?? "", GUILayout.Width(120));
             GUILayout.Label("spec 경로(절대 경로, 또는 " + runner.ResolvedSpecFolder + " 기준 이름)", _wrap);
@@ -210,6 +214,97 @@ namespace IFS.SceneSpec.Placement
                     cfg.replayPath = GUILayout.TextField(cfg.replayPath ?? "");
                 }
             }
+            bool locked = runner.ExperimentPresetLocked;
+            if (locked) DrawLockSummary(cfg);
+            else DrawPresetControls(cfg);
+            GUILayout.Label("참여자 입력(auto = 헤드셋이 켜져 있으면 XR 컨트롤러, 없으면 데스크톱)", _wrap);
+            GUILayout.BeginHorizontal();
+            foreach (var m in PlacementConfig.InputModes)
+                if (GUILayout.Button((cfg.inputMode == m ? "● " : "") + m, _button, GUILayout.Width(120), GUILayout.Height(30))) cfg.inputMode = m;
+            GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("주 사용 손", _wrap, GUILayout.Width(100));
+            foreach (var h in PlacementConfig.Hands)
+                if (GUILayout.Button((cfg.xrHand == h ? "● " : "") + h, _button, GUILayout.Width(90), GUILayout.Height(30))) cfg.xrHand = h;
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+            GUILayout.Space(4);
+            cfg.participantRatesWithController = GUILayout.Toggle(cfg.participantRatesWithController,
+                " 참여자가 컨트롤러로 평정(썸스틱 좌우 고르기, 트리거 확정) — 꺼 두면 참여자는 말로 답하고 실험자가 숫자를 넣는다", _toggle);
+            if (!locked) DrawProcedureToggles(cfg);
+            cfg.hidePanelInDistancePhases = GUILayout.Toggle(cfg.hidePanelInDistancePhases,
+                $" 조건·멈춤 거리 단계에서 안내 판을 {cfg.hidePanelReadSeconds:0.#}초 뒤 숨기기(G63 (7), 판이 거리 기준점이 되지 않게 — RQ2에 닿아 묶음에서 빠짐. 연구 책임자 결정 대기)", _toggle);
+            cfg.askOptionalItems = GUILayout.Toggle(cfg.askOptionalItems, " 선택 단계 문항도 묻기(optionalWhen — 두 평정 문항 모습 일치·대표성을 사전에도. 기본 꺼짐: 사전 측정은 데스크톱)", _toggle);
+            GUILayout.Label("묻지 않을 평정 문항 키(쉼표로, 예: own 또는 S4 — 기존 '내 것 같다' 문항 끄기)", _wrap);
+            string disabled = GUILayout.TextField(string.Join(",", cfg.disabledItems ?? new string[0]));
+            cfg.disabledItems = disabled.Split(',').Select(k => k.Trim()).Where(k => k.Length > 0).ToArray();
+            if (!locked)
+            {
+                GUILayout.Label("문구 파일(StreamingAssets): 지금 " + runner.TaskTextDisplayName, _wrap);
+                GUILayout.BeginHorizontal();
+                foreach (var f in runner.TaskTextFiles)
+                    if (GUILayout.Button((SameTaskText(runner.TaskTextDisplayName, f) ? "● " : "") + f.Replace(PlacementTaskText.TaskTextFolder + "/", ""), _button, GUILayout.ExpandWidth(false), GUILayout.Height(30)))
+                        runner.SelectTaskText(f);
+                GUILayout.EndHorizontal();
+            }
+            GUILayout.Space(8);
+            var keep = GUI.backgroundColor;
+            GUI.backgroundColor = PrimaryTint;
+            if (GUILayout.Button("확인", _button, GUILayout.Height(ButtonH))) runner.Check();
+            GUI.backgroundColor = keep;
+        }
+
+        /// <summary>가장 최근 세션 자동 채움 결과(눈에 띄게, Setup 맨 위). 실험자가 아래 칸·단추로 바꿀 수 있다.</summary>
+        void DrawAutoFill()
+        {
+            var r = runner.AutoFill;
+            if (r == null) return;
+            var p = r.Pick;
+            if (p != null)
+            {
+                var now = System.DateTimeOffset.Now;
+                bool stale = PlacementLatestSession.IsStale(p.SavedAt, now, runner.AutoFillStaleMinutes);
+                string who = p.ParticipantNumber.HasValue ? $"참여자 번호 <b>{p.ParticipantNumber.Value}</b>"
+                    : $"참여자 번호 <color={ColWarn}>파일에 없음 — 손으로 넣으세요</color>" + (p.ParticipantIdRaw != null ? $"(participantId {p.ParticipantIdRaw})" : "");
+                string when = $"저장 {p.SavedAt.ToLocalTime():HH:mm}({PlacementLatestSession.AgeText(p.SavedAt, now)}){(p.SavedFromFile ? "" : " — 파일 수정 시각")}";
+                GUILayout.Label($"자동으로 고른 세션: <b>{p.SessionId}</b>   {who}   " +
+                                (stale ? $"<color={ColWarn}>{when} — {runner.AutoFillStaleMinutes:0}분보다 오래됨, 이 참여자의 세션인지 확인</color>" : when), _alert);
+                if (runner.AutoFillRunThisProcess)
+                    GUILayout.Label($"<color={ColWarn}>이 세션은 이번 Play에서 이미 시작한 적이 있습니다(같은 세션을 다시 돌리는지 확인)</color>", _alert);
+                else if (runner.AutoFillHasRecord)
+                    GUILayout.Label($"<color={ColWarn}>이 세션 ID의 배치 기록 폴더가 이미 있습니다(이미 돌린 세션인지 확인)</color>", _alert);
+                if (p.NotRunnerReady)
+                    GUILayout.Label($"<color={ColWarn}>챗봇이 이 선택 파일을 아직 러너에 넘길 수 없다고 적었습니다(조절·사전 측정이 끝났는지 확인 — 확인 단계에서 거부됨)</color>", _wrap);
+                if (!runner.SessionFilesAreAutoFilled)
+                    GUILayout.Label($"<color={ColMuted}>spec·선택 파일 칸을 바꿨습니다 — 기록에는 auto_overridden으로 남습니다</color>", _small);
+            }
+            else if (r.FutureTimestamp)   // CP16-3: 시계 오류 — 이전 참여자 파일일 수 있어 크게 알린다
+                GUILayout.Label($"<color={ColError}>최근 세션을 자동으로 채우지 않았습니다({r.RejectedSessionId ?? "-"}): {r.Rejected}. PC 시계를 확인하고 파일을 손으로 고르세요</color>", _stage);
+            else if (r.Rejected != null)
+                GUILayout.Label($"<color={ColWarn}>최근 세션을 자동으로 채우지 않았습니다({r.RejectedSessionId ?? "-"}): {r.Rejected} — 파일을 손으로 고르세요</color>", _alert);
+            else
+                GUILayout.Label($"<color={ColMuted}>최근 세션 자동 채움: 챗봇 선택 파일이 없습니다(spec·선택 파일을 손으로 고르세요)</color>", _small);
+            if (r.NewerSpecWithoutSelection != null)
+                GUILayout.Label($"<color={ColWarn}>더 늦게 저장된 spec {r.NewerSpecWithoutSelection}.json에는 아직 선택 파일이 없습니다(그 세션이 진행 중일 수 있음)</color>", _wrap);
+            if (GUILayout.Button("최근 세션 다시 찾기", _button, GUILayout.Width(220), GUILayout.Height(30))) runner.AutoFillLatestSession();
+            GUILayout.Space(4);
+        }
+
+        /// <summary>본 실험 설정 고정(lockExperimentPreset)일 때 고정 항목 대신 보이는 요약.</summary>
+        void DrawLockSummary(PlacementConfig cfg)
+        {
+            var refusals = PlacementExperimentLock.Refusals(cfg, runner.TaskTextDisplayName, runner.TaskText);
+            bool holds = refusals.Count == 0;
+            GUILayout.Label(holds ? $"<color={ColOk}>본 실험 설정 고정</color> <color={ColMuted}>(lockExperimentPreset — 설계 뼈대 3절. 바꾸려면 씬에서 잠금을 끈다)</color>"
+                                  : $"<color={ColError}>본 실험 설정 고정인데 값이 어긋났습니다 — [확인]을 누르면 설정은 다시 적용합니다. 문구 파일(판·키)이 어긋나면 시작하지 않습니다</color>", _alert);
+            foreach (var x in refusals) GUILayout.Label($"<color={ColError}>{x}</color>", _small);
+            foreach (var line in PlacementExperimentLock.SummaryLines(cfg, runner.TaskTextDisplayName, runner.TaskText?.Version))
+                GUILayout.Label("  · " + line, _small);
+        }
+
+        /// <summary>잠금이 꺼졌을 때: 권고 설정 단추·공간·놓기 도움·연습.</summary>
+        void DrawPresetControls(PlacementConfig cfg)
+        {
             // 설계 뼈대 3절 본 실험 권고 설정(G59-8 + G63 묶음)을 한 번에. 아래 낱개 체크로 다시 바꿀 수 있다
             bool presetOn = cfg.ExperimentPresetOn && SameTaskText(runner.TaskTextDisplayName, PlacementConfig.ExperimentTaskTextFile);
             if (GUILayout.Button((presetOn ? "● " : "") + "본 실험 권고 설정 켜기(설계 뼈대 3절: 공간 B + 놓기 도움, 두 조건 연습, 자리 문항 → 멈춤 거리, 평정 중 물체 숨김, UI 묶음 G63, 반복 멈춤, 눈높이 기준 배치, 문구 scaleA)",
@@ -237,29 +332,20 @@ namespace IFS.SceneSpec.Placement
             }
             if (cfg.placementAssist)
                 cfg.practiceInAllConditions = GUILayout.Toggle(cfg.practiceInAllConditions,
-                    "   └ 배치 연습을 보기만 조건에서도(G59, practiceInAllConditions — 조건 전 컨트롤러 경험을 같게. 팀 결정 전)", _toggle);
-            GUILayout.Label("참여자 입력(auto = 헤드셋이 켜져 있으면 XR 컨트롤러, 없으면 데스크톱)", _wrap);
-            GUILayout.BeginHorizontal();
-            foreach (var m in PlacementConfig.InputModes)
-                if (GUILayout.Button((cfg.inputMode == m ? "● " : "") + m, _button, GUILayout.Width(120), GUILayout.Height(30))) cfg.inputMode = m;
-            GUILayout.EndHorizontal();
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("주 사용 손", _wrap, GUILayout.Width(100));
-            foreach (var h in PlacementConfig.Hands)
-                if (GUILayout.Button((cfg.xrHand == h ? "● " : "") + h, _button, GUILayout.Width(90), GUILayout.Height(30))) cfg.xrHand = h;
-            GUILayout.FlexibleSpace();
-            GUILayout.EndHorizontal();
-            GUILayout.Space(4);
-            cfg.participantRatesWithController = GUILayout.Toggle(cfg.participantRatesWithController,
-                " 참여자가 컨트롤러로 평정(썸스틱 좌우 고르기, 트리거 확정) — 꺼 두면 참여자는 말로 답하고 실험자가 숫자를 넣는다", _toggle);
-            cfg.hideObjectDuringItems = GUILayout.Toggle(cfg.hideObjectDuringItems, " 평정 동안 물체 숨기기(설문 초안의 제안, 절차 변경이라 팀 결정 전)", _toggle);
+                    "   └ 배치 연습을 보기만 조건에서도(practiceInAllConditions — 조건 전 컨트롤러 경험을 같게. 본 실험 켬, G59-8)", _toggle);
+        }
+
+        /// <summary>잠금이 꺼졌을 때: 절차 토글(물체 숨김·점검 순서·반복 멈춤·눈높이·UI 묶음).</summary>
+        void DrawProcedureToggles(PlacementConfig cfg)
+        {
+            cfg.hideObjectDuringItems = GUILayout.Toggle(cfg.hideObjectDuringItems, " 평정 동안 물체 숨기기(본 실험 켬, G59-8)", _toggle);
             cfg.checkBeforeStopDistance = GUILayout.Toggle(cfg.checkBeforeStopDistance,
-                " 점검 문항을 멈춤 거리 앞에(G59, checkBeforeStopDistance — 사후 평정 바로 뒤. 기본: 멈춤 거리 뒤. 팀 결정 전)", _toggle);
+                " 점검 문항을 멈춤 거리 앞에(checkBeforeStopDistance — 사후 평정 바로 뒤. 기본: 멈춤 거리 뒤. 본 실험 켬, G59-8)", _toggle);
             bool loop = GUILayout.Toggle(cfg.IsStopLoop,
-                " 멈춤 거리 반복 멈춤(G60-2, stopMode loop — 왕복 경로, 트리거로 멈춤/다시 움직임, A·X로 확정, 연습 1 + 본 4라운드. 기본: 한 번 누름. 팀 결정 전)", _toggle);
+                $" 멈춤 거리 반복 멈춤(stopMode loop — 왕복 경로, 트리거로 멈춤/다시 움직임, A·X로 확정, 연습 {cfg.stopLoopPracticeRounds}(상한 {cfg.stopLoopPracticeRoundSeconds:0.#}초) + 본 {cfg.stopLoopRounds}라운드. 기본: 한 번 누름. 본 실험 loop, G60-2)", _toggle);
             cfg.stopMode = loop ? PlacementConfig.StopModeLoop : PlacementConfig.StopModeSingle;
             bool eyeRel = GUILayout.Toggle(cfg.IsEyeRelative,
-                " 눈높이 기준 배치(G60-3, eyeHeightMode relative — Check 뒤 H로 눈높이를 재고 물체 높이를 E − 1.60 m만큼 옮김. 기본: 절대 높이. 팀 결정 전)", _toggle);
+                " 눈높이 기준 배치(eyeHeightMode relative — Check 뒤 H로 눈높이를 재고 물체 높이를 E − 1.60 m만큼 옮김. 기본: 절대 높이. 본 실험 relative, G60-3)", _toggle);
             cfg.eyeHeightMode = eyeRel ? PlacementConfig.EyeHeightRelative : PlacementConfig.EyeHeightNone;
             // G63 헤드셋 UI 개선 묶음: (1) 판 35° 안(줄 24자·지시문 쪽 나누기) (2) 어두운 판 (3) 광선 겨눔 (4) 햅틱 (5) 평정 확정 표시 (6) 평정 칸 0.20 m
             bool bundle = GUILayout.Toggle(cfg.UiBundleOn,
@@ -269,23 +355,6 @@ namespace IFS.SceneSpec.Placement
                 if (bundle) cfg.ApplyUiBundle();
                 else cfg.uiComfortWrap = cfg.uiDarkPanel = cfg.uiRayHover = cfg.uiHaptics = cfg.uiRatingConfirmFlash = cfg.uiNarrowScale = false;
             }
-            cfg.hidePanelInDistancePhases = GUILayout.Toggle(cfg.hidePanelInDistancePhases,
-                $" 조건·멈춤 거리 단계에서 안내 판을 {cfg.hidePanelReadSeconds:0.#}초 뒤 숨기기(G63 (7), 판이 거리 기준점이 되지 않게 — RQ2에 닿아 묶음에서 빠짐. 팀 결정 전)", _toggle);
-            cfg.askOptionalItems = GUILayout.Toggle(cfg.askOptionalItems, " 선택 단계 문항도 묻기(optionalWhen — 두 평정 문항 모습 일치·대표성을 사전에도. 기본 꺼짐: 사전 측정은 데스크톱)", _toggle);
-            GUILayout.Label("묻지 않을 평정 문항 키(쉼표로, 예: own 또는 S4 — 기존 '내 것 같다' 문항 끄기)", _wrap);
-            string disabled = GUILayout.TextField(string.Join(",", cfg.disabledItems ?? new string[0]));
-            cfg.disabledItems = disabled.Split(',').Select(k => k.Trim()).Where(k => k.Length > 0).ToArray();
-            GUILayout.Label("문구 파일(StreamingAssets): 지금 " + runner.TaskTextDisplayName, _wrap);
-            GUILayout.BeginHorizontal();
-            foreach (var f in runner.TaskTextFiles)
-                if (GUILayout.Button((SameTaskText(runner.TaskTextDisplayName, f) ? "● " : "") + f.Replace(PlacementTaskText.TaskTextFolder + "/", ""), _button, GUILayout.ExpandWidth(false), GUILayout.Height(30)))
-                    runner.SelectTaskText(f);
-            GUILayout.EndHorizontal();
-            GUILayout.Space(8);
-            var keep = GUI.backgroundColor;
-            GUI.backgroundColor = PrimaryTint;
-            if (GUILayout.Button("확인", _button, GUILayout.Height(ButtonH))) runner.Check();
-            GUI.backgroundColor = keep;
         }
 
         static bool SameTaskText(string a, string b) =>
