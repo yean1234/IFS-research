@@ -429,3 +429,82 @@ def shape_items_from(rec: dict | None) -> list[dict]:
     """기록 → 규칙 프롬프트에 넘길 항목(채택된 것만, 0–1개). shape_prompt(..., llm_shape_items=...)"""
     a = (rec or {}).get("adopted")
     return [{"quote": a["quote"], "charSpan": list(a["charSpan"]), "en": a["en"]}] if a else []
+
+
+# ── (G83-b) 그림 고르기 화면에 보이는 근거 낱말 ─────────────────────────────────────
+# LLM 인용 구간(검증기를 통과한 것)에는 조사·서술격 조사가 붙어 있을 수 있다('판때기예요', '톱니바퀴가'). 화면에는 그 구간 안의
+# 첫 명사 덩어리(원문 글자 그대로의 부분 구간)만 보인다. 기록에는 LLM 인용과 화면에 보인 구간을 둘 다 남긴다(basisShown).
+# 원문에 없는 글자를 만들지 않는다: 보이는 글은 늘 확정 텍스트[shownSpan]이고, Kiwi 형태와 원문 글자가 다르면(축약 등) 줄이지 않는다.
+BASIS_DISPLAY_VERSION = "ifs-llm-shape-basis-display/0.2.0"
+# 0.1.0: 인용 구간 안 첫 명사 덩어리(NR 포함). 0.2.0(CP20): 구간·인용이 맞지 않으면 아무것도 보이지 않음(displayable false — 호출 쪽이
+#   채택하지 않은 것으로 다룸), 옛 문구 분기도 같은 검사를 먼저 거침. 덩어리는 마지막 것(한국어 명사구의 머리 — '머릿속에 톱니바퀴가'
+#   → '톱니바퀴', '유리 구슬이' → '구슬'). 수사(NR '하나')는 덩어리를 시작하지 않음('조약돌 하나가' → '조약돌')
+_BASIS_HEAD_TAGS = {"NNG", "NNP", "SL", "SH"}                  # 덩어리를 시작하는 품사(의존 명사 '것'·수사 '하나'는 시작하지 않음)
+_BASIS_RUN_TAGS = _BASIS_HEAD_TAGS | {"XSN", "SN", "NR"}        # 붙어서 이어지는 품사(접미사 '들', 숫자 등)
+
+
+def _span_ok(norm: str, quote, s, e) -> bool:
+    return (isinstance(quote, str) and isinstance(s, int) and isinstance(e, int) and not isinstance(s, bool)
+            and not isinstance(e, bool) and 0 <= s < e <= len(norm) and norm[s:e] == quote)
+
+
+def basis_display(norm: str, quote: str, char_span, template: str) -> dict:
+    """확정 텍스트(norm)·LLM 인용·charSpan·문구 틀('{quote}'·'{rago}') → 화면 글과 기록.
+    {quote} = 인용 구간 안 마지막 명사 덩어리(없거나 판단할 수 없으면 인용 전체), {rago} = 그 낱말 받침에 맞춘 '이라고'/'라고'.
+    화면에 나가는 글자는 어느 분기에서도 확정 텍스트[shownSpan]이다. 인용이 확정 텍스트[charSpan]과 다르면 displayable = false이고
+    shownText·text는 None(fallback span_mismatch) — 호출 쪽은 이 항목을 채택하지 않은 것으로 다룬다.
+    같은 입력 → 같은 결과(Kiwi 형태소 분석만, LLM 없음)."""
+    from . import none_gen as ng
+    from .korean import josa, normalize
+
+    s, e = (list(char_span) + [None, None])[:2] if isinstance(char_span, (list, tuple)) else (None, None)
+    out = {"version": BASIS_DISPLAY_VERSION, "llmQuote": quote, "llmCharSpan": [s, e] if s is not None else None,
+           "displayable": False, "shownText": None, "shownSpan": None, "trimmed": False, "fallback": None,
+           "particle": None, "text": None}
+    if not _span_ok(norm, quote, s, e):
+        out["fallback"] = "span_mismatch"                # 원문에 없는 글자를 보일 수 있으므로 아무것도 보이지 않는다
+        return out
+    out.update(displayable=True, shownText=norm[s:e], shownSpan=[s, e])
+    if "{rago}" not in template:
+        out["fallback"] = "template_without_particle"   # 0.12 문구('{quote}'라고)는 인용 전체를 그대로(줄이면 조사가 맞지 않음)
+    elif normalize(norm) != norm:
+        out["fallback"] = "offset_basis_differs"
+    else:
+        toks = None
+        with ng._prompts_lock:                              # 그림 프롬프트 규칙과 같은 Kiwi(같은 잠금)
+            try:
+                an = ng._load_prompts()._shape_runtime().analyzer
+                toks = an.tokens(norm) if an.available else None
+            except (Exception, SystemExit):                 # noqa: BLE001 — 분석을 못 하면 줄이지 않는다(인용 전체)
+                toks = None
+        if toks is None:
+            out["fallback"] = "no_kiwi"
+        else:
+            runs, run = [], []
+            for t in (t for t in toks if t.start >= s and t.end <= e and t.end > t.start):
+                tag = t.base_tag
+                if run and tag in _BASIS_RUN_TAGS and t.start == run[-1].end:
+                    run.append(t)
+                    continue
+                if run:
+                    runs.append(run)
+                run = [t] if tag in _BASIS_HEAD_TAGS else []
+            if run:
+                runs.append(run)
+            if not runs:
+                out["fallback"] = "no_noun"
+            else:
+                run = runs[-1]
+                a, b = run[0].start, run[-1].end
+                if norm[a:b] != "".join(t.form for t in run):
+                    out["fallback"] = "form_differs"          # 축약 등: 줄이지 않고 인용 전체를 보인다
+                else:
+                    out.update(shownText=norm[a:b], shownSpan=[a, b], trimmed=(a, b) != (s, e))
+    a, b = out["shownSpan"]
+    assert out["shownText"] == norm[a:b]                    # 화면 글자 = 확정 텍스트의 부분 구간
+    if "{rago}" in template:
+        out["particle"] = josa(out["shownText"], "이라/라") + "고"
+        if "(" in out["particle"]:
+            out["particle"] = "라고"                              # 받침을 판단할 수 없으면(영문·기호) 따옴표 인용의 기본 꼴
+    out["text"] = template.replace("{quote}", out["shownText"]).replace("{rago}", out["particle"] or "")
+    return out

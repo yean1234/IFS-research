@@ -87,13 +87,14 @@ def test_flag_only_in_experiment_and_defaults():
     assert g.on_none_image_timeout_s == 180.0 and g.on_none_mesh_timeout_s == 180.0
     exp = load_config("experiment")
     assert exp.gen3d.on_none_image_pick is True and exp.gen3d.on_none is True and exp.gen3d.on_none_image_rounds == 2
-    # G77: 0.10.0(0.9.1 문구 그대로 + llm_fill_note 하나). G79: 0.11.0(+ 색상 고리 문구 3개)
-    assert exp.selection.protocol == "selection_protocol.v0.11.json"
+    # G77: 0.10.0(0.9.1 문구 그대로 + llm_fill_note 하나). G79: 0.11.0(+ 색상 고리 문구 3개). G82·G83: 0.13.0(+ 근거 인용 줄)
+    assert exp.selection.protocol == "selection_protocol.v0.13.json"
     for name in ("default", "pilot", "v4", "v4-gen3d", "bridge", "mac8gb"):
         c = load_config(name)
         assert c.gen3d.on_none_image_pick is False, name
         assert c.selection.protocol not in ("selection_protocol.v0.9.json", "selection_protocol.v0.10.json",
-                                         "selection_protocol.v0.11.json"), name
+                                         "selection_protocol.v0.11.json", "selection_protocol.v0.12.json",
+                                         "selection_protocol.v0.13.json"), name
 
 
 def test_protocol_09_adds_four_draft_phrases_only():

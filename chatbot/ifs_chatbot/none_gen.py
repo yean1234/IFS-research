@@ -613,7 +613,8 @@ class NoneGenService:
             return finish(OK, asset=a)
         side = self._sidecar(run_dir)
         if side is not None and side.get("status") == "blocked":
-            return finish(BLOCKED, blockReason=side.get("blockReason") or "blocked", blockDetail=side.get("blockDetail"))
+            return finish(BLOCKED, blockReason=side.get("blockReason") or "blocked", blockDetail=side.get("blockDetail"),
+                          gate=self._sidecar_gate(side))
         if side is not None and side.get("status") == "failed":
             return finish(FAILED, error=(side.get("error") or "failed")[:300])
         why = "; ".join(f"{r['reason']}" for r in lk["rejected"]) or "no_sidecar"
@@ -685,7 +686,8 @@ class NoneGenService:
             return finish(OK, asset=a)
         side = self._sidecar(run_dir)
         if side is not None and side.get("status") == "blocked":
-            return finish(BLOCKED, blockReason=side.get("blockReason") or "blocked", blockDetail=side.get("blockDetail"))
+            return finish(BLOCKED, blockReason=side.get("blockReason") or "blocked", blockDetail=side.get("blockDetail"),
+                          gate=self._sidecar_gate(side))
         if side is not None and side.get("status") == "failed":
             return finish(FAILED, error=(side.get("error") or "failed")[:300])
         why = "; ".join(f"{r['reason']}" for r in lk["rejected"]) or "no_sidecar"
@@ -796,6 +798,13 @@ class NoneGenService:
         finally:
             out["seconds"] = round(time.monotonic() - tp, 2)
         return out
+
+    @staticmethod
+    def _sidecar_gate(side: dict) -> dict | None:
+        """(G83-d) 막힌 메시의 관문 결과(personLikeScore·labelScores·threshold·passed 등, 사이드카 gate 그대로). 없으면 None.
+        selection.json afterNone.gate에 남겨, 저장소 밖 생성기 사이드카를 열지 않고도 차단 점수를 볼 수 있게 한다."""
+        g = side.get("gate")
+        return copy.deepcopy(g) if isinstance(g, dict) else None
 
     @staticmethod
     def _sidecar(run_dir: Path) -> dict | None:

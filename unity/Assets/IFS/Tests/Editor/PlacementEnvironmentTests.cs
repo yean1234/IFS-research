@@ -414,8 +414,8 @@ namespace IFS.SceneSpec.Tests
                 Assert.That(t[PlacementTaskText.PlacementRangeKey], Is.EqualTo("둥근 바닥 안이면 어디든, 어떤 높이든 괜찮아요."));
                 Assert.That(t[PlacementTaskText.PracticeKey], Is.EqualTo(PlacementTaskText.Load(DefaultPath)[PlacementTaskText.PracticeKey]), "두 파일 같은 문구");
             }
-            Assert.That(PlacementTaskText.Load(DefaultPath).Version, Is.EqualTo("0.9"), "2026-11-28 확인 버튼 안내·확정 알림·본 측정 시작 안내로 0.8, 공간 고르기 문구로 0.9");
-            Assert.That(PlacementTaskText.Load(ScaleAPath).Version, Is.EqualTo("0.9-scaleA"));
+            Assert.That(PlacementTaskText.Load(DefaultPath).Version, Is.EqualTo("0.10"), "2026-11-28 확인 버튼 안내·확정 알림·본 측정 시작 안내로 0.8, 공간 고르기 문구로 0.9, 반복 멈춤 조작 안내(G83)로 0.10");
+            Assert.That(PlacementTaskText.Load(ScaleAPath).Version, Is.EqualTo("0.10-scaleA"));
         }
 
         // ── 놓기 도움 화면 규칙 ──────────────────────────────────────────

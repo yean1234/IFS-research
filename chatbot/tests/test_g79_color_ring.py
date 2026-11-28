@@ -98,10 +98,12 @@ def test_every_sixth_step_equals_old_swatch():
 
 def test_only_experiment_uses_v4_and_protocol_011():
     exp = load_config("experiment")
-    assert exp.selection.table == "candidate_values.v4.json" and exp.selection.protocol == "selection_protocol.v0.11.json"
+    # G83: 문구는 0.13.0(0.11.0 고리 문구 그대로 + G82 근거 인용 줄)
+    assert exp.selection.table == "candidate_values.v4.json" and exp.selection.protocol == "selection_protocol.v0.13.json"
     for name in ("default", "pilot", "v4", "v4-gen3d", "bridge", "mac8gb"):
         c = load_config(name).selection
-        assert c.table != "candidate_values.v4.json" and c.protocol != "selection_protocol.v0.11.json", name
+        assert c.table != "candidate_values.v4.json" and c.protocol not in (
+            "selection_protocol.v0.11.json", "selection_protocol.v0.12.json", "selection_protocol.v0.13.json"), name
 
 
 def test_protocol_011_adds_three_draft_phrases_only():
@@ -121,7 +123,7 @@ def test_protocol_011_adds_three_draft_phrases_only():
 
 
 def test_runtime_loads_protocol_011_and_ui_config(rt):
-    assert rt.selection_protocol.version == "0.11.0" and rt.candidate_table["tableVersion"] == "4.0.0"
+    assert rt.selection_protocol.version == "0.13.0" and rt.candidate_table["tableVersion"] == "4.0.0"
     ui = ui_config(rt.selection_protocol, rt.candidate_table, {}, True)
     c = next(x for x in ui["adjustItems"] if x["id"] == "color")
     assert c["kind"] == "hue_ring" and [x["id"] for x in c["values"]] == ["n10", "n30", "n50", "n70", "n90"]
@@ -132,10 +134,10 @@ def test_runtime_loads_protocol_011_and_ui_config(rt):
 def test_ring_table_needs_ring_phrases_but_old_table_takes_new_protocol(tmp_path):
     # CP18-1: hue_ring 표 + 고리 문구 없는 프로토콜(0.10) → 시작을 멈춤(화면 문구가 빠지므로)
     with pytest.raises(RuntimeError, match="adjust_color_ring_hint"):
-        Runtime(exp_cfg(tmp_path, **{"selection.protocol": "selection_protocol.v0.10.json"}))
-    # 반대 조합(swatch 표 v3 + 0.11)은 막지 않는다: 쓰지 않는 문구가 있을 뿐이고 프로토콜 판은 기록에 남는다
+        Runtime(exp_cfg(tmp_path, **{"selection.protocol": "selection_protocol.v0.10.json", "gen3d.on_none_llm_shape": False}))
+    # 반대 조합(swatch 표 v3 + 0.13)은 막지 않는다: 쓰지 않는 문구가 있을 뿐이고 프로토콜 판은 기록에 남는다
     rt3 = Runtime(exp_cfg(tmp_path, **{"selection.table": "candidate_values.v3.json"}))
-    assert rt3.selection_protocol.version == "0.11.0" and rt3.candidate_table["tableVersion"] == "3.0.0"
+    assert rt3.selection_protocol.version == "0.13.0" and rt3.candidate_table["tableVersion"] == "3.0.0"
 
 
 def test_releasing_on_current_handle_still_sends_once():
@@ -284,7 +286,7 @@ def test_versions_are_in_the_selection_record(rt):
     d = sel(f)
     assert d["formatVersion"] == "ifs-selection/0.5"
     assert d["generator"]["tableVersion"] == "4.0.0" and len(d["generator"]["tableSha256"]) == 64
-    assert d["protocol"]["protocolVersion"] == "0.11.0" and "phrases.adjust_color_ring_hint" in d["protocol"]["draftKeys"]
+    assert d["protocol"]["protocolVersion"] == "0.13.0" and "phrases.adjust_color_ring_hint" in d["protocol"]["draftKeys"]   # G83: experiment는 0.13
     assert d["colorRing"]["tableVersion"] == "4.0.0" and d["colorRing"]["final"] is None
     ev = [e for e in s.log.data["events"] if e.get("type") == "selection:candidates"]
     assert ev and ev[0]["payload"]["tableVersion"] == "4.0.0"
@@ -293,7 +295,8 @@ def test_versions_are_in_the_selection_record(rt):
 # ── 끈 설정 = 그대로 ─────────────────────────────────────────────────────────
 def test_v3_table_session_has_no_ring_keys(tmp_path):
     rt3 = Runtime(exp_cfg(tmp_path, **{"selection.table": "candidate_values.v3.json",
-                                       "selection.protocol": "selection_protocol.v0.10.json"}))
+                                       "selection.protocol": "selection_protocol.v0.10.json",
+                                       "gen3d.on_none_llm_shape": False}))      # G83: 0.10에는 G82 문구가 없음
     s, f, v = adjusting(rt3, "SYN-G79-V3", T_BLUE)
     assert f.ring is None and "colorRing" not in v and set(color(v)) == {"swatch", "h", "s", "l"}
     with pytest.raises(SelectionInvalid):

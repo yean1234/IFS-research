@@ -57,13 +57,13 @@ cd <repo>\chatbot
    - spec: 손으로 고를 때는 목록에서 **`<세션ID>.json`** 단추(`.v0`·`.v1`·`.v2.json`은 비교용이라 고르면 해시가 달라 시작이 거부됩니다)
    - 선택 파일: 손으로 고를 때는 `../selection/<세션ID>/selection.json`
    - 조건: 배정표대로 `place` 또는 `view`(통제 방식 `static`)
-   - **본 실험 설정 고정**: 실험 씬에서는 권고 설정, 멈춤 거리 절차 값(연습 1 × 상한 30초 + 본 4 × 상한 75초, 라운드 사이 2초, 왕복 0.4–3.6 m · 0.25 m/s 등), 문구 파일 scaleA가 Play·[확인]·다음 참여자 때마다 자동으로 적용되고, 화면에는 낱개 토글 대신 "본 실험 설정 고정" 요약 다섯 줄만 보입니다(manifest `flags.experimentPresetLocked: true`). 2026-11-28 연구 책임자 결정으로 **공간은 실험자가 설정 화면에서 고릅니다**: 잠금 요약 위의 공간 단추 셋(기본 (neutral) · 자연 (nature) · 우주 (space), 처음 눌린 값 neutral)으로 세션마다 고르고, 잠금은 고른 공간을 바꾸지 않습니다(`environmentChoice experimenter`, 고른 공간은 manifest `config.environment`에). [다음 참여자 준비] 뒤에도 앞 참여자의 공간이 남으니 다시 확인합니다. 참여자가 헤드셋에서 고르는 단계(`space_choice`)는 꺼 둔 기능이라 실험 씬에서는 돌지 않습니다(설정 화면에 토글 없음). **눈높이 보정은 앉은 자세**(`eyeCalibPosture seated`, 범위 [0.95, 1.45] m)입니다 — 요약 첫 줄과 넷째 줄에 보입니다. 읽은 문구 파일의 판이 `0.9-scaleA`가 아니거나 G78 문구 네 개(`confirm_button_right/left`, `confirm_done`, `stop_main_start`)가 없으면, 또는 설정이 잠금 값과 다르면 [확인]·[시작]이 거부됩니다(빨간 줄). 고정하지 않고 화면에 남는 것: 공간, 안내 판 숨기기, 선택 단계 문항, 묻지 않을 문항 키, 참여자 컨트롤러 평정, 보기만 통제 방식, 참여자 입력·주 사용 손. 잠금을 끈 씬에서는 아래처럼 **[본 실험 권고 설정 켜기]** 단추를 누릅니다(설정은 저장되지 않아 Play마다 다시). 한 번에 켜는 것: 공간 B(`neutral`) + 놓기 도움, 두 조건 모두 배치 연습, 자리 문항을 멈춤 거리 앞으로, 평정 동안 물체 숨김, 헤드셋 UI 개선 묶음(G63), 멈춤 거리 반복 멈춤(`stopMode loop`, G60-2·G60-4), 눈높이 기준 배치(`eyeHeightMode relative`, G60-3), 문구 파일 scaleA(뼈대 3절·G59-8). 켜지면 단추 앞에 ●가 붙고 아래 낱개 체크도 따라 바뀝니다. 조건과 안내 판 숨기기는 이 단추가 건드리지 않습니다(7절).
+   - **본 실험 설정 고정**: 실험 씬에서는 권고 설정, 멈춤 거리 절차 값(연습 1 × 상한 30초 + 본 1 × 상한 75초, 연습과 본 측정 사이 2초, 왕복 0.4–3.6 m · 0.25 m/s 등), 문구 파일 scaleA가 Play·[확인]·다음 참여자 때마다 자동으로 적용되고, 화면에는 낱개 토글 대신 "본 실험 설정 고정" 요약 다섯 줄만 보입니다(manifest `flags.experimentPresetLocked: true`). 2026-11-28 연구 책임자 결정으로 **공간은 실험자가 설정 화면에서 고릅니다**: 잠금 요약 위의 공간 단추 셋(기본 (neutral) · 자연 (nature) · 우주 (space), 처음 눌린 값 neutral)으로 세션마다 고르고, 잠금은 고른 공간을 바꾸지 않습니다(`environmentChoice experimenter`, 고른 공간은 manifest `config.environment`에). [다음 참여자 준비] 뒤에도 앞 참여자의 공간이 남으니 다시 확인합니다. 참여자가 헤드셋에서 고르는 단계(`space_choice`)는 꺼 둔 기능이라 실험 씬에서는 돌지 않습니다(설정 화면에 토글 없음). **눈높이 보정은 앉은 자세**(`eyeCalibPosture seated`, 범위 [0.95, 1.45] m)입니다 — 요약 첫 줄과 넷째 줄에 보입니다. 읽은 문구 파일의 판이 `0.10-scaleA`가 아니거나 G78 문구 네 개(`confirm_button_right/left`, `confirm_done`, `stop_main_start`)가 없으면, 또는 설정이 잠금 값과 다르면 [확인]·[시작]이 거부됩니다(빨간 줄). 고정하지 않고 화면에 남는 것: 공간, 안내 판 숨기기, 선택 단계 문항, 묻지 않을 문항 키, 참여자 컨트롤러 평정, 보기만 통제 방식, 참여자 입력·주 사용 손. 잠금을 끈 씬에서는 아래처럼 **[본 실험 권고 설정 켜기]** 단추를 누릅니다(설정은 저장되지 않아 Play마다 다시). 한 번에 켜는 것: 공간 B(`neutral`) + 놓기 도움, 두 조건 모두 배치 연습, 자리 문항을 멈춤 거리 앞으로, 평정 동안 물체 숨김, 헤드셋 UI 개선 묶음(G63), 멈춤 거리 반복 멈춤(`stopMode loop`, G60-2·G60-4), 눈높이 기준 배치(`eyeHeightMode relative`, G60-3), 문구 파일 scaleA(뼈대 3절·G59-8). 켜지면 단추 앞에 ●가 붙고 아래 낱개 체크도 따라 바뀝니다. 조건과 안내 판 숨기기는 이 단추가 건드리지 않습니다(7절).
    - 참여자 입력 `auto`, 주 사용 손
-   - 멈춤 거리 연습 라운드는 1회, 상한 30초입니다(`stopLoopPracticeRoundSeconds`, 본 라운드는 75초). 넘으면 그 라운드 확정값은 빈칸입니다.
+   - 멈춤 거리는 연습 1번(상한 30초, `stopLoopPracticeRoundSeconds`)과 본 측정 1번(상한 75초, `stopLoopRounds` 1 — 2026-11-28 연구 책임자 결정 G83, 이전 4번)입니다. 본 측정은 라운드를 되풀이하지 않고, 75초 안에 참여자가 언제든 트리거로 멈추고 다시 움직이다가 멈춘 자리에서 확인 버튼(오른손 A, 왼손 설정이면 X)으로 한 번 정합니다. 75초 전에 확정하면 그때 끝나고, 시간 안에 확정하지 않으면 확정값은 빈칸입니다(마지막 멈춤 거리는 따로 남음). 연습 뒤 2초 동안 「연습이 끝났어요. 이제 본 측정을 시작할게요.」(연습을 확정했으면 위에 「정했어요.」)가 보이고, 본 측정을 확정하면 「정했어요.」가 2초 보인 뒤, 시간 초과면 기다리지 않고 다음 단계로 갑니다. 본 측정의 출발 방향은 연습의 반대입니다(홀수 번호는 연습 가까워지며·본 멀어지며 출발, 짝수 번호는 그 반대).
 3. [확인] → 확인 화면의 선택 파일 요약(고른 후보, 덮어쓰기)과 경고를 읽습니다. 눈높이 기준 배치가 켜져 있으므로 [시작] 전에 눈높이를 **과제를 하는 자세(앉은 자세)로** 잽니다: 참여자를 원판 가운데 의자에 앉힘 → R → 말로 "편하게 앉아서 앞을 봐 주세요"(대본 초안 — ⚠ 연구 책임자 확인) → H(또는 "눈높이 재기"). 실험자 화면에 `눈높이 E = … m`가 나오면 [시작]. 서서 재면 앉은 자세 범위를 넘어 실패합니다(서서 잰 값으로 앉아 과제를 하면 물체·안내 판이 그 차이만큼 눈보다 높게 놓입니다). 보정을 통과하지 못하면 시작이 거부되니 이유대로 고쳐 다시 H(`docs/internal-trial-guide.md` 4절 G60-3 항목). 실패 이유가 범위 밖이면 먼저 `지금 머리 높이` 줄과 Quest 바닥 높이를 봅니다(범위를 넓히는 우회 수단은 화면에 없습니다). 초안 문구 경고는 PC의 실험자 화면에만 나오고 헤드셋에는 나오지 않습니다.
 4. (꺼 둔 기능 — 실험 씬에서는 돌지 않음) 잠금을 끄고 인스펙터·명령줄로 `environmentChoice participant`를 켰을 때만 [시작] 뒤 첫 단계가 **참여자 공간 고르기**(`space_choice`)입니다. 실험에서는 공간을 실험자가 2단계 Setup의 공간 단추로 고르고 [시작] 뒤 바로 intro입니다. 켰을 때의 동작: 헤드셋 판에 "과제를 할 공간을 골라 주세요. 방아쇠를 누르면 다음 공간이 보여요. 세 공간을 다 본 뒤 확인 버튼으로 정해 주세요. 확인 버튼은 오른손 A 버튼이에요. / 공간 1 / 3"이 보이고, 참여자는 방아쇠로 세 공간(기본·자연·우주, 순서는 참여자 번호로 돌림 — 1번은 기본부터, 2번은 자연부터, 3번은 우주부터)을 넘겨 보다가 세 공간을 다 본 뒤 A(왼손 X)로 정합니다. 다 보기 전 확인은 받지 않습니다. 실험자 화면에는 지금 공간 이름·본 공간 수·순서가 보이고(공간 이름은 헤드셋 판에 쓰지 않음), 참여자가 말로 고르면 실험자가 그 공간이 보일 때 Enter로 정할 수 있습니다(`chosenBy experimenter`). 정하면 "정했어요."가 2초 보인 뒤 intro. 기록: manifest `environmentChoice`{mode, orderRule, order, environmentBeforeChoice, chosen, chosenBy, durationMs, switches, seenAll, ignoredConfirms, viewMs}, `config.environmentChoice`, 고른 공간이 `config.environment`·`environment.name`, events `space_choice_start/show/confirm_ignored/end`. ⚠ 분석기는 세션 사이 공간이 다르면 `config_mismatch:environment` 플래그를 붙입니다(이 변경에서 분석기는 고치지 않음).
    - 세션 중 헤드셋 연결이 끊기면(헤드셋을 벗어 잠듦·Link 끊김) 실험자 화면 맨 위에 빨간 큰 경고가 뜹니다 — 그동안 참여자가 Link 데스크톱 보기로 PC 화면을 볼 수 있습니다. 세션 시간은 멈추지 않습니다. F1로 실험자 화면을 숨기거나, 진행할 수 없으면 [중단…](또는 Esc)으로 중단합니다. 기록: `events.csv` `xr_lost`·`xr_regained`, manifest `xrConnection.lostCount`(CP17-1). [확인] 때 XR이 늦게 켜져 "XR 없음" 오류가 났으면 XR이 잡히는 대로 오류가 저절로 사라지고 [시작]이 눌립니다(CP17-4).
-5. 단계: `intro → practice → baseline → pre_items → pre_wait → condition(90초) → post_items → check_items(자리 문항) → post_wait → stop_distance(반복 멈춤: 연습 1 + 본 4라운드, 트리거 = 멈춤/다시 움직임, A·X = 확정) → done`. 실험자 키는 `unity/README.md` 「데스크톱 조작 키」, 참여자 컨트롤러는 「컨트롤러 조작」.
+5. 단계: `intro → practice → baseline → pre_items → pre_wait → condition(90초) → post_items → check_items(자리 문항) → post_wait → stop_distance(반복 멈춤: 연습 1 + 본 1, 트리거 = 멈춤/다시 움직임, A·X = 확인(확정)) → done`. 실험자 키는 `unity/README.md` 「데스크톱 조작 키」, 참여자 컨트롤러는 「컨트롤러 조작」.
 6. 끝나면 실험자 화면에 기록 폴더가 나옵니다. 기본 기록 루트는 `%USERPROFILE%\AppData\LocalLow\DefaultCompany\unity\IFS\sessions`(git 밖)입니다.
 
 ### 2.3 사후 면담 (PC)
@@ -139,7 +139,7 @@ $env:IFS_LIVE=1; .venv\Scripts\python.exe -m pytest tests\test_experiment_config
 ### 6.2 확정 직후 LLM 빈칸 채우기 (G77, `[mapping] llm_fill = true` — experiment.toml에서만 켬, 다른 설정은 기본 끔)
 
 - 참여자가 [이대로 맞아요]로 확정하면 매퍼 v2가 스펙을 만든 직후, 면담 모델(같은 Ollama 모델)을 한 번 더 부릅니다(온도 0, seed 0, JSON 스키마, 한도 `llm_fill_timeout_s` 20초). 매퍼가 비운 슬롯(색·밝기·투명도·질감·크기·움직임·형태 종류)과 그림용 형태 낱말만, 참여자 원문 인용이 있어야 받습니다. 위치·거리는 대상이 아닙니다. 프롬프트 `chatbot/prompts/llm_fill/llm_fill.v0.1.1.json`(draft).
-- 검증기를 통과한 값만 후보·조절의 처음 값이 됩니다(확정 스펙 파일은 그대로). 조절 화면에는 그 항목 아래 「'<인용>'라고 하셔서 이렇게 해 봤어요. 다르면 고쳐 주세요.」가 보입니다(문구 `selection_protocol.v0.10.json` `llm_fill_note`, draft). 형태 낱말은 [맞는 게 없어요] 뒤 규칙이 형태를 못 만들 때만 그림 프롬프트에 들어갑니다.
+- 검증기를 통과한 값만 후보·조절의 처음 값이 됩니다(확정 스펙 파일은 그대로). 조절 화면에는 그 항목 아래 「'<인용>'라고 하셔서 이렇게 해 봤어요. 다르면 고쳐 주세요.」가 보입니다(문구 `selection_protocol.v0.10.json` `llm_fill_note`, draft). 형태 낱말은 [맞는 게 없어요] 뒤 규칙이 형태를 못 만들 때만 그림 프롬프트에 들어갑니다. G83부터는 G82(6.4)가 켜져 이 형태 낱말 칸이 꺼지고, 그 일은 G82가 맡습니다.
 - 부르지 않음·버림: 세션에 위기·확인 판정이 있었음, 실패·시간 초과·JSON 깨짐(지금 경로 그대로). 서버 시작 때 Ollama가 없으면 면담도 시작하지 않으므로 별도 점검은 없습니다.
 - 기록: 이 설정의 `selection.json`은 처음부터 `ifs-selection/0.5`(`shared/schemas/selection.v0.5.json`)입니다. `llmFill`(모델 digest·프롬프트 판·원시 항목·항목별 기각 사유·채택 값·`applied`·참여자가 그대로 뒀는지 `participant`), `llmFillExposed`, 출처 값 `llm_quoted`. 세션 로그 사건은 `scene:llm_fill`. 헤드셋 러너는 0.5를 0.3 규칙으로 읽고 `llm_quoted`를 받습니다(헤드셋 빌드를 다시 만들어야 함). 실제 모델로는 아직 돌려 보지 않았습니다(2026-11-28 구현 때 GPU를 다른 실측이 쓰고 있었음) — 본 실험 전에 합성 대사로 돌려 `docs/validation/run-g77-llm-fill/`에 결과를 남겨야 합니다.
 
@@ -148,6 +148,28 @@ $env:IFS_LIVE=1; .venv\Scripts\python.exe -m pytest tests\test_experiment_config
 - 기록은 `selection.json`의 `colorRing`에서 봅니다(`final.origin`: 말함 / 고름 / `unspecified` = 말하지도 고르지도 않음). 선택 파일 형식은 `ifs-selection/0.5` 그대로라 헤드셋 빌드를 다시 만들지 않습니다.
 - 값 표나 프로토콜을 바꾼 뒤에는 챗봇 서버를 다시 띄워야 합니다. 고리 값 표에 고리 문구가 없는 프로토콜을 묶으면 서버가 시작할 때 설정 오류로 멈춥니다.
 - 사람이 볼 것: 웹 화면의 색과 헤드셋에서 그려진 색의 차이, 채도 단계 차이가 헤드셋에서 보이는지.
+- G83부터 프로토콜은 0.13입니다(0.11의 고리 문구는 그대로, 6.4의 문구만 더함).
+
+### 6.4 LLM이 고른 형태 낱말로 그림 그리기 (G82, `[gen3d] on_none_llm_shape = true` — G83부터 experiment.toml에서 켬, 프로토콜 0.13)
+
+연구 책임자가 2026-11-28에 켜기로 정했습니다(G83). 오프라인 평가 세 번은 미리 정한 기준에 미달이었습니다(`docs/decisions.md` G82). 참여자가 그림을 직접 고르거나 거절하는 구조이므로 참여자 기록으로 판단합니다. 이 판 앞뒤 세션은 생성 경로가 다르니 분석에서 층으로 나눕니다.
+
+- **무엇이 켜졌나.** 처음 [맞는 게 없어요]를 누르면 서버가 먼저 규칙 그림 프롬프트를 만듭니다(6절). 그 프롬프트에 중심 형태 명사가 없을 때(`no_shape_stated`)만 면담 모델을 한 번 부릅니다. 모델은 확정 텍스트에서 형태 낱말 하나를 인용하고 영어 이름(소문자 한 낱말)을 냅니다. 같은 Ollama 모델·digest이고 온도 0, seed 0, JSON 스키마, 한도 20초입니다(`chatbot/ifs_chatbot/llm_shape.py`, 프롬프트 `llm_shape.v0.3.0`, draft). 검증기(G77 형태 낱말 검증 + 영어 금지 목록)를 통과한 것만 규칙 프롬프트의 빈 중심 명사 자리에 넣습니다. 프롬프트 문장·꾸밈말·부정 틀은 규칙이 붙입니다. 그 뒤는 6.1과 같습니다(그림 3장 → 고르기 → 메시).
+- **부르지 않는 경우.** 규칙이 형태를 잡았을 때, 다른 사유로 막혔을 때(사람·동물·안개 등), 형태를 전혀 말하지 않았을 때('쑥색이고 차가워요'), 세션에 위기·확인 판정이 있었을 때입니다. LLM이 null을 내거나 검증기가 버리거나 실패·시간 초과가 나면 지금 경로(「물체를 더 만들지 못했어요. 이어서 진행할게요.」 뒤 조절)로 갑니다. 다시 부르지 않습니다.
+- **G77과의 관계.** 이 플래그가 켜지면 G77(6.2)의 그림용 형태 낱말 칸(`shape_noun`)은 코드가 자동으로 끕니다. 다른 빈 슬롯 제안(색·질감 등)은 그대로입니다. 서버를 띄우면 경고 줄에 그 사실이 나옵니다.
+- **참여자 화면.** LLM 이름으로 그린 회차의 그림 고르기 화면 맨 위에 「'<낱말>'이라고 하신 말을 바탕으로 모양을 만들어 볼게요.」 한 줄과 [그 말이 아니에요]가 있습니다(`selection_protocol.v0.13.json` `llm_shape_basis`·`llm_shape_basis_wrong_button`, draft). 낱말은 LLM 인용 구간 안의 명사 부분을 원문 글자 그대로 씁니다. 예를 들어 인용이 '판때기예요'면 '판때기'가 보입니다. 조사는 받침에 맞춰 '이라고'/'라고'를 붙입니다. 영어 이름은 보이지 않습니다. 단추는 그림마다 붙은 [이걸로 할게요]와 같은 크기입니다. [그 말이 아니에요]를 누르면 LLM을 다시 부르지 않고 조절 화면으로 가고, 맨 위에 「물체를 더 만들지 못했어요. 이어서 진행할게요.」가 나옵니다. [이 중에는 없어요]로 가는 2회차도 같은 낱말을 씁니다.
+- **기록(`selection.json`, `ifs-selection/0.5`).** 칸은 `generation.shapeLlm`에 있습니다.
+  - 경로: `route`(rule·llm·none), `routeReason`, `called`, `candidate`, `adopted`(인용·charSpan·영어), `rejectReasons`, `rawText`(원시 출력), 입력·검증 입력 해시, `model`(digest), `promptVersion`, `validatorRules`, `seed`
+  - 화면 노출과 선택: `exposed`(그림이 나옴), `imageChosen`, `candidateExposed`(만든 물체가 후보에 나옴), `candidateChosen`(만든 물체가 나온 적이 없으면 null), `rejected`·`rejectedAt`
+  - `basisShown`: LLM 인용(`llmQuote`·`llmCharSpan`), 화면 낱말(`shownText`·`shownSpan`), 조사, 보인 문장
+  - `generation.afterNone`의 칸: `shapeLlmUsed`, `shapeLlmItems`, `shapeLlmBasisShown`, `basisRejected`. 메시가 관문에서 막혔으면 `gate`(personLikeScore·labelScores 등)
+  - 세션 로그 사건은 `selection:shape_llm`입니다. 원시 출력은 참여자 말에서 온 것이라 git 밖 로그에만 있습니다.
+- **알려진 한계.**
+  - 채움은 약 50%입니다. 사전 밖 형태 낱말에서 뜻이 맞는 이름을 낸 비율이 2차 24/48, 3차 25/50이었습니다. 나머지는 LLM null, 목록 밖 이름, 가정 표지로 막힘 등입니다.
+  - 목록 밖 동물은 LLM 단계를 지납니다(3차 '도롱뇽' → newt 2건). 그 뒤의 그림 관문과 메시 관문(CLIP 사람·동물)에 기댑니다.
+  - '돌덩이'는 되지 않습니다. 「돌덩이예요.」와 「돌덩이 같은 게 있어요.」 모두 LLM이 null을 냅니다(실제 흐름 점검 `docs/validation/run-g82-end-to-end/`).
+  - 그림은 통과해도 메시가 관문에서 막힐 수 있습니다(주전자 `person_like` 0.793). 이때 참여자는 그림을 고른 뒤 40초쯤 기다렸다가 조절 화면으로 갑니다.
+- 실측: `docs/validation/run-g82-end-to-end/`(G82 첫 점검, 시험 설정), `docs/validation/run-g83-g82-on/`(G83 고친 뒤, experiment.toml 사본).
 
 ## 7. 아직 사람이 정할 것 (이 문서가 켜지 않은 것)
 

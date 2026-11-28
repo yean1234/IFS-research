@@ -3,6 +3,9 @@
 // 참여자 번호를 시드로 한 의사난수로 고른다(조정법에서 출발값이 닻이 되는 것을 줄이려고).
 // 의사난수는 System.Random을 쓰지 않고 여기서 직접 구현한다(splitmix64로 시드를 펴고 xorshift64*로 뽑음) — 정수 연산만 써서
 // Unity(Mono)와 dotnet에서 같은 수열이 나온다. 출발 거리는 1 mm 단위로 반올림해 기록과 계획이 정확히 같다.
+// 2026-11-28 G83(연습 1 + 본 1): 규칙은 그대로라 연습 = 첫 방향, 본 라운드 = 그 반대 방향이다. 기본(by_participant)이면 홀수 번호는
+//   연습 approach·본 recede, 짝수 번호는 연습 recede·본 approach(본 라운드 출발 방향이 참여자 사이에서 반반). 본 라운드 출발 거리는
+//   수열의 두 번째 값이다(예전 4라운드 계획의 앞 두 라운드와 같은 값).
 // UnityEngine에 의존하지 않는다.
 using System;
 using System.Collections.Generic;

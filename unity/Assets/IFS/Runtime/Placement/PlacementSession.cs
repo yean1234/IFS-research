@@ -112,6 +112,8 @@ namespace IFS.SceneSpec.Placement
         bool _roundActive, _loopMoving;
         int _loopDir;   // −1 = 가까워짐(approach), +1 = 멀어짐(recede)
         double _roundStart, _lastChange, _lastToggle;
+        double _roundXrPausedS, _loopXrPauseAt;   // CP20: XR이 끊긴 동안 라운드가 멈춘 시간 합계, 이번 멈춤이 시작된 시각
+        bool _loopXrPaused;
         readonly List<double> _loopStops = new List<double>();
         readonly List<double> _loopPoints = new List<double>();   // 출발·끝점 반사·멈춤 자리(확정 전에 지나간 횟수 계산)
         int _loopResumes;
@@ -296,10 +298,15 @@ namespace IFS.SceneSpec.Placement
         public int StopLoopStopCount => _loopStops.Count;
         /// <summary>직전 상태 변화(라운드 시작·멈춤·재개)부터 지난 시간(초).</summary>
         public double StopLoopSecondsSinceChange => _roundActive ? _now - _lastChange : 0;
-        /// <summary>이번 라운드 남은 시간(초). 라운드 밖이면 NaN.</summary>
-        public double StopLoopSecondsLeft => _roundActive ? Math.Max(0, RoundLimitSeconds(_loopPlan[_roundIndex]) - (_now - _roundStart)) : double.NaN;
-        /// <summary>이번 라운드가 시작된 뒤 지난 시간(초). 라운드 밖이면 NaN.</summary>
-        public double StopLoopRoundElapsed => _roundActive ? _now - _roundStart : double.NaN;
+        /// <summary>이번 라운드 남은 시간(초, XR이 끊겨 멈춘 시간은 빼고 — CP20). 라운드 밖이면 NaN.</summary>
+        public double StopLoopSecondsLeft => _roundActive ? Math.Max(0, RoundLimitSeconds(_loopPlan[_roundIndex]) - RoundActiveSeconds) : double.NaN;
+        /// <summary>이번 라운드가 시작된 뒤 흐른 과제 시간(초, XR이 끊겨 멈춘 시간은 뺌). 라운드 밖이면 NaN.</summary>
+        public double StopLoopRoundElapsed => _roundActive ? RoundActiveSeconds : double.NaN;
+        /// <summary>이번 라운드에서 XR이 끊겨 라운드가 멈춰 있던 시간 합계(초). 라운드 밖이면 0.</summary>
+        public double StopLoopXrPausedSeconds => _roundActive ? _roundXrPausedS : 0;
+        /// <summary>XR이 끊겨 멈춤 거리 라운드(또는 라운드 사이 간격)가 멈춰 있다(CP20).</summary>
+        public bool StopLoopXrPaused => _loopXrPaused && Phase == PlacementPhase.StopDistance;
+        double RoundActiveSeconds => _now - _roundStart - _roundXrPausedS;
         /// <summary>라운드 시간 상한(초): 연습 라운드는 stopLoopPracticeRoundSeconds, 본 라운드는 stopLoopRoundSeconds(2026-11-28).</summary>
         public double RoundLimitSeconds(StopRoundPlan plan) => plan != null && plan.Practice ? _cfg.stopLoopPracticeRoundSeconds : _cfg.stopLoopRoundSeconds;
         // ── 눈높이(G60-3) ───────────────────────────────────────────
@@ -473,7 +480,8 @@ namespace IFS.SceneSpec.Placement
         // ── 세션 중 XR 끊김(CP17-1, 2026-11-28) ─────────────────────────
         /// <summary>러너가 매 프레임 부른다(XR 헤드셋이 지금 켜져 있나). XR로 시작한 사람 실행(info.XrMonitored)만 본다 — 데스크톱·자동 시행은 무시.
         /// 켜짐 → 꺼짐이면 events xr_lost, 꺼짐 → 켜짐이면 xr_regained, 그때마다 manifest xrConnection을 다시 쓴다.
-        /// 타이머·단계는 건드리지 않는다(측정 절차 그대로 — 멈출지·되돌릴지는 실험자가 중단으로 정한다).</summary>
+        /// 타이머·단계는 건드리지 않는다(측정 절차 그대로 — 멈출지·되돌릴지는 실험자가 중단으로 정한다). 예외: 반복 멈춤(loop) 멈춤 거리 라운드는
+        /// 끊긴 동안 제한 시간·물체·입력을 멈추고 다시 잡히면 이어 간다(CP20, StepStopLoop).</summary>
         public void ReportXrHead(bool active)
         {
             if (!_info.XrMonitored || Finished) return;
@@ -1273,6 +1281,36 @@ namespace IFS.SceneSpec.Placement
 
         void StepStopLoop(double dt, bool stopPress, bool confirmPress)
         {
+            // CP20(2026-11-28 메인 결정): XR이 끊긴 동안(XR로 시작한 세션만 — ReportXrHead) 라운드의 제한 시간·물체 움직임을 멈추고
+            // 입력(토글·확정)을 받지 않는다. 라운드 사이 간격도 줄지 않는다(다시 잡힌 뒤 남은 간격만큼 기다림). 다시 잡히면 이어 간다.
+            // 기록: events stop_xr_pause·stop_xr_resume(paused_ms·round_paused_ms), stopadjust xr_pause·xr_resume 행(라운드 안일 때),
+            // stop_round_end의 xr_paused_ms. t_ms·duration_ms는 벽시계(멈춘 시간 포함), 제한 시간은 멈춘 시간을 뺀 과제 시간으로 잰다.
+            if (_xrLost)
+            {
+                if (!_loopXrPaused)
+                {
+                    _loopXrPaused = true;
+                    _loopXrPauseAt = _now - dt;   // 이 프레임의 dt부터 멈춤
+                    if (_roundActive) Adjust("xr_pause", _stopD, _loopMoving ? DirName(_loopDir) : _loopLastStopDir, false);
+                    Event("stop_xr_pause", $"round={(_roundActive ? _loopPlan[_roundIndex].Round.ToString(Inv) : "")};in_round={(_roundActive ? 1 : 0)}");
+                }
+                if (_roundActive) _roundXrPausedS += dt;
+                else _itiUntil += dt;
+                return;
+            }
+            if (_loopXrPaused)
+            {
+                _loopXrPaused = false;
+                // 다시 잡힌 프레임도 멈춘 시간으로 센다(CP20_recheck 1): 이 프레임의 dt는 끊긴 동안의 시간을 품을 수 있어(복귀 직후 큰 dt)
+                // 물체를 움직이지 않고 제한 시간·간격에서도 뺀다. 다음 프레임부터 이어 간다.
+                if (_roundActive) _roundXrPausedS += dt;
+                else _itiUntil += dt;
+                if (_roundActive) Adjust("xr_resume", _stopD, _loopMoving ? DirName(_loopDir) : _loopLastStopDir, false);
+                Event("stop_xr_resume", $"round={(_roundActive ? _loopPlan[_roundIndex].Round.ToString(Inv) : "")};in_round={(_roundActive ? 1 : 0)};" +
+                                        $"paused_ms={Ms(_now - _loopXrPauseAt)};round_paused_ms={Ms(_roundActive ? _roundXrPausedS : 0)}");
+                stopPress = confirmPress = false;   // 다시 잡힌 프레임의 누름은 버린다(끊긴 동안 눌린 것이 넘어오지 않게)
+                dt = 0;
+            }
             if (!_roundActive)
             {
                 if (_now < _itiUntil - Eps) return;
@@ -1303,6 +1341,7 @@ namespace IFS.SceneSpec.Placement
                     Adjust("confirm", _stopD, _loopLastStopDir, false);
                     Haptic(PlacementHaptics.Confirm);
                     EndRound(StopLoopEnd.Confirmed);
+                    LeaveIfLastRoundHasNoGap();
                     return;
                 }
                 Adjust("confirm_ignored", _stopD, DirName(_loopDir), false);
@@ -1336,12 +1375,19 @@ namespace IFS.SceneSpec.Placement
                 }
             }
             // ④ 시간 상한
-            if (_now - _roundStart >= RoundLimitSeconds(_loopPlan[_roundIndex]) - Eps)
+            if (RoundActiveSeconds >= RoundLimitSeconds(_loopPlan[_roundIndex]) - Eps)   // CP20: XR이 끊겨 멈춘 시간은 빼고 잰다
             {
                 string reason = _loopMoving ? StopLoopEnd.TimeoutMoving : StopLoopEnd.TimeoutStopped;
                 Adjust("timeout", _stopD, _loopMoving ? DirName(_loopDir) : _loopLastStopDir, false);
                 EndRound(reason);
+                LeaveIfLastRoundHasNoGap();
             }
+        }
+
+        /// <summary>마지막 라운드를 알림 없이 끝냈으면(EndRound가 간격을 0으로 둠) 같은 프레임에 다음 단계로 간다 — 지시문이 한 프레임도 남지 않게(G83).</summary>
+        void LeaveIfLastRoundHasNoGap()
+        {
+            if (!_roundActive && _roundIndex + 1 >= _loopPlan.Count && _now >= _itiUntil - Eps) GoTo(Next(PlacementPhase.StopDistance));
         }
 
         /// <summary>stoprounds.csv end_reason 값.</summary>
@@ -1381,6 +1427,7 @@ namespace IFS.SceneSpec.Placement
             _loopDir = plan.StartsApproaching ? -1 : 1;
             _stopD = plan.StartM;
             _roundStart = _lastChange = _now;
+            _roundXrPausedS = 0;
             _lastToggle = double.NegativeInfinity;
             _loopStops.Clear();
             _loopPoints.Clear();
@@ -1431,14 +1478,18 @@ namespace IFS.SceneSpec.Placement
             };
             _writer?.StopRound(r);
             Event("stop_round_end", $"round={plan.Round};end_reason={reason};final_m={(final.HasValue ? F(final.Value) : "")};" +
-                                    $"n_stops={r.NStops};duration_ms={r.DurationMs}");
+                                    $"n_stops={r.NStops};duration_ms={r.DurationMs};xr_paused_ms={Ms(_roundXrPausedS)}");
             _roundActive = false;
             _loopMoving = false;
             _visible = false;
             _state = StateIdle;
-            _itiUntil = _now + _cfg.stopItiSeconds;
+            // 2026-11-28 G83: 마지막 라운드 뒤에는 다음 라운드가 없다 — 확정했으면 확정 알림을 stopItiSeconds 동안 보이고(G78-d),
+            // 확정하지 않았으면(시간 초과) 기다리지 않고 다음 단계로 간다(라운드 사이 지시문을 보이지 않음).
+            bool last = _roundIndex + 1 >= _loopPlan.Count;
+            bool noticeAfterLast = confirmed && _text[PlacementTaskText.ConfirmDoneKey] != null;
+            _itiUntil = last && reason != StopLoopEnd.Aborted && !noticeAfterLast ? _now : _now + _cfg.stopItiSeconds;
             if (reason == StopLoopEnd.Aborted) ShowText(PlacementTaskText.StopLoopKey);   // 중단: 알림 없음
-            else ShowStopRoundGapText(plan, confirmed);
+            else if (!last || noticeAfterLast) ShowStopRoundGapText(plan, confirmed);
         }
 
         /// <summary>라운드 사이 간격(stopItiSeconds)의 안내(2026-11-28 연구 책임자 결정). 확정했으면 confirm_done, 연습 뒤 첫 본 라운드 전이면

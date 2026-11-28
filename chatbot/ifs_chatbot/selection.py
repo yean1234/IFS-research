@@ -320,8 +320,8 @@ class SelectionFlow:
     def _shape_items(self) -> list:
         """(G82) 그림 프롬프트에 넣을 LLM 형태 이름. 채택 없음·판정이 선 세션·[그 말이 아니에요]를 누른 뒤면 빈 목록."""
         r = self.shape_llm
-        if not r or r.get("rejected") or llm_fill_mod.session_flag(self.s):
-            return []
+        if not r or r.get("route") != "llm" or r.get("rejected") or llm_fill_mod.session_flag(self.s):
+            return []                                    # (CP20) route가 llm이 아니면(근거 줄을 보일 수 없음 등) 쓰지 않음
         return llm_shape_mod.shape_items_from(r.get("call"))
 
     @property
@@ -914,12 +914,16 @@ class SelectionFlow:
             rec["status"] = status
             if status != ng.OK:
                 rec.update(blockReason=res.get("blockReason"), blockDetail=res.get("blockDetail"), error=res.get("error"))
+                if res.get("gate") is not None:
+                    rec["gate"] = copy.deepcopy(res["gate"])   # G83-d: 막힌 메시의 관문 점수(personLikeScore·labelScores, 사이드카 그대로)
                 self._log_event("selection:none_gen", {"status": status, "blockReason": rec["blockReason"],
                                                        "seconds": rec["seconds"]})
                 self._apply_choice(NONE_CHOICE)
                 return
             cid = self._add_after_none_candidate(a)
             rec.update(asset={**public_asset(a), "origin": ng.ORIGIN}, candidateId=cid, displayPosition=0)
+            if rec.get("shapeLlmUsed") and self.shape_llm is not None:
+                self.shape_llm["candidateExposed"] = True    # G83-d: LLM 형태 이름으로 만든 물체가 후보 화면에 나옴
             if rec.get("llmPromptUsed"):
                 self.data["llmFillExposed"] = True        # G77: LLM 형태 낱말로 만든 후보가 화면에 나옴
             self.data["stage"] = "selecting"
@@ -1065,8 +1069,8 @@ class SelectionFlow:
                 "model": copy.deepcopy(c.get("model")), "promptVersion": (c.get("prompt") or {}).get("promptVersion"),
                 "promptSha256": (c.get("prompt") or {}).get("promptSha256"), "validatorRules": c.get("validatorRules"),
                 "seed": (c.get("options") or {}).get("seed"), "lineStages": copy.deepcopy(c.get("lineStages")),
-                "exposed": False, "imageChosen": False, "candidateChosen": None, "rejected": False, "rejectedAt": None,
-                "call": copy.deepcopy(call)}
+                "exposed": False, "imageChosen": False, "candidateExposed": False, "candidateChosen": None,
+                "rejected": False, "rejectedAt": None, "basisShown": None, "call": copy.deepcopy(call)}
 
     def _shape_llm_work(self, rec: dict, r: int, at: str) -> None:
         """(G82) 스레드: LLM 형태 이름 한 번(잠금 밖, 시간 한도는 설정). 끝나면 잠금 안에서 같은 회차를 이어 간다."""
@@ -1087,6 +1091,15 @@ class SelectionFlow:
                 return
             route = "llm" if call.get("status") == "ok" and call.get("adopted") else "none"
             self.shape_llm = self._shape_llm_record(route, call.get("skipReason") or call.get("status"), call)
+            if route == "llm":
+                # (CP20) 근거 줄을 원문 글자 그대로 보일 수 없으면(인용·구간 불일치) 채택하지 않은 것으로 다룬다 → 지금 경로(LLM 없음)
+                ad = call["adopted"]
+                bs = llm_shape_mod.basis_display(self._confirmed_norm() or "", ad.get("quote"), ad.get("charSpan"),
+                                                 self.protocol.text("llm_shape_basis"))
+                self.shape_llm["basisShown"] = bs
+                if not bs["displayable"]:
+                    route = "none"
+                    self.shape_llm.update(route=route, routeReason="basis_" + (bs["fallback"] or "not_displayable"))
             self.data["generation"]["shapeLlm"] = self.shape_llm
             rec.pop("shapeLlmPending", None)
             self._log_event("selection:shape_llm", {"status": call.get("status"), "route": route,
@@ -1186,6 +1199,12 @@ class SelectionFlow:
                 self.shape_llm["exposed"] = True          # G82: LLM 형태 이름으로 그린 그림이 화면에 나옴
                 if isinstance(self.shape_llm.get("call"), dict):
                     self.shape_llm["call"]["exposure"].update(exposed=True, at=now_iso())
+                if not (self.shape_llm.get("basisShown") or {}).get("displayable"):
+                    # G83-b: 화면의 근거 낱말 = LLM 인용 구간 안의 마지막 명사 덩어리(원문 글자 그대로). LLM 인용과 함께 기록
+                    it = (rec.get("shapeLlmItems") or [{}])[0]
+                    self.shape_llm["basisShown"] = llm_shape_mod.basis_display(
+                        self._confirmed_norm() or "", it.get("quote"), it.get("charSpan"), self.protocol.text("llm_shape_basis"))
+                rec["shapeLlmBasisShown"] = copy.deepcopy(self.shape_llm["basisShown"])
             if rec.get("llmPromptUsed"):
                 self.data["llmFillExposed"] = True        # G77: LLM 형태 낱말로 그린 그림이 화면에 나옴
             self.data["stage"] = "picking"
@@ -1421,7 +1440,8 @@ class SelectionFlow:
                 rec["chosen"] = cid == rec["candidateId"]     # G73: [맞는 게 없어요] 뒤 만든 후보(그 시도의 것)를 골랐는가
                 if rec.get("shapeLlmUsed") and self.shape_llm is not None and rec["chosen"]:
                     self.shape_llm["candidateChosen"] = True     # G82: LLM 형태 이름으로 만든 물체를 골랐음
-        if self.shape_llm is not None and self.shape_llm.get("exposed") and self.shape_llm.get("candidateChosen") is None:
+        # G83-d: 만든 물체가 후보 화면에 나온 적이 있을 때만 false(그림 단계에서 끝남·메시 관문 차단이면 null 그대로)
+        if self.shape_llm is not None and self.shape_llm.get("candidateExposed") and self.shape_llm.get("candidateChosen") is None:
             self.shape_llm["candidateChosen"] = False
         if cid not in offered:
             self.data["form"]["asset"] = None
@@ -2002,7 +2022,7 @@ class SelectionFlow:
                 # G73: 생성 경로 상태(화면: 대기·완료 안내·못 만듦 안내. 사유는 연구자 보기)
                 out["afterNone"] = {k: an.get(k) for k in ("status", "blockReason", "error", "candidateId", "noneAt",
                                                             "startedAt", "endedAt", "seconds", "participantSkippedWait",
-                                                            "attempt", "seed")}
+                                                            "attempt", "seed", "basisRejected")}
                 out["afterNone"]["timeoutS"] = an["setting"]["timeoutS"]
                 ip = an.get("imagePick")
                 if ip is not None:
@@ -2013,10 +2033,10 @@ class SelectionFlow:
                                             imagePickStatus=ip["status"])
                     if self.stage == "picking" and an.get("shapeLlmUsed"):
                         # G82: 그림을 그린 근거 낱말(참여자 원문 그대로, 영어 이름은 보이지 않음)과 [그 말이 아니에요]
-                        q = (an.get("shapeLlmItems") or [{}])[0].get("quote")
-                        if q:
-                            out["llmShapeBasis"] = {"quote": q,
-                                                    "text": self.protocol.text("llm_shape_basis").replace("{quote}", q)}
+                        # G83-b: 보이는 낱말은 인용 구간 안의 명사 부분(shapeLlmBasisShown, 노출 때 정해 기록한 것)
+                        bs = an.get("shapeLlmBasisShown") or {}
+                        if bs.get("displayable") and bs.get("shownText") and bs.get("text"):
+                            out["llmShapeBasis"] = {"quote": bs["shownText"], "text": bs["text"]}
                     if self.stage == "picking":
                         shown = sorted((x for x in ip["images"] if x["shown"]), key=lambda x: x["position"])
                         out["imagePick"] = {"round": ip["round"], "images": [

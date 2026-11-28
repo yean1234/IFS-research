@@ -27,7 +27,7 @@ ITEM = {"item": {"quote": "조약돌이", "charSpan": [0, 4], "en": "pebble"}}
 def gcfg(tmp_path, on=True, **over):
     c = pcfg(tmp_path)
     if on:
-        c = c.with_overrides(**{"gen3d.on_none_llm_shape": True, "selection.protocol": "selection_protocol.v0.12.json",
+        c = c.with_overrides(**{"gen3d.on_none_llm_shape": True, "selection.protocol": "selection_protocol.v0.13.json",
                                 "gen3d.on_none_llm_shape_timeout_s": 5.0})
     return c.with_overrides(**over) if over else c
 
@@ -70,11 +70,15 @@ def test_protocol_012_adds_two_draft_phrases_only():
     assert "{quote}" in b["phrases"]["llm_shape_basis"]["text"] and b["phrases"]["llm_shape_basis_wrong_button"]["text"] == "그 말이 아니에요"
 
 
-def test_configs_experiment_off_and_test_config_on():
-    assert load_config("experiment").gen3d.on_none_llm_shape is False
-    t = load_config("experiment-g82")
+def test_configs_experiment_on_and_eval_config_kept():
+    # G83: 실험 설정에서 켬(문구 0.13). experiment-g82.toml은 3차 평가 재현용(문구 0.12)으로 남김 — 그 밖은 같다
+    e, t = load_config("experiment"), load_config("experiment-g82")
+    assert e.gen3d.on_none_llm_shape is True and e.selection.protocol == "selection_protocol.v0.13.json"
+    assert e.gen3d.on_none and e.gen3d.on_none_image_pick and e.mapping.mode == "v2" and e.mapping.llm_fill
     assert t.gen3d.on_none_llm_shape is True and t.selection.protocol == "selection_protocol.v0.12.json"
-    assert t.gen3d.on_none and t.gen3d.on_none_image_pick and t.mapping.mode == "v2"
+    assert t.gen3d == e.gen3d and t.mapping == e.mapping and t.interview == e.interview and t.llm == e.llm
+    from dataclasses import replace
+    assert t.selection == replace(e.selection, protocol="selection_protocol.v0.12.json")
 
 
 def test_runtime_refuses_protocol_without_basis_phrases(tmp_path):
@@ -114,7 +118,8 @@ def test_llm_shape_fills_prompt_basis_line_then_mesh(tmp_path, fake):
     v = f.view()
     assert v["stage"] == "picking" and len(llm.calls) == 1
     b = v["llmShapeBasis"]
-    assert b["quote"] == "조약돌이" and b["text"] == "'조약돌이'라고 하신 말을 바탕으로 모양을 만들어 볼게요."
+    # G83-b: 화면 낱말은 인용 구간 안의 명사 부분(원문 글자 그대로), 조사는 받침에 맞게
+    assert b["quote"] == "조약돌" and b["text"] == "'조약돌'이라고 하신 말을 바탕으로 모양을 만들어 볼게요."
     assert "pebble" not in json.dumps(b, ensure_ascii=False)                     # 영어 이름은 화면에 보이지 않음
     c0 = calls(tmp_path)[0]
     assert c0["imagePick"]
@@ -159,7 +164,7 @@ def test_second_round_reuses_without_recall(tmp_path, fake):
     assert v["stage"] == "generating"
     wait_stage(f)
     v = f.view()
-    assert v["stage"] == "picking" and v["afterNone"]["round"] == 1 and v["llmShapeBasis"]["quote"] == "조약돌이"
+    assert v["stage"] == "picking" and v["afterNone"]["round"] == 1 and v["llmShapeBasis"]["quote"] == "조약돌"
     assert len(llm.calls) == 1 and len(calls(tmp_path)) == 2
 
 
@@ -213,7 +218,7 @@ def test_api_reject_endpoint_and_web_wiring(tmp_path, fake):
     c.post(f"/api/sessions/{s.id}/selection", json={"candidateId": "none"})
     wait_stage(s.selection_flow)
     v = c.get(f"/api/sessions/{s.id}/selection").json()
-    assert v["stage"] == "picking" and v["llmShapeBasis"]["quote"] == "조약돌이"
+    assert v["stage"] == "picking" and v["llmShapeBasis"]["quote"] == "조약돌"
     assert c.get("/api/selection/config").json()["phrases"]["llm_shape_basis_wrong_button"] == "그 말이 아니에요"
     r = c.post(f"/api/sessions/{s.id}/selection/shape-basis/reject")
     assert r.status_code == 200 and r.json()["stage"] == "adjusting"
