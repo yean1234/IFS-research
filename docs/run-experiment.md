@@ -108,9 +108,9 @@ $env:IFS_LIVE=1; .venv\Scripts\python.exe -m pytest tests\test_experiment_config
 | 미리보기가 정지 그림·글 요약으로 내려감 | 1절 3번 빌드. 내려간 이유는 연구자 화면 "미리보기"와 `selection.json`의 `preview` |
 | 그 밖 | `docs/internal-trial-guide.md` 7절(알려진 한계), `unity/README.md` 「문제 해결」 |
 
-## 6. 생성 메시: [맞는 게 없어요] 뒤에만 (G73)
+## 6. 생성 메시: [맞는 게 없어요] 뒤에만 (G73·G75)
 
-`experiment.toml`은 `[gen3d] enabled = false`(생성 메시를 기본 후보로 두지 않음, G67-b)이고 `on_none = true`입니다.
+`experiment.toml`은 `[gen3d] enabled = false`(생성 메시를 기본 후보로 두지 않음, G67-b)이고 `on_none = true`, `on_none_image_pick = true`(G75 — 아래 6.1)입니다. 아래 첫 항목들은 G73 흐름이고, G75를 켜면 그 가운데 생성 단계가 6.1처럼 '그림 고르기 → 고른 그림으로 형태'로 바뀝니다.
 
 - 참여자가 후보 화면에서 처음 [맞는 게 없어요]를 누르면 서버가 확정 텍스트로 규칙 프롬프트를 만듭니다(`tools/gen3d/prompts.py`, 한→영 고정 사전, LLM 없음). 이 경로는 세션의 매퍼 spec을 함께 넘겨 매퍼 판단을 따릅니다(G73 후속): 매퍼가 형태에서 버린 낱말 — 움직임 비유의 매개어(「천이 펄럭이듯이 … 움직이는」의 '천'), 장소 용법(「안개 속에」), 직접 진술에 밀린 형상 낱말, 부정 — 은 프롬프트에 넣지 않고 `afterNone.prompt.dropped`에 사유(`mapper_action_simile` 등)와 함께 남깁니다(`promptRule: "mapper"`, builder `gen3d-shape-prompt/0.3.0+mapper-v2`). G62 기본 후보 경로와 오프라인 평가는 예전 규칙(0.2.0) 그대로입니다. 형태를 말하지 않았거나 사람·동물·안개처럼 메시로 만들지 않는 범주면 만들지 않고 "물체를 더 만들지 못했어요. 이어서 진행할게요."를 보인 뒤 예전처럼 조절로 갑니다.
 - 만들 수 있으면 대기 화면(「말씀하신 내용으로 모양을 하나 더 만들고 있어요. …」)이 나오고, 서버가 Ollama의 면담·가드 모델을 내린 뒤 저장소 밖 `gen3d-venv`로 `tools/gen3d/generate.py --pipeline sdxl-triposg`를 돌립니다. 끝나면 만든 물체가 후보 맨 앞(점선 테두리)에 더해지고 다시 고릅니다. 이 후보도 아니라고 하면 같은 프롬프트·seed + 1로 한 번 더 만들고, 그다음 [맞는 게 없어요]는 예전 경로입니다. 끝나면 내렸던 모델을 다시 올립니다. 모델을 내리기 전에 생성기 `--cache-probe`(모델 호출 없음, 2초 안팎)로 같은 프롬프트·seed·모델의 자산이 이미 있는지 보고, 있으면 모델을 내리지 않습니다(`afterNone.llmUnload.skipped = "cache_hit_expected"`, `afterNone.cacheProbe`).
@@ -119,6 +119,16 @@ $env:IFS_LIVE=1; .venv\Scripts\python.exe -m pytest tests\test_experiment_config
 - 기록: `selection.json`의 `generation.afterNone`(none 시각, 프롬프트와 낱말별 원문 위치, 모델 내림, 시작·끝·초, 결과와 사유, 모델·리비전·가중치 해시·seed, 골랐는지), `selection.afterNoneGeneration`. 생성기 입력·산출물·로그는 `gen3d-out/none-<세션ID>-…/`(저장소 밖).
 - 미리보기가 글 요약(none)으로 내려간 세션에서는 만들지 않습니다(보일 수 없음). 같은 서버에서 다른 세션이 면담 중이면 GPU를 비울 수 없어 만들지 않습니다(`interview_active`).
 - (CP13) 생성이 모델을 내린 때부터 다시 올리기가 끝날 때까지는 새 면담 세션 만들기·시작·답을 받지 않습니다(실험자 화면에 409와 「물체 생성 중이라 …」). 키워드 위기 문장은 막지 않습니다(모델 없이 고정 문구). 모델을 내리지 못하면 만들지 않습니다(`llm_unload_failed`). 다시 올리기에 실패하면 `/api/health`의 `gen3dOnNone.modelsReady`가 false가 되고, 가드 모델이 필수인 이 설정에서는 서버가 백그라운드로 다시 올려 돌아올 때까지 새 세션을 만들지 않습니다(「가드 모델이 준비되지 않았습니다 …」). 오래 이어지면 Ollama 상태를 확인합니다.
+
+### 6.1 참고 그림을 먼저 고르기 (G75, `on_none_image_pick = true`)
+
+- 처음 [맞는 게 없어요]를 누르면 서버가 같은 규칙 프롬프트에 무채색 화풍 고정 문구(흰 배경, 회색 점토 조형 하나 — `tools/gen3d/prompts.image_pick_prompt`)를 붙이고, 면담·가드 모델을 내린 뒤 생성기를 `--image-pick --seeds 0,1,2`로 돌려 SDXL 그림 3장을 그립니다. 그림마다 CLIP 사람·동물 관문을 거쳐 통과한 그림만 seed 순서로 보입니다. 끝나면 모델을 다시 올립니다(대기 화면: 「말씀하신 모양으로 그림을 그리고 있어요. …」, [기다리지 않고 넘어갈게요]는 그대로).
+- 고르기 화면(단계 `picking`): 「말씀하신 모양으로 그림을 그려 봤어요. 떠올리신 모양과 가장 가까운 그림을 골라 주세요. 색은 나중에 말씀하신 대로 칠하니, 모양만 봐 주세요.」와 그림마다 [이걸로 할게요], 아래에 [이 중에는 없어요]·[넘어갈게요]. 고르는 동안 면담·가드 모델은 올라가 있고, 고르는 시간에는 한도가 없습니다.
+- 그림을 고르면 모델을 다시 내리고 `--from-image <그 그림> --image-sha256 … --seed <그 그림의 seed>`로 TripoSG만 돌립니다(대기 문구는 G73 그대로). 만든 물체가 후보 맨 앞에 더해지고, 그 뒤는 위 G73과 같습니다(골라야만 장면에 씀).
+- [이 중에는 없어요] 또는 만든 물체에 다시 [맞는 게 없어요] → 새 seed 3개(3, 4, 5)로 2회차(`on_none_image_rounds = 2`). 그다음은 예전 경로(조절)입니다. 이 설정에서는 G73의 'seed + 1로 다시 만들기'를 쓰지 않습니다.
+- 관문을 통과한 그림이 없으면(`all_images_gated`)·형태를 말하지 않았으면·실패·시간 초과면 「물체를 더 만들지 못했어요. 이어서 진행할게요.」 뒤 예전 경로입니다. 한도는 그림 단계 `on_none_image_timeout_s`(180초)·형태 단계 `on_none_mesh_timeout_s`(180초), 각각 모델 내리기를 포함합니다.
+- 기록: 이 설정에서 [맞는 게 없어요]를 누른 세션의 `selection.json`은 `ifs-selection/0.4`(`shared/schemas/selection.v0.4.json`)입니다. `generation.afterNone.imagePick`에 회차마다 seed, 그림 sha256, 관문 결과, 보여 준 순서, 고른 자리(또는 none·skipped), 시각, 프롬프트·builder·화풍 판이 남고, 앞 회차는 `afterNoneEarlier`에 있습니다. 그림 고르기 화면에 노출된 세션은 `generation.imagePickExposed = true`입니다. 세션 로그 사건은 `selection:image_pick`(running·shown·picked·none)입니다. 그림 파일은 `gen3d-out/none-<세션ID>-…-r<회차>-img/images/`(저장소 밖)에 있습니다. 헤드셋 러너는 0.4를 0.3과 같은 규칙으로 읽습니다.
+- 실측(합성 대사 2개, 이 PC): `docs/validation/run-g75-image-pick/README.md`.
 
 ## 7. 아직 사람이 정할 것 (이 문서가 켜지 않은 것)
 
