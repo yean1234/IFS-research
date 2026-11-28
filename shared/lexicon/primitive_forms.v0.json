@@ -7,7 +7,7 @@
   "description": "단순 도형 목록: 형태 후보의 기본값을 정하는 규칙([gen3d] default_form_source = \"auto\")만 읽는다(chatbot/ifs_chatbot/form_assets.py judge_default_form). 말한 형태 낱말이 모두 이 목록에 있고 절차 사전이 그 문장에서 실제로 그 형상으로 옮겼으면 절차 메시가 기본 후보, 하나라도 아니면 생성 메시가 기본 후보다. 사전·규칙만 쓴다(LLM 없음, AGENTS.md 원칙 1). 장면 슬롯 값은 바꾸지 않는다. 모든 항목은 연구자가 보탠 초안이다(source added). 실제 참여자 응답 문장을 넣지 않는다(원칙 6).",
   "keyedTo": {
     "lexicon": "shape_prompt_en.v0.json",
-    "lexiconVersion": "0.2.0",
+    "lexiconVersion": "0.2.1",
     "key": "사이드카 prompt.tokens[].lexiconKey(= 형태 사전 항목 ko를 '+'로 이은 것). 형태 사전 낱말이 바뀌면 이 목록도 다시 본다."
   },
   "howToEdit": [

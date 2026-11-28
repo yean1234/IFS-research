@@ -491,7 +491,7 @@ def test_flag_after_success_does_not_return_cache(tmp_path):
 
 def test_validator_rules_recorded_and_schema_05_accepts_it(tmp_path):
     rt, s, llm = session(tmp_path, T_COLOR, [item(T_COLOR, "color", "green", "쑥색")], sid="SYN-G77-VR")
-    assert s.llm_fill["validatorRules"] == lf.VALIDATOR_RULES == "ifs-llm-fill-validator/0.3.0"
+    assert s.llm_fill["validatorRules"] == lf.VALIDATOR_RULES == "ifs-llm-fill-validator/0.4.0"
     f = s.selection()
     v = f.start()
     if v["stage"] == "selecting":
@@ -790,3 +790,14 @@ def test_experiment_sets_llm_fill_seed_explicitly():
     src = (REPO_ROOT / "chatbot" / "config" / "experiment.toml").read_text(encoding="utf-8")
     assert re.search(r"^llm_fill_seed\s*=\s*0\b", src, re.M)
     assert load_config("experiment").mapping.llm_fill_seed == MappingConfig().llm_fill_seed
+
+
+# ── 0.4.0(G82 3단계): 속성 비유 판정이 어근(XR) 서술어를 놓치던 버그 ─────────────────────────────
+@pytest.mark.parametrize("text", ["주전자처럼 단단해요.", "주전자처럼 묵직해요.", "주전자처럼 딱딱해요.", "주전자같이 싸늘해요.",
+                                  "주전자처럼 답답해요.", "주전자처럼 무거워요.", "주전자처럼 차가워요."])
+def test_shape_noun_simile_of_root_predicate_rejected(tmp_path, text):
+    """'X처럼 단단해요'(Kiwi: XR + XSA + EF)도 '무거워요'(VA)처럼 속성 비유로 막는다(G77 형태 낱말 칸)."""
+    q = text.split("처럼")[0].split("같이")[0]
+    rt, s, llm = session(tmp_path, text, [item(text, "shape_noun", "kettle", q, evt="shape_noun")], sid="SYN-G77-XR")
+    assert "simile_of_predicate" in reasons(s)[("shape_noun", q)]
+    assert not [a for a in s.llm_fill["adopted"] if a["slot"] == "shape_noun"]

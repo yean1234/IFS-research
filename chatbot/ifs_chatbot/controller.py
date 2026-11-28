@@ -237,6 +237,25 @@ class Runtime:
             if not hasattr(self.backend, "structured"):
                 self.warnings.append(f"[mapping] llm_fill: 백엔드 {getattr(self.backend, 'name', '?')}는 JSON 호출을 못 해 "
                                      "부르지 않습니다(사유 backend_unsupported로 기록).")
+        # G82: [맞는 게 없어요] 뒤 규칙이 형태 명사를 못 잡았을 때 LLM 형태 이름([gen3d] on_none_llm_shape, 기본 끔·어느 설정에서도 켜지 않음).
+        # 꺼져 있으면 None — 출력·기록 그대로. 첫 단계: 시작 점검과 프롬프트 파일만 읽고 선택 단계에는 잇지 않았다(llm_shape.py)
+        self.llm_shape_prompt = None
+        if cfg.gen3d.on_none_llm_shape:
+            from . import llm_shape as llm_shape_mod
+            missing = llm_shape_mod.config_problems(cfg)
+            if missing:
+                raise RuntimeError("[gen3d] on_none_llm_shape를 켰는데 " + "; ".join(missing) + " — 시작을 멈춥니다(G82).")
+            self.llm_shape_prompt = llm_shape_mod.ShapePrompt(cfg.gen3d.on_none_llm_shape_prompt)   # 파일이 없으면 시작을 멈춤
+            need = ("llm_shape_basis", "llm_shape_basis_wrong_button")
+            if cfg.selection.enabled and any(k not in self.selection_protocol.data["phrases"] for k in need):
+                raise RuntimeError("[gen3d] on_none_llm_shape를 켰는데 선택 단계 문구에 " + "·".join(need) + "가 없습니다 — 참여자가 그림을 "
+                                   "그린 근거 낱말을 보고 거절할 수 없어 시작을 멈춥니다(selection_protocol.v0.12.json 이상을 쓰세요).")
+            if not hasattr(self.backend, "structured"):
+                self.warnings.append(f"[gen3d] on_none_llm_shape: 백엔드 {getattr(self.backend, 'name', '?')}는 JSON 호출을 못 해 "
+                                     "부르지 않습니다(사유 backend_unsupported로 기록).")
+            if cfg.mapping.llm_fill:
+                self.warnings.append("[gen3d] on_none_llm_shape가 켜져 G77([mapping] llm_fill)의 형태 낱말 칸(shape_noun)은 내밀지 않습니다"
+                                     "(다른 빈 슬롯 제안은 그대로).")
         self.none_gen: NoneGenService | None = None
         if cfg.gen3d.on_none and cfg.selection.enabled:
             root = Path(cfg.gen3d.assets_dir)
@@ -365,6 +384,7 @@ class Session:
         self.llm_fill: dict | None = None          # (G77) 확정 직후 LLM 빈칸 채우기 기록([mapping] llm_fill일 때만)
         self.llm_fill_cache: dict = {}             # (확정 텍스트 해시, 모델 digest, 프롬프트 판·해시) → 기록(다시 부르지 않음)
         self.llm_fill_skips: list = []              # (G77, CP15 재검토) 판정 때문에 건너뛴 기록(캐시의 앞 결과를 덮지 않고 따로)
+        self.llm_shape_cache: dict = {}            # (G82) 형태 이름 호출 캐시(세션 안만). [gen3d] on_none_llm_shape일 때만 쓰임
         self.steps: list[Step] = self.p.sequence(condition)
         self.idx = 0
         self.step_state: dict[int, dict] = defaultdict(dict)

@@ -1444,8 +1444,10 @@
                           },
                           "provenance": {
                             "enum": [
-                              "llm_quoted"
-                            ]
+                              "llm_quoted",
+                              "llm_translated"
+                            ],
+                            "description": "llm_quoted = G77 인용 형태 낱말, llm_translated = G82 LLM 형태 이름"
                           }
                         }
                       }
@@ -1478,7 +1480,10 @@
                       ]
                     },
                     "shapeSource": {
-                      "const": "llm_quoted"
+                      "enum": [
+                        "llm_quoted",
+                        "llm_translated"
+                      ]
                     }
                   }
                 }
@@ -1871,7 +1876,8 @@
                     "blocked",
                     "failed",
                     "timeout",
-                    "cancelled"
+                    "cancelled",
+                    "basis_rejected"
                   ]
                 },
                 "pickedPosition": {
@@ -1939,6 +1945,31 @@
                   }
                 }
               }
+            },
+            "shapeLlmUsed": {
+              "type": "boolean",
+              "description": "G82: 이 회차 그림 프롬프트의 중심 형태 명사 자리를 LLM 형태 이름으로 메웠는가(prompt.shapeSource llm_translated). [gen3d] on_none_llm_shape를 켰을 때만 키가 있다"
+            },
+            "shapeLlmItems": {
+              "type": "array",
+              "description": "G82: 그 회차에 쓴 LLM 형태 이름(검증기를 통과한 것, 0–1개). en은 기록에만 있고 참여자 화면에는 보이지 않는다",
+              "items": {
+                "type": "object",
+                "required": ["quote", "charSpan", "en"],
+                "properties": {
+                  "quote": {"type": "string"},
+                  "charSpan": {"type": "array", "items": {"type": "integer", "minimum": 0}, "minItems": 2, "maxItems": 2},
+                  "en": {"type": "string"}
+                }
+              }
+            },
+            "shapeLlmPending": {
+              "type": "boolean",
+              "description": "G82: LLM 형태 이름을 기다리는 중(끝나면 키가 빠짐)"
+            },
+            "basisRejected": {
+              "type": "boolean",
+              "description": "G82: 그림 고르기 화면에서 [그 말이 아니에요]를 눌렀음(LLM을 다시 부르지 않고 기존 none 경로, imagePick.outcome basis_rejected)"
             }
           }
         },
@@ -1956,6 +1987,38 @@
         "llmPromptUsed": {
           "type": "boolean",
           "description": "G77: 어느 회차든 그림 프롬프트의 형태 자리를 LLM 인용 낱말로 메웠는가"
+        },
+        "shapeLlm": {
+          "type": "object",
+          "description": "G82([gen3d] on_none_llm_shape를 켰을 때만, 하위 호환 추가 — 판은 0.5 그대로, 러너는 generation을 읽지 않음): [맞는 게 없어요] 뒤 LLM 형태 이름. route rule(규칙이 중심 형태 명사를 잡음, 부르지 않음) | llm(채택된 이름으로 그림 프롬프트를 메움) | none(그 밖: 규칙 차단·판정·LLM null·기각·실패). call은 chatbot/ifs_chatbot/llm_shape.py 기록 원본(원시 출력·검증 항목·기각 사유·입력 해시·검증 입력 해시·캐시 키 포함). 원시 출력은 참여자 확정 텍스트에서 온 것이라 git 밖 로그에만 있다",
+          "required": ["version", "route", "called", "candidate", "adopted", "exposed", "imageChosen", "rejected"],
+          "properties": {
+            "version": {"const": "ifs-shape-llm-record/0.1.0"},
+            "route": {"enum": ["rule", "llm", "none"]},
+            "routeReason": {"type": ["string", "null"]},
+            "called": {"type": "boolean"},
+            "candidate": {"type": "boolean", "description": "LLM이 null이 아닌 항목을 냈는가"},
+            "adopted": {"oneOf": [{"type": "null"}, {"type": "object", "required": ["quote", "charSpan", "en"]}]},
+            "status": {"type": ["string", "null"]},
+            "skipReason": {"type": ["string", "null"]},
+            "rejectReasons": {"type": "array", "items": {"type": "string"}},
+            "rawText": {"type": ["string", "null"]},
+            "inputTextSha256": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/sha256"}]},
+            "validatorTextSha256": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/sha256"}]},
+            "model": {"type": ["object", "null"]},
+            "promptVersion": {"type": ["string", "null"]},
+            "promptSha256": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/sha256"}]},
+            "validatorRules": {"type": ["string", "null"]},
+            "seed": {"type": ["integer", "null"]},
+            "lineStages": {"type": ["object", "null"]},
+            "exposed": {"type": "boolean", "description": "LLM 형태 이름으로 그린 그림이 화면에 나왔는가"},
+            "imageChosen": {"type": "boolean", "description": "그 그림 가운데 하나를 골랐는가"},
+            "candidateChosen": {"type": ["boolean", "null"], "description": "그 그림으로 만든 물체를 후보에서 골랐는가(노출되지 않았으면 null)"},
+            "rejected": {"type": "boolean", "description": "[그 말이 아니에요]를 눌렀는가"},
+            "rejectedAt": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/isoTime"}]},
+            "participantLeftBeforeResult": {"type": "boolean"},
+            "call": {"type": ["object", "null"]}
+          }
         }
       }
     }

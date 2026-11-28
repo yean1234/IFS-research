@@ -182,6 +182,15 @@ class Gen3DConfig:
     # 단계별 대기 한도(모델 내리기 포함, 참여자가 고르는 시간은 넣지 않음). 넘으면 프로세스를 끄고 기존 none 경로
     on_none_image_timeout_s: float = 180.0
     on_none_mesh_timeout_s: float = 180.0
+    # G82(원칙 1의 세 번째 예외, 2026-11-28 연구 책임자 결정): [맞는 게 없어요] 뒤 규칙 그림 프롬프트에 중심 형태 명사가 없을 때만,
+    # 면담 LLM이 확정 텍스트에서 형태 낱말 하나를 인용(charSpan)하고 영어 이름(소문자 명사 1–2낱말)을 낸다(llm_shape.py). 문장·꾸밈말·
+    # 부정 틀은 규칙이 붙인다. 기본 끔이고 **어느 설정에서도 켜지 않았다**(첫 단계는 오프라인 평가만, 선택 단계에 잇지 않음).
+    # 켜려면 on_none·on_none_image_pick·[selection] enabled·[mapping] mode = "v2"가 함께 있어야 한다(아니면 시작을 멈춤).
+    # 켜지면 G77([mapping] llm_fill)은 형태 낱말 칸(shape_noun)만 내밀지 않는다(다른 빈 슬롯 제안은 그대로).
+    on_none_llm_shape: bool = False
+    on_none_llm_shape_timeout_s: float = 20.0
+    on_none_llm_shape_seed: int = 0
+    on_none_llm_shape_prompt: str = "llm_shape.v0.3.0.json"   # chatbot/prompts/llm_shape/ 아래 고정 프롬프트(판·status draft). 0.1.x는 평가 기록용
 
 
 @dataclass(frozen=True)
