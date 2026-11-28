@@ -156,6 +156,19 @@ class OllamaBackend:
                                 meta={"eval_count": d.get("eval_count"), "prompt_eval_count": d.get("prompt_eval_count"),
                                       "done_reason": d.get("done_reason"), "options": body["options"]})
 
+    def prime_context(self) -> dict:
+        """(G85 재현성) 바로 앞 요청과 프롬프트 앞부분이 같으면 Ollama(llama.cpp)가 KV 캐시를 다시 써서 같은 입력·온도 0·seed라도
+        출력이 달라질 수 있다(docs/validation/run-g85-rewrite/repro_probe.json). 관계없는 짧은 요청('.', 예열과 같은 몸체 —
+        num_ctx가 같아 모델을 다시 적재하지 않음)을 하나 보내 캐시가 맞는 부분을 채팅 틀 머리로만 줄인다. 실패해도 예외를 내지 않는다.
+        다른 세션의 요청이 그 사이에 끼면 보장되지 않는다(기록만)."""
+        t0 = time.perf_counter()
+        try:
+            r = httpx.post(f"{self.host}/api/chat", timeout=self.cfg.timeout_s, json=self.warmup_body())
+            ok = r.status_code < 400
+        except Exception:  # noqa: BLE001
+            ok = False
+        return {"ok": ok, "ms": int((time.perf_counter() - t0) * 1000)}
+
     def warmup(self) -> None:
         """첫 호출의 모델 적재 시간(수십 초)을 세션 밖에서 미리 쓴다. num_ctx는 실제 호출(generate·structured)과 같게 준다
         (다르면 Ollama가 다음 호출에서 모델을 다시 적재한다 — G77 실측)."""

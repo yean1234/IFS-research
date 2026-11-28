@@ -256,6 +256,29 @@ class Runtime:
             if cfg.mapping.llm_fill:
                 self.warnings.append("[gen3d] on_none_llm_shape가 켜져 G77([mapping] llm_fill)의 형태 낱말 칸(shape_noun)은 내밀지 않습니다"
                                      "(다른 빈 슬롯 제안은 그대로).")
+        # G85: 규칙 → G82 → G85. 규칙과 G82가 모두 형태를 얻지 못했을 때 LLM 다시 쓰기 재료·중립 형태([gen3d] on_none_llm_rewrite, 기본 끔).
+        # 꺼져 있으면 None — 출력·기록 그대로
+        self.llm_rewrite_prompt = None
+        if cfg.gen3d.on_none_llm_rewrite:
+            from . import llm_rewrite as llm_rewrite_mod
+            missing = llm_rewrite_mod.config_problems(cfg)
+            if missing:
+                raise RuntimeError("[gen3d] on_none_llm_rewrite를 켰는데 " + "; ".join(missing) + " — 시작을 멈춥니다(G85).")
+            self.llm_rewrite_prompt = llm_rewrite_mod.RewritePrompt(cfg.gen3d.on_none_llm_rewrite_prompt)
+            need = ("llm_rewrite_basis", "llm_rewrite_added", "llm_rewrite_neutral", "llm_rewrite_waiting")
+            if cfg.selection.enabled and any(k not in self.selection_protocol.data["phrases"] for k in need):
+                raise RuntimeError("[gen3d] on_none_llm_rewrite를 켰는데 선택 단계 문구에 " + "·".join(need) + "가 없습니다 — "
+                                   "참여자가 근거 낱말·덧붙임·중립 형태 안내를 볼 수 없어 시작을 멈춥니다(selection_protocol.v0.14.json 이상을 쓰세요).")
+            from . import wordnet_check
+            wi = wordnet_check.info()
+            if wi["status"] != "available":
+                self.warnings.append(f"[gen3d] on_none_llm_rewrite: WordNet 상위어 검사를 쓸 수 없습니다({wi['reason']}) — "
+                                     "영어 금지 목록과 그림·메시 관문만으로 막습니다(기록 wordnet.status unavailable).")
+        if cfg.gen3d.on_none_mesh_retry and cfg.selection.enabled:
+            need = ("mesh_retry_note",)
+            if any(k not in self.selection_protocol.data["phrases"] for k in need):
+                raise RuntimeError("[gen3d] on_none_mesh_retry를 켰는데 선택 단계 문구에 mesh_retry_note가 없습니다 — "
+                                   "시작을 멈춥니다(selection_protocol.v0.14.json 이상을 쓰세요).")
         self.none_gen: NoneGenService | None = None
         if cfg.gen3d.on_none and cfg.selection.enabled:
             root = Path(cfg.gen3d.assets_dir)
@@ -385,6 +408,7 @@ class Session:
         self.llm_fill_cache: dict = {}             # (확정 텍스트 해시, 모델 digest, 프롬프트 판·해시) → 기록(다시 부르지 않음)
         self.llm_fill_skips: list = []              # (G77, CP15 재검토) 판정 때문에 건너뛴 기록(캐시의 앞 결과를 덮지 않고 따로)
         self.llm_shape_cache: dict = {}            # (G82) 형태 이름 호출 캐시(세션 안만). [gen3d] on_none_llm_shape일 때만 쓰임
+        self.llm_rewrite_cache: dict = {}          # (G85) 다시 쓰기 호출 캐시(세션 안만). [gen3d] on_none_llm_rewrite일 때만 쓰임
         self.steps: list[Step] = self.p.sequence(condition)
         self.idx = 0
         self.step_state: dict[int, dict] = defaultdict(dict)

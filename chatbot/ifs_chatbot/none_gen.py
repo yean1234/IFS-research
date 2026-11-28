@@ -95,13 +95,17 @@ def _load_prompts():
 
 
 def shape_prompt(text: str, spec: dict | None = None, llm_items: list | None = None,
-                 llm_shape_items: list | None = None, stage_rule: dict | None = None) -> dict:
+                 llm_shape_items: list | None = None, stage_rule: dict | None = None,
+                 rewrite_item: dict | None = None, neutral_form: dict | None = None) -> dict:
     """규칙 프롬프트(tools/gen3d/prompts.shape_prompt). 같은 (텍스트, spec) → 같은 결과. Kiwi 분석기를 함께 쓰므로 잠그고 부른다.
     spec을 주면 매퍼 규칙(그 spec이 형태에서 버린 낱말은 빼고 dropped에 사유).
     (G77) llm_items = 확정 직후 검증을 통과한 LLM 인용 형태 낱말(llm_fill.shape_items_from). 규칙이 형태를 못 만들 때만 쓰인다.
     (G82) llm_shape_items = 검증을 통과한 LLM 형태 이름(llm_shape.shape_items_from). 규칙에 중심 형태 명사가 없을 때만 쓰인다.
     (G84 후속) stage_rule = llm_shape.session_stage_rule(세션 단계 표지가 applied일 때만) — 형태를 묻는 단계 밖 줄의 낱말을 뺀다."""
     with _prompts_lock:
+        if rewrite_item or neutral_form:        # (G85) 다시 쓰기 재료·고정 중립 형태(규칙·G82가 형태를 못 얻었을 때만 쓰인다)
+            return _load_prompts().shape_prompt(text, mapper_spec=spec, stage_rule=stage_rule,
+                                                llm_rewrite_item=rewrite_item or None, neutral_form=neutral_form or None)
         if llm_shape_items:
             return _load_prompts().shape_prompt(text, mapper_spec=spec, llm_shape_items=llm_shape_items, stage_rule=stage_rule)
         if llm_items:
@@ -117,7 +121,7 @@ def image_pick_prompt(p: dict) -> dict:
 def prompt_record(p: dict) -> dict:
     """기록용 프롬프트: 낱말별 원문 근거(ko·charSpan = 정규화한 확정 텍스트 기준)와 사전·규칙 판.
     (G75) 이미지 고르기 화풍을 더한 프롬프트면 imageStyle·imageStyleVersion을 덧붙인다(G73 기록에는 키가 없다)."""
-    extra = {k: p[k] for k in ("imageStyle", "imageStyleVersion", "shapeSource") if k in p}
+    extra = {k: p[k] for k in ("imageStyle", "imageStyleVersion", "shapeSource", "rewriteAddedCount", "neutralForm") if k in p}
     return {**_prompt_record(p), **extra}
 
 
@@ -145,11 +149,14 @@ class NoneGenJob:
     def __init__(self, session_id: str, text: str, key: str, prompt_text: str, seed: int = 0, attempt: int = 0,
                  spec: dict | None = None, kind: str = "full", seeds: list[int] | None = None,
                  image: tuple[Path, str] | None = None, timeout_s: float | None = None, llm_items: list | None = None,
-                 llm_shape_items: list | None = None, stage_rule: dict | None = None):
+                 llm_shape_items: list | None = None, stage_rule: dict | None = None,
+                 rewrite_item: dict | None = None, neutral_form: dict | None = None):
         self.session_id, self.text, self.key, self.prompt_text = session_id, text, key, prompt_text
         self.stage_rule = stage_rule or None   # (G84 후속) 생성기 입력 줄의 lineStageRule(있을 때만 — 생성기도 같은 단계 규칙)
         self.llm_items = llm_items or None     # (G77) 생성기 입력 줄의 llmShapeItems(있을 때만 키를 적는다)
         self.llm_shape_items = llm_shape_items or None   # (G82) 생성기 입력 줄의 llmTranslatedShapeItems(있을 때만)
+        self.rewrite_item = rewrite_item or None         # (G85) 생성기 입력 줄의 llmRewriteItem(있을 때만)
+        self.neutral_form = neutral_form or None         # (G85) 생성기 입력 줄의 neutralForm(있을 때만)
         self.spec = spec                    # 세션 매퍼 spec(있으면 생성기도 매퍼 규칙으로 프롬프트를 다시 만든다)
         self.seed, self.attempt = int(seed), int(attempt)
         # (G75) kind: full(G73 한 번에 이미지 → 형태) | image(이미지 여러 장 + 이미지 관문만) | mesh(고른 이미지로 형태만)
@@ -295,7 +302,8 @@ class NoneGenService:
 
     # ── 생성 전 판정(모델 호출 없음) ─────────────────────────────────────────
     def precheck(self, spec: dict, confirmed_text: str | None, preview_mode: str, other_interviews: list[str],
-                 llm_items: list | None = None, llm_shape_items: list | None = None, stage_rule: dict | None = None) -> dict:
+                 llm_items: list | None = None, llm_shape_items: list | None = None, stage_rule: dict | None = None,
+                 rewrite_item: dict | None = None, neutral_form: dict | None = None) -> dict:
         """→ {prompt(기록용 | None), blockReason, blockDetail}. blockReason이 None이면 만들 수 있다. 같은 입력 → 같은 판정."""
         out = {"prompt": None, "blockReason": None, "blockDetail": None}
 
@@ -307,7 +315,8 @@ class NoneGenService:
         if not isinstance(confirmed_text, str) or not confirmed_text.strip():
             return block(B_NO_TEXT)
         try:
-            p = shape_prompt(confirmed_text, spec, llm_items, llm_shape_items, stage_rule)   # 세션 매퍼(v2) 판단을 따름(G73 후속). (G77) LLM 형태 낱말은 빈자리만
+            p = shape_prompt(confirmed_text, spec, llm_items, llm_shape_items, stage_rule,   # 세션 매퍼(v2) 판단을 따름(G73 후속). (G77) LLM 형태 낱말은 빈자리만
+                             rewrite_item, neutral_form)
             if self.image_pick:
                 p = image_pick_prompt(p)                     # (G75) 무채색 화풍 고정 문구(내용 토큰은 그대로)
         except (Exception, SystemExit) as exc:  # noqa: BLE001 — 프롬프트를 못 만들면 만들지 않는다(fail closed)
@@ -476,7 +485,8 @@ class NoneGenService:
               spec: dict | None = None, other_interviews=None, kind: str = "full", seeds: list[int] | None = None,
               image: tuple[Path, str] | None = None, seed: int | None = None,
               llm_items: list | None = None, llm_shape_items: list | None = None,
-              stage_rule: dict | None = None) -> "NoneGenJob | str":
+              stage_rule: dict | None = None, rewrite_item: dict | None = None,
+              neutral_form: dict | None = None) -> "NoneGenJob | str":
         """백그라운드로 시작 → NoneGenJob, 못 하면 사유 문자열(B_BUSY·B_INTERVIEW). on_done(result)은 생성 스레드에서 한 번.
         (CP13-2) 면담 중 세션(other_interviews — 목록 또는 호출 가능)과 들어가 있는 면담 요청(inflight)을 같은 잠금 안에서 보고
         예약한다. (CP13-3) 앞 작업이 모델을 다시 올리는 중(reloading)이면 예약하고, 새 작업은 그 재적재가 끝난 뒤에 시작한다.
@@ -491,12 +501,14 @@ class NoneGenService:
                 return B_INTERVIEW
             if kind == "full":
                 job = NoneGenJob(session_id, text, key, prompt_text, self.seed_for(attempt), attempt, spec, llm_items=llm_items,
-                                 llm_shape_items=llm_shape_items, stage_rule=stage_rule)
+                                 llm_shape_items=llm_shape_items, stage_rule=stage_rule, rewrite_item=rewrite_item,
+                                 neutral_form=neutral_form)
             else:
                 job = NoneGenJob(session_id, text, key, prompt_text, seed if seed is not None else (seeds or [self.seed])[0],
                                  attempt, spec, kind=kind, seeds=seeds, image=image,
                                  timeout_s=self.image_timeout_s if kind == "image" else self.mesh_timeout_s,
-                                 llm_items=llm_items, llm_shape_items=llm_shape_items, stage_rule=stage_rule)
+                                 llm_items=llm_items, llm_shape_items=llm_shape_items, stage_rule=stage_rule,
+                                 rewrite_item=rewrite_item, neutral_form=neutral_form)
             self.active = job
 
         def work():
@@ -556,6 +568,10 @@ class NoneGenService:
                 row["llmShapeItems"] = job.llm_items
             if job.llm_shape_items:
                 row["llmTranslatedShapeItems"] = job.llm_shape_items
+            if job.rewrite_item:
+                row["llmRewriteItem"] = job.rewrite_item
+            if job.neutral_form:
+                row["neutralForm"] = job.neutral_form
             if job.stage_rule:
                 row["lineStageRule"] = job.stage_rule
         (inputs / "sentences.json").write_text(json.dumps([row], ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
@@ -654,6 +670,10 @@ class NoneGenService:
                 row["llmShapeItems"] = job.llm_items
             if job.llm_shape_items:
                 row["llmTranslatedShapeItems"] = job.llm_shape_items
+            if job.rewrite_item:
+                row["llmRewriteItem"] = job.rewrite_item
+            if job.neutral_form:
+                row["neutralForm"] = job.neutral_form
             if job.stage_rule:
                 row["lineStageRule"] = job.stage_rule
         (inputs / "sentences.json").write_text(json.dumps([row], ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

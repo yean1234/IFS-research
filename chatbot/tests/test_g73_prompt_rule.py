@@ -53,7 +53,7 @@ def test_action_simile_medium_is_dropped_researcher_session(mapper):
     assert {"ko": "천", "charSpan": alts[0]["_provenance"][0]["charSpan"], "reason": "mapper_action_simile"} in new["dropped"]
     assert ("동그란", "round") in content(new)                            # 직접 말한 모양어는 그대로
     assert new["promptRule"] == "mapper" and new["builderVersion"].endswith("+mapper-v2")
-    assert old["promptRule"] == "text" and old["builderVersion"] == "gen3d-shape-prompt/0.5.0"
+    assert old["promptRule"] == "text" and old["builderVersion"] == "gen3d-shape-prompt/0.6.0"
 
 
 def test_simile_medium_with_its_own_subject_keeps_the_subject(mapper):

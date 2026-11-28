@@ -51,7 +51,8 @@ def test_experiment_runtime_starts_with_g82_on_and_g77_shape_slot_off(tmp_path):
         "llm.backend": "offline", "guard.model_backend": "none", "guard.required": False,
         "session.log_dir": str(tmp_path / "logs"), "preview.mode": "none"})
     rt = Runtime(cfg)                                          # 시작 점검(G82 문구·설정 조합) 통과
-    assert rt.selection_protocol.version == "0.13.0" and rt.llm_shape_prompt is not None
+    assert rt.selection_protocol.version == "0.14.0" and rt.llm_shape_prompt is not None   # G85: experiment는 0.14
+    assert rt.llm_rewrite_prompt is not None                   # G85 시작 점검도 통과
     assert ls.g77_shape_slot_open(cfg) is False                # G77 형태 낱말 칸은 자동으로 꺼짐
     assert any("shape_noun" in w for w in rt.warnings)
 

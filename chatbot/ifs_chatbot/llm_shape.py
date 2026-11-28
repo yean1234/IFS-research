@@ -285,8 +285,9 @@ def _head_noun(ctx, item: dict):
     return next((k for k in reversed(idx) if ctx.toks[k].form not in ctx.rt.generic), None)
 
 
-def validate(ctx, raw, stages: dict | None = None, allowed_stages: tuple = ()) -> tuple[dict | None, list[str]]:
-    """raw = LLM의 item(null 또는 dict) → (정리한 항목, 기각 사유). null이면 (None, [])."""
+def validate(ctx, raw, stages: dict | None = None, allowed_stages: tuple = (), english=None) -> tuple[dict | None, list[str]]:
+    """raw = LLM의 item(null 또는 dict) → (정리한 항목, 기각 사유). null이면 (None, []).
+    english(G85): 영어 규칙 함수(기본 prompts.llm_shape_english_reasons — G82 한 낱말). G85 대상 명사구는 1–3낱말 규칙을 넘긴다."""
     if raw is None:
         return None, []
     if not isinstance(raw, dict) or not isinstance(raw.get("en"), str):
@@ -317,7 +318,8 @@ def validate(ctx, raw, stages: dict | None = None, allowed_stages: tuple = ()) -
     if "simile_of_predicate" in why and _simile_of_shape_verb(ctx, out):
         why.remove("simile_of_predicate")
         out["exempted"] = ["simile_of_predicate:shape_verb"]
-    why += [r for r in ctx.pm.llm_shape_english_reasons(raw["en"]) if r not in why]
+    en_rule = english or ctx.pm.llm_shape_english_reasons
+    why += [r for r in en_rule(raw["en"]) if r not in why]
     return out, why
 
 

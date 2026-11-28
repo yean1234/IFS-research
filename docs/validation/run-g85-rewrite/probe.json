@@ -1,0 +1,498 @@
+[
+ {
+  "word": "바윗덩이",
+  "ruleReasons": [
+   "no_shape_stated",
+   "rule_has_shape",
+   "rule_has_shape"
+  ]
+ },
+ {
+  "word": "쇳덩이",
+  "ruleReasons": [
+   "rule_has_shape",
+   "rule_has_shape",
+   "rule_has_shape"
+  ]
+ },
+ {
+  "word": "흙덩이",
+  "ruleReasons": [
+   "no_shape_stated",
+   "no_shape_stated",
+   "no_shape_stated"
+  ]
+ },
+ {
+  "word": "진흙덩이",
+  "ruleReasons": [
+   "no_shape_stated",
+   "no_shape_stated",
+   "no_shape_stated"
+  ]
+ },
+ {
+  "word": "바윗돌",
+  "ruleReasons": [
+   "no_shape_stated",
+   "no_shape_stated",
+   "no_shape_stated"
+  ]
+ },
+ {
+  "word": "디딤돌",
+  "ruleReasons": [
+   "no_shape_stated",
+   "no_shape_stated",
+   "no_shape_stated"
+  ]
+ },
+ {
+  "word": "숫돌",
+  "ruleReasons": [
+   "no_shape_stated",
+   "no_shape_stated",
+   "no_shape_stated"
+  ]
+ },
+ {
+  "word": "주춧돌",
+  "ruleReasons": [
+   "no_shape_stated",
+   "no_shape_stated",
+   "no_shape_stated"
+  ]
+ },
+ {
+  "word": "나무토막",
+  "ruleReasons": [
+   "no_shape_stated",
+   "no_shape_stated",
+   "no_shape_stated"
+  ]
+ },
+ {
+  "word": "통나무",
+  "ruleReasons": [
+   "rule_has_shape",
+   "rule_has_shape",
+   "rule_has_shape"
+  ]
+ },
+ {
+  "word": "장작",
+  "ruleReasons": [
+   "no_shape_stated",
+   "no_shape_stated",
+   "no_shape_stated"
+  ]
+ },
+ {
+  "word": "쐐기",
+  "ruleReasons": [
+   "no_shape_stated",
+   "no_shape_stated",
+   "no_shape_stated"
+  ]
+ },
+ {
+  "word": "말뚝",
+  "ruleReasons": [
+   "no_shape_stated",
+   "no_shape_stated",
+   "no_shape_stated"
+  ]
+ },
+ {
+  "word": "방망이",
+  "ruleReasons": [
+   "no_shape_stated",
+   "no_shape_stated",
+   "no_shape_stated"
+  ]
+ },
+ {
+  "word": "다리미",
+  "ruleReasons": [
+   "no_shape_stated",
+   "no_shape_stated",
+   "no_shape_stated"
+  ]
+ },
+ {
+  "word": "주전자",
+  "ruleReasons": [
+   "rule_has_shape",
+   "rule_has_shape",
+   "rule_has_shape"
+  ]
+ },
+ {
+  "word": "국자",
+  "ruleReasons": [
+   "rule_has_shape",
+   "rule_has_shape",
+   "rule_has_shape"
+  ]
+ },
+ {
+  "word": "주걱",
+  "ruleReasons": [
+   "no_shape_stated",
+   "no_shape_stated",
+   "no_shape_stated"
+  ]
+ },
+ {
+  "word": "깔때기",
+  "ruleReasons": [
+   "rule_has_shape",
+   "rule_has_shape",
+   "rule_has_shape"
+  ]
+ },
+ {
+  "word": "확성기",
+  "ruleReasons": [
+   "no_shape_stated",
+   "no_shape_stated",
+   "no_shape_stated"
+  ]
+ },
+ {
+  "word": "우산",
+  "ruleReasons": [
+   "rule_has_shape",
+   "rule_has_shape",
+   "rule_has_shape"
+  ]
+ },
+ {
+  "word": "자물쇠",
+  "ruleReasons": [
+   "rule_has_shape",
+   "rule_has_shape",
+   "rule_has_shape"
+  ]
+ },
+ {
+  "word": "나사못",
+  "ruleReasons": [
+   "no_shape_stated",
+   "no_shape_stated",
+   "no_shape_stated"
+  ]
+ },
+ {
+  "word": "도르래",
+  "ruleReasons": [
+   "no_shape_stated",
+   "no_shape_stated",
+   "no_shape_stated"
+  ]
+ },
+ {
+  "word": "저울추",
+  "ruleReasons": [
+   "no_shape_stated",
+   "no_shape_stated",
+   "no_shape_stated"
+  ]
+ },
+ {
+  "word": "병뚜껑",
+  "ruleReasons": [
+   "no_shape_stated",
+   "no_shape_stated",
+   "no_shape_stated"
+  ]
+ },
+ {
+  "word": "항아리",
+  "ruleReasons": [
+   "rule_has_shape",
+   "rule_has_shape",
+   "rule_has_shape"
+  ]
+ },
+ {
+  "word": "물동이",
+  "ruleReasons": [
+   "no_shape_stated",
+   "no_shape_stated",
+   "no_shape_stated"
+  ]
+ },
+ {
+  "word": "바가지",
+  "ruleReasons": [
+   "no_shape_stated",
+   "no_shape_stated",
+   "no_shape_stated"
+  ]
+ },
+ {
+  "word": "소쿠리",
+  "ruleReasons": [
+   "no_shape_stated",
+   "no_shape_stated",
+   "no_shape_stated"
+  ]
+ },
+ {
+  "word": "빗자루",
+  "ruleReasons": [
+   "rule_has_shape",
+   "rule_has_shape",
+   "rule_has_shape"
+  ]
+ },
+ {
+  "word": "수세미",
+  "ruleReasons": [
+   "no_shape_stated",
+   "no_shape_stated",
+   "no_shape_stated"
+  ]
+ },
+ {
+  "word": "방석",
+  "ruleReasons": [
+   "rule_has_shape",
+   "rule_has_shape",
+   "rule_has_shape"
+  ]
+ },
+ {
+  "word": "깡통",
+  "ruleReasons": [
+   "no_shape_stated",
+   "no_shape_stated",
+   "no_shape_stated"
+  ]
+ },
+ {
+  "word": "단지",
+  "ruleReasons": [
+   "no_shape_stated",
+   "no_shape_stated",
+   "no_shape_stated"
+  ]
+ },
+ {
+  "word": "화분",
+  "ruleReasons": [
+   "rule_has_shape",
+   "rule_has_shape",
+   "rule_has_shape"
+  ]
+ },
+ {
+  "word": "모래시계",
+  "ruleReasons": [
+   "rule_has_shape",
+   "rule_has_shape",
+   "rule_has_shape"
+  ]
+ },
+ {
+  "word": "요강",
+  "ruleReasons": [
+   "no_shape_stated",
+   "no_shape_stated",
+   "no_shape_stated"
+  ]
+ },
+ {
+  "word": "호루라기",
+  "ruleReasons": [
+   "no_shape_stated",
+   "no_shape_stated",
+   "no_shape_stated"
+  ]
+ },
+ {
+  "word": "팽이",
+  "ruleReasons": [
+   "no_shape_stated",
+   "no_shape_stated",
+   "no_shape_stated"
+  ]
+ },
+ {
+  "word": "맷방석",
+  "ruleReasons": [
+   "no_shape_stated",
+   "no_shape_stated",
+   "no_shape_stated"
+  ]
+ },
+ {
+  "word": "바퀴통",
+  "ruleReasons": [
+   "no_shape_stated",
+   "no_shape_stated",
+   "no_shape_stated"
+  ]
+ },
+ {
+  "word": "굴렁쇠",
+  "ruleReasons": [
+   "no_shape_stated",
+   "no_shape_stated",
+   "no_shape_stated"
+  ]
+ },
+ {
+  "word": "쟁반",
+  "ruleReasons": [
+   "rule_has_shape",
+   "rule_has_shape",
+   "rule_has_shape"
+  ]
+ },
+ {
+  "word": "숟가락",
+  "ruleReasons": [
+   "rule_has_shape",
+   "rule_has_shape",
+   "rule_has_shape"
+  ]
+ },
+ {
+  "word": "젓가락",
+  "ruleReasons": [
+   "no_shape_stated",
+   "no_shape_stated",
+   "no_shape_stated"
+  ]
+ },
+ {
+  "word": "솥뚜껑",
+  "ruleReasons": [
+   "no_shape_stated",
+   "no_shape_stated",
+   "no_shape_stated"
+  ]
+ },
+ {
+  "word": "옹기",
+  "ruleReasons": [
+   "no_shape_stated",
+   "no_shape_stated",
+   "no_shape_stated"
+  ]
+ },
+ {
+  "word": "뚝배기",
+  "ruleReasons": [
+   "rule_has_shape",
+   "rule_has_shape",
+   "rule_has_shape"
+  ]
+ },
+ {
+  "word": "절구통",
+  "ruleReasons": [
+   "no_shape_stated",
+   "no_shape_stated",
+   "no_shape_stated"
+  ]
+ },
+ {
+  "word": "물레",
+  "ruleReasons": [
+   "no_shape_stated",
+   "no_shape_stated",
+   "no_shape_stated"
+  ]
+ },
+ {
+  "word": "부채",
+  "ruleReasons": [
+   "no_shape_stated",
+   "no_shape_stated",
+   "no_shape_stated"
+  ]
+ },
+ {
+  "word": "촛대",
+  "ruleReasons": [
+   "no_shape_stated",
+   "no_shape_stated",
+   "no_shape_stated"
+  ]
+ },
+ {
+  "word": "나팔",
+  "ruleReasons": [
+   "no_shape_stated",
+   "no_shape_stated",
+   "no_shape_stated"
+  ]
+ },
+ {
+  "word": "기왓장",
+  "ruleReasons": [
+   "no_shape_stated",
+   "no_shape_stated",
+   "no_shape_stated"
+  ]
+ },
+ {
+  "word": "솔방울",
+  "ruleReasons": [
+   "rule_has_shape",
+   "no_shape_stated",
+   "no_shape_stated"
+  ]
+ },
+ {
+  "word": "도토리",
+  "ruleReasons": [
+   "rule_has_shape",
+   "rule_has_shape",
+   "rule_has_shape"
+  ]
+ },
+ {
+  "word": "밤송이",
+  "ruleReasons": [
+   "no_shape_stated",
+   "no_shape_stated",
+   "no_shape_stated"
+  ]
+ },
+ {
+  "word": "감자",
+  "ruleReasons": [
+   "rule_has_shape",
+   "rule_has_shape",
+   "rule_has_shape"
+  ]
+ },
+ {
+  "word": "고구마",
+  "ruleReasons": [
+   "no_shape_stated",
+   "no_shape_stated",
+   "no_shape_stated"
+  ]
+ },
+ {
+  "word": "양파",
+  "ruleReasons": [
+   "rule_has_shape",
+   "rule_has_shape",
+   "rule_has_shape"
+  ]
+ },
+ {
+  "word": "호두",
+  "ruleReasons": [
+   "rule_has_shape",
+   "rule_has_shape",
+   "rule_has_shape"
+  ]
+ }
+]

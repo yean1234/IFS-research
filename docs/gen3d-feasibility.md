@@ -119,6 +119,9 @@ A·B만으로 분위기·재질 8개 대부분을 덮을 수 있고, 이 8개는
 cd "<repo>/.."
 python -m venv --system-site-packages gen3d-venv
 gen3d-venv/Scripts/python -m pip install "trimesh==4.*" pygltflib kiwipiepy==0.24.1 kiwipiepy_model==0.24.0 jsonschema
+gen3d-venv/Scripts/python -m pip install nltk==3.10.4   # (G85, 2026-11-29) 생성 직전 재검증의 WordNet 상위어 검사. 말뭉치는 서버와 같은
+#    <repo>/chatbot/.venv/nltk_data(chatbot/README.md 「실행」에서 한 번 내려받음)를 읽는다 — 이 venv에는 말뭉치를 따로 받지 않음.
+#    없으면 G85 재료를 쓰지 않는다(fail closed)
 #    (rembg 2.0.57·onnxruntime 1.18.1·scikit-image 0.26.0·omegaconf·einops는 시스템에 이미 있음)
 
 # 1) 외부 코드와 가중치(한 번만, 저장소 밖)

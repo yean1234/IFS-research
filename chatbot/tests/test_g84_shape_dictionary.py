@@ -82,8 +82,9 @@ def heads(p):
 
 # ── 사전 파일 ────────────────────────────────────────────────────────────────
 def test_lexicon_version_and_source():
-    assert LEX["lexiconVersion"] == "0.3.0"
-    ch = LEX["changes"][0]
+    assert LEX["lexiconVersion"] == "0.3.1"                                  # G85 3차: 0.3.1 = 0.3.0 + 다리미 한 항목
+    assert LEX["changes"][0]["version"] == "0.3.1" and "다리미" in LEX["changes"][0]["what"]
+    ch = next(c for c in LEX["changes"] if c["version"] == "0.3.0")
     assert ch["version"] == "0.3.0" and "2026-11-28 G84, 연구 책임자 결정: 원칙 2 유지 + 사전 넓히기" in ch["what"]
     assert 60 <= len(WORDS) <= 120
     # 낱말마다 사전 항목이 있고(붙여 쓴 꼴), 같은 낱말의 모든 항목이 같은 영어를 낸다
@@ -99,7 +100,7 @@ def test_lexicon_version_and_source():
 
 def test_primitive_forms_rechecked_for_new_lexicon():
     prim = json.loads(shared("lexicon", "primitive_forms.v0.json").read_text(encoding="utf-8"))
-    assert prim["keyedTo"]["lexiconVersion"] == "0.3.0"
+    assert prim["keyedTo"]["lexiconVersion"] == LEX["lexiconVersion"]
     assert not ({e["lexiconKey"] for e in prim["entries"]} & G84_KEYS)       # 더한 낱말은 모두 사물 → 단순 도형 아님
 
 
@@ -127,7 +128,7 @@ def test_new_word_is_rule_head_noun(mapper, word):
 def test_same_text_same_result(mapper):
     a, _ = mapper("돌덩이예요.")
     b, _ = mapper("돌덩이예요.")
-    assert a == b and a["text"].startswith("a single rock,") and a["lexiconVersion"] == "0.3.0"
+    assert a == b and a["text"].startswith("a single rock,") and a["lexiconVersion"] == "0.3.1"
 
 
 @pytest.mark.parametrize("word", sorted(WORDS))
@@ -182,7 +183,7 @@ def test_frame_word_not_used_for_generation(mapper, text, why):
     assert p["status"] == "blocked" and p["blockReason"] == "no_shape_stated" and (call, route) == (True, "no_shape_stated")
     d = [x for x in p["dropped"] if x["reason"] == why]
     assert d and why in d[0]["frameReasons"]
-    assert p["builderVersion"] == "gen3d-shape-prompt/0.5.0+mapper-v2"
+    assert p["builderVersion"] == "gen3d-shape-prompt/0.6.0+mapper-v2"
 
 
 @pytest.mark.parametrize("text,en", [("돌덩이처럼 생겼어요.", "rock"), ("돌덩이 같아요.", "rock"), ("돌덩이 같은 게 있어요.", "rock"),
@@ -228,6 +229,6 @@ def test_g82_does_not_revive_worry_line_word(tmp_path):
     norm = "\n".join(lines)
     rt, s, llm = interview_session(tmp_path, lines, {"item": {"quote": "가방", "charSpan": [0, 2], "en": "bag"}}, sid="SYN-G84-W")
     rec = ls.run(s, s.scene_spec, s.log.data["confirmedText"])
-    assert rec["ruleRoute"]["reason"] == "no_shape_stated" and rec["rule"]["builderVersion"].startswith("gen3d-shape-prompt/0.5.0")
+    assert rec["ruleRoute"]["reason"] == "no_shape_stated" and rec["rule"]["builderVersion"].startswith("gen3d-shape-prompt/0.6.0")
     assert rec["status"] == "rejected" and "non_shape_stage_line" in rec["rejectReasons"] and rec["adopted"] is None
     assert norm == s.log.data["confirmedText"]

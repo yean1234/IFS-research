@@ -74,11 +74,14 @@ def test_protocol_012_adds_two_draft_phrases_only():
 def test_configs_experiment_on_and_eval_config_kept():
     # G83: 실험 설정에서 켬(문구 0.13). experiment-g82.toml은 3차 평가 재현용(문구 0.12)으로 남김 — 그 밖은 같다
     e, t = load_config("experiment"), load_config("experiment-g82")
-    assert e.gen3d.on_none_llm_shape is True and e.selection.protocol == "selection_protocol.v0.13.json"
+    assert e.gen3d.on_none_llm_shape is True and e.selection.protocol == "selection_protocol.v0.14.json"   # G85: 0.14(0.13 + G85 문구)
     assert e.gen3d.on_none and e.gen3d.on_none_image_pick and e.mapping.mode == "v2" and e.mapping.llm_fill
     assert t.gen3d.on_none_llm_shape is True and t.selection.protocol == "selection_protocol.v0.12.json"
-    assert t.gen3d == e.gen3d and t.mapping == e.mapping and t.interview == e.interview and t.llm == e.llm
     from dataclasses import replace
+    # G85(2026-11-29)는 experiment에서만 켬 — G82 재현용 설정은 G85 두 키만 꺼진 채로 나머지가 같다
+    assert t.gen3d.on_none_llm_rewrite is False and t.gen3d.on_none_mesh_retry is False
+    assert t.gen3d == replace(e.gen3d, on_none_llm_rewrite=False, on_none_mesh_retry=False)
+    assert t.mapping == e.mapping and t.interview == e.interview and t.llm == e.llm
     assert t.selection == replace(e.selection, protocol="selection_protocol.v0.12.json")
 
 

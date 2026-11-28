@@ -5,3 +5,4 @@ httpx>=0.27
 jsonschema>=4.20
 kiwipiepy>=0.20
 pytest>=8
+nltk==3.10.4      # G85: WordNet 3.0 상위어 검사(chatbot/ifs_chatbot/wordnet_check.py). 말뭉치는 설치 때 한 번 내려받음 — chatbot/README.md 「실행」

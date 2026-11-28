@@ -187,14 +187,16 @@ def build_spec(text: str, sid: str) -> dict:
 # 모든 내용 토큰은 원문 charSpan을 단다. 거슬러 갈 수 없는 토큰이 하나라도 있으면 막는다(fail closed).
 # 막는 경우 모델을 부르지 않는다: no_shape_stated, excluded_category, untraceable_token.
 # charSpan은 normalize_confirmed(text) 기준이고 sourceTextSha256도 그 문자열의 해시다(세션 confirmedText와 같은 정규화).
-SHAPE_BUILDER_VERSION = "gen3d-shape-prompt/0.5.0"     # 0.2.0: 부속물 부정 틀, pluralStated
+SHAPE_BUILDER_VERSION = "gen3d-shape-prompt/0.6.0"     # 0.2.0: 부속물 부정 틀, pluralStated
+# 0.6.0(G85 판정 뒤, 2026-11-29): 몸 낱말로 돌려 말하기(body_part_attachments — 부위 낱말 + 달린·있는·붙은·난·개인)면
+# blockReason body_part_attachment(금지 범주처럼 생성하지 않음, G82·G85도 부르지 않음). 세 판 모두 0.6.0으로 올림.
 # 0.5.0(G84 후속, 2026-11-28): 문맥 규칙 — 사전 낱말이 든 문장이 과거·이전·전언·가정이거나(llm_fill.frame_reasons),
 # 비유 원천이 속성 비유('X처럼 단단해요', llm_fill.simile_of_predicate — '처럼 생겼어요'는 형태 진술로 둠, llm_shape._simile_of_shape_verb)이거나,
 # 단계 규칙(stage_rule)을 받았을 때 형태를 묻는 단계 밖 줄이면(llm_shape.line_stage_reason) 그 낱말을 쓰지 않는다. G82·G77 검증기와 같은 함수.
 # 매퍼(IFSSceneSpec)는 건드리지 않는다. 설정 플래그 없이 항상(세 판 모두 0.5.0으로 올림).
 # (G73 후속) 매퍼 판단을 따르는 규칙: shape_prompt(text, mapper_spec=세션 spec)일 때만. 텍스트만 넘기면 0.2.0 그대로
 # (G62 기본 후보 경로·eval_g62 재현성). 판 이름에 규칙을 붙여 사이드카 builderVersion만 보고도 가를 수 있게 한다.
-SHAPE_BUILDER_VERSION_MAPPER = "gen3d-shape-prompt/0.5.0+mapper-v2"
+SHAPE_BUILDER_VERSION_MAPPER = "gen3d-shape-prompt/0.6.0+mapper-v2"
 PROMPT_RULE_TEXT, PROMPT_RULE_MAPPER = "text", "mapper"
 SHAPE_LEXICON = CHATBOT.parent / "shared" / "lexicon" / "shape_prompt_en.v0.json"
 _NOUNISH = {"NNG", "NNP", "XSN"}
@@ -326,8 +328,10 @@ def shape_prompt_for_row(row: dict) -> dict:
             raise SystemExit(f"{row.get('id')}: promptRule mapper인데 mapperSpec이 없음")
         # (G77) 서버가 검증해 채택한 LLM 형태 낱말(있을 때만 키가 있다). 규칙이 형태를 못 만들었을 때만 쓰인다
         # (G82) 서버가 검증해 채택한 LLM 형태 이름(llmTranslatedShapeItems, 있을 때만). 규칙에 중심 형태 명사가 없을 때만 쓰인다
+        # (G85) 서버가 검증해 채택한 다시 쓰기 재료(llmRewriteItem) 또는 고정 중립 형태(neutralForm), 있을 때만
         p = shape_prompt(row["text"], mapper_spec=spec, llm_items=row.get("llmShapeItems"),
-                         llm_shape_items=row.get("llmTranslatedShapeItems"), stage_rule=row.get("lineStageRule"))
+                         llm_shape_items=row.get("llmTranslatedShapeItems"), stage_rule=row.get("lineStageRule"),
+                         llm_rewrite_item=row.get("llmRewriteItem"), neutral_form=row.get("neutralForm"))
     else:
         p = shape_prompt(row["text"])
     style = row.get("imageStyle")
@@ -348,7 +352,7 @@ IMAGE_PICK_SUFFIX = ("untextured monochrome gray clay sculpture", "single unifor
                      "centered", "entire object in view")
 IMAGE_PICK_NEGATIVE = ("colorful", "multicolored", "painted", "patterned", "glossy", "metallic", "reflections",
                        "background objects")
-SHAPE_BUILDER_VERSION_IMAGE_PICK = "gen3d-shape-prompt/0.5.0+imagepick"
+SHAPE_BUILDER_VERSION_IMAGE_PICK = "gen3d-shape-prompt/0.6.0+imagepick"
 
 
 def image_pick_prompt(p: dict) -> dict:
@@ -358,7 +362,9 @@ def image_pick_prompt(p: dict) -> dict:
     rule = p.get("promptRule")
     q["builderVersion"] = SHAPE_BUILDER_VERSION_IMAGE_PICK + ("+mapper-v2" if rule == PROMPT_RULE_MAPPER else "") \
         + (SHAPE_BUILDER_LLM_SUFFIX if p.get("shapeSource") == LLM_QUOTED else "") \
-        + (SHAPE_BUILDER_LLM_SHAPE_SUFFIX if p.get("shapeSource") == LLM_TRANSLATED else "")
+        + (SHAPE_BUILDER_LLM_SHAPE_SUFFIX if p.get("shapeSource") == LLM_TRANSLATED else "") \
+        + (SHAPE_BUILDER_LLM_REWRITE_SUFFIX if p.get("shapeSource") == LLM_REWRITE else "") \
+        + (SHAPE_BUILDER_NEUTRAL_SUFFIX if p.get("shapeSource") == SYSTEM_DEFAULT else "")
     q["imageStyle"] = IMAGE_PICK_STYLE_ID
     q["imageStyleVersion"] = IMAGE_PICK_STYLE_VERSION
     if p.get("status") != "ok" or not p.get("text"):
@@ -625,6 +631,296 @@ def _llm_shape_head(norm: str, items) -> dict | None:
     return None
 
 
+# ── G85: [맞는 게 없어요] 뒤 규칙·G82가 형태를 얻지 못했을 때 LLM이 구조화해 낸 재료(대상 명사구 + 모양 꾸밈)로 규칙이 조립 ──────
+# LLM은 문장을 쓰지 않는다. 서버 검증기(chatbot/ifs_chatbot/llm_rewrite.py)가 통과시킨 항목만 받고, 생성기 프로세스도 같은 함수로
+# 다시 확인한다(fail closed — 하나라도 어긋나면 이 항목을 쓰지 않음). 형태를 말하지 않았으면 고정 중립 형태(neutral_form_prompt).
+SHAPE_BUILDER_LLM_REWRITE_SUFFIX = "+llmrewrite-0.1.1"   # 0.1.1: 근거 꾸밈의 비유 구간·문맥(CP21-2)·WordNet(CP21 재검토) 재검증
+SHAPE_BUILDER_NEUTRAL_SUFFIX = "+neutral-0.1.0"
+LLM_REWRITE = "llm_rewrite"                             # (G85) 대상·근거 있는 꾸밈 토큰 출처
+LLM_REWRITE_ADDED = "llm_rewrite_added"                 # (G85) 근거 없이 덧붙인 꾸밈(닫힌 목록, 원문 구간 없음)
+SYSTEM_DEFAULT = "system_default"                       # (G85) 고정 중립 형태
+SHAPE_ADDED_LIST = CHATBOT.parent / "shared" / "lexicon" / "shape_added_adjectives.v0.json"
+SHAPE_EN_REWRITE_BLOCK = CHATBOT.parent / "shared" / "lexicon" / "shape_english_rewrite_block.v0.json"
+NEUTRAL_FORM = CHATBOT.parent / "shared" / "lexicon" / "neutral_form_prompt.v0.json"
+REWRITE_REASONS = ("english_material", "english_emotion", "english_quantity", "english_scene", "english_place",
+                   "english_style", "english_negation", "english_state")
+_rw = None
+
+
+class _RewriteLists:
+    def __init__(self):
+        def load(p):
+            raw = Path(p).read_text(encoding="utf-8")
+            return raw, json.loads(raw)
+        ra, a = load(SHAPE_ADDED_LIST)
+        rb, b = load(SHAPE_EN_REWRITE_BLOCK)
+        rn, n = load(NEUTRAL_FORM)
+        self.added = {"file": SHAPE_ADDED_LIST.name, "sha256": sha256_text(ra), "version": a["version"]}
+        self.block = {"file": SHAPE_EN_REWRITE_BLOCK.name, "sha256": sha256_text(rb), "version": b["version"]}
+        self.neutral = {"file": NEUTRAL_FORM.name, "sha256": sha256_text(rn), "version": n["version"]}
+        self.added_words = frozenset(a["words"])
+        self.max_added = int(a["maxAdded"])
+        c = b["categories"]
+        self.cat = {"english_scene": frozenset(c["scene_background"]), "english_place": frozenset(c["place_preposition"]),
+                    "english_style": frozenset(c["style"]), "english_negation": frozenset(c["negation"]),
+                    "english_state": frozenset(c["state_emotion"])}
+        self.wordnet = dict(b["wordnetHypernymCheck"])
+        tm = json.loads(SHAPE_EN_MOD_BLOCK.read_text(encoding="utf-8"))["categories"]["texture_material"]
+        self.head_material = frozenset(tm) | frozenset(c["headMaterial"])       # (CP21-1) 머리 낱말 재질
+        M = english_modifier_block()
+        lex_mods = {w for e in _shape_runtime().lex["entries"] if e["slot"] == "shape_modifier" for w in e["en"].split()}
+        self.rule_mods = frozenset(lex_mods)
+        not_shape = frozenset(b["detailAllowed"]["notShapeForRewrite"])
+        raw_m = json.loads(SHAPE_EN_MOD_BLOCK.read_text(encoding="utf-8"))
+        self.shape_adj = frozenset(raw_m["categories"]["shape_adjective"])
+        self.detail_allowed = (self.shape_adj | self.rule_mods | self.added_words) - not_shape
+        self.material = frozenset(raw_m["categories"]["texture_material"]) | M.first_only
+        self.emotion = frozenset(raw_m["categories"]["emotion_evaluation"])
+        self.quantity = frozenset(raw_m["categories"]["quantity"])
+        self.neutral_phrase = n["phrase"]
+        self.neutral_negative = list(n["negativeExtra"])
+
+
+def rewrite_lists() -> _RewriteLists:
+    global _rw
+    if _rw is None:
+        _rw = _RewriteLists()
+    return _rw
+
+
+def rewrite_english_reasons(value: str, role: str) -> list[str]:
+    """(G85) LLM 재료의 영어 → 기각 사유(비면 통과). role = subject(대상 명사구 1–3낱말) | detail(근거 있는 꾸밈 한 낱말) |
+    added(근거 없는 꾸밈 한 낱말, 닫힌 목록만). 서버 검증기와 생성 직전 재검증이 같은 함수를 쓴다(WordNet 검사는 서버만 — 여기 없음).
+    ① G77 금지 규칙 english_shape_reasons(형식·사람·동물·색·크기·재질·감정·안개·불꽃) ② 소문자 아님 → english_format
+    ③ G82 보충 금지(사람·동물·안개·불꽃 낱말) ④ G85 목록(재질·감정·개수·장면·장소 낱말·화풍·부정어·상태) ⑤ 역할별 모양 낱말 규칙."""
+    why = list(english_shape_reasons(value))
+    if "english_format" in why:
+        return why
+    if value != value.lower():
+        return ["english_format"]
+    L = rewrite_lists()
+    M = english_modifier_block()
+    B = english_block()
+    words = value.split()
+    forms = set()
+    for w in words:
+        forms |= _en_variants(w, B.irregular)
+    joined = _en_variants("".join(words), B.irregular)
+    if (forms | joined) & M.banned and "english_banned" not in why:
+        why.append("english_banned")
+    if (forms | joined) & M.non_meshable and "non_meshable" not in why:
+        why.append("non_meshable")
+    lists = {"english_material": L.material, "english_emotion": L.emotion, "english_quantity": L.quantity, **L.cat}
+    # 재질 낱말: 꾸미는 자리(앞 낱말·꾸밈)는 재질 목록 전체(first_only 포함), (CP21-1) 대상의 머리 낱말도 재질 이름이면 막는다
+    # (marble·sponge·iron·clay — texture_material + headMaterial). rock·stone·brick처럼 사물로도 쓰는 first_only 낱말은 머리에서는 막지 않음
+    mat_words = words[:-1] if role == "subject" else words
+    mat_forms = set()
+    for w in mat_words:
+        mat_forms |= _en_variants(w, B.irregular)
+    head_mat = role == "subject" and bool(_en_variants(words[-1], B.irregular) & L.head_material)
+    for k in REWRITE_REASONS:
+        if k == "english_material":
+            hit = bool(set(mat_words) & lists[k] or mat_forms & lists[k]) or head_mat
+        elif k == "english_place":
+            hit = bool(set(words) & lists[k])
+        else:
+            hit = bool(set(words) & lists[k] or forms & lists[k])
+        if hit:
+            why.append(k)
+    if role == "subject":
+        if forms & (L.shape_adj | L.rule_mods | L.added_words):
+            why.append("subject_modifier")                    # 모양 말은 꾸밈(details) 자리로 — 대상 명사구에 넣지 않음
+        elif len(words) >= 2 and (words[0] in M.first_only or (len(words[0]) >= M.adj_min and words[0].endswith(M.adj_suffixes))):
+            why.append("subject_modifier")
+    else:
+        if len(words) != 1:
+            why.append("detail_words")                        # 꾸밈은 한 낱말
+        allowed = L.added_words if role == "added" else L.detail_allowed
+        if words and words[0] not in allowed:
+            why.append("added_not_in_list" if role == "added" else "detail_not_shape_word")
+        if role == "detail" and words and words[0] in L.rule_mods and "english_color_size" in why:
+            why.remove("english_color_size")                  # 규칙 사전도 같은 영어로 옮기는 모양 꾸밈말(long·thick·thin)
+    return why
+
+
+_REWRITE_SIMILE = ("처럼", "같이", "같은", "같아", "같다", "마냥")
+
+
+def _simile_span(norm: str, s: int, e: int) -> bool:
+    """(0.1.1) 근거 꾸밈 구간이 비유 구문인가(글자만 — 서버 검증기 simile_detail과 같은 뜻, 생성기 쪽 재확인)."""
+    after = norm[e:e + 3].lstrip()
+    return any(m in norm[s:e] for m in _REWRITE_SIMILE) or after.startswith(_REWRITE_SIMILE)
+
+
+def _pred_units(toks, idx) -> list[int]:
+    """용언·어근 토큰(VA·VV·XR, 또는 부사 + 하다 꼴 '뾰족/MAG + 하/XSA')."""
+    return [k for k in idx if toks[k].base_tag in ("VA", "VV", "XR") or (
+        toks[k].base_tag == "MAG" and k + 1 < len(toks) and toks[k + 1].base_tag in ("XSA", "XSV")
+        and toks[k + 1].start == toks[k].end)]
+
+
+def rewrite_detail_attach_reason(doc, dspan, sspan) -> str | None:
+    """(G85 3차 판정 2) 근거 있는 꾸밈 구간 → 기각 사유(None이면 통과). 구간 안에 모양을 말하는 용언·어근이 있어야 하고, 그 용언이
+    ① 바로 뒤 명사가 대상 명사인 관형형('뾰족한 디딤돌')이거나 ② 대상 명사가 주어인 서술어('디딤돌이 뾰족해요')일 때만 받는다.
+    용언 앞에 다른 명사의 주어('주둥이가 긴 병', '끝이 뾰족한 숫돌')가 있으면 그 명사를 꾸미므로 기각. 서버 검증기와 생성기 재검증이 같이 쓴다."""
+    toks = doc.toks
+    s, e = dspan
+    idx = [k for k, t in enumerate(toks) if t.start < e and s < t.end]
+    preds = _pred_units(toks, idx)
+    if not preds:
+        return "detail_no_predicate"
+
+    def in_subj(k):
+        return toks[k].start < sspan[1] and sspan[0] < toks[k].end
+    first, p = preds[0], preds[-1]
+    sent = doc.sent[p]
+    b = first - 1
+    while b >= 0 and doc.sent[b] == sent and toks[b].base_tag == "MAG":
+        b -= 1
+    if b >= 1 and doc.sent[b] == sent and toks[b].base_tag == "JKS" and toks[b - 1].base_tag in ("NNG", "NNP", "NP")             and not in_subj(b - 1):
+        return "detail_other_subject"
+    k = p + 1
+    while k < len(toks) and doc.sent[k] == sent and (toks[k].base_tag in ("XSA", "XSV", "VX") or toks[k].base_tag.startswith("E")):
+        k += 1
+    if k < len(toks) and doc.sent[k] == sent and toks[k].base_tag in ("NNG", "NNP") and in_subj(k):
+        return None                                           # ① 관형형 + 대상 명사
+    heads = [m for m in range(len(toks)) if in_subj(m) and toks[m].base_tag in ("NNG", "NNP")]
+    if heads:
+        h = heads[-1]
+        j = h + 1
+        if doc.sent[h] == sent and h < first and j < len(toks) and toks[j].base_tag in ("JKS", "JX")                 and not any(toks[m].base_tag in ("JKS", "NNG", "NNP", "NP") for m in range(j + 1, first)):
+            return None                                       # ② 대상 명사가 주어인 서술어
+    return "detail_not_on_subject"
+
+
+def _rewrite_head(norm: str, item) -> dict | None:
+    """(G85) 서버가 채택한 재료 {subject: {en, quote, charSpan}, details: [{en, origin grounded|added, quote?, charSpan?}]}를
+    다시 확인한다(생성기 프로세스도 같은 판정). 대상 인용이 확정 텍스트 charSpan 글자와 같고, 모든 영어가 rewrite_english_reasons를
+    통과하고, 근거 있는 꾸밈은 인용이 맞고, 덧붙임은 닫힌 목록 안 maxAdded개 이하일 때만. 아니면 None(fail closed)."""
+    L = rewrite_lists()
+
+    def span_ok(q, cs):
+        return (isinstance(q, str) and isinstance(cs, (list, tuple)) and len(cs) == 2
+                and all(isinstance(x, int) and not isinstance(x, bool) for x in cs)
+                and 0 <= cs[0] < cs[1] <= len(norm) and norm[cs[0]:cs[1]] == q)
+    try:
+        sub = item["subject"]
+        en, q, cs = sub["en"], sub["quote"], sub["charSpan"]
+        dets = list(item.get("details") or [])
+    except (KeyError, TypeError, AttributeError):
+        return None
+    if not isinstance(en, str) or not span_ok(q, cs) or rewrite_english_reasons(en, "subject"):
+        return None
+    # (CP21 재검토) 서버 검증기와 같은 WordNet 상위어 판정(금지 범주·장소)을 생성기 쪽에서도 같은 함수로. WordNet을 읽을 수 없으면
+    # 서버도 읽지 못했다고 적힌 경우(item.wordnet.status unavailable)에만 서버처럼 건너뛰고, 그 밖에는 쓰지 않는다(fail closed)
+    wn_why, wn_rec = _wordnet_module().reasons(en)
+    if wn_why:
+        return None
+    if wn_rec.get("status") != "available" and (item.get("wordnet") or {}).get("status") != "unavailable":
+        return None
+    out_d, n_added = [], 0
+    for d in dets:
+        if not isinstance(d, dict) or not isinstance(d.get("en"), str):
+            return None
+        if d.get("origin") == "grounded":
+            if not span_ok(d.get("quote"), d.get("charSpan")) or rewrite_english_reasons(d["en"], "detail")                     or _simile_span(norm, d["charSpan"][0], d["charSpan"][1]):
+                return None
+            out_d.append({"en": d["en"], "ko": d["quote"], "charSpan": list(d["charSpan"]), "origin": "grounded"})
+        elif d.get("origin") == "added":
+            n_added += 1
+            if n_added > L.max_added or rewrite_english_reasons(d["en"], "added"):
+                return None
+            out_d.append({"en": d["en"], "ko": None, "charSpan": None, "origin": "added"})
+        else:
+            return None
+    return {"en": en, "ko": q, "charSpan": list(cs), "details": out_d}
+
+
+def neutral_form_ok(neutral) -> bool:
+    """(G85) 생성기 입력 줄의 neutralForm이 지금 파일의 판과 같은가(다르면 중립 형태를 쓰지 않음 — fail closed)."""
+    L = rewrite_lists()
+    return isinstance(neutral, dict) and neutral.get("version") == L.neutral["version"] and neutral.get("sha256") == L.neutral["sha256"]
+
+
+def neutral_form_ref() -> dict:
+    """(G85) 서버가 생성기 입력 줄에 적는 중립 형태 참조(판·해시)."""
+    L = rewrite_lists()
+    return {"version": L.neutral["version"], "sha256": L.neutral["sha256"]}
+
+
+# ── (G85 판정 뒤, 0.6.0) 몸 낱말로 돌려 말하기: '눈 두 개가 달린 바윗돌'·'입이 있는 단지' → 금지 범주와 같이 생성하지 않음 ──────
+BODY_ATTACH_LEX = CHATBOT.parent / "shared" / "lexicon" / "body_part_attachment.v0.json"
+BODY_PART_ATTACHMENT = "body_part_attachment"
+_body_attach = None
+_ATTACH_PARTICLES = {"이", "가", "은", "는", "도", "을", "를"}
+
+
+def body_attach_lexicon() -> dict:
+    global _body_attach
+    if _body_attach is None:
+        raw = BODY_ATTACH_LEX.read_text(encoding="utf-8")
+        d = json.loads(raw)
+        _body_attach = {"file": BODY_ATTACH_LEX.name, "version": d["version"], "sha256": sha256_text(raw),
+                        "words": frozenset(d["bodyWords"]), "verbs": frozenset(d["attachVerbs"]),
+                        "face": frozenset(d.get("faceWords") or []),
+                        "counts": frozenset(d["countNouns"])}
+    return _body_attach
+
+
+def body_part_attachments(norm: str, doc, context=frozenset(), lexical_starts=frozenset(), neg_spans=()) -> list[dict]:
+    """확정 텍스트(doc = Kiwi 토큰) → 부위 낱말 부착·소유 구문 목록 [{ko, charSpan, verb}]. 규칙만(shared/lexicon/
+    body_part_attachment.v0.json rule). 규칙 사전·G82·G85 세 경로가 모두 shape_prompt의 차단 판정에서 이 함수를 쓴다."""
+    L = body_attach_lexicon()
+    toks = doc.toks
+    hits = []
+    k = 0
+    while k < len(toks):
+        if toks[k].base_tag not in ("NNG", "NNP"):
+            k += 1
+            continue
+        a = k
+        while k + 1 < len(toks) and toks[k + 1].base_tag in ("NNG", "NNP") and toks[k + 1].start == toks[k].end:
+            k += 1
+        b = k                                             # 붙여 쓴 명사 연속 toks[a..b]
+        k += 1
+        run = "".join(t.form for t in toks[a:b + 1])
+        face = run in L["face"] or toks[b].form in L["face"]
+        if run not in L["words"] and toks[b].form not in L["words"] and not face:
+            continue
+        if doc.sent[b] in context or _negated(doc, a, b, set(lexical_starts), list(neg_spans)):
+            continue
+        m = b + 1
+        if face and m < len(toks) and doc.sent[m] == doc.sent[b]:
+            # (0.2.0) 얼굴 낱말이 주격(이·가) 또는 조사 없이 바로 용언·어근이면 용언과 상관없이 막는다('입이 커다란'·'눈 큰')
+            t = toks[m]
+            if (t.base_tag == "JKS" and t.form in ("이", "가")) or t.base_tag in ("VA", "VV", "XR") or (
+                    t.base_tag == "MAG" and m + 1 < len(toks) and toks[m + 1].base_tag in ("XSA", "XSV")):
+                hits.append({"ko": norm[toks[a].start:toks[b].end], "charSpan": [toks[a].start, toks[b].end], "verb": "얼굴주어"})
+                continue
+        if m < len(toks) and doc.sent[m] == doc.sent[b] and toks[m].base_tag in ("JKS", "JX", "JKO") \
+                and toks[m].form in _ATTACH_PARTICLES:
+            m += 1
+        prev_count = prev_num = False
+        while m < len(toks) and doc.sent[m] == doc.sent[b]:
+            t = toks[m]
+            if t.base_tag in ("NR", "SN", "MM", "MAG"):
+                prev_num = prev_num or t.base_tag in ("NR", "SN")
+                m += 1
+                continue
+            if t.base_tag == "NNB" and t.form in L["counts"]:
+                prev_count = True
+                m += 1
+                continue
+            if t.base_tag in ("JKS", "JX") and (prev_count or prev_num):   # '두 개가 달린'·'눈 하나가 박힌'
+                m += 1
+                continue
+            if (t.base_tag in ("VV", "VA", "VX") and t.lemma in L["verbs"]) or (t.base_tag == "VCP" and prev_count):
+                hits.append({"ko": norm[toks[a].start:toks[b].end],
+                             "charSpan": [toks[a].start, toks[b].end], "verb": t.lemma if t.base_tag != "VCP" else "이(개)"})
+            break
+    return hits
+
+
 _frame_mods = None
 
 
@@ -654,8 +950,93 @@ def _frame_drop(fctx, norm: str, i: int, j: int, e: dict, pos: str, stage_rule: 
     return why
 
 
+_wn_mod = None
+
+
+def _wordnet_module():
+    """(CP21 재검토) 서버 검증기와 같은 WordNet 판정 모듈(chatbot/ifs_chatbot/wordnet_check.py, 같은 말뭉치 chatbot/.venv/nltk_data)."""
+    global _wn_mod
+    if _wn_mod is None:
+        sys.path.insert(0, str(CHATBOT))
+        from ifs_chatbot import wordnet_check
+        _wn_mod = wordnet_check
+    return _wn_mod
+
+
+_rw_ctx_cache: dict = {}
+
+
+def _rewrite_ctx_support():
+    """(CP21-2) 생성기 쪽 문맥 재검증이 쓰는 챗봇 모듈(llm_rewrite)과 G77 프롬프트의 openUnmappedCategories(서버 검증기와 같은 값)."""
+    if not _rw_ctx_cache:
+        sys.path.insert(0, str(CHATBOT))
+        from ifs_chatbot import llm_rewrite
+        rp = json.loads((CHATBOT / "prompts" / "llm_rewrite" / "llm_rewrite.v0.1.0.json").read_text(encoding="utf-8"))
+        fp = json.loads((CHATBOT / "prompts" / "llm_fill" / rp["validatorConfig"]).read_text(encoding="utf-8"))
+        _rw_ctx_cache.update(lr=llm_rewrite, open=list(fp["openUnmappedCategories"]))
+    return _rw_ctx_cache["lr"], _rw_ctx_cache["open"]
+
+
+def _rewrite_context_reasons(norm: str, fctx, context, neg_spans, mapper_spec, stage_rule, dropped, item) -> list[str]:
+    """(CP21-2) 다시 쓰기 재료의 대상·근거 있는 꾸밈 구간마다 서버 검증기(llm_rewrite.validate)와 같은 문맥 검사를 같은 함수로 다시 한다:
+    매퍼가 쓴 구간(대상, form.* 제외)·뺀 구간, 부정·정정(_negated), 맥락 문장, 지난 일·남의 말·가정(llm_fill.frame_reasons), 두 문장,
+    속성 비유(대상: llm_fill.simile_of_predicate — '처럼 생겼어요'는 뺌 / 꾸밈: 비유 구간), 단계 줄, 규칙이 문맥으로 뺀 구간.
+    → 사유 목록(비면 통과). 생성기 프로세스도 같은 판정(fail closed)."""
+    lf, ls = _frame_modules()
+    lr, open_cats = _rewrite_ctx_support()
+    rt = _shape_runtime()
+    toks, doc = fctx.toks, fctx.doc
+    if mapper_spec is not None:
+        spans = lf.mapper_spans(mapper_spec, types.SimpleNamespace(_mapper_evidence=_mapper_evidence),
+                                types.SimpleNamespace(data={"openUnmappedCategories": open_cats}))
+    else:
+        spans = {"used": [], "excluded": []}
+    used_nonform = [u for u, path, _ in spans["used"] if not str(path).startswith("form.")]
+    why = []
+    elems = [("subject", item["subject"])] + [("detail", d) for d in item.get("details") or [] if d.get("origin") == "grounded"]
+    for role, el in elems:
+        s, e = el["charSpan"]
+        idx = [k for k, t in enumerate(toks) if t.start < e and s < t.end]
+        if not idx:
+            why.append(f"{role}:span_not_token_aligned")
+            continue
+        i, j = idx[0], idx[-1]
+        r = []
+        if role == "subject" and any(_overlaps((s, e), u) for u in used_nonform):
+            r.append("span_covered")
+        if any(_overlaps((s, e), x) for x, rs, _ in spans["excluded"]
+               if role == "subject" or rs not in lr.DETAIL_OPEN_EXCLUDED):
+            r.append("span_excluded")
+        if _negated(doc, i, j, set(), list(neg_spans)):
+            r.append("negated")
+        if doc.sent[i] in context:
+            r.append("context_sentence")
+        r += lf.frame_reasons(fctx, idx)
+        if len(lf._quote_sentences(fctx, idx)) > 1:
+            r.append("cross_sentence")
+        if role == "subject":
+            head = next((k for k in reversed(idx) if toks[k].base_tag in ("NNG", "NNP") and toks[k].form not in rt.generic), None)
+            if head is not None and _position(rt, doc, head) == "simile" and lf.simile_of_predicate(doc, toks, head)                     and not ls._simile_of_shape_verb(fctx, {"charSpan": [s, e]}):
+                r.append("simile_of_predicate")
+        else:
+            if _simile_span(norm, s, e):
+                r.append("simile_detail")
+            why_att = rewrite_detail_attach_reason(doc, (s, e), item["subject"]["charSpan"])
+            if why_att:
+                r.append(why_att)
+        if stage_rule:
+            _st, outside = ls.line_stage_reason(norm, s, stage_rule["stages"], stage_rule["allowedStages"])
+            if outside:
+                r.append("non_shape_stage_line")
+        if any(d.get("reason") in lr.RULE_CONTEXT_DROPS and _overlaps((s, e), d.get("charSpan")) for d in dropped):
+            r.append("rule_context_dropped")
+        why += [f"{role}:{x}" for x in r]
+    return why
+
+
 def shape_prompt(text: str, mapper_spec: dict | None = None, llm_items: list | None = None,
-                 llm_shape_items: list | None = None, stage_rule: dict | None = None) -> dict:
+                 llm_shape_items: list | None = None, stage_rule: dict | None = None,
+                 llm_rewrite_item: dict | None = None, neutral_form: dict | None = None) -> dict:
     """확정 텍스트 → 형태 프롬프트와 차단 판정. 같은 텍스트 → 언제나 같은 결과(사전·규칙만).
 
     mapper_spec(G73 후속, 실험 설정의 [맞는 게 없어요] 생성만): 같은 확정 텍스트로 세션이 만든 매퍼 v2 spec.
@@ -666,9 +1047,14 @@ def shape_prompt(text: str, mapper_spec: dict | None = None, llm_items: list | N
     (G82) llm_shape_items: 서버 검증기를 통과한 LLM 형태 이름 [{quote, charSpan, en}]. 규칙이 중심 형태 명사를 못 잡았고(꾸밈말만
     잡은 경우 포함) 막을 사유가 없을 때만 중심 명사 자리를 메운다(문장·꾸밈말·부정 틀은 규칙 그대로). llm_items(G77)와 함께 주면 오류.
     (G84 후속, 0.5.0) 사전 낱말마다 문맥 규칙(_frame_drop)을 건다. stage_rule = {stages, allowedStages}(llm_shape.stage_rule —
-    단계 표지가 applied일 때만)이면 형태를 묻는 단계 밖 줄의 낱말도 뺀다. 뺀 낱말은 dropped에 reason(첫 사유)·frameReasons."""
+    단계 표지가 applied일 때만)이면 형태를 묻는 단계 밖 줄의 낱말도 뺀다. 뺀 낱말은 dropped에 reason(첫 사유)·frameReasons.
+    (G85) llm_rewrite_item: 서버 검증기를 통과한 다시 쓰기 재료. 규칙에 중심 형태 명사가 없고 막을 사유가 없고 G77·G82 낱말이 없을 때만
+    대상 명사구(+ 근거 있는 꾸밈·덧붙임)로 중심 자리를 메운다(규칙 꾸밈말은 그대로 앞에). neutral_form: 규칙이 아무 형태 낱말도
+    못 잡았고(no_shape_stated) 막을 사유가 없을 때만 고정 중립 형태. 둘 다 주지 않으면 출력은 예전 그대로."""
     if llm_items and llm_shape_items:
         raise ValueError("G77 llm_items와 G82 llm_shape_items를 함께 줄 수 없음(형태 낱말 자리는 한 경로만)")
+    if llm_rewrite_item and neutral_form:
+        raise ValueError("G85 다시 쓰기 재료와 중립 형태를 함께 줄 수 없음")
     rt = _shape_runtime()
     norm = rt.normalize(text)
     toks = rt.analyzer.tokens(norm)
@@ -778,6 +1164,11 @@ def shape_prompt(text: str, mapper_spec: dict | None = None, llm_items: list | N
         if hit:
             detail.append(f"{kind}:{t.form}")
     block = "excluded_category" if detail else None
+    # (0.6.0) 몸 낱말로 돌려 말하기 — 사람·얼굴·동물 형상을 말한 것으로 보고 막는다(중립 형태로도 가지 않음)
+    bpa = body_part_attachments(norm, doc, context, lexical_starts, neg_spans)
+    if bpa:
+        detail += [f"{BODY_PART_ATTACHMENT}:{h['ko']}+{h['verb']}" for h in bpa]
+        block = block or BODY_PART_ATTACHMENT
     if mapper_mismatch:                              # 다른 텍스트의 spec — 매퍼 판단을 믿을 수 없음(fail closed)
         block, detail = "mapper_spec_mismatch", ["mapper_spec_mismatch:meta.sourceTextHash"]
 
@@ -811,11 +1202,35 @@ def shape_prompt(text: str, mapper_spec: dict | None = None, llm_items: list | N
     llm_tok = _llm_head(norm, llm_items) if (not content and llm_items and block is None) else None
     # (G82) 중심 명사가 없고(꾸밈말만 있어도 됨) 막을 사유도 없을 때만 LLM 형태 이름 하나로 중심 명사 자리를 메운다
     shape_tok = _llm_shape_head(norm, llm_shape_items) if (head is None and llm_shape_items and block is None) else None
+    # (G85) G77·G82가 메우지 않았고 중심 명사가 없고 막을 사유가 없을 때만 다시 쓰기 재료, 아무 형태 낱말도 없을 때만 중립 형태
+    rw_tok = _rewrite_head(norm, llm_rewrite_item) \
+        if (head is None and llm_rewrite_item and block is None and llm_tok is None and shape_tok is None) else None
+    rw_ctx = []
+    if rw_tok is not None:                          # (CP21-2) 서버 검증기와 같은 문맥 검사를 생성기 쪽에서도(fail closed)
+        rw_ctx = _rewrite_context_reasons(norm, fctx, context, neg_spans, mapper_spec, stage_rule, dropped, llm_rewrite_item)
+        if rw_ctx:
+            rw_tok = None
+    neutral_on = (bool(neutral_form) and neutral_form_ok(neutral_form) and block is None and not content
+                  and llm_tok is None and shape_tok is None and rw_tok is None)
     tokens = [{"en": tmpl["prefix"], "ko": None, "charSpan": None, "slot": "template", "lexiconKey": None}]
     for c in content:
         tokens.append({"en": c["en"], "ko": c["ko"], "charSpan": c["span"], "slot": c["e"]["slot"],
                        "lexiconKey": "+".join(c["e"]["ko"])})
-    if llm_tok is not None:
+    if rw_tok is not None:
+        have = {c["en"] for c in content}
+        for d in rw_tok["details"]:
+            if d["en"] in have:
+                dropped.append({"ko": d["ko"], "charSpan": d["charSpan"], "reason": "same_as_rule_modifier", "en": d["en"]})
+                continue
+            have.add(d["en"])
+            tokens.append({"en": d["en"], "ko": d["ko"], "charSpan": d["charSpan"], "slot": "shape_modifier", "lexiconKey": None,
+                           "provenance": LLM_REWRITE if d["origin"] == "grounded" else LLM_REWRITE_ADDED})
+        tokens.append({"en": rw_tok["en"], "ko": rw_tok["ko"], "charSpan": rw_tok["charSpan"], "slot": "shape_noun",
+                       "lexiconKey": None, "provenance": LLM_REWRITE})
+    elif neutral_on:
+        tokens.append({"en": rewrite_lists().neutral_phrase, "ko": None, "charSpan": None, "slot": "template",
+                       "lexiconKey": None, "provenance": SYSTEM_DEFAULT})
+    elif llm_tok is not None:
         tokens.append({"en": llm_tok["en"], "ko": llm_tok["ko"], "charSpan": llm_tok["charSpan"], "slot": "shape_noun",
                        "lexiconKey": None, "provenance": LLM_QUOTED})
     elif shape_tok is not None:
@@ -825,15 +1240,16 @@ def shape_prompt(text: str, mapper_spec: dict | None = None, llm_items: list | N
         tokens.append({"en": tmpl["defaultNoun"], "ko": None, "charSpan": None, "slot": "template", "lexiconKey": None})
     phrase = " ".join(t["en"] for t in tokens)
     tokens += [{"en": s, "ko": None, "charSpan": None, "slot": "template", "lexiconKey": None} for s in tmpl["suffix"]]
-    prompt_text = ", ".join([phrase, *tmpl["suffix"]]) if (content or llm_tok or shape_tok) else ""
+    filled = bool(content or llm_tok or shape_tok or rw_tok or neutral_on)
+    prompt_text = ", ".join([phrase, *tmpl["suffix"]]) if filled else ""
 
-    # 4) 감사: 모든 내용 토큰이 원문 글자로 거슬러 가야 한다(fail closed)
-    untraceable = [t["en"] for t in tokens if t["slot"] != "template" and not (
+    # 4) 감사: 모든 내용 토큰이 원문 글자로 거슬러 가야 한다(fail closed). (G85) 근거 없이 덧붙인 꾸밈은 설계상 원문 구간이 없다
+    untraceable = [t["en"] for t in tokens if t["slot"] != "template" and t.get("provenance") != LLM_REWRITE_ADDED and not (
         t["ko"] and t["charSpan"] and 0 <= t["charSpan"][0] < t["charSpan"][1] <= len(norm)
         and norm[t["charSpan"][0]:t["charSpan"][1]] == t["ko"])]
     if block is None and untraceable:
         block, detail = "untraceable_token", [f"untraceable:{u}" for u in untraceable]
-    if block is None and not content and llm_tok is None and shape_tok is None:
+    if block is None and not filled:
         block = "no_shape_stated"
     # 부정 틀: 안전 제약(언제나 같음) + 부속물(말한 낱말과 한 낱말이라도 겹치면 뺌)
     said_words = {w for c in content for w in c["en"].replace("-", " ").split()}
@@ -841,8 +1257,10 @@ def shape_prompt(text: str, mapper_spec: dict | None = None, llm_items: list | N
         said_words |= set(llm_tok["en"].split())
     if shape_tok is not None:
         said_words |= set(shape_tok["en"].split())
+    if rw_tok is not None:
+        said_words |= set(rw_tok["en"].split()) | {d["en"] for d in rw_tok["details"]}
     acc = [a for a in tmpl.get("negativeAccessories", []) if not (set(a.split()) & said_words)]
-    negative = ", ".join([tmpl["negative"], *acc])
+    negative = ", ".join([tmpl["negative"], *acc, *(rewrite_lists().neutral_negative if neutral_on else [])])
     toks_ = doc.toks
     plural = any(c["e"].get("plural") or (c["j"] + 1 < len(toks_) and toks_[c["j"] + 1].form == "들"
                                             and toks_[c["j"] + 1].base_tag == "XSN")
@@ -859,7 +1277,7 @@ def shape_prompt(text: str, mapper_spec: dict | None = None, llm_items: list | N
         "promptRule": PROMPT_RULE_MAPPER if use_mapper else PROMPT_RULE_TEXT,
         "mapperBuilder": (((mapper_spec.get("meta") or {}).get("pipeline") or {}).get("builder")) if use_mapper else None,
         "templateVersion": tmpl["version"],
-        "tokens": tokens if (content or llm_tok or shape_tok) else [],
+        "tokens": tokens if filled else [],
         "dropped": dropped,
         "thinRisk": any(c["e"].get("thin") for c in content),
         "familiarObjectStated": any(c["e"].get("familiar") for c in content if c["e"]["pos"] == "noun"),
@@ -871,4 +1289,14 @@ def shape_prompt(text: str, mapper_spec: dict | None = None, llm_items: list | N
     if shape_tok is not None:                        # (G82) 키는 LLM 형태 이름을 썼을 때만(쓰지 않으면 예전 출력 그대로)
         out["builderVersion"] += SHAPE_BUILDER_LLM_SHAPE_SUFFIX
         out["shapeSource"] = LLM_TRANSLATED
+    if rw_ctx:                                       # (CP21-2) 다시 쓰기 재료를 문맥 재검증에서 버렸을 때만
+        out["rewriteRecheckReasons"] = rw_ctx
+    if rw_tok is not None:                           # (G85) 키는 다시 쓰기 재료를 썼을 때만
+        out["builderVersion"] += SHAPE_BUILDER_LLM_REWRITE_SUFFIX
+        out["shapeSource"] = LLM_REWRITE
+        out["rewriteAddedCount"] = sum(d["origin"] == "added" for d in rw_tok["details"])
+    if neutral_on:                                   # (G85) 고정 중립 형태(참여자 말에서 온 낱말 없음)
+        out["builderVersion"] += SHAPE_BUILDER_NEUTRAL_SUFFIX
+        out["shapeSource"] = SYSTEM_DEFAULT
+        out["neutralForm"] = neutral_form_ref()
     return out

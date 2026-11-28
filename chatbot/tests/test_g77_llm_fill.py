@@ -102,7 +102,7 @@ def test_flag_only_in_experiment_and_prompt_file_is_draft():
     m = MappingConfig()
     assert m.llm_fill is False and m.llm_fill_timeout_s == 20.0 and m.llm_fill_max_items == 4
     exp = load_config("experiment")
-    assert exp.mapping.llm_fill is True and exp.selection.protocol == "selection_protocol.v0.13.json"   # G79 고리 문구 + G82·G83
+    assert exp.mapping.llm_fill is True and exp.selection.protocol == "selection_protocol.v0.14.json"   # G79 고리 문구 + G82·G83 + G85
     for name in ("default", "pilot", "v4", "v4-gen3d", "bridge", "mac8gb"):
         assert load_config(name).mapping.llm_fill is False, name
     p = lf.FillPrompt()

@@ -191,6 +191,17 @@ class Gen3DConfig:
     on_none_llm_shape_timeout_s: float = 20.0
     on_none_llm_shape_seed: int = 0
     on_none_llm_shape_prompt: str = "llm_shape.v0.3.0.json"   # chatbot/prompts/llm_shape/ 아래 고정 프롬프트(판·status draft). 0.1.x는 평가 기록용
+    # G85(원칙 1의 네 번째 예외·원칙 2 변경, 2026-11-28 연구 책임자 결정): 규칙 → G82 → G85. 규칙과 G82가 모두 중심 형태를 얻지 못했을 때만
+    # 면담 LLM이 그림 프롬프트의 재료(대상 명사구 + 모양 꾸밈, 요소마다 원문 근거 또는 근거 없음)를 내고 규칙이 조립한다(llm_rewrite.py).
+    # 형태를 말하지 않았으면 고정 중립 형태(system_default). 기본 끔. 켜려면 on_none_llm_shape(G82)와 그 조건이 함께 있어야 한다.
+    # 시험 설정 config/experiment-g85.toml만 켬(experiment.toml은 합성 점검을 메인이 본 뒤).
+    on_none_llm_rewrite: bool = False
+    on_none_llm_rewrite_timeout_s: float = 25.0
+    on_none_llm_rewrite_seed: int = 0
+    on_none_llm_rewrite_prompt: str = "llm_rewrite.v0.1.0.json"   # chatbot/prompts/llm_rewrite/ 아래 고정 프롬프트(status draft)
+    # G85: 고른 그림으로 만든 메시가 관문(person_like·gate_failed)에 막히면, 같은 회차에서 아직 고르지 않은(그림 관문을 통과한) 그림으로
+    # 세션에 한 번만 돌아가 다시 고르게 한다. 두 번째도 막히면 지금처럼 기존 none 경로. 규칙·G82·G85 경로 모두. 기본 끔
+    on_none_mesh_retry: bool = False
 
 
 @dataclass(frozen=True)

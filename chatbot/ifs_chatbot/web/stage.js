@@ -549,7 +549,9 @@
     pollGenerating();
     // G75: 그림을 그리는 동안(phase image)은 그 문구, 고른 그림으로 물체를 만드는 동안(phase mesh)·G73은 기존 대기 문구
     const imagePhase = !!(v.afterNone && v.afterNone.phase === "image");
-    return [intro(phrase(imagePhase ? "image_pick_waiting" : "none_gen_waiting")),
+    // G85: 다시 쓰기를 켰으면 그림 대기 문구는 llm_rewrite_waiting(중립 형태일 수 있어 '말씀하신 모양으로'를 쓰지 않음)
+    const waitKey = imagePhase ? ((v.afterNone && v.afterNone.rewriteOn) ? "llm_rewrite_waiting" : "image_pick_waiting") : "none_gen_waiting";
+    return [intro(phrase(waitKey)),
             el("div", { class: "gen-wait", role: "status", "aria-live": "polite" }, el("span", { class: "gen-spinner", "aria-hidden": "true" })),
             el("div", { class: "buttons stage-actions" },
               el("button", { type: "button", class: "pick none-gen-skip", "data-fkey": "none-gen-skip",
@@ -570,7 +572,24 @@
 
   function drawPicking(v) {
     const ip = v.imagePick || { images: [] };
-    const parts = [intro(phrase("image_pick_intro"))];
+    const parts = [];
+    // G85: 고른 그림으로 물체를 만들지 못해 남은 그림으로 한 번 돌아왔을 때 맨 위 한 줄(이유는 말하지 않음)
+    if (v.meshRetry && v.meshRetry.text) parts.push(el("p", { class: "msg bot", "data-fkey": "mesh-retry" }, v.meshRetry.text));
+    // G85: 형태를 말하지 않아 고정 중립 형태로 그린 회차는 image_pick_intro('말씀하신 모양으로') 대신 그 사실을 알리는 안내
+    parts.push(v.llmRewriteNeutral && v.llmRewriteNeutral.text
+      ? intro(v.llmRewriteNeutral.text)
+      : intro(phrase("image_pick_intro")));
+    // G85: 다시 쓰기로 그린 회차 — 대상 명사의 근거 낱말(원문 그대로)과 [그 말이 아니에요](G82 줄과 같은 꼴·같은 단추 크기),
+    // 덧붙임이 있으면 그 사실 한 줄(무엇을 더했는지는 말하지 않음)
+    if (v.llmRewriteBasis && v.llmRewriteBasis.text) {
+      parts.push(el("div", { class: "llm-shape-basis" },
+        el("p", { class: "msg bot", "data-fkey": "rewrite-basis" }, v.llmRewriteBasis.text),
+        el("button", { type: "button", class: "pick shape-basis-wrong", "data-fkey": "img:basis-wrong",
+                       onclick: (e) => call("POST", `/api/sessions/${S.sid}/selection/shape-basis/reject`, undefined, e.currentTarget) },
+          phrase("llm_shape_basis_wrong_button"))));
+      if (v.llmRewriteAdded && v.llmRewriteAdded.text)
+        parts.push(el("p", { class: "msg bot", "data-fkey": "rewrite-added" }, v.llmRewriteAdded.text));
+    }
     // G82: LLM 형태 이름으로 그린 회차만 — 그림을 그린 근거 낱말(참여자 원문 그대로, 서버가 넣은 글)과 [그 말이 아니에요].
     // 누르면 LLM을 다시 부르지 않고 기존 경로(조절)로 간다. 영어 이름은 화면에 보이지 않는다
     if (v.llmShapeBasis && v.llmShapeBasis.text) {

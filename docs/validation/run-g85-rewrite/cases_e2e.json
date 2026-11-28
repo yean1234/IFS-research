@@ -1,0 +1,12 @@
+[
+  {"id": "F1", "kind": "사전 밖 형태(G82 null → G85)", "text": "병뚜껑 같은 게 있어요.", "reject": false},
+  {"id": "F2", "kind": "사전 밖 형태(G82·G85 null이면 중립)", "text": "팽이처럼 생겼어요.", "reject": false},
+  {"id": "F3", "kind": "사전 밖 형태(G82가 잡으면 G85 안 부름)", "text": "확성기예요.", "reject": false},
+  {"id": "F4", "kind": "꾸밈이 있는 서술(규칙 꾸밈말 + G85 대상)", "text": "울퉁불퉁한 다리미가 있어요.", "reject": false},
+  {"id": "F5", "kind": "형태 없음(색·온도) → 중립", "text": "쑥색이고 차가워요.", "reject": false},
+  {"id": "F6", "kind": "형태 없음(감정) → 중립", "text": "답답해요.", "reject": false},
+  {"id": "F7", "kind": "메시 관문 → 남은 그림으로 한 번", "text": "돌덩이예요.", "reject": false},
+  {"id": "F8", "kind": "[그 말이 아니에요](G85 근거 줄)", "text": "병뚜껑 같은 게 있어요.", "reject": true},
+  {"id": "F9", "kind": "[그 말이 아니에요](G85 근거 줄 — F8이 G82로 가서 더함)", "text": "울퉁불퉁한 다리미가 있어요.", "reject": true},
+  {"id": "F10", "kind": "[그 말이 아니에요](G85 근거 줄 — 3차에서 F9가 규칙 경로로 가서 더함)", "text": "둥글넓적한 밤송이 모양이에요.", "reject": true}
+]

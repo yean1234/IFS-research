@@ -53,14 +53,18 @@ def test_experiment_config_is_bridge_plus_v4_plus_backbone_values():
     # G73: 문구 0.8.0(0.7.0 + [맞는 게 없어요] 뒤 생성 화면 문구 4개). G75: 0.9.0(+ 참고 그림 고르기 화면 문구 4개)
     # G77: 0.10.0(+ LLM이 채운 처음 값의 근거 인용 안내 1개). G79: 값 표 4.0.0(색상 고리) · 문구 0.11.0(+ 고리 문구 3개)
     # G83: 0.13.0(0.12.0 = 0.11.0 + G82 근거 인용 줄·[그 말이 아니에요], 0.13.0 = 명사 부분·받침에 맞춘 조사)
-    assert exp.selection == replace(v4.selection, participant_draft_banner=False, protocol="selection_protocol.v0.13.json",
+    # G85(2026-11-29 켬): 0.14.0(0.13.0 + G85 문구 다섯 개)
+    assert exp.selection == replace(v4.selection, participant_draft_banner=False, protocol="selection_protocol.v0.14.json",
                                     table="candidate_values.v4.json")
     assert v4.selection.table == "candidate_values.v2.json" and v4.selection.protocol == "selection_protocol.v0.json"
     # 생성 메시를 기본 후보로 두는 G62 경로는 끔(G67-b). G73: [맞는 게 없어요] 뒤 생성만 켬
     # G75: 그 생성에서 참고 그림을 먼저 고름(on_none_image_pick, 회차 2, 단계별 한도 180초)
     # G83: [맞는 게 없어요] 뒤 규칙에 중심 형태 명사가 없으면 LLM 형태 이름(G82, on_none_llm_shape, 한도 20초·seed 0)
+    # G85(2026-11-29): 규칙 → G82 → LLM 다시 쓰기·중립 형태(on_none_llm_rewrite, 한도 25초·seed 0), 메시 관문 뒤 남은 그림으로 한 번
     assert exp.gen3d.enabled is False and exp.gen3d == replace(v4.gen3d, on_none=True, on_none_image_pick=True,
-                                                               on_none_llm_shape=True)
+                                                               on_none_llm_shape=True, on_none_llm_rewrite=True,
+                                                               on_none_llm_rewrite_timeout_s=25.0, on_none_mesh_retry=True)
+    assert exp.gen3d.on_none_llm_rewrite_seed == 0 and v4.gen3d.on_none_llm_rewrite is False and v4.gen3d.on_none_mesh_retry is False
     assert exp.gen3d.on_none_llm_shape_timeout_s == 20.0 and exp.gen3d.on_none_llm_shape_seed == 0
     assert v4.gen3d.on_none_llm_shape is False
     assert exp.session == v4.session

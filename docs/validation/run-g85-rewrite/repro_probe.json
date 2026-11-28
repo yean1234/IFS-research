@@ -1,0 +1,1110 @@
+{
+ "summary": {
+  "n": 36,
+  "A==B": 34,
+  "A==C": 34,
+  "B==C": 34,
+  "D1==D2": 34,
+  "A==D1": 34,
+  "C==D1": 34,
+  "promptEval": {
+   "A": [
+    1526,
+    1529,
+    1532,
+    1534,
+    1536,
+    1537
+   ],
+   "B": [
+    1526,
+    1529,
+    1532,
+    1534,
+    1536,
+    1537
+   ],
+   "C": [
+    1526,
+    1529,
+    1532,
+    1534,
+    1536,
+    1537
+   ],
+   "D": [
+    1526,
+    1529,
+    1532,
+    1534,
+    1536,
+    1537
+   ],
+   "E": [
+    1526,
+    1529,
+    1532,
+    1534,
+    1536,
+    1537
+   ]
+  },
+  "promptEvalMedian": {
+   "A": 1574,
+   "B": 1574,
+   "C": 1574,
+   "D": 1574,
+   "E": 1574
+  },
+  "differAB": [
+   "OOV0020",
+   "OOV0036"
+  ],
+  "differD": [
+   "OOV0028",
+   "PAST0096"
+  ]
+ },
+ "rows": [
+  {
+   "id": "OOV0000",
+   "A": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1537
+   },
+   "B": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1537
+   },
+   "C": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1537
+   },
+   "D": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1537
+   },
+   "E": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1537
+   }
+  },
+  {
+   "id": "OOV0004",
+   "A": {
+    "kind": "g85",
+    "raw": "{\n\"item\": {\n\"subject\": {\n\"en\": \"whetstone\",\n\"quote\": \"숫돌이에요\",\n\"charSpan\": [29, 39]\n},\n\"details\": [\n{\n\"en\": \"pointed\",\n\"basis\": \"quote\",\n\"quote\": \"뾰족한\",\n\"charSpan\": [25, 29]\n}\n]\n}\n}",
+    "promptEval": 1628
+   },
+   "B": {
+    "kind": "g85",
+    "raw": "{\n\"item\": {\n\"subject\": {\n\"en\": \"whetstone\",\n\"quote\": \"숫돌이에요\",\n\"charSpan\": [29, 39]\n},\n\"details\": [\n{\n\"en\": \"pointed\",\n\"basis\": \"quote\",\n\"quote\": \"뾰족한\",\n\"charSpan\": [25, 29]\n}\n]\n}\n}",
+    "promptEval": 1628
+   },
+   "C": {
+    "kind": "g85",
+    "raw": "{\n\"item\": {\n\"subject\": {\n\"en\": \"whetstone\",\n\"quote\": \"숫돌이에요\",\n\"charSpan\": [29, 39]\n},\n\"details\": [\n{\n\"en\": \"pointed\",\n\"basis\": \"quote\",\n\"quote\": \"뾰족한\",\n\"charSpan\": [25, 29]\n}\n]\n}\n}",
+    "promptEval": 1628
+   },
+   "D": {
+    "kind": "g85",
+    "raw": "{\n\"item\": {\n\"subject\": {\n\"en\": \"whetstone\",\n\"quote\": \"숫돌이에요\",\n\"charSpan\": [29, 39]\n},\n\"details\": [\n{\n\"en\": \"pointed\",\n\"basis\": \"quote\",\n\"quote\": \"뾰족한\",\n\"charSpan\": [25, 29]\n}\n]\n}\n}",
+    "promptEval": 1628
+   },
+   "E": {
+    "kind": "g85",
+    "raw": "{\n\"item\": {\n\"subject\": {\n\"en\": \"whetstone\",\n\"quote\": \"숫돌이에요\",\n\"charSpan\": [29, 39]\n},\n\"details\": [\n{\n\"en\": \"pointed\",\n\"basis\": \"quote\",\n\"quote\": \"뾰족한\",\n\"charSpan\": [25, 29]\n}\n]\n}\n}",
+    "promptEval": 1628
+   }
+  },
+  {
+   "id": "OOV0008",
+   "A": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1529
+   },
+   "B": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1529
+   },
+   "C": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1529
+   },
+   "D": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1529
+   },
+   "E": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1529
+   }
+  },
+  {
+   "id": "OOV0012",
+   "A": {
+    "kind": "g85",
+    "raw": "{\n\"item\": {\n\"subject\": {\n\"en\": \"spatula\",\n\"quote\": \"주걱이에요\",\n\"charSpan\": [37, 40]\n},\n\"details\": [\n{\n\"en\": \"pointed\",\n\"basis\": \"quote\",\n\"quote\": \"뾰족한\",\n\"charSpan\": [33, 36]\n}\n]\n}\n}",
+    "promptEval": 1574
+   },
+   "B": {
+    "kind": "g85",
+    "raw": "{\n\"item\": {\n\"subject\": {\n\"en\": \"spatula\",\n\"quote\": \"주걱이에요\",\n\"charSpan\": [37, 40]\n},\n\"details\": [\n{\n\"en\": \"pointed\",\n\"basis\": \"quote\",\n\"quote\": \"뾰족한\",\n\"charSpan\": [33, 36]\n}\n]\n}\n}",
+    "promptEval": 1574
+   },
+   "C": {
+    "kind": "g85",
+    "raw": "{\n\"item\": {\n\"subject\": {\n\"en\": \"spatula\",\n\"quote\": \"주걱이에요\",\n\"charSpan\": [37, 40]\n},\n\"details\": [\n{\n\"en\": \"pointed\",\n\"basis\": \"quote\",\n\"quote\": \"뾰족한\",\n\"charSpan\": [33, 36]\n}\n]\n}\n}",
+    "promptEval": 1574
+   },
+   "D": {
+    "kind": "g85",
+    "raw": "{\n\"item\": {\n\"subject\": {\n\"en\": \"spatula\",\n\"quote\": \"주걱이에요\",\n\"charSpan\": [37, 40]\n},\n\"details\": [\n{\n\"en\": \"pointed\",\n\"basis\": \"quote\",\n\"quote\": \"뾰족한\",\n\"charSpan\": [33, 36]\n}\n]\n}\n}",
+    "promptEval": 1574
+   },
+   "E": {
+    "kind": "g85",
+    "raw": "{\n\"item\": {\n\"subject\": {\n\"en\": \"spatula\",\n\"quote\": \"주걱이에요\",\n\"charSpan\": [37, 40]\n},\n\"details\": [\n{\n\"en\": \"pointed\",\n\"basis\": \"quote\",\n\"quote\": \"뾰족한\",\n\"charSpan\": [33, 36]\n}\n]\n}\n}",
+    "promptEval": 1574
+   }
+  },
+  {
+   "id": "OOV0016",
+   "A": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1605
+   },
+   "B": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1605
+   },
+   "C": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1605
+   },
+   "D": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1605
+   },
+   "E": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1605
+   }
+  },
+  {
+   "id": "OOV0020",
+   "A": {
+    "kind": "g85",
+    "raw": "{\n  \"item\": {\n    \"subject\": {\n      \"en\": \"basket\",\n      \"quote\": \"소쿠리예요\",\n      \"charSpan\": [\n        42,\n        45\n      ]\n    },\n    \"details\": [\n      {\n        \"en\": \"pointed\",\n        \"basis\": \"quote\",\n        \"quote\": \"뾰족한\",\n        \"charSpan\": [\n          38,\n          41\n        ]\n      }\n    ]\n  }\n}",
+    "promptEval": 1577
+   },
+   "B": {
+    "kind": "g85",
+    "raw": "{\n\"item\": {\n\"subject\": {\n\"en\": \"basket\",\n\"quote\": \"소쿠리예요\",\n\"charSpan\": [42, 45]\n},\n\"details\": [\n{\n\"en\": \"pointed\",\n\"basis\": \"quote\",\n\"quote\": \"뾰족한\",\n\"charSpan\": [38, 41]\n}\n]\n}\n}",
+    "promptEval": 1577
+   },
+   "C": {
+    "kind": "g85",
+    "raw": "{\n\"item\": {\n\"subject\": {\n\"en\": \"basket\",\n\"quote\": \"소쿠리예요\",\n\"charSpan\": [42, 45]\n},\n\"details\": [\n{\n\"en\": \"pointed\",\n\"basis\": \"quote\",\n\"quote\": \"뾰족한\",\n\"charSpan\": [38, 41]\n}\n]\n}\n}",
+    "promptEval": 1577
+   },
+   "D": {
+    "kind": "g85",
+    "raw": "{\n\"item\": {\n\"subject\": {\n\"en\": \"basket\",\n\"quote\": \"소쿠리예요\",\n\"charSpan\": [42, 45]\n},\n\"details\": [\n{\n\"en\": \"pointed\",\n\"basis\": \"quote\",\n\"quote\": \"뾰족한\",\n\"charSpan\": [38, 41]\n}\n]\n}\n}",
+    "promptEval": 1577
+   },
+   "E": {
+    "kind": "g85",
+    "raw": "{\n\"item\": {\n\"subject\": {\n\"en\": \"basket\",\n\"quote\": \"소쿠리예요\",\n\"charSpan\": [42, 45]\n},\n\"details\": [\n{\n\"en\": \"pointed\",\n\"basis\": \"quote\",\n\"quote\": \"뾰족한\",\n\"charSpan\": [38, 41]\n}\n]\n}\n}",
+    "promptEval": 1577
+   }
+  },
+  {
+   "id": "OOV0024",
+   "A": {
+    "kind": "g85",
+    "raw": "{\n\"item\": {\n\"subject\": {\n\"en\": \"urinal\",\n\"quote\": \"요강이\",\n\"charSpan\": [22, 26]\n},\n\"details\": []\n}\n}",
+    "promptEval": 1584
+   },
+   "B": {
+    "kind": "g85",
+    "raw": "{\n\"item\": {\n\"subject\": {\n\"en\": \"urinal\",\n\"quote\": \"요강이\",\n\"charSpan\": [22, 26]\n},\n\"details\": []\n}\n}",
+    "promptEval": 1584
+   },
+   "C": {
+    "kind": "g85",
+    "raw": "{\n\"item\": {\n\"subject\": {\n\"en\": \"urinal\",\n\"quote\": \"요강이\",\n\"charSpan\": [22, 26]\n},\n\"details\": []\n}\n}",
+    "promptEval": 1584
+   },
+   "D": {
+    "kind": "g85",
+    "raw": "{\n\"item\": {\n\"subject\": {\n\"en\": \"urinal\",\n\"quote\": \"요강이\",\n\"charSpan\": [22, 26]\n},\n\"details\": []\n}\n}",
+    "promptEval": 1584
+   },
+   "E": {
+    "kind": "g85",
+    "raw": "{\n\"item\": {\n\"subject\": {\n\"en\": \"urinal\",\n\"quote\": \"요강이\",\n\"charSpan\": [22, 26]\n},\n\"details\": []\n}\n}",
+    "promptEval": 1584
+   }
+  },
+  {
+   "id": "OOV0028",
+   "A": {
+    "kind": "g85",
+    "raw": "{\n\"item\": {\n\"subject\": {\n\"en\": \"wheel\",\n\"quote\": \"바퀴통이에요\",\n\"charSpan\": [38, 41]\n},\n\"details\": [\n{\n\"en\": \"pointed\",\n\"basis\": \"quote\",\n\"quote\": \"뾰족한\",\n\"charSpan\": [34, 37]\n}\n]\n}\n}",
+    "promptEval": 1576
+   },
+   "B": {
+    "kind": "g85",
+    "raw": "{\n\"item\": {\n\"subject\": {\n\"en\": \"wheel\",\n\"quote\": \"바퀴통이에요\",\n\"charSpan\": [38, 41]\n},\n\"details\": [\n{\n\"en\": \"pointed\",\n\"basis\": \"quote\",\n\"quote\": \"뾰족한\",\n\"charSpan\": [34, 37]\n}\n]\n}\n}",
+    "promptEval": 1576
+   },
+   "C": {
+    "kind": "g85",
+    "raw": "{\n\"item\": {\n\"subject\": {\n\"en\": \"wheel\",\n\"quote\": \"바퀴통이에요\",\n\"charSpan\": [38, 41]\n},\n\"details\": [\n{\n\"en\": \"pointed\",\n\"basis\": \"quote\",\n\"quote\": \"뾰족한\",\n\"charSpan\": [34, 37]\n}\n]\n}\n}",
+    "promptEval": 1576
+   },
+   "D": {
+    "kind": "g85",
+    "raw": "{\n\"item\": {\n\"subject\": {\n\"en\": \"wheel\",\n\"quote\": \"바퀴통이에요\",\n\"charSpan\": [38, 41]\n},\n\"details\": [\n{\n\"en\": \"pointed\",\n\"basis\": \"quote\",\n\"quote\": \"뾰족한\",\n\"charSpan\": [34, 37]\n}\n]\n}\n}",
+    "promptEval": 1576
+   },
+   "E": {
+    "kind": "g85",
+    "raw": "{\n\"item\": {\n\"subject\": {\n\"en\": \"wheel\",\n\"quote\": \"바퀴통이에요\",\n\"charSpan\": [34, 38]\n},\n\"details\": [\n{\n\"en\": \"pointed\",\n\"basis\": \"quote\",\n\"quote\": \"뾰족한\",\n\"charSpan\": [34, 37]\n}\n]\n}\n}",
+    "promptEval": 1576
+   }
+  },
+  {
+   "id": "OOV0032",
+   "A": {
+    "kind": "g85",
+    "raw": "{\n\"item\": {\n\"subject\": {\n\"en\": \"earthenware pot\",\n\"quote\": \"옹기가\",\n\"charSpan\": [30, 34]\n},\n\"details\": [\n{\n\"en\": \"none\",\n\"basis\": \"none\",\n\"quote\": \"\",\n\"charSpan\": []\n}\n]\n}\n}",
+    "promptEval": 1529
+   },
+   "B": {
+    "kind": "g85",
+    "raw": "{\n\"item\": {\n\"subject\": {\n\"en\": \"earthenware pot\",\n\"quote\": \"옹기가\",\n\"charSpan\": [30, 34]\n},\n\"details\": [\n{\n\"en\": \"none\",\n\"basis\": \"none\",\n\"quote\": \"\",\n\"charSpan\": []\n}\n]\n}\n}",
+    "promptEval": 1529
+   },
+   "C": {
+    "kind": "g85",
+    "raw": "{\n\"item\": {\n\"subject\": {\n\"en\": \"earthenware pot\",\n\"quote\": \"옹기가\",\n\"charSpan\": [30, 34]\n},\n\"details\": [\n{\n\"en\": \"none\",\n\"basis\": \"none\",\n\"quote\": \"\",\n\"charSpan\": []\n}\n]\n}\n}",
+    "promptEval": 1529
+   },
+   "D": {
+    "kind": "g85",
+    "raw": "{\n\"item\": {\n\"subject\": {\n\"en\": \"earthenware pot\",\n\"quote\": \"옹기가\",\n\"charSpan\": [30, 34]\n},\n\"details\": [\n{\n\"en\": \"none\",\n\"basis\": \"none\",\n\"quote\": \"\",\n\"charSpan\": []\n}\n]\n}\n}",
+    "promptEval": 1529
+   },
+   "E": {
+    "kind": "g85",
+    "raw": "{\n\"item\": {\n\"subject\": {\n\"en\": \"earthenware pot\",\n\"quote\": \"옹기가\",\n\"charSpan\": [30, 34]\n},\n\"details\": [\n{\n\"en\": \"none\",\n\"basis\": \"none\",\n\"quote\": \"\",\n\"charSpan\": []\n}\n]\n}\n}",
+    "promptEval": 1529
+   }
+  },
+  {
+   "id": "OOV0036",
+   "A": {
+    "kind": "g85",
+    "raw": "{\n  \"item\": {\n    \"subject\": {\n      \"en\": \"candle holder\",\n      \"quote\": \"촛대예요\",\n      \"charSpan\": [\n        34,\n        37\n      ]\n    },\n    \"details\": [\n      {\n        \"en\": \"pointed\",\n        \"basis\": \"quote\",\n        \"quote\": \"뾰족한\",\n        \"charSpan\": [\n          30,\n          33\n        ]\n      }\n    ]\n  }\n}",
+    "promptEval": 1649
+   },
+   "B": {
+    "kind": "g85",
+    "raw": "{\n\"item\": {\n\"subject\": {\n\"en\": \"candle holder\",\n\"quote\": \"촛대예요\",\n\"charSpan\": [34, 37]\n},\n\"details\": [\n{\n\"en\": \"pointed\",\n\"basis\": \"quote\",\n\"quote\": \"뾰족한\",\n\"charSpan\": [30, 33]\n}\n]\n}\n}",
+    "promptEval": 1649
+   },
+   "C": {
+    "kind": "g85",
+    "raw": "{\n  \"item\": {\n    \"subject\": {\n      \"en\": \"candle holder\",\n      \"quote\": \"촛대예요\",\n      \"charSpan\": [\n        34,\n        37\n      ]\n    },\n    \"details\": [\n      {\n        \"en\": \"pointed\",\n        \"basis\": \"quote\",\n        \"quote\": \"뾰족한\",\n        \"charSpan\": [\n          30,\n          33\n        ]\n      }\n    ]\n  }\n}",
+    "promptEval": 1649
+   },
+   "D": {
+    "kind": "g85",
+    "raw": "{\n\"item\": {\n\"subject\": {\n\"en\": \"candle holder\",\n\"quote\": \"촛대예요\",\n\"charSpan\": [34, 37]\n},\n\"details\": [\n{\n\"en\": \"pointed\",\n\"basis\": \"quote\",\n\"quote\": \"뾰족한\",\n\"charSpan\": [30, 33]\n}\n]\n}\n}",
+    "promptEval": 1649
+   },
+   "E": {
+    "kind": "g85",
+    "raw": "{\n\"item\": {\n\"subject\": {\n\"en\": \"candle holder\",\n\"quote\": \"촛대예요\",\n\"charSpan\": [34, 37]\n},\n\"details\": [\n{\n\"en\": \"pointed\",\n\"basis\": \"quote\",\n\"quote\": \"뾰족한\",\n\"charSpan\": [30, 33]\n}\n]\n}\n}",
+    "promptEval": 1649
+   }
+  },
+  {
+   "id": "NOSHAPE0040",
+   "A": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1559
+   },
+   "B": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1559
+   },
+   "C": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1559
+   },
+   "D": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1559
+   },
+   "E": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1559
+   }
+  },
+  {
+   "id": "NOSHAPE0044",
+   "A": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1599
+   },
+   "B": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1599
+   },
+   "C": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1599
+   },
+   "D": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1599
+   },
+   "E": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1599
+   }
+  },
+  {
+   "id": "NOSHAPE0048",
+   "A": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1526
+   },
+   "B": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1526
+   },
+   "C": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1526
+   },
+   "D": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1526
+   },
+   "E": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1526
+   }
+  },
+  {
+   "id": "NOSHAPE0052",
+   "A": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1576
+   },
+   "B": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1576
+   },
+   "C": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1576
+   },
+   "D": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1576
+   },
+   "E": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1576
+   }
+  },
+  {
+   "id": "NOSHAPE0056",
+   "A": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1595
+   },
+   "B": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1595
+   },
+   "C": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1595
+   },
+   "D": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1595
+   },
+   "E": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1595
+   }
+  },
+  {
+   "id": "NOSHAPE0060",
+   "A": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1537
+   },
+   "B": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1537
+   },
+   "C": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1537
+   },
+   "D": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1537
+   },
+   "E": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1537
+   }
+  },
+  {
+   "id": "NOSHAPE0064",
+   "A": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1580
+   },
+   "B": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1580
+   },
+   "C": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1580
+   },
+   "D": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1580
+   },
+   "E": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1580
+   }
+  },
+  {
+   "id": "NOSHAPE0068",
+   "A": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1543
+   },
+   "B": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1543
+   },
+   "C": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1543
+   },
+   "D": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1543
+   },
+   "E": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1543
+   }
+  },
+  {
+   "id": "PAST0092",
+   "A": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1536
+   },
+   "B": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1536
+   },
+   "C": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1536
+   },
+   "D": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1536
+   },
+   "E": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1536
+   }
+  },
+  {
+   "id": "PAST0096",
+   "A": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1609
+   },
+   "B": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1609
+   },
+   "C": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1609
+   },
+   "D": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1609
+   },
+   "E": {
+    "kind": "g85",
+    "raw": "{\"item\": {\"subject\": {\"en\": \"log\", \"quote\": \"나무토막이었어요\", \"charSpan\": [32, 37]}, \"details\": []}}",
+    "promptEval": 1609
+   }
+  },
+  {
+   "id": "PAST0100",
+   "A": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1542
+   },
+   "B": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1542
+   },
+   "C": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1542
+   },
+   "D": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1542
+   },
+   "E": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1542
+   }
+  },
+  {
+   "id": "PAST0104",
+   "A": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1590
+   },
+   "B": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1590
+   },
+   "C": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1590
+   },
+   "D": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1590
+   },
+   "E": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1590
+   }
+  },
+  {
+   "id": "PAST0108",
+   "A": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1536
+   },
+   "B": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1536
+   },
+   "C": {
+    "kind": "g85",
+    "raw": "{\"item\": {\"subject\": {\"en\": \"water jug\", \"quote\": \"물동이였어요\", \"charSpan\": [36, 39]}, \"details\": []}}",
+    "promptEval": 1536
+   },
+   "D": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1536
+   },
+   "E": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1536
+   }
+  },
+  {
+   "id": "OTHER0112",
+   "A": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1540
+   },
+   "B": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1540
+   },
+   "C": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1540
+   },
+   "D": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1540
+   },
+   "E": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1540
+   }
+  },
+  {
+   "id": "OTHER0116",
+   "A": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1613
+   },
+   "B": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1613
+   },
+   "C": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1613
+   },
+   "D": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1613
+   },
+   "E": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1613
+   }
+  },
+  {
+   "id": "OTHER0120",
+   "A": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1546
+   },
+   "B": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1546
+   },
+   "C": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1546
+   },
+   "D": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1546
+   },
+   "E": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1546
+   }
+  },
+  {
+   "id": "OTHER0124",
+   "A": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1594
+   },
+   "B": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1594
+   },
+   "C": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1594
+   },
+   "D": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1594
+   },
+   "E": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1594
+   }
+  },
+  {
+   "id": "OTHER0128",
+   "A": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1540
+   },
+   "B": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1540
+   },
+   "C": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1540
+   },
+   "D": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1540
+   },
+   "E": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1540
+   }
+  },
+  {
+   "id": "HYPO0132",
+   "A": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1534
+   },
+   "B": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1534
+   },
+   "C": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1534
+   },
+   "D": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1534
+   },
+   "E": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1534
+   }
+  },
+  {
+   "id": "HYPO0136",
+   "A": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1607
+   },
+   "B": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1607
+   },
+   "C": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1607
+   },
+   "D": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1607
+   },
+   "E": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1607
+   }
+  },
+  {
+   "id": "HYPO0140",
+   "A": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1538
+   },
+   "B": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1538
+   },
+   "C": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1538
+   },
+   "D": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1538
+   },
+   "E": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1538
+   }
+  },
+  {
+   "id": "HYPO0144",
+   "A": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1588
+   },
+   "B": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1588
+   },
+   "C": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1588
+   },
+   "D": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1588
+   },
+   "E": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1588
+   }
+  },
+  {
+   "id": "HYPO0148",
+   "A": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1532
+   },
+   "B": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1532
+   },
+   "C": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1532
+   },
+   "D": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1532
+   },
+   "E": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1532
+   }
+  },
+  {
+   "id": "FORBID0172",
+   "A": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1532
+   },
+   "B": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1532
+   },
+   "C": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1532
+   },
+   "D": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1532
+   },
+   "E": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1532
+   }
+  },
+  {
+   "id": "FORBID0176",
+   "A": null,
+   "B": null,
+   "C": null,
+   "D": null,
+   "E": null
+  },
+  {
+   "id": "FORBID0180",
+   "A": null,
+   "B": null,
+   "C": null,
+   "D": null,
+   "E": null
+  },
+  {
+   "id": "FORBID0184",
+   "A": null,
+   "B": null,
+   "C": null,
+   "D": null,
+   "E": null
+  },
+  {
+   "id": "FORBID0188",
+   "A": null,
+   "B": null,
+   "C": null,
+   "D": null,
+   "E": null
+  },
+  {
+   "id": "FORBID0192",
+   "A": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1542
+   },
+   "B": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1542
+   },
+   "C": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1542
+   },
+   "D": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1542
+   },
+   "E": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1542
+   }
+  },
+  {
+   "id": "FORBID0196",
+   "A": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1615
+   },
+   "B": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1615
+   },
+   "C": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1615
+   },
+   "D": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1615
+   },
+   "E": {
+    "kind": "g85",
+    "raw": "{\"item\": null}",
+    "promptEval": 1615
+   }
+  }
+ ]
+}

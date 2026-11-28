@@ -11,6 +11,15 @@
 python -m venv .venv
 .venv\Scripts\python -m pip install -r requirements.txt
 
+# G85 WordNet 3.0 말뭉치(설치 때 한 번만 내려받음 — 실행 중에는 네트워크를 쓰지 않음. 저장소 밖과 같은 취급: .venv 아래라 git에 잡히지 않음)
+.venv\Scripts\python -c "import nltk; nltk.download('wordnet', download_dir=r'.venv
+ltk_data')"
+#   → chatbot\.venv
+ltk_data\corpora\wordnet.zip, sha256 cbda5ea6eef7f36a97a43d4a75f85e07fccbb4f23657d27b4ccbc93e2646ab59(WordNet 3.0, WordNet 3.0 license)
+#   생성기 venv(gen3d-venv, docs/gen3d-feasibility.md 4절)에도 nltk 3.10.4를 넣는다 — 생성기는 같은 말뭉치 폴더를 읽는다.
+#   둘 중 하나라도 없으면 G85 그림 프롬프트 다시 쓰기는 닫힌다(서버: 시작 경고 + 기록 wordnet.status unavailable,
+#   생성기: 서버가 unavailable이라 적지 않은 재료는 쓰지 않음 → 그 회차는 생성되지 않음)
+
 # 로컬 모델 (Ollama)
 ollama pull gemma4:e4b                                          # 개발 기본값. 연구 파일럿은 gemma4:31b (pilot.toml)
 ollama pull hf.co/mradermacher/kanana-safeguard-8b-GGUF:Q4_K_M   # 안전 분류 모델. 없으면 키워드 사전만으로 검사

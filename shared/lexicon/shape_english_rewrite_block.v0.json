@@ -1,0 +1,35 @@
+{
+  "lexiconId": "ifs-shape-english-rewrite-block",
+  "version": "0.2.0",
+  "status": "draft",
+  "decision": "G85",
+  "date": "2026-11-28",
+  "source": "docs/decisions.md G85(연구 책임자 결정, 2026-11-28). 설계안 docs/codex-reviews/D16_claude.md 3절 '새 목록'(장면·배경, 장소 전치사, 화풍, 영어 부정어)과 D16 반박 판정 2·4. 구현 하위 에이전트의 초안, 연구팀 검토 전.",
+  "description": "G85 그림 프롬프트 다시 쓰기의 영어 낱말 금지 목록(허용 목록 아님). 기존 두 목록(shape_english_block.v0.json·shape_english_modifier_block.v0.json)에 더해 쓴다. 대상 명사구(subject)의 모든 낱말에 걸고, 꾸밈(details)은 모양 낱말 허용 집합 안에서만 받는다(아래 detailAllowed). 서버 검증기(chatbot/ifs_chatbot/llm_rewrite.py)와 생성 직전 재검증(tools/gen3d/prompts.py rewrite_english_reasons)이 같은 파일을 읽는다. WordNet 상위어 검사(wordnetHypernymCheck)는 서버 검증기만 한다(생성기 venv에는 WordNet이 없음).",
+  "changes": [{"version": "0.2.0", "date": "2026-11-29", "by": "Codex CP21-1 수용", "what": "대상 명사구의 머리 낱말에도 재질 검사(texture_material + headMaterial, rock·stone·brick 등 사물로도 쓰는 낱말은 머리에서는 막지 않음), 장소 낱말 보강(cave 등), WordNet 장소 상위어(placeRoots)"}],
+  "howToEdit": [
+    "낱말을 더하거나 빼면 version을 올린다(캐시 키·기록의 sha256이 바뀐다)."
+  ],
+  "categories": {
+    "scene_background": ["background", "backdrop", "scene", "scenery", "landscape", "setting", "environment", "room", "floor", "ground", "horizon", "field", "meadow", "forest", "sea", "ocean", "lake", "river", "street", "road", "city", "world", "universe", "air", "surroundings",
+                         "cave", "cliff", "mountain", "hill", "valley", "beach", "desert", "island", "tunnel", "canyon", "shore", "coast", "park", "garden", "sky"],
+    "place_preposition": ["on", "in", "under", "inside", "beside", "behind", "above", "below", "near", "over", "between", "within", "atop", "around", "through", "of", "with", "and", "or", "the", "a", "an", "at", "to", "from", "into", "onto"],
+    "style": ["realistic", "photo", "photograph", "photorealistic", "cartoon", "cartoonish", "render", "rendering", "rendered", "painting", "painted", "drawing", "drawn", "sketch", "illustration", "style", "stylized", "cinematic", "lighting", "lit", "anime", "digital", "art", "artwork", "sculpture", "sculpted", "abstract", "surreal", "symbolic", "symbol", "icon", "logo", "emoji", "clipart"],
+    "negation": ["not", "no", "without", "never", "non", "none", "nor", "less"],
+    "headMaterial": ["wood", "wooden", "paper", "glass", "metal", "plastic", "water", "sand", "cloth", "silk"],
+    "state_emotion": ["compressed", "tangled", "broken", "crushed", "trapped", "stuck", "tight", "squeezed", "pressed", "choked", "choking", "suffocated", "burdened", "lost", "alone", "abandoned", "empty", "hollow", "twisted", "wounded", "aching", "sore", "numb", "burning", "bleeding", "dying", "dead", "crying", "screaming", "shaking", "trembling", "falling", "sinking", "drowning", "squashed", "crumpled", "cracked", "shattered", "dented", "drooping", "sagging", "withered", "rotten", "decayed", "sick", "ill", "lonely", "sorrowful", "fearful", "anxious", "stressed", "stressful", "frustrated", "frustrating", "helpless", "hopeless", "worthless", "guilty", "ashamed", "angry", "upset", "burden", "worry", "fear", "anxiety", "sadness", "grief", "anger", "stress", "trauma", "memory", "dream", "thought", "mind", "soul", "spirit", "self"]
+  },
+  "detailAllowed": {
+    "note": "근거 있는 꾸밈(basis quote)은 이 집합 안의 낱말만 받는다: G82 목록의 shape_adjective(shape_english_modifier_block.v0.json) + 규칙 사전(shape_prompt_en.v0.json)의 shape_modifier 영어 낱말 + 닫힌 덧붙임 목록(shape_added_adjectives.v0.json) − notShapeForRewrite. 근거 없는 꾸밈(basis none)은 닫힌 덧붙임 목록만.",
+    "notShapeForRewrite": ["smooth", "rough", "empty", "solid", "whole"],
+    "colorSizeExemptIfRuleModifier": "규칙 사전의 shape_modifier 영어 낱말(long·thick·thin 등)은 기존 목록 english_color_size에 걸려도 근거 있는 꾸밈으로는 받는다(참여자가 말한 낱말을 규칙도 같은 영어로 옮긴다). 근거 없는 꾸밈에는 이 예외가 없다"
+  },
+  "wordnetHypernymCheck": {
+    "version": "g85-wordnet-check/0.1.0",
+    "data": "WordNet 3.0(nltk 말뭉치 wordnet.zip, chatbot/.venv/nltk_data — git 밖, 구현 때 한 번 내려받음, 실행 중 외부 호출 없음). 라이선스 WordNet 3.0 license(Princeton, BSD 꼴 허용 라이선스, 말뭉치 안 wordnet/LICENSE)",
+    "placeRoots": ["location.n.01", "geological_formation.n.01", "body_of_water.n.01"],
+    "placeRule": "(CP21-1, 2026-11-29) 머리 명사·합성어의 첫 명사 뜻 상위어에 placeRoots가 있으면 wordnet_place로 기각(금지 범주가 아님 — 대상 근거 없음으로 다뤄 중립 형태). structure(건물 등)는 넣지 않는다.",
+    "forbiddenRoots": ["person.n.01", "animal.n.01", "body_part.n.01", "fire.n.01", "fire.n.03", "cloud.n.01", "spiritual_being.n.01", "imaginary_being.n.01"],
+    "rule": "대상 명사구(subject)의 머리 명사(마지막 낱말)와, 두 낱말 이상이면 밑줄로 이은 합성어(WordNet에 있을 때)의 명사 뜻 가운데 **첫 뜻**(WordNet 빈도 순 첫 synset, morphy로 복수형을 되돌림)만 본다. 그 뜻의 상위어(hypernym·instance hypernym 닫힘)에 forbiddenRoots가 하나라도 있으면 wordnet_forbidden으로 기각(금지 범주). 첫 뜻만 보는 것은 다의어 과차단을 줄이려는 규칙이다(rock의 사람 이름 뜻·head의 다른 뜻은 보지 않음) — 대신 첫 뜻이 금지 범주가 아닌 낱말의 다른 뜻은 놓친다(미탐). WordNet에 없는 낱말은 판정하지 않는다(목록·관문에 기댐). 꾸밈 낱말에는 걸지 않는다(꾸밈은 닫힌 모양 낱말 집합 안에서만 받으므로). 대상 명사구의 앞 낱말(꾸밈 자리)도 보지 않는다 — 형용사의 드문 명사 뜻이 걸리는 과차단(heavy의 첫 명사 뜻이 사람)을 막으려는 규칙이며, 앞 낱말의 사람·동물 낱말은 영어 금지 목록이 맡는다."
+  }
+}

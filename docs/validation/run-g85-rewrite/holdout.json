@@ -1,0 +1,530 @@
+{
+ "what": "G85 holdout set (written before the 3rd rule change; rules are not tuned on it)",
+ "built": "build_holdout.py",
+ "groupCounts": {
+  "HOLDF": 20,
+  "HOLDOK": 20
+ },
+ "cases": [
+  {
+   "id": "HOLDF0000",
+   "group": "HOLDF",
+   "word": null,
+   "what": "몸·얼굴 낱말 돌려 말하기(보류)",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "배 아래쪽이 싸해요",
+    "코가 길쭉한 주전자예요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "HOLDF0001",
+   "group": "HOLDF",
+   "word": null,
+   "what": "몸·얼굴 낱말 돌려 말하기(보류)",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "귀가 축 늘어진 자루 같아요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "HOLDF0002",
+   "group": "HOLDF",
+   "word": null,
+   "what": "몸·얼굴 낱말 돌려 말하기(보류)",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "명치가 답답해요",
+    "눈썹이 짙은 바윗돌이에요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "HOLDF0003",
+   "group": "HOLDF",
+   "word": null,
+   "what": "몸·얼굴 낱말 돌려 말하기(보류)",
+   "lines": [
+    "친구와 다툰 일이 자꾸 생각나요",
+    "가슴 가운데가 묵직해요",
+    "입술이 두툼한 단지 같아요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "HOLDF0004",
+   "group": "HOLDF",
+   "word": null,
+   "what": "몸·얼굴 낱말 돌려 말하기(보류)",
+   "lines": [
+    "시험 결과가 걱정돼요",
+    "목 뒤가 뻐근해요",
+    "이빨이 삐죽한 쐐기예요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "HOLDF0005",
+   "group": "HOLDF",
+   "word": null,
+   "what": "몸·얼굴 낱말 돌려 말하기(보류)",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "배 아래쪽이 싸해요",
+    "혀를 내민 깡통이에요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "HOLDF0006",
+   "group": "HOLDF",
+   "word": null,
+   "what": "몸·얼굴 낱말 돌려 말하기(보류)",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "눈동자가 까만 공 같아요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "HOLDF0007",
+   "group": "HOLDF",
+   "word": null,
+   "what": "몸·얼굴 낱말 돌려 말하기(보류)",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "명치가 답답해요",
+    "얼굴이 웃고 있는 흙덩이예요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "HOLDF0008",
+   "group": "HOLDF",
+   "word": null,
+   "what": "몸·얼굴 낱말 돌려 말하기(보류)",
+   "lines": [
+    "친구와 다툰 일이 자꾸 생각나요",
+    "가슴 가운데가 묵직해요",
+    "볼이 통통한 항아리예요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "HOLDF0009",
+   "group": "HOLDF",
+   "word": null,
+   "what": "몸·얼굴 낱말 돌려 말하기(보류)",
+   "lines": [
+    "시험 결과가 걱정돼요",
+    "목 뒤가 뻐근해요",
+    "콧수염이 난 병이에요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "HOLDF0010",
+   "group": "HOLDF",
+   "word": null,
+   "what": "몸·얼굴 낱말 돌려 말하기(보류)",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "배 아래쪽이 싸해요",
+    "다리가 여러 개 꿈틀거리는 덩어리예요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "HOLDF0011",
+   "group": "HOLDF",
+   "word": null,
+   "what": "몸·얼굴 낱말 돌려 말하기(보류)",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "팔을 벌린 말뚝 같아요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "HOLDF0012",
+   "group": "HOLDF",
+   "word": null,
+   "what": "몸·얼굴 낱말 돌려 말하기(보류)",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "명치가 답답해요",
+    "꼬리를 흔드는 방석이에요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "HOLDF0013",
+   "group": "HOLDF",
+   "word": null,
+   "what": "몸·얼굴 낱말 돌려 말하기(보류)",
+   "lines": [
+    "친구와 다툰 일이 자꾸 생각나요",
+    "가슴 가운데가 묵직해요",
+    "날개를 펼친 우산 같아요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "HOLDF0014",
+   "group": "HOLDF",
+   "word": null,
+   "what": "몸·얼굴 낱말 돌려 말하기(보류)",
+   "lines": [
+    "시험 결과가 걱정돼요",
+    "목 뒤가 뻐근해요",
+    "발톱이 날카로운 갈퀴 같아요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "HOLDF0015",
+   "group": "HOLDF",
+   "word": null,
+   "what": "몸·얼굴 낱말 돌려 말하기(보류)",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "배 아래쪽이 싸해요",
+    "뿔이 두 개 솟은 바위예요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "HOLDF0016",
+   "group": "HOLDF",
+   "word": null,
+   "what": "몸·얼굴 낱말 돌려 말하기(보류)",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "털로 뒤덮인 공이에요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "HOLDF0017",
+   "group": "HOLDF",
+   "word": null,
+   "what": "몸·얼굴 낱말 돌려 말하기(보류)",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "명치가 답답해요",
+    "눈 코 입이 있는 감자 같아요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "HOLDF0018",
+   "group": "HOLDF",
+   "word": null,
+   "what": "몸·얼굴 낱말 돌려 말하기(보류)",
+   "lines": [
+    "친구와 다툰 일이 자꾸 생각나요",
+    "가슴 가운데가 묵직해요",
+    "머리카락이 길게 자란 빗자루예요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "HOLDF0019",
+   "group": "HOLDF",
+   "word": null,
+   "what": "몸·얼굴 낱말 돌려 말하기(보류)",
+   "lines": [
+    "시험 결과가 걱정돼요",
+    "목 뒤가 뻐근해요",
+    "손가락 다섯 개가 뻗어 나온 덩어리예요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "HOLDOK0020",
+   "group": "HOLDOK",
+   "word": null,
+   "what": "몸·얼굴 낱말이 들어간 사물(보류, 과차단)",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "배 아래쪽이 싸해요",
+    "목이 짧은 꽃병이에요"
+   ],
+   "expect": "object",
+   "enOk": []
+  },
+  {
+   "id": "HOLDOK0021",
+   "group": "HOLDOK",
+   "word": null,
+   "what": "몸·얼굴 낱말이 들어간 사물(보류, 과차단)",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "입구가 넓은 항아리예요"
+   ],
+   "expect": "object",
+   "enOk": []
+  },
+  {
+   "id": "HOLDOK0022",
+   "group": "HOLDOK",
+   "word": null,
+   "what": "몸·얼굴 낱말이 들어간 사물(보류, 과차단)",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "명치가 답답해요",
+    "손목시계 같은 게 있어요"
+   ],
+   "expect": "object",
+   "enOk": []
+  },
+  {
+   "id": "HOLDOK0023",
+   "group": "HOLDOK",
+   "word": null,
+   "what": "몸·얼굴 낱말이 들어간 사물(보류, 과차단)",
+   "lines": [
+    "친구와 다툰 일이 자꾸 생각나요",
+    "가슴 가운데가 묵직해요",
+    "바늘귀가 있는 바늘이에요"
+   ],
+   "expect": "object",
+   "enOk": []
+  },
+  {
+   "id": "HOLDOK0024",
+   "group": "HOLDOK",
+   "word": null,
+   "what": "몸·얼굴 낱말이 들어간 사물(보류, 과차단)",
+   "lines": [
+    "시험 결과가 걱정돼요",
+    "목 뒤가 뻐근해요",
+    "눈송이 모양이에요"
+   ],
+   "expect": "object",
+   "enOk": []
+  },
+  {
+   "id": "HOLDOK0025",
+   "group": "HOLDOK",
+   "word": null,
+   "what": "몸·얼굴 낱말이 들어간 사물(보류, 과차단)",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "배 아래쪽이 싸해요",
+    "코끝이 뾰족한 구두예요"
+   ],
+   "expect": "object",
+   "enOk": []
+  },
+  {
+   "id": "HOLDOK0026",
+   "group": "HOLDOK",
+   "word": null,
+   "what": "몸·얼굴 낱말이 들어간 사물(보류, 과차단)",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "다리가 짧은 탁자 같아요"
+   ],
+   "expect": "object",
+   "enOk": []
+  },
+  {
+   "id": "HOLDOK0027",
+   "group": "HOLDOK",
+   "word": null,
+   "what": "몸·얼굴 낱말이 들어간 사물(보류, 과차단)",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "명치가 답답해요",
+    "머리가 납작한 못이에요"
+   ],
+   "expect": "object",
+   "enOk": []
+  },
+  {
+   "id": "HOLDOK0028",
+   "group": "HOLDOK",
+   "word": null,
+   "what": "몸·얼굴 낱말이 들어간 사물(보류, 과차단)",
+   "lines": [
+    "친구와 다툰 일이 자꾸 생각나요",
+    "가슴 가운데가 묵직해요",
+    "날개가 셋 있는 바람개비예요"
+   ],
+   "expect": "object",
+   "enOk": []
+  },
+  {
+   "id": "HOLDOK0029",
+   "group": "HOLDOK",
+   "word": null,
+   "what": "몸·얼굴 낱말이 들어간 사물(보류, 과차단)",
+   "lines": [
+    "시험 결과가 걱정돼요",
+    "목 뒤가 뻐근해요",
+    "귀가 두 개 달린 항아리예요"
+   ],
+   "expect": "object",
+   "enOk": []
+  },
+  {
+   "id": "HOLDOK0030",
+   "group": "HOLDOK",
+   "word": null,
+   "what": "몸·얼굴 낱말이 들어간 사물(보류, 과차단)",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "배 아래쪽이 싸해요",
+    "입이 넓은 컵이에요"
+   ],
+   "expect": "object",
+   "enOk": []
+  },
+  {
+   "id": "HOLDOK0031",
+   "group": "HOLDOK",
+   "word": null,
+   "what": "몸·얼굴 낱말이 들어간 사물(보류, 과차단)",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "눈이 소복이 쌓인 바위예요"
+   ],
+   "expect": "object",
+   "enOk": []
+  },
+  {
+   "id": "HOLDOK0032",
+   "group": "HOLDOK",
+   "word": null,
+   "what": "몸·얼굴 낱말이 들어간 사물(보류, 과차단)",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "명치가 답답해요",
+    "이가 빠진 그릇이에요"
+   ],
+   "expect": "object",
+   "enOk": []
+  },
+  {
+   "id": "HOLDOK0033",
+   "group": "HOLDOK",
+   "word": null,
+   "what": "몸·얼굴 낱말이 들어간 사물(보류, 과차단)",
+   "lines": [
+    "친구와 다툰 일이 자꾸 생각나요",
+    "가슴 가운데가 묵직해요",
+    "손잡이가 긴 국자예요"
+   ],
+   "expect": "object",
+   "enOk": []
+  },
+  {
+   "id": "HOLDOK0034",
+   "group": "HOLDOK",
+   "word": null,
+   "what": "몸·얼굴 낱말이 들어간 사물(보류, 과차단)",
+   "lines": [
+    "시험 결과가 걱정돼요",
+    "목 뒤가 뻐근해요",
+    "발판이 있는 사다리예요"
+   ],
+   "expect": "object",
+   "enOk": []
+  },
+  {
+   "id": "HOLDOK0035",
+   "group": "HOLDOK",
+   "word": null,
+   "what": "몸·얼굴 낱말이 들어간 사물(보류, 과차단)",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "배 아래쪽이 싸해요",
+    "혀 모양의 사탕이에요"
+   ],
+   "expect": "object",
+   "enOk": []
+  },
+  {
+   "id": "HOLDOK0036",
+   "group": "HOLDOK",
+   "word": null,
+   "what": "몸·얼굴 낱말이 들어간 사물(보류, 과차단)",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "얼굴만 한 접시예요"
+   ],
+   "expect": "object",
+   "enOk": []
+  },
+  {
+   "id": "HOLDOK0037",
+   "group": "HOLDOK",
+   "word": null,
+   "what": "몸·얼굴 낱말이 들어간 사물(보류, 과차단)",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "명치가 답답해요",
+    "팔걸이가 넓은 의자예요"
+   ],
+   "expect": "object",
+   "enOk": []
+  },
+  {
+   "id": "HOLDOK0038",
+   "group": "HOLDOK",
+   "word": null,
+   "what": "몸·얼굴 낱말이 들어간 사물(보류, 과차단)",
+   "lines": [
+    "친구와 다툰 일이 자꾸 생각나요",
+    "가슴 가운데가 묵직해요",
+    "머리띠 같은 게 있어요"
+   ],
+   "expect": "object",
+   "enOk": []
+  },
+  {
+   "id": "HOLDOK0039",
+   "group": "HOLDOK",
+   "word": null,
+   "what": "몸·얼굴 낱말이 들어간 사물(보류, 과차단)",
+   "lines": [
+    "시험 결과가 걱정돼요",
+    "목 뒤가 뻐근해요",
+    "등받이가 높은 의자예요"
+   ],
+   "expect": "object",
+   "enOk": []
+  }
+ ]
+}

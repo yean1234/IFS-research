@@ -1,0 +1,4045 @@
+{
+ "what": "G85 synthetic offline check case set (written before the run; do not edit after results). 2026-11-29: BODYF·BODYOK 42 appended after the first run (first 220 unchanged)",
+ "built": "build_cases.py",
+ "groupCounts": {
+  "OOV": 40,
+  "NOSHAPE": 30,
+  "NEG": 20,
+  "PAST": 20,
+  "OTHER": 20,
+  "HYPO": 20,
+  "SIMILE": 20,
+  "FORBID": 30,
+  "WORRY": 20,
+  "BODYF": 20,
+  "BODYOK": 22
+ },
+ "cases": [
+  {
+   "id": "OOV0000",
+   "group": "OOV",
+   "word": "흙덩이",
+   "what": null,
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "배 아래쪽이 싸해요",
+    "흙덩이가 보여요"
+   ],
+   "expect": "shape",
+   "enOk": [
+    "clod",
+    "lump",
+    "dirt",
+    "soil",
+    "chunk"
+   ]
+  },
+  {
+   "id": "OOV0001",
+   "group": "OOV",
+   "word": "진흙덩이",
+   "what": null,
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "진흙덩이 같은 게 있어요"
+   ],
+   "expect": "shape",
+   "enOk": [
+    "clod",
+    "lump",
+    "mud",
+    "clay",
+    "chunk"
+   ]
+  },
+  {
+   "id": "OOV0002",
+   "group": "OOV",
+   "word": "바윗돌",
+   "what": null,
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "명치가 답답해요",
+    "바윗돌처럼 생겼어요"
+   ],
+   "expect": "shape",
+   "enOk": [
+    "rock",
+    "boulder",
+    "stone"
+   ]
+  },
+  {
+   "id": "OOV0003",
+   "group": "OOV",
+   "word": "디딤돌",
+   "what": null,
+   "lines": [
+    "친구와 다툰 일이 자꾸 생각나요",
+    "가슴 가운데가 묵직해요",
+    "울퉁불퉁한 디딤돌이 있어요"
+   ],
+   "expect": "shape",
+   "enOk": [
+    "stone",
+    "steppingstone",
+    "stepping stone",
+    "step"
+   ]
+  },
+  {
+   "id": "OOV0004",
+   "group": "OOV",
+   "word": "숫돌",
+   "what": null,
+   "lines": [
+    "시험 결과가 걱정돼요",
+    "목 뒤가 뻐근해요",
+    "끝이 뾰족한 숫돌이에요"
+   ],
+   "expect": "shape",
+   "enOk": [
+    "whetstone",
+    "grindstone",
+    "stone",
+    "hone"
+   ]
+  },
+  {
+   "id": "OOV0005",
+   "group": "OOV",
+   "word": "주춧돌",
+   "what": null,
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "배 아래쪽이 싸해요",
+    "주춧돌이에요"
+   ],
+   "expect": "shape",
+   "enOk": [
+    "cornerstone",
+    "foundation stone",
+    "stone",
+    "plinth"
+   ]
+  },
+  {
+   "id": "OOV0006",
+   "group": "OOV",
+   "word": "나무토막",
+   "what": null,
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "가슴 앞에 나무토막이 놓여 있어요"
+   ],
+   "expect": "shape",
+   "enOk": [
+    "block",
+    "wood block",
+    "log",
+    "piece"
+   ]
+  },
+  {
+   "id": "OOV0007",
+   "group": "OOV",
+   "word": "장작",
+   "what": null,
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "명치가 답답해요",
+    "둥글넓적한 장작 모양이에요"
+   ],
+   "expect": "shape",
+   "enOk": [
+    "firewood",
+    "log",
+    "wood"
+   ]
+  },
+  {
+   "id": "OOV0008",
+   "group": "OOV",
+   "word": "쐐기",
+   "what": null,
+   "lines": [
+    "친구와 다툰 일이 자꾸 생각나요",
+    "가슴 가운데가 묵직해요",
+    "쐐기가 보여요"
+   ],
+   "expect": "shape",
+   "enOk": [
+    "wedge"
+   ]
+  },
+  {
+   "id": "OOV0009",
+   "group": "OOV",
+   "word": "말뚝",
+   "what": null,
+   "lines": [
+    "시험 결과가 걱정돼요",
+    "목 뒤가 뻐근해요",
+    "말뚝 같은 게 있어요"
+   ],
+   "expect": "shape",
+   "enOk": [
+    "stake",
+    "post",
+    "peg",
+    "pile"
+   ]
+  },
+  {
+   "id": "OOV0010",
+   "group": "OOV",
+   "word": "방망이",
+   "what": null,
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "배 아래쪽이 싸해요",
+    "방망이처럼 생겼어요"
+   ],
+   "expect": "shape",
+   "enOk": [
+    "club",
+    "bat",
+    "stick",
+    "mallet"
+   ]
+  },
+  {
+   "id": "OOV0011",
+   "group": "OOV",
+   "word": "다리미",
+   "what": null,
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "울퉁불퉁한 다리미가 있어요"
+   ],
+   "expect": "shape",
+   "enOk": [
+    "iron"
+   ]
+  },
+  {
+   "id": "OOV0012",
+   "group": "OOV",
+   "word": "주걱",
+   "what": null,
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "명치가 답답해요",
+    "끝이 뾰족한 주걱이에요"
+   ],
+   "expect": "shape",
+   "enOk": [
+    "spatula",
+    "paddle",
+    "scoop"
+   ]
+  },
+  {
+   "id": "OOV0013",
+   "group": "OOV",
+   "word": "확성기",
+   "what": null,
+   "lines": [
+    "친구와 다툰 일이 자꾸 생각나요",
+    "가슴 가운데가 묵직해요",
+    "확성기예요"
+   ],
+   "expect": "shape",
+   "enOk": [
+    "megaphone",
+    "loudspeaker"
+   ]
+  },
+  {
+   "id": "OOV0014",
+   "group": "OOV",
+   "word": "나사못",
+   "what": null,
+   "lines": [
+    "시험 결과가 걱정돼요",
+    "목 뒤가 뻐근해요",
+    "가슴 앞에 나사못이 놓여 있어요"
+   ],
+   "expect": "shape",
+   "enOk": [
+    "screw"
+   ]
+  },
+  {
+   "id": "OOV0015",
+   "group": "OOV",
+   "word": "도르래",
+   "what": null,
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "배 아래쪽이 싸해요",
+    "둥글넓적한 도르래 모양이에요"
+   ],
+   "expect": "shape",
+   "enOk": [
+    "pulley"
+   ]
+  },
+  {
+   "id": "OOV0016",
+   "group": "OOV",
+   "word": "저울추",
+   "what": null,
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "저울추가 보여요"
+   ],
+   "expect": "shape",
+   "enOk": [
+    "weight",
+    "counterweight"
+   ]
+  },
+  {
+   "id": "OOV0017",
+   "group": "OOV",
+   "word": "병뚜껑",
+   "what": null,
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "명치가 답답해요",
+    "병뚜껑 같은 게 있어요"
+   ],
+   "expect": "shape",
+   "enOk": [
+    "cap",
+    "bottle cap",
+    "lid"
+   ]
+  },
+  {
+   "id": "OOV0018",
+   "group": "OOV",
+   "word": "물동이",
+   "what": null,
+   "lines": [
+    "친구와 다툰 일이 자꾸 생각나요",
+    "가슴 가운데가 묵직해요",
+    "물동이처럼 생겼어요"
+   ],
+   "expect": "shape",
+   "enOk": [
+    "jar",
+    "pot",
+    "pail",
+    "bucket"
+   ]
+  },
+  {
+   "id": "OOV0019",
+   "group": "OOV",
+   "word": "바가지",
+   "what": null,
+   "lines": [
+    "시험 결과가 걱정돼요",
+    "목 뒤가 뻐근해요",
+    "울퉁불퉁한 바가지가 있어요"
+   ],
+   "expect": "shape",
+   "enOk": [
+    "gourd",
+    "dipper",
+    "bowl",
+    "scoop"
+   ]
+  },
+  {
+   "id": "OOV0020",
+   "group": "OOV",
+   "word": "소쿠리",
+   "what": null,
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "배 아래쪽이 싸해요",
+    "끝이 뾰족한 소쿠리예요"
+   ],
+   "expect": "shape",
+   "enOk": [
+    "basket",
+    "sieve"
+   ]
+  },
+  {
+   "id": "OOV0021",
+   "group": "OOV",
+   "word": "수세미",
+   "what": null,
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "수세미예요"
+   ],
+   "expect": "shape",
+   "enOk": [
+    "scrubber",
+    "sponge",
+    "scourer",
+    "loofah"
+   ]
+  },
+  {
+   "id": "OOV0022",
+   "group": "OOV",
+   "word": "깡통",
+   "what": null,
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "명치가 답답해요",
+    "가슴 앞에 깡통이 놓여 있어요"
+   ],
+   "expect": "shape",
+   "enOk": [
+    "can",
+    "tin"
+   ]
+  },
+  {
+   "id": "OOV0023",
+   "group": "OOV",
+   "word": "단지",
+   "what": null,
+   "lines": [
+    "친구와 다툰 일이 자꾸 생각나요",
+    "가슴 가운데가 묵직해요",
+    "둥글넓적한 단지 모양이에요"
+   ],
+   "expect": "shape",
+   "enOk": [
+    "jar",
+    "pot",
+    "crock"
+   ]
+  },
+  {
+   "id": "OOV0024",
+   "group": "OOV",
+   "word": "요강",
+   "what": null,
+   "lines": [
+    "시험 결과가 걱정돼요",
+    "목 뒤가 뻐근해요",
+    "요강이 보여요"
+   ],
+   "expect": "shape",
+   "enOk": [
+    "chamber pot",
+    "pot",
+    "potty"
+   ]
+  },
+  {
+   "id": "OOV0025",
+   "group": "OOV",
+   "word": "호루라기",
+   "what": null,
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "배 아래쪽이 싸해요",
+    "호루라기 같은 게 있어요"
+   ],
+   "expect": "shape",
+   "enOk": [
+    "whistle"
+   ]
+  },
+  {
+   "id": "OOV0026",
+   "group": "OOV",
+   "word": "팽이",
+   "what": null,
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "팽이처럼 생겼어요"
+   ],
+   "expect": "shape",
+   "enOk": [
+    "top",
+    "spinning top"
+   ]
+  },
+  {
+   "id": "OOV0027",
+   "group": "OOV",
+   "word": "맷방석",
+   "what": null,
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "명치가 답답해요",
+    "울퉁불퉁한 맷방석이 있어요"
+   ],
+   "expect": "shape",
+   "enOk": [
+    "mat",
+    "cushion"
+   ]
+  },
+  {
+   "id": "OOV0028",
+   "group": "OOV",
+   "word": "바퀴통",
+   "what": null,
+   "lines": [
+    "친구와 다툰 일이 자꾸 생각나요",
+    "가슴 가운데가 묵직해요",
+    "끝이 뾰족한 바퀴통이에요"
+   ],
+   "expect": "shape",
+   "enOk": [
+    "hub"
+   ]
+  },
+  {
+   "id": "OOV0029",
+   "group": "OOV",
+   "word": "굴렁쇠",
+   "what": null,
+   "lines": [
+    "시험 결과가 걱정돼요",
+    "목 뒤가 뻐근해요",
+    "굴렁쇠예요"
+   ],
+   "expect": "shape",
+   "enOk": [
+    "hoop",
+    "ring"
+   ]
+  },
+  {
+   "id": "OOV0030",
+   "group": "OOV",
+   "word": "젓가락",
+   "what": null,
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "배 아래쪽이 싸해요",
+    "가슴 앞에 젓가락이 놓여 있어요"
+   ],
+   "expect": "shape",
+   "enOk": [
+    "chopsticks",
+    "chopstick"
+   ]
+  },
+  {
+   "id": "OOV0031",
+   "group": "OOV",
+   "word": "솥뚜껑",
+   "what": null,
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "둥글넓적한 솥뚜껑 모양이에요"
+   ],
+   "expect": "shape",
+   "enOk": [
+    "lid",
+    "pot lid"
+   ]
+  },
+  {
+   "id": "OOV0032",
+   "group": "OOV",
+   "word": "옹기",
+   "what": null,
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "명치가 답답해요",
+    "옹기가 보여요"
+   ],
+   "expect": "shape",
+   "enOk": [
+    "pot",
+    "jar",
+    "crock",
+    "pottery"
+   ]
+  },
+  {
+   "id": "OOV0033",
+   "group": "OOV",
+   "word": "절구통",
+   "what": null,
+   "lines": [
+    "친구와 다툰 일이 자꾸 생각나요",
+    "가슴 가운데가 묵직해요",
+    "절구통 같은 게 있어요"
+   ],
+   "expect": "shape",
+   "enOk": [
+    "mortar"
+   ]
+  },
+  {
+   "id": "OOV0034",
+   "group": "OOV",
+   "word": "물레",
+   "what": null,
+   "lines": [
+    "시험 결과가 걱정돼요",
+    "목 뒤가 뻐근해요",
+    "물레처럼 생겼어요"
+   ],
+   "expect": "shape",
+   "enOk": [
+    "wheel",
+    "spinning wheel"
+   ]
+  },
+  {
+   "id": "OOV0035",
+   "group": "OOV",
+   "word": "부채",
+   "what": null,
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "배 아래쪽이 싸해요",
+    "울퉁불퉁한 부채가 있어요"
+   ],
+   "expect": "shape",
+   "enOk": [
+    "fan"
+   ]
+  },
+  {
+   "id": "OOV0036",
+   "group": "OOV",
+   "word": "촛대",
+   "what": null,
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "끝이 뾰족한 촛대예요"
+   ],
+   "expect": "shape",
+   "enOk": [
+    "candlestick",
+    "candleholder"
+   ]
+  },
+  {
+   "id": "OOV0037",
+   "group": "OOV",
+   "word": "나팔",
+   "what": null,
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "명치가 답답해요",
+    "나팔이에요"
+   ],
+   "expect": "shape",
+   "enOk": [
+    "trumpet",
+    "horn"
+   ]
+  },
+  {
+   "id": "OOV0038",
+   "group": "OOV",
+   "word": "기왓장",
+   "what": null,
+   "lines": [
+    "친구와 다툰 일이 자꾸 생각나요",
+    "가슴 가운데가 묵직해요",
+    "가슴 앞에 기왓장이 놓여 있어요"
+   ],
+   "expect": "shape",
+   "enOk": [
+    "tile",
+    "roof tile"
+   ]
+  },
+  {
+   "id": "OOV0039",
+   "group": "OOV",
+   "word": "밤송이",
+   "what": null,
+   "lines": [
+    "시험 결과가 걱정돼요",
+    "목 뒤가 뻐근해요",
+    "둥글넓적한 밤송이 모양이에요"
+   ],
+   "expect": "shape",
+   "enOk": [
+    "burr",
+    "chestnut",
+    "chestnut burr",
+    "husk"
+   ]
+  },
+  {
+   "id": "NOSHAPE0040",
+   "group": "NOSHAPE",
+   "word": null,
+   "what": null,
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "배 아래쪽이 싸해요",
+    "쑥색이고 차가워요"
+   ],
+   "expect": "neutral",
+   "enOk": []
+  },
+  {
+   "id": "NOSHAPE0041",
+   "group": "NOSHAPE",
+   "word": null,
+   "what": null,
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "답답해요"
+   ],
+   "expect": "neutral",
+   "enOk": []
+  },
+  {
+   "id": "NOSHAPE0042",
+   "group": "NOSHAPE",
+   "word": null,
+   "what": null,
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "명치가 답답해요",
+    "뜨겁고 빨개요"
+   ],
+   "expect": "neutral",
+   "enOk": []
+  },
+  {
+   "id": "NOSHAPE0043",
+   "group": "NOSHAPE",
+   "word": null,
+   "what": null,
+   "lines": [
+    "친구와 다툰 일이 자꾸 생각나요",
+    "가슴 가운데가 묵직해요",
+    "무겁고 어두워요"
+   ],
+   "expect": "neutral",
+   "enOk": []
+  },
+  {
+   "id": "NOSHAPE0044",
+   "group": "NOSHAPE",
+   "word": null,
+   "what": null,
+   "lines": [
+    "시험 결과가 걱정돼요",
+    "목 뒤가 뻐근해요",
+    "축축한 느낌이에요"
+   ],
+   "expect": "neutral",
+   "enOk": []
+  },
+  {
+   "id": "NOSHAPE0045",
+   "group": "NOSHAPE",
+   "word": null,
+   "what": null,
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "배 아래쪽이 싸해요",
+    "차갑고 파래요"
+   ],
+   "expect": "neutral",
+   "enOk": []
+  },
+  {
+   "id": "NOSHAPE0046",
+   "group": "NOSHAPE",
+   "word": null,
+   "what": null,
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "그냥 막막해요"
+   ],
+   "expect": "neutral",
+   "enOk": []
+  },
+  {
+   "id": "NOSHAPE0047",
+   "group": "NOSHAPE",
+   "word": null,
+   "what": null,
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "명치가 답답해요",
+    "회색빛이고 서늘해요"
+   ],
+   "expect": "neutral",
+   "enOk": []
+  },
+  {
+   "id": "NOSHAPE0048",
+   "group": "NOSHAPE",
+   "word": null,
+   "what": null,
+   "lines": [
+    "친구와 다툰 일이 자꾸 생각나요",
+    "가슴 가운데가 묵직해요",
+    "따끔따끔해요"
+   ],
+   "expect": "neutral",
+   "enOk": []
+  },
+  {
+   "id": "NOSHAPE0049",
+   "group": "NOSHAPE",
+   "word": null,
+   "what": null,
+   "lines": [
+    "시험 결과가 걱정돼요",
+    "목 뒤가 뻐근해요",
+    "속이 울렁거려요"
+   ],
+   "expect": "neutral",
+   "enOk": []
+  },
+  {
+   "id": "NOSHAPE0050",
+   "group": "NOSHAPE",
+   "word": null,
+   "what": null,
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "배 아래쪽이 싸해요",
+    "검고 끈적해요"
+   ],
+   "expect": "neutral",
+   "enOk": []
+  },
+  {
+   "id": "NOSHAPE0051",
+   "group": "NOSHAPE",
+   "word": null,
+   "what": null,
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "미지근하고 흐릿해요"
+   ],
+   "expect": "neutral",
+   "enOk": []
+  },
+  {
+   "id": "NOSHAPE0052",
+   "group": "NOSHAPE",
+   "word": null,
+   "what": null,
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "명치가 답답해요",
+    "숨이 막혀요"
+   ],
+   "expect": "neutral",
+   "enOk": []
+  },
+  {
+   "id": "NOSHAPE0053",
+   "group": "NOSHAPE",
+   "word": null,
+   "what": null,
+   "lines": [
+    "친구와 다툰 일이 자꾸 생각나요",
+    "가슴 가운데가 묵직해요",
+    "노랗고 따뜻해요"
+   ],
+   "expect": "neutral",
+   "enOk": []
+  },
+  {
+   "id": "NOSHAPE0054",
+   "group": "NOSHAPE",
+   "word": null,
+   "what": null,
+   "lines": [
+    "시험 결과가 걱정돼요",
+    "목 뒤가 뻐근해요",
+    "조여드는 느낌이에요"
+   ],
+   "expect": "neutral",
+   "enOk": []
+  },
+  {
+   "id": "NOSHAPE0055",
+   "group": "NOSHAPE",
+   "word": null,
+   "what": null,
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "배 아래쪽이 싸해요",
+    "갑갑하고 무거워요"
+   ],
+   "expect": "neutral",
+   "enOk": []
+  },
+  {
+   "id": "NOSHAPE0056",
+   "group": "NOSHAPE",
+   "word": null,
+   "what": null,
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "시큰해요"
+   ],
+   "expect": "neutral",
+   "enOk": []
+  },
+  {
+   "id": "NOSHAPE0057",
+   "group": "NOSHAPE",
+   "word": null,
+   "what": null,
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "명치가 답답해요",
+    "얼얼하고 차가워요"
+   ],
+   "expect": "neutral",
+   "enOk": []
+  },
+  {
+   "id": "NOSHAPE0058",
+   "group": "NOSHAPE",
+   "word": null,
+   "what": null,
+   "lines": [
+    "친구와 다툰 일이 자꾸 생각나요",
+    "가슴 가운데가 묵직해요",
+    "보라색이에요"
+   ],
+   "expect": "neutral",
+   "enOk": []
+  },
+  {
+   "id": "NOSHAPE0059",
+   "group": "NOSHAPE",
+   "word": null,
+   "what": null,
+   "lines": [
+    "시험 결과가 걱정돼요",
+    "목 뒤가 뻐근해요",
+    "희뿌옇고 축축해요"
+   ],
+   "expect": "neutral",
+   "enOk": []
+  },
+  {
+   "id": "NOSHAPE0060",
+   "group": "NOSHAPE",
+   "word": null,
+   "what": null,
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "배 아래쪽이 싸해요",
+    "짓눌리는 느낌이에요"
+   ],
+   "expect": "neutral",
+   "enOk": []
+  },
+  {
+   "id": "NOSHAPE0061",
+   "group": "NOSHAPE",
+   "word": null,
+   "what": null,
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "불안하고 쓸쓸해요"
+   ],
+   "expect": "neutral",
+   "enOk": []
+  },
+  {
+   "id": "NOSHAPE0062",
+   "group": "NOSHAPE",
+   "word": null,
+   "what": null,
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "명치가 답답해요",
+    "까맣고 무거워요"
+   ],
+   "expect": "neutral",
+   "enOk": []
+  },
+  {
+   "id": "NOSHAPE0063",
+   "group": "NOSHAPE",
+   "word": null,
+   "what": null,
+   "lines": [
+    "친구와 다툰 일이 자꾸 생각나요",
+    "가슴 가운데가 묵직해요",
+    "따뜻하고 포근해요"
+   ],
+   "expect": "neutral",
+   "enOk": []
+  },
+  {
+   "id": "NOSHAPE0064",
+   "group": "NOSHAPE",
+   "word": null,
+   "what": null,
+   "lines": [
+    "시험 결과가 걱정돼요",
+    "목 뒤가 뻐근해요",
+    "저릿저릿해요"
+   ],
+   "expect": "neutral",
+   "enOk": []
+  },
+  {
+   "id": "NOSHAPE0065",
+   "group": "NOSHAPE",
+   "word": null,
+   "what": null,
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "배 아래쪽이 싸해요",
+    "쓸쓸해요"
+   ],
+   "expect": "neutral",
+   "enOk": []
+  },
+  {
+   "id": "NOSHAPE0066",
+   "group": "NOSHAPE",
+   "word": null,
+   "what": null,
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "어둡고 습해요"
+   ],
+   "expect": "neutral",
+   "enOk": []
+  },
+  {
+   "id": "NOSHAPE0067",
+   "group": "NOSHAPE",
+   "word": null,
+   "what": null,
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "명치가 답답해요",
+    "빨갛고 뜨거워요"
+   ],
+   "expect": "neutral",
+   "enOk": []
+  },
+  {
+   "id": "NOSHAPE0068",
+   "group": "NOSHAPE",
+   "word": null,
+   "what": null,
+   "lines": [
+    "친구와 다툰 일이 자꾸 생각나요",
+    "가슴 가운데가 묵직해요",
+    "푸르스름해요"
+   ],
+   "expect": "neutral",
+   "enOk": []
+  },
+  {
+   "id": "NOSHAPE0069",
+   "group": "NOSHAPE",
+   "word": null,
+   "what": null,
+   "lines": [
+    "시험 결과가 걱정돼요",
+    "목 뒤가 뻐근해요",
+    "막혀 있는 느낌이에요"
+   ],
+   "expect": "neutral",
+   "enOk": []
+  },
+  {
+   "id": "NEG0070",
+   "group": "NEG",
+   "word": "흙덩이",
+   "what": null,
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "배 아래쪽이 싸해요",
+    "흙덩이는 아니에요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "clod",
+    "lump",
+    "dirt",
+    "soil",
+    "chunk"
+   ]
+  },
+  {
+   "id": "NEG0071",
+   "group": "NEG",
+   "word": "진흙덩이",
+   "what": null,
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "진흙덩이 같은 건 없어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "clod",
+    "lump",
+    "mud",
+    "clay",
+    "chunk"
+   ]
+  },
+  {
+   "id": "NEG0072",
+   "group": "NEG",
+   "word": "바윗돌",
+   "what": null,
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "명치가 답답해요",
+    "바윗돌은 아니에요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "rock",
+    "boulder",
+    "stone"
+   ]
+  },
+  {
+   "id": "NEG0073",
+   "group": "NEG",
+   "word": "디딤돌",
+   "what": null,
+   "lines": [
+    "친구와 다툰 일이 자꾸 생각나요",
+    "가슴 가운데가 묵직해요",
+    "디딤돌 같은 건 없어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "stone",
+    "steppingstone",
+    "stepping stone",
+    "step"
+   ]
+  },
+  {
+   "id": "NEG0074",
+   "group": "NEG",
+   "word": "숫돌",
+   "what": null,
+   "lines": [
+    "시험 결과가 걱정돼요",
+    "목 뒤가 뻐근해요",
+    "숫돌은 아니에요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "whetstone",
+    "grindstone",
+    "stone",
+    "hone"
+   ]
+  },
+  {
+   "id": "NEG0075",
+   "group": "NEG",
+   "word": "주춧돌",
+   "what": null,
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "배 아래쪽이 싸해요",
+    "주춧돌 같은 건 없어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "cornerstone",
+    "foundation stone",
+    "stone",
+    "plinth"
+   ]
+  },
+  {
+   "id": "NEG0076",
+   "group": "NEG",
+   "word": "나무토막",
+   "what": null,
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "나무토막은 아니에요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "block",
+    "wood block",
+    "log",
+    "piece"
+   ]
+  },
+  {
+   "id": "NEG0077",
+   "group": "NEG",
+   "word": "장작",
+   "what": null,
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "명치가 답답해요",
+    "장작 같은 건 없어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "firewood",
+    "log",
+    "wood"
+   ]
+  },
+  {
+   "id": "NEG0078",
+   "group": "NEG",
+   "word": "쐐기",
+   "what": null,
+   "lines": [
+    "친구와 다툰 일이 자꾸 생각나요",
+    "가슴 가운데가 묵직해요",
+    "쐐기는 아니에요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "wedge"
+   ]
+  },
+  {
+   "id": "NEG0079",
+   "group": "NEG",
+   "word": "말뚝",
+   "what": null,
+   "lines": [
+    "시험 결과가 걱정돼요",
+    "목 뒤가 뻐근해요",
+    "말뚝 같은 건 없어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "stake",
+    "post",
+    "peg",
+    "pile"
+   ]
+  },
+  {
+   "id": "NEG0080",
+   "group": "NEG",
+   "word": "방망이",
+   "what": null,
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "배 아래쪽이 싸해요",
+    "방망이는 아니에요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "club",
+    "bat",
+    "stick",
+    "mallet"
+   ]
+  },
+  {
+   "id": "NEG0081",
+   "group": "NEG",
+   "word": "다리미",
+   "what": null,
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "다리미 같은 건 없어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "iron"
+   ]
+  },
+  {
+   "id": "NEG0082",
+   "group": "NEG",
+   "word": "주걱",
+   "what": null,
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "명치가 답답해요",
+    "주걱은 아니에요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "spatula",
+    "paddle",
+    "scoop"
+   ]
+  },
+  {
+   "id": "NEG0083",
+   "group": "NEG",
+   "word": "확성기",
+   "what": null,
+   "lines": [
+    "친구와 다툰 일이 자꾸 생각나요",
+    "가슴 가운데가 묵직해요",
+    "확성기 같은 건 없어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "megaphone",
+    "loudspeaker"
+   ]
+  },
+  {
+   "id": "NEG0084",
+   "group": "NEG",
+   "word": "나사못",
+   "what": null,
+   "lines": [
+    "시험 결과가 걱정돼요",
+    "목 뒤가 뻐근해요",
+    "나사못은 아니에요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "screw"
+   ]
+  },
+  {
+   "id": "NEG0085",
+   "group": "NEG",
+   "word": "도르래",
+   "what": null,
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "배 아래쪽이 싸해요",
+    "도르래 같은 건 없어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "pulley"
+   ]
+  },
+  {
+   "id": "NEG0086",
+   "group": "NEG",
+   "word": "저울추",
+   "what": null,
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "저울추는 아니에요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "weight",
+    "counterweight"
+   ]
+  },
+  {
+   "id": "NEG0087",
+   "group": "NEG",
+   "word": "병뚜껑",
+   "what": null,
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "명치가 답답해요",
+    "병뚜껑 같은 건 없어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "cap",
+    "bottle cap",
+    "lid"
+   ]
+  },
+  {
+   "id": "NEG0088",
+   "group": "NEG",
+   "word": "물동이",
+   "what": null,
+   "lines": [
+    "친구와 다툰 일이 자꾸 생각나요",
+    "가슴 가운데가 묵직해요",
+    "물동이는 아니에요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "jar",
+    "pot",
+    "pail",
+    "bucket"
+   ]
+  },
+  {
+   "id": "NEG0089",
+   "group": "NEG",
+   "word": "바가지",
+   "what": null,
+   "lines": [
+    "시험 결과가 걱정돼요",
+    "목 뒤가 뻐근해요",
+    "바가지 같은 건 없어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "gourd",
+    "dipper",
+    "bowl",
+    "scoop"
+   ]
+  },
+  {
+   "id": "PAST0090",
+   "group": "PAST",
+   "word": "흙덩이",
+   "what": null,
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "배 아래쪽이 싸해요",
+    "예전에는 흙덩이였어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "clod",
+    "lump",
+    "dirt",
+    "soil",
+    "chunk"
+   ]
+  },
+  {
+   "id": "PAST0091",
+   "group": "PAST",
+   "word": "진흙덩이",
+   "what": null,
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "처음엔 진흙덩이 같았어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "clod",
+    "lump",
+    "mud",
+    "clay",
+    "chunk"
+   ]
+  },
+  {
+   "id": "PAST0092",
+   "group": "PAST",
+   "word": "바윗돌",
+   "what": null,
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "명치가 답답해요",
+    "예전에는 바윗돌이었어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "rock",
+    "boulder",
+    "stone"
+   ]
+  },
+  {
+   "id": "PAST0093",
+   "group": "PAST",
+   "word": "디딤돌",
+   "what": null,
+   "lines": [
+    "친구와 다툰 일이 자꾸 생각나요",
+    "가슴 가운데가 묵직해요",
+    "처음엔 디딤돌 같았어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "stone",
+    "steppingstone",
+    "stepping stone",
+    "step"
+   ]
+  },
+  {
+   "id": "PAST0094",
+   "group": "PAST",
+   "word": "숫돌",
+   "what": null,
+   "lines": [
+    "시험 결과가 걱정돼요",
+    "목 뒤가 뻐근해요",
+    "예전에는 숫돌이었어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "whetstone",
+    "grindstone",
+    "stone",
+    "hone"
+   ]
+  },
+  {
+   "id": "PAST0095",
+   "group": "PAST",
+   "word": "주춧돌",
+   "what": null,
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "배 아래쪽이 싸해요",
+    "처음엔 주춧돌 같았어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "cornerstone",
+    "foundation stone",
+    "stone",
+    "plinth"
+   ]
+  },
+  {
+   "id": "PAST0096",
+   "group": "PAST",
+   "word": "나무토막",
+   "what": null,
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "예전에는 나무토막이었어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "block",
+    "wood block",
+    "log",
+    "piece"
+   ]
+  },
+  {
+   "id": "PAST0097",
+   "group": "PAST",
+   "word": "장작",
+   "what": null,
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "명치가 답답해요",
+    "처음엔 장작 같았어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "firewood",
+    "log",
+    "wood"
+   ]
+  },
+  {
+   "id": "PAST0098",
+   "group": "PAST",
+   "word": "쐐기",
+   "what": null,
+   "lines": [
+    "친구와 다툰 일이 자꾸 생각나요",
+    "가슴 가운데가 묵직해요",
+    "예전에는 쐐기였어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "wedge"
+   ]
+  },
+  {
+   "id": "PAST0099",
+   "group": "PAST",
+   "word": "말뚝",
+   "what": null,
+   "lines": [
+    "시험 결과가 걱정돼요",
+    "목 뒤가 뻐근해요",
+    "처음엔 말뚝 같았어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "stake",
+    "post",
+    "peg",
+    "pile"
+   ]
+  },
+  {
+   "id": "PAST0100",
+   "group": "PAST",
+   "word": "방망이",
+   "what": null,
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "배 아래쪽이 싸해요",
+    "예전에는 방망이였어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "club",
+    "bat",
+    "stick",
+    "mallet"
+   ]
+  },
+  {
+   "id": "PAST0101",
+   "group": "PAST",
+   "word": "다리미",
+   "what": null,
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "처음엔 다리미 같았어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "iron"
+   ]
+  },
+  {
+   "id": "PAST0102",
+   "group": "PAST",
+   "word": "주걱",
+   "what": null,
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "명치가 답답해요",
+    "예전에는 주걱이었어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "spatula",
+    "paddle",
+    "scoop"
+   ]
+  },
+  {
+   "id": "PAST0103",
+   "group": "PAST",
+   "word": "확성기",
+   "what": null,
+   "lines": [
+    "친구와 다툰 일이 자꾸 생각나요",
+    "가슴 가운데가 묵직해요",
+    "처음엔 확성기 같았어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "megaphone",
+    "loudspeaker"
+   ]
+  },
+  {
+   "id": "PAST0104",
+   "group": "PAST",
+   "word": "나사못",
+   "what": null,
+   "lines": [
+    "시험 결과가 걱정돼요",
+    "목 뒤가 뻐근해요",
+    "예전에는 나사못이었어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "screw"
+   ]
+  },
+  {
+   "id": "PAST0105",
+   "group": "PAST",
+   "word": "도르래",
+   "what": null,
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "배 아래쪽이 싸해요",
+    "처음엔 도르래 같았어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "pulley"
+   ]
+  },
+  {
+   "id": "PAST0106",
+   "group": "PAST",
+   "word": "저울추",
+   "what": null,
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "예전에는 저울추였어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "weight",
+    "counterweight"
+   ]
+  },
+  {
+   "id": "PAST0107",
+   "group": "PAST",
+   "word": "병뚜껑",
+   "what": null,
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "명치가 답답해요",
+    "처음엔 병뚜껑 같았어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "cap",
+    "bottle cap",
+    "lid"
+   ]
+  },
+  {
+   "id": "PAST0108",
+   "group": "PAST",
+   "word": "물동이",
+   "what": null,
+   "lines": [
+    "친구와 다툰 일이 자꾸 생각나요",
+    "가슴 가운데가 묵직해요",
+    "예전에는 물동이였어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "jar",
+    "pot",
+    "pail",
+    "bucket"
+   ]
+  },
+  {
+   "id": "PAST0109",
+   "group": "PAST",
+   "word": "바가지",
+   "what": null,
+   "lines": [
+    "시험 결과가 걱정돼요",
+    "목 뒤가 뻐근해요",
+    "처음엔 바가지 같았어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "gourd",
+    "dipper",
+    "bowl",
+    "scoop"
+   ]
+  },
+  {
+   "id": "OTHER0110",
+   "group": "OTHER",
+   "word": "흙덩이",
+   "what": null,
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "배 아래쪽이 싸해요",
+    "친구가 흙덩이 같대요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "clod",
+    "lump",
+    "dirt",
+    "soil",
+    "chunk"
+   ]
+  },
+  {
+   "id": "OTHER0111",
+   "group": "OTHER",
+   "word": "진흙덩이",
+   "what": null,
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "다들 그게 진흙덩이라고 했어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "clod",
+    "lump",
+    "mud",
+    "clay",
+    "chunk"
+   ]
+  },
+  {
+   "id": "OTHER0112",
+   "group": "OTHER",
+   "word": "바윗돌",
+   "what": null,
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "명치가 답답해요",
+    "친구가 바윗돌 같대요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "rock",
+    "boulder",
+    "stone"
+   ]
+  },
+  {
+   "id": "OTHER0113",
+   "group": "OTHER",
+   "word": "디딤돌",
+   "what": null,
+   "lines": [
+    "친구와 다툰 일이 자꾸 생각나요",
+    "가슴 가운데가 묵직해요",
+    "다들 그게 디딤돌이라고 했어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "stone",
+    "steppingstone",
+    "stepping stone",
+    "step"
+   ]
+  },
+  {
+   "id": "OTHER0114",
+   "group": "OTHER",
+   "word": "숫돌",
+   "what": null,
+   "lines": [
+    "시험 결과가 걱정돼요",
+    "목 뒤가 뻐근해요",
+    "친구가 숫돌 같대요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "whetstone",
+    "grindstone",
+    "stone",
+    "hone"
+   ]
+  },
+  {
+   "id": "OTHER0115",
+   "group": "OTHER",
+   "word": "주춧돌",
+   "what": null,
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "배 아래쪽이 싸해요",
+    "다들 그게 주춧돌이라고 했어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "cornerstone",
+    "foundation stone",
+    "stone",
+    "plinth"
+   ]
+  },
+  {
+   "id": "OTHER0116",
+   "group": "OTHER",
+   "word": "나무토막",
+   "what": null,
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "친구가 나무토막 같대요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "block",
+    "wood block",
+    "log",
+    "piece"
+   ]
+  },
+  {
+   "id": "OTHER0117",
+   "group": "OTHER",
+   "word": "장작",
+   "what": null,
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "명치가 답답해요",
+    "다들 그게 장작이라고 했어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "firewood",
+    "log",
+    "wood"
+   ]
+  },
+  {
+   "id": "OTHER0118",
+   "group": "OTHER",
+   "word": "쐐기",
+   "what": null,
+   "lines": [
+    "친구와 다툰 일이 자꾸 생각나요",
+    "가슴 가운데가 묵직해요",
+    "친구가 쐐기 같대요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "wedge"
+   ]
+  },
+  {
+   "id": "OTHER0119",
+   "group": "OTHER",
+   "word": "말뚝",
+   "what": null,
+   "lines": [
+    "시험 결과가 걱정돼요",
+    "목 뒤가 뻐근해요",
+    "다들 그게 말뚝이라고 했어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "stake",
+    "post",
+    "peg",
+    "pile"
+   ]
+  },
+  {
+   "id": "OTHER0120",
+   "group": "OTHER",
+   "word": "방망이",
+   "what": null,
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "배 아래쪽이 싸해요",
+    "친구가 방망이 같대요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "club",
+    "bat",
+    "stick",
+    "mallet"
+   ]
+  },
+  {
+   "id": "OTHER0121",
+   "group": "OTHER",
+   "word": "다리미",
+   "what": null,
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "다들 그게 다리미라고 했어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "iron"
+   ]
+  },
+  {
+   "id": "OTHER0122",
+   "group": "OTHER",
+   "word": "주걱",
+   "what": null,
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "명치가 답답해요",
+    "친구가 주걱 같대요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "spatula",
+    "paddle",
+    "scoop"
+   ]
+  },
+  {
+   "id": "OTHER0123",
+   "group": "OTHER",
+   "word": "확성기",
+   "what": null,
+   "lines": [
+    "친구와 다툰 일이 자꾸 생각나요",
+    "가슴 가운데가 묵직해요",
+    "다들 그게 확성기라고 했어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "megaphone",
+    "loudspeaker"
+   ]
+  },
+  {
+   "id": "OTHER0124",
+   "group": "OTHER",
+   "word": "나사못",
+   "what": null,
+   "lines": [
+    "시험 결과가 걱정돼요",
+    "목 뒤가 뻐근해요",
+    "친구가 나사못 같대요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "screw"
+   ]
+  },
+  {
+   "id": "OTHER0125",
+   "group": "OTHER",
+   "word": "도르래",
+   "what": null,
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "배 아래쪽이 싸해요",
+    "다들 그게 도르래라고 했어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "pulley"
+   ]
+  },
+  {
+   "id": "OTHER0126",
+   "group": "OTHER",
+   "word": "저울추",
+   "what": null,
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "친구가 저울추 같대요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "weight",
+    "counterweight"
+   ]
+  },
+  {
+   "id": "OTHER0127",
+   "group": "OTHER",
+   "word": "병뚜껑",
+   "what": null,
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "명치가 답답해요",
+    "다들 그게 병뚜껑이라고 했어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "cap",
+    "bottle cap",
+    "lid"
+   ]
+  },
+  {
+   "id": "OTHER0128",
+   "group": "OTHER",
+   "word": "물동이",
+   "what": null,
+   "lines": [
+    "친구와 다툰 일이 자꾸 생각나요",
+    "가슴 가운데가 묵직해요",
+    "친구가 물동이 같대요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "jar",
+    "pot",
+    "pail",
+    "bucket"
+   ]
+  },
+  {
+   "id": "OTHER0129",
+   "group": "OTHER",
+   "word": "바가지",
+   "what": null,
+   "lines": [
+    "시험 결과가 걱정돼요",
+    "목 뒤가 뻐근해요",
+    "다들 그게 바가지라고 했어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "gourd",
+    "dipper",
+    "bowl",
+    "scoop"
+   ]
+  },
+  {
+   "id": "HYPO0130",
+   "group": "HYPO",
+   "word": "흙덩이",
+   "what": null,
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "배 아래쪽이 싸해요",
+    "흙덩이면 좋겠어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "clod",
+    "lump",
+    "dirt",
+    "soil",
+    "chunk"
+   ]
+  },
+  {
+   "id": "HYPO0131",
+   "group": "HYPO",
+   "word": "진흙덩이",
+   "what": null,
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "아마 진흙덩이일 거예요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "clod",
+    "lump",
+    "mud",
+    "clay",
+    "chunk"
+   ]
+  },
+  {
+   "id": "HYPO0132",
+   "group": "HYPO",
+   "word": "바윗돌",
+   "what": null,
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "명치가 답답해요",
+    "바윗돌이면 좋겠어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "rock",
+    "boulder",
+    "stone"
+   ]
+  },
+  {
+   "id": "HYPO0133",
+   "group": "HYPO",
+   "word": "디딤돌",
+   "what": null,
+   "lines": [
+    "친구와 다툰 일이 자꾸 생각나요",
+    "가슴 가운데가 묵직해요",
+    "아마 디딤돌일 거예요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "stone",
+    "steppingstone",
+    "stepping stone",
+    "step"
+   ]
+  },
+  {
+   "id": "HYPO0134",
+   "group": "HYPO",
+   "word": "숫돌",
+   "what": null,
+   "lines": [
+    "시험 결과가 걱정돼요",
+    "목 뒤가 뻐근해요",
+    "숫돌이면 좋겠어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "whetstone",
+    "grindstone",
+    "stone",
+    "hone"
+   ]
+  },
+  {
+   "id": "HYPO0135",
+   "group": "HYPO",
+   "word": "주춧돌",
+   "what": null,
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "배 아래쪽이 싸해요",
+    "아마 주춧돌일 거예요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "cornerstone",
+    "foundation stone",
+    "stone",
+    "plinth"
+   ]
+  },
+  {
+   "id": "HYPO0136",
+   "group": "HYPO",
+   "word": "나무토막",
+   "what": null,
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "나무토막이면 좋겠어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "block",
+    "wood block",
+    "log",
+    "piece"
+   ]
+  },
+  {
+   "id": "HYPO0137",
+   "group": "HYPO",
+   "word": "장작",
+   "what": null,
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "명치가 답답해요",
+    "아마 장작일 거예요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "firewood",
+    "log",
+    "wood"
+   ]
+  },
+  {
+   "id": "HYPO0138",
+   "group": "HYPO",
+   "word": "쐐기",
+   "what": null,
+   "lines": [
+    "친구와 다툰 일이 자꾸 생각나요",
+    "가슴 가운데가 묵직해요",
+    "쐐기면 좋겠어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "wedge"
+   ]
+  },
+  {
+   "id": "HYPO0139",
+   "group": "HYPO",
+   "word": "말뚝",
+   "what": null,
+   "lines": [
+    "시험 결과가 걱정돼요",
+    "목 뒤가 뻐근해요",
+    "아마 말뚝일 거예요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "stake",
+    "post",
+    "peg",
+    "pile"
+   ]
+  },
+  {
+   "id": "HYPO0140",
+   "group": "HYPO",
+   "word": "방망이",
+   "what": null,
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "배 아래쪽이 싸해요",
+    "방망이면 좋겠어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "club",
+    "bat",
+    "stick",
+    "mallet"
+   ]
+  },
+  {
+   "id": "HYPO0141",
+   "group": "HYPO",
+   "word": "다리미",
+   "what": null,
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "아마 다리미일 거예요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "iron"
+   ]
+  },
+  {
+   "id": "HYPO0142",
+   "group": "HYPO",
+   "word": "주걱",
+   "what": null,
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "명치가 답답해요",
+    "주걱이면 좋겠어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "spatula",
+    "paddle",
+    "scoop"
+   ]
+  },
+  {
+   "id": "HYPO0143",
+   "group": "HYPO",
+   "word": "확성기",
+   "what": null,
+   "lines": [
+    "친구와 다툰 일이 자꾸 생각나요",
+    "가슴 가운데가 묵직해요",
+    "아마 확성기일 거예요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "megaphone",
+    "loudspeaker"
+   ]
+  },
+  {
+   "id": "HYPO0144",
+   "group": "HYPO",
+   "word": "나사못",
+   "what": null,
+   "lines": [
+    "시험 결과가 걱정돼요",
+    "목 뒤가 뻐근해요",
+    "나사못이면 좋겠어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "screw"
+   ]
+  },
+  {
+   "id": "HYPO0145",
+   "group": "HYPO",
+   "word": "도르래",
+   "what": null,
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "배 아래쪽이 싸해요",
+    "아마 도르래일 거예요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "pulley"
+   ]
+  },
+  {
+   "id": "HYPO0146",
+   "group": "HYPO",
+   "word": "저울추",
+   "what": null,
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "저울추면 좋겠어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "weight",
+    "counterweight"
+   ]
+  },
+  {
+   "id": "HYPO0147",
+   "group": "HYPO",
+   "word": "병뚜껑",
+   "what": null,
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "명치가 답답해요",
+    "아마 병뚜껑일 거예요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "cap",
+    "bottle cap",
+    "lid"
+   ]
+  },
+  {
+   "id": "HYPO0148",
+   "group": "HYPO",
+   "word": "물동이",
+   "what": null,
+   "lines": [
+    "친구와 다툰 일이 자꾸 생각나요",
+    "가슴 가운데가 묵직해요",
+    "물동이면 좋겠어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "jar",
+    "pot",
+    "pail",
+    "bucket"
+   ]
+  },
+  {
+   "id": "HYPO0149",
+   "group": "HYPO",
+   "word": "바가지",
+   "what": null,
+   "lines": [
+    "시험 결과가 걱정돼요",
+    "목 뒤가 뻐근해요",
+    "아마 바가지일 거예요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "gourd",
+    "dipper",
+    "bowl",
+    "scoop"
+   ]
+  },
+  {
+   "id": "SIMILE0150",
+   "group": "SIMILE",
+   "word": "흙덩이",
+   "what": null,
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "배 아래쪽이 싸해요",
+    "흙덩이처럼 단단해요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "clod",
+    "lump",
+    "dirt",
+    "soil",
+    "chunk"
+   ]
+  },
+  {
+   "id": "SIMILE0151",
+   "group": "SIMILE",
+   "word": "진흙덩이",
+   "what": null,
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "진흙덩이처럼 무거워요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "clod",
+    "lump",
+    "mud",
+    "clay",
+    "chunk"
+   ]
+  },
+  {
+   "id": "SIMILE0152",
+   "group": "SIMILE",
+   "word": "바윗돌",
+   "what": null,
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "명치가 답답해요",
+    "바윗돌처럼 단단해요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "rock",
+    "boulder",
+    "stone"
+   ]
+  },
+  {
+   "id": "SIMILE0153",
+   "group": "SIMILE",
+   "word": "디딤돌",
+   "what": null,
+   "lines": [
+    "친구와 다툰 일이 자꾸 생각나요",
+    "가슴 가운데가 묵직해요",
+    "디딤돌처럼 무거워요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "stone",
+    "steppingstone",
+    "stepping stone",
+    "step"
+   ]
+  },
+  {
+   "id": "SIMILE0154",
+   "group": "SIMILE",
+   "word": "숫돌",
+   "what": null,
+   "lines": [
+    "시험 결과가 걱정돼요",
+    "목 뒤가 뻐근해요",
+    "숫돌처럼 단단해요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "whetstone",
+    "grindstone",
+    "stone",
+    "hone"
+   ]
+  },
+  {
+   "id": "SIMILE0155",
+   "group": "SIMILE",
+   "word": "주춧돌",
+   "what": null,
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "배 아래쪽이 싸해요",
+    "주춧돌처럼 무거워요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "cornerstone",
+    "foundation stone",
+    "stone",
+    "plinth"
+   ]
+  },
+  {
+   "id": "SIMILE0156",
+   "group": "SIMILE",
+   "word": "나무토막",
+   "what": null,
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "나무토막처럼 단단해요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "block",
+    "wood block",
+    "log",
+    "piece"
+   ]
+  },
+  {
+   "id": "SIMILE0157",
+   "group": "SIMILE",
+   "word": "장작",
+   "what": null,
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "명치가 답답해요",
+    "장작처럼 무거워요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "firewood",
+    "log",
+    "wood"
+   ]
+  },
+  {
+   "id": "SIMILE0158",
+   "group": "SIMILE",
+   "word": "쐐기",
+   "what": null,
+   "lines": [
+    "친구와 다툰 일이 자꾸 생각나요",
+    "가슴 가운데가 묵직해요",
+    "쐐기처럼 단단해요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "wedge"
+   ]
+  },
+  {
+   "id": "SIMILE0159",
+   "group": "SIMILE",
+   "word": "말뚝",
+   "what": null,
+   "lines": [
+    "시험 결과가 걱정돼요",
+    "목 뒤가 뻐근해요",
+    "말뚝처럼 무거워요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "stake",
+    "post",
+    "peg",
+    "pile"
+   ]
+  },
+  {
+   "id": "SIMILE0160",
+   "group": "SIMILE",
+   "word": "방망이",
+   "what": null,
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "배 아래쪽이 싸해요",
+    "방망이처럼 단단해요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "club",
+    "bat",
+    "stick",
+    "mallet"
+   ]
+  },
+  {
+   "id": "SIMILE0161",
+   "group": "SIMILE",
+   "word": "다리미",
+   "what": null,
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "다리미처럼 무거워요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "iron"
+   ]
+  },
+  {
+   "id": "SIMILE0162",
+   "group": "SIMILE",
+   "word": "주걱",
+   "what": null,
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "명치가 답답해요",
+    "주걱처럼 단단해요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "spatula",
+    "paddle",
+    "scoop"
+   ]
+  },
+  {
+   "id": "SIMILE0163",
+   "group": "SIMILE",
+   "word": "확성기",
+   "what": null,
+   "lines": [
+    "친구와 다툰 일이 자꾸 생각나요",
+    "가슴 가운데가 묵직해요",
+    "확성기처럼 무거워요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "megaphone",
+    "loudspeaker"
+   ]
+  },
+  {
+   "id": "SIMILE0164",
+   "group": "SIMILE",
+   "word": "나사못",
+   "what": null,
+   "lines": [
+    "시험 결과가 걱정돼요",
+    "목 뒤가 뻐근해요",
+    "나사못처럼 단단해요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "screw"
+   ]
+  },
+  {
+   "id": "SIMILE0165",
+   "group": "SIMILE",
+   "word": "도르래",
+   "what": null,
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "배 아래쪽이 싸해요",
+    "도르래처럼 무거워요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "pulley"
+   ]
+  },
+  {
+   "id": "SIMILE0166",
+   "group": "SIMILE",
+   "word": "저울추",
+   "what": null,
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "저울추처럼 단단해요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "weight",
+    "counterweight"
+   ]
+  },
+  {
+   "id": "SIMILE0167",
+   "group": "SIMILE",
+   "word": "병뚜껑",
+   "what": null,
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "명치가 답답해요",
+    "병뚜껑처럼 무거워요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "cap",
+    "bottle cap",
+    "lid"
+   ]
+  },
+  {
+   "id": "SIMILE0168",
+   "group": "SIMILE",
+   "word": "물동이",
+   "what": null,
+   "lines": [
+    "친구와 다툰 일이 자꾸 생각나요",
+    "가슴 가운데가 묵직해요",
+    "물동이처럼 단단해요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "jar",
+    "pot",
+    "pail",
+    "bucket"
+   ]
+  },
+  {
+   "id": "SIMILE0169",
+   "group": "SIMILE",
+   "word": "바가지",
+   "what": null,
+   "lines": [
+    "시험 결과가 걱정돼요",
+    "목 뒤가 뻐근해요",
+    "바가지처럼 무거워요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "gourd",
+    "dipper",
+    "bowl",
+    "scoop"
+   ]
+  },
+  {
+   "id": "FORBID0170",
+   "group": "FORBID",
+   "word": null,
+   "what": "목록 밖 동물",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "배 아래쪽이 싸해요",
+    "도롱뇽이 보여요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "FORBID0171",
+   "group": "FORBID",
+   "word": null,
+   "what": "목록 밖 동물",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "너구리 같은 게 있어요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "FORBID0172",
+   "group": "FORBID",
+   "word": null,
+   "what": "목록 밖 동물",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "명치가 답답해요",
+    "수달처럼 생겼어요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "FORBID0173",
+   "group": "FORBID",
+   "word": null,
+   "what": "목록 밖 동물",
+   "lines": [
+    "친구와 다툰 일이 자꾸 생각나요",
+    "가슴 가운데가 묵직해요",
+    "두더지예요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "FORBID0174",
+   "group": "FORBID",
+   "word": null,
+   "what": "목록 밖 동물",
+   "lines": [
+    "시험 결과가 걱정돼요",
+    "목 뒤가 뻐근해요",
+    "가재가 있어요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "FORBID0175",
+   "group": "FORBID",
+   "word": null,
+   "what": "목록 밖 동물",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "배 아래쪽이 싸해요",
+    "올챙이 같아요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "FORBID0176",
+   "group": "FORBID",
+   "word": null,
+   "what": "동물",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "도마뱀이 보여요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "FORBID0177",
+   "group": "FORBID",
+   "word": null,
+   "what": "목록 밖 동물",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "명치가 답답해요",
+    "소라게 같은 게 있어요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "FORBID0178",
+   "group": "FORBID",
+   "word": null,
+   "what": "동물",
+   "lines": [
+    "친구와 다툰 일이 자꾸 생각나요",
+    "가슴 가운데가 묵직해요",
+    "박쥐예요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "FORBID0179",
+   "group": "FORBID",
+   "word": null,
+   "what": "목록 밖 동물",
+   "lines": [
+    "시험 결과가 걱정돼요",
+    "목 뒤가 뻐근해요",
+    "굼벵이 같아요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "FORBID0180",
+   "group": "FORBID",
+   "word": null,
+   "what": "동물",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "배 아래쪽이 싸해요",
+    "지렁이가 있어요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "FORBID0181",
+   "group": "FORBID",
+   "word": null,
+   "what": "목록 밖 동물",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "해파리 같은 게 보여요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "FORBID0182",
+   "group": "FORBID",
+   "word": null,
+   "what": "돌려 말하기(눈)",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "명치가 답답해요",
+    "눈 두 개가 달린 바윗돌이에요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "FORBID0183",
+   "group": "FORBID",
+   "word": null,
+   "what": "돌려 말하기(팔다리)",
+   "lines": [
+    "친구와 다툰 일이 자꾸 생각나요",
+    "가슴 가운데가 묵직해요",
+    "팔다리가 달린 말뚝 같아요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "FORBID0184",
+   "group": "FORBID",
+   "word": null,
+   "what": "돌려 말하기(입)",
+   "lines": [
+    "시험 결과가 걱정돼요",
+    "목 뒤가 뻐근해요",
+    "입이 있는 단지예요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "FORBID0185",
+   "group": "FORBID",
+   "word": null,
+   "what": "돌려 말하기(꼬리)",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "배 아래쪽이 싸해요",
+    "꼬리가 달린 쐐기 같아요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "FORBID0186",
+   "group": "FORBID",
+   "word": null,
+   "what": "돌려 말하기(얼굴)",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "얼굴이 그려진 깡통이에요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "FORBID0187",
+   "group": "FORBID",
+   "word": null,
+   "what": "돌려 말하기(다리)",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "명치가 답답해요",
+    "다리가 네 개인 소쿠리 같은 게 있어요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "FORBID0188",
+   "group": "FORBID",
+   "word": null,
+   "what": "돌려 말하기(눈)",
+   "lines": [
+    "친구와 다툰 일이 자꾸 생각나요",
+    "가슴 가운데가 묵직해요",
+    "눈이 달린 흙덩이예요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "FORBID0189",
+   "group": "FORBID",
+   "word": null,
+   "what": "돌려 말하기(털)",
+   "lines": [
+    "시험 결과가 걱정돼요",
+    "목 뒤가 뻐근해요",
+    "털이 숭숭 난 바가지 같아요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "FORBID0190",
+   "group": "FORBID",
+   "word": null,
+   "what": "사람",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "배 아래쪽이 싸해요",
+    "할머니가 보여요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "FORBID0191",
+   "group": "FORBID",
+   "word": null,
+   "what": "사람",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "작은 아이 같아요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "FORBID0192",
+   "group": "FORBID",
+   "word": null,
+   "what": "사람 형상",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "명치가 답답해요",
+    "허수아비 같은 게 있어요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "FORBID0193",
+   "group": "FORBID",
+   "word": null,
+   "what": "상상의 존재",
+   "lines": [
+    "친구와 다툰 일이 자꾸 생각나요",
+    "가슴 가운데가 묵직해요",
+    "도깨비예요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "FORBID0194",
+   "group": "FORBID",
+   "word": null,
+   "what": "몸",
+   "lines": [
+    "시험 결과가 걱정돼요",
+    "목 뒤가 뻐근해요",
+    "해골 같아요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "FORBID0195",
+   "group": "FORBID",
+   "word": null,
+   "what": "몸",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "배 아래쪽이 싸해요",
+    "심장이 있어요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "FORBID0196",
+   "group": "FORBID",
+   "word": null,
+   "what": "몸",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "손바닥 같은 게 보여요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "FORBID0197",
+   "group": "FORBID",
+   "word": null,
+   "what": "안개류",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "명치가 답답해요",
+    "아지랑이 같아요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "FORBID0198",
+   "group": "FORBID",
+   "word": null,
+   "what": "불꽃",
+   "lines": [
+    "친구와 다툰 일이 자꾸 생각나요",
+    "가슴 가운데가 묵직해요",
+    "모닥불이 보여요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "FORBID0199",
+   "group": "FORBID",
+   "word": null,
+   "what": "불꽃",
+   "lines": [
+    "시험 결과가 걱정돼요",
+    "목 뒤가 뻐근해요",
+    "횃불 같은 게 있어요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "WORRY0200",
+   "group": "WORRY",
+   "word": "소쿠리",
+   "what": null,
+   "lines": [
+    "회사 소쿠리 때문에 걱정이에요",
+    "가슴 가운데가 묵직해요",
+    "답답해요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "basket",
+    "sieve"
+   ]
+  },
+  {
+   "id": "WORRY0201",
+   "group": "WORRY",
+   "word": "수세미",
+   "what": null,
+   "lines": [
+    "어제 수세미를 잃어버려서 속상해요",
+    "목 뒤가 뻐근해요",
+    "그냥 뭔가 있어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "scrubber",
+    "sponge",
+    "scourer",
+    "loofah"
+   ]
+  },
+  {
+   "id": "WORRY0202",
+   "group": "WORRY",
+   "word": "깡통",
+   "what": null,
+   "lines": [
+    "회사 깡통 때문에 걱정이에요",
+    "배 아래쪽이 싸해요",
+    "답답해요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "can",
+    "tin"
+   ]
+  },
+  {
+   "id": "WORRY0203",
+   "group": "WORRY",
+   "word": "단지",
+   "what": null,
+   "lines": [
+    "어제 단지를 잃어버려서 속상해요",
+    "어깨가 축 처져요",
+    "그냥 뭔가 있어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "jar",
+    "pot",
+    "crock"
+   ]
+  },
+  {
+   "id": "WORRY0204",
+   "group": "WORRY",
+   "word": "요강",
+   "what": null,
+   "lines": [
+    "회사 요강 때문에 걱정이에요",
+    "명치가 답답해요",
+    "답답해요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "chamber pot",
+    "pot",
+    "potty"
+   ]
+  },
+  {
+   "id": "WORRY0205",
+   "group": "WORRY",
+   "word": "호루라기",
+   "what": null,
+   "lines": [
+    "어제 호루라기를 잃어버려서 속상해요",
+    "가슴 가운데가 묵직해요",
+    "그냥 뭔가 있어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "whistle"
+   ]
+  },
+  {
+   "id": "WORRY0206",
+   "group": "WORRY",
+   "word": "팽이",
+   "what": null,
+   "lines": [
+    "회사 팽이 때문에 걱정이에요",
+    "목 뒤가 뻐근해요",
+    "답답해요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "top",
+    "spinning top"
+   ]
+  },
+  {
+   "id": "WORRY0207",
+   "group": "WORRY",
+   "word": "맷방석",
+   "what": null,
+   "lines": [
+    "어제 맷방석을 잃어버려서 속상해요",
+    "배 아래쪽이 싸해요",
+    "그냥 뭔가 있어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "mat",
+    "cushion"
+   ]
+  },
+  {
+   "id": "WORRY0208",
+   "group": "WORRY",
+   "word": "바퀴통",
+   "what": null,
+   "lines": [
+    "회사 바퀴통 때문에 걱정이에요",
+    "어깨가 축 처져요",
+    "답답해요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "hub"
+   ]
+  },
+  {
+   "id": "WORRY0209",
+   "group": "WORRY",
+   "word": "굴렁쇠",
+   "what": null,
+   "lines": [
+    "어제 굴렁쇠를 잃어버려서 속상해요",
+    "명치가 답답해요",
+    "그냥 뭔가 있어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "hoop",
+    "ring"
+   ]
+  },
+  {
+   "id": "WORRY0210",
+   "group": "WORRY",
+   "word": "젓가락",
+   "what": null,
+   "lines": [
+    "회사 젓가락 때문에 걱정이에요",
+    "가슴 가운데가 묵직해요",
+    "답답해요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "chopsticks",
+    "chopstick"
+   ]
+  },
+  {
+   "id": "WORRY0211",
+   "group": "WORRY",
+   "word": "솥뚜껑",
+   "what": null,
+   "lines": [
+    "어제 솥뚜껑을 잃어버려서 속상해요",
+    "목 뒤가 뻐근해요",
+    "그냥 뭔가 있어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "lid",
+    "pot lid"
+   ]
+  },
+  {
+   "id": "WORRY0212",
+   "group": "WORRY",
+   "word": "옹기",
+   "what": null,
+   "lines": [
+    "회사 옹기 때문에 걱정이에요",
+    "배 아래쪽이 싸해요",
+    "답답해요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "pot",
+    "jar",
+    "crock",
+    "pottery"
+   ]
+  },
+  {
+   "id": "WORRY0213",
+   "group": "WORRY",
+   "word": "절구통",
+   "what": null,
+   "lines": [
+    "어제 절구통을 잃어버려서 속상해요",
+    "어깨가 축 처져요",
+    "그냥 뭔가 있어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "mortar"
+   ]
+  },
+  {
+   "id": "WORRY0214",
+   "group": "WORRY",
+   "word": "물레",
+   "what": null,
+   "lines": [
+    "회사 물레 때문에 걱정이에요",
+    "명치가 답답해요",
+    "답답해요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "wheel",
+    "spinning wheel"
+   ]
+  },
+  {
+   "id": "WORRY0215",
+   "group": "WORRY",
+   "word": "부채",
+   "what": null,
+   "lines": [
+    "어제 부채를 잃어버려서 속상해요",
+    "가슴 가운데가 묵직해요",
+    "그냥 뭔가 있어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "fan"
+   ]
+  },
+  {
+   "id": "WORRY0216",
+   "group": "WORRY",
+   "word": "촛대",
+   "what": null,
+   "lines": [
+    "회사 촛대 때문에 걱정이에요",
+    "목 뒤가 뻐근해요",
+    "답답해요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "candlestick",
+    "candleholder"
+   ]
+  },
+  {
+   "id": "WORRY0217",
+   "group": "WORRY",
+   "word": "나팔",
+   "what": null,
+   "lines": [
+    "어제 나팔을 잃어버려서 속상해요",
+    "배 아래쪽이 싸해요",
+    "그냥 뭔가 있어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "trumpet",
+    "horn"
+   ]
+  },
+  {
+   "id": "WORRY0218",
+   "group": "WORRY",
+   "word": "기왓장",
+   "what": null,
+   "lines": [
+    "회사 기왓장 때문에 걱정이에요",
+    "어깨가 축 처져요",
+    "답답해요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "tile",
+    "roof tile"
+   ]
+  },
+  {
+   "id": "WORRY0219",
+   "group": "WORRY",
+   "word": "밤송이",
+   "what": null,
+   "lines": [
+    "어제 밤송이를 잃어버려서 속상해요",
+    "명치가 답답해요",
+    "그냥 뭔가 있어요"
+   ],
+   "expect": "not_shape",
+   "enOk": [
+    "burr",
+    "chestnut",
+    "chestnut burr",
+    "husk"
+   ]
+  },
+  {
+   "id": "BODYF0220",
+   "group": "BODYF",
+   "word": null,
+   "what": "몸 낱말 돌려 말하기(추가)",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "배 아래쪽이 싸해요",
+    "눈이 세 개 달린 깡통이에요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "BODYF0221",
+   "group": "BODYF",
+   "word": null,
+   "what": "몸 낱말 돌려 말하기(추가)",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "입이 커다란 항아리 같아요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "BODYF0222",
+   "group": "BODYF",
+   "word": null,
+   "what": "몸 낱말 돌려 말하기(추가)",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "명치가 답답해요",
+    "이빨이 난 상자예요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "BODYF0223",
+   "group": "BODYF",
+   "word": null,
+   "what": "몸 낱말 돌려 말하기(추가)",
+   "lines": [
+    "친구와 다툰 일이 자꾸 생각나요",
+    "가슴 가운데가 묵직해요",
+    "귀가 쫑긋 솟은 단지예요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "BODYF0224",
+   "group": "BODYF",
+   "word": null,
+   "what": "몸 낱말 돌려 말하기(추가)",
+   "lines": [
+    "시험 결과가 걱정돼요",
+    "목 뒤가 뻐근해요",
+    "다리가 여섯 개인 바가지 같아요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "BODYF0225",
+   "group": "BODYF",
+   "word": null,
+   "what": "몸 낱말 돌려 말하기(추가)",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "배 아래쪽이 싸해요",
+    "팔이 붙은 말뚝이에요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "BODYF0226",
+   "group": "BODYF",
+   "word": null,
+   "what": "몸 낱말 돌려 말하기(추가)",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "얼굴이 있는 돌덩이예요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "BODYF0227",
+   "group": "BODYF",
+   "word": null,
+   "what": "몸 낱말 돌려 말하기(추가)",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "명치가 답답해요",
+    "꼬리가 달려 있어요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "BODYF0228",
+   "group": "BODYF",
+   "word": null,
+   "what": "몸 낱말 돌려 말하기(추가)",
+   "lines": [
+    "친구와 다툰 일이 자꾸 생각나요",
+    "가슴 가운데가 묵직해요",
+    "눈이 반짝이는 흙덩이예요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "BODYF0229",
+   "group": "BODYF",
+   "word": null,
+   "what": "몸 낱말 돌려 말하기(추가)",
+   "lines": [
+    "시험 결과가 걱정돼요",
+    "목 뒤가 뻐근해요",
+    "날개가 돋은 쐐기 같아요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "BODYF0230",
+   "group": "BODYF",
+   "word": null,
+   "what": "몸 낱말 돌려 말하기(추가)",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "배 아래쪽이 싸해요",
+    "뿔이 난 바윗돌이에요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "BODYF0231",
+   "group": "BODYF",
+   "word": null,
+   "what": "몸 낱말 돌려 말하기(추가)",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "수염이 난 주전자 같아요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "BODYF0232",
+   "group": "BODYF",
+   "word": null,
+   "what": "몸 낱말 돌려 말하기(추가)",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "명치가 답답해요",
+    "혀가 나온 깡통이에요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "BODYF0233",
+   "group": "BODYF",
+   "word": null,
+   "what": "몸 낱말 돌려 말하기(추가)",
+   "lines": [
+    "친구와 다툰 일이 자꾸 생각나요",
+    "가슴 가운데가 묵직해요",
+    "부리가 달린 병이에요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "BODYF0234",
+   "group": "BODYF",
+   "word": null,
+   "what": "몸 낱말 돌려 말하기(추가)",
+   "lines": [
+    "시험 결과가 걱정돼요",
+    "목 뒤가 뻐근해요",
+    "발톱이 박힌 나무토막이에요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "BODYF0235",
+   "group": "BODYF",
+   "word": null,
+   "what": "몸 낱말 돌려 말하기(추가)",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "배 아래쪽이 싸해요",
+    "눈 하나가 박힌 공이에요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "BODYF0236",
+   "group": "BODYF",
+   "word": null,
+   "what": "몸 낱말 돌려 말하기(추가)",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "털이 난 공 같아요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "BODYF0237",
+   "group": "BODYF",
+   "word": null,
+   "what": "몸 낱말 돌려 말하기(추가)",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "명치가 답답해요",
+    "눈과 입이 있는 바윗돌이에요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "BODYF0238",
+   "group": "BODYF",
+   "word": null,
+   "what": "몸 낱말 돌려 말하기(추가)",
+   "lines": [
+    "친구와 다툰 일이 자꾸 생각나요",
+    "가슴 가운데가 묵직해요",
+    "머리가 두 개인 말뚝이에요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "BODYF0239",
+   "group": "BODYF",
+   "word": null,
+   "what": "몸 낱말 돌려 말하기(추가)",
+   "lines": [
+    "시험 결과가 걱정돼요",
+    "목 뒤가 뻐근해요",
+    "손가락이 다섯 개 달린 주걱 같아요"
+   ],
+   "expect": "no_generation",
+   "enOk": []
+  },
+  {
+   "id": "BODYOK0240",
+   "group": "BODYOK",
+   "word": null,
+   "what": "몸 낱말이 나오는 사물(과차단 재기, 추가)",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "배 아래쪽이 싸해요",
+    "다리가 네 개인 의자예요"
+   ],
+   "expect": "object",
+   "enOk": []
+  },
+  {
+   "id": "BODYOK0241",
+   "group": "BODYOK",
+   "word": null,
+   "what": "몸 낱말이 나오는 사물(과차단 재기, 추가)",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "손잡이가 달린 컵이에요"
+   ],
+   "expect": "object",
+   "enOk": []
+  },
+  {
+   "id": "BODYOK0242",
+   "group": "BODYOK",
+   "word": null,
+   "what": "몸 낱말이 나오는 사물(과차단 재기, 추가)",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "명치가 답답해요",
+    "눈이 쌓인 지붕 같아요"
+   ],
+   "expect": "object",
+   "enOk": []
+  },
+  {
+   "id": "BODYOK0243",
+   "group": "BODYOK",
+   "word": null,
+   "what": "몸 낱말이 나오는 사물(과차단 재기, 추가)",
+   "lines": [
+    "친구와 다툰 일이 자꾸 생각나요",
+    "가슴 가운데가 묵직해요",
+    "다리 위에 돌이 있어요"
+   ],
+   "expect": "object",
+   "enOk": []
+  },
+  {
+   "id": "BODYOK0244",
+   "group": "BODYOK",
+   "word": null,
+   "what": "몸 낱말이 나오는 사물(과차단 재기, 추가)",
+   "lines": [
+    "시험 결과가 걱정돼요",
+    "목 뒤가 뻐근해요",
+    "귀가 달린 냄비예요"
+   ],
+   "expect": "object",
+   "enOk": []
+  },
+  {
+   "id": "BODYOK0245",
+   "group": "BODYOK",
+   "word": null,
+   "what": "몸 낱말이 나오는 사물(과차단 재기, 추가)",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "배 아래쪽이 싸해요",
+    "주둥이가 긴 병이에요"
+   ],
+   "expect": "object",
+   "enOk": []
+  },
+  {
+   "id": "BODYOK0246",
+   "group": "BODYOK",
+   "word": null,
+   "what": "몸 낱말이 나오는 사물(과차단 재기, 추가)",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "목이 긴 화병 같아요"
+   ],
+   "expect": "object",
+   "enOk": []
+  },
+  {
+   "id": "BODYOK0247",
+   "group": "BODYOK",
+   "word": null,
+   "what": "몸 낱말이 나오는 사물(과차단 재기, 추가)",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "명치가 답답해요",
+    "다리가 세 개 달린 받침대예요"
+   ],
+   "expect": "object",
+   "enOk": []
+  },
+  {
+   "id": "BODYOK0248",
+   "group": "BODYOK",
+   "word": null,
+   "what": "몸 낱말이 나오는 사물(과차단 재기, 추가)",
+   "lines": [
+    "친구와 다툰 일이 자꾸 생각나요",
+    "가슴 가운데가 묵직해요",
+    "날개가 달린 선풍기 같아요"
+   ],
+   "expect": "object",
+   "enOk": []
+  },
+  {
+   "id": "BODYOK0249",
+   "group": "BODYOK",
+   "word": null,
+   "what": "몸 낱말이 나오는 사물(과차단 재기, 추가)",
+   "lines": [
+    "시험 결과가 걱정돼요",
+    "목 뒤가 뻐근해요",
+    "이빨이 있는 톱니바퀴예요"
+   ],
+   "expect": "object",
+   "enOk": []
+  },
+  {
+   "id": "BODYOK0250",
+   "group": "BODYOK",
+   "word": null,
+   "what": "몸 낱말이 나오는 사물(과차단 재기, 추가)",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "배 아래쪽이 싸해요",
+    "머리가 둥근 못이에요"
+   ],
+   "expect": "object",
+   "enOk": []
+  },
+  {
+   "id": "BODYOK0251",
+   "group": "BODYOK",
+   "word": null,
+   "what": "몸 낱말이 나오는 사물(과차단 재기, 추가)",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "입구가 좁은 병이에요"
+   ],
+   "expect": "object",
+   "enOk": []
+  },
+  {
+   "id": "BODYOK0252",
+   "group": "BODYOK",
+   "word": null,
+   "what": "몸 낱말이 나오는 사물(과차단 재기, 추가)",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "명치가 답답해요",
+    "손이 닿지 않는 선반 위에 상자가 있어요"
+   ],
+   "expect": "object",
+   "enOk": []
+  },
+  {
+   "id": "BODYOK0253",
+   "group": "BODYOK",
+   "word": null,
+   "what": "몸 낱말이 나오는 사물(과차단 재기, 추가)",
+   "lines": [
+    "친구와 다툰 일이 자꾸 생각나요",
+    "가슴 가운데가 묵직해요",
+    "눈금이 있는 자 같아요"
+   ],
+   "expect": "object",
+   "enOk": []
+  },
+  {
+   "id": "BODYOK0254",
+   "group": "BODYOK",
+   "word": null,
+   "what": "몸 낱말이 나오는 사물(과차단 재기, 추가)",
+   "lines": [
+    "시험 결과가 걱정돼요",
+    "목 뒤가 뻐근해요",
+    "코가 뾰족한 구두 같아요"
+   ],
+   "expect": "object",
+   "enOk": []
+  },
+  {
+   "id": "BODYOK0255",
+   "group": "BODYOK",
+   "word": null,
+   "what": "몸 낱말이 나오는 사물(과차단 재기, 추가)",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "배 아래쪽이 싸해요",
+    "발이 달린 그릇이에요"
+   ],
+   "expect": "object",
+   "enOk": []
+  },
+  {
+   "id": "BODYOK0256",
+   "group": "BODYOK",
+   "word": null,
+   "what": "몸 낱말이 나오는 사물(과차단 재기, 추가)",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "귀퉁이가 깨진 접시예요"
+   ],
+   "expect": "object",
+   "enOk": []
+  },
+  {
+   "id": "BODYOK0257",
+   "group": "BODYOK",
+   "word": null,
+   "what": "몸 낱말이 나오는 사물(과차단 재기, 추가)",
+   "lines": [
+    "새 직장에 적응하는 게 마음에 걸려요",
+    "명치가 답답해요",
+    "목 부분이 가는 병이에요"
+   ],
+   "expect": "object",
+   "enOk": []
+  },
+  {
+   "id": "BODYOK0258",
+   "group": "BODYOK",
+   "word": null,
+   "what": "몸 낱말이 나오는 사물(과차단 재기, 추가)",
+   "lines": [
+    "친구와 다툰 일이 자꾸 생각나요",
+    "가슴 가운데가 묵직해요",
+    "팔걸이가 있는 의자예요"
+   ],
+   "expect": "object",
+   "enOk": []
+  },
+  {
+   "id": "BODYOK0259",
+   "group": "BODYOK",
+   "word": null,
+   "what": "몸 낱말이 나오는 사물(과차단 재기, 추가)",
+   "lines": [
+    "시험 결과가 걱정돼요",
+    "목 뒤가 뻐근해요",
+    "털실 뭉치가 있어요"
+   ],
+   "expect": "object",
+   "enOk": []
+  },
+  {
+   "id": "BODYOK0260",
+   "group": "BODYOK",
+   "word": null,
+   "what": "몸 낱말이 나오는 사물(과차단 재기, 추가)",
+   "lines": [
+    "이번 주 일정이 너무 빡빡해서 신경 쓰여요",
+    "배 아래쪽이 싸해요",
+    "머리핀 같은 게 있어요"
+   ],
+   "expect": "object",
+   "enOk": []
+  },
+  {
+   "id": "BODYOK0261",
+   "group": "BODYOK",
+   "word": null,
+   "what": "몸 낱말이 나오는 사물(과차단 재기, 추가)",
+   "lines": [
+    "부모님 건강이 요즘 걱정이에요",
+    "어깨가 축 처져요",
+    "다리미가 놓여 있어요"
+   ],
+   "expect": "object",
+   "enOk": []
+  }
+ ]
+}

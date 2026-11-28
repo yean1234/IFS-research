@@ -9,6 +9,7 @@ form-asset.v0 사이드카를 GEN3D_OUT/<run>/g62-<pipeline>/assets/에 쓴다(�
   FAKE_GEN3D_IMAGE_MODE = ok(기본) | failed(status failed) | crash(exit 5) | hang | blocked(프롬프트 막힘처럼) | mismatch(프롬프트를 바꿔 씀)
   FAKE_GEN3D_IMAGE_GATE = 관문에 걸릴 이미지 순번(0부터, 쉼표) 또는 all. FAKE_GEN3D_IMAGE_TAMPER = 순번(파일을 적은 뒤 바꿈 — sha256 불일치)
 --from-image <png> --image-sha256 <sha>: 그 이미지의 sha256을 확인하고(다르면 사이드카 failed) FAKE_GEN3D_MODE대로 사이드카.
+  (G85) FAKE_GEN3D_MESH_GATE_SEEDS = 쉼표로 적은 seed — 그 seed의 그림으로 만든 메시만 관문 차단(person_like).
 연구 자료가 아니다(합성 메시·합성 그림).
 """
 import argparse
@@ -131,6 +132,9 @@ def main():
     if a.image_pick:
         image_pick(a, rows, gp, out_root, delay)
         return
+    gate_seeds = {int(x) for x in os.environ.get("FAKE_GEN3D_MESH_GATE_SEEDS", "").split(",") if x.strip()}
+    if a.from_image and a.seed in gate_seeds:
+        mode = "gate"                         # (G85 시험) 이 seed의 그림으로 만든 메시만 관문 차단(person_like)
     if a.from_image and hashlib.sha256(Path(a.from_image).read_bytes()).hexdigest() != a.image_sha256:
         mode = "failed"                       # 고른 이미지가 바뀜 → 만들지 않음(실제 생성기와 같이 사이드카 failed)
     if a.cache_probe:

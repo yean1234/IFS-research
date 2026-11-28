@@ -171,6 +171,17 @@ $env:IFS_LIVE=1; .venv\Scripts\python.exe -m pytest tests\test_experiment_config
   - 그림은 통과해도 메시가 관문에서 막힐 수 있습니다(주전자 `person_like` 0.793). 이때 참여자는 그림을 고른 뒤 40초쯤 기다렸다가 조절 화면으로 갑니다.
 - 실측: `docs/validation/run-g82-end-to-end/`(G82 첫 점검, 시험 설정), `docs/validation/run-g83-g82-on/`(G83 고친 뒤, experiment.toml 사본).
 
+### 6.5 LLM 다시 쓰기·중립 형태·메시 재시도 (G85, `[gen3d] on_none_llm_rewrite = true`·`on_none_mesh_retry = true` — 2026-11-29부터 experiment.toml에서 켬, 프로토콜 0.14)
+
+- **무엇이 켜졌나.** [맞는 게 없어요] 뒤 그림 프롬프트를 규칙 사전 → G82(6.4) → G85 차례로 만듭니다. G85는 규칙과 G82가 모두 형태를 얻지 못했을 때만, 면담 모델이 대상 명사구와 모양 꾸밈을 원문 근거와 함께 내고 규칙이 조립합니다(`chatbot/ifs_chatbot/llm_rewrite.py`). 형태를 말하지 않았으면 고정 중립 형태(`system_default`)로 그립니다. 금지 범주(사람·동물·몸 낱말 돌려 말하기·안개·불꽃)와 위기·확인 판정 세션은 만들지 않습니다. 메시가 관문에 막히면 남은 그림으로 세션에 한 번만 돌아갑니다. 결정·한계는 `docs/decisions.md` G85, 합성 점검은 `docs/validation/run-g85-rewrite/README.md`.
+- **화면.** 근거 낱말 줄과 [그 말이 아니에요], 덧붙임이 있으면 「말씀하지 않은 모양이 더해졌을 수 있어요.」, 중립 형태면 「말씀하신 것에서 모양을 찾지 못해서, …」, 메시 재시도면 「고르신 그림으로는 물체를 만들지 못했어요. …」(`selection_protocol.v0.14.json`, draft).
+- **기록.** `generation.promptRoute`(rule·llm_word·llm_rewrite·system_default·none), `generation.rewrite`(원시 출력 전문·sha256·요소별 근거·덧붙임 수·조립한 프롬프트·노출·거절), `generation.meshRetry`.
+- **실험 전 확인(한 줄).** 서버 venv와 생성기 venv가 둘 다 WordNet을 읽는지 봅니다. 둘 다 `available ['wordnet_place']`가 나와야 합니다. 아니면 G85 생성이 닫힙니다(설치는 `chatbot/README.md` 「실행」, `docs/gen3d-feasibility.md` 4절).
+
+  ```powershell
+  cd <repo>\chatbot; .venv\Scripts\python -c "from ifs_chatbot import wordnet_check as w; print(w.info()['status'], w.reasons('pond')[0])"; ..\..\gen3d-venv\Scripts\python -c "import sys; sys.path.insert(0, '.'); from ifs_chatbot import wordnet_check as w; print(w.info()['status'], w.reasons('pond')[0])"
+  ```
+
 ## 7. 아직 사람이 정할 것 (이 문서가 켜지 않은 것)
 
 - 조건·멈춤 거리 단계에서 안내 판 숨기기(G63 (7)): 꺼 둠.

@@ -1,0 +1,158 @@
+# ◆G85 시험 설정(2026-11-28): experiment.toml 사본에 G85만 켬 — [gen3d] on_none_llm_rewrite = true(규칙 → G82 → LLM 다시 쓰기 재료·
+#   고정 중립 형태), on_none_mesh_retry = true(메시 관문에 막히면 남은 그림으로 세션에 한 번만 돌아감), [selection] protocol 0.14.0
+#   (G85 문구 다섯 개, draft). 합성 점검(docs/validation/run-g85-rewrite)용. experiment.toml에는 메인이 합성 점검 결과를 본 뒤 켠다.
+#   ◆G85 표시가 experiment.toml과 다른 세 곳이다. 나머지는 experiment.toml과 같다(시험 test_g85_*가 확인).
+# 본 실험 단일 설정: v4 흐름(면담 → 확정 → 추출 → 후보 → 조절 → 사전 측정 → 사후 면담 기록) + D9 다리 질문 + G70 면담 앞부분(프로토콜 1.6)
+#   + 설계 뼈대 3절 권고값(docs/design-backbone.md, 결정 G59-8). 실행 순서서: docs/run-experiment.md
+# 실행: python -m ifs_chatbot.server --config experiment
+# 만든 법: 새 값은 없다. 기존 설정에서 가져왔다 — [interview]·[guard] safety_lexicon·[validator] = bridge.toml,
+#   [mapping]·[selection]·[preview] = v4.toml, guard.required·mapping.strict = pilot.toml, participant_draft_banner = G59-8.
+#   G70(2026-11-27)부터 [interview] protocol·prompt_version과 [guard] safety_lexicon 세 값만 bridge.toml과 다르다(1.6 · v1.2.0 · 0.3.0).
+#   G72(2026-11-27)부터 [mapping] proportions와 [selection] protocol·table 세 값이 v4.toml과 다르다(너비·높이·깊이 비율 — 스펙 2.4.0,
+#   조절 항목 너비·높이·깊이, selection_protocol 0.7.0, 값 표 3.0.0). 다른 설정 파일은 그대로라 출력·조절 항목이 예전과 같다.
+#   G73(2026-11-27)부터 [gen3d] on_none = true(맞는 게 없어요 뒤 형태 생성)와 [selection] protocol 0.8.0(그 화면 문구 4개). [gen3d] enabled는 계속 끔.
+#   G75(2026-11-28)부터 [gen3d] on_none_image_pick = true(3D 모델이 참고할 그림 3장을 참여자가 먼저 고름)와 [selection] protocol 0.9.1(그 화면 문구 4개, 0.9.1은 안내 문구 고침).
+#   G74(2026-11-27)부터 [mapping] mist_kinds도 v4.toml과 다르다(안개 입자 모양 form.mistKind — 스펙 2.4.0의 선택 슬롯, builder 2.9.0).
+#   G77(2026-11-28)부터 [mapping] llm_fill = true(확정 직후 매퍼가 비운 슬롯을 면담 LLM이 원문 인용과 함께 채워 후보·조절의 처음 값으로)와
+#   [selection] protocol 0.10.0(조절 화면의 근거 인용 안내 문구 1개). 선택 기록은 처음부터 ifs-selection/0.5. 다른 설정 파일에서는 꺼져 있다.
+#   G79(2026-11-28)부터 [selection] table 4.0.0(조절 화면의 색을 색상 고리 72칸 + 채도 단계 + 무채색 견본 5개로)과 protocol 0.11.0(고리 안내·
+#   낭독기 글 3개). 선택 기록은 ifs-selection/0.5 그대로이고 선택 속성 colorRing·hueStep 등만 더해진다. 다른 설정 파일은 3.0.0·2.0.0 그대로.
+#   G83(2026-11-28, 연구 책임자 결정)부터 [gen3d] on_none_llm_shape = true(G82: [맞는 게 없어요] 뒤 규칙에 중심 형태 명사가 없으면 면담 LLM이
+#   확정 텍스트에서 형태 낱말 하나를 인용하고 영어 이름을 냄 — AGENTS.md 원칙 1의 예외)와 [selection] protocol 0.13.0(근거 인용 줄·[그 말이
+#   아니에요], draft). 오프라인 평가는 미리 정한 기준에 미달이었고(docs/decisions.md G82), 참여자가 그림을 직접 고르거나 거절하는 구조라
+#   참여자 기록(generation.shapeLlm)으로 판단하기로 했다. 켜지면 G77의 형태 낱말 칸(shape_noun)은 꺼진다(다른 빈 슬롯 제안은 그대로).
+#   이 판 앞뒤 세션은 생성 경로가 다르므로 층으로 나눠 본다. 시험 설정 experiment-g82.toml(선택 문구 0.12)은 G82 3차 평가 재현용으로만 남긴다.
+# 기존 설정 파일(default·pilot·v4·v4-gen3d·bridge·mac8gb)과 코드 기본값은 바꾸지 않았다. ◆ = v4.toml과 다른 곳.
+# 헤드셋 쪽 권고값(공간 B + 놓기 도움, 두 조건 연습, 자리 문항 → 멈춤 거리, 평정 중 물체 숨김, UI 묶음 G63, 반복 멈춤 loop,
+#   눈높이 기준 배치 relative, 문구 scaleA)은 이 파일이 아니라 Unity 러너 Setup의 [본 실험 권고 설정 켜기](-experimentPreset true)가 켠다.
+# 문구는 모두 초안(status draft, IRB·팀 검토 전)이다. 초안이어도 시작은 한다(require_spec_phrases = false).
+
+[interview]
+condition = "chatbot"                         # 조건 2 · 챗봇 면담(LLM은 면담 질문만 만든다, 원칙 1). 두 집단 차이는 헤드셋 배치 구간뿐(뼈대 2절)
+lock_condition = true                         # ◆ 면담 조건 고정: 시작 화면에 조건 선택 없음, 다른 조건 요청은 서버가 거절(409), 기록 헤더 conditionLocked
+protocol = "elicitation_protocol.v1.6.json"   # ◆ G70(1.6.0): location 없음 · '그 느낌' 호칭 · 다리 문구 · 틀 규칙 · 프로브 판정 = 매퍼 슬롯 + 형상 신호
+                                              #   (1.5.0 = D9 bridge·imageSignal·find 틀 제한은 그대로 들어 있음. bridge.toml은 1.5 그대로)
+prompt_version = "1.2.0"                      # ◆ G70·결함 5: 이미 말한 차원·이미 쓴 틀을 맥락으로(chatbot/prompts/v1.2.0/)
+lexicon_overlay = "layer1_interview.v0.json"  # ◆ D9: 면담용 감정어 '기대'(매퍼 v2의 사전은 바꾸지 않음)
+anchor_doe_root = true                        # ◆ D9: 인용 후보 '-되' 어근 규칙
+
+[llm]
+backend = "ollama"
+model = "gemma4:e4b"       # G64 검증(run-g64-e2e)에 쓴 모델. pilot.toml의 gemma4:31b는 16 GB GPU에 올라가지 않는다 — ⚠ 본 실험 모델은 사람이 정할 것
+host = "http://127.0.0.1:11434"
+timeout_s = 300
+temperature = 0.2
+top_p = 0.9
+seed = 7
+think = false
+num_ctx = 8192
+keep_alive = "30m"
+max_regenerations = 2
+retry_feedback = true
+
+[guard]
+keyword = true
+model_backend = "ollama"
+model = "hf.co/mradermacher/kanana-safeguard-8b-GGUF:Q4_K_M"
+format = "kanana"
+check_output = true
+required = true                               # ◆ pilot.toml과 같음: 가드 모델이 없으면 서버가 시작하지 않는다(참여자 세션). 점검만 할 때는 --no-guard-model
+safety_lexicon = "safety_ko.v0.3.json"        # ◆ G70-f: 0.2.0(D9)에서 stop의 '끝내고 싶어요'만 뺌(첫 답 「끝내고 싶어요」에 세션이 멈추던 결함)
+
+[validator]
+strict_novel_content = true
+l5_depth = "present_focus"
+max_anchor_eojeol = 3
+predicate_as_noun = true                      # ◆ D9: V7 — what_kind·where·like_what의 X가 활용형이면 막음
+
+[session]
+log_dir = "logs"              # chatbot/logs/ (git에 올리지 않음). spec은 logs/scenes/<세션ID>.json, 후보·조절·측정·사후 면담은 logs/selection/<세션ID>/
+scenes_dir = ""
+researcher_contact = "(연구자 연락처를 config에 입력하세요)"   # ⚠ 실험 전에 반드시 채우거나 --researcher-contact로 넘길 것(위기 고정 문구에 들어감)
+
+[mapping]
+mode = "v2"                   # 매퍼 v2(기본 형상 form.base, 후보·조절 흐름이 쓰는 매퍼). bridge.toml(v1)과 달리 세션 안에서 바로 v2 spec을 만든다
+save_both = true              # v0·v1·v2 비교 파일도 남김
+clarify_loop = false
+clarify_max = 2
+strict = true                 # ◆ pilot.toml과 같음: v2를 불러오지 못하면 v0로 넘어가지 않고 시작을 멈춘다
+ext_lexicon = ""              # G61 끔: 스펙 2.2.0 그대로(헤드셋 러너·WebGL 미리보기가 읽는 버전)
+ext_params = "scene_params.v3.json"
+variant_rules = ""
+proportions = "scene_params.v2.json"   # ◆ G72: 너비·높이·깊이 비율(layout.proportions, 스펙 2.4.0, builder 2.8.0 — 그 파일의 proportions 표).
+                                        #   Unity 러너·미리보기가 2.4.0을 읽는 빌드여야 한다(헤드셋 빌드를 다시 만들기 전에는 러너가 2.4.0을 거부할 수 있음)
+mist_kinds = "scene_params.v2.json"    # ◆ G74: 안개 입자 모양(form.mistKind — 안개·연기·먼지·구름, 스펙 2.4.0의 선택 슬롯, builder 2.9.0 — 그 파일의 mistKinds 표).
+                                        #   form.type이 mist일 때 종류별로 그린다. Unity 러너·미리보기가 form.mistKind를 읽는 빌드여야 한다(옛 러너는 모르는 필드로 거부)
+llm_fill = true                         # ◆ G77: 확정 직후 면담 모델(같은 Ollama 모델·digest)이 매퍼가 비운 슬롯(색·밝기·투명도·질감·크기·움직임·형태 종류)과
+                                        #   그림용 형태 낱말을 참여자 원문 인용과 함께 채운다(온도 0·seed 고정·JSON 스키마, chatbot/prompts/llm_fill/llm_fill.v0.1.1.json, draft).
+                                        #   G83부터 그림용 형태 낱말 칸은 꺼진다([gen3d] on_none_llm_shape = true가 그 일을 맡음, 코드가 자동으로 끔)
+                                        #   검증기를 통과한 값만 후보·조절의 처음 값(덮어쓰기)으로 — 확정 스펙은 그대로. 위기·확인 판정이 있었던 세션·실패·시간 초과는 지금 경로
+llm_fill_timeout_s = 20.0
+llm_fill_max_items = 4
+llm_fill_seed = 0                       # G77: 빈칸 채우기 호출의 seed(코드 기본값과 같음, 기록 options.seed). 실측 docs/validation/run-g77-llm-fill-live
+
+[drift]
+enabled = true
+recall_check = false
+self_report = false
+allow_draft_phrases = false
+
+[selection]
+enabled = true
+protocol = "selection_protocol.v0.14.json"  # ◆G85(0.14.0): 0.13.0 + G85 문구 다섯 개(draft). ◆ G83(0.13.0): 0.12.0(G82 근거 인용 줄 llm_shape_basis·[그 말이 아니에요], draft) + 인용의 명사 부분·
+                                            #   받침에 맞춘 '이라고/라고'. 0.12.0 = 0.11.0(G79 색상 고리, G73·G75·G77 문구) + G82 문구 두 개
+table = "candidate_values.v4.json"           # ◆ G79(4.0.0): 3.0.0(G72 너비·높이·깊이) + 색 항목을 고리 72칸·채도 단계·무채색 견본으로
+require_spec_phrases = false
+participant_draft_banner = false              # ◆ 뼈대 3절·G59-8: 초안 경고 줄을 참여자 보기에서 숨김(연구자 보기·기록에는 남음)
+post_interview = "post_interview.v0.json"     # 사후 면담 기록 화면 /?view=postinterview&session=<세션ID>
+
+[preview]
+mode = "webgl"                                  # 저장소 밖 빌드가 없으면 image → 글 요약으로 내려감(기록에 남음)
+webgl_dir = "../../webgl-build/preview"
+image_player = "../../webgl-build/preview-win/IFSPreview.exe"
+queue_dir = ""
+start_on_launch = false
+width = 320
+height = 240
+start_timeout_s = 60
+request_timeout_s = 20
+webgl_ready_timeout_s = 30
+webgl_request_timeout_s = 15
+
+[gen3d]
+# 생성 메시를 기본 후보로 두는 G62 경로(enabled·default_form_source)는 끈다(G67-b: 기본 후보 3세션 중 맞음 0).
+enabled = false
+# ◆ G73: 후보 화면에서 처음 [맞는 게 없어요]를 누르면 확정 텍스트로 형태를 하나 만들어 새 후보로 맨 앞에 보여 준다(none_gen.py).
+#  - 프롬프트는 규칙만(tools/gen3d/prompts.shape_prompt). 형태를 말하지 않았거나 사람·동물·메시로 그릴 수 없는 범주면 만들지 않고
+#    사유를 기록한 뒤 기존 none 경로(0번 후보로 조절)로 간다. 참여자가 그 후보를 골라야만 장면에 쓴다(selection.json 0.3 form.asset).
+#  - 만들기 전에 Ollama 모델(면담·가드)을 내려 GPU를 비우고 끝나면 다시 올린다. 대기 화면에서 [기다리지 않고 넘어갈게요]로 건너뛸 수 있다.
+#  - 생성기는 저장소 밖 gen3d-venv(docs/gen3d-feasibility.md G62 절). 없으면 서버 경고 후 none은 기존 경로(사유 generator_unavailable).
+on_none = true
+on_none_timeout_s = 180                         # none을 누른 때부터(모델 내리기·적재 포함). 넘으면 생성 프로세스를 끄고 기존 경로
+# ◆ G75: [맞는 게 없어요] 뒤 생성에서 3D 모델이 참고할 그림을 참여자가 먼저 고른다(선행 Refugio, Mora 외 2026의 흐름).
+#  - 형태 낱말 규칙 프롬프트 + 무채색 화풍 고정 문구(tools/gen3d/prompts.image_pick_prompt)로 SDXL 그림 3장(seed = on_none_seed + 3r + 0·1·2).
+#    그림마다 관문(CLIP 사람·동물)을 거쳐 통과한 것만 seed 순서로 보인다(0장이면 기존 none 경로, 사유 all_images_gated).
+#  - 고른 그림으로만 TripoSG → 만든 물체를 후보 맨 앞에(그 뒤는 G73과 같음: 골라야만 장면에 씀). [이 중에는 없어요]나 만든 물체에
+#    다시 [맞는 게 없어요]면 새 seed로 다음 회차(on_none_image_rounds까지), 그다음은 기존 none 경로. on_none_max_regenerations는 쓰지 않는다.
+#  - 그림 단계·물체 단계마다 모델을 내리고 끝나면 다시 올린다(고르는 동안은 올라가 있음). 대기 한도는 단계마다, 고르는 시간은 넣지 않는다.
+on_none_image_pick = true
+on_none_image_rounds = 2
+on_none_image_timeout_s = 180                   # 그림 3장 + 관문(모델 내리기 포함)
+on_none_mesh_timeout_s = 180                    # 고른 그림 → TripoSG → 후처리·관문(모델 내리기 포함)
+# ◆ G82·G83: [맞는 게 없어요] 뒤 규칙 그림 프롬프트에 중심 형태 명사가 없으면 면담 LLM(같은 Ollama 모델·digest)이 확정 텍스트에서 형태 낱말
+#  하나를 인용하고 영어 이름(소문자 한 낱말)을 낸다(chatbot/ifs_chatbot/llm_shape.py, 프롬프트 llm_shape.v0.3.0 draft, 온도 0·seed 고정).
+#  - 검증기(G77 형태 낱말 검증 + 영어 금지 목록)를 통과한 것만 그림 프롬프트의 빈 중심 명사 자리에 넣는다. 프롬프트 문장은 규칙이 만든다.
+#  - 그림 고르기 화면 맨 위에 근거 낱말(원문의 명사 부분, 영어 이름은 안 보임)과 [그 말이 아니에요]. 누르면 다시 부르지 않고 기존 none 경로.
+#  - 형태를 말하지 않았으면·위기·확인 판정 세션이면 부르지 않는다. 기록 selection.json generation.shapeLlm(원시 출력·기각 사유 포함).
+#  - 켜면 G77([mapping] llm_fill)의 형태 낱말 칸은 꺼진다. 알려진 한계는 docs/run-experiment.md 6절 G82 소절.
+on_none_llm_shape = true
+on_none_llm_shape_timeout_s = 20
+on_none_llm_shape_seed = 0
+# ◆G85: 규칙과 G82가 모두 형태를 얻지 못하면 면담 LLM이 그림 프롬프트 재료(대상 명사구 + 모양 꾸밈, 요소마다 원문 근거 또는 근거 없음)를 내고
+#  규칙이 조립한다(chatbot/ifs_chatbot/llm_rewrite.py, 프롬프트 llm_rewrite.v0.1.0 draft, 온도 0·seed 고정). 형태를 말하지 않았으면 고정 중립 형태
+#  (shared/lexicon/neutral_form_prompt.v0.json, system_default). 금지 범주를 말해서 막혔거나 위기·확인 판정 세션이면 만들지 않는다.
+on_none_llm_rewrite = true
+on_none_llm_rewrite_timeout_s = 25
+on_none_llm_rewrite_seed = 0
+# ◆G85: 고른 그림으로 만든 메시가 관문에 막히면 같은 회차의 남은 그림으로 세션에 한 번만 돌아간다(두 번째도 막히면 기존 none 경로)
+on_none_mesh_retry = true

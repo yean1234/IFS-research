@@ -1445,9 +1445,12 @@
                           "provenance": {
                             "enum": [
                               "llm_quoted",
-                              "llm_translated"
+                              "llm_translated",
+                              "llm_rewrite",
+                              "llm_rewrite_added",
+                              "system_default"
                             ],
-                            "description": "llm_quoted = G77 인용 형태 낱말, llm_translated = G82 LLM 형태 이름"
+                            "description": "llm_quoted = G77 인용 형태 낱말, llm_translated = G82 LLM 형태 이름, (G85, 하위 호환 추가) llm_rewrite = 다시 쓰기 재료의 대상·근거 있는 꾸밈, llm_rewrite_added = 근거 없이 덧붙인 꾸밈(원문 구간 없음), system_default = 고정 중립 형태"
                           }
                         }
                       }
@@ -1482,7 +1485,9 @@
                     "shapeSource": {
                       "enum": [
                         "llm_quoted",
-                        "llm_translated"
+                        "llm_translated",
+                        "llm_rewrite",
+                        "system_default"
                       ]
                     }
                   }
@@ -2035,6 +2040,34 @@
             "rejectedAt": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/isoTime"}]},
             "participantLeftBeforeResult": {"type": "boolean"},
             "call": {"type": ["object", "null"]}
+          }
+        },
+        "promptRoute": {
+          "enum": ["rule", "llm_word", "llm_rewrite", "system_default", "none"],
+          "description": "G85([gen3d] on_none_llm_rewrite를 켰을 때만, 하위 호환 추가): [맞는 게 없어요] 뒤 이 세션의 그림 프롬프트 경로. rule(규칙 사전) | llm_word(G82 형태 낱말) | llm_rewrite(G85 다시 쓰기 재료를 규칙이 조립) | system_default(형태를 말하지 않아 고정 중립 형태) | none(금지 범주·판정·실패 등으로 만들지 않음). 회차마다 실제 경로는 afterNone.promptRoute"
+        },
+        "rewrite": {
+          "type": "object",
+          "description": "G85([gen3d] on_none_llm_rewrite를 켰을 때만, 하위 호환 추가 — 판은 0.5 그대로, 러너는 generation을 읽지 않음): 경로·사유·부름·결과(outcome)·요소별 출처 grounded/added와 근거 구간(elements)·덧붙임 수·기각·금지 범주 사유·모델 digest·프롬프트 판·검증기 판·온도·seed·입력 해시·원시 출력·WordNet 판(또는 unavailable)·조립한 프롬프트 전문(assembledPrompt·negativePrompt)·화면에 보인 근거 낱말(basisShown)·덧붙임/중립 줄 노출·그림 고름·만든 물체 노출·고름·[그 말이 아니에요]. call은 chatbot/ifs_chatbot/llm_rewrite.py 기록 원본. 원시 출력은 참여자 확정 텍스트에서 온 것이라 git 밖 로그에만 있다",
+          "required": ["version", "route", "called", "exposed", "rejected"],
+          "properties": {
+            "version": {"const": "ifs-llm-rewrite-session/0.1.0"},
+            "route": {"enum": ["rule", "llm_word", "llm_rewrite", "system_default", "none"]},
+            "called": {"type": "boolean"},
+            "exposed": {"type": "boolean"},
+            "rejected": {"type": "boolean"},
+            "addedCount": {"type": "integer", "minimum": 0, "maximum": 2}
+          }
+        },
+        "meshRetry": {
+          "type": "object",
+          "description": "G85([gen3d] on_none_mesh_retry를 켰을 때만): 고른 그림의 메시 시도 누적(attemptsTotal·results — 관문 결과 포함)과 남은 그림으로 돌아갔는지(used, 세션에 한 번만)",
+          "required": ["version", "used", "attemptsTotal", "results"],
+          "properties": {
+            "version": {"const": "ifs-mesh-retry/0.1.0"},
+            "used": {"type": "boolean"},
+            "attemptsTotal": {"type": "integer", "minimum": 0},
+            "results": {"type": "array"}
           }
         }
       }

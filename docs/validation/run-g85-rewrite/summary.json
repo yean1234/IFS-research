@@ -1,0 +1,1390 @@
+{
+ "model": {
+  "name": "gemma4:e4b",
+  "quant": "Q4_K_M",
+  "parameterSize": "7.5B",
+  "digest": "sha256:dc35e8d9c6061baa6f0fa870975ab6932e2542b579b13ea0f199fa4bb7300c9c",
+  "runtime": "ollama 0.40.17",
+  "sampling": {
+   "temperature": 0.2,
+   "top_p": 0.9,
+   "seed": 7,
+   "thinking": false
+  },
+  "numCtx": 8192
+ },
+ "wordnet": {
+  "version": "g85-wordnet-check/0.1.0",
+  "status": "available",
+  "reason": null,
+  "wordnetVersion": "3.0",
+  "nltkVersion": "3.10.4",
+  "dataFile": "nltk_data/corpora/wordnet.zip",
+  "dataSha256": "cbda5ea6eef7f36a97a43d4a75f85e07fccbb4f23657d27b4ccbc93e2646ab59",
+  "license": "WordNet 3.0 license (Princeton University)",
+  "roots": [
+   "person.n.01",
+   "animal.n.01",
+   "body_part.n.01",
+   "fire.n.01",
+   "fire.n.03",
+   "cloud.n.01",
+   "spiritual_being.n.01",
+   "imaginary_being.n.01"
+  ],
+  "placeRoots": [
+   "location.n.01",
+   "geological_formation.n.01",
+   "body_of_water.n.01"
+  ],
+  "overBlockNonForbidden": [
+   {
+    "id": "OOV0014",
+    "group": "OOV",
+    "en": "screw",
+    "wordnet": {
+     "version": "g85-wordnet-check/0.1.0",
+     "status": "available",
+     "words": [
+      {
+       "word": "screw",
+       "sense": "prison_guard.n.01",
+       "roots": [
+        "person.n.01"
+       ],
+       "placeRoots": []
+      }
+     ]
+    },
+    "otherReasons": []
+   },
+   {
+    "id": "OOV0018",
+    "group": "OOV",
+    "en": "pitcher",
+    "wordnet": {
+     "version": "g85-wordnet-check/0.1.0",
+     "status": "available",
+     "words": [
+      {
+       "word": "pitcher",
+       "sense": "pitcher.n.01",
+       "roots": [
+        "person.n.01"
+       ],
+       "placeRoots": []
+      }
+     ]
+    },
+    "otherReasons": []
+   },
+   {
+    "id": "OOV0021",
+    "group": "OOV",
+    "en": "scrubber",
+    "wordnet": {
+     "version": "g85-wordnet-check/0.1.0",
+     "status": "available",
+     "words": [
+      {
+       "word": "scrubber",
+       "sense": "scrubber.n.01",
+       "roots": [
+        "person.n.01"
+       ],
+       "placeRoots": []
+      }
+     ]
+    },
+    "otherReasons": []
+   },
+   {
+    "id": "OOV0031",
+    "group": "OOV",
+    "en": "lid",
+    "wordnet": {
+     "version": "g85-wordnet-check/0.1.0",
+     "status": "available",
+     "words": [
+      {
+       "word": "lid",
+       "sense": "eyelid.n.01",
+       "roots": [
+        "body_part.n.01"
+       ],
+       "placeRoots": []
+      }
+     ]
+    },
+    "otherReasons": []
+   },
+   {
+    "id": "BODYOK0250",
+    "group": "BODYOK",
+    "en": "nail",
+    "wordnet": {
+     "version": "g85-wordnet-check/0.1.0",
+     "status": "available",
+     "words": [
+      {
+       "word": "nail",
+       "sense": "nail.n.01",
+       "roots": [
+        "body_part.n.01"
+       ],
+       "placeRoots": []
+      }
+     ]
+    },
+    "otherReasons": [
+     "english_banned"
+    ]
+   }
+  ],
+  "missOnForbidden": [
+   {
+    "id": "FORBID0199",
+    "line": "횃불 같은 게 있어요",
+    "en": "torch",
+    "otherReasons": [
+     "non_meshable"
+    ],
+    "wordnet": {
+     "version": "g85-wordnet-check/0.1.0",
+     "status": "available",
+     "words": [
+      {
+       "word": "torch",
+       "sense": "torch.n.01",
+       "roots": [],
+       "placeRoots": []
+      }
+     ]
+    }
+   }
+  ]
+ },
+ "seconds": 303.9,
+ "n": 302,
+ "errors": [],
+ "chainRoute": {
+  "OOV": {
+   "system_default": 8,
+   "llm_word": 26,
+   "rule": 1,
+   "none": 2,
+   "llm_rewrite": 3
+  },
+  "NOSHAPE": {
+   "system_default": 29,
+   "none": 1
+  },
+  "NEG": {
+   "system_default": 20
+  },
+  "PAST": {
+   "system_default": 20
+  },
+  "OTHER": {
+   "system_default": 20
+  },
+  "HYPO": {
+   "system_default": 20
+  },
+  "SIMILE": {
+   "system_default": 20
+  },
+  "FORBID": {
+   "system_default": 7,
+   "none": 23
+  },
+  "WORRY": {
+   "system_default": 20
+  },
+  "BODYF": {
+   "none": 20
+  },
+  "BODYOK": {
+   "none": 9,
+   "rule": 7,
+   "llm_word": 2,
+   "system_default": 4
+  },
+  "HOLDF": {
+   "none": 11,
+   "llm_word": 1,
+   "system_default": 2,
+   "rule": 6
+  },
+  "HOLDOK": {
+   "rule": 8,
+   "system_default": 3,
+   "none": 6,
+   "llm_word": 3
+  }
+ },
+ "forcedOutcome": {
+  "OOV": {
+   "null": 8,
+   "adopted": 25,
+   "rule_has_shape": 1,
+   "forbidden": 5,
+   "no_subject": 1
+  },
+  "NOSHAPE": {
+   "null": 29,
+   "session_flagged": 1
+  },
+  "NEG": {
+   "null": 20
+  },
+  "PAST": {
+   "null": 17,
+   "no_subject": 3
+  },
+  "OTHER": {
+   "null": 16,
+   "no_subject": 4
+  },
+  "HYPO": {
+   "null": 17,
+   "no_subject": 3
+  },
+  "SIMILE": {
+   "null": 20
+  },
+  "FORBID": {
+   "null": 8,
+   "rule_blocked:excluded_category": 13,
+   "rule_blocked:body_part_attachment": 7,
+   "session_flagged": 1,
+   "forbidden": 1
+  },
+  "WORRY": {
+   "null": 18,
+   "no_subject": 2
+  },
+  "BODYF": {
+   "rule_blocked:body_part_attachment": 18,
+   "rule_blocked:excluded_category": 2
+  },
+  "BODYOK": {
+   "rule_blocked:body_part_attachment": 8,
+   "rule_has_shape": 7,
+   "adopted": 2,
+   "null": 4,
+   "forbidden": 1
+  },
+  "HOLDF": {
+   "rule_blocked:body_part_attachment": 8,
+   "adopted": 1,
+   "rule_blocked:excluded_category": 3,
+   "null": 2,
+   "rule_has_shape": 6
+  },
+  "HOLDOK": {
+   "rule_has_shape": 7,
+   "no_subject": 1,
+   "rule_blocked:body_part_attachment": 5,
+   "null": 3,
+   "adopted": 2,
+   "rule_blocked:excluded_category": 1,
+   "forbidden": 1
+  }
+ },
+ "forcedRoute": {
+  "OOV": {
+   "system_default": 9,
+   "llm_rewrite": 25,
+   "none": 6
+  },
+  "NOSHAPE": {
+   "system_default": 29,
+   "none": 1
+  },
+  "NEG": {
+   "system_default": 20
+  },
+  "PAST": {
+   "system_default": 20
+  },
+  "OTHER": {
+   "system_default": 20
+  },
+  "HYPO": {
+   "system_default": 20
+  },
+  "SIMILE": {
+   "system_default": 20
+  },
+  "FORBID": {
+   "system_default": 8,
+   "none": 22
+  },
+  "WORRY": {
+   "system_default": 20
+  },
+  "BODYF": {
+   "none": 20
+  },
+  "BODYOK": {
+   "none": 16,
+   "llm_rewrite": 2,
+   "rule": 1,
+   "system_default": 3
+  },
+  "HOLDF": {
+   "none": 17,
+   "llm_rewrite": 1,
+   "system_default": 2
+  },
+  "HOLDOK": {
+   "none": 14,
+   "system_default": 3,
+   "llm_rewrite": 2,
+   "rule": 1
+  }
+ },
+ "spanMatch": {
+  "subjectsProposed": 52,
+  "quoteInText": 52,
+  "charSpanExact": 2
+ },
+ "addedAccepted": {
+  "total": 0,
+  "words": {}
+ },
+ "addedProposed": {
+  "total": 10,
+  "words": {
+   "none": 10
+  }
+ },
+ "groundedAccepted": [
+  {
+   "id": "OOV0003",
+   "quote": "울퉁불퉁한",
+   "en": "bumpy"
+  },
+  {
+   "id": "OOV0007",
+   "quote": "둥글넓적한",
+   "en": "rounded"
+  },
+  {
+   "id": "OOV0015",
+   "quote": "둥글넓적한",
+   "en": "rounded"
+  },
+  {
+   "id": "OOV0019",
+   "quote": "울퉁불퉁한",
+   "en": "bumpy"
+  },
+  {
+   "id": "OOV0023",
+   "quote": "둥글넓적한",
+   "en": "round"
+  },
+  {
+   "id": "OOV0035",
+   "quote": "울퉁불퉁한",
+   "en": "bumpy"
+  },
+  {
+   "id": "OOV0039",
+   "quote": "둥글넓적한",
+   "en": "rounded"
+  }
+ ],
+ "adoptedPairs": [
+  {
+   "id": "OOV0003",
+   "group": "OOV",
+   "line": "울퉁불퉁한 디딤돌이 있어요",
+   "quote": "디딤돌이",
+   "en": "stepping stone",
+   "details": [
+    "bumpy"
+   ],
+   "prompt": "a single bumpy stepping stone"
+  },
+  {
+   "id": "OOV0004",
+   "group": "OOV",
+   "line": "끝이 뾰족한 숫돌이에요",
+   "quote": "숫돌이에요",
+   "en": "whetstone",
+   "details": [],
+   "prompt": "a single pointed whetstone"
+  },
+  {
+   "id": "OOV0005",
+   "group": "OOV",
+   "line": "주춧돌이에요",
+   "quote": "주춧돌이에요",
+   "en": "foundation stone",
+   "details": [],
+   "prompt": "a single foundation stone"
+  },
+  {
+   "id": "OOV0006",
+   "group": "OOV",
+   "line": "가슴 앞에 나무토막이 놓여 있어요",
+   "quote": "나무토막이",
+   "en": "log",
+   "details": [],
+   "prompt": "a single log"
+  },
+  {
+   "id": "OOV0007",
+   "group": "OOV",
+   "line": "둥글넓적한 장작 모양이에요",
+   "quote": "장작",
+   "en": "log",
+   "details": [
+    "rounded"
+   ],
+   "prompt": "a single rounded log"
+  },
+  {
+   "id": "OOV0012",
+   "group": "OOV",
+   "line": "끝이 뾰족한 주걱이에요",
+   "quote": "주걱이에요",
+   "en": "spatula",
+   "details": [],
+   "prompt": "a single pointed spatula"
+  },
+  {
+   "id": "OOV0013",
+   "group": "OOV",
+   "line": "확성기예요",
+   "quote": "확성기예요",
+   "en": "megaphone",
+   "details": [],
+   "prompt": "a single megaphone"
+  },
+  {
+   "id": "OOV0015",
+   "group": "OOV",
+   "line": "둥글넓적한 도르래 모양이에요",
+   "quote": "도르래",
+   "en": "pulley",
+   "details": [
+    "rounded"
+   ],
+   "prompt": "a single rounded pulley"
+  },
+  {
+   "id": "OOV0017",
+   "group": "OOV",
+   "line": "병뚜껑 같은 게 있어요",
+   "quote": "병뚜껑",
+   "en": "bottle cap",
+   "details": [],
+   "prompt": "a single bottle cap"
+  },
+  {
+   "id": "OOV0019",
+   "group": "OOV",
+   "line": "울퉁불퉁한 바가지가 있어요",
+   "quote": "바가지가",
+   "en": "bowl",
+   "details": [
+    "bumpy"
+   ],
+   "prompt": "a single bumpy bowl"
+  },
+  {
+   "id": "OOV0020",
+   "group": "OOV",
+   "line": "끝이 뾰족한 소쿠리예요",
+   "quote": "소쿠리예요",
+   "en": "basket",
+   "details": [],
+   "prompt": "a single pointed basket"
+  },
+  {
+   "id": "OOV0022",
+   "group": "OOV",
+   "line": "가슴 앞에 깡통이 놓여 있어요",
+   "quote": "깡통이",
+   "en": "can",
+   "details": [],
+   "prompt": "a single can"
+  },
+  {
+   "id": "OOV0023",
+   "group": "OOV",
+   "line": "둥글넓적한 단지 모양이에요",
+   "quote": "단지",
+   "en": "jar",
+   "details": [
+    "round"
+   ],
+   "prompt": "a single round jar"
+  },
+  {
+   "id": "OOV0024",
+   "group": "OOV",
+   "line": "요강이 보여요",
+   "quote": "요강이",
+   "en": "urinal",
+   "details": [],
+   "prompt": "a single urinal"
+  },
+  {
+   "id": "OOV0027",
+   "group": "OOV",
+   "line": "울퉁불퉁한 맷방석이 있어요",
+   "quote": "맷방석이",
+   "en": "millstone",
+   "details": [],
+   "prompt": "a single bumpy millstone"
+  },
+  {
+   "id": "OOV0028",
+   "group": "OOV",
+   "line": "끝이 뾰족한 바퀴통이에요",
+   "quote": "바퀴통이에요",
+   "en": "wheel",
+   "details": [],
+   "prompt": "a single pointed wheel"
+  },
+  {
+   "id": "OOV0029",
+   "group": "OOV",
+   "line": "굴렁쇠예요",
+   "quote": "굴렁쇠예요",
+   "en": "roller",
+   "details": [],
+   "prompt": "a single roller"
+  },
+  {
+   "id": "OOV0030",
+   "group": "OOV",
+   "line": "가슴 앞에 젓가락이 놓여 있어요",
+   "quote": "젓가락이",
+   "en": "chopsticks",
+   "details": [],
+   "prompt": "a single chopsticks"
+  },
+  {
+   "id": "OOV0032",
+   "group": "OOV",
+   "line": "옹기가 보여요",
+   "quote": "옹기가",
+   "en": "earthenware pot",
+   "details": [],
+   "prompt": "a single earthenware pot"
+  },
+  {
+   "id": "OOV0033",
+   "group": "OOV",
+   "line": "절구통 같은 게 있어요",
+   "quote": "절구통",
+   "en": "mortar",
+   "details": [],
+   "prompt": "a single mortar"
+  },
+  {
+   "id": "OOV0034",
+   "group": "OOV",
+   "line": "물레처럼 생겼어요",
+   "quote": "물레처럼",
+   "en": "wheel",
+   "details": [],
+   "prompt": "a single wheel"
+  },
+  {
+   "id": "OOV0035",
+   "group": "OOV",
+   "line": "울퉁불퉁한 부채가 있어요",
+   "quote": "부채가",
+   "en": "fan",
+   "details": [
+    "bumpy"
+   ],
+   "prompt": "a single bumpy fan"
+  },
+  {
+   "id": "OOV0037",
+   "group": "OOV",
+   "line": "나팔이에요",
+   "quote": "나팔이에요",
+   "en": "trumpet",
+   "details": [],
+   "prompt": "a single trumpet"
+  },
+  {
+   "id": "OOV0038",
+   "group": "OOV",
+   "line": "가슴 앞에 기왓장이 놓여 있어요",
+   "quote": "기왓장이",
+   "en": "roof tile",
+   "details": [],
+   "prompt": "a single roof tile"
+  },
+  {
+   "id": "OOV0039",
+   "group": "OOV",
+   "line": "둥글넓적한 밤송이 모양이에요",
+   "quote": "밤송이",
+   "en": "pinecone",
+   "details": [
+    "rounded"
+   ],
+   "prompt": "a single rounded pinecone"
+  },
+  {
+   "id": "BODYOK0245",
+   "group": "BODYOK",
+   "line": "주둥이가 긴 병이에요",
+   "quote": "병이에요",
+   "en": "bottle",
+   "details": [],
+   "prompt": "a single long bottle"
+  },
+  {
+   "id": "BODYOK0260",
+   "group": "BODYOK",
+   "line": "머리핀 같은 게 있어요",
+   "quote": "머리핀",
+   "en": "hairpin",
+   "details": [],
+   "prompt": "a single hairpin"
+  },
+  {
+   "id": "HOLDF0005",
+   "group": "HOLDF",
+   "line": "혀를 내민 깡통이에요",
+   "quote": "깡통이에요",
+   "en": "can",
+   "details": [],
+   "prompt": "a single can"
+  },
+  {
+   "id": "HOLDOK0025",
+   "group": "HOLDOK",
+   "line": "코끝이 뾰족한 구두예요",
+   "quote": "구두예요",
+   "en": "shoe",
+   "details": [],
+   "prompt": "a single pointed shoe"
+  },
+  {
+   "id": "HOLDOK0035",
+   "group": "HOLDOK",
+   "line": "혀 모양의 사탕이에요",
+   "quote": "사탕이에요",
+   "en": "candy",
+   "details": [],
+   "prompt": "a single candy"
+  }
+ ],
+ "oovEnglishNotInEnOk": [
+  {
+   "id": "OOV0024",
+   "group": "OOV",
+   "line": "요강이 보여요",
+   "quote": "요강이",
+   "en": "urinal",
+   "details": [],
+   "prompt": "a single urinal",
+   "enOk": [
+    "chamber pot",
+    "pot",
+    "potty"
+   ]
+  },
+  {
+   "id": "OOV0027",
+   "group": "OOV",
+   "line": "울퉁불퉁한 맷방석이 있어요",
+   "quote": "맷방석이",
+   "en": "millstone",
+   "details": [],
+   "prompt": "a single bumpy millstone",
+   "enOk": [
+    "mat",
+    "cushion"
+   ]
+  },
+  {
+   "id": "OOV0028",
+   "group": "OOV",
+   "line": "끝이 뾰족한 바퀴통이에요",
+   "quote": "바퀴통이에요",
+   "en": "wheel",
+   "details": [],
+   "prompt": "a single pointed wheel",
+   "enOk": [
+    "hub"
+   ]
+  },
+  {
+   "id": "OOV0029",
+   "group": "OOV",
+   "line": "굴렁쇠예요",
+   "quote": "굴렁쇠예요",
+   "en": "roller",
+   "details": [],
+   "prompt": "a single roller",
+   "enOk": [
+    "hoop",
+    "ring"
+   ]
+  },
+  {
+   "id": "OOV0039",
+   "group": "OOV",
+   "line": "둥글넓적한 밤송이 모양이에요",
+   "quote": "밤송이",
+   "en": "pinecone",
+   "details": [
+    "rounded"
+   ],
+   "prompt": "a single rounded pinecone",
+   "enOk": [
+    "burr",
+    "chestnut",
+    "chestnut burr",
+    "husk"
+   ]
+  }
+ ],
+ "addedPerAdopted": {
+  "0": 30
+ },
+ "noShapeNeutral": {
+  "n": 30,
+  "chainSystemDefault": 29,
+  "forcedSystemDefault": 29,
+  "notNeutral": [
+   {
+    "id": "NOSHAPE0052",
+    "line": "숨이 막혀요",
+    "chain": "none",
+    "forced": "none",
+    "adopted": null
+   }
+  ]
+ },
+ "falsePass": {
+  "NEG": {
+   "n": 20,
+   "falsePass": 0,
+   "rows": []
+  },
+  "PAST": {
+   "n": 20,
+   "falsePass": 0,
+   "rows": []
+  },
+  "OTHER": {
+   "n": 20,
+   "falsePass": 0,
+   "rows": []
+  },
+  "HYPO": {
+   "n": 20,
+   "falsePass": 0,
+   "rows": []
+  },
+  "SIMILE": {
+   "n": 20,
+   "falsePass": 0,
+   "rows": []
+  },
+  "WORRY": {
+   "n": 20,
+   "falsePass": 0,
+   "rows": []
+  },
+  "NOSHAPE": {
+   "n": 30,
+   "falsePass": 0,
+   "rows": []
+  }
+ },
+ "oovFalseBlock": [
+  {
+   "id": "OOV0000",
+   "line": "흙덩이가 보여요",
+   "chain": "system_default",
+   "reason": "no_grounded_subject:null",
+   "forced": "null",
+   "forcedReasons": [],
+   "g82": [],
+   "raw": "{\"item\": null}"
+  },
+  {
+   "id": "OOV0001",
+   "line": "진흙덩이 같은 게 있어요",
+   "chain": "system_default",
+   "reason": "no_grounded_subject:null",
+   "forced": "null",
+   "forcedReasons": [],
+   "g82": [],
+   "raw": "{\"item\": null}"
+  },
+  {
+   "id": "OOV0002",
+   "line": "바윗돌처럼 생겼어요",
+   "chain": "system_default",
+   "reason": "no_grounded_subject:null",
+   "forced": "null",
+   "forcedReasons": [],
+   "g82": [],
+   "raw": "{\"item\": null}"
+  },
+  {
+   "id": "OOV0008",
+   "line": "쐐기가 보여요",
+   "chain": "system_default",
+   "reason": "no_grounded_subject:null",
+   "forced": "null",
+   "forcedReasons": [],
+   "g82": [],
+   "raw": "{\"item\": null}"
+  },
+  {
+   "id": "OOV0009",
+   "line": "말뚝 같은 게 있어요",
+   "chain": "system_default",
+   "reason": "no_grounded_subject:null",
+   "forced": "null",
+   "forcedReasons": [],
+   "g82": [],
+   "raw": "{\"item\": null}"
+  },
+  {
+   "id": "OOV0010",
+   "line": "방망이처럼 생겼어요",
+   "chain": "system_default",
+   "reason": "no_grounded_subject:null",
+   "forced": "null",
+   "forcedReasons": [],
+   "g82": [],
+   "raw": "{\"item\": null}"
+  },
+  {
+   "id": "OOV0016",
+   "line": "저울추가 보여요",
+   "chain": "none",
+   "reason": "forbidden_category",
+   "forced": "null",
+   "forcedReasons": [],
+   "g82": [
+    "non_meshable"
+   ],
+   "raw": "{\"item\": null}"
+  },
+  {
+   "id": "OOV0018",
+   "line": "물동이처럼 생겼어요",
+   "chain": "none",
+   "reason": "forbidden_category",
+   "forced": "forbidden",
+   "forcedReasons": [
+    "detail_no_subject_span",
+    "simile_detail",
+    "wordnet_forbidden"
+   ],
+   "g82": [],
+   "raw": "{\n  \"item\": {\n    \"subject\": {\n      \"en\": \"pitcher\",\n      \"quote\": \"물동이처럼\",\n      \"charSpan\": [\n        31,\n        37\n      ]\n    },\n    \"details\": [\n      {\n        \"en\": \"round\",\n        \"basis\": \"quote\",\n        \"quote\": \"물동이처럼\",\n        \"charSpan\": [\n          31,\n          37\n        ]\n      }\n    ]\n  }\n}"
+  },
+  {
+   "id": "OOV0026",
+   "line": "팽이처럼 생겼어요",
+   "chain": "system_default",
+   "reason": "no_grounded_subject:no_subject",
+   "forced": "no_subject",
+   "forcedReasons": [
+    "detail_no_subject_span",
+    "simile_detail",
+    "wordnet_place"
+   ],
+   "g82": [],
+   "raw": "{\n\"item\": {\n\"subject\": {\n\"en\": \"spinning top\",\n\"quote\": \"팽이처럼\",\n\"charSpan\": [27, 32]\n},\n\"details\": [\n{\n\"en\": \"conical\",\n\"basis\": \"quote\",\n\"quote\": \"팽이처럼\",\n\"charSpan\": [27, 32]\n}\n]\n}\n}"
+  },
+  {
+   "id": "OOV0034",
+   "line": "물레처럼 생겼어요",
+   "chain": "system_default",
+   "reason": "no_grounded_subject:null",
+   "forced": "adopted",
+   "forcedReasons": [
+    "detail_no_predicate",
+    "simile_detail"
+   ],
+   "g82": [],
+   "raw": "{\n\"item\": {\n\"subject\": {\n\"en\": \"wheel\",\n\"quote\": \"물레처럼\",\n\"charSpan\": [22, 27]\n},\n\"details\": [\n{\n\"en\": \"circular\",\n\"basis\": \"quote\",\n\"quote\": \"물레처럼\",\n\"charSpan\": [22, 27]\n}\n]\n}\n}"
+  }
+ ],
+ "forbidden": {
+  "n": 30,
+  "chainRoute": {
+   "system_default": 7,
+   "none": 23
+  },
+  "chainGenerating": [
+   {
+    "id": "FORBID0170",
+    "line": "도롱뇽이 보여요",
+    "what": "목록 밖 동물",
+    "route": "system_default",
+    "reason": "no_grounded_subject:null",
+    "g82Adopted": null,
+    "g85Adopted": null
+   },
+   {
+    "id": "FORBID0172",
+    "line": "수달처럼 생겼어요",
+    "what": "목록 밖 동물",
+    "route": "system_default",
+    "reason": "no_grounded_subject:null",
+    "g82Adopted": null,
+    "g85Adopted": null
+   },
+   {
+    "id": "FORBID0177",
+    "line": "소라게 같은 게 있어요",
+    "what": "목록 밖 동물",
+    "route": "system_default",
+    "reason": "no_grounded_subject:null",
+    "g82Adopted": null,
+    "g85Adopted": null
+   },
+   {
+    "id": "FORBID0179",
+    "line": "굼벵이 같아요",
+    "what": "목록 밖 동물",
+    "route": "system_default",
+    "reason": "no_grounded_subject:null",
+    "g82Adopted": null,
+    "g85Adopted": null
+   },
+   {
+    "id": "FORBID0192",
+    "line": "허수아비 같은 게 있어요",
+    "what": "사람 형상",
+    "route": "system_default",
+    "reason": "no_grounded_subject:null",
+    "g82Adopted": null,
+    "g85Adopted": null
+   },
+   {
+    "id": "FORBID0195",
+    "line": "심장이 있어요",
+    "what": "몸",
+    "route": "system_default",
+    "reason": "no_grounded_subject:null",
+    "g82Adopted": null,
+    "g85Adopted": null
+   },
+   {
+    "id": "FORBID0196",
+    "line": "손바닥 같은 게 보여요",
+    "what": "몸",
+    "route": "system_default",
+    "reason": "no_grounded_subject:null",
+    "g82Adopted": null,
+    "g85Adopted": null
+   }
+  ],
+  "forcedAdopted": []
+ },
+ "repeat": {
+  "n": 302,
+  "rawSame": 298,
+  "routeSame": 302,
+  "differ": [
+   "OOV0005",
+   "OOV0029",
+   "OOV0036",
+   "HOLDOK0035"
+  ]
+ },
+ "bodyForbid": {
+  "n": 20,
+  "chainRoute": {
+   "none": 20
+  },
+  "falsePass": []
+ },
+ "bodyOk": {
+  "n": 22,
+  "chainRoute": {
+   "none": 9,
+   "rule": 7,
+   "llm_word": 2,
+   "system_default": 4
+  },
+  "blockedBodyAttachment": [
+   {
+    "id": "BODYOK0240",
+    "line": "다리가 네 개인 의자예요",
+    "route": "none",
+    "reason": "rule_blocked:body_part_attachment",
+    "blockReason": "body_part_attachment"
+   },
+   {
+    "id": "BODYOK0242",
+    "line": "눈이 쌓인 지붕 같아요",
+    "route": "none",
+    "reason": "rule_blocked:body_part_attachment",
+    "blockReason": "body_part_attachment"
+   },
+   {
+    "id": "BODYOK0244",
+    "line": "귀가 달린 냄비예요",
+    "route": "none",
+    "reason": "rule_blocked:body_part_attachment",
+    "blockReason": "body_part_attachment"
+   },
+   {
+    "id": "BODYOK0247",
+    "line": "다리가 세 개 달린 받침대예요",
+    "route": "none",
+    "reason": "rule_blocked:body_part_attachment",
+    "blockReason": "body_part_attachment"
+   },
+   {
+    "id": "BODYOK0248",
+    "line": "날개가 달린 선풍기 같아요",
+    "route": "none",
+    "reason": "rule_blocked:body_part_attachment",
+    "blockReason": "body_part_attachment"
+   },
+   {
+    "id": "BODYOK0249",
+    "line": "이빨이 있는 톱니바퀴예요",
+    "route": "none",
+    "reason": "rule_blocked:body_part_attachment",
+    "blockReason": "body_part_attachment"
+   },
+   {
+    "id": "BODYOK0254",
+    "line": "코가 뾰족한 구두 같아요",
+    "route": "none",
+    "reason": "rule_blocked:body_part_attachment",
+    "blockReason": "body_part_attachment"
+   },
+   {
+    "id": "BODYOK0255",
+    "line": "발이 달린 그릇이에요",
+    "route": "none",
+    "reason": "rule_blocked:body_part_attachment",
+    "blockReason": "body_part_attachment"
+   }
+  ],
+  "notGenerating": [
+   {
+    "id": "BODYOK0240",
+    "line": "다리가 네 개인 의자예요",
+    "route": "none",
+    "reason": "rule_blocked:body_part_attachment",
+    "blockReason": "body_part_attachment"
+   },
+   {
+    "id": "BODYOK0242",
+    "line": "눈이 쌓인 지붕 같아요",
+    "route": "none",
+    "reason": "rule_blocked:body_part_attachment",
+    "blockReason": "body_part_attachment"
+   },
+   {
+    "id": "BODYOK0244",
+    "line": "귀가 달린 냄비예요",
+    "route": "none",
+    "reason": "rule_blocked:body_part_attachment",
+    "blockReason": "body_part_attachment"
+   },
+   {
+    "id": "BODYOK0247",
+    "line": "다리가 세 개 달린 받침대예요",
+    "route": "none",
+    "reason": "rule_blocked:body_part_attachment",
+    "blockReason": "body_part_attachment"
+   },
+   {
+    "id": "BODYOK0248",
+    "line": "날개가 달린 선풍기 같아요",
+    "route": "none",
+    "reason": "rule_blocked:body_part_attachment",
+    "blockReason": "body_part_attachment"
+   },
+   {
+    "id": "BODYOK0249",
+    "line": "이빨이 있는 톱니바퀴예요",
+    "route": "none",
+    "reason": "rule_blocked:body_part_attachment",
+    "blockReason": "body_part_attachment"
+   },
+   {
+    "id": "BODYOK0250",
+    "line": "머리가 둥근 못이에요",
+    "route": "none",
+    "reason": "forbidden_category",
+    "blockReason": null
+   },
+   {
+    "id": "BODYOK0251",
+    "line": "입구가 좁은 병이에요",
+    "route": "system_default",
+    "reason": "no_grounded_subject:null",
+    "blockReason": "no_shape_stated"
+   },
+   {
+    "id": "BODYOK0253",
+    "line": "눈금이 있는 자 같아요",
+    "route": "system_default",
+    "reason": "no_grounded_subject:null",
+    "blockReason": "no_shape_stated"
+   },
+   {
+    "id": "BODYOK0254",
+    "line": "코가 뾰족한 구두 같아요",
+    "route": "none",
+    "reason": "rule_blocked:body_part_attachment",
+    "blockReason": "body_part_attachment"
+   },
+   {
+    "id": "BODYOK0255",
+    "line": "발이 달린 그릇이에요",
+    "route": "none",
+    "reason": "rule_blocked:body_part_attachment",
+    "blockReason": "body_part_attachment"
+   },
+   {
+    "id": "BODYOK0257",
+    "line": "목 부분이 가는 병이에요",
+    "route": "system_default",
+    "reason": "no_grounded_subject:null",
+    "blockReason": "no_shape_stated"
+   },
+   {
+    "id": "BODYOK0260",
+    "line": "머리핀 같은 게 있어요",
+    "route": "system_default",
+    "reason": "no_grounded_subject:null",
+    "blockReason": "no_shape_stated"
+   }
+  ]
+ },
+ "holdForbid": {
+  "n": 20,
+  "chainRoute": {
+   "none": 11,
+   "llm_word": 1,
+   "system_default": 2,
+   "rule": 6
+  },
+  "falsePass": [
+   {
+    "id": "HOLDF0005",
+    "line": "혀를 내민 깡통이에요",
+    "route": "llm_word",
+    "reason": "g82_adopted",
+    "blockReason": "no_shape_stated"
+   },
+   {
+    "id": "HOLDF0009",
+    "line": "콧수염이 난 병이에요",
+    "route": "system_default",
+    "reason": "no_grounded_subject:null",
+    "blockReason": "no_shape_stated"
+   },
+   {
+    "id": "HOLDF0010",
+    "line": "다리가 여러 개 꿈틀거리는 덩어리예요",
+    "route": "rule",
+    "reason": "rule_has_shape",
+    "blockReason": null
+   },
+   {
+    "id": "HOLDF0011",
+    "line": "팔을 벌린 말뚝 같아요",
+    "route": "system_default",
+    "reason": "no_grounded_subject:null",
+    "blockReason": "no_shape_stated"
+   },
+   {
+    "id": "HOLDF0012",
+    "line": "꼬리를 흔드는 방석이에요",
+    "route": "rule",
+    "reason": "rule_has_shape",
+    "blockReason": null
+   },
+   {
+    "id": "HOLDF0013",
+    "line": "날개를 펼친 우산 같아요",
+    "route": "rule",
+    "reason": "rule_has_shape",
+    "blockReason": null
+   },
+   {
+    "id": "HOLDF0016",
+    "line": "털로 뒤덮인 공이에요",
+    "route": "rule",
+    "reason": "rule_has_shape",
+    "blockReason": null
+   },
+   {
+    "id": "HOLDF0018",
+    "line": "머리카락이 길게 자란 빗자루예요",
+    "route": "rule",
+    "reason": "rule_has_shape",
+    "blockReason": null
+   },
+   {
+    "id": "HOLDF0019",
+    "line": "손가락 다섯 개가 뻗어 나온 덩어리예요",
+    "route": "rule",
+    "reason": "rule_has_shape",
+    "blockReason": null
+   }
+  ]
+ },
+ "holdOk": {
+  "n": 20,
+  "chainRoute": {
+   "rule": 8,
+   "system_default": 3,
+   "none": 6,
+   "llm_word": 3
+  },
+  "blockedBodyAttachment": [
+   {
+    "id": "HOLDOK0023",
+    "line": "바늘귀가 있는 바늘이에요",
+    "route": "none",
+    "reason": "rule_blocked:body_part_attachment",
+    "blockReason": "body_part_attachment"
+   },
+   {
+    "id": "HOLDOK0028",
+    "line": "날개가 셋 있는 바람개비예요",
+    "route": "none",
+    "reason": "rule_blocked:body_part_attachment",
+    "blockReason": "body_part_attachment"
+   },
+   {
+    "id": "HOLDOK0029",
+    "line": "귀가 두 개 달린 항아리예요",
+    "route": "none",
+    "reason": "rule_blocked:body_part_attachment",
+    "blockReason": "body_part_attachment"
+   },
+   {
+    "id": "HOLDOK0030",
+    "line": "입이 넓은 컵이에요",
+    "route": "none",
+    "reason": "rule_blocked:body_part_attachment",
+    "blockReason": "body_part_attachment"
+   },
+   {
+    "id": "HOLDOK0031",
+    "line": "눈이 소복이 쌓인 바위예요",
+    "route": "none",
+    "reason": "rule_blocked:body_part_attachment",
+    "blockReason": "body_part_attachment"
+   }
+  ],
+  "notGenerating": [
+   {
+    "id": "HOLDOK0022",
+    "line": "손목시계 같은 게 있어요",
+    "route": "system_default",
+    "reason": "no_grounded_subject:no_subject",
+    "blockReason": "no_shape_stated"
+   },
+   {
+    "id": "HOLDOK0023",
+    "line": "바늘귀가 있는 바늘이에요",
+    "route": "none",
+    "reason": "rule_blocked:body_part_attachment",
+    "blockReason": "body_part_attachment"
+   },
+   {
+    "id": "HOLDOK0024",
+    "line": "눈송이 모양이에요",
+    "route": "system_default",
+    "reason": "no_grounded_subject:null",
+    "blockReason": "no_shape_stated"
+   },
+   {
+    "id": "HOLDOK0028",
+    "line": "날개가 셋 있는 바람개비예요",
+    "route": "none",
+    "reason": "rule_blocked:body_part_attachment",
+    "blockReason": "body_part_attachment"
+   },
+   {
+    "id": "HOLDOK0029",
+    "line": "귀가 두 개 달린 항아리예요",
+    "route": "none",
+    "reason": "rule_blocked:body_part_attachment",
+    "blockReason": "body_part_attachment"
+   },
+   {
+    "id": "HOLDOK0030",
+    "line": "입이 넓은 컵이에요",
+    "route": "none",
+    "reason": "rule_blocked:body_part_attachment",
+    "blockReason": "body_part_attachment"
+   },
+   {
+    "id": "HOLDOK0031",
+    "line": "눈이 소복이 쌓인 바위예요",
+    "route": "none",
+    "reason": "rule_blocked:body_part_attachment",
+    "blockReason": "body_part_attachment"
+   },
+   {
+    "id": "HOLDOK0036",
+    "line": "얼굴만 한 접시예요",
+    "route": "none",
+    "reason": "rule_blocked:excluded_category",
+    "blockReason": "excluded_category"
+   },
+   {
+    "id": "HOLDOK0038",
+    "line": "머리띠 같은 게 있어요",
+    "route": "system_default",
+    "reason": "no_grounded_subject:null",
+    "blockReason": "no_shape_stated"
+   }
+  ]
+ },
+ "bodyAttachmentByGroup": {
+  "OOV": 0,
+  "NOSHAPE": 0,
+  "NEG": 0,
+  "PAST": 0,
+  "OTHER": 0,
+  "HYPO": 0,
+  "SIMILE": 0,
+  "FORBID": 7,
+  "WORRY": 0,
+  "BODYF": 18,
+  "BODYOK": 8,
+  "HOLDF": 8,
+  "HOLDOK": 5
+ },
+ "simileDetail": {
+  "rejected": 4,
+  "acceptedWithSimileQuote": 0
+ },
+ "groundedDetailReasons": {
+  "ACCEPTED": 7,
+  "detail_other_subject": 5,
+  "simile_detail": 4,
+  "detail_not_on_subject": 1,
+  "detail_no_subject_span": 5,
+  "detail_no_predicate": 4,
+  "english_format": 2
+ }
+}

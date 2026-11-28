@@ -1,0 +1,12 @@
+{
+  "lexiconId": "ifs-neutral-form-prompt",
+  "version": "g85-neutral/0.1.0",
+  "status": "draft",
+  "decision": "G85",
+  "date": "2026-11-28",
+  "source": "docs/decisions.md G85(연구 책임자 결정, 2026-11-28 — 형태를 말하지 않으면 LLM 출력을 버리고 규칙이 고정한 중립 형태를 system_default로 제시). 문안은 메인 판정의 예('a single smooth abstract lump' 류)를 따름. 설계안 D16_claude.md 4절의 'abstract organic form'은 'organic'이 생물을 떠올리게 해(그림 관문의 동물 오탐·생물 닮음) 쓰지 않았다. 구현 하위 에이전트의 초안, 연구팀 검토 전.",
+  "description": "참여자가 형태를 말하지 않았을 때(규칙·G82·G85 어느 것도 근거 있는 대상 명사를 얻지 못함, 문맥 차단 포함) 쓰는 고정 그림 프롬프트의 내용 부분. 모든 참여자에게 같다(seed만 다름). 참여자의 말에서 온 낱말이 없고 감정·은유가 없다. 사람·동물·안개·불꽃 등 금지 범주를 말해서 막힌 경우와 위기·확인 판정 세션에는 쓰지 않는다. tools/gen3d/prompts.py가 'a single ' + phrase + 기존 틀 접미(shape_prompt_en template suffix) + 그림 고르기 화풍 접미로 조립한다.",
+  "phrase": "smooth abstract lump",
+  "negativeExtra": ["recognizable object", "symbol"],
+  "note": "phrase는 심상 속성이 아니라 시스템 문구다(토큰 slot template, provenance system_default). 'smooth'는 표면을 매끈하게 두어 그림이 무엇을 닮지 않게 하려는 뜻이며, 최종 물체의 질감은 조절 화면이 정한다."
+}

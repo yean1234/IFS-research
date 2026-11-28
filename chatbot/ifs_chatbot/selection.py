@@ -29,6 +29,7 @@ from .candidates import (PROPORTION_KEYS, SLOTS, base_drawn, candidates_bytes, e
 from .form_assets import (DEFAULT_PROCEDURAL, R_NO_SHAPE_PREVIEW, R_PREVIEW_FAILED, _rej, add_generated,
                           generated_candidate_id, public_asset, source_key)
 from . import llm_fill as llm_fill_mod
+from . import llm_rewrite as llm_rewrite_mod
 from . import llm_shape as llm_shape_mod
 from . import none_gen as ng
 from .paths import shared
@@ -65,6 +66,13 @@ FORMAT_VERSION_LLM_FILL = "ifs-selection/0.5"
 # G82를 켜면 llm_fill이 꺼져 있어도 처음부터 0.5로 쓴다(출처 값 목록은 0.5 그대로).
 SHAPE_LLM_RECORD_VERSION = "ifs-shape-llm-record/0.1.0"
 SHAPE_BASIS_PHRASE_KEYS = ("llm_shape_basis", "llm_shape_basis_wrong_button")
+# (G85, [gen3d] on_none_llm_rewrite를 켰을 때만 — 끄면 그대로) 0.5에 선택 필드만 더함: generation.promptRoute(실제로 탄 경로
+# rule | llm_word | llm_rewrite | system_default | none), generation.rewrite(G85 기록: 경로·사유·부름·결과·요소별 출처 grounded/added·
+# 근거 구간·화면에 보인 낱말·덧붙임/중립 줄 노출·그림 고름·[그 말이 아니에요]·조립한 프롬프트 전문·호출 기록 call), afterNone.promptRoute·
+# rewriteUsed·neutralUsed·rewriteItem·rewriteBasisShown. (G85, on_none_mesh_retry) generation.meshRetry·afterNone.meshAttempts.
+REWRITE_RECORD_VERSION = "ifs-llm-rewrite-session/0.1.0"
+MESH_RETRY_VERSION = "ifs-mesh-retry/0.1.0"
+MESH_GATE_REASONS = ("person_like", "gate_failed")     # 메시 관문 차단(사이드카 blockReason). 이때만 남은 그림으로 돌아간다
 GENERATED_CHOSEN = "generated_chosen"
 PREMEASURE_VERSION = "ifs-premeasure/0.1"
 ITEMS = ("color", "form", "brightness", "opacity", "size", "texture", "motion")   # G31: 색이 맨 앞(표 adjustItems.order와 같음)
@@ -307,6 +315,12 @@ class SelectionFlow:
         # G82: [맞는 게 없어요] 뒤 규칙에 중심 형태 명사가 없을 때 LLM 형태 이름([gen3d] on_none_llm_shape). 꺼져 있으면 shape_llm_on False
         self.shape_llm_on = getattr(rt, "llm_shape_prompt", None) is not None
         self.shape_llm: dict | None = None        # 이 세션의 G82 기록(한 번만 부름, 다음 회차는 같은 결과를 씀)
+        # G85: 규칙 → G82 → 다시 쓰기·중립 형태([gen3d] on_none_llm_rewrite). 꺼져 있으면 rewrite_on False — 출력·기록 그대로
+        self.rewrite_on = getattr(rt, "llm_rewrite_prompt", None) is not None
+        self.rewrite: dict | None = None          # 이 세션의 G85 기록(한 번만 정함, 다음 회차는 같은 결과)
+        # G85: 메시 관문에 막히면 남은 그림으로 세션에 한 번만 돌아감([gen3d] on_none_mesh_retry)
+        self.mesh_retry_on = bool(getattr(rt.cfg.gen3d, "on_none_mesh_retry", False))
+        self._mesh_retry_used = False
 
     def _llm_flag(self) -> str | None:
         """(G77, CP15-2) 세션에 위기·확인 판정이 있으면 그 사유. 판정 뒤에는 LLM 값을 새 후보·그림 프롬프트에 넣지 않는다."""
@@ -323,6 +337,29 @@ class SelectionFlow:
         if not r or r.get("route") != "llm" or r.get("rejected") or llm_fill_mod.session_flag(self.s):
             return []                                    # (CP20) route가 llm이 아니면(근거 줄을 보일 수 없음 등) 쓰지 않음
         return llm_shape_mod.shape_items_from(r.get("call"))
+
+    def _rewrite_item(self) -> dict | None:
+        """(G85) 그림 프롬프트에 넣을 다시 쓰기 재료. 경로가 llm_rewrite가 아니거나·판정이 선 세션·[그 말이 아니에요] 뒤면 None."""
+        r = self.rewrite
+        if not r or r.get("route") != "llm_rewrite" or r.get("rejected") or llm_fill_mod.session_flag(self.s):
+            return None
+        return copy.deepcopy((r.get("call") or {}).get("adopted"))
+
+    def _neutral_form(self) -> dict | None:
+        """(G85) 고정 중립 형태 참조(경로가 system_default일 때만). 판정이 선 세션이면 None(중립 형태도 만들지 않음)."""
+        r = self.rewrite
+        if not r or r.get("route") != "system_default" or llm_fill_mod.session_flag(self.s):
+            return None
+        with ng._prompts_lock:
+            return ng._load_prompts().neutral_form_ref()
+
+    def _prompt_kw(self) -> dict:
+        """그림 고르기 경로의 규칙 프롬프트 인자(G77·G82·G84 후속·G85). 같은 세션 → 같은 인자."""
+        kw = {"llm_items": self.llm_shape_items or None, "llm_shape_items": self._shape_items() or None,
+              "stage_rule": self._stage_rule()}
+        if self.rewrite_on:
+            kw.update(rewrite_item=self._rewrite_item(), neutral_form=self._neutral_form())
+        return kw
 
     @property
     def gen3d(self) -> bool:
@@ -911,6 +948,8 @@ class SelectionFlow:
                 status, res = ng.BLOCKED, {**res, "blockReason": ng.B_PREVIEW_NONE, "blockDetail": "preview mode none"}
             if status == ng.OK and any((c.get("asset") or {}).get("glbSha256") == a["glbSha256"] for c in self.cands["candidates"]):
                 status, res = ng.BLOCKED, {**res, "blockReason": ng.B_DUPLICATE, "blockDetail": a["assetId"]}
+            if self.mesh_retry_on and rec.get("imagePick") is not None and self._mesh_attempt_done(rec, status, res):
+                return                                   # (G85) 남은 그림으로 돌아감(세션에 한 번만)
             rec["status"] = status
             if status != ng.OK:
                 rec.update(blockReason=res.get("blockReason"), blockDetail=res.get("blockDetail"), error=res.get("error"))
@@ -924,6 +963,8 @@ class SelectionFlow:
             rec.update(asset={**public_asset(a), "origin": ng.ORIGIN}, candidateId=cid, displayPosition=0)
             if rec.get("shapeLlmUsed") and self.shape_llm is not None:
                 self.shape_llm["candidateExposed"] = True    # G83-d: LLM 형태 이름으로 만든 물체가 후보 화면에 나옴
+            if (rec.get("rewriteUsed") or rec.get("neutralUsed")) and self.rewrite is not None:
+                self.rewrite["candidateExposed"] = True      # G85: 다시 쓰기·중립 형태로 만든 물체가 후보 화면에 나옴
             if rec.get("llmPromptUsed"):
                 self.data["llmFillExposed"] = True        # G77: LLM 형태 낱말로 만든 후보가 화면에 나옴
             self.data["stage"] = "selecting"
@@ -975,8 +1016,7 @@ class SelectionFlow:
         at = at or now_iso()
         text = self.s.log.data.get("confirmedText")
         need_llm = self.shape_llm_on and self.shape_llm is None and self._shape_llm_route()
-        pre = self.none_gen.precheck(self.spec, text, self.preview_mode, self._other_interviews(), stage_rule=self._stage_rule(),
-                                     llm_items=self.llm_shape_items or None, llm_shape_items=self._shape_items() or None)
+        pre = self.none_gen.precheck(self.spec, text, self.preview_mode, self._other_interviews(), **self._prompt_kw())
         rec = self._image_rec(r, at, pre)
         self.data["generation"]["afterNone"] = rec
         if need_llm:
@@ -1020,8 +1060,7 @@ class SelectionFlow:
             job = self.none_gen.start(self.s.id, text, source_key(self.spec), p["text"],
                                       lambda res, rec=rec: self._image_round_done(res, rec), attempt=r, spec=self.spec,
                                       other_interviews=self._other_interviews, kind="image", seeds=ip["seeds"],
-                                      llm_items=self.llm_shape_items or None, llm_shape_items=self._shape_items() or None,
-                                      stage_rule=self._stage_rule())
+                                      **self._prompt_kw())
             if isinstance(job, str):
                 rec.update(blockReason=job, blockDetail=",".join(self._other_interviews()) or None
                            if job == ng.B_INTERVIEW else None)
@@ -1066,6 +1105,9 @@ class SelectionFlow:
         route = "rule" if why == "rule_has_shape" else "none"
         self.shape_llm = self._shape_llm_record(route, "session_flagged" if (call and flag) else why, None)
         self.data["generation"]["shapeLlm"] = self.shape_llm
+        if self.rewrite_on:
+            # (G85) G82를 부르지 않는 경우: 규칙이 형태를 잡음(rule) · 막음(금지 범주 등 → none, 중립 형태도 없음) · 판정(none)
+            self._set_rewrite(self._rewrite_record(route, "session_flagged" if (call and flag) else why, None))
         return False
 
     def _shape_llm_record(self, route: str, reason: str | None, call: dict | None) -> dict:
@@ -1088,13 +1130,20 @@ class SelectionFlow:
             call = llm_shape_mod.run(self.s, self.spec, norm)
         except Exception as exc:  # noqa: BLE001 — 어떤 예외도 세션을 멈추지 않는다(지금 경로)
             call = {"status": "failed", "error": f"{type(exc).__name__}: {exc}"[:300]}
+        rw = None
+        if self.rewrite_on and not (call.get("status") == "ok" and call.get("adopted")):
+            # (G85) G82가 형태를 얻지 못했을 때만 다시 쓰기(같은 스레드·같은 대기 화면). 판정·G82 금지 범주 기각이면 llm_rewrite가 부르지 않음
+            try:
+                rw = llm_rewrite_mod.run(self.s, self.spec, norm, call)
+            except Exception as exc:  # noqa: BLE001
+                rw = {"status": "failed", "error": f"{type(exc).__name__}: {exc}"[:300]}
         try:
-            self._shape_llm_done(rec, r, at, call)
+            self._shape_llm_done(rec, r, at, call, rw)
         except Exception:  # noqa: BLE001
             import logging
             logging.getLogger(__name__).exception("shape-llm 이어 가기 실패")
 
-    def _shape_llm_done(self, rec: dict, r: int, at: str, call: dict) -> None:
+    def _shape_llm_done(self, rec: dict, r: int, at: str, call: dict, rw: dict | None = None) -> None:
         with self.lock:
             if self.data is None:
                 return
@@ -1110,6 +1159,8 @@ class SelectionFlow:
                     route = "none"
                     self.shape_llm.update(route=route, routeReason="basis_" + (bs["fallback"] or "not_displayable"))
             self.data["generation"]["shapeLlm"] = self.shape_llm
+            if self.rewrite_on:
+                self._rewrite_after_g82(route, call, rw)
             rec.pop("shapeLlmPending", None)
             self._log_event("selection:shape_llm", {"status": call.get("status"), "route": route,
                                                     "rejectReasons": call.get("rejectReasons")})
@@ -1118,8 +1169,7 @@ class SelectionFlow:
                 self._save()
                 return
             text = self.s.log.data.get("confirmedText")
-            pre = self.none_gen.precheck(self.spec, text, self.preview_mode, self._other_interviews(), stage_rule=self._stage_rule(),
-                                         llm_items=self.llm_shape_items or None, llm_shape_items=self._shape_items() or None)
+            pre = self.none_gen.precheck(self.spec, text, self.preview_mode, self._other_interviews(), **self._prompt_kw())
             p = pre["prompt"] or {}
             rec.update(blockReason=pre["blockReason"], blockDetail=pre["blockDetail"], prompt=pre["prompt"])
             rec["imagePick"].update(promptText=p.get("text"), builderVersion=p.get("builderVersion"),
@@ -1127,16 +1177,133 @@ class SelectionFlow:
             self._note_llm_prompt(rec)
             self._launch_image_round(rec, r, at, text, pre)
 
+    # ── G85 다시 쓰기·중립 형태([gen3d] on_none_llm_rewrite) ───────────────────────
+    def _rewrite_record(self, route: str, reason: str | None, call: dict | None) -> dict:
+        c = call or {}
+        return {"version": REWRITE_RECORD_VERSION, "route": route, "routeReason": reason,
+                "called": bool(c.get("called")), "candidate": bool(c.get("candidate")), "status": c.get("status"),
+                "skipReason": c.get("skipReason"), "outcome": c.get("outcome"), "cached": bool(c.get("cached")),
+                "adopted": copy.deepcopy(c.get("adopted")) if route == "llm_rewrite" else None,
+                "elements": llm_rewrite_mod.element_record(c),
+                "addedCount": int(c.get("addedCount") or 0) if route == "llm_rewrite" else 0,
+                "rejectReasons": list(c.get("rejectReasons") or []), "forbidden": list(c.get("forbidden") or []),
+                "rawText": c.get("rawText"), "rawTextSha256": c.get("rawTextSha256"),
+                "contextPrime": copy.deepcopy(c.get("contextPrime")), "inputTextSha256": c.get("inputTextSha256"),
+                "validatorTextSha256": c.get("validatorTextSha256"), "model": copy.deepcopy(c.get("model")),
+                "promptVersion": (c.get("prompt") or {}).get("promptVersion"),
+                "promptSha256": (c.get("prompt") or {}).get("promptSha256"), "validatorRules": c.get("validatorRules"),
+                "temperature": (c.get("options") or {}).get("temperature"), "seed": (c.get("options") or {}).get("seed"),
+                "wordnet": copy.deepcopy(c.get("wordnet")), "assembledPrompt": None, "negativePrompt": None,
+                "neutralForm": None, "exposed": False, "basisShown": None, "addedLineShown": False,
+                "neutralLineShown": False, "imageChosen": False, "candidateExposed": False, "candidateChosen": None,
+                "rejected": False, "rejectedAt": None, "call": copy.deepcopy(call)}
+
+    def _set_rewrite(self, rec: dict) -> None:
+        self.rewrite = rec
+        if rec["route"] == "system_default":
+            rec["neutralForm"] = self._neutral_form()
+        self.data["generation"]["rewrite"] = rec
+        self.data["generation"]["promptRoute"] = rec["route"]
+
+    def _rewrite_after_g82(self, g82_route: str, call: dict, rw: dict | None) -> None:
+        """(G85) G82가 끝난 뒤 이 세션의 경로를 정한다(한 번만). lock 안에서 부른다."""
+        if g82_route == "llm":
+            self._set_rewrite(self._rewrite_record("llm_word", "g82_adopted", rw))
+            return
+        rule_reason = ((rw or {}).get("ruleRoute") or call.get("ruleRoute") or {}).get("reason")
+        route, why = llm_rewrite_mod.decide_route(rw, rule_reason)
+        rec = self._rewrite_record(route, why, rw)
+        if route == "llm_rewrite":
+            sb = llm_rewrite_mod.subject_basis(rw)
+            bs = llm_shape_mod.basis_display(self._confirmed_norm() or "", sb["quote"], sb["charSpan"],
+                                             self.protocol.text("llm_rewrite_basis"))
+            rec["basisShown"] = bs
+            if not bs["displayable"]:
+                # 근거 낱말을 원문 글자 그대로 보일 수 없으면 채택하지 않은 것으로(대상 근거 없음과 같게) 다룬다
+                route = "system_default" if rule_reason == "no_shape_stated" else "rule"
+                rec = self._rewrite_record(route, "basis_" + (bs["fallback"] or "not_displayable"), rw)
+                rec["basisShown"] = bs
+        self._set_rewrite(rec)
+        self._log_event("selection:llm_rewrite", {"status": (rw or {}).get("status"), "route": route,
+                                                  "outcome": (rw or {}).get("outcome"),
+                                                  "rejectReasons": (rw or {}).get("rejectReasons")})
+
+    @staticmethod
+    def _route_of(prompt: dict, block_reason) -> str:
+        """(G85) 이 회차 프롬프트가 실제로 탄 경로."""
+        if block_reason is not None or not (prompt or {}).get("text"):
+            return "none"
+        return {llm_shape_mod.ORIGIN: "llm_word", llm_rewrite_mod.ORIGIN: "llm_rewrite",
+                llm_rewrite_mod.ORIGIN_DEFAULT: "system_default"}.get(prompt.get("shapeSource"), "rule")
+
+    def _note_rewrite_exposure(self, rec: dict) -> None:
+        """(G85) 그림 고르기 화면이 나옴: 근거 줄·덧붙임 줄·중립 줄 노출을 기록. lock 안에서 부른다."""
+        rw = self.rewrite
+        rw["exposed"] = True
+        rw["exposedAt"] = rw.get("exposedAt") or now_iso()
+        if rec.get("rewriteUsed"):
+            bs = rw.get("basisShown") or {}
+            if not bs.get("displayable"):
+                sb = llm_rewrite_mod.subject_basis(rw.get("call")) or {}
+                bs = llm_shape_mod.basis_display(self._confirmed_norm() or "", sb.get("quote"), sb.get("charSpan"),
+                                                 self.protocol.text("llm_rewrite_basis"))
+                rw["basisShown"] = bs
+            rec["rewriteBasisShown"] = copy.deepcopy(bs)
+            if (rec.get("prompt") or {}).get("rewriteAddedCount"):
+                rw["addedLineShown"] = True
+        if rec.get("neutralUsed"):
+            rw["neutralLineShown"] = True
+
+    def _mesh_attempt_done(self, rec: dict, status: str, res: dict) -> bool:
+        """(G85, on_none_mesh_retry) 고른 그림의 메시 시도를 기록한다. 관문에 막혔고 이 세션에서 아직 돌아간 적이 없고 같은 회차에
+        남은 그림(그림 관문 통과·아직 고르지 않음)이 있으면 고르기 화면으로 돌아가고 참. lock 안에서 부른다."""
+        ip = rec["imagePick"]
+        gen = self.data["generation"]
+        mr = gen.setdefault("meshRetry", {"version": MESH_RETRY_VERSION, "enabled": True, "used": False, "attemptsTotal": 0,
+                                          "results": []})
+        att = {"attempt": mr["attemptsTotal"] + 1, "round": ip["round"], "position": ip.get("pickedPosition"),
+               "seed": ip.get("pickedSeed"), "imageSha256": ip.get("pickedImageSha256"), "status": status,
+               "blockReason": res.get("blockReason"), "blockDetail": res.get("blockDetail"),
+               "gate": copy.deepcopy(res.get("gate")) if res.get("gate") is not None else None,
+               "endedAt": res.get("endedAt"), "seconds": res.get("seconds"), "promptRoute": rec.get("promptRoute")}
+        mr["attemptsTotal"] += 1
+        mr["results"].append(att)
+        rec.setdefault("meshAttempts", []).append(att)
+        if status != ng.BLOCKED or res.get("blockReason") not in MESH_GATE_REASONS or self._mesh_retry_used:
+            return False
+        picked = ip.get("pickedPosition")
+        remaining = [x for x in ip["images"] if x["shown"] and not x.get("retired") and x["position"] != picked
+                     and x["position"] in self._pick_paths]
+        for x in ip["images"]:
+            if x["shown"] and x["position"] == picked:
+                x["retired"], x["meshBlocked"] = True, True
+        self._pick_paths.pop(picked, None)
+        if not remaining:
+            mr["noRemainingImages"] = True
+            return False
+        self._mesh_retry_used = True
+        mr.update(used=True, usedAt=now_iso(), remainingPositions=[x["position"] for x in remaining])
+        rec.update(status=ng.RUNNING, blockReason=None, blockDetail=None, seed=None, meshRetryActive=True)
+        ip.update(status="shown", outcome=None, pickedPosition=None, pickedSeed=None, pickedImageSha256=None, decidedAt=None,
+                  meshRetryShownAt=now_iso())
+        self.data["stage"] = "picking"
+        self._save()
+        self._log_event("selection:mesh_retry", {"round": ip["round"], "blockReason": att["blockReason"],
+                                                 "remaining": mr["remainingPositions"]})
+        return True
+
     def reject_shape_basis(self) -> dict:
         """(G82) 고르기 화면의 [그 말이 아니에요]: LLM이 인용한 낱말이 아니라고 함 → 다시 부르지 않고 기존 none 경로(0번 후보로 조절)."""
         with self.lock:
             self._require("picking")
             rec = self._after_none()
-            if not (rec and rec.get("shapeLlmUsed")):
+            if not (rec and (rec.get("shapeLlmUsed") or rec.get("rewriteUsed"))):
                 raise SelectionInvalid("LLM 형태 이름으로 그린 그림이 아닙니다.")
             at = now_iso()
             rec["imagePick"].update(status=ng.DECLINED, outcome="basis_rejected", decidedAt=at)
             rec.update(status=ng.DECLINED, basisRejected=True, endedAt=at)
+            if rec.get("rewriteUsed") and self.rewrite is not None:
+                self.rewrite.update(rejected=True, rejectedAt=at)        # (G85) 다시 부르지 않음, 다음 회차도 없음
             if self.shape_llm is not None:
                 self.shape_llm.update(rejected=True, rejectedAt=at)
                 if isinstance(self.shape_llm.get("call"), dict):
@@ -1151,6 +1318,17 @@ class SelectionFlow:
         if self.shape_llm_on:
             rec["shapeLlmUsed"] = (rec.get("prompt") or {}).get("shapeSource") == llm_shape_mod.ORIGIN
             rec["shapeLlmItems"] = copy.deepcopy(self._shape_items()) if rec["shapeLlmUsed"] else []
+        if self.rewrite_on:
+            # (G85) 이 회차 프롬프트가 실제로 탄 경로와 다시 쓰기 재료(채택된 것만), 조립된 프롬프트 전문은 prompt.text·negativeText
+            pr = rec.get("prompt") or {}
+            src = pr.get("shapeSource")
+            rec["rewriteUsed"] = src == llm_rewrite_mod.ORIGIN
+            rec["neutralUsed"] = src == llm_rewrite_mod.ORIGIN_DEFAULT
+            rec["rewriteItem"] = copy.deepcopy(self._rewrite_item()) if rec["rewriteUsed"] else None
+            rec["promptRoute"] = self._route_of(pr, rec.get("blockReason"))
+            if self.rewrite is not None and (rec["rewriteUsed"] or rec["neutralUsed"]) and pr.get("text"):
+                self.rewrite["assembledPrompt"] = pr.get("text")
+                self.rewrite["negativePrompt"] = pr.get("negativeText")
         if not self.llm_on:
             return
         used = ((rec.get("prompt") or {}).get("shapeSource") == llm_fill_mod.ORIGIN)
@@ -1214,6 +1392,8 @@ class SelectionFlow:
                     self.shape_llm["basisShown"] = llm_shape_mod.basis_display(
                         self._confirmed_norm() or "", it.get("quote"), it.get("charSpan"), self.protocol.text("llm_shape_basis"))
                 rec["shapeLlmBasisShown"] = copy.deepcopy(self.shape_llm["basisShown"])
+            if (rec.get("rewriteUsed") or rec.get("neutralUsed")) and self.rewrite is not None:
+                self._note_rewrite_exposure(rec)
             if rec.get("llmPromptUsed"):
                 self.data["llmFillExposed"] = True        # G77: LLM 형태 낱말로 그린 그림이 화면에 나옴
             self.data["stage"] = "picking"
@@ -1243,7 +1423,7 @@ class SelectionFlow:
                 pos = int(choice)
             except (TypeError, ValueError):
                 raise SelectionInvalid(f"보여 준 그림이 아닙니다: {choice}") from None
-            img = next((x for x in ip["images"] if x["shown"] and x["position"] == pos), None)
+            img = next((x for x in ip["images"] if x["shown"] and not x.get("retired") and x["position"] == pos), None)
             if img is None or pos not in self._pick_paths:
                 raise SelectionInvalid(f"보여 준 그림이 아닙니다: {choice}")
             path, sha = self._pick_paths[pos]
@@ -1254,18 +1434,19 @@ class SelectionFlow:
                 self.shape_llm["imageChosen"] = True
                 if isinstance(self.shape_llm.get("call"), dict):
                     self.shape_llm["call"]["exposure"]["imageChosen"] = True
+            if (rec.get("rewriteUsed") or rec.get("neutralUsed")) and self.rewrite is not None:
+                self.rewrite["imageChosen"] = True
             self._log_event("selection:image_pick", {"status": "picked", "round": ip["round"], "position": pos,
                                                      "seed": img["seed"]})
             text = self.s.log.data.get("confirmedText")
             if (rec.get("llmPromptUsed") and self._llm_flag()) or \
-                    (rec.get("shapeLlmUsed") and llm_fill_mod.session_flag(self.s)):
-                job = "session_flagged"                     # (CP15-2·G82) LLM 낱말로 만든 그림 프롬프트는 판정 뒤 메시로 잇지 않음
+                    ((rec.get("shapeLlmUsed") or rec.get("rewriteUsed") or rec.get("neutralUsed"))
+                     and llm_fill_mod.session_flag(self.s)):
+                job = "session_flagged"                     # (CP15-2·G82·G85) LLM이 매개한 그림 프롬프트는 판정 뒤 메시로 잇지 않음
             else:
                 job = self.none_gen.start(self.s.id, text, source_key(self.spec), rec["prompt"]["text"], self._generation_done,
                                           attempt=rec["attempt"], spec=self.spec, other_interviews=self._other_interviews,
-                                          kind="mesh", image=(path, sha), seed=img["seed"],
-                                          llm_items=self.llm_shape_items or None,
-                                          llm_shape_items=self._shape_items() or None, stage_rule=self._stage_rule())
+                                          kind="mesh", image=(path, sha), seed=img["seed"], **self._prompt_kw())
             if isinstance(job, str):
                 rec.update(status=ng.BLOCKED, blockReason=job, endedAt=at, seconds=0.0,
                            blockDetail=",".join(self._other_interviews()) or None if job == ng.B_INTERVIEW else None)
@@ -1286,7 +1467,7 @@ class SelectionFlow:
         with self.lock:
             ip = self._image_pick()
             if (self.stage != "picking" or ip is None or ip["round"] != round_ or position not in self._pick_paths
-                    or not any(x["shown"] and x["position"] == position for x in ip["images"])):
+                    or not any(x["shown"] and not x.get("retired") and x["position"] == position for x in ip["images"])):
                 return None
             path, sha = self._pick_paths[position]
             raw = Path(path).read_bytes()
@@ -1449,9 +1630,13 @@ class SelectionFlow:
                 rec["chosen"] = cid == rec["candidateId"]     # G73: [맞는 게 없어요] 뒤 만든 후보(그 시도의 것)를 골랐는가
                 if rec.get("shapeLlmUsed") and self.shape_llm is not None and rec["chosen"]:
                     self.shape_llm["candidateChosen"] = True     # G82: LLM 형태 이름으로 만든 물체를 골랐음
+                if (rec.get("rewriteUsed") or rec.get("neutralUsed")) and self.rewrite is not None and rec["chosen"]:
+                    self.rewrite["candidateChosen"] = True       # G85
         # G83-d: 만든 물체가 후보 화면에 나온 적이 있을 때만 false(그림 단계에서 끝남·메시 관문 차단이면 null 그대로)
         if self.shape_llm is not None and self.shape_llm.get("candidateExposed") and self.shape_llm.get("candidateChosen") is None:
             self.shape_llm["candidateChosen"] = False
+        if self.rewrite is not None and self.rewrite.get("candidateExposed") and self.rewrite.get("candidateChosen") is None:
+            self.rewrite["candidateChosen"] = False
         if cid not in offered:
             self.data["form"]["asset"] = None
             return
@@ -2040,6 +2225,19 @@ class SelectionFlow:
                              else "mesh" if ip["outcome"] == "picked" else None)
                     out["afterNone"].update(phase=phase, round=ip["round"], rounds=an["setting"]["imagePick"]["rounds"],
                                             imagePickStatus=ip["status"])
+                    if self.rewrite_on:
+                        out["afterNone"]["rewriteOn"] = True       # (G85) 대기 문구 llm_rewrite_waiting
+                    if self.stage == "picking" and an.get("rewriteUsed"):
+                        # G85: 대상 명사의 근거 낱말(원문 그대로)·[그 말이 아니에요], 덧붙임이 있으면 그 사실 한 줄(무엇인지는 말하지 않음)
+                        bs = an.get("rewriteBasisShown") or {}
+                        if bs.get("displayable") and bs.get("shownText") and bs.get("text"):
+                            out["llmRewriteBasis"] = {"quote": bs["shownText"], "text": bs["text"]}
+                        if (an.get("prompt") or {}).get("rewriteAddedCount"):
+                            out["llmRewriteAdded"] = {"text": self.protocol.text("llm_rewrite_added")}
+                    if self.stage == "picking" and an.get("neutralUsed"):
+                        out["llmRewriteNeutral"] = {"text": self.protocol.text("llm_rewrite_neutral")}
+                    if self.stage == "picking" and an.get("meshRetryActive"):
+                        out["meshRetry"] = {"text": self.protocol.text("mesh_retry_note")}
                     if self.stage == "picking" and an.get("shapeLlmUsed"):
                         # G82: 그림을 그린 근거 낱말(참여자 원문 그대로, 영어 이름은 보이지 않음)과 [그 말이 아니에요]
                         # G83-b: 보이는 낱말은 인용 구간 안의 명사 부분(shapeLlmBasisShown, 노출 때 정해 기록한 것)
@@ -2047,7 +2245,8 @@ class SelectionFlow:
                         if bs.get("displayable") and bs.get("shownText") and bs.get("text"):
                             out["llmShapeBasis"] = {"quote": bs["shownText"], "text": bs["text"]}
                     if self.stage == "picking":
-                        shown = sorted((x for x in ip["images"] if x["shown"]), key=lambda x: x["position"])
+                        shown = sorted((x for x in ip["images"] if x["shown"] and not x.get("retired")),
+                                       key=lambda x: x["position"])
                         out["imagePick"] = {"round": ip["round"], "images": [
                             {"position": x["position"],
                              "url": f"/api/sessions/{self.s.id}/selection/image-pick/{ip['round']}/{x['position']}.png"}

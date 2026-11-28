@@ -88,13 +88,13 @@ def test_flag_only_in_experiment_and_defaults():
     exp = load_config("experiment")
     assert exp.gen3d.on_none_image_pick is True and exp.gen3d.on_none is True and exp.gen3d.on_none_image_rounds == 2
     # G77: 0.10.0(0.9.1 문구 그대로 + llm_fill_note 하나). G79: 0.11.0(+ 색상 고리 문구 3개). G82·G83: 0.13.0(+ 근거 인용 줄)
-    assert exp.selection.protocol == "selection_protocol.v0.13.json"
+    assert exp.selection.protocol == "selection_protocol.v0.14.json"                 # G85: 0.14.0(+ G85 문구 다섯 개)
     for name in ("default", "pilot", "v4", "v4-gen3d", "bridge", "mac8gb"):
         c = load_config(name)
         assert c.gen3d.on_none_image_pick is False, name
         assert c.selection.protocol not in ("selection_protocol.v0.9.json", "selection_protocol.v0.10.json",
                                          "selection_protocol.v0.11.json", "selection_protocol.v0.12.json",
-                                         "selection_protocol.v0.13.json"), name
+                                         "selection_protocol.v0.13.json", "selection_protocol.v0.14.json"), name
 
 
 def test_protocol_09_adds_four_draft_phrases_only():
@@ -119,7 +119,7 @@ def test_image_pick_prompt_adds_fixed_gray_style_only():
     assert [(t["en"], t["ko"], t["charSpan"]) for t in q["tokens"] if t["slot"] != "template"] == content   # 말한 낱말 그대로
     assert q["text"].startswith(p["text"] + ", ") and "monochrome gray clay" in q["text"]
     assert q["negativeText"].startswith(p["negativeText"]) and "colorful" in q["negativeText"]
-    assert q["builderVersion"] == "gen3d-shape-prompt/0.5.0+imagepick" and q["imageStyle"] == "g75-shape-only-gray"
+    assert q["builderVersion"] == "gen3d-shape-prompt/0.6.0+imagepick" and q["imageStyle"] == "g75-shape-only-gray"
     assert ng.image_pick_prompt(p) == q                                              # 결정적
     assert p == ng.shape_prompt(T_SHAPE) and "imageStyle" not in p                   # 원래 규칙(G62·G73)은 그대로
     b = ng.image_pick_prompt(ng.shape_prompt(T_NOSHAPE))
@@ -140,7 +140,7 @@ def test_flag_off_is_g73_unchanged(tmp_path, fake):
     assert d["formatVersion"] == "ifs-selection/0.3" and d["stage"] == "selecting"
     an = d["generation"]["afterNone"]
     assert set(an) == G73_KEYS and "imagePickExposed" not in d["generation"]
-    assert an["prompt"]["builderVersion"] == "gen3d-shape-prompt/0.5.0+mapper-v2" and "imageStyle" not in an["prompt"]
+    assert an["prompt"]["builderVersion"] == "gen3d-shape-prompt/0.6.0+mapper-v2" and "imageStyle" not in an["prompt"]
     assert not any(c["imagePick"] or c["fromImage"] for c in calls(tmp_path))     # 생성기도 예전 인자만
     assert "imagePick" not in f.view()
     assert not [e for e in V03.iter_errors(d)]

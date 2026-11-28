@@ -1,7 +1,12 @@
 {
   "lexiconId": "shape-prompt-en-v0",
-  "lexiconVersion": "0.3.0",
+  "lexiconVersion": "0.3.1",
   "changes": [
+    {
+      "version": "0.3.1",
+      "date": "2026-11-29",
+      "what": "G85 3차 메인 판정 3: 다리미 → clothes iron 한 항목(G85 머리 낱말 재질 검사가 iron을 재질로 막는 과차단을 피함). 다른 항목은 그대로"
+    },
     {"version": "0.3.0", "date": "2026-11-28", "what": "G84(2026-11-28 G84, 연구 책임자 결정: 원칙 2 유지 + 사전 넓히기). 형태 명사 117낱말(129항목, Kiwi가 붙여 쓴 낱말을 둘로 나누는 꼴 포함)을 더함 — G81·G82 점검과 평가 세트(합성)의 사전 밖 형태 명사와 같은 부류의 일상 사물·덩어리·용기·끈 꼴 명사. 영어는 소문자 한 낱말(shape_english_block·shape_english_modifier_block 검사 통과). 동음이의어·날붙이·몸 부위 형상·빛을 내는 물건은 넣지 않음(notIncluded). 형태 꾸밈말·틀·자리 규칙·차단 목록은 바꾸지 않음. 낱말별 근거: docs/validation/run-g84-shape-dictionary/README.md"},
     {"version": "0.2.1", "date": "2026-11-28", "what": "G82 다음 단계(메인 지시 A3): blocked.animal에 흔한 동물 낱말 68개를 더함(참새·다람쥐 등 — G82 1차 오프라인 평가에서 한국어 금지 목록에 없었음). 동음 낱말이 많은 말·양·소·게·개·매·벌은 넣지 않음(형태 명사·단위와 겹침). 형태 낱말 항목·틀은 바꾸지 않음. 규칙 그림 프롬프트(형태 자리의 동물 → excluded_category)와 G77·G82 검증기(한국어 금지 명사)가 함께 읽는다"},
     {"version": "0.2.0", "date": "2026-11-27", "what": "template 0.2.0: 부속물 부정 틀(negativeAccessories) 추가, 프롬프트에 말한 낱말과 겹치는 부속물 낱말은 빼는 규칙. 복수 명사 표시(plural) 추가 — 출력 관문의 여러 물체 검사(multi_object)를 면제. 형태 낱말 항목·차단 목록은 바꾸지 않음. 같은 합성 60문장의 1차 결과(비교 시트)를 본 뒤의 조정이며 개별 문장에 맞춘 항목은 넣지 않음"}
@@ -224,6 +229,7 @@
     {"ko": ["사다리"], "pos": "noun", "en": "ladder", "slot": "shape_noun", "familiar": true},
     {"ko": ["숟가락"], "pos": "noun", "en": "spoon", "slot": "shape_noun", "familiar": true},
     {"ko": ["국자"], "pos": "noun", "en": "ladle", "slot": "shape_noun", "familiar": true},
+    {"ko": ["다리미"], "pos": "noun", "en": "clothes iron", "slot": "shape_noun", "familiar": true},
     {"ko": ["연필"], "pos": "noun", "en": "pencil", "slot": "shape_noun", "familiar": true},
     {"ko": ["빗자루"], "pos": "noun", "en": "broom", "slot": "shape_noun", "familiar": true},
     {"ko": ["붓"], "pos": "noun", "en": "brush", "slot": "shape_noun", "familiar": true},

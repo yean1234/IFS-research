@@ -17,6 +17,8 @@
 #   확정 텍스트에서 형태 낱말 하나를 인용하고 영어 이름을 냄 — AGENTS.md 원칙 1의 예외)와 [selection] protocol 0.13.0(근거 인용 줄·[그 말이
 #   아니에요], draft). 오프라인 평가는 미리 정한 기준에 미달이었고(docs/decisions.md G82), 참여자가 그림을 직접 고르거나 거절하는 구조라
 #   참여자 기록(generation.shapeLlm)으로 판단하기로 했다. 켜지면 G77의 형태 낱말 칸(shape_noun)은 꺼진다(다른 빈 슬롯 제안은 그대로).
+#   G85(2026-11-29, 연구 책임자 결정 "변경")부터 [gen3d] on_none_llm_rewrite = true·on_none_mesh_retry = true와 [selection] protocol 0.14.0(문구 다섯 개, draft).
+#   합성 점검에서 G85 경로의 금지 범주 오통과는 0건, 규칙 사전·G82 경로의 돌려 말하기 구멍은 미해결(docs/decisions.md G85 구현과 합성 점검).
 #   이 판 앞뒤 세션은 생성 경로가 다르므로 층으로 나눠 본다. 시험 설정 experiment-g82.toml(선택 문구 0.12)은 G82 3차 평가 재현용으로만 남긴다.
 # 기존 설정 파일(default·pilot·v4·v4-gen3d·bridge·mac8gb)과 코드 기본값은 바꾸지 않았다. ◆ = v4.toml과 다른 곳.
 # 헤드셋 쪽 권고값(공간 B + 놓기 도움, 두 조건 연습, 자리 문항 → 멈춤 거리, 평정 중 물체 숨김, UI 묶음 G63, 반복 멈춤 loop,
@@ -95,7 +97,7 @@ allow_draft_phrases = false
 
 [selection]
 enabled = true
-protocol = "selection_protocol.v0.13.json"  # ◆ G83(0.13.0): 0.12.0(G82 근거 인용 줄 llm_shape_basis·[그 말이 아니에요], draft) + 인용의 명사 부분·
+protocol = "selection_protocol.v0.14.json"  # ◆G85(0.14.0): 0.13.0 + G85 문구 다섯 개(draft). ◆ G83(0.13.0): 0.12.0(G82 근거 인용 줄 llm_shape_basis·[그 말이 아니에요], draft) + 인용의 명사 부분·
                                             #   받침에 맞춘 '이라고/라고'. 0.12.0 = 0.11.0(G79 색상 고리, G73·G75·G77 문구) + G82 문구 두 개
 table = "candidate_values.v4.json"           # ◆ G79(4.0.0): 3.0.0(G72 너비·높이·깊이) + 색 항목을 고리 72칸·채도 단계·무채색 견본으로
 require_spec_phrases = false
@@ -144,3 +146,11 @@ on_none_mesh_timeout_s = 180                    # 고른 그림 → TripoSG → 
 on_none_llm_shape = true
 on_none_llm_shape_timeout_s = 20
 on_none_llm_shape_seed = 0
+# ◆G85: 규칙과 G82가 모두 형태를 얻지 못하면 면담 LLM이 그림 프롬프트 재료(대상 명사구 + 모양 꾸밈, 요소마다 원문 근거 또는 근거 없음)를 내고
+#  규칙이 조립한다(chatbot/ifs_chatbot/llm_rewrite.py, 프롬프트 llm_rewrite.v0.1.0 draft, 온도 0·seed 고정). 형태를 말하지 않았으면 고정 중립 형태
+#  (shared/lexicon/neutral_form_prompt.v0.json, system_default). 금지 범주를 말해서 막혔거나 위기·확인 판정 세션이면 만들지 않는다.
+on_none_llm_rewrite = true
+on_none_llm_rewrite_timeout_s = 25
+on_none_llm_rewrite_seed = 0
+# ◆G85: 고른 그림으로 만든 메시가 관문에 막히면 같은 회차의 남은 그림으로 세션에 한 번만 돌아간다(두 번째도 막히면 기존 none 경로)
+on_none_mesh_retry = true
