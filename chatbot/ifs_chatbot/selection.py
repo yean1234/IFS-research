@@ -799,12 +799,14 @@ class SelectionFlow:
                                                    "promptText": rec["prompt"]["text"]})
             return self.view()
 
-    def image_png(self, round_: int, position: int) -> bytes:
-        """고르기 화면의 그림(지금 회차, 보여 준 것만). 파일이 바뀌었으면 SelectionInvalid."""
+    def image_png(self, round_: int, position: int) -> bytes | None:
+        """고르기 화면의 그림. (CP14-1) 이 세션이 지금 고르기 화면(stage picking)이고, 지금 보여 주는 회차의 보여 준 그림일 때만
+        바이트를 돌려준다. 그 밖(고른 뒤·다른 회차·숨긴 그림)은 None(서버는 404). 파일이 바뀌었으면 SelectionInvalid."""
         with self.lock:
             ip = self._image_pick()
-            if ip is None or ip["round"] != round_ or position not in self._pick_paths:
-                raise SelectionInvalid("보여 준 그림이 아닙니다.")
+            if (self.stage != "picking" or ip is None or ip["round"] != round_ or position not in self._pick_paths
+                    or not any(x["shown"] and x["position"] == position for x in ip["images"])):
+                return None
             path, sha = self._pick_paths[position]
             raw = Path(path).read_bytes()
             if hashlib.sha256(raw).hexdigest() != sha:

@@ -7,7 +7,7 @@
 #   G72(2026-11-27)부터 [mapping] proportions와 [selection] protocol·table 세 값이 v4.toml과 다르다(너비·높이·깊이 비율 — 스펙 2.4.0,
 #   조절 항목 너비·높이·깊이, selection_protocol 0.7.0, 값 표 3.0.0). 다른 설정 파일은 그대로라 출력·조절 항목이 예전과 같다.
 #   G73(2026-11-27)부터 [gen3d] on_none = true(맞는 게 없어요 뒤 형태 생성)와 [selection] protocol 0.8.0(그 화면 문구 4개). [gen3d] enabled는 계속 끔.
-#   G75(2026-11-28)부터 [gen3d] on_none_image_pick = true(3D 모델이 참고할 그림 3장을 참여자가 먼저 고름)와 [selection] protocol 0.9.0(그 화면 문구 4개).
+#   G75(2026-11-28)부터 [gen3d] on_none_image_pick = true(3D 모델이 참고할 그림 3장을 참여자가 먼저 고름)와 [selection] protocol 0.9.1(그 화면 문구 4개, 0.9.1은 안내 문구 고침).
 #   G74(2026-11-27)부터 [mapping] mist_kinds도 v4.toml과 다르다(안개 입자 모양 form.mistKind — 스펙 2.4.0의 선택 슬롯, builder 2.9.0).
 # 기존 설정 파일(default·pilot·v4·v4-gen3d·bridge·mac8gb)과 코드 기본값은 바꾸지 않았다. ◆ = v4.toml과 다른 곳.
 # 헤드셋 쪽 권고값(공간 B + 놓기 도움, 두 조건 연습, 자리 문항 → 멈춤 거리, 평정 중 물체 숨김, UI 묶음 G63, 반복 멈춤 loop,
@@ -79,7 +79,7 @@ allow_draft_phrases = false
 
 [selection]
 enabled = true
-protocol = "selection_protocol.v0.9.json"   # ◆ G75(0.9.0): 0.8.0(G73 생성 대기·완료·못 만듦 문구 4개) + 참고 그림 고르기 화면 문구 4개
+protocol = "selection_protocol.v0.9.json"   # ◆ G75(0.9.1): 0.8.0(G73 생성 대기·완료·못 만듦 문구 4개) + 참고 그림 고르기 화면 문구 4개
 table = "candidate_values.v3.json"           # ◆ G72: 조절 항목 너비·높이·깊이(3.0.0). 후보 규칙·다른 항목은 2.0.0과 같음
 require_spec_phrases = false
 participant_draft_banner = false              # ◆ 뼈대 3절·G59-8: 초안 경고 줄을 참여자 보기에서 숨김(연구자 보기·기록에는 남음)

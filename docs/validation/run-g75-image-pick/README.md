@@ -26,6 +26,6 @@ experiment 설정 서버(127.0.0.1, 면담 LLM `gemma4:e4b`·가드 모델 실�
 4. **'돌덩이'는 형태 사전에 없습니다.** 「돌덩이 같아요」는 '돌덩이'가 한 낱말로 분석되어 사전의 '돌'·'덩이'와 맞지 않아 `no_shape_stated`로 막혔습니다(R3). 사전에 넣으면 G62 평가 입력도 바뀌므로 이번에는 손대지 않았습니다.
 5. 만든 메시는 고른 그림의 큰 모양(달걀꼴 돌, 구)을 따랐습니다(`R1-stone_5_selecting.png`, `R2-cloth-sphere_5_selecting.png`의 점선 칸). R2는 규칙 후보도 구라서 다섯 후보가 거의 같은 구입니다.
 
-화면: `*_3_picking.png` 고르기 화면, `R2-cloth-sphere_2_waiting_image.png` 그림 대기, `R2-cloth-sphere_4_waiting_mesh.png` 고른 뒤 대기, `*_5_selecting.png` 만든 물체가 맨 앞 점선 칸.
+화면: `*_3_picking.png` 고르기 화면(이 캡처의 안내 문구는 0.9.0 글 「…색은 나중에 말씀하신 대로 칠하니, 모양만 봐 주세요.」입니다. 0.9.1에서 「…색은 보지 말고 모양만 봐 주세요.」로 고쳤고 다시 찍지 않았습니다), `R2-cloth-sphere_2_waiting_image.png` 그림 대기, `R2-cloth-sphere_4_waiting_mesh.png` 고른 뒤 대기, `*_5_selecting.png` 만든 물체가 맨 앞 점선 칸.
 
 원본 기록(`chatbot/logs/`)과 생성기 입력·그림·로그(`gen3d-out/none-SYN-G75-R*-1100-*`)는 git 밖입니다.

@@ -290,8 +290,13 @@ def create_app(cfg: Config | None = None, runtime: Runtime | None = None, warmup
 
     @app.get("/api/sessions/{sid}/selection/image-pick/{round_}/{position}.png")
     def image_pick_png(sid: str, round_: int, position: int):
-        """G75: 고르기 화면의 그림(지금 회차에 보여 준 것만, sha256을 다시 확인)."""
-        data = sel_run(flow(sid).image_png, round_, position)
+        """G75: 고르기 화면의 그림(sha256을 다시 확인). (CP14-1) 그 세션이 지금 고르기 화면이고 지금 회차에 보여 준 그림일 때만.
+        그 밖(고른 뒤·다른 회차·숨긴 그림·후보 단계 전·없는 세션)은 404. 세션 소유자 개념은 이 서버에 없다(다른 API와 같음)."""
+        s = get_session(sid)
+        f = sel_run(s.selection, False) if rt.cfg.selection.enabled else None
+        data = sel_run(f.image_png, round_, position) if f is not None else None
+        if data is None:
+            raise HTTPException(404, "지금 고르기 화면에 보여 준 그림이 아닙니다.")
         return Response(content=data, media_type="image/png", headers={"Cache-Control": "no-store"})
 
     @app.post("/api/sessions/{sid}/adjust")

@@ -95,6 +95,12 @@ def image_pick(a, rows, gp, out_root, delay):
                                            "threshold": 0.5}})
             if k in tamper:
                 png.write_bytes(data + b"x")
+            bad = os.environ.get("FAKE_GEN3D_IMAGE_BADPATH", "")      # (CP14-2) "0:abs,1:dotdot" — 그 순번의 file을 잘못 적음
+            for spec_ in filter(None, bad.split(",")):
+                idx, kind = spec_.split(":")
+                if int(idx) == k:
+                    res["images"][-1]["file"] = (str(png.resolve()) if kind == "abs"
+                                                 else "../FAKE-SECRET-DIR/" + png.name)
     (run_dir / "image-pick.json").write_text(json.dumps(res, ensure_ascii=False, indent=2), encoding="utf-8")
     print("fake image-pick", res["status"], flush=True)
 

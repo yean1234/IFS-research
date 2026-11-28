@@ -1734,8 +1734,11 @@
                         "type": "integer"
                       },
                       "file": {
-                        "type": "string",
-                        "description": "생성물 폴더(<assets_dir>/<run>) 기준 상대 파일 이름(저장소 밖)"
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "description": "생성물 폴더(<assets_dir>/<run>) 기준 상대 파일 이름(저장소 밖). 경로 검증에 실패하면(problem file_path_invalid) null — 생성기가 적은 경로 문자열은 기록하지 않는다(CP14-2)"
                       },
                       "sha256": {
                         "oneOf": [

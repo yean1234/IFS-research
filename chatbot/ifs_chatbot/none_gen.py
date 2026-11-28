@@ -689,7 +689,10 @@ class NoneGenService:
                     "gate": copy.deepcopy(im.get("gate")) if isinstance(im.get("gate"), dict) else None,
                     "problem": None}
             if not rel or os.path.isabs(rel) or ".." in Path(rel).parts or run_dir.resolve() not in path.parents:
+                # (CP14-2) 검증에 실패한 경로 문자열은 기록·로그에 남기지 않는다(로컬 절대 경로가 참여자 기록에 들어가지 않게)
                 item["problem"] = "file_path_invalid"
+                item["file"] = None
+                path = None
             elif not path.is_file():
                 item["problem"] = "file_missing"
             elif file_sha256(path) != im.get("sha256"):

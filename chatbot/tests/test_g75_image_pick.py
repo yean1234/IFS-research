@@ -97,13 +97,13 @@ def test_flag_only_in_experiment_and_defaults():
 def test_protocol_09_adds_four_draft_phrases_only():
     a = json.loads(shared("protocol", "selection_protocol.v0.8.json").read_text(encoding="utf-8"))
     b = json.loads(shared("protocol", "selection_protocol.v0.9.json").read_text(encoding="utf-8"))
-    assert b["protocolVersion"] == "0.9.0" and b["changes"][0]["version"] == "0.9.0"
+    assert b["protocolVersion"] == "0.9.1" and [c["version"] for c in b["changes"][:2]] == ["0.9.1", "0.9.0"]   # CP14: 안내 문구 고침
     new = set(b["phrases"]) - set(a["phrases"])
     assert new == {"image_pick_waiting", "image_pick_intro", "image_pick_none", "image_pick_skip_button"}
     assert all(b["phrases"][k]["status"] == "draft" and "G75" in b["phrases"][k]["source"] for k in new)
     assert all(b["phrases"][k] == a["phrases"][k] for k in a["phrases"])            # 기존 문구는 그대로
     assert b["phrases"]["image_pick_intro"]["text"] == ("말씀하신 모양으로 그림을 그려 봤어요. 떠올리신 모양과 가장 가까운 그림을 "
-                                                        "골라 주세요. 색은 나중에 말씀하신 대로 칠하니, 모양만 봐 주세요.")
+                                                        "골라 주세요. 색은 보지 말고 모양만 봐 주세요.")
     assert b["phrases"]["image_pick_none"]["text"] == "이 중에는 없어요"
     for k in new:                                                                     # 치료·진단 표현 없음(원칙 8)
         assert not any(w in b["phrases"][k]["text"] for w in ("치료", "진단", "내담자", "증상"))
@@ -195,8 +195,7 @@ def test_gated_image_hidden_and_order_kept(tmp_path, fake):
     assert ip["shownOrder"] == [0, 2]
     hid = ip["images"][1]
     assert hid["seed"] == 1 and hid["shown"] is False and hid["problem"] == "gate_not_passed" and hid["position"] is None
-    with pytest.raises(Exception):
-        f.image_png(0, 2)                                                             # 보이지 않은 자리
+    assert f.image_png(0, 2) is None                                                  # 보이지 않은 자리(CP14-1: 서버 404)
     v = f.pick_image("1")                                                             # 자리 1 = seed 2
     wait_stage(f)
     assert f.data["generation"]["afterNone"]["seed"] == 2 and calls(tmp_path)[-1]["fromImage"] == "after-none-s2.png"
@@ -425,7 +424,7 @@ def test_api_pick_flow(tmp_path, fake):
     assert png.status_code == 200 and png.headers["content-type"] == "image/png" and png.content[:4] == b"\x89PNG"
     ip = s.selection_flow.data["generation"]["afterNone"]["imagePick"]
     assert hashlib.sha256(png.content).hexdigest() == ip["images"][0]["sha256"]
-    assert c.get(f"/api/sessions/{s.id}/selection/image-pick/0/7.png").status_code == 422
+    assert c.get(f"/api/sessions/{s.id}/selection/image-pick/0/7.png").status_code == 404
     assert c.post(f"/api/sessions/{s.id}/selection/image-pick", json={"choice": "9"}).status_code == 422
     cfgv = c.get("/api/selection/config").json()["phrases"]
     assert cfgv["image_pick_none"] == "이 중에는 없어요" and cfgv["image_pick_skip_button"] == "넘어갈게요"
@@ -455,6 +454,54 @@ def test_web_wires_picking_screen():
         assert needle in js, needle
     assert '"picking"' in (WEB_DIR / "app.js").read_text(encoding="utf-8")
     assert ".pick-grid" in (WEB_DIR / "style.css").read_text(encoding="utf-8")
+
+
+# ── CP14 ────────────────────────────────────────────────────────────────────
+def test_cp14_1_image_url_only_while_picking_current_round_shown(tmp_path, fake):
+    fake(gate="1")
+    rt = Runtime(pcfg(tmp_path))
+    c = TestClient(create_app(runtime=rt, warmup=False))
+    s = done_session(rt, "SYN-G75-CP14URL", T_SHAPE)
+    url = f"/api/sessions/{s.id}/selection/image-pick"
+    assert c.get(f"{url}/0/0.png").status_code == 404                                # 후보 단계 전
+    c.post(f"/api/sessions/{s.id}/candidates")
+    assert c.get(f"{url}/0/0.png").status_code == 404                                # 고르기 화면 전
+    c.post(f"/api/sessions/{s.id}/selection", json={"candidateId": "none"})
+    f = s.selection_flow
+    wait_stage(f)
+    assert f.stage == "picking"
+    assert c.get(f"{url}/0/0.png").status_code == 200 and c.get(f"{url}/0/1.png").status_code == 200
+    assert c.get(f"{url}/0/2.png").status_code == 404                                # 숨긴 그림(관문)의 자리
+    assert c.get(f"{url}/1/0.png").status_code == 404                                # 다른 회차
+    assert c.get(f"/api/sessions/SYN-NO-SUCH/selection/image-pick/0/0.png").status_code == 404   # 없는 세션
+    c.post(url, json={"choice": "none"})                                              # 2회차로
+    wait_stage(f)
+    assert f.stage == "picking"
+    assert c.get(f"{url}/0/0.png").status_code == 404 and c.get(f"{url}/1/0.png").status_code == 200   # 앞 회차는 닫힘
+    c.post(url, json={"choice": "0"})                                                 # 고른 뒤
+    assert c.get(f"{url}/1/0.png").status_code == 404
+    f._none_job.wait(30)
+    wait_stage(f)
+    assert c.get(f"{url}/1/0.png").status_code == 404
+
+
+def test_cp14_2_invalid_image_paths_not_recorded(tmp_path, fake, monkeypatch):
+    monkeypatch.setenv("FAKE_GEN3D_IMAGE_BADPATH", "0:abs,1:dotdot")
+    rt, s, f = start(tmp_path, "SYN-G75-CP14PATH")
+    to_picking(f)
+    ip = f.data["generation"]["afterNone"]["imagePick"]
+    assert ip["shownOrder"] == [2]
+    for im in ip["images"][:2]:
+        assert im["problem"] == "file_path_invalid" and im["file"] is None and im["shown"] is False
+    run_dir = tmp_path / "gen3d-out" / ip["run"]
+    abs_str = str((run_dir / "images" / "after-none-s0.png").resolve())
+    f.pick_image("0")
+    wait_stage(f)
+    valid4(f)
+    texts = [(f.dir / "selection.json").read_text(encoding="utf-8"), json.dumps(s.log.data, ensure_ascii=False)]
+    for t in texts:
+        for needle in (abs_str, abs_str.replace("\\", "\\\\"), "FAKE-SECRET-DIR", str(run_dir.resolve() / "images")):
+            assert needle not in t, needle
 
 
 def test_schema_04_reads_and_03_records_still_valid():
