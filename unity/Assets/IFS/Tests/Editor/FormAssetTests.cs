@@ -180,6 +180,22 @@ namespace IFS.SceneSpec.Tests
             PlacementSelection.Parse(o.ToString(), "selection.json", "ab", out errors);
 
         [Test]
+        public void Reads_04_like_03_without_warning_and_keeps_required_fields()
+        {
+            // G75: 0.4는 챗봇 쪽 기록 필드(참고 그림 고르기)만 더한 판 — 러너는 0.3과 같은 규칙으로 읽는다
+            var o = Selection03(format: "ifs-selection/0.4");
+            o["generation"] = new JObject { ["imagePickExposed"] = true };
+            var s = Parse(o, out var errors);
+            Assert.That(errors, Is.Empty);
+            Assert.That(s.Warnings, Is.Empty, "0.4는 아는 버전");
+            Assert.That(s.FormAsset.AssetId, Is.EqualTo("0123456789abcdef"));
+            var noColor = Selection03(format: "ifs-selection/0.4");
+            noColor.Remove("colorChanged");
+            Parse(noColor, out var errors2);
+            Assert.That(errors2.Any(e => e.Contains("colorChanged")), Is.True, "0.4도 colorChanged 필수(0.3과 같음)");
+        }
+
+        [Test]
         public void Reads_03_form_asset_and_default_choice()
         {
             var s = Parse(Selection03(), out var errors);
