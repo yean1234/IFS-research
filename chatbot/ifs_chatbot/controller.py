@@ -47,7 +47,7 @@ from .scene_builder import SceneSpecBuilder, normalize_confirmed, write_spec
 from .scene_builder_v1 import SceneSpecBuilderV1, fallback_spec
 from .scene_builder_v2 import SceneSpecBuilderV2, load_lexicon_chain
 from .scene_spec import check_principles
-from .selection import SelectionError, SelectionFlow, SelectionProtocol, delete_selection_dir
+from .selection import RING_PHRASE_KEYS, SelectionError, SelectionFlow, SelectionProtocol, delete_selection_dir
 from .session_log import SessionLog, now_iso
 from .validator import TurnContext, Validator, describe
 
@@ -200,8 +200,17 @@ class Runtime:
         self.selection_protocol = SelectionProtocol(cfg.selection.protocol)
         self.candidate_table = load_candidate_table(shared("lexicon", cfg.selection.table))
         self.preview = PreviewService(cfg.preview, cfg.log_dir, CHATBOT_DIR, self.candidate_table["defaults"])
+        # G79(CP18-1): 값 표의 색 항목이 hue_ring(4.0.0)이면 고리 문구 세 개가 있는 프로토콜(0.11.0 이상)이어야 한다 — 없으면 화면 문구가
+        # 빠지므로 시작을 멈춤. 반대 조합(swatch 표 + 0.11)은 막지 않는다: 쓰지 않는 문구가 있을 뿐이고 프로토콜 판은 기록에 남는다
+        color_it = self.candidate_table["adjustItems"]["items"].get("color") or {}
+        if cfg.selection.enabled and color_it.get("kind") == "hue_ring":
+            missing = [k for k in RING_PHRASE_KEYS if k not in self.selection_protocol.data["phrases"]]
+            if missing:
+                raise RuntimeError(f"[selection] table {cfg.selection.table}은 색상 고리(hue_ring)인데 protocol "
+                                   f"{cfg.selection.protocol}에 고리 문구 {', '.join(missing)}가 없습니다 — 시작을 멈춥니다"
+                                   "(selection_protocol.v0.11.json 이상을 쓰세요).")
         if cfg.selection.enabled:
-            n = self.selection_protocol.info()["draftCount"]
+            n =self.selection_protocol.info()["draftCount"]
             if n:
                 self.warnings.append(f"[selection] 후보·조절·사전 측정 문구 {n}개가 초안(status draft)입니다(X35: 화면·기록에 표시).")
             if self.preview.reason:

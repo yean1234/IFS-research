@@ -90,7 +90,8 @@ class ImagePickChoice(BaseModel):
 
 class AdjustStep(BaseModel):
     item: str = Field(..., max_length=32, description="form | color | brightness | opacity | size | texture | motion (G10)")
-    value: Any = Field(..., description="표의 값(색은 견본 id, 형태·움직임은 이름, 나머지는 정해진 단계의 숫자)")
+    value: Any = Field(..., description="표의 값(색은 견본 id — 값 표 4.0.0(G79)이면 {\"hueStep\": 0–71, \"saturationStep\": 단계} "
+                                        "또는 \"said\"도, 형태·움직임은 이름, 나머지는 정해진 단계의 숫자)")
 
 
 class PreviewReport(BaseModel):

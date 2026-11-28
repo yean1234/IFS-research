@@ -85,7 +85,7 @@ def test_on_none_only_in_experiment_and_g62_stays_off():
     assert Gen3DConfig().on_none_max_regenerations == 1 and Gen3DConfig().on_none_pipeline == "sdxl-triposg"
     exp = load_config("experiment")
     assert exp.gen3d.on_none is True and exp.gen3d.enabled is False and exp.gen3d.default_form_source == "procedural"
-    assert exp.selection.protocol == "selection_protocol.v0.10.json"  # G75·G77: 0.8.0 + 참고 그림 고르기 문구 + LLM 근거 안내(0.8.0 문구는 그대로)
+    assert exp.selection.protocol == "selection_protocol.v0.11.json"  # G75·G77·G79: 0.8.0 + 참고 그림 고르기 문구 + LLM 근거 안내 + 고리 문구(0.8.0 문구는 그대로)
     for name in ("default", "pilot", "v4", "v4-gen3d", "bridge", "mac8gb"):
         assert load_config(name).gen3d.on_none is False, name
 

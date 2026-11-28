@@ -11,6 +11,8 @@
 #   G74(2026-11-27)부터 [mapping] mist_kinds도 v4.toml과 다르다(안개 입자 모양 form.mistKind — 스펙 2.4.0의 선택 슬롯, builder 2.9.0).
 #   G77(2026-11-28)부터 [mapping] llm_fill = true(확정 직후 매퍼가 비운 슬롯을 면담 LLM이 원문 인용과 함께 채워 후보·조절의 처음 값으로)와
 #   [selection] protocol 0.10.0(조절 화면의 근거 인용 안내 문구 1개). 선택 기록은 처음부터 ifs-selection/0.5. 다른 설정 파일에서는 꺼져 있다.
+#   G79(2026-11-28)부터 [selection] table 4.0.0(조절 화면의 색을 색상 고리 72칸 + 채도 단계 + 무채색 견본 5개로)과 protocol 0.11.0(고리 안내·
+#   낭독기 글 3개). 선택 기록은 ifs-selection/0.5 그대로이고 선택 속성 colorRing·hueStep 등만 더해진다. 다른 설정 파일은 3.0.0·2.0.0 그대로.
 # 기존 설정 파일(default·pilot·v4·v4-gen3d·bridge·mac8gb)과 코드 기본값은 바꾸지 않았다. ◆ = v4.toml과 다른 곳.
 # 헤드셋 쪽 권고값(공간 B + 놓기 도움, 두 조건 연습, 자리 문항 → 멈춤 거리, 평정 중 물체 숨김, UI 묶음 G63, 반복 멈춤 loop,
 #   눈높이 기준 배치 relative, 문구 scaleA)은 이 파일이 아니라 Unity 러너 Setup의 [본 실험 권고 설정 켜기](-experimentPreset true)가 켠다.
@@ -87,8 +89,8 @@ allow_draft_phrases = false
 
 [selection]
 enabled = true
-protocol = "selection_protocol.v0.10.json"  # ◆ G77(0.10.0): 0.9.1(G73·G75 문구) + LLM이 채운 처음 값의 근거 인용 안내(llm_fill_note, draft)
-table = "candidate_values.v3.json"           # ◆ G72: 조절 항목 너비·높이·깊이(3.0.0). 후보 규칙·다른 항목은 2.0.0과 같음
+protocol = "selection_protocol.v0.11.json"  # ◆ G79(0.11.0): 0.10.0(G73·G75·G77 문구) + 색상 고리 안내·낭독기 글 3개(draft)
+table = "candidate_values.v4.json"           # ◆ G79(4.0.0): 3.0.0(G72 너비·높이·깊이) + 색 항목을 고리 72칸·채도 단계·무채색 견본으로
 require_spec_phrases = false
 participant_draft_banner = false              # ◆ 뼈대 3절·G59-8: 초안 경고 줄을 참여자 보기에서 숨김(연구자 보기·기록에는 남음)
 post_interview = "post_interview.v0.json"     # 사후 면담 기록 화면 /?view=postinterview&session=<세션ID>

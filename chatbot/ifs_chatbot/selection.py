@@ -75,6 +75,26 @@ SOURCES_GEN3D = SOURCES + (GENERATED_CHOSEN,)      # 0.3(G62)
 SOURCES_LLM_FILL = SOURCES_GEN3D + (llm_fill_mod.ORIGIN,)   # 0.5(G77)
 SAID_NOT_IN_TABLE = "said_value_not_in_table"
 
+# G79: 색상 고리(값 표 4.0.0, 색 항목 kind hue_ring). 3.0.0 이하 표(kind swatch)는 아래를 쓰지 않아 출력·기록이 그대로다.
+# 선택 파일 형식은 ifs-selection/0.5 그대로 두고 선택 속성만 더한다: 맨 위 colorRing, 색 값의 hueStep·saturationStep, 색 조작의 input.
+COLOR_RING_VERSION = "ifs-color-ring/0.1.0"
+RING_SAID = "said"          # 말한 색이 칸·단계 사이 값일 때 그 자리(G79-c). 입력 "said" = 말한 색 그대로
+# 색 출처(colorRing.initial·final.origin): 말함 | 면담 LLM이 인용과 함께 채움(G77) | 말하지도 고르지도 않음 | 참여자가 고름
+RING_ORIGINS = ("said", "llm_quoted", "unspecified", "picked")
+RING_ORIGIN_RULE = ("initial: 확정 spec에 색·채도가 있으면 said, 없고 G77 처음 값이 들어갔으면 llm_quoted, 아니면 unspecified. "
+                    "final: 색 조작이 없으면 initial 그대로, initial이 unspecified인데 한 번이라도 눌렀으면 picked(기본 회색 견본을 "
+                    "눌러도 — 기본색과 고른 회색을 가름), 마지막 값이 처음 값과 같으면 initial 그대로, 다르면 picked. "
+                    "sources.material.color(러너 계약)는 이 규칙과 별개로 G15 규칙 그대로다")
+_MISSING = object()
+# 고리 화면이 쓰는 고정 문구(selection_protocol 0.11.0). 값 표가 hue_ring이면 Runtime이 시작할 때 이 키들이 있는지 본다(CP18-1)
+RING_PHRASE_KEYS = ("adjust_color_ring_hint", "adjust_color_ring_value", "adjust_color_saturation_label")
+RING_SNAP = 0.0005          # 말한 h·s가 칸·단계 값과 이만큼 안이면 같은 자리(매퍼 값의 소수 셋째 자리 반올림 폭의 절반, 색상 0.18°)
+
+
+def ring_hue(k: int, steps: int) -> float:
+    """G79-a: 고리 칸 k의 색상 h(0–1). 6k번째 칸은 견본 h0k와 같은 값(round 4자리)."""
+    return round(k / steps, 4)
+
 # 러너에 넘길 수 없는 이유(runnerBlockers). 러너(PlacementSelection.cs)도 runnerReady = false면 이 글을 붙여 시작을 거부한다.
 BLOCK_NO_SPEC_FILE = ("spec 파일이 저장되지 않은 실행입니다(persist_logs = false 또는 spec 저장 실패). 배치 러너는 저장된 spec "
                       "파일 바이트의 sha256만 비교하므로 이 선택 기록은 러너에 넘길 수 없습니다(G26)")
@@ -201,6 +221,11 @@ def ui_config(protocol: SelectionProtocol, table: dict, preview_info: dict, enab
         entry = {"id": name, "label": labels[name]["text"], "kind": it["kind"]}
         if it["kind"] == "swatch":
             entry["values"] = [{"id": s["id"], "hex": swatch_hex(s)} for s in it["swatches"]]
+        elif it["kind"] == "hue_ring":
+            # G79: 화면에는 무채색 견본(screenSwatches)과 고리만. 고리 칸·채도 단계는 세션마다 view().colorRing(말한 명도·말한 자리)
+            by_id = {s["id"]: s for s in it["swatches"]}
+            entry["values"] = [{"id": i, "hex": swatch_hex(by_id[i])} for i in it["screenSwatches"]]
+            entry["ring"] = {"hueSteps": it["hueSteps"], "saturationSteps": list(it["saturationSteps"])}
         else:
             entry["values"] = list(it["values"])
         adjust.append(entry)
@@ -256,6 +281,7 @@ class SelectionFlow:
         self.preview_reason: str | None = rt.preview.reason
         self._spec_blockers: list[str] = []
         self.extras: dict = self._said_value_extras()
+        self.ring: dict | None = self._ring_setup()      # G79: 값 표 4.0.0(색 kind hue_ring)일 때만, 아니면 None
         # G62: 생성 형태 후보 자산 조회([gen3d] enabled일 때만, 아니면 None — 이때 출력은 G62 전과 같다)
         self.form_assets = getattr(rt, "form_assets", None)
         self._asset_paths: dict[str, Path] = {}          # 생성 후보 id → GLB 경로(기록에 쓰지 않음)
@@ -352,12 +378,15 @@ class SelectionFlow:
             # D6 형태 항목: 기본 형상이 그려지면(form.base 있음 + form.type blob) 그 기본 형상, 아니면 form.type
             base = params.get("form.base", "none")
             return base if base != "none" and params["form.type"] == "blob" else params["form.type"]
-        if it["kind"] == "swatch":
+        if it["kind"] in ("swatch", "hue_ring"):
             hsl = {"h": round(params["material.color.h"], 4), "s": round(params["material.color.s"], 4),
                    "l": round(params["material.color.l"], 4)}
             sw = next((s["id"] for s in it["swatches"]
                        if all(abs(s[k] - hsl[k]) < 1e-6 for k in ("h", "s", "l"))), None)
-            return {"swatch": sw, **hsl}
+            if it["kind"] == "swatch":
+                return {"swatch": sw, **hsl}
+            hk, sk = self._ring_pos(hsl)
+            return {"swatch": sw, **hsl, "hueStep": hk, "saturationStep": sk}   # G79-e: 고리 칸·채도 단계(무채색이면 null)
         v = params[it["key"]]
         return round(v, 4) if isinstance(v, float) else v
 
@@ -378,10 +407,195 @@ class SelectionFlow:
     def item_values(self, item: str) -> list:
         """이 세션의 조절 값 목록(표의 값 + 표에 없던 말한 값)."""
         it = self.table["adjustItems"]["items"][item]
-        vals = list(it["values"]) if it["kind"] != "swatch" else [s["id"] for s in it["swatches"]]
+        vals = [s["id"] for s in it["swatches"]] if it["kind"] in ("swatch", "hue_ring") else list(it["values"])
         if item in self.extras:
             vals.append(self.extras[item]["value"])
         return vals
+
+    # ── G79 색상 고리 ───────────────────────────────────────────────────────
+    def _ring_setup(self) -> dict | None:
+        """값 표의 색 항목이 hue_ring이면 이 세션의 고리 설정. 말한 색(spec의 material.color 또는 material.saturation)이 있으면
+        그 값(렌더 규칙 effective_params 그대로)을 처음 자리로 둔다. 유채색(s ≥ achromaticBelow)이면 고리의 명도는 말한 l,
+        아니면 ringLightness(G79-c). 말한 h·s가 칸·단계 사이면 그 값을 이 세션의 허용 자리("said")로 더한다."""
+        it = self.table["adjustItems"]["items"].get("color")
+        if not it or it.get("kind") != "hue_ring":
+            return None
+        n, sats, thr = int(it["hueSteps"]), [float(x) for x in it["saturationSteps"]], float(it["achromaticBelow"])
+        said_raw = None
+        if slot_value(self.spec, "material.color") is not None or slot_value(self.spec, "material.saturation") is not None:
+            b = effective_params(self.spec, self.defaults)
+            said_raw = {k: float(b[f"material.color.{k}"]) for k in ("h", "s", "l")}
+        said = {k: round(v, 4) for k, v in said_raw.items()} if said_raw else None
+        chroma = said is not None and said["s"] >= thr
+        # 매퍼 값은 소수 셋째 자리(215° → 0.597)라 칸 값(0.5972)과 끝자리만 다를 수 있다. RING_SNAP 안이면 그 칸이 이 세션에서는
+        # 말한 값 자체다(칸 하나가 말한 자리 — 겹치는 자리를 두 개 만들지 않고, 그 칸을 누르면 말한 값 그대로 돌아온다)
+        hue_snap = next((k for k in range(n) if chroma and abs(ring_hue(k, n) - said["h"]) <= RING_SNAP), None)
+        sat_snap = next((j for j, x in enumerate(sats) if chroma and abs(x - said["s"]) <= RING_SNAP), None)
+        on_hue, on_sat = hue_snap is not None, sat_snap is not None
+        screen = {s["id"]: s for s in it["swatches"] if s["id"] in it["screenSwatches"]}
+        said_screen = next((i for i, sw in screen.items() if said is not None and not chroma
+                            and all(abs(sw[k] - said[k]) < 1e-6 for k in ("h", "s", "l"))), None)
+        said_chip = said is not None and not chroma and said_screen is None
+        return {"hueSteps": n, "saturationSteps": sats, "achromaticBelow": thr,
+                "defaultSat": sats[int(it["saturationDefaultIndex"])],
+                "lightRaw": said_raw["l"] if chroma else float(it["ringLightness"]),
+                "said": said, "saidRaw": said_raw, "chromatic": chroma,
+                "hueSaid": said["h"] if chroma and not on_hue else None,      # 칸 사이 말한 색상(그 자리를 더함)
+                "satSaid": said["s"] if chroma and not on_sat else None,      # 단계 사이 말한 채도
+                "hueSnap": hue_snap, "satSnap": sat_snap,                     # 말한 값과 같은 칸·단계(끝자리 차이 안)
+                "saidChip": said_chip,                                      # 무채색 견본에 없는 말한 무채색 → 견본 하나 더
+                "saidScreenSwatch": said_screen}                              # 말한 무채색이 견본 하나와 같음(그 견본에 눈금)
+
+    def _ring_pos(self, hsl: dict) -> tuple:
+        """(hueStep, saturationStep): 칸 번호 0–71 | "said"(칸 사이 말한 자리) | None(무채색이거나 고리 밖)."""
+        R = self.ring
+        if hsl["s"] < R["achromaticBelow"]:
+            return None, None
+        n = R["hueSteps"]
+        hk = next((k for k in range(n) if abs(round(self._step_h(k), 4) - hsl["h"]) < 1e-6), None)
+        if hk is None and R["hueSaid"] is not None and abs(R["hueSaid"] - hsl["h"]) < 1e-6:
+            hk = RING_SAID
+        sk = next((j for j in range(len(R["saturationSteps"])) if abs(round(self._step_s(j), 4) - hsl["s"]) < 1e-6), None)
+        if sk is None and R["satSaid"] is not None and abs(R["satSaid"] - hsl["s"]) < 1e-6:
+            sk = RING_SAID
+        return hk, sk
+
+    def _step_h(self, k: int) -> float:
+        """이 세션에서 칸 k의 색상: 말한 색상이 그 칸과 같은 자리(RING_SNAP 안)면 말한 값, 아니면 round(k/72, 4)."""
+        R = self.ring
+        return R["saidRaw"]["h"] if R["hueSnap"] == k else ring_hue(k, R["hueSteps"])
+
+    def _step_s(self, j: int) -> float:
+        R = self.ring
+        return R["saidRaw"]["s"] if R["satSnap"] == j else R["saturationSteps"][j]
+
+    def _validate_ring(self, it: dict, value) -> dict:
+        """G79 색 입력 → 덮어쓰기 h·s·l. 받는 것: 견본 id(17개, G77 제안·옛 화면), "said"(말한 색 그대로 — 말한 색이 있을 때만),
+        {"hueStep": k, "saturationStep": j}(둘 중 하나만 줘도 됨). k = 0–71 정수 | "said", j = 단계 번호 정수 | "said".
+        bool·실수(3.0 포함)·음수·범위 밖·문자열·다른 키는 거부. hueStep이 없으면 지금 고리 위 색상을 그대로(고리 위에 색이 없으면 거부),
+        saturationStep이 없으면 지금 채도가 허용 단계면 그대로, 아니면 말한 채도(유채색일 때) 또는 기본 단계. 명도는 이 세션의 고리 명도."""
+        R = self.ring
+        if isinstance(value, str):
+            if value == RING_SAID:
+                if R["saidRaw"] is None:
+                    raise SelectionInvalid("말한 색이 없는 세션입니다: 'said'")
+                return {f"material.color.{k}": R["saidRaw"][k] for k in ("h", "s", "l")}
+            sw = next((s for s in it["swatches"] if s["id"] == value), None)
+            if sw is None:
+                raise SelectionInvalid(f"색 견본 목록에 없는 값입니다: {value!r}")
+            return {"material.color.h": sw["h"], "material.color.s": sw["s"], "material.color.l": sw["l"]}
+        if not isinstance(value, dict) or not value or set(value) - {"hueStep", "saturationStep"}:
+            raise SelectionInvalid(f"색 값은 견본 id 또는 {{\"hueStep\": 0–{R['hueSteps'] - 1}, \"saturationStep\": "
+                                   f"0–{len(R['saturationSteps']) - 1}}}입니다: {value!r}")
+        cur = effective_params(self.spec, self.defaults, self.current)
+        pos = self._ring_pos({k: round(cur[f"material.color.{k}"], 4) for k in ("h", "s", "l")})
+
+        def pick(v, name, top, said_raw):
+            if v == RING_SAID:
+                if not R["chromatic"]:
+                    raise SelectionInvalid(f"{name}: 말한 유채색이 없는 세션입니다: 'said'")
+                return said_raw
+            if isinstance(v, bool) or not isinstance(v, int) or not 0 <= v < top:
+                raise SelectionInvalid(f"{name}: 0–{top - 1} 정수여야 합니다: {v!r}")
+            return None
+
+        hv = value.get("hueStep", _MISSING)
+        if hv is _MISSING:
+            if pos[0] is None:
+                raise SelectionInvalid("고리 위에 고른 색이 없어 채도만 바꿀 수 없습니다(hueStep 필요)")
+            h = cur["material.color.h"]
+        else:
+            h = pick(hv, "hueStep", R["hueSteps"], R["saidRaw"]["h"] if R["chromatic"] else None)
+            h = self._step_h(hv) if h is None else h
+        sv = value.get("saturationStep", _MISSING)
+        if sv is _MISSING:
+            s = (cur["material.color.s"] if pos[1] is not None
+                 else R["saidRaw"]["s"] if R["chromatic"] else R["defaultSat"])
+        else:
+            s = pick(sv, "saturationStep", len(R["saturationSteps"]), R["saidRaw"]["s"] if R["chromatic"] else None)
+            s = self._step_s(sv) if s is None else s
+        return {"material.color.h": h, "material.color.s": s, "material.color.l": R["lightRaw"]}
+
+    def _ring_initial_origin(self) -> str:
+        if self.ring["said"] is not None:
+            return "said"
+        return llm_fill_mod.ORIGIN if "color" in self.llm_applied else "unspecified"
+
+    def _ring_home(self):
+        """Home 키(처음 값)로 보낼 입력. 처음에 고리·견본에 고른 것이 없었으면(말하지도 채우지도 않음) None."""
+        init = (self.data.get("colorRing") or {}).get("initial") if self.data else None
+        if init is None or init["origin"] == "unspecified":
+            return None
+        if init["origin"] == "said":
+            return RING_SAID
+        v = init["value"]
+        return v["swatch"] or ({"hueStep": v["hueStep"], "saturationStep": v["saturationStep"]}
+                               if v["hueStep"] is not None else None)
+
+    def _ring_record_new(self) -> dict:
+        """selection.json 맨 위 colorRing(G79-d·e). 고리가 화면에 나갔는지(exposed), 처음·최종 색의 출처."""
+        R = self.ring
+        return {"version": COLOR_RING_VERSION, "tableVersion": self.table["tableVersion"],
+                "hueSteps": R["hueSteps"], "saturationSteps": list(R["saturationSteps"]),
+                "lightness": round(R["lightRaw"], 4), "lightnessFrom": "said" if R["chromatic"] else "ringLightness",
+                "said": copy.deepcopy(R["said"]), "saidChromatic": R["chromatic"] if R["said"] is not None else None,
+                "saidPosition": ({"hueStep": p[0], "saturationStep": p[1]} if (p := self._ring_pos(R["said"]))[0] is not None
+                                 else None) if R["said"] is not None else None,
+                "saidSwatchAdded": R["saidChip"],
+                "originRule": RING_ORIGIN_RULE,
+                "exposed": False, "exposedAt": None, "initial": None, "final": None}
+
+    def _ring_enter(self, at: str) -> None:
+        """조절 단계에 들어감(선택·none·건너뜀): 처음 값과 그 출처를 적고, 색 항목이 꺼져 있지 않으면 고리를 내보냈다고 적는다
+        (서버가 고리를 그리는 조절 화면을 냄 — 브라우저가 실제로 그렸는지는 미리보기 알림(preview.shown.adjusting)으로 본다)."""
+        rec = (self.data or {}).get("colorRing")
+        if rec is None:
+            return
+        if rec["initial"] is None:
+            params = effective_params(self.spec, self.defaults, self.current)
+            rec["initial"] = {"origin": self._ring_initial_origin(), "value": self._item_value("color", params), "at": at}
+        if not rec["exposed"] and "color" not in self.unavailable_items():
+            rec.update(exposed=True, exposedAt=at)
+
+    def _ring_final(self) -> dict:
+        rec = self.data["colorRing"]
+        init = rec["initial"]["origin"] if rec["initial"] else self._ring_initial_origin()
+        summ = self.data["adjustments"]["items"].get("color")
+        if not summ:
+            origin = init
+        elif init == "unspecified":
+            origin = "picked"
+        else:
+            origin = init if _same_value(summ["last"], summ["first"]) else "picked"
+        evs = [e for e in self.data["adjustments"]["events"] if e["item"] == "color"]
+        final = effective_params(self.spec, self.defaults, self.current)
+        return {"origin": origin, "value": self._item_value("color", final), "adjustCount": summ["count"] if summ else 0,
+                "ringInputs": sum(1 for e in evs if isinstance(e.get("input"), dict)),
+                "swatchInputs": sum(1 for e in evs if isinstance(e.get("input"), str) and e["input"] != RING_SAID),
+                "saidInputs": sum(1 for e in evs if e.get("input") == RING_SAID)}
+
+    def _ring_view(self) -> dict:
+        """화면용(stage.js): 고리 명도, 채도 단추(단계 + 단계 사이 말한 채도), 말한 자리 눈금, Home 값, 말하지도 고르지도 않은 상태."""
+        R = self.ring
+        sats = [{"step": j, "s": x} for j, x in enumerate(R["saturationSteps"])]
+        if R["satSaid"] is not None:
+            sats = sorted(sats + [{"step": RING_SAID, "s": R["satSaid"]}], key=lambda x: x["s"])
+        said_pos = self._ring_pos(R["said"]) if R["chromatic"] else (None, None)
+        rec = (self.data or {}).get("colorRing") or {}
+        untouched = "color" not in ((self.data or {}).get("adjustments") or {}).get("items", {})
+        init = rec.get("initial")
+        cur = effective_params(self.spec, self.defaults, self.current)
+        at_said = R["said"] is not None and all(abs(round(cur[f"material.color.{k}"], 4) - R["said"][k]) < 1e-6 for k in "hsl")
+        out = {"hueSteps": R["hueSteps"], "lightness": round(R["lightRaw"], 4), "atSaid": at_said,
+               "saturations": sats, "ringSaturation": R["satSaid"] if R["satSaid"] is not None else (
+                   R["said"]["s"] if R["chromatic"] else R["defaultSat"]),
+               "saidHue": R["said"]["h"] if R["chromatic"] else None, "saidHueStep": said_pos[0],
+               "saidSaturationStep": said_pos[1],
+               "saidSwatch": ({"id": RING_SAID, "hex": swatch_hex(R["said"])} if R["saidChip"] else None),
+               "saidSwatchId": RING_SAID if R["saidChip"] else R["saidScreenSwatch"],
+               "home": self._ring_home(),
+               "unspecified": bool(untouched and (init["origin"] if init else self._ring_initial_origin()) == "unspecified")}
+        return out
 
     def _spec_file_hash(self) -> tuple[str | None, str, list[str]]:
         """러너 계약의 specSha256(G26): 저장된 spec 파일 바이트의 sha256만 적는다. (sha | None, sha256Basis, 막는 이유)
@@ -489,6 +703,9 @@ class SelectionFlow:
             if self.has_proportions:
                 # G72: 축별 처음 값·최종 값·고쳤는지(값 표 3.0.0일 때만 키를 넣는다 — 2.0.0 표의 기록은 그대로)
                 self.data["proportions"] = self._proportions_record(final=False)
+            if self.ring is not None:
+                # G79: 색상 고리 기록(값 표 4.0.0일 때만 키를 넣는다 — 3.0.0 이하 표의 기록은 그대로)
+                self.data["colorRing"] = self._ring_record_new()
             if self.gen3d:
                 # G62(0.3): 고른 생성 메시(form.asset)와 생성 후보 기록. 꺼져 있으면 키 자체를 넣지 않는다(0.2 그대로)
                 self.data["formatVersion"] = self._fv(FORMAT_VERSION_GEN3D)
@@ -566,6 +783,7 @@ class SelectionFlow:
         self.data["selection"] = sel
         self.data["stage"] = "adjusting"
         self.current = dict(op["overrides"])
+        self._ring_enter(sel["at"])
         if self.gen3d:
             self._record_generation_choice(op if choice != NONE_CHOICE else None)
         self._save()
@@ -948,6 +1166,7 @@ class SelectionFlow:
                                   "operationalId": op["id"], "operationalIndex": op["index"], "at": now}
         self.data["stage"] = "adjusting"
         self.current = dict(op["overrides"])
+        self._ring_enter(now)
         if self.gen3d:
             self.data["generation"]["outcome"] = "skipped"      # 생성 후보가 없을 때만 건너뜀이 생긴다
 
@@ -1124,6 +1343,8 @@ class SelectionFlow:
             if sw is None:
                 raise SelectionInvalid(f"색 견본 목록에 없는 값입니다: {value!r}")
             return {"material.color.h": sw["h"], "material.color.s": sw["s"], "material.color.l": sw["l"]}
+        if it["kind"] == "hue_ring":
+            return self._validate_ring(it, value)         # G79
         if it["kind"] == "category":
             allowed = self.item_values(item)          # 표의 값 + 표에 없던 말한 값(있으면)
             if not isinstance(value, str) or value not in allowed:
@@ -1159,6 +1380,8 @@ class SelectionFlow:
                 # G39: 형태 조작 한 번 = 고른 값 하나(value). 그 조작으로 정해진 세 슬롯을 함께 남긴다(변형값은 base가 spec의
                 # base와 다르면 null — 이전 base의 변형값은 지워짐)
                 event["formSlots"] = self._form_slots(params)
+            if self.ring is not None and item == "color":
+                event["input"] = copy.deepcopy(value)       # G79: 고리({hueStep…})·견본 id·"said" 가운데 무엇으로 바꿨는지
             ev.append(event)
             summ = self.data["adjustments"]["items"].setdefault(item, {"count": 0, "first": before, "last": before,
                                                                        "firstAt": at, "lastAt": at})
@@ -1345,6 +1568,8 @@ class SelectionFlow:
                 self.data["proportions"] = self._proportions_record(final=True)
             if self.llm_on and self.data.get("llmFill") is not None:
                 self.data["llmFill"]["participant"] = self._llm_participant()
+            if self.data.get("colorRing") is not None:
+                self.data["colorRing"]["final"] = self._ring_final()     # G79-d: 말함 | llm_quoted | 말하지도 고르지도 않음 | 고름
             self.data["stage"] = "premeasure"
             self._save()
             self._log_event("selection:adjusted", {
@@ -1666,6 +1891,8 @@ class SelectionFlow:
                                   "items": {i: self._item_value(i, params) for i in self.items}}
                 out["adjustCounts"] = {k: v["count"] for k, v in self.data["adjustments"]["items"].items()}
                 out["colorChanged"] = self.data["colorChanged"]
+                if self.ring is not None:
+                    out["colorRing"] = self._ring_view()          # G79: 고리 그리기(값 표 4.0.0일 때만 키가 있음)
             if self.stage in ("premeasure", "done"):
                 out["finalOverrides"] = self.data["finalOverrides"]
                 out["sourceCounts"] = self.data["sourceCounts"]
