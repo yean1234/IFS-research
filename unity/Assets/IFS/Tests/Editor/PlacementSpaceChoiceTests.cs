@@ -396,8 +396,8 @@ namespace IFS.SceneSpec.Tests
             // 판 0.8 → 0.9(공간 고르기 문구 추가)는 원칙 7에 따른 의도한 변경 — manifest taskText.version이 바뀐다(CP17-2 판정: 고치지 않음)
             var def = PlacementTaskText.Load(DefaultPath);
             var a = PlacementTaskText.Load(ScaleAPath);
-            Assert.That(def.Version, Is.EqualTo("0.10"));   // 0.10: G83 반복 멈춤 조작 안내
-            Assert.That(a.Version, Is.EqualTo("0.10-scaleA"));
+            Assert.That(def.Version, Is.EqualTo("0.11"));   // 0.10: G83 반복 멈춤 조작 안내, 0.11: G86 직접 배치 안내
+            Assert.That(a.Version, Is.EqualTo("0.11-scaleA"));
             Assert.That(a.Version, Is.EqualTo(PlacementExperimentLock.ExpectedTaskTextVersion), "잠금 판 = 실제 scaleA 파일 판");
             Assert.That(PlacementExperimentLock.TaskTextProblems(a), Is.Empty, "실제 scaleA 파일은 잠금이 받는다");
             foreach (var t in new[] { def, a })
@@ -416,7 +416,7 @@ namespace IFS.SceneSpec.Tests
                 TaskTextFile = a.FileName, TaskTextVersion = a.Version, TaskTextDraftKeys = a.DraftKeysFor(cfg).ToArray(),
             };
             using (var s = new PlacementSession(cfg, a, info, Path.Combine(_tmp, "ver")))
-                Assert.That((string)Manifest(s.RecordDirectory)["taskText"]["version"], Is.EqualTo("0.10-scaleA"));
+                Assert.That((string)Manifest(s.RecordDirectory)["taskText"]["version"], Is.EqualTo("0.11-scaleA"));
         }
 
         // ── CP17-4: 늦게 켜진 XR ─────────────────────────────────────────

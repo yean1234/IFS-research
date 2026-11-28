@@ -241,6 +241,7 @@ namespace IFS.SceneSpec.Tests
             Assert.That(cfg.environmentChoice, Is.EqualTo(PlacementConfig.EnvironmentChoiceExperimenter));
             Assert.That(cfg.placementAssist && cfg.practiceInAllConditions && cfg.hideObjectDuringItems && cfg.checkBeforeStopDistance, Is.True);
             Assert.That(cfg.IsStopLoop && cfg.IsEyeRelative && cfg.UiBundleOn, Is.True);
+            Assert.That(cfg.conditionEndsOnConfirm, Is.True, "G86: 직접 배치는 확인으로 끝남(보기만 조건 설정에도 값은 켜지고, 보기만의 길이는 고정)");
             // 고정하지 않는 것(연구 책임자 결정 대기 · 세션마다 다른 것 · preset이 정하지 않는 참여자 입력)
             Assert.That(cfg.hidePanelInDistancePhases, Is.True);
             Assert.That(cfg.askOptionalItems, Is.True);
@@ -288,6 +289,35 @@ namespace IFS.SceneSpec.Tests
         }
 
         [Test]
+        public void Lock_turns_on_confirm_ends_the_place_condition_and_refuses_when_it_is_off()
+        {
+            // G86(2026-11-29 연구 책임자 결정): 직접 배치는 확인 버튼으로 조건 단계를 끝낸다. 코드 기본값은 그대로 꺼짐(권고 설정·잠금이 켬)
+            Assert.That(new PlacementConfig().conditionEndsOnConfirm, Is.False, "코드 기본값은 바꾸지 않는다");
+            Assert.That(PlacementExperimentLock.ConditionEndsOnConfirm, Is.True);
+            var preset = new PlacementConfig();
+            preset.ApplyExperimentPreset();
+            Assert.That(preset.conditionEndsOnConfirm, Is.True, "권고 설정이 켠다");
+            var cfg = new PlacementConfig();
+            PlacementExperimentLock.Apply(cfg);
+            Assert.That(cfg.conditionEndsOnConfirm, Is.True);
+            Assert.That(cfg.conditionSeconds, Is.EqualTo(90), "제한 시간은 그대로");
+            var text = PlacementTaskText.Load(Path.Combine(UnityEngine.Application.streamingAssetsPath, PlacementExperimentLock.TaskTextFile));
+            Assert.That(PlacementExperimentLock.Refusals(cfg, PlacementExperimentLock.TaskTextFile, text), Is.Empty);
+
+            cfg.conditionEndsOnConfirm = false;
+            Assert.That(PlacementExperimentLock.Holds(cfg, PlacementExperimentLock.TaskTextFile), Is.False);
+            Assert.That(PlacementExperimentLock.ConditionMismatches(cfg).Single(), Does.StartWith("conditionEndsOnConfirm = false(잠금 true"));
+            // 러너 Check·StartSession이 이 목록이 비어 있지 않으면 시작을 거부한다(AddLockRefusals — 러너 자체는 UnityOnly 시험 범위)
+            var refusals = PlacementExperimentLock.Refusals(cfg, PlacementExperimentLock.TaskTextFile, text);
+            Assert.That(refusals.Single(x => x.Contains("conditionEndsOnConfirm = false")), Does.Contain("본 실험 설정 고정").And.Contain("시작하지 않습니다"));
+            // preset만 켜 둔 채(잠금 없이) 값을 끄면 권고 설정이 아니게 된다
+            preset.conditionEndsOnConfirm = false;
+            Assert.That(preset.ExperimentProcedureOn, Is.False);
+            PlacementExperimentLock.Apply(cfg);
+            Assert.That(PlacementExperimentLock.Holds(cfg, PlacementExperimentLock.TaskTextFile), Is.True, "다시 적용하면 켜짐");
+        }
+
+        [Test]
         public void Lock_refuses_a_task_text_of_another_version_or_without_the_G78_keys()
         {
             var cfg = new PlacementConfig();
@@ -314,16 +344,17 @@ namespace IFS.SceneSpec.Tests
         {
             var cfg = new PlacementConfig();
             PlacementExperimentLock.Apply(cfg);
-            var lines = PlacementExperimentLock.SummaryLines(cfg, PlacementExperimentLock.TaskTextFile, "0.10-scaleA");
+            var lines = PlacementExperimentLock.SummaryLines(cfg, PlacementExperimentLock.TaskTextFile, "0.11-scaleA");
             string all = string.Join("\n", lines);
-            Assert.That(lines.Count, Is.EqualTo(5));
+            Assert.That(lines.Count, Is.EqualTo(6));
+            Assert.That(all, Does.Contain("조건 단계 상한 90초 · 직접 배치는 확인 버튼으로 끝냄 켬(보기만은 길이 고정) (G86)"));
             Assert.That(all, Does.Contain("공간 neutral(실험자가 위 단추로 고름 — 세션마다, 처음 값 neutral)"), "2026-11-28: 공간은 실험자가 고른다");
             Assert.That(all, Does.Not.Contain("참여자가 헤드셋 안에서 고름"));
             cfg.environment = PlacementConfig.EnvironmentSpace;
             Assert.That(string.Join(" | ", PlacementExperimentLock.SummaryLines(cfg, PlacementExperimentLock.TaskTextFile)), Does.Contain("공간 space(실험자가"), "요약은 지금 고른 공간을 보인다");
             Assert.That(all, Does.Contain("보정 자세 앉은 자세 [0.95, 1.45] m"));
             Assert.That(all, Does.Contain("loop: 연습 1 × 상한 30초 + 본 1 × 상한 75초, 라운드 사이 2초, 왕복 0.4–3.6 m · 0.25 m/s"));
-            Assert.That(all, Does.Contain("판 0.10-scaleA"));
+            Assert.That(all, Does.Contain("판 0.11-scaleA"));
             Assert.That(all, Does.Contain("relative(기준 1.60 m)"));
             Assert.That(all, Does.Contain("placement_task.scaleA.v0.json"));
             Assert.That(all, Does.Not.Contain("팀 결정 전"));

@@ -56,6 +56,18 @@ LLM 없음, 표준 라이브러리만, 결정론적(같은 기록 → 같은 출
   proportions_source = said | edited | default(선택 파일 sources, 없으면 spec 값 유무), proportions_axis_said = 방향을 말했는지.
 - 설정 일치 점검: 요약에 넣은 세션들 사이에서 manifest config의 baselineSeconds·conditionSeconds·conditionEndsOnConfirm,
   manifest space·stopDistance가 다르면 요약 warnings에 config_mismatch:<키>를 넣는다(빠진 값도 하나의 값으로 본다).
+  2026-11-29 G86: 직접 배치를 확인으로 끝내는 세션(conditionEndsOnConfirm true)과 예전 방식(확인해도 conditionSeconds까지) 세션이
+  섞이면 config_mismatch:conditionEndsOnConfirm이 뜬다. 두 방식의 세션은 한 층으로 보지 않는다(직접 배치의 조건 단계 길이가 다르다).
+
+조건 단계 끝(G86, 2026-11-29 — placement.json conditionEndReason이 있거나 manifest config.conditionEndsOnConfirm이 true인 세션이
+하나라도 있을 때만 세션 표에 END_COLUMNS를, 요약에 conditionEnd를 더한다. 없으면 출력은 G86 전과 바이트까지 같다)
+- condition_ends_on_confirm = manifest config.conditionEndsOnConfirm(없으면 빈칸). condition_duration_ms = placement.json phaseDurationMs
+  (실제 조건 단계 길이 — 확인으로 끝나면 confirmMs + 확정 알림 약 2초). confirm_ms = confirmMs, confirm_ignored_held = 쥔 채 누른 확인 수
+  (확인으로 끝나는 세션만, 없으면 빈칸). 확인 전까지 놓은 횟수는 grab_count(확인 뒤에는 잡을 수 없다).
+- condition_end_reason = placement.json conditionEndReason(confirmed | timeout | aborted). 필드가 없는 옛 기록은 조건 단계가 끝까지
+  가지 않았으면 aborted, 설정이 꺼져 있었으면(false·없음) timeout(예전 방식에서 정해진 끝은 시간 끝뿐), 설정이 켜져 있었는데 필드가
+  없으면(G86 전 러너) 빈칸.
+- 요약 conditionEnd.byCondition: 조건별 끝난 까닭 개수와 condition_duration_ms 기술 통계(요약에 넣은 세션).
 
 멈춤 거리 반복 멈춤(G60-2, 2026-11-26 — manifest stopDistance.mode == "loop"인 세션)
 - 원자료는 stoprounds.csv(라운드 1행)와 stopadjust.csv(조정 사건). stopdistance.csv는 헤더만이라 single 열(stop_approach_mean_m 등)은 빈칸이고
@@ -196,6 +208,9 @@ OBJECT_COLUMNS = ["object_width_m", "object_height_m", "object_depth_m", "propor
                   "proportions_source", "proportions_axis_said"]
 EYE_COLUMNS = ["eye_height_m", "eye_height_source", "final_height_rel_eye_m", "final_height_ratio_eye", "head_y_drift_m"]
 EYE_METRICS = ("eye_height_m", "final_height_rel_eye_m", "final_height_ratio_eye", "head_y_drift_m")
+# G86 조건 단계 끝(확인으로 끝나는 세션이 하나라도 있을 때만 세션 표에 붙는 열 — 없으면 출력은 G86 전과 바이트까지 같다)
+END_COLUMNS = ["condition_ends_on_confirm", "condition_end_reason", "condition_duration_ms", "confirm_ms", "confirm_ignored_held"]
+END_REASONS = ("confirmed", "timeout", "aborted")
 
 
 # ---------------------------------------------------------------- 계산 도우미
@@ -672,8 +687,27 @@ def load_session(cand: dict, facing_deg: float = DEFAULT_FACING_DEG) -> tuple[di
     srow["final_height_ratio_eye"] = _r(final_h / eye_h) if final_h is not None and eye_h else None
     hm = _median(head_ys)
     srow["head_y_drift_m"] = _r(hm - eye_h) if hm is not None and eye_h else None
+    # G86 조건 단계 끝(확인으로 끝나는 세션이 하나라도 있을 때만 표에 나간다 — analyze가 정함)
+    eoc = _path(man, ("config", "conditionEndsOnConfirm"))
+    eoc = eoc if isinstance(eoc, bool) else None
+    reason = pl.get("conditionEndReason") if pl.get("conditionEndReason") in END_REASONS else None
+    if reason is None and pl.get("conditionEndReason") is not None:
+        flags.append("condition_end_reason_unknown")
+        srow["flags"] = ";".join(flags)
+    if reason is None and pl.get("conditionEndReason") is None:
+        # 필드가 없는 옛 기록: 중단이면 aborted, 예전 방식(설정 꺼짐)이면 정해진 끝은 시간 끝뿐 — timeout. 켜져 있었으면 알 수 없음(빈칸)
+        if not cond_complete:
+            reason = "aborted" if pl else None
+        elif eoc is not True:
+            reason = "timeout"
+    srow["condition_ends_on_confirm"] = eoc
+    srow["condition_end_reason"] = reason
+    srow["condition_duration_ms"] = _num(pl.get("phaseDurationMs"))
+    srow["confirm_ms"] = _num(pl.get("confirmMs"))
+    srow["confirm_ignored_held"] = _int(pl.get("confirmIgnoredHeld"))
+    srow["_has_end"] = eoc is True or "conditionEndReason" in pl
     if not cond_complete:
-        for k in CONDITION_METRICS + ("final_height_rel_eye_m", "final_height_ratio_eye", "head_y_drift_m"):
+        for k in CONDITION_METRICS + ("final_height_rel_eye_m", "final_height_ratio_eye", "head_y_drift_m", "confirm_ms"):
             srow[k] = None     # 중단된 조건 단계: 완료 자료처럼 보이지 않게 비운다(원자료 파일은 그대로)
     # 닻 지표: 확정 멈춤 거리 평균 − 조건 단계 끝 자리(두 조건 모두)
     sfm, fdm = srow.get("stop_final_mean_m"), srow.get("final_distance_m")
@@ -895,7 +929,9 @@ def analyze(records: str | Path, out_dir: str | Path | None = None, facing_deg: 
     has_loop = any(s["_has_loop"] for s in sessions)
     has_eye = any(s["_has_eye"] for s in sessions)
     has_object = any(s["_has_object"] for s in sessions)      # G72: 경계 상자·비율이 있는 기록이 하나라도 있을 때만
-    extra_cols = (LOOP_COLUMNS if has_loop else []) + (EYE_COLUMNS if has_eye else []) + (OBJECT_COLUMNS if has_object else [])
+    has_end = any(s["_has_end"] for s in sessions)            # G86: 확인으로 끝나는 세션이 하나라도 있을 때만
+    extra_cols = ((LOOP_COLUMNS if has_loop else []) + (EYE_COLUMNS if has_eye else []) + (OBJECT_COLUMNS if has_object else [])
+                  + (END_COLUMNS if has_end else []))
     loop_rounds: list[dict] = []
     for s in sessions:
         ident = {"participant": s["participant"], "session_id": s["session_id"], "condition": s["condition"],
@@ -910,6 +946,11 @@ def analyze(records: str | Path, out_dir: str | Path | None = None, facing_deg: 
         if not has_object:
             for k in OBJECT_COLUMNS:
                 s.pop(k, None)
+        if not has_end:
+            for k in END_COLUMNS:
+                s.pop(k, None)
+    if has_end:
+        summary["conditionEnd"] = condition_end_summary(included)
     if has_loop:
         summary["stopLoop"] = loop_summary(included, loop_rounds)
         summary["warnings"].extend(summary["stopLoop"]["warnings"])
@@ -926,12 +967,28 @@ def analyze(records: str | Path, out_dir: str | Path | None = None, facing_deg: 
         (out / "placement_summary.json").write_text(json.dumps(summary, ensure_ascii=False, indent=2) + "\n",
                                                     encoding="utf-8")
     for s in sessions:
-        for k in ("_space", "_manifest", "_loop_rounds", "_has_loop", "_has_eye", "_has_object"):
+        for k in ("_space", "_manifest", "_loop_rounds", "_has_loop", "_has_eye", "_has_object", "_has_end"):
             s.pop(k, None)
     res = {"sessions": sessions, "stop_trials": stops, "summary": summary, "columns": columns}
     if has_loop:
         res["stop_loop_rounds"] = loop_rounds
     return res
+
+
+def condition_end_summary(included: list[dict]) -> dict:
+    """G86 조건 단계 끝 요약(요약에 넣은 세션): 조건별 끝난 까닭 개수와 실제 조건 단계 길이(ms) 기술 통계."""
+    by_cond: dict[str, list[dict]] = {}
+    for s in included:
+        by_cond.setdefault(str(s["condition"]), []).append(s)
+    return {
+        "definition": "condition_duration_ms = placement.json phaseDurationMs(실제 조건 단계 길이, 확인으로 끝나면 확인 + 확정 알림). "
+                      "endReason: confirmed(확인으로 끝남) | timeout(conditionSeconds를 다 채움) | aborted. "
+                      "확인으로 끝나는 방식과 예전 방식이 섞이면 config_mismatch:conditionEndsOnConfirm.",
+        "byCondition": {c: {"n": len(rows),
+                            "endReason": _count(rows, lambda s: s.get("condition_end_reason")),
+                            "conditionDurationMs": describe(s.get("condition_duration_ms") for s in rows)}
+                        for c, rows in sorted(by_cond.items())},
+    }
 
 
 def loop_summary(included: list[dict], rounds: list[dict]) -> dict:

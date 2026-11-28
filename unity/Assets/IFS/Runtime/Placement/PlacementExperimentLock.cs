@@ -3,7 +3,7 @@
 //   문구 파일 scaleA를 다시 적용하고, 실험자 화면은 고정 항목의 토글 대신 아래 요약만 보인다. 확인·시작 때 Holds·TaskTextProblems가
 //   어긋나면 시작을 거부한다.
 //   고정 항목 = ApplyExperimentPreset이 정하는 값(놓기 도움·두 조건 연습·점검 문항 앞·평정 중 물체 숨김·UI 묶음 (1)–(6)·
-//   반복 멈춤 loop·눈높이 relative) + 멈춤 거리 절차 값(아래 상수, G60-2·G78-a — CP16-1) + 문구 파일 scaleA(판 ExpectedTaskTextVersion과
+//   반복 멈춤 loop·눈높이 relative·직접 배치는 확인으로 조건 단계 끝냄 G86) + 멈춤 거리 절차 값(아래 상수, G60-2·G78-a — CP16-1) + 문구 파일 scaleA(판 ExpectedTaskTextVersion과
 //   G78 키 — CP16-4). 참여자 입력(inputMode)은 preset이 정하지 않으므로 고정하지 않는다(화면에 그대로).
 //   2026-11-28 연구 책임자 결정(나중 결정이 앞 결정을 바꿈): 공간은 neutral로 고정하지 않고 **실험자가 설정 화면의 단추로 고른다**
 //     (environmentChoice experimenter — 세션마다 화면에 남는 항목, 처음 눌린 값 neutral. Apply는 고른 environment를 건드리지 않는다).
@@ -23,9 +23,9 @@ namespace IFS.SceneSpec.Placement
     {
         /// <summary>잠금이 정하는 문구 파일(G59-8·G67-a: scaleA).</summary>
         public const string TaskTextFile = PlacementConfig.ExperimentTaskTextFile;
-        /// <summary>잠금이 받는 문구 파일 판(G78-e, 2026-11-28 공간 고르기로 0.9, 반복 멈춤 조작 안내 stop_loop_hint 고침으로 0.10 — G83).
-        /// 문구 판을 올리면 여기도 올린다.</summary>
-        public const string ExpectedTaskTextVersion = "0.10-scaleA";
+        /// <summary>잠금이 받는 문구 파일 판(G78-e, 2026-11-28 공간 고르기로 0.9, 반복 멈춤 조작 안내 stop_loop_hint 고침으로 0.10 — G83,
+        /// 직접 배치 안내 condition_place를 확인으로 끝나는 절차에 맞춰 고침으로 0.11 — G86). 문구 판을 올리면 여기도 올린다.</summary>
+        public const string ExpectedTaskTextVersion = "0.11-scaleA";
         /// <summary>잠금 문구 파일에 있어야 하는 G78 새 키. 공간 고르기 키(space_choice·space_choice_position)는 실험에서 그 단계를 쓰지 않아 요구하지 않는다
         /// (판 0.9-scaleA 뒤 파일에는 들어 있다 — 꺼 둔 기능을 켤 때는 러너 Check가 따로 요구한다).</summary>
         public static readonly string[] RequiredTaskTextKeys =
@@ -57,6 +57,11 @@ namespace IFS.SceneSpec.Placement
         public const double StopLoopToggleDebounceMs = 250;
         public const bool StopLoopHideRings = true;
 
+        // ── 조건 단계(G86, 2026-11-29 연구 책임자 결정) ─────────────────────
+        /// <summary>직접 배치는 확인 버튼으로 조건 단계를 끝낸다(제한 시간 안에서 몇 번이든 다시 놓고, 확인하지 않으면 conditionSeconds에 끝남).
+        /// 보기만 조건은 이 값과 상관없이 길이 고정.</summary>
+        public const bool ConditionEndsOnConfirm = true;
+
         /// <summary>잠금 적용: 권고 설정(ApplyExperimentPreset) + 실험자가 공간을 고름·앉은 자세 + 멈춤 거리 절차 값. 문구 파일은 러너가 TaskTextFile로 고른다.
         /// 실험자가 고른 공간(environment)은 그대로 둔다(세 공간 가운데 하나일 때 — 아니면 권고 설정의 neutral).</summary>
         public static void Apply(PlacementConfig cfg)
@@ -83,7 +88,19 @@ namespace IFS.SceneSpec.Placement
             cfg.stopLoopPracticeRoundSeconds = StopLoopPracticeRoundSeconds;
             cfg.stopLoopToggleDebounceMs = StopLoopToggleDebounceMs;
             cfg.stopLoopHideRings = StopLoopHideRings;
+            cfg.conditionEndsOnConfirm = ConditionEndsOnConfirm;
         }
+
+        /// <summary>조건 단계 값(G86) 가운데 잠금 값과 다른 것. 맞으면 빈 목록.</summary>
+        public static List<string> ConditionMismatches(PlacementConfig cfg)
+        {
+            var e = new List<string>();
+            if (cfg.conditionEndsOnConfirm != ConditionEndsOnConfirm)
+                e.Add($"conditionEndsOnConfirm = {B(cfg.conditionEndsOnConfirm)}(잠금 {B(ConditionEndsOnConfirm)} — 직접 배치는 확인으로 끝남, G86)");
+            return e;
+        }
+
+        static string B(bool b) => b ? "true" : "false";
 
         /// <summary>멈춤 거리 절차 값 가운데 잠금 값과 다른 것(이름 = 지금 값). 맞으면 빈 목록.</summary>
         public static List<string> StopMismatches(PlacementConfig cfg)
@@ -124,7 +141,7 @@ namespace IFS.SceneSpec.Placement
         /// <summary>설정과 문구 파일 이름이 잠금 값 그대로다(문구 파일 내용은 TaskTextProblems). 공간 이름은 세 공간 가운데 하나면 된다(실험자가 고름).</summary>
         public static bool Holds(PlacementConfig cfg, string taskTextName) =>
             cfg != null && cfg.ExperimentProcedureOn && StopMismatches(cfg).Count == 0 && SpacePostureMismatches(cfg).Count == 0
-            && SameTaskText(taskTextName, TaskTextFile);
+            && ConditionMismatches(cfg).Count == 0 && SameTaskText(taskTextName, TaskTextFile);
 
         /// <summary>잠금이 거부할 이유(설정·문구 파일 이름·읽은 문구 파일의 판과 키). 없으면 빈 목록. 러너가 확인·시작 때 오류로 낸다.</summary>
         public static List<string> Refusals(PlacementConfig cfg, string taskTextName, PlacementTaskText text)
@@ -134,6 +151,7 @@ namespace IFS.SceneSpec.Placement
             if (!cfg.ExperimentProcedureOn) e.Add("권고 설정(ApplyExperimentPreset) 값이 아님");
             e.AddRange(SpacePostureMismatches(cfg));
             e.AddRange(StopMismatches(cfg));
+            e.AddRange(ConditionMismatches(cfg));
             if (!SameTaskText(taskTextName, TaskTextFile)) e.Add($"문구 파일 {taskTextName}(잠금 {TaskTextFile})");
             e.AddRange(TaskTextProblems(text));
             return e.Select(x => "본 실험 설정 고정: " + x + " — 시작하지 않습니다").ToList();
@@ -178,6 +196,7 @@ namespace IFS.SceneSpec.Placement
                 $"멈춤 거리 {stop} (G60-2·G78-a)",
                 $"눈높이 기준 배치 {eye} · 보정 자세 {posture} (G60-3, 2026-11-28) · 헤드셋 UI 개선 묶음 (1)–(6) {OnOff(cfg.UiBundleOn)} (G63)",
                 $"문구 파일 {task}{(taskTextVersion != null ? " 판 " + taskTextVersion : "")} (G59-8·G78-e)",
+                $"조건 단계 상한 {N(cfg.conditionSeconds)}초 · 직접 배치는 확인 버튼으로 끝냄 {OnOff(cfg.conditionEndsOnConfirm)}(보기만은 길이 고정) (G86)",
             };
         }
     }

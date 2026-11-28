@@ -578,6 +578,80 @@ def test_config_mismatch_between_included_sessions(tmp_path):
     assert "config_mismatch:stopDistance" not in summ["warnings"]
 
 
+# ---------------------------------------------------------------- G86(2026-11-29): 직접 배치는 확인으로 조건 단계를 끝낸다
+
+G86_CFG = {"baselineSeconds": 30, "conditionSeconds": 90, "conditionEndsOnConfirm": True, "headSampleHz": 20}
+OLD_CFG = {**G86_CFG, "conditionEndsOnConfirm": False}
+
+
+def _g86_place(root, pnum, sid, confirm_ms=40000, reason="confirmed", ignored=0, **kw):
+    dur = confirm_ms + 2000 if reason == "confirmed" else 90000
+    return make_placement_session(root, pnum, sid, manifest_extra={"config": G86_CFG}, placement_override={
+        "phaseDurationMs": dur, "confirmed": confirm_ms is not None, "confirmMs": confirm_ms, "conditionCompleted": True,
+        "conditionEndsOnConfirm": True, "conditionEndReason": reason, "confirmIgnoredHeld": ignored}, **kw)
+
+
+def test_g86_condition_end_columns_and_duration_per_session(tmp_path):
+    _g86_place(tmp_path, 1, "early", confirm_ms=40000, ignored=1)
+    _g86_place(tmp_path, 3, "late", confirm_ms=60000)
+    _g86_place(tmp_path, 5, "noconf", confirm_ms=None, reason="timeout")
+    make_placement_session(tmp_path, 2, "v", "view", manifest_extra={"config": G86_CFG}, placement_override={
+        "phaseDurationMs": 90000, "confirmed": False, "confirmMs": None, "conditionCompleted": True,
+        "conditionEndsOnConfirm": True, "conditionEndReason": "timeout", "confirmIgnoredHeld": 0})
+    res = analyze(tmp_path, tmp_path / "out")
+    for k in placement.END_COLUMNS:
+        assert k in res["columns"]
+    e = row(res, "early")
+    assert e["condition_end_reason"] == "confirmed" and e["condition_duration_ms"] == 42000 and e["confirm_ms"] == 40000
+    assert e["condition_ends_on_confirm"] is True and e["confirm_ignored_held"] == 1 and e["grab_count"] == 2
+    assert row(res, "noconf")["condition_end_reason"] == "timeout" and row(res, "noconf")["condition_duration_ms"] == 90000
+    assert row(res, "noconf")["confirm_ms"] is None
+    assert row(res, "v")["condition_end_reason"] == "timeout"
+    ce = res["summary"]["conditionEnd"]["byCondition"]
+    assert ce["place"]["n"] == 3 and ce["place"]["endReason"] == {"confirmed": 2, "timeout": 1}
+    assert ce["place"]["conditionDurationMs"]["mean"] == pytest.approx((42000 + 62000 + 90000) / 3)
+    assert ce["view"]["endReason"] == {"timeout": 1}
+    assert "config_mismatch:conditionEndsOnConfirm" not in res["summary"]["warnings"]
+    header = (tmp_path / "out" / "placement_sessions.csv").read_text(encoding="utf-8").splitlines()[0].split(",")
+    assert "condition_end_reason" in header and "condition_duration_ms" in header
+
+
+def test_g86_old_and_new_sessions_mixed_warn_and_old_records_do_not_break(tmp_path):
+    _g86_place(tmp_path, 1, "new")
+    # 옛 방식(확인해도 90초까지) — placement.json에 새 필드가 없다
+    make_placement_session(tmp_path, 3, "old", manifest_extra={"config": OLD_CFG})
+    make_placement_session(tmp_path, 4, "old-cut", completed=False, aborted_at="condition", manifest_extra={"config": OLD_CFG},
+                           placement_override={"conditionCompleted": False, "phaseDurationMs": 2000})
+    make_placement_session(tmp_path, 2, "v", "view", manifest_extra={"config": OLD_CFG})
+    res = analyze(tmp_path)
+    summ = res["summary"]
+    assert "config_mismatch:conditionEndsOnConfirm" in summ["warnings"]
+    assert summ["configMismatch"]["conditionEndsOnConfirm"] == [False, True]
+    old = row(res, "old")
+    assert old["condition_ends_on_confirm"] is False and old["condition_end_reason"] == "timeout"
+    assert old["condition_duration_ms"] == 90000 and old["confirm_ignored_held"] is None
+    cut = row(res, "old-cut")
+    assert cut["condition_end_reason"] == "aborted" and cut["confirm_ms"] is None
+    assert row(res, "new")["condition_end_reason"] == "confirmed"
+
+
+def test_g86_columns_absent_without_new_sessions_and_unknown_reason_flagged(tmp_path):
+    make_placement_session(tmp_path, 1, "old", manifest_extra={"config": OLD_CFG})
+    make_placement_session(tmp_path, 2, "older")      # config에 키조차 없는 기록
+    res = analyze(tmp_path)
+    assert not any(k in res["columns"] for k in placement.END_COLUMNS), "확인으로 끝나는 세션이 없으면 출력은 G86 전과 같다"
+    assert "conditionEnd" not in res["summary"]
+    assert "condition_end_reason" not in row(res, "old")
+
+    other = tmp_path / "other"
+    _g86_place(other, 1, "odd", reason="weird")
+    # 설정은 켜져 있었는데 필드가 없는 기록(G86 전 러너) — 까닭은 알 수 없음(빈칸)
+    make_placement_session(other, 3, "pre-g86-on", manifest_extra={"config": G86_CFG})
+    res = analyze(other)
+    assert row(res, "odd")["condition_end_reason"] is None and "condition_end_reason_unknown" in row(res, "odd")["flags"]
+    assert row(res, "pre-g86-on")["condition_end_reason"] is None
+
+
 # ---------------------------------------------------------------- 계약 테스트: 실제 Unity 기록
 
 REAL_RECORDS = Path(__file__).resolve().parents[2] / "docs" / "validation" / "placement" / "records"

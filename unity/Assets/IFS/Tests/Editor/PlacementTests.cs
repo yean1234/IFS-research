@@ -530,9 +530,285 @@ namespace IFS.SceneSpec.Tests
             cfg.conditionEndsOnConfirm = true;
             string dir = Run(cfg);
             var pl = Json(dir, "placement.json");
-            Assert.That((long)pl["phaseDurationMs"], Is.EqualTo(10000).Within(40));
-            Assert.That((long)pl["confirmMs"], Is.EqualTo((long)pl["phaseDurationMs"]));
+            // G86: 확인 뒤 확정 알림(ConfirmNoticeSeconds) 동안 기다렸다가 끝난다 — phaseDurationMs = confirmMs + 알림
+            Assert.That((long)pl["confirmMs"], Is.EqualTo(10000).Within(40));
+            Assert.That((long)pl["phaseDurationMs"], Is.EqualTo((long)pl["confirmMs"] + 2000).Within(40));
             Assert.That((bool)pl["conditionCompleted"], Is.True, "설정으로 정한 끝(확인)은 중단이 아니다");
+        }
+
+        // ── G86(2026-11-29): 직접 배치는 확인으로 조건 단계를 끝낸다 ─────────────
+        static PlacementConfig G86Config(string condition = "place", string mode = PlacementConfig.ModeStatic)
+        {
+            var cfg = ShortConfig(condition, mode);
+            cfg.conditionSeconds = 20;   // 확인(10초) + 알림(2초)이 제한 시간보다 앞서게
+            cfg.conditionEndsOnConfirm = true;
+            return cfg;
+        }
+
+        static List<string[]> CondEvents(string dir, string name) => Csv(dir, "events.csv").Where(c => c[1] == name).ToList();
+
+        [Test]
+        public void G86_confirm_ends_place_condition_early_after_the_notice()
+        {
+            var keys = new List<string>();
+            string dir = Run(G86Config(), participantOverride: (s, dt, f) =>
+            {
+                if (s.Phase == PlacementPhase.Condition && s.ConditionClosing) keys.Add(s.ParticipantTextKey);
+                return f;
+            });
+            Assert.That(PhaseEvents(dir), Is.EqualTo(AllPhases), "확인으로 끝나도 다음 단계로 그대로 간다");
+            var pl = Json(dir, "placement.json");
+            Assert.That((bool)pl["confirmed"], Is.True);
+            Assert.That((long)pl["confirmMs"], Is.EqualTo(10000).Within(40));
+            Assert.That((long)pl["phaseDurationMs"], Is.EqualTo(12000).Within(40), "실제 조건 단계 길이 = 확인 + 2초 알림(제한 20초보다 짧다)");
+            Assert.That((string)pl["conditionEndReason"], Is.EqualTo("confirmed"));
+            Assert.That((bool)pl["conditionEndsOnConfirm"], Is.True);
+            Assert.That((int)pl["confirmIgnoredHeld"], Is.EqualTo(0));
+            Assert.That((int)pl["grabCount"], Is.EqualTo(2), "확인 전까지 잡아 옮긴 횟수(다시 잡기 1번)");
+            Assert.That((bool)pl["conditionCompleted"], Is.True);
+            Assert.That((double)pl["finalDistanceM"], Is.EqualTo(2.6).Within(1e-3), "확인한 자리 그대로");
+            Assert.That(keys, Is.Not.Empty);
+            Assert.That(keys.All(k => k == PlacementTaskText.ConfirmDoneKey), Is.True, "알림 동안 「정했어요.」만 보인다: " + string.Join(" | ", keys.Distinct()));
+            var end = CondEvents(dir, "condition_end").Single();
+            Assert.That(end[2], Does.StartWith("reason=confirmed;duration_ms="));
+            Assert.That(end[2], Does.Contain(";grab_count=2;confirm_ignored_held=0"));
+            Assert.That(CondEvents(dir, "confirm").Count, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void G86_without_confirm_the_place_condition_ends_at_the_time_limit()
+        {
+            string dir = Run(G86Config(), script: new PlacementAutoScript { ConfirmAtSeconds = -1 });
+            var pl = Json(dir, "placement.json");
+            Assert.That((bool)pl["confirmed"], Is.False);
+            Assert.That(pl["confirmMs"].Type, Is.EqualTo(JTokenType.Null));
+            Assert.That((long)pl["phaseDurationMs"], Is.EqualTo(20000).Within(40), "확인하지 않으면 conditionSeconds에 끝난다");
+            Assert.That((string)pl["conditionEndReason"], Is.EqualTo("timeout"));
+            Assert.That((bool)pl["conditionCompleted"], Is.True);
+            Assert.That((double)pl["finalDistanceM"], Is.EqualTo(2.6).Within(1e-3), "마지막으로 놓은 자리");
+            Assert.That(CondEvents(dir, "condition_end").Single()[2], Does.StartWith("reason=timeout;duration_ms="));
+        }
+
+        [Test]
+        public void G86_confirm_while_holding_is_ignored()
+        {
+            bool pressed = false;
+            string dir = Run(G86Config(), participantOverride: (s, dt, f) =>
+            {
+                // 첫 이동(1–4초) 도중 쥔 채로 확인을 한 번 누른다
+                if (s.Phase == PlacementPhase.Condition && s.Held && !pressed && s.SecondsInPhase >= 2.0) { pressed = true; f.ConfirmDown = true; }
+                return f;
+            });
+            Assert.That(pressed, Is.True);
+            var ign = CondEvents(dir, "confirm_ignored");
+            Assert.That(ign.Count, Is.EqualTo(1));
+            Assert.That(ign[0][2], Does.StartWith("reason=held;"));
+            var pl = Json(dir, "placement.json");
+            Assert.That((int)pl["confirmIgnoredHeld"], Is.EqualTo(1));
+            Assert.That((long)pl["confirmMs"], Is.EqualTo(10000).Within(40), "받은 확인은 놓은 뒤의 확인 하나");
+            Assert.That((string)pl["conditionEndReason"], Is.EqualTo("confirmed"));
+            Assert.That((int)pl["grabCount"], Is.EqualTo(2), "쥔 채 누른 확인이 놓기를 일으키지 않는다(이동은 그대로 이어짐)");
+            Assert.That((double)pl["finalDistanceM"], Is.EqualTo(2.6).Within(1e-3));
+            var rel = CondEvents(dir, "release");
+            Assert.That(rel.Count, Is.EqualTo(2));
+            Assert.That(rel.All(r => r[2].EndsWith("reason=button")), Is.True, "확인으로 놓아지지 않았다");
+            Assert.That(CondEvents(dir, "confirm").Count, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void G86_object_cannot_be_grabbed_or_moved_during_the_notice()
+        {
+            PVec3? atConfirm = null;
+            int tries = 0;
+            string dir = Run(G86Config(), participantOverride: (s, dt, f) =>
+            {
+                if (s.Phase != PlacementPhase.Condition || !s.ConditionClosing) return f;
+                atConfirm = atConfirm ?? s.ObjectPosition;
+                tries++;
+                // 알림 동안: 물체를 겨눠 잡기·당기기·확인을 계속 누른다 — 아무것도 받지 않아야 한다
+                var origin = new PVec3(0.0, 1.2, 0.0);
+                return new PlacementInputFrame
+                {
+                    HasRay = true, RayOrigin = origin, RayDirection = (s.ObjectPosition - origin).Normalized,
+                    GrabDown = true, GrabHeld = true, PushPullAxis = 1, PushPullDeltaM = 0.5, ConfirmDown = true,
+                };
+            });
+            Assert.That(tries, Is.GreaterThan(50), "알림 2초 동안 여러 프레임 눌렀다");
+            var pl = Json(dir, "placement.json");
+            Assert.That((int)pl["grabCount"], Is.EqualTo(2), "알림 동안 잡기 없음");
+            Assert.That((double)pl["finalX"], Is.EqualTo(atConfirm.Value.X).Within(1e-4), "최종 자리 = 확인한 순간의 자리");
+            Assert.That((double)pl["finalY"], Is.EqualTo(atConfirm.Value.Y).Within(1e-4));
+            Assert.That((double)pl["finalZ"], Is.EqualTo(atConfirm.Value.Z).Within(1e-4));
+            Assert.That(CondEvents(dir, "confirm").Count, Is.EqualTo(1), "알림 동안 확인을 다시 받지 않는다");
+            Assert.That(CondEvents(dir, "grab").Count, Is.EqualTo(2));
+            long confirmT = long.Parse(CondEvents(dir, "confirm")[0][0]);
+            var after = Csv(dir, "objpose.csv").Where(c => c[1] == "condition" && long.Parse(c[0]) > confirmT).ToList();
+            Assert.That(after, Is.Not.Empty);
+            Assert.That(after.All(c => c[8] == "idle"), Is.True);
+            Assert.That(after.Select(c => c[2] + c[3] + c[4]).Distinct().Count(), Is.EqualTo(1), "알림 동안 물체가 움직이지 않는다");
+        }
+
+        [Test]
+        public void G86_abort_during_the_notice_is_recorded_as_aborted()
+        {
+            string dir = Run(G86Config(), abortWhen: s => s.Phase == PlacementPhase.Condition && s.ConditionClosing && s.SecondsInPhase >= 11.0);
+            var pl = Json(dir, "placement.json");
+            Assert.That((bool)pl["confirmed"], Is.True, "확인은 받은 뒤");
+            Assert.That((bool)pl["conditionCompleted"], Is.False);
+            Assert.That((string)pl["conditionEndReason"], Is.EqualTo("aborted"));
+        }
+
+        [Test]
+        public void G86_view_conditions_keep_the_fixed_length_even_when_A_is_pressed()
+        {
+            foreach (var mode in new[] { PlacementConfig.ModeStatic, PlacementConfig.ModePointSelect, PlacementConfig.ModeSystemMove })
+            {
+                int presses = 0;
+                string dir = Run(G86Config("view", mode), participantOverride: (s, dt, f) =>
+                {
+                    if (s.Phase == PlacementPhase.Condition && s.SecondsInPhase >= 3.0 && (++presses % 25) == 0) f.ConfirmDown = true;   // A를 여러 번
+                    return f;
+                });
+                Assert.That(presses, Is.GreaterThan(0), mode);
+                var pl = Json(dir, "placement.json");
+                Assert.That((long)pl["phaseDurationMs"], Is.EqualTo(20000).Within(40), mode + ": 보기만은 길이 고정");
+                Assert.That((string)pl["conditionEndReason"], Is.EqualTo("timeout"), mode);
+                Assert.That((bool)pl["conditionCompleted"], Is.True, mode);
+                Assert.That(CondEvents(dir, "confirm"), Is.Empty, mode + ": 보기만에는 직접 배치 확인이 없다");
+                Assert.That(CondEvents(dir, "confirm_ignored"), Is.Empty, mode);
+                Directory.Delete(dir, true);
+            }
+        }
+
+        [Test]
+        public void G86_release_and_confirm_in_the_same_frame_is_ignored_and_the_next_frame_confirm_is_taken()
+        {
+            // CP22-1: 프레임 시작 때 쥐고 있었으면 그 프레임에 놓아도 확인은 쥔 채 확인으로 본다. 다음 프레임부터의 확인만 받는다
+            int stage = 0;
+            double releasedAt = double.NaN;
+            string dir = Run(G86Config(), script: new PlacementAutoScript { ConfirmAtSeconds = -1 }, participantOverride: (s, dt, f) =>
+            {
+                if (s.Phase != PlacementPhase.Condition) return f;
+                if (stage == 0 && s.Held && s.SecondsInPhase >= 2.0)
+                {
+                    stage = 1;
+                    releasedAt = s.SecondsInPhase;
+                    return new PlacementInputFrame { HasRay = f.HasRay, RayOrigin = f.RayOrigin, RayDirection = f.RayDirection, GrabHeld = false, ConfirmDown = true };
+                }
+                if (stage == 1) { stage = 2; f.GrabDown = f.GrabHeld = false; f.ConfirmDown = true; }   // 놓은 다음 프레임
+                return f;
+            });
+            Assert.That(stage, Is.EqualTo(2));
+            var ign = CondEvents(dir, "confirm_ignored");
+            Assert.That(ign.Count, Is.EqualTo(1));
+            Assert.That(ign[0][2], Does.StartWith("reason=held;"));
+            var rel = CondEvents(dir, "release");
+            Assert.That(rel.Count, Is.EqualTo(1), "같은 프레임에 놓기는 그대로 일어난다");
+            Assert.That(rel[0][2], Does.EndWith("reason=button"));
+            Assert.That(long.Parse(rel[0][0]), Is.EqualTo(long.Parse(ign[0][0])), "놓기와 무시된 확인이 같은 프레임");
+            var pl = Json(dir, "placement.json");
+            Assert.That((int)pl["confirmIgnoredHeld"], Is.EqualTo(1));
+            Assert.That((bool)pl["confirmed"], Is.True);
+            // releasedAt = 놓은 프레임의 Tick 앞 시각 → 놓은 프레임 = +0.02 s, 그 다음 프레임 = +0.04 s
+            Assert.That((long)pl["confirmMs"], Is.EqualTo((long)Math.Round((releasedAt + 0.04) * 1000)).Within(2), "놓은 다음 프레임의 확인");
+            Assert.That((long)pl["confirmMs"] - long.Parse(ign[0][0]) + long.Parse(Csv(dir, "events.csv").First(e => e[1] == "phase" && e[2] == "condition")[0]),
+                Is.EqualTo(20).Within(2), "무시된 확인 바로 다음 프레임");
+            Assert.That((string)pl["conditionEndReason"], Is.EqualTo("confirmed"));
+            Assert.That((int)pl["grabCount"], Is.EqualTo(1), "두 번째 이동 전에 끝났다");
+        }
+
+        [Test]
+        public void G86_confirm_arriving_in_the_frame_that_reaches_the_limit_is_not_taken()
+        {
+            bool pressed = false;
+            string dir = Run(G86Config(), script: new PlacementAutoScript { ConfirmAtSeconds = -1 }, participantOverride: (s, dt, f) =>
+            {
+                // 이번 Tick에서 conditionSeconds(20)에 닿는 프레임에 확인
+                if (s.Phase == PlacementPhase.Condition && !pressed && s.SecondsInPhase + dt >= 20.0 - 1e-9) { pressed = true; f.ConfirmDown = true; }
+                return f;
+            });
+            Assert.That(pressed, Is.True);
+            var pl = Json(dir, "placement.json");
+            Assert.That((string)pl["conditionEndReason"], Is.EqualTo("timeout"), "상한에 닿은 프레임은 입력보다 시간 끝이 먼저");
+            Assert.That((bool)pl["confirmed"], Is.False);
+            Assert.That((long)pl["phaseDurationMs"], Is.EqualTo(20000).Within(40));
+            Assert.That(CondEvents(dir, "confirm"), Is.Empty);
+        }
+
+        [Test]
+        public void G86_limit_passing_during_the_notice_still_ends_as_confirmed_after_the_notice()
+        {
+            string dir = Run(G86Config(), script: new PlacementAutoScript { ConfirmAtSeconds = 19.0 });
+            var pl = Json(dir, "placement.json");
+            Assert.That((long)pl["confirmMs"], Is.EqualTo(19000).Within(40));
+            Assert.That((string)pl["conditionEndReason"], Is.EqualTo("confirmed"));
+            Assert.That((long)pl["phaseDurationMs"], Is.EqualTo(21000).Within(40), "알림 2초를 마친 뒤 끝난다(상한 20초를 넘김)");
+            Assert.That((bool)pl["conditionCompleted"], Is.True);
+        }
+
+        [Test]
+        public void G86_view_replay_does_not_end_on_confirm()
+        {
+            var traj = new PlacementTrajectory { SourceSessionId = "SYN-SRC", SampleHz = 20 };
+            traj.Add(0, new PVec3(0, 1.2, 1.5));
+            traj.Add(5000, new PVec3(1.0, 1.0, 2.0));
+            var cfg = G86Config("view", PlacementConfig.ModeReplay);
+            cfg.replayPath = "synthetic_trajectory.json";
+            int presses = 0;
+            string dir = Run(cfg, replay: traj, replayFile: "synthetic_trajectory.json", participantOverride: (s, dt, f) =>
+            {
+                if (s.Phase == PlacementPhase.Condition && (++presses % 25) == 0) { f.ConfirmDown = true; f.GrabDown = f.GrabHeld = true; }
+                return f;
+            });
+            Assert.That(presses, Is.GreaterThan(0));
+            var pl = Json(dir, "placement.json");
+            Assert.That((long)pl["phaseDurationMs"], Is.EqualTo(20000).Within(40), "replay는 확인 입력과 상관없이 길이 고정");
+            Assert.That((string)pl["conditionEndReason"], Is.EqualTo("timeout"));
+            Assert.That(CondEvents(dir, "confirm"), Is.Empty);
+            Assert.That(CondEvents(dir, "confirm_ignored"), Is.Empty);
+        }
+
+        [Test]
+        public void G86_xr_loss_during_the_condition_keeps_the_timer_running()
+        {
+            // 지금 동작을 고정하는 시험: 조건 단계는 XR이 끊겨도 제한 시간이 그대로 흐른다(CP20에서 남긴 것).
+            // 끊긴 동안 멈출지는 책임자에게 물어 둔 상태다 — 답이 오면 이 시험을 함께 고친다. 동작은 바꾸지 않았다.
+            bool lost = false, regained = false;
+            string dir = Run(G86Config(), script: new PlacementAutoScript { ConfirmAtSeconds = -1 },
+                setup: (info, w) => info.XrMonitored = true,
+                participantOverride: (s, dt, f) =>
+                {
+                    if (s.Phase == PlacementPhase.Condition && !lost && s.SecondsInPhase >= 9.0) { lost = true; s.ReportXrHead(false); }
+                    else if (lost && !regained && s.Phase == PlacementPhase.Condition && s.SecondsInPhase >= 15.0) { regained = true; s.ReportXrHead(true); }
+                    else if (!lost || regained) s.ReportXrHead(true);
+                    return f;
+                });
+            Assert.That(lost && regained, Is.True);
+            var evs = Csv(dir, "events.csv");
+            Assert.That(evs.Count(e => e[1] == "xr_lost" && e[2].Contains("phase=condition")), Is.EqualTo(1));
+            Assert.That(evs.Count(e => e[1] == "xr_regained"), Is.EqualTo(1));
+            var pl = Json(dir, "placement.json");
+            Assert.That((long)pl["phaseDurationMs"], Is.EqualTo(20000).Within(40), "끊긴 6초도 조건 단계 시간에 든다(멈추지 않음)");
+            Assert.That((string)pl["conditionEndReason"], Is.EqualTo("timeout"));
+        }
+
+        [Test]
+        public void G86_off_keeps_the_old_behavior_confirm_while_holding_releases_and_length_is_fixed()
+        {
+            bool pressed = false;
+            var cfg = G86Config();
+            cfg.conditionEndsOnConfirm = false;
+            string dir = Run(cfg, participantOverride: (s, dt, f) =>
+            {
+                if (s.Phase == PlacementPhase.Condition && s.Held && !pressed && s.SecondsInPhase >= 2.0) { pressed = true; f.ConfirmDown = true; }
+                return f;
+            });
+            var pl = Json(dir, "placement.json");
+            Assert.That((long)pl["phaseDurationMs"], Is.EqualTo(20000).Within(40));
+            Assert.That(pl["conditionEndReason"], Is.Null, "꺼진 설정의 placement.json에는 새 필드가 없다");
+            Assert.That(pl["conditionEndsOnConfirm"], Is.Null);
+            Assert.That(CondEvents(dir, "condition_end"), Is.Empty);
+            Assert.That(CondEvents(dir, "release").Any(r => r[2].EndsWith("reason=confirm")), Is.True, "예전처럼 쥔 채 확인은 놓고 확정");
         }
 
         // ── 멈춤 거리 ────────────────────────────────────────────────────

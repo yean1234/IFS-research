@@ -47,7 +47,9 @@ namespace IFS.SceneSpec.Placement
         public double baselineSeconds = 30;
         /// <summary>조건 단계 길이(초). 두 조건이 같다.</summary>
         public double conditionSeconds = 90;
-        /// <summary>켜면 직접 배치에서 확인("여기에 둔다")을 누르는 순간 조건 단계를 끝낸다. 기본 꺼짐(단계 길이 고정).</summary>
+        /// <summary>켜면 직접 배치에서 확인("여기에 둔다")을 누르면 확정 알림(약 2초, 그동안 잡기·옮기기 막음) 뒤 조건 단계를 끝낸다.
+        /// 쥔 채 누른 확인은 받지 않는다(confirm_ignored). 확인하지 않으면 conditionSeconds에 끝난다. 보기만 조건은 켜도 길이 고정.
+        /// 코드 기본 꺼짐(단계 길이 고정) — 본 실험 권고 설정·잠금은 켠다(2026-11-29 연구 책임자 결정 G86).</summary>
         public bool conditionEndsOnConfirm = false;
         /// <summary>머리 자세·물체 위치·궤적 표본 빈도(Hz).</summary>
         public double headSampleHz = 20;
@@ -240,7 +242,8 @@ namespace IFS.SceneSpec.Placement
 
         /// <summary>뼈대 3절 권고 설정을 켠다: 공간 B(neutral + 놓기 도움), 두 조건 모두 배치 연습, 자리(점검) 문항을 멈춤 거리 앞에,
         /// 평정 동안 물체 숨김, 헤드셋 UI 개선 묶음 (1)–(6), 멈춤 거리 반복 멈춤(stopMode loop — G60-4가 want_move를 뺀 전제),
-        /// 눈높이 기준 배치(eyeHeightMode relative — G60-3, 헤드셋에서는 보정을 통과해야 시작, 데스크톱·자동 시행은 desktop_fixed).
+        /// 눈높이 기준 배치(eyeHeightMode relative — G60-3, 헤드셋에서는 보정을 통과해야 시작, 데스크톱·자동 시행은 desktop_fixed),
+        /// 직접 배치는 확인으로 조건 단계를 끝냄(conditionEndsOnConfirm — 2026-11-29 연구 책임자 결정 G86, 보기만은 길이 고정 그대로).
         /// 조건·통제 방식과 판 숨김(hidePanelInDistancePhases)은 건드리지 않는다(⚠ 사람이 정할 것). 문구 파일 scaleA는 러너가 고른다.</summary>
         public void ApplyExperimentPreset()
         {
@@ -252,13 +255,15 @@ namespace IFS.SceneSpec.Placement
             ApplyUiBundle();
             stopMode = StopModeLoop;
             eyeHeightMode = EyeHeightRelative;
+            conditionEndsOnConfirm = true;
         }
 
         /// <summary>뼈대 3절 권고 설정이 모두 켜져 있다(문구 파일은 따로 — 러너가 확인).</summary>
         public bool ExperimentPresetOn => environment == EnvironmentNeutral && ExperimentProcedureOn;
         /// <summary>권고 설정 가운데 공간 이름을 뺀 나머지가 모두 켜져 있다(잠금은 공간을 참여자가 고르게 둔다 — 2026-11-28).</summary>
         public bool ExperimentProcedureOn => placementAssist && practiceInAllConditions
-                                             && checkBeforeStopDistance && hideObjectDuringItems && UiBundleOn && IsStopLoop && IsEyeRelative;
+                                             && checkBeforeStopDistance && hideObjectDuringItems && UiBundleOn && IsStopLoop && IsEyeRelative
+                                             && conditionEndsOnConfirm;
         /// <summary>G63 UI 플래그가 하나라도 켜져 있다(manifest config에 ui* 키를 더한다).</summary>
         public bool UsesUiOptions => uiComfortWrap || uiDarkPanel || uiRayHover || uiHaptics || uiRatingConfirmFlash || uiNarrowScale || hidePanelInDistancePhases;
 

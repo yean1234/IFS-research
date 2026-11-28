@@ -297,7 +297,7 @@ MonoBehaviour:
     startHeightM: 1.2
     baselineSeconds: 30
     conditionSeconds: 90
-    conditionEndsOnConfirm: 0
+    conditionEndsOnConfirm: 1
     headSampleHz: 20
     pushPullSpeedMps: 1
     holdMinM: 0.3

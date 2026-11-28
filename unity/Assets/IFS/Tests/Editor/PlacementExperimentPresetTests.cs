@@ -44,6 +44,8 @@ namespace IFS.SceneSpec.Tests
             Assert.That(cfg.eyeHeightMode, Is.EqualTo(PlacementConfig.EyeHeightRelative), "눈높이 기준 배치(G60-3)");
             Assert.That(def.stopMode, Is.EqualTo(PlacementConfig.StopModeSingle), "기본값 그대로");
             Assert.That(def.eyeHeightMode, Is.EqualTo(PlacementConfig.EyeHeightNone), "기본값 그대로");
+            Assert.That(cfg.conditionEndsOnConfirm, Is.True, "직접 배치는 확인으로 끝남(G86)");
+            Assert.That(def.conditionEndsOnConfirm, Is.False, "기본값 그대로");
             // 그 밖의 것은 그대로
             Assert.That(cfg.condition, Is.EqualTo(def.condition));
             Assert.That(cfg.controlMode, Is.EqualTo(def.controlMode));
@@ -117,6 +119,11 @@ namespace IFS.SceneSpec.Tests
                 foreach (var f in PlacementRecordWriter.LoopFiles)
                     Assert.That(File.ReadAllLines(Path.Combine(dir, f)).Length, Is.GreaterThan(1), cond + ": " + f);
                 Assert.That(events.Any(e => e[1] == "eye_height_calibrated"), Is.True, cond);
+                // G86: 직접 배치는 확인으로, 보기만은 제한 시간으로 끝난다
+                Assert.That((bool)c["conditionEndsOnConfirm"], Is.True, cond);
+                var pl = JObject.Parse(File.ReadAllText(Path.Combine(dir, PlacementRecordWriter.PlacementFile)));
+                Assert.That((string)pl["conditionEndReason"], Is.EqualTo(cond == PlacementConfig.ConditionPlace ? "confirmed" : "timeout"), cond);
+                Assert.That(events.Count(e => e[1] == "condition_end"), Is.EqualTo(1), cond);
                 Assert.That(JObject.Parse(File.ReadAllText(Path.Combine(dir, "summary.json")))["completed"].Value<bool>(), Is.True, cond);
             }
         }

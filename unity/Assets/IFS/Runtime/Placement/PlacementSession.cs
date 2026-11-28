@@ -69,6 +69,10 @@ namespace IFS.SceneSpec.Placement
         double _pathLength;
         bool _confirmed;
         long? _confirmMs;
+        // G86(2026-11-29): 확인으로 끝나는 직접 배치에서 확인을 받은 뒤 확정 알림(ConfirmNoticeSeconds)이 끝나 단계를 닫을 시각.
+        // 그동안 잡기·옮기기는 받지 않는다(최종 자리 = 확인한 순간의 자리). NaN이면 기다리는 중이 아님.
+        double _confirmEndAt = double.NaN;
+        int _confirmIgnoredHeld;
 
         // 시스템 이동·가리켜 지정·재생
         bool _moving, _moveStarted;
@@ -237,6 +241,7 @@ namespace IFS.SceneSpec.Placement
         /// <summary>제시·조건 단계의 남은 시간(초). 다른 단계는 NaN.</summary>
         public double PhaseSecondsLeft =>
             Phase == PlacementPhase.Baseline ? Math.Max(0, _cfg.baselineSeconds - SecondsInPhase)
+            : Phase == PlacementPhase.Condition && ConditionClosing ? Math.Max(0, _confirmEndAt - _now)   // G86: 확인 뒤 알림이 끝날 때까지
             : Phase == PlacementPhase.Condition ? Math.Max(0, _cfg.conditionSeconds - SecondsInPhase)
             : double.NaN;
         public PVec3 StartPosition { get; }
@@ -773,6 +778,9 @@ namespace IFS.SceneSpec.Placement
             _pathLength = 0;
             _confirmed = false;
             _confirmMs = null;
+            _confirmEndAt = double.NaN;
+            _confirmIgnoredHeld = 0;
+            _conditionEndReason = null;
             _moving = _moveStarted = false;
             _pointer = null;
             _replayEnded = false;
@@ -822,6 +830,7 @@ namespace IFS.SceneSpec.Placement
 
         void StepPlace(double dt, PlacementInputFrame input)
         {
+            bool heldAtFrameStart = _held;   // G86 CP22-1: 같은 프레임의 놓기 + 확인은 쥔 채 확인으로 본다
             if (!_held && input.GrabDown && input.HasRay) TryGrab(input);
             else if (_held && !input.GrabHeld) Release("button");
 
@@ -833,7 +842,7 @@ namespace IFS.SceneSpec.Placement
                 SetObject(ClampSpace(target), true);
             }
             _state = _held ? StateHeld : StateIdle;
-            if (input.ConfirmDown) ConfirmPlace();
+            if (input.ConfirmDown) ConfirmPlace(heldAtFrameStart);
         }
 
         void TryGrab(PlacementInputFrame input)
@@ -862,15 +871,38 @@ namespace IFS.SceneSpec.Placement
             if (reason == "button") Haptic(PlacementHaptics.Release);   // 참여자가 뗀 때만(확인·단계 끝의 자동 놓기는 확인 펄스 하나)
         }
 
-        void ConfirmPlace()
+        /// <summary>G86: 직접 배치이고 conditionEndsOnConfirm이 켜져 있다(확인 = 단계 끝). 보기만 조건은 켜져 있어도 길이 고정.</summary>
+        bool PlaceEndsOnConfirm => _cfg.IsPlace && _cfg.conditionEndsOnConfirm;
+        /// <summary>G86: 확인을 받아 확정 알림이 끝나기를 기다리는 중(잡기·옮기기를 받지 않음).</summary>
+        public bool ConditionClosing => !double.IsNaN(_confirmEndAt);
+
+        /// <param name="heldAtFrameStart">이 프레임 시작 때 쥐고 있었나(같은 프레임에 놓았어도 쥔 채 확인으로 본다 — CP22-1)</param>
+        void ConfirmPlace(bool heldAtFrameStart)
         {
+            if (PlaceEndsOnConfirm)
+            {
+                // G86(2026-11-29): 쥔 채 누른 확인은 받지 않는다(놓은 자리를 정하는 버튼 — 놓은 뒤 다음 프레임부터 다시 눌러야 함). 사건으로만 남긴다.
+                // 프레임 시작 때 쥐고 있었으면(이 프레임에 놓았어도) 무시한다.
+                if (_held || heldAtFrameStart)
+                {
+                    _confirmIgnoredHeld++;
+                    Event("confirm_ignored", $"reason=held;{Where(_obj)};t_ms={CondMs}");
+                    return;
+                }
+                _confirmed = true;
+                _confirmMs = CondMs;
+                Event("confirm", $"{Where(_obj)};t_ms={_confirmMs}");
+                Haptic(PlacementHaptics.Confirm);
+                ShowConfirmNotice();   // 「정했어요.」 ConfirmNoticeSeconds 동안
+                _confirmEndAt = _now + ConfirmNoticeSeconds;   // 그동안 잡기·옮기기를 막고, 끝나면 단계를 닫는다(Tick)
+                return;
+            }
             if (_held) Release("confirm");
             _confirmed = true;
             _confirmMs = CondMs;
             Event("confirm", $"{Where(_obj)};t_ms={_confirmMs}");
             Haptic(PlacementHaptics.Confirm);
             ShowConfirmNotice();   // 2026-11-28: 확정 알림(약 2초 뒤 원래 안내). 조건 단계 길이·기록은 그대로
-            if (_cfg.conditionEndsOnConfirm) EndCondition();
         }
 
         void StartMove(PVec3 target, string ev, string detail)
@@ -948,6 +980,10 @@ namespace IFS.SceneSpec.Placement
         {
             if (_conditionWritten) return;
             _conditionCompleted = advance;
+            // G86: 끝난 까닭. confirmed = 확인 뒤 확정 알림까지(직접 배치 + conditionEndsOnConfirm), timeout = conditionSeconds를 다 채움,
+            // aborted = 중단(확인 뒤 알림 중에 중단해도 aborted — confirmed 필드는 true로 남는다).
+            _conditionEndReason = !advance ? EndAborted : ConditionClosing ? EndConfirmed : EndTimeout;
+            _confirmEndAt = double.NaN;
             if (_held) Release("phase_end");
             if (_moving)
             {
@@ -963,6 +999,10 @@ namespace IFS.SceneSpec.Placement
             long durMs = CondMs;
             if (_trajectory.Samples.Count == 0 || _trajectory.Samples[_trajectory.Samples.Count - 1].TMs < durMs) _trajectory.Add(durMs, _obj);
             _conditionFinal = _obj;
+            // G86: 확인으로 끝나는 설정(conditionEndsOnConfirm)일 때만 사건을 더한다(꺼진 설정의 기록은 예전과 같다)
+            if (_cfg.conditionEndsOnConfirm)
+                Event("condition_end", $"reason={_conditionEndReason};duration_ms={durMs};confirm_ms={(_confirmMs.HasValue ? _confirmMs.Value.ToString(Inv) : "")};" +
+                                       $"grab_count={_grabCount};confirm_ignored_held={_confirmIgnoredHeld}");
             _writer.WriteJson(PlacementRecordWriter.PlacementFile, BuildPlacementJson(durMs));
             _writer.WriteJson(PlacementRecordWriter.TrajectoryFile, _trajectory.ToJson());
             _conditionWritten = true;
@@ -973,7 +1013,7 @@ namespace IFS.SceneSpec.Placement
         JObject BuildPlacementJson(long durMs)
         {
             var p = _obj;
-            return new JObject
+            var o = new JObject
             {
                 ["condition"] = _cfg.condition,
                 ["controlMode"] = Mode,
@@ -992,7 +1032,22 @@ namespace IFS.SceneSpec.Placement
                 ["confirmMs"] = _confirmMs,
                 ["conditionCompleted"] = _conditionCompleted,
             };
+            if (_cfg.conditionEndsOnConfirm)
+            {
+                // G86(2026-11-29) 선택 필드: 확인으로 끝나는 설정일 때만(꺼진 설정의 placement.json은 예전과 바이트 단위로 같다).
+                // phaseDurationMs가 실제 조건 단계 길이(확인으로 끝나면 confirmMs + 확정 알림 ConfirmNoticeSeconds).
+                // 확인 뒤에는 잡을 수 없으므로 grabCount = 확인 전까지 잡아 옮긴 횟수.
+                o["conditionEndsOnConfirm"] = true;
+                o["conditionEndReason"] = _conditionEndReason;
+                o["confirmIgnoredHeld"] = _confirmIgnoredHeld;
+            }
+            return o;
         }
+
+        public const string EndConfirmed = "confirmed", EndTimeout = "timeout", EndAborted = "aborted";
+        string _conditionEndReason;
+        /// <summary>G86: 조건 단계가 끝난 까닭(confirmed | timeout | aborted). 끝나기 전엔 null.</summary>
+        public string ConditionEndReason => _conditionEndReason;
 
         // ── 공간 고르기(2026-11-28 연구 책임자 결정) ──────────────────────
         void EnterSpaceChoice()
@@ -1646,7 +1701,14 @@ namespace IFS.SceneSpec.Placement
                     if (SecondsInPhase >= _cfg.baselineSeconds - Eps) GoTo(PlacementPhase.PreItems);
                     break;
                 case PlacementPhase.Condition:
-                    if (SecondsInPhase >= _cfg.conditionSeconds - Eps) EndCondition();
+                    if (ConditionClosing)
+                    {
+                        // G86: 확인 뒤 확정 알림 동안 — 입력은 받지 않고(물체는 확인한 자리 그대로) 알림이 끝나면 단계를 닫는다.
+                        // 알림 중에 conditionSeconds가 지나도 기다린다(끝난 까닭은 confirmed).
+                        _state = StateIdle;
+                        if (_now >= _confirmEndAt - Eps) EndCondition();
+                    }
+                    else if (SecondsInPhase >= _cfg.conditionSeconds - Eps) EndCondition();
                     else StepCondition(dt, input);
                     break;
                 case PlacementPhase.StopDistance:
